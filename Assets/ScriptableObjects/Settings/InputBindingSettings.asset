@@ -1,0 +1,111 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91d30b97916859d47b6941479645c588, type: 3}
+  m_Name: InputBindingSettings
+  m_EditorClassIdentifier: Assembly-CSharp::InputBindingSettings
+  Bindings:
+  - Action: 0
+    PrimaryKey: 1
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 1
+    PrimaryKey: 51
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 1
+  - Action: 2
+    PrimaryKey: 55
+    PrimaryMouse: 0
+    SecondaryKey: 17
+    SecondaryMouse: 0
+    Mode: 2
+  - Action: 3
+    PrimaryKey: 31
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 4
+    PrimaryKey: 0
+    PrimaryMouse: 1
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 1
+  - Action: 5
+    PrimaryKey: 0
+    PrimaryMouse: 2
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 1
+  - Action: 6
+    PrimaryKey: 32
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 7
+    PrimaryKey: 19
+    PrimaryMouse: 0
+    SecondaryKey: 20
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 8
+    PrimaryKey: 41
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 9
+    PrimaryKey: 42
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 10
+    PrimaryKey: 43
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 11
+    PrimaryKey: 44
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 12
+    PrimaryKey: 60
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 13
+    PrimaryKey: 36
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 14
+    PrimaryKey: 3
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 15
+    PrimaryKey: 27
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0

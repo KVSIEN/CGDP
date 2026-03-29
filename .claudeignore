@@ -1,0 +1,48 @@
+# Unity generated directories
+Library/
+Temp/
+Logs/
+obj/
+Build/
+Builds/
+UserSettings/
+
+# Build artifacts
+*.csproj
+*.sln
+*.slnx
+
+# Unity meta files
+*.meta
+
+# Asset store / third-party packages
+Assets/Plugins/
+Assets/TextMesh Pro/
+Assets/TextMeshPro/
+Packages/
+
+# Large binary assets (Claude can't meaningfully read these)
+Assets/**/*.fbx
+Assets/**/*.FBX
+Assets/**/*.obj
+Assets/**/*.blend
+Assets/**/*.png
+Assets/**/*.jpg
+Assets/**/*.jpeg
+Assets/**/*.tga
+Assets/**/*.psd
+Assets/**/*.tiff
+Assets/**/*.gif
+Assets/**/*.mp3
+Assets/**/*.wav
+Assets/**/*.ogg
+Assets/**/*.mp4
+Assets/**/*.mov
+Assets/**/*.avi
+Assets/**/*.ttf
+Assets/**/*.otf
+Assets/**/*.pdf
+
+# Shader compiled output
+Assets/**/*.shader.variants
+Assets/**/*.shadervariants

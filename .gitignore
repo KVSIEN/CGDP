@@ -1,0 +1,42 @@
+# Unity generated
+Library/
+Temp/
+Logs/
+obj/
+Build/
+Builds/
+UserSettings/
+MemoryCaptures/
+
+# Unity cache
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.meta.bak
+
+# VS / Rider
+.vs/
+.idea/
+*.csproj
+*.sln
+*.slnx
+ExportedObj/
+
+# OS
+.DS_Store
+Desktop.ini
+Thumbs.db
+
+# JetBrains Rider
+.idea/
+
+# Crashlytics
+crashlytics-build.properties
