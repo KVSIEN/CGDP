@@ -25,8 +25,13 @@ public class PlayerMovement : MonoBehaviour
 
     private float _coyoteTimer;
     private float _jumpBufferTimer;
+    private float _dodgeCooldownTimer;
+    private bool _dodgeQueued;
     private Vector3 _moveDirection;
     private Rigidbody _groundRb;
+
+    public float DodgeReadyRatio => _dodgeCooldownTimer <= 0f ? 1f
+        : 1f - _dodgeCooldownTimer / _settings.DodgeCooldown;
 
     private void Awake()
     {
@@ -48,6 +53,9 @@ public class PlayerMovement : MonoBehaviour
             _jumpBufferTimer = _settings.JumpBufferTime;
 
         _jumpBufferTimer -= Time.deltaTime;
+
+        if (_input.WasPressed(GameAction.Dodge) && _dodgeCooldownTimer <= 0f)
+            _dodgeQueued = true;
     }
 
     private void FixedUpdate()
@@ -55,6 +63,7 @@ public class PlayerMovement : MonoBehaviour
         HandleCrouch();
         CheckGround();
         HandleMovement();
+        HandleDodge();
         HandleJump();
         ApplyGravity();
         ClampFallSpeed();
@@ -130,8 +139,8 @@ public class PlayerMovement : MonoBehaviour
         else
             accel = _settings.Deceleration;
 
-        Vector3 newHorizontal = Vector3.MoveTowards(currentHorizontal, targetHorizontal, accel * Time.fixedDeltaTime)
-            + platformVel;
+        float t = 1f - Mathf.Exp(-accel * Time.fixedDeltaTime);
+        Vector3 newHorizontal = Vector3.Lerp(currentHorizontal, targetHorizontal, t) + platformVel;
 
         _rb.linearVelocity = new Vector3(newHorizontal.x, _rb.linearVelocity.y, newHorizontal.z);
 
@@ -233,6 +242,25 @@ public class PlayerMovement : MonoBehaviour
         // and matches the collider height visually.
         _playerMesh.localPosition = new Vector3(0f, height * 0.5f, 0f);
         _playerMesh.localScale    = new Vector3(1f, height / _settings.StandHeight, 1f);
+    }
+
+    private void HandleDodge()
+    {
+        _dodgeCooldownTimer = Mathf.Max(_dodgeCooldownTimer - Time.fixedDeltaTime, 0f);
+
+        if (!_dodgeQueued) return;
+        _dodgeQueued = false;
+
+        Vector3 dir = _moveDirection.magnitude > 0.1f
+            ? _moveDirection
+            : -Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
+
+        _rb.linearVelocity = new Vector3(
+            dir.x * _settings.DodgeForce,
+            _rb.linearVelocity.y,
+            dir.z * _settings.DodgeForce);
+
+        _dodgeCooldownTimer = _settings.DodgeCooldown;
     }
 
     public void AddImpulse(Vector3 force) => _rb.AddForce(force, ForceMode.Impulse);

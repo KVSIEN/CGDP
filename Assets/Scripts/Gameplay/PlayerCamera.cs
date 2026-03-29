@@ -11,7 +11,7 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private CameraMode _startingMode = CameraMode.ThirdPerson;
 
     [Header("Sensitivity")]
-    [SerializeField] private float _mouseSensitivity = 0.15f;
+    [SerializeField] private float _mouseSensitivity = 1.5f;
     [SerializeField] private float _gamepadSensitivity = 120f;
 
     [Header("Pitch Limits")]
@@ -95,7 +95,7 @@ public class PlayerCamera : MonoBehaviour
         // Mouse delta is typically small (< 1); gamepad stick axes are normalized to [-1, 1].
         // A magnitude above 1.1 reliably means the input came from a gamepad.
         bool isGamepad = look.magnitude > 1.1f;
-        float mult = isGamepad ? _gamepadSensitivity * Time.deltaTime : _mouseSensitivity;
+        float mult = isGamepad ? _gamepadSensitivity * Time.deltaTime : _mouseSensitivity * 0.1f;
 
         _yaw += look.x * mult;
         _pitch = Mathf.Clamp(_pitch - look.y * mult, _minPitch, _maxPitch);

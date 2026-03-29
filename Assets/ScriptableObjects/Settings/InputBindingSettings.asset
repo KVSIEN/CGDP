@@ -28,11 +28,11 @@ MonoBehaviour:
   - Action: 2
     PrimaryKey: 55
     PrimaryMouse: 0
-    SecondaryKey: 17
+    SecondaryKey: 0
     SecondaryMouse: 0
     Mode: 2
   - Action: 3
-    PrimaryKey: 31
+    PrimaryKey: 17
     PrimaryMouse: 0
     SecondaryKey: 0
     SecondaryMouse: 0

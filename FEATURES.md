@@ -9,6 +9,7 @@
 - Step climbing — automatically steps up small ledges without getting stuck
 - Moving platform support — player inherits the platform's velocity
 - External impulse support — explosions, knockback, jump pads can all push the player via `AddImpulse`
+- Dodge — tap Q to burst in the move direction (or backward if idle); has a cooldown with a HUD indicator
 - All movement values (speeds, jump height, gravity, etc.) are tunable in a ScriptableObject without touching code
 
 ## Camera
@@ -31,6 +32,7 @@
 - Ammo counter displaying magazine and reserve rounds
 - Stats HUD updates automatically whenever health or ammo changes — no polling needed
 - All crosshair options live in a ScriptableObject so they can be tweaked in the Inspector and shared across scenes
+- Dodge cooldown indicator — a single slot to the right of the ability bar that drains and refills, matching the ability HUD style
 
 ## Player Stats
 - Health with TakeDamage and Heal methods

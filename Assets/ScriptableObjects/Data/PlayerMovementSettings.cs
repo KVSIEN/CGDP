@@ -7,8 +7,8 @@ public class PlayerMovementSettings : ScriptableObject
     public float WalkSpeed = 5f;
     public float SprintSpeed = 9f;
     public float CrouchSpeed = 2.5f;
-    public float Acceleration = 20f;
-    public float Deceleration = 25f;
+    public float Acceleration = 25f;
+    public float Deceleration = 40f;
     public float AirControl = 0.35f;
 
     [Header("Jump")]
@@ -34,4 +34,8 @@ public class PlayerMovementSettings : ScriptableObject
     public float MaxStepHeight = 0.3f;
     public float StepCheckDistance = 0.45f;
     public float StepClimbSpeed = 8f;
+
+    [Header("Dodge")]
+    public float DodgeForce = 12f;
+    public float DodgeCooldown = 1.5f;
 }
