@@ -150,7 +150,7 @@ public class PlayerCamera : MonoBehaviour
         // Pull aim back toward origin only when mouse is idle.
         if (_input.LookInput.sqrMagnitude < 0.01f)
         {
-            _pitch -= (prevPitch - _recoilPitch) * _recoilRecoveryFraction;
+            _pitch += (prevPitch - _recoilPitch) * _recoilRecoveryFraction;
             _yaw   -= (prevYaw   - _recoilYaw)   * _recoilRecoveryFraction;
         }
     }

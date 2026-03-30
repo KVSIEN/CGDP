@@ -118,11 +118,7 @@ public class WeaponController : MonoBehaviour
     // ── Fire ──────────────────────────────────────────────────────────────
     private void TryFire()
     {
-        if (_magazine <= 0)
-        {
-            if (_reserve > 0) StartCoroutine(Reload());
-            return;
-        }
+        if (_magazine <= 0) return;
 
         _magazine--;
         _fireCooldown = 60f / _data.RoundsPerMinute;
@@ -196,7 +192,7 @@ public class WeaponController : MonoBehaviour
     {
         if (spreadDeg <= 0f) return forward;
         float radius = Mathf.Tan(spreadDeg * Mathf.Deg2Rad);
-        Vector2 offset = Random.insideUnitCircle * radius;
+        Vector2 offset = UnityEngine.Random.insideUnitCircle * radius;
         Quaternion rot = Quaternion.LookRotation(forward);
         return (rot * new Vector3(offset.x, offset.y, 1f)).normalized;
     }
@@ -208,14 +204,14 @@ public class WeaponController : MonoBehaviour
         // Hip = 0 camera kick; ADS = full kick scaled by AdsRecoilMultiplier
         float camMult = Mathf.Lerp(0f, _data.AdsRecoilMultiplier, adsT);
 
-        float vertBase = _data.RecoilVertical + Random.Range(-_data.RecoilVerticalVariation, _data.RecoilVerticalVariation);
+        float vertBase = _data.RecoilVertical + UnityEngine.Random.Range(-_data.RecoilVerticalVariation, _data.RecoilVerticalVariation);
         float remaining = _data.MaxAccumulatedRecoil - _accumulatedRecoil;
         float vertKick  = Mathf.Min(vertBase * camMult, remaining);
         // Only accumulate what was actually applied to the camera
         _accumulatedRecoil += vertKick;
 
         WanderDrift();
-        float horizKick = (Random.Range(-_data.RecoilHorizontalMax, _data.RecoilHorizontalMax)
+        float horizKick = (UnityEngine.Random.Range(-_data.RecoilHorizontalMax, _data.RecoilHorizontalMax)
                          + _recoilDriftDir * _data.RecoilHorizontalMax * _data.RecoilHorizontalBias) * camMult;
 
         _camera.AddRecoil(vertKick, horizKick, _data.RecoilRecoverySpeed, _data.RecoilRecoveryFraction, _data.RecoilRecoveryDelay);
@@ -223,7 +219,7 @@ public class WeaponController : MonoBehaviour
 
     private void WanderDrift()
     {
-        _recoilDriftDir += Random.Range(-0.4f, 0.4f);
+        _recoilDriftDir += UnityEngine.Random.Range(-0.4f, 0.4f);
         _recoilDriftDir  = Mathf.Clamp(_recoilDriftDir, -1f, 1f);
     }
 

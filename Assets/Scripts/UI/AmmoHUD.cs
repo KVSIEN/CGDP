@@ -36,11 +36,14 @@ public class AmmoHUD : HUDElement
     {
         SetupAnchor();
         Build();
+    }
 
+    private void Start()
+    {
         if (_weapon != null)
         {
             _weapon.OnAmmoChanged += OnAmmoChanged;
-            // Initialise with current state
+            // Read weapon state after all Awake calls have run
             OnAmmoChanged(_weapon.Magazine, _weapon.Reserve, _weapon.IsReloading);
         }
     }
@@ -94,8 +97,13 @@ public class AmmoHUD : HUDElement
     private void Build()
     {
         var self = GetComponent<RectTransform>();
-        float ip = _innerPadding.x;
+        float ip           = _innerPadding.x;
         float contentWidth = _panelWidth - ip * 2f;
+
+        // Calculate total height first and set sizeDelta so children are positioned correctly
+        float totalHeight = _innerPadding.y + 44f + 20f + 18f + _innerPadding.y;
+        self.sizeDelta = new Vector2(_panelWidth, totalHeight);
+
         float y = -_innerPadding.y;
 
         var bg = MakeImage("Background", self);
@@ -111,7 +119,7 @@ public class AmmoHUD : HUDElement
         Place(_magText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 44f));
         y -= 44f;
 
-        // Divider + reserve — smaller, dimmed
+        // Reserve — smaller, dimmed
         _reserveText = MakeText("Reserve", self);
         _reserveText.color     = _dimColor;
         _reserveText.fontSize  = 16f;
@@ -128,10 +136,6 @@ public class AmmoHUD : HUDElement
         _reloadText.text      = "RELOADING";
         Place(_reloadText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 18f));
         _reloadText.gameObject.SetActive(false);
-        y -= 18f;
-
-        float totalHeight = -y + _innerPadding.y;
-        self.sizeDelta = new Vector2(_panelWidth, totalHeight);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────
