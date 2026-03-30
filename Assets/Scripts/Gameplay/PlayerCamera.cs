@@ -35,6 +35,13 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private float _fpBodySmoothTime = 0.02f;
     [SerializeField] private float _tpBodySmoothTime = 0.12f;
 
+    [Header("ADS")]
+    [SerializeField] private float _adsFOV = 45f;
+    [SerializeField] private float _adsTpDistance = 1.5f;
+    [SerializeField] private float _adsShoulderOffset = 0f;
+    [SerializeField] private float _adsSensitivityMult = 0.5f;
+    [SerializeField] private float _adsSpeed = 10f;
+
     [Header("FOV")]
     [SerializeField] private Camera _camera;
     [SerializeField] private float _baseFOV = 70f;
@@ -58,9 +65,23 @@ public class PlayerCamera : MonoBehaviour
     private float _transitionVelocity;
 
     private float _bodyRotVelocity;
+    private float _adsT;
+
+    public bool IsAiming { get; private set; }
+
+    public float MouseSensitivity   => _mouseSensitivity;
+    public float GamepadSensitivity => _gamepadSensitivity;
+
+    public void SetSensitivity(float mouse, float gamepad)
+    {
+        _mouseSensitivity   = mouse;
+        _gamepadSensitivity = gamepad;
+    }
 
     private void Awake()
     {
+        SettingsSave.LoadSensitivity(out _mouseSensitivity, out _gamepadSensitivity);
+
         _yaw = _playerBody.eulerAngles.y;
         _currentYaw = _yaw;
 
@@ -76,6 +97,7 @@ public class PlayerCamera : MonoBehaviour
     private void LateUpdate()
     {
         HandleToggleInput();
+        HandleADS();
         UpdateRotation();
         UpdateTransition();
         UpdateCamera();
@@ -89,13 +111,18 @@ public class PlayerCamera : MonoBehaviour
         _transitionTarget = _transitionTarget < 0.5f ? 1f : 0f;
     }
 
+    private void HandleADS()
+    {
+        IsAiming = _input.GetAction(GameAction.AimDownSights);
+        float target = IsAiming ? 1f : 0f;
+        _adsT = Mathf.MoveTowards(_adsT, target, _adsSpeed * Time.deltaTime);
+    }
+
     private void UpdateRotation()
     {
         Vector2 look = _input.LookInput;
-        // Mouse delta is typically small (< 1); gamepad stick axes are normalized to [-1, 1].
-        // A magnitude above 1.1 reliably means the input came from a gamepad.
-        bool isGamepad = look.magnitude > 1.1f;
-        float mult = isGamepad ? _gamepadSensitivity * Time.deltaTime : _mouseSensitivity * 0.1f;
+        float sensScale = Mathf.Lerp(1f, _adsSensitivityMult, _adsT);
+        float mult = (_input.IsGamepadLook ? _gamepadSensitivity * Time.deltaTime : _mouseSensitivity * 0.1f) * sensScale;
 
         _yaw += look.x * mult;
         _pitch = Mathf.Clamp(_pitch - look.y * mult, _minPitch, _maxPitch);
@@ -123,17 +150,20 @@ public class PlayerCamera : MonoBehaviour
 
         Vector3 fpsPos = _headAnchor.position;
 
+        float activeDistance = Mathf.Lerp(_tpDistance, _adsTpDistance, _adsT);
+        float activeShoulder = Mathf.Lerp(_shoulderOffset, _adsShoulderOffset, _adsT);
+
         // Collision: cast from head along -forward to find safe TP distance
         Vector3 back = rotation * Vector3.back;
-        float safeDistance = _tpDistance;
+        float safeDistance = activeDistance;
         if (Physics.SphereCast(_headAnchor.position, _collisionRadius, back,
-            out RaycastHit hit, _tpDistance, _collisionMask, QueryTriggerInteraction.Ignore))
+            out RaycastHit hit, activeDistance, _collisionMask, QueryTriggerInteraction.Ignore))
         {
             safeDistance = Mathf.Max(hit.distance - _collisionRadius, _tpMinDistance);
         }
 
         // Shoulder offset interpolates with transition so it doesn't affect FPS aim
-        float shoulder = _shoulderOffset * _transitionT;
+        float shoulder = activeShoulder * _transitionT;
         Vector3 tpPos = _headAnchor.position
             + rotation * new Vector3(shoulder, 0f, -safeDistance);
 
@@ -151,7 +181,8 @@ public class PlayerCamera : MonoBehaviour
     private void UpdateFOV()
     {
         if (_camera == null) return;
-        float target = _movement.IsSprinting ? _sprintFOV : _baseFOV;
+        float hipFOV = _movement.IsSprinting ? _sprintFOV : _baseFOV;
+        float target = Mathf.Lerp(hipFOV, _adsFOV, _adsT);
         _camera.fieldOfView = Mathf.Lerp(_camera.fieldOfView, target, _fovSpeed * Time.deltaTime);
     }
 

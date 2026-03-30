@@ -8,6 +8,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     public Vector2 MoveInput { get; private set; }
     public Vector2 LookInput { get; private set; }
+    public bool IsGamepadLook { get; private set; }
 
     private static readonly int ActionCount = Enum.GetValues(typeof(GameAction)).Length;
 
@@ -17,6 +18,8 @@ public class PlayerInputHandler : MonoBehaviour
     private bool[] _results;
     private bool[] _toggleStates;
 
+    public bool InputEnabled { get; set; } = true;
+
     private void Awake()
     {
         _axisActions = new InputSystem_Actions();
@@ -25,6 +28,7 @@ public class PlayerInputHandler : MonoBehaviour
         _results = new bool[ActionCount];
         _toggleStates = new bool[ActionCount];
 
+        SettingsSave.LoadBindings(_bindings);
         BuildActions();
     }
 
@@ -65,8 +69,18 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void Update()
     {
+        if (!InputEnabled)
+        {
+            MoveInput     = Vector2.zero;
+            LookInput     = Vector2.zero;
+            IsGamepadLook = false;
+            Array.Clear(_results, 0, _results.Length);
+            return;
+        }
+
         MoveInput = _axisActions.Player.Move.ReadValue<Vector2>();
         LookInput = _axisActions.Player.Look.ReadValue<Vector2>();
+        IsGamepadLook = _axisActions.Player.Look.activeControl?.device is Gamepad;
 
         for (int i = 0; i < ActionCount; i++)
         {
@@ -94,16 +108,27 @@ public class PlayerInputHandler : MonoBehaviour
     public bool GetAction(GameAction action) => _results[(int)action];
 
     // Raw held state regardless of mode — use for sustained checks (e.g. low-jump gravity)
-    public bool IsHeld(GameAction action) => _actions[(int)action]?.IsPressed() ?? false;
+    public bool IsHeld(GameAction action) => InputEnabled && (_actions[(int)action]?.IsPressed() ?? false);
 
     // Raw press this frame regardless of mode
-    public bool WasPressed(GameAction action) => _actions[(int)action]?.WasPressedThisFrame() ?? false;
+    public bool WasPressed(GameAction action) => InputEnabled && (_actions[(int)action]?.WasPressedThisFrame() ?? false);
 
     public void SetMode(GameAction action, InputActionMode mode)
     {
         int i = (int)action;
         _modes[i] = mode;
         _toggleStates[i] = false;
+    }
+
+    public void RebuildActions()
+    {
+        for (int i = 0; i < _actions.Length; i++)
+        {
+            _actions[i]?.Disable();
+            _actions[i]?.Dispose();
+            _actions[i] = null;
+        }
+        BuildActions();
     }
 
     public void Remap(GameAction action, Key primary, Key secondary = Key.None,

@@ -19,11 +19,25 @@ public class PlayerStats : MonoBehaviour
     public int MagazineSize => _magazineSize;
 
     public event Action OnChanged;
+    public event Action OnDeath;
+
+    private float _initialHealth;
+    private int   _initialAmmo;
+    private int   _initialReserve;
+
+    private void Awake()
+    {
+        _initialHealth  = _health;
+        _initialAmmo    = _ammo;
+        _initialReserve = _ammoReserve;
+    }
 
     public void TakeDamage(float amount)
     {
+        if (_health <= 0f) return;
         _health = Mathf.Clamp(_health - amount, 0f, _maxHealth);
         OnChanged?.Invoke();
+        if (_health <= 0f) OnDeath?.Invoke();
     }
 
     public void Heal(float amount)
@@ -44,6 +58,14 @@ public class PlayerStats : MonoBehaviour
         int taken = Mathf.Min(needed, _ammoReserve);
         _ammo += taken;
         _ammoReserve -= taken;
+        OnChanged?.Invoke();
+    }
+
+    public void Respawn()
+    {
+        _health     = _initialHealth;
+        _ammo       = _initialAmmo;
+        _ammoReserve = _initialReserve;
         OnChanged?.Invoke();
     }
 }

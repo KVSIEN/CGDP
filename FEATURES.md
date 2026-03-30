@@ -23,6 +23,10 @@
 - Sprint FOV kick — field of view widens slightly while sprinting
 - Mouse and gamepad both supported with separate sensitivity settings
 - Body rotation is snappy in first-person and smooth in third-person
+- Aim Down Sights (hold right mouse / right stick) — works in both first and third person
+  - Zooms the FOV toward a configurable ADS value
+  - In third person: pulls the camera in closer and centers the shoulder offset
+  - Reduces look sensitivity while aiming; all transitions are smooth
 
 ## HUD / UI
 - Modular HUD system — elements (crosshair, stats) are independent and can be shown or hidden individually
@@ -59,5 +63,17 @@
   - Pressed — fires once on the frame the key is pressed
   - Held — fires every frame the key is held down
   - Toggle — pressing the key flips it on or off
-- Bindings can be remapped at runtime (e.g. from a settings screen)
+- Bindings can be remapped at runtime via the settings menu
 - Default actions: Jump, Sprint, Crouch, Dodge, Attack, Aim, Reload, Interact, Abilities 1–4, Pause, Switch View, Inventory, Map
+
+## Settings Menu
+- Press Escape at any time to open or close the settings menu
+- Mouse and gamepad sensitivity sliders with live preview; changes are applied and saved on confirmation
+- Full keybinding editor — every action shows its primary and secondary slot; click a slot then press any key or mouse button to rebind it
+- Reset to Defaults button restores all keybindings to their original values
+- All settings (sensitivity and keybindings) are saved to disk and automatically restored on next launch
+
+## Death & Respawn
+- When health reaches zero the player loses control, the HUD hides, and a death screen is shown
+- Player automatically respawns after a short delay, returning to the designated spawn point
+- Health and ammo are fully restored on respawn
