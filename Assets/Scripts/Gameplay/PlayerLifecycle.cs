@@ -7,6 +7,7 @@ public class PlayerLifecycle : MonoBehaviour
     [SerializeField] private PlayerMovement      _movement;
     [SerializeField] private PlayerAbilities     _abilities;
     [SerializeField] private PlayerInputHandler  _input;
+    [SerializeField] private WeaponController    _weapon;
     [SerializeField] private HUDManager          _hud;
     [SerializeField] private Transform           _spawnPoint;
     [SerializeField] private float               _respawnDelay = 3f;
@@ -45,6 +46,7 @@ public class PlayerLifecycle : MonoBehaviour
             transform.position = _spawnPoint.position;
 
         _stats.Respawn();
+        _weapon?.Refill();
 
         _movement.enabled   = true;
         _abilities.enabled  = true;

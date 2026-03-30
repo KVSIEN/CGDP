@@ -73,6 +73,24 @@
 - Reset to Defaults button restores all keybindings to their original values
 - All settings (sensitivity and keybindings) are saved to disk and automatically restored on next launch
 
+## Weapon System
+- Data-driven weapon setup via ScriptableObject assets — create a new gun by filling in a single asset, no code needed
+- Three fire modes: Semi-auto (one shot per press), Full-auto (hold to fire), Burst (fixed burst per press)
+- Hitscan shooting — instant hit detection via raycast, no projectile travel time for guns
+- Damage falloff — full damage up to an optimal range, then drops linearly to a configurable minimum at max range
+- Headshot multiplier — colliders tagged "Head" receive bonus damage
+- Bullet spread / bloom — hip-fire has a wider cone; firing continuously grows the spread; ADS tightens it; spread recovers quickly when not shooting
+- Magazine and reserve ammo tracked per weapon; ammo display in HUD stays in sync
+- Tactical reload (round in chamber) is faster than an empty reload
+- Recoil system:
+  - Each shot kicks the camera upward (vertical recoil) and slightly sideways (horizontal recoil)
+  - Vertical recoil has a small random variation per shot to avoid perfectly predictable patterns
+  - Horizontal recoil wanders using a configurable bias (e.g. slight right drift), giving each gun a personality
+  - Accumulated recoil is capped so full-auto spray stays controllable
+  - ADS reduces all recoil by a configurable multiplier
+  - Recovery is tunable per gun: 0 = BF-style (aim stays up, no return), 1 = CoD-style (full return to original aim), values between give a hybrid feel
+- All values tunable per weapon: RPM, damage, ranges, spread, recoil amounts, reload times
+
 ## Death & Respawn
 - When health reaches zero the player loses control, the HUD hides, and a death screen is shown
 - Player automatically respawns after a short delay, returning to the designated spawn point

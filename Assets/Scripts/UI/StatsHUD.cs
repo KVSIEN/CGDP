@@ -22,7 +22,6 @@ public class StatsHUD : HUDElement
 
     private Image _healthFill;
     private TextMeshProUGUI _healthText;
-    private TextMeshProUGUI _ammoText;
 
     private void Awake()
     {
@@ -83,17 +82,7 @@ public class StatsHUD : HUDElement
         _healthText.alignment = TextAlignmentOptions.Left;
         Place(_healthText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 16f));
 
-        y -= 16f + 8f;
-
-        // Ammo text
-        _ammoText = MakeText("AmmoText", self);
-        _ammoText.color = _textColor;
-        _ammoText.fontSize = 17f;
-        _ammoText.fontStyle = FontStyles.Bold;
-        _ammoText.alignment = TextAlignmentOptions.Right;
-        Place(_ammoText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 22f));
-
-        y -= 22f;
+        y -= 16f;
 
         float totalHeight = -y + _innerPadding.y;
         self.sizeDelta = new Vector2(_panelWidth, totalHeight);
@@ -107,7 +96,6 @@ public class StatsHUD : HUDElement
         _healthFill.rectTransform.anchorMax = new Vector2(ratio, 1f);
         _healthFill.color = Color.Lerp(_healthLowColor, _healthColor, ratio);
         _healthText.text = $"HP  {Mathf.CeilToInt(_playerStats.Health)} / {Mathf.CeilToInt(_playerStats.MaxHealth)}";
-        _ammoText.text = $"{_playerStats.Ammo}  <color=#888888>|</color>  {_playerStats.AmmoReserve}";
     }
 
     private static Image MakeImage(string elementName, RectTransform parent)

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bd3583691f680f40925447c7e1e95a3, type: 3}
+  m_Name: NewWeapon
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  WeaponName: Rifle
+  FireMode: 1
+  RoundsPerMinute: 750
+  BurstCount: 3
+  BurstInterval: 0.075
+  Damage: 25
+  HeadshotMultiplier: 2
+  RangeOptimal: 50
+  RangeFalloffEnd: 150
+  DamageFalloffMin: 0.4
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  MagazineSize: 30
+  ReserveAmmo: 90
+  ReloadTime: 2.6
+  TacticalReloadTime: 2.1
+  HipSpreadDeg: 2.5
+  AdsSpreadDeg: 0.8
+  SpreadPerShot: 0.8
+  SpreadRecovery: 14
+  MaxSpread: 6
+  RecoilVertical: 1.2
+  RecoilVerticalVariation: 0.2
+  RecoilHorizontalMax: 0.55
+  RecoilHorizontalBias: 0.15
+  RecoilRecoverySpeed: 14
+  RecoilRecoveryFraction: 0.72
+  RecoilRecoveryDelay: 0.12
+  AdsRecoilMultiplier: 0.45
+  HipRecoilMultiplier: 0.15
+  MaxAccumulatedRecoil: 14

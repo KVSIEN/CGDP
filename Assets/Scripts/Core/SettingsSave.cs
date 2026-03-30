@@ -34,6 +34,7 @@ public static class SettingsSave
                 primaryMouse   = (int)b.PrimaryMouse,
                 secondaryKey   = (int)b.SecondaryKey,
                 secondaryMouse = (int)b.SecondaryMouse,
+                mode           = (int)b.Mode,
             };
         }
         PlayerPrefs.SetString(KeyBindings, JsonUtility.ToJson(data));
@@ -57,6 +58,7 @@ public static class SettingsSave
                 b.PrimaryMouse   = (InputMouseButton)entry.primaryMouse;
                 b.SecondaryKey   = (Key)entry.secondaryKey;
                 b.SecondaryMouse = (InputMouseButton)entry.secondaryMouse;
+                b.Mode           = (InputActionMode)entry.mode;
                 settings.Bindings[j] = b;
                 break;
             }
@@ -71,6 +73,6 @@ public static class SettingsSave
     [Serializable]
     private class BindingEntry
     {
-        public int action, primaryKey, primaryMouse, secondaryKey, secondaryMouse;
+        public int action, primaryKey, primaryMouse, secondaryKey, secondaryMouse, mode;
     }
 }

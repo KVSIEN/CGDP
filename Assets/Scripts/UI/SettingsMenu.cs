@@ -25,7 +25,9 @@ public class SettingsMenu : MonoBehaviour
     private bool _listeningPrimary;
     private int  _listenStartFrame;
 
-    private const float W = 620f;
+    private static readonly string[] ModeLabels = { "Press", "Hold", "Toggle" };
+
+    private const float W = 680f;
     private const float H = 520f;
 
     private void Start()
@@ -165,40 +167,51 @@ public class SettingsMenu : MonoBehaviour
         GUI.Label(new Rect(10, y, 580, 20), "── Keybindings ──");
         y += 22f;
 
-        GUI.Label(new Rect(10,  y, 155, 20), "Action");
-        GUI.Label(new Rect(170, y, 160, 20), "Primary");
-        GUI.Label(new Rect(340, y, 160, 20), "Secondary");
+        GUI.Label(new Rect(10,  y, 135, 20), "Action");
+        GUI.Label(new Rect(150, y, 120, 20), "Primary");
+        GUI.Label(new Rect(275, y, 120, 20), "Secondary");
+        GUI.Label(new Rect(400, y, 200, 20), "Mode");
         y += 20f;
 
         float scrollHeight  = H - y - 36f;
-        float contentHeight = _bindings.Bindings.Count * 26f;
+        float contentHeight = _bindings.Bindings.Count * 28f;
         _scrollPos = GUI.BeginScrollView(
             new Rect(10, y, W - 20f, scrollHeight),
             _scrollPos,
             new Rect(0, 0, W - 40f, contentHeight));
 
         float ry = 0f;
-        foreach (var b in _bindings.Bindings)
+        for (int i = 0; i < _bindings.Bindings.Count; i++)
         {
+            var b = _bindings.Bindings[i];
             bool waitPri = _listeningAction == (int)b.Action && _listeningPrimary;
             bool waitSec = _listeningAction == (int)b.Action && !_listeningPrimary;
 
-            GUI.Label(new Rect(0, ry, 160, 22), b.Action.ToString());
+            GUI.Label(new Rect(0, ry, 140, 24), b.Action.ToString());
 
-            if (GUI.Button(new Rect(165, ry, 155, 22), waitPri ? "▪▪▪" : BindingLabel(b.PrimaryKey, b.PrimaryMouse)))
+            if (GUI.Button(new Rect(145, ry, 120, 24), waitPri ? "▪▪▪" : BindingLabel(b.PrimaryKey, b.PrimaryMouse)))
             {
                 _listeningAction  = (int)b.Action;
                 _listeningPrimary = true;
                 _listenStartFrame = Time.frameCount;
             }
-            if (GUI.Button(new Rect(330, ry, 155, 22), waitSec ? "▪▪▪" : BindingLabel(b.SecondaryKey, b.SecondaryMouse)))
+            if (GUI.Button(new Rect(270, ry, 120, 24), waitSec ? "▪▪▪" : BindingLabel(b.SecondaryKey, b.SecondaryMouse)))
             {
                 _listeningAction  = (int)b.Action;
                 _listeningPrimary = false;
                 _listenStartFrame = Time.frameCount;
             }
 
-            ry += 26f;
+            int newMode = GUI.SelectionGrid(new Rect(395, ry, 195, 24), (int)b.Mode, ModeLabels, 3);
+            if (newMode != (int)b.Mode)
+            {
+                b.Mode = (InputActionMode)newMode;
+                _bindings.Bindings[i] = b;
+                _input.SetMode(b.Action, b.Mode);
+                SettingsSave.SaveBindings(_bindings);
+            }
+
+            ry += 28f;
         }
         GUI.EndScrollView();
 

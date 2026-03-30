@@ -35,10 +35,15 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private float _fpBodySmoothTime = 0.02f;
     [SerializeField] private float _tpBodySmoothTime = 0.12f;
 
+    [Header("Crouch")]
+    [SerializeField] private float _crouchHeadLower = 0.65f;
+    [SerializeField] private float _crouchHeadSmoothTime = 0.08f;
+
     [Header("ADS")]
     [SerializeField] private float _adsFOV = 45f;
     [SerializeField] private float _adsTpDistance = 1.5f;
-    [SerializeField] private float _adsShoulderOffset = 0f;
+    [Tooltip("Shoulder offset while ADS in third-person. Keep non-zero so the camera stays beside the player, not behind their head.")]
+    [SerializeField] private float _adsTpShoulderOffset = 0.25f;
     [SerializeField] private float _adsSensitivityMult = 0.5f;
     [SerializeField] private float _adsSpeed = 10f;
 
@@ -66,8 +71,17 @@ public class PlayerCamera : MonoBehaviour
 
     private float _bodyRotVelocity;
     private float _adsT;
+    private float _crouchHeadOffset;
+    private float _crouchHeadVelocity;
+    private float _recoilPitch;
+    private float _recoilYaw;
+    private float _recoilRecoverySpeed    = 8f;
+    private float _recoilRecoveryFraction = 0.75f;
+    private float _recoilIdleTimer;
 
-    public bool IsAiming { get; private set; }
+    public bool  IsAiming => _adsT > 0.01f;
+    /// <summary>0 = hip, 1 = fully aimed. Used by WeaponController for spread/recoil scaling.</summary>
+    public float AdsT     => _adsT;
 
     public float MouseSensitivity   => _mouseSensitivity;
     public float GamepadSensitivity => _gamepadSensitivity;
@@ -98,6 +112,7 @@ public class PlayerCamera : MonoBehaviour
     {
         HandleToggleInput();
         HandleADS();
+        RecoverRecoil();
         UpdateRotation();
         UpdateTransition();
         UpdateCamera();
@@ -113,9 +128,47 @@ public class PlayerCamera : MonoBehaviour
 
     private void HandleADS()
     {
-        IsAiming = _input.GetAction(GameAction.AimDownSights);
-        float target = IsAiming ? 1f : 0f;
+        float target = _input.GetAction(GameAction.AimDownSights) ? 1f : 0f;
         _adsT = Mathf.MoveTowards(_adsT, target, _adsSpeed * Time.deltaTime);
+    }
+
+    private void RecoverRecoil()
+    {
+        if (_recoilPitch == 0f && _recoilYaw == 0f) return;
+
+        // Don't recover while shots are still landing — wait until the gun goes idle.
+        _recoilIdleTimer -= Time.deltaTime;
+        if (_recoilIdleTimer > 0f) return;
+
+        float dt = Time.deltaTime;
+        float prevPitch = _recoilPitch;
+        float prevYaw   = _recoilYaw;
+
+        _recoilPitch = Mathf.Lerp(_recoilPitch, 0f, _recoilRecoverySpeed * dt);
+        _recoilYaw   = Mathf.Lerp(_recoilYaw,   0f, _recoilRecoverySpeed * dt);
+
+        // Pull aim back toward origin only when mouse is idle.
+        if (_input.LookInput.sqrMagnitude < 0.01f)
+        {
+            _pitch -= (prevPitch - _recoilPitch) * _recoilRecoveryFraction;
+            _yaw   -= (prevYaw   - _recoilYaw)   * _recoilRecoveryFraction;
+        }
+    }
+
+    /// <summary>
+    /// Called by WeaponController on each shot. Pitch is degrees upward; yaw is degrees right.
+    /// recoverySpeed and recoveryFraction come from WeaponData so each gun feels different.
+    /// </summary>
+    public void AddRecoil(float pitch, float yaw, float recoverySpeed, float recoveryFraction, float recoveryDelay)
+    {
+        _recoilPitch += pitch;
+        _recoilYaw   += yaw;
+        _pitch       -= pitch;
+        _yaw         += yaw;
+        _recoilRecoverySpeed    = recoverySpeed;
+        _recoilRecoveryFraction = recoveryFraction;
+        // Reset the idle timer so recovery doesn't start until after this delay
+        _recoilIdleTimer = recoveryDelay;
     }
 
     private void UpdateRotation()
@@ -148,10 +201,14 @@ public class PlayerCamera : MonoBehaviour
         Quaternion rotation = Quaternion.Euler(_currentPitch, _currentYaw, 0f);
         transform.rotation = rotation;
 
-        Vector3 fpsPos = _headAnchor.position;
+        float targetCrouchOffset = _movement.IsCrouching ? -_crouchHeadLower : 0f;
+        _crouchHeadOffset = Mathf.SmoothDamp(_crouchHeadOffset, targetCrouchOffset, ref _crouchHeadVelocity, _crouchHeadSmoothTime);
+        Vector3 fpsPos = _headAnchor.position + Vector3.up * _crouchHeadOffset;
 
         float activeDistance = Mathf.Lerp(_tpDistance, _adsTpDistance, _adsT);
-        float activeShoulder = Mathf.Lerp(_shoulderOffset, _adsShoulderOffset, _adsT);
+        // In TP, keep a meaningful shoulder offset while ADS so the camera sits beside
+        // the player rather than clipping through the back of their head.
+        float activeShoulder = Mathf.Lerp(_shoulderOffset, _adsTpShoulderOffset, _adsT);
 
         // Collision: cast from head along -forward to find safe TP distance
         Vector3 back = rotation * Vector3.back;
@@ -162,7 +219,7 @@ public class PlayerCamera : MonoBehaviour
             safeDistance = Mathf.Max(hit.distance - _collisionRadius, _tpMinDistance);
         }
 
-        // Shoulder offset interpolates with transition so it doesn't affect FPS aim
+        // Shoulder offset only applies in TP (transitionT = 0 in FP, so no effect there)
         float shoulder = activeShoulder * _transitionT;
         Vector3 tpPos = _headAnchor.position
             + rotation * new Vector3(shoulder, 0f, -safeDistance);
