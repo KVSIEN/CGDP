@@ -12,12 +12,14 @@ public class PlayerMovement : MonoBehaviour
     public bool IsGrounded { get; private set; }
     public bool IsCrouching { get; private set; }
     public bool IsSprinting { get; private set; }
+    public bool IsSliding { get; private set; }
     public Vector3 Velocity => _rb.linearVelocity;
 
     [Header("Debug")]
     [SerializeField] private bool _isGrounded;
     [SerializeField] private bool _isCrouching;
     [SerializeField] private bool _isSprinting;
+    [SerializeField] private bool _isSliding;
 
     private Rigidbody _rb;
     private CapsuleCollider _col;
@@ -27,6 +29,9 @@ public class PlayerMovement : MonoBehaviour
     private float _jumpBufferTimer;
     private float _dodgeCooldownTimer;
     private bool _dodgeQueued;
+    private bool _slideQueued;
+    private float _slideTimer;
+    private Vector3 _slideDirection;
     private Vector3 _moveDirection;
     private Rigidbody _groundRb;
 
@@ -56,12 +61,16 @@ public class PlayerMovement : MonoBehaviour
 
         if (_input.WasPressed(GameAction.Dodge) && _dodgeCooldownTimer <= 0f)
             _dodgeQueued = true;
+
+        if (_input.WasPressed(GameAction.Crouch) && IsSprinting && IsGrounded)
+            _slideQueued = true;
     }
 
     private void FixedUpdate()
     {
         HandleCrouch();
         CheckGround();
+        HandleSlide();
         HandleMovement();
         HandleDodge();
         HandleJump();
@@ -71,6 +80,7 @@ public class PlayerMovement : MonoBehaviour
         _isGrounded  = IsGrounded;
         _isCrouching = IsCrouching;
         _isSprinting = IsSprinting;
+        _isSliding   = IsSliding;
     }
 
     private void CheckGround()
@@ -97,10 +107,53 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void HandleSlide()
+    {
+        if (_slideQueued && IsGrounded)
+        {
+            IsSliding = true;
+            _slideTimer = _settings.SlideDuration;
+            Vector3 horiz = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+            _slideDirection = horiz.magnitude > 0.1f
+                ? horiz.normalized
+                : -Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
+            _rb.linearVelocity = new Vector3(
+                _slideDirection.x * _settings.SlideSpeed,
+                _rb.linearVelocity.y,
+                _slideDirection.z * _settings.SlideSpeed);
+        }
+        _slideQueued = false;
+
+        if (!IsSliding) return;
+
+        _slideTimer -= Time.fixedDeltaTime;
+
+        Vector3 current = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+        if (_slideTimer <= 0f
+            || current.magnitude < _settings.SlideMinSpeed
+            || !_input.GetAction(GameAction.Crouch)
+            || !IsGrounded)
+        {
+            IsSliding = false;
+        }
+    }
+
     private void HandleMovement()
     {
         Vector2 rawInput = _input.MoveInput;
-        IsSprinting = _input.GetAction(GameAction.Sprint) && rawInput.magnitude > 0.1f && !IsCrouching && IsGrounded;
+        IsSprinting = _input.GetAction(GameAction.Sprint) && rawInput.magnitude > 0.1f && !IsCrouching && IsGrounded && !IsSliding;
+
+        if (IsSliding)
+        {
+            Vector3 slidePlatformVel = _groundRb != null
+                ? new Vector3(_groundRb.linearVelocity.x, 0f, _groundRb.linearVelocity.z)
+                : Vector3.zero;
+            Vector3 slideHorizontal = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z) - slidePlatformVel;
+            float slideT = 1f - Mathf.Exp(-_settings.SlideDeceleration * Time.fixedDeltaTime);
+            Vector3 slideNewHorizontal = Vector3.Lerp(slideHorizontal, Vector3.zero, slideT) + slidePlatformVel;
+            _rb.linearVelocity = new Vector3(slideNewHorizontal.x, _rb.linearVelocity.y, slideNewHorizontal.z);
+            return;
+        }
 
         float targetSpeed = IsCrouching ? _settings.CrouchSpeed
             : IsSprinting ? _settings.SprintSpeed
@@ -207,7 +260,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleCrouch()
     {
-        bool want = _input.GetAction(GameAction.Crouch);
+        bool want = IsSliding || _input.GetAction(GameAction.Crouch);
 
         if (want && !IsCrouching)
             IsCrouching = true;

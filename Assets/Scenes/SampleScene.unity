@@ -1282,6 +1282,7 @@ MonoBehaviour:
   _isGrounded: 0
   _isCrouching: 0
   _isSprinting: 0
+  _isSliding: 0
 --- !u!114 &1555766056
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -38,4 +38,10 @@ public class PlayerMovementSettings : ScriptableObject
     [Header("Dodge")]
     public float DodgeForce = 12f;
     public float DodgeCooldown = 1.5f;
+
+    [Header("Slide")]
+    public float SlideSpeed = 11f;
+    public float SlideDeceleration = 6f;
+    public float SlideMinSpeed = 3f;
+    public float SlideDuration = 1.2f;
 }

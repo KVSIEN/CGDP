@@ -11,8 +11,7 @@
 -   Implement mantle / vault system
     Triggered by Space while airborne near a ledge; supports low vaults and high mantles; eventually plays matching animation, but no animations yet.
 
--   Add slide mechanic
-    Activates from sprint + crouch input; smooth speed transition into and out of slide; uses existing Rigidbody movement
+-   ~~Add slide mechanic~~ ✓ Done
 
 ## Enemy AI
 -   Build behavior tree framework
