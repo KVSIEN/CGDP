@@ -145,8 +145,9 @@ public class WeaponController : MonoBehaviour
     // ── Hitscan ───────────────────────────────────────────────────────────
     private void CastBullet()
     {
-        float spreadDeg = Mathf.Lerp(_data.HipSpreadDeg, _data.AdsSpreadDeg, _camera.AdsT)
-                        + _currentSpread;
+        float adsT      = _camera.AdsT;
+        float hipSpread = _data.HipSpreadDeg * _data.HipSpreadScale;
+        float spreadDeg = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, adsT) + _currentSpread;
         Vector3 dir    = SpreadDirection(_camera.transform.forward, spreadDeg);
         Vector3 origin = _muzzle != null ? _muzzle.position : _camera.transform.position;
 
@@ -200,21 +201,21 @@ public class WeaponController : MonoBehaviour
     // ── Recoil ────────────────────────────────────────────────────────────
     private void ApplyRecoil()
     {
-        float adsT   = _camera.AdsT;
-        // Hip = 0 camera kick; ADS = full kick scaled by AdsRecoilMultiplier
-        float camMult = Mathf.Lerp(0f, _data.AdsRecoilMultiplier, adsT);
+        float adsT      = _camera.AdsT;
+        float vertMult  = Mathf.Lerp(_data.HipRecoilVerticalMultiplier,   _data.AdsRecoilMultiplier, adsT);
+        float horizMult = Mathf.Lerp(_data.HipRecoilHorizontalMultiplier, _data.AdsRecoilMultiplier, adsT);
 
         float vertBase = _data.RecoilVertical + UnityEngine.Random.Range(-_data.RecoilVerticalVariation, _data.RecoilVerticalVariation);
         float remaining = _data.MaxAccumulatedRecoil - _accumulatedRecoil;
-        float vertKick  = Mathf.Min(vertBase * camMult, remaining);
-        // Only accumulate what was actually applied to the camera
+        float vertKick  = Mathf.Min(vertBase * vertMult, remaining);
         _accumulatedRecoil += vertKick;
 
         WanderDrift();
         float horizKick = (UnityEngine.Random.Range(-_data.RecoilHorizontalMax, _data.RecoilHorizontalMax)
-                         + _recoilDriftDir * _data.RecoilHorizontalMax * _data.RecoilHorizontalBias) * camMult;
+                         + _recoilDriftDir * _data.RecoilHorizontalMax * _data.RecoilHorizontalBias) * horizMult;
 
-        _camera.AddRecoil(vertKick, horizKick, _data.RecoilRecoverySpeed, _data.RecoilRecoveryFraction, _data.RecoilRecoveryDelay);
+        float recoveryFraction = Mathf.Lerp(_data.RecoilRecoveryFraction, _data.AdsRecoilRecoveryFraction, adsT);
+        _camera.AddRecoil(vertKick, horizKick, _data.RecoilRecoverySpeed, recoveryFraction, _data.RecoilRecoveryDelay);
     }
 
     private void WanderDrift()
@@ -257,7 +258,8 @@ public class WeaponController : MonoBehaviour
     private void UpdateCrosshair()
     {
         if (_crosshair == null || _data == null) return;
-        float baseDeg   = Mathf.Lerp(_data.HipSpreadDeg, _data.AdsSpreadDeg, _camera.AdsT);
+        float hipSpread = _data.HipSpreadDeg * _data.HipSpreadScale;
+        float baseDeg   = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, _camera.AdsT);
         _crosshair.SetDynamicSpread(baseDeg + _currentSpread);
     }
 

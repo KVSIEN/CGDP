@@ -78,6 +78,10 @@ public class PlayerCamera : MonoBehaviour
     private float _recoilRecoverySpeed    = 8f;
     private float _recoilRecoveryFraction = 0.75f;
     private float _recoilIdleTimer;
+    private float _recoilOriginPitch;
+    private float _recoilOriginYaw;
+    private float _counterplayAccum;
+    [SerializeField] private float _counterplayThreshold = 2f;
 
     public bool  IsAiming => _adsT > 0.01f;
     /// <summary>0 = hip, 1 = fully aimed. Used by WeaponController for spread/recoil scaling.</summary>
@@ -147,12 +151,16 @@ public class PlayerCamera : MonoBehaviour
         _recoilPitch = Mathf.Lerp(_recoilPitch, 0f, _recoilRecoverySpeed * dt);
         _recoilYaw   = Mathf.Lerp(_recoilYaw,   0f, _recoilRecoverySpeed * dt);
 
-        // Pull aim back toward origin only when mouse is idle.
-        if (_input.LookInput.sqrMagnitude < 0.01f)
-        {
-            _pitch += (prevPitch - _recoilPitch) * _recoilRecoveryFraction;
-            _yaw   -= (prevYaw   - _recoilYaw)   * _recoilRecoveryFraction;
-        }
+        // Pitch: clamp so recovery never pushes past the pre-burst origin.
+        float pitchRecovery = (prevPitch - _recoilPitch) * _recoilRecoveryFraction;
+        pitchRecovery = Mathf.Clamp(pitchRecovery, 0f, Mathf.Max(0f, _recoilOriginPitch - _pitch));
+        _pitch += pitchRecovery;
+
+        // Yaw: bidirectional — move toward origin by the step amount without overshooting.
+        // The previous code clamped to [0, …] which broke leftward drift recovery entirely.
+        float yawStep = Mathf.Abs((prevYaw - _recoilYaw) * _recoilRecoveryFraction);
+        float yawGap  = _recoilOriginYaw - _yaw;
+        _yaw += Mathf.Clamp(yawGap, -yawStep, yawStep);
     }
 
     /// <summary>
@@ -161,13 +169,21 @@ public class PlayerCamera : MonoBehaviour
     /// </summary>
     public void AddRecoil(float pitch, float yaw, float recoverySpeed, float recoveryFraction, float recoveryDelay)
     {
+        // Capture where the player was aiming before this burst started.
+        // Used by recovery to avoid overshooting past origin when the player manually counteracted.
+        if (_recoilPitch == 0f && _recoilYaw == 0f)
+        {
+            _recoilOriginPitch = _pitch;
+            _recoilOriginYaw   = _yaw;
+            _counterplayAccum  = 0f;
+        }
+
         _recoilPitch += pitch;
         _recoilYaw   += yaw;
         _pitch       -= pitch;
         _yaw         += yaw;
         _recoilRecoverySpeed    = recoverySpeed;
         _recoilRecoveryFraction = recoveryFraction;
-        // Reset the idle timer so recovery doesn't start until after this delay
         _recoilIdleTimer = recoveryDelay;
     }
 
@@ -179,6 +195,21 @@ public class PlayerCamera : MonoBehaviour
 
         _yaw += look.x * mult;
         _pitch = Mathf.Clamp(_pitch - look.y * mult, _minPitch, _maxPitch);
+
+        // When the player actively pulls down against active recoil, accumulate the movement.
+        // Once they've moved enough to show deliberate counterplay, shift the recovery origin
+        // to wherever they've aimed — so recovery settles there instead of the pre-burst origin.
+        if (_recoilPitch > 0f && look.y < 0f)
+        {
+            _counterplayAccum += (-look.y) * mult;
+            if (_counterplayAccum >= _counterplayThreshold)
+                _recoilOriginPitch = _pitch;
+        }
+
+        // Keep the yaw origin in sync with deliberate horizontal movement so recovery
+        // never pulls the aim sideways against the player's intent.
+        if (_recoilYaw != 0f && Mathf.Abs(look.x) > 0.01f)
+            _recoilOriginYaw = _yaw;
 
         _currentYaw = Mathf.SmoothDampAngle(_currentYaw, _yaw, ref _yawVelocity, _rotationSmoothing);
         _currentPitch = Mathf.SmoothDampAngle(_currentPitch, _pitch, ref _pitchVelocity, _rotationSmoothing);

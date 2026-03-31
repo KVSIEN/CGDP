@@ -457,7 +457,7 @@ MonoBehaviour:
   _crouchHeadSmoothTime: 0.08
   _adsFOV: 45
   _adsTpDistance: 1.5
-  _adsTpShoulderOffset: 0.5
+  _adsTpShoulderOffset: 0.75
   _adsSensitivityMult: 0.5
   _adsSpeed: 10
   _camera: {fileID: 330585545}
@@ -465,6 +465,7 @@ MonoBehaviour:
   _sprintFOV: 80
   _fovSpeed: 8
   _firstPersonHideRenderers: []
+  _counterplayThreshold: 2
 --- !u!1 &345996832
 GameObject:
   m_ObjectHideFlags: 0

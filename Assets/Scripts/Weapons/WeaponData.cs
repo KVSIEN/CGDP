@@ -45,6 +45,8 @@ public class WeaponData : ScriptableObject
     [Header("Spread")]
     [Tooltip("Cone half-angle while hip-firing (degrees)")]
     public float HipSpreadDeg  = 2.5f;
+    [Tooltip("Scale applied to hip spread (1 = normal, 2 = double, etc.)")]
+    public float HipSpreadScale = 1f;
     [Tooltip("Cone half-angle while ADS (degrees)")]
     public float AdsSpreadDeg  = 0.35f;
     [Tooltip("Spread added per shot (bloom)")]
@@ -74,12 +76,18 @@ public class WeaponData : ScriptableObject
     public float RecoilRecoveryFraction = 0.72f;
     [Tooltip("Seconds after the last shot before aim starts recovering. Should be slightly longer than the fire interval so recovery never fights the kick.")]
     public float RecoilRecoveryDelay = 0.12f;
+    [Tooltip("Fraction of recoil returned to aim direction while ADS (1 = full return to origin)")]
+    [Range(0f, 1f)]
+    public float AdsRecoilRecoveryFraction = 1f;
     [Tooltip("Multiplier applied to all recoil amounts while ADS")]
     [Range(0f, 1f)]
     public float AdsRecoilMultiplier = 0.45f;
-    [Tooltip("Multiplier applied to camera recoil kick when hip-firing. 0 = no camera movement (spread only), 1 = full kick. CoD-style: 0.1–0.2, BF-style: 0.4–0.6.")]
+    [Tooltip("Camera vertical recoil kick while hip-firing (0 = spread only, 1 = full kick)")]
     [Range(0f, 1f)]
-    public float HipRecoilMultiplier = 0.15f;
+    public float HipRecoilVerticalMultiplier = 0.15f;
+    [Tooltip("Camera horizontal recoil kick while hip-firing (0 = spread only, 1 = full kick)")]
+    [Range(0f, 1f)]
+    public float HipRecoilHorizontalMultiplier = 0.15f;
     [Tooltip("Hard cap on total accumulated upward recoil (degrees)")]
     public float MaxAccumulatedRecoil = 14f;
 }

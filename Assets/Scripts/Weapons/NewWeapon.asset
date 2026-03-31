@@ -30,6 +30,7 @@ MonoBehaviour:
   ReloadTime: 2.6
   TacticalReloadTime: 2.1
   HipSpreadDeg: 2.5
+  HipSpreadScale: 1
   AdsSpreadDeg: 0.35
   SpreadPerShot: 0.8
   SpreadRecovery: 14
@@ -41,6 +42,8 @@ MonoBehaviour:
   RecoilRecoverySpeed: 6
   RecoilRecoveryFraction: 0.72
   RecoilRecoveryDelay: 0.12
+  AdsRecoilRecoveryFraction: 1
   AdsRecoilMultiplier: 0.45
-  HipRecoilMultiplier: 0.15
+  HipRecoilVerticalMultiplier: 0.25
+  HipRecoilHorizontalMultiplier: 0.25
   MaxAccumulatedRecoil: 14
