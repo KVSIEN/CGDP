@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3974e72bbf5d3804b90470932ec4bdc6, type: 3}
   m_Name: CrosshairSettings
   m_EditorClassIdentifier: Assembly-CSharp::CrosshairSettings
-  lineLength: 20
+  lineLength: 6
   lineThickness: 2
   centerGap: 4
   opacity: 1
