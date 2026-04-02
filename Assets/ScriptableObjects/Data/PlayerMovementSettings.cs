@@ -41,6 +41,8 @@ public class PlayerMovementSettings : ScriptableObject
 
     [Header("Slide")]
     public float SlideSpeed = 11f;
+    [Tooltip("Extra speed added on top of sprint speed when a slide starts")]
+    public float SlideBoost = 3f;
     public float SlideDeceleration = 6f;
     public float SlideMinSpeed = 3f;
     public float SlideDuration = 1.2f;

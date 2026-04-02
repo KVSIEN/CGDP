@@ -62,8 +62,12 @@ public class PlayerMovement : MonoBehaviour
         if (_input.WasPressed(GameAction.Dodge) && _dodgeCooldownTimer <= 0f)
             _dodgeQueued = true;
 
-        if (_input.WasPressed(GameAction.Crouch) && IsSprinting && IsGrounded)
-            _slideQueued = true;
+        if (_input.WasPressed(GameAction.Crouch) && IsGrounded)
+        {
+            Vector3 hv = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+            if (hv.magnitude >= _settings.SprintSpeed * 0.75f)
+                _slideQueued = true;
+        }
     }
 
     private void FixedUpdate()
@@ -117,10 +121,11 @@ public class PlayerMovement : MonoBehaviour
             _slideDirection = horiz.magnitude > 0.1f
                 ? horiz.normalized
                 : -Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
+            float boostedSpeed = Mathf.Max(horiz.magnitude, _settings.SprintSpeed) + _settings.SlideBoost;
             _rb.linearVelocity = new Vector3(
-                _slideDirection.x * _settings.SlideSpeed,
+                _slideDirection.x * boostedSpeed,
                 _rb.linearVelocity.y,
-                _slideDirection.z * _settings.SlideSpeed);
+                _slideDirection.z * boostedSpeed);
         }
         _slideQueued = false;
 

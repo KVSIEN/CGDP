@@ -147,7 +147,7 @@ public class WeaponController : MonoBehaviour
     {
         float adsT      = _camera.AdsT;
         float hipSpread = _data.HipSpreadDeg * _data.HipSpreadScale;
-        float spreadDeg = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, adsT) + _currentSpread;
+        float spreadDeg = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, adsT) + _currentSpread * Mathf.Lerp(1f, _data.AdsSpreadMultiplier, adsT);
         Vector3 dir    = SpreadDirection(_camera.transform.forward, spreadDeg);
         Vector3 origin = _muzzle != null ? _muzzle.position : _camera.transform.position;
 
@@ -260,7 +260,7 @@ public class WeaponController : MonoBehaviour
         if (_crosshair == null || _data == null) return;
         float hipSpread = _data.HipSpreadDeg * _data.HipSpreadScale;
         float baseDeg   = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, _camera.AdsT);
-        _crosshair.SetDynamicSpread(baseDeg + _currentSpread);
+        _crosshair.SetDynamicSpread(baseDeg + _currentSpread * Mathf.Lerp(1f, _data.AdsSpreadMultiplier, _camera.AdsT));
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────

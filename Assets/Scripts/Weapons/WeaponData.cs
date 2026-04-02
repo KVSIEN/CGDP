@@ -49,6 +49,9 @@ public class WeaponData : ScriptableObject
     public float HipSpreadScale = 1f;
     [Tooltip("Cone half-angle while ADS (degrees)")]
     public float AdsSpreadDeg  = 0.35f;
+    [Tooltip("How much bloom (SpreadPerShot) applies while fully ADS (0 = no bloom, 1 = same as hip)")]
+    [Range(0f, 1f)]
+    public float AdsSpreadMultiplier = 0f;
     [Tooltip("Spread added per shot (bloom)")]
     public float SpreadPerShot = 0.8f;
     [Tooltip("Spread degrees recovered per second when not shooting")]
