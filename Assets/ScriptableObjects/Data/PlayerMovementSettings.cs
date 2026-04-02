@@ -46,4 +46,24 @@ public class PlayerMovementSettings : ScriptableObject
     public float SlideDeceleration = 6f;
     public float SlideMinSpeed = 3f;
     public float SlideDuration = 1.2f;
+
+    [Header("Mantle / Vault")]
+    [Tooltip("Horizontal distance in front of the player to check for a ledge")]
+    public float MantleReach = 0.9f;
+    [Tooltip("Height above feet to cast the wall-detection ray (approx chest)")]
+    public float MantleDetectHeight = 1.3f;
+    [Tooltip("Ledge tops at or below this height relative to feet trigger a vault")]
+    public float VaultMaxHeight = 1.1f;
+    [Tooltip("Maximum ledge top height relative to feet that the player can mantle")]
+    public float MantleMaxHeight = 2.2f;
+    [Tooltip("Speed at which the player is moved to the mantle target (m/s)")]
+    public float MantleSpeed = 6f;
+    [Tooltip("Maximum time allowed to complete a mantle before it is cancelled")]
+    public float MantleTimeout = 0.8f;
+    [Tooltip("How far past the ledge edge the player is placed after mantling")]
+    public float MantleStepOver = 0.4f;
+    [Tooltip("Upward velocity impulse applied on a vault")]
+    public float VaultUpImpulse = 5f;
+    [Tooltip("Forward velocity impulse applied on a vault")]
+    public float VaultForwardImpulse = 5f;
 }

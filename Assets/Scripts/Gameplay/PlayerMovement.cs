@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     public bool IsCrouching { get; private set; }
     public bool IsSprinting { get; private set; }
     public bool IsSliding { get; private set; }
+    public bool IsMantling { get; private set; }
     public Vector3 Velocity => _rb.linearVelocity;
 
     [Header("Debug")]
@@ -20,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool _isCrouching;
     [SerializeField] private bool _isSprinting;
     [SerializeField] private bool _isSliding;
+    [SerializeField] private bool _isMantling;
 
     private Rigidbody _rb;
     private CapsuleCollider _col;
@@ -34,6 +36,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _slideDirection;
     private Vector3 _moveDirection;
     private Rigidbody _groundRb;
+    private bool _mantleQueued;
+    private Vector3 _mantleTarget;
+    private float _mantleTimer;
 
     public float DodgeReadyRatio => _dodgeCooldownTimer <= 0f ? 1f
         : 1f - _dodgeCooldownTimer / _settings.DodgeCooldown;
@@ -55,7 +60,11 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         if (_input.WasPressed(GameAction.Jump))
+        {
             _jumpBufferTimer = _settings.JumpBufferTime;
+            if (!IsGrounded)
+                _mantleQueued = true;
+        }
 
         _jumpBufferTimer -= Time.deltaTime;
 
@@ -74,17 +83,29 @@ public class PlayerMovement : MonoBehaviour
     {
         HandleCrouch();
         CheckGround();
-        HandleSlide();
-        HandleMovement();
-        HandleDodge();
-        HandleJump();
-        ApplyGravity();
-        ClampFallSpeed();
+        HandleMantle();
+
+        if (!IsMantling)
+        {
+            HandleSlide();
+            HandleMovement();
+            HandleDodge();
+            HandleJump();
+
+            if (_mantleQueued && _coyoteTimer <= 0f)
+                TryInitMantle();
+
+            ApplyGravity();
+            ClampFallSpeed();
+        }
+
+        _mantleQueued = false;
 
         _isGrounded  = IsGrounded;
         _isCrouching = IsCrouching;
         _isSprinting = IsSprinting;
         _isSliding   = IsSliding;
+        _isMantling  = IsMantling;
     }
 
     private void CheckGround()
@@ -219,6 +240,72 @@ public class PlayerMovement : MonoBehaviour
         _rb.position = Vector3.MoveTowards(_rb.position,
             _rb.position + Vector3.up * _settings.MaxStepHeight,
             _settings.StepClimbSpeed * Time.fixedDeltaTime);
+    }
+
+    private void HandleMantle()
+    {
+        if (!IsMantling) return;
+
+        _mantleTimer -= Time.fixedDeltaTime;
+
+        float dist = Vector3.Distance(_rb.position, _mantleTarget);
+        if (dist < 0.08f || _mantleTimer <= 0f)
+        {
+            _rb.MovePosition(_mantleTarget);
+            _rb.linearVelocity = Vector3.zero;
+            IsMantling = false;
+            return;
+        }
+
+        _rb.MovePosition(Vector3.MoveTowards(_rb.position, _mantleTarget, _settings.MantleSpeed * Time.fixedDeltaTime));
+        _rb.linearVelocity = Vector3.zero;
+    }
+
+    private void TryInitMantle()
+    {
+        Vector3 forward = Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
+        Vector3 chestOrigin = transform.position + Vector3.up * _settings.MantleDetectHeight;
+
+        if (!Physics.Raycast(chestOrigin, forward, out RaycastHit wallHit,
+                _settings.MantleReach, _settings.GroundMask, QueryTriggerInteraction.Ignore))
+            return;
+
+        // Cast down from above the wall hit point to find the ledge top surface.
+        float castTopY = transform.position.y + _settings.MantleMaxHeight + 0.2f;
+        Vector3 castFrom = new Vector3(
+            wallHit.point.x + forward.x * 0.05f,
+            castTopY,
+            wallHit.point.z + forward.z * 0.05f);
+
+        if (!Physics.Raycast(castFrom, Vector3.down, out RaycastHit ledgeHit,
+                _settings.MantleMaxHeight + 0.5f, _settings.GroundMask, QueryTriggerInteraction.Ignore))
+            return;
+
+        float relativeHeight = ledgeHit.point.y - transform.position.y;
+        if (relativeHeight < 0f) return;
+
+        if (relativeHeight <= _settings.VaultMaxHeight)
+        {
+            // Low vault: boost velocity up and forward.
+            Vector3 vel = _rb.linearVelocity;
+            _rb.linearVelocity = new Vector3(
+                forward.x * _settings.VaultForwardImpulse,
+                Mathf.Max(vel.y, _settings.VaultUpImpulse),
+                forward.z * _settings.VaultForwardImpulse);
+            return;
+        }
+
+        if (relativeHeight <= _settings.MantleMaxHeight)
+        {
+            // High mantle: kinematically move player to stand on the ledge.
+            _mantleTarget = new Vector3(
+                wallHit.point.x + forward.x * _settings.MantleStepOver,
+                ledgeHit.point.y,
+                wallHit.point.z + forward.z * _settings.MantleStepOver);
+            IsMantling = true;
+            _mantleTimer = _settings.MantleTimeout;
+            _rb.linearVelocity = Vector3.zero;
+        }
     }
 
     private void HandleJump()

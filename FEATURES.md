@@ -11,6 +11,7 @@
 - External impulse support — explosions, knockback, jump pads can all push the player via `AddImpulse`
 - Dodge — tap Q to burst in the move direction (or backward if idle); has a cooldown with a HUD indicator
 - Slide — press crouch while sprinting to slide; launches at a configurable speed then decelerates smoothly; exits when speed drops below a threshold, the timer runs out, crouch is released, or the player leaves the ground
+- Vault / Mantle — press Jump while airborne near a ledge to interact with it; low ledges are vaulted over with a velocity boost, taller ledges are mantled by smoothly pulling the player up onto the surface; works identically in first-person and third-person
 - All movement values (speeds, jump height, gravity, etc.) are tunable in a ScriptableObject without touching code
 
 ## Camera

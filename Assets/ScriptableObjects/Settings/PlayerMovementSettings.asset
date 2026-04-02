@@ -38,8 +38,17 @@ MonoBehaviour:
   StepClimbSpeed: 8
   DodgeForce: 12
   DodgeCooldown: 1.5
-  SlideSpeed: 9
+  SlideSpeed: 10
   SlideBoost: 3
-  SlideDeceleration: 6
+  SlideDeceleration: 3
   SlideMinSpeed: 1
   SlideDuration: 1.2
+  MantleReach: 0.9
+  MantleDetectHeight: 1.3
+  VaultMaxHeight: 1.1
+  MantleMaxHeight: 2.2
+  MantleSpeed: 6
+  MantleTimeout: 0.8
+  MantleStepOver: 0.4
+  VaultUpImpulse: 5
+  VaultForwardImpulse: 5
