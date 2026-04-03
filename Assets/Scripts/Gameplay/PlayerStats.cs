@@ -12,6 +12,7 @@ public class PlayerStats : MonoBehaviour
 
     public event Action OnChanged;
     public event Action OnDeath;
+    public event Action<float> OnDamaged;
 
     private float _initialHealth;
 
@@ -24,6 +25,7 @@ public class PlayerStats : MonoBehaviour
     {
         if (_health <= 0f) return;
         _health = Mathf.Clamp(_health - amount, 0f, _maxHealth);
+        OnDamaged?.Invoke(amount);
         OnChanged?.Invoke();
         if (_health <= 0f) OnDeath?.Invoke();
     }

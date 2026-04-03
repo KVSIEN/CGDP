@@ -27,10 +27,17 @@ public class PlayerMovement : MonoBehaviour
     private CapsuleCollider _col;
     private PlayerInputHandler _input;
 
+    private enum DodgePhase { None, Sidestep, Roll }
+
     private float _coyoteTimer;
     private float _jumpBufferTimer;
     private float _dodgeCooldownTimer;
+    private float _dodgeCooldownMax;
+    private DodgePhase _dodgePhase;
+    private float _dodgePhaseTimer;
+    private Vector3 _dodgeDir;
     private bool _dodgeQueued;
+    private bool _rollQueued;
     private bool _slideQueued;
     private float _slideTimer;
     private Vector3 _slideDirection;
@@ -40,8 +47,10 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _mantleTarget;
     private float _mantleTimer;
 
-    public float DodgeReadyRatio => _dodgeCooldownTimer <= 0f ? 1f
-        : 1f - _dodgeCooldownTimer / _settings.DodgeCooldown;
+    public float DodgeReadyRatio =>
+        _dodgePhase != DodgePhase.None ? 0f :
+        _dodgeCooldownTimer <= 0f      ? 1f :
+        1f - _dodgeCooldownTimer / _dodgeCooldownMax;
 
     private void Awake()
     {
@@ -68,8 +77,13 @@ public class PlayerMovement : MonoBehaviour
 
         _jumpBufferTimer -= Time.deltaTime;
 
-        if (_input.WasPressed(GameAction.Dodge) && _dodgeCooldownTimer <= 0f)
-            _dodgeQueued = true;
+        if (_input.WasPressed(GameAction.Dodge))
+        {
+            if (_dodgePhase == DodgePhase.None && _dodgeCooldownTimer <= 0f)
+                _dodgeQueued = true;
+            else if (_dodgePhase == DodgePhase.Sidestep)
+                _rollQueued = true;
+        }
 
         if (_input.WasPressed(GameAction.Crouch) && IsGrounded)
         {
@@ -393,19 +407,59 @@ public class PlayerMovement : MonoBehaviour
     {
         _dodgeCooldownTimer = Mathf.Max(_dodgeCooldownTimer - Time.fixedDeltaTime, 0f);
 
-        if (!_dodgeQueued) return;
-        _dodgeQueued = false;
+        // Phase 1 — sidestep: small burst, opens the roll window
+        if (_dodgeQueued)
+        {
+            _dodgeQueued = false;
+            _dodgeDir = _moveDirection.magnitude > 0.1f
+                ? _moveDirection
+                : -Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
+            _rb.linearVelocity = new Vector3(
+                _dodgeDir.x * _settings.SidestepForce,
+                _rb.linearVelocity.y,
+                _dodgeDir.z * _settings.SidestepForce);
+            _dodgePhase      = DodgePhase.Sidestep;
+            _dodgePhaseTimer = _settings.RollWindowDuration;
+            return;
+        }
 
-        Vector3 dir = _moveDirection.magnitude > 0.1f
-            ? _moveDirection
-            : -Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
+        if (_dodgePhase == DodgePhase.None) return;
 
-        _rb.linearVelocity = new Vector3(
-            dir.x * _settings.DodgeForce,
-            _rb.linearVelocity.y,
-            dir.z * _settings.DodgeForce);
+        _dodgePhaseTimer -= Time.fixedDeltaTime;
 
-        _dodgeCooldownTimer = _settings.DodgeCooldown;
+        if (_dodgePhase == DodgePhase.Sidestep)
+        {
+            // Second press within the window → commit to the full roll
+            if (_rollQueued)
+            {
+                _rollQueued = false;
+                _rb.linearVelocity = new Vector3(
+                    _dodgeDir.x * _settings.DodgeForce,
+                    _rb.linearVelocity.y,
+                    _dodgeDir.z * _settings.DodgeForce);
+                _dodgePhase      = DodgePhase.Roll;
+                _dodgePhaseTimer = _settings.RollDuration;
+                return;
+            }
+
+            // Window expired without a roll → short cooldown
+            if (_dodgePhaseTimer <= 0f)
+            {
+                _rollQueued         = false;
+                _dodgePhase         = DodgePhase.None;
+                _dodgeCooldownTimer = _settings.SidestepCooldown;
+                _dodgeCooldownMax   = _settings.SidestepCooldown;
+            }
+            return;
+        }
+
+        // Phase 2 — roll: wait out the roll duration then apply full cooldown
+        if (_dodgePhase == DodgePhase.Roll && _dodgePhaseTimer <= 0f)
+        {
+            _dodgePhase         = DodgePhase.None;
+            _dodgeCooldownTimer = _settings.DodgeCooldown;
+            _dodgeCooldownMax   = _settings.DodgeCooldown;
+        }
     }
 
     public void AddImpulse(Vector3 force) => _rb.AddForce(force, ForceMode.Impulse);

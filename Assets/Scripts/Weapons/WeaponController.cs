@@ -171,12 +171,13 @@ public class WeaponController : MonoBehaviour
 
         if (!didHit) return;
 
-        float damage = CalculateDamage(hit.distance, false);
+        bool headshot = hit.collider.CompareTag("Head");
+        float damage  = CalculateDamage(hit.distance, headshot);
 
         if (hit.collider.TryGetComponent<PlayerStats>(out var playerStats))
             playerStats.TakeDamage(damage);
         else if (hit.collider.TryGetComponent<EnemyHealth>(out var enemyHealth))
-            enemyHealth.TakeDamage(damage);
+            enemyHealth.TakeDamageAt(damage, hit.point, headshot);
     }
 
     private float CalculateDamage(float distance, bool headshot)

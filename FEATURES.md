@@ -9,7 +9,7 @@
 - Step climbing — automatically steps up small ledges without getting stuck
 - Moving platform support — player inherits the platform's velocity
 - External impulse support — explosions, knockback, jump pads can all push the player via `AddImpulse`
-- Dodge — tap Q to burst in the move direction (or backward if idle); has a cooldown with a HUD indicator
+- Dodge — two-phase system inspired by God of War: tap Q for a quick sidestep, then tap Q again within a short window to commit to a full dodge roll in the same direction; if the window expires the roll is cancelled and only a shorter sidestep cooldown applies; completing the full roll uses the longer cooldown; both phases show on the HUD cooldown indicator
 - Slide — press crouch while sprinting to slide; launches at a configurable speed then decelerates smoothly; exits when speed drops below a threshold, the timer runs out, crouch is released, or the player leaves the ground
 - Vault / Mantle — press Jump while airborne near a ledge to interact with it; low ledges are vaulted over with a velocity boost, taller ledges are mantled by smoothly pulling the player up onto the surface; works identically in first-person and third-person
 - All movement values (speeds, jump height, gravity, etc.) are tunable in a ScriptableObject without touching code
@@ -41,6 +41,9 @@
 - Stats HUD updates automatically whenever health or ammo changes — no polling needed
 - All crosshair options live in a ScriptableObject so they can be tweaked in the Inspector and shared across scenes
 - Dodge cooldown indicator — a single slot to the right of the ability bar that drains and refills, matching the ability HUD style
+- Floating damage numbers — world-space popups appear at the hit point when an enemy takes damage; headshots show a larger gold number; each popup floats upward and fades out
+- Hit flash and damage vignette — a red screen flash triggers on taking damage; a persistent red vignette around the screen edges grows stronger as health drops toward zero
+- Velocity display — top-right HUD panel showing current movement speed in m/s, updated each frame
 
 ## Player Stats
 - Health with TakeDamage and Heal methods

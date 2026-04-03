@@ -21,8 +21,14 @@ public class EnemyHealth : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        TakeDamageAt(amount, transform.position + Vector3.up * 1.5f, false);
+    }
+
+    public void TakeDamageAt(float amount, Vector3 worldPos, bool headshot)
+    {
         if (_health <= 0f) return;
         _health = Mathf.Max(_health - amount, 0f);
+        DamagePopup.Spawn(amount, worldPos, headshot);
         _healthBar?.ShowDamage(_health, _data.MaxHealth);
         OnDamaged?.Invoke(_health, _data.MaxHealth);
         if (_health <= 0f) OnDeath?.Invoke();
