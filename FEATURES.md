@@ -21,6 +21,8 @@
 - Aim point stays consistent during the transition — the center crosshair points at the same world direction in both modes
 - Third-person camera avoids clipping into walls by pulling in when geometry is close
 - Shoulder offset in third-person view, which fades out during the transition to first-person
+- Shoulder swap — press X to flip the camera between the right and left shoulder in third-person
+- Crosshair turns red when a wall is blocking the player's line of sight to the aimed target in third-person (aim obstruction indicator)
 - Player mesh automatically hides when close enough to first-person to avoid it blocking the view
 - Sprint FOV kick — field of view widens slightly while sprinting
 - Mouse and gamepad both supported with separate sensitivity settings
@@ -66,7 +68,7 @@
   - Held — fires every frame the key is held down
   - Toggle — pressing the key flips it on or off
 - Bindings can be remapped at runtime via the settings menu
-- Default actions: Jump, Sprint, Crouch, Dodge, Attack, Aim, Reload, Interact, Abilities 1–4, Pause, Switch View, Inventory, Map
+- Default actions: Jump, Sprint, Crouch, Dodge, Attack, Aim, Reload, Interact, Abilities 1–4, Pause, Switch View, Inventory, Map, Shoulder Swap (X)
 
 ## Settings Menu
 - Press Escape at any time to open or close the settings menu
@@ -92,6 +94,19 @@
   - ADS reduces all recoil by a configurable multiplier
   - Recovery is tunable per gun: 0 = BF-style (aim stays up, no return), 1 = CoD-style (full return to original aim), values between give a hybrid feel
 - All values tunable per weapon: RPM, damage, ranges, spread, recoil amounts, reload times
+
+## Enemy AI
+- Behavior tree framework with four reusable node types: Selector (first-success), Sequence (all-must-succeed), Condition (predicate leaf), Action (logic leaf)
+- Three AI states: Patrol, Alert, Chase — driven entirely by the behavior tree
+- Patrol follows an ordered list of waypoints, looping continuously; idles in place if no waypoints are assigned
+- Alert sends the enemy to the last known player position and returns to patrol after a configurable duration
+- Chase closes the gap to the player and attacks at melee range with a configurable cooldown; stops moving while attacking
+- Line-of-sight detection: raycast cone with tunable range and full-angle FOV; blocked by any geometry on the obstacle mask
+- Hearing detection: proximity sphere with tunable radius; always triggers regardless of facing direction
+- Losing sight switches the enemy to Alert for investigation; regaining sight immediately re-enters Chase
+- State color indicator: mesh tints grey (patrol), yellow (alert), red (chase) via MaterialPropertyBlock — no material instances created
+- World-space health bar appears above the enemy on damage and fades out after a configurable delay; billboards toward the camera
+- All parameters (health, speeds, sight, hearing, attack, alert duration) are tunable per enemy type via an EnemyData ScriptableObject
 
 ## Death & Respawn
 - When health reaches zero the player loses control, the HUD hides, and a death screen is shown

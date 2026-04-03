@@ -8,21 +8,24 @@
     Trajectory arc indicator, throw force tunable via ScriptableObject, integrates with ability or inventory slot
 
 ## Movement
--   Implement mantle / vault system
+-   Implement mantle / vault system ✓ Done
     Triggered by Space while airborne near a ledge; supports low vaults and high mantles; eventually plays matching animation, but no animations yet.
 
 -   ~~Add slide mechanic~~ ✓ Done
 
-## Enemy AI
--   Build behavior tree framework
+## Enemy AI ✓ Done
+-   ~~Build behavior tree framework~~
     Reusable node types — Selector, Sequence, Condition, Action; drives all enemy AI states
     Enemy health bars that appear on damage and fade after a few seconds
 
--   Implement patrol, alert, and chase states
+-   ~~Implement patrol, alert, and chase states~~
     Patrol follows waypoints; alert investigates last known position; chase closes to attack range
 
--   Add line-of-sight and hearing detection
+-   ~~Add line-of-sight and hearing detection~~
     LoS uses a raycast cone with configurable angle and range; hearing uses overlap sphere with radius tunable per enemy type
+
+-   ~~Indicate AI state with agent color change~~
+    Enemy mesh color shifts per state (e.g. grey = patrol, yellow = alert, red = chase); no materials needed, drives renderer color directly; placeholder until proper animations/VFX exist
 
 ## HUD / Feedback
 -   Add floating damage number popups

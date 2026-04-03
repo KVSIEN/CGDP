@@ -15,7 +15,8 @@ public enum GameAction
     Pause,
     TogglePerspective,
     Inventory,
-    Map
+    Map,
+    ShoulderSwap
 }
 
 public enum InputActionMode { Pressed, Held, Toggle }

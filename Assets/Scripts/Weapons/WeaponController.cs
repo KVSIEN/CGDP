@@ -148,8 +148,18 @@ public class WeaponController : MonoBehaviour
         float adsT      = _camera.AdsT;
         float hipSpread = _data.HipSpreadDeg * _data.HipSpreadScale;
         float spreadDeg = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, adsT) + _currentSpread * Mathf.Lerp(1f, _data.AdsSpreadMultiplier, adsT);
-        Vector3 dir    = SpreadDirection(_camera.transform.forward, spreadDeg);
-        Vector3 origin = _muzzle != null ? _muzzle.position : _camera.transform.position;
+
+        // Find the world point the crosshair is aimed at via the camera-centre ray.
+        // In TP the camera is shoulder-offset, so firing straight along camera.forward
+        // from the muzzle would miss targets the crosshair is visually on.
+        Vector3 camPos   = _camera.transform.position;
+        Vector3 aimPoint = Physics.Raycast(camPos, _camera.transform.forward, out RaycastHit aimHit,
+                               _data.RangeFalloffEnd, _data.HitMask, QueryTriggerInteraction.Ignore)
+                           ? aimHit.point
+                           : camPos + _camera.transform.forward * _data.RangeFalloffEnd;
+
+        Vector3 origin = _muzzle != null ? _muzzle.position : camPos;
+        Vector3 dir    = SpreadDirection((aimPoint - origin).normalized, spreadDeg);
 
         bool didHit = Physics.Raycast(origin, dir, out RaycastHit hit, _data.RangeFalloffEnd, _data.HitMask, QueryTriggerInteraction.Ignore);
 
@@ -163,8 +173,10 @@ public class WeaponController : MonoBehaviour
 
         float damage = CalculateDamage(hit.distance, false);
 
-        if (hit.collider.TryGetComponent<PlayerStats>(out var targetStats))
-            targetStats.TakeDamage(damage);
+        if (hit.collider.TryGetComponent<PlayerStats>(out var playerStats))
+            playerStats.TakeDamage(damage);
+        else if (hit.collider.TryGetComponent<EnemyHealth>(out var enemyHealth))
+            enemyHealth.TakeDamage(damage);
     }
 
     private float CalculateDamage(float distance, bool headshot)

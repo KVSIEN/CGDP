@@ -41,6 +41,7 @@ public class InputBindingSettings : ScriptableObject
             new() { Action = GameAction.TogglePerspective, PrimaryKey = Key.V,                                  Mode = InputActionMode.Pressed },
             new() { Action = GameAction.Inventory,         PrimaryKey = Key.Tab,                                Mode = InputActionMode.Pressed },
             new() { Action = GameAction.Map,               PrimaryKey = Key.M,                                  Mode = InputActionMode.Pressed },
+            new() { Action = GameAction.ShoulderSwap,      PrimaryKey = Key.X,                                  Mode = InputActionMode.Pressed },
         };
     }
 }

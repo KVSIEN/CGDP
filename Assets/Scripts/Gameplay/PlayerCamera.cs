@@ -69,6 +69,9 @@ public class PlayerCamera : MonoBehaviour
     private float _transitionTarget;
     private float _transitionVelocity;
 
+    private float _shoulderTarget  = 1f;
+    private float _shoulderCurrent = 1f;
+    private float _shoulderVelocity;
     private float _bodyRotVelocity;
     private float _adsT;
     private float _crouchHeadOffset;
@@ -83,6 +86,9 @@ public class PlayerCamera : MonoBehaviour
     private float _counterplayAccum;
     [SerializeField] private float _counterplayThreshold = 2f;
 
+    public bool    IsAimObstructed  { get; private set; }
+    public Vector3 ObstructionPoint { get; private set; }
+    public Camera  Camera           => _camera;
     public bool  IsAiming => _adsT > 0.01f;
     /// <summary>0 = hip, 1 = fully aimed. Used by WeaponController for spread/recoil scaling.</summary>
     public float AdsT     => _adsT;
@@ -122,12 +128,16 @@ public class PlayerCamera : MonoBehaviour
         UpdateCamera();
         UpdateBodyRotation();
         UpdateFOV();
+        CheckAimObstruction();
     }
 
     private void HandleToggleInput()
     {
-        if (!_input.WasPressed(GameAction.TogglePerspective)) return;
-        _transitionTarget = _transitionTarget < 0.5f ? 1f : 0f;
+        if (_input.WasPressed(GameAction.TogglePerspective))
+            _transitionTarget = _transitionTarget < 0.5f ? 1f : 0f;
+
+        if (_input.WasPressed(GameAction.ShoulderSwap))
+            _shoulderTarget *= -1f;
     }
 
     private void HandleADS()
@@ -219,6 +229,7 @@ public class PlayerCamera : MonoBehaviour
     {
         float prev = _transitionT;
         _transitionT = Mathf.SmoothDamp(_transitionT, _transitionTarget, ref _transitionVelocity, _transitionSmoothTime);
+        _shoulderCurrent = Mathf.SmoothDamp(_shoulderCurrent, _shoulderTarget, ref _shoulderVelocity, _transitionSmoothTime);
 
         if (Mathf.Abs(_transitionT - prev) > 0.001f)
             RefreshMeshVisibility();
@@ -251,7 +262,7 @@ public class PlayerCamera : MonoBehaviour
         }
 
         // Shoulder offset only applies in TP (transitionT = 0 in FP, so no effect there)
-        float shoulder = activeShoulder * _transitionT;
+        float shoulder = activeShoulder * _transitionT * _shoulderCurrent;
         Vector3 tpPos = _headAnchor.position
             + rotation * new Vector3(shoulder, 0f, -safeDistance);
 
@@ -280,6 +291,35 @@ public class PlayerCamera : MonoBehaviour
         foreach (var r in _firstPersonHideRenderers)
         {
             if (r != null) r.enabled = showMesh;
+        }
+    }
+
+    private void CheckAimObstruction()
+    {
+        // Only relevant when in or transitioning to third-person.
+        if (_transitionT < 0.1f)
+        {
+            IsAimObstructed = false;
+            return;
+        }
+
+        // Find what the camera crosshair is aimed at.
+        Vector3 camForward = transform.forward;
+        float maxDist = _tpDistance + 100f;
+        Vector3 aimPoint = Physics.Raycast(transform.position, camForward, out RaycastHit camHit, maxDist, _collisionMask, QueryTriggerInteraction.Ignore)
+            ? camHit.point
+            : transform.position + camForward * maxDist;
+
+        // Check if the player's head has line-of-sight to that aim point.
+        Vector3 toAim = aimPoint - _headAnchor.position;
+        if (Physics.Raycast(_headAnchor.position, toAim.normalized, out RaycastHit headHit, toAim.magnitude - 0.05f, _collisionMask, QueryTriggerInteraction.Ignore))
+        {
+            IsAimObstructed  = true;
+            ObstructionPoint = headHit.point;
+        }
+        else
+        {
+            IsAimObstructed = false;
         }
     }
 
