@@ -27,7 +27,7 @@ public class PlayerMovement : MonoBehaviour
     private CapsuleCollider _col;
     private PlayerInputHandler _input;
 
-    private enum DodgePhase { None, Sidestep, Roll }
+    public enum DodgePhase { None, Sidestep, Roll }
 
     private float _coyoteTimer;
     private float _jumpBufferTimer;
@@ -47,10 +47,14 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _mantleTarget;
     private float _mantleTimer;
 
+    [SerializeField] private bool _lockDodgeDirection;
+
     public float DodgeReadyRatio =>
         _dodgePhase != DodgePhase.None ? 0f :
         _dodgeCooldownTimer <= 0f      ? 1f :
         1f - _dodgeCooldownTimer / _dodgeCooldownMax;
+
+    public DodgePhase CurrentDodgePhase => _dodgePhase;
 
     private void Awake()
     {
@@ -180,6 +184,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleMovement()
     {
+        if (_dodgePhase == DodgePhase.Roll && _lockDodgeDirection)
+            return;
+
         Vector2 rawInput = _input.MoveInput;
         IsSprinting = _input.GetAction(GameAction.Sprint) && rawInput.magnitude > 0.1f && !IsCrouching && IsGrounded && !IsSliding;
 
@@ -407,20 +414,15 @@ public class PlayerMovement : MonoBehaviour
     {
         _dodgeCooldownTimer = Mathf.Max(_dodgeCooldownTimer - Time.fixedDeltaTime, 0f);
 
-        // Phase 1 — sidestep: small burst, opens the roll window
+        // Phase 1 — sidestep: capture direction and start the window
         if (_dodgeQueued)
         {
             _dodgeQueued = false;
             _dodgeDir = _moveDirection.magnitude > 0.1f
                 ? _moveDirection
                 : -Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
-            _rb.linearVelocity = new Vector3(
-                _dodgeDir.x * _settings.SidestepForce,
-                _rb.linearVelocity.y,
-                _dodgeDir.z * _settings.SidestepForce);
             _dodgePhase      = DodgePhase.Sidestep;
             _dodgePhaseTimer = _settings.RollWindowDuration;
-            return;
         }
 
         if (_dodgePhase == DodgePhase.None) return;
@@ -429,14 +431,22 @@ public class PlayerMovement : MonoBehaviour
 
         if (_dodgePhase == DodgePhase.Sidestep)
         {
-            // Second press within the window → commit to the full roll
+            // Sustain sidestep velocity for SidestepDuration
+            float elapsed = _settings.RollWindowDuration - _dodgePhaseTimer;
+            if (elapsed < _settings.SidestepDuration)
+            {
+                _rb.linearVelocity = new Vector3(
+                    _dodgeDir.x * _settings.SidestepForce,
+                    _rb.linearVelocity.y,
+                    _dodgeDir.z * _settings.SidestepForce);
+            }
+
+            // Second press within the window → commit to the full roll, re-capture direction from current input
             if (_rollQueued)
             {
                 _rollQueued = false;
-                _rb.linearVelocity = new Vector3(
-                    _dodgeDir.x * _settings.DodgeForce,
-                    _rb.linearVelocity.y,
-                    _dodgeDir.z * _settings.DodgeForce);
+                if (_moveDirection.magnitude > 0.1f)
+                    _dodgeDir = _moveDirection;
                 _dodgePhase      = DodgePhase.Roll;
                 _dodgePhaseTimer = _settings.RollDuration;
                 return;
@@ -453,12 +463,23 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // Phase 2 — roll: wait out the roll duration then apply full cooldown
-        if (_dodgePhase == DodgePhase.Roll && _dodgePhaseTimer <= 0f)
+        // Phase 2 — roll: sustain velocity at DodgeForce for the full duration
+        if (_dodgePhase == DodgePhase.Roll)
         {
-            _dodgePhase         = DodgePhase.None;
-            _dodgeCooldownTimer = _settings.DodgeCooldown;
-            _dodgeCooldownMax   = _settings.DodgeCooldown;
+            if (!_lockDodgeDirection && _moveDirection.magnitude > 0.1f)
+                _dodgeDir = _moveDirection;
+
+            _rb.linearVelocity = new Vector3(
+                _dodgeDir.x * _settings.DodgeForce,
+                _rb.linearVelocity.y,
+                _dodgeDir.z * _settings.DodgeForce);
+
+            if (_dodgePhaseTimer <= 0f)
+            {
+                _dodgePhase         = DodgePhase.None;
+                _dodgeCooldownTimer = _settings.DodgeCooldown;
+                _dodgeCooldownMax   = _settings.DodgeCooldown;
+            }
         }
     }
 

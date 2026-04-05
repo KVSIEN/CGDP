@@ -3,33 +3,32 @@ using TMPro;
 
 public class DamagePopup : MonoBehaviour
 {
-    private const float FloatSpeed    = 1.4f;
+    private const float FloatSpeed    = 50f;  // Adjusted for screen space (pixels per second)
     private const float FadeDelay     = 0.35f;
     private const float FadeSpeed     = 3.5f;
-    private const float NormalScale   = 0.004f;
-    private const float HeadshotScale = 0.006f;
+    private const float NormalScale   = 1f;
+    private const float HeadshotScale = 1.2f;
 
     private static readonly Color NormalColor   = Color.white;
     private static readonly Color HeadshotColor = new Color(1f, 0.85f, 0.1f, 1f);
 
     private CanvasGroup _group;
-    private Camera      _cam;
     private float       _fadeTimer;
 
     public static void Spawn(float damage, Vector3 worldPos, bool headshot)
     {
         var go = new GameObject("DamagePopup");
-        go.transform.position = worldPos;
-        go.AddComponent<DamagePopup>().Setup(damage, headshot);
+        go.AddComponent<DamagePopup>().Setup(damage, worldPos, headshot);
     }
 
-    private void Setup(float damage, bool headshot)
+    private void Setup(float damage, Vector3 worldPos, bool headshot)
     {
         var canvas = gameObject.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         var rt = (RectTransform)canvas.transform;
         rt.sizeDelta  = new Vector2(200f, 60f);
         rt.localScale = Vector3.one * (headshot ? HeadshotScale : NormalScale);
+        rt.position   = Camera.main.WorldToScreenPoint(worldPos);
 
         _group     = gameObject.AddComponent<CanvasGroup>();
         _fadeTimer = FadeDelay;
@@ -44,7 +43,7 @@ public class DamagePopup : MonoBehaviour
         var text = textGo.GetComponent<TextMeshProUGUI>();
         text.text          = Mathf.RoundToInt(damage).ToString();
         text.color         = headshot ? HeadshotColor : NormalColor;
-        text.fontSize      = headshot ? 52f : 36f;
+        text.fontSize      = headshot ? 64f : 52f;
         text.fontStyle     = headshot ? FontStyles.Bold : FontStyles.Normal;
         text.alignment     = TextAlignmentOptions.Center;
         text.raycastTarget = false;
@@ -52,9 +51,7 @@ public class DamagePopup : MonoBehaviour
 
     private void Update()
     {
-        if (_cam == null) _cam = Camera.main;
-        if (_cam != null)
-            transform.rotation = _cam.transform.rotation;
+        if (_group == null) return;
 
         transform.position += Vector3.up * (FloatSpeed * Time.deltaTime);
 

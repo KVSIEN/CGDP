@@ -36,16 +36,18 @@ public class PlayerMovementSettings : ScriptableObject
     public float StepClimbSpeed = 8f;
 
     [Header("Dodge")]
-    [Tooltip("Impulse of the first phase — a short sidestep")]
+    [Tooltip("Speed sustained during the sidestep burst")]
     public float SidestepForce = 7f;
+    [Tooltip("How long the sidestep velocity is held before movement takes over")]
+    public float SidestepDuration = 0.15f;
     [Tooltip("How long after the sidestep the player can press Dodge again to roll")]
-    public float RollWindowDuration = 0.35f;
+    public float RollWindowDuration = 0.5f;
     [Tooltip("Cooldown applied when the sidestep is used but the roll window expires unused")]
     public float SidestepCooldown = 0.7f;
-    [Tooltip("Impulse of the full roll (second phase)")]
+    [Tooltip("Speed sustained during the full roll")]
     public float DodgeForce = 12f;
-    [Tooltip("Brief phase duration after the roll before the cooldown starts")]
-    public float RollDuration = 0.2f;
+    [Tooltip("How long the full roll velocity is held before movement takes over")]
+    public float RollDuration = 0.6f;
     public float DodgeCooldown = 1.5f;
 
     [Header("Slide")]

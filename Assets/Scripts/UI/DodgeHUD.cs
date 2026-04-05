@@ -12,12 +12,15 @@ public class DodgeHUD : HUDElement
     [SerializeField] private float _screenPaddingBottom = 24f;
     [SerializeField] private float _offsetFromCenter    = 160f;
 
-    private static readonly Color ReadyColor            = new Color(0.25f, 0.55f, 1f,  0.85f);
-    private static readonly Color CooldownColor         = new Color(0.1f,  0.1f,  0.1f, 0.85f);
-    private static readonly Color OverlayColor          = new Color(0f,    0f,    0f,   0.65f);
+    private static readonly Color ReadyColor    = new Color(0.25f, 0.55f, 1f,  0.85f);
+    private static readonly Color CooldownColor = new Color(0.1f,  0.1f,  0.1f, 0.85f);
+    private static readonly Color StepColor     = new Color(1f,    0.75f, 0.1f, 0.85f);
+    private static readonly Color RollColor     = new Color(0.15f, 0.9f,  0.4f, 0.85f);
+    private static readonly Color OverlayColor  = new Color(0f,    0f,    0f,   0.65f);
 
-    private Image _bg;
-    private Image _overlay;
+    private Image          _bg;
+    private Image          _overlay;
+    private TextMeshProUGUI _nameLabel;
 
     private void Awake()
     {
@@ -45,21 +48,39 @@ public class DodgeHUD : HUDElement
         keyLabel.rectTransform.offsetMin = new Vector2(4f, 0f);
         keyLabel.rectTransform.offsetMax = new Vector2(0f, -3f);
 
-        var nameLabel        = MakeText("DodgeName", _bg.rectTransform);
-        nameLabel.text       = "DODGE";
-        nameLabel.fontSize   = 9f;
-        nameLabel.color      = new Color(1f, 1f, 1f, 0.85f);
-        nameLabel.alignment  = TextAlignmentOptions.Center;
-        Stretch(nameLabel.rectTransform);
+        _nameLabel           = MakeText("DodgeName", _bg.rectTransform);
+        _nameLabel.text      = "DODGE";
+        _nameLabel.fontSize  = 9f;
+        _nameLabel.color     = new Color(1f, 1f, 1f, 0.85f);
+        _nameLabel.alignment = TextAlignmentOptions.Center;
+        Stretch(_nameLabel.rectTransform);
     }
 
     private void Update()
     {
         if (_movement == null) return;
 
-        float ratio = _movement.DodgeReadyRatio;
-        _bg.color = Color.Lerp(CooldownColor, ReadyColor, ratio);
-        _overlay.rectTransform.anchorMax = new Vector2(1f, 1f - ratio);
+        var phase = _movement.CurrentDodgePhase;
+
+        if (phase == PlayerMovement.DodgePhase.Sidestep)
+        {
+            _bg.color = StepColor;
+            _overlay.rectTransform.anchorMax = new Vector2(1f, 0f);
+            _nameLabel.text = "STEP";
+        }
+        else if (phase == PlayerMovement.DodgePhase.Roll)
+        {
+            _bg.color = RollColor;
+            _overlay.rectTransform.anchorMax = new Vector2(1f, 0f);
+            _nameLabel.text = "ROLL";
+        }
+        else
+        {
+            float ratio = _movement.DodgeReadyRatio;
+            _bg.color = Color.Lerp(CooldownColor, ReadyColor, ratio);
+            _overlay.rectTransform.anchorMax = new Vector2(1f, 1f - ratio);
+            _nameLabel.text = "DODGE";
+        }
     }
 
     public override void Refresh() { }
