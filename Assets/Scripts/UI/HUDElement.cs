@@ -2,21 +2,21 @@ using UnityEngine;
 
 public abstract class HUDElement : MonoBehaviour
 {
-    public bool IsVisible { get; private set; } = true;
+    public bool IsVisible { get; protected set; } = true;
 
-    public void Show()
+    public virtual void Show()
     {
         IsVisible = true;
         gameObject.SetActive(true);
     }
 
-    public void Hide()
+    public virtual void Hide()
     {
         IsVisible = false;
         gameObject.SetActive(false);
     }
 
-    public void Toggle()
+    public virtual void Toggle()
     {
         if (IsVisible) Hide(); else Show();
     }

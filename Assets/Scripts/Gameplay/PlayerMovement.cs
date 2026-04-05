@@ -13,56 +13,40 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool _isCrouching;
     [SerializeField] private bool _isSprinting;
     [SerializeField] private bool _isSliding;
-    [SerializeField] private bool _isMantling;
 
     public bool IsGrounded  => _isGrounded;
     public bool IsCrouching => _isCrouching;
     public bool IsSprinting => _isSprinting;
     public bool IsSliding   => _isSliding;
-    public bool IsMantling  => _isMantling;
+    public bool IsMantling  => _mantle.IsMantling;
     public Vector3 Velocity => _rb.linearVelocity;
+
+    public Vector3 MoveDirection   => _moveDirection;
+    public float CoyoteTimer       => _coyoteTimer;
+    public Transform CameraTransform => _cameraTransform;
 
     private Rigidbody _rb;
     private CapsuleCollider _col;
     private PlayerInputHandler _input;
-
-    public enum DodgePhase { None, Sidestep, Roll }
+    private PlayerDodge _dodge;
+    private PlayerMantle _mantle;
 
     private float _coyoteTimer;
     private float _jumpBufferTimer;
-    private float _dodgeCooldownTimer;
-    private float _dodgeCooldownMax;
-    private DodgePhase _dodgePhase;
-    private float _dodgePhaseTimer;
-    private Vector3 _dodgeDir;
-    private bool _dodgeQueued;
-    private bool _rollQueued;
+    private float _mantleBufferTimer;
     private bool _slideQueued;
     private float _slideTimer;
     private Vector3 _slideDirection;
     private Vector3 _moveDirection;
     private Rigidbody _groundRb;
-    private float _mantleBufferTimer;
-    private Vector3 _mantleTarget;
-    private Vector3 _mantleLiftTarget;
-    private Vector3 _mantleExitVelocity;
-    private bool _mantleInLiftPhase;
-    private float _mantleTimer;
-
-    [SerializeField] private bool _lockDodgeDirection;
-
-    public float DodgeReadyRatio =>
-        _dodgePhase != DodgePhase.None ? 0f :
-        _dodgeCooldownTimer <= 0f      ? 1f :
-        1f - _dodgeCooldownTimer / _dodgeCooldownMax;
-
-    public DodgePhase CurrentDodgePhase => _dodgePhase;
 
     private void Awake()
     {
-        _rb = GetComponent<Rigidbody>();
-        _col = GetComponent<CapsuleCollider>();
-        _input = GetComponent<PlayerInputHandler>();
+        _rb     = GetComponent<Rigidbody>();
+        _col    = GetComponent<CapsuleCollider>();
+        _input  = GetComponent<PlayerInputHandler>();
+        _dodge  = GetComponent<PlayerDodge>();
+        _mantle = GetComponent<PlayerMantle>();
 
         _rb.useGravity = false;
         _rb.freezeRotation = true;
@@ -94,14 +78,6 @@ public class PlayerMovement : MonoBehaviour
 
         _jumpBufferTimer -= Time.deltaTime;
 
-        if (_input.WasPressed(GameAction.Dodge))
-        {
-            if (_dodgePhase == DodgePhase.None && _dodgeCooldownTimer <= 0f)
-                _dodgeQueued = true;
-            else if (_dodgePhase == DodgePhase.Sidestep)
-                _rollQueued = true;
-        }
-
         if (_input.WasPressed(GameAction.Crouch) && IsGrounded)
         {
             Vector3 hv = HorizontalVelocity;
@@ -114,19 +90,19 @@ public class PlayerMovement : MonoBehaviour
     {
         HandleCrouch();
         CheckGround();
-        HandleMantle();
+        _mantle.Tick();
 
         if (!IsMantling)
         {
             HandleSlide();
             HandleMovement();
-            HandleDodge();
+            _dodge.Tick();
             HandleJump();
 
             _mantleBufferTimer -= Time.fixedDeltaTime;
             if (_mantleBufferTimer > 0f && _coyoteTimer <= 0f)
             {
-                TryInitMantle();
+                _mantle.TryInit();
                 if (IsMantling) _mantleBufferTimer = 0f;
             }
 
@@ -196,7 +172,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (_dodgePhase == DodgePhase.Roll && _lockDodgeDirection)
+        if (_dodge.CurrentDodgePhase == PlayerDodge.DodgePhase.Roll && _dodge.LockDodgeDirection)
             return;
 
         Vector2 rawInput = _input.MoveInput;
@@ -273,101 +249,6 @@ public class PlayerMovement : MonoBehaviour
         _rb.position = Vector3.MoveTowards(_rb.position,
             _rb.position + Vector3.up * _settings.MaxStepHeight,
             _settings.StepClimbSpeed * Time.fixedDeltaTime);
-    }
-
-    private void HandleMantle()
-    {
-        if (!IsMantling) return;
-
-        _mantleTimer -= Time.fixedDeltaTime;
-
-        Vector3 target = _mantleInLiftPhase ? _mantleLiftTarget : _mantleTarget;
-        float dist     = Vector3.Distance(_rb.position, target);
-
-        // Phase transition: lift complete → begin forward step
-        if (_mantleInLiftPhase && dist < 0.08f)
-        {
-            _mantleInLiftPhase = false;
-            return;
-        }
-
-        // Done: reached final target or timed out
-        if (!_mantleInLiftPhase && (dist < 0.08f || _mantleTimer <= 0f))
-        {
-            _rb.position       = _mantleTarget;
-            _rb.isKinematic    = false;
-            _rb.linearVelocity = _mantleExitVelocity;
-            _isMantling        = false;
-            return;
-        }
-
-        // Lift slightly faster so it feels snappy upward
-        float speed = _mantleInLiftPhase ? _settings.MantleSpeed * 1.5f : _settings.MantleSpeed;
-        _rb.MovePosition(Vector3.MoveTowards(_rb.position, target, speed * Time.fixedDeltaTime));
-    }
-
-    private void TryInitMantle()
-    {
-        Vector3 forward = Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
-
-        // Sweep the full mantleable height range so the wall is detected whether
-        // the player is at ground level or has already risen near the ledge top.
-        Vector3 sweepBase = transform.position + Vector3.up * (_col.radius + 0.05f);
-        Vector3 sweepTop  = transform.position + Vector3.up * _settings.MantleMaxHeight;
-        if (!Physics.CapsuleCast(sweepBase, sweepTop, _col.radius * 0.4f, forward,
-                out RaycastHit wallHit, _settings.MantleReach, _settings.GroundMask, QueryTriggerInteraction.Ignore))
-            return;
-
-        // Cast down from above the wall hit point to find the ledge top surface.
-        float castTopY = transform.position.y + _settings.MantleMaxHeight + 0.2f;
-        Vector3 castFrom = new Vector3(
-            wallHit.point.x + forward.x * 0.05f,
-            castTopY,
-            wallHit.point.z + forward.z * 0.05f);
-
-        if (!Physics.Raycast(castFrom, Vector3.down, out RaycastHit ledgeHit,
-                _settings.MantleMaxHeight + 0.5f, _settings.GroundMask, QueryTriggerInteraction.Ignore))
-            return;
-
-        float relativeHeight = ledgeHit.point.y - transform.position.y;
-        if (relativeHeight < 0f) return;
-
-        if (relativeHeight <= _settings.VaultMaxHeight)
-        {
-            // Low vault: kinematically lift to the ledge top to avoid clipping the edge,
-            // then release with forward + upward velocity so the player arcs over.
-            _mantleLiftTarget   = new Vector3(_rb.position.x, ledgeHit.point.y, _rb.position.z);
-            _mantleTarget       = _mantleLiftTarget;
-            _mantleInLiftPhase  = false;
-            _mantleExitVelocity = new Vector3(
-                forward.x * _settings.VaultForwardImpulse,
-                _settings.VaultUpImpulse,
-                forward.z * _settings.VaultForwardImpulse);
-            _isMantling        = true;
-            _mantleTimer       = 0.3f;
-            _rb.linearVelocity = Vector3.zero;
-            _rb.isKinematic    = true;
-            return;
-        }
-
-        if (relativeHeight <= _settings.MantleMaxHeight)
-        {
-            // High mantle: phase 1 — lift straight up alongside the wall to ledge height
-            //              phase 2 — step forward onto the ledge surface.
-            // Kinematic during the move prevents physics from pushing the player back
-            // through the wall face.
-            _mantleLiftTarget  = new Vector3(_rb.position.x, ledgeHit.point.y, _rb.position.z);
-            _mantleTarget = new Vector3(
-                wallHit.point.x + forward.x * _settings.MantleStepOver,
-                ledgeHit.point.y,
-                wallHit.point.z + forward.z * _settings.MantleStepOver);
-            _mantleInLiftPhase  = true;
-            _mantleExitVelocity = Vector3.zero;
-            _isMantling        = true;
-            _mantleTimer       = _settings.MantleTimeout;
-            _rb.linearVelocity = Vector3.zero;
-            _rb.isKinematic    = true;
-        }
     }
 
     private void HandleJump()
@@ -449,79 +330,6 @@ public class PlayerMovement : MonoBehaviour
         // and matches the collider height visually.
         _playerMesh.localPosition = new Vector3(0f, height * 0.5f, 0f);
         _playerMesh.localScale    = new Vector3(1f, height / _settings.StandHeight, 1f);
-    }
-
-    private void HandleDodge()
-    {
-        _dodgeCooldownTimer = Mathf.Max(_dodgeCooldownTimer - Time.fixedDeltaTime, 0f);
-
-        // Phase 1 — sidestep: capture direction and start the window
-        if (_dodgeQueued)
-        {
-            _dodgeQueued = false;
-            _dodgeDir = _moveDirection.magnitude > 0.1f
-                ? _moveDirection
-                : -Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
-            _dodgePhase      = DodgePhase.Sidestep;
-            _dodgePhaseTimer = _settings.RollWindowDuration;
-        }
-
-        if (_dodgePhase == DodgePhase.None) return;
-
-        _dodgePhaseTimer -= Time.fixedDeltaTime;
-
-        if (_dodgePhase == DodgePhase.Sidestep)
-        {
-            // Sustain sidestep velocity for SidestepDuration
-            float elapsed = _settings.RollWindowDuration - _dodgePhaseTimer;
-            if (elapsed < _settings.SidestepDuration)
-            {
-                _rb.linearVelocity = new Vector3(
-                    _dodgeDir.x * _settings.SidestepForce,
-                    _rb.linearVelocity.y,
-                    _dodgeDir.z * _settings.SidestepForce);
-            }
-
-            // Second press within the window → commit to the full roll, re-capture direction from current input
-            if (_rollQueued)
-            {
-                _rollQueued = false;
-                if (_moveDirection.magnitude > 0.1f)
-                    _dodgeDir = _moveDirection;
-                _dodgePhase      = DodgePhase.Roll;
-                _dodgePhaseTimer = _settings.RollDuration;
-                return;
-            }
-
-            // Window expired without a roll → short cooldown
-            if (_dodgePhaseTimer <= 0f)
-            {
-                _rollQueued         = false;
-                _dodgePhase         = DodgePhase.None;
-                _dodgeCooldownTimer = _settings.SidestepCooldown;
-                _dodgeCooldownMax   = _settings.SidestepCooldown;
-            }
-            return;
-        }
-
-        // Phase 2 — roll: sustain velocity at DodgeForce for the full duration
-        if (_dodgePhase == DodgePhase.Roll)
-        {
-            if (!_lockDodgeDirection && _moveDirection.magnitude > 0.1f)
-                _dodgeDir = _moveDirection;
-
-            _rb.linearVelocity = new Vector3(
-                _dodgeDir.x * _settings.DodgeForce,
-                _rb.linearVelocity.y,
-                _dodgeDir.z * _settings.DodgeForce);
-
-            if (_dodgePhaseTimer <= 0f)
-            {
-                _dodgePhase         = DodgePhase.None;
-                _dodgeCooldownTimer = _settings.DodgeCooldown;
-                _dodgeCooldownMax   = _settings.DodgeCooldown;
-            }
-        }
     }
 
     public void AddImpulse(Vector3 force) => _rb.AddForce(force, ForceMode.Impulse);

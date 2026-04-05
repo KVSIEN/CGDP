@@ -113,6 +113,9 @@ public class PlayerInputHandler : MonoBehaviour
     // Raw press this frame regardless of mode
     public bool WasPressed(GameAction action) => InputEnabled && (_actions[(int)action]?.WasPressedThisFrame() ?? false);
 
+    // Bypasses InputEnabled — use only for overlay toggles (inventory, pause) that must work while input is locked
+    public bool WasPressedRaw(GameAction action) => _actions[(int)action]?.WasPressedThisFrame() ?? false;
+
     public void SetMode(GameAction action, InputActionMode mode)
     {
         int i = (int)action;

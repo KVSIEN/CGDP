@@ -5,7 +5,7 @@ using TMPro;
 [RequireComponent(typeof(RectTransform))]
 public class DodgeHUD : HUDElement
 {
-    [SerializeField] private PlayerMovement _movement;
+    [SerializeField] private PlayerDodge _dodge;
 
     [Header("Layout")]
     [SerializeField] private float _slotSize            = 56f;
@@ -58,17 +58,17 @@ public class DodgeHUD : HUDElement
 
     private void Update()
     {
-        if (_movement == null) return;
+        if (_dodge == null) return;
 
-        var phase = _movement.CurrentDodgePhase;
+        var phase = _dodge.CurrentDodgePhase;
 
-        if (phase == PlayerMovement.DodgePhase.Sidestep)
+        if (phase == PlayerDodge.DodgePhase.Sidestep)
         {
             _bg.color = StepColor;
             _overlay.rectTransform.anchorMax = new Vector2(1f, 0f);
             _nameLabel.text = "STEP";
         }
-        else if (phase == PlayerMovement.DodgePhase.Roll)
+        else if (phase == PlayerDodge.DodgePhase.Roll)
         {
             _bg.color = RollColor;
             _overlay.rectTransform.anchorMax = new Vector2(1f, 0f);
@@ -76,7 +76,7 @@ public class DodgeHUD : HUDElement
         }
         else
         {
-            float ratio = _movement.DodgeReadyRatio;
+            float ratio = _dodge.DodgeReadyRatio;
             _bg.color = Color.Lerp(CooldownColor, ReadyColor, ratio);
             _overlay.rectTransform.anchorMax = new Vector2(1f, 1f - ratio);
             _nameLabel.text = "DODGE";

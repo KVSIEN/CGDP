@@ -16,7 +16,11 @@ public enum GameAction
     TogglePerspective,
     Inventory,
     Map,
-    ShoulderSwap
+    ShoulderSwap,
+    Weapon1,
+    Weapon2,
+    Weapon3,
+    Weapon4,
 }
 
 public enum InputActionMode { Pressed, Held, Toggle }

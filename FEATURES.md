@@ -51,7 +51,7 @@
 - Fires a change event so the HUD reacts immediately without polling
 
 ## Ability System
-- Four ability slots assignable to keys 1, 2, 3, 4
+- Four ability slots (unbound by default; assign keys via the settings menu)
 - Each ability has its own cooldown; activating during cooldown does nothing
 - Cooldown starts only if the ability succeeds (e.g. heal won't trigger if already full health)
 - Four built-in abilities: Dash, Projectile, Heal, and Shockwave
@@ -62,6 +62,33 @@
 - All ability values (cooldown, force, damage, etc.) are tunable on the ScriptableObject asset
 - HUD shows four coloured slots at the bottom of the screen; a dark overlay drains away as each cooldown recovers
 
+## Interaction System
+- `IInteractable` interface — any world object can implement it to become interactable
+- Player scans for nearby interactables each frame using a zero-allocation sphere overlap (configurable range, default 2.5 m); always selects the closest one
+- Press E to trigger the interaction; prompts only appear when something is actually in range
+- HUD prompt appears bottom-center of the screen showing a blue "E" key badge and the action label (e.g. "Pick Up  Assault Rifle"); disappears instantly when out of range
+- Weapon pickups: place a `WeaponPickup` component on any world object, assign a `WeaponData` asset; picking it up fills the first empty loadout slot and equips it, or replaces the active slot if all four are full; the pickup object is destroyed on collection
+- Random weapon pickups: add `RandomWeaponPickup` alongside `WeaponPickup` and assign a `WeaponCategoryData` asset; each time the object spawns a unique weapon is generated with randomised stats drawn from the category's thresholds
+
+## Procedural Weapon Generation
+- Five weapon categories: AR, SMG, Pistol, Sniper, LMG — each defined by a `WeaponCategoryData` ScriptableObject
+- Every stat (damage, RPM, magazine size, spread, recoil, range, reload time, etc.) is defined as a min/max range with an optional bias value
+- Bias < 0 skews the random result toward the minimum (e.g. SMG mags weighted toward 20–30 despite max being 50); bias > 0 skews toward the maximum
+- Stat ranges reflect real-world and common game conventions per category:
+  - **AR** — 600–850 RPM, 25–40 round mags (weighted 30–40), moderate recoil, 40–60 m effective range
+  - **SMG** — 750–1100 RPM, 20–50 round mags (heavily weighted low, P90-style outlier), short range, erratic horizontal recoil
+  - **Pistol** — 300–600 RPM semi/auto, 7–20 round mags (weighted low), high per-shot kick, 15–25 m range; wide damage spread (20–55) representing everything from Glock to Desert Eagle
+  - **Sniper** — 30–80 RPM semi only, 5–10 rounds, 70–160 damage, 80–200 m optimal range, terrible hipfire, near-zero ADS spread
+  - **LMG** — 600–950 RPM, 75–200 round belt/drum (weighted toward 75–120), slow reload (4.5–8 s), wide spread even ADS, high sustained recoil cap
+- Several stats (ADS bloom, recoil recovery fraction, recovery delay, ADS recoil multiplier, hipfire camera kick) are automatically derived from the category type and fire rate so the weapon feels correct without manual tuning
+- Create category assets via **Assets → Create → CGD → Weapon Category**, set the `Type` field, then right-click the asset and choose **Apply Type Defaults** to fill in all thresholds; values can be freely tweaked afterward
+
+## Weapon Loadout
+- Four weapon slots on the player; press 1, 2, 3, or 4 to equip the weapon in that slot
+- Switching to a slot instantly equips the weapon and resets fire/reload state
+- Inventory panel (press I) shows all four loadout slots, highlights the active weapon, and lists each weapon's name; empty slots are shown as "— Empty —"
+- Loadout slots are configurable in the Inspector via WeaponData ScriptableObject assets
+
 ## Input System
 - All actions are defined in one place and can be reconfigured without touching code
 - Every action supports a primary and secondary keybind (e.g. LeftCtrl and C both crouch)
@@ -71,7 +98,7 @@
   - Held — fires every frame the key is held down
   - Toggle — pressing the key flips it on or off
 - Bindings can be remapped at runtime via the settings menu
-- Default actions: Jump, Sprint, Crouch, Dodge, Attack, Aim, Reload, Interact, Abilities 1–4, Pause, Switch View, Inventory, Map, Shoulder Swap (X)
+- Default actions: Jump, Sprint, Crouch, Dodge, Attack, Aim, Reload, Interact, Abilities 1–4 (unbound), Weapon slots 1–4 (keys 1–4), Pause, Switch View, Inventory (I), Map, Shoulder Swap (X)
 
 ## Settings Menu
 - Press Escape at any time to open or close the settings menu

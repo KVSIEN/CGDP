@@ -75,6 +75,7 @@ public class CrosshairHUD : HUDElement
     {
         // Derive px/deg from the live camera FOV so the crosshair scales correctly
         // at all FOVs (hip, ADS, sprint) instead of using a hardcoded constant.
+        if (_playerCamera == null || _playerCamera.Camera == null) return;
         float canvasHeight = ((RectTransform)transform.root).rect.height;
         float pixPerDeg    = canvasHeight / _playerCamera.Camera.fieldOfView;
         _dynamicSpreadPixels = spreadDegrees * pixPerDeg * _spreadScale;

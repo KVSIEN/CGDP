@@ -20,6 +20,9 @@ public class InputBindingSettings : ScriptableObject
         return false;
     }
 
+    [ContextMenu("Clear Saved Bindings (PlayerPrefs)")]
+    public void ClearSavedBindings() => SettingsSave.DeleteBindings();
+
     [ContextMenu("Reset to Defaults")]
     public void ResetToDefaults()
     {
@@ -33,15 +36,19 @@ public class InputBindingSettings : ScriptableObject
             new() { Action = GameAction.AimDownSights,     PrimaryMouse = InputMouseButton.Right,               Mode = InputActionMode.Held    },
             new() { Action = GameAction.Reload,            PrimaryKey = Key.R,                                  Mode = InputActionMode.Pressed },
             new() { Action = GameAction.Interact,          PrimaryKey = Key.E,         SecondaryKey = Key.F,    Mode = InputActionMode.Pressed },
-            new() { Action = GameAction.Ability1,          PrimaryKey = Key.Digit1,                             Mode = InputActionMode.Pressed },
-            new() { Action = GameAction.Ability2,          PrimaryKey = Key.Digit2,                             Mode = InputActionMode.Pressed },
-            new() { Action = GameAction.Ability3,          PrimaryKey = Key.Digit3,                             Mode = InputActionMode.Pressed },
-            new() { Action = GameAction.Ability4,          PrimaryKey = Key.Digit4,                             Mode = InputActionMode.Pressed },
+            new() { Action = GameAction.Ability1,          Mode = InputActionMode.Pressed },
+            new() { Action = GameAction.Ability2,          Mode = InputActionMode.Pressed },
+            new() { Action = GameAction.Ability3,          Mode = InputActionMode.Pressed },
+            new() { Action = GameAction.Ability4,          Mode = InputActionMode.Pressed },
             new() { Action = GameAction.Pause,             PrimaryKey = Key.Escape,                             Mode = InputActionMode.Pressed },
             new() { Action = GameAction.TogglePerspective, PrimaryKey = Key.V,                                  Mode = InputActionMode.Pressed },
-            new() { Action = GameAction.Inventory,         PrimaryKey = Key.Tab,                                Mode = InputActionMode.Pressed },
+            new() { Action = GameAction.Inventory,         PrimaryKey = Key.I,                                  Mode = InputActionMode.Pressed },
             new() { Action = GameAction.Map,               PrimaryKey = Key.M,                                  Mode = InputActionMode.Pressed },
             new() { Action = GameAction.ShoulderSwap,      PrimaryKey = Key.X,                                  Mode = InputActionMode.Pressed },
+            new() { Action = GameAction.Weapon1,           PrimaryKey = Key.Digit1,                             Mode = InputActionMode.Pressed },
+            new() { Action = GameAction.Weapon2,           PrimaryKey = Key.Digit2,                             Mode = InputActionMode.Pressed },
+            new() { Action = GameAction.Weapon3,           PrimaryKey = Key.Digit3,                             Mode = InputActionMode.Pressed },
+            new() { Action = GameAction.Weapon4,           PrimaryKey = Key.Digit4,                             Mode = InputActionMode.Pressed },
         };
     }
 }

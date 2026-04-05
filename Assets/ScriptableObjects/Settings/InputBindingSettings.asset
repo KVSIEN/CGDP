@@ -61,32 +61,32 @@ MonoBehaviour:
     SecondaryKey: 20
     SecondaryMouse: 0
     Mode: 0
-  - Action: 8
+  - Action: 17
     PrimaryKey: 41
     PrimaryMouse: 0
     SecondaryKey: 0
     SecondaryMouse: 0
     Mode: 0
-  - Action: 9
+  - Action: 18
     PrimaryKey: 42
     PrimaryMouse: 0
     SecondaryKey: 0
     SecondaryMouse: 0
     Mode: 0
-  - Action: 10
+  - Action: 19
     PrimaryKey: 43
     PrimaryMouse: 0
     SecondaryKey: 0
     SecondaryMouse: 0
     Mode: 0
-  - Action: 11
+  - Action: 20
     PrimaryKey: 44
     PrimaryMouse: 0
     SecondaryKey: 0
     SecondaryMouse: 0
     Mode: 0
-  - Action: 12
-    PrimaryKey: 60
+  - Action: 20
+    PrimaryKey: 44
     PrimaryMouse: 0
     SecondaryKey: 0
     SecondaryMouse: 0
@@ -100,7 +100,7 @@ MonoBehaviour:
   - Action: 14
     PrimaryKey: 3
     PrimaryMouse: 0
-    SecondaryKey: 0
+    SecondaryKey: 23
     SecondaryMouse: 0
     Mode: 0
   - Action: 15
@@ -111,6 +111,24 @@ MonoBehaviour:
     Mode: 0
   - Action: 16
     PrimaryKey: 38
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 12
+    PrimaryKey: 60
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 12
+    PrimaryKey: 60
+    PrimaryMouse: 0
+    SecondaryKey: 0
+    SecondaryMouse: 0
+    Mode: 0
+  - Action: 12
+    PrimaryKey: 60
     PrimaryMouse: 0
     SecondaryKey: 0
     SecondaryMouse: 0

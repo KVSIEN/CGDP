@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 // Displays four ability slots anchored to the bottom-centre of the screen.
 // Each slot shows the ability's colour and a dark overlay that shrinks as
@@ -17,12 +16,10 @@ public class AbilityHUD : HUDElement
 
     private const int SlotCount = 4;
 
-    private Image[]            _slotBg          = new Image[SlotCount];
-    private Image[]            _cooldownOverlay  = new Image[SlotCount];
-    private TextMeshProUGUI[]  _keyLabels        = new TextMeshProUGUI[SlotCount];
+    private Image[]  _slotBg         = new Image[SlotCount];
+    private Image[]  _cooldownOverlay = new Image[SlotCount];
 
-    private static readonly string[] KeyNames = { "1", "2", "3", "4" };
-    private static readonly Color    EmptySlotColor   = new Color(0.1f, 0.1f, 0.1f, 0.85f);
+    private static readonly Color EmptySlotColor = new Color(0.1f, 0.1f, 0.1f, 0.85f);
     private static readonly Color    CooldownOverlayColor = new Color(0f, 0f, 0f, 0.65f);
 
     private void Awake()
@@ -61,17 +58,6 @@ public class AbilityHUD : HUDElement
             overlay.color = CooldownOverlayColor;
             StretchToParent(overlay.rectTransform);
             _cooldownOverlay[i] = overlay;
-
-            // Key number in the top-left corner
-            var key = MakeText("Key_" + i, bg.rectTransform);
-            key.text      = KeyNames[i];
-            key.fontSize  = 11f;
-            key.color     = new Color(1f, 1f, 1f, 0.7f);
-            key.alignment = TextAlignmentOptions.TopLeft;
-            StretchToParent(key.rectTransform);
-            key.rectTransform.offsetMin = new Vector2(4f, 0f);
-            key.rectTransform.offsetMax = new Vector2(0f, -3f);
-            _keyLabels[i] = key;
         }
     }
 
@@ -126,12 +112,4 @@ public class AbilityHUD : HUDElement
         return img;
     }
 
-    private static TextMeshProUGUI MakeText(string elementName, RectTransform parent)
-    {
-        var go = new GameObject(elementName, typeof(RectTransform), typeof(TextMeshProUGUI));
-        go.transform.SetParent(parent, false);
-        var text = go.GetComponent<TextMeshProUGUI>();
-        text.raycastTarget = false;
-        return text;
-    }
 }
