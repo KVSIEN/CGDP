@@ -9,19 +9,18 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform _cameraTransform;
     [SerializeField] private Transform _playerMesh;
 
-    public bool IsGrounded { get; private set; }
-    public bool IsCrouching { get; private set; }
-    public bool IsSprinting { get; private set; }
-    public bool IsSliding { get; private set; }
-    public bool IsMantling { get; private set; }
-    public Vector3 Velocity => _rb.linearVelocity;
-
-    [Header("Debug")]
     [SerializeField] private bool _isGrounded;
     [SerializeField] private bool _isCrouching;
     [SerializeField] private bool _isSprinting;
     [SerializeField] private bool _isSliding;
     [SerializeField] private bool _isMantling;
+
+    public bool IsGrounded  => _isGrounded;
+    public bool IsCrouching => _isCrouching;
+    public bool IsSprinting => _isSprinting;
+    public bool IsSliding   => _isSliding;
+    public bool IsMantling  => _isMantling;
+    public Vector3 Velocity => _rb.linearVelocity;
 
     private Rigidbody _rb;
     private CapsuleCollider _col;
@@ -43,8 +42,11 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _slideDirection;
     private Vector3 _moveDirection;
     private Rigidbody _groundRb;
-    private bool _mantleQueued;
+    private float _mantleBufferTimer;
     private Vector3 _mantleTarget;
+    private Vector3 _mantleLiftTarget;
+    private Vector3 _mantleExitVelocity;
+    private bool _mantleInLiftPhase;
     private float _mantleTimer;
 
     [SerializeField] private bool _lockDodgeDirection;
@@ -67,6 +69,17 @@ public class PlayerMovement : MonoBehaviour
         _rb.interpolation = RigidbodyInterpolation.Interpolate;
         _rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
+        // Zero-friction material prevents wall/surface contact from dampening
+        // vertical velocity (e.g. jump height being reduced while touching a wall).
+        _col.material = new PhysicsMaterial("PlayerNoFriction")
+        {
+            staticFriction  = 0f,
+            dynamicFriction = 0f,
+            bounciness      = 0f,
+            frictionCombine = PhysicsMaterialCombine.Minimum,
+            bounceCombine   = PhysicsMaterialCombine.Minimum,
+        };
+
         SetColliderHeight(_settings.StandHeight);
     }
 
@@ -76,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _jumpBufferTimer = _settings.JumpBufferTime;
             if (!IsGrounded)
-                _mantleQueued = true;
+                _mantleBufferTimer = _settings.MantleBufferTime;
         }
 
         _jumpBufferTimer -= Time.deltaTime;
@@ -91,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (_input.WasPressed(GameAction.Crouch) && IsGrounded)
         {
-            Vector3 hv = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+            Vector3 hv = HorizontalVelocity;
             if (hv.magnitude >= _settings.SprintSpeed * 0.75f)
                 _slideQueued = true;
         }
@@ -110,21 +123,20 @@ public class PlayerMovement : MonoBehaviour
             HandleDodge();
             HandleJump();
 
-            if (_mantleQueued && _coyoteTimer <= 0f)
+            _mantleBufferTimer -= Time.fixedDeltaTime;
+            if (_mantleBufferTimer > 0f && _coyoteTimer <= 0f)
+            {
                 TryInitMantle();
+                if (IsMantling) _mantleBufferTimer = 0f;
+            }
 
             ApplyGravity();
             ClampFallSpeed();
         }
-
-        _mantleQueued = false;
-
-        _isGrounded  = IsGrounded;
-        _isCrouching = IsCrouching;
-        _isSprinting = IsSprinting;
-        _isSliding   = IsSliding;
-        _isMantling  = IsMantling;
     }
+
+    private Vector3 HorizontalVelocity => new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+    private Vector3 VelocityWithY(float y) => new Vector3(_rb.linearVelocity.x, y, _rb.linearVelocity.z);
 
     private void CheckGround()
     {
@@ -135,7 +147,7 @@ public class PlayerMovement : MonoBehaviour
         float castRadius      = _col.radius * 0.9f;
         float castDistance    = _col.height * 0.5f - castRadius + _settings.GroundCheckDistance;
 
-        IsGrounded = Physics.SphereCast(capsuleCenter, castRadius, Vector3.down, out RaycastHit hit,
+        _isGrounded = Physics.SphereCast(capsuleCenter, castRadius, Vector3.down, out RaycastHit hit,
             castDistance, _settings.GroundMask, QueryTriggerInteraction.Ignore);
 
         if (IsGrounded)
@@ -154,9 +166,9 @@ public class PlayerMovement : MonoBehaviour
     {
         if (_slideQueued && IsGrounded)
         {
-            IsSliding = true;
+            _isSliding = true;
             _slideTimer = _settings.SlideDuration;
-            Vector3 horiz = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+            Vector3 horiz = HorizontalVelocity;
             _slideDirection = horiz.magnitude > 0.1f
                 ? horiz.normalized
                 : -Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
@@ -172,13 +184,13 @@ public class PlayerMovement : MonoBehaviour
 
         _slideTimer -= Time.fixedDeltaTime;
 
-        Vector3 current = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+        Vector3 current = HorizontalVelocity;
         if (_slideTimer <= 0f
             || current.magnitude < _settings.SlideMinSpeed
             || !_input.GetAction(GameAction.Crouch)
             || !IsGrounded)
         {
-            IsSliding = false;
+            _isSliding = false;
         }
     }
 
@@ -188,14 +200,14 @@ public class PlayerMovement : MonoBehaviour
             return;
 
         Vector2 rawInput = _input.MoveInput;
-        IsSprinting = _input.GetAction(GameAction.Sprint) && rawInput.magnitude > 0.1f && !IsCrouching && IsGrounded && !IsSliding;
+        _isSprinting = _input.GetAction(GameAction.Sprint) && rawInput.magnitude > 0.1f && !IsCrouching && IsGrounded && !IsSliding;
 
         if (IsSliding)
         {
             Vector3 slidePlatformVel = _groundRb != null
                 ? new Vector3(_groundRb.linearVelocity.x, 0f, _groundRb.linearVelocity.z)
                 : Vector3.zero;
-            Vector3 slideHorizontal = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z) - slidePlatformVel;
+            Vector3 slideHorizontal = HorizontalVelocity - slidePlatformVel;
             float slideT = 1f - Mathf.Exp(-_settings.SlideDeceleration * Time.fixedDeltaTime);
             Vector3 slideNewHorizontal = Vector3.Lerp(slideHorizontal, Vector3.zero, slideT) + slidePlatformVel;
             _rb.linearVelocity = new Vector3(slideNewHorizontal.x, _rb.linearVelocity.y, slideNewHorizontal.z);
@@ -228,7 +240,7 @@ public class PlayerMovement : MonoBehaviour
             ? new Vector3(_groundRb.linearVelocity.x, 0f, _groundRb.linearVelocity.z)
             : Vector3.zero;
 
-        Vector3 currentHorizontal = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z) - platformVel;
+        Vector3 currentHorizontal = HorizontalVelocity - platformVel;
         Vector3 targetHorizontal = targetDir * targetSpeed;
 
         float accel;
@@ -269,26 +281,41 @@ public class PlayerMovement : MonoBehaviour
 
         _mantleTimer -= Time.fixedDeltaTime;
 
-        float dist = Vector3.Distance(_rb.position, _mantleTarget);
-        if (dist < 0.08f || _mantleTimer <= 0f)
+        Vector3 target = _mantleInLiftPhase ? _mantleLiftTarget : _mantleTarget;
+        float dist     = Vector3.Distance(_rb.position, target);
+
+        // Phase transition: lift complete → begin forward step
+        if (_mantleInLiftPhase && dist < 0.08f)
         {
-            _rb.MovePosition(_mantleTarget);
-            _rb.linearVelocity = Vector3.zero;
-            IsMantling = false;
+            _mantleInLiftPhase = false;
             return;
         }
 
-        _rb.MovePosition(Vector3.MoveTowards(_rb.position, _mantleTarget, _settings.MantleSpeed * Time.fixedDeltaTime));
-        _rb.linearVelocity = Vector3.zero;
+        // Done: reached final target or timed out
+        if (!_mantleInLiftPhase && (dist < 0.08f || _mantleTimer <= 0f))
+        {
+            _rb.position       = _mantleTarget;
+            _rb.isKinematic    = false;
+            _rb.linearVelocity = _mantleExitVelocity;
+            _isMantling        = false;
+            return;
+        }
+
+        // Lift slightly faster so it feels snappy upward
+        float speed = _mantleInLiftPhase ? _settings.MantleSpeed * 1.5f : _settings.MantleSpeed;
+        _rb.MovePosition(Vector3.MoveTowards(_rb.position, target, speed * Time.fixedDeltaTime));
     }
 
     private void TryInitMantle()
     {
         Vector3 forward = Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
-        Vector3 chestOrigin = transform.position + Vector3.up * _settings.MantleDetectHeight;
 
-        if (!Physics.Raycast(chestOrigin, forward, out RaycastHit wallHit,
-                _settings.MantleReach, _settings.GroundMask, QueryTriggerInteraction.Ignore))
+        // Sweep the full mantleable height range so the wall is detected whether
+        // the player is at ground level or has already risen near the ledge top.
+        Vector3 sweepBase = transform.position + Vector3.up * (_col.radius + 0.05f);
+        Vector3 sweepTop  = transform.position + Vector3.up * _settings.MantleMaxHeight;
+        if (!Physics.CapsuleCast(sweepBase, sweepTop, _col.radius * 0.4f, forward,
+                out RaycastHit wallHit, _settings.MantleReach, _settings.GroundMask, QueryTriggerInteraction.Ignore))
             return;
 
         // Cast down from above the wall hit point to find the ledge top surface.
@@ -307,25 +334,39 @@ public class PlayerMovement : MonoBehaviour
 
         if (relativeHeight <= _settings.VaultMaxHeight)
         {
-            // Low vault: boost velocity up and forward.
-            Vector3 vel = _rb.linearVelocity;
-            _rb.linearVelocity = new Vector3(
+            // Low vault: kinematically lift to the ledge top to avoid clipping the edge,
+            // then release with forward + upward velocity so the player arcs over.
+            _mantleLiftTarget   = new Vector3(_rb.position.x, ledgeHit.point.y, _rb.position.z);
+            _mantleTarget       = _mantleLiftTarget;
+            _mantleInLiftPhase  = false;
+            _mantleExitVelocity = new Vector3(
                 forward.x * _settings.VaultForwardImpulse,
-                Mathf.Max(vel.y, _settings.VaultUpImpulse),
+                _settings.VaultUpImpulse,
                 forward.z * _settings.VaultForwardImpulse);
+            _isMantling        = true;
+            _mantleTimer       = 0.3f;
+            _rb.linearVelocity = Vector3.zero;
+            _rb.isKinematic    = true;
             return;
         }
 
         if (relativeHeight <= _settings.MantleMaxHeight)
         {
-            // High mantle: kinematically move player to stand on the ledge.
+            // High mantle: phase 1 — lift straight up alongside the wall to ledge height
+            //              phase 2 — step forward onto the ledge surface.
+            // Kinematic during the move prevents physics from pushing the player back
+            // through the wall face.
+            _mantleLiftTarget  = new Vector3(_rb.position.x, ledgeHit.point.y, _rb.position.z);
             _mantleTarget = new Vector3(
                 wallHit.point.x + forward.x * _settings.MantleStepOver,
                 ledgeHit.point.y,
                 wallHit.point.z + forward.z * _settings.MantleStepOver);
-            IsMantling = true;
-            _mantleTimer = _settings.MantleTimeout;
+            _mantleInLiftPhase  = true;
+            _mantleExitVelocity = Vector3.zero;
+            _isMantling        = true;
+            _mantleTimer       = _settings.MantleTimeout;
             _rb.linearVelocity = Vector3.zero;
+            _rb.isKinematic    = true;
         }
     }
 
@@ -334,7 +375,7 @@ public class PlayerMovement : MonoBehaviour
         if (_jumpBufferTimer > 0f && _coyoteTimer > 0f)
         {
             float v = Mathf.Sqrt(2f * _settings.JumpHeight * -Physics.gravity.y * _settings.GravityScale);
-            _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, v, _rb.linearVelocity.z);
+            _rb.linearVelocity = VelocityWithY(v);
             _jumpBufferTimer = 0f;
             _coyoteTimer = 0f;
         }
@@ -347,7 +388,7 @@ public class PlayerMovement : MonoBehaviour
             // Keep a small constant downward velocity so the player stays pressed
             // onto slopes. Only applied when already moving down so jumps are unaffected.
             if (_rb.linearVelocity.y < 0f)
-                _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, -2f, _rb.linearVelocity.z);
+                _rb.linearVelocity = VelocityWithY(-2f);
             return;
         }
 
@@ -368,7 +409,7 @@ public class PlayerMovement : MonoBehaviour
     private void ClampFallSpeed()
     {
         if (_rb.linearVelocity.y < -_settings.MaxFallSpeed)
-            _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, -_settings.MaxFallSpeed, _rb.linearVelocity.z);
+            _rb.linearVelocity = VelocityWithY(-_settings.MaxFallSpeed);
     }
 
     private void HandleCrouch()
@@ -376,9 +417,9 @@ public class PlayerMovement : MonoBehaviour
         bool want = IsSliding || _input.GetAction(GameAction.Crouch);
 
         if (want && !IsCrouching)
-            IsCrouching = true;
+            _isCrouching = true;
         else if (!want && IsCrouching && CanStandUp())
-            IsCrouching = false;
+            _isCrouching = false;
 
         float targetHeight = IsCrouching ? _settings.CrouchHeight : _settings.StandHeight;
         float current = _col.height;

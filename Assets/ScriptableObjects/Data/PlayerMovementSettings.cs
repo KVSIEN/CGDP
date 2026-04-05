@@ -61,8 +61,8 @@ public class PlayerMovementSettings : ScriptableObject
     [Header("Mantle / Vault")]
     [Tooltip("Horizontal distance in front of the player to check for a ledge")]
     public float MantleReach = 0.9f;
-    [Tooltip("Height above feet to cast the wall-detection ray (approx chest)")]
-    public float MantleDetectHeight = 1.3f;
+    [Tooltip("How long after pressing Jump (while airborne) to keep retrying the mantle each physics step")]
+    public float MantleBufferTime = 0.3f;
     [Tooltip("Ledge tops at or below this height relative to feet trigger a vault")]
     public float VaultMaxHeight = 1.1f;
     [Tooltip("Maximum ledge top height relative to feet that the player can mantle")]

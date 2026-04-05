@@ -137,8 +137,8 @@ public class EnemyAI : MonoBehaviour
     {
         _agent.speed = _data.ChaseSpeed;
 
-        float dist = Vector3.Distance(transform.position, _playerTransform.position);
-        if (dist <= _data.AttackRange)
+        float distSq = (transform.position - _playerTransform.position).sqrMagnitude;
+        if (distSq <= _data.AttackRange * _data.AttackRange)
         {
             _agent.isStopped = true;
             TryAttack();

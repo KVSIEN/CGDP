@@ -11,17 +11,20 @@ public class Projectile : MonoBehaviour
     public float Lifetime = 5f;
     public float Damage   = 25f;
 
+    private Rigidbody _rb;
+
     private void Awake()
     {
-        GetComponent<Rigidbody>().isKinematic = true;
-        GetComponent<Collider>().isTrigger    = true;
+        _rb = GetComponent<Rigidbody>();
+        _rb.isKinematic = true;
+        GetComponent<Collider>().isTrigger = true;
     }
 
     private void Start() => Destroy(gameObject, Lifetime);
 
     private void Update()
     {
-        transform.position += transform.forward * Speed * Time.deltaTime;
+        _rb.MovePosition(_rb.position + transform.forward * Speed * Time.deltaTime);
     }
 
     private void OnTriggerEnter(Collider other)

@@ -54,7 +54,8 @@ public class WeaponController : MonoBehaviour
 
     private void OnDisable()
     {
-        _crosshair?.SetDynamicSpread(0f);
+        if (_crosshair != null)
+            _crosshair.SetDynamicSpread(0f);
     }
 
     private void Update()
@@ -271,9 +272,10 @@ public class WeaponController : MonoBehaviour
     private void UpdateCrosshair()
     {
         if (_crosshair == null || _data == null) return;
+        float adsT      = _camera.AdsT;
         float hipSpread = _data.HipSpreadDeg * _data.HipSpreadScale;
-        float baseDeg   = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, _camera.AdsT);
-        _crosshair.SetDynamicSpread(baseDeg + _currentSpread * Mathf.Lerp(1f, _data.AdsSpreadMultiplier, _camera.AdsT));
+        float baseDeg   = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, adsT);
+        _crosshair.SetDynamicSpread(baseDeg + _currentSpread * Mathf.Lerp(1f, _data.AdsSpreadMultiplier, adsT));
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────
