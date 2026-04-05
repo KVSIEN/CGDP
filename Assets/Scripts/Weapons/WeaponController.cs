@@ -149,24 +149,21 @@ public class WeaponController : MonoBehaviour
         float hipSpread = _data.HipSpreadDeg * _data.HipSpreadScale;
         float spreadDeg = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, adsT) + _currentSpread * Mathf.Lerp(1f, _data.AdsSpreadMultiplier, adsT);
 
-        // Find the world point the crosshair is aimed at via the camera-centre ray.
-        // In TP the camera is shoulder-offset, so firing straight along camera.forward
-        // from the muzzle would miss targets the crosshair is visually on.
-        Vector3 camPos   = _camera.transform.position;
-        Vector3 aimPoint = Physics.Raycast(camPos, _camera.transform.forward, out RaycastHit aimHit,
-                               _data.RangeFalloffEnd, _data.HitMask, QueryTriggerInteraction.Ignore)
-                           ? aimHit.point
-                           : camPos + _camera.transform.forward * _data.RangeFalloffEnd;
+        // Hitscan from camera centre with spread applied around camera forward.
+        // Using the muzzle as origin in TP causes parallax: the muzzle→aimPoint
+        // direction diverges from camera forward for close targets, letting spread
+        // shots fly past surfaces the crosshair was sitting on.
+        Vector3 camPos = _camera.transform.position;
+        Vector3 dir    = SpreadDirection(_camera.transform.forward, spreadDeg);
 
-        Vector3 origin = _muzzle != null ? _muzzle.position : camPos;
-        Vector3 dir    = SpreadDirection((aimPoint - origin).normalized, spreadDeg);
-
-        bool didHit = Physics.Raycast(origin, dir, out RaycastHit hit, _data.RangeFalloffEnd, _data.HitMask, QueryTriggerInteraction.Ignore);
+        bool didHit = Physics.Raycast(camPos, dir, out RaycastHit hit,
+            _data.RangeFalloffEnd, _data.HitMask, QueryTriggerInteraction.Ignore);
 
         if (_debugDrawBullets)
         {
-            Vector3 end = didHit ? hit.point : origin + dir * _data.RangeFalloffEnd;
-            Debug.DrawLine(origin, end, didHit ? _debugHitColor : _debugMissColor, _debugLineDuration);
+            Vector3 fxOrigin = _muzzle != null ? _muzzle.position : camPos;
+            Vector3 end      = didHit ? hit.point : fxOrigin + dir * _data.RangeFalloffEnd;
+            Debug.DrawLine(fxOrigin, end, didHit ? _debugHitColor : _debugMissColor, _debugLineDuration);
         }
 
         if (!didHit) return;
@@ -207,7 +204,10 @@ public class WeaponController : MonoBehaviour
         if (spreadDeg <= 0f) return forward;
         float radius = Mathf.Tan(spreadDeg * Mathf.Deg2Rad);
         Vector2 offset = UnityEngine.Random.insideUnitCircle * radius;
-        Quaternion rot = Quaternion.LookRotation(forward);
+        // Avoid degenerate LookRotation when forward is nearly parallel to world up
+        // (e.g. player looking up near the pitch limit), which sends bullets wild.
+        Vector3 up = Mathf.Abs(Vector3.Dot(forward, Vector3.up)) > 0.99f ? Vector3.right : Vector3.up;
+        Quaternion rot = Quaternion.LookRotation(forward, up);
         return (rot * new Vector3(offset.x, offset.y, 1f)).normalized;
     }
 

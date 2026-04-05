@@ -8,7 +8,8 @@ public class CrosshairHUD : HUDElement
     [SerializeField] private PlayerCamera _playerCamera;
 
     [Header("Spread")]
-    [SerializeField] private float _spreadPixelsPerDegree = 8f;
+    [Tooltip("Scale multiplier on top of the FOV-derived px/deg conversion. 1 = physically accurate.")]
+    [SerializeField] private float _spreadScale = 1f;
 
     [Header("Obstruction Dot")]
     [SerializeField] private float _obstructionDotSize = 6f;
@@ -72,7 +73,11 @@ public class CrosshairHUD : HUDElement
     /// </summary>
     public void SetDynamicSpread(float spreadDegrees)
     {
-        _dynamicSpreadPixels = spreadDegrees * _spreadPixelsPerDegree;
+        // Derive px/deg from the live camera FOV so the crosshair scales correctly
+        // at all FOVs (hip, ADS, sprint) instead of using a hardcoded constant.
+        float canvasHeight = ((RectTransform)transform.root).rect.height;
+        float pixPerDeg    = canvasHeight / _playerCamera.Camera.fieldOfView;
+        _dynamicSpreadPixels = spreadDegrees * pixPerDeg * _spreadScale;
         ApplyLinePositions();
     }
 

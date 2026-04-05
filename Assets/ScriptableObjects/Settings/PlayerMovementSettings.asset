@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262ba839e21da854491c7c48614ff495, type: 3}
   m_Name: PlayerMovementSettings
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementSettings
-  WalkSpeed: 5
-  SprintSpeed: 9
-  CrouchSpeed: 2.5
+  WalkSpeed: 3
+  SprintSpeed: 6
+  CrouchSpeed: 2
   Acceleration: 20
   Deceleration: 25
   AirControl: 0.35
@@ -41,7 +41,7 @@ MonoBehaviour:
   RollWindowDuration: 0.75
   SidestepCooldown: 1
   DodgeForce: 7
-  RollDuration: 0.5
+  RollDuration: 0.25
   DodgeCooldown: 1.5
   SlideSpeed: 10
   SlideBoost: 3

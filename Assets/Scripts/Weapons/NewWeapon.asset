@@ -26,12 +26,13 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   MagazineSize: 30
-  ReserveAmmo: 90
-  ReloadTime: 2.6
+  ReserveAmmo: 9999
+  ReloadTime: 1
   TacticalReloadTime: 2.1
   HipSpreadDeg: 2.5
   HipSpreadScale: 1
   AdsSpreadDeg: 0.35
+  AdsSpreadMultiplier: 0
   SpreadPerShot: 0.8
   SpreadRecovery: 14
   MaxSpread: 6
