@@ -230,7 +230,7 @@ public class WeaponController : MonoBehaviour
         float vertMult  = Mathf.Lerp(_data.HipRecoilVerticalMultiplier,   _data.AdsRecoilMultiplier, adsT);
         float horizMult = Mathf.Lerp(_data.HipRecoilHorizontalMultiplier, _data.AdsRecoilMultiplier, adsT);
 
-        float vertBase = _data.RecoilVertical + UnityEngine.Random.Range(-_data.RecoilVerticalVariation, _data.RecoilVerticalVariation);
+        float vertBase = _data.RecoilVerticalMax + UnityEngine.Random.Range(-_data.RecoilVerticalBias, _data.RecoilVerticalBias);
         float remaining = _data.MaxAccumulatedRecoil - _accumulatedRecoil;
         float vertKick  = Mathf.Min(vertBase * vertMult, remaining);
         _accumulatedRecoil += vertKick;

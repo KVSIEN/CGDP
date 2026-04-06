@@ -100,20 +100,20 @@ MonoBehaviour:
     Max: 8
     Bias: 0
   SpreadRecovery:
-    Min: 12
-    Max: 18
+    Min: 8
+    Max: 16
     Bias: 0
-  RecoilVertical:
+  RecoilVerticalMax:
     Min: 0.9
     Max: 1.5
     Bias: 0
-  RecoilVerticalVariation:
+  RecoilVerticalBias:
     Min: 0.1
     Max: 0.3
     Bias: 0
   RecoilHorizontalMax:
-    Min: 0.4
-    Max: 0.7
+    Min: 1
+    Max: 2.5
     Bias: 0
   RecoilHorizontalBias:
     Min: -0.2

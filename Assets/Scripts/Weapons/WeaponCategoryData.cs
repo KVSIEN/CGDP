@@ -51,8 +51,8 @@ public class WeaponCategoryData : ScriptableObject
     public FloatRange SpreadRecovery = new(12f,  18f);
 
     [Header("Recoil")]
-    public FloatRange RecoilVertical          = new(0.9f, 1.5f);
-    public FloatRange RecoilVerticalVariation = new(0.1f, 0.3f);
+    public FloatRange RecoilVerticalMax  = new(0.9f, 1.5f);
+    public FloatRange RecoilVerticalBias = new(0.1f, 0.3f);
     public FloatRange RecoilHorizontalMax     = new(0.4f, 0.7f);
     public FloatRange RecoilHorizontalBias    = new(-0.2f, 0.2f);  // drift direction
     public FloatRange MaxAccumulatedRecoil    = new(12f,  18f);
@@ -113,8 +113,8 @@ public class WeaponCategoryData : ScriptableObject
         MaxSpread      = new(5f,   8f,   0f);
         SpreadRecovery = new(12f,  18f,  0f);
 
-        RecoilVertical          = new(0.9f,  1.5f,  0f);
-        RecoilVerticalVariation = new(0.1f,  0.3f,  0f);
+        RecoilVerticalMax  = new(0.9f,  1.5f,  0f);
+        RecoilVerticalBias = new(0.1f,  0.3f,  0f);
         RecoilHorizontalMax     = new(0.4f,  0.7f,  0f);
         RecoilHorizontalBias    = new(-0.2f, 0.2f,  0f);
         MaxAccumulatedRecoil    = new(12f,   18f,   0f);
@@ -159,8 +159,8 @@ public class WeaponCategoryData : ScriptableObject
         MaxSpread      = new(4f,   7f,   0f);
         SpreadRecovery = new(14f,  22f,  0f);   // recovers fast, high fire rate
 
-        RecoilVertical          = new(0.6f,  1.1f,  0f);
-        RecoilVerticalVariation = new(0.1f,  0.25f, 0f);
+        RecoilVerticalMax  = new(0.6f,  1.1f,  0f);
+        RecoilVerticalBias = new(0.1f,  0.25f, 0f);
         RecoilHorizontalMax     = new(0.5f,  0.9f,  0f);  // more erratic
         RecoilHorizontalBias    = new(-0.3f, 0.3f,  0f);
         MaxAccumulatedRecoil    = new(8f,    14f,   0f);
@@ -206,8 +206,8 @@ public class WeaponCategoryData : ScriptableObject
         MaxSpread      = new(5f,   9f,   0f);
         SpreadRecovery = new(10f,  16f,  0f);
 
-        RecoilVertical          = new(1.2f,  2.8f,  0f);  // heavy per shot
-        RecoilVerticalVariation = new(0.2f,  0.5f,  0f);
+        RecoilVerticalMax  = new(1.2f,  2.8f,  0f);  // heavy per shot
+        RecoilVerticalBias = new(0.2f,  0.5f,  0f);
         RecoilHorizontalMax     = new(0.3f,  0.9f,  0f);
         RecoilHorizontalBias    = new(-0.15f, 0.15f, 0f);
         MaxAccumulatedRecoil    = new(6f,    12f,   0f);   // small mag = small cap
@@ -251,8 +251,8 @@ public class WeaponCategoryData : ScriptableObject
         MaxSpread      = new(15f,   25f,   0f);
         SpreadRecovery = new(4f,    8f,    0f);     // slow recovery
 
-        RecoilVertical          = new(3.0f, 6.0f,  0f);  // massive kick
-        RecoilVerticalVariation = new(0.3f, 0.8f,  0f);
+        RecoilVerticalMax  = new(3.0f, 6.0f,  0f);  // massive kick
+        RecoilVerticalBias = new(0.3f, 0.8f,  0f);
         RecoilHorizontalMax     = new(0.8f, 1.8f,  0f);
         RecoilHorizontalBias    = new(-0.1f, 0.1f, 0f);
         MaxAccumulatedRecoil    = new(3f,   6f,    0f);  // one shot at a time
@@ -297,8 +297,8 @@ public class WeaponCategoryData : ScriptableObject
         MaxSpread      = new(10f,  16f,  0f);
         SpreadRecovery = new(6f,   10f,  0f);    // slow recovery
 
-        RecoilVertical          = new(1.2f,  2.2f,  0f);
-        RecoilVerticalVariation = new(0.3f,  0.6f,  0f);
+        RecoilVerticalMax  = new(1.2f,  2.2f,  0f);
+        RecoilVerticalBias = new(0.3f,  0.6f,  0f);
         RecoilHorizontalMax     = new(0.8f,  1.4f,  0f);
         RecoilHorizontalBias    = new(-0.25f, 0.25f, 0f);
         MaxAccumulatedRecoil    = new(20f,   35f,   0f);  // huge cap for sustained fire

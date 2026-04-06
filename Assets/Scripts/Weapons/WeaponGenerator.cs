@@ -44,8 +44,8 @@ public static class WeaponGenerator
         d.SpreadRecovery      = cat.SpreadRecovery.EvaluateClamped();
 
         // ── Recoil — Kick ─────────────────────────────────────────────────────
-        d.RecoilVertical          = cat.RecoilVertical.EvaluateClamped();
-        d.RecoilVerticalVariation = cat.RecoilVerticalVariation.EvaluateClamped();
+        d.RecoilVerticalMax  = cat.RecoilVerticalMax.EvaluateClamped();
+        d.RecoilVerticalBias = cat.RecoilVerticalBias.EvaluateClamped();
         d.RecoilHorizontalMax     = cat.RecoilHorizontalMax.EvaluateClamped();
         d.RecoilHorizontalBias    = cat.RecoilHorizontalBias.EvaluateClamped();
         d.MaxAccumulatedRecoil    = cat.MaxAccumulatedRecoil.EvaluateClamped();

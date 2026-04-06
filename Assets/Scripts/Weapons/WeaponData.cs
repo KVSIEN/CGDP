@@ -81,9 +81,9 @@ public class WeaponData : ScriptableObject
     // ── Recoil ────────────────────────────────────────────────────────────
     [Header("Recoil — Kick")]
     [Tooltip("Upward pitch added per shot (degrees)")]
-    public float RecoilVertical = 1.2f;
+    public float RecoilVerticalMax = 1.2f;
     [Tooltip("Random ± variation on vertical kick")]
-    public float RecoilVerticalVariation = 0.2f;
+    public float RecoilVerticalBias = 0.2f;
     [Tooltip("Maximum horizontal kick per shot (degrees); actual value is random each shot")]
     public float RecoilHorizontalMax = 0.55f;
     [Tooltip("Persistent sideways drift bias (-1 full left, 0 none, 1 full right)")]
