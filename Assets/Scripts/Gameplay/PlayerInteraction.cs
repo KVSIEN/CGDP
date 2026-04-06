@@ -3,16 +3,18 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInputHandler))]
 public class PlayerInteraction : MonoBehaviour
 {
-    [SerializeField] private float     _range        = 2.5f;
-    [SerializeField] private LayerMask _interactMask = ~0;
+    [SerializeField] private float     _range           = 2.5f;
+    [SerializeField] private LayerMask _interactMask    = ~0;
+    [SerializeField] private Transform _forwardReference;   // assign camera transform
 
-    public bool   HasTarget   => _current != null;
-    public string TargetLabel => _current?.InteractLabel ?? string.Empty;
+    public bool      HasTarget      => _current != null;
+    public string    TargetLabel    => _current?.InteractLabel ?? string.Empty;
+    public Vector3   TargetPosition => _currentTransform != null ? _currentTransform.position : Vector3.zero;
 
     private PlayerInputHandler _input;
     private IInteractable      _current;
+    private Transform          _currentTransform;
 
-    // Pre-allocated to avoid per-frame heap allocations
     private readonly Collider[] _buffer = new Collider[16];
 
     private void Awake()
@@ -33,20 +35,30 @@ public class PlayerInteraction : MonoBehaviour
         int count = Physics.OverlapSphereNonAlloc(
             transform.position, _range, _buffer, _interactMask, QueryTriggerInteraction.Collide);
 
-        IInteractable best     = null;
-        float         bestDist = float.MaxValue;
+        Vector3 forward    = _forwardReference != null ? _forwardReference.forward : transform.forward;
+        Vector3 eyeOrigin  = _forwardReference != null ? _forwardReference.position : transform.position;
+
+        IInteractable best          = null;
+        float         bestDist      = float.MaxValue;
+        Transform     bestTransform = null;
 
         for (int i = 0; i < count; i++)
         {
             if (!_buffer[i].TryGetComponent<IInteractable>(out var candidate)) continue;
 
-            float dist = (_buffer[i].transform.position - transform.position).sqrMagnitude;
+            Vector3 toTarget = _buffer[i].transform.position - eyeOrigin;
+            float   mag      = toTarget.magnitude;
+            if (mag > 0.05f && Vector3.Dot(forward, toTarget / mag) <= 0f) continue;
+
+            float dist = toTarget.sqrMagnitude;
             if (dist >= bestDist) continue;
 
-            bestDist = dist;
-            best     = candidate;
+            bestDist      = dist;
+            best          = candidate;
+            bestTransform = _buffer[i].transform;
         }
 
-        _current = best;
+        _current          = best;
+        _currentTransform = bestTransform;
     }
 }

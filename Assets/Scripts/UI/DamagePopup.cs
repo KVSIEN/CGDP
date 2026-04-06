@@ -21,11 +21,11 @@ public class DamagePopup : MonoBehaviour
 
     // ── Overlay camera ────────────────────────────────────────────────────
 
-    private static Camera GetOrCreateOverlayCamera()
+    public static Camera GetOrCreateOverlayCamera()
     {
         if (_overlayCamera != null) return _overlayCamera;
 
-        int layer   = LayerMask.NameToLayer("DamagePopup");
+        int layer   = LayerMask.NameToLayer("UI");
         var mainCam = Camera.main;
 
         // Parent to main camera so it always shares its transform
@@ -55,7 +55,7 @@ public class DamagePopup : MonoBehaviour
 
     public static void Spawn(float damage, Vector3 worldPos, bool headshot)
     {
-        int layer = LayerMask.NameToLayer("DamagePopup");
+        int layer = LayerMask.NameToLayer("UI");
         var go    = new GameObject("DamagePopup");
         go.layer  = layer;
         go.AddComponent<DamagePopup>().Setup(damage, worldPos, headshot);

@@ -717,7 +717,7 @@ MonoBehaviour:
   _adsFOV: 45
   _adsTpDistance: 1.5
   _adsTpShoulderOffset: 0.75
-  _adsSensitivityMult: 0.5
+  _adsSensitivityMult: 1
   _adsSpeed: 10
   _camera: {fileID: 330585545}
   _baseFOV: 70
@@ -1044,6 +1044,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   _data: {fileID: 11400000, guid: 4777eab4e6ecf4a4c844cba8021e870e, type: 2}
   _healthBar: {fileID: 460101220}
+  _popupOffset: {x: 0, y: 0.3, z: 0}
 --- !u!136 &460101216
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1166,7 +1167,7 @@ GameObject:
   m_Component:
   - component: {fileID: 497559532}
   - component: {fileID: 497559533}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: DamageNumbers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1317,7 +1318,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ebd589c952325cf4888029914e9d941b, type: 2}
   - {fileID: 11400000, guid: ef20e19e7da2caa4f873416a54a13b19, type: 2}
   - {fileID: 11400000, guid: dff160e7c52e5dc4cae48410a434e46f, type: 2}
-  _fixedIndex: 2
+  _fixedIndex: -1
 --- !u!114 &542727092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1734,41 +1735,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1255431806
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1255431807}
-  m_Layer: 5
-  m_Name: EnemyHealth
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1255431807
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1255431806}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2051602390}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1272141993
 GameObject:
   m_ObjectHideFlags: 0
@@ -2640,6 +2606,53 @@ MonoBehaviour:
   _flashFadeSpeed: 6
   _vignetteMaxAlpha: 0.75
   _vignetteHealthThreshold: 0.5
+--- !u!1 &2026799442
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2026799443}
+  - component: {fileID: 2026799444}
+  m_Layer: 0
+  m_Name: EnemyHealth
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2026799443
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2026799442}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -958.3438, y: -540, z: 28.18416}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2051602390}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2026799444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2026799442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9086ce9d772b81b4f9148d793d2babaf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  _data: {fileID: 11400000, guid: 4777eab4e6ecf4a4c844cba8021e870e, type: 2}
+  _healthBar: {fileID: 460101220}
+  _popupOffset: {x: 0, y: 0.3, z: 0}
 --- !u!1 &2051602386
 GameObject:
   m_ObjectHideFlags: 0
@@ -2741,7 +2754,7 @@ RectTransform:
   - {fileID: 378935971}
   - {fileID: 685327449}
   - {fileID: 345996833}
-  - {fileID: 1255431807}
+  - {fileID: 2026799443}
   - {fileID: 524831380}
   - {fileID: 1994817524}
   - {fileID: 497559532}

@@ -16,21 +16,31 @@ public class InventoryHUD : HUDElement
     [SerializeField] private float _padding    = 16f;
 
     private const int SlotCount = 4;
-    private static readonly string[] SlotKeys = { "1", "2", "3", "4" };
+    private static readonly string[]     SlotKeys    = { "1", "2", "3", "4" };
+    private static readonly GameAction[] SlotActions =
+    {
+        GameAction.Weapon1,
+        GameAction.Weapon2,
+        GameAction.Weapon3,
+        GameAction.Weapon4,
+    };
 
     private static readonly Color PanelBg  = new Color(0.05f, 0.05f, 0.08f, 0.93f);
     private static readonly Color SlotBg   = new Color(0.12f, 0.12f, 0.18f, 0.88f);
     private static readonly Color ActiveBg = new Color(0.22f, 0.42f, 0.82f, 0.92f);
     private static readonly Color EmptyBg  = new Color(0.08f, 0.08f, 0.10f, 0.72f);
 
-    private Image[]           _slotBgs   = new Image[SlotCount];
-    private TextMeshProUGUI[] _slotNames = new TextMeshProUGUI[SlotCount];
+    private Image[]           _slotBgs     = new Image[SlotCount];
+    private TextMeshProUGUI[] _slotNames   = new TextMeshProUGUI[SlotCount];
+    private Image[]           _barSlotBgs  = new Image[SlotCount];
+    private TextMeshProUGUI   _activeBarText;
     private CanvasGroup       _cg;
 
     private void Awake()
     {
         _cg = GetComponent<CanvasGroup>();
         BuildPanel();
+        BuildActiveBar();
         SetPanelAlpha(false);
         // IsVisible starts true in HUDElement — sync it
         IsVisible = false;
@@ -42,12 +52,23 @@ public class InventoryHUD : HUDElement
         if (_input != null && _input.WasPressedRaw(GameAction.Inventory))
             Toggle();
 
-        if (!IsVisible || _loadout == null) return;
+        if (_loadout == null) return;
 
+        int active = _loadout.ActiveSlot;
         for (int i = 0; i < SlotCount; i++)
         {
             var  weapon   = _loadout.Slots[i];
-            bool isActive = _loadout.ActiveSlot == i;
+            bool isActive = active == i;
+
+            // Always update the compact bar
+            _barSlotBgs[i].color = isActive ? ActiveBg : (weapon != null ? SlotBg : EmptyBg);
+            if (isActive)
+                _activeBarText.text = weapon != null ? weapon.WeaponName : "— Empty —";
+
+            if (!IsVisible) continue;
+
+            if (_input.WasPressedRaw(SlotActions[i]))
+                _loadout.EquipSlot(i);
 
             _slotBgs[i].color  = isActive ? ActiveBg : (weapon != null ? SlotBg : EmptyBg);
             _slotNames[i].text = weapon != null ? weapon.WeaponName : "— Empty —";
@@ -163,6 +184,55 @@ public class InventoryHUD : HUDElement
             name.rectTransform.sizeDelta        = new Vector2(-50f, 0f);
             _slotNames[i] = name;
         }
+    }
+
+    private void BuildActiveBar()
+    {
+        // Sibling of InventoryHUD so it's unaffected by the panel's CanvasGroup
+        var barGO = new GameObject("ActiveWeaponBar", typeof(RectTransform));
+        barGO.transform.SetParent(transform.parent, false);
+
+        var barRt = barGO.GetComponent<RectTransform>();
+        barRt.anchorMin = barRt.anchorMax = barRt.pivot = new Vector2(0f, 0f);
+        barRt.anchoredPosition = new Vector2(20f, 20f);
+        barRt.sizeDelta = new Vector2(240f, 36f);
+
+        var bg = MakeImage("Bg", barRt);
+        bg.color = new Color(0.05f, 0.05f, 0.08f, 0.82f);
+        Stretch(bg.rectTransform);
+
+        const float boxSize = 24f;
+        const float boxGap  = 4f;
+
+        for (int i = 0; i < SlotCount; i++)
+        {
+            var box = MakeImage("SlotBox_" + i, barRt);
+            box.rectTransform.anchorMin = box.rectTransform.anchorMax = new Vector2(0f, 0.5f);
+            box.rectTransform.pivot     = new Vector2(0f, 0.5f);
+            box.rectTransform.anchoredPosition = new Vector2(6f + i * (boxSize + boxGap), 0f);
+            box.rectTransform.sizeDelta        = new Vector2(boxSize, boxSize);
+            box.color = EmptyBg;
+            _barSlotBgs[i] = box;
+
+            var key = MakeText("Key_" + i, box.rectTransform);
+            key.text      = SlotKeys[i];
+            key.fontSize  = 10f;
+            key.color     = new Color(1f, 1f, 1f, 0.85f);
+            key.alignment = TextAlignmentOptions.Center;
+            Stretch(key.rectTransform);
+        }
+
+        float nameX = 6f + SlotCount * (boxSize + boxGap) + 6f;
+        _activeBarText = MakeText("WeaponName", barRt);
+        _activeBarText.fontSize  = 12f;
+        _activeBarText.color     = new Color(1f, 1f, 1f, 0.85f);
+        _activeBarText.alignment = TextAlignmentOptions.MidlineLeft;
+        _activeBarText.rectTransform.anchorMin = Vector2.zero;
+        _activeBarText.rectTransform.anchorMax = Vector2.one;
+        _activeBarText.rectTransform.pivot     = new Vector2(0f, 0.5f);
+        _activeBarText.rectTransform.offsetMin = new Vector2(nameX, 0f);
+        _activeBarText.rectTransform.offsetMax = new Vector2(-6f, 0f);
+        _activeBarText.text = "— Empty —";
     }
 
     private static Image MakeImage(string n, RectTransform parent)

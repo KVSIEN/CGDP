@@ -17,8 +17,10 @@ public class SettingsMenu : MonoBehaviour
     private bool    _isOpen;
     private Vector2 _scrollPos;
 
-    private float _pendingMouse;
-    private float _pendingGamepad;
+    private float  _pendingMouse;
+    private float  _pendingGamepad;
+    private string _mouseSensText;
+    private string _gamepadSensText;
 
     // Rebind state: -1 = not listening
     private int  _listeningAction = -1;
@@ -33,6 +35,8 @@ public class SettingsMenu : MonoBehaviour
     private void Start()
     {
         SettingsSave.LoadSensitivity(out _pendingMouse, out _pendingGamepad);
+        _mouseSensText   = _pendingMouse.ToString("F2");
+        _gamepadSensText = _pendingGamepad.ToString("F0");
     }
 
     private void Update()
@@ -111,6 +115,8 @@ public class SettingsMenu : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible   = true;
         SettingsSave.LoadSensitivity(out _pendingMouse, out _pendingGamepad);
+        _mouseSensText   = _pendingMouse.ToString("F2");
+        _gamepadSensText = _pendingGamepad.ToString("F0");
     }
 
     private void Close()
@@ -148,12 +154,30 @@ public class SettingsMenu : MonoBehaviour
         GUI.Label(new Rect(10, y, 580, 20), "── Sensitivity ──");
         y += 24f;
 
-        GUI.Label(new Rect(10, y, 155, 20), $"Mouse: {_pendingMouse:F2}");
-        _pendingMouse = GUI.HorizontalSlider(new Rect(170, y + 4f, 360f, 16f), _pendingMouse, 0.1f, 10f);
+        GUI.Label(new Rect(10, y, 60, 20), "Mouse:");
+        float prevMouse = _pendingMouse;
+        _pendingMouse = GUI.HorizontalSlider(new Rect(75, y + 4f, 330f, 16f), _pendingMouse, 0.1f, 10f);
+        if (_pendingMouse != prevMouse) _mouseSensText = _pendingMouse.ToString("F2");
+        string newMouseText = GUI.TextField(new Rect(415, y, 70, 20), _mouseSensText);
+        if (newMouseText != _mouseSensText)
+        {
+            _mouseSensText = newMouseText;
+            if (float.TryParse(newMouseText, out float parsedMouse))
+                _pendingMouse = Mathf.Clamp(parsedMouse, 0.1f, 10f);
+        }
         y += 26f;
 
-        GUI.Label(new Rect(10, y, 155, 20), $"Gamepad: {_pendingGamepad:F0}");
-        _pendingGamepad = GUI.HorizontalSlider(new Rect(170, y + 4f, 360f, 16f), _pendingGamepad, 10f, 300f);
+        GUI.Label(new Rect(10, y, 60, 20), "Gamepad:");
+        float prevGamepad = _pendingGamepad;
+        _pendingGamepad = GUI.HorizontalSlider(new Rect(75, y + 4f, 330f, 16f), _pendingGamepad, 10f, 300f);
+        if (_pendingGamepad != prevGamepad) _gamepadSensText = _pendingGamepad.ToString("F0");
+        string newGamepadText = GUI.TextField(new Rect(415, y, 70, 20), _gamepadSensText);
+        if (newGamepadText != _gamepadSensText)
+        {
+            _gamepadSensText = newGamepadText;
+            if (float.TryParse(newGamepadText, out float parsedGamepad))
+                _pendingGamepad = Mathf.Clamp(parsedGamepad, 10f, 300f);
+        }
         y += 28f;
 
         if (GUI.Button(new Rect(170, y, 140, 22), "Apply Sensitivity"))

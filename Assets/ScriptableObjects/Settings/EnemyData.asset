@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fa9dd37a1333c94ba199e2bd61bbee3, type: 3}
   m_Name: EnemyData
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  MaxHealth: 200
+  MaxHealth: 9999
   PatrolSpeed: 2
   ChaseSpeed: 5
   SightRange: 15

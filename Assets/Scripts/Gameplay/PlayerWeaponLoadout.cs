@@ -29,14 +29,7 @@ public class PlayerWeaponLoadout : MonoBehaviour
 
     private void Start()
     {
-        for (int i = 0; i < _slots.Length; i++)
-        {
-            if (_slots[i] != null)
-            {
-                EquipSlot(i);
-                return;
-            }
-        }
+        EquipSlot(0);
     }
 
     private void Update()

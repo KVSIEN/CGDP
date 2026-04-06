@@ -5,6 +5,7 @@ public class EnemyHealth : MonoBehaviour
 {
     [SerializeField] private EnemyData      _data;
     [SerializeField] private EnemyHealthBar _healthBar;
+    [SerializeField] private Vector3        _popupOffset = new Vector3(0f, 0.3f, 0f);
 
     private float _health;
 
@@ -28,7 +29,7 @@ public class EnemyHealth : MonoBehaviour
     {
         if (_health <= 0f) return;
         _health = Mathf.Max(_health - amount, 0f);
-        DamagePopup.Spawn(amount, worldPos, headshot);
+        DamagePopup.Spawn(amount, worldPos + _popupOffset, headshot);
         _healthBar?.ShowDamage(_health, _data.MaxHealth);
         OnDamaged?.Invoke(_health, _data.MaxHealth);
         if (_health <= 0f) OnDeath?.Invoke();
