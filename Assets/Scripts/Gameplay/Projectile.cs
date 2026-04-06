@@ -7,9 +7,9 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class Projectile : MonoBehaviour
 {
-    public float Speed    = 25f;
-    public float Lifetime = 5f;
-    public float Damage   = 25f;
+    public float Speed    { get; set; } = 25f;
+    public float Lifetime { get; set; } = 5f;
+    public float Damage   { get; set; } = 25f;
 
     private Rigidbody _rb;
 

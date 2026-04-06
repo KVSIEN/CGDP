@@ -71,7 +71,7 @@
 - Random weapon pickups: add `RandomWeaponPickup` alongside `WeaponPickup` and assign a `WeaponCategoryData` asset; each time the object spawns a unique weapon is generated with randomised stats drawn from the category's thresholds
 
 ## Procedural Weapon Generation
-- Five weapon categories: AR, SMG, Pistol, Sniper, LMG — each defined by a `WeaponCategoryData` ScriptableObject
+- Six weapon categories: AR, SMG, Pistol, Sniper, LMG, Shotgun — each defined by a `WeaponCategoryData` ScriptableObject
 - Every stat (damage, RPM, magazine size, spread, recoil, range, reload time, etc.) is defined as a min/max range with an optional bias value
 - Bias < 0 skews the random result toward the minimum (e.g. SMG mags weighted toward 20–30 despite max being 50); bias > 0 skews toward the maximum
 - Stat ranges reflect real-world and common game conventions per category:
@@ -80,6 +80,7 @@
   - **Pistol** — 300–600 RPM semi/auto, 7–20 round mags (weighted low), high per-shot kick, 15–25 m range; wide damage spread (20–55) representing everything from Glock to Desert Eagle
   - **Sniper** — 30–80 RPM semi only, 5–10 rounds, 70–160 damage, 80–200 m optimal range, terrible hipfire, near-zero ADS spread
   - **LMG** — 600–950 RPM, 75–200 round belt/drum (weighted toward 75–120), slow reload (4.5–8 s), wide spread even ADS, high sustained recoil cap
+  - **Shotgun** — 60–120 RPM semi/auto, 5–8 shell tube, 8–12 pellets per shot at 10–15 damage each, very short optimal range (8–15 m) with steep falloff, wide pellet cone (8–15° hip, 4–10° ADS), heavy per-shot recoil
 - Several stats (ADS bloom, recoil recovery fraction, recovery delay, ADS recoil multiplier, hipfire camera kick) are automatically derived from the category type and fire rate so the weapon feels correct without manual tuning
 - Create category assets via **Assets → Create → CGD → Weapon Category**, set the `Type` field, then right-click the asset and choose **Apply Type Defaults** to fill in all thresholds; values can be freely tweaked afterward
 
@@ -110,7 +111,7 @@
 ## Weapon System
 - Data-driven weapon setup via ScriptableObject assets — create a new gun by filling in a single asset, no code needed
 - Three fire modes: Semi-auto (one shot per press), Full-auto (hold to fire), Burst (fixed burst per press)
-- Hitscan shooting — instant hit detection via raycast, no projectile travel time for guns
+- Pluggable fire behavior per weapon — assign a `WeaponFireBehavior` ScriptableObject asset on the `WeaponData` to choose how shots are resolved; three built-in behaviors: **Hitscan** (instant single raycast), **Shotgun** (fires N independent pellet raycasts per shot, count driven by `PelletCount` on the weapon), and **Projectile** (spawns a moving projectile from the muzzle); adding new fire types requires only a new ScriptableObject subclass
 - Damage falloff — full damage up to an optimal range, then drops linearly to a configurable minimum at max range
 - Headshot multiplier — colliders tagged "Head" receive bonus damage
 - Bullet spread / bloom — hip-fire has a wider cone; firing continuously grows the spread; ADS tightens it; spread recovers quickly when not shooting

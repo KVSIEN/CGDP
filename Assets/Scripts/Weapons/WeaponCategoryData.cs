@@ -15,9 +15,12 @@ public class WeaponCategoryData : ScriptableObject
     public FireMode[] FireModes = { FireMode.Auto };
 
     [Header("Firing")]
+    public WeaponFireBehavior FireBehavior;
     public FloatRange RPM          = new(600, 800);
     public IntRange   BurstCount   = new(3, 3);    // only used if Burst is in FireModes
     public FloatRange BurstInterval = new(0.07f, 0.10f);
+    [Tooltip("Pellets per shot. 1 for all non-shotgun types.")]
+    public IntRange   PelletCount  = new(1, 1);
 
     [Header("Damage")]
     public FloatRange Damage              = new(25, 35);
@@ -73,11 +76,12 @@ public class WeaponCategoryData : ScriptableObject
     {
         switch (Type)
         {
-            case WeaponType.AR:     ApplyAR();     break;
-            case WeaponType.SMG:    ApplySMG();    break;
-            case WeaponType.Pistol: ApplyPistol(); break;
-            case WeaponType.Sniper: ApplySniper(); break;
-            case WeaponType.LMG:    ApplyLMG();    break;
+            case WeaponType.AR:      ApplyAR();      break;
+            case WeaponType.SMG:     ApplySMG();     break;
+            case WeaponType.Pistol:  ApplyPistol();  break;
+            case WeaponType.Sniper:  ApplySniper();  break;
+            case WeaponType.LMG:     ApplyLMG();     break;
+            case WeaponType.Shotgun: ApplyShotgun(); break;
         }
     }
 
@@ -310,5 +314,52 @@ public class WeaponCategoryData : ScriptableObject
         AdsRecoilMultiplier         = new(0.55f, 0.75f, 0f);
         HipRecoilVerticalMultiplier = new(0.20f, 0.35f, 0f);
         HipRecoilHorizontalMultiplier = new(0.18f, 0.30f, 0f);
+    }
+
+    private void ApplyShotgun()
+    {
+        Names     = new[] { "M870", "SPAS-12", "Benelli M3", "Mossberg 500", "KSG", "AA-12" };
+        FireModes = new[] { FireMode.Semi, FireMode.Semi, FireMode.Semi, FireMode.Auto };
+
+        RPM           = new(60,    120,   0f);   // pump ≈ 60 RPM, semi-auto ≈ 120 RPM
+        BurstCount    = new(1,     1);
+        BurstInterval = new(0.0f,  0.0f);
+        PelletCount   = new(8,     12,    0f);
+
+        // Damage is per pellet — 9 pellets × 12 dmg = 108 total at close range
+        Damage             = new(10f,   15f,   0f);
+        HeadshotMultiplier = new(1.5f,  2.0f,  0f);  // headshots less decisive — pellet spread
+        RangeOptimal       = new(8f,    15f,   0f);   // very short effective range
+        RangeFalloffEnd    = new(25f,   45f,   0f);
+        DamageFalloffMin   = new(0.10f, 0.25f, 0f);  // steep dropoff
+
+        MagazineSize      = new(5,     8,     0f);
+        ReserveAmmo       = new(20,    36,    0f);
+        ReserveMultiplier = new(3f,    5f,    0f);
+
+        ReloadTime          = new(2.5f, 4.5f, 0f);   // shell-by-shell reload takes longer
+        TacticalReloadTime  = new(2.0f, 3.5f, 0f);
+        TacticalReloadBonus = new(0.3f, 1.0f, 0f);
+
+        HipSpreadDeg   = new(8f,    15f,   0f);   // wide pellet cone hip
+        AdsSpreadDeg   = new(4f,    10f,   0f);   // tighter but still wide ADS
+        AdsSpreadMultiplier = new(0.30f, 0.60f, 0f);
+        SpreadPerShot  = new(0.5f,  1.5f,  0f);   // bloom per shot (between shots)
+        MaxSpread      = new(6f,    12f,   0f);
+        SpreadRecovery = new(8f,    14f,   0f);
+
+        RecoilVerticalMax  = new(2.5f,  5.0f,  0f);  // heavy kick per shot
+        RecoilVerticalBias = new(0.3f,  0.8f,  0f);
+        RecoilHorizontalMax     = new(0.5f,  1.2f,  0f);
+        RecoilHorizontalBias    = new(-0.15f, 0.15f, 0f);
+        MaxAccumulatedRecoil    = new(4f,    8f,    0f);  // low cap — one shot at a time
+
+        RecoilRecoverySpeed         = new(4f,   6f,    0f);
+        RecoilRecoveryFraction      = new(0.70f, 1.0f,  0f);
+        RecoilRecoveryDelay         = new(0.15f, 0.30f, 0f);
+        AdsRecoilRecoveryFraction   = new(0.85f, 1.0f,  0f);
+        AdsRecoilMultiplier         = new(0.55f, 0.75f, 0f);
+        HipRecoilVerticalMultiplier = new(0.30f, 0.55f, 0f);
+        HipRecoilHorizontalMultiplier = new(0.20f, 0.40f, 0f);
     }
 }

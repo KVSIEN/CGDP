@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 522962483bd84074e8d7de7a151a8cfd, type: 3}
-  m_Name: SubMachineGun
+  m_Name: Shotgun
   m_EditorClassIdentifier: Assembly-CSharp::WeaponCategoryData
-  Type: 1
+  Type: 5
   Names:
-  - SMG
-  FireModes: 01000000
-  FireBehavior: {fileID: 11400000, guid: ca566d8dc066bdc49b9f7028754076c0, type: 2}
+  - Shotgun
+  FireModes: 00000000
+  FireBehavior: {fileID: 11400000, guid: e2cbfa746aa878d4aa23d60289c75ece, type: 2}
   RPM:
-    Min: 600
-    Max: 800
+    Min: 60
+    Max: 300
     Bias: 0
   BurstCount:
     Min: 3
@@ -30,12 +30,12 @@ MonoBehaviour:
     Max: 0.1
     Bias: 0
   PelletCount:
-    Min: 1
-    Max: 1
+    Min: 5
+    Max: 9
     Bias: 0
   Damage:
-    Min: 25
-    Max: 35
+    Min: 6
+    Max: 12
     Bias: 0
   HeadshotMultiplier:
     Min: 2
@@ -54,9 +54,9 @@ MonoBehaviour:
     Max: 0.5
     Bias: 0
   MagazineSize:
-    Min: 20
-    Max: 50
-    Bias: -0.75
+    Min: 25
+    Max: 35
+    Bias: 0
   ReserveAmmo:
     Min: 75
     Max: 110
@@ -66,9 +66,9 @@ MonoBehaviour:
     Max: 3.5
     Bias: 0
   ReloadTime:
-    Min: 1.5
+    Min: 2.2
     Max: 3
-    Bias: -0.75
+    Bias: 0
   TacticalReloadTime:
     Min: 1.7
     Max: 2.2
@@ -85,40 +85,40 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   HipSpreadDeg:
-    Min: 2
-    Max: 3.5
+    Min: 3.5
+    Max: 6
     Bias: 0
   AdsSpreadDeg:
-    Min: 0
-    Max: 0
+    Min: 1.5
+    Max: 3.5
     Bias: 0
   AdsSpreadMultiplier:
-    Min: 0
-    Max: 0
+    Min: 1
+    Max: 1
     Bias: 0
   SpreadPerShot:
     Min: 0.6
-    Max: 1.5
+    Max: 1
     Bias: 0
   MaxSpread:
-    Min: 6
-    Max: 14
+    Min: 5
+    Max: 8
     Bias: 0
   SpreadRecovery:
     Min: 12
-    Max: 16
+    Max: 18
     Bias: 0
   RecoilVerticalMax:
-    Min: 0.5
-    Max: 2.5
+    Min: 1
+    Max: 1.5
     Bias: 0
   RecoilVerticalBias:
     Min: 0.1
     Max: 0.3
     Bias: 0
   RecoilHorizontalMax:
-    Min: 0.25
-    Max: 1.5
+    Min: 0.4
+    Max: 0.7
     Bias: 0
   RecoilHorizontalBias:
     Min: -0.2
@@ -149,10 +149,10 @@ MonoBehaviour:
     Max: 1
     Bias: 0
   HipRecoilVerticalMultiplier:
-    Min: 0.1
-    Max: 0.5
+    Min: 0.4
+    Max: 0.6
     Bias: 0
   HipRecoilHorizontalMultiplier:
     Min: 0.1
-    Max: 0.5
-    Bias: -0.4
+    Max: 0.25
+    Bias: 0

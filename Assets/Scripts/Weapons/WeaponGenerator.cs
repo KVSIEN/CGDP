@@ -8,12 +8,14 @@ public static class WeaponGenerator
 
         // ── Identity ──────────────────────────────────────────────────────────
         d.WeaponName = cat.Names[Random.Range(0, cat.Names.Length)];
-        d.FireMode   = cat.FireModes[Random.Range(0, cat.FireModes.Length)];
+        d.FireMode    = cat.FireModes[Random.Range(0, cat.FireModes.Length)];
+        d.FireBehavior = cat.FireBehavior;
 
         // ── Firing ────────────────────────────────────────────────────────────
         d.RoundsPerMinute = cat.RPM.EvaluateClamped();
         d.BurstCount      = cat.BurstCount.Evaluate();
         d.BurstInterval   = cat.BurstInterval.EvaluateClamped();
+        d.PelletCount     = Mathf.Max(1, cat.PelletCount.Evaluate());
 
         // ── Handling ──────────────────────────────────────────────────────────
         d.DrawTime = cat.DrawTime.EvaluateClamped();
@@ -36,7 +38,6 @@ public static class WeaponGenerator
 
         // ── Spread ────────────────────────────────────────────────────────────
         d.HipSpreadDeg        = cat.HipSpreadDeg.EvaluateClamped();
-        d.HipSpreadScale      = 1f;
         d.AdsSpreadDeg        = cat.AdsSpreadDeg.EvaluateClamped();
         d.AdsSpreadMultiplier = cat.AdsSpreadMultiplier.EvaluateClamped();
         d.SpreadPerShot       = cat.SpreadPerShot.EvaluateClamped();

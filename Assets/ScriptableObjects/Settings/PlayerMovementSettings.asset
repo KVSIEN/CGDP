@@ -52,8 +52,8 @@ MonoBehaviour:
   MantleBufferTime: 0.3
   VaultMaxHeight: 1.1
   MantleMaxHeight: 2.2
-  MantleSpeed: 6
+  MantleSpeed: 4
   MantleTimeout: 0.8
   MantleStepOver: 0.4
-  VaultUpImpulse: 5
+  VaultUpImpulse: 4
   VaultForwardImpulse: 5

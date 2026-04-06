@@ -3,8 +3,10 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Hitscan gun controller. Attach to the player root (or a weapon child).
+/// Weapon controller. Attach to the player root (or a weapon child).
 /// Wire up references in the Inspector, then assign a WeaponData asset.
+/// Fire behaviour (hitscan or projectile) is determined by the WeaponFireBehavior
+/// assigned on the WeaponData asset.
 /// </summary>
 public class WeaponController : MonoBehaviour
 {
@@ -154,48 +156,31 @@ public class WeaponController : MonoBehaviour
         _burstPending = false;
     }
 
-    // ── Hitscan ───────────────────────────────────────────────────────────
+    // ── Fire ──────────────────────────────────────────────────────────────
     private void CastBullet()
     {
-        float adsT      = _camera.AdsT;
-        float hipSpread = _data.HipSpreadDeg * _data.HipSpreadScale;
-        float spreadDeg = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, adsT) + _currentSpread * Mathf.Lerp(1f, _data.EffectiveAdsSpreadMultiplier, adsT);
+        if (_data.FireBehavior == null) return;
 
-        // Hitscan from camera centre with spread applied around camera forward.
-        // Using the muzzle as origin in TP causes parallax: the muzzle→aimPoint
-        // direction diverges from camera forward for close targets, letting spread
-        // shots fly past surfaces the crosshair was sitting on.
-        Vector3 camPos = _camera.transform.position;
-        Vector3 dir    = SpreadDirection(_camera.transform.forward, spreadDeg);
+        float   adsT      = _camera.AdsT;
+        float   spreadDeg = Mathf.Lerp(_data.HipSpreadDeg, _data.AdsSpreadDeg, adsT)
+                          + _currentSpread * Mathf.Lerp(1f, _data.EffectiveAdsSpreadMultiplier, adsT);
+        Vector3 forward   = _camera.transform.forward;
 
-        bool didHit = Physics.Raycast(camPos, dir, out RaycastHit hit,
-            _data.RangeFalloffEnd, _data.HitMask, QueryTriggerInteraction.Ignore);
-
-        if (_debugDrawBullets)
+        // Ray originates from camera centre — avoids TP parallax where muzzle→target
+        // diverges from camera forward for close geometry, causing shots to miss.
+        _data.FireBehavior.Execute(new FireContext
         {
-            Vector3 fxOrigin = _muzzle != null ? _muzzle.position : camPos;
-            Vector3 end      = didHit ? hit.point : fxOrigin + dir * _data.RangeFalloffEnd;
-            Debug.DrawLine(fxOrigin, end, didHit ? _debugHitColor : _debugMissColor, _debugLineDuration);
-        }
-
-        if (!didHit) return;
-
-        bool headshot = hit.collider.CompareTag("Head");
-        float damage  = CalculateDamage(hit.distance, headshot);
-
-        if (hit.collider.TryGetComponent<PlayerStats>(out var playerStats))
-            playerStats.TakeDamage(damage);
-        else if (hit.collider.TryGetComponent<EnemyHealth>(out var enemyHealth))
-            enemyHealth.TakeDamageAt(damage, hit.point, headshot);
-    }
-
-    private float CalculateDamage(float distance, bool headshot)
-    {
-        float t = Mathf.InverseLerp(_data.RangeOptimal, _data.RangeFalloffEnd, distance);
-        float falloff = Mathf.Lerp(1f, _data.DamageFalloffMin, t);
-        float dmg = _data.Damage * falloff;
-        if (headshot) dmg *= _data.HeadshotMultiplier;
-        return dmg;
+            CameraPosition    = _camera.transform.position,
+            CameraForward     = forward,
+            SpreadDeg         = spreadDeg,
+            Direction         = WeaponFireBehavior.ComputeSpreadDirection(forward, spreadDeg),
+            Muzzle            = _muzzle,
+            Data              = _data,
+            DebugDraw         = _debugDrawBullets,
+            DebugHitColor     = _debugHitColor,
+            DebugMissColor    = _debugMissColor,
+            DebugLineDuration = _debugLineDuration,
+        });
     }
 
     // ── Spread ────────────────────────────────────────────────────────────
@@ -209,18 +194,6 @@ public class WeaponController : MonoBehaviour
         // Only recover spread when not actively firing so bloom builds up correctly
         if (_currentSpread > 0f && _fireCooldown <= 0f)
             _currentSpread = Mathf.Max(_currentSpread - _data.SpreadRecovery * Time.deltaTime, 0f);
-    }
-
-    private static Vector3 SpreadDirection(Vector3 forward, float spreadDeg)
-    {
-        if (spreadDeg <= 0f) return forward;
-        float radius = Mathf.Tan(spreadDeg * Mathf.Deg2Rad);
-        Vector2 offset = UnityEngine.Random.insideUnitCircle * radius;
-        // Avoid degenerate LookRotation when forward is nearly parallel to world up
-        // (e.g. player looking up near the pitch limit), which sends bullets wild.
-        Vector3 up = Mathf.Abs(Vector3.Dot(forward, Vector3.up)) > 0.99f ? Vector3.right : Vector3.up;
-        Quaternion rot = Quaternion.LookRotation(forward, up);
-        return (rot * new Vector3(offset.x, offset.y, 1f)).normalized;
     }
 
     // ── Recoil ────────────────────────────────────────────────────────────
@@ -283,9 +256,8 @@ public class WeaponController : MonoBehaviour
     private void UpdateCrosshair()
     {
         if (_crosshair == null || _data == null) return;
-        float adsT      = _camera.AdsT;
-        float hipSpread = _data.HipSpreadDeg * _data.HipSpreadScale;
-        float baseDeg   = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, adsT);
+        float adsT    = _camera.AdsT;
+        float baseDeg = Mathf.Lerp(_data.HipSpreadDeg, _data.AdsSpreadDeg, adsT);
         float adsBloomMult = _data.AdsSpreadDeg > 0f ? _data.AdsSpreadMultiplier : 0f;
         _crosshair.SetDynamicSpread(baseDeg + _currentSpread * Mathf.Lerp(1f, adsBloomMult, adsT));
     }

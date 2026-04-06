@@ -16,6 +16,7 @@ MonoBehaviour:
   Names:
   - LMG
   FireModes: 01000000
+  FireBehavior: {fileID: 11400000, guid: ca566d8dc066bdc49b9f7028754076c0, type: 2}
   RPM:
     Min: 600
     Max: 800
@@ -27,6 +28,10 @@ MonoBehaviour:
   BurstInterval:
     Min: 0.07
     Max: 0.1
+    Bias: 0
+  PelletCount:
+    Min: 1
+    Max: 1
     Bias: 0
   Damage:
     Min: 25

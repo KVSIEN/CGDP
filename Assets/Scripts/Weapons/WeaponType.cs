@@ -1,1 +1,1 @@
-public enum WeaponType { AR, SMG, Pistol, Sniper, LMG }
+public enum WeaponType { AR, SMG, Pistol, Sniper, LMG, Shotgun }

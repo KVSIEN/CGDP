@@ -8,6 +8,10 @@ public class WeaponData : ScriptableObject
     [Header("Identity")]
     public string WeaponName = "Rifle";
 
+    // ── Fire Behavior ─────────────────────────────────────────────────────
+    [Header("Fire Behavior")]
+    public WeaponFireBehavior FireBehavior;
+
     // ── Firing ────────────────────────────────────────────────────────────
     [Header("Firing")]
     public FireMode FireMode = FireMode.Auto;
@@ -17,6 +21,8 @@ public class WeaponData : ScriptableObject
     public int BurstCount = 3;
     [Tooltip("Delay between shots within a burst")]
     public float BurstInterval = 0.075f;
+    [Tooltip("Pellets fired per shot. Values above 1 produce shotgun-style spread. Damage is applied per pellet.")]
+    public int PelletCount = 1;
 
     // ── Damage ────────────────────────────────────────────────────────────
     [Header("Damage")]
@@ -63,8 +69,6 @@ public class WeaponData : ScriptableObject
     [Header("Spread")]
     [Tooltip("Cone half-angle while hip-firing (degrees)")]
     public float HipSpreadDeg  = 2.5f;
-    [Tooltip("Scale applied to hip spread (1 = normal, 2 = double, etc.)")]
-    public float HipSpreadScale = 1f;
     [Tooltip("Cone half-angle while ADS (degrees)")]
     public float AdsSpreadDeg  = 0.35f;
     [Tooltip("How much bloom (SpreadPerShot) applies while fully ADS (0 = no bloom, 1 = same as hip). Ignored when AdsSpreadDeg is 0.")]
