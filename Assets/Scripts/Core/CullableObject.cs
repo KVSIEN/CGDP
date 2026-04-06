@@ -7,9 +7,15 @@ using UnityEngine;
 public class CullableObject : MonoBehaviour
 {
     [SerializeField] private Renderer[] _renderers;
+    [SerializeField, Min(1)] private int _showStableChecks = 1;
+    [SerializeField, Min(1)] private int _hideStableChecks = 2;
 
     public bool IsVisible { get; private set; } = true;
     public Bounds WorldBounds { get; private set; }
+
+    private bool _hasPendingVisibility;
+    private bool _pendingVisibility;
+    private int _pendingVisibilityChecks;
 
     private void Awake()
     {
@@ -30,7 +36,35 @@ public class CullableObject : MonoBehaviour
         WorldBounds = b;
     }
 
-    public void SetVisible(bool visible)
+    public void ApplyVisibilitySample(bool visible)
+    {
+        if (visible == IsVisible)
+        {
+            _hasPendingVisibility = false;
+            _pendingVisibilityChecks = 0;
+            return;
+        }
+
+        if (!_hasPendingVisibility || _pendingVisibility != visible)
+        {
+            _hasPendingVisibility = true;
+            _pendingVisibility = visible;
+            _pendingVisibilityChecks = 1;
+        }
+        else
+        {
+            _pendingVisibilityChecks++;
+        }
+
+        int requiredChecks = visible ? _showStableChecks : _hideStableChecks;
+        if (_pendingVisibilityChecks < requiredChecks) return;
+
+        SetVisible(visible);
+        _hasPendingVisibility = false;
+        _pendingVisibilityChecks = 0;
+    }
+
+    private void SetVisible(bool visible)
     {
         if (visible == IsVisible) return;
         IsVisible = visible;

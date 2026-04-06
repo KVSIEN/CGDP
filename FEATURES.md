@@ -142,6 +142,7 @@
 - Objects outside the camera frustum have their renderers disabled automatically, reducing draw calls without deactivating GameObjects
 - Checks are time-sliced across multiple frames to avoid per-frame performance spikes
 - Hysteresis prevents pop-in: objects activate slightly before fully entering the frame, and only deactivate once fully off-screen
+- Visibility changes are debounced so edge objects stay stable instead of rapidly toggling on and off
 - Objects close to the camera are always rendered regardless of frustum position
 - Add `CullableObject` to any world object; place `VisibilityCullingManager` in the scene and assign the camera
 

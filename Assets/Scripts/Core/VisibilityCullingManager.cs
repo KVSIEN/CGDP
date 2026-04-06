@@ -5,20 +5,20 @@ using UnityEngine;
 /// Disables renderers on objects outside the camera frustum to reduce draw calls.
 /// Checks are spread across multiple frames to avoid per-frame spikes.
 ///
-/// Hysteresis prevents pop-in: currently-invisible objects use expanded bounds for
-/// their visibility test, so they activate slightly before fully entering the frustum.
+/// Hysteresis prevents pop-in: visible objects keep a larger margin so they stay
+/// active near the edge, while hidden objects need to be clearly back inside
+/// before they re-enable.
 /// </summary>
 [DefaultExecutionOrder(-100)]
 public class VisibilityCullingManager : MonoBehaviour
 {
     [SerializeField] private Camera _camera;
 
-    [Tooltip("World-unit expansion added to an invisible object's bounds — activates it before it fully enters the frustum.")]
-    [SerializeField] private float _activationMargin = 3f;
+    [Tooltip("World-unit expansion added to an invisible object's bounds. Smaller values make reactivation more conservative.")]
+    [SerializeField] private float _activationMargin = 1f;
 
-    [Tooltip("World-unit expansion added to a visible object's bounds — keeps it active until it is this far outside the frustum. " +
-             "Must be less than Activation Margin to form a proper hysteresis gap.")]
-    [SerializeField] private float _deactivationMargin = 5f;
+    [Tooltip("World-unit expansion added to a visible object's bounds. Larger values keep the object active longer near the frustum edge.")]
+    [SerializeField] private float _deactivationMargin = 3f;
 
     [Tooltip("Objects whose bounds centre is within this distance of the camera are always rendered.")]
     [SerializeField] private float _alwaysVisibleDistance = 12f;
@@ -72,20 +72,16 @@ public class VisibilityCullingManager : MonoBehaviour
             // Never cull objects close to the camera.
             if ((bounds.center - camPos).sqrMagnitude <= minDistSq)
             {
-                obj.SetVisible(true);
+                obj.ApplyVisibilitySample(true);
                 continue;
             }
 
-            // Hysteresis: expand the test bounds only when the object is currently invisible.
-            // This means an invisible object starts rendering a little before it reaches the
-            // actual screen edge, so the player never sees it pop in.
-            // Hysteresis: invisible objects use a larger expansion (activate before entering view),
-            // visible objects use a smaller expansion (stay active until clearly off-screen).
-            // The gap between the two margins is the dead zone where no toggling occurs.
+            // Visible objects use the larger margin so they stay active near the edge.
+            // Hidden objects use the smaller margin so they only reappear once clearly inside.
             Bounds testBounds = bounds;
             testBounds.Expand(obj.IsVisible ? _deactivationMargin * 2f : _activationMargin * 2f);
 
-            obj.SetVisible(GeometryUtility.TestPlanesAABB(_frustumPlanes, testBounds));
+            obj.ApplyVisibilitySample(GeometryUtility.TestPlanesAABB(_frustumPlanes, testBounds));
         }
 
         _batchIndex = (_batchIndex + 1) % _batchFrames;
