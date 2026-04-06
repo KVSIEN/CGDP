@@ -4,7 +4,7 @@ public class HUDManager : MonoBehaviour
 {
     [SerializeField] private CrosshairHUD  _crosshair;
     [SerializeField] private StatsHUD      _stats;
-    [SerializeField] private AmmoHUD       _ammo;
+    [SerializeField] private WeaponHUD     _weapon;
     [SerializeField] private AbilityHUD    _abilities;
     [SerializeField] private DodgeHUD      _dodge;
     [SerializeField] private HitEffect     _hitEffect;
@@ -14,7 +14,7 @@ public class HUDManager : MonoBehaviour
 
     public CrosshairHUD  Crosshair  => _crosshair;
     public StatsHUD      Stats      => _stats;
-    public AmmoHUD       Ammo       => _ammo;
+    public WeaponHUD     Weapon     => _weapon;
     public AbilityHUD    Abilities  => _abilities;
     public DodgeHUD      Dodge      => _dodge;
     public HitEffect     HitEffect  => _hitEffect;
@@ -26,7 +26,7 @@ public class HUDManager : MonoBehaviour
     {
         _crosshair?.Show();
         _stats?.Show();
-        _ammo?.Show();
+        _weapon?.Show();
         _abilities?.Show();
         _dodge?.Show();
         _hitEffect?.Show();
@@ -38,7 +38,7 @@ public class HUDManager : MonoBehaviour
     {
         _crosshair?.Hide();
         _stats?.Hide();
-        _ammo?.Hide();
+        _weapon?.Hide();
         _abilities?.Hide();
         _dodge?.Hide();
         _hitEffect?.Hide();
@@ -51,7 +51,7 @@ public class HUDManager : MonoBehaviour
     {
         _crosshair?.Refresh();
         _stats?.Refresh();
-        _ammo?.Refresh();
+        _weapon?.Refresh();
         _abilities?.Refresh();
         _dodge?.Refresh();
         _hitEffect?.Refresh();

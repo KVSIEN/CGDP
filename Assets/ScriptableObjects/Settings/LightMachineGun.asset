@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponCategoryData
   Type: 4
   Names:
-  - Weapon
+  - LMG
   FireModes: 01000000
   RPM:
     Min: 600
@@ -103,17 +103,17 @@ MonoBehaviour:
     Min: 12
     Max: 18
     Bias: 0
-  RecoilVertical:
+  RecoilVerticalMax:
     Min: 0.9
     Max: 1.5
     Bias: 0
-  RecoilVerticalVariation:
+  RecoilVerticalBias:
     Min: 0.1
     Max: 0.3
     Bias: 0
   RecoilHorizontalMax:
     Min: 0.4
-    Max: 0.7
+    Max: 1.5
     Bias: 0
   RecoilHorizontalBias:
     Min: -0.2
@@ -140,8 +140,8 @@ MonoBehaviour:
     Max: 1
     Bias: 0
   AdsRecoilMultiplier:
-    Min: 0.35
-    Max: 0.55
+    Min: 1
+    Max: 1
     Bias: 0
   HipRecoilVerticalMultiplier:
     Min: 0.1

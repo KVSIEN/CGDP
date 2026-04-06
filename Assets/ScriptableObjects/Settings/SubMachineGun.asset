@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponCategoryData
   Type: 1
   Names:
-  - Weapon
+  - SMG
   FireModes: 01000000
   RPM:
     Min: 600

@@ -2,13 +2,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Displays weapon magazine, reserve ammo, and a reload indicator.
-/// Anchor: bottom-right corner.
-/// Wire WeaponController in the Inspector.
-/// </summary>
 [RequireComponent(typeof(RectTransform))]
-public class AmmoHUD : HUDElement
+public class WeaponHUD : HUDElement
 {
     [SerializeField] private WeaponController _weapon;
 
@@ -25,6 +20,7 @@ public class AmmoHUD : HUDElement
     [SerializeField] private Vector2 _innerPadding = new Vector2(12f, 10f);
     [SerializeField] private float _panelWidth = 180f;
 
+    private TextMeshProUGUI _weaponNameText;
     private TextMeshProUGUI _magText;
     private TextMeshProUGUI _reserveText;
     private TextMeshProUGUI _reloadText;
@@ -67,6 +63,9 @@ public class AmmoHUD : HUDElement
         if (_magText == null) return;
 
         bool hasWeapon = _weapon != null && _weapon.Data != null;
+
+        _weaponNameText.text  = hasWeapon ? _weapon.Data.WeaponName : string.Empty;
+        _weaponNameText.color = _dimColor;
 
         if (!hasWeapon)
         {
@@ -111,7 +110,7 @@ public class AmmoHUD : HUDElement
         float ip = _innerPadding.x;
         float contentWidth = _panelWidth - ip * 2f;
 
-        float totalHeight = _innerPadding.y + 44f + 20f + 18f + _innerPadding.y;
+        float totalHeight = _innerPadding.y + 18f + 44f + 20f + 18f + _innerPadding.y;
         self.sizeDelta = new Vector2(_panelWidth, totalHeight);
 
         float y = -_innerPadding.y;
@@ -119,6 +118,13 @@ public class AmmoHUD : HUDElement
         var bg = MakeImage("Background", self);
         bg.color = _backgroundColor;
         Stretch(bg.rectTransform);
+
+        _weaponNameText = MakeText("WeaponName", self);
+        _weaponNameText.color = _dimColor;
+        _weaponNameText.fontSize = 12f;
+        _weaponNameText.alignment = TextAlignmentOptions.Right;
+        Place(_weaponNameText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 18f));
+        y -= 18f;
 
         _magText = MakeText("MagCount", self);
         _magText.color = _textColor;
