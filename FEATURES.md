@@ -114,7 +114,7 @@
 - Damage falloff — full damage up to an optimal range, then drops linearly to a configurable minimum at max range
 - Headshot multiplier — colliders tagged "Head" receive bonus damage
 - Bullet spread / bloom — hip-fire has a wider cone; firing continuously grows the spread; ADS tightens it; spread recovers quickly when not shooting
-- Magazine and reserve ammo tracked per weapon; ammo display in HUD stays in sync
+- Magazine and reserve ammo tracked per weapon; reserve ammo is snapped to full magazine-sized clips so counts stay in whole-mag multiples; ammo display in HUD stays in sync
 - Tactical reload (round in chamber) is faster than an empty reload
 - Recoil system:
   - Each shot kicks the camera upward (vertical recoil) and slightly sideways (horizontal recoil)

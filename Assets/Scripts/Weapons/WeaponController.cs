@@ -49,7 +49,7 @@ public class WeaponController : MonoBehaviour
     {
         if (_data == null) return;
         _magazine = _data.MagazineSize;
-        _reserve  = _data.ReserveAmmo;
+        _reserve  = _data.GetNormalizedReserveAmmo();
         NotifyAmmoChanged();
     }
 
@@ -87,7 +87,7 @@ public class WeaponController : MonoBehaviour
         _isReloading       = false;
         _data              = data;
         _magazine          = data != null ? data.MagazineSize : 0;
-        _reserve           = data != null ? data.ReserveAmmo  : 0;
+        _reserve           = data != null ? data.GetNormalizedReserveAmmo() : 0;
         _currentSpread     = 0f;
         _accumulatedRecoil = 0f;
         _drawTimer         = data != null ? data.DrawTime : 0f;
@@ -100,7 +100,7 @@ public class WeaponController : MonoBehaviour
     {
         if (_data == null) return;
         _magazine = _data.MagazineSize;
-        _reserve  = _data.ReserveAmmo;
+        _reserve  = _data.GetNormalizedReserveAmmo();
         NotifyAmmoChanged();
     }
 

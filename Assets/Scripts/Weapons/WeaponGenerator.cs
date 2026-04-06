@@ -28,7 +28,7 @@ public static class WeaponGenerator
 
         // ── Ammo ──────────────────────────────────────────────────────────────
         d.MagazineSize = cat.MagazineSize.Evaluate();
-        d.ReserveAmmo  = cat.ReserveAmmo.Evaluate();
+        d.ReserveAmmo  = WeaponData.NormalizeReserveAmmo(d.MagazineSize, cat.ReserveAmmo.Evaluate());
 
         // ── Reload ────────────────────────────────────────────────────────────
         d.ReloadTime         = cat.ReloadTime.EvaluateClamped();

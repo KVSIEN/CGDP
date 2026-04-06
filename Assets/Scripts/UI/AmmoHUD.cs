@@ -17,7 +17,7 @@ public class AmmoHUD : HUDElement
     [SerializeField] private Color _textColor        = new Color(0.92f, 0.92f, 0.92f, 1f);
     [SerializeField] private Color _dimColor         = new Color(0.55f, 0.55f, 0.55f, 1f);
     [SerializeField] private Color _reloadColor      = new Color(1f, 0.75f, 0.1f, 1f);
-    [SerializeField] private Color _emptyColor       = new Color(0.9f, 0.15f, 0.1f, 1f);
+    [SerializeField] private Color _emptyColor       = new Color(0.68f, 0.68f, 0.68f, 1f);
 
     [Header("Layout")]
     [SerializeField] private Vector2 _screenPadding = new Vector2(20f, 20f);
@@ -65,6 +65,18 @@ public class AmmoHUD : HUDElement
     public override void Refresh()
     {
         if (_magText == null) return;
+
+        bool hasWeapon = _weapon != null && _weapon.Data != null;
+
+        if (!hasWeapon)
+        {
+            _reloadText.gameObject.SetActive(false);
+            _magText.text      = "—";
+            _magText.color     = _emptyColor;
+            _reserveText.text  = "│";
+            _reserveText.color = _emptyColor;
+            return;
+        }
 
         if (_isReloading)
         {

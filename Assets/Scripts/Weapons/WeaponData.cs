@@ -46,6 +46,19 @@ public class WeaponData : ScriptableObject
     [Tooltip("Reload with a round still chambered (faster)")]
     public float TacticalReloadTime = 2.1f;
 
+    public int GetNormalizedReserveAmmo()
+    {
+        return NormalizeReserveAmmo(MagazineSize, ReserveAmmo);
+    }
+
+    public static int NormalizeReserveAmmo(int magazineSize, int reserveAmmo)
+    {
+        if (magazineSize <= 0 || reserveAmmo <= 0) return 0;
+
+        int clips = Mathf.Max(1, Mathf.RoundToInt((float)reserveAmmo / magazineSize));
+        return clips * magazineSize;
+    }
+
     // ── Spread / Bloom ────────────────────────────────────────────────────
     [Header("Spread")]
     [Tooltip("Cone half-angle while hip-firing (degrees)")]
