@@ -138,6 +138,13 @@
 - World-space health bar appears above the enemy on damage and fades out after a configurable delay; billboards toward the camera
 - All parameters (health, speeds, sight, hearing, attack, alert duration) are tunable per enemy type via an EnemyData ScriptableObject
 
+## Visibility Culling
+- Objects outside the camera frustum have their renderers disabled automatically, reducing draw calls without deactivating GameObjects
+- Checks are time-sliced across multiple frames to avoid per-frame performance spikes
+- Hysteresis prevents pop-in: objects activate slightly before fully entering the frame, and only deactivate once fully off-screen
+- Objects close to the camera are always rendered regardless of frustum position
+- Add `CullableObject` to any world object; place `VisibilityCullingManager` in the scene and assign the camera
+
 ## Death & Respawn
 - When health reaches zero the player loses control, the HUD hides, and a death screen is shown
 - Player automatically respawns after a short delay, returning to the designated spawn point

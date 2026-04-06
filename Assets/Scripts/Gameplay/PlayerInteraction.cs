@@ -39,21 +39,24 @@ public class PlayerInteraction : MonoBehaviour
         Vector3 eyeOrigin  = _forwardReference != null ? _forwardReference.position : transform.position;
 
         IInteractable best          = null;
-        float         bestDist      = float.MaxValue;
+        float         bestScore    = float.MinValue;
         Transform     bestTransform = null;
 
         for (int i = 0; i < count; i++)
         {
             if (!_buffer[i].TryGetComponent<IInteractable>(out var candidate)) continue;
 
-            Vector3 toTarget = _buffer[i].transform.position - eyeOrigin;
-            float   mag      = toTarget.magnitude;
-            if (mag > 0.05f && Vector3.Dot(forward, toTarget / mag) <= 0f) continue;
+            Vector3 toTarget  = _buffer[i].transform.position - eyeOrigin;
+            float   mag       = toTarget.magnitude;
+            Vector3 dir       = mag > 0.05f ? toTarget / mag : forward;
+            float   alignment = Vector3.Dot(forward, dir);
+            if (alignment <= 0f) continue;
 
-            float dist = toTarget.sqrMagnitude;
-            if (dist >= bestDist) continue;
+            // Score favours objects more aligned with look direction; distance is secondary.
+            float score = alignment - mag / _range;
+            if (score <= bestScore) continue;
 
-            bestDist      = dist;
+            bestScore     = score;
             best          = candidate;
             bestTransform = _buffer[i].transform;
         }
