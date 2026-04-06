@@ -32,6 +32,11 @@ public class WeaponData : ScriptableObject
     public float DamageFalloffMin = 0.4f;
     public LayerMask HitMask = ~0;
 
+    // ── Handling ──────────────────────────────────────────────────────────
+    [Header("Handling")]
+    [Tooltip("Seconds to draw and ready the weapon after swapping to this slot")]
+    public float DrawTime = 0.5f;
+
     // ── Ammo & Reload ────────────────────────────────────────────────────
     [Header("Ammo & Reload")]
     public int MagazineSize = 30;
@@ -49,9 +54,10 @@ public class WeaponData : ScriptableObject
     public float HipSpreadScale = 1f;
     [Tooltip("Cone half-angle while ADS (degrees)")]
     public float AdsSpreadDeg  = 0.35f;
-    [Tooltip("How much bloom (SpreadPerShot) applies while fully ADS (0 = no bloom, 1 = same as hip)")]
+    [Tooltip("How much bloom (SpreadPerShot) applies while fully ADS (0 = no bloom, 1 = same as hip). Ignored when AdsSpreadDeg is 0.")]
     [Range(0f, 1f)]
     public float AdsSpreadMultiplier = 0f;
+    public float EffectiveAdsSpreadMultiplier => AdsSpreadDeg > 0f ? AdsSpreadMultiplier : 0f;
     [Tooltip("Spread added per shot (bloom)")]
     public float SpreadPerShot = 0.8f;
     [Tooltip("Spread degrees recovered per second when not shooting")]

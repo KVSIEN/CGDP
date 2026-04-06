@@ -15,9 +15,9 @@ MonoBehaviour:
   Type: 0
   Names:
   - Weapon
-  FireModes: 010000000000000002000000
+  FireModes: 01000000
   RPM:
-    Min: 400
+    Min: 600
     Max: 800
     Bias: 0
   BurstCount:
@@ -50,7 +50,11 @@ MonoBehaviour:
     Bias: 0
   MagazineSize:
     Min: 25
-    Max: 60
+    Max: 35
+    Bias: 0
+  ReserveAmmo:
+    Min: 75
+    Max: 110
     Bias: 0
   ReserveMultiplier:
     Min: 2.5
@@ -60,21 +64,36 @@ MonoBehaviour:
     Min: 2.2
     Max: 3
     Bias: 0
+  TacticalReloadTime:
+    Min: 1.7
+    Max: 2.2
+    Bias: 0
   TacticalReloadBonus:
     Min: 0.3
     Max: 0.6
     Bias: 0
+  DrawTime:
+    Min: 0.5
+    Max: 0.7
+    Bias: 0
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   HipSpreadDeg:
     Min: 2
     Max: 3.5
     Bias: 0
   AdsSpreadDeg:
-    Min: 0.2
-    Max: 0.5
+    Min: 0
+    Max: 0
+    Bias: 0
+  AdsSpreadMultiplier:
+    Min: 0.1
+    Max: 0.1
     Bias: 0
   SpreadPerShot:
-    Min: 0.6
-    Max: 1
+    Min: 0.2
+    Max: 0.6
     Bias: 0
   MaxSpread:
     Min: 5
@@ -103,4 +122,32 @@ MonoBehaviour:
   MaxAccumulatedRecoil:
     Min: 12
     Max: 18
+    Bias: 0
+  RecoilRecoverySpeed:
+    Min: 4
+    Max: 9
+    Bias: 0
+  RecoilRecoveryFraction:
+    Min: 0.55
+    Max: 0.8
+    Bias: 0
+  RecoilRecoveryDelay:
+    Min: 0.08
+    Max: 0.18
+    Bias: 0
+  AdsRecoilRecoveryFraction:
+    Min: 0.85
+    Max: 1
+    Bias: 0
+  AdsRecoilMultiplier:
+    Min: 0.35
+    Max: 0.55
+    Bias: 0
+  HipRecoilVerticalMultiplier:
+    Min: 0.1
+    Max: 0.25
+    Bias: 0
+  HipRecoilHorizontalMultiplier:
+    Min: 0.1
+    Max: 0.25
     Bias: 0

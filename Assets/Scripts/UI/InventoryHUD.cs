@@ -49,7 +49,7 @@ public class InventoryHUD : HUDElement
             var  weapon   = _loadout.Slots[i];
             bool isActive = _loadout.ActiveSlot == i;
 
-            _slotBgs[i].color  = weapon != null ? (isActive ? ActiveBg : SlotBg) : EmptyBg;
+            _slotBgs[i].color  = isActive ? ActiveBg : (weapon != null ? SlotBg : EmptyBg);
             _slotNames[i].text = weapon != null ? weapon.WeaponName : "— Empty —";
         }
     }

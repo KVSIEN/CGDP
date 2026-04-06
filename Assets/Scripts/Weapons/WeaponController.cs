@@ -24,6 +24,7 @@ public class WeaponController : MonoBehaviour
     private int   _magazine;
     private int   _reserve;
     private float _fireCooldown;
+    private float _drawTimer;
     private float _currentSpread;
     private float _recoilDriftDir;   // -1..1, wanders over time
     private bool  _isReloading;
@@ -60,7 +61,15 @@ public class WeaponController : MonoBehaviour
 
     private void Update()
     {
-        if (_data == null || _isReloading) return;
+        if (_data == null) return;
+
+        if (_drawTimer > 0f)
+        {
+            _drawTimer -= Time.deltaTime;
+            return;
+        }
+
+        if (_isReloading) return;
 
         TickSpread();
         TickRecoilRecovery();
@@ -77,10 +86,12 @@ public class WeaponController : MonoBehaviour
         StopAllCoroutines();
         _isReloading       = false;
         _data              = data;
-        _magazine          = data.MagazineSize;
-        _reserve           = data.ReserveAmmo;
+        _magazine          = data != null ? data.MagazineSize : 0;
+        _reserve           = data != null ? data.ReserveAmmo  : 0;
         _currentSpread     = 0f;
         _accumulatedRecoil = 0f;
+        _drawTimer         = data != null ? data.DrawTime : 0f;
+        if (_crosshair != null) _crosshair.SetDynamicSpread(0f);
         NotifyAmmoChanged();
     }
 
@@ -148,7 +159,7 @@ public class WeaponController : MonoBehaviour
     {
         float adsT      = _camera.AdsT;
         float hipSpread = _data.HipSpreadDeg * _data.HipSpreadScale;
-        float spreadDeg = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, adsT) + _currentSpread * Mathf.Lerp(1f, _data.AdsSpreadMultiplier, adsT);
+        float spreadDeg = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, adsT) + _currentSpread * Mathf.Lerp(1f, _data.EffectiveAdsSpreadMultiplier, adsT);
 
         // Hitscan from camera centre with spread applied around camera forward.
         // Using the muzzle as origin in TP causes parallax: the muzzle→aimPoint
@@ -275,7 +286,8 @@ public class WeaponController : MonoBehaviour
         float adsT      = _camera.AdsT;
         float hipSpread = _data.HipSpreadDeg * _data.HipSpreadScale;
         float baseDeg   = Mathf.Lerp(hipSpread, _data.AdsSpreadDeg, adsT);
-        _crosshair.SetDynamicSpread(baseDeg + _currentSpread * Mathf.Lerp(1f, _data.AdsSpreadMultiplier, adsT));
+        float adsBloomMult = _data.AdsSpreadDeg > 0f ? _data.AdsSpreadMultiplier : 0f;
+        _crosshair.SetDynamicSpread(baseDeg + _currentSpread * Mathf.Lerp(1f, adsBloomMult, adsT));
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────

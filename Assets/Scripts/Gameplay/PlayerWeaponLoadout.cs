@@ -51,7 +51,6 @@ public class PlayerWeaponLoadout : MonoBehaviour
     public void EquipSlot(int index)
     {
         if (index < 0 || index >= _slots.Length) return;
-        if (_slots[index] == null) return;
         if (_activeSlot == index) return;
 
         _activeSlot = index;
@@ -62,7 +61,7 @@ public class PlayerWeaponLoadout : MonoBehaviour
     {
         if (index < 0 || index >= _slots.Length) return;
         _slots[index] = data;
-        if (_activeSlot == index && data != null)
+        if (_activeSlot == index)
             _weapon.Equip(data);
     }
 }
