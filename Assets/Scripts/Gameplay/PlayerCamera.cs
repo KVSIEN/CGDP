@@ -133,10 +133,10 @@ public class PlayerCamera : MonoBehaviour
 
     private void HandleToggleInput()
     {
-        if (_input.WasPressed(GameAction.TogglePerspective))
+        if (_input.GetAction(GameAction.TogglePerspective))
             _transitionTarget = _transitionTarget < 0.5f ? 1f : 0f;
 
-        if (_input.WasPressed(GameAction.ShoulderSwap))
+        if (_input.GetAction(GameAction.ShoulderSwap))
             _shoulderTarget *= -1f;
     }
 

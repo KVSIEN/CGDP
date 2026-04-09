@@ -49,7 +49,7 @@ public class PlayerAbilities : MonoBehaviour
                 _cooldownTimers[i] -= Time.deltaTime;
 
             if (_slots[i] == null)                         continue;
-            if (!_input.WasPressed(SlotActions[i]))        continue;
+            if (!_input.GetAction(SlotActions[i]))         continue;
             if (_cooldownTimers[i] > 0f)                   continue;
 
             if (_slots[i].Execute(_ctx))

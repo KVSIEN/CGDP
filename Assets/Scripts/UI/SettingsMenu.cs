@@ -27,7 +27,7 @@ public class SettingsMenu : MonoBehaviour
     private bool _listeningPrimary;
     private int  _listenStartFrame;
 
-    private static readonly string[] ModeLabels = { "Press", "Hold", "Toggle" };
+    private static readonly string[] ModeLabels = { "Press", "Hold", "Toggle", "Dbl Click" };
 
     private const float W = 680f;
     private const float H = 520f;

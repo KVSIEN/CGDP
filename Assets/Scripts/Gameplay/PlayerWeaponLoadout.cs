@@ -36,7 +36,7 @@ public class PlayerWeaponLoadout : MonoBehaviour
     {
         for (int i = 0; i < SlotActions.Length; i++)
         {
-            if (_input.WasPressed(SlotActions[i]))
+            if (_input.GetAction(SlotActions[i]))
                 EquipSlot(i);
         }
     }

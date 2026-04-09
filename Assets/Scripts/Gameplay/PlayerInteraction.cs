@@ -26,7 +26,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         FindClosest();
 
-        if (_current != null && _input.WasPressed(GameAction.Interact))
+        if (_current != null && _input.GetAction(GameAction.Interact))
             _current.Interact(gameObject);
     }
 

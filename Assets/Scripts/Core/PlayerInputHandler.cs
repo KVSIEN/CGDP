@@ -12,11 +12,15 @@ public class PlayerInputHandler : MonoBehaviour
 
     private static readonly int ActionCount = Enum.GetValues(typeof(GameAction)).Length;
 
+    private const float DoubleClickWindow = 0.3f;
+
     private InputSystem_Actions _axisActions;
     private InputAction[] _actions;
     private InputActionMode[] _modes;
     private bool[] _results;
     private bool[] _toggleStates;
+    private float[] _lastClickTime;
+    private bool[] _waitingForDoubleClick;
 
     public bool InputEnabled { get; set; } = true;
 
@@ -27,6 +31,8 @@ public class PlayerInputHandler : MonoBehaviour
         _modes = new InputActionMode[ActionCount];
         _results = new bool[ActionCount];
         _toggleStates = new bool[ActionCount];
+        _lastClickTime = new float[ActionCount];
+        _waitingForDoubleClick = new bool[ActionCount];
 
         SettingsSave.LoadBindings(_bindings);
         BuildActions();
@@ -82,6 +88,13 @@ public class PlayerInputHandler : MonoBehaviour
         LookInput = _axisActions.Player.Look.ReadValue<Vector2>();
         IsGamepadLook = _axisActions.Player.Look.activeControl?.device is Gamepad;
 
+        float now = Time.unscaledTime;
+        for (int i = 0; i < ActionCount; i++)
+        {
+            if (_waitingForDoubleClick[i] && now - _lastClickTime[i] > DoubleClickWindow)
+                _waitingForDoubleClick[i] = false;
+        }
+
         for (int i = 0; i < ActionCount; i++)
         {
             var action = _actions[i];
@@ -89,10 +102,11 @@ public class PlayerInputHandler : MonoBehaviour
 
             _results[i] = _modes[i] switch
             {
-                InputActionMode.Pressed => action.WasPressedThisFrame(),
-                InputActionMode.Held    => action.IsPressed(),
-                InputActionMode.Toggle  => EvaluateToggle(i, action),
-                _                       => false
+                InputActionMode.Pressed      => action.WasPressedThisFrame(),
+                InputActionMode.Held         => action.IsPressed(),
+                InputActionMode.Toggle       => EvaluateToggle(i, action),
+                InputActionMode.DoubleClick  => EvaluateDoubleClick(i, action),
+                _                            => false
             };
         }
     }
@@ -102,6 +116,22 @@ public class PlayerInputHandler : MonoBehaviour
         if (action.WasPressedThisFrame())
             _toggleStates[i] = !_toggleStates[i];
         return _toggleStates[i];
+    }
+
+    private bool EvaluateDoubleClick(int i, InputAction action)
+    {
+        if (!action.WasPressedThisFrame()) return false;
+
+        float now = Time.unscaledTime;
+        if (_waitingForDoubleClick[i] && now - _lastClickTime[i] <= DoubleClickWindow)
+        {
+            _waitingForDoubleClick[i] = false;
+            return true;
+        }
+
+        _lastClickTime[i] = now;
+        _waitingForDoubleClick[i] = true;
+        return false;
     }
 
     // Mode-aware result — use this for most gameplay checks

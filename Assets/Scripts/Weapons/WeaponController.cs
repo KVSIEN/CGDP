@@ -125,7 +125,7 @@ public class WeaponController : MonoBehaviour
 
     private void HandleReloadInput()
     {
-        if (_input.WasPressed(GameAction.Reload) && _magazine < _data.MagazineSize && _reserve > 0)
+        if (_input.GetAction(GameAction.Reload) && _magazine < _data.MagazineSize && _reserve > 0)
             StartCoroutine(Reload());
     }
 

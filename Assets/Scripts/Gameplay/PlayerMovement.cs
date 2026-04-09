@@ -69,7 +69,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (_input.WasPressed(GameAction.Jump))
+        if (_input.GetAction(GameAction.Jump))
         {
             _jumpBufferTimer = _settings.JumpBufferTime;
             if (!IsGrounded)

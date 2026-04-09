@@ -38,7 +38,7 @@ public class PlayerDodge : MonoBehaviour
 
     private void Update()
     {
-        if (_input.WasPressed(GameAction.Dodge))
+        if (_input.GetAction(GameAction.Dodge))
         {
             if (_dodgePhase == DodgePhase.None && _dodgeCooldownTimer <= 0f)
                 _dodgeQueued = true;

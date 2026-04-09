@@ -23,6 +23,6 @@ public enum GameAction
     Weapon4,
 }
 
-public enum InputActionMode { Pressed, Held, Toggle }
+public enum InputActionMode { Pressed, Held, Toggle, DoubleClick }
 
 public enum InputMouseButton { None, Left, Right, Middle, Forward, Back }
