@@ -15,6 +15,7 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private PlayerCamera       _camera;
     [SerializeField] private CrosshairHUD       _crosshair;
     [SerializeField] private Transform          _muzzle;    // optional: origin for visual FX
+    [SerializeField] private WeaponVisuals      _visuals;   // optional: weapon model kick
 
     [Header("Debug")]
     [SerializeField] private bool  _debugDrawBullets = true;
@@ -214,6 +215,7 @@ public class WeaponController : MonoBehaviour
 
         float recoveryFraction = Mathf.Lerp(_data.RecoilRecoveryFraction, _data.AdsRecoilRecoveryFraction, adsT);
         _camera.AddRecoil(vertKick, horizKick, _data.RecoilRecoverySpeed, recoveryFraction, _data.RecoilRecoveryDelay);
+        _visuals?.AddKick(vertKick, horizKick);
     }
 
     private void WanderDrift()
