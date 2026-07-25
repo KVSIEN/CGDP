@@ -26,17 +26,17 @@ public class WeaponController : MonoBehaviour
     // ── Runtime state ─────────────────────────────────────────────────────
     private int   _magazine;
     private int   _reserve;
-    private float _fireCooldown;
+    private CooldownTimer _fireCooldown;
     private float _drawTimer;
     private float _currentSpread;
-    private float _recoilDriftDir;   // -1..1, wanders over time
     private bool  _isReloading;
     private bool  _burstPending;
 
     // Tracks how much camera recoil has been applied this burst (for the hard cap).
-    // Only counts actual camera kick (vertKick), not hip-fire shots.
+    // Only counts actual camera kick (vertKick/horizKick), not hip-fire shots.
     // Resets as soon as firing stops so each new burst starts fresh.
     private float _accumulatedRecoil;
+    private float _accumulatedHorizontalRecoil;
     private bool  _wasFiringLastFrame;
 
     /// <summary>Fired whenever magazine, reserve, or reload state changes. Args: magazine, reserve, isReloading.</summary>
@@ -93,6 +93,7 @@ public class WeaponController : MonoBehaviour
         _reserve           = data != null ? data.GetNormalizedReserveAmmo() : 0;
         _currentSpread     = 0f;
         _accumulatedRecoil = 0f;
+        _accumulatedHorizontalRecoil = 0f;
         _drawTimer         = data != null ? data.DrawTime : 0f;
         if (_crosshair != null) _crosshair.SetDynamicSpread(0f);
         NotifyAmmoChanged();
@@ -110,7 +111,7 @@ public class WeaponController : MonoBehaviour
     // ── Input polling ─────────────────────────────────────────────────────
     private void HandleFireInput()
     {
-        if (_fireCooldown > 0f) return;
+        if (!_fireCooldown.IsReady) return;
 
         bool triggerHeld  = _input.GetAction(GameAction.Attack);
         bool triggerPress = _input.WasPressed(GameAction.Attack);
@@ -136,7 +137,7 @@ public class WeaponController : MonoBehaviour
         if (_magazine <= 0) return;
 
         _magazine--;
-        _fireCooldown = 60f / _data.RoundsPerMinute;
+        _fireCooldown.Start(60f / _data.RoundsPerMinute);
         NotifyAmmoChanged();
 
         ApplyRecoil();
@@ -193,7 +194,7 @@ public class WeaponController : MonoBehaviour
     private void TickSpread()
     {
         // Only recover spread when not actively firing so bloom builds up correctly
-        if (_currentSpread > 0f && _fireCooldown <= 0f)
+        if (_currentSpread > 0f && _fireCooldown.IsReady)
             _currentSpread = Mathf.Max(_currentSpread - _data.SpreadRecovery * Time.deltaTime, 0f);
     }
 
@@ -204,34 +205,44 @@ public class WeaponController : MonoBehaviour
         float vertMult  = Mathf.Lerp(_data.HipRecoilVerticalMultiplier,   _data.AdsRecoilMultiplier, adsT);
         float horizMult = Mathf.Lerp(_data.HipRecoilHorizontalMultiplier, _data.AdsRecoilMultiplier, adsT);
 
-        float vertBase = _data.RecoilVerticalMax + UnityEngine.Random.Range(-_data.RecoilVerticalBias, _data.RecoilVerticalBias);
-        float remaining = _data.MaxAccumulatedRecoil - _accumulatedRecoil;
-        float vertKick  = Mathf.Min(vertBase * vertMult, remaining);
+        // Shared shape for both axes: axisScale × (pattern + jitter).
+        // Vertical's pattern is a constant full kick; horizontal's pattern is the
+        // authored drift bias applied directly, so it reads from the first shot
+        // instead of emerging over several rounds.
+        float vertJitter = BlendedJitter(_data.RecoilJitter.y);
+        float vertBase   = _data.RecoilScale.y * (1f + vertJitter);
+        float remaining  = _data.MaxAccumulatedRecoil - _accumulatedRecoil;
+        float vertKick   = Mathf.Min(vertBase * vertMult, remaining);
         _accumulatedRecoil += vertKick;
 
-        WanderDrift();
-        float horizKick = (UnityEngine.Random.Range(-_data.RecoilHorizontalMax, _data.RecoilHorizontalMax)
-                         + _recoilDriftDir * _data.RecoilHorizontalMax * _data.RecoilHorizontalBias) * horizMult;
+        float horizJitter    = BlendedJitter(_data.RecoilJitter.x);
+        float horizRaw       = _data.RecoilScale.x * (_data.RecoilHorizontalBias + horizJitter) * horizMult;
+        float horizRemaining = _data.MaxAccumulatedHorizontalRecoil - Mathf.Abs(_accumulatedHorizontalRecoil);
+        float horizKick      = Mathf.Clamp(horizRaw, -horizRemaining, horizRemaining);
+        _accumulatedHorizontalRecoil += horizKick;
 
         float recoveryFraction = Mathf.Lerp(_data.RecoilRecoveryFraction, _data.AdsRecoilRecoveryFraction, adsT);
         _camera.AddRecoil(vertKick, horizKick, _data.RecoilRecoverySpeed, recoveryFraction, _data.RecoilRecoveryDelay);
         _visuals?.AddKick(vertKick, horizKick);
     }
 
-    private void WanderDrift()
+    // Averaging two uniform samples gives a triangular, center-weighted spread
+    // over the same [-magnitude, magnitude] range instead of a flat distribution.
+    private static float BlendedJitter(float magnitude)
     {
-        _recoilDriftDir += UnityEngine.Random.Range(-0.4f, 0.4f);
-        _recoilDriftDir  = Mathf.Clamp(_recoilDriftDir, -1f, 1f);
+        float a = UnityEngine.Random.Range(-magnitude, magnitude);
+        float b = UnityEngine.Random.Range(-magnitude, magnitude);
+        return (a + b) * 0.5f;
     }
 
     private void TickRecoilRecovery()
     {
-        bool isFiring = _fireCooldown > 0f;
+        bool isFiring = !_fireCooldown.IsReady;
         if (!isFiring && _wasFiringLastFrame)
         {
             // Gun just went idle — reset cap instantly so next burst starts fresh
             _accumulatedRecoil = 0f;
-            _recoilDriftDir    = 0f;
+            _accumulatedHorizontalRecoil = 0f;
         }
         _wasFiringLastFrame = isFiring;
     }
@@ -267,8 +278,7 @@ public class WeaponController : MonoBehaviour
     // ── Helpers ───────────────────────────────────────────────────────────
     private void TickFireCooldown()
     {
-        if (_fireCooldown > 0f)
-            _fireCooldown -= Time.deltaTime;
+        _fireCooldown.Tick(Time.deltaTime);
     }
 
     private void NotifyAmmoChanged()

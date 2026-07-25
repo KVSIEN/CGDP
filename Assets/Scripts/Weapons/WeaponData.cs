@@ -84,13 +84,11 @@ public class WeaponData : ScriptableObject
 
     // ── Recoil ────────────────────────────────────────────────────────────
     [Header("Recoil — Kick")]
-    [Tooltip("Upward pitch added per shot (degrees)")]
-    public float RecoilVerticalMax = 1.2f;
-    [Tooltip("Random ± variation on vertical kick")]
-    public float RecoilVerticalBias = 0.2f;
-    [Tooltip("Maximum horizontal kick per shot (degrees); actual value is random each shot")]
-    public float RecoilHorizontalMax = 0.55f;
-    [Tooltip("Persistent sideways drift bias (-1 full left, 0 none, 1 full right)")]
+    [Tooltip("Per-shot recoil magnitude (degrees): x = horizontal, y = vertical")]
+    public Vector2 RecoilScale = new Vector2(0.55f, 1.2f);
+    [Tooltip("Randomness applied per shot, as a fraction of RecoilScale: x = horizontal, y = vertical")]
+    public Vector2 RecoilJitter = new Vector2(0.35f, 0.1667f);
+    [Tooltip("Authored horizontal lean applied to every shot (-1 full left, 0 none, 1 full right)")]
     [Range(-1f, 1f)]
     public float RecoilHorizontalBias = 0.15f;
 
@@ -116,4 +114,6 @@ public class WeaponData : ScriptableObject
     public float HipRecoilHorizontalMultiplier = 0.15f;
     [Tooltip("Hard cap on total accumulated upward recoil (degrees)")]
     public float MaxAccumulatedRecoil = 14f;
+    [Tooltip("Hard cap on total accumulated sideways recoil (degrees), either direction")]
+    public float MaxAccumulatedHorizontalRecoil = 7f;
 }

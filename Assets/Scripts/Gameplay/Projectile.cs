@@ -30,9 +30,9 @@ public class Projectile : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent<PlayerStats>(out var playerStats))
-            playerStats.TakeDamage(Damage);
+            playerStats.TakeDamage(new DamageInfo(Damage));
         else if (other.TryGetComponent<EnemyHealth>(out var enemyHealth))
-            enemyHealth.TakeDamage(Damage);
+            enemyHealth.TakeDamage(new DamageInfo(Damage));
 
         Destroy(gameObject);
     }

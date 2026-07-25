@@ -108,15 +108,15 @@ MonoBehaviour:
     Min: 12
     Max: 18
     Bias: 0
-  RecoilVerticalMax:
+  RecoilScaleVertical:
     Min: 0.9
     Max: 1.5
     Bias: 0
-  RecoilVerticalBias:
-    Min: 0.1
-    Max: 0.3
+  RecoilJitterVertical:
+    Min: 0.083
+    Max: 0.25
     Bias: 0
-  RecoilHorizontalMax:
+  RecoilScaleHorizontal:
     Min: 0.4
     Max: 0.7
     Bias: 0
@@ -127,6 +127,10 @@ MonoBehaviour:
   MaxAccumulatedRecoil:
     Min: 12
     Max: 18
+    Bias: 0
+  MaxAccumulatedHorizontalRecoil:
+    Min: 6
+    Max: 9
     Bias: 0
   RecoilRecoverySpeed:
     Min: 4

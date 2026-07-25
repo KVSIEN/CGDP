@@ -39,12 +39,11 @@ public class CrosshairHUD : HUDElement
 
     private Image CreateImage(string elementName)
     {
-        var go = new GameObject(elementName, typeof(RectTransform), typeof(Image));
-        go.transform.SetParent(transform, false);
-        var rt = go.GetComponent<RectTransform>();
+        var img = HudUIFactory.MakeImage(elementName, (RectTransform)transform);
+        var rt = img.rectTransform;
         rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
         rt.pivot = new Vector2(0.5f, 0.5f);
-        return go.GetComponent<Image>();
+        return img;
     }
 
     private void Update()

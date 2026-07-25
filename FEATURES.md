@@ -47,6 +47,8 @@
 
 ## Player Stats
 - Health with TakeDamage and Heal methods
+- Armor reduces incoming damage (diminishing returns — 100 armor halves damage taken); enemies mitigate the same way
+- Shield absorbs damage before Health; any damage left over after a hit depletes the shield carries through to Health; shield regenerates automatically after a few seconds without taking damage; enemies can have shields too
 - Ammo with UseAmmo and Reload methods
 - Fires a change event so the HUD reacts immediately without polling
 

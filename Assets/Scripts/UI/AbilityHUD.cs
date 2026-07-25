@@ -48,15 +48,15 @@ public class AbilityHUD : HUDElement
             float x = (i - (SlotCount - 1) * 0.5f) * (_slotSize + _slotGap);
 
             // Grey background
-            var bg = MakeImage("Slot_" + i, self);
+            var bg = HudUIFactory.MakeImage("Slot_" + i, self);
             bg.color = EmptySlotColor;
             PlaceSquare(bg.rectTransform, x, _slotSize);
             _slotBg[i] = bg;
 
             // Dark overlay that covers the slot while on cooldown (child of the slot)
-            var overlay = MakeImage("Overlay_" + i, bg.rectTransform);
+            var overlay = HudUIFactory.MakeImage("Overlay_" + i, bg.rectTransform);
             overlay.color = CooldownOverlayColor;
-            StretchToParent(overlay.rectTransform);
+            HudUIFactory.Stretch(overlay.rectTransform);
             _cooldownOverlay[i] = overlay;
         }
     }
@@ -77,7 +77,7 @@ public class AbilityHUD : HUDElement
             // Shrink the overlay from top to bottom as the cooldown recovers.
             // anchorMax.y = 1 → overlay fills the slot (just used).
             // anchorMax.y = 0 → overlay is gone (ready).
-            float readyRatio = ability != null ? _abilities.GetReadyRatio(i) : 1f;
+            float readyRatio = ability != null ? _abilities.GetCooldown(i).Ratio : 1f;
             _cooldownOverlay[i].rectTransform.anchorMax = new Vector2(1f, 1f - readyRatio);
         }
     }
@@ -94,22 +94,6 @@ public class AbilityHUD : HUDElement
         rt.pivot            = new Vector2(0.5f, 0.5f);
         rt.anchoredPosition = new Vector2(centreX, 0f);
         rt.sizeDelta        = Vector2.one * size;
-    }
-
-    private static void StretchToParent(RectTransform rt)
-    {
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.offsetMin = rt.offsetMax = Vector2.zero;
-    }
-
-    private static Image MakeImage(string elementName, RectTransform parent)
-    {
-        var go = new GameObject(elementName, typeof(RectTransform), typeof(Image));
-        go.transform.SetParent(parent, false);
-        var img = go.GetComponent<Image>();
-        img.raycastTarget = false;
-        return img;
     }
 
 }

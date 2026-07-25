@@ -2,6 +2,10 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerInputHandler))]
+// Runs after PlayerMovement's default execution order so dodge velocity overrides
+// whatever HandleMovement/HandleSlide set this frame, same as when it was ticked
+// from inside PlayerMovement.FixedUpdate() after those calls.
+[DefaultExecutionOrder(100)]
 public class PlayerDodge : MonoBehaviour
 {
     public enum DodgePhase { None, Sidestep, Roll }
@@ -9,20 +13,18 @@ public class PlayerDodge : MonoBehaviour
     [SerializeField] private PlayerMovementSettings _settings;
     [SerializeField] private bool _lockDodgeDirection;
 
-    public float DodgeReadyRatio =>
-        _dodgePhase != DodgePhase.None ? 0f :
-        _dodgeCooldownTimer <= 0f      ? 1f :
-        1f - _dodgeCooldownTimer / _dodgeCooldownMax;
+    // Read by DodgeHUD to size the cooldown overlay.
+    public CooldownTimer Cooldown => _dodgeCooldown;
 
     public DodgePhase CurrentDodgePhase => _dodgePhase;
+    public bool IsRolling => _dodgePhase == DodgePhase.Roll;
     public bool LockDodgeDirection => _lockDodgeDirection;
 
     private PlayerMovement _movement;
     private Rigidbody _rb;
     private PlayerInputHandler _input;
 
-    private float _dodgeCooldownTimer;
-    private float _dodgeCooldownMax;
+    private CooldownTimer _dodgeCooldown;
     private DodgePhase _dodgePhase;
     private float _dodgePhaseTimer;
     private Vector3 _dodgeDir;
@@ -40,16 +42,18 @@ public class PlayerDodge : MonoBehaviour
     {
         if (_input.GetAction(GameAction.Dodge))
         {
-            if (_dodgePhase == DodgePhase.None && _dodgeCooldownTimer <= 0f)
+            if (_dodgePhase == DodgePhase.None && _dodgeCooldown.IsReady)
                 _dodgeQueued = true;
             else if (_dodgePhase == DodgePhase.Sidestep)
                 _rollQueued = true;
         }
     }
 
-    public void Tick()
+    private void FixedUpdate()
     {
-        _dodgeCooldownTimer = Mathf.Max(_dodgeCooldownTimer - Time.fixedDeltaTime, 0f);
+        if (_movement.IsMantling) return;
+
+        _dodgeCooldown.Tick(Time.fixedDeltaTime);
 
         // Phase 1 — sidestep: capture direction and start the window
         if (_dodgeQueued)
@@ -92,10 +96,9 @@ public class PlayerDodge : MonoBehaviour
             // Window expired without a roll → short cooldown
             if (_dodgePhaseTimer <= 0f)
             {
-                _rollQueued         = false;
-                _dodgePhase         = DodgePhase.None;
-                _dodgeCooldownTimer = _settings.SidestepCooldown;
-                _dodgeCooldownMax   = _settings.SidestepCooldown;
+                _rollQueued = false;
+                _dodgePhase = DodgePhase.None;
+                _dodgeCooldown.Start(_settings.SidestepCooldown);
             }
             return;
         }
@@ -113,9 +116,8 @@ public class PlayerDodge : MonoBehaviour
 
             if (_dodgePhaseTimer <= 0f)
             {
-                _dodgePhase         = DodgePhase.None;
-                _dodgeCooldownTimer = _settings.DodgeCooldown;
-                _dodgeCooldownMax   = _settings.DodgeCooldown;
+                _dodgePhase = DodgePhase.None;
+                _dodgeCooldown.Start(_settings.DodgeCooldown);
             }
         }
     }

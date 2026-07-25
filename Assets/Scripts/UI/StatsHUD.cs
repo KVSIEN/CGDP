@@ -56,17 +56,17 @@ public class StatsHUD : HUDElement
         float y = -_innerPadding.y;
 
         // Background panel (added first so it renders behind everything)
-        var bg = MakeImage("Background", self);
+        var bg = HudUIFactory.MakeImage("Background", self);
         bg.color = _backgroundColor;
-        Stretch(bg.rectTransform);
+        HudUIFactory.Stretch(bg.rectTransform);
 
         // Health bar background
-        var barBg = MakeImage("HealthBarBg", self);
+        var barBg = HudUIFactory.MakeImage("HealthBarBg", self);
         barBg.color = _barBgColor;
-        Place(barBg.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, _barHeight));
+        HudUIFactory.Place(barBg.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, _barHeight));
 
         // Health fill (child of bar background, width driven by anchor)
-        _healthFill = MakeImage("HealthFill", barBg.rectTransform);
+        _healthFill = HudUIFactory.MakeImage("HealthFill", barBg.rectTransform);
         _healthFill.color = _healthColor;
         var fillRt = _healthFill.rectTransform;
         fillRt.anchorMin = Vector2.zero;
@@ -76,11 +76,11 @@ public class StatsHUD : HUDElement
         y -= _barHeight + 6f;
 
         // Health text
-        _healthText = MakeText("HealthText", self);
+        _healthText = HudUIFactory.MakeText("HealthText", self);
         _healthText.color = _textColor;
         _healthText.fontSize = 12f;
         _healthText.alignment = TextAlignmentOptions.Left;
-        Place(_healthText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 16f));
+        HudUIFactory.Place(_healthText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 16f));
 
         y -= 16f;
 
@@ -96,38 +96,5 @@ public class StatsHUD : HUDElement
         _healthFill.rectTransform.anchorMax = new Vector2(ratio, 1f);
         _healthFill.color = Color.Lerp(_healthLowColor, _healthColor, ratio);
         _healthText.text = $"HP  {Mathf.CeilToInt(_playerStats.Health)} / {Mathf.CeilToInt(_playerStats.MaxHealth)}";
-    }
-
-    private static Image MakeImage(string elementName, RectTransform parent)
-    {
-        var go = new GameObject(elementName, typeof(RectTransform), typeof(Image));
-        go.transform.SetParent(parent, false);
-        var img = go.GetComponent<Image>();
-        img.raycastTarget = false;
-        return img;
-    }
-
-    private static TextMeshProUGUI MakeText(string elementName, RectTransform parent)
-    {
-        var go = new GameObject(elementName, typeof(RectTransform), typeof(TextMeshProUGUI));
-        go.transform.SetParent(parent, false);
-        var text = go.GetComponent<TextMeshProUGUI>();
-        text.raycastTarget = false;
-        return text;
-    }
-
-    private static void Place(RectTransform rt, Vector2 pos, Vector2 size)
-    {
-        rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f);
-        rt.pivot = new Vector2(0f, 1f);
-        rt.anchoredPosition = pos;
-        rt.sizeDelta = size;
-    }
-
-    private static void Stretch(RectTransform rt)
-    {
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.offsetMin = rt.offsetMax = Vector2.zero;
     }
 }

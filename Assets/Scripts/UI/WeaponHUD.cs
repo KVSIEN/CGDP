@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 [RequireComponent(typeof(RectTransform))]
 public class WeaponHUD : HUDElement
@@ -115,72 +114,39 @@ public class WeaponHUD : HUDElement
 
         float y = -_innerPadding.y;
 
-        var bg = MakeImage("Background", self);
+        var bg = HudUIFactory.MakeImage("Background", self);
         bg.color = _backgroundColor;
-        Stretch(bg.rectTransform);
+        HudUIFactory.Stretch(bg.rectTransform);
 
-        _weaponNameText = MakeText("WeaponName", self);
+        _weaponNameText = HudUIFactory.MakeText("WeaponName", self);
         _weaponNameText.color = _dimColor;
         _weaponNameText.fontSize = 12f;
         _weaponNameText.alignment = TextAlignmentOptions.Right;
-        Place(_weaponNameText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 18f));
+        HudUIFactory.Place(_weaponNameText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 18f));
         y -= 18f;
 
-        _magText = MakeText("MagCount", self);
+        _magText = HudUIFactory.MakeText("MagCount", self);
         _magText.color = _textColor;
         _magText.fontSize = 36f;
         _magText.fontStyle = FontStyles.Bold;
         _magText.alignment = TextAlignmentOptions.Right;
-        Place(_magText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 44f));
+        HudUIFactory.Place(_magText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 44f));
         y -= 44f;
 
-        _reserveText = MakeText("Reserve", self);
+        _reserveText = HudUIFactory.MakeText("Reserve", self);
         _reserveText.color = _dimColor;
         _reserveText.fontSize = 16f;
         _reserveText.alignment = TextAlignmentOptions.Right;
-        Place(_reserveText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 20f));
+        HudUIFactory.Place(_reserveText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 20f));
         y -= 20f;
 
-        _reloadText = MakeText("ReloadLabel", self);
+        _reloadText = HudUIFactory.MakeText("ReloadLabel", self);
         _reloadText.color = _reloadColor;
         _reloadText.fontSize = 13f;
         _reloadText.fontStyle = FontStyles.Bold;
         _reloadText.alignment = TextAlignmentOptions.Right;
         _reloadText.text = "RELOADING";
-        Place(_reloadText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 18f));
+        HudUIFactory.Place(_reloadText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 18f));
         _reloadText.gameObject.SetActive(false);
-    }
-
-    private static Image MakeImage(string n, RectTransform parent)
-    {
-        var go = new GameObject(n, typeof(RectTransform), typeof(Image));
-        go.transform.SetParent(parent, false);
-        var img = go.GetComponent<Image>();
-        img.raycastTarget = false;
-        return img;
-    }
-
-    private static TextMeshProUGUI MakeText(string n, RectTransform parent)
-    {
-        var go = new GameObject(n, typeof(RectTransform), typeof(TextMeshProUGUI));
-        go.transform.SetParent(parent, false);
-        var t = go.GetComponent<TextMeshProUGUI>();
-        t.raycastTarget = false;
-        return t;
-    }
-
-    private static void Place(RectTransform rt, Vector2 pos, Vector2 size)
-    {
-        rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f);
-        rt.pivot = new Vector2(0f, 1f);
-        rt.anchoredPosition = pos;
-        rt.sizeDelta = size;
-    }
-
-    private static void Stretch(RectTransform rt)
-    {
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.offsetMin = rt.offsetMax = Vector2.zero;
     }
 }

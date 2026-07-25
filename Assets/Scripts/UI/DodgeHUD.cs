@@ -31,29 +31,29 @@ public class DodgeHUD : HUDElement
         rt.anchoredPosition = new Vector2(_offsetFromCenter, _screenPaddingBottom);
         rt.sizeDelta        = Vector2.one * _slotSize;
 
-        _bg          = MakeImage("DodgeBg", rt);
+        _bg          = HudUIFactory.MakeImage("DodgeBg", rt);
         _bg.color    = ReadyColor;
-        Stretch(_bg.rectTransform);
+        HudUIFactory.Stretch(_bg.rectTransform);
 
-        _overlay       = MakeImage("DodgeOverlay", _bg.rectTransform);
+        _overlay       = HudUIFactory.MakeImage("DodgeOverlay", _bg.rectTransform);
         _overlay.color = OverlayColor;
-        Stretch(_overlay.rectTransform);
+        HudUIFactory.Stretch(_overlay.rectTransform);
 
-        var keyLabel         = MakeText("DodgeKey", _bg.rectTransform);
+        var keyLabel         = HudUIFactory.MakeText("DodgeKey", _bg.rectTransform);
         keyLabel.text        = "Q";
         keyLabel.fontSize    = 11f;
         keyLabel.color       = new Color(1f, 1f, 1f, 0.7f);
         keyLabel.alignment   = TextAlignmentOptions.TopLeft;
-        Stretch(keyLabel.rectTransform);
+        HudUIFactory.Stretch(keyLabel.rectTransform);
         keyLabel.rectTransform.offsetMin = new Vector2(4f, 0f);
         keyLabel.rectTransform.offsetMax = new Vector2(0f, -3f);
 
-        _nameLabel           = MakeText("DodgeName", _bg.rectTransform);
+        _nameLabel           = HudUIFactory.MakeText("DodgeName", _bg.rectTransform);
         _nameLabel.text      = "DODGE";
         _nameLabel.fontSize  = 9f;
         _nameLabel.color     = new Color(1f, 1f, 1f, 0.85f);
         _nameLabel.alignment = TextAlignmentOptions.Center;
-        Stretch(_nameLabel.rectTransform);
+        HudUIFactory.Stretch(_nameLabel.rectTransform);
     }
 
     private void Update()
@@ -76,7 +76,7 @@ public class DodgeHUD : HUDElement
         }
         else
         {
-            float ratio = _dodge.DodgeReadyRatio;
+            float ratio = _dodge.Cooldown.Ratio;
             _bg.color = Color.Lerp(CooldownColor, ReadyColor, ratio);
             _overlay.rectTransform.anchorMax = new Vector2(1f, 1f - ratio);
             _nameLabel.text = "DODGE";
@@ -84,29 +84,4 @@ public class DodgeHUD : HUDElement
     }
 
     public override void Refresh() { }
-
-    private static Image MakeImage(string elementName, RectTransform parent)
-    {
-        var go = new GameObject(elementName, typeof(RectTransform), typeof(Image));
-        go.transform.SetParent(parent, false);
-        var img = go.GetComponent<Image>();
-        img.raycastTarget = false;
-        return img;
-    }
-
-    private static TextMeshProUGUI MakeText(string elementName, RectTransform parent)
-    {
-        var go = new GameObject(elementName, typeof(RectTransform), typeof(TextMeshProUGUI));
-        go.transform.SetParent(parent, false);
-        var text = go.GetComponent<TextMeshProUGUI>();
-        text.raycastTarget = false;
-        return text;
-    }
-
-    private static void Stretch(RectTransform rt)
-    {
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.offsetMin = rt.offsetMax = Vector2.zero;
-    }
 }

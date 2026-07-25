@@ -49,23 +49,17 @@ public class HitEffect : HUDElement
         var self = GetComponent<RectTransform>();
 
         // Vignette — rendered first so it sits behind the flash
-        var vigGo = new GameObject("Vignette", typeof(RectTransform), typeof(Image));
-        vigGo.transform.SetParent(self, false);
-        _vignetteImage             = vigGo.GetComponent<Image>();
+        _vignetteImage             = HudUIFactory.MakeImage("Vignette", self);
         _vignetteImage.sprite      = CreateVignetteSprite();
         _vignetteImage.color       = new Color(1f, 0f, 0f, 0f);
-        _vignetteImage.raycastTarget = false;
-        StretchRT(vigGo.GetComponent<RectTransform>());
+        HudUIFactory.Stretch(_vignetteImage.rectTransform);
 
         // Flash — rendered on top of the vignette
-        var flashGo = new GameObject("Flash", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
-        flashGo.transform.SetParent(self, false);
-        var flashImage             = flashGo.GetComponent<Image>();
-        flashImage.color           = _flashColor;
-        flashImage.raycastTarget   = false;
-        _flashGroup                = flashGo.GetComponent<CanvasGroup>();
-        _flashGroup.alpha          = 0f;
-        StretchRT(flashGo.GetComponent<RectTransform>());
+        var flashImage    = HudUIFactory.MakeImage("Flash", self);
+        flashImage.color  = _flashColor;
+        _flashGroup        = flashImage.gameObject.AddComponent<CanvasGroup>();
+        _flashGroup.alpha  = 0f;
+        HudUIFactory.Stretch(flashImage.rectTransform);
     }
 
     private void OnPlayerDamaged(float amount)
@@ -85,13 +79,6 @@ public class HitEffect : HUDElement
     {
         if (_flashGroup.alpha <= 0f) return;
         _flashGroup.alpha = Mathf.MoveTowards(_flashGroup.alpha, 0f, _flashFadeSpeed * Time.deltaTime);
-    }
-
-    private static void StretchRT(RectTransform rt)
-    {
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.offsetMin = rt.offsetMax = Vector2.zero;
     }
 
     private static Sprite CreateVignetteSprite()

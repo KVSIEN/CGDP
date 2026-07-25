@@ -8,11 +8,11 @@ public class PlayerAbilities : MonoBehaviour
     [SerializeField] private Transform _cameraTransform;
 
     // Read by AbilityHUD to draw cooldown overlays
-    public Ability[] Slots        => _slots;
-    public float[]   CooldownTimers => _cooldownTimers;
+    public Ability[] Slots => _slots;
 
     private PlayerInputHandler _input;
-    private float[] _cooldownTimers;
+    private PlayerMovement _movement;
+    private CooldownTimer[] _cooldowns;
     private AbilityContext _ctx;
 
     // Maps slot index to the matching GameAction
@@ -26,8 +26,9 @@ public class PlayerAbilities : MonoBehaviour
 
     private void Awake()
     {
-        _input          = GetComponent<PlayerInputHandler>();
-        _cooldownTimers = new float[_slots.Length];
+        _input     = GetComponent<PlayerInputHandler>();
+        _movement  = GetComponent<PlayerMovement>();
+        _cooldowns = new CooldownTimer[_slots.Length];
 
         _ctx = new AbilityContext
         {
@@ -45,22 +46,18 @@ public class PlayerAbilities : MonoBehaviour
 
         for (int i = 0; i < _slots.Length; i++)
         {
-            if (_cooldownTimers[i] > 0f)
-                _cooldownTimers[i] -= Time.deltaTime;
+            _cooldowns[i].Tick(Time.deltaTime);
 
-            if (_slots[i] == null)                         continue;
-            if (!_input.GetAction(SlotActions[i]))         continue;
-            if (_cooldownTimers[i] > 0f)                   continue;
+            if (_slots[i] == null)                 continue;
+            if (!_input.GetAction(SlotActions[i])) continue;
+            if (!_cooldowns[i].IsReady)             continue;
+            if (!_movement.CanAct)                 continue;
 
             if (_slots[i].Execute(_ctx))
-                _cooldownTimers[i] = _slots[i].Cooldown;
+                _cooldowns[i].Start(_slots[i].Cooldown);
         }
     }
 
-    // Returns 0 (just used) to 1 (ready). Used by AbilityHUD to size the overlay.
-    public float GetReadyRatio(int slot)
-    {
-        if (_slots[slot] == null || _cooldownTimers[slot] <= 0f) return 1f;
-        return Mathf.Clamp01(1f - _cooldownTimers[slot] / _slots[slot].Cooldown);
-    }
+    // Read by AbilityHUD to size the cooldown overlay.
+    public CooldownTimer GetCooldown(int slot) => _cooldowns[slot];
 }

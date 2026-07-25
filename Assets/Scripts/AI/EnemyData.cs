@@ -5,6 +5,14 @@ public class EnemyData : ScriptableObject
 {
     [Header("Health")]
     public float MaxHealth = 100f;
+    public float Armor     = 0f;
+
+    [Header("Shield")]
+    public float MaxShield = 0f;
+    [Tooltip("Seconds without taking damage before shield starts regenerating")]
+    public float ShieldRegenDelay = 5f;
+    [Tooltip("Shield points restored per second once regen starts")]
+    public float ShieldRegenRate = 10f;
 
     [Header("Movement")]
     public float PatrolSpeed = 2f;

@@ -85,22 +85,13 @@ public class DamagePopup : MonoBehaviour
         _group     = gameObject.AddComponent<CanvasGroup>();
         _fadeTimer = FadeDelay;
 
-        var textGo = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
-        textGo.transform.SetParent(transform, false);
-        textGo.layer = gameObject.layer;
-
-        var textRt = textGo.GetComponent<RectTransform>();
-        textRt.anchorMin = Vector2.zero;
-        textRt.anchorMax = Vector2.one;
-        textRt.offsetMin = textRt.offsetMax = Vector2.zero;
-
-        var text = textGo.GetComponent<TextMeshProUGUI>();
+        var text = HudUIFactory.MakeText("Text", (RectTransform)transform, gameObject.layer);
+        HudUIFactory.Stretch(text.rectTransform);
         text.text          = Mathf.RoundToInt(damage).ToString();
         text.color         = headshot ? HeadshotColor : NormalColor;
         text.fontSize      = headshot ? 48f : 36f;
         text.fontStyle     = headshot ? FontStyles.Bold : FontStyles.Normal;
         text.alignment     = TextAlignmentOptions.Center;
-        text.raycastTarget = false;
         text.outlineWidth  = 0.25f;
         text.outlineColor  = Color.black;
     }

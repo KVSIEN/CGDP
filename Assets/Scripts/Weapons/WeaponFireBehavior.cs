@@ -39,9 +39,10 @@ public abstract class WeaponFireBehavior : ScriptableObject
 
     protected static void ApplyHitDamage(RaycastHit hit, float damage, bool headshot)
     {
+        var info = new DamageInfo(damage);
         if (hit.collider.TryGetComponent<PlayerStats>(out var ps))
-            ps.TakeDamage(damage);
+            ps.TakeDamage(info);
         else if (hit.collider.TryGetComponent<EnemyHealth>(out var eh))
-            eh.TakeDamageAt(damage, hit.point, headshot);
+            eh.TakeDamageAt(info, hit.point, headshot);
     }
 }

@@ -45,11 +45,11 @@ public static class WeaponGenerator
         d.SpreadRecovery      = cat.SpreadRecovery.EvaluateClamped();
 
         // ── Recoil — Kick ─────────────────────────────────────────────────────
-        d.RecoilVerticalMax  = cat.RecoilVerticalMax.EvaluateClamped();
-        d.RecoilVerticalBias = cat.RecoilVerticalBias.EvaluateClamped();
-        d.RecoilHorizontalMax     = cat.RecoilHorizontalMax.EvaluateClamped();
-        d.RecoilHorizontalBias    = cat.RecoilHorizontalBias.EvaluateClamped();
-        d.MaxAccumulatedRecoil    = cat.MaxAccumulatedRecoil.EvaluateClamped();
+        d.RecoilScale         = new Vector2(cat.RecoilScaleHorizontal.EvaluateClamped(), cat.RecoilScaleVertical.EvaluateClamped());
+        d.RecoilJitter.y      = cat.RecoilJitterVertical.EvaluateClamped(); // horizontal jitter keeps WeaponData's default
+        d.RecoilHorizontalBias = cat.RecoilHorizontalBias.EvaluateClamped();
+        d.MaxAccumulatedRecoil = cat.MaxAccumulatedRecoil.EvaluateClamped();
+        d.MaxAccumulatedHorizontalRecoil = cat.MaxAccumulatedHorizontalRecoil.EvaluateClamped();
 
         // ── Recoil — Recovery ─────────────────────────────────────────────────
         d.RecoilRecoverySpeed           = cat.RecoilRecoverySpeed.EvaluateClamped();

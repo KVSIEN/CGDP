@@ -24,10 +24,6 @@ public class WeaponVisuals : MonoBehaviour
     private Vector3 _posVelocity;
     private Vector3 _posOffset;
 
-    // Target kick to spring towards (decays each frame as spring settles)
-    private Vector3 _rotTarget;
-    private Vector3 _posTarget;
-
     /// <summary>
     /// Called by WeaponController on every shot.
     /// vertKick and horizKick are the same values passed to PlayerCamera.AddRecoil.

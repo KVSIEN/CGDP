@@ -21,6 +21,11 @@ public class PlayerMovement : MonoBehaviour
     public bool IsMantling  => _mantle.IsMantling;
     public Vector3 Velocity => _rb.linearVelocity;
 
+    // Shared gate for abilities/actions that shouldn't run during an exclusive
+    // movement state (mid-mantle the Rigidbody is kinematic; mid-dodge-roll it's
+    // forcibly overwritten each FixedUpdate), so neither would have any real effect.
+    public bool CanAct => !IsMantling && !_dodge.IsRolling;
+
     public Vector3 MoveDirection   => _moveDirection;
     public float CoyoteTimer       => _coyoteTimer;
     public Transform CameraTransform => _cameraTransform;
@@ -90,13 +95,11 @@ public class PlayerMovement : MonoBehaviour
     {
         HandleCrouch();
         CheckGround();
-        _mantle.Tick();
 
         if (!IsMantling)
         {
             HandleSlide();
             HandleMovement();
-            _dodge.Tick();
             HandleJump();
 
             _mantleBufferTimer -= Time.fixedDeltaTime;

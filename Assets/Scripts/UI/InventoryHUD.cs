@@ -130,11 +130,11 @@ public class InventoryHUD : HUDElement
         rt.anchoredPosition = Vector2.zero;
         rt.sizeDelta        = new Vector2(_panelWidth, totalHeight);
 
-        var panelBg = MakeImage("PanelBg", rt);
+        var panelBg = HudUIFactory.MakeImage("PanelBg", rt);
         panelBg.color = PanelBg;
-        Stretch(panelBg.rectTransform);
+        HudUIFactory.Stretch(panelBg.rectTransform);
 
-        var title = MakeText("Title", rt);
+        var title = HudUIFactory.MakeText("Title", rt);
         title.text      = "LOADOUT";
         title.fontSize  = 13f;
         title.fontStyle = FontStyles.Bold;
@@ -152,7 +152,7 @@ public class InventoryHUD : HUDElement
         {
             float topY = slotStartY - i * (_rowHeight + _rowGap);
 
-            var bg = MakeImage("Slot_" + i, rt);
+            var bg = HudUIFactory.MakeImage("Slot_" + i, rt);
             bg.color = EmptyBg;
             bg.rectTransform.anchorMin        = new Vector2(0f, 1f);
             bg.rectTransform.anchorMax        = new Vector2(1f, 1f);
@@ -161,7 +161,7 @@ public class InventoryHUD : HUDElement
             bg.rectTransform.sizeDelta        = new Vector2(-_padding * 2f, _rowHeight);
             _slotBgs[i] = bg;
 
-            var key = MakeText("Key_" + i, bg.rectTransform);
+            var key = HudUIFactory.MakeText("Key_" + i, bg.rectTransform);
             key.text      = SlotKeys[i];
             key.fontSize  = 12f;
             key.color     = new Color(1f, 1f, 1f, 0.5f);
@@ -172,7 +172,7 @@ public class InventoryHUD : HUDElement
             key.rectTransform.anchoredPosition = new Vector2(10f, 0f);
             key.rectTransform.sizeDelta        = new Vector2(22f, 0f);
 
-            var name = MakeText("Name_" + i, bg.rectTransform);
+            var name = HudUIFactory.MakeText("Name_" + i, bg.rectTransform);
             name.text      = "— Empty —";
             name.fontSize  = 13f;
             name.color     = new Color(1f, 1f, 1f, 0.80f);
@@ -197,16 +197,16 @@ public class InventoryHUD : HUDElement
         barRt.anchoredPosition = new Vector2(20f, 20f);
         barRt.sizeDelta = new Vector2(240f, 36f);
 
-        var bg = MakeImage("Bg", barRt);
+        var bg = HudUIFactory.MakeImage("Bg", barRt);
         bg.color = new Color(0.05f, 0.05f, 0.08f, 0.82f);
-        Stretch(bg.rectTransform);
+        HudUIFactory.Stretch(bg.rectTransform);
 
         const float boxSize = 24f;
         const float boxGap  = 4f;
 
         for (int i = 0; i < SlotCount; i++)
         {
-            var box = MakeImage("SlotBox_" + i, barRt);
+            var box = HudUIFactory.MakeImage("SlotBox_" + i, barRt);
             box.rectTransform.anchorMin = box.rectTransform.anchorMax = new Vector2(0f, 0.5f);
             box.rectTransform.pivot     = new Vector2(0f, 0.5f);
             box.rectTransform.anchoredPosition = new Vector2(6f + i * (boxSize + boxGap), 0f);
@@ -214,16 +214,16 @@ public class InventoryHUD : HUDElement
             box.color = EmptyBg;
             _barSlotBgs[i] = box;
 
-            var key = MakeText("Key_" + i, box.rectTransform);
+            var key = HudUIFactory.MakeText("Key_" + i, box.rectTransform);
             key.text      = SlotKeys[i];
             key.fontSize  = 10f;
             key.color     = new Color(1f, 1f, 1f, 0.85f);
             key.alignment = TextAlignmentOptions.Center;
-            Stretch(key.rectTransform);
+            HudUIFactory.Stretch(key.rectTransform);
         }
 
         float nameX = 6f + SlotCount * (boxSize + boxGap) + 6f;
-        _activeBarText = MakeText("WeaponName", barRt);
+        _activeBarText = HudUIFactory.MakeText("WeaponName", barRt);
         _activeBarText.fontSize  = 12f;
         _activeBarText.color     = new Color(1f, 1f, 1f, 0.85f);
         _activeBarText.alignment = TextAlignmentOptions.MidlineLeft;
@@ -233,30 +233,5 @@ public class InventoryHUD : HUDElement
         _activeBarText.rectTransform.offsetMin = new Vector2(nameX, 0f);
         _activeBarText.rectTransform.offsetMax = new Vector2(-6f, 0f);
         _activeBarText.text = "— Empty —";
-    }
-
-    private static Image MakeImage(string n, RectTransform parent)
-    {
-        var go  = new GameObject(n, typeof(RectTransform), typeof(Image));
-        go.transform.SetParent(parent, false);
-        var img = go.GetComponent<Image>();
-        img.raycastTarget = false;
-        return img;
-    }
-
-    private static TextMeshProUGUI MakeText(string n, RectTransform parent)
-    {
-        var go   = new GameObject(n, typeof(RectTransform), typeof(TextMeshProUGUI));
-        go.transform.SetParent(parent, false);
-        var text = go.GetComponent<TextMeshProUGUI>();
-        text.raycastTarget = false;
-        return text;
-    }
-
-    private static void Stretch(RectTransform rt)
-    {
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.offsetMin = rt.offsetMax = Vector2.zero;
     }
 }

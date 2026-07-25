@@ -2,6 +2,9 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
+// Runs before PlayerMovement's default execution order so IsMantling reflects
+// this frame's transition before PlayerMovement checks it in the same FixedUpdate.
+[DefaultExecutionOrder(-100)]
 public class PlayerMantle : MonoBehaviour
 {
     [SerializeField] private PlayerMovementSettings _settings;
@@ -28,7 +31,7 @@ public class PlayerMantle : MonoBehaviour
         _movement = GetComponent<PlayerMovement>();
     }
 
-    public void Tick()
+    private void FixedUpdate()
     {
         if (!_isMantling) return;
 

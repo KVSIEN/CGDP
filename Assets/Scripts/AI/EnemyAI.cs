@@ -30,7 +30,7 @@ public class EnemyAI : MonoBehaviour
     private int     _waypointIndex;
     private Vector3 _lastKnownPos;
     private float   _alertTimer;
-    private float   _attackCooldown;
+    private CooldownTimer _attackCooldown;
     private bool    _seesPlayer;
 
     private void Awake()
@@ -65,8 +65,7 @@ public class EnemyAI : MonoBehaviour
         DetectPlayer();
         _tree.Tick();
 
-        if (_attackCooldown > 0f)
-            _attackCooldown -= Time.deltaTime;
+        _attackCooldown.Tick(Time.deltaTime);
     }
 
     private void DetectPlayer()
@@ -154,9 +153,9 @@ public class EnemyAI : MonoBehaviour
 
     private void TryAttack()
     {
-        if (_attackCooldown > 0f) return;
-        _attackCooldown = _data.AttackCooldown;
-        _playerStats.TakeDamage(_data.AttackDamage);
+        if (!_attackCooldown.IsReady) return;
+        _attackCooldown.Start(_data.AttackCooldown);
+        _playerStats.TakeDamage(new DamageInfo(_data.AttackDamage));
     }
 
     private void SetState(AiState state)

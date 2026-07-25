@@ -54,11 +54,12 @@ public class WeaponCategoryData : ScriptableObject
     public FloatRange SpreadRecovery = new(12f,  18f);
 
     [Header("Recoil")]
-    public FloatRange RecoilVerticalMax  = new(0.9f, 1.5f);
-    public FloatRange RecoilVerticalBias = new(0.1f, 0.3f);
-    public FloatRange RecoilHorizontalMax     = new(0.4f, 0.7f);
-    public FloatRange RecoilHorizontalBias    = new(-0.2f, 0.2f);  // drift direction
-    public FloatRange MaxAccumulatedRecoil    = new(12f,  18f);
+    public FloatRange RecoilScaleVertical   = new(0.9f, 1.5f);
+    public FloatRange RecoilJitterVertical  = new(0.083f, 0.25f);
+    public FloatRange RecoilScaleHorizontal = new(0.4f, 0.7f);
+    public FloatRange RecoilHorizontalBias  = new(-0.2f, 0.2f);  // drift direction
+    public FloatRange MaxAccumulatedRecoil  = new(12f,  18f);
+    public FloatRange MaxAccumulatedHorizontalRecoil = new(6f, 9f);
 
     [Header("Recoil — Recovery")]
     public FloatRange RecoilRecoverySpeed         = new(4f, 9f);
@@ -117,11 +118,12 @@ public class WeaponCategoryData : ScriptableObject
         MaxSpread      = new(5f,   8f,   0f);
         SpreadRecovery = new(12f,  18f,  0f);
 
-        RecoilVerticalMax  = new(0.9f,  1.5f,  0f);
-        RecoilVerticalBias = new(0.1f,  0.3f,  0f);
-        RecoilHorizontalMax     = new(0.4f,  0.7f,  0f);
-        RecoilHorizontalBias    = new(-0.2f, 0.2f,  0f);
-        MaxAccumulatedRecoil    = new(12f,   18f,   0f);
+        RecoilScaleVertical   = new(0.9f,   1.5f,  0f);
+        RecoilJitterVertical  = new(0.083f, 0.25f, 0f);
+        RecoilScaleHorizontal = new(0.4f,   0.7f,  0f);
+        RecoilHorizontalBias  = new(-0.2f,  0.2f,  0f);
+        MaxAccumulatedRecoil  = new(12f,    18f,   0f);
+        MaxAccumulatedHorizontalRecoil = new(6f, 9f, 0f);
 
         RecoilRecoverySpeed         = new(5f, 7.5f, 0f);
         RecoilRecoveryFraction      = new(0.55f, 0.80f, 0f);
@@ -163,11 +165,12 @@ public class WeaponCategoryData : ScriptableObject
         MaxSpread      = new(4f,   7f,   0f);
         SpreadRecovery = new(14f,  22f,  0f);   // recovers fast, high fire rate
 
-        RecoilVerticalMax  = new(0.6f,  1.1f,  0f);
-        RecoilVerticalBias = new(0.1f,  0.25f, 0f);
-        RecoilHorizontalMax     = new(0.5f,  0.9f,  0f);  // more erratic
-        RecoilHorizontalBias    = new(-0.3f, 0.3f,  0f);
-        MaxAccumulatedRecoil    = new(8f,    14f,   0f);
+        RecoilScaleVertical   = new(0.6f,  1.1f,  0f);
+        RecoilJitterVertical  = new(0.118f, 0.294f, 0f);
+        RecoilScaleHorizontal = new(0.5f,  0.9f,  0f);  // more erratic
+        RecoilHorizontalBias  = new(-0.3f, 0.3f,  0f);
+        MaxAccumulatedRecoil  = new(8f,    14f,   0f);
+        MaxAccumulatedHorizontalRecoil = new(4f, 7f, 0f);
 
         RecoilRecoverySpeed         = new(5f, 7f, 0f);
         RecoilRecoveryFraction      = new(0.45f, 0.70f, 0f);
@@ -210,11 +213,12 @@ public class WeaponCategoryData : ScriptableObject
         MaxSpread      = new(5f,   9f,   0f);
         SpreadRecovery = new(10f,  16f,  0f);
 
-        RecoilVerticalMax  = new(1.2f,  2.8f,  0f);  // heavy per shot
-        RecoilVerticalBias = new(0.2f,  0.5f,  0f);
-        RecoilHorizontalMax     = new(0.3f,  0.9f,  0f);
-        RecoilHorizontalBias    = new(-0.15f, 0.15f, 0f);
-        MaxAccumulatedRecoil    = new(6f,    12f,   0f);   // small mag = small cap
+        RecoilScaleVertical   = new(1.2f,  2.8f,  0f);  // heavy per shot
+        RecoilJitterVertical  = new(0.1f,  0.25f, 0f);
+        RecoilScaleHorizontal = new(0.3f,  0.9f,  0f);
+        RecoilHorizontalBias  = new(-0.15f, 0.15f, 0f);
+        MaxAccumulatedRecoil  = new(6f,    12f,   0f);   // small mag = small cap
+        MaxAccumulatedHorizontalRecoil = new(3f, 6f, 0f);
 
         RecoilRecoverySpeed         = new(5f, 8f, 0f);
         RecoilRecoveryFraction      = new(0.60f, 0.90f, 0f);
@@ -255,11 +259,12 @@ public class WeaponCategoryData : ScriptableObject
         MaxSpread      = new(15f,   25f,   0f);
         SpreadRecovery = new(4f,    8f,    0f);     // slow recovery
 
-        RecoilVerticalMax  = new(3.0f, 6.0f,  0f);  // massive kick
-        RecoilVerticalBias = new(0.3f, 0.8f,  0f);
-        RecoilHorizontalMax     = new(0.8f, 1.8f,  0f);
-        RecoilHorizontalBias    = new(-0.1f, 0.1f, 0f);
-        MaxAccumulatedRecoil    = new(3f,   6f,    0f);  // one shot at a time
+        RecoilScaleVertical   = new(3.0f, 6.0f,  0f);  // massive kick
+        RecoilJitterVertical  = new(0.067f, 0.178f, 0f);
+        RecoilScaleHorizontal = new(0.8f, 1.8f,  0f);
+        RecoilHorizontalBias  = new(-0.1f, 0.1f, 0f);
+        MaxAccumulatedRecoil  = new(3f,   6f,    0f);  // one shot at a time
+        MaxAccumulatedHorizontalRecoil = new(1.5f, 3f, 0f);
 
         RecoilRecoverySpeed         = new(3.5f, 5f, 0f);
         RecoilRecoveryFraction      = new(0.85f, 1f, 0f);
@@ -301,11 +306,12 @@ public class WeaponCategoryData : ScriptableObject
         MaxSpread      = new(10f,  16f,  0f);
         SpreadRecovery = new(6f,   10f,  0f);    // slow recovery
 
-        RecoilVerticalMax  = new(1.2f,  2.2f,  0f);
-        RecoilVerticalBias = new(0.3f,  0.6f,  0f);
-        RecoilHorizontalMax     = new(0.8f,  1.4f,  0f);
-        RecoilHorizontalBias    = new(-0.25f, 0.25f, 0f);
-        MaxAccumulatedRecoil    = new(20f,   35f,   0f);  // huge cap for sustained fire
+        RecoilScaleVertical   = new(1.2f,  2.2f,  0f);
+        RecoilJitterVertical  = new(0.176f, 0.353f, 0f);
+        RecoilScaleHorizontal = new(0.8f,  1.4f,  0f);
+        RecoilHorizontalBias  = new(-0.25f, 0.25f, 0f);
+        MaxAccumulatedRecoil  = new(20f,   35f,   0f);  // huge cap for sustained fire
+        MaxAccumulatedHorizontalRecoil = new(10f, 17f, 0f);
 
         RecoilRecoverySpeed         = new(3f, 5f, 0f);
         RecoilRecoveryFraction      = new(0.30f, 0.55f, 0f);
@@ -348,11 +354,12 @@ public class WeaponCategoryData : ScriptableObject
         MaxSpread      = new(6f,    12f,   0f);
         SpreadRecovery = new(8f,    14f,   0f);
 
-        RecoilVerticalMax  = new(2.5f,  5.0f,  0f);  // heavy kick per shot
-        RecoilVerticalBias = new(0.3f,  0.8f,  0f);
-        RecoilHorizontalMax     = new(0.5f,  1.2f,  0f);
-        RecoilHorizontalBias    = new(-0.15f, 0.15f, 0f);
-        MaxAccumulatedRecoil    = new(4f,    8f,    0f);  // low cap — one shot at a time
+        RecoilScaleVertical   = new(2.5f,  5.0f,  0f);  // heavy kick per shot
+        RecoilJitterVertical  = new(0.08f, 0.213f, 0f);
+        RecoilScaleHorizontal = new(0.5f,  1.2f,  0f);
+        RecoilHorizontalBias  = new(-0.15f, 0.15f, 0f);
+        MaxAccumulatedRecoil  = new(4f,    8f,    0f);  // low cap — one shot at a time
+        MaxAccumulatedHorizontalRecoil = new(2f, 4f, 0f);
 
         RecoilRecoverySpeed         = new(4f,   6f,    0f);
         RecoilRecoveryFraction      = new(0.70f, 1.0f,  0f);

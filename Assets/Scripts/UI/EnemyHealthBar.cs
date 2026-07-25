@@ -44,14 +44,9 @@ public class EnemyHealthBar : MonoBehaviour
 
     private static Image CreateStretchImage(Transform parent, string name, Color color)
     {
-        var go  = new GameObject(name, typeof(RectTransform), typeof(Image));
-        go.transform.SetParent(parent, false);
-        var rt  = go.GetComponent<RectTransform>();
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.offsetMin = rt.offsetMax = Vector2.zero;
-        var img = go.GetComponent<Image>();
+        var img = HudUIFactory.MakeImage(name, (RectTransform)parent);
         img.color = color;
+        HudUIFactory.Stretch(img.rectTransform);
         return img;
     }
 
