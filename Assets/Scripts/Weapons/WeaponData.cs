@@ -92,6 +92,13 @@ public class WeaponData : ScriptableObject
     [Range(-1f, 1f)]
     public float RecoilHorizontalBias = 0.15f;
 
+    // ── Audio ─────────────────────────────────────────────────────────────
+    [Header("Audio")]
+    public SoundBank FireSound;
+    public SoundBank ReloadSound;
+    [Tooltip("Played when the player tries to fire with an empty magazine")]
+    public SoundBank EmptySound;
+
     [Header("Recoil — Recovery")]
     [Tooltip("Speed at which accumulated recoil recovers toward zero (higher = snappier)")]
     public float RecoilRecoverySpeed = 6f;

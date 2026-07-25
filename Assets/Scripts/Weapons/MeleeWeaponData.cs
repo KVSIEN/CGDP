@@ -23,6 +23,10 @@ public class MeleeAttackStep
     public float Range = 1.8f;
     public float Radius = 0.7f;
     public Color DebugColor = Color.white;
+
+    [Header("Audio")]
+    public SoundBank SwingSound;
+    public SoundBank HitSound;
 }
 
 [CreateAssetMenu(fileName = "NewMeleeWeapon", menuName = "CGD/Melee Weapon Data")]

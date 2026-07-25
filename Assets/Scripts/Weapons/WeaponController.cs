@@ -131,6 +131,12 @@ public class WeaponController : MonoBehaviour
             case FireMode.Burst when triggerPress && !_burstPending:
                 StartCoroutine(FireBurst()); break;
         }
+
+        if (triggerPress && _magazine <= 0 && !_isReloading)
+        {
+            Vector3 soundPos = _muzzle != null ? _muzzle.position : transform.position;
+            _data.EmptySound?.Play(soundPos);
+        }
     }
 
     private void HandleReloadInput()
@@ -151,6 +157,9 @@ public class WeaponController : MonoBehaviour
         ApplyRecoil();
         CastBullet();
         AddSpreadBloom();
+
+        Vector3 soundPos = _muzzle != null ? _muzzle.position : transform.position;
+        _data.FireSound?.Play(soundPos);
     }
 
     private IEnumerator FireBurst()
@@ -260,6 +269,9 @@ public class WeaponController : MonoBehaviour
     {
         _isReloading = true;
         NotifyAmmoChanged();
+
+        Vector3 soundPos = _muzzle != null ? _muzzle.position : transform.position;
+        _data.ReloadSound?.Play(soundPos);
 
         float time = _magazine > 0 ? _data.TacticalReloadTime : _data.ReloadTime;
         yield return new WaitForSeconds(time);

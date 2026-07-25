@@ -79,6 +79,8 @@ public class GrenadeController : MonoBehaviour
 
         _carried--;
         OnCountChanged?.Invoke(_carried);
+
+        _data.ThrowSound?.Play(transform.position);
     }
 
     private void DrawTrajectoryPreview()

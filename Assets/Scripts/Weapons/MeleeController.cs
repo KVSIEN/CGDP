@@ -84,6 +84,8 @@ public class MeleeController : MonoBehaviour
 
         _phase      = Phase.Windup;
         _phaseTimer = _activeStep.WindupTime;
+
+        _activeStep.SwingSound?.Play(transform.position);
     }
 
     private void TickPhase(float dt)
@@ -134,12 +136,19 @@ public class MeleeController : MonoBehaviour
 
         var info = new DamageInfo(_activeStep.Damage, _activeStep.ArmorPenetration, _activeStep.DamageType);
 
+        bool hitAnything = false;
         for (int i = 0; i < count; i++)
         {
             if (_hitBuffer[i].transform.root == transform.root) continue;
             if (_hitBuffer[i].TryGetComponent<IDamageable>(out var target))
+            {
                 target.TakeDamage(info);
+                hitAnything = true;
+            }
         }
+
+        if (hitAnything)
+            _activeStep.HitSound?.Play(center);
 
         if (_debugDrawHitbox)
             DebugDrawSphere(center, _activeStep.Radius, _activeStep.DebugColor, _debugDrawDuration);

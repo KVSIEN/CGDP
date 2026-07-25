@@ -44,6 +44,7 @@ public class Grenade : MonoBehaviour
             target.TakeDamage(new DamageInfo(_data.ExplosionDamage * falloff, _data.ArmorPenetration, _data.DamageType));
         }
 
+        _data.ExplosionSound?.Play(transform.position);
         Destroy(gameObject);
     }
 }

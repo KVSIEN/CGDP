@@ -21,6 +21,10 @@ public class GrenadeData : ScriptableObject
     public DamageType DamageType = DamageType.Physical;
     public LayerMask HitMask = ~0;
 
+    [Header("Audio")]
+    public SoundBank ThrowSound;
+    public SoundBank ExplosionSound;
+
     [Header("Trajectory Preview")]
     public int   TrajectorySteps   = 30;
     public float TrajectoryStepTime = 0.1f;

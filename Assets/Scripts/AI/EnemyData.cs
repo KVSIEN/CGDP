@@ -34,4 +34,8 @@ public class EnemyData : ScriptableObject
     [Header("Alert")]
     [Tooltip("How long the enemy investigates the last known position before returning to patrol.")]
     public float AlertDuration = 5f;
+
+    [Header("Audio")]
+    public SoundBank AttackSound;
+    public SoundBank DeathSound;
 }

@@ -111,9 +111,18 @@
 -   ~~Rebuild the settings menu in UGUI instead of OnGUI~~ ✓ Done
     SettingsMenu draws itself with legacy IMGUI (OnGUI) — the only screen in the project not built on the same runtime UGUI/TextMeshPro system as the rest of the HUD; porting it over gets consistent styling, resolution scaling, and controller/gamepad navigation for free
 
-## Audio
--   Implement surface-aware footstep system
-    PhysicsMaterial or surface tag on ground triggers correct audio bank; separate clips for walk, sprint, crouch; randomized pitch variation per step
+## Audio ✓ Done
+-   ~~Build pooled audio system and SoundBank data model~~ ✓ Done
+    AudioPool manages reusable AudioSource GameObjects; SoundBank ScriptableObject holds AudioClip variants with pitch/volume randomization; all gameplay systems play sounds through this pool
+
+-   ~~Add weapon, melee, and grenade audio~~ ✓ Done
+    WeaponData has FireSound/ReloadSound/EmptySound SoundBanks; MeleeAttackStep has SwingSound/HitSound; GrenadeData has ThrowSound/ExplosionSound; all fields optional — silent when unassigned
+
+-   ~~Add player and enemy feedback audio~~ ✓ Done
+    PlayerAudio subscribes to PlayerStats events for hurt/death sounds; EnemyAudio subscribes to EnemyHealth events; EnemyData has AttackSound/DeathSound
+
+-   ~~Implement surface-aware footstep system~~ ✓ Done
+    PhysicsMaterial or surface tag on ground triggers correct audio bank; separate clips for walk, sprint, crouch; randomized pitch variation per step; SurfaceDatabase maps PhysicMaterials to SoundBanks with a fallback default; SurfaceTag component overrides on individual surfaces
 
 Claude - Blender Integration:
 https://github.com/ahujasid/blender-mcp

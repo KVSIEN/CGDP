@@ -11,7 +11,7 @@ Asset paths referenced below live under `Assets/ScriptableObjects/Settings/` and
 ## Scene Root
 
 ```
-GameManager                  [VisibilityCullingManager]
+GameManager                  [VisibilityCullingManager, AudioPool]
 RespawnPoint                 (empty transform — spawn point for PlayerLifecycle)
 EventSystem                  (Unity default: EventSystem, InputSystemUIInputModule)
 Directional Light            (Light + UniversalAdditionalLightData)
@@ -19,6 +19,7 @@ Global Volume                (URP post-processing)
 ```
 
 - `GameManager` hosts `VisibilityCullingManager` — set `[DefaultExecutionOrder(-100)]` so it registers before `CullableObject.OnEnable()` runs elsewhere. Assign the scene's main `Camera` to its `_camera` field. `_batchFrames`, `_activationMargin`, `_deactivationMargin`, `_alwaysVisibleDistance` are tunable; defaults are fine to start.
+- `GameManager` also hosts `AudioPool`. `_initialSize` defaults to 16 pooled AudioSources; increase if many sounds play simultaneously (rapid-fire weapons, crowds).
 - `RespawnPoint` just needs a `Transform` — assign it to `PlayerLifecycle._spawnPoint`.
 
 ## Player Rig
@@ -28,7 +29,8 @@ Player                       [PlayerInputHandler, PlayerStats, PlayerMovement,
                                PlayerDodge, PlayerMantle, PlayerAbilities,
                                PlayerInteraction, WeaponController,
                                PlayerWeaponLoadout, MeleeController,
-                               GrenadeController, PlayerLifecycle]
+                               GrenadeController, PlayerLifecycle,
+                               PlayerFootsteps, PlayerAudio]
   Rigidbody + CapsuleCollider on the Player root (required by PlayerMovement/PlayerDodge/PlayerMantle)
   - CameraRig
     - Main Camera             [Camera, UniversalAdditionalCameraData, PlayerCamera]
@@ -55,6 +57,8 @@ Wiring, by component:
 - **MeleeController** — assign `_camera` = PlayerCamera, `_data` = a `MeleeWeaponData` asset. No other wiring — resolves `PlayerInputHandler`/`PlayerMovement` via `GetComponent` on the same object.
 - **GrenadeController** — assign `_camera` = PlayerCamera, `_data` = a `GrenadeData` asset (which in turn needs a `GrenadePrefab` — see below). No other wiring — resolves `PlayerInputHandler`/`PlayerMovement`/`Collider` via `GetComponent` on the same object.
 - **WeaponVisuals** (on WeaponRig) — no references to wire; `WeaponController` calls `AddKick()` on it directly.
+- **PlayerFootsteps** — assign `_surfaces` = `SurfaceDatabase.asset`. Step intervals (`_walkInterval`, `_sprintInterval`, `_crouchInterval`) and `_groundMask` are tunable; defaults are fine to start. No other wiring — resolves `PlayerMovement` via `GetComponent`.
+- **PlayerAudio** — assign `_stats` = Player's `PlayerStats`, `_hurtSound` / `_deathSound` = `SoundBank` assets (optional — silent when unassigned).
 - **PlayerLifecycle** — assign `_stats`, `_movement`, `_abilities`, `_input`, `_weapon` = the matching Player components, `_hud` = HUD's `HUDManager`, `_spawnPoint` = `RespawnPoint`, `_deathScreen` = a death-screen UI object if one exists (optional).
 
 ## HUD Canvas
@@ -107,13 +111,14 @@ SettingsMenu                  [RectTransform, SettingsMenu]   (must be under the
 ## Enemy
 
 ```
-Enemy                         [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar]
+Enemy                         [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, EnemyAudio]
 ```
 
 - Requires baked NavMesh (`NavMesh Surface` in the scene, baked over the walkable ground).
 - **EnemyAI** — assign `_data` = `EnemyData.asset`, `_playerTransform` = Player, `_playerStats` = Player's `PlayerStats`, `_waypoints` = patrol point transforms (optional — idles if empty), `_obstacleMask` = geometry layers that block line-of-sight, `_stateRenderers` = the enemy's renderer(s) for the patrol/alert/chase color tint.
 - **EnemyHealth** — assign `_data` = same `EnemyData.asset`, `_healthBar` = the `EnemyHealthBar` on the same object.
 - **EnemyHealthBar** — no references required; it builds its own world-space canvas in `Awake`.
+- **EnemyAudio** — assign `_hurtSound` / `_deathSound` = `SoundBank` assets (optional — silent when unassigned). No other wiring — resolves `EnemyHealth` via `GetComponent`.
 - **StatusEffectController** (optional, not yet in the reference scene) — add to the Player and/or an Enemy to let status effects (Bleed, Poison, Fire, ...) apply to it. No references to wire; it resolves its `IDamageable` target via `GetComponent` in `Awake`, so it only needs `PlayerStats` or `EnemyHealth` present on the same GameObject.
 
 ## Interactables & Pickups
@@ -149,6 +154,8 @@ Switch (any name)             [Collider (isTrigger), Switch]
 | Ability assets (`DashAbility`, `HealAbility`, `ProjectileAbility`, `ShockwaveAbility`) | `PlayerAbilities._slots` |
 | `MeleeWeaponData` asset | `MeleeController` |
 | `GrenadeData` asset (its `GrenadePrefab` needs a `Rigidbody` + non-trigger `Collider` + `Grenade` component) | `GrenadeController` |
+| `SurfaceDatabase.asset` | `PlayerFootsteps` |
+| `SoundBank` assets (per sound — weapon fire/reload/empty, melee swing/hit, grenade throw/explosion, player hurt/death, enemy hurt/death/attack, footstep walk/sprint/crouch per surface) | Various — all optional; systems work silently without them |
 
 `InputBindingSettings` and `PlayerMovementSettings` are each a **single shared asset**
 referenced by multiple components — don't accidentally create per-component duplicates,

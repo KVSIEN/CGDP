@@ -183,6 +183,7 @@ public class EnemyAI : MonoBehaviour, IStunnable
         if (!_attackCooldown.IsReady) return;
         _attackCooldown.Start(_data.AttackCooldown);
         _playerStats.TakeDamage(new DamageInfo(_data.AttackDamage));
+        _data.AttackSound?.Play(transform.position);
     }
 
     private void SetState(AiState state)
@@ -222,6 +223,7 @@ public class EnemyAI : MonoBehaviour, IStunnable
 
     private void OnDeath()
     {
+        _data.DeathSound?.Play(transform.position);
         _agent.enabled = false;
         enabled = false;
     }

@@ -171,6 +171,17 @@
 - Objects close to the camera are always rendered regardless of frustum position
 - Add `CullableObject` to any world object; place `VisibilityCullingManager` in the scene and assign the camera
 
+## Audio System
+- All audio plays through a pooled AudioSource system — no per-shot Instantiate/Destroy, sources are reused automatically
+- Sound data is driven by SoundBank ScriptableObject assets: assign multiple AudioClip variants with pitch and volume randomization so repeated sounds (gunfire, footsteps) never sound robotic
+- Weapon audio: each WeaponData asset has optional SoundBank fields for fire, reload, and empty-magazine click; sounds play automatically at the muzzle position
+- Melee audio: each MeleeAttackStep has optional swing and hit SoundBanks; swing plays on attack start, hit plays only when a target is struck
+- Grenade audio: throw sound on release, explosion sound on detonation (plays via the pool so it persists after the grenade object is destroyed)
+- Enemy audio: EnemyData has optional attack and death SoundBanks; attack plays on each melee strike, death plays when health reaches zero
+- Player feedback audio: a PlayerAudio component subscribes to PlayerStats events and plays hurt/death sounds
+- Surface-aware footsteps: PlayerFootsteps raycasts downward each step to identify the ground surface; a SurfaceDatabase ScriptableObject maps PhysicMaterials to separate walk, sprint, and crouch SoundBanks; individual surfaces can override via a SurfaceTag component; step interval scales with movement speed
+- All sound fields are optional — systems work silently when no SoundBank is assigned, same as before
+
 ## Death & Respawn
 - When health reaches zero the player loses control, the HUD hides, and a death screen is shown
 - Player automatically respawns after a short delay, returning to the designated spawn point
