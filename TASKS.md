@@ -1,10 +1,10 @@
 # Unity Project – To-Do List
 
 ## Combat
--   Implement melee system
+-   ~~Implement melee system~~ ✓ Done
     Light/heavy attacks, hit detection colliders, combo string logic with input buffering, currently no animations so add debug scene indicators for now.
 
--   Add throwable grenades / consumables
+-   ~~Add throwable grenades / consumables~~ ✓ Done
     Trajectory arc indicator, throw force tunable via ScriptableObject, integrates with ability or inventory slot
 
 ## Ability & Action System
@@ -93,22 +93,22 @@
 -   ~~Interactive doors and switches tied to your Interact (E) key~~ ✓ Done
 
 ## Input System
--   Add gamepad support for discrete actions
+-   ~~Add gamepad support for discrete actions~~ ✓ Done
     `ActionBinding` only stores Key/Mouse fields — Jump, Attack, Interact, Abilities, weapon slots, etc. currently cannot be bound to a gamepad button at all (only Move/Look axes get gamepad input, via the separate InputSystem_Actions asset); add a gamepad-button field per binding slot and extend BuildActions/Remap/PollForRebind to read and write it
 
 -   ~~Store keybind saves by name, not enum ordinal~~ ✓ Done
     SettingsSave currently serializes GameAction/Key/InputMouseButton as raw `(int)` ordinals into PlayerPrefs; inserting or reordering a value in any of those enums silently remaps existing players' saved bindings to the wrong action or key; switch BindingEntry to store enum names (or a stable id) instead
 
--   Detect and warn on duplicate bindings
+-   ~~Detect and warn on duplicate bindings~~ ✓ Done
     WriteRebind() in SettingsMenu overwrites a slot without checking whether that key/mouse button is already bound to another action (or to the binding's own other slot); add a conflict check that blocks or warns before committing a new binding
 
--   Move keybind rebinding onto native Input System APIs
+-   ~~Move keybind rebinding onto native Input System APIs~~ ✓ Done
     KeyPath()/MousePath() hand-translate the Key enum into control path strings via a casing heuristic (already fragile enough to need a special-cased Digit-key exception); replacing the custom InputAction rebuild + rebind-polling loop with Unity's built-in `InputActionRebindingExtensions.PerformInteractiveRebinding` removes that translation layer entirely and picks up gamepad/any-device support for free
 
--   Unify Move/Look with the GameAction binding system
+-   ~~Unify Move/Look with the GameAction binding system~~ ✓ Done
     Move and Look are driven by the generated InputSystem_Actions asset with fixed, non-remappable bindings, while every other action is a hand-built runtime InputAction driven by InputBindingSettings — two separate input pipelines that can't be edited from the same place; fold Move/Look into InputBindingSettings (or generate GameAction bindings from a single .inputactions asset) so there's one source of truth
 
--   Rebuild the settings menu in UGUI instead of OnGUI
+-   ~~Rebuild the settings menu in UGUI instead of OnGUI~~ ✓ Done
     SettingsMenu draws itself with legacy IMGUI (OnGUI) — the only screen in the project not built on the same runtime UGUI/TextMeshPro system as the rest of the HUD; porting it over gets consistent styling, resolution scaling, and controller/gamepad navigation for free
 
 ## Audio

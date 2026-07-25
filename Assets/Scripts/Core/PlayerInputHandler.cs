@@ -14,7 +14,11 @@ public class PlayerInputHandler : MonoBehaviour
 
     private const float DoubleClickWindow = 0.3f;
 
-    private InputSystem_Actions _axisActions;
+    // Move/Look are built here alongside every other GameAction instead of coming from a
+    // separate .inputactions asset, so all player-facing input lives in one place.
+    private InputAction _moveAction;
+    private InputAction _lookAction;
+
     private InputAction[] _actions;
     private InputActionMode[] _modes;
     private bool[] _results;
@@ -26,7 +30,6 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void Awake()
     {
-        _axisActions = new InputSystem_Actions();
         _actions = new InputAction[ActionCount];
         _modes = new InputActionMode[ActionCount];
         _results = new bool[ActionCount];
@@ -34,8 +37,30 @@ public class PlayerInputHandler : MonoBehaviour
         _lastClickTime = new float[ActionCount];
         _waitingForDoubleClick = new bool[ActionCount];
 
+        BuildAxisActions();
         SettingsSave.LoadBindings(_bindings);
         BuildActions();
+    }
+
+    private void BuildAxisActions()
+    {
+        _moveAction = new InputAction("Move", InputActionType.Value, expectedControlType: "Vector2");
+        _moveAction.AddCompositeBinding("2DVector")
+            .With("Up", "<Keyboard>/w")
+            .With("Up", "<Keyboard>/upArrow")
+            .With("Down", "<Keyboard>/s")
+            .With("Down", "<Keyboard>/downArrow")
+            .With("Left", "<Keyboard>/a")
+            .With("Left", "<Keyboard>/leftArrow")
+            .With("Right", "<Keyboard>/d")
+            .With("Right", "<Keyboard>/rightArrow");
+        _moveAction.AddBinding("<Gamepad>/leftStick");
+        _moveAction.Enable();
+
+        _lookAction = new InputAction("Look", InputActionType.Value, expectedControlType: "Vector2");
+        _lookAction.AddBinding("<Pointer>/delta");
+        _lookAction.AddBinding("<Gamepad>/rightStick");
+        _lookAction.Enable();
     }
 
     private void BuildActions()
@@ -45,14 +70,11 @@ public class PlayerInputHandler : MonoBehaviour
             int i = (int)binding.Action;
             var action = new InputAction(binding.Action.ToString(), InputActionType.Button);
 
-            if (binding.PrimaryKey != Key.None)
-                action.AddBinding(KeyPath(binding.PrimaryKey));
-            if (binding.PrimaryMouse != InputMouseButton.None)
-                action.AddBinding(MousePath(binding.PrimaryMouse));
-            if (binding.SecondaryKey != Key.None)
-                action.AddBinding(KeyPath(binding.SecondaryKey));
-            if (binding.SecondaryMouse != InputMouseButton.None)
-                action.AddBinding(MousePath(binding.SecondaryMouse));
+            // Binding index 0 is always the primary slot, 1 always the secondary — added
+            // even when empty (as an unbound placeholder) so PerformInteractiveRebinding
+            // has a stable index to target regardless of whether the slot is currently set.
+            AddSlot(action, binding.PrimaryPath);
+            AddSlot(action, binding.SecondaryPath);
 
             action.Enable();
             _actions[i] = action;
@@ -60,16 +82,28 @@ public class PlayerInputHandler : MonoBehaviour
         }
     }
 
-    private void OnEnable() => _axisActions.Enable();
+    private static void AddSlot(InputAction action, string path)
+    {
+        action.AddBinding(string.IsNullOrEmpty(path) ? null : path);
+    }
+
+    private void OnEnable()
+    {
+        _moveAction?.Enable();
+        _lookAction?.Enable();
+    }
 
     private void OnDisable()
     {
-        _axisActions.Disable();
+        _moveAction?.Disable();
+        _lookAction?.Disable();
         foreach (var a in _actions) a?.Disable();
     }
 
     private void OnDestroy()
     {
+        _moveAction?.Dispose();
+        _lookAction?.Dispose();
         foreach (var a in _actions) a?.Dispose();
     }
 
@@ -84,9 +118,9 @@ public class PlayerInputHandler : MonoBehaviour
             return;
         }
 
-        MoveInput = _axisActions.Player.Move.ReadValue<Vector2>();
-        LookInput = _axisActions.Player.Look.ReadValue<Vector2>();
-        IsGamepadLook = _axisActions.Player.Look.activeControl?.device is Gamepad;
+        MoveInput = _moveAction.ReadValue<Vector2>();
+        LookInput = _lookAction.ReadValue<Vector2>();
+        IsGamepadLook = _lookAction.activeControl?.device is Gamepad;
 
         float now = Time.unscaledTime;
         for (int i = 0; i < ActionCount; i++)
@@ -146,6 +180,10 @@ public class PlayerInputHandler : MonoBehaviour
     // Bypasses InputEnabled — use only for overlay toggles (inventory, pause) that must work while input is locked
     public bool WasPressedRaw(GameAction action) => _actions[(int)action]?.WasPressedThisFrame() ?? false;
 
+    // Exposes the underlying InputAction for the settings menu to drive
+    // InputActionRebindingExtensions.PerformInteractiveRebinding directly.
+    public InputAction GetInputAction(GameAction action) => _actions[(int)action];
+
     public void SetMode(GameAction action, InputActionMode mode)
     {
         int i = (int)action;
@@ -163,43 +201,4 @@ public class PlayerInputHandler : MonoBehaviour
         }
         BuildActions();
     }
-
-    public void Remap(GameAction action, Key primary, Key secondary = Key.None,
-        InputMouseButton primaryMouse = InputMouseButton.None,
-        InputMouseButton secondaryMouse = InputMouseButton.None)
-    {
-        int i = (int)action;
-        _actions[i]?.Disable();
-        _actions[i]?.Dispose();
-
-        var a = new InputAction(action.ToString(), InputActionType.Button);
-        if (primary != Key.None) a.AddBinding(KeyPath(primary));
-        if (primaryMouse != InputMouseButton.None) a.AddBinding(MousePath(primaryMouse));
-        if (secondary != Key.None) a.AddBinding(KeyPath(secondary));
-        if (secondaryMouse != InputMouseButton.None) a.AddBinding(MousePath(secondaryMouse));
-
-        a.Enable();
-        _actions[i] = a;
-    }
-
-    // Unity's input system paths use camelCase, e.g. "<Keyboard>/leftShift".
-    // Digit keys are an exception: the Key enum says "Digit3" but the control
-    // path is just the digit — "<Keyboard>/3", not "<Keyboard>/digit3".
-    private static string KeyPath(Key key)
-    {
-        string name = key.ToString();
-        if (name.StartsWith("Digit"))
-            return $"<Keyboard>/{name[5..]}";
-        return $"<Keyboard>/{char.ToLower(name[0])}{name[1..]}";
-    }
-
-    private static string MousePath(InputMouseButton btn) => btn switch
-    {
-        InputMouseButton.Left    => "<Mouse>/leftButton",
-        InputMouseButton.Right   => "<Mouse>/rightButton",
-        InputMouseButton.Middle  => "<Mouse>/middleButton",
-        InputMouseButton.Forward => "<Mouse>/forwardButton",
-        InputMouseButton.Back    => "<Mouse>/backButton",
-        _                        => string.Empty
-    };
 }

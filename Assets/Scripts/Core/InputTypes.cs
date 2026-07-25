@@ -5,6 +5,8 @@ public enum GameAction
     Crouch,
     Dodge,
     Attack,
+    Melee,
+    Grenade,
     AimDownSights,
     Reload,
     Interact,
@@ -24,5 +26,3 @@ public enum GameAction
 }
 
 public enum InputActionMode { Pressed, Held, Toggle, DoubleClick }
-
-public enum InputMouseButton { None, Left, Right, Middle, Forward, Back }

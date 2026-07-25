@@ -27,7 +27,8 @@ Global Volume                (URP post-processing)
 Player                       [PlayerInputHandler, PlayerStats, PlayerMovement,
                                PlayerDodge, PlayerMantle, PlayerAbilities,
                                PlayerInteraction, WeaponController,
-                               PlayerWeaponLoadout, PlayerLifecycle]
+                               PlayerWeaponLoadout, MeleeController,
+                               GrenadeController, PlayerLifecycle]
   Rigidbody + CapsuleCollider on the Player root (required by PlayerMovement/PlayerDodge/PlayerMantle)
   - CameraRig
     - Main Camera             [Camera, UniversalAdditionalCameraData, PlayerCamera]
@@ -51,6 +52,8 @@ Wiring, by component:
 - **PlayerInteraction** — assign `_forwardReference` = Main Camera.
 - **WeaponController** — assign `_input` = Player, `_camera` = PlayerCamera, `_crosshair` = HUD's Crosshair object, `_muzzle` = Muzzle, `_visuals` = WeaponVisuals on WeaponRig, `_data` = starting `WeaponData` asset (optional — `PlayerWeaponLoadout.Start()` equips slot 0 anyway).
 - **PlayerWeaponLoadout** — assign `_slots[0..3]` = `WeaponData` assets (e.g. `AssaultRifle.asset`, `Shotgun.asset`, `SubMachineGun.asset`, `LightMachineGun.asset`, `Pistol.asset`).
+- **MeleeController** — assign `_camera` = PlayerCamera, `_data` = a `MeleeWeaponData` asset. No other wiring — resolves `PlayerInputHandler`/`PlayerMovement` via `GetComponent` on the same object.
+- **GrenadeController** — assign `_camera` = PlayerCamera, `_data` = a `GrenadeData` asset (which in turn needs a `GrenadePrefab` — see below). No other wiring — resolves `PlayerInputHandler`/`PlayerMovement`/`Collider` via `GetComponent` on the same object.
 - **WeaponVisuals** (on WeaponRig) — no references to wire; `WeaponController` calls `AddKick()` on it directly.
 - **PlayerLifecycle** — assign `_stats`, `_movement`, `_abilities`, `_input`, `_weapon` = the matching Player components, `_hud` = HUD's `HUDManager`, `_spawnPoint` = `RespawnPoint`, `_deathScreen` = a death-screen UI object if one exists (optional).
 
@@ -92,11 +95,13 @@ show/hide the same way.
 ## Settings Menu
 
 ```
-SettingsMenu                  [SettingsMenu]   (can live anywhere, e.g. under HUD)
+SettingsMenu                  [RectTransform, SettingsMenu]   (must be under the HUD Canvas)
 ```
 
+- Must live under a `Canvas` with a `GraphicRaycaster` (e.g. directly under `HUD`) — its buttons/sliders are real UGUI now and won't receive clicks otherwise.
+- Its own `RectTransform` must be stretched to fill the screen (anchors `(0,0)`–`(1,1)`, zero offsets) — it builds a centered 680×520 window and a full-screen rebind-listening overlay inside itself at runtime via `HudUIFactory`, same convention as the rest of the HUD.
 - Assign `_camera` = Main Camera's `PlayerCamera`, `_input` = Player, `_bindings` = the same `InputBindingSettings.asset` used by `PlayerInputHandler`, `_hud` = HUD's `HUDManager`.
-- Renders itself via `OnGUI()` — no Canvas/child objects required.
+- No child objects need to be pre-built — the window, sensitivity sliders/fields, the scrollable keybinding list (one row per entry in `InputBindingSettings.Bindings`), and the rebind overlay are all constructed in `Awake()`.
 - Escape toggles it; it disables `PlayerInputHandler.InputEnabled` and unlocks the cursor while open.
 
 ## Enemy
@@ -142,6 +147,8 @@ Switch (any name)             [Collider (isTrigger), Switch]
 | `WeaponCategoryData` assets (per category) | `RandomWeaponPickup`, `WeaponGenerator` |
 | `WeaponFireBehavior` assets (`HitscanBehavior`, `ShotgunBehavior`, projectile behavior) | assigned on each `WeaponData.FireBehavior` |
 | Ability assets (`DashAbility`, `HealAbility`, `ProjectileAbility`, `ShockwaveAbility`) | `PlayerAbilities._slots` |
+| `MeleeWeaponData` asset | `MeleeController` |
+| `GrenadeData` asset (its `GrenadePrefab` needs a `Rigidbody` + non-trigger `Collider` + `Grenade` component) | `GrenadeController` |
 
 `InputBindingSettings` and `PlayerMovementSettings` are each a **single shared asset**
 referenced by multiple components — don't accidentally create per-component duplicates,

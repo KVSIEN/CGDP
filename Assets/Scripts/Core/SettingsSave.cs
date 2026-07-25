@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public static class SettingsSave
 {
@@ -29,12 +28,10 @@ public static class SettingsSave
             var b = settings.Bindings[i];
             data.entries[i] = new BindingEntry
             {
-                action         = b.Action.ToString(),
-                primaryKey     = b.PrimaryKey.ToString(),
-                primaryMouse   = b.PrimaryMouse.ToString(),
-                secondaryKey   = b.SecondaryKey.ToString(),
-                secondaryMouse = b.SecondaryMouse.ToString(),
-                mode           = b.Mode.ToString(),
+                action        = b.Action.ToString(),
+                primaryPath   = b.PrimaryPath,
+                secondaryPath = b.SecondaryPath,
+                mode          = b.Mode.ToString(),
             };
         }
         PlayerPrefs.SetString(KeyBindings, JsonUtility.ToJson(data));
@@ -56,10 +53,8 @@ public static class SettingsSave
                 if (settings.Bindings[j].Action != action) continue;
                 var b = settings.Bindings[j];
 
-                if (Enum.TryParse(entry.primaryKey, out Key primaryKey)) b.PrimaryKey = primaryKey;
-                if (Enum.TryParse(entry.primaryMouse, out InputMouseButton primaryMouse)) b.PrimaryMouse = primaryMouse;
-                if (Enum.TryParse(entry.secondaryKey, out Key secondaryKey)) b.SecondaryKey = secondaryKey;
-                if (Enum.TryParse(entry.secondaryMouse, out InputMouseButton secondaryMouse)) b.SecondaryMouse = secondaryMouse;
+                b.PrimaryPath   = entry.primaryPath;
+                b.SecondaryPath = entry.secondaryPath;
                 if (Enum.TryParse(entry.mode, out InputActionMode mode)) b.Mode = mode;
 
                 settings.Bindings[j] = b;
@@ -76,6 +71,6 @@ public static class SettingsSave
     [Serializable]
     private class BindingEntry
     {
-        public string action, primaryKey, primaryMouse, secondaryKey, secondaryMouse, mode;
+        public string action, primaryPath, secondaryPath, mode;
     }
 }

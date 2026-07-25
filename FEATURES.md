@@ -104,13 +104,17 @@
   - Pressed — fires once on the frame the key is pressed
   - Held — fires every frame the key is held down
   - Toggle — pressing the key flips it on or off
-- Bindings can be remapped at runtime via the settings menu
-- Default actions: Jump, Sprint, Crouch, Dodge, Attack, Aim, Reload, Interact, Abilities 1–4 (unbound), Weapon slots 1–4 (keys 1–4), Pause, Switch View, Inventory (I), Map, Shoulder Swap (X)
+- Bindings can be remapped at runtime via the settings menu, driven entirely by the Input System's own interactive rebinding — no hand-rolled key/device translation code
+- Every action can be bound to a keyboard key, mouse button, or gamepad button (any mix of two, primary and secondary) — rebinding listens for input from any connected device and picks up whatever is pressed first
+- Default actions: Jump, Sprint, Crouch, Dodge, Attack, Melee (G), Grenade (H), Aim, Reload, Interact, Abilities 1–4 (unbound), Weapon slots 1–4 (keys 1–4), Pause, Switch View, Inventory (I), Map, Shoulder Swap (X)
+- Move and Look are built the same way as every other action (WASD/arrows + gamepad left stick for Move, mouse delta + gamepad right stick for Look) — one input pipeline for the whole game instead of a separate non-remappable asset just for movement
 
 ## Settings Menu
+- Built with the same runtime UGUI/TextMeshPro system as the rest of the HUD (not legacy IMGUI) — consistent styling and resolution scaling with everything else
 - Press Escape at any time to open or close the settings menu
 - Mouse and gamepad sensitivity sliders with live preview; changes are applied and saved on confirmation
-- Full keybinding editor — every action shows its primary and secondary slot; click a slot then press any key or mouse button to rebind it
+- Full keybinding editor — every action shows its primary and secondary slot; click a slot then press any key, mouse, or gamepad button to rebind it
+- Duplicate binding protection — rebinding to a key/mouse/gamepad button already used by another action (or the same action's other slot) is rejected with an on-screen warning instead of silently overwriting it
 - Reset to Defaults button restores all keybindings to their original values
 - All settings (sensitivity and keybindings) are saved to disk and automatically restored on next launch
 
@@ -131,6 +135,20 @@
   - ADS reduces all recoil by a configurable multiplier
   - Recovery is tunable per gun: 0 = BF-style (aim stays up, no return), 1 = CoD-style (full return to original aim), values between give a hybrid feel
 - All values tunable per weapon: RPM, damage, ranges, spread, recoil amounts, reload times
+
+## Melee Combat
+- Tap the melee key for a light attack; hold it past a configurable threshold before releasing for a heavier finisher instead
+- Light attacks chain into a combo string — pressing again while the current attack is swinging or recovering queues the next step, which fires the instant the current one finishes; the string resets back to the first step after a short period of no input
+- Damage resolves through the same Effective Damage pipeline as guns and abilities (armor, penetration, damage type all apply)
+- Independent of the equipped ranged weapon — always available regardless of which gun is out
+- No animations yet — a wireframe sphere is drawn at the hit location while the attack is active so timing and reach are visible during testing
+
+## Grenades
+- Hold the grenade key to aim — a predicted trajectory arc is drawn from the throw point, accounting for gravity, and stops early at the first surface it would hit
+- Release to throw; the grenade flies with real physics (gravity, bouncing) and detonates after a fixed fuse time
+- Explosion deals damage in a radius, falling off linearly with distance from the blast center, through the same Effective Damage pipeline as everything else
+- Limited carried count, like ammo — throwing decrements it, a pickup or event can restock it via `AddGrenades`
+- Independent of the four ability slots and the equipped ranged weapon — its own dedicated key
 
 ## Enemy AI
 - Behavior tree framework with four reusable node types: Selector (first-success), Sequence (all-must-succeed), Condition (predicate leaf), Action (logic leaf)
