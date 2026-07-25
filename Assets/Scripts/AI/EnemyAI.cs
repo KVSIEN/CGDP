@@ -3,7 +3,7 @@ using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(EnemyHealth))]
-public class EnemyAI : MonoBehaviour
+public class EnemyAI : MonoBehaviour, IStunnable
 {
     public enum AiState { Patrol, Alert, Chase }
 
@@ -32,6 +32,18 @@ public class EnemyAI : MonoBehaviour
     private float   _alertTimer;
     private CooldownTimer _attackCooldown;
     private bool    _seesPlayer;
+    private float   _speedMultiplier = 1f;
+    private CooldownTimer _stunTimer;
+    private bool    _wasStunned;
+
+    // IStunnable — driven externally (e.g. Ice) via GetComponent<IStunnable>().
+    public float SpeedMultiplier
+    {
+        get => _speedMultiplier;
+        set => _speedMultiplier = Mathf.Clamp01(value);
+    }
+    public bool IsStunned => !_stunTimer.IsReady;
+    public void ApplyStun(float duration) => _stunTimer.Start(duration);
 
     private void Awake()
     {
@@ -60,6 +72,21 @@ public class EnemyAI : MonoBehaviour
     private void Update()
     {
         if (_health.Health <= 0f) return;
+
+        _stunTimer.Tick(Time.deltaTime);
+
+        if (IsStunned)
+        {
+            _agent.isStopped = true;
+            _wasStunned = true;
+            return;
+        }
+
+        if (_wasStunned)
+        {
+            _agent.isStopped = false;
+            _wasStunned = false;
+        }
 
         _seesPlayer = CanSeePlayer();
         DetectPlayer();
@@ -110,7 +137,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (_waypoints == null || _waypoints.Length == 0) return BtStatus.Running;
 
-        _agent.speed = _data.PatrolSpeed;
+        _agent.speed = _data.PatrolSpeed * _speedMultiplier;
 
         if (!_agent.pathPending && _agent.hasPath && _agent.remainingDistance < 0.4f)
         {
@@ -123,7 +150,7 @@ public class EnemyAI : MonoBehaviour
 
     private BtStatus InvestigateAlert()
     {
-        _agent.speed = _data.PatrolSpeed;
+        _agent.speed = _data.PatrolSpeed * _speedMultiplier;
         _alertTimer -= Time.deltaTime;
 
         if (_alertTimer <= 0f || (!_agent.pathPending && _agent.hasPath && _agent.remainingDistance < 0.5f))
@@ -134,7 +161,7 @@ public class EnemyAI : MonoBehaviour
 
     private BtStatus ChasePlayer()
     {
-        _agent.speed = _data.ChaseSpeed;
+        _agent.speed = _data.ChaseSpeed * _speedMultiplier;
 
         float distSq = (transform.position - _playerTransform.position).sqrMagnitude;
         if (distSq <= _data.AttackRange * _data.AttackRange)

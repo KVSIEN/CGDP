@@ -20,6 +20,11 @@ public class PlayerStats : MonoBehaviour, IDamageable
     public float Health => _health;
     public float MaxHealth => _maxHealth;
     public float Armor => _armor;
+    public float ArmorReductionPercent
+    {
+        get => _armorReductionPercent;
+        set => _armorReductionPercent = Mathf.Clamp01(value);
+    }
     public float Shield => _shield;
     public float MaxShield => _maxShield;
 
@@ -30,6 +35,7 @@ public class PlayerStats : MonoBehaviour, IDamageable
     private float _initialHealth;
     private float _shield;
     private float _shieldRegenTimer;
+    private float _armorReductionPercent;
 
     private void Awake()
     {
@@ -46,14 +52,17 @@ public class PlayerStats : MonoBehaviour, IDamageable
     {
         if (_health <= 0f) return;
 
-        float amount = info.ResolveDamage(_armor);
+        float amount = info.ResolveDamage(_armor * (1f - _armorReductionPercent));
         _shieldRegenTimer = _shieldRegenDelay;
 
         if (_shield > 0f)
         {
-            float absorbed = Mathf.Min(_shield, amount);
+            // Lightning hits the shield harder; the extra bite is undone before
+            // computing what carries over so only the shield portion is boosted.
+            float shieldMult = info.Type == DamageType.Lightning ? DamageInfo.LightningShieldBonus : 1f;
+            float absorbed   = Mathf.Min(_shield, amount * shieldMult);
             _shield -= absorbed;
-            amount  -= absorbed;
+            amount  -= absorbed / shieldMult;
         }
 
         if (amount > 0f)

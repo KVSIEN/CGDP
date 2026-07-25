@@ -47,16 +47,16 @@
 -   ~~Bleed~~ ✓ Done
     Bleed Damage (per tick) = (Raw Damage × 50%) + (Target Max Health × 2%); ignores Armor entirely; does not stack — reapplying Bleed refreshes its duration instead
 
--   Poison
+-   ~~Poison~~ ✓ Done
     Poison Damage (per tick) = Effective Damage × (1.2 ^ (Stacks − 1)) (tune multiplier/cap, e.g. 1.5 with a 5-stack max); stacks infinitely or to a defined cap; each stack raises damage exponentially; uses Effective Damage (post-armor) as its base
 
--   Fire
+-   ~~Fire~~ ✓ Done
     Fire Damage (per tick) = Effective Damage × Fire DPS%; Fire DPS% comes from whichever weapon/ability applied it; reapplying Fire refreshes duration; scales from Effective Damage so Armor still reduces it
 
--   Lightning
+-   ~~Lightning~~ ✓ Done
     Deals 50% bonus damage to Shields; chains to nearby enemies — Chain Count = 1 + Current Lightning Stacks; each chain hit deals 20% less than the previous (100% / 80% / 64% / 51.2% / 40.96%); a chain cannot strike the same enemy twice per cast
 
--   Ice
+-   ~~Ice~~ ✓ Done
     Each stack grants 5% Movement Slow and 2% Armor Reduction, up to 5 stacks; at 5 stacks the target is Stunned for X seconds with an extra 10% Armor Reduction; during Stun totals reach 100% Slow and 20% Armor Reduction; stacks decay after X seconds without gaining a new one
 
 ## Movement
@@ -79,23 +79,24 @@
 -   ~~Indicate AI state with agent color change~~
     Enemy mesh color shifts per state (e.g. grey = patrol, yellow = alert, red = chase); no materials needed, drives renderer color directly; placeholder until proper animations/VFX exist
 
-## HUD / Feedback
--   Add floating damage number popups
+## HUD / Feedback ✓ Done
+-   ~~Add floating damage number popups~~
     World-space UI that spawns above hit position; headshots show larger/colored number; fades and floats upward
 
--   Implement hit flash and damage vignette
+-   ~~Implement hit flash and damage vignette~~
     Brief screen flash on taking damage; red vignette overlay that fades with health; integrates with existing TakeDamage event
 
 ## Systems
--   Build world pickup system
+-   ~~Build world pickup system~~ ✓ Done
     Press E to collect or interact; supports ammo, health, and weapon pickups or interact; prompt appears on proximity; weapon pickups swap or add to carried weapons
-    Interactive doors and switches tied to your Interact (E) key
+
+-   ~~Interactive doors and switches tied to your Interact (E) key~~ ✓ Done
 
 ## Input System
 -   Add gamepad support for discrete actions
     `ActionBinding` only stores Key/Mouse fields — Jump, Attack, Interact, Abilities, weapon slots, etc. currently cannot be bound to a gamepad button at all (only Move/Look axes get gamepad input, via the separate InputSystem_Actions asset); add a gamepad-button field per binding slot and extend BuildActions/Remap/PollForRebind to read and write it
 
--   Store keybind saves by name, not enum ordinal
+-   ~~Store keybind saves by name, not enum ordinal~~ ✓ Done
     SettingsSave currently serializes GameAction/Key/InputMouseButton as raw `(int)` ordinals into PlayerPrefs; inserting or reordering a value in any of those enums silently remaps existing players' saved bindings to the wrong action or key; switch BindingEntry to store enum names (or a stable id) instead
 
 -   Detect and warn on duplicate bindings

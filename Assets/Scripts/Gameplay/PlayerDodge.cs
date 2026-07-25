@@ -51,7 +51,7 @@ public class PlayerDodge : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_movement.IsMantling) return;
+        if (_movement.IsMantling || _movement.IsStunned) return;
 
         _dodgeCooldown.Tick(Time.fixedDeltaTime);
 

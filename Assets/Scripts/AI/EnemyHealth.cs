@@ -10,10 +10,16 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     private float _health;
     private float _shield;
     private float _shieldRegenTimer;
+    private float _armorReductionPercent;
 
     public float Health    => _health;
     public float MaxHealth => _data.MaxHealth;
     public float Armor     => _data.Armor;
+    public float ArmorReductionPercent
+    {
+        get => _armorReductionPercent;
+        set => _armorReductionPercent = Mathf.Clamp01(value);
+    }
     public float Shield    => _shield;
     public float MaxShield => _data.MaxShield;
 
@@ -40,14 +46,17 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     {
         if (_health <= 0f) return;
 
-        float amount = info.ResolveDamage(_data.Armor);
+        float amount = info.ResolveDamage(_data.Armor * (1f - _armorReductionPercent));
         _shieldRegenTimer = _data.ShieldRegenDelay;
 
         if (_shield > 0f)
         {
-            float absorbed = Mathf.Min(_shield, amount);
+            // Lightning hits the shield harder; the extra bite is undone before
+            // computing what carries over so only the shield portion is boosted.
+            float shieldMult = info.Type == DamageType.Lightning ? DamageInfo.LightningShieldBonus : 1f;
+            float absorbed   = Mathf.Min(_shield, amount * shieldMult);
             _shield -= absorbed;
-            amount  -= absorbed;
+            amount  -= absorbed / shieldMult;
         }
 
         if (amount > 0f)

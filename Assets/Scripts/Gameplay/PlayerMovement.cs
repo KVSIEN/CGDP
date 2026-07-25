@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
 [RequireComponent(typeof(PlayerInputHandler))]
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IStunnable
 {
     [SerializeField] private PlayerMovementSettings _settings;
     [SerializeField] private Transform _cameraTransform;
@@ -24,7 +24,16 @@ public class PlayerMovement : MonoBehaviour
     // Shared gate for abilities/actions that shouldn't run during an exclusive
     // movement state (mid-mantle the Rigidbody is kinematic; mid-dodge-roll it's
     // forcibly overwritten each FixedUpdate), so neither would have any real effect.
-    public bool CanAct => !IsMantling && !_dodge.IsRolling;
+    public bool CanAct => !IsMantling && !_dodge.IsRolling && !IsStunned;
+
+    // IStunnable — driven externally (e.g. Ice) via GetComponent<IStunnable>().
+    public float SpeedMultiplier
+    {
+        get => _speedMultiplier;
+        set => _speedMultiplier = Mathf.Clamp01(value);
+    }
+    public bool IsStunned => !_stunTimer.IsReady;
+    public void ApplyStun(float duration) => _stunTimer.Start(duration);
 
     public Vector3 MoveDirection   => _moveDirection;
     public float CoyoteTimer       => _coyoteTimer;
@@ -44,6 +53,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _slideDirection;
     private Vector3 _moveDirection;
     private Rigidbody _groundRb;
+    private float _speedMultiplier = 1f;
+    private CooldownTimer _stunTimer;
 
     private void Awake()
     {
@@ -93,20 +104,25 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        _stunTimer.Tick(Time.fixedDeltaTime);
+
         HandleCrouch();
         CheckGround();
 
         if (!IsMantling)
         {
-            HandleSlide();
-            HandleMovement();
-            HandleJump();
-
-            _mantleBufferTimer -= Time.fixedDeltaTime;
-            if (_mantleBufferTimer > 0f && _coyoteTimer <= 0f)
+            if (!IsStunned)
             {
-                _mantle.TryInit();
-                if (IsMantling) _mantleBufferTimer = 0f;
+                HandleSlide();
+                HandleMovement();
+                HandleJump();
+
+                _mantleBufferTimer -= Time.fixedDeltaTime;
+                if (_mantleBufferTimer > 0f && _coyoteTimer <= 0f)
+                {
+                    _mantle.TryInit();
+                    if (IsMantling) _mantleBufferTimer = 0f;
+                }
             }
 
             ApplyGravity();
@@ -193,9 +209,9 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        float targetSpeed = IsCrouching ? _settings.CrouchSpeed
+        float targetSpeed = (IsCrouching ? _settings.CrouchSpeed
             : IsSprinting ? _settings.SprintSpeed
-            : _settings.WalkSpeed;
+            : _settings.WalkSpeed) * _speedMultiplier;
 
         _moveDirection = Vector3.zero;
         if (rawInput.magnitude > 0.01f)

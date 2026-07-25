@@ -108,6 +108,14 @@ public class WeaponController : MonoBehaviour
         NotifyAmmoChanged();
     }
 
+    /// <summary>Adds reserve ammo to the currently equipped weapon — call from ammo pickups.</summary>
+    public void AddReserveAmmo(int amount)
+    {
+        if (_data == null || amount <= 0) return;
+        _reserve += amount;
+        NotifyAmmoChanged();
+    }
+
     // ── Input polling ─────────────────────────────────────────────────────
     private void HandleFireInput()
     {

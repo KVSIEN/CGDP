@@ -71,6 +71,10 @@
 - HUD prompt appears bottom-center of the screen showing a blue "E" key badge and the action label (e.g. "Pick Up  Assault Rifle"); disappears instantly when out of range
 - Weapon pickups: place a `WeaponPickup` component on any world object, assign a `WeaponData` asset; picking it up fills the first empty loadout slot and equips it, or replaces the active slot if all four are full; the pickup object is destroyed on collection
 - Random weapon pickups: add `RandomWeaponPickup` alongside `WeaponPickup` and assign a `WeaponCategoryData` asset; each time the object spawns a unique weapon is generated with randomised stats drawn from the category's thresholds
+- Ammo pickups: `AmmoPickup` adds reserve ammo to whichever weapon the player currently has equipped
+- Health pickups: `HealthPickup` restores a set amount of health
+- Doors: press E on a `Door` to swing it open or closed (no animation — a plain procedural rotation)
+- Switches: press E on a `Switch` to toggle one or more linked doors remotely
 
 ## Procedural Weapon Generation
 - Six weapon categories: AR, SMG, Pistol, Sniper, LMG, Shotgun — each defined by a `WeaponCategoryData` ScriptableObject

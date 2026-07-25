@@ -29,12 +29,12 @@ public static class SettingsSave
             var b = settings.Bindings[i];
             data.entries[i] = new BindingEntry
             {
-                action         = (int)b.Action,
-                primaryKey     = (int)b.PrimaryKey,
-                primaryMouse   = (int)b.PrimaryMouse,
-                secondaryKey   = (int)b.SecondaryKey,
-                secondaryMouse = (int)b.SecondaryMouse,
-                mode           = (int)b.Mode,
+                action         = b.Action.ToString(),
+                primaryKey     = b.PrimaryKey.ToString(),
+                primaryMouse   = b.PrimaryMouse.ToString(),
+                secondaryKey   = b.SecondaryKey.ToString(),
+                secondaryMouse = b.SecondaryMouse.ToString(),
+                mode           = b.Mode.ToString(),
             };
         }
         PlayerPrefs.SetString(KeyBindings, JsonUtility.ToJson(data));
@@ -49,16 +49,19 @@ public static class SettingsSave
 
         foreach (var entry in data.entries)
         {
-            var action = (GameAction)entry.action;
+            if (!Enum.TryParse(entry.action, out GameAction action)) continue;
+
             for (int j = 0; j < settings.Bindings.Count; j++)
             {
                 if (settings.Bindings[j].Action != action) continue;
                 var b = settings.Bindings[j];
-                b.PrimaryKey     = (Key)entry.primaryKey;
-                b.PrimaryMouse   = (InputMouseButton)entry.primaryMouse;
-                b.SecondaryKey   = (Key)entry.secondaryKey;
-                b.SecondaryMouse = (InputMouseButton)entry.secondaryMouse;
-                b.Mode           = (InputActionMode)entry.mode;
+
+                if (Enum.TryParse(entry.primaryKey, out Key primaryKey)) b.PrimaryKey = primaryKey;
+                if (Enum.TryParse(entry.primaryMouse, out InputMouseButton primaryMouse)) b.PrimaryMouse = primaryMouse;
+                if (Enum.TryParse(entry.secondaryKey, out Key secondaryKey)) b.SecondaryKey = secondaryKey;
+                if (Enum.TryParse(entry.secondaryMouse, out InputMouseButton secondaryMouse)) b.SecondaryMouse = secondaryMouse;
+                if (Enum.TryParse(entry.mode, out InputActionMode mode)) b.Mode = mode;
+
                 settings.Bindings[j] = b;
                 break;
             }
@@ -73,6 +76,6 @@ public static class SettingsSave
     [Serializable]
     private class BindingEntry
     {
-        public int action, primaryKey, primaryMouse, secondaryKey, secondaryMouse, mode;
+        public string action, primaryKey, primaryMouse, secondaryKey, secondaryMouse, mode;
     }
 }

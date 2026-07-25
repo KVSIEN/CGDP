@@ -4,6 +4,9 @@ using UnityEngine;
 // and status ticks, so every damage source resolves against armor the same way.
 public readonly struct DamageInfo
 {
+    // Shared by PlayerStats/EnemyHealth's shield-absorption step.
+    public const float LightningShieldBonus = 1.5f;
+
     public readonly float RawDamage;
     public readonly float ArmorPenetration; // 0..1
     public readonly DamageType Type;

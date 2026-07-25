@@ -115,10 +115,18 @@ Enemy                         [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBa
 
 ```
 WeaponPickup (any name)       [Collider (isTrigger), WeaponPickup, CullableObject?]
+AmmoPickup (any name)         [Collider (isTrigger), AmmoPickup, CullableObject?]
+HealthPickup (any name)       [Collider (isTrigger), HealthPickup, CullableObject?]
+Door (any name)               [Collider (solid — blocks the player when closed), Door]
+Switch (any name)             [Collider (isTrigger), Switch]
 ```
 
 - **WeaponPickup** — assign `_data` = a fixed `WeaponData` asset, **or**
 - add **RandomWeaponPickup** alongside it and assign `_categories` = one or more `WeaponCategoryData` assets (`AssaultRifle`, `SubMachineGun`, `Pistol`, `Shotgun`, `LightMachineGun` — generate a `Sniper` category asset too if that category is needed, it isn't present yet) plus `_fixedIndex = -1` for a random pick.
+- **AmmoPickup** — assign `_amount` (reserve ammo added to the player's currently equipped weapon; default 30). No reference wiring — finds `WeaponController` via `GetComponent` on the interacting player.
+- **HealthPickup** — assign `_amount` (health restored; default 25). No reference wiring — finds `PlayerStats` via `GetComponent` on the interacting player.
+- **Door** — place the GameObject's pivot at the hinge edge, not the center (the whole object rotates in place). Assign `_openAngle`/`_openSpeed` as needed. Directly interactable with E; a `Switch` can also toggle it via `Toggle()`.
+- **Switch** — assign `_label` and `_doors[]` = one or more `Door` components to toggle when interacted with. Doesn't need to be near the doors it controls.
 - Any other world object that should respond to the Interact key just needs a component implementing `IInteractable` (`InteractLabel`, `Interact(GameObject)`) — no other wiring required, `PlayerInteraction` finds it via an `OverlapSphere` scan.
 - Environment meshes that should be frustum-culled need a `CullableObject` component — leave `_renderers` empty to auto-collect from children, or assign explicitly for multi-renderer objects.
 

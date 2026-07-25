@@ -44,12 +44,25 @@ public class StatusEffectController : MonoBehaviour
             }
 
             if (active.RemainingDuration <= 0f)
-                _expiredBuffer.Add(effect);
+            {
+                if (effect.DecayOneStackAtATime && active.Stacks > 1)
+                {
+                    active.Stacks--;
+                    active.RemainingDuration = effect.Duration;
+                }
+                else
+                {
+                    _expiredBuffer.Add(effect);
+                }
+            }
         }
 
         if (_expiredBuffer.Count == 0) return;
         foreach (StatusEffect effect in _expiredBuffer)
+        {
             _active.Remove(effect);
+            effect.OnRemoved(_target);
+        }
         _expiredBuffer.Clear();
     }
 
@@ -74,5 +87,11 @@ public class StatusEffectController : MonoBehaviour
                 Magnitude         = magnitude,
             };
         }
+    }
+
+    // Current stack count for `effect`, or 0 if it isn't active.
+    public int GetStacks(StatusEffect effect)
+    {
+        return _active.TryGetValue(effect, out ActiveEffect active) ? active.Stacks : 0;
     }
 }
