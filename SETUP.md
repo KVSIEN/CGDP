@@ -115,7 +115,7 @@ Enemy                         [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBa
 ```
 
 - Requires baked NavMesh (`NavMesh Surface` in the scene, baked over the walkable ground).
-- **EnemyAI** — assign `_data` = `EnemyData.asset`, `_playerTransform` = Player, `_playerStats` = Player's `PlayerStats`, `_waypoints` = patrol point transforms (optional — idles if empty), `_obstacleMask` = geometry layers that block line-of-sight, `_stateRenderers` = the enemy's renderer(s) for the patrol/alert/chase color tint.
+- **EnemyAI** — assign `_data` = `EnemyData.asset`, `_playerTransform` = Player, `_playerStats` = Player's `PlayerStats`, `_waypoints` = patrol point transforms (optional — idles if empty), `_obstacleMask` = geometry layers that block line-of-sight, `_stateRenderers` = the enemy's renderer(s) for the patrol/alert/chase color tint. Set `CombatType` to `Melee` or `Ranged` on the `EnemyData` asset — ranged enemies use additional fields (`PreferredRange`, `SpreadAngle`, `BurstCount`, `BurstInterval`, `StrafeInterval`, `StrafeDistance`, `RangedAttackSound`).
 - **EnemyHealth** — assign `_data` = same `EnemyData.asset`, `_healthBar` = the `EnemyHealthBar` on the same object.
 - **EnemyHealthBar** — no references required; it builds its own world-space canvas in `Awake`.
 - **EnemyAudio** — assign `_hurtSound` / `_deathSound` = `SoundBank` assets (optional — silent when unassigned). No other wiring — resolves `EnemyHealth` via `GetComponent`.
@@ -155,7 +155,7 @@ Switch (any name)             [Collider (isTrigger), Switch]
 | `MeleeWeaponData` asset | `MeleeController` |
 | `GrenadeData` asset (its `GrenadePrefab` needs a `Rigidbody` + non-trigger `Collider` + `Grenade` component) | `GrenadeController` |
 | `SurfaceDatabase.asset` | `PlayerFootsteps` |
-| `SoundBank` assets (per sound — weapon fire/reload/empty, melee swing/hit, grenade throw/explosion, player hurt/death, enemy hurt/death/attack, footstep walk/sprint/crouch per surface) | Various — all optional; systems work silently without them |
+| `SoundBank` assets (per sound — weapon fire/reload/empty, melee swing/hit, grenade throw/explosion, player hurt/death, enemy hurt/death/attack/ranged-attack, footstep walk/sprint/crouch per surface) | Various — all optional; systems work silently without them |
 
 `InputBindingSettings` and `PlayerMovementSettings` are each a **single shared asset**
 referenced by multiple components — don't accidentally create per-component duplicates,

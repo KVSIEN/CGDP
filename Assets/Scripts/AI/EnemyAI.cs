@@ -36,7 +36,11 @@ public class EnemyAI : MonoBehaviour, IStunnable
     private CooldownTimer _stunTimer;
     private bool    _wasStunned;
 
-    // IStunnable — driven externally (e.g. Ice) via GetComponent<IStunnable>().
+    private int   _burstRemaining;
+    private float _burstTimer;
+    private float _strafeTimer;
+    private int   _strafeDir = 1;
+
     public float SpeedMultiplier
     {
         get => _speedMultiplier;
@@ -161,13 +165,21 @@ public class EnemyAI : MonoBehaviour, IStunnable
 
     private BtStatus ChasePlayer()
     {
+        if (_data.CombatType == EnemyCombatType.Ranged)
+            return ChasePlayerRanged();
+
+        return ChasePlayerMelee();
+    }
+
+    private BtStatus ChasePlayerMelee()
+    {
         _agent.speed = _data.ChaseSpeed * _speedMultiplier;
 
         float distSq = (transform.position - _playerTransform.position).sqrMagnitude;
         if (distSq <= _data.AttackRange * _data.AttackRange)
         {
             _agent.isStopped = true;
-            TryAttack();
+            TryMeleeAttack();
         }
         else
         {
@@ -178,7 +190,86 @@ public class EnemyAI : MonoBehaviour, IStunnable
         return BtStatus.Running;
     }
 
-    private void TryAttack()
+    private BtStatus ChasePlayerRanged()
+    {
+        _agent.speed = _data.ChaseSpeed * _speedMultiplier;
+
+        Vector3 toPlayer = _playerTransform.position - transform.position;
+        float dist = toPlayer.magnitude;
+        float preferred = _data.PreferredRange;
+        float tolerance = preferred * 0.15f;
+
+        if (_burstRemaining > 0)
+        {
+            _agent.isStopped = true;
+            FacePlayer();
+            TickBurst();
+            return BtStatus.Running;
+        }
+
+        if (dist > preferred + tolerance)
+        {
+            _agent.isStopped = false;
+            _agent.SetDestination(_playerTransform.position);
+        }
+        else if (dist < preferred - tolerance)
+        {
+            _agent.isStopped = false;
+            Vector3 retreatDir = -toPlayer.normalized;
+            Vector3 retreatTarget = transform.position + retreatDir * (preferred - dist + tolerance);
+            if (NavMesh.SamplePosition(retreatTarget, out var hit, tolerance * 2f, NavMesh.AllAreas))
+                _agent.SetDestination(hit.position);
+        }
+        else
+        {
+            Strafe();
+
+            if (_seesPlayer)
+                TryRangedAttack();
+        }
+
+        FacePlayer();
+        return BtStatus.Running;
+    }
+
+    private void Strafe()
+    {
+        _strafeTimer -= Time.deltaTime;
+
+        if (_strafeTimer <= 0f)
+        {
+            _strafeTimer = _data.StrafeInterval;
+            _strafeDir = Random.value > 0.5f ? 1 : -1;
+        }
+
+        Vector3 toPlayer = (_playerTransform.position - transform.position).normalized;
+        Vector3 strafeVec = Vector3.Cross(Vector3.up, toPlayer) * _strafeDir;
+        Vector3 strafeTarget = transform.position + strafeVec * _data.StrafeDistance;
+
+        if (NavMesh.SamplePosition(strafeTarget, out var hit, _data.StrafeDistance, NavMesh.AllAreas))
+        {
+            _agent.isStopped = false;
+            _agent.SetDestination(hit.position);
+        }
+        else
+        {
+            _strafeDir = -_strafeDir;
+        }
+    }
+
+    private void FacePlayer()
+    {
+        Vector3 dir = _playerTransform.position - transform.position;
+        dir.y = 0f;
+        if (dir.sqrMagnitude > 0.001f)
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                Quaternion.LookRotation(dir),
+                _agent.angularSpeed * Time.deltaTime
+            );
+    }
+
+    private void TryMeleeAttack()
     {
         if (!_attackCooldown.IsReady) return;
         _attackCooldown.Start(_data.AttackCooldown);
@@ -186,10 +277,62 @@ public class EnemyAI : MonoBehaviour, IStunnable
         _data.AttackSound?.Play(transform.position);
     }
 
+    private void TryRangedAttack()
+    {
+        if (!_attackCooldown.IsReady) return;
+        _attackCooldown.Start(_data.AttackCooldown);
+
+        _burstRemaining = Mathf.Max(1, _data.BurstCount);
+        _burstTimer = 0f;
+        FireOneShot();
+        _burstRemaining--;
+    }
+
+    private void TickBurst()
+    {
+        if (_burstRemaining <= 0) return;
+
+        _burstTimer -= Time.deltaTime;
+        if (_burstTimer <= 0f)
+        {
+            FireOneShot();
+            _burstRemaining--;
+            _burstTimer = _data.BurstInterval;
+        }
+    }
+
+    private void FireOneShot()
+    {
+        Vector3 eyePos = transform.position + Vector3.up * 1.5f;
+        Vector3 dir = (_playerTransform.position + Vector3.up * 1f - eyePos).normalized;
+
+        if (_data.SpreadAngle > 0f)
+        {
+            float halfSpread = _data.SpreadAngle * 0.5f;
+            Vector3 randomOffset = Random.insideUnitCircle * Mathf.Tan(halfSpread * Mathf.Deg2Rad);
+            dir = (dir + transform.right * randomOffset.x + transform.up * randomOffset.y).normalized;
+        }
+
+        SoundBank sound = _data.RangedAttackSound != null ? _data.RangedAttackSound : _data.AttackSound;
+        sound?.Play(transform.position);
+
+        if (Physics.Raycast(eyePos, dir, out var hit, _data.SightRange, ~0, QueryTriggerInteraction.Ignore))
+        {
+            var target = hit.collider.GetComponentInParent<PlayerStats>();
+            if (target != null)
+            {
+                bool headshot = hit.collider.CompareTag("Head");
+                float damage = headshot ? _data.AttackDamage * 2f : _data.AttackDamage;
+                target.TakeDamage(new DamageInfo(damage));
+            }
+        }
+    }
+
     private void SetState(AiState state)
     {
         _agent.isStopped = false;
         _state = state;
+        _burstRemaining = 0;
 
         switch (state)
         {

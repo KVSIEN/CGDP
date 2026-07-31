@@ -155,13 +155,16 @@
 - Three AI states: Patrol, Alert, Chase — driven entirely by the behavior tree
 - Patrol follows an ordered list of waypoints, looping continuously; idles in place if no waypoints are assigned
 - Alert sends the enemy to the last known player position and returns to patrol after a configurable duration
-- Chase closes the gap to the player and attacks at melee range with a configurable cooldown; stops moving while attacking
+- Two combat types per enemy: Melee or Ranged, selectable on the EnemyData asset
+- **Melee enemies** close the gap to the player and attack at melee range with a configurable cooldown; stop moving while attacking
+- **Ranged enemies** maintain a preferred engagement distance — they advance when too far, retreat when too close, and strafe sideways while at range; they fire hitscan shots at the player when they have line of sight, with configurable spread for accuracy; burst fire is supported (multiple shots per trigger pull with a configurable interval between them)
+- Ranged shots resolve through the same Effective Damage pipeline as everything else (armor, shield, penetration all apply); headshots deal double damage
 - Line-of-sight detection: raycast cone with tunable range and full-angle FOV; blocked by any geometry on the obstacle mask
 - Hearing detection: proximity sphere with tunable radius; always triggers regardless of facing direction
 - Losing sight switches the enemy to Alert for investigation; regaining sight immediately re-enters Chase
 - State color indicator: mesh tints grey (patrol), yellow (alert), red (chase) via MaterialPropertyBlock — no material instances created
 - World-space health bar appears above the enemy on damage and fades out after a configurable delay; billboards toward the camera
-- All parameters (health, speeds, sight, hearing, attack, alert duration) are tunable per enemy type via an EnemyData ScriptableObject
+- All parameters (health, speeds, sight, hearing, combat type, attack, ranged stats, alert duration) are tunable per enemy type via an EnemyData ScriptableObject
 
 ## Visibility Culling
 - Objects outside the camera frustum have their renderers disabled automatically, reducing draw calls without deactivating GameObjects
