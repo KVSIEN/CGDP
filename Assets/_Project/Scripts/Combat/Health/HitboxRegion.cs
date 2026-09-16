@@ -1,6 +1,9 @@
-public enum HitboxRegion
+namespace CGD.Combat
 {
-    Body,
-    Head,
-    Limb,
+    public enum HitboxRegion
+    {
+        Body,
+        Head,
+        Limb,
+    }
 }

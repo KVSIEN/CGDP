@@ -1,60 +1,65 @@
 using UnityEngine;
+using CGD.Input;
+using CGD.Weapons;
 
-[RequireComponent(typeof(PlayerInputHandler))]
-[RequireComponent(typeof(WeaponController))]
-public class PlayerWeaponLoadout : MonoBehaviour
+namespace CGD.Player
 {
-    [SerializeField] private WeaponData[] _slots = new WeaponData[4];
-
-    public WeaponData[] Slots     => _slots;
-    public int          ActiveSlot => _activeSlot;
-
-    private PlayerInputHandler _input;
-    private WeaponController   _weapon;
-    private int                _activeSlot = -1;
-
-    private static readonly GameAction[] SlotActions =
+    [RequireComponent(typeof(PlayerInputHandler))]
+    [RequireComponent(typeof(WeaponController))]
+    public class PlayerWeaponLoadout : MonoBehaviour
     {
-        GameAction.Weapon1,
-        GameAction.Weapon2,
-        GameAction.Weapon3,
-        GameAction.Weapon4,
-    };
+        [SerializeField] private WeaponData[] _slots = new WeaponData[4];
 
-    private void Awake()
-    {
-        _input  = GetComponent<PlayerInputHandler>();
-        _weapon = GetComponent<WeaponController>();
-    }
+        public WeaponData[] Slots     => _slots;
+        public int          ActiveSlot => _activeSlot;
 
-    private void Start()
-    {
-        EquipSlot(0);
-    }
+        private PlayerInputHandler _input;
+        private WeaponController   _weapon;
+        private int                _activeSlot = -1;
 
-    private void Update()
-    {
-        for (int i = 0; i < SlotActions.Length; i++)
+        private static readonly GameAction[] SlotActions =
         {
-            if (_input.GetAction(SlotActions[i]))
-                EquipSlot(i);
+            GameAction.Weapon1,
+            GameAction.Weapon2,
+            GameAction.Weapon3,
+            GameAction.Weapon4,
+        };
+
+        private void Awake()
+        {
+            _input  = GetComponent<PlayerInputHandler>();
+            _weapon = GetComponent<WeaponController>();
         }
-    }
 
-    public void EquipSlot(int index)
-    {
-        if (index < 0 || index >= _slots.Length) return;
-        if (_activeSlot == index) return;
+        private void Start()
+        {
+            EquipSlot(0);
+        }
 
-        _activeSlot = index;
-        _weapon.Equip(_slots[index]);
-    }
+        private void Update()
+        {
+            for (int i = 0; i < SlotActions.Length; i++)
+            {
+                if (_input.GetAction(SlotActions[i]))
+                    EquipSlot(i);
+            }
+        }
 
-    public void SetSlot(int index, WeaponData data)
-    {
-        if (index < 0 || index >= _slots.Length) return;
-        _slots[index] = data;
-        if (_activeSlot == index)
-            _weapon.Equip(data);
+        public void EquipSlot(int index)
+        {
+            if (index < 0 || index >= _slots.Length) return;
+            if (_activeSlot == index) return;
+
+            _activeSlot = index;
+            _weapon.Equip(_slots[index]);
+        }
+
+        public void SetSlot(int index, WeaponData data)
+        {
+            if (index < 0 || index >= _slots.Length) return;
+            _slots[index] = data;
+            if (_activeSlot == index)
+                _weapon.Equip(data);
+        }
     }
 }

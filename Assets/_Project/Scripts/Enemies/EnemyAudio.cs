@@ -1,30 +1,34 @@
 using UnityEngine;
+using CGD.Audio;
 
-[RequireComponent(typeof(EnemyHealth))]
-public class EnemyAudio : MonoBehaviour
+namespace CGD.Enemies
 {
-    [SerializeField] private SoundBank _hurtSound;
-    [SerializeField] private SoundBank _deathSound;
-
-    private EnemyHealth _health;
-
-    private void Awake()
+    [RequireComponent(typeof(EnemyHealth))]
+    public class EnemyAudio : MonoBehaviour
     {
-        _health = GetComponent<EnemyHealth>();
-    }
+        [SerializeField] private SoundBank _hurtSound;
+        [SerializeField] private SoundBank _deathSound;
 
-    private void OnEnable()
-    {
-        _health.OnDamaged += OnDamaged;
-        _health.OnDeath   += OnDeath;
-    }
+        private EnemyHealth _health;
 
-    private void OnDisable()
-    {
-        _health.OnDamaged -= OnDamaged;
-        _health.OnDeath   -= OnDeath;
-    }
+        private void Awake()
+        {
+            _health = GetComponent<EnemyHealth>();
+        }
 
-    private void OnDamaged(float amount) => _hurtSound?.Play(transform.position);
-    private void OnDeath()               => _deathSound?.Play(transform.position);
+        private void OnEnable()
+        {
+            _health.OnDamaged += OnDamaged;
+            _health.OnDeath   += OnDeath;
+        }
+
+        private void OnDisable()
+        {
+            _health.OnDamaged -= OnDamaged;
+            _health.OnDeath   -= OnDeath;
+        }
+
+        private void OnDamaged(float amount) => _hurtSound?.Play(transform.position);
+        private void OnDeath()               => _deathSound?.Play(transform.position);
+    }
 }

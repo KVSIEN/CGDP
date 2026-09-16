@@ -1,18 +1,21 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "HealAbility", menuName = "CGD/Abilities/Heal")]
-public class HealAbility : Ability
+namespace CGD.Abilities
 {
-    public float HealAmount = 35f;
-
-    public override bool Execute(AbilityContext ctx)
+    [CreateAssetMenu(fileName = "HealAbility", menuName = "CGD/Abilities/Heal")]
+    public class HealAbility : Ability
     {
-        if (ctx.Health == null) return false;
+        public float HealAmount = 35f;
 
-        // Don't use the cooldown if already at full health
-        if (ctx.Health.Health >= ctx.Health.MaxHealth) return false;
+        public override bool Execute(AbilityContext ctx)
+        {
+            if (ctx.Health == null) return false;
 
-        ctx.Health.Heal(HealAmount);
-        return true;
+            // Don't use the cooldown if already at full health
+            if (ctx.Health.Health >= ctx.Health.MaxHealth) return false;
+
+            ctx.Health.Heal(HealAmount);
+            return true;
+        }
     }
 }

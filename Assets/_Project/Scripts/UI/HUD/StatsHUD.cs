@@ -1,100 +1,104 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using CGD.Player;
 
-[RequireComponent(typeof(RectTransform))]
-public class StatsHUD : HUDElement
+namespace CGD.UI
 {
-    [SerializeField] private PlayerHealth _playerHealth;
-
-    [Header("Colors")]
-    [SerializeField] private Color _backgroundColor = new Color(0f, 0f, 0f, 0.45f);
-    [SerializeField] private Color _barBgColor = new Color(0.08f, 0.08f, 0.08f, 0.9f);
-    [SerializeField] private Color _healthColor = new Color(0.22f, 0.85f, 0.22f, 1f);
-    [SerializeField] private Color _healthLowColor = new Color(0.9f, 0.15f, 0.1f, 1f);
-    [SerializeField] private Color _textColor = new Color(0.92f, 0.92f, 0.92f, 1f);
-
-    [Header("Layout")]
-    [SerializeField] private Vector2 _screenPadding = new Vector2(20f, 20f);
-    [SerializeField] private Vector2 _innerPadding = new Vector2(12f, 12f);
-    [SerializeField] private float _panelWidth = 200f;
-    [SerializeField] private float _barHeight = 8f;
-
-    private Image _healthFill;
-    private TextMeshProUGUI _healthText;
-
-    private void Awake()
+    [RequireComponent(typeof(RectTransform))]
+    public class StatsHUD : HUDElement
     {
-        SetupAnchor();
-        Build();
+        [SerializeField] private PlayerHealth _playerHealth;
 
-        if (_playerHealth != null)
-            _playerHealth.OnChanged += Refresh;
+        [Header("Colors")]
+        [SerializeField] private Color _backgroundColor = new Color(0f, 0f, 0f, 0.45f);
+        [SerializeField] private Color _barBgColor = new Color(0.08f, 0.08f, 0.08f, 0.9f);
+        [SerializeField] private Color _healthColor = new Color(0.22f, 0.85f, 0.22f, 1f);
+        [SerializeField] private Color _healthLowColor = new Color(0.9f, 0.15f, 0.1f, 1f);
+        [SerializeField] private Color _textColor = new Color(0.92f, 0.92f, 0.92f, 1f);
 
-        Refresh();
-    }
+        [Header("Layout")]
+        [SerializeField] private Vector2 _screenPadding = new Vector2(20f, 20f);
+        [SerializeField] private Vector2 _innerPadding = new Vector2(12f, 12f);
+        [SerializeField] private float _panelWidth = 200f;
+        [SerializeField] private float _barHeight = 8f;
 
-    private void OnDestroy()
-    {
-        if (_playerHealth != null)
-            _playerHealth.OnChanged -= Refresh;
-    }
+        private Image _healthFill;
+        private TextMeshProUGUI _healthText;
 
-    private void SetupAnchor()
-    {
-        var rt = GetComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = rt.pivot = Vector2.zero;
-        rt.anchoredPosition = _screenPadding;
-    }
+        private void Awake()
+        {
+            SetupAnchor();
+            Build();
 
-    private void Build()
-    {
-        var self = GetComponent<RectTransform>();
+            if (_playerHealth != null)
+                _playerHealth.OnChanged += Refresh;
 
-        float ip = _innerPadding.x;
-        float contentWidth = _panelWidth - ip * 2f;
-        float y = -_innerPadding.y;
+            Refresh();
+        }
 
-        // Background panel (added first so it renders behind everything)
-        var bg = UIFactory.MakeImage("Background", self);
-        bg.color = _backgroundColor;
-        UIFactory.Stretch(bg.rectTransform);
+        private void OnDestroy()
+        {
+            if (_playerHealth != null)
+                _playerHealth.OnChanged -= Refresh;
+        }
 
-        // Health bar background
-        var barBg = UIFactory.MakeImage("HealthBarBg", self);
-        barBg.color = _barBgColor;
-        UIFactory.Place(barBg.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, _barHeight));
+        private void SetupAnchor()
+        {
+            var rt = GetComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = rt.pivot = Vector2.zero;
+            rt.anchoredPosition = _screenPadding;
+        }
 
-        // Health fill (child of bar background, width driven by anchor)
-        _healthFill = UIFactory.MakeImage("HealthFill", barBg.rectTransform);
-        _healthFill.color = _healthColor;
-        var fillRt = _healthFill.rectTransform;
-        fillRt.anchorMin = Vector2.zero;
-        fillRt.anchorMax = Vector2.one;
-        fillRt.offsetMin = fillRt.offsetMax = Vector2.zero;
+        private void Build()
+        {
+            var self = GetComponent<RectTransform>();
 
-        y -= _barHeight + 6f;
+            float ip = _innerPadding.x;
+            float contentWidth = _panelWidth - ip * 2f;
+            float y = -_innerPadding.y;
 
-        // Health text
-        _healthText = UIFactory.MakeText("HealthText", self);
-        _healthText.color = _textColor;
-        _healthText.fontSize = 12f;
-        _healthText.alignment = TextAlignmentOptions.Left;
-        UIFactory.Place(_healthText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 16f));
+            // Background panel (added first so it renders behind everything)
+            var bg = UIFactory.MakeImage("Background", self);
+            bg.color = _backgroundColor;
+            UIFactory.Stretch(bg.rectTransform);
 
-        y -= 16f;
+            // Health bar background
+            var barBg = UIFactory.MakeImage("HealthBarBg", self);
+            barBg.color = _barBgColor;
+            UIFactory.Place(barBg.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, _barHeight));
 
-        float totalHeight = -y + _innerPadding.y;
-        self.sizeDelta = new Vector2(_panelWidth, totalHeight);
-    }
+            // Health fill (child of bar background, width driven by anchor)
+            _healthFill = UIFactory.MakeImage("HealthFill", barBg.rectTransform);
+            _healthFill.color = _healthColor;
+            var fillRt = _healthFill.rectTransform;
+            fillRt.anchorMin = Vector2.zero;
+            fillRt.anchorMax = Vector2.one;
+            fillRt.offsetMin = fillRt.offsetMax = Vector2.zero;
 
-    public override void Refresh()
-    {
-        if (_playerHealth == null) return;
+            y -= _barHeight + 6f;
 
-        float ratio = _playerHealth.MaxHealth > 0f ? _playerHealth.Health / _playerHealth.MaxHealth : 0f;
-        _healthFill.rectTransform.anchorMax = new Vector2(ratio, 1f);
-        _healthFill.color = Color.Lerp(_healthLowColor, _healthColor, ratio);
-        _healthText.text = $"HP  {Mathf.CeilToInt(_playerHealth.Health)} / {Mathf.CeilToInt(_playerHealth.MaxHealth)}";
+            // Health text
+            _healthText = UIFactory.MakeText("HealthText", self);
+            _healthText.color = _textColor;
+            _healthText.fontSize = 12f;
+            _healthText.alignment = TextAlignmentOptions.Left;
+            UIFactory.Place(_healthText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 16f));
+
+            y -= 16f;
+
+            float totalHeight = -y + _innerPadding.y;
+            self.sizeDelta = new Vector2(_panelWidth, totalHeight);
+        }
+
+        public override void Refresh()
+        {
+            if (_playerHealth == null) return;
+
+            float ratio = _playerHealth.MaxHealth > 0f ? _playerHealth.Health / _playerHealth.MaxHealth : 0f;
+            _healthFill.rectTransform.anchorMax = new Vector2(ratio, 1f);
+            _healthFill.color = Color.Lerp(_healthLowColor, _healthColor, ratio);
+            _healthText.text = $"HP  {Mathf.CeilToInt(_playerHealth.Health)} / {Mathf.CeilToInt(_playerHealth.MaxHealth)}";
+        }
     }
 }

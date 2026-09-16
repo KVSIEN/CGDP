@@ -1,41 +1,45 @@
 using UnityEngine;
+using CGD.Audio;
 
-[CreateAssetMenu(fileName = "EnemyData", menuName = "CGD/Enemies/Enemy Data")]
-public class EnemyData : ScriptableObject
+namespace CGD.Enemies
 {
-    [Header("Health")]
-    public float MaxHealth = 100f;
-    public float Armor     = 0f;
+    [CreateAssetMenu(fileName = "EnemyData", menuName = "CGD/Enemies/Enemy Data")]
+    public class EnemyData : ScriptableObject
+    {
+        [Header("Health")]
+        public float MaxHealth = 100f;
+        public float Armor     = 0f;
 
-    [Header("Shield")]
-    public float MaxShield = 0f;
-    [Tooltip("Seconds without taking damage before shield starts regenerating")]
-    public float ShieldRegenDelay = 5f;
-    [Tooltip("Shield points restored per second once regen starts")]
-    public float ShieldRegenRate = 10f;
+        [Header("Shield")]
+        public float MaxShield = 0f;
+        [Tooltip("Seconds without taking damage before shield starts regenerating")]
+        public float ShieldRegenDelay = 5f;
+        [Tooltip("Shield points restored per second once regen starts")]
+        public float ShieldRegenRate = 10f;
 
-    [Header("Movement")]
-    public float PatrolSpeed = 2f;
-    public float ChaseSpeed  = 5f;
+        [Header("Movement")]
+        public float PatrolSpeed = 2f;
+        public float ChaseSpeed  = 5f;
 
-    [Header("Detection")]
-    [Tooltip("Maximum sight distance in metres.")]
-    public float SightRange = 15f;
-    [Tooltip("Full cone angle in degrees — e.g. 90 means 45° either side of forward.")]
-    public float SightAngle = 90f;
-    [Tooltip("Radius at which the enemy hears the player regardless of line-of-sight.")]
-    public float HearingRadius = 8f;
+        [Header("Detection")]
+        [Tooltip("Maximum sight distance in metres.")]
+        public float SightRange = 15f;
+        [Tooltip("Full cone angle in degrees — e.g. 90 means 45° either side of forward.")]
+        public float SightAngle = 90f;
+        [Tooltip("Radius at which the enemy hears the player regardless of line-of-sight.")]
+        public float HearingRadius = 8f;
 
-    [Header("Combat")]
-    public float AttackRange    = 1.5f;
-    public float AttackDamage   = 15f;
-    public float AttackCooldown = 1f;
+        [Header("Combat")]
+        public float AttackRange    = 1.5f;
+        public float AttackDamage   = 15f;
+        public float AttackCooldown = 1f;
 
-    [Header("Alert")]
-    [Tooltip("How long the enemy investigates the last known position before returning to patrol.")]
-    public float AlertDuration = 5f;
+        [Header("Alert")]
+        [Tooltip("How long the enemy investigates the last known position before returning to patrol.")]
+        public float AlertDuration = 5f;
 
-    [Header("Audio")]
-    public SoundBank AttackSound;
-    public SoundBank DeathSound;
+        [Header("Audio")]
+        public SoundBank AttackSound;
+        public SoundBank DeathSound;
+    }
 }

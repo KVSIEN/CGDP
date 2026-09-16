@@ -1,20 +1,23 @@
 using UnityEngine;
 
-// Attach to a world GameObject with a Collider (set Is Trigger = true).
-// Toggles every linked Door when interacted with.
-[RequireComponent(typeof(Collider))]
-public class Switch : MonoBehaviour, IInteractable
+namespace CGD.Interaction
 {
-    [SerializeField] private string _label = "Switch";
-    [SerializeField] private Door[] _doors;
-
-    public string InteractLabel => _label;
-
-    public void Interact(GameObject player)
+    // Attach to a world GameObject with a Collider (set Is Trigger = true).
+    // Toggles every linked Door when interacted with.
+    [RequireComponent(typeof(Collider))]
+    public class Switch : MonoBehaviour, IInteractable
     {
-        foreach (Door door in _doors)
+        [SerializeField] private string _label = "Switch";
+        [SerializeField] private Door[] _doors;
+
+        public string InteractLabel => _label;
+
+        public void Interact(GameObject player)
         {
-            if (door != null) door.Toggle();
+            foreach (Door door in _doors)
+            {
+                if (door != null) door.Toggle();
+            }
         }
     }
 }

@@ -1,20 +1,24 @@
 using UnityEngine;
+using CGD.Weapons;
 
-[RequireComponent(typeof(WeaponPickup))]
-public class RandomWeaponPickup : MonoBehaviour
+namespace CGD.Interaction
 {
-    [SerializeField] private WeaponCategoryData[] _categories;
-    [SerializeField] private int _fixedIndex = -1; // -1 = random
-
-    private void Awake()
+    [RequireComponent(typeof(WeaponPickup))]
+    public class RandomWeaponPickup : MonoBehaviour
     {
-        if (_categories == null || _categories.Length == 0) return;
+        [SerializeField] private WeaponCategoryData[] _categories;
+        [SerializeField] private int _fixedIndex = -1; // -1 = random
 
-        WeaponCategoryData cat = _fixedIndex >= 0 && _fixedIndex < _categories.Length
-            ? _categories[_fixedIndex]
-            : _categories[Random.Range(0, _categories.Length)];
+        private void Awake()
+        {
+            if (_categories == null || _categories.Length == 0) return;
 
-        if (cat == null) return;
-        GetComponent<WeaponPickup>().SetData(WeaponGenerator.Generate(cat));
+            WeaponCategoryData cat = _fixedIndex >= 0 && _fixedIndex < _categories.Length
+                ? _categories[_fixedIndex]
+                : _categories[Random.Range(0, _categories.Length)];
+
+            if (cat == null) return;
+            GetComponent<WeaponPickup>().SetData(WeaponGenerator.Generate(cat));
+        }
     }
 }

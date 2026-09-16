@@ -1,6 +1,9 @@
-public enum DamageType
+namespace CGD.Combat
 {
-    Physical,
-    True,      // bypasses armor mitigation entirely
-    Lightning, // deals bonus damage against Shields
+    public enum DamageType
+    {
+        Physical,
+        True,      // bypasses armor mitigation entirely
+        Lightning, // deals bonus damage against Shields
+    }
 }

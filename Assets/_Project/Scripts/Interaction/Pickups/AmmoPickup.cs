@@ -1,20 +1,24 @@
 using UnityEngine;
+using CGD.Weapons;
 
-// Attach to a world GameObject with a Collider (set Is Trigger = true).
-// Adds reserve ammo to the player's currently equipped weapon on interact.
-[RequireComponent(typeof(Collider))]
-public class AmmoPickup : MonoBehaviour, IInteractable
+namespace CGD.Interaction
 {
-    [SerializeField] private int _amount = 30;
-
-    public string InteractLabel => "Pick Up  Ammo";
-
-    public void Interact(GameObject player)
+    // Attach to a world GameObject with a Collider (set Is Trigger = true).
+    // Adds reserve ammo to the player's currently equipped weapon on interact.
+    [RequireComponent(typeof(Collider))]
+    public class AmmoPickup : MonoBehaviour, IInteractable
     {
-        var weapon = player.GetComponent<WeaponController>();
-        if (weapon == null) return;
+        [SerializeField] private int _amount = 30;
 
-        weapon.AddReserveAmmo(_amount);
-        Destroy(gameObject);
+        public string InteractLabel => "Pick Up  Ammo";
+
+        public void Interact(GameObject player)
+        {
+            var weapon = player.GetComponent<WeaponController>();
+            if (weapon == null) return;
+
+            weapon.AddReserveAmmo(_amount);
+            Destroy(gameObject);
+        }
     }
 }

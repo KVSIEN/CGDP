@@ -1,21 +1,25 @@
 using UnityEngine;
+using CGD.Combat;
 
-[CreateAssetMenu(fileName = "ProjectileBehavior", menuName = "CGD/Weapons/Fire Behaviors/Projectile")]
-public class ProjectileFireBehavior : WeaponFireBehavior
+namespace CGD.Weapons
 {
-    [SerializeField] private Projectile _prefab;
-    [SerializeField] private float      _speed    = 60f;
-    [SerializeField] private float      _lifetime = 5f;
-
-    public override void Execute(FireContext ctx)
+    [CreateAssetMenu(fileName = "ProjectileBehavior", menuName = "CGD/Weapons/Fire Behaviors/Projectile")]
+    public class ProjectileFireBehavior : WeaponFireBehavior
     {
-        if (_prefab == null) return;
+        [SerializeField] private Projectile _prefab;
+        [SerializeField] private float      _speed    = 60f;
+        [SerializeField] private float      _lifetime = 5f;
 
-        Vector3    origin = ctx.Muzzle != null ? ctx.Muzzle.position : ctx.CameraPosition;
-        Projectile p      = Object.Instantiate(_prefab, origin, Quaternion.LookRotation(ctx.Direction));
-        p.Speed    = _speed;
-        p.Lifetime = _lifetime;
-        p.Damage   = ctx.Data.Damage;
-        p.CriticalMultiplier = ctx.Data.HeadshotMultiplier;
+        public override void Execute(FireContext ctx)
+        {
+            if (_prefab == null) return;
+
+            Vector3    origin = ctx.Muzzle != null ? ctx.Muzzle.position : ctx.CameraPosition;
+            Projectile p      = Object.Instantiate(_prefab, origin, Quaternion.LookRotation(ctx.Direction));
+            p.Speed    = _speed;
+            p.Lifetime = _lifetime;
+            p.Damage   = ctx.Data.Damage;
+            p.CriticalMultiplier = ctx.Data.HeadshotMultiplier;
+        }
     }
 }

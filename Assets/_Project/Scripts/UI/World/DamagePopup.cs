@@ -2,114 +2,117 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using TMPro;
 
-public class DamagePopup : MonoBehaviour
+namespace CGD.UI
 {
-    private const float FloatSpeed = 1.5f;   // world units per second
-    private const float FadeDelay  = 0.35f;
-    private const float FadeSpeed  = 3.5f;
-    private const float NormalPx   = 52f;
-    private const float HeadshotPx = 64f;
-
-    private static readonly Color NormalColor   = Color.red;
-    private static readonly Color HeadshotColor = new Color(1f, 0.85f, 0.1f, 1f);
-
-    private static Camera _overlayCamera;
-
-    private CanvasGroup _group;
-    private float       _fadeTimer;
-    private Camera      _cam;
-
-    // ── Overlay camera ────────────────────────────────────────────────────
-
-    public static Camera GetOrCreateOverlayCamera()
+    public class DamagePopup : MonoBehaviour
     {
-        if (_overlayCamera != null) return _overlayCamera;
+        private const float FloatSpeed = 1.5f;   // world units per second
+        private const float FadeDelay  = 0.35f;
+        private const float FadeSpeed  = 3.5f;
+        private const float NormalPx   = 52f;
+        private const float HeadshotPx = 64f;
 
-        int layer   = LayerMask.NameToLayer("UI");
-        var mainCam = Camera.main;
+        private static readonly Color NormalColor   = Color.red;
+        private static readonly Color HeadshotColor = new Color(1f, 0.85f, 0.1f, 1f);
 
-        // Parent to main camera so it always shares its transform
-        var go = new GameObject("DamagePopupCamera");
-        go.transform.SetParent(mainCam.transform, false);
+        private static Camera _overlayCamera;
 
-        var cam = go.AddComponent<Camera>();
-        cam.clearFlags  = CameraClearFlags.Depth;
-        cam.cullingMask = 1 << layer;
-        cam.depth       = mainCam.depth + 1;
+        private CanvasGroup _group;
+        private float       _fadeTimer;
+        private Camera      _cam;
 
-        var camData = go.AddComponent<UniversalAdditionalCameraData>();
-        camData.renderType = CameraRenderType.Overlay;
+        // ── Overlay camera ────────────────────────────────────────────────────
 
-        // Add to main camera's URP stack
-        var mainData = mainCam.GetComponent<UniversalAdditionalCameraData>();
-        mainData.cameraStack.Add(cam);
+        public static Camera GetOrCreateOverlayCamera()
+        {
+            if (_overlayCamera != null) return _overlayCamera;
 
-        // Exclude layer from main camera so it isn't rendered twice
-        mainCam.cullingMask &= ~(1 << layer);
+            int layer   = LayerMask.NameToLayer("UI");
+            var mainCam = Camera.main;
 
-        _overlayCamera = cam;
-        return cam;
-    }
+            // Parent to main camera so it always shares its transform
+            var go = new GameObject("DamagePopupCamera");
+            go.transform.SetParent(mainCam.transform, false);
 
-    // ── Spawn ─────────────────────────────────────────────────────────────
+            var cam = go.AddComponent<Camera>();
+            cam.clearFlags  = CameraClearFlags.Depth;
+            cam.cullingMask = 1 << layer;
+            cam.depth       = mainCam.depth + 1;
 
-    public static void Spawn(float damage, Vector3 worldPos, bool headshot)
-    {
-        int layer = LayerMask.NameToLayer("UI");
-        var go    = new GameObject("DamagePopup");
-        go.layer  = layer;
-        go.AddComponent<DamagePopup>().Setup(damage, worldPos, headshot);
-    }
+            var camData = go.AddComponent<UniversalAdditionalCameraData>();
+            camData.renderType = CameraRenderType.Overlay;
 
-    private void Setup(float damage, Vector3 worldPos, bool headshot)
-    {
-        _cam = Camera.main;
-        var overlayCam = GetOrCreateOverlayCamera();
+            // Add to main camera's URP stack
+            var mainData = mainCam.GetComponent<UniversalAdditionalCameraData>();
+            mainData.cameraStack.Add(cam);
 
-        float dist       = Vector3.Distance(_cam.transform.position, worldPos);
-        float unitPerPx  = dist * Mathf.Tan(overlayCam.fieldOfView * 0.5f * Mathf.Deg2Rad) * 2f / Screen.height;
-        float targetPx   = headshot ? HeadshotPx : NormalPx;
+            // Exclude layer from main camera so it isn't rendered twice
+            mainCam.cullingMask &= ~(1 << layer);
 
-        var canvas = gameObject.AddComponent<Canvas>();
-        canvas.renderMode      = RenderMode.WorldSpace;
-        canvas.worldCamera     = overlayCam;
-        canvas.overrideSorting = true;
-        canvas.sortingOrder    = 0;
+            _overlayCamera = cam;
+            return cam;
+        }
 
-        var rt = (RectTransform)canvas.transform;
-        rt.sizeDelta  = new Vector2(200f, 60f);
-        rt.position   = worldPos;
-        rt.localScale = Vector3.one * (targetPx * unitPerPx / 60f);
-        rt.rotation   = _cam.transform.rotation;
+        // ── Spawn ─────────────────────────────────────────────────────────────
 
-        _group     = gameObject.AddComponent<CanvasGroup>();
-        _fadeTimer = FadeDelay;
+        public static void Spawn(float damage, Vector3 worldPos, bool headshot)
+        {
+            int layer = LayerMask.NameToLayer("UI");
+            var go    = new GameObject("DamagePopup");
+            go.layer  = layer;
+            go.AddComponent<DamagePopup>().Setup(damage, worldPos, headshot);
+        }
 
-        var text = UIFactory.MakeText("Text", (RectTransform)transform, gameObject.layer);
-        UIFactory.Stretch(text.rectTransform);
-        text.text          = Mathf.RoundToInt(damage).ToString();
-        text.color         = headshot ? HeadshotColor : NormalColor;
-        text.fontSize      = headshot ? 48f : 36f;
-        text.fontStyle     = headshot ? FontStyles.Bold : FontStyles.Normal;
-        text.alignment     = TextAlignmentOptions.Center;
-        text.outlineWidth  = 0.25f;
-        text.outlineColor  = Color.black;
-    }
+        private void Setup(float damage, Vector3 worldPos, bool headshot)
+        {
+            _cam = Camera.main;
+            var overlayCam = GetOrCreateOverlayCamera();
 
-    // ── Update ────────────────────────────────────────────────────────────
+            float dist       = Vector3.Distance(_cam.transform.position, worldPos);
+            float unitPerPx  = dist * Mathf.Tan(overlayCam.fieldOfView * 0.5f * Mathf.Deg2Rad) * 2f / Screen.height;
+            float targetPx   = headshot ? HeadshotPx : NormalPx;
 
-    private void LateUpdate()
-    {
-        if (_group == null) return;
+            var canvas = gameObject.AddComponent<Canvas>();
+            canvas.renderMode      = RenderMode.WorldSpace;
+            canvas.worldCamera     = overlayCam;
+            canvas.overrideSorting = true;
+            canvas.sortingOrder    = 0;
 
-        transform.position += Vector3.up * (FloatSpeed * Time.deltaTime);
-        transform.rotation  = _cam.transform.rotation;
+            var rt = (RectTransform)canvas.transform;
+            rt.sizeDelta  = new Vector2(200f, 60f);
+            rt.position   = worldPos;
+            rt.localScale = Vector3.one * (targetPx * unitPerPx / 60f);
+            rt.rotation   = _cam.transform.rotation;
 
-        _fadeTimer -= Time.deltaTime;
-        if (_fadeTimer >= 0f) return;
+            _group     = gameObject.AddComponent<CanvasGroup>();
+            _fadeTimer = FadeDelay;
 
-        _group.alpha -= FadeSpeed * Time.deltaTime;
-        if (_group.alpha <= 0f)
-            Destroy(gameObject);
+            var text = UIFactory.MakeText("Text", (RectTransform)transform, gameObject.layer);
+            UIFactory.Stretch(text.rectTransform);
+            text.text          = Mathf.RoundToInt(damage).ToString();
+            text.color         = headshot ? HeadshotColor : NormalColor;
+            text.fontSize      = headshot ? 48f : 36f;
+            text.fontStyle     = headshot ? FontStyles.Bold : FontStyles.Normal;
+            text.alignment     = TextAlignmentOptions.Center;
+            text.outlineWidth  = 0.25f;
+            text.outlineColor  = Color.black;
+        }
+
+        // ── Update ────────────────────────────────────────────────────────────
+
+        private void LateUpdate()
+        {
+            if (_group == null) return;
+
+            transform.position += Vector3.up * (FloatSpeed * Time.deltaTime);
+            transform.rotation  = _cam.transform.rotation;
+
+            _fadeTimer -= Time.deltaTime;
+            if (_fadeTimer >= 0f) return;
+
+            _group.alpha -= FadeSpeed * Time.deltaTime;
+            if (_group.alpha <= 0f)
+                Destroy(gameObject);
+        }
     }
 }

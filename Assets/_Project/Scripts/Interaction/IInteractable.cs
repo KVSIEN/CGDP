@@ -1,7 +1,10 @@
 using UnityEngine;
 
-public interface IInteractable
+namespace CGD.Interaction
 {
-    string InteractLabel { get; }
-    void Interact(GameObject player);
+    public interface IInteractable
+    {
+        string InteractLabel { get; }
+        void Interact(GameObject player);
+    }
 }

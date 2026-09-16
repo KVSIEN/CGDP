@@ -1,25 +1,29 @@
 using UnityEngine;
+using CGD.Audio;
 
-public class PlayerAudio : MonoBehaviour
+namespace CGD.Player
 {
-    [SerializeField] private PlayerHealth _health;
-    [SerializeField] private SoundBank  _hurtSound;
-    [SerializeField] private SoundBank  _deathSound;
-
-    private void OnEnable()
+    public class PlayerAudio : MonoBehaviour
     {
-        if (_health == null) return;
-        _health.OnDamaged += PlayHurt;
-        _health.OnDeath   += PlayDeath;
-    }
+        [SerializeField] private PlayerHealth _health;
+        [SerializeField] private SoundBank  _hurtSound;
+        [SerializeField] private SoundBank  _deathSound;
 
-    private void OnDisable()
-    {
-        if (_health == null) return;
-        _health.OnDamaged -= PlayHurt;
-        _health.OnDeath   -= PlayDeath;
-    }
+        private void OnEnable()
+        {
+            if (_health == null) return;
+            _health.OnDamaged += PlayHurt;
+            _health.OnDeath   += PlayDeath;
+        }
 
-    private void PlayHurt(float damage) => _hurtSound?.Play(transform.position);
-    private void PlayDeath()            => _deathSound?.Play(transform.position);
+        private void OnDisable()
+        {
+            if (_health == null) return;
+            _health.OnDamaged -= PlayHurt;
+            _health.OnDeath   -= PlayDeath;
+        }
+
+        private void PlayHurt(float damage) => _hurtSound?.Play(transform.position);
+        private void PlayDeath()            => _deathSound?.Play(transform.position);
+    }
 }

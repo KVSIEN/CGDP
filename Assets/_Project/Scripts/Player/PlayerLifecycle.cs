@@ -1,62 +1,69 @@
 using System.Collections;
 using UnityEngine;
+using CGD.Abilities;
+using CGD.Input;
+using CGD.UI;
+using CGD.Weapons;
 
-public class PlayerLifecycle : MonoBehaviour
+namespace CGD.Player
 {
-    [SerializeField] private PlayerHealth        _health;
-    [SerializeField] private PlayerMovement      _movement;
-    [SerializeField] private PlayerAbilities     _abilities;
-    [SerializeField] private PlayerInputHandler  _input;
-    [SerializeField] private WeaponController    _weapon;
-    [SerializeField] private HUDManager          _hud;
-    [SerializeField] private Transform           _spawnPoint;
-    [SerializeField] private float               _respawnDelay = 3f;
-    [SerializeField] private GameObject          _deathScreen;
-
-    private void Awake()
+    public class PlayerLifecycle : MonoBehaviour
     {
-        _health.OnDeath += HandleDeath;
-    }
+        [SerializeField] private PlayerHealth        _health;
+        [SerializeField] private PlayerMovement      _movement;
+        [SerializeField] private PlayerAbilities     _abilities;
+        [SerializeField] private PlayerInputHandler  _input;
+        [SerializeField] private WeaponController    _weapon;
+        [SerializeField] private HUDManager          _hud;
+        [SerializeField] private Transform           _spawnPoint;
+        [SerializeField] private float               _respawnDelay = 3f;
+        [SerializeField] private GameObject          _deathScreen;
 
-    private void HandleDeath()
-    {
-        _movement.enabled  = false;
-        _abilities.enabled = false;
-        _input.InputEnabled = false;
-        _hud.HideAll();
+        private void Awake()
+        {
+            _health.OnDeath += HandleDeath;
+        }
 
-        if (_deathScreen != null)
-            _deathScreen.SetActive(true);
+        private void HandleDeath()
+        {
+            _movement.enabled  = false;
+            _abilities.enabled = false;
+            _input.InputEnabled = false;
+            _hud.HideAll();
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible   = true;
+            if (_deathScreen != null)
+                _deathScreen.SetActive(true);
 
-        StartCoroutine(RespawnRoutine());
-    }
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible   = true;
 
-    private IEnumerator RespawnRoutine()
-    {
-        yield return new WaitForSeconds(_respawnDelay);
-        Respawn();
-    }
+            StartCoroutine(RespawnRoutine());
+        }
 
-    private void Respawn()
-    {
-        if (_spawnPoint != null)
-            transform.position = _spawnPoint.position;
+        private IEnumerator RespawnRoutine()
+        {
+            yield return new WaitForSeconds(_respawnDelay);
+            Respawn();
+        }
 
-        _health.Respawn();
-        _weapon?.Refill();
+        private void Respawn()
+        {
+            if (_spawnPoint != null)
+                transform.position = _spawnPoint.position;
 
-        _movement.enabled   = true;
-        _abilities.enabled  = true;
-        _input.InputEnabled = true;
-        _hud.ShowAll();
+            _health.Respawn();
+            _weapon?.Refill();
 
-        if (_deathScreen != null)
-            _deathScreen.SetActive(false);
+            _movement.enabled   = true;
+            _abilities.enabled  = true;
+            _input.InputEnabled = true;
+            _hud.ShowAll();
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible   = false;
+            if (_deathScreen != null)
+                _deathScreen.SetActive(false);
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible   = false;
+        }
     }
 }

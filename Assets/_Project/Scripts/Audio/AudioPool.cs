@@ -2,66 +2,69 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AudioPool : MonoBehaviour
+namespace CGD.Audio
 {
-    public static AudioPool Instance { get; private set; }
-
-    [SerializeField] private int _initialSize = 16;
-
-    private readonly Stack<AudioSource> _available = new();
-
-    private void Awake()
+    public class AudioPool : MonoBehaviour
     {
-        Instance = this;
+        public static AudioPool Instance { get; private set; }
 
-        for (int i = 0; i < _initialSize; i++)
-            _available.Push(CreateSource());
-    }
+        [SerializeField] private int _initialSize = 16;
 
-    private void OnDestroy()
-    {
-        if (Instance == this)
-            Instance = null;
-    }
+        private readonly Stack<AudioSource> _available = new();
 
-    public void Play(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f, float spatialBlend = 1f)
-    {
-        if (clip == null) return;
+        private void Awake()
+        {
+            Instance = this;
 
-        var source = Get();
-        source.transform.position = position;
-        source.clip         = clip;
-        source.volume       = volume;
-        source.pitch        = pitch;
-        source.spatialBlend = spatialBlend;
-        source.Play();
+            for (int i = 0; i < _initialSize; i++)
+                _available.Push(CreateSource());
+        }
 
-        StartCoroutine(ReturnWhenDone(source, clip.length / Mathf.Max(Mathf.Abs(pitch), 0.01f)));
-    }
+        private void OnDestroy()
+        {
+            if (Instance == this)
+                Instance = null;
+        }
 
-    private AudioSource Get()
-    {
-        return _available.Count > 0 ? _available.Pop() : CreateSource();
-    }
+        public void Play(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f, float spatialBlend = 1f)
+        {
+            if (clip == null) return;
 
-    private AudioSource CreateSource()
-    {
-        var go  = new GameObject("PooledAudio");
-        go.transform.SetParent(transform);
-        var src = go.AddComponent<AudioSource>();
-        src.playOnAwake  = false;
-        src.spatialBlend = 1f;
-        src.rolloffMode  = AudioRolloffMode.Linear;
-        src.minDistance   = 1f;
-        src.maxDistance   = 50f;
-        return src;
-    }
+            var source = Get();
+            source.transform.position = position;
+            source.clip         = clip;
+            source.volume       = volume;
+            source.pitch        = pitch;
+            source.spatialBlend = spatialBlend;
+            source.Play();
 
-    private IEnumerator ReturnWhenDone(AudioSource source, float duration)
-    {
-        yield return new WaitForSeconds(duration + 0.05f);
-        source.Stop();
-        source.clip = null;
-        _available.Push(source);
+            StartCoroutine(ReturnWhenDone(source, clip.length / Mathf.Max(Mathf.Abs(pitch), 0.01f)));
+        }
+
+        private AudioSource Get()
+        {
+            return _available.Count > 0 ? _available.Pop() : CreateSource();
+        }
+
+        private AudioSource CreateSource()
+        {
+            var go  = new GameObject("PooledAudio");
+            go.transform.SetParent(transform);
+            var src = go.AddComponent<AudioSource>();
+            src.playOnAwake  = false;
+            src.spatialBlend = 1f;
+            src.rolloffMode  = AudioRolloffMode.Linear;
+            src.minDistance   = 1f;
+            src.maxDistance   = 50f;
+            return src;
+        }
+
+        private IEnumerator ReturnWhenDone(AudioSource source, float duration)
+        {
+            yield return new WaitForSeconds(duration + 0.05f);
+            source.Stop();
+            source.clip = null;
+            _available.Push(source);
+        }
     }
 }

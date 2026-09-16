@@ -1,25 +1,28 @@
 using UnityEngine;
 
-public abstract class HUDElement : MonoBehaviour
+namespace CGD.UI
 {
-    public bool IsVisible { get; protected set; } = true;
-
-    public virtual void Show()
+    public abstract class HUDElement : MonoBehaviour
     {
-        IsVisible = true;
-        gameObject.SetActive(true);
-    }
+        public bool IsVisible { get; protected set; } = true;
 
-    public virtual void Hide()
-    {
-        IsVisible = false;
-        gameObject.SetActive(false);
-    }
+        public virtual void Show()
+        {
+            IsVisible = true;
+            gameObject.SetActive(true);
+        }
 
-    public virtual void Toggle()
-    {
-        if (IsVisible) Hide(); else Show();
-    }
+        public virtual void Hide()
+        {
+            IsVisible = false;
+            gameObject.SetActive(false);
+        }
 
-    public abstract void Refresh();
+        public virtual void Toggle()
+        {
+            if (IsVisible) Hide(); else Show();
+        }
+
+        public abstract void Refresh();
+    }
 }

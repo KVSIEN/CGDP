@@ -1,13 +1,17 @@
 using UnityEngine;
+using CGD.Player;
 
-// Data bundle passed to an ability when the player activates it.
-// PlayerAbilities fills this once in Awake and updates MoveInput each frame.
-public class AbilityContext
+namespace CGD.Abilities
 {
-    public Transform PlayerTransform;
-    public Rigidbody PlayerRigidbody;
-    public Collider  PlayerCollider;
-    public Transform CameraTransform;
-    public PlayerHealth Health;
-    public Vector2 MoveInput;
+    // Data bundle passed to an ability when the player activates it.
+    // PlayerAbilities fills this once in Awake and updates MoveInput each frame.
+    public class AbilityContext
+    {
+        public Transform PlayerTransform;
+        public Rigidbody PlayerRigidbody;
+        public Collider  PlayerCollider;
+        public Transform CameraTransform;
+        public PlayerHealth Health;
+        public Vector2 MoveInput;
+    }
 }

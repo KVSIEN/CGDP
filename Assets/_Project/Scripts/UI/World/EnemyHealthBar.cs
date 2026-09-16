@@ -1,83 +1,86 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyHealthBar : MonoBehaviour
+namespace CGD.UI
 {
-    [SerializeField] private Vector3 _worldOffset = new Vector3(0f, 2.2f, 0f);
-    [SerializeField] private float   _fadeDelay   = 2.5f;
-    [SerializeField] private float   _fadeSpeed   = 2f;
-    [SerializeField] private Color   _fillColor   = new Color(0.2f, 0.85f, 0.2f, 1f);
-    [SerializeField] private Color   _bgColor     = new Color(0.85f, 0.15f, 0.1f, 1f);
-
-    private Canvas      _canvas;
-    private Image       _fill;
-    private CanvasGroup _group;
-    private Camera      _cam;
-    private float       _fadeTimer;
-    private bool        _active;
-
-    private void Awake()
+    public class EnemyHealthBar : MonoBehaviour
     {
-        BuildCanvas();
-        _canvas.gameObject.SetActive(false);
-    }
+        [SerializeField] private Vector3 _worldOffset = new Vector3(0f, 2.2f, 0f);
+        [SerializeField] private float   _fadeDelay   = 2.5f;
+        [SerializeField] private float   _fadeSpeed   = 2f;
+        [SerializeField] private Color   _fillColor   = new Color(0.2f, 0.85f, 0.2f, 1f);
+        [SerializeField] private Color   _bgColor     = new Color(0.85f, 0.15f, 0.1f, 1f);
 
-    private void BuildCanvas()
-    {
-        var go = new GameObject("HealthBarCanvas");
-        go.transform.SetParent(transform, false);
+        private Canvas      _canvas;
+        private Image       _fill;
+        private CanvasGroup _group;
+        private Camera      _cam;
+        private float       _fadeTimer;
+        private bool        _active;
 
-        _canvas = go.AddComponent<Canvas>();
-        _canvas.renderMode = RenderMode.WorldSpace;
+        private void Awake()
+        {
+            BuildCanvas();
+            _canvas.gameObject.SetActive(false);
+        }
 
-        // Placed only after switching to WorldSpace: a new Canvas starts in overlay
-        // mode, which drives (and overwrites) its RectTransform.
-        var rt = (RectTransform)_canvas.transform;
-        rt.sizeDelta     = new Vector2(200f, 20f);
-        rt.localPosition = _worldOffset;
-        rt.localScale    = Vector3.one * 0.005f;
+        private void BuildCanvas()
+        {
+            var go = new GameObject("HealthBarCanvas");
+            go.transform.SetParent(transform, false);
 
-        _group = go.AddComponent<CanvasGroup>();
+            _canvas = go.AddComponent<Canvas>();
+            _canvas.renderMode = RenderMode.WorldSpace;
 
-        CreateStretchImage(go.transform, "BG", _bgColor);
+            // Placed only after switching to WorldSpace: a new Canvas starts in overlay
+            // mode, which drives (and overwrites) its RectTransform.
+            var rt = (RectTransform)_canvas.transform;
+            rt.sizeDelta     = new Vector2(200f, 20f);
+            rt.localPosition = _worldOffset;
+            rt.localScale    = Vector3.one * 0.005f;
 
-        _fill = CreateStretchImage(go.transform, "Fill", _fillColor);
-    }
+            _group = go.AddComponent<CanvasGroup>();
 
-    private static Image CreateStretchImage(Transform parent, string name, Color color)
-    {
-        var img = UIFactory.MakeImage(name, (RectTransform)parent);
-        img.color = color;
-        UIFactory.Stretch(img.rectTransform);
-        return img;
-    }
+            CreateStretchImage(go.transform, "BG", _bgColor);
 
-    public void ShowDamage(float current, float max)
-    {
-        float t = max > 0f ? current / max : 0f;
-        _fill.rectTransform.anchorMax = new Vector2(t, 1f);
-        _fill.rectTransform.offsetMax = Vector2.zero;
-        _group.alpha = 1f;
-        _fadeTimer       = _fadeDelay;
-        _active          = true;
-        _canvas.gameObject.SetActive(true);
-    }
+            _fill = CreateStretchImage(go.transform, "Fill", _fillColor);
+        }
 
-    private void LateUpdate()
-    {
-        if (!_active) return;
+        private static Image CreateStretchImage(Transform parent, string name, Color color)
+        {
+            var img = UIFactory.MakeImage(name, (RectTransform)parent);
+            img.color = color;
+            UIFactory.Stretch(img.rectTransform);
+            return img;
+        }
 
-        if (_cam == null) _cam = Camera.main;
-        if (_cam != null)
-            _canvas.transform.rotation = _cam.transform.rotation;
+        public void ShowDamage(float current, float max)
+        {
+            float t = max > 0f ? current / max : 0f;
+            _fill.rectTransform.anchorMax = new Vector2(t, 1f);
+            _fill.rectTransform.offsetMax = Vector2.zero;
+            _group.alpha = 1f;
+            _fadeTimer       = _fadeDelay;
+            _active          = true;
+            _canvas.gameObject.SetActive(true);
+        }
 
-        _fadeTimer -= Time.deltaTime;
-        if (_fadeTimer >= 0f) return;
+        private void LateUpdate()
+        {
+            if (!_active) return;
 
-        _group.alpha = Mathf.MoveTowards(_group.alpha, 0f, _fadeSpeed * Time.deltaTime);
-        if (_group.alpha > 0f) return;
+            if (_cam == null) _cam = Camera.main;
+            if (_cam != null)
+                _canvas.transform.rotation = _cam.transform.rotation;
 
-        _canvas.gameObject.SetActive(false);
-        _active = false;
+            _fadeTimer -= Time.deltaTime;
+            if (_fadeTimer >= 0f) return;
+
+            _group.alpha = Mathf.MoveTowards(_group.alpha, 0f, _fadeSpeed * Time.deltaTime);
+            if (_group.alpha > 0f) return;
+
+            _canvas.gameObject.SetActive(false);
+            _active = false;
+        }
     }
 }
