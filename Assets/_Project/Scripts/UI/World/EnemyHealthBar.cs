@@ -46,9 +46,9 @@ public class EnemyHealthBar : MonoBehaviour
 
     private static Image CreateStretchImage(Transform parent, string name, Color color)
     {
-        var img = HudUIFactory.MakeImage(name, (RectTransform)parent);
+        var img = UIFactory.MakeImage(name, (RectTransform)parent);
         img.color = color;
-        HudUIFactory.Stretch(img.rectTransform);
+        UIFactory.Stretch(img.rectTransform);
         return img;
     }
 

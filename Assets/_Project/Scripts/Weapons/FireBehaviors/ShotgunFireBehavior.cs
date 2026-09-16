@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ShotgunBehavior", menuName = "CGD/Fire Behaviors/Shotgun")]
+[CreateAssetMenu(fileName = "ShotgunBehavior", menuName = "CGD/Weapons/Fire Behaviors/Shotgun")]
 public class ShotgunFireBehavior : WeaponFireBehavior
 {
     public override void Execute(FireContext ctx)

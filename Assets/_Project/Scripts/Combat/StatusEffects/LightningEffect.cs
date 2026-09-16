@@ -7,7 +7,7 @@ using UnityEngine;
 // is a no-op; duration/decay of the stack still comes from the base
 // StatusEffect lifecycle. Set MaxStacks to 4 on the asset to match the given
 // falloff table (100/80/64/51.2/40.96% = 1 initial hit + up to 4 chain hops).
-[CreateAssetMenu(fileName = "LightningEffect", menuName = "CGD/Status Effects/Lightning")]
+[CreateAssetMenu(fileName = "LightningEffect", menuName = "CGD/Combat/Status Effects/Lightning")]
 public class LightningEffect : StatusEffect
 {
     [Header("Lightning")]

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerLifecycle : MonoBehaviour
 {
-    [SerializeField] private PlayerStats         _stats;
+    [SerializeField] private PlayerHealth        _health;
     [SerializeField] private PlayerMovement      _movement;
     [SerializeField] private PlayerAbilities     _abilities;
     [SerializeField] private PlayerInputHandler  _input;
@@ -15,7 +15,7 @@ public class PlayerLifecycle : MonoBehaviour
 
     private void Awake()
     {
-        _stats.OnDeath += HandleDeath;
+        _health.OnDeath += HandleDeath;
     }
 
     private void HandleDeath()
@@ -45,7 +45,7 @@ public class PlayerLifecycle : MonoBehaviour
         if (_spawnPoint != null)
             transform.position = _spawnPoint.position;
 
-        _stats.Respawn();
+        _health.Respawn();
         _weapon?.Refill();
 
         _movement.enabled   = true;

@@ -48,15 +48,15 @@ public class AbilityHUD : HUDElement
             float x = (i - (SlotCount - 1) * 0.5f) * (_slotSize + _slotGap);
 
             // Grey background
-            var bg = HudUIFactory.MakeImage("Slot_" + i, self);
+            var bg = UIFactory.MakeImage("Slot_" + i, self);
             bg.color = EmptySlotColor;
             PlaceSquare(bg.rectTransform, x, _slotSize);
             _slotBg[i] = bg;
 
             // Dark overlay that covers the slot while on cooldown (child of the slot)
-            var overlay = HudUIFactory.MakeImage("Overlay_" + i, bg.rectTransform);
+            var overlay = UIFactory.MakeImage("Overlay_" + i, bg.rectTransform);
             overlay.color = CooldownOverlayColor;
-            HudUIFactory.Stretch(overlay.rectTransform);
+            UIFactory.Stretch(overlay.rectTransform);
             _cooldownOverlay[i] = overlay;
         }
     }

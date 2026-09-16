@@ -5,7 +5,7 @@ using TMPro;
 [RequireComponent(typeof(RectTransform))]
 public class StatsHUD : HUDElement
 {
-    [SerializeField] private PlayerStats _playerStats;
+    [SerializeField] private PlayerHealth _playerHealth;
 
     [Header("Colors")]
     [SerializeField] private Color _backgroundColor = new Color(0f, 0f, 0f, 0.45f);
@@ -28,16 +28,16 @@ public class StatsHUD : HUDElement
         SetupAnchor();
         Build();
 
-        if (_playerStats != null)
-            _playerStats.OnChanged += Refresh;
+        if (_playerHealth != null)
+            _playerHealth.OnChanged += Refresh;
 
         Refresh();
     }
 
     private void OnDestroy()
     {
-        if (_playerStats != null)
-            _playerStats.OnChanged -= Refresh;
+        if (_playerHealth != null)
+            _playerHealth.OnChanged -= Refresh;
     }
 
     private void SetupAnchor()
@@ -56,17 +56,17 @@ public class StatsHUD : HUDElement
         float y = -_innerPadding.y;
 
         // Background panel (added first so it renders behind everything)
-        var bg = HudUIFactory.MakeImage("Background", self);
+        var bg = UIFactory.MakeImage("Background", self);
         bg.color = _backgroundColor;
-        HudUIFactory.Stretch(bg.rectTransform);
+        UIFactory.Stretch(bg.rectTransform);
 
         // Health bar background
-        var barBg = HudUIFactory.MakeImage("HealthBarBg", self);
+        var barBg = UIFactory.MakeImage("HealthBarBg", self);
         barBg.color = _barBgColor;
-        HudUIFactory.Place(barBg.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, _barHeight));
+        UIFactory.Place(barBg.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, _barHeight));
 
         // Health fill (child of bar background, width driven by anchor)
-        _healthFill = HudUIFactory.MakeImage("HealthFill", barBg.rectTransform);
+        _healthFill = UIFactory.MakeImage("HealthFill", barBg.rectTransform);
         _healthFill.color = _healthColor;
         var fillRt = _healthFill.rectTransform;
         fillRt.anchorMin = Vector2.zero;
@@ -76,11 +76,11 @@ public class StatsHUD : HUDElement
         y -= _barHeight + 6f;
 
         // Health text
-        _healthText = HudUIFactory.MakeText("HealthText", self);
+        _healthText = UIFactory.MakeText("HealthText", self);
         _healthText.color = _textColor;
         _healthText.fontSize = 12f;
         _healthText.alignment = TextAlignmentOptions.Left;
-        HudUIFactory.Place(_healthText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 16f));
+        UIFactory.Place(_healthText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 16f));
 
         y -= 16f;
 
@@ -90,11 +90,11 @@ public class StatsHUD : HUDElement
 
     public override void Refresh()
     {
-        if (_playerStats == null) return;
+        if (_playerHealth == null) return;
 
-        float ratio = _playerStats.MaxHealth > 0f ? _playerStats.Health / _playerStats.MaxHealth : 0f;
+        float ratio = _playerHealth.MaxHealth > 0f ? _playerHealth.Health / _playerHealth.MaxHealth : 0f;
         _healthFill.rectTransform.anchorMax = new Vector2(ratio, 1f);
         _healthFill.color = Color.Lerp(_healthLowColor, _healthColor, ratio);
-        _healthText.text = $"HP  {Mathf.CeilToInt(_playerStats.Health)} / {Mathf.CeilToInt(_playerStats.MaxHealth)}";
+        _healthText.text = $"HP  {Mathf.CeilToInt(_playerHealth.Health)} / {Mathf.CeilToInt(_playerHealth.MaxHealth)}";
     }
 }

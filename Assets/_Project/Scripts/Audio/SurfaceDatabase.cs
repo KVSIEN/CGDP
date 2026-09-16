@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SurfaceDatabase", menuName = "CGD/Surface Database")]
+[CreateAssetMenu(fileName = "SurfaceDatabase", menuName = "CGD/Audio/Surface Database")]
 public class SurfaceDatabase : ScriptableObject
 {
     [Serializable]

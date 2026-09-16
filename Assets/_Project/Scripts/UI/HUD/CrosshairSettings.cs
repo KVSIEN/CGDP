@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CrosshairSettings", menuName = "CGD/Crosshair Settings")]
+[CreateAssetMenu(fileName = "CrosshairSettings", menuName = "CGD/UI/Crosshair Settings")]
 public class CrosshairSettings : ScriptableObject
 {
     [Header("Lines")]

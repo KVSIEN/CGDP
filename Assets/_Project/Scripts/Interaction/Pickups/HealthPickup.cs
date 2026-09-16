@@ -11,10 +11,10 @@ public class HealthPickup : MonoBehaviour, IInteractable
 
     public void Interact(GameObject player)
     {
-        var stats = player.GetComponent<PlayerStats>();
-        if (stats == null) return;
+        var health = player.GetComponent<PlayerHealth>();
+        if (health == null) return;
 
-        stats.Heal(_amount);
+        health.Heal(_amount);
         Destroy(gameObject);
     }
 }

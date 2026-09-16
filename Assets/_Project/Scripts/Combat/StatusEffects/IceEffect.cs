@@ -10,7 +10,7 @@ using UnityEngine;
 // Set MaxStacks to 5 and DecayOneStackAtATime to true on the asset to match the
 // spec (5% slow / 2% armor reduction per stack, one stack lost every Duration
 // seconds without a new one).
-[CreateAssetMenu(fileName = "IceEffect", menuName = "CGD/Status Effects/Ice")]
+[CreateAssetMenu(fileName = "IceEffect", menuName = "CGD/Combat/Status Effects/Ice")]
 public class IceEffect : StatusEffect
 {
     [Header("Ice")]

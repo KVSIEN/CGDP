@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "InputBindingSettings", menuName = "CGD/Input Binding Settings")]
+[CreateAssetMenu(fileName = "InputBindingSettings", menuName = "CGD/Input/Input Binding Settings")]
 public class InputBindingSettings : ScriptableObject
 {
     public List<ActionBinding> Bindings = new();

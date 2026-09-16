@@ -4,7 +4,7 @@ using TMPro;
 
 // Shared element construction for code-built HUD panels — avoids re-implementing
 // the same GameObject/RectTransform setup in every HUD script.
-public static class HudUIFactory
+public static class UIFactory
 {
     public static Image MakeImage(string name, RectTransform parent, int layer = -1)
     {

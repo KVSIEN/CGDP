@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerAbilities : MonoBehaviour
 {
     [SerializeField] private Ability[] _slots = new Ability[4];
-    [SerializeField] private PlayerStats _stats;
+    [SerializeField] private PlayerHealth _health;
     [SerializeField] private Transform _cameraTransform;
 
     // Read by AbilityHUD to draw cooldown overlays
@@ -36,7 +36,7 @@ public class PlayerAbilities : MonoBehaviour
             PlayerRigidbody  = GetComponent<Rigidbody>(),
             PlayerCollider   = GetComponent<Collider>(),
             CameraTransform  = _cameraTransform,
-            Stats            = _stats,
+            Health           = _health,
         };
     }
 

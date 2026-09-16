@@ -8,6 +8,6 @@ public class AbilityContext
     public Rigidbody PlayerRigidbody;
     public Collider  PlayerCollider;
     public Transform CameraTransform;
-    public PlayerStats Stats;
+    public PlayerHealth Health;
     public Vector2 MoveInput;
 }

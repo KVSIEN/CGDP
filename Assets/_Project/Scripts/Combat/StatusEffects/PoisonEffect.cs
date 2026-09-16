@@ -5,7 +5,7 @@ using UnityEngine;
 // target's armor once; the exponential stack scaling is applied on top and
 // delivered via DamageType.True so it isn't mitigated a second time.
 // Set MaxStacks on the asset to cap stacking (e.g. 5) or leave high for uncapped.
-[CreateAssetMenu(fileName = "PoisonEffect", menuName = "CGD/Status Effects/Poison")]
+[CreateAssetMenu(fileName = "PoisonEffect", menuName = "CGD/Combat/Status Effects/Poison")]
 public class PoisonEffect : StatusEffect
 {
     [Header("Poison")]

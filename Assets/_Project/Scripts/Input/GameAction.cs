@@ -24,5 +24,3 @@ public enum GameAction
     Weapon3,
     Weapon4,
 }
-
-public enum InputActionMode { Pressed, Held, Toggle, DoubleClick }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "HitscanBehavior", menuName = "CGD/Fire Behaviors/Hitscan")]
+[CreateAssetMenu(fileName = "HitscanBehavior", menuName = "CGD/Weapons/Fire Behaviors/Hitscan")]
 public class HitscanFireBehavior : WeaponFireBehavior
 {
     public override void Execute(FireContext ctx)

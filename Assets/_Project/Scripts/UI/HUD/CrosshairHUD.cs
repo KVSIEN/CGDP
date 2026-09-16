@@ -39,7 +39,7 @@ public class CrosshairHUD : HUDElement
 
     private Image CreateImage(string elementName)
     {
-        var img = HudUIFactory.MakeImage(elementName, (RectTransform)transform);
+        var img = UIFactory.MakeImage(elementName, (RectTransform)transform);
         var rt = img.rectTransform;
         rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
         rt.pivot = new Vector2(0.5f, 0.5f);

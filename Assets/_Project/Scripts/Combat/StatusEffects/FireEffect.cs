@@ -6,7 +6,7 @@ using UnityEngine;
 // StatusEffect default of 1; reapplying just refreshes duration and magnitude.
 // Different weapons/abilities express their own Fire DPS% by referencing
 // different FireEffect assets, the same way WeaponFireBehavior variants work.
-[CreateAssetMenu(fileName = "FireEffect", menuName = "CGD/Status Effects/Fire")]
+[CreateAssetMenu(fileName = "FireEffect", menuName = "CGD/Combat/Status Effects/Fire")]
 public class FireEffect : StatusEffect
 {
     [Header("Fire")]

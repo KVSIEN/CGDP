@@ -9,7 +9,7 @@ public class EnemyAI : MonoBehaviour, IStunnable
 
     [SerializeField] private EnemyData   _data;
     [SerializeField] private Transform   _playerTransform;
-    [SerializeField] private PlayerStats _playerStats;
+    [SerializeField] private PlayerHealth _playerHealth;
     [SerializeField] private Transform[] _waypoints;
     [SerializeField] private LayerMask   _obstacleMask;
     [SerializeField] private Renderer[]  _stateRenderers;
@@ -182,7 +182,7 @@ public class EnemyAI : MonoBehaviour, IStunnable
     {
         if (!_attackCooldown.IsReady) return;
         _attackCooldown.Start(_data.AttackCooldown);
-        _playerStats.TakeDamage(new DamageInfo(_data.AttackDamage));
+        _playerHealth.TakeDamage(new DamageInfo(_data.AttackDamage));
         _data.AttackSound?.Play(transform.position);
     }
 

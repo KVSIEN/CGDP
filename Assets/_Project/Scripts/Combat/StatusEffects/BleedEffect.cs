@@ -3,7 +3,7 @@ using UnityEngine;
 // Bleed Damage (per tick) = (Raw Damage × RawDamageFraction) + (Target Max Health × MaxHealthFraction).
 // Ignores armor entirely (DamageType.True). Non-stacking — MaxStacks stays at the
 // StatusEffect default of 1, so reapplying just refreshes duration and magnitude.
-[CreateAssetMenu(fileName = "BleedEffect", menuName = "CGD/Status Effects/Bleed")]
+[CreateAssetMenu(fileName = "BleedEffect", menuName = "CGD/Combat/Status Effects/Bleed")]
 public class BleedEffect : StatusEffect
 {
     [Header("Bleed")]

@@ -1891,7 +1891,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 749b05f622ecee34ca0808068a5dff08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StatsHUD
-  _playerStats: {fileID: 1555766054}
+  _playerHealth: {fileID: 1555766054}
   _backgroundColor: {r: 0, g: 0, b: 0, a: 0.45}
   _barBgColor: {r: 0.08, g: 0.08, b: 0.08, a: 0.9}
   _healthColor: {r: 0.22, g: 0.85, b: 0.22, a: 1}
@@ -2841,7 +2841,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6c7d56429200d3e468a60c411d95cdb6, type: 2}
   - {fileID: 11400000, guid: 331f0a11fada26140b82420a7152cf8a, type: 2}
   - {fileID: 11400000, guid: 358d9c68c5a3be5408a85fd86356a1f7, type: 2}
-  _stats: {fileID: 1555766054}
+  _health: {fileID: 1555766054}
   _cameraTransform: {fileID: 330585546}
 --- !u!114 &1555766054
 MonoBehaviour:
@@ -2854,7 +2854,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bcf2b09aaecffd43bde23d0baefc2bf, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   _hitboxProfile: {fileID: 0}
   _maxHealth: 100
   _health: 100
@@ -2924,7 +2924,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed6f872e031dcbf4e8425d4c707d63fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerLifecycle
-  _stats: {fileID: 1555766054}
+  _health: {fileID: 1555766054}
   _movement: {fileID: 1555766055}
   _abilities: {fileID: 1555766053}
   _input: {fileID: 1555766056}
@@ -3848,7 +3848,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e77e55ee1659e724db5b4af003e96efd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitEffect
-  _playerStats: {fileID: 1555766054}
+  _playerHealth: {fileID: 1555766054}
   _flashColor: {r: 1, g: 0.1, b: 0.1, a: 0.35}
   _flashFadeSpeed: 6
   _vignetteMaxAlpha: 0.75

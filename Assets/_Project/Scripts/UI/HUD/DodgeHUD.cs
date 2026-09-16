@@ -31,29 +31,29 @@ public class DodgeHUD : HUDElement
         rt.anchoredPosition = new Vector2(_offsetFromCenter, _screenPaddingBottom);
         rt.sizeDelta        = Vector2.one * _slotSize;
 
-        _bg          = HudUIFactory.MakeImage("DodgeBg", rt);
+        _bg          = UIFactory.MakeImage("DodgeBg", rt);
         _bg.color    = ReadyColor;
-        HudUIFactory.Stretch(_bg.rectTransform);
+        UIFactory.Stretch(_bg.rectTransform);
 
-        _overlay       = HudUIFactory.MakeImage("DodgeOverlay", _bg.rectTransform);
+        _overlay       = UIFactory.MakeImage("DodgeOverlay", _bg.rectTransform);
         _overlay.color = OverlayColor;
-        HudUIFactory.Stretch(_overlay.rectTransform);
+        UIFactory.Stretch(_overlay.rectTransform);
 
-        var keyLabel         = HudUIFactory.MakeText("DodgeKey", _bg.rectTransform);
+        var keyLabel         = UIFactory.MakeText("DodgeKey", _bg.rectTransform);
         keyLabel.text        = "Q";
         keyLabel.fontSize    = 11f;
         keyLabel.color       = new Color(1f, 1f, 1f, 0.7f);
         keyLabel.alignment   = TextAlignmentOptions.TopLeft;
-        HudUIFactory.Stretch(keyLabel.rectTransform);
+        UIFactory.Stretch(keyLabel.rectTransform);
         keyLabel.rectTransform.offsetMin = new Vector2(4f, 0f);
         keyLabel.rectTransform.offsetMax = new Vector2(0f, -3f);
 
-        _nameLabel           = HudUIFactory.MakeText("DodgeName", _bg.rectTransform);
+        _nameLabel           = UIFactory.MakeText("DodgeName", _bg.rectTransform);
         _nameLabel.text      = "DODGE";
         _nameLabel.fontSize  = 9f;
         _nameLabel.color     = new Color(1f, 1f, 1f, 0.85f);
         _nameLabel.alignment = TextAlignmentOptions.Center;
-        HudUIFactory.Stretch(_nameLabel.rectTransform);
+        UIFactory.Stretch(_nameLabel.rectTransform);
     }
 
     private void Update()

@@ -7,12 +7,12 @@ public class HealAbility : Ability
 
     public override bool Execute(AbilityContext ctx)
     {
-        if (ctx.Stats == null) return false;
+        if (ctx.Health == null) return false;
 
         // Don't use the cooldown if already at full health
-        if (ctx.Stats.Health >= ctx.Stats.MaxHealth) return false;
+        if (ctx.Health.Health >= ctx.Health.MaxHealth) return false;
 
-        ctx.Stats.Heal(HealAmount);
+        ctx.Health.Heal(HealAmount);
         return true;
     }
 }

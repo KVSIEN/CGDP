@@ -85,8 +85,8 @@ public class DamagePopup : MonoBehaviour
         _group     = gameObject.AddComponent<CanvasGroup>();
         _fadeTimer = FadeDelay;
 
-        var text = HudUIFactory.MakeText("Text", (RectTransform)transform, gameObject.layer);
-        HudUIFactory.Stretch(text.rectTransform);
+        var text = UIFactory.MakeText("Text", (RectTransform)transform, gameObject.layer);
+        UIFactory.Stretch(text.rectTransform);
         text.text          = Mathf.RoundToInt(damage).ToString();
         text.color         = headshot ? HeadshotColor : NormalColor;
         text.fontSize      = headshot ? 48f : 36f;

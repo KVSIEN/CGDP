@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PlayerMovementSettings", menuName = "CGD/Player Movement Settings")]
+[CreateAssetMenu(fileName = "PlayerMovementSettings", menuName = "CGD/Player/Player Movement Settings")]
 public class PlayerMovementSettings : ScriptableObject
 {
     [Header("Speed")]

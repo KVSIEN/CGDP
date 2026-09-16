@@ -114,39 +114,39 @@ public class WeaponHUD : HUDElement
 
         float y = -_innerPadding.y;
 
-        var bg = HudUIFactory.MakeImage("Background", self);
+        var bg = UIFactory.MakeImage("Background", self);
         bg.color = _backgroundColor;
-        HudUIFactory.Stretch(bg.rectTransform);
+        UIFactory.Stretch(bg.rectTransform);
 
-        _weaponNameText = HudUIFactory.MakeText("WeaponName", self);
+        _weaponNameText = UIFactory.MakeText("WeaponName", self);
         _weaponNameText.color = _dimColor;
         _weaponNameText.fontSize = 12f;
         _weaponNameText.alignment = TextAlignmentOptions.Right;
-        HudUIFactory.Place(_weaponNameText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 18f));
+        UIFactory.Place(_weaponNameText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 18f));
         y -= 18f;
 
-        _magText = HudUIFactory.MakeText("MagCount", self);
+        _magText = UIFactory.MakeText("MagCount", self);
         _magText.color = _textColor;
         _magText.fontSize = 36f;
         _magText.fontStyle = FontStyles.Bold;
         _magText.alignment = TextAlignmentOptions.Right;
-        HudUIFactory.Place(_magText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 44f));
+        UIFactory.Place(_magText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 44f));
         y -= 44f;
 
-        _reserveText = HudUIFactory.MakeText("Reserve", self);
+        _reserveText = UIFactory.MakeText("Reserve", self);
         _reserveText.color = _dimColor;
         _reserveText.fontSize = 16f;
         _reserveText.alignment = TextAlignmentOptions.Right;
-        HudUIFactory.Place(_reserveText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 20f));
+        UIFactory.Place(_reserveText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 20f));
         y -= 20f;
 
-        _reloadText = HudUIFactory.MakeText("ReloadLabel", self);
+        _reloadText = UIFactory.MakeText("ReloadLabel", self);
         _reloadText.color = _reloadColor;
         _reloadText.fontSize = 13f;
         _reloadText.fontStyle = FontStyles.Bold;
         _reloadText.alignment = TextAlignmentOptions.Right;
         _reloadText.text = "RELOADING";
-        HudUIFactory.Place(_reloadText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 18f));
+        UIFactory.Place(_reloadText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 18f));
         _reloadText.gameObject.SetActive(false);
     }
 }

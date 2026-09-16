@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerStats : HealthManager
+public class PlayerHealth : HealthManager
 {
     [Header("Health")]
     [SerializeField] private float _maxHealth = 100f;

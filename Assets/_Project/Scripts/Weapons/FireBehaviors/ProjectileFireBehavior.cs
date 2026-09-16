@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ProjectileBehavior", menuName = "CGD/Fire Behaviors/Projectile")]
+[CreateAssetMenu(fileName = "ProjectileBehavior", menuName = "CGD/Weapons/Fire Behaviors/Projectile")]
 public class ProjectileFireBehavior : WeaponFireBehavior
 {
     [SerializeField] private Projectile _prefab;

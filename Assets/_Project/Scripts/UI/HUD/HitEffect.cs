@@ -4,7 +4,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(RectTransform))]
 public class HitEffect : HUDElement
 {
-    [SerializeField] private PlayerStats _playerStats;
+    [SerializeField] private PlayerHealth _playerHealth;
 
     [Header("Flash")]
     [SerializeField] private Color _flashColor     = new Color(1f, 0.1f, 0.1f, 0.35f);
@@ -26,10 +26,10 @@ public class HitEffect : HUDElement
 
         Build();
 
-        if (_playerStats != null)
+        if (_playerHealth != null)
         {
-            _playerStats.OnDamaged += OnPlayerDamaged;
-            _playerStats.OnChanged += Refresh;
+            _playerHealth.OnDamaged += OnPlayerDamaged;
+            _playerHealth.OnChanged += Refresh;
         }
 
         Refresh();
@@ -37,10 +37,10 @@ public class HitEffect : HUDElement
 
     private void OnDestroy()
     {
-        if (_playerStats != null)
+        if (_playerHealth != null)
         {
-            _playerStats.OnDamaged -= OnPlayerDamaged;
-            _playerStats.OnChanged -= Refresh;
+            _playerHealth.OnDamaged -= OnPlayerDamaged;
+            _playerHealth.OnChanged -= Refresh;
         }
     }
 
@@ -49,17 +49,17 @@ public class HitEffect : HUDElement
         var self = GetComponent<RectTransform>();
 
         // Vignette — rendered first so it sits behind the flash
-        _vignetteImage             = HudUIFactory.MakeImage("Vignette", self);
+        _vignetteImage             = UIFactory.MakeImage("Vignette", self);
         _vignetteImage.sprite      = CreateVignetteSprite();
         _vignetteImage.color       = new Color(1f, 0f, 0f, 0f);
-        HudUIFactory.Stretch(_vignetteImage.rectTransform);
+        UIFactory.Stretch(_vignetteImage.rectTransform);
 
         // Flash — rendered on top of the vignette
-        var flashImage    = HudUIFactory.MakeImage("Flash", self);
+        var flashImage    = UIFactory.MakeImage("Flash", self);
         flashImage.color  = _flashColor;
         _flashGroup        = flashImage.gameObject.AddComponent<CanvasGroup>();
         _flashGroup.alpha  = 0f;
-        HudUIFactory.Stretch(flashImage.rectTransform);
+        UIFactory.Stretch(flashImage.rectTransform);
     }
 
     private void OnPlayerDamaged(float amount)
@@ -69,8 +69,8 @@ public class HitEffect : HUDElement
 
     public override void Refresh()
     {
-        if (_playerStats == null || _vignetteImage == null) return;
-        float ratio    = _playerStats.MaxHealth > 0f ? _playerStats.Health / _playerStats.MaxHealth : 0f;
+        if (_playerHealth == null || _vignetteImage == null) return;
+        float ratio    = _playerHealth.MaxHealth > 0f ? _playerHealth.Health / _playerHealth.MaxHealth : 0f;
         float vigAlpha = Mathf.Clamp01(1f - ratio / _vignetteHealthThreshold) * _vignetteMaxAlpha;
         _vignetteImage.color = new Color(1f, 0f, 0f, vigAlpha);
     }

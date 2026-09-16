@@ -43,14 +43,14 @@ public class InteractHUD : HUDElement
         rt.sizeDelta = new Vector2(PromptWidth, PromptHeight);
 
         // Background
-        var bg = HudUIFactory.MakeImage("Bg", rt, layer);
+        var bg = UIFactory.MakeImage("Bg", rt, layer);
         bg.color = PanelBg;
-        HudUIFactory.Stretch(bg.rectTransform);
+        UIFactory.Stretch(bg.rectTransform);
 
         float keySize = PromptHeight;
 
         // Key badge
-        var keyBg = HudUIFactory.MakeImage("KeyBg", rt, layer);
+        var keyBg = UIFactory.MakeImage("KeyBg", rt, layer);
         keyBg.color = KeyBg;
         keyBg.rectTransform.anchorMin        = new Vector2(0f, 0f);
         keyBg.rectTransform.anchorMax        = new Vector2(0f, 1f);
@@ -58,16 +58,16 @@ public class InteractHUD : HUDElement
         keyBg.rectTransform.anchoredPosition = Vector2.zero;
         keyBg.rectTransform.sizeDelta        = new Vector2(keySize, 0f);
 
-        var keyText = HudUIFactory.MakeText("KeyLabel", keyBg.rectTransform, layer);
+        var keyText = UIFactory.MakeText("KeyLabel", keyBg.rectTransform, layer);
         keyText.text      = "E";
         keyText.fontSize  = 18f;
         keyText.fontStyle = FontStyles.Bold;
         keyText.color     = KeyColor;
         keyText.alignment = TextAlignmentOptions.Midline;
-        HudUIFactory.Stretch(keyText.rectTransform);
+        UIFactory.Stretch(keyText.rectTransform);
 
         // Action label
-        _labelText = HudUIFactory.MakeText("ActionLabel", rt, layer);
+        _labelText = UIFactory.MakeText("ActionLabel", rt, layer);
         _labelText.fontSize  = 13f;
         _labelText.color     = LabelColor;
         _labelText.alignment = TextAlignmentOptions.MidlineLeft;

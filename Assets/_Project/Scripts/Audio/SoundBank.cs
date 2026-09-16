@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewSoundBank", menuName = "CGD/Sound Bank")]
+[CreateAssetMenu(fileName = "NewSoundBank", menuName = "CGD/Audio/Sound Bank")]
 public class SoundBank : ScriptableObject
 {
     [SerializeField] private AudioClip[] _clips;
