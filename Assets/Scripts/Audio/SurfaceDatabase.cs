@@ -7,7 +7,7 @@ public class SurfaceDatabase : ScriptableObject
     [Serializable]
     public class SurfaceEntry
     {
-        public PhysicMaterial Material;
+        public PhysicsMaterial Material;
         public SoundBank Walk;
         public SoundBank Sprint;
         public SoundBank Crouch;
@@ -20,7 +20,7 @@ public class SurfaceDatabase : ScriptableObject
     [SerializeField] private SoundBank _defaultSprint;
     [SerializeField] private SoundBank _defaultCrouch;
 
-    public void GetBanks(PhysicMaterial mat, out SoundBank walk, out SoundBank sprint, out SoundBank crouch)
+    public void GetBanks(PhysicsMaterial mat, out SoundBank walk, out SoundBank sprint, out SoundBank crouch)
     {
         if (mat != null && _surfaces != null)
         {
