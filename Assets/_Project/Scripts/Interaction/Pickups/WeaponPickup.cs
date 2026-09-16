@@ -5,40 +5,42 @@ using CGD.Weapons;
 namespace CGD.Interaction
 {
     // Attach to a world GameObject with a Collider (set Is Trigger = true).
-    // Assign a WeaponData asset in the Inspector.
-    // When the player presses E nearby, the weapon fills the first empty loadout slot,
-    // or replaces the active slot if all four are already filled.
+    // Assign a WeaponData asset in the Inspector (or let RandomWeaponPickup generate one).
+    // Picking it up fills the first empty loadout slot; with every slot full it swaps
+    // with the active weapon, which is left behind here with its remaining ammo.
     [RequireComponent(typeof(Collider))]
     public class WeaponPickup : MonoBehaviour, IInteractable
     {
         [SerializeField] private WeaponData _data;
 
-        public string InteractLabel => _data != null ? $"Pick Up  {_data.WeaponName}" : "Pick Up";
+        private WeaponInstance _weapon;
 
-        public void SetData(WeaponData data) => _data = data;
+        private WeaponInstance Weapon => _weapon ??= _data != null ? new WeaponInstance(_data) : null;
+
+        public string InteractLabel => Weapon != null ? $"Pick Up  {Weapon.Data.WeaponName}" : "Pick Up";
+
+        public void SetData(WeaponData data)
+        {
+            _data   = data;
+            _weapon = null;
+        }
+
+        public bool CanInteract(GameObject player) =>
+            Weapon != null && player.TryGetComponent<PlayerWeaponLoadout>(out _);
 
         public void Interact(GameObject player)
         {
-            if (_data == null) return;
+            if (Weapon == null || !player.TryGetComponent(out PlayerWeaponLoadout loadout)) return;
 
-            var loadout = player.GetComponent<PlayerWeaponLoadout>();
-            if (loadout == null) return;
-
-            // Try to find an empty slot first
-            for (int i = 0; i < loadout.Slots.Length; i++)
+            WeaponInstance replaced = loadout.AddWeapon(Weapon);
+            if (replaced == null)
             {
-                if (loadout.Slots[i] != null) continue;
-
-                loadout.SetSlot(i, _data);
-                loadout.EquipSlot(i);
                 Destroy(gameObject);
                 return;
             }
 
-            // All slots full — replace the active slot
-            int target = Mathf.Max(0, loadout.ActiveSlot);
-            loadout.SetSlot(target, _data);
-            Destroy(gameObject);
+            _weapon = replaced;
+            _data   = replaced.Data;
         }
     }
 }

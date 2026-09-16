@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Combat;
 
 namespace CGD.Abilities
 {
@@ -20,6 +21,9 @@ namespace CGD.Abilities
             // Prevent the projectile from triggering on the player who fired it
             if (ctx.PlayerCollider != null && go.TryGetComponent<Collider>(out var col))
                 Physics.IgnoreCollision(col, ctx.PlayerCollider);
+
+            if (go.TryGetComponent(out Projectile projectile))
+                projectile.Source = ctx.Source;
 
             return true;
         }

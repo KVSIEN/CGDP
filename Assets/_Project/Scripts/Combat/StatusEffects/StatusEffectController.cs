@@ -6,7 +6,7 @@ namespace CGD.Combat
     // Reusable runtime driver for status effects (Bleed, Poison, Fire, Lightning, Ice, ...).
     // Tracks stacks/duration per effect asset and calls into each effect's own Tick()
     // so damage-over-time effects resolve through the same TakeDamage(DamageInfo)
-    // pipeline as direct hits.
+    // pipeline as direct hits. All effects are cleared when the character dies.
     public class StatusEffectController : MonoBehaviour
     {
         private class ActiveEffect
@@ -17,13 +17,27 @@ namespace CGD.Combat
             public float Magnitude; // raw damage of the hit that (most recently) applied this effect
         }
 
-        private IDamageable _target;
+        private IDamageable   _target;
+        private HealthManager _health;
         private readonly Dictionary<StatusEffect, ActiveEffect> _active = new();
         private readonly List<StatusEffect> _expiredBuffer = new();
+
+        // A tick can kill the target, which clears effects mid-iteration; defer that clear.
+        private bool _ticking;
+        private bool _clearRequested;
+
+        public Team Team => _health != null ? _health.Team : Team.None;
 
         private void Awake()
         {
             _target = GetComponent<IDamageable>();
+            _health = _target as HealthManager;
+            if (_health != null) _health.OnDeath += Clear;
+        }
+
+        private void OnDestroy()
+        {
+            if (_health != null) _health.OnDeath -= Clear;
         }
 
         private void Update()
@@ -31,6 +45,8 @@ namespace CGD.Combat
             if (_active.Count == 0) return;
 
             float dt = Time.deltaTime;
+            _ticking = true;
+
             foreach (var pair in _active)
             {
                 StatusEffect effect = pair.Key;
@@ -59,7 +75,15 @@ namespace CGD.Combat
                 }
             }
 
+            _ticking = false;
+            if (_clearRequested)
+            {
+                Clear();
+                return;
+            }
+
             if (_expiredBuffer.Count == 0) return;
+
             foreach (StatusEffect effect in _expiredBuffer)
             {
                 _active.Remove(effect);
@@ -68,10 +92,13 @@ namespace CGD.Combat
             _expiredBuffer.Clear();
         }
 
-        // Applies (or refreshes/stacks) an effect. Stack count clamps at effect.MaxStacks;
+        // Entry point for hits: lets the effect decide what applying it means.
+        public void Apply(StatusEffect effect, in DamageInfo hit) => effect.Apply(this, hit);
+
+        // Adds (or refreshes) a stack. Stack count clamps at effect.MaxStacks;
         // reapplying always resets the remaining duration back to effect.Duration and
         // updates magnitude to the new hit's value.
-        public void ApplyEffect(StatusEffect effect, float magnitude = 0f)
+        public void AddStack(StatusEffect effect, float magnitude)
         {
             if (_active.TryGetValue(effect, out ActiveEffect active))
             {
@@ -95,6 +122,21 @@ namespace CGD.Combat
         public int GetStacks(StatusEffect effect)
         {
             return _active.TryGetValue(effect, out ActiveEffect active) ? active.Stacks : 0;
+        }
+
+        public void Clear()
+        {
+            if (_ticking)
+            {
+                _clearRequested = true;
+                return;
+            }
+
+            _clearRequested = false;
+            foreach (StatusEffect effect in _active.Keys)
+                effect.OnRemoved(_target);
+            _active.Clear();
+            _expiredBuffer.Clear();
         }
     }
 }

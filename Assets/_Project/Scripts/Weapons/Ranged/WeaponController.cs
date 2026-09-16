@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using CGD.Combat;
 using CGD.Core;
 using CGD.Input;
 using CGD.Player;
@@ -9,14 +10,12 @@ using CGD.UI;
 namespace CGD.Weapons
 {
     /// <summary>
-    /// Weapon controller. Attach to the player root (or a weapon child).
-    /// Wire up references in the Inspector, then assign a WeaponData asset.
-    /// Fire behaviour (hitscan or projectile) is determined by the WeaponFireBehavior
-    /// assigned on the WeaponData asset.
+    /// Fires whichever WeaponInstance is equipped (PlayerWeaponLoadout owns the carried
+    /// weapons). Attach to the player root and wire up references in the Inspector.
+    /// Fire behaviour (hitscan, shotgun, projectile) comes from the equipped weapon's data.
     /// </summary>
     public class WeaponController : MonoBehaviour
     {
-        [SerializeField] private WeaponData         _data;
         [SerializeField] private PlayerInputHandler _input;
         [SerializeField] private PlayerCamera       _camera;
         [SerializeField] private CrosshairHUD       _crosshair;
@@ -30,8 +29,9 @@ namespace CGD.Weapons
         [SerializeField] private Color _debugMissColor = Color.yellow;
 
         // ── Runtime state ─────────────────────────────────────────────────────
-        private int   _magazine;
-        private int   _reserve;
+        private WeaponInstance _current;
+        private PlayerMovement _movement;
+        private DamageSource   _damageSource;
         private CooldownTimer _fireCooldown;
         private float _drawTimer;
         private float _currentSpread;
@@ -48,18 +48,21 @@ namespace CGD.Weapons
         /// <summary>Fired whenever magazine, reserve, or reload state changes. Args: magazine, reserve, isReloading.</summary>
         public event Action<int, int, bool> OnAmmoChanged;
 
-        public WeaponData Data      => _data;
-        public int  Magazine        => _magazine;
-        public int  Reserve         => _reserve;
-        public bool IsReloading     => _isReloading;
+        public WeaponInstance Current => _current;
+        public WeaponData Data        => _current?.Data;
+        public int  Magazine          => _current?.Magazine ?? 0;
+        public int  Reserve           => _current?.Reserve ?? 0;
+        public bool IsReloading       => _isReloading;
+
+        private WeaponData D        => _current.Data;
+        private Vector3    SoundPos => _muzzle != null ? _muzzle.position : transform.position;
 
         // ── Lifecycle ─────────────────────────────────────────────────────────
+
         private void Awake()
         {
-            if (_data == null) return;
-            _magazine = _data.MagazineSize;
-            _reserve  = _data.GetNormalizedReserveAmmo();
-            NotifyAmmoChanged();
+            _movement     = GetComponent<PlayerMovement>();
+            _damageSource = DamageSource.Of(gameObject);
         }
 
         private void OnDisable()
@@ -70,7 +73,7 @@ namespace CGD.Weapons
 
         private void Update()
         {
-            if (_data == null) return;
+            if (_current == null) return;
 
             if (_drawTimer > 0f)
             {
@@ -83,46 +86,45 @@ namespace CGD.Weapons
             TickSpread();
             TickRecoilRecovery();
             TickFireCooldown();
-            HandleFireInput();
-            HandleReloadInput();
+
+            if (_movement == null || _movement.CanAct)
+            {
+                HandleFireInput();
+                HandleReloadInput();
+            }
+
             UpdateCrosshair();
         }
 
         // ── Public API ────────────────────────────────────────────────────────
-        /// <summary>Swap the active weapon asset at runtime.</summary>
-        public void Equip(WeaponData data)
+
+        /// <summary>Swap the active weapon at runtime (null = unarmed).</summary>
+        public void Equip(WeaponInstance weapon)
         {
             StopAllCoroutines();
             _isReloading       = false;
-            _data              = data;
-            _magazine          = data != null ? data.MagazineSize : 0;
-            _reserve           = data != null ? data.GetNormalizedReserveAmmo() : 0;
+            _burstPending      = false;
+            _current           = weapon;
             _currentSpread     = 0f;
             _accumulatedRecoil = 0f;
             _accumulatedHorizontalRecoil = 0f;
-            _drawTimer         = data != null ? data.DrawTime : 0f;
+            _drawTimer         = weapon != null ? weapon.Data.DrawTime : 0f;
+
             if (_crosshair != null) _crosshair.SetDynamicSpread(0f);
             NotifyAmmoChanged();
         }
 
-        /// <summary>Restore ammo to full — call on respawn.</summary>
-        public void Refill()
+        /// <summary>Adds reserve ammo to the equipped weapon. Returns false when unarmed.</summary>
+        public bool AddReserveAmmo(int amount)
         {
-            if (_data == null) return;
-            _magazine = _data.MagazineSize;
-            _reserve  = _data.GetNormalizedReserveAmmo();
+            if (_current == null || amount <= 0) return false;
+            _current.Reserve += amount;
             NotifyAmmoChanged();
-        }
-
-        /// <summary>Adds reserve ammo to the currently equipped weapon — call from ammo pickups.</summary>
-        public void AddReserveAmmo(int amount)
-        {
-            if (_data == null || amount <= 0) return;
-            _reserve += amount;
-            NotifyAmmoChanged();
+            return true;
         }
 
         // ── Input polling ─────────────────────────────────────────────────────
+
         private void HandleFireInput()
         {
             if (!_fireCooldown.IsReady) return;
@@ -130,7 +132,7 @@ namespace CGD.Weapons
             bool triggerHeld  = _input.GetAction(GameAction.Attack);
             bool triggerPress = _input.WasPressed(GameAction.Attack);
 
-            switch (_data.FireMode)
+            switch (D.FireMode)
             {
                 case FireMode.Auto  when triggerHeld:  TryFire(); break;
                 case FireMode.Semi  when triggerPress: TryFire(); break;
@@ -138,69 +140,66 @@ namespace CGD.Weapons
                     StartCoroutine(FireBurst()); break;
             }
 
-            if (triggerPress && _magazine <= 0 && !_isReloading)
-            {
-                Vector3 soundPos = _muzzle != null ? _muzzle.position : transform.position;
-                _data.EmptySound?.Play(soundPos);
-            }
+            if (triggerPress && _current.Magazine <= 0)
+                D.EmptySound?.Play(SoundPos);
         }
 
         private void HandleReloadInput()
         {
-            if (_input.GetAction(GameAction.Reload) && _magazine < _data.MagazineSize && _reserve > 0)
+            if (_input.GetAction(GameAction.Reload) && _current.Magazine < D.MagazineSize && _current.Reserve > 0)
                 StartCoroutine(Reload());
         }
 
         // ── Fire ──────────────────────────────────────────────────────────────
+
         private void TryFire()
         {
-            if (_magazine <= 0) return;
+            if (_current.Magazine <= 0) return;
 
-            _magazine--;
-            _fireCooldown.Start(60f / _data.RoundsPerMinute);
+            _current.Magazine--;
+            _fireCooldown.Start(60f / D.RoundsPerMinute);
             NotifyAmmoChanged();
 
             ApplyRecoil();
             CastBullet();
             AddSpreadBloom();
 
-            Vector3 soundPos = _muzzle != null ? _muzzle.position : transform.position;
-            _data.FireSound?.Play(soundPos);
+            D.FireSound?.Play(SoundPos);
         }
 
         private IEnumerator FireBurst()
         {
             _burstPending = true;
-            for (int i = 0; i < _data.BurstCount; i++)
+            for (int i = 0; i < D.BurstCount; i++)
             {
-                if (_magazine <= 0) break;
+                if (_current.Magazine <= 0) break;
                 TryFire();
-                if (i < _data.BurstCount - 1)
-                    yield return new WaitForSeconds(_data.BurstInterval);
+                if (i < D.BurstCount - 1)
+                    yield return new WaitForSeconds(D.BurstInterval);
             }
             _burstPending = false;
         }
 
-        // ── Fire ──────────────────────────────────────────────────────────────
         private void CastBullet()
         {
-            if (_data.FireBehavior == null) return;
+            if (D.FireBehavior == null) return;
 
             float   adsT      = _camera.AdsT;
-            float   spreadDeg = Mathf.Lerp(_data.HipSpreadDeg, _data.AdsSpreadDeg, adsT)
-                              + _currentSpread * Mathf.Lerp(1f, _data.EffectiveAdsSpreadMultiplier, adsT);
+            float   spreadDeg = Mathf.Lerp(D.HipSpreadDeg, D.AdsSpreadDeg, adsT)
+                              + _currentSpread * Mathf.Lerp(1f, D.EffectiveAdsSpreadMultiplier, adsT);
             Vector3 forward   = _camera.transform.forward;
 
             // Ray originates from camera centre — avoids TP parallax where muzzle→target
             // diverges from camera forward for close geometry, causing shots to miss.
-            _data.FireBehavior.Execute(new FireContext
+            D.FireBehavior.Execute(new FireContext
             {
                 CameraPosition    = _camera.transform.position,
                 CameraForward     = forward,
                 SpreadDeg         = spreadDeg,
                 Direction         = WeaponFireBehavior.ComputeSpreadDirection(forward, spreadDeg),
                 Muzzle            = _muzzle,
-                Data              = _data,
+                Data              = D,
+                Source            = _damageSource,
                 DebugDraw         = _debugDrawBullets,
                 DebugHitColor     = _debugHitColor,
                 DebugMissColor    = _debugMissColor,
@@ -209,43 +208,45 @@ namespace CGD.Weapons
         }
 
         // ── Spread ────────────────────────────────────────────────────────────
+
         private void AddSpreadBloom()
         {
-            _currentSpread = Mathf.Min(_currentSpread + _data.SpreadPerShot, _data.MaxSpread);
+            _currentSpread = Mathf.Min(_currentSpread + D.SpreadPerShot, D.MaxSpread);
         }
 
         private void TickSpread()
         {
             // Only recover spread when not actively firing so bloom builds up correctly
             if (_currentSpread > 0f && _fireCooldown.IsReady)
-                _currentSpread = Mathf.Max(_currentSpread - _data.SpreadRecovery * Time.deltaTime, 0f);
+                _currentSpread = Mathf.Max(_currentSpread - D.SpreadRecovery * Time.deltaTime, 0f);
         }
 
         // ── Recoil ────────────────────────────────────────────────────────────
+
         private void ApplyRecoil()
         {
             float adsT      = _camera.AdsT;
-            float vertMult  = Mathf.Lerp(_data.HipRecoilVerticalMultiplier,   _data.AdsRecoilMultiplier, adsT);
-            float horizMult = Mathf.Lerp(_data.HipRecoilHorizontalMultiplier, _data.AdsRecoilMultiplier, adsT);
+            float vertMult  = Mathf.Lerp(D.HipRecoilVerticalMultiplier,   D.AdsRecoilMultiplier, adsT);
+            float horizMult = Mathf.Lerp(D.HipRecoilHorizontalMultiplier, D.AdsRecoilMultiplier, adsT);
 
             // Shared shape for both axes: axisScale × (pattern + jitter).
             // Vertical's pattern is a constant full kick; horizontal's pattern is the
             // authored drift bias applied directly, so it reads from the first shot
             // instead of emerging over several rounds.
-            float vertJitter = BlendedJitter(_data.RecoilJitter.y);
-            float vertBase   = _data.RecoilScale.y * (1f + vertJitter);
-            float remaining  = _data.MaxAccumulatedRecoil - _accumulatedRecoil;
+            float vertJitter = BlendedJitter(D.RecoilJitter.y);
+            float vertBase   = D.RecoilScale.y * (1f + vertJitter);
+            float remaining  = D.MaxAccumulatedRecoil - _accumulatedRecoil;
             float vertKick   = Mathf.Min(vertBase * vertMult, remaining);
             _accumulatedRecoil += vertKick;
 
-            float horizJitter    = BlendedJitter(_data.RecoilJitter.x);
-            float horizRaw       = _data.RecoilScale.x * (_data.RecoilHorizontalBias + horizJitter) * horizMult;
-            float horizRemaining = _data.MaxAccumulatedHorizontalRecoil - Mathf.Abs(_accumulatedHorizontalRecoil);
+            float horizJitter    = BlendedJitter(D.RecoilJitter.x);
+            float horizRaw       = D.RecoilScale.x * (D.RecoilHorizontalBias + horizJitter) * horizMult;
+            float horizRemaining = D.MaxAccumulatedHorizontalRecoil - Mathf.Abs(_accumulatedHorizontalRecoil);
             float horizKick      = Mathf.Clamp(horizRaw, -horizRemaining, horizRemaining);
             _accumulatedHorizontalRecoil += horizKick;
 
-            float recoveryFraction = Mathf.Lerp(_data.RecoilRecoveryFraction, _data.AdsRecoilRecoveryFraction, adsT);
-            _camera.AddRecoil(vertKick, horizKick, _data.RecoilRecoverySpeed, recoveryFraction, _data.RecoilRecoveryDelay);
+            float recoveryFraction = Mathf.Lerp(D.RecoilRecoveryFraction, D.AdsRecoilRecoveryFraction, adsT);
+            _camera.AddRecoil(vertKick, horizKick, D.RecoilRecoverySpeed, recoveryFraction, D.RecoilRecoveryDelay);
             _visuals?.AddKick(vertKick, horizKick);
         }
 
@@ -271,37 +272,39 @@ namespace CGD.Weapons
         }
 
         // ── Reload ────────────────────────────────────────────────────────────
+
         private IEnumerator Reload()
         {
             _isReloading = true;
             NotifyAmmoChanged();
 
-            Vector3 soundPos = _muzzle != null ? _muzzle.position : transform.position;
-            _data.ReloadSound?.Play(soundPos);
+            D.ReloadSound?.Play(SoundPos);
 
-            float time = _magazine > 0 ? _data.TacticalReloadTime : _data.ReloadTime;
+            float time = _current.Magazine > 0 ? D.TacticalReloadTime : D.ReloadTime;
             yield return new WaitForSeconds(time);
 
-            int needed = _data.MagazineSize - _magazine;
-            int taken  = Mathf.Min(needed, _reserve);
-            _magazine += taken;
-            _reserve  -= taken;
+            int needed = D.MagazineSize - _current.Magazine;
+            int taken  = Mathf.Min(needed, _current.Reserve);
+            _current.Magazine += taken;
+            _current.Reserve  -= taken;
 
             _isReloading = false;
             NotifyAmmoChanged();
         }
 
         // ── Crosshair ─────────────────────────────────────────────────────────
+
         private void UpdateCrosshair()
         {
-            if (_crosshair == null || _data == null) return;
+            if (_crosshair == null) return;
+
             float adsT    = _camera.AdsT;
-            float baseDeg = Mathf.Lerp(_data.HipSpreadDeg, _data.AdsSpreadDeg, adsT);
-            float adsBloomMult = _data.AdsSpreadDeg > 0f ? _data.AdsSpreadMultiplier : 0f;
-            _crosshair.SetDynamicSpread(baseDeg + _currentSpread * Mathf.Lerp(1f, adsBloomMult, adsT));
+            float baseDeg = Mathf.Lerp(D.HipSpreadDeg, D.AdsSpreadDeg, adsT);
+            _crosshair.SetDynamicSpread(baseDeg + _currentSpread * Mathf.Lerp(1f, D.EffectiveAdsSpreadMultiplier, adsT));
         }
 
         // ── Helpers ───────────────────────────────────────────────────────────
+
         private void TickFireCooldown()
         {
             _fireCooldown.Tick(Time.deltaTime);
@@ -309,7 +312,7 @@ namespace CGD.Weapons
 
         private void NotifyAmmoChanged()
         {
-            OnAmmoChanged?.Invoke(_magazine, _reserve, _isReloading);
+            OnAmmoChanged?.Invoke(Magazine, Reserve, _isReloading);
         }
     }
 }

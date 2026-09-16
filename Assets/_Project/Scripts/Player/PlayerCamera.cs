@@ -116,8 +116,7 @@ namespace CGD.Player
             _transitionTarget = _startingMode == CameraMode.FirstPerson ? 0f : 1f;
             _transitionT = _transitionTarget;
 
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            CursorLock.Set(true);
 
             RefreshMeshVisibility();
         }

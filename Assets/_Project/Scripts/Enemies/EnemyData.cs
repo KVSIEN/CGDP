@@ -1,11 +1,15 @@
 using UnityEngine;
 using CGD.Audio;
+using CGD.Combat;
 
 namespace CGD.Enemies
 {
     [CreateAssetMenu(fileName = "EnemyData", menuName = "CGD/Enemies/Enemy Data")]
     public class EnemyData : ScriptableObject
     {
+        [Tooltip("Enemies never damage their own team")]
+        public Team Team = Team.Enemy;
+
         [Header("Health")]
         public float MaxHealth = 100f;
         public float Armor     = 0f;
@@ -40,6 +44,5 @@ namespace CGD.Enemies
 
         [Header("Audio")]
         public SoundBank AttackSound;
-        public SoundBank DeathSound;
     }
 }

@@ -12,6 +12,7 @@ namespace CGD.Weapons
             d.WeaponName = cat.Names[Random.Range(0, cat.Names.Length)];
             d.FireMode    = cat.FireModes[Random.Range(0, cat.FireModes.Length)];
             d.FireBehavior = cat.FireBehavior;
+            d.OnHitEffects = cat.OnHitEffects;
 
             // ── Firing ────────────────────────────────────────────────────────────
             d.RoundsPerMinute = cat.RPM.EvaluateClamped();

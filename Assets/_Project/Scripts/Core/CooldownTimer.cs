@@ -22,6 +22,8 @@ namespace CGD.Core
             _remaining = duration;
         }
 
+        public void Reset() => _remaining = 0f;
+
         public void Tick(float deltaTime)
         {
             if (_remaining > 0f)

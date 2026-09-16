@@ -6,7 +6,8 @@ namespace CGD.Weapons
 {
     // Required prefab setup: Rigidbody (isKinematic = false, useGravity = true),
     // Collider (isTrigger = false) — needs real physics to arc and bounce.
-    // GrenadeController.Throw() calls Init() right after spawning.
+    // GrenadeController.Throw() calls Init() right after spawning; the thrower's team is
+    // immune to the explosion.
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(Collider))]
     public class Grenade : MonoBehaviour
@@ -15,12 +16,14 @@ namespace CGD.Weapons
         private static readonly Dictionary<IDamageable, float> _targetFalloff = new();
 
         private GrenadeData _data;
+        private DamageSource _source;
         private float _fuseTimer;
         private bool _initialized;
 
-        public void Init(GrenadeData data)
+        public void Init(GrenadeData data, DamageSource source)
         {
             _data = data;
+            _source = source;
             _fuseTimer = data.FuseTime;
             _initialized = true;
         }
@@ -54,7 +57,8 @@ namespace CGD.Weapons
             foreach (KeyValuePair<IDamageable, float> pair in _targetFalloff)
             {
                 if (pair.Value <= 0f) continue;
-                pair.Key.TakeDamage(new DamageInfo(_data.ExplosionDamage * pair.Value, _data.ArmorPenetration, _data.DamageType));
+                pair.Key.TakeDamage(new DamageInfo(_data.ExplosionDamage * pair.Value, _data.ArmorPenetration, _data.DamageType,
+                    source: _source, onHitEffects: _data.OnHitEffects));
             }
 
             _data.ExplosionSound?.Play(transform.position);

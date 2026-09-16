@@ -20,6 +20,8 @@ namespace CGD.Weapons
             p.Lifetime = _lifetime;
             p.Damage   = ctx.Data.Damage;
             p.CriticalMultiplier = ctx.Data.HeadshotMultiplier;
+            p.Source       = ctx.Source;
+            p.OnHitEffects = ctx.Data.OnHitEffects;
         }
     }
 }

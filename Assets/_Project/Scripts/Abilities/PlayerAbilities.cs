@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Combat;
 using CGD.Core;
 using CGD.Input;
 using CGD.Player;
@@ -42,7 +43,15 @@ namespace CGD.Abilities
                 PlayerCollider   = GetComponent<Collider>(),
                 CameraTransform  = _cameraTransform,
                 Health           = _health,
+                Source           = DamageSource.Of(gameObject),
             };
+
+            if (_health != null) _health.OnRevived += ResetCooldowns;
+        }
+
+        private void OnDestroy()
+        {
+            if (_health != null) _health.OnRevived -= ResetCooldowns;
         }
 
         private void Update()
@@ -65,5 +74,11 @@ namespace CGD.Abilities
 
         // Read by AbilityHUD to size the cooldown overlay.
         public CooldownTimer GetCooldown(int slot) => _cooldowns[slot];
+
+        private void ResetCooldowns()
+        {
+            for (int i = 0; i < _cooldowns.Length; i++)
+                _cooldowns[i].Reset();
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using CGD.Combat;
 using CGD.Input;
 using CGD.Player;
 
@@ -23,6 +24,7 @@ namespace CGD.Weapons
         private PlayerInputHandler _input;
         private PlayerMovement     _movement;
         private Collider           _ownerCollider;
+        private DamageSource       _damageSource;
 
         private int  _carried;
         private bool _heldLastFrame;
@@ -32,6 +34,7 @@ namespace CGD.Weapons
             _input         = GetComponent<PlayerInputHandler>();
             _movement      = GetComponent<PlayerMovement>();
             _ownerCollider = GetComponent<Collider>();
+            _damageSource  = DamageSource.Of(gameObject);
             _carried       = _data != null ? _data.MaxCarried : 0;
         }
 
@@ -79,7 +82,7 @@ namespace CGD.Weapons
                 Physics.IgnoreCollision(col, _ownerCollider);
 
             if (go.TryGetComponent<Grenade>(out var grenade))
-                grenade.Init(_data);
+                grenade.Init(_data, _damageSource);
 
             _carried--;
             OnCountChanged?.Invoke(_carried);

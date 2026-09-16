@@ -2928,7 +2928,6 @@ MonoBehaviour:
   _movement: {fileID: 1555766055}
   _abilities: {fileID: 1555766053}
   _input: {fileID: 1555766056}
-  _weapon: {fileID: 1555766062}
   _hud: {fileID: 2051602391}
   _spawnPoint: {fileID: 1629601954}
   _respawnDelay: 3
@@ -2991,7 +2990,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 726904b1645258441b229f6e5b428c5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponController
-  _data: {fileID: 0}
   _input: {fileID: 1555766056}
   _camera: {fileID: 330585548}
   _crosshair: {fileID: 277604014}
@@ -3013,7 +3011,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b85bb1675a3a3642a910687a01b20ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerWeaponLoadout
-  _slots:
+  _startingWeapons:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

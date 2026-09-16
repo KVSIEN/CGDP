@@ -14,14 +14,19 @@ namespace CGD.Combat
         public readonly DamageType Type;
         // Applied only when the hit lands on a critical hitbox region (e.g. a weapon's headshot bonus).
         public readonly float CriticalMultiplier;
+        public readonly DamageSource Source;
+        // Status effects the target may receive from this hit; null for none.
+        public readonly StatusEffectApplication[] OnHitEffects;
 
         public DamageInfo(float rawDamage, float armorPenetration = 0f, DamageType type = DamageType.Physical,
-            float criticalMultiplier = 1f)
+            float criticalMultiplier = 1f, DamageSource source = default, StatusEffectApplication[] onHitEffects = null)
         {
             RawDamage          = rawDamage;
             ArmorPenetration   = Mathf.Clamp01(armorPenetration);
             Type               = type;
             CriticalMultiplier = criticalMultiplier;
+            Source             = source;
+            OnHitEffects       = onHitEffects;
         }
 
         // Effective Armor = Armor × (1 − Armor Penetration%)

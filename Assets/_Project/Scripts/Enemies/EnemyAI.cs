@@ -39,6 +39,7 @@ namespace CGD.Enemies
         private bool    _seesPlayer;
         private float   _speedMultiplier = 1f;
         private CooldownTimer _stunTimer;
+        private DamageSource _damageSource;
         private bool    _wasStunned;
 
         // IStunnable — driven externally (e.g. Ice) via GetComponent<IStunnable>().
@@ -55,6 +56,7 @@ namespace CGD.Enemies
             _agent  = GetComponent<NavMeshAgent>();
             _health = GetComponent<EnemyHealth>();
             _mpb    = new MaterialPropertyBlock();
+            _damageSource = DamageSource.Of(gameObject);
 
             _health.OnDeath += OnDeath;
 
@@ -187,7 +189,7 @@ namespace CGD.Enemies
         {
             if (!_attackCooldown.IsReady) return;
             _attackCooldown.Start(_data.AttackCooldown);
-            _playerHealth.TakeDamage(new DamageInfo(_data.AttackDamage));
+            _playerHealth.TakeDamage(new DamageInfo(_data.AttackDamage, source: _damageSource));
             _data.AttackSound?.Play(transform.position);
         }
 
@@ -228,7 +230,6 @@ namespace CGD.Enemies
 
         private void OnDeath()
         {
-            _data.DeathSound?.Play(transform.position);
             _agent.enabled = false;
             enabled = false;
         }

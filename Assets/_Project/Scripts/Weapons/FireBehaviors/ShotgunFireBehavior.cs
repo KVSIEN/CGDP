@@ -26,7 +26,7 @@ namespace CGD.Weapons
                 Debug.DrawLine(origin, end, didHit ? ctx.DebugHitColor : ctx.DebugMissColor, ctx.DebugLineDuration);
             }
 
-            if (didHit) ApplyHitDamage(hit, ctx.Data);
+            if (didHit) ApplyHitDamage(hit, ctx);
         }
     }
 }

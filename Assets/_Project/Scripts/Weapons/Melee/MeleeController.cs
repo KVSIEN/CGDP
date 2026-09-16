@@ -27,6 +27,7 @@ namespace CGD.Weapons
 
         private PlayerInputHandler _input;
         private PlayerMovement     _movement;
+        private DamageSource       _damageSource;
 
         private Phase _phase;
         private float _phaseTimer;
@@ -43,6 +44,7 @@ namespace CGD.Weapons
         {
             _input    = GetComponent<PlayerInputHandler>();
             _movement = GetComponent<PlayerMovement>();
+            _damageSource = DamageSource.Of(gameObject);
         }
 
         private void Update()
@@ -141,7 +143,8 @@ namespace CGD.Weapons
             int count = Physics.OverlapSphereNonAlloc(center, _activeStep.Radius, _hitBuffer,
                 _data.HitMask, QueryTriggerInteraction.Ignore);
 
-            var info = new DamageInfo(_activeStep.Damage, _activeStep.ArmorPenetration, _activeStep.DamageType);
+            var info = new DamageInfo(_activeStep.Damage, _activeStep.ArmorPenetration, _activeStep.DamageType,
+                source: _damageSource, onHitEffects: _activeStep.OnHitEffects);
 
             _hitTargets.Clear();
             bool hitAnything = false;

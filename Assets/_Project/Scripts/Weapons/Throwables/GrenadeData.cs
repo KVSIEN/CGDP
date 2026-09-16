@@ -25,6 +25,10 @@ namespace CGD.Weapons
         public DamageType DamageType = DamageType.Physical;
         public LayerMask HitMask = ~0;
 
+        [Header("On Hit")]
+        [Tooltip("Status effects each hit may apply")]
+        public StatusEffectApplication[] OnHitEffects;
+
         [Header("Audio")]
         public SoundBank ThrowSound;
         public SoundBank ExplosionSound;

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.WeaponData
   WeaponName: Standard Rifle
   FireBehavior: {fileID: 11400000, guid: ca566d8dc066bdc49b9f7028754076c0, type: 2}
+  OnHitEffects: []
   FireMode: 1
   RoundsPerMinute: 750
   BurstCount: 3

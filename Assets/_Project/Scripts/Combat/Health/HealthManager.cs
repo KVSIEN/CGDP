@@ -14,7 +14,9 @@ namespace CGD.Combat
         private float _shield;
         private float _shieldRegenTimer;
         private float _armorReductionPercent;
+        private StatusEffectController _statusEffects;
 
+        public abstract Team  Team      { get; }
         public abstract float MaxHealth { get; }
         public abstract float Armor     { get; }
         public abstract float MaxShield { get; }
@@ -37,8 +39,14 @@ namespace CGD.Combat
         public event Action        OnChanged;
         public event Action        OnDeath;
         public event Action<float> OnDamaged;
+        // Raised by Revive(), so systems on the same character can reset themselves.
+        public event Action        OnRevived;
 
-        protected virtual void Awake() => ResetHealth();
+        protected virtual void Awake()
+        {
+            TryGetComponent(out _statusEffects);
+            ResetHealth();
+        }
 
         private void Update() => TickShieldRegen(Time.deltaTime);
 
@@ -56,7 +64,16 @@ namespace CGD.Combat
             OnChanged?.Invoke();
         }
 
-        protected void ResetHealth()
+        public void Revive()
+        {
+            ResetHealth();
+            OnRevived?.Invoke();
+        }
+
+        // Teammates (and the source itself) are immune; teamless sources hit everyone.
+        public bool CanBeDamagedBy(DamageSource source) => source.Team == Team.None || source.Team != Team;
+
+        private void ResetHealth()
         {
             _currentHealth = StartingHealth;
             _shield        = MaxShield;
@@ -67,7 +84,7 @@ namespace CGD.Combat
 
         private void ApplyDamage(DamageInfo info, float multiplier, Vector3 point, bool isCritical)
         {
-            if (IsDead) return;
+            if (IsDead || !CanBeDamagedBy(info.Source)) return;
 
             float amount = info.ResolveDamage(Armor * (1f - _armorReductionPercent)) * multiplier;
             _shieldRegenTimer = ShieldRegenDelay;
@@ -90,7 +107,24 @@ namespace CGD.Combat
             }
 
             OnChanged?.Invoke();
-            if (IsDead) OnDeath?.Invoke();
+            if (IsDead)
+            {
+                OnDeath?.Invoke();
+                return;
+            }
+
+            ApplyOnHitEffects(info);
+        }
+
+        private void ApplyOnHitEffects(in DamageInfo info)
+        {
+            if (_statusEffects == null || info.OnHitEffects == null) return;
+
+            foreach (StatusEffectApplication application in info.OnHitEffects)
+            {
+                if (application.Effect != null && UnityEngine.Random.value < application.Chance)
+                    _statusEffects.Apply(application.Effect, info);
+            }
         }
 
         private void TickShieldRegen(float deltaTime)

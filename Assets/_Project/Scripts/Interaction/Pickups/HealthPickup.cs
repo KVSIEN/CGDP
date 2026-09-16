@@ -12,12 +12,14 @@ namespace CGD.Interaction
 
         public string InteractLabel => "Pick Up  Health";
 
+        public bool CanInteract(GameObject player) =>
+            player.TryGetComponent(out PlayerHealth health) && !health.IsDead && health.Health < health.MaxHealth;
+
         public void Interact(GameObject player)
         {
-            var health = player.GetComponent<PlayerHealth>();
-            if (health == null) return;
+            if (!CanInteract(player)) return;
 
-            health.Heal(_amount);
+            player.GetComponent<PlayerHealth>().Heal(_amount);
             Destroy(gameObject);
         }
     }

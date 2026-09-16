@@ -1,19 +1,21 @@
 using System.Collections;
 using UnityEngine;
 using CGD.Abilities;
+using CGD.Core;
 using CGD.Input;
 using CGD.UI;
-using CGD.Weapons;
 
 namespace CGD.Player
 {
+    // Death and respawn flow: locks control and shows the death screen, then moves the
+    // player to the spawn point and revives them. Per-system resets (ammo, cooldowns,
+    // status effects) happen in those systems via PlayerHealth's OnDeath/OnRevived.
     public class PlayerLifecycle : MonoBehaviour
     {
         [SerializeField] private PlayerHealth        _health;
         [SerializeField] private PlayerMovement      _movement;
         [SerializeField] private PlayerAbilities     _abilities;
         [SerializeField] private PlayerInputHandler  _input;
-        [SerializeField] private WeaponController    _weapon;
         [SerializeField] private HUDManager          _hud;
         [SerializeField] private Transform           _spawnPoint;
         [SerializeField] private float               _respawnDelay = 3f;
@@ -24,19 +26,14 @@ namespace CGD.Player
             _health.OnDeath += HandleDeath;
         }
 
+        private void OnDestroy()
+        {
+            _health.OnDeath -= HandleDeath;
+        }
+
         private void HandleDeath()
         {
-            _movement.enabled  = false;
-            _abilities.enabled = false;
-            _input.InputEnabled = false;
-            _hud.HideAll();
-
-            if (_deathScreen != null)
-                _deathScreen.SetActive(true);
-
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible   = true;
-
+            SetControlEnabled(false);
             StartCoroutine(RespawnRoutine());
         }
 
@@ -49,21 +46,25 @@ namespace CGD.Player
         private void Respawn()
         {
             if (_spawnPoint != null)
-                transform.position = _spawnPoint.position;
+                _movement.Teleport(_spawnPoint.position);
 
-            _health.Respawn();
-            _weapon?.Refill();
+            _health.Revive();
+            SetControlEnabled(true);
+        }
 
-            _movement.enabled   = true;
-            _abilities.enabled  = true;
-            _input.InputEnabled = true;
-            _hud.ShowAll();
+        private void SetControlEnabled(bool controlEnabled)
+        {
+            _movement.enabled   = controlEnabled;
+            _abilities.enabled  = controlEnabled;
+            _input.InputEnabled = controlEnabled;
+
+            if (controlEnabled) _hud.ShowAll();
+            else                _hud.HideAll();
 
             if (_deathScreen != null)
-                _deathScreen.SetActive(false);
+                _deathScreen.SetActive(!controlEnabled);
 
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible   = false;
+            CursorLock.Set(controlEnabled);
         }
     }
 }

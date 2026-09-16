@@ -49,6 +49,7 @@ namespace CGD.Player
             for (int i = 0; i < count; i++)
             {
                 if (!_buffer[i].TryGetComponent<IInteractable>(out var candidate)) continue;
+                if (!candidate.CanInteract(gameObject)) continue;
 
                 Vector3 toTarget  = _buffer[i].transform.position - eyeOrigin;
                 float   mag       = toTarget.magnitude;

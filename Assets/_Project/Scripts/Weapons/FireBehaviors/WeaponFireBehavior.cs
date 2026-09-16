@@ -17,11 +17,13 @@ namespace CGD.Weapons
             return (rot * new Vector3(offset.x, offset.y, 1f)).normalized;
         }
 
-        protected static void ApplyHitDamage(RaycastHit hit, WeaponData data)
+        protected static void ApplyHitDamage(RaycastHit hit, in FireContext ctx)
         {
+            WeaponData data = ctx.Data;
             float t       = Mathf.InverseLerp(data.RangeOptimal, data.RangeFalloffEnd, hit.distance);
             float falloff = Mathf.Lerp(1f, data.DamageFalloffMin, t);
-            var   info    = new DamageInfo(data.Damage * falloff, criticalMultiplier: data.HeadshotMultiplier);
+            var   info    = new DamageInfo(data.Damage * falloff, criticalMultiplier: data.HeadshotMultiplier,
+                source: ctx.Source, onHitEffects: data.OnHitEffects);
             Hitbox.ApplyHit(hit.collider, info, hit.point);
         }
     }

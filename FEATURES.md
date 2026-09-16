@@ -51,7 +51,17 @@
 - Shield absorbs damage before Health; any damage left over after a hit depletes the shield carries through to Health; shield regenerates automatically after a few seconds without taking damage; enemies can have shields too
 - Hitboxes — characters can be split into head, body, and limb hitboxes; each region deals its own damage multiplier (defaults: head ×1 plus the weapon's headshot bonus, body ×1, limbs ×0.75), tunable per character type via a Hitbox Profile asset
 - Explosions and melee swings damage a character once, no matter how many of its hitboxes they overlap
+- Teams — the player and enemies never damage their own side, so your own grenades and projectiles can't hurt you; damage without a team (hazards, status ticks) hits everyone
 - Fires a change event so the HUD reacts immediately without polling
+
+## Status Effects
+- Weapons, melee attacks and grenades can each list on-hit status effects, each with its own chance to apply per hit
+- **Bleed** — damage over time that ignores armor; reapplying refreshes it
+- **Poison** — stacks up to 5; each stack makes the ticks much stronger
+- **Fire** — damage over time based on the hit that applied it, still reduced by armor
+- **Ice** — each stack slows and lowers armor; at 5 stacks the target is stunned; stacks wear off one at a time
+- **Lightning** — jumps from the target to nearby characters on the same side, weaker with each jump; more stacks mean more jumps
+- All active effects are removed when a character dies
 
 ## Ability System
 - Four ability slots (unbound by default; assign keys via the settings menu)
@@ -70,10 +80,11 @@
 - Player scans for nearby interactables each frame using a zero-allocation sphere overlap (configurable range, default 2.5 m); always selects the closest one
 - Press E to trigger the interaction; prompts only appear when something is actually in range
 - HUD prompt appears bottom-center of the screen showing a blue "E" key badge and the action label (e.g. "Pick Up  Assault Rifle"); disappears instantly when out of range
-- Weapon pickups: place a `WeaponPickup` component on any world object, assign a `WeaponData` asset; picking it up fills the first empty loadout slot and equips it, or replaces the active slot if all four are full; the pickup object is destroyed on collection
+- Weapon pickups: place a `WeaponPickup` component on any world object, assign a `WeaponData` asset; picking it up fills the first empty loadout slot and equips it; if all four slots are full, your active weapon is swapped out and left behind in the pickup's place, keeping its remaining ammo
 - Random weapon pickups: add `RandomWeaponPickup` alongside `WeaponPickup` and assign a `WeaponCategoryData` asset; each time the object spawns a unique weapon is generated with randomised stats drawn from the category's thresholds
 - Ammo pickups: `AmmoPickup` adds reserve ammo to whichever weapon the player currently has equipped
 - Health pickups: `HealthPickup` restores a set amount of health
+- Pickups only show a prompt when they would do something — no health pickup at full health, no ammo pickup without a weapon — so they aren't wasted
 - Doors: press E on a `Door` to swing it open or closed (no animation — a plain procedural rotation)
 - Switches: press E on a `Switch` to toggle one or more linked doors remotely
 
@@ -93,9 +104,10 @@
 
 ## Weapon Loadout
 - Four weapon slots on the player; press 1, 2, 3, or 4 to equip the weapon in that slot
-- Switching to a slot instantly equips the weapon and resets fire/reload state
+- Switching to a slot equips the weapon and cancels any reload in progress
+- Each weapon keeps its own magazine and reserve ammo — switching away and back doesn't refill it
 - Inventory panel (press I) shows all four loadout slots, highlights the active weapon, and lists each weapon's name; empty slots are shown as "— Empty —"
-- Loadout slots are configurable in the Inspector via WeaponData ScriptableObject assets
+- Starting weapons are configurable in the Inspector via WeaponData ScriptableObject assets
 
 ## Input System
 - All actions are defined in one place and can be reconfigured without touching code
@@ -126,6 +138,8 @@
 - Damage falloff — full damage up to an optimal range, then drops linearly to a configurable minimum at max range
 - Headshot multiplier — each weapon's headshot bonus applies when a shot or projectile lands on a critical hitbox (the head by default)
 - Bullet spread / bloom — hip-fire has a wider cone; firing continuously grows the spread; ADS tightens it; spread recovers quickly when not shooting
+- Weapons can't fire or reload while stunned, mantling, or mid-roll
+- Projectiles pass through pickups and other trigger zones and never hit the shooter
 - Magazine and reserve ammo tracked per weapon; reserve ammo is snapped to full magazine-sized clips so counts stay in whole-mag multiples; ammo display in HUD stays in sync
 - Tactical reload (round in chamber) is faster than an empty reload
 - Recoil system:
@@ -178,7 +192,7 @@
 - Weapon audio: each WeaponData asset has optional SoundBank fields for fire, reload, and empty-magazine click; sounds play automatically at the muzzle position
 - Melee audio: each MeleeAttackStep has optional swing and hit SoundBanks; swing plays on attack start, hit plays only when a target is struck
 - Grenade audio: throw sound on release, explosion sound on detonation (plays via the pool so it persists after the grenade object is destroyed)
-- Enemy audio: EnemyData has optional attack and death SoundBanks; attack plays on each melee strike, death plays when health reaches zero
+- Enemy audio: EnemyData has an optional attack SoundBank played on each melee strike; an EnemyAudio component plays hurt and death sounds
 - Player feedback audio: a PlayerAudio component subscribes to the player's health events and plays hurt/death sounds
 - Surface-aware footsteps: PlayerFootsteps raycasts downward each step to identify the ground surface; a SurfaceDatabase ScriptableObject maps PhysicMaterials to separate walk, sprint, and crouch SoundBanks; individual surfaces can override via a SurfaceTag component; step interval scales with movement speed
 - All sound fields are optional — systems work silently when no SoundBank is assigned, same as before
@@ -186,4 +200,4 @@
 ## Death & Respawn
 - When health reaches zero the player loses control, the HUD hides, and a death screen is shown
 - Player automatically respawns after a short delay, returning to the designated spawn point
-- Health and ammo are fully restored on respawn
+- On respawn, health and every carried weapon's ammo are restored, ability cooldowns reset, and leftover momentum and status effects are cleared

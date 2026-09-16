@@ -27,6 +27,6 @@ namespace CGD.Player
         protected override float ShieldRegenRate  => _shieldRegenRate;
         protected override float StartingHealth   => _health;
 
-        public void Respawn() => ResetHealth();
+        public override Team Team => Team.Player;
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Combat;
 
 namespace CGD.Weapons
 {
@@ -10,6 +11,7 @@ namespace CGD.Weapons
         public Vector3    Direction;         // spread applied once; single-pellet behaviors use this directly
         public Transform  Muzzle;
         public WeaponData Data;
+        public DamageSource Source;
         public bool       DebugDraw;
         public Color      DebugHitColor;
         public Color      DebugMissColor;

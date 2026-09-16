@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using CGD.Core;
 using CGD.Input;
 using CGD.Player;
 
@@ -67,7 +68,7 @@ namespace CGD.UI
                 // Always update the compact bar
                 _barSlotBgs[i].color = isActive ? ActiveBg : (weapon != null ? SlotBg : EmptyBg);
                 if (isActive)
-                    _activeBarText.text = weapon != null ? weapon.WeaponName : "— Empty —";
+                    _activeBarText.text = weapon != null ? weapon.Data.WeaponName : "— Empty —";
 
                 if (!IsVisible) continue;
 
@@ -75,7 +76,7 @@ namespace CGD.UI
                     _loadout.EquipSlot(i);
 
                 _slotBgs[i].color  = isActive ? ActiveBg : (weapon != null ? SlotBg : EmptyBg);
-                _slotNames[i].text = weapon != null ? weapon.WeaponName : "— Empty —";
+                _slotNames[i].text = weapon != null ? weapon.Data.WeaponName : "— Empty —";
             }
         }
 
@@ -109,8 +110,7 @@ namespace CGD.UI
             if (_input != null)
                 _input.InputEnabled = !inventoryOpen;
 
-            Cursor.lockState = inventoryOpen ? CursorLockMode.None : CursorLockMode.Locked;
-            Cursor.visible   = inventoryOpen;
+            CursorLock.Set(!inventoryOpen);
         }
 
         private void SetPanelAlpha(bool visible)

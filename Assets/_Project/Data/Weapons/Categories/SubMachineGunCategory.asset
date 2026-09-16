@@ -33,6 +33,7 @@ MonoBehaviour:
     Min: 1
     Max: 1
     Bias: 0
+  OnHitEffects: []
   Damage:
     Min: 25
     Max: 35

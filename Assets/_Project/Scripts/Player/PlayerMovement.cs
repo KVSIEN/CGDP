@@ -357,5 +357,14 @@ namespace CGD.Player
         }
 
         public void AddImpulse(Vector3 force) => _rb.AddForce(force, ForceMode.Impulse);
+
+        // Moves the player instantly and clears any carried momentum (e.g. on respawn).
+        public void Teleport(Vector3 position)
+        {
+            _rb.position        = position;
+            transform.position  = position;
+            _rb.linearVelocity  = Vector3.zero;
+            _rb.angularVelocity = Vector3.zero;
+        }
     }
 }

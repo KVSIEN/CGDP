@@ -28,6 +28,10 @@ namespace CGD.Weapons
         public float Radius = 0.7f;
         public Color DebugColor = Color.white;
 
+        [Header("On Hit")]
+        [Tooltip("Status effects each hit may apply")]
+        public StatusEffectApplication[] OnHitEffects;
+
         [Header("Audio")]
         public SoundBank SwingSound;
         public SoundBank HitSound;

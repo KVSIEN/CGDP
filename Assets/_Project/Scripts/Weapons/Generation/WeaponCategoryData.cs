@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Combat;
 using CGD.Core;
 
 namespace CGD.Weapons
@@ -24,6 +25,10 @@ namespace CGD.Weapons
         public FloatRange BurstInterval = new(0.07f, 0.10f);
         [Tooltip("Pellets per shot. 1 for all non-shotgun types.")]
         public IntRange   PelletCount  = new(1, 1);
+
+        [Header("On Hit")]
+        [Tooltip("Status effects each hit may apply")]
+        public StatusEffectApplication[] OnHitEffects;
 
         [Header("Damage")]
         public FloatRange Damage              = new(25, 35);

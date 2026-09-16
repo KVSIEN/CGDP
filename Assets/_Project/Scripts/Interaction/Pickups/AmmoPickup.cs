@@ -12,13 +12,13 @@ namespace CGD.Interaction
 
         public string InteractLabel => "Pick Up  Ammo";
 
+        public bool CanInteract(GameObject player) =>
+            player.TryGetComponent(out WeaponController weapon) && weapon.Current != null;
+
         public void Interact(GameObject player)
         {
-            var weapon = player.GetComponent<WeaponController>();
-            if (weapon == null) return;
-
-            weapon.AddReserveAmmo(_amount);
-            Destroy(gameObject);
+            if (player.TryGetComponent(out WeaponController weapon) && weapon.AddReserveAmmo(_amount))
+                Destroy(gameObject);
         }
     }
 }

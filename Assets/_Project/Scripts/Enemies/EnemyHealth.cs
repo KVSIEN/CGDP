@@ -10,6 +10,7 @@ namespace CGD.Enemies
         [SerializeField] private EnemyHealthBar _healthBar;
         [SerializeField] private Vector3        _popupOffset = new Vector3(0f, 0.3f, 0f);
 
+        public override Team  Team      => _data.Team;
         public override float MaxHealth => _data.MaxHealth;
         public override float Armor     => _data.Armor;
         public override float MaxShield => _data.MaxShield;

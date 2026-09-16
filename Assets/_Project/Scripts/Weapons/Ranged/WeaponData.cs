@@ -1,5 +1,6 @@
 using UnityEngine;
 using CGD.Audio;
+using CGD.Combat;
 
 namespace CGD.Weapons
 {
@@ -16,6 +17,10 @@ namespace CGD.Weapons
         public WeaponFireBehavior FireBehavior;
 
         // ── Firing ────────────────────────────────────────────────────────────
+        [Header("On Hit")]
+        [Tooltip("Status effects each hit may apply")]
+        public StatusEffectApplication[] OnHitEffects;
+
         [Header("Firing")]
         public FireMode FireMode = FireMode.Auto;
         [Tooltip("Rounds per minute")]

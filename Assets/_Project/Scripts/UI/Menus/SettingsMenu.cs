@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using CGD.Core;
 using CGD.Input;
 using CGD.Player;
 
@@ -53,8 +54,7 @@ namespace CGD.UI
             _panel.SetActive(true);
             _input.InputEnabled = false;
             _hud.HideAll();
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible   = true;
+            CursorLock.Set(false);
 
             _sensitivity.Load();
         }
@@ -66,8 +66,7 @@ namespace CGD.UI
             _panel.SetActive(false);
             _input.InputEnabled = true;
             _hud.ShowAll();
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible   = false;
+            CursorLock.Set(true);
         }
 
         private void BuildUI()

@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Combat;
 using CGD.Player;
 
 namespace CGD.Abilities
@@ -12,6 +13,7 @@ namespace CGD.Abilities
         public Collider  PlayerCollider;
         public Transform CameraTransform;
         public PlayerHealth Health;
+        public DamageSource Source;
         public Vector2 MoveInput;
     }
 }

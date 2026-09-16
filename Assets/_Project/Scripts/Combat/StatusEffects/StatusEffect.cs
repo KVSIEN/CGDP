@@ -20,6 +20,11 @@ namespace CGD.Combat
         [Tooltip("If true, Duration expiring removes one stack and restarts the countdown instead of clearing the whole effect at once — for effects like Ice where stacks decay individually.")]
         public bool DecayOneStackAtATime = false;
 
+        // Called when a hit applies this effect. Default: add a stack. Override for
+        // effects that do something on application (e.g. Lightning chaining).
+        public virtual void Apply(StatusEffectController target, in DamageInfo hit) =>
+            target.AddStack(this, hit.RawDamage);
+
         // Called once per TickInterval while the effect is active. `stacks` is the
         // current stack count (1..MaxStacks) — implementations decide what stacking
         // means for them (bigger hits, extra chains, deeper debuffs, etc). `magnitude`
