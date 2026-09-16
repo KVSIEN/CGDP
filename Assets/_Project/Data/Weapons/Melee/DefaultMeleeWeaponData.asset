@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 972769c7c18bee9459e105b50ca2349b, type: 3}
+  m_Name: DefaultMeleeWeaponData
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.MeleeWeaponData
+  WeaponName: Fists
+  LightCombo:
+  - Damage: 20
+    ArmorPenetration: 0
+    DamageType: 0
+    WindupTime: 0.08
+    ActiveTime: 0.1
+    RecoveryTime: 0.2
+    Range: 1.6
+    Radius: 0.6
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+  - Damage: 22
+    ArmorPenetration: 0
+    DamageType: 0
+    WindupTime: 0.08
+    ActiveTime: 0.1
+    RecoveryTime: 0.22
+    Range: 1.6
+    Radius: 0.6
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+  - Damage: 30
+    ArmorPenetration: 0.1
+    DamageType: 0
+    WindupTime: 0.12
+    ActiveTime: 0.1
+    RecoveryTime: 0.35
+    Range: 1.8
+    Radius: 0.75
+    DebugColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+  HeavyAttack:
+    Damage: 55
+    ArmorPenetration: 0.3
+    DamageType: 0
+    WindupTime: 0.3
+    ActiveTime: 0.12
+    RecoveryTime: 0.5
+    Range: 2
+    Radius: 0.9
+    DebugColor: {r: 1, g: 0, b: 0, a: 1}
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+  HeavyHoldThreshold: 0.35
+  ComboResetTime: 1
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295

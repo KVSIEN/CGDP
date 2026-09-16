@@ -26,3 +26,5 @@ MonoBehaviour:
   AttackDamage: 15
   AttackCooldown: 1
   AlertDuration: 5
+  AttackSound: {fileID: 0}
+  DeathSound: {fileID: 0}

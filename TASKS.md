@@ -1,9 +1,6 @@
 # Unity Project – To-Do List
 
 ## Open
--   Add a `SniperCategory` weapon category asset
-    `WeaponCategoryDefaults` already has Sniper values, but no category asset exists, so snipers never generate.
-
 -   Blender integration for Claude
     https://github.com/ahujasid/blender-mcp
 
@@ -21,3 +18,4 @@ Completed work is described in [FEATURES.md](FEATURES.md); full task history is 
 - Input: gamepad bindings, name-based saves, conflict detection, native rebinding, unified Move/Look, UGUI settings menu
 - Audio: pooled sources and sound banks, weapon/melee/grenade/player/enemy sounds, surface-aware footsteps
 - Project structure: `_Project` layout, feature folders, namespaces, assembly definition
+- Default data set: an asset for every data type, Sniper category, projectile and grenade prefabs

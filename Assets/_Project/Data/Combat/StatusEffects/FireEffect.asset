@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67ed04c104bda224ea324c29f6f21ac6, type: 3}
+  m_Name: FireEffect
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.FireEffect
+  DisplayName: Fire
+  Duration: 4
+  TickInterval: 1
+  MaxStacks: 1
+  DecayOneStackAtATime: 0
+  FireDpsPercent: 0.2

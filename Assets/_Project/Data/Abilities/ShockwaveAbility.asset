@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc4a007168808bb48bc0d5792a819f49, type: 3}
   m_Name: ShockwaveAbility
   m_EditorClassIdentifier: Assembly-CSharp::ShockwaveAbility
-  DisplayName: Ability
-  SlotColor: {r: 0.3, g: 0.55, b: 1, a: 1}
-  Cooldown: 5
+  DisplayName: Shockwave
+  SlotColor: {r: 0.7, g: 0.4, b: 1, a: 1}
+  Cooldown: 8
   Radius: 6
   Force: 18

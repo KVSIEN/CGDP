@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a53dc97b2a0bed9419e98ca115f24200, type: 3}
   m_Name: HealAbility
   m_EditorClassIdentifier: Assembly-CSharp::HealAbility
-  DisplayName: Ability
-  SlotColor: {r: 0.3, g: 0.55, b: 1, a: 1}
-  Cooldown: 5
+  DisplayName: Heal
+  SlotColor: {r: 0.3, g: 0.9, b: 0.4, a: 1}
+  Cooldown: 12
   HealAmount: 35

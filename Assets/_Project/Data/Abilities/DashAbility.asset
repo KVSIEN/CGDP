@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69b77866f428305498ec19f52198e1d4, type: 3}
   m_Name: DashAbility
   m_EditorClassIdentifier: Assembly-CSharp::DashAbility
-  DisplayName: Ability
-  SlotColor: {r: 0.3, g: 0.55, b: 1, a: 1}
-  Cooldown: 5
+  DisplayName: Dash
+  SlotColor: {r: 0.25, g: 0.8, b: 1, a: 1}
+  Cooldown: 4
   Force: 12

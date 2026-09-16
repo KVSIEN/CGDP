@@ -30,7 +30,7 @@ namespace CGD.Weapons
         // ── Damage ────────────────────────────────────────────────────────────
         [Header("Damage")]
         public float Damage = 25f;
-        [Tooltip("Multiplier applied when hitting a collider tagged 'Head'")]
+        [Tooltip("Multiplier applied when hitting a critical hitbox region (the head by default)")]
         public float HeadshotMultiplier = 2f;
         [Tooltip("Full damage up to this distance (metres)")]
         public float RangeOptimal = 50f;

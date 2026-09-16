@@ -116,7 +116,7 @@ Enemy                         [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBa
 
 - Requires baked NavMesh (`NavMesh Surface` in the scene, baked over the walkable ground).
 - **EnemyAI** — assign `_data` = the enemy's `EnemyData` asset (e.g. `TargetDummyEnemyData`), `_playerTransform` = Player, `_playerHealth` = Player's `PlayerHealth`, `_waypoints` = patrol point transforms (optional — idles if empty), `_obstacleMask` = geometry layers that block line-of-sight, `_stateRenderers` = the enemy's renderer(s) for the patrol/alert/chase color tint.
-- **EnemyHealth** — assign `_data` = the same `EnemyData` asset, `_healthBar` = the `EnemyHealthBar` on the same object, `_hitboxProfile` = a `HitboxProfile` asset, e.g. `TargetDummyHitboxProfile` (optional — see Hitboxes).
+- **EnemyHealth** — assign `_data` = the same `EnemyData` asset, `_healthBar` = the `EnemyHealthBar` on the same object, `_hitboxProfile` = a `HitboxProfile` asset, e.g. `DefaultHitboxProfile` (optional — see Hitboxes).
 - **EnemyHealthBar** — no references required; it builds its own world-space canvas in `Awake`.
 - **EnemyAudio** — assign `_hurtSound` / `_deathSound` = `SoundBank` assets (optional — silent when unassigned). No other wiring — resolves `EnemyHealth` via `GetComponent`.
 - **StatusEffectController** (optional, not yet in the reference scene) — add to the Player and/or an Enemy to let status effects (Bleed, Poison, Fire, ...) apply to it. No references to wire; it resolves its `IDamageable` target via `GetComponent` in `Awake`, so it only needs `PlayerHealth` or `EnemyHealth` present on the same GameObject.
@@ -148,7 +148,7 @@ Switch (any name)             [Collider (isTrigger), Switch]
 ```
 
 - **WeaponPickup** — assign `_data` = a fixed `WeaponData` asset, **or**
-- add **RandomWeaponPickup** alongside it and assign `_categories` = one or more `WeaponCategoryData` assets (`AssaultRifleCategory`, `SubMachineGunCategory`, `PistolCategory`, `ShotgunCategory`, `LightMachineGunCategory` — create a `SniperCategory` too if that category is needed, it isn't present yet) plus `_fixedIndex = -1` for a random pick.
+- add **RandomWeaponPickup** alongside it and assign `_categories` = one or more `WeaponCategoryData` assets (`AssaultRifleCategory`, `SubMachineGunCategory`, `PistolCategory`, `SniperCategory`, `ShotgunCategory`, `LightMachineGunCategory` — the scene's pickups don't list `SniperCategory` yet) plus `_fixedIndex = -1` for a random pick.
 - **AmmoPickup** — assign `_amount` (reserve ammo added to the player's currently equipped weapon; default 30). No reference wiring — finds `WeaponController` via `GetComponent` on the interacting player.
 - **HealthPickup** — assign `_amount` (health restored; default 25). No reference wiring — finds `PlayerHealth` via `GetComponent` on the interacting player.
 - **Door** — place the GameObject's pivot at the hinge edge, not the center (the whole object rotates in place). Assign `_openAngle`/`_openSpeed` as needed. Directly interactable with E; a `Switch` can also toggle it via `Toggle()`.
@@ -163,15 +163,16 @@ Switch (any name)             [Collider (isTrigger), Switch]
 | `Input/InputBindingSettings` | `PlayerInputHandler`, `SettingsMenu` |
 | `Player/PlayerMovementSettings` | `PlayerMovement`, `PlayerDodge`, `PlayerMantle` |
 | `UI/CrosshairSettings` | `CrosshairHUD` |
-| `Enemies/<Name>EnemyData` (one per enemy type, e.g. `TargetDummyEnemyData`) | `EnemyAI`, `EnemyHealth` |
-| `Enemies/HitboxProfiles/<Name>HitboxProfile` (optional, one per character type) | `EnemyHealth`, `PlayerHealth` |
-| `WeaponData` assets (per weapon) | `PlayerWeaponLoadout`, `WeaponController`, `WeaponPickup` |
+| `Enemies/<Name>EnemyData` (one per enemy type — `DefaultEnemyData`, `TargetDummyEnemyData`) | `EnemyAI`, `EnemyHealth` |
+| `Combat/HitboxProfiles/<Name>HitboxProfile` (optional, one per character type — `DefaultHitboxProfile`, `TargetDummyHitboxProfile`) | `EnemyHealth`, `PlayerHealth` |
+| `Combat/StatusEffects/` (`BleedEffect`, `FireEffect`, `IceEffect`, `LightningEffect`, `PoisonEffect`) | referenced by whatever applies the effect via `StatusEffectController` |
+| `Weapons/Ranged/<Name>WeaponData` (per weapon — `DefaultWeaponData`) | `PlayerWeaponLoadout`, `WeaponController`, `WeaponPickup` |
 | `Weapons/Categories/<Name>Category` (per category) | `RandomWeaponPickup`, `WeaponGenerator` |
-| `Weapons/FireBehaviors/` (`HitscanFireBehavior`, `ShotgunFireBehavior`, projectile behavior) | assigned on each `WeaponCategoryData` / `WeaponData` `FireBehavior` |
-| `Abilities/` (`DashAbility`, `HealAbility`, `ProjectileAbility`, `ShockwaveAbility`) | `PlayerAbilities._slots` |
-| `MeleeWeaponData` asset | `MeleeController` |
-| `GrenadeData` asset (its `GrenadePrefab` needs a `Rigidbody` + non-trigger `Collider` + `Grenade` component) | `GrenadeController` |
-| `SurfaceDatabase` asset | `PlayerFootsteps` |
+| `Weapons/FireBehaviors/` (`HitscanFireBehavior`, `ShotgunFireBehavior`, `ProjectileFireBehavior` → `Prefabs/Weapons/Projectile`) | assigned on each `WeaponCategoryData` / `WeaponData` `FireBehavior` |
+| `Abilities/` (`DashAbility`, `HealAbility`, `ProjectileAbility` → `Prefabs/Weapons/Projectile`, `ShockwaveAbility`) | `PlayerAbilities._slots` |
+| `Weapons/Melee/DefaultMeleeWeaponData` | `MeleeController` |
+| `Weapons/Throwables/DefaultGrenadeData` (its `GrenadePrefab` — `Prefabs/Weapons/FragGrenade` — needs a `Rigidbody` + non-trigger `Collider` + `Grenade` component) | `GrenadeController` |
+| `Audio/DefaultSurfaceDatabase` (empty until surface `SoundBank`s exist) | `PlayerFootsteps` |
 | `SoundBank` assets (per sound — weapon fire/reload/empty, melee swing/hit, grenade throw/explosion, player hurt/death, enemy hurt/death/attack, footstep walk/sprint/crouch per surface) | Various — all optional; systems work silently without them |
 
 `InputBindingSettings` and `PlayerMovementSettings` are each a **single shared asset**

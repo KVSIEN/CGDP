@@ -19,8 +19,9 @@ Assets/
     Art/                    Animations, Fonts, Materials, PhysicsMaterials, Shaders, Textures
     Audio/                  Music, SFX
     Data/                   ScriptableObject assets, one folder per feature
-      Abilities/  Enemies/  Input/  Player/  UI/  Weapons/
-    Prefabs/                Characters, Environment, Pickups, UI, VFX
+      Abilities/  Audio/  Combat/  Enemies/  Input/  Player/  UI/  Weapons/
+      (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
+    Prefabs/                Characters, Environment, Pickups, UI, VFX, Weapons
     Scenes/                 Sandbox.unity (+ its baked NavMesh folder)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            ability assets and the player's ability slots
