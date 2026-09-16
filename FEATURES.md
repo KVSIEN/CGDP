@@ -45,13 +45,12 @@
 - Hit flash and damage vignette — a red screen flash triggers on taking damage; a persistent red vignette around the screen edges grows stronger as health drops toward zero
 - Velocity display — top-right HUD panel showing current movement speed in m/s, updated each frame
 
-## Player Stats
+## Player Health
 - Health with TakeDamage and Heal methods
 - Armor reduces incoming damage (diminishing returns — 100 armor halves damage taken); enemies mitigate the same way
 - Shield absorbs damage before Health; any damage left over after a hit depletes the shield carries through to Health; shield regenerates automatically after a few seconds without taking damage; enemies can have shields too
 - Hitboxes — characters can be split into head, body, and limb hitboxes; each region deals its own damage multiplier (defaults: head ×1 plus the weapon's headshot bonus, body ×1, limbs ×0.75), tunable per character type via a Hitbox Profile asset
 - Explosions and melee swings damage a character once, no matter how many of its hitboxes they overlap
-- Ammo with UseAmmo and Reload methods
 - Fires a change event so the HUD reacts immediately without polling
 
 ## Ability System
@@ -180,7 +179,7 @@
 - Melee audio: each MeleeAttackStep has optional swing and hit SoundBanks; swing plays on attack start, hit plays only when a target is struck
 - Grenade audio: throw sound on release, explosion sound on detonation (plays via the pool so it persists after the grenade object is destroyed)
 - Enemy audio: EnemyData has optional attack and death SoundBanks; attack plays on each melee strike, death plays when health reaches zero
-- Player feedback audio: a PlayerAudio component subscribes to PlayerStats events and plays hurt/death sounds
+- Player feedback audio: a PlayerAudio component subscribes to the player's health events and plays hurt/death sounds
 - Surface-aware footsteps: PlayerFootsteps raycasts downward each step to identify the ground surface; a SurfaceDatabase ScriptableObject maps PhysicMaterials to separate walk, sprint, and crouch SoundBanks; individual surfaces can override via a SurfaceTag component; step interval scales with movement speed
 - All sound fields are optional — systems work silently when no SoundBank is assigned, same as before
 

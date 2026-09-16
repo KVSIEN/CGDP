@@ -40,8 +40,10 @@ Language: C#
 
 Source folders:
 
-- Assets/
+- Assets/_Project/ (all project-owned content — layout in README.md)
 - ProjectSettings/
+
+Assets/ThirdParty/ and Assets/TextMesh Pro/ are imported content; don't edit them.
 
 ---
 
@@ -67,9 +69,11 @@ Never inspect:
 
 When locating references:
 
+- search for symbols, component names, and scene/prefab references before opening files
 - search scenes/prefabs for component names
 - avoid reading large YAML files in full
 - inspect only relevant sections
+- skip generated project files (.csproj, .slnx) unless debugging build tooling
 
 ---
 
@@ -166,7 +170,9 @@ Use TryGetComponent whenever failure is expected.
 
 Use the Unity Input System.
 
-Use existing generated InputSystem_Actions.
+All gameplay input goes through PlayerInputHandler, which builds its InputActions at
+runtime from InputBindingSettings (GameAction enum). Add new actions there — don't
+generate a C# wrapper from InputSystem_Actions.inputactions.
 
 Do not introduce the legacy Input API unless already required.
 
@@ -222,27 +228,23 @@ Comments should explain "why", not "what".
 
 # File Organization
 
-Prefer organizing by feature rather than by type when practical.
+Organize by feature. The layout is documented in README.md:
 
-Example:
+- scripts: Assets/_Project/Scripts/<Feature>/ (sub-folders per concern when a feature grows)
+- ScriptableObject assets: Assets/_Project/Data/<Feature>/ — never inside Scripts/
+- no .cs files outside Scripts/
 
-Assets/
-    Gameplay/
-        Combat/
-            CombatController.cs
-            DamageSystem.cs
-            DamageConfig.asset
-        Inventory/
-        Crafting/
+Namespaces follow the top-level script folder: `namespace CGD.<Feature>`.
+All runtime scripts compile into the CGD.Runtime assembly (Scripts/CGD.Runtime.asmdef);
+add a package assembly to its references when new code needs one.
 
-rather than:
+Name data assets `<Name><Type>` (e.g. PistolCategory, HitscanFireBehavior) and put
+`[CreateAssetMenu]` entries under `CGD/<Feature>/...`.
 
-Scripts/
-    Managers/
-    Controllers/
-    Utils/
+One top-level type per file, file named after the type.
 
-Keep related assets together.
+Move or rename assets inside Unity, or move each file together with its .meta while
+the editor is closed — otherwise serialized references break.
 
 Avoid dumping unrelated scripts into generic folders like Helpers or Managers.
 
@@ -287,6 +289,8 @@ When modifying existing code:
 
 Do not perform unrelated refactors unless requested.
 
+Do not add packages, editor tooling, gizmos, or logging unless requested.
+
 ---
 
 # Feature Tracking
@@ -327,4 +331,11 @@ correctness → maintainability → architecture → project consistency → opt
 Do not follow rules mechanically.
 
 Explain significant architectural decisions when introducing new systems.
+
+---
+
+# Verification
+
+Say what was verified (compiled, tested in play mode, checked against the scene) and
+what could not be verified.
 
