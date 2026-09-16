@@ -28,21 +28,11 @@ public abstract class WeaponFireBehavior : ScriptableObject
         return (rot * new Vector3(offset.x, offset.y, 1f)).normalized;
     }
 
-    protected static float CalculateDamage(WeaponData data, float distance, bool headshot)
+    protected static void ApplyHitDamage(RaycastHit hit, WeaponData data)
     {
-        float t       = Mathf.InverseLerp(data.RangeOptimal, data.RangeFalloffEnd, distance);
+        float t       = Mathf.InverseLerp(data.RangeOptimal, data.RangeFalloffEnd, hit.distance);
         float falloff = Mathf.Lerp(1f, data.DamageFalloffMin, t);
-        float dmg     = data.Damage * falloff;
-        if (headshot) dmg *= data.HeadshotMultiplier;
-        return dmg;
-    }
-
-    protected static void ApplyHitDamage(RaycastHit hit, float damage, bool headshot)
-    {
-        var info = new DamageInfo(damage);
-        if (hit.collider.TryGetComponent<PlayerStats>(out var ps))
-            ps.TakeDamage(info);
-        else if (hit.collider.TryGetComponent<EnemyHealth>(out var eh))
-            eh.TakeDamageAt(info, hit.point, headshot);
+        var   info    = new DamageInfo(data.Damage * falloff, criticalMultiplier: data.HeadshotMultiplier);
+        Hitbox.ApplyHit(hit.collider, info, hit.point);
     }
 }

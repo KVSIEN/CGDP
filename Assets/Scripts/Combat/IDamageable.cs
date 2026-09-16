@@ -1,5 +1,5 @@
-// Common surface PlayerStats and EnemyHealth both expose, so status effects and
-// other cross-cutting systems can resolve damage without caring which one they hit.
+// Common damage surface (implemented by HealthManager), so status effects and other
+// cross-cutting systems can resolve damage without caring what they hit.
 public interface IDamageable
 {
     float Armor { get; }

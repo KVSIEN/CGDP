@@ -1,85 +1,22 @@
-using System;
 using UnityEngine;
 
-public class EnemyHealth : MonoBehaviour, IDamageable
+public class EnemyHealth : HealthManager
 {
     [SerializeField] private EnemyData      _data;
     [SerializeField] private EnemyHealthBar _healthBar;
     [SerializeField] private Vector3        _popupOffset = new Vector3(0f, 0.3f, 0f);
 
-    private float _health;
-    private float _shield;
-    private float _shieldRegenTimer;
-    private float _armorReductionPercent;
+    public override float MaxHealth => _data.MaxHealth;
+    public override float Armor     => _data.Armor;
+    public override float MaxShield => _data.MaxShield;
+    protected override float ShieldRegenDelay => _data.ShieldRegenDelay;
+    protected override float ShieldRegenRate  => _data.ShieldRegenRate;
 
-    public float Health    => _health;
-    public float MaxHealth => _data.MaxHealth;
-    public float Armor     => _data.Armor;
-    public float ArmorReductionPercent
+    protected override Vector3 DefaultHitPoint => transform.position + Vector3.up * 1.5f;
+
+    protected override void OnDamageTaken(float amount, Vector3 point, bool isCritical)
     {
-        get => _armorReductionPercent;
-        set => _armorReductionPercent = Mathf.Clamp01(value);
-    }
-    public float Shield    => _shield;
-    public float MaxShield => _data.MaxShield;
-
-    public event Action           OnDeath;
-    public event Action<float, float> OnDamaged;
-
-    private void Awake()
-    {
-        _health = _data.MaxHealth;
-        _shield = _data.MaxShield;
-    }
-
-    private void Update()
-    {
-        TickShieldRegen(Time.deltaTime);
-    }
-
-    public void TakeDamage(DamageInfo info)
-    {
-        TakeDamageAt(info, transform.position + Vector3.up * 1.5f, false);
-    }
-
-    public void TakeDamageAt(DamageInfo info, Vector3 worldPos, bool headshot)
-    {
-        if (_health <= 0f) return;
-
-        float amount = info.ResolveDamage(_data.Armor * (1f - _armorReductionPercent));
-        _shieldRegenTimer = _data.ShieldRegenDelay;
-
-        if (_shield > 0f)
-        {
-            // Lightning hits the shield harder; the extra bite is undone before
-            // computing what carries over so only the shield portion is boosted.
-            float shieldMult = info.Type == DamageType.Lightning ? DamageInfo.LightningShieldBonus : 1f;
-            float absorbed   = Mathf.Min(_shield, amount * shieldMult);
-            _shield -= absorbed;
-            amount  -= absorbed / shieldMult;
-        }
-
-        if (amount > 0f)
-        {
-            _health = Mathf.Max(_health - amount, 0f);
-            DamagePopup.Spawn(amount, worldPos + _popupOffset, headshot);
-            _healthBar?.ShowDamage(_health, _data.MaxHealth);
-            OnDamaged?.Invoke(_health, _data.MaxHealth);
-        }
-
-        if (_health <= 0f) OnDeath?.Invoke();
-    }
-
-    private void TickShieldRegen(float deltaTime)
-    {
-        if (_shield >= _data.MaxShield) return;
-
-        if (_shieldRegenTimer > 0f)
-        {
-            _shieldRegenTimer -= deltaTime;
-            return;
-        }
-
-        _shield = Mathf.Min(_shield + _data.ShieldRegenRate * deltaTime, _data.MaxShield);
+        DamagePopup.Spawn(amount, point + _popupOffset, isCritical);
+        _healthBar?.ShowDamage(Health, MaxHealth);
     }
 }

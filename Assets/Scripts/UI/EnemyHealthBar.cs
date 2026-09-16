@@ -26,14 +26,16 @@ public class EnemyHealthBar : MonoBehaviour
     {
         var go = new GameObject("HealthBarCanvas");
         go.transform.SetParent(transform, false);
-        go.transform.localPosition = _worldOffset;
 
         _canvas = go.AddComponent<Canvas>();
         _canvas.renderMode = RenderMode.WorldSpace;
 
+        // Placed only after switching to WorldSpace: a new Canvas starts in overlay
+        // mode, which drives (and overwrites) its RectTransform.
         var rt = (RectTransform)_canvas.transform;
-        rt.sizeDelta  = new Vector2(200f, 20f);
-        rt.localScale = Vector3.one * 0.005f;
+        rt.sizeDelta     = new Vector2(200f, 20f);
+        rt.localPosition = _worldOffset;
+        rt.localScale    = Vector3.one * 0.005f;
 
         _group = go.AddComponent<CanvasGroup>();
 

@@ -71,7 +71,7 @@ public class LightningEffect : StatusEffect
 
         foreach (Collider col in hits)
         {
-            if (!col.TryGetComponent<EnemyHealth>(out var enemy)) continue;
+            if (Hitbox.FindDamageable(col) is not EnemyHealth enemy) continue;
             if (visited.Contains(enemy.gameObject)) continue;
 
             float sqrDist = (enemy.transform.position - origin).sqrMagnitude;

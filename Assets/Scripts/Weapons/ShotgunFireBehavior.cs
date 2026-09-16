@@ -24,10 +24,6 @@ public class ShotgunFireBehavior : WeaponFireBehavior
             Debug.DrawLine(origin, end, didHit ? ctx.DebugHitColor : ctx.DebugMissColor, ctx.DebugLineDuration);
         }
 
-        if (!didHit) return;
-
-        bool  headshot = hit.collider.CompareTag("Head");
-        float damage   = CalculateDamage(ctx.Data, hit.distance, headshot);
-        ApplyHitDamage(hit, damage, headshot);
+        if (didHit) ApplyHitDamage(hit, ctx.Data);
     }
 }

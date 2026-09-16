@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 // Standalone light/heavy melee attack, independent of the equipped ranged weapon.
@@ -17,6 +18,7 @@ public class MeleeController : MonoBehaviour
     [SerializeField] private float _debugDrawDuration = 0.5f;
 
     private static readonly Collider[] _hitBuffer = new Collider[16];
+    private static readonly HashSet<IDamageable> _hitTargets = new();
 
     private PlayerInputHandler _input;
     private PlayerMovement     _movement;
@@ -136,11 +138,13 @@ public class MeleeController : MonoBehaviour
 
         var info = new DamageInfo(_activeStep.Damage, _activeStep.ArmorPenetration, _activeStep.DamageType);
 
+        _hitTargets.Clear();
         bool hitAnything = false;
         for (int i = 0; i < count; i++)
         {
             if (_hitBuffer[i].transform.root == transform.root) continue;
-            if (_hitBuffer[i].TryGetComponent<IDamageable>(out var target))
+            IDamageable target = Hitbox.FindDamageable(_hitBuffer[i]);
+            if (target != null && _hitTargets.Add(target))
             {
                 target.TakeDamage(info);
                 hitAnything = true;

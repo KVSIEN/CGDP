@@ -49,6 +49,8 @@
 - Health with TakeDamage and Heal methods
 - Armor reduces incoming damage (diminishing returns — 100 armor halves damage taken); enemies mitigate the same way
 - Shield absorbs damage before Health; any damage left over after a hit depletes the shield carries through to Health; shield regenerates automatically after a few seconds without taking damage; enemies can have shields too
+- Hitboxes — characters can be split into head, body, and limb hitboxes; each region deals its own damage multiplier (defaults: head ×1 plus the weapon's headshot bonus, body ×1, limbs ×0.75), tunable per character type via a Hitbox Profile asset
+- Explosions and melee swings damage a character once, no matter how many of its hitboxes they overlap
 - Ammo with UseAmmo and Reload methods
 - Fires a change event so the HUD reacts immediately without polling
 
@@ -123,7 +125,7 @@
 - Three fire modes: Semi-auto (one shot per press), Full-auto (hold to fire), Burst (fixed burst per press)
 - Pluggable fire behavior per weapon — assign a `WeaponFireBehavior` ScriptableObject asset on the `WeaponData` to choose how shots are resolved; three built-in behaviors: **Hitscan** (instant single raycast), **Shotgun** (fires N independent pellet raycasts per shot, count driven by `PelletCount` on the weapon), and **Projectile** (spawns a moving projectile from the muzzle); adding new fire types requires only a new ScriptableObject subclass
 - Damage falloff — full damage up to an optimal range, then drops linearly to a configurable minimum at max range
-- Headshot multiplier — colliders tagged "Head" receive bonus damage
+- Headshot multiplier — each weapon's headshot bonus applies when a shot or projectile lands on a critical hitbox (the head by default)
 - Bullet spread / bloom — hip-fire has a wider cone; firing continuously grows the spread; ADS tightens it; spread recovers quickly when not shooting
 - Magazine and reserve ammo tracked per weapon; reserve ammo is snapped to full magazine-sized clips so counts stay in whole-mag multiples; ammo display in HUD stays in sync
 - Tactical reload (round in chamber) is faster than an empty reload

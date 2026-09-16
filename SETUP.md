@@ -116,10 +116,26 @@ Enemy                         [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBa
 
 - Requires baked NavMesh (`NavMesh Surface` in the scene, baked over the walkable ground).
 - **EnemyAI** — assign `_data` = `EnemyData.asset`, `_playerTransform` = Player, `_playerStats` = Player's `PlayerStats`, `_waypoints` = patrol point transforms (optional — idles if empty), `_obstacleMask` = geometry layers that block line-of-sight, `_stateRenderers` = the enemy's renderer(s) for the patrol/alert/chase color tint.
-- **EnemyHealth** — assign `_data` = same `EnemyData.asset`, `_healthBar` = the `EnemyHealthBar` on the same object.
+- **EnemyHealth** — assign `_data` = same `EnemyData.asset`, `_healthBar` = the `EnemyHealthBar` on the same object, `_hitboxProfile` = a `HitboxProfile.asset` (optional — see Hitboxes).
 - **EnemyHealthBar** — no references required; it builds its own world-space canvas in `Awake`.
 - **EnemyAudio** — assign `_hurtSound` / `_deathSound` = `SoundBank` assets (optional — silent when unassigned). No other wiring — resolves `EnemyHealth` via `GetComponent`.
 - **StatusEffectController** (optional, not yet in the reference scene) — add to the Player and/or an Enemy to let status effects (Bleed, Poison, Fire, ...) apply to it. No references to wire; it resolves its `IDamageable` target via `GetComponent` in `Awake`, so it only needs `PlayerStats` or `EnemyHealth` present on the same GameObject.
+
+### Hitboxes (optional, Player or Enemy)
+
+```
+Enemy                         [EnemyHealth (or PlayerStats) — the HealthManager]
+  - Head                      [Collider (non-trigger), Hitbox (Region = Head)]
+  - Body                      [Collider (non-trigger), Hitbox (Region = Body)]
+  - LeftArm / RightLeg / ...  [Collider (non-trigger), Hitbox (Region = Limb)]
+```
+
+- `EnemyHealth` and `PlayerStats` are both `HealthManager`s; every `Hitbox` forwards damage to one and the `HealthManager` does the math.
+- **Hitbox** — set `_region`. `_owner` auto-fills from the nearest parent `HealthManager` when the component is added (or at runtime if empty); assign it manually only when the hitbox isn't under its owner in the hierarchy.
+- Hitbox colliders must **not** be triggers — weapon raycasts ignore triggers. Parent them to the matching bones/child transforms so they follow the model.
+- If the owner also has its own collider (e.g. a movement capsule), shots hitting it count as Body. To make only hitboxes receive hits, put the hitboxes on their own layer and remove the capsule's layer from each weapon's `HitMask`; use the physics collision matrix to stop hitboxes blocking movement if needed.
+- **HitboxProfile** (`Create > CGD > Combat > Hitbox Profile`, one per character type) — per-region `DamageMultiplier` and `IsCritical` (critical regions also apply the weapon's headshot multiplier). Without a profile every region is ×1 and Head is still critical.
+- Characters with no `Hitbox` components keep working — a collider on the `HealthManager` object itself takes Body hits.
 
 ## Interactables & Pickups
 
@@ -148,6 +164,7 @@ Switch (any name)             [Collider (isTrigger), Switch]
 | `PlayerMovementSettings.asset` | `PlayerMovement`, `PlayerDodge`, `PlayerMantle` |
 | `CrosshairSettings.asset` | `CrosshairHUD` |
 | `EnemyData.asset` (one per enemy type) | `EnemyAI`, `EnemyHealth` |
+| `HitboxProfile.asset` (optional, one per character type) | `EnemyHealth`, `PlayerStats` |
 | `WeaponData` assets (per weapon) | `PlayerWeaponLoadout`, `WeaponController`, `WeaponPickup` |
 | `WeaponCategoryData` assets (per category) | `RandomWeaponPickup`, `WeaponGenerator` |
 | `WeaponFireBehavior` assets (`HitscanBehavior`, `ShotgunBehavior`, projectile behavior) | assigned on each `WeaponData.FireBehavior` |

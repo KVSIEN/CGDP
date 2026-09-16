@@ -16,5 +16,6 @@ public class ProjectileFireBehavior : WeaponFireBehavior
         p.Speed    = _speed;
         p.Lifetime = _lifetime;
         p.Damage   = ctx.Data.Damage;
+        p.CriticalMultiplier = ctx.Data.HeadshotMultiplier;
     }
 }

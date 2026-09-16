@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 // Required prefab setup: Rigidbody (isKinematic = false, useGravity = true),
@@ -8,6 +9,7 @@ using UnityEngine;
 public class Grenade : MonoBehaviour
 {
     private static readonly Collider[] _hitBuffer = new Collider[32];
+    private static readonly Dictionary<IDamageable, float> _targetFalloff = new();
 
     private GrenadeData _data;
     private float _fuseTimer;
@@ -33,15 +35,23 @@ public class Grenade : MonoBehaviour
         int count = Physics.OverlapSphereNonAlloc(transform.position, _data.ExplosionRadius, _hitBuffer,
             _data.HitMask, QueryTriggerInteraction.Ignore);
 
+        // A target with several hitboxes in range is damaged once, using its closest one.
+        _targetFalloff.Clear();
         for (int i = 0; i < count; i++)
         {
-            if (!_hitBuffer[i].TryGetComponent<IDamageable>(out var target)) continue;
+            IDamageable target = Hitbox.FindDamageable(_hitBuffer[i]);
+            if (target == null) continue;
 
             float distance = Vector3.Distance(transform.position, _hitBuffer[i].transform.position);
             float falloff  = Mathf.Clamp01(1f - distance / _data.ExplosionRadius);
-            if (falloff <= 0f) continue;
+            if (_targetFalloff.TryGetValue(target, out float best) && best >= falloff) continue;
+            _targetFalloff[target] = falloff;
+        }
 
-            target.TakeDamage(new DamageInfo(_data.ExplosionDamage * falloff, _data.ArmorPenetration, _data.DamageType));
+        foreach (KeyValuePair<IDamageable, float> pair in _targetFalloff)
+        {
+            if (pair.Value <= 0f) continue;
+            pair.Key.TakeDamage(new DamageInfo(_data.ExplosionDamage * pair.Value, _data.ArmorPenetration, _data.DamageType));
         }
 
         _data.ExplosionSound?.Play(transform.position);

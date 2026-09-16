@@ -10,6 +10,7 @@ public class Projectile : MonoBehaviour
     public float Speed    { get; set; } = 25f;
     public float Lifetime { get; set; } = 5f;
     public float Damage   { get; set; } = 25f;
+    public float CriticalMultiplier { get; set; } = 1f;
 
     private Rigidbody _rb;
 
@@ -29,11 +30,7 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent<PlayerStats>(out var playerStats))
-            playerStats.TakeDamage(new DamageInfo(Damage));
-        else if (other.TryGetComponent<EnemyHealth>(out var enemyHealth))
-            enemyHealth.TakeDamage(new DamageInfo(Damage));
-
+        Hitbox.ApplyHit(other, new DamageInfo(Damage, criticalMultiplier: CriticalMultiplier), transform.position);
         Destroy(gameObject);
     }
 }
