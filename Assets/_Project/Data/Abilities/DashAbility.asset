@@ -15,4 +15,6 @@ MonoBehaviour:
   DisplayName: Dash
   SlotColor: {r: 0.25, g: 0.8, b: 1, a: 1}
   Cooldown: 4
+  MaxCharges: 1
+  CastTime: 0
   Force: 12

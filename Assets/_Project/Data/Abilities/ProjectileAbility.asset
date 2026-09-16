@@ -15,5 +15,11 @@ MonoBehaviour:
   DisplayName: Projectile
   SlotColor: {r: 1, g: 0.6, b: 0.2, a: 1}
   Cooldown: 3
+  MaxCharges: 1
+  CastTime: 0
   ProjectilePrefab: {fileID: 3470164953719663744, guid: e4776271d68913142b1b6df795be0d43, type: 3}
+  Damage: 25
+  Speed: 25
+  Lifetime: 5
+  OnHitEffects: []
   SpawnOffset: 1.5

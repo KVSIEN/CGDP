@@ -1,5 +1,6 @@
 using UnityEngine;
 using CGD.Combat;
+using CGD.Core;
 
 namespace CGD.Weapons
 {
@@ -15,13 +16,12 @@ namespace CGD.Weapons
             if (_prefab == null) return;
 
             Vector3    origin = ctx.Muzzle != null ? ctx.Muzzle.position : ctx.CameraPosition;
-            Projectile p      = Object.Instantiate(_prefab, origin, Quaternion.LookRotation(ctx.Direction));
-            p.Speed    = _speed;
-            p.Lifetime = _lifetime;
-            p.Damage   = ctx.Data.Damage;
-            p.CriticalMultiplier = ctx.Data.HeadshotMultiplier;
-            p.Source       = ctx.Source;
-            p.OnHitEffects = ctx.Data.OnHitEffects;
+            GameObject go     = PrefabPool.Spawn(_prefab.gameObject, origin, Quaternion.LookRotation(ctx.Direction));
+
+            WeaponData data = ctx.Data;
+            var hit = new DamageInfo(data.Damage, data.ArmorPenetration, data.DamageType,
+                data.HeadshotMultiplier, ctx.Source, data.OnHitEffects);
+            go.GetComponent<Projectile>().Launch(hit, _speed, _lifetime);
         }
     }
 }

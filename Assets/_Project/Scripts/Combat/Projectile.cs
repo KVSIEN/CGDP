@@ -1,22 +1,20 @@
 using UnityEngine;
+using CGD.Core;
 
 namespace CGD.Combat
 {
     // Required prefab setup: Rigidbody (isKinematic = true), Collider (isTrigger = true).
-    // Passes through trigger volumes (pickups, interaction zones) and its owner's own
-    // colliders; stops on the first solid collider it enters.
+    // Spawn through PrefabPool and call Launch. Passes through trigger volumes (pickups,
+    // interaction zones) and its owner's own colliders; stops on the first solid collider.
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(Collider))]
     public class Projectile : MonoBehaviour
     {
-        public float Speed    { get; set; } = 25f;
-        public float Lifetime { get; set; } = 5f;
-        public float Damage   { get; set; } = 25f;
-        public float CriticalMultiplier { get; set; } = 1f;
-        public DamageSource Source { get; set; }
-        public StatusEffectApplication[] OnHitEffects { get; set; }
-
-        private Rigidbody _rb;
+        private Rigidbody  _rb;
+        private DamageInfo _hit;
+        private float      _speed;
+        private float      _lifetime;
+        private float      _age;
 
         private void Awake()
         {
@@ -25,21 +23,35 @@ namespace CGD.Combat
             GetComponent<Collider>().isTrigger = true;
         }
 
-        private void Start() => Destroy(gameObject, Lifetime);
+        // `hit` is dealt to whatever the projectile strikes; its Source is the shooter.
+        public void Launch(DamageInfo hit, float speed, float lifetime)
+        {
+            _hit      = hit;
+            _speed    = speed;
+            _lifetime = lifetime;
+            _age      = 0f;
+        }
 
         private void FixedUpdate()
         {
-            _rb.MovePosition(_rb.position + transform.forward * (Speed * Time.fixedDeltaTime));
+            _age += Time.fixedDeltaTime;
+            if (_age >= _lifetime)
+            {
+                PrefabPool.Release(gameObject);
+                return;
+            }
+
+            _rb.MovePosition(_rb.position + transform.forward * (_speed * Time.fixedDeltaTime));
         }
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.isTrigger) return;
-            if (Source.Owner != null && other.transform.root == Source.Owner.transform.root) return;
+            GameObject owner = _hit.Source.Owner;
+            if (owner != null && other.transform.root == owner.transform.root) return;
 
-            var info = new DamageInfo(Damage, criticalMultiplier: CriticalMultiplier, source: Source, onHitEffects: OnHitEffects);
-            Hitbox.ApplyHit(other, info, transform.position);
-            Destroy(gameObject);
+            Hitbox.ApplyHit(other, _hit, transform.position);
+            PrefabPool.Release(gameObject);
         }
     }
 }

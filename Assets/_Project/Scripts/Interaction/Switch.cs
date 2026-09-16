@@ -9,8 +9,11 @@ namespace CGD.Interaction
     {
         [SerializeField] private string _label = "Switch";
         [SerializeField] private Door[] _doors;
+        [Tooltip("Seconds the Interact key must be held (0 = instant)")]
+        [SerializeField] private float _holdDuration = 0f;
 
         public string InteractLabel => _label;
+        public float HoldDuration => _holdDuration;
 
         public void Interact(GameObject player)
         {

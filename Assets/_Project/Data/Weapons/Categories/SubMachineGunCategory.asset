@@ -38,6 +38,11 @@ MonoBehaviour:
     Min: 25
     Max: 35
     Bias: 0
+  DamageType: 0
+  ArmorPenetration:
+    Min: 0
+    Max: 0
+    Bias: 0
   HeadshotMultiplier:
     Min: 2
     Max: 2

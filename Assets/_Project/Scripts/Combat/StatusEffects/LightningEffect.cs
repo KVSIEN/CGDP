@@ -9,8 +9,7 @@ namespace CGD.Combat
     // chain reach further. Tick() is a no-op; duration/decay of the stack still comes
     // from the base StatusEffect lifecycle. Set MaxStacks to 4 on the asset to match
     // the given falloff table (100/80/64/51.2/40.96% = 1 initial hit + up to 4 chain hops).
-    // Attacks that apply it should use DamageType.Lightning (melee steps and grenades
-    // expose it) to get the bonus against shields.
+    // Attacks that apply it should use DamageType.Lightning to get the bonus against shields.
     [CreateAssetMenu(fileName = "LightningEffect", menuName = "CGD/Combat/Status Effects/Lightning")]
     public class LightningEffect : StatusEffect
     {

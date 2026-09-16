@@ -6,6 +6,10 @@ namespace CGD.UI
     {
         public bool IsVisible { get; protected set; } = true;
 
+        // False keeps the element hidden when HUDManager.ShowAll restores the HUD
+        // (e.g. panels the player opens on demand).
+        public virtual bool ShowWithHud => true;
+
         public virtual void Show()
         {
             IsVisible = true;

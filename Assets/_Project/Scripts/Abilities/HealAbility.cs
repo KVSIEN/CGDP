@@ -7,15 +7,10 @@ namespace CGD.Abilities
     {
         public float HealAmount = 35f;
 
-        public override bool Execute(AbilityContext ctx)
-        {
-            if (ctx.Health == null) return false;
+        // Not usable at full health, so the charge isn't wasted.
+        public override bool CanExecute(AbilityContext ctx) =>
+            ctx.Health != null && ctx.Health.Health < ctx.Health.MaxHealth;
 
-            // Don't use the cooldown if already at full health
-            if (ctx.Health.Health >= ctx.Health.MaxHealth) return false;
-
-            ctx.Health.Heal(HealAmount);
-            return true;
-        }
+        public override void Execute(AbilityContext ctx) => ctx.Health.Heal(HealAmount);
     }
 }

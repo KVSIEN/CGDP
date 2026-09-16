@@ -32,6 +32,8 @@ namespace CGD.Weapons
 
         [Header("Damage")]
         public FloatRange Damage              = new(25, 35);
+        public DamageType DamageType          = DamageType.Physical;
+        public FloatRange ArmorPenetration    = new(0f, 0f);
         public FloatRange HeadshotMultiplier  = new(2f, 2f);
         public FloatRange RangeOptimal        = new(40, 60);
         public FloatRange RangeFalloffEnd     = new(120, 200);

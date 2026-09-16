@@ -15,5 +15,14 @@ MonoBehaviour:
   DisplayName: Shockwave
   SlotColor: {r: 0.7, g: 0.4, b: 1, a: 1}
   Cooldown: 8
+  MaxCharges: 1
+  CastTime: 0
   Radius: 6
   Force: 18
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  Damage: 20
+  ArmorPenetration: 0
+  DamageType: 0
+  OnHitEffects: []

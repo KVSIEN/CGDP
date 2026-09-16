@@ -19,7 +19,8 @@ Global Volume                (URP post-processing)
 ```
 
 - `GameManager` hosts `VisibilityCullingManager` — set `[DefaultExecutionOrder(-100)]` so it registers before `CullableObject.OnEnable()` runs elsewhere. Assign the scene's main `Camera` to its `_camera` field. `_batchFrames`, `_activationMargin`, `_deactivationMargin`, `_alwaysVisibleDistance` are tunable; defaults are fine to start.
-- `GameManager` also hosts `AudioPool`. `_initialSize` defaults to 16 pooled AudioSources; increase if many sounds play simultaneously (rapid-fire weapons, crowds).
+- `GameManager` also hosts `AudioPool`. `_initialSize` defaults to 16 pooled AudioSources; increase if many sounds play simultaneously (rapid-fire weapons, crowds). Optional: assign an Audio Mixer group on each `SoundBank`.
+- Projectiles, grenades and damage numbers are pooled at runtime under `DontDestroyOnLoad` roots (`PrefabPool`, `DamagePopups`) — nothing to place in the scene. Projectile and grenade prefabs are spawned through the pool, so don't destroy them manually.
 - `RespawnPoint` just needs a `Transform` — assign it to `PlayerLifecycle._spawnPoint`.
 
 ## Player Rig
@@ -52,7 +53,7 @@ Wiring, by component:
 - **PlayerMantle** — assign `_settings` = same `PlayerMovementSettings.asset`, `_cameraTransform` = Main Camera.
 - **PlayerCamera** (on Main Camera) — assign `_input` = Player, `_movement` = Player, `_playerBody` = Player Body, `_headAnchor` = Head Anchor, `_camera` = the Camera component on the same object, `_firstPersonHideRenderers` = Player Body's renderer(s).
 - **PlayerAbilities** — assign `_health` = Player's `PlayerHealth`, `_cameraTransform` = Main Camera, and `_slots[0..3]` = ability assets (`DashAbility.asset`, `HealAbility.asset`, `ProjectileAbility.asset`, `ShockwaveAbility.asset`, or `None` for an empty slot).
-- **PlayerInteraction** — assign `_forwardReference` = Main Camera.
+- **PlayerInteraction** — assign `_forwardReference` = Main Camera. `_requireLineOfSight` (default on) ignores interactables behind anything on `_occlusionMask`.
 - **WeaponController** — assign `_input` = Player, `_camera` = PlayerCamera, `_crosshair` = HUD's Crosshair object, `_muzzle` = Muzzle, `_visuals` = WeaponVisuals on WeaponRig. It fires whatever `PlayerWeaponLoadout` equips — no weapon asset is assigned here.
 - **PlayerWeaponLoadout** — assign `_startingWeapons[0..3]` = `WeaponData` assets, e.g. `DefaultWeaponData` (optional — empty slots are filled by pickups). Must share the GameObject with `WeaponController` and `PlayerHealth` (it refills weapons when the player is revived).
 - **MeleeController** — assign `_camera` = PlayerCamera, `_data` = a `MeleeWeaponData` asset. No other wiring — resolves `PlayerInputHandler`/`PlayerMovement` via `GetComponent` on the same object.
@@ -85,7 +86,7 @@ matching component. Damage popups (`DamagePopup`) and enemy health bars
 `DamagePopup.Spawn()` and by the `EnemyHealthBar` component on each enemy, respectively.
 Don't leave stray instances of either parented under the HUD canvas.
 
-- **HUDManager** — assign every child reference (`_crosshair`, `_stats`, `_weapon`, `_abilities`, `_dodge`, `_hitEffect`, `_velocity`, `_inventory`, `_interact`, `_statusEffects`) to its matching child object above.
+- **HUDManager** — no references to wire; it finds every `HUDElement` among its children when the scene starts, so new HUD elements only need to be placed under `HUD`.
 - **CrosshairHUD** — assign `_settings` = `CrosshairSettings.asset`, `_playerCamera` = Main Camera's `PlayerCamera`.
 - **StatsHUD** / **HitEffect** — assign `_playerHealth` = Player's `PlayerHealth`.
 - **StatusEffectHUD** — assign `_target` = Player's `StatusEffectController`.
@@ -159,8 +160,8 @@ Switch (any name)             [Collider (isTrigger), Switch]
 - add **RandomWeaponPickup** alongside it and assign `_categories` = one or more `WeaponCategoryData` assets (`AssaultRifleCategory`, `SubMachineGunCategory`, `PistolCategory`, `SniperCategory`, `ShotgunCategory`, `LightMachineGunCategory` — the scene's pickups don't list `SniperCategory` yet) plus `_fixedIndex = -1` for a random pick.
 - **AmmoPickup** — assign `_amount` (reserve ammo added to the player's currently equipped weapon; default 30). No reference wiring — finds `WeaponController` via `GetComponent` on the interacting player.
 - **HealthPickup** — assign `_amount` (health restored; default 25). No reference wiring — finds `PlayerHealth` via `GetComponent` on the interacting player.
-- **Door** — place the GameObject's pivot at the hinge edge, not the center (the whole object rotates in place). Assign `_openAngle`/`_openSpeed` as needed. Directly interactable with E; a `Switch` can also toggle it via `Toggle()`.
-- **Switch** — assign `_label` and `_doors[]` = one or more `Door` components to toggle when interacted with. Doesn't need to be near the doors it controls.
+- **Door** — place the GameObject's pivot at the hinge edge, not the center (the whole object rotates in place). Assign `_openAngle`/`_openSpeed` as needed, and `_holdDuration` > 0 to require holding E. Directly interactable with E; a `Switch` can also toggle it via `Toggle()`.
+- **Switch** — assign `_label` and `_doors[]` = one or more `Door` components to toggle when interacted with (`_holdDuration` works like on `Door`). Doesn't need to be near the doors it controls.
 - Any other world object that should respond to the Interact key just needs a component implementing `IInteractable` (`InteractLabel`, `Interact(GameObject)`, and optionally `CanInteract(GameObject)` to hide the prompt when it wouldn't do anything) — no other wiring required, `PlayerInteraction` finds it via an `OverlapSphere` scan.
 - Environment meshes that should be frustum-culled need a `CullableObject` component — leave `_renderers` empty to auto-collect from children, or assign explicitly for multi-renderer objects.
 
@@ -177,7 +178,7 @@ Switch (any name)             [Collider (isTrigger), Switch]
 | `Weapons/Ranged/<Name>WeaponData` (per weapon — `DefaultWeaponData`) | `PlayerWeaponLoadout`, `WeaponController`, `WeaponPickup` |
 | `Weapons/Categories/<Name>Category` (per category) | `RandomWeaponPickup`, `WeaponGenerator` |
 | `Weapons/FireBehaviors/` (`HitscanFireBehavior`, `ShotgunFireBehavior`, `ProjectileFireBehavior` → `Prefabs/Weapons/Projectile`) | assigned on each `WeaponCategoryData` / `WeaponData` `FireBehavior` |
-| `Abilities/` (`DashAbility`, `HealAbility`, `ProjectileAbility` → `Prefabs/Weapons/Projectile`, `ShockwaveAbility`) | `PlayerAbilities._slots` |
+| `Abilities/` (`DashAbility`, `HealAbility`, `ProjectileAbility` → `Prefabs/Weapons/Projectile`, `ShockwaveAbility`) — each has `MaxCharges` and `CastTime` | `PlayerAbilities._slots` |
 | `Weapons/Melee/DefaultMeleeWeaponData` | `MeleeController` |
 | `Weapons/Throwables/DefaultGrenadeData` (its `GrenadePrefab` — `Prefabs/Weapons/FragGrenade` — needs a `Rigidbody` + non-trigger `Collider` + `Grenade` component) | `GrenadeController` |
 | `Audio/DefaultSurfaceDatabase` (empty until surface `SoundBank`s exist) | `PlayerFootsteps` |

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
+using CGD.Core;
 
 namespace CGD.Weapons
 {
@@ -63,7 +64,8 @@ namespace CGD.Weapons
 
             _data.ExplosionSound?.Play(transform.position);
             Noise.Emit(transform.position, _data.NoiseRadius, _source);
-            Destroy(gameObject);
+            _initialized = false;
+            PrefabPool.Release(gameObject);
         }
     }
 }

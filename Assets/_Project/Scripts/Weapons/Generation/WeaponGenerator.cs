@@ -27,6 +27,8 @@ namespace CGD.Weapons
 
             // ── Damage ────────────────────────────────────────────────────────────
             d.Damage             = cat.Damage.EvaluateClamped();
+            d.DamageType         = cat.DamageType;
+            d.ArmorPenetration   = Mathf.Clamp01(cat.ArmorPenetration.EvaluateClamped());
             d.HeadshotMultiplier = cat.HeadshotMultiplier.EvaluateClamped();
             d.RangeOptimal       = cat.RangeOptimal.EvaluateClamped();
             d.RangeFalloffEnd    = Mathf.Max(d.RangeOptimal + 10f, cat.RangeFalloffEnd.EvaluateClamped());

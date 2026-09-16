@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace CGD.Audio
 {
@@ -13,18 +14,10 @@ namespace CGD.Audio
         [Tooltip("0 = 2D (no spatialization), 1 = full 3D")]
         [Range(0f, 1f)]
         [SerializeField] private float _spatialBlend = 1f;
+        [Tooltip("Optional mixer group (e.g. SFX, Footsteps) for volume control")]
+        [SerializeField] private AudioMixerGroup _mixerGroup;
 
-        public void Play(Vector3 position)
-        {
-            if (_clips == null || _clips.Length == 0 || AudioPool.Instance == null) return;
-
-            var clip = _clips[Random.Range(0, _clips.Length)];
-            if (clip == null) return;
-
-            float pitch  = Random.Range(_minPitch, _maxPitch);
-            float volume = Random.Range(_minVolume, _maxVolume);
-            AudioPool.Instance.Play(clip, position, volume, pitch, _spatialBlend);
-        }
+        public void Play(Vector3 position) => Play(position, 1f);
 
         public void Play(Vector3 position, float volumeScale)
         {
@@ -35,7 +28,7 @@ namespace CGD.Audio
 
             float pitch  = Random.Range(_minPitch, _maxPitch);
             float volume = Random.Range(_minVolume, _maxVolume) * volumeScale;
-            AudioPool.Instance.Play(clip, position, volume, pitch, _spatialBlend);
+            AudioPool.Instance.Play(clip, position, volume, pitch, _spatialBlend, _mixerGroup);
         }
     }
 }

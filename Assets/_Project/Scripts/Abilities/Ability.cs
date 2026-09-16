@@ -12,10 +12,19 @@ namespace CGD.Abilities
         public Color  SlotColor   = new Color(0.3f, 0.55f, 1f, 1f);
 
         [Header("Cooldown")]
+        [Tooltip("Seconds to recharge one charge")]
         public float Cooldown = 5f;
+        [Tooltip("Uses stored at once; spent charges recharge one after another")]
+        [Min(1)] public int MaxCharges = 1;
 
-        // Fires the ability. Return true on success — this starts the cooldown.
-        // Return false to cancel without triggering the cooldown (e.g. not enough health).
-        public abstract bool Execute(AbilityContext ctx);
+        [Header("Casting")]
+        [Tooltip("Delay between pressing the key and the ability firing (0 = instant). Cancelled if the player is stunned, mantling or rolling.")]
+        [Min(0f)] public float CastTime = 0f;
+
+        // Whether using the ability now would do anything. Returning false keeps the
+        // charge (e.g. Heal at full health). Checked when pressed and again after casting.
+        public virtual bool CanExecute(AbilityContext ctx) => true;
+
+        public abstract void Execute(AbilityContext ctx);
     }
 }

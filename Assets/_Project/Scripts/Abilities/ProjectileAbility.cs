@@ -1,31 +1,35 @@
 using UnityEngine;
 using CGD.Combat;
+using CGD.Core;
 
 namespace CGD.Abilities
 {
     [CreateAssetMenu(fileName = "ProjectileAbility", menuName = "CGD/Abilities/Projectile")]
     public class ProjectileAbility : Ability
     {
+        [Tooltip("Prefab with a Projectile component")]
         public GameObject ProjectilePrefab;
+
+        [Header("Projectile")]
+        public float Damage   = 25f;
+        public float Speed    = 25f;
+        public float Lifetime = 5f;
+        public StatusEffectApplication[] OnHitEffects;
 
         // Distance in front of the camera to spawn — prevents clipping through geometry directly ahead
         public float SpawnOffset = 1.5f;
 
-        public override bool Execute(AbilityContext ctx)
+        public override bool CanExecute(AbilityContext ctx) =>
+            ProjectilePrefab != null && ProjectilePrefab.TryGetComponent<Projectile>(out _);
+
+        public override void Execute(AbilityContext ctx)
         {
-            if (ProjectilePrefab == null) return false;
-
             Vector3 spawnPos = ctx.CameraTransform.position + ctx.CameraTransform.forward * SpawnOffset;
-            var go = Instantiate(ProjectilePrefab, spawnPos, ctx.CameraTransform.rotation);
+            var go = PrefabPool.Spawn(ProjectilePrefab, spawnPos, ctx.CameraTransform.rotation);
 
-            // Prevent the projectile from triggering on the player who fired it
-            if (ctx.PlayerCollider != null && go.TryGetComponent<Collider>(out var col))
-                Physics.IgnoreCollision(col, ctx.PlayerCollider);
-
-            if (go.TryGetComponent(out Projectile projectile))
-                projectile.Source = ctx.Source;
-
-            return true;
+            // The projectile ignores its source's colliders, so it can't hit the caster.
+            var hit = new DamageInfo(Damage, source: ctx.Source, onHitEffects: OnHitEffects);
+            go.GetComponent<Projectile>().Launch(hit, Speed, Lifetime);
         }
     }
 }

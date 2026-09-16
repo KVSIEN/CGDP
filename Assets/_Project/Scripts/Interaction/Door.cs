@@ -10,8 +10,11 @@ namespace CGD.Interaction
     {
         [SerializeField] private float _openAngle = 90f;
         [SerializeField] private float _openSpeed = 120f;
+        [Tooltip("Seconds the Interact key must be held (0 = instant)")]
+        [SerializeField] private float _holdDuration = 0f;
 
         public string InteractLabel => _isOpen ? "Close" : "Open";
+        public float HoldDuration => _holdDuration;
 
         private bool        _isOpen;
         private float       _currentAngle;

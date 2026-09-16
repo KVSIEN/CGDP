@@ -22,8 +22,8 @@ namespace CGD.Weapons
             WeaponData data = ctx.Data;
             float t       = Mathf.InverseLerp(data.RangeOptimal, data.RangeFalloffEnd, hit.distance);
             float falloff = Mathf.Lerp(1f, data.DamageFalloffMin, t);
-            var   info    = new DamageInfo(data.Damage * falloff, criticalMultiplier: data.HeadshotMultiplier,
-                source: ctx.Source, onHitEffects: data.OnHitEffects);
+            var   info    = new DamageInfo(data.Damage * falloff, data.ArmorPenetration, data.DamageType,
+                data.HeadshotMultiplier, ctx.Source, data.OnHitEffects);
             Hitbox.ApplyHit(hit.collider, info, hit.point);
         }
     }

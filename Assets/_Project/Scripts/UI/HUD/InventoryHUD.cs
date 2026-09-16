@@ -82,6 +82,8 @@ namespace CGD.UI
 
         // ── HUDElement overrides ──────────────────────────────────────────────
 
+        public override bool ShowWithHud => false;
+
         public override void Show()
         {
             IsVisible = true;

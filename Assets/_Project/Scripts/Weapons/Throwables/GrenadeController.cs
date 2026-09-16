@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using CGD.Combat;
+using CGD.Core;
 using CGD.Input;
 using CGD.Player;
 
@@ -73,10 +74,13 @@ namespace CGD.Weapons
         {
             if (_data.GrenadePrefab == null || _carried <= 0) return;
 
-            var go = Instantiate(_data.GrenadePrefab, ThrowOrigin, Quaternion.identity);
+            var go = PrefabPool.Spawn(_data.GrenadePrefab, ThrowOrigin, Quaternion.identity);
 
             if (go.TryGetComponent<Rigidbody>(out var rb))
-                rb.linearVelocity = _camera.transform.forward * _data.ThrowForce;
+            {
+                rb.linearVelocity  = _camera.transform.forward * _data.ThrowForce;
+                rb.angularVelocity = Vector3.zero;
+            }
 
             if (_ownerCollider != null && go.TryGetComponent<Collider>(out var col))
                 Physics.IgnoreCollision(col, _ownerCollider);

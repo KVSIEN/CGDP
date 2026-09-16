@@ -4119,16 +4119,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea587d5638ea3fc42a79c41ad6cd58e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HUDManager
-  _crosshair: {fileID: 277604014}
-  _stats: {fileID: 965868806}
-  _weapon: {fileID: 1913707792}
-  _abilities: {fileID: 1889567012}
-  _dodge: {fileID: 378935972}
-  _hitEffect: {fileID: 1994817525}
-  _velocity: {fileID: 524831381}
-  _statusEffects: {fileID: 1494457032}
-  _inventory: {fileID: 1272141995}
-  _interact: {fileID: 126377344}
 --- !u!1 &2070597237
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,6 +4,8 @@ using CGD.Player;
 
 namespace CGD.UI
 {
+    // World-space prompt above the current interactable; hold interactions show a
+    // progress bar along the bottom edge.
     [RequireComponent(typeof(RectTransform))]
     public class InteractHUD : HUDElement
     {
@@ -14,6 +16,7 @@ namespace CGD.UI
         private static readonly Color KeyBg      = new Color(0.22f, 0.42f, 0.82f, 0.92f);
         private static readonly Color LabelColor = new Color(0.95f, 0.95f, 0.95f, 0.90f);
         private static readonly Color KeyColor   = new Color(1f, 1f, 1f, 1f);
+        private static readonly Color HoldColor  = new Color(0.35f, 0.65f, 1f, 0.95f);
 
         private const float PromptWidth  = 340f;
         private const float PromptHeight = 42f;
@@ -22,6 +25,7 @@ namespace CGD.UI
         private Canvas          _canvas;
         private GameObject      _worldPrompt;
         private TextMeshProUGUI _labelText;
+        private RectTransform   _holdBar;
 
         private void Awake()
         {
@@ -79,6 +83,14 @@ namespace CGD.UI
             _labelText.rectTransform.pivot            = new Vector2(0f, 0.5f);
             _labelText.rectTransform.anchoredPosition = new Vector2(keySize + 12f, 0f);
             _labelText.rectTransform.sizeDelta        = new Vector2(-(keySize + 20f), 0f);
+
+            // Hold progress bar
+            var hold = UIFactory.MakeImage("HoldProgress", rt, layer);
+            hold.color = HoldColor;
+            _holdBar = hold.rectTransform;
+            _holdBar.anchorMin = Vector2.zero;
+            _holdBar.anchorMax = new Vector2(0f, 0.1f);
+            _holdBar.offsetMin = _holdBar.offsetMax = Vector2.zero;
         }
 
         private void LateUpdate()
@@ -93,6 +105,7 @@ namespace CGD.UI
             if (!hasTarget) return;
 
             _labelText.text = _interaction.TargetLabel;
+            _holdBar.anchorMax = new Vector2(_interaction.HoldProgress, 0.1f);
 
             Vector3 targetPos = _interaction.TargetPosition + Vector3.up * _yOffset;
             float   dist      = Vector3.Distance(_cam.transform.position, targetPos);

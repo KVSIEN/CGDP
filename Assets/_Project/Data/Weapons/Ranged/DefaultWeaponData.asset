@@ -21,6 +21,8 @@ MonoBehaviour:
   BurstInterval: 0.075
   PelletCount: 1
   Damage: 25
+  DamageType: 0
+  ArmorPenetration: 0
   HeadshotMultiplier: 2
   RangeOptimal: 50
   RangeFalloffEnd: 150

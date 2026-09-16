@@ -7,7 +7,7 @@ namespace CGD.Abilities
     {
         public float Force = 12f;
 
-        public override bool Execute(AbilityContext ctx)
+        public override void Execute(AbilityContext ctx)
         {
             // Dash in the move direction, or camera forward if the player is standing still
             Vector3 dashDir;
@@ -23,7 +23,6 @@ namespace CGD.Abilities
             }
 
             ctx.PlayerRigidbody.AddForce(dashDir * Force, ForceMode.VelocityChange);
-            return true;
         }
     }
 }

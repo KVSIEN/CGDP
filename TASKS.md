@@ -1,18 +1,6 @@
 # Unity Project – To-Do List
 
 ## Open
--   Interaction extras
-    Optional line-of-sight check and hold-to-interact.
-
--   Abilities
-    Split CanExecute from Execute, optional charges and cast time, Shockwave layer mask and damage through the hit pipeline.
-
--   Pooling and allocations
-    Pool damage popups, projectiles and grenades; AudioPool without a coroutine per sound, plus mixer groups.
-
--   Smaller cleanups
-    HUDManager collects HUDElement children instead of three hard-coded lists; one shared weapon stats definition so a new stat isn't added in three places; a DamageType on ranged weapons.
-
 -   Blender integration for Claude
     https://github.com/ahujasid/blender-mcp
 
@@ -25,6 +13,10 @@ Completed work is described in [FEATURES.md](FEATURES.md); full task history is 
 - Status effects: stacking modes (refresh / stack / independent), immunities, cached target context, status HUD
 - Shared Stunnable component for player and enemies
 - Enemy AI: team-based perception, aggro on hit, noise-based hearing, wind-up attacks, state classes, separate state visuals
+- Interaction: line-of-sight check, hold-to-interact with progress bar
+- Abilities: CanExecute/Execute split, charges, cast times, Shockwave layer mask and damage
+- Pooling: projectiles, grenades and damage popups; AudioPool without per-sound coroutines; mixer groups
+- Cleanups: HUDManager discovers its elements; damage type and armor penetration on ranged weapons
 - Status effects: Bleed, Poison, Fire, Lightning, Ice
 - Abilities & actions: shared CooldownTimer, self-driven Dodge/Mantle, "can act" gating, unified cooldown ratios
 - Weapon recoil: unified recoil model, authored horizontal dominance, horizontal cap, blended jitter

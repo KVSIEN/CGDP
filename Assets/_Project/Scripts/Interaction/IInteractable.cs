@@ -9,5 +9,8 @@ namespace CGD.Interaction
 
         // False hides the prompt and blocks Interact (e.g. a health pickup at full health).
         bool CanInteract(GameObject player) => true;
+
+        // Seconds the Interact key must be held before Interact fires; 0 = on press.
+        float HoldDuration => 0f;
     }
 }
