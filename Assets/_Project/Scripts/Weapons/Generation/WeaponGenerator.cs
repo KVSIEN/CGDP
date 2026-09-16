@@ -23,6 +23,7 @@ namespace CGD.Weapons
             // ── Handling ──────────────────────────────────────────────────────────
             d.DrawTime = cat.DrawTime.EvaluateClamped();
             d.HitMask  = cat.HitMask;
+            d.NoiseRadius = cat.NoiseRadius;
 
             // ── Damage ────────────────────────────────────────────────────────────
             d.Damage             = cat.Damage.EvaluateClamped();

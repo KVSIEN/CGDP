@@ -26,5 +26,6 @@ MonoBehaviour:
   AttackRange: 1.5
   AttackDamage: 15
   AttackCooldown: 1
+  AttackWindup: 0.35
   AlertDuration: 5
   AttackSound: {fileID: 0}

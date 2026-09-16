@@ -30,7 +30,8 @@ Player                       [PlayerInputHandler, PlayerHealth, PlayerMovement,
                                PlayerInteraction, WeaponController,
                                PlayerWeaponLoadout, MeleeController,
                                GrenadeController, PlayerLifecycle,
-                               PlayerFootsteps, PlayerAudio]
+                               PlayerFootsteps, PlayerAudio, Stunnable,
+                               StatusEffectController]
   Rigidbody + CapsuleCollider on the Player root (required by PlayerMovement/PlayerDodge/PlayerMantle)
   - CameraRig
     - Main Camera             [Camera, UniversalAdditionalCameraData, PlayerCamera]
@@ -74,6 +75,7 @@ HUD                           [Canvas, CanvasScaler, GraphicRaycaster, HUDManage
   - Interact                   [InteractHUD]
   - HitEffect                  [HitEffect]
   - Velocity                   [VelocityHUD]
+  - StatusEffects              [StatusEffectHUD]
 ```
 
 All HUD elements build their own visuals at runtime via `UIFactory` — no child UI
@@ -83,9 +85,10 @@ matching component. Damage popups (`DamagePopup`) and enemy health bars
 `DamagePopup.Spawn()` and by the `EnemyHealthBar` component on each enemy, respectively.
 Don't leave stray instances of either parented under the HUD canvas.
 
-- **HUDManager** — assign every child reference (`_crosshair`, `_stats`, `_weapon`, `_abilities`, `_dodge`, `_hitEffect`, `_velocity`, `_inventory`, `_interact`) to its matching child object above.
+- **HUDManager** — assign every child reference (`_crosshair`, `_stats`, `_weapon`, `_abilities`, `_dodge`, `_hitEffect`, `_velocity`, `_inventory`, `_interact`, `_statusEffects`) to its matching child object above.
 - **CrosshairHUD** — assign `_settings` = `CrosshairSettings.asset`, `_playerCamera` = Main Camera's `PlayerCamera`.
 - **StatsHUD** / **HitEffect** — assign `_playerHealth` = Player's `PlayerHealth`.
+- **StatusEffectHUD** — assign `_target` = Player's `StatusEffectController`.
 - **WeaponHUD** — assign `_weapon` = Player's `WeaponController`.
 - **AbilityHUD** — assign `_abilities` = Player's `PlayerAbilities`.
 - **DodgeHUD** — assign `_dodge` = Player's `PlayerDodge`.
@@ -111,15 +114,18 @@ SettingsMenu                  [RectTransform, SettingsMenu]   (must be under the
 ## Enemy
 
 ```
-Enemy                         [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, EnemyAudio]
+Enemy                         [NavMeshAgent, EnemyAI, EnemyStateVisuals, EnemyHealth, EnemyHealthBar,
+                               EnemyAudio, Stunnable, StatusEffectController]
 ```
 
 - Requires baked NavMesh (`NavMesh Surface` in the scene, baked over the walkable ground).
-- **EnemyAI** — assign `_data` = the enemy's `EnemyData` asset (e.g. `TargetDummyEnemyData`), `_playerTransform` = Player, `_playerHealth` = Player's `PlayerHealth`, `_waypoints` = patrol point transforms (optional — idles if empty), `_obstacleMask` = geometry layers that block line-of-sight, `_stateRenderers` = the enemy's renderer(s) for the patrol/alert/chase color tint.
+- **EnemyAI** — assign `_data` = the enemy's `EnemyData` asset (e.g. `DefaultEnemyData`), `_waypoints` = patrol point transforms (optional — idles if empty), `_targetMask` = layers hostile characters are on (default Everything), `_obstacleMask` = geometry layers that block line-of-sight. No player reference — targets are found by team. Requires `Stunnable` (added automatically).
+- **EnemyStateVisuals** (optional) — assign `_renderers` = the enemy's renderer(s) for the patrol/alert/chase color tint.
 - **EnemyHealth** — assign `_data` = the same `EnemyData` asset, `_healthBar` = the `EnemyHealthBar` on the same object, `_hitboxProfile` = a `HitboxProfile` asset, e.g. `DefaultHitboxProfile` (optional — see Hitboxes).
 - **EnemyHealthBar** — no references required; it builds its own world-space canvas in `Awake`.
 - **EnemyAudio** — assign `_hurtSound` / `_deathSound` = `SoundBank` assets (optional — silent when unassigned). No other wiring — resolves `EnemyHealth` via `GetComponent`.
-- **StatusEffectController** (optional, not yet in the reference scene) — add to the Player and/or an Enemy to let status effects (Bleed, Poison, Fire, ...) apply to it. Must sit on the same GameObject as its `PlayerHealth`/`EnemyHealth`; no references to wire. Without it, on-hit status effects are ignored for that character.
+- **StatusEffectController** (on the Player and the target dummy in the reference scene) — lets status effects apply to that character. Must sit on the same GameObject as its `PlayerHealth`/`EnemyHealth`; optionally list `_immunities`. Without it, on-hit status effects are ignored for that character.
+- **Stunnable** — required by `PlayerMovement` and `EnemyAI` (Unity adds it automatically); holds stun and slow state that status effects write to. No references to wire.
 - **Teams** — `PlayerHealth` is always on the Player team; each enemy's team comes from `EnemyData.Team` (default Enemy). Attackers take their team from the `HealthManager` on their own GameObject or a parent, so weapon, melee, grenade and ability components must live on (or under) the character that owns them.
 - **On-hit effects** — fill `OnHitEffects` (effect asset + chance) on a `WeaponData`/`WeaponCategoryData`, a `MeleeWeaponData` attack step, or a `GrenadeData`, using the assets in `Data/Combat/StatusEffects/`.
 

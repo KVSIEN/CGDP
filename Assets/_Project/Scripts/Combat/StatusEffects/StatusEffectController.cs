@@ -6,7 +6,8 @@ namespace CGD.Combat
     // Reusable runtime driver for status effects (Bleed, Poison, Fire, Lightning, Ice, ...).
     // Tracks stacks/duration per effect asset and calls into each effect's own Tick()
     // so damage-over-time effects resolve through the same TakeDamage(DamageInfo)
-    // pipeline as direct hits. All effects are cleared when the character dies.
+    // pipeline as direct hits. Also the context effects act on: the character's
+    // IDamageable and (optional) Stunnable. All effects are cleared on death.
     public class StatusEffectController : MonoBehaviour
     {
         private class ActiveEffect
@@ -15,9 +16,12 @@ namespace CGD.Combat
             public float RemainingDuration;
             public float TickTimer;
             public float Magnitude; // raw damage of the hit that (most recently) applied this effect
+            public readonly List<float> StackTimers = new(); // Independent stacking only
         }
 
-        private IDamageable   _target;
+        [Tooltip("Effects this character ignores")]
+        [SerializeField] private StatusEffect[] _immunities;
+
         private HealthManager _health;
         private readonly Dictionary<StatusEffect, ActiveEffect> _active = new();
         private readonly List<StatusEffect> _expiredBuffer = new();
@@ -26,12 +30,15 @@ namespace CGD.Combat
         private bool _ticking;
         private bool _clearRequested;
 
-        public Team Team => _health != null ? _health.Team : Team.None;
+        public IDamageable Damageable { get; private set; }
+        public Stunnable   Stunnable  { get; private set; }
+        public Team        Team       => _health != null ? _health.Team : Team.None;
 
         private void Awake()
         {
-            _target = GetComponent<IDamageable>();
-            _health = _target as HealthManager;
+            Damageable = GetComponent<IDamageable>();
+            Stunnable  = GetComponent<Stunnable>();
+            _health    = Damageable as HealthManager;
             if (_health != null) _health.OnDeath += Clear;
         }
 
@@ -52,27 +59,15 @@ namespace CGD.Combat
                 StatusEffect effect = pair.Key;
                 ActiveEffect active = pair.Value;
 
-                active.RemainingDuration -= dt;
-                active.TickTimer         -= dt;
-
+                active.TickTimer -= dt;
                 if (active.TickTimer <= 0f)
                 {
                     active.TickTimer += effect.TickInterval;
-                    effect.Tick(_target, active.Stacks, active.Magnitude);
+                    effect.Tick(this, active.Stacks, active.Magnitude);
                 }
 
-                if (active.RemainingDuration <= 0f)
-                {
-                    if (effect.DecayOneStackAtATime && active.Stacks > 1)
-                    {
-                        active.Stacks--;
-                        active.RemainingDuration = effect.Duration;
-                    }
-                    else
-                    {
-                        _expiredBuffer.Add(effect);
-                    }
-                }
+                if (TickDuration(effect, active, dt))
+                    _expiredBuffer.Add(effect);
             }
 
             _ticking = false;
@@ -87,41 +82,121 @@ namespace CGD.Combat
             foreach (StatusEffect effect in _expiredBuffer)
             {
                 _active.Remove(effect);
-                effect.OnRemoved(_target);
+                effect.OnRemoved(this);
             }
             _expiredBuffer.Clear();
         }
 
-        // Entry point for hits: lets the effect decide what applying it means.
-        public void Apply(StatusEffect effect, in DamageInfo hit) => effect.Apply(this, hit);
+        // Advances the effect's timers; returns true once it should be removed.
+        private static bool TickDuration(StatusEffect effect, ActiveEffect active, float dt)
+        {
+            if (effect.Stacking == StatusStacking.Independent)
+            {
+                var timers = active.StackTimers;
+                for (int i = timers.Count - 1; i >= 0; i--)
+                {
+                    timers[i] -= dt;
+                    if (timers[i] <= 0f) timers.RemoveAt(i);
+                }
+                active.Stacks = timers.Count;
+                return timers.Count == 0;
+            }
 
-        // Adds (or refreshes) a stack. Stack count clamps at effect.MaxStacks;
-        // reapplying always resets the remaining duration back to effect.Duration and
+            active.RemainingDuration -= dt;
+            if (active.RemainingDuration > 0f) return false;
+
+            if (effect.Stacking == StatusStacking.Stack && effect.DecayOneStackAtATime && active.Stacks > 1)
+            {
+                active.Stacks--;
+                active.RemainingDuration = effect.Duration;
+                return false;
+            }
+            return true;
+        }
+
+        public bool IsImmuneTo(StatusEffect effect) =>
+            _immunities != null && System.Array.IndexOf(_immunities, effect) >= 0;
+
+        // Entry point for hits: lets the effect decide what applying it means.
+        public void Apply(StatusEffect effect, in DamageInfo hit)
+        {
+            if (!IsImmuneTo(effect)) effect.Apply(this, hit);
+        }
+
+        // Adds (or refreshes) a stack according to the effect's Stacking mode and
         // updates magnitude to the new hit's value.
         public void AddStack(StatusEffect effect, float magnitude)
         {
-            if (_active.TryGetValue(effect, out ActiveEffect active))
+            if (IsImmuneTo(effect)) return;
+
+            if (!_active.TryGetValue(effect, out ActiveEffect active))
             {
-                active.Stacks            = Mathf.Min(active.Stacks + 1, effect.MaxStacks);
-                active.RemainingDuration = effect.Duration;
-                active.Magnitude         = magnitude;
+                active = new ActiveEffect { TickTimer = effect.TickInterval };
+                _active[effect] = active;
             }
-            else
+
+            active.Magnitude         = magnitude;
+            active.RemainingDuration = effect.Duration;
+
+            switch (effect.Stacking)
             {
-                _active[effect] = new ActiveEffect
-                {
-                    Stacks            = 1,
-                    RemainingDuration = effect.Duration,
-                    TickTimer         = effect.TickInterval,
-                    Magnitude         = magnitude,
-                };
+                case StatusStacking.Refresh:
+                    active.Stacks = 1;
+                    break;
+
+                case StatusStacking.Stack:
+                    active.Stacks = Mathf.Min(active.Stacks + 1, Mathf.Max(1, effect.MaxStacks));
+                    break;
+
+                case StatusStacking.Independent:
+                    AddIndependentStack(active.StackTimers, effect);
+                    active.Stacks = active.StackTimers.Count;
+                    break;
             }
+        }
+
+        private static void AddIndependentStack(List<float> timers, StatusEffect effect)
+        {
+            if (timers.Count < Mathf.Max(1, effect.MaxStacks))
+            {
+                timers.Add(effect.Duration);
+                return;
+            }
+
+            int shortest = 0;
+            for (int i = 1; i < timers.Count; i++)
+                if (timers[i] < timers[shortest]) shortest = i;
+            timers[shortest] = effect.Duration;
         }
 
         // Current stack count for `effect`, or 0 if it isn't active.
         public int GetStacks(StatusEffect effect)
         {
             return _active.TryGetValue(effect, out ActiveEffect active) ? active.Stacks : 0;
+        }
+
+        // Fills `results` with the active effects (cleared first; no allocations once warmed up).
+        public void GetActive(List<ActiveStatus> results)
+        {
+            results.Clear();
+            foreach (var pair in _active)
+            {
+                StatusEffect effect = pair.Key;
+                ActiveEffect active = pair.Value;
+                float remaining = effect.Stacking == StatusStacking.Independent
+                    ? LongestTimer(active.StackTimers)
+                    : active.RemainingDuration;
+                float ratio = effect.Duration > 0f ? Mathf.Clamp01(remaining / effect.Duration) : 0f;
+                results.Add(new ActiveStatus(effect, active.Stacks, ratio));
+            }
+        }
+
+        private static float LongestTimer(List<float> timers)
+        {
+            float longest = 0f;
+            foreach (float t in timers)
+                if (t > longest) longest = t;
+            return longest;
         }
 
         public void Clear()
@@ -134,7 +209,7 @@ namespace CGD.Combat
 
             _clearRequested = false;
             foreach (StatusEffect effect in _active.Keys)
-                effect.OnRemoved(_target);
+                effect.OnRemoved(this);
             _active.Clear();
             _expiredBuffer.Clear();
         }

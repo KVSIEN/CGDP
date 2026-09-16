@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: FireEffect
   m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.FireEffect
   DisplayName: Fire
+  Icon: {fileID: 0}
+  Color: {r: 1, g: 0.45, b: 0.1, a: 1}
   Duration: 4
   TickInterval: 1
+  Stacking: 0
   MaxStacks: 1
   DecayOneStackAtATime: 0
   FireDpsPercent: 0.2

@@ -62,6 +62,7 @@ namespace CGD.Weapons
             }
 
             _data.ExplosionSound?.Play(transform.position);
+            Noise.Emit(transform.position, _data.NoiseRadius, _source);
             Destroy(gameObject);
         }
     }

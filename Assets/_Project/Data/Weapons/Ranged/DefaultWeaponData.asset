@@ -28,6 +28,7 @@ MonoBehaviour:
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  NoiseRadius: 40
   DrawTime: 0.5
   MagazineSize: 30
   ReserveAmmo: 90

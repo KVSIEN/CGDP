@@ -61,6 +61,9 @@
 - **Fire** — damage over time based on the hit that applied it, still reduced by armor
 - **Ice** — each stack slows and lowers armor; at 5 stacks the target is stunned; stacks wear off one at a time
 - **Lightning** — jumps from the target to nearby characters on the same side, weaker with each jump; more stacks mean more jumps
+- Each effect chooses how repeat hits stack: refresh the timer, add stacks on one timer, or give every stack its own timer
+- Characters can be made immune to specific effects
+- Status HUD — a row of tiles above the ability bar shows the player's active effects with their stack count and remaining time
 - All active effects are removed when a character dies
 
 ## Ability System
@@ -166,14 +169,17 @@
 - Independent of the four ability slots and the equipped ranged weapon — its own dedicated key
 
 ## Enemy AI
-- Behavior tree framework with four reusable node types: Selector (first-success), Sequence (all-must-succeed), Condition (predicate leaf), Action (logic leaf)
-- Three AI states: Patrol, Alert, Chase — driven entirely by the behavior tree
+- Three AI states — Patrol, Alert, Chase — each its own small state class
+- Enemies find targets by team: any character on another team can be detected, so no player reference needs wiring
 - Patrol follows an ordered list of waypoints, looping continuously; idles in place if no waypoints are assigned
-- Alert sends the enemy to the last known player position and returns to patrol after a configurable duration
-- Chase closes the gap to the player and attacks at melee range with a configurable cooldown; stops moving while attacking
+- Alert sends the enemy to the last known position and returns to patrol after a configurable duration or on arrival
+- Chase closes the gap and attacks at melee range: the enemy stops, turns to face the target, winds up, then strikes everything hostile in front of it; configurable wind-up and cooldown
 - Line-of-sight detection: raycast cone with tunable range and full-angle FOV; blocked by any geometry on the obstacle mask
-- Hearing detection: proximity sphere with tunable radius; always triggers regardless of facing direction
-- Losing sight switches the enemy to Alert for investigation; regaining sight immediately re-enters Chase
+- Proximity detection: hostiles within a tunable radius are noticed regardless of facing direction
+- Hearing: gunfire, melee swings and explosions make noise with their own range; enemies within range go to investigate the source
+- Getting hit alerts an enemy to the attacker, even from behind
+- Losing the target switches the enemy to Alert for investigation; detecting it again immediately re-enters Chase
+- Stuns and slows (e.g. from Ice) stop or slow enemies the same way they affect the player
 - State color indicator: mesh tints grey (patrol), yellow (alert), red (chase) via MaterialPropertyBlock — no material instances created
 - World-space health bar appears above the enemy on damage and fades out after a configurable delay; billboards toward the camera
 - All parameters (health, speeds, sight, hearing, attack, alert duration) are tunable per enemy type via an EnemyData ScriptableObject

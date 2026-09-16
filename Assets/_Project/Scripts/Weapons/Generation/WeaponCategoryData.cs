@@ -52,6 +52,8 @@ namespace CGD.Weapons
         [Header("Handling")]
         public FloatRange DrawTime           = new(0.5f, 0.7f);
         public LayerMask HitMask             = ~0;
+        [Tooltip("How far away enemies hear it (0 = silent)")]
+        public float NoiseRadius = 40f;
 
         [Header("Spread")]
         public FloatRange HipSpreadDeg          = new(2.0f, 3.5f);

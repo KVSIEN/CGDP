@@ -1,15 +1,6 @@
 # Unity Project – To-Do List
 
 ## Open
--   Status effect polish
-    One explicit stacking setting (refresh / stack / independent), cached target context instead of per-tick lookups, optional immunities, status icons on the HUD.
-
--   Shared stun/slow component
-    PlayerMovement and EnemyAI each implement IStunnable; move it into one component both read.
-
--   Enemy AI upgrade
-    Team-based perception instead of per-enemy player wiring, aggro when damaged, noise events for hearing, wind-up attacks through Hitbox.ApplyHit, state classes instead of a switch, state colors in their own component.
-
 -   Interaction extras
     Optional line-of-sight check and hold-to-interact.
 
@@ -31,6 +22,9 @@ Completed work is described in [FEATURES.md](FEATURES.md); full task history is 
 - Combat: melee combos, throwable grenades, armor/shield mitigation, hitboxes with per-region multipliers, teams, attacker info and on-hit status effects on every attack
 - Weapons: per-weapon ammo that survives swaps, weapon swap-drops on full loadout, action gating while stunned/mantling/rolling
 - Respawn: systems reset themselves on revive (ammo, cooldowns, momentum, status effects)
+- Status effects: stacking modes (refresh / stack / independent), immunities, cached target context, status HUD
+- Shared Stunnable component for player and enemies
+- Enemy AI: team-based perception, aggro on hit, noise-based hearing, wind-up attacks, state classes, separate state visuals
 - Status effects: Bleed, Poison, Fire, Lightning, Ice
 - Abilities & actions: shared CooldownTimer, self-driven Dodge/Mantle, "can act" gating, unified cooldown ratios
 - Weapon recoil: unified recoil model, authored horizontal dominance, horizontal cap, blended jitter

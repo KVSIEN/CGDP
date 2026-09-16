@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: PoisonEffect
   m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.PoisonEffect
   DisplayName: Poison
+  Icon: {fileID: 0}
+  Color: {r: 0.35, g: 0.85, b: 0.2, a: 1}
   Duration: 6
   TickInterval: 1
+  Stacking: 1
   MaxStacks: 5
   DecayOneStackAtATime: 0
   StackMultiplier: 1.5

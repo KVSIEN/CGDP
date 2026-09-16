@@ -45,6 +45,8 @@ namespace CGD.Weapons
         [Range(0.1f, 1f)]
         public float DamageFalloffMin = 0.4f;
         public LayerMask HitMask = ~0;
+        [Tooltip("How far away enemies hear it (0 = silent)")]
+        public float NoiseRadius = 40f;
 
         // ── Handling ──────────────────────────────────────────────────────────
         [Header("Handling")]

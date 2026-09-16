@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: LightningEffect
   m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.LightningEffect
   DisplayName: Lightning
+  Icon: {fileID: 0}
+  Color: {r: 1, g: 0.9, b: 0.2, a: 1}
   Duration: 4
   TickInterval: 1
+  Stacking: 1
   MaxStacks: 4
   DecayOneStackAtATime: 0
   ChainRadius: 8

@@ -85,6 +85,7 @@ MonoBehaviour:
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  NoiseRadius: 40
   HipSpreadDeg:
     Min: 2
     Max: 3.5

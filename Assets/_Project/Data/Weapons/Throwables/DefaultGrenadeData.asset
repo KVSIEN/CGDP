@@ -24,6 +24,7 @@ MonoBehaviour:
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  NoiseRadius: 50
   OnHitEffects: []
   ThrowSound: {fileID: 0}
   ExplosionSound: {fileID: 0}

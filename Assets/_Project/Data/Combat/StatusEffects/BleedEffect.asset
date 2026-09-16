@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: BleedEffect
   m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.BleedEffect
   DisplayName: Bleed
+  Icon: {fileID: 0}
+  Color: {r: 0.8, g: 0.1, b: 0.15, a: 1}
   Duration: 5
   TickInterval: 1
+  Stacking: 0
   MaxStacks: 1
   DecayOneStackAtATime: 0
   RawDamageFraction: 0.5

@@ -68,3 +68,4 @@ MonoBehaviour:
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  NoiseRadius: 8

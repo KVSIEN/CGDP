@@ -1,6 +1,5 @@
 using UnityEngine;
 using CGD.Combat;
-using CGD.Core;
 using CGD.Input;
 
 namespace CGD.Player
@@ -8,7 +7,8 @@ namespace CGD.Player
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(CapsuleCollider))]
     [RequireComponent(typeof(PlayerInputHandler))]
-    public class PlayerMovement : MonoBehaviour, IStunnable
+    [RequireComponent(typeof(Stunnable))]
+    public class PlayerMovement : MonoBehaviour
     {
         [SerializeField] private PlayerMovementSettings _settings;
         [SerializeField] private Transform _cameraTransform;
@@ -31,14 +31,7 @@ namespace CGD.Player
         // forcibly overwritten each FixedUpdate), so neither would have any real effect.
         public bool CanAct => !IsMantling && !_dodge.IsRolling && !IsStunned;
 
-        // IStunnable — driven externally (e.g. Ice) via GetComponent<IStunnable>().
-        public float SpeedMultiplier
-        {
-            get => _speedMultiplier;
-            set => _speedMultiplier = Mathf.Clamp01(value);
-        }
-        public bool IsStunned => !_stunTimer.IsReady;
-        public void ApplyStun(float duration) => _stunTimer.Start(duration);
+        public bool IsStunned => _stunnable.IsStunned;
 
         public Vector3 MoveDirection   => _moveDirection;
         public float CoyoteTimer       => _coyoteTimer;
@@ -49,6 +42,7 @@ namespace CGD.Player
         private PlayerInputHandler _input;
         private PlayerDodge _dodge;
         private PlayerMantle _mantle;
+        private Stunnable _stunnable;
 
         private float _coyoteTimer;
         private float _jumpBufferTimer;
@@ -58,8 +52,6 @@ namespace CGD.Player
         private Vector3 _slideDirection;
         private Vector3 _moveDirection;
         private Rigidbody _groundRb;
-        private float _speedMultiplier = 1f;
-        private CooldownTimer _stunTimer;
 
         private void Awake()
         {
@@ -68,6 +60,7 @@ namespace CGD.Player
             _input  = GetComponent<PlayerInputHandler>();
             _dodge  = GetComponent<PlayerDodge>();
             _mantle = GetComponent<PlayerMantle>();
+            _stunnable = GetComponent<Stunnable>();
 
             _rb.useGravity = false;
             _rb.freezeRotation = true;
@@ -109,8 +102,6 @@ namespace CGD.Player
 
         private void FixedUpdate()
         {
-            _stunTimer.Tick(Time.fixedDeltaTime);
-
             HandleCrouch();
             CheckGround();
 
@@ -216,7 +207,7 @@ namespace CGD.Player
 
             float targetSpeed = (IsCrouching ? _settings.CrouchSpeed
                 : IsSprinting ? _settings.SprintSpeed
-                : _settings.WalkSpeed) * _speedMultiplier;
+                : _settings.WalkSpeed) * _stunnable.SpeedMultiplier;
 
             _moveDirection = Vector3.zero;
             if (rawInput.magnitude > 0.01f)

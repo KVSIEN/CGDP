@@ -783,6 +783,7 @@ GameObject:
   - component: {fileID: 366475993}
   - component: {fileID: 366475992}
   - component: {fileID: 366475991}
+  - component: {fileID: 366475994}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -840,6 +841,19 @@ Transform:
   - {fileID: 1766896606}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &366475994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 366475990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0a06aeda59d973488ae1b321424e48e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.StatusEffectController
+  _immunities: []
 --- !u!1 &378935970
 GameObject:
   m_ObjectHideFlags: 0
@@ -2590,6 +2604,59 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Hitbox
   _owner: {fileID: 366475991}
   _region: 0
+--- !u!1 &1494457030
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1494457031}
+  - component: {fileID: 1494457032}
+  m_Layer: 5
+  m_Name: StatusEffects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1494457031
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494457030}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2051602390}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1494457032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494457030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f1665b29ac40acbda5194d631f946b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.UI.StatusEffectHUD
+  _target: {fileID: 1555766064}
+  _maxTiles: 8
+  _tileSize: 36
+  _tileGap: 6
+  _screenPaddingBottom: 92
 --- !u!1 &1554548218
 GameObject:
   m_ObjectHideFlags: 0
@@ -2767,6 +2834,8 @@ GameObject:
   - component: {fileID: 1555766062}
   - component: {fileID: 1555766051}
   - component: {fileID: 1555766050}
+  - component: {fileID: 1555766065}
+  - component: {fileID: 1555766064}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -3016,6 +3085,31 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+--- !u!114 &1555766064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1555766049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0a06aeda59d973488ae1b321424e48e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.StatusEffectController
+  _immunities: []
+--- !u!114 &1555766065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1555766049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc9caf2a0ec94fb082f8ce644a0ce248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.Stunnable
 --- !u!1 &1629601953
 GameObject:
   m_ObjectHideFlags: 0
@@ -4005,6 +4099,7 @@ RectTransform:
   - {fileID: 1272141994}
   - {fileID: 126377343}
   - {fileID: 1913707791}
+  - {fileID: 1494457031}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4031,6 +4126,7 @@ MonoBehaviour:
   _dodge: {fileID: 378935972}
   _hitEffect: {fileID: 1994817525}
   _velocity: {fileID: 524831381}
+  _statusEffects: {fileID: 1494457032}
   _inventory: {fileID: 1272141995}
   _interact: {fileID: 126377344}
 --- !u!1 &2070597237

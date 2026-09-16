@@ -20,5 +20,7 @@ namespace CGD.Weapons
         public float ComboResetTime = 1.2f;
 
         public LayerMask HitMask = ~0;
+        [Tooltip("How far away enemies hear it (0 = silent)")]
+        public float NoiseRadius = 8f;
     }
 }

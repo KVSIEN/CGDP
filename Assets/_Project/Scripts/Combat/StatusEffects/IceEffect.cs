@@ -9,7 +9,7 @@ namespace CGD.Combat
     // each call, so decay (see below) self-corrects automatically without Ice needing
     // to track any state of its own — required since this asset is shared across every
     // target it's applied to.
-    // Set MaxStacks to 5 and DecayOneStackAtATime to true on the asset to match the
+    // Set Stacking to Stack, MaxStacks to 5 and DecayOneStackAtATime to true on the asset to match the
     // spec (5% slow / 2% armor reduction per stack, one stack lost every Duration
     // seconds without a new one).
     [CreateAssetMenu(fileName = "IceEffect", menuName = "CGD/Combat/Status Effects/Ice")]
@@ -25,11 +25,10 @@ namespace CGD.Combat
         [Tooltip("Extra armor reduction applied while stunned, on top of the per-stack total")]
         public float StunArmorReductionBonus = 0.10f;
 
-        public override void Tick(IDamageable target, int stacks, float magnitude)
+        public override void Tick(StatusEffectController target, int stacks, float magnitude)
         {
             int clampedStacks = Mathf.Min(stacks, MaxStacks);
-            var component = target as Component;
-            IStunnable stunnable = component != null ? component.GetComponent<IStunnable>() : null;
+            Stunnable stunnable = target.Stunnable;
 
             if (clampedStacks >= MaxStacks && stunnable != null && !stunnable.IsStunned)
                 stunnable.ApplyStun(StunDuration);
@@ -41,17 +40,15 @@ namespace CGD.Combat
 
             float armorReduction = clampedStacks * ArmorReductionPerStack;
             if (stunned) armorReduction += StunArmorReductionBonus;
-            target.ArmorReductionPercent = armorReduction;
+            target.Damageable.ArmorReductionPercent = armorReduction;
         }
 
-        public override void OnRemoved(IDamageable target)
+        public override void OnRemoved(StatusEffectController target)
         {
-            target.ArmorReductionPercent = 0f;
+            target.Damageable.ArmorReductionPercent = 0f;
 
-            var component = target as Component;
-            IStunnable stunnable = component != null ? component.GetComponent<IStunnable>() : null;
-            if (stunnable != null)
-                stunnable.SpeedMultiplier = 1f;
+            if (target.Stunnable != null)
+                target.Stunnable.SpeedMultiplier = 1f;
         }
     }
 }

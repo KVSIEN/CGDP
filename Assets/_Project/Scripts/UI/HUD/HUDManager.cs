@@ -11,6 +11,7 @@ namespace CGD.UI
         [SerializeField] private DodgeHUD      _dodge;
         [SerializeField] private HitEffect     _hitEffect;
         [SerializeField] private VelocityHUD   _velocity;
+        [SerializeField] private StatusEffectHUD _statusEffects;
         [SerializeField] private InventoryHUD  _inventory;
         [SerializeField] private InteractHUD   _interact;
 
@@ -21,6 +22,7 @@ namespace CGD.UI
         public DodgeHUD      Dodge      => _dodge;
         public HitEffect     HitEffect  => _hitEffect;
         public VelocityHUD   Velocity   => _velocity;
+        public StatusEffectHUD StatusEffects => _statusEffects;
         public InventoryHUD  Inventory  => _inventory;
         public InteractHUD   Interact   => _interact;
 
@@ -33,6 +35,7 @@ namespace CGD.UI
             _dodge?.Show();
             _hitEffect?.Show();
             _velocity?.Show();
+            _statusEffects?.Show();
             _interact?.Show();
         }
 
@@ -45,6 +48,7 @@ namespace CGD.UI
             _dodge?.Hide();
             _hitEffect?.Hide();
             _velocity?.Hide();
+            _statusEffects?.Hide();
             _inventory?.Hide();
             _interact?.Hide();
         }
@@ -58,6 +62,7 @@ namespace CGD.UI
             _dodge?.Refresh();
             _hitEffect?.Refresh();
             _velocity?.Refresh();
+            _statusEffects?.Refresh();
             _inventory?.Refresh();
             _interact?.Refresh();
         }

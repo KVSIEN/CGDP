@@ -30,13 +30,15 @@ namespace CGD.Enemies
         public float SightRange = 15f;
         [Tooltip("Full cone angle in degrees — e.g. 90 means 45° either side of forward.")]
         public float SightAngle = 90f;
-        [Tooltip("Radius at which the enemy hears the player regardless of line-of-sight.")]
+        [Tooltip("Radius within which the enemy notices a hostile even without line of sight. Gunfire and other noises are heard from their own radius.")]
         public float HearingRadius = 8f;
 
         [Header("Combat")]
         public float AttackRange    = 1.5f;
         public float AttackDamage   = 15f;
         public float AttackCooldown = 1f;
+        [Tooltip("Seconds between starting an attack and the hit landing")]
+        public float AttackWindup   = 0.35f;
 
         [Header("Alert")]
         [Tooltip("How long the enemy investigates the last known position before returning to patrol.")]

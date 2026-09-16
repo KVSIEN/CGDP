@@ -95,6 +95,7 @@ namespace CGD.Weapons
             _phaseTimer = _activeStep.WindupTime;
 
             _activeStep.SwingSound?.Play(transform.position);
+            Noise.Emit(transform.position, _data.NoiseRadius, _damageSource);
         }
 
         private void TickPhase(float dt)

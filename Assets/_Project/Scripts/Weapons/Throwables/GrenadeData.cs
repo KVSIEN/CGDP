@@ -24,6 +24,8 @@ namespace CGD.Weapons
         [Range(0f, 1f)] public float ArmorPenetration = 0f;
         public DamageType DamageType = DamageType.Physical;
         public LayerMask HitMask = ~0;
+        [Tooltip("How far away enemies hear it (0 = silent)")]
+        public float NoiseRadius = 50f;
 
         [Header("On Hit")]
         [Tooltip("Status effects each hit may apply")]

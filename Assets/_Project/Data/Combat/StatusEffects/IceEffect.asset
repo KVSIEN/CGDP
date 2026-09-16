@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: IceEffect
   m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.IceEffect
   DisplayName: Ice
+  Icon: {fileID: 0}
+  Color: {r: 0.45, g: 0.8, b: 1, a: 1}
   Duration: 2
   TickInterval: 0.25
+  Stacking: 1
   MaxStacks: 5
   DecayOneStackAtATime: 1
   SlowPerStack: 0.05

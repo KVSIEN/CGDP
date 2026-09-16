@@ -26,9 +26,9 @@ Assets/
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            ability assets and the player's ability slots
       Audio/                audio pool, sound banks, surface lookup
-      Combat/               Damage/, Health/ (HealthManager, Hitbox), StatusEffects/, Projectile
+      Combat/               Damage/, Health/ (HealthManager, Hitbox), StatusEffects/, Projectile, Stunnable, Noise
       Core/                 shared utilities (cooldowns, ranges, settings save, Culling/)
-      Enemies/              enemy components and AI/ (behavior tree)
+      Enemies/              enemy components, perception, and AI/ (state classes)
       Input/                PlayerInputHandler and binding settings
       Interaction/          IInteractable, doors, switches, Pickups/
       Player/               movement, camera, health, lifecycle, player audio

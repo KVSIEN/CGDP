@@ -165,6 +165,7 @@ namespace CGD.Weapons
             AddSpreadBloom();
 
             D.FireSound?.Play(SoundPos);
+            Noise.Emit(transform.position, D.NoiseRadius, _damageSource);
         }
 
         private IEnumerator FireBurst()

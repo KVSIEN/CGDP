@@ -25,7 +25,7 @@ namespace CGD.Combat
         private static readonly Collider[] _hitBuffer = new Collider[32];
         private readonly HashSet<HealthManager> _visited = new();
 
-        public override void Tick(IDamageable target, int stacks, float magnitude) { }
+        public override void Tick(StatusEffectController target, int stacks, float magnitude) { }
 
         // The hit that applied Lightning already damaged the target. Chain count equals
         // the target's resulting stack count; each hop deals ChainFalloff less than the

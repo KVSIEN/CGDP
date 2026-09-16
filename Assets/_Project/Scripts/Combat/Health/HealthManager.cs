@@ -39,6 +39,8 @@ namespace CGD.Combat
         public event Action        OnChanged;
         public event Action        OnDeath;
         public event Action<float> OnDamaged;
+        // Every hit this character accepts (after team filtering), with its source.
+        public event Action<DamageInfo> OnHit;
         // Raised by Revive(), so systems on the same character can reset themselves.
         public event Action        OnRevived;
 
@@ -85,6 +87,8 @@ namespace CGD.Combat
         private void ApplyDamage(DamageInfo info, float multiplier, Vector3 point, bool isCritical)
         {
             if (IsDead || !CanBeDamagedBy(info.Source)) return;
+
+            OnHit?.Invoke(info);
 
             float amount = info.ResolveDamage(Armor * (1f - _armorReductionPercent)) * multiplier;
             _shieldRegenTimer = ShieldRegenDelay;
