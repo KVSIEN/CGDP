@@ -120,7 +120,7 @@ Enemy                         [NavMeshAgent, EnemyAI, EnemyStateVisuals, EnemyHe
 ```
 
 - Requires baked NavMesh (`NavMesh Surface` in the scene, baked over the walkable ground).
-- **EnemyAI** — assign `_data` = the enemy's `EnemyData` asset (e.g. `DefaultEnemyData`), `_waypoints` = patrol point transforms (optional — idles if empty), `_targetMask` = layers hostile characters are on (default Everything), `_obstacleMask` = geometry layers that block line-of-sight. No player reference — targets are found by team. Requires `Stunnable` (added automatically).
+- **EnemyAI** — assign `_data` = the enemy's `EnemyData` asset (e.g. `DefaultEnemyData`), `_waypoints` = patrol point transforms (optional — idles if empty), `_targetMask` = layers hostile characters are on (default Everything), `_obstacleMask` = geometry layers that block line-of-sight. No player reference — targets are found by team. Requires `Stunnable` (added automatically). Set `CombatType` to `Melee` or `Ranged` on the `EnemyData` asset — ranged enemies use additional fields (`PreferredRange`, `SpreadAngle`, `BurstCount`, `BurstInterval`, `StrafeInterval`, `StrafeDistance`, `RangedAttackSound`).
 - **EnemyStateVisuals** (optional) — assign `_renderers` = the enemy's renderer(s) for the patrol/alert/chase color tint.
 - **EnemyHealth** — assign `_data` = the same `EnemyData` asset, `_healthBar` = the `EnemyHealthBar` on the same object, `_hitboxProfile` = a `HitboxProfile` asset, e.g. `DefaultHitboxProfile` (optional — see Hitboxes).
 - **EnemyHealthBar** — no references required; it builds its own world-space canvas in `Awake`.
@@ -182,7 +182,7 @@ Switch (any name)             [Collider (isTrigger), Switch]
 | `Weapons/Melee/DefaultMeleeWeaponData` | `MeleeController` |
 | `Weapons/Throwables/DefaultGrenadeData` (its `GrenadePrefab` — `Prefabs/Weapons/FragGrenade` — needs a `Rigidbody` + non-trigger `Collider` + `Grenade` component) | `GrenadeController` |
 | `Audio/DefaultSurfaceDatabase` (empty until surface `SoundBank`s exist) | `PlayerFootsteps` |
-| `SoundBank` assets (per sound — weapon fire/reload/empty, melee swing/hit, grenade throw/explosion, player hurt/death, enemy hurt/death/attack, footstep walk/sprint/crouch per surface) | Various — all optional; systems work silently without them |
+| `SoundBank` assets (per sound — weapon fire/reload/empty, melee swing/hit, grenade throw/explosion, player hurt/death, enemy hurt/death/attack/ranged-attack, footstep walk/sprint/crouch per surface) | Various — all optional; systems work silently without them |
 
 `InputBindingSettings` and `PlayerMovementSettings` are each a **single shared asset**
 referenced by multiple components — don't accidentally create per-component duplicates,

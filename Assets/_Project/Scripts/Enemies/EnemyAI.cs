@@ -7,9 +7,6 @@ using CGD.Core;
 
 namespace CGD.Enemies
 {
-    // Enemy brain: runs the Patrol / Alert / Chase states on top of EnemyPerception,
-    // and owns movement speed, facing and the wind-up melee attack. Targets are found
-    // by team, so no player reference needs to be wired.
     [RequireComponent(typeof(NavMeshAgent))]
     [RequireComponent(typeof(EnemyHealth))]
     [RequireComponent(typeof(Stunnable))]
@@ -17,7 +14,7 @@ namespace CGD.Enemies
     {
         public enum AiState { Patrol, Alert, Chase }
 
-        private const float TurnSpeed = 540f; // degrees per second while stationary
+        private const float TurnSpeed = 540f;
 
         [SerializeField] private EnemyData   _data;
         [SerializeField] private Transform[] _waypoints;
@@ -57,11 +54,15 @@ namespace CGD.Enemies
             _damageSource = DamageSource.Of(gameObject);
             Perception    = new EnemyPerception(transform, _data, _targetMask, _obstacleMask, _health.Team);
 
+            EnemyState chaseState = _data.CombatType == EnemyCombatType.Ranged
+                ? new RangedChaseState(this, _damageSource, _obstacleMask)
+                : new ChaseState(this);
+
             _states = new Dictionary<AiState, EnemyState>
             {
                 [AiState.Patrol] = new PatrolState(this),
                 [AiState.Alert]  = new AlertState(this),
-                [AiState.Chase]  = new ChaseState(this),
+                [AiState.Chase]  = chaseState,
             };
 
             _health.OnDeath += OnDeath;
@@ -126,7 +127,7 @@ namespace CGD.Enemies
                 transform.rotation, Quaternion.LookRotation(flat), TurnSpeed * deltaTime);
         }
 
-        // ── Attack ────────────────────────────────────────────────────────────
+        // -- Melee Attack ---------------------------------------------------------
 
         internal void TryStartAttack()
         {
@@ -148,7 +149,6 @@ namespace CGD.Enemies
             ResolveAttack();
         }
 
-        // Same shape as player melee: a sphere in front of the enemy, each hostile hit once.
         private void ResolveAttack()
         {
             _data.AttackSound?.Play(transform.position);

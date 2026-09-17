@@ -34,11 +34,26 @@ namespace CGD.Enemies
         public float HearingRadius = 8f;
 
         [Header("Combat")]
+        public EnemyCombatType CombatType = EnemyCombatType.Melee;
         public float AttackRange    = 1.5f;
         public float AttackDamage   = 15f;
         public float AttackCooldown = 1f;
-        [Tooltip("Seconds between starting an attack and the hit landing")]
+        [Tooltip("Seconds between starting an attack and the hit landing (melee only)")]
         public float AttackWindup   = 0.35f;
+
+        [Header("Ranged Combat")]
+        [Tooltip("Distance the enemy tries to maintain from its target")]
+        public float PreferredRange = 12f;
+        [Tooltip("Spread angle in degrees — 0 is perfect accuracy")]
+        public float SpreadAngle    = 3f;
+        [Tooltip("Shots fired per burst before the fire cooldown starts")]
+        public int   BurstCount     = 1;
+        [Tooltip("Delay in seconds between shots within a burst")]
+        public float BurstInterval  = 0.1f;
+        [Tooltip("How often the enemy picks a new strafe direction (seconds)")]
+        public float StrafeInterval = 2f;
+        [Tooltip("How far sideways the enemy strafes at preferred range")]
+        public float StrafeDistance  = 4f;
 
         [Header("Alert")]
         [Tooltip("How long the enemy investigates the last known position before returning to patrol.")]
@@ -46,5 +61,6 @@ namespace CGD.Enemies
 
         [Header("Audio")]
         public SoundBank AttackSound;
+        public SoundBank RangedAttackSound;
     }
 }

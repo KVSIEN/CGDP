@@ -178,7 +178,9 @@
 - Enemies find targets by team: any character on another team can be detected, so no player reference needs wiring
 - Patrol follows an ordered list of waypoints, looping continuously; idles in place if no waypoints are assigned
 - Alert sends the enemy to the last known position and returns to patrol after a configurable duration or on arrival
-- Chase closes the gap and attacks at melee range: the enemy stops, turns to face the target, winds up, then strikes everything hostile in front of it; configurable wind-up and cooldown
+- Two combat types per enemy: Melee or Ranged, selectable on the EnemyData asset
+- **Melee** enemies close the gap and attack at melee range: stop, turn to face the target, wind up, then strike everything hostile in front; configurable wind-up and cooldown
+- **Ranged** enemies maintain a preferred engagement distance — advance when too far, retreat when too close, and strafe sideways while at range; fire hitscan shots at the target when they have line of sight, with configurable spread; burst fire is supported (multiple shots per trigger pull with a configurable interval between them); shots resolve through the full damage pipeline (armor, shield, hitbox regions all apply)
 - Line-of-sight detection: raycast cone with tunable range and full-angle FOV; blocked by any geometry on the obstacle mask
 - Proximity detection: hostiles within a tunable radius are noticed regardless of facing direction
 - Hearing: gunfire, melee swings and explosions make noise with their own range; enemies within range go to investigate the source
@@ -187,7 +189,7 @@
 - Stuns and slows (e.g. from Ice) stop or slow enemies the same way they affect the player
 - State color indicator: mesh tints grey (patrol), yellow (alert), red (chase) via MaterialPropertyBlock — no material instances created
 - World-space health bar appears above the enemy on damage and fades out after a configurable delay; billboards toward the camera
-- All parameters (health, speeds, sight, hearing, attack, alert duration) are tunable per enemy type via an EnemyData ScriptableObject
+- All parameters (health, speeds, sight, hearing, combat type, attack, ranged stats, alert duration) are tunable per enemy type via an EnemyData ScriptableObject
 
 ## Visibility Culling
 - Objects outside the camera frustum have their renderers disabled automatically, reducing draw calls without deactivating GameObjects
