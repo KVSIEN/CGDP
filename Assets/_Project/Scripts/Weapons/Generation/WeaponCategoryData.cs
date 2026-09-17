@@ -65,7 +65,7 @@ namespace CGD.Weapons
         public FloatRange MaxSpread      = new(5f,   8f);
         public FloatRange SpreadRecovery = new(12f,  18f);
 
-        [Header("Recoil")]
+        [Header("Control — Kick")]
         public FloatRange RecoilScaleVertical   = new(0.9f, 1.5f);
         public FloatRange RecoilJitterVertical  = new(0.083f, 0.25f);
         public FloatRange RecoilScaleHorizontal = new(0.4f, 0.7f);
@@ -73,7 +73,13 @@ namespace CGD.Weapons
         public FloatRange MaxAccumulatedRecoil  = new(12f,  18f);
         public FloatRange MaxAccumulatedHorizontalRecoil = new(6f, 9f);
 
-        [Header("Recoil — Recovery")]
+        [Header("Control — Buildup")]
+        public FloatRange RecoilHeatPerShot         = new(0.05f, 0.08f);
+        public FloatRange RecoilHeatDecay           = new(0.5f, 0.8f);
+        public FloatRange RecoilHeatKickMultiplier  = new(1.3f, 1.7f);
+        public FloatRange RecoilHeatJitterMultiplier = new(2f, 3f);
+
+        [Header("Control — Recovery")]
         public FloatRange RecoilRecoverySpeed         = new(4f, 9f);
         public FloatRange RecoilRecoveryFraction      = new(0.55f, 0.80f);
         public FloatRange RecoilRecoveryDelay         = new(0.08f, 0.18f);
@@ -81,6 +87,14 @@ namespace CGD.Weapons
         public FloatRange AdsRecoilMultiplier         = new(0.35f, 0.55f);
         public FloatRange HipRecoilVerticalMultiplier = new(0.10f, 0.25f);
         public FloatRange HipRecoilHorizontalMultiplier = new(0.10f, 0.25f);
+
+        [Header("Handling — Sway")]
+        public FloatRange LookSwayAmount    = new(0.4f, 0.6f);
+        public FloatRange LookSwayRecovery  = new(9f,   12f);
+        public FloatRange IdleSwayAmount    = new(0.3f, 0.5f);
+        public FloatRange IdleSwaySpeed     = new(0.6f, 0.9f);
+        public FloatRange MoveSwayAmount    = new(0.8f, 1.2f);
+        public FloatRange AdsSwayMultiplier = new(0.20f, 0.35f);
 
         // ── Context Menu ──────────────────────────────────────────────────────────
 

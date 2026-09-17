@@ -50,11 +50,6 @@ namespace CGD.Weapons
         [Tooltip("How far away enemies hear it (0 = silent)")]
         public float NoiseRadius = 40f;
 
-        // ── Handling ──────────────────────────────────────────────────────────
-        [Header("Handling")]
-        [Tooltip("Seconds to draw and ready the weapon after swapping to this slot")]
-        public float DrawTime = 0.5f;
-
         // ── Ammo & Reload ────────────────────────────────────────────────────
         [Header("Ammo & Reload")]
         public int MagazineSize = 30;
@@ -77,8 +72,8 @@ namespace CGD.Weapons
             return clips * magazineSize;
         }
 
-        // ── Spread / Bloom ────────────────────────────────────────────────────
-        [Header("Spread")]
+        // ── Accuracy (where bullets land) ─────────────────────────────────────
+        [Header("Accuracy")]
         [Tooltip("Cone half-angle while hip-firing (degrees)")]
         public float HipSpreadDeg  = 2.5f;
         [Tooltip("Cone half-angle while ADS (degrees)")]
@@ -94,8 +89,8 @@ namespace CGD.Weapons
         [Tooltip("Maximum spread cap (degrees)")]
         public float MaxSpread = 6f;
 
-        // ── Recoil ────────────────────────────────────────────────────────────
-        [Header("Recoil — Kick")]
+        // ── Control — Kick ───────────────────────────────────────────────
+        [Header("Control — Kick")]
         [Tooltip("Per-shot recoil magnitude (degrees): x = horizontal, y = vertical")]
         public Vector2 RecoilScale = new Vector2(0.55f, 1.2f);
         [Tooltip("Randomness applied per shot, as a fraction of RecoilScale: x = horizontal, y = vertical")]
@@ -103,15 +98,27 @@ namespace CGD.Weapons
         [Tooltip("Authored horizontal lean applied to every shot (-1 full left, 0 none, 1 full right)")]
         [Range(-1f, 1f)]
         public float RecoilHorizontalBias = 0.15f;
+        [Tooltip("Hard cap on total accumulated upward recoil (degrees)")]
+        public float MaxAccumulatedRecoil = 14f;
+        [Tooltip("Hard cap on total accumulated sideways recoil (degrees), either direction")]
+        public float MaxAccumulatedHorizontalRecoil = 7f;
 
-        // ── Audio ─────────────────────────────────────────────────────────────
-        [Header("Audio")]
-        public SoundBank FireSound;
-        public SoundBank ReloadSound;
-        [Tooltip("Played when the player tries to fire with an empty magazine")]
-        public SoundBank EmptySound;
+        // ── Control — Buildup (heat over sustained fire) ─────────────────
+        [Header("Control — Buildup")]
+        [Tooltip("Heat added per shot; heat grows 0→1 over roughly 1/RecoilHeatPerShot shots of sustained fire. 0 disables buildup entirely.")]
+        [Range(0f, 1f)]
+        public float RecoilHeatPerShot = 0.06f;
+        [Tooltip("Heat drained per second when not firing")]
+        public float RecoilHeatDecay = 0.6f;
+        [Tooltip("Recoil kick multiplier at maximum heat (1 = no buildup, 2 = kick doubles when hot)")]
+        [Range(1f, 3f)]
+        public float RecoilHeatKickMultiplier = 1.5f;
+        [Tooltip("Jitter multiplier at maximum heat (higher = late shots much less predictable)")]
+        [Range(1f, 5f)]
+        public float RecoilHeatJitterMultiplier = 2.25f;
 
-        [Header("Recoil — Recovery")]
+        // ── Control — Recovery ───────────────────────────────────────────
+        [Header("Control — Recovery")]
         [Tooltip("Speed at which accumulated recoil recovers toward zero (higher = snappier)")]
         public float RecoilRecoverySpeed = 6f;
         [Tooltip("Fraction of recoil that is returned to the aim direction (0 = BF-style stays, 1 = CoD-style full return)")]
@@ -131,9 +138,31 @@ namespace CGD.Weapons
         [Tooltip("Camera horizontal recoil kick while hip-firing (0 = spread only, 1 = full kick)")]
         [Range(0f, 1f)]
         public float HipRecoilHorizontalMultiplier = 0.15f;
-        [Tooltip("Hard cap on total accumulated upward recoil (degrees)")]
-        public float MaxAccumulatedRecoil = 14f;
-        [Tooltip("Hard cap on total accumulated sideways recoil (degrees), either direction")]
-        public float MaxAccumulatedHorizontalRecoil = 7f;
+
+        // ── Handling (how the weapon moves in hand) ───────────────────────────
+        [Header("Handling")]
+        [Tooltip("Seconds to draw and ready the weapon after swapping to this slot")]
+        public float DrawTime = 0.5f;
+        [Tooltip("How heavily the weapon lags behind look input (0 = rigid, 1 = heavy). Higher = worse handling.")]
+        [Range(0f, 1f)]
+        public float LookSwayAmount = 0.5f;
+        [Tooltip("Spring stiffness that settles the weapon back after a look input (higher = snappier)")]
+        public float LookSwayRecovery = 10f;
+        [Tooltip("Passive breathing sway amplitude while idle (degrees)")]
+        public float IdleSwayAmount = 0.4f;
+        [Tooltip("Idle sway pattern frequency (Hz)")]
+        public float IdleSwaySpeed = 0.7f;
+        [Tooltip("Sway amplitude while walking/sprinting, scaled by move speed")]
+        public float MoveSwayAmount = 1.0f;
+        [Tooltip("Multiplier applied to all sway while fully ADS (breath hold; 0 = perfectly stable, 1 = same as hip)")]
+        [Range(0f, 1f)]
+        public float AdsSwayMultiplier = 0.25f;
+
+        // ── Audio ─────────────────────────────────────────────────────────────
+        [Header("Audio")]
+        public SoundBank FireSound;
+        public SoundBank ReloadSound;
+        [Tooltip("Played when the player tries to fire with an empty magazine")]
+        public SoundBank EmptySound;
     }
 }

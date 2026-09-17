@@ -45,6 +45,11 @@ namespace CGD.Weapons
         private float _accumulatedHorizontalRecoil;
         private bool  _wasFiringLastFrame;
 
+        // Heat grows with each shot and decays when the trigger is released.
+        // Both kick magnitude and jitter scale with heat, so early shots stay
+        // controllable and sustained fire drifts progressively wilder.
+        private float _recoilHeat;
+
         /// <summary>Fired whenever magazine, reserve, or reload state changes. Args: magazine, reserve, isReloading.</summary>
         public event Action<int, int, bool> OnAmmoChanged;
 
@@ -75,6 +80,10 @@ namespace CGD.Weapons
         {
             if (_current == null) return;
 
+            // Sway keeps ticking through draw and reload so the weapon never freezes
+            // mid-animation. Only the fire/reload/spread logic gates on those states.
+            PushSwayInputs();
+
             if (_drawTimer > 0f)
             {
                 _drawTimer -= Time.deltaTime;
@@ -96,6 +105,16 @@ namespace CGD.Weapons
             UpdateCrosshair();
         }
 
+        private void PushSwayInputs()
+        {
+            if (_visuals == null || _input == null) return;
+
+            Vector3 vel = _movement != null ? _movement.Velocity : Vector3.zero;
+            float horizSpeed = new Vector2(vel.x, vel.z).magnitude;
+            bool  grounded   = _movement == null || _movement.IsGrounded;
+            _visuals.SetSwayInputs(_input.LookInput, horizSpeed, grounded, _camera != null ? _camera.AdsT : 0f);
+        }
+
         // ── Public API ────────────────────────────────────────────────────────
 
         /// <summary>Swap the active weapon at runtime (null = unarmed).</summary>
@@ -108,8 +127,10 @@ namespace CGD.Weapons
             _currentSpread     = 0f;
             _accumulatedRecoil = 0f;
             _accumulatedHorizontalRecoil = 0f;
+            _recoilHeat        = 0f;
             _drawTimer         = weapon != null ? weapon.Data.DrawTime : 0f;
 
+            if (_visuals != null)   _visuals.Configure(weapon?.Data);
             if (_crosshair != null) _crosshair.SetDynamicSpread(0f);
             NotifyAmmoChanged();
         }
@@ -230,21 +251,28 @@ namespace CGD.Weapons
             float vertMult  = Mathf.Lerp(D.HipRecoilVerticalMultiplier,   D.AdsRecoilMultiplier, adsT);
             float horizMult = Mathf.Lerp(D.HipRecoilHorizontalMultiplier, D.AdsRecoilMultiplier, adsT);
 
+            // Heat curves multiply both the base kick and the jitter, so early shots
+            // stay tight and predictable while sustained fire drifts wilder.
+            float kickHeat   = Mathf.Lerp(1f, D.RecoilHeatKickMultiplier,   _recoilHeat);
+            float jitterHeat = Mathf.Lerp(1f, D.RecoilHeatJitterMultiplier, _recoilHeat);
+
             // Shared shape for both axes: axisScale × (pattern + jitter).
             // Vertical's pattern is a constant full kick; horizontal's pattern is the
             // authored drift bias applied directly, so it reads from the first shot
             // instead of emerging over several rounds.
-            float vertJitter = BlendedJitter(D.RecoilJitter.y);
-            float vertBase   = D.RecoilScale.y * (1f + vertJitter);
+            float vertJitter = BlendedJitter(D.RecoilJitter.y) * jitterHeat;
+            float vertBase   = D.RecoilScale.y * kickHeat * (1f + vertJitter);
             float remaining  = D.MaxAccumulatedRecoil - _accumulatedRecoil;
             float vertKick   = Mathf.Min(vertBase * vertMult, remaining);
             _accumulatedRecoil += vertKick;
 
-            float horizJitter    = BlendedJitter(D.RecoilJitter.x);
-            float horizRaw       = D.RecoilScale.x * (D.RecoilHorizontalBias + horizJitter) * horizMult;
+            float horizJitter    = BlendedJitter(D.RecoilJitter.x) * jitterHeat;
+            float horizRaw       = D.RecoilScale.x * kickHeat * (D.RecoilHorizontalBias + horizJitter) * horizMult;
             float horizRemaining = D.MaxAccumulatedHorizontalRecoil - Mathf.Abs(_accumulatedHorizontalRecoil);
             float horizKick      = Mathf.Clamp(horizRaw, -horizRemaining, horizRemaining);
             _accumulatedHorizontalRecoil += horizKick;
+
+            _recoilHeat = Mathf.Min(1f, _recoilHeat + D.RecoilHeatPerShot);
 
             float recoveryFraction = Mathf.Lerp(D.RecoilRecoveryFraction, D.AdsRecoilRecoveryFraction, adsT);
             _camera.AddRecoil(vertKick, horizKick, D.RecoilRecoverySpeed, recoveryFraction, D.RecoilRecoveryDelay);
@@ -265,10 +293,16 @@ namespace CGD.Weapons
             bool isFiring = !_fireCooldown.IsReady;
             if (!isFiring && _wasFiringLastFrame)
             {
-                // Gun just went idle — reset cap instantly so next burst starts fresh
+                // Gun just went idle — reset the hard cap instantly so the next burst
+                // starts fresh. Heat decays gradually (below) so quick tap-fire still
+                // carries a bit of built-up sway.
                 _accumulatedRecoil = 0f;
                 _accumulatedHorizontalRecoil = 0f;
             }
+
+            if (!isFiring && _recoilHeat > 0f)
+                _recoilHeat = Mathf.Max(0f, _recoilHeat - D.RecoilHeatDecay * Time.deltaTime);
+
             _wasFiringLastFrame = isFiring;
         }
 

@@ -50,14 +50,20 @@ namespace CGD.Weapons
             d.MaxSpread           = cat.MaxSpread.EvaluateClamped();
             d.SpreadRecovery      = cat.SpreadRecovery.EvaluateClamped();
 
-            // ── Recoil — Kick ─────────────────────────────────────────────────────
+            // ── Control — Kick ────────────────────────────────────────────────────
             d.RecoilScale         = new Vector2(cat.RecoilScaleHorizontal.EvaluateClamped(), cat.RecoilScaleVertical.EvaluateClamped());
             d.RecoilJitter.y      = cat.RecoilJitterVertical.EvaluateClamped(); // horizontal jitter keeps WeaponData's default
             d.RecoilHorizontalBias = cat.RecoilHorizontalBias.EvaluateClamped();
             d.MaxAccumulatedRecoil = cat.MaxAccumulatedRecoil.EvaluateClamped();
             d.MaxAccumulatedHorizontalRecoil = cat.MaxAccumulatedHorizontalRecoil.EvaluateClamped();
 
-            // ── Recoil — Recovery ─────────────────────────────────────────────────
+            // ── Control — Buildup ─────────────────────────────────────────────────
+            d.RecoilHeatPerShot          = Mathf.Clamp01(cat.RecoilHeatPerShot.EvaluateClamped());
+            d.RecoilHeatDecay            = cat.RecoilHeatDecay.EvaluateClamped();
+            d.RecoilHeatKickMultiplier   = Mathf.Max(1f, cat.RecoilHeatKickMultiplier.EvaluateClamped());
+            d.RecoilHeatJitterMultiplier = Mathf.Max(1f, cat.RecoilHeatJitterMultiplier.EvaluateClamped());
+
+            // ── Control — Recovery ────────────────────────────────────────────────
             d.RecoilRecoverySpeed           = cat.RecoilRecoverySpeed.EvaluateClamped();
             d.RecoilRecoveryFraction        = cat.RecoilRecoveryFraction.EvaluateClamped();
             d.AdsRecoilRecoveryFraction     = cat.AdsRecoilRecoveryFraction.EvaluateClamped();
@@ -65,6 +71,14 @@ namespace CGD.Weapons
             d.AdsRecoilMultiplier           = cat.AdsRecoilMultiplier.EvaluateClamped();
             d.HipRecoilVerticalMultiplier   = cat.HipRecoilVerticalMultiplier.EvaluateClamped();
             d.HipRecoilHorizontalMultiplier = cat.HipRecoilHorizontalMultiplier.EvaluateClamped();
+
+            // ── Handling — Sway ───────────────────────────────────────────────────
+            d.LookSwayAmount    = Mathf.Clamp01(cat.LookSwayAmount.EvaluateClamped());
+            d.LookSwayRecovery  = cat.LookSwayRecovery.EvaluateClamped();
+            d.IdleSwayAmount    = cat.IdleSwayAmount.EvaluateClamped();
+            d.IdleSwaySpeed     = cat.IdleSwaySpeed.EvaluateClamped();
+            d.MoveSwayAmount    = cat.MoveSwayAmount.EvaluateClamped();
+            d.AdsSwayMultiplier = Mathf.Clamp01(cat.AdsSwayMultiplier.EvaluateClamped());
 
             return d;
         }
