@@ -30,6 +30,7 @@
 - Aim Down Sights (hold right mouse / right stick) — works in both first and third person
   - Zooms the FOV toward a configurable ADS value
   - In third person: pulls the camera in closer and centers the shoulder offset
+  - The held weapon smoothly raises from its hip position to a centred aim position and back
   - Reduces look sensitivity while aiming; all transitions are smooth
 
 ## HUD / UI
@@ -104,8 +105,8 @@
   - **SMG** — 750–1100 RPM, 20–50 round mags (heavily weighted low, P90-style outlier), short range, erratic horizontal recoil
   - **Pistol** — 300–600 RPM semi/auto, 7–20 round mags (weighted low), high per-shot kick, 15–25 m range; wide damage spread (20–55) representing everything from Glock to Desert Eagle
   - **Sniper** — 30–80 RPM semi only, 5–10 rounds, 70–160 damage, 80–200 m optimal range, terrible hipfire, near-zero ADS spread
-  - **LMG** — 600–950 RPM, 75–200 round belt/drum (weighted toward 75–120), slow reload (4.5–8 s), wide spread even ADS, high sustained recoil cap
-  - **Shotgun** — 60–120 RPM semi/auto, 5–8 shell tube, 8–12 pellets per shot at 10–15 damage each, very short optimal range (8–15 m) with steep falloff, wide pellet cone (8–15° hip, 4–10° ADS), heavy per-shot recoil
+  - **LMG** — 600–950 RPM, 75–200 round belt/drum (weighted toward 75–120), slow reload (4.5–8 s), wide hipfire, high sustained recoil cap
+  - **Shotgun** — 60–120 RPM semi/auto, 5–8 shell tube, 8–12 pellets per shot at 10–15 damage each, very short optimal range (8–15 m) with steep falloff, wide pellet cone (8–15° hip, 2–4° ADS), heavy per-shot recoil
 - Several stats (ADS bloom, recoil recovery fraction, recovery delay, ADS recoil multiplier, hipfire camera kick) are automatically derived from the category type and fire rate so the weapon feels correct without manual tuning
 - Create category assets via **Assets → Create → CGD → Weapon Category**, set the `Type` field, then right-click the asset and choose **Apply Type Defaults** to fill in all thresholds; values can be freely tweaked afterward
 
@@ -142,25 +143,30 @@
 - Data-driven weapon setup via ScriptableObject assets — create a new gun by filling in a single asset, no code needed
 - Three fire modes: Semi-auto (one shot per press), Full-auto (hold to fire), Burst (fixed burst per press)
 - Pluggable fire behavior per weapon — assign a `WeaponFireBehavior` ScriptableObject asset on the `WeaponData` to choose how shots are resolved; three built-in behaviors: **Hitscan** (instant single raycast), **Shotgun** (fires N independent pellet raycasts per shot, count driven by `PelletCount` on the weapon), and **Projectile** (spawns a moving projectile from the muzzle); adding new fire types requires only a new ScriptableObject subclass
-- Damage falloff — full damage up to an optimal range, then drops linearly to a configurable minimum at max range
+- Damage falloff — full damage up to an optimal range, then drops linearly to a configurable minimum at the falloff distance
+- Bullets and shotgun pellets keep travelling past the falloff distance (1000 m by default) and still hit there, at the minimum damage
 - Headshot multiplier — each weapon's headshot bonus applies when a shot or projectile lands on a critical hitbox (the head by default)
 - Damage type and armor penetration per weapon (and per weapon category for generated weapons) — e.g. Lightning rounds hit shields harder
 - Weapons can't fire or reload while stunned, mantling, or mid-roll
 - Projectiles pass through pickups and other trigger zones and never hit the shooter
 - Magazine and reserve ammo tracked per weapon; reserve ammo is snapped to full magazine-sized clips so counts stay in whole-mag multiples; ammo display in HUD stays in sync
 - Tactical reload (round in chamber) is faster than an empty reload
+- Auto-reload: pulling the trigger on an empty magazine, or keeping it held as the magazine runs dry, starts a reload; with no reserve ammo left it plays the empty click instead
 - Weapon stats are grouped into three user-facing families that map directly to how the weapon *feels* — Accuracy, Control, Handling
 
 ### Accuracy (where bullets land)
 - Hip-fire cone opens wide; ADS tightens it dramatically (each cone is a per-weapon degree value)
-- **Bloom** — each shot adds to the spread cone; unfired weapons recover it back down at a per-weapon rate; a hard cap keeps sustained fire from getting infinitely wild
-- ADS can optionally still bloom (per-weapon multiplier) so aimed sustained fire never becomes silently pinpoint
+- Aiming down sights is pinpoint accurate (0.01° cone) and removes bloom entirely on every weapon type except shotguns; shotguns keep some bloom while aimed, which grows as the weapon heats up
+- Aiming a shotgun tightens its pellet cone to roughly a quarter of the hip-fire cone
+- **Bloom** — each shot adds to the spread cone up to a per-weapon cap; spread starts recovering a moment after each shot, so slow-firing weapons like shotguns and snipers tighten back up between rounds while sprays from automatic weapons still build up
+- At maximum spread the crosshair still pops open with each shot and settles back, instead of sitting still at full size (accuracy itself stays at the maximum)
 
 ### Control (recoil and its buildup)
 - Each shot kicks the camera upward (vertical) and slightly sideways (horizontal)
 - Vertical kick has small per-shot jitter so patterns aren't perfectly predictable; horizontal drifts using a configurable left/right bias, giving each gun a personality
-- Accumulated recoil is capped per burst so full-auto spray stays controllable; caps reset the moment the trigger is released
-- **Recoil buildup / heat** — sustained fire raises a per-weapon "heat" value that multiplies both the kick magnitude and the jitter; early shots stay tight and predictable, later shots kick harder and drift more chaotically; heat drains back down whenever the trigger is released, so tap-firing keeps the weapon manageable while holding down the trigger progressively destabilizes it
+- **Recoil buildup / heat** — sustained fire raises a per-weapon heat value that makes each shot kick harder and less predictably, up to a per-weapon maximum; heat cools off gradually once you stop firing, so short controlled bursts kick less than long sprays
+- Accumulated recoil is capped per burst so full-auto spray stays controllable — once the gun reaches its maximum climb it stops rising, but every shot still kicks the view up and it settles back before the next round; sideways drift swings back and forth between its limits instead of settling, so long sprays never turn into a laser; caps reset the moment the trigger is released
+- The held weapon model kicks too: from the hip it visibly rears up and rolls; while aiming it drives back into the shoulder with a small hop that always settles before the next round can fire, so the sights are centred on the crosshair every time a shot leaves — if the sights were on target, the shot goes there
 - ADS reduces recoil by a per-weapon multiplier and can hold a separate recovery fraction from hip fire
 - Recovery is tunable per gun: 0 = BF-style (aim stays up, no return), 1 = CoD-style (full return to original aim); values between give a hybrid feel
 - Player counterplay — if the player deliberately pulls down against active recoil, the recovery origin shifts to their new aim, so recovery never fights against intentional aim adjustments
@@ -170,11 +176,11 @@
 - **Look sway** — the weapon lags behind mouse/stick input and springs back into place; heavier weapons lag further and settle slower, lighter weapons snap back instantly
 - **Idle sway** — a subtle Perlin-driven breathing motion is always present at hip fire, so the weapon never feels frozen
 - **Move sway** — walking and sprinting cause the weapon to bob in a figure-8 pattern that scales with movement speed and stops as soon as the player is airborne or standing still
-- **Stabilization on ADS** — every kind of sway (look, idle, move) is multiplied down toward zero while aiming; snipers hold rock-steady when scoped, LMGs barely dampen, and the amount is tunable per weapon (breath-hold analog)
-- All handling values are tunable per weapon: draw time, look-sway amount and recovery, idle amplitude and speed, move-sway amount, ADS stabilization
+- **Steady when aiming** — all sway (look, idle, move) fades out while aiming down sights, so the sights always line up with where shots go
+- All handling values are tunable per weapon: draw time, look-sway amount and recovery, idle amplitude and speed, move-sway amount
 
 ### Tuning
-- All values tunable per weapon: RPM, damage, ranges, Accuracy (spreads, bloom, recovery, cap), Control (kick, jitter, drift, buildup, recovery), Handling (draw, sway, stabilization), reload times
+- All values tunable per weapon: RPM, damage, ranges, Accuracy (spreads, bloom, recovery, cap), Control (kick, jitter, drift, buildup, recovery), Handling (draw, sway), reload times
 
 ## Melee Combat
 - Tap the melee key for a light attack; hold it past a configurable threshold before releasing for a heavier finisher instead

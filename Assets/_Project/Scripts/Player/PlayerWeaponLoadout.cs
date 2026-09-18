@@ -17,6 +17,11 @@ namespace CGD.Player
         [Tooltip("Weapons carried at start; empty slots are filled by pickups")]
         [SerializeField] private WeaponData[] _startingWeapons = new WeaponData[SlotCount];
 
+        // Inspector mirror of the runtime loadout; overwritten on every change, so edits here do nothing.
+        [Header("Runtime (read-only)")]
+        [SerializeField] private WeaponData   _activeWeapon;
+        [SerializeField] private WeaponData[] _equippedWeapons = new WeaponData[SlotCount];
+
         private readonly WeaponInstance[] _slots = new WeaponInstance[SlotCount];
 
         public IReadOnlyList<WeaponInstance> Slots      => _slots;
@@ -107,6 +112,18 @@ namespace CGD.Player
         {
             _activeSlot = index;
             _weapon.Equip(_slots[index]);
+            RefreshInspectorView();
+        }
+
+        private void RefreshInspectorView()
+        {
+            if (_equippedWeapons == null || _equippedWeapons.Length != SlotCount)
+                _equippedWeapons = new WeaponData[SlotCount];
+
+            for (int i = 0; i < SlotCount; i++)
+                _equippedWeapons[i] = _slots[i]?.Data;
+
+            _activeWeapon = _slots[_activeSlot]?.Data;
         }
     }
 }

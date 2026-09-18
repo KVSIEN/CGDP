@@ -102,11 +102,11 @@ MonoBehaviour:
     Bias: 0
   AdsSpreadDeg:
     Min: 0.01
-    Max: 0.15
-    Bias: -0.5
+    Max: 0.01
+    Bias: 0
   AdsSpreadMultiplier:
     Min: 0
-    Max: 0.05
+    Max: 0
     Bias: 0
   SpreadPerShot:
     Min: 2
@@ -143,6 +143,22 @@ MonoBehaviour:
   MaxAccumulatedHorizontalRecoil:
     Min: 1.5
     Max: 3
+    Bias: 0
+  RecoilHeatPerShot:
+    Min: 0
+    Max: 0
+    Bias: 0
+  RecoilHeatCooldown:
+    Min: 2
+    Max: 2
+    Bias: 0
+  MaxHeatRecoilMultiplier:
+    Min: 1
+    Max: 1
+    Bias: 0
+  HotAdsSpreadMultiplier:
+    Min: 0
+    Max: 0
     Bias: 0
   RecoilRecoverySpeed:
     Min: 3.5

@@ -200,6 +200,16 @@ namespace CGD.Player
             _recoilIdleTimer = recoveryDelay;
         }
 
+        /// <summary>
+        /// Returns part of an earlier upward kick while shots are still landing, without
+        /// touching the recovery timing. Pitch is degrees; positive moves the aim back down.
+        /// </summary>
+        public void SettleRecoil(float pitch)
+        {
+            _recoilPitch -= pitch;
+            _pitch       += pitch;
+        }
+
         private void UpdateRotation()
         {
             Vector2 look = _input.LookInput;

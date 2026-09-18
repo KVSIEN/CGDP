@@ -43,9 +43,13 @@ namespace CGD.Weapons
         public float RangeOptimal = 50f;
         [Tooltip("Damage reaches minimum at this distance")]
         public float RangeFalloffEnd = 150f;
-        [Tooltip("Damage multiplier at maximum range (0–1)")]
+        [Tooltip("Damage multiplier from RangeFalloffEnd out to MaxRange (0–1)")]
         [Range(0.1f, 1f)]
         public float DamageFalloffMin = 0.4f;
+        [Tooltip("How far shots travel (metres). Past RangeFalloffEnd they still hit, at DamageFalloffMin damage. Never shorter than RangeFalloffEnd.")]
+        [Min(0f)]
+        public float MaxRange = 1000f;
+        public float EffectiveMaxRange => Mathf.Max(MaxRange, RangeFalloffEnd);
         public LayerMask HitMask = ~0;
         [Tooltip("How far away enemies hear it (0 = silent)")]
         public float NoiseRadius = 40f;
@@ -77,17 +81,27 @@ namespace CGD.Weapons
         [Tooltip("Cone half-angle while hip-firing (degrees)")]
         public float HipSpreadDeg  = 2.5f;
         [Tooltip("Cone half-angle while ADS (degrees)")]
-        public float AdsSpreadDeg  = 0.35f;
+        public float AdsSpreadDeg  = 0.01f;
         [Tooltip("How much bloom (SpreadPerShot) applies while fully ADS (0 = no bloom, 1 = same as hip). Ignored when AdsSpreadDeg is 0.")]
         [Range(0f, 1f)]
         public float AdsSpreadMultiplier = 0f;
-        public float EffectiveAdsSpreadMultiplier => AdsSpreadDeg > 0f ? AdsSpreadMultiplier : 0f;
+        [Tooltip("ADS bloom multiplier at full recoil heat, so sustained ADS fire scatters more. Never lower than AdsSpreadMultiplier; ignored when AdsSpreadDeg or AdsSpreadMultiplier is 0.")]
+        [Range(0f, 1f)]
+        public float HotAdsSpreadMultiplier = 0.4f;
         [Tooltip("Spread added per shot (bloom)")]
         public float SpreadPerShot = 0.8f;
         [Tooltip("Spread degrees recovered per second when not shooting")]
         public float SpreadRecovery = 14f;
-        [Tooltip("Maximum spread cap (degrees)")]
+        [Tooltip("Maximum spread cap (degrees). At the cap the crosshair still pulses by SpreadPerShot with each shot and settles back before the next one.")]
         public float MaxSpread = 6f;
+
+        // Heat (0–1) raises ADS bloom from AdsSpreadMultiplier toward HotAdsSpreadMultiplier.
+        // AdsSpreadMultiplier = 0 is an explicit "no ADS bloom" switch that heat can't override.
+        public float GetAdsSpreadMultiplier(float heat)
+        {
+            if (AdsSpreadDeg <= 0f || AdsSpreadMultiplier <= 0f) return 0f;
+            return Mathf.Lerp(AdsSpreadMultiplier, Mathf.Max(AdsSpreadMultiplier, HotAdsSpreadMultiplier), heat);
+        }
 
         // ── Control — Kick ───────────────────────────────────────────────
         [Header("Control — Kick")]
@@ -98,24 +112,25 @@ namespace CGD.Weapons
         [Tooltip("Authored horizontal lean applied to every shot (-1 full left, 0 none, 1 full right)")]
         [Range(-1f, 1f)]
         public float RecoilHorizontalBias = 0.15f;
-        [Tooltip("Hard cap on total accumulated upward recoil (degrees)")]
+        [Tooltip("Cap on total accumulated upward recoil (degrees). At the cap each shot still kicks, then the aim settles back to the cap before the next shot.")]
         public float MaxAccumulatedRecoil = 14f;
-        [Tooltip("Hard cap on total accumulated sideways recoil (degrees), either direction")]
+        [Tooltip("Cap on total accumulated sideways recoil (degrees), either direction. Drift that reaches it swings back the other way.")]
         public float MaxAccumulatedHorizontalRecoil = 7f;
 
         // ── Control — Buildup (heat over sustained fire) ─────────────────
         [Header("Control — Buildup")]
-        [Tooltip("Heat added per shot; heat grows 0→1 over roughly 1/RecoilHeatPerShot shots of sustained fire. 0 disables buildup entirely.")]
+        [Tooltip("Heat added per shot, as a fraction of full heat (0.1 = full after 10 shots, 0 = no build-up)")]
         [Range(0f, 1f)]
-        public float RecoilHeatPerShot = 0.06f;
-        [Tooltip("Heat drained per second when not firing")]
-        public float RecoilHeatDecay = 0.6f;
-        [Tooltip("Recoil kick multiplier at maximum heat (1 = no buildup, 2 = kick doubles when hot)")]
-        [Range(1f, 3f)]
-        public float RecoilHeatKickMultiplier = 1.5f;
-        [Tooltip("Jitter multiplier at maximum heat (higher = late shots much less predictable)")]
+        public float RecoilHeatPerShot = 0.08f;
+        [Tooltip("Heat lost per second once the weapon stops firing (1 = full heat clears in 1 second)")]
+        [Min(0f)]
+        public float RecoilHeatCooldown = 1.5f;
+        [Tooltip("Kick multiplier at full heat; kick scales linearly from 1× at no heat (1 = no build-up)")]
+        [Min(1f)]
+        public float MaxHeatRecoilMultiplier = 1.6f;
+        [Tooltip("Jitter multiplier at full heat (higher = late shots less predictable; 1 = no change)")]
         [Range(1f, 5f)]
-        public float RecoilHeatJitterMultiplier = 2.25f;
+        public float RecoilHeatJitterMultiplier = 1.75f;
 
         // ── Control — Recovery ───────────────────────────────────────────
         [Header("Control — Recovery")]
@@ -152,11 +167,8 @@ namespace CGD.Weapons
         public float IdleSwayAmount = 0.4f;
         [Tooltip("Idle sway pattern frequency (Hz)")]
         public float IdleSwaySpeed = 0.7f;
-        [Tooltip("Sway amplitude while walking/sprinting, scaled by move speed")]
+        [Tooltip("Sway amplitude while walking/sprinting, scaled by move speed. All sway fades out while aiming so the sights stay on the crosshair.")]
         public float MoveSwayAmount = 1.0f;
-        [Tooltip("Multiplier applied to all sway while fully ADS (breath hold; 0 = perfectly stable, 1 = same as hip)")]
-        [Range(0f, 1f)]
-        public float AdsSwayMultiplier = 0.25f;
 
         // ── Audio ─────────────────────────────────────────────────────────────
         [Header("Audio")]

@@ -14,20 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponCategoryData
   Type: 1
   Names:
-  - SMG
+  - MP5
+  - UMP-45
+  - P90
+  - Vector
+  - MP7
+  - PP-19 Bizon
   FireModes: 01000000
   FireBehavior: {fileID: 11400000, guid: ca566d8dc066bdc49b9f7028754076c0, type: 2}
   RPM:
-    Min: 600
-    Max: 800
+    Min: 750
+    Max: 1100
     Bias: 0
   BurstCount:
     Min: 3
     Max: 3
     Bias: 0
   BurstInterval:
-    Min: 0.07
-    Max: 0.1
+    Min: 0.05
+    Max: 0.07
     Bias: 0
   PelletCount:
     Min: 1
@@ -35,8 +40,8 @@ MonoBehaviour:
     Bias: 0
   OnHitEffects: []
   Damage:
-    Min: 25
-    Max: 35
+    Min: 15
+    Max: 24
     Bias: 0
   DamageType: 0
   ArmorPenetration:
@@ -44,44 +49,44 @@ MonoBehaviour:
     Max: 0
     Bias: 0
   HeadshotMultiplier:
-    Min: 2
-    Max: 2
+    Min: 1.75
+    Max: 2.25
     Bias: 0
   RangeOptimal:
-    Min: 40
-    Max: 60
+    Min: 20
+    Max: 35
     Bias: 0
   RangeFalloffEnd:
-    Min: 120
-    Max: 200
+    Min: 80
+    Max: 120
     Bias: 0
   DamageFalloffMin:
-    Min: 0.3
-    Max: 0.5
+    Min: 0.25
+    Max: 0.45
     Bias: 0
   MagazineSize:
     Min: 20
     Max: 50
-    Bias: -0.75
+    Bias: -0.5
   ReserveAmmo:
-    Min: 75
-    Max: 110
+    Min: 60
+    Max: 100
     Bias: 0
   ReserveMultiplier:
-    Min: 2.5
-    Max: 3.5
+    Min: 3
+    Max: 4
     Bias: 0
   ReloadTime:
-    Min: 1.5
-    Max: 3
-    Bias: -0.75
+    Min: 1.8
+    Max: 2.5
+    Bias: 0
   TacticalReloadTime:
-    Min: 1.7
-    Max: 2.2
+    Min: 1.4
+    Max: 2.1
     Bias: 0
   TacticalReloadBonus:
-    Min: 0.3
-    Max: 0.6
+    Min: 0.2
+    Max: 0.5
     Bias: 0
   DrawTime:
     Min: 0.5
@@ -92,78 +97,94 @@ MonoBehaviour:
     m_Bits: 4294967295
   NoiseRadius: 40
   HipSpreadDeg:
-    Min: 2
-    Max: 3.5
+    Min: 1.5
+    Max: 2.8
     Bias: 0
   AdsSpreadDeg:
-    Min: 0
-    Max: 0
+    Min: 0.01
+    Max: 0.01
     Bias: 0
   AdsSpreadMultiplier:
     Min: 0
     Max: 0
     Bias: 0
   SpreadPerShot:
-    Min: 0.6
-    Max: 1.5
+    Min: 0.5
+    Max: 0.9
     Bias: 0
   MaxSpread:
-    Min: 6
-    Max: 14
+    Min: 4
+    Max: 7
     Bias: 0
   SpreadRecovery:
-    Min: 12
-    Max: 16
+    Min: 14
+    Max: 22
     Bias: 0
   RecoilScaleVertical:
-    Min: 0.5
-    Max: 2.5
+    Min: 0.6
+    Max: 1.1
     Bias: 0
   RecoilJitterVertical:
-    Min: 0.067
-    Max: 0.2
+    Min: 0.118
+    Max: 0.294
     Bias: 0
   RecoilScaleHorizontal:
-    Min: 0.25
-    Max: 1.5
+    Min: 0.5
+    Max: 0.9
     Bias: 0
   RecoilHorizontalBias:
-    Min: -0.2
-    Max: 0.2
+    Min: -0.3
+    Max: 0.3
     Bias: 0
   MaxAccumulatedRecoil:
-    Min: 12
-    Max: 18
+    Min: 8
+    Max: 14
     Bias: 0
   MaxAccumulatedHorizontalRecoil:
-    Min: 6
-    Max: 9
+    Min: 4
+    Max: 7
+    Bias: 0
+  RecoilHeatPerShot:
+    Min: 0.04
+    Max: 0.07
+    Bias: 0
+  RecoilHeatCooldown:
+    Min: 1.5
+    Max: 2.2
+    Bias: 0
+  MaxHeatRecoilMultiplier:
+    Min: 1.3
+    Max: 1.6
+    Bias: 0
+  HotAdsSpreadMultiplier:
+    Min: 0
+    Max: 0
     Bias: 0
   RecoilRecoverySpeed:
-    Min: 4
-    Max: 9
+    Min: 5
+    Max: 7
     Bias: 0
   RecoilRecoveryFraction:
-    Min: 0.55
-    Max: 0.8
+    Min: 0.45
+    Max: 0.7
     Bias: 0
   RecoilRecoveryDelay:
     Min: 0.08
-    Max: 0.18
+    Max: 0.14
     Bias: 0
   AdsRecoilRecoveryFraction:
-    Min: 0.85
+    Min: 0.8
     Max: 1
     Bias: 0
   AdsRecoilMultiplier:
-    Min: 1
-    Max: 1
+    Min: 0.3
+    Max: 0.5
     Bias: 0
   HipRecoilVerticalMultiplier:
-    Min: 0.1
-    Max: 0.5
+    Min: 0.08
+    Max: 0.18
     Bias: 0
   HipRecoilHorizontalMultiplier:
-    Min: 0.1
-    Max: 0.5
-    Bias: -0.4
+    Min: 0.08
+    Max: 0.18
+    Bias: 0

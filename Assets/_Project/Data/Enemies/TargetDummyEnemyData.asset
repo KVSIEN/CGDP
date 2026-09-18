@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TargetDummyEnemyData
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   Team: 2
-  MaxHealth: 100
+  MaxHealth: 10000
   Armor: 0
   MaxShield: 0
   ShieldRegenDelay: 5

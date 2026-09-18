@@ -59,8 +59,8 @@ namespace CGD.Weapons
 
         [Header("Spread")]
         public FloatRange HipSpreadDeg          = new(2.0f, 3.5f);
-        public FloatRange AdsSpreadDeg          = new(0.2f, 0.5f);
-        public FloatRange AdsSpreadMultiplier   = new(0f, 0.15f);
+        public FloatRange AdsSpreadDeg          = new(0.01f, 0.01f);
+        public FloatRange AdsSpreadMultiplier   = new(0f, 0f);
         public FloatRange SpreadPerShot         = new(0.6f, 1.0f);
         public FloatRange MaxSpread      = new(5f,   8f);
         public FloatRange SpreadRecovery = new(12f,  18f);
@@ -74,10 +74,11 @@ namespace CGD.Weapons
         public FloatRange MaxAccumulatedHorizontalRecoil = new(6f, 9f);
 
         [Header("Control — Buildup")]
-        public FloatRange RecoilHeatPerShot         = new(0.05f, 0.08f);
-        public FloatRange RecoilHeatDecay           = new(0.5f, 0.8f);
-        public FloatRange RecoilHeatKickMultiplier  = new(1.3f, 1.7f);
-        public FloatRange RecoilHeatJitterMultiplier = new(2f, 3f);
+        public FloatRange RecoilHeatPerShot          = new(0.06f, 0.10f);
+        public FloatRange RecoilHeatCooldown         = new(1.2f, 2.0f);
+        public FloatRange MaxHeatRecoilMultiplier    = new(1.4f, 1.8f);
+        public FloatRange RecoilHeatJitterMultiplier = new(1.5f, 2.0f);
+        public FloatRange HotAdsSpreadMultiplier     = new(0f, 0f);
 
         [Header("Control — Recovery")]
         public FloatRange RecoilRecoverySpeed         = new(4f, 9f);
@@ -94,7 +95,6 @@ namespace CGD.Weapons
         public FloatRange IdleSwayAmount    = new(0.3f, 0.5f);
         public FloatRange IdleSwaySpeed     = new(0.6f, 0.9f);
         public FloatRange MoveSwayAmount    = new(0.8f, 1.2f);
-        public FloatRange AdsSwayMultiplier = new(0.20f, 0.35f);
 
         // ── Context Menu ──────────────────────────────────────────────────────────
 

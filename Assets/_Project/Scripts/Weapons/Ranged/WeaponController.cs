@@ -35,6 +35,7 @@ namespace CGD.Weapons
         private CooldownTimer _fireCooldown;
         private float _drawTimer;
         private float _currentSpread;
+        private float _lastShotTime = float.NegativeInfinity;
         private bool  _isReloading;
         private bool  _burstPending;
 
@@ -45,10 +46,11 @@ namespace CGD.Weapons
         private float _accumulatedHorizontalRecoil;
         private bool  _wasFiringLastFrame;
 
-        // Heat grows with each shot and decays when the trigger is released.
-        // Both kick magnitude and jitter scale with heat, so early shots stay
-        // controllable and sustained fire drifts progressively wilder.
+        // 0–1; grows with sustained fire and scales each shot's kick and jitter, so early
+        // shots stay controllable and sustained fire drifts wilder. Unlike the caps above
+        // it cools off gradually, so quick follow-up bursts stay hot.
         private float _recoilHeat;
+        private float _horizontalDriftSign = 1f;   // flips each time drift hits the horizontal cap
 
         /// <summary>Fired whenever magazine, reserve, or reload state changes. Args: magazine, reserve, isReloading.</summary>
         public event Action<int, int, bool> OnAmmoChanged;
@@ -128,6 +130,7 @@ namespace CGD.Weapons
             _accumulatedRecoil = 0f;
             _accumulatedHorizontalRecoil = 0f;
             _recoilHeat        = 0f;
+            _horizontalDriftSign = 1f;
             _drawTimer         = weapon != null ? weapon.Data.DrawTime : 0f;
 
             if (_visuals != null)   _visuals.Configure(weapon?.Data);
@@ -153,6 +156,16 @@ namespace CGD.Weapons
             bool triggerHeld  = _input.GetAction(GameAction.Attack);
             bool triggerPress = _input.WasPressed(GameAction.Attack);
 
+            if (_current.Magazine <= 0)
+            {
+                // Pulling the trigger on an empty gun, or still holding it as the magazine
+                // runs dry, reloads; with no reserve left it just clicks.
+                if (_burstPending || !(triggerHeld || triggerPress)) return;
+                if (CanReload) StartCoroutine(Reload());
+                else if (triggerPress) D.EmptySound?.Play(SoundPos);
+                return;
+            }
+
             switch (D.FireMode)
             {
                 case FireMode.Auto  when triggerHeld:  TryFire(); break;
@@ -160,16 +173,15 @@ namespace CGD.Weapons
                 case FireMode.Burst when triggerPress && !_burstPending:
                     StartCoroutine(FireBurst()); break;
             }
-
-            if (triggerPress && _current.Magazine <= 0)
-                D.EmptySound?.Play(SoundPos);
         }
 
         private void HandleReloadInput()
         {
-            if (_input.GetAction(GameAction.Reload) && _current.Magazine < D.MagazineSize && _current.Reserve > 0)
+            if (!_isReloading && _input.GetAction(GameAction.Reload) && CanReload)
                 StartCoroutine(Reload());
         }
+
+        private bool CanReload => _current.Magazine < D.MagazineSize && _current.Reserve > 0;
 
         // ── Fire ──────────────────────────────────────────────────────────────
 
@@ -179,6 +191,7 @@ namespace CGD.Weapons
 
             _current.Magazine--;
             _fireCooldown.Start(60f / D.RoundsPerMinute);
+            _lastShotTime = Time.time;
             NotifyAmmoChanged();
 
             ApplyRecoil();
@@ -208,7 +221,7 @@ namespace CGD.Weapons
 
             float   adsT      = _camera.AdsT;
             float   spreadDeg = Mathf.Lerp(D.HipSpreadDeg, D.AdsSpreadDeg, adsT)
-                              + _currentSpread * Mathf.Lerp(1f, D.EffectiveAdsSpreadMultiplier, adsT);
+                              + _currentSpread * BloomScale(adsT);
             Vector3 forward   = _camera.transform.forward;
 
             // Ray originates from camera centre — avoids TP parallax where muzzle→target
@@ -231,16 +244,39 @@ namespace CGD.Weapons
 
         // ── Spread ────────────────────────────────────────────────────────────
 
+        // Bloom may overshoot MaxSpread by one shot's worth; TickSpread settles it back before
+        // the next shot, so the crosshair still pulses with each shot at max while the spread
+        // bullets actually use (read before this is called) never exceeds MaxSpread.
         private void AddSpreadBloom()
         {
-            _currentSpread = Mathf.Min(_currentSpread + D.SpreadPerShot, D.MaxSpread);
+            _currentSpread = Mathf.Min(_currentSpread, D.MaxSpread) + D.SpreadPerShot;
         }
 
         private void TickSpread()
         {
-            // Only recover spread when not actively firing so bloom builds up correctly
-            if (_currentSpread > 0f && _fireCooldown.IsReady)
+            // Bloom recovers once the gun has been quiet for RecoilRecoveryDelay. Automatic
+            // weapons fire faster than that, so bloom still builds while spraying; slow weapons
+            // (shotguns, snipers) start closing soon after each shot instead of staying fully
+            // bloomed until the next round is ready.
+            bool recovering = _fireCooldown.IsReady || Time.time - _lastShotTime >= D.RecoilRecoveryDelay;
+            if (!recovering)
+            {
+                // Still firing: only settle the at-cap overshoot.
+                if (_currentSpread > D.MaxSpread)
+                    _currentSpread -= (_currentSpread - D.MaxSpread) * SettleFraction();
+                return;
+            }
+
+            if (_currentSpread > 0f)
                 _currentSpread = Mathf.Max(_currentSpread - D.SpreadRecovery * Time.deltaTime, 0f);
+        }
+
+        // Share of an at-cap overshoot to return this frame so it is fully gone by the time
+        // the next shot is ready — the value eases back over exactly one fire interval.
+        private float SettleFraction()
+        {
+            float remaining = _fireCooldown.Remaining;
+            return remaining > Time.deltaTime ? Time.deltaTime / remaining : 1f;
         }
 
         // ── Recoil ────────────────────────────────────────────────────────────
@@ -251,32 +287,52 @@ namespace CGD.Weapons
             float vertMult  = Mathf.Lerp(D.HipRecoilVerticalMultiplier,   D.AdsRecoilMultiplier, adsT);
             float horizMult = Mathf.Lerp(D.HipRecoilHorizontalMultiplier, D.AdsRecoilMultiplier, adsT);
 
-            // Heat curves multiply both the base kick and the jitter, so early shots
-            // stay tight and predictable while sustained fire drifts wilder.
-            float kickHeat   = Mathf.Lerp(1f, D.RecoilHeatKickMultiplier,   _recoilHeat);
+            // Heat is read before this shot adds to it, so the first shot always kicks at 1×.
+            // It scales both the kick and its jitter: sustained fire kicks harder and less
+            // predictably.
+            float kickHeat   = Mathf.Lerp(1f, D.MaxHeatRecoilMultiplier,    _recoilHeat);
             float jitterHeat = Mathf.Lerp(1f, D.RecoilHeatJitterMultiplier, _recoilHeat);
+            _recoilHeat = Mathf.Min(_recoilHeat + D.RecoilHeatPerShot, 1f);
 
+            // gunVert/gunHoriz are the weapon's own kick this shot. The camera takes a hip/ADS
+            // share of it (vertMult/horizMult); WeaponVisuals shows the gun's side of it.
             // Shared shape for both axes: axisScale × (pattern + jitter).
             // Vertical's pattern is a constant full kick; horizontal's pattern is the
             // authored drift bias applied directly, so it reads from the first shot
             // instead of emerging over several rounds.
-            float vertJitter = BlendedJitter(D.RecoilJitter.y) * jitterHeat;
-            float vertBase   = D.RecoilScale.y * kickHeat * (1f + vertJitter);
-            float remaining  = D.MaxAccumulatedRecoil - _accumulatedRecoil;
-            float vertKick   = Mathf.Min(vertBase * vertMult, remaining);
+            // Vertical kicks in full even at the cap; TickRecoilRecovery eases the overshoot
+            // back before the next shot, so the aim holds at the cap but still visibly kicks
+            // and settles with each round instead of freezing.
+            float gunVert  = D.RecoilScale.y * (1f + BlendedJitter(D.RecoilJitter.y) * jitterHeat) * kickHeat;
+            float vertKick = gunVert * vertMult;
             _accumulatedRecoil += vertKick;
 
-            float horizJitter    = BlendedJitter(D.RecoilJitter.x) * jitterHeat;
-            float horizRaw       = D.RecoilScale.x * kickHeat * (D.RecoilHorizontalBias + horizJitter) * horizMult;
-            float horizRemaining = D.MaxAccumulatedHorizontalRecoil - Mathf.Abs(_accumulatedHorizontalRecoil);
-            float horizKick      = Mathf.Clamp(horizRaw, -horizRemaining, horizRemaining);
+            float horizCap = D.MaxAccumulatedHorizontalRecoil;
+            float gunHoriz = HorizontalKick(kickHeat, jitterHeat);
+            if (Mathf.Abs(_accumulatedHorizontalRecoil + gunHoriz * horizMult) > horizCap)
+            {
+                // Drift hit the side limit: swing back the other way instead of pinning there.
+                _horizontalDriftSign = -_horizontalDriftSign;
+                gunHoriz = HorizontalKick(kickHeat, jitterHeat);
+            }
+            float horizKick = Mathf.Clamp(gunHoriz * horizMult,
+                                          -horizCap - _accumulatedHorizontalRecoil, horizCap - _accumulatedHorizontalRecoil);
             _accumulatedHorizontalRecoil += horizKick;
-
-            _recoilHeat = Mathf.Min(1f, _recoilHeat + D.RecoilHeatPerShot);
 
             float recoveryFraction = Mathf.Lerp(D.RecoilRecoveryFraction, D.AdsRecoilRecoveryFraction, adsT);
             _camera.AddRecoil(vertKick, horizKick, D.RecoilRecoverySpeed, recoveryFraction, D.RecoilRecoveryDelay);
-            _visuals?.AddKick(vertKick, horizKick);
+            _visuals?.AddKick(gunVert, gunHoriz, adsT, ShotInterval);
+        }
+
+        // Soonest the next round can fire: burst shots follow BurstInterval rather than RPM.
+        private float ShotInterval => D.FireMode == FireMode.Burst
+            ? Mathf.Min(60f / D.RoundsPerMinute, D.BurstInterval)
+            : 60f / D.RoundsPerMinute;
+
+        private float HorizontalKick(float kickHeat, float jitterHeat)
+        {
+            float jitter = BlendedJitter(D.RecoilJitter.x) * jitterHeat;
+            return D.RecoilScale.x * (D.RecoilHorizontalBias * _horizontalDriftSign + jitter) * kickHeat;
         }
 
         // Averaging two uniform samples gives a triangular, center-weighted spread
@@ -293,17 +349,24 @@ namespace CGD.Weapons
             bool isFiring = !_fireCooldown.IsReady;
             if (!isFiring && _wasFiringLastFrame)
             {
-                // Gun just went idle — reset the hard cap instantly so the next burst
-                // starts fresh. Heat decays gradually (below) so quick tap-fire still
-                // carries a bit of built-up sway.
+                // Gun just went idle — reset the caps instantly so the next burst starts
+                // fresh. Heat cools gradually (below) so quick follow-up bursts stay hot.
                 _accumulatedRecoil = 0f;
                 _accumulatedHorizontalRecoil = 0f;
+                _horizontalDriftSign = 1f;
+            }
+            _wasFiringLastFrame = isFiring;
+
+            float vertOvershoot = _accumulatedRecoil - D.MaxAccumulatedRecoil;
+            if (isFiring && vertOvershoot > 0f)
+            {
+                float settle = vertOvershoot * SettleFraction();
+                _accumulatedRecoil -= settle;
+                _camera.SettleRecoil(settle);
             }
 
             if (!isFiring && _recoilHeat > 0f)
-                _recoilHeat = Mathf.Max(0f, _recoilHeat - D.RecoilHeatDecay * Time.deltaTime);
-
-            _wasFiringLastFrame = isFiring;
+                _recoilHeat = Mathf.Max(_recoilHeat - D.RecoilHeatCooldown * Time.deltaTime, 0f);
         }
 
         // ── Reload ────────────────────────────────────────────────────────────
@@ -335,8 +398,10 @@ namespace CGD.Weapons
 
             float adsT    = _camera.AdsT;
             float baseDeg = Mathf.Lerp(D.HipSpreadDeg, D.AdsSpreadDeg, adsT);
-            _crosshair.SetDynamicSpread(baseDeg + _currentSpread * Mathf.Lerp(1f, D.EffectiveAdsSpreadMultiplier, adsT));
+            _crosshair.SetDynamicSpread(baseDeg + _currentSpread * BloomScale(adsT));
         }
+
+        private float BloomScale(float adsT) => Mathf.Lerp(1f, D.GetAdsSpreadMultiplier(_recoilHeat), adsT);
 
         // ── Helpers ───────────────────────────────────────────────────────────
 

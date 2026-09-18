@@ -12,6 +12,7 @@ namespace CGD.Core
         [SerializeField] private float _remaining;
 
         public bool IsReady => _remaining <= 0f;
+        public float Remaining => Mathf.Max(0f, _remaining);
 
         // 0 = just started, 1 = ready.
         public float Ratio => _duration <= 0f ? 1f : 1f - Mathf.Clamp01(_remaining / _duration);

@@ -59,9 +59,10 @@ namespace CGD.Weapons
 
             // ── Control — Buildup ─────────────────────────────────────────────────
             d.RecoilHeatPerShot          = Mathf.Clamp01(cat.RecoilHeatPerShot.EvaluateClamped());
-            d.RecoilHeatDecay            = cat.RecoilHeatDecay.EvaluateClamped();
-            d.RecoilHeatKickMultiplier   = Mathf.Max(1f, cat.RecoilHeatKickMultiplier.EvaluateClamped());
+            d.RecoilHeatCooldown         = Mathf.Max(0f, cat.RecoilHeatCooldown.EvaluateClamped());
+            d.MaxHeatRecoilMultiplier    = Mathf.Max(1f, cat.MaxHeatRecoilMultiplier.EvaluateClamped());
             d.RecoilHeatJitterMultiplier = Mathf.Max(1f, cat.RecoilHeatJitterMultiplier.EvaluateClamped());
+            d.HotAdsSpreadMultiplier     = Mathf.Clamp01(cat.HotAdsSpreadMultiplier.EvaluateClamped());
 
             // ── Control — Recovery ────────────────────────────────────────────────
             d.RecoilRecoverySpeed           = cat.RecoilRecoverySpeed.EvaluateClamped();
@@ -78,7 +79,6 @@ namespace CGD.Weapons
             d.IdleSwayAmount    = cat.IdleSwayAmount.EvaluateClamped();
             d.IdleSwaySpeed     = cat.IdleSwaySpeed.EvaluateClamped();
             d.MoveSwayAmount    = cat.MoveSwayAmount.EvaluateClamped();
-            d.AdsSwayMultiplier = Mathf.Clamp01(cat.AdsSwayMultiplier.EvaluateClamped());
 
             return d;
         }

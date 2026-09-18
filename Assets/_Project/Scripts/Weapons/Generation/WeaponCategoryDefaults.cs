@@ -41,8 +41,8 @@ namespace CGD.Weapons
             c.TacticalReloadBonus = new(0.3f, 0.6f, 0f);
 
             c.HipSpreadDeg   = new(2.0f, 3.5f, 0f);
-            c.AdsSpreadDeg   = new(0.2f, 0.5f, 0f);
-            c.AdsSpreadMultiplier = new(0.00f, 0.15f, 0f);
+            c.AdsSpreadDeg   = new(0.01f, 0.01f, 0f);
+            c.AdsSpreadMultiplier = new(0f, 0f, 0f);      // no ADS bloom
             c.SpreadPerShot  = new(0.6f, 1.0f, 0f);
             c.MaxSpread      = new(5f,   8f,   0f);
             c.SpreadRecovery = new(12f,  18f,  0f);
@@ -54,6 +54,12 @@ namespace CGD.Weapons
             c.MaxAccumulatedRecoil  = new(12f,    18f,   0f);
             c.MaxAccumulatedHorizontalRecoil = new(6f, 9f, 0f);
 
+            c.RecoilHeatPerShot       = new(0.05f, 0.08f, 0f);  // full heat after ~12–20 rounds
+            c.RecoilHeatCooldown      = new(1.2f,  1.8f,  0f);
+            c.MaxHeatRecoilMultiplier = new(1.3f,  1.6f,  0f);
+            c.RecoilHeatJitterMultiplier = new(1.5f,  2.0f,  0f);
+            c.HotAdsSpreadMultiplier  = new(0f,    0f,    0f);
+
             c.RecoilRecoverySpeed         = new(5f, 7.5f, 0f);
             c.RecoilRecoveryFraction      = new(0.55f, 0.80f, 0f);
             c.RecoilRecoveryDelay         = new(0.10f, 0.16f, 0f);
@@ -62,18 +68,11 @@ namespace CGD.Weapons
             c.HipRecoilVerticalMultiplier = new(0.10f, 0.25f, 0f);
             c.HipRecoilHorizontalMultiplier = new(0.10f, 0.20f, 0f);
 
-            // ~15 rounds of controlled fire before drift becomes obvious.
-            c.RecoilHeatPerShot          = new(0.05f, 0.07f, 0f);
-            c.RecoilHeatDecay            = new(0.5f,  0.8f,  0f);
-            c.RecoilHeatKickMultiplier   = new(1.4f,  1.7f,  0f);
-            c.RecoilHeatJitterMultiplier = new(2.0f,  3.0f,  0f);
-
             c.LookSwayAmount    = new(0.4f,  0.6f,  0f);
             c.LookSwayRecovery  = new(9f,    12f,   0f);
             c.IdleSwayAmount    = new(0.3f,  0.5f,  0f);
             c.IdleSwaySpeed     = new(0.6f,  0.9f,  0f);
             c.MoveSwayAmount    = new(0.8f,  1.2f,  0f);
-            c.AdsSwayMultiplier = new(0.20f, 0.30f, 0f);
         }
 
         private static void ApplySMG(WeaponCategoryData c)
@@ -101,8 +100,8 @@ namespace CGD.Weapons
             c.TacticalReloadBonus = new(0.2f, 0.5f, 0f);
 
             c.HipSpreadDeg   = new(1.5f, 2.8f, 0f);
-            c.AdsSpreadDeg   = new(0.3f, 0.6f, 0f);
-            c.AdsSpreadMultiplier = new(0.05f, 0.20f, 0f);
+            c.AdsSpreadDeg   = new(0.01f, 0.01f, 0f);
+            c.AdsSpreadMultiplier = new(0f, 0f, 0f);      // no ADS bloom
             c.SpreadPerShot  = new(0.5f, 0.9f, 0f);
             c.MaxSpread      = new(4f,   7f,   0f);
             c.SpreadRecovery = new(14f,  22f,  0f);   // recovers fast, high fire rate
@@ -114,6 +113,12 @@ namespace CGD.Weapons
             c.MaxAccumulatedRecoil  = new(8f,    14f,   0f);
             c.MaxAccumulatedHorizontalRecoil = new(4f, 7f, 0f);
 
+            c.RecoilHeatPerShot       = new(0.04f, 0.07f, 0f);  // high RPM, so less per round
+            c.RecoilHeatCooldown      = new(1.5f,  2.2f,  0f);
+            c.MaxHeatRecoilMultiplier = new(1.3f,  1.6f,  0f);
+            c.RecoilHeatJitterMultiplier = new(1.8f,  2.5f,  0f);
+            c.HotAdsSpreadMultiplier  = new(0f,    0f,    0f);
+
             c.RecoilRecoverySpeed         = new(5f, 7f, 0f);
             c.RecoilRecoveryFraction      = new(0.45f, 0.70f, 0f);
             c.RecoilRecoveryDelay         = new(0.08f, 0.14f, 0f);
@@ -122,19 +127,12 @@ namespace CGD.Weapons
             c.HipRecoilVerticalMultiplier = new(0.08f, 0.18f, 0f);
             c.HipRecoilHorizontalMultiplier = new(0.08f, 0.18f, 0f);
 
-            // Long mags reward sustained fire — heat builds slowly but climbs high.
-            c.RecoilHeatPerShot          = new(0.035f, 0.05f, 0f);
-            c.RecoilHeatDecay            = new(0.8f,   1.1f,  0f);
-            c.RecoilHeatKickMultiplier   = new(1.5f,   1.9f,  0f);
-            c.RecoilHeatJitterMultiplier = new(2.5f,   3.5f,  0f);
-
             // Light, snappy in the hands.
             c.LookSwayAmount    = new(0.3f,  0.45f, 0f);
             c.LookSwayRecovery  = new(12f,   16f,   0f);
             c.IdleSwayAmount    = new(0.2f,  0.35f, 0f);
             c.IdleSwaySpeed     = new(0.7f,  1.0f,  0f);
             c.MoveSwayAmount    = new(0.7f,  1.0f,  0f);
-            c.AdsSwayMultiplier = new(0.25f, 0.35f, 0f);
         }
 
         private static void ApplyPistol(WeaponCategoryData c)
@@ -163,8 +161,8 @@ namespace CGD.Weapons
             c.TacticalReloadBonus = new(0.1f, 0.4f, 0f);
 
             c.HipSpreadDeg   = new(1.5f, 3.5f, 0f);
-            c.AdsSpreadDeg   = new(0.4f, 0.9f, 0f);
-            c.AdsSpreadMultiplier = new(0.10f, 0.25f, 0f);
+            c.AdsSpreadDeg   = new(0.01f, 0.01f, 0f);
+            c.AdsSpreadMultiplier = new(0f, 0f, 0f);      // no ADS bloom
             c.SpreadPerShot  = new(0.8f, 1.5f, 0f);  // bloom quickly
             c.MaxSpread      = new(5f,   9f,   0f);
             c.SpreadRecovery = new(10f,  16f,  0f);
@@ -176,6 +174,12 @@ namespace CGD.Weapons
             c.MaxAccumulatedRecoil  = new(6f,    12f,   0f);   // small mag = small cap
             c.MaxAccumulatedHorizontalRecoil = new(3f, 6f, 0f);
 
+            c.RecoilHeatPerShot       = new(0.08f, 0.15f, 0f);  // punishes spamming the trigger
+            c.RecoilHeatCooldown      = new(1.5f,  2.5f,  0f);
+            c.MaxHeatRecoilMultiplier = new(1.2f,  1.4f,  0f);
+            c.RecoilHeatJitterMultiplier = new(1.3f,  1.6f,  0f);
+            c.HotAdsSpreadMultiplier  = new(0f,    0f,    0f);
+
             c.RecoilRecoverySpeed         = new(5f, 8f, 0f);
             c.RecoilRecoveryFraction      = new(0.60f, 0.90f, 0f);
             c.RecoilRecoveryDelay         = new(0.10f, 0.18f, 0f);
@@ -184,19 +188,12 @@ namespace CGD.Weapons
             c.HipRecoilVerticalMultiplier = new(0.25f, 0.50f, 0f);
             c.HipRecoilHorizontalMultiplier = new(0.20f, 0.40f, 0f);
 
-            // Semi-auto by nature — heat rises fast per shot, decays fast too.
-            c.RecoilHeatPerShot          = new(0.08f, 0.12f, 0f);
-            c.RecoilHeatDecay            = new(0.4f,  0.7f,  0f);
-            c.RecoilHeatKickMultiplier   = new(1.2f,  1.5f,  0f);
-            c.RecoilHeatJitterMultiplier = new(1.4f,  1.8f,  0f);
-
             // Very nimble — best-handling weapon class.
             c.LookSwayAmount    = new(0.25f, 0.35f, 0f);
             c.LookSwayRecovery  = new(14f,   18f,   0f);
             c.IdleSwayAmount    = new(0.2f,  0.3f,  0f);
             c.IdleSwaySpeed     = new(0.7f,  1.0f,  0f);
             c.MoveSwayAmount    = new(0.6f,  0.9f,  0f);
-            c.AdsSwayMultiplier = new(0.30f, 0.40f, 0f);
         }
 
         private static void ApplySniper(WeaponCategoryData c)
@@ -223,8 +220,8 @@ namespace CGD.Weapons
             c.TacticalReloadBonus = new(0.3f, 0.8f, 0f);
 
             c.HipSpreadDeg   = new(8f,    15f,   0f);     // terrible hipfire
-            c.AdsSpreadDeg   = new(0.01f, 0.15f, -0.5f); // weighted toward very accurate
-            c.AdsSpreadMultiplier = new(0f, 0.05f, 0f);
+            c.AdsSpreadDeg   = new(0.01f, 0.01f, 0f);
+            c.AdsSpreadMultiplier = new(0f, 0f, 0f);      // no ADS bloom
             c.SpreadPerShot  = new(2.0f,  4.0f,  0f);
             c.MaxSpread      = new(15f,   25f,   0f);
             c.SpreadRecovery = new(4f,    8f,    0f);     // slow recovery
@@ -236,6 +233,12 @@ namespace CGD.Weapons
             c.MaxAccumulatedRecoil  = new(3f,   6f,    0f);  // one shot at a time
             c.MaxAccumulatedHorizontalRecoil = new(1.5f, 3f, 0f);
 
+            c.RecoilHeatPerShot       = new(0f,    0f,    0f);  // one deliberate shot at a time
+            c.RecoilHeatCooldown      = new(2f,    2f,    0f);
+            c.MaxHeatRecoilMultiplier = new(1f,    1f,    0f);
+            c.RecoilHeatJitterMultiplier = new(1f,    1f,    0f);
+            c.HotAdsSpreadMultiplier  = new(0f,    0f,    0f);
+
             c.RecoilRecoverySpeed         = new(3.5f, 5f, 0f);
             c.RecoilRecoveryFraction      = new(0.85f, 1f, 0f);
             c.RecoilRecoveryDelay         = new(0.18f, 0.35f, 0f);
@@ -244,19 +247,12 @@ namespace CGD.Weapons
             c.HipRecoilVerticalMultiplier = new(0.05f, 0.05f, 0f);
             c.HipRecoilHorizontalMultiplier = new(0.05f, 0.05f, 0f);
 
-            // Buildup barely matters — one shot at a time — but keep it low & fast-decaying.
-            c.RecoilHeatPerShot          = new(0.25f, 0.4f, 0f);
-            c.RecoilHeatDecay            = new(0.6f,  0.9f, 0f);
-            c.RecoilHeatKickMultiplier   = new(1.1f,  1.3f, 0f);
-            c.RecoilHeatJitterMultiplier = new(1.2f,  1.5f, 0f);
-
-            // Heavy, wobbly weapon that stabilizes dramatically when scoped.
+            // Heavy, wobbly weapon from the hip.
             c.LookSwayAmount    = new(0.75f, 1.0f,  0f);
             c.LookSwayRecovery  = new(6f,    9f,    0f);
             c.IdleSwayAmount    = new(0.7f,  1.0f,  0f);
             c.IdleSwaySpeed     = new(0.4f,  0.6f,  0f);
             c.MoveSwayAmount    = new(1.4f,  1.9f,  0f);
-            c.AdsSwayMultiplier = new(0.05f, 0.15f, 0f); // scoped = rock steady
         }
 
         private static void ApplyLMG(WeaponCategoryData c)
@@ -284,8 +280,8 @@ namespace CGD.Weapons
             c.TacticalReloadBonus = new(0.5f, 1.5f, 0f);
 
             c.HipSpreadDeg   = new(3.5f, 6.0f, 0f);   // wide hipfire
-            c.AdsSpreadDeg   = new(0.6f, 1.2f, 0f);   // not precise even ADS (vibration)
-            c.AdsSpreadMultiplier = new(0.20f, 0.40f, 0f);
+            c.AdsSpreadDeg   = new(0.01f, 0.01f, 0f);
+            c.AdsSpreadMultiplier = new(0f, 0f, 0f);      // no ADS bloom
             c.SpreadPerShot  = new(0.8f, 1.4f, 0f);
             c.MaxSpread      = new(10f,  16f,  0f);
             c.SpreadRecovery = new(6f,   10f,  0f);    // slow recovery
@@ -297,6 +293,14 @@ namespace CGD.Weapons
             c.MaxAccumulatedRecoil  = new(20f,   35f,   0f);  // huge cap for sustained fire
             c.MaxAccumulatedHorizontalRecoil = new(10f, 17f, 0f);
 
+            // Big belt: heat builds over ~25–50 rounds and cools slowly, so the first
+            // stretch of a burst is accurate and long sustained fire becomes a hose.
+            c.RecoilHeatPerShot       = new(0.02f, 0.04f, 0f);
+            c.RecoilHeatCooldown      = new(0.8f,  1.2f,  0f);
+            c.MaxHeatRecoilMultiplier = new(1.5f,  1.9f,  0f);
+            c.RecoilHeatJitterMultiplier = new(2.0f,  2.8f,  0f);
+            c.HotAdsSpreadMultiplier  = new(0f,    0f,    0f);
+
             c.RecoilRecoverySpeed         = new(3f, 5f, 0f);
             c.RecoilRecoveryFraction      = new(0.30f, 0.55f, 0f);
             c.RecoilRecoveryDelay         = new(0.10f, 0.18f, 0f);
@@ -305,19 +309,12 @@ namespace CGD.Weapons
             c.HipRecoilVerticalMultiplier = new(0.20f, 0.35f, 0f);
             c.HipRecoilHorizontalMultiplier = new(0.18f, 0.30f, 0f);
 
-            // Long belts + slow decay = feared "hot LMG" territory during held triggers.
-            c.RecoilHeatPerShot          = new(0.025f, 0.035f, 0f);
-            c.RecoilHeatDecay            = new(0.3f,   0.5f,   0f);
-            c.RecoilHeatKickMultiplier   = new(1.7f,   2.2f,   0f);
-            c.RecoilHeatJitterMultiplier = new(3.0f,   4.0f,   0f);
-
             // Heaviest handling in the roster.
             c.LookSwayAmount    = new(0.85f, 1.0f,  0f);
             c.LookSwayRecovery  = new(5f,    7f,    0f);
             c.IdleSwayAmount    = new(0.5f,  0.8f,  0f);
             c.IdleSwaySpeed     = new(0.4f,  0.6f,  0f);
             c.MoveSwayAmount    = new(1.6f,  2.2f,  0f);
-            c.AdsSwayMultiplier = new(0.20f, 0.35f, 0f);
         }
 
         private static void ApplyShotgun(WeaponCategoryData c)
@@ -346,7 +343,7 @@ namespace CGD.Weapons
             c.TacticalReloadBonus = new(0.3f, 1.0f, 0f);
 
             c.HipSpreadDeg   = new(8f,    15f,   0f);   // wide pellet cone hip
-            c.AdsSpreadDeg   = new(4f,    10f,   0f);   // tighter but still wide ADS
+            c.AdsSpreadDeg   = new(2f,    4f,    0f);   // roughly a quarter of the hip cone
             c.AdsSpreadMultiplier = new(0.30f, 0.60f, 0f);
             c.SpreadPerShot  = new(0.5f,  1.5f,  0f);   // bloom per shot (between shots)
             c.MaxSpread      = new(6f,    12f,   0f);
@@ -359,6 +356,12 @@ namespace CGD.Weapons
             c.MaxAccumulatedRecoil  = new(4f,    8f,    0f);  // low cap — one shot at a time
             c.MaxAccumulatedHorizontalRecoil = new(2f, 4f, 0f);
 
+            c.RecoilHeatPerShot       = new(0f,    0.05f, 0f);  // mostly irrelevant at shotgun RPM
+            c.RecoilHeatCooldown      = new(1.5f,  2.5f,  0f);
+            c.MaxHeatRecoilMultiplier = new(1f,    1.2f,  0f);
+            c.RecoilHeatJitterMultiplier = new(1.2f,  1.4f,  0f);
+            c.HotAdsSpreadMultiplier  = new(0.35f, 0.65f, 0f);
+
             c.RecoilRecoverySpeed         = new(4f,   6f,    0f);
             c.RecoilRecoveryFraction      = new(0.70f, 1.0f,  0f);
             c.RecoilRecoveryDelay         = new(0.15f, 0.30f, 0f);
@@ -367,19 +370,12 @@ namespace CGD.Weapons
             c.HipRecoilVerticalMultiplier = new(0.30f, 0.55f, 0f);
             c.HipRecoilHorizontalMultiplier = new(0.20f, 0.40f, 0f);
 
-            // One shot at a time — heat mostly irrelevant, but adds character to auto shotguns.
-            c.RecoilHeatPerShot          = new(0.20f, 0.30f, 0f);
-            c.RecoilHeatDecay            = new(0.5f,  0.8f,  0f);
-            c.RecoilHeatKickMultiplier   = new(1.15f, 1.35f, 0f);
-            c.RecoilHeatJitterMultiplier = new(1.3f,  1.6f,  0f);
-
             // Chunky, hard to swing quickly.
             c.LookSwayAmount    = new(0.55f, 0.75f, 0f);
             c.LookSwayRecovery  = new(7f,    10f,   0f);
             c.IdleSwayAmount    = new(0.35f, 0.55f, 0f);
             c.IdleSwaySpeed     = new(0.5f,  0.7f,  0f);
             c.MoveSwayAmount    = new(1.1f,  1.5f,  0f);
-            c.AdsSwayMultiplier = new(0.25f, 0.35f, 0f);
         }
     }
 }

@@ -7,13 +7,14 @@ namespace CGD.Weapons
     {
         public override void Execute(FireContext ctx)
         {
-            bool didHit = Physics.Raycast(ctx.CameraPosition, ctx.Direction, out RaycastHit hit,
-                ctx.Data.RangeFalloffEnd, ctx.Data.HitMask, QueryTriggerInteraction.Ignore);
+            float range  = ctx.Data.EffectiveMaxRange;
+            bool  didHit = Physics.Raycast(ctx.CameraPosition, ctx.Direction, out RaycastHit hit,
+                range, ctx.Data.HitMask, QueryTriggerInteraction.Ignore);
 
             if (ctx.DebugDraw)
             {
                 Vector3 origin = ctx.Muzzle != null ? ctx.Muzzle.position : ctx.CameraPosition;
-                Vector3 end    = didHit ? hit.point : origin + ctx.Direction * ctx.Data.RangeFalloffEnd;
+                Vector3 end    = didHit ? hit.point : origin + ctx.Direction * range;
                 Debug.DrawLine(origin, end, didHit ? ctx.DebugHitColor : ctx.DebugMissColor, ctx.DebugLineDuration);
             }
 

@@ -37,7 +37,7 @@ Player                       [PlayerInputHandler, PlayerHealth, PlayerMovement,
   - CameraRig
     - Main Camera             [Camera, UniversalAdditionalCameraData, PlayerCamera]
       - WeaponRig              [WeaponVisuals]
-        - Weapon               (gun mesh)
+        - Weapon               [WeaponAimPose] (gun mesh — no colliders on it or its children)
           - Muzzle             (empty transform — fire origin)
   - Player Body                (visual mesh — hidden in first-person via PlayerCamera._firstPersonHideRenderers)
   - Head Anchor                (empty transform at eye height — first-person camera position)
@@ -58,7 +58,9 @@ Wiring, by component:
 - **PlayerWeaponLoadout** — assign `_startingWeapons[0..3]` = `WeaponData` assets, e.g. `DefaultWeaponData` (optional — empty slots are filled by pickups). Must share the GameObject with `WeaponController` and `PlayerHealth` (it refills weapons when the player is revived).
 - **MeleeController** — assign `_camera` = PlayerCamera, `_data` = a `MeleeWeaponData` asset. No other wiring — resolves `PlayerInputHandler`/`PlayerMovement` via `GetComponent` on the same object.
 - **GrenadeController** — assign `_camera` = PlayerCamera, `_data` = a `GrenadeData` asset (which in turn needs a `GrenadePrefab` — see below). No other wiring — resolves `PlayerInputHandler`/`PlayerMovement`/`Collider` via `GetComponent` on the same object.
-- **WeaponVisuals** (on WeaponRig) — no references to wire; `WeaponController` calls `AddKick()` for firing recoil and pushes look/movement/ADS state into it each frame for sway. Sway tuning (look, idle, move, ADS stabilization) lives on the equipped `WeaponData`.
+- **WeaponVisuals** (on WeaponRig) — no references to wire; `WeaponController` calls `AddKick()` for firing recoil, `Configure()` on weapon swap, and pushes look/movement/ADS state into it each frame for sway. Kick feel (hip spring, ADS timed kick) is tuned on the component; sway amounts (look, idle, move) live on the equipped `WeaponData`.
+- **WeaponAimPose** (on Weapon, the child of WeaponRig) — assign `_camera` = PlayerCamera. The Weapon's local position/rotation in the scene is its hip pose; set `_adsPosition` / `_adsRotation` to the aimed pose (tune in Play mode while aiming, then copy the values back). Must not sit on WeaponRig itself — WeaponVisuals drives that transform.
+- **Weapon model colliders** — the gun mesh under WeaponRig must have no colliders (remove the BoxCollider that Unity adds to primitives). Shots are raycast from the camera centre, so while aiming a collider on the sights blocks every shot; colliders there would also become part of the Player Rigidbody's collision shape.
 - **PlayerFootsteps** — assign `_surfaces` = `SurfaceDatabase.asset`. Step intervals (`_walkInterval`, `_sprintInterval`, `_crouchInterval`) and `_groundMask` are tunable; defaults are fine to start. No other wiring — resolves `PlayerMovement` via `GetComponent`.
 - **PlayerAudio** — assign `_health` = Player's `PlayerHealth`, `_hurtSound` / `_deathSound` = `SoundBank` assets (optional — silent when unassigned).
 - **PlayerLifecycle** — assign `_health`, `_movement`, `_abilities`, `_input` = the matching Player components, `_hud` = HUD's `HUDManager`, `_spawnPoint` = `RespawnPoint`, `_deathScreen` = a death-screen UI object if one exists (optional).
