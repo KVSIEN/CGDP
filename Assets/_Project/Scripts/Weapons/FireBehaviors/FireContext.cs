@@ -12,6 +12,9 @@ namespace CGD.Weapons
         public Transform  Muzzle;
         public WeaponData Data;
         public DamageSource Source;
+        // 1 for standard fire modes; 0–1 for Charge mode, reflecting how long the trigger was held.
+        // Fire behaviors that ignore charge should treat it as 1.
+        public float      Charge;
         public bool       DebugDraw;
         public Color      DebugHitColor;
         public Color      DebugMissColor;

@@ -14,6 +14,9 @@ namespace CGD.Abilities
         public float Damage   = 25f;
         public float Speed    = 25f;
         public float Lifetime = 5f;
+        [Tooltip("Downward acceleration in m/s² applied to the projectile in flight. 0 = perfectly straight.")]
+        [Min(0f)]
+        public float Gravity  = 0f;
         public StatusEffectApplication[] OnHitEffects;
 
         // Distance in front of the camera to spawn — prevents clipping through geometry directly ahead
@@ -29,7 +32,7 @@ namespace CGD.Abilities
 
             // The projectile ignores its source's colliders, so it can't hit the caster.
             var hit = new DamageInfo(Damage, source: ctx.Source, onHitEffects: OnHitEffects);
-            go.GetComponent<Projectile>().Launch(hit, Speed, Lifetime);
+            go.GetComponent<Projectile>().Launch(hit, ctx.CameraTransform.forward * Speed, Gravity, Lifetime);
         }
     }
 }

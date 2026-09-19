@@ -75,7 +75,7 @@
 - An ability that wouldn't do anything isn't used (e.g. Heal at full health), so no charge is spent
 - Four built-in abilities: Dash, Projectile, Heal, and Shockwave
   - **Dash** — bursts the player horizontally in their move direction (or camera forward if idle)
-  - **Projectile** — fires a fast-moving projectile from the camera that deals damage (and optional status effects) on impact
+  - **Projectile** — fires a projectile from the camera that deals damage (and optional status effects) on impact; configurable speed, lifetime and gravity drop
   - **Heal** — instantly restores a set amount of health
   - **Shockwave** — damages nearby enemies and launches nearby rigidbodies away from the player
 - All ability values (cooldown, force, damage, etc.) are tunable on the ScriptableObject asset
@@ -141,14 +141,15 @@
 
 ## Weapon System
 - Data-driven weapon setup via ScriptableObject assets — create a new gun by filling in a single asset, no code needed
-- Three fire modes: Semi-auto (one shot per press), Full-auto (hold to fire), Burst (fixed burst per press)
+- Four fire modes: Semi-auto (one shot per press), Full-auto (hold to fire), Burst (fixed burst per press), Charge (hold to charge, release to fire; releasing below a per-weapon minimum charge cancels the shot with no ammo spent)
 - Pluggable fire behavior per weapon — assign a `WeaponFireBehavior` ScriptableObject asset on the `WeaponData` to choose how shots are resolved; three built-in behaviors: **Hitscan** (instant single raycast), **Shotgun** (fires N independent pellet raycasts per shot, count driven by `PelletCount` on the weapon), and **Projectile** (spawns a moving projectile from the muzzle); adding new fire types requires only a new ScriptableObject subclass
+- **Projectiles** travel physically through the world with configurable speed, lifetime and gravity drop (0 = perfectly straight — bullets, plasma; higher = arrow/mortar arc); each step swept-raycasts between its previous and next position so fast projectiles can't tunnel past thin colliders between frames; they pass through their shooter and any trigger colliders and stop on the first solid hit
+- **Charge scaling on projectiles** — a projectile fire behavior can be authored so weak (short-hold) shots come out slower and drop harder while fully charged shots fly faster and straighter; a bow held only briefly lobs an arrow that plummets, while a fully drawn shot flies nearly flat
 - Damage falloff — full damage up to an optimal range, then drops linearly to a configurable minimum at the falloff distance
 - Bullets and shotgun pellets keep travelling past the falloff distance (1000 m by default) and still hit there, at the minimum damage
 - Headshot multiplier — each weapon's headshot bonus applies when a shot or projectile lands on a critical hitbox (the head by default)
 - Damage type and armor penetration per weapon (and per weapon category for generated weapons) — e.g. Lightning rounds hit shields harder
 - Weapons can't fire or reload while stunned, mantling, or mid-roll
-- Projectiles pass through pickups and other trigger zones and never hit the shooter
 - Magazine and reserve ammo tracked per weapon; reserve ammo is snapped to full magazine-sized clips so counts stay in whole-mag multiples; ammo display in HUD stays in sync
 - Tactical reload (round in chamber) is faster than an empty reload
 - Auto-reload: pulling the trigger on an empty magazine, or keeping it held as the magazine runs dry, starts a reload; with no reserve ammo left it plays the empty click instead

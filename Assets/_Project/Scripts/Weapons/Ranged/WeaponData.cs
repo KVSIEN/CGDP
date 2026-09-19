@@ -4,7 +4,7 @@ using CGD.Combat;
 
 namespace CGD.Weapons
 {
-    public enum FireMode { Semi, Auto, Burst }
+    public enum FireMode { Semi, Auto, Burst, Charge }
 
     [CreateAssetMenu(fileName = "NewWeapon", menuName = "CGD/Weapons/Weapon Data")]
     public class WeaponData : ScriptableObject
@@ -31,6 +31,14 @@ namespace CGD.Weapons
         public float BurstInterval = 0.075f;
         [Tooltip("Pellets fired per shot. Values above 1 produce shotgun-style spread. Damage is applied per pellet.")]
         public int PelletCount = 1;
+
+        [Header("Charge (Charge fire mode)")]
+        [Tooltip("Seconds of hold to reach full charge. Only used in Charge fire mode.")]
+        [Min(0f)]
+        public float ChargeTime = 0.8f;
+        [Tooltip("Releasing before this fraction of ChargeTime cancels the shot with no ammo spent. 0 = any tap fires at that charge amount.")]
+        [Range(0f, 1f)]
+        public float MinChargeToFire = 0.15f;
 
         // ── Damage ────────────────────────────────────────────────────────────
         [Header("Damage")]

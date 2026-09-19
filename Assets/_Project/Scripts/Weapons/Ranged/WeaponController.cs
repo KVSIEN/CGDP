@@ -52,6 +52,11 @@ namespace CGD.Weapons
         private float _recoilHeat;
         private float _horizontalDriftSign = 1f;   // flips each time drift hits the horizontal cap
 
+        // Charge fire mode: accumulates while the trigger is held, releases on the frame
+        // the trigger goes up. Reset on Equip so a swap can never carry someone else's charge.
+        private float _chargeTimer;
+        private bool  _wasChargeHeld;
+
         /// <summary>Fired whenever magazine, reserve, or reload state changes. Args: magazine, reserve, isReloading.</summary>
         public event Action<int, int, bool> OnAmmoChanged;
 
@@ -60,6 +65,9 @@ namespace CGD.Weapons
         public int  Magazine          => _current?.Magazine ?? 0;
         public int  Reserve           => _current?.Reserve ?? 0;
         public bool IsReloading       => _isReloading;
+        /// <summary>0 at rest, 1 fully charged. Always 0 for non-Charge fire modes.</summary>
+        public float ChargeRatio      => Data != null && Data.FireMode == FireMode.Charge && Data.ChargeTime > 0f
+                                          ? Mathf.Clamp01(_chargeTimer / Data.ChargeTime) : 0f;
 
         private WeaponData D        => _current.Data;
         private Vector3    SoundPos => _muzzle != null ? _muzzle.position : transform.position;
@@ -131,6 +139,8 @@ namespace CGD.Weapons
             _accumulatedHorizontalRecoil = 0f;
             _recoilHeat        = 0f;
             _horizontalDriftSign = 1f;
+            _chargeTimer       = 0f;
+            _wasChargeHeld     = false;
             _drawTimer         = weapon != null ? weapon.Data.DrawTime : 0f;
 
             if (_visuals != null)   _visuals.Configure(weapon?.Data);
@@ -159,7 +169,11 @@ namespace CGD.Weapons
             if (_current.Magazine <= 0)
             {
                 // Pulling the trigger on an empty gun, or still holding it as the magazine
-                // runs dry, reloads; with no reserve left it just clicks.
+                // runs dry, reloads; with no reserve left it just clicks. Charge state is
+                // synced to the current trigger position so a still-held trigger after a
+                // reload doesn't instantly fire whatever was queued before.
+                _chargeTimer   = 0f;
+                _wasChargeHeld = triggerHeld;
                 if (_burstPending || !(triggerHeld || triggerPress)) return;
                 if (CanReload) StartCoroutine(Reload());
                 else if (triggerPress) D.EmptySound?.Play(SoundPos);
@@ -172,7 +186,27 @@ namespace CGD.Weapons
                 case FireMode.Semi  when triggerPress: TryFire(); break;
                 case FireMode.Burst when triggerPress && !_burstPending:
                     StartCoroutine(FireBurst()); break;
+                case FireMode.Charge:
+                    HandleChargeInput(triggerHeld);
+                    break;
             }
+        }
+
+        // Hold to charge, release to fire. Releasing before MinChargeToFire cancels the
+        // shot with no ammo spent so tap-firing a bow doesn't waste arrows.
+        private void HandleChargeInput(bool triggerHeld)
+        {
+            if (triggerHeld)
+            {
+                _chargeTimer = Mathf.Min(_chargeTimer + Time.deltaTime, D.ChargeTime);
+            }
+            else if (_wasChargeHeld)
+            {
+                float charge = D.ChargeTime > 0f ? Mathf.Clamp01(_chargeTimer / D.ChargeTime) : 1f;
+                if (charge >= D.MinChargeToFire) TryFire(charge);
+                _chargeTimer = 0f;
+            }
+            _wasChargeHeld = triggerHeld;
         }
 
         private void HandleReloadInput()
@@ -185,7 +219,7 @@ namespace CGD.Weapons
 
         // ── Fire ──────────────────────────────────────────────────────────────
 
-        private void TryFire()
+        private void TryFire(float charge = 1f)
         {
             if (_current.Magazine <= 0) return;
 
@@ -195,7 +229,7 @@ namespace CGD.Weapons
             NotifyAmmoChanged();
 
             ApplyRecoil();
-            CastBullet();
+            CastBullet(charge);
             AddSpreadBloom();
 
             D.FireSound?.Play(SoundPos);
@@ -215,7 +249,7 @@ namespace CGD.Weapons
             _burstPending = false;
         }
 
-        private void CastBullet()
+        private void CastBullet(float charge)
         {
             if (D.FireBehavior == null) return;
 
@@ -235,6 +269,7 @@ namespace CGD.Weapons
                 Muzzle            = _muzzle,
                 Data              = D,
                 Source            = _damageSource,
+                Charge            = charge,
                 DebugDraw         = _debugDrawBullets,
                 DebugHitColor     = _debugHitColor,
                 DebugMissColor    = _debugMissColor,
