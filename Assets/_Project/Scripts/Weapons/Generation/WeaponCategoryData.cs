@@ -96,6 +96,10 @@ namespace CGD.Weapons
         public FloatRange IdleSwaySpeed     = new(0.6f, 0.9f);
         public FloatRange MoveSwayAmount    = new(0.8f, 1.2f);
 
+        [Header("ADS")]
+        public FloatRange AdsFovDeg = new(40f, 48f);
+        public FloatRange AdsSpeed  = new(8f,  12f);
+
         // ── Context Menu ──────────────────────────────────────────────────────────
 
         [ContextMenu("Apply Type Defaults")]

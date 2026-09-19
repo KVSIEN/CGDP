@@ -80,6 +80,10 @@ namespace CGD.Weapons
             d.IdleSwaySpeed     = cat.IdleSwaySpeed.EvaluateClamped();
             d.MoveSwayAmount    = cat.MoveSwayAmount.EvaluateClamped();
 
+            // ── ADS ───────────────────────────────────────────────────────────────
+            d.AdsFovDeg = Mathf.Max(1f,   cat.AdsFovDeg.EvaluateClamped());
+            d.AdsSpeed  = Mathf.Max(0.1f, cat.AdsSpeed.EvaluateClamped());
+
             return d;
         }
     }

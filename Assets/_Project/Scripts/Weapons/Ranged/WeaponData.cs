@@ -6,6 +6,12 @@ namespace CGD.Weapons
 {
     public enum FireMode { Semi, Auto, Burst, Charge }
 
+    // Alternating: horizontal drift ping-pongs between the caps, so long sprays
+    // sway both ways regardless of which sign the bias started with. OneWay:
+    // drift only pushes in the direction of RecoilHorizontalBias and stops at the
+    // cap — used for weapons with a signature always-one-side pull.
+    public enum HorizontalDriftMode { Alternating, OneWay }
+
     [CreateAssetMenu(fileName = "NewWeapon", menuName = "CGD/Weapons/Weapon Data")]
     public class WeaponData : ScriptableObject
     {
@@ -120,6 +126,8 @@ namespace CGD.Weapons
         [Tooltip("Authored horizontal lean applied to every shot (-1 full left, 0 none, 1 full right)")]
         [Range(-1f, 1f)]
         public float RecoilHorizontalBias = 0.15f;
+        [Tooltip("Alternating: drift ping-pongs left/right when it hits either cap (signature spray patterns). OneWay: drift only pushes in the bias direction and stops at the cap.")]
+        public HorizontalDriftMode HorizontalDriftMode = HorizontalDriftMode.Alternating;
         [Tooltip("Cap on total accumulated upward recoil (degrees). At the cap each shot still kicks, then the aim settles back to the cap before the next shot.")]
         public float MaxAccumulatedRecoil = 14f;
         [Tooltip("Cap on total accumulated sideways recoil (degrees), either direction. Drift that reaches it swings back the other way.")]
@@ -177,6 +185,15 @@ namespace CGD.Weapons
         public float IdleSwaySpeed = 0.7f;
         [Tooltip("Sway amplitude while walking/sprinting, scaled by move speed. All sway fades out while aiming so the sights stay on the crosshair.")]
         public float MoveSwayAmount = 1.0f;
+
+        // ── ADS (per-weapon camera behaviour while aiming) ────────────────────
+        [Header("ADS")]
+        [Tooltip("Camera field-of-view while fully aimed (degrees). Lower = more zoom. Sniper scopes want 20-30, ARs 40-45, pistols 55-60.")]
+        [Min(1f)]
+        public float AdsFovDeg = 45f;
+        [Tooltip("Speed at which the ADS transition proceeds. Higher = snappier aim-in/aim-out. Snipers ~5, ARs ~10, pistols ~15+.")]
+        [Min(0.1f)]
+        public float AdsSpeed = 10f;
 
         // ── Audio ─────────────────────────────────────────────────────────────
         [Header("Audio")]

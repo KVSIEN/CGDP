@@ -28,7 +28,7 @@
 - Mouse and gamepad both supported with separate sensitivity settings
 - Body rotation is snappy in first-person and smooth in third-person
 - Aim Down Sights (hold right mouse / right stick) — works in both first and third person
-  - Zooms the FOV toward a configurable ADS value
+  - Zoom (FOV) and transition speed are per-weapon: snipers scope deep and slowly, pistols barely zoom and snap in, ARs sit in the middle
   - In third person: pulls the camera in closer and centers the shoulder offset
   - The held weapon smoothly raises from its hip position to a centred aim position and back
   - Reduces look sensitivity while aiming; all transitions are smooth
@@ -165,8 +165,9 @@
 ### Control (recoil and its buildup)
 - Each shot kicks the camera upward (vertical) and slightly sideways (horizontal)
 - Vertical kick has small per-shot jitter so patterns aren't perfectly predictable; horizontal drifts using a configurable left/right bias, giving each gun a personality
+- **Horizontal drift mode** per weapon — *Alternating* (default) ping-pongs between the caps for a classic swaying spray, *OneWay* respects the bias direction the whole way to the cap for signature always-one-side pulls (AK-style hard right, e.g.)
 - **Recoil buildup / heat** — sustained fire raises a per-weapon heat value that makes each shot kick harder and less predictably, up to a per-weapon maximum; heat cools off gradually once you stop firing, so short controlled bursts kick less than long sprays
-- Accumulated recoil is capped per burst so full-auto spray stays controllable — once the gun reaches its maximum climb it stops rising, but every shot still kicks the view up and it settles back before the next round; sideways drift swings back and forth between its limits instead of settling, so long sprays never turn into a laser; caps reset the moment the trigger is released
+- Accumulated recoil is capped per burst so full-auto spray stays controllable — once the gun reaches its maximum climb it stops rising, but every shot still kicks the view up and it settles back before the next round; sideways drift either ping-pongs between its limits (Alternating) or pins at the bias-side cap (OneWay); caps reset the moment the trigger is released
 - The held weapon model kicks too: from the hip it visibly rears up and rolls; while aiming it drives back into the shoulder with a small hop that always settles before the next round can fire, so the sights are centred on the crosshair every time a shot leaves — if the sights were on target, the shot goes there
 - ADS reduces recoil by a per-weapon multiplier and can hold a separate recovery fraction from hip fire
 - Recovery is tunable per gun: 0 = BF-style (aim stays up, no return), 1 = CoD-style (full return to original aim); values between give a hybrid feel

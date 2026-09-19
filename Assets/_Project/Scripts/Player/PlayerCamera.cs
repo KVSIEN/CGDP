@@ -44,11 +44,13 @@ namespace CGD.Player
         [SerializeField] private float _crouchHeadSmoothTime = 0.08f;
 
         [Header("ADS")]
+        [Tooltip("Fallback ADS FOV used before a weapon is equipped. WeaponData.AdsFovDeg overrides at runtime via SetAdsProfile().")]
         [SerializeField] private float _adsFOV = 45f;
         [SerializeField] private float _adsTpDistance = 1.5f;
         [Tooltip("Shoulder offset while ADS in third-person. Keep non-zero so the camera stays beside the player, not behind their head.")]
         [SerializeField] private float _adsTpShoulderOffset = 0.25f;
         [SerializeField] private float _adsSensitivityMult = 0.5f;
+        [Tooltip("Fallback ADS transition speed used before a weapon is equipped. WeaponData.AdsSpeed overrides at runtime via SetAdsProfile().")]
         [SerializeField] private float _adsSpeed = 10f;
 
         [Header("FOV")]
@@ -104,6 +106,15 @@ namespace CGD.Player
         {
             _mouseSensitivity   = mouse;
             _gamepadSensitivity = gamepad;
+        }
+
+        // Pushed by WeaponController on Equip so each weapon can carry its own aim
+        // zoom (sniper vs pistol) and transition speed (heavy vs snappy). Non-positive
+        // arguments are ignored so a caller can leave one side untouched.
+        public void SetAdsProfile(float fovDeg, float speed)
+        {
+            if (fovDeg > 0f) _adsFOV   = fovDeg;
+            if (speed  > 0f) _adsSpeed = speed;
         }
 
         private void Awake()

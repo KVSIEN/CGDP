@@ -145,6 +145,8 @@ namespace CGD.Weapons
 
             if (_visuals != null)   _visuals.Configure(weapon?.Data);
             if (_crosshair != null) _crosshair.SetDynamicSpread(0f);
+            if (_camera != null && weapon != null)
+                _camera.SetAdsProfile(weapon.Data.AdsFovDeg, weapon.Data.AdsSpeed);
             NotifyAmmoChanged();
         }
 
@@ -344,9 +346,13 @@ namespace CGD.Weapons
 
             float horizCap = D.MaxAccumulatedHorizontalRecoil;
             float gunHoriz = HorizontalKick(kickHeat, jitterHeat);
-            if (Mathf.Abs(_accumulatedHorizontalRecoil + gunHoriz * horizMult) > horizCap)
+            // Alternating mode: when drift reaches the cap, flip the bias direction so
+            // long sprays sway back the other way instead of pinning at the limit.
+            // OneWay mode keeps the sign of RecoilHorizontalBias throughout — the clamp
+            // below stops kicks that would push past the cap, so drift settles there.
+            if (D.HorizontalDriftMode == HorizontalDriftMode.Alternating &&
+                Mathf.Abs(_accumulatedHorizontalRecoil + gunHoriz * horizMult) > horizCap)
             {
-                // Drift hit the side limit: swing back the other way instead of pinning there.
                 _horizontalDriftSign = -_horizontalDriftSign;
                 gunHoriz = HorizontalKick(kickHeat, jitterHeat);
             }

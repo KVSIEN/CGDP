@@ -73,6 +73,9 @@ namespace CGD.Weapons
             c.IdleSwayAmount    = new(0.3f,  0.5f,  0f);
             c.IdleSwaySpeed     = new(0.6f,  0.9f,  0f);
             c.MoveSwayAmount    = new(0.8f,  1.2f,  0f);
+
+            c.AdsFovDeg = new(40f, 45f, 0f);
+            c.AdsSpeed  = new(9f,  12f, 0f);
         }
 
         private static void ApplySMG(WeaponCategoryData c)
@@ -133,6 +136,10 @@ namespace CGD.Weapons
             c.IdleSwayAmount    = new(0.2f,  0.35f, 0f);
             c.IdleSwaySpeed     = new(0.7f,  1.0f,  0f);
             c.MoveSwayAmount    = new(0.7f,  1.0f,  0f);
+
+            // Light zoom, snappy aim — SMG needs peripheral vision for CQB.
+            c.AdsFovDeg = new(48f, 55f, 0f);
+            c.AdsSpeed  = new(14f, 18f, 0f);
         }
 
         private static void ApplyPistol(WeaponCategoryData c)
@@ -194,6 +201,10 @@ namespace CGD.Weapons
             c.IdleSwayAmount    = new(0.2f,  0.3f,  0f);
             c.IdleSwaySpeed     = new(0.7f,  1.0f,  0f);
             c.MoveSwayAmount    = new(0.6f,  0.9f,  0f);
+
+            // Minimal zoom, snappiest aim in the roster — iron sights on a small gun.
+            c.AdsFovDeg = new(52f, 60f, 0f);
+            c.AdsSpeed  = new(16f, 20f, 0f);
         }
 
         private static void ApplySniper(WeaponCategoryData c)
@@ -253,6 +264,10 @@ namespace CGD.Weapons
             c.IdleSwayAmount    = new(0.7f,  1.0f,  0f);
             c.IdleSwaySpeed     = new(0.4f,  0.6f,  0f);
             c.MoveSwayAmount    = new(1.4f,  1.9f,  0f);
+
+            // Deep scope zoom, slow scope-in — sniper feel.
+            c.AdsFovDeg = new(18f, 30f, 0f);
+            c.AdsSpeed  = new(3f,  5f,  0f);
         }
 
         private static void ApplyLMG(WeaponCategoryData c)
@@ -315,6 +330,10 @@ namespace CGD.Weapons
             c.IdleSwayAmount    = new(0.5f,  0.8f,  0f);
             c.IdleSwaySpeed     = new(0.4f,  0.6f,  0f);
             c.MoveSwayAmount    = new(1.6f,  2.2f,  0f);
+
+            // Moderate zoom, slow shoulder mount — the LMG is big and heavy.
+            c.AdsFovDeg = new(42f, 50f, 0f);
+            c.AdsSpeed  = new(5f,  7f,  0f);
         }
 
         private static void ApplyShotgun(WeaponCategoryData c)
@@ -376,6 +395,10 @@ namespace CGD.Weapons
             c.IdleSwayAmount    = new(0.35f, 0.55f, 0f);
             c.IdleSwaySpeed     = new(0.5f,  0.7f,  0f);
             c.MoveSwayAmount    = new(1.1f,  1.5f,  0f);
+
+            // Minimal zoom — close-range weapon — moderate aim speed.
+            c.AdsFovDeg = new(48f, 55f, 0f);
+            c.AdsSpeed  = new(8f,  11f, 0f);
         }
     }
 }
