@@ -19,9 +19,10 @@ namespace CGD.Player
         [SerializeField] private bool      _requireLineOfSight = true;
         [SerializeField] private LayerMask _occlusionMask      = ~0;
 
-        public bool    HasTarget      => _current != null;
-        public string  TargetLabel    => _current?.InteractLabel ?? string.Empty;
-        public Vector3 TargetPosition => _currentCollider != null ? _currentCollider.transform.position : Vector3.zero;
+        public bool          HasTarget      => _current != null;
+        public string        TargetLabel    => _current?.InteractLabel ?? string.Empty;
+        public IInteractable Current        => _current;
+        public Vector3       TargetPosition => _currentCollider != null ? _currentCollider.transform.position : Vector3.zero;
         // 0..1 while holding the key on a hold interaction; 0 otherwise.
         public float   HoldProgress   => _current != null && _current.HoldDuration > 0f
             ? Mathf.Clamp01(_holdTimer / _current.HoldDuration)

@@ -88,6 +88,7 @@
 - Hold interactions: doors and switches can require holding E for a set time; the prompt shows a progress bar and releasing early cancels
 - Interactables behind walls or other solid objects are ignored (line-of-sight check, can be turned off)
 - HUD prompt appears bottom-center of the screen showing a blue "E" key badge and the action label (e.g. "Pick Up  Assault Rifle"); disappears instantly when out of range
+- Hovering a weapon pickup opens a top-right stat panel with the weapon's name, tier (colored — grey/green/blue/purple/gold for Common through Legendary), quality score, category, and a two-column readout of damage, fire rate, magazine, reload, range, fire mode, ammo type, recoil, spread and draw time; contextual footer adds headshot multiplier, pellet count (shotguns), burst pattern (burst mode), charge time (charge mode) and armor penetration when relevant
 - Weapon pickups: place a `WeaponPickup` component on any world object, assign a `WeaponData` asset; picking it up fills the first empty loadout slot and equips it; if all four slots are full, your active weapon is swapped out and left behind in the pickup's place, keeping its remaining ammo
 - Random weapon pickups: add `RandomWeaponPickup` alongside `WeaponPickup` and assign a `WeaponCategoryData` asset; each time the object spawns a unique weapon is generated with randomised stats drawn from the category's thresholds
 - Ammo pickups: `AmmoPickup` adds a set amount of a specific `MunitionDefinition` to the player's shared inventory — every weapon that draws from that pool benefits at once

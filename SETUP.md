@@ -78,6 +78,7 @@ HUD                           [Canvas, CanvasScaler, GraphicRaycaster, HUDManage
   - Inventory                  [InventoryHUD]
   - ItemInventory              [ItemInventoryHUD]
   - Interact                   [InteractHUD]
+  - WeaponPickup               [WeaponPickupHUD]
   - HitEffect                  [HitEffect]
   - Velocity                   [VelocityHUD]
   - StatusEffects              [StatusEffectHUD]
@@ -100,8 +101,9 @@ Don't leave stray instances of either parented under the HUD canvas.
 - **InventoryHUD** — assign `_input` = Player, `_loadout` = Player's `PlayerWeaponLoadout`. Requires a `CanvasGroup` on the same object (used to fade the panel in/out).
 - **ItemInventoryHUD** — assign `_input` = Player, `_inventory` = Player's `PlayerInventory` (auto-resolved by scene lookup if left unset). Requires a `CanvasGroup` on the same object. Opens/closes on the same Inventory action as `InventoryHUD` — both panels sit as siblings under the HUD canvas.
 - **InteractHUD** — assign `_interaction` = Player's `PlayerInteraction`. Builds its own world-space prompt via `DamagePopup.GetOrCreateOverlayCamera()` — no manual camera setup needed.
+- **WeaponPickupHUD** — assign `_interaction` = Player's `PlayerInteraction`. Requires a `CanvasGroup`. Screen-anchored top-right; builds itself in `Awake` and only shows when the current interactable is a `WeaponPickup`. No wiring per pickup — stats are read from the pickup's `WeaponInstance` directly.
 
-`InventoryHUD`, `ItemInventoryHUD` and `InteractHUD` are excluded from `HUDManager.ShowAll()`/it only
+`InventoryHUD`, `ItemInventoryHUD`, `InteractHUD` and `WeaponPickupHUD` are excluded from `HUDManager.ShowAll()`/it only
 shows a fixed subset — see `HUDManager.cs` before assuming every element reacts to
 show/hide the same way.
 

@@ -15,7 +15,11 @@ namespace CGD.Interaction
 
         private WeaponInstance _weapon;
 
-        private WeaponInstance Weapon => _weapon ??= _data != null ? new WeaponInstance(_data) : null;
+        // Public so hover UIs (WeaponPickupHUD, comparison tooltips) can read the
+        // rolled instance's stats before the player commits to picking it up. Lazily
+        // instantiates so hand-authored pickups get a WeaponInstance the same shape
+        // as procedurally generated ones.
+        public WeaponInstance Weapon => _weapon ??= _data != null ? new WeaponInstance(_data) : null;
 
         public string InteractLabel => Weapon != null ? $"Pick Up  {Weapon.Data.WeaponName}" : "Pick Up";
 
