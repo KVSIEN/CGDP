@@ -1,6 +1,7 @@
 using UnityEngine;
 using CGD.Audio;
 using CGD.Combat;
+using CGD.Items;
 
 namespace CGD.Weapons
 {
@@ -70,25 +71,13 @@ namespace CGD.Weapons
 
         // ── Ammo & Reload ────────────────────────────────────────────────────
         [Header("Ammo & Reload")]
+        [Tooltip("Which shared pool this weapon draws from. Multiple weapons of the same AmmoType share their reserve.")]
+        public AmmoType AmmoType = AmmoType.LightRounds;
         public int MagazineSize = 30;
-        public int ReserveAmmo  = 90;
         [Tooltip("Reload from empty")]
         public float ReloadTime = 2.6f;
         [Tooltip("Reload with a round still chambered (faster)")]
         public float TacticalReloadTime = 2.1f;
-
-        public int GetNormalizedReserveAmmo()
-        {
-            return NormalizeReserveAmmo(MagazineSize, ReserveAmmo);
-        }
-
-        public static int NormalizeReserveAmmo(int magazineSize, int reserveAmmo)
-        {
-            if (magazineSize <= 0 || reserveAmmo <= 0) return 0;
-
-            int clips = Mathf.Max(1, Mathf.RoundToInt((float)reserveAmmo / magazineSize));
-            return clips * magazineSize;
-        }
 
         // ── Accuracy (where bullets land) ─────────────────────────────────────
         [Header("Accuracy")]

@@ -103,6 +103,43 @@ namespace CGD.Items
             return total;
         }
 
+        // Sums every munition stack with the matching AmmoType, so weapons can ask
+        // "how many rounds of my caliber do I have?" without knowing which specific
+        // MunitionDefinition asset(s) fed the pool.
+        public int CountOf(AmmoType ammoType)
+        {
+            if (ammoType == AmmoType.None || ammoType == AmmoType.Cooldown) return 0;
+
+            int total = 0;
+            foreach (ItemStack stack in _stacks)
+                if (stack.Definition is MunitionDefinition m && m.AmmoType == ammoType) total += stack.Count;
+
+            return total;
+        }
+
+        // Removes rounds of a given ammo type across whatever stacks it takes.
+        // All-or-nothing, same as the ItemDefinition overload.
+        public bool Remove(AmmoType ammoType, int count)
+        {
+            if (count <= 0 || CountOf(ammoType) < count) return false;
+
+            int remaining = count;
+            for (int i = _stacks.Count - 1; i >= 0 && remaining > 0; i--)
+            {
+                if (_stacks[i].Definition is not MunitionDefinition m || m.AmmoType != ammoType) continue;
+
+                int taken = Mathf.Min(_stacks[i].Count, remaining);
+                remaining -= taken;
+
+                int left = _stacks[i].Count - taken;
+                if (left > 0) _stacks[i] = _stacks[i].WithCount(left);
+                else          _stacks.RemoveAt(i);
+            }
+
+            Changed?.Invoke();
+            return true;
+        }
+
         public bool Has(ItemDefinition definition, int count) => CountOf(definition) >= count;
 
         public void Clear()

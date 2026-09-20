@@ -2,7 +2,10 @@ using CGD.Items;
 
 namespace CGD.Weapons
 {
-    // Runtime state of one carried weapon, so its ammo survives swaps and drops.
+    // Runtime state of one carried weapon: the loaded magazine. Reserve ammo is no
+    // longer per-weapon — it lives in the player's Inventory as shared pools by
+    // AmmoType, so dropping and picking up a weapon preserves its mag but never
+    // grants extra reserve.
     //
     // Inherits ItemInstance, so a generated weapon carries the same quality, tier
     // and attachment slots as any other piece of gear. Its stats stay on Data rather
@@ -11,27 +14,27 @@ namespace CGD.Weapons
     {
         public WeaponData Data { get; }
         public int Magazine { get; internal set; }
-        public int Reserve  { get; internal set; }
 
         // Hand-authored weapon placed directly in a scene: no roll behind it, so no
-        // quality and no attachment slots.
+        // quality and no attachment slots. Spawns loaded.
         public WeaponInstance(WeaponData data) : base(null)
         {
-            Data = data;
-            Refill();
+            Data     = data;
+            Magazine = data != null ? data.MagazineSize : 0;
         }
 
         internal WeaponInstance(WeaponCategoryData category, ItemRoll roll, WeaponData data)
             : base(category, roll)
         {
-            Data = data;
-            Refill();
+            Data     = data;
+            Magazine = data != null ? data.MagazineSize : 0;
         }
 
-        public void Refill()
+        // Called on player revive. Refills the loaded mag only — reserve is inventory
+        // state and lives outside the weapon.
+        public void RefillMagazine()
         {
-            Magazine = Data.MagazineSize;
-            Reserve  = Data.GetNormalizedReserveAmmo();
+            if (Data != null) Magazine = Data.MagazineSize;
         }
     }
 }

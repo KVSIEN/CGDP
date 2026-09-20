@@ -2,6 +2,7 @@ using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
 using CGD.Items;
+using CGD.Items;
 
 namespace CGD.Weapons
 {
@@ -41,10 +42,9 @@ namespace CGD.Weapons
         public FloatRange DamageFalloffMin    = new(0.3f, 0.5f);
 
         [Header("Ammo")]
+        [Tooltip("Which shared ammo pool weapons in this category draw from.")]
+        public AmmoType   AmmoType           = AmmoType.StandardRounds;
         public IntRange   MagazineSize       = new(25, 35);
-        public IntRange   ReserveAmmo        = new(75, 110);
-        // Reserve = RoundToInt(magazine * multiplier)
-        public FloatRange ReserveMultiplier  = new(2.5f, 3.5f);
 
         [Header("Reload")]
         public FloatRange ReloadTime          = new(2.2f, 3.0f);

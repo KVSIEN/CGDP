@@ -4,6 +4,7 @@ using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
 using CGD.Input;
+using CGD.Items;
 using CGD.Player;
 using CGD.UI;
 
@@ -20,6 +21,7 @@ namespace CGD.Weapons
     {
         [SerializeField] private PlayerInputHandler _input;
         [SerializeField] private PlayerCamera       _camera;
+        [SerializeField] private PlayerInventory    _inventory; // reserve ammo pool; auto-fetched from same object if unset
         [SerializeField] private CrosshairHUD       _crosshair;
         [SerializeField] private Transform          _muzzle;    // optional: origin for visual FX
         [SerializeField] private WeaponVisuals      _visuals;   // optional: weapon model kick
@@ -53,7 +55,7 @@ namespace CGD.Weapons
         public WeaponInstance Current => _current;
         public WeaponData     Data    => _current?.Data;
         public int  Magazine          => _current?.Magazine ?? 0;
-        public int  Reserve           => _current?.Reserve ?? 0;
+        public int  Reserve           => _inventory != null && _current != null ? _inventory.Inventory.CountOf(_current.Data.AmmoType) : 0;
         public bool IsReloading       => _isReloading;
         /// <summary>0 at rest, 1 fully charged. Always 0 for non-Charge fire modes.</summary>
         public float ChargeRatio      => Data != null && Data.FireMode == FireMode.Charge && Data.ChargeTime > 0f
@@ -68,6 +70,16 @@ namespace CGD.Weapons
         {
             _movement     = GetComponent<PlayerMovement>();
             _damageSource = DamageSource.Of(gameObject);
+            if (_inventory == null) _inventory = GetComponentInParent<PlayerInventory>();
+
+            // Re-notify the HUD whenever the shared pool changes so the reserve
+            // display stays in sync with pickups and loot drops.
+            if (_inventory != null) _inventory.Inventory.Changed += NotifyAmmoChanged;
+        }
+
+        private void OnDestroy()
+        {
+            if (_inventory != null) _inventory.Inventory.Changed -= NotifyAmmoChanged;
         }
 
         private void OnDisable()
@@ -143,14 +155,6 @@ namespace CGD.Weapons
             NotifyAmmoChanged();
         }
 
-        /// <summary>Adds reserve ammo to the equipped weapon. Returns false when unarmed.</summary>
-        public bool AddReserveAmmo(int amount)
-        {
-            if (_current == null || amount <= 0) return false;
-            _current.Reserve += amount;
-            NotifyAmmoChanged();
-            return true;
-        }
 
         // ── Input polling ─────────────────────────────────────────────────────
 
@@ -210,7 +214,7 @@ namespace CGD.Weapons
                 StartCoroutine(Reload());
         }
 
-        private bool CanReload => _current.Magazine < D.MagazineSize && _current.Reserve > 0;
+        private bool CanReload => _current.Magazine < D.MagazineSize && Reserve > 0;
 
         // ── Fire ──────────────────────────────────────────────────────────────
 
@@ -296,10 +300,16 @@ namespace CGD.Weapons
             float time = _current.Magazine > 0 ? D.TacticalReloadTime : D.ReloadTime;
             yield return new WaitForSeconds(time);
 
-            int needed = D.MagazineSize - _current.Magazine;
-            int taken  = Mathf.Min(needed, _current.Reserve);
-            _current.Magazine += taken;
-            _current.Reserve  -= taken;
+            int needed    = D.MagazineSize - _current.Magazine;
+            int available = _inventory != null ? _inventory.Inventory.CountOf(D.AmmoType) : 0;
+            int taken     = Mathf.Min(needed, available);
+            if (taken > 0)
+            {
+                _current.Magazine += taken;
+                // Inventory.Remove fires Changed which triggers NotifyAmmoChanged, so the
+                // final ammo-changed event covers both the mag add and the reserve drop.
+                _inventory.Inventory.Remove(D.AmmoType, taken);
+            }
 
             _isReloading = false;
             NotifyAmmoChanged();

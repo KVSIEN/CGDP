@@ -1,3 +1,5 @@
+using CGD.Items;
+
 namespace CGD.Weapons
 {
     // Realistic per-type stat thresholds, applied from WeaponCategoryData's
@@ -32,9 +34,8 @@ namespace CGD.Weapons
             c.RangeFalloffEnd    = new(120f,  180f,  0f);
             c.DamageFalloffMin   = new(0.30f, 0.50f, 0f);
 
+            c.AmmoType          = AmmoType.StandardRounds;
             c.MagazineSize      = new(25,    40,   0f);   // slight high bias — 30 to 40 common
-            c.ReserveAmmo       = new(80,    120,  0f);
-            c.ReserveMultiplier = new(2.5f,  3.5f, 0f);
 
             c.ReloadTime          = new(2.2f, 3.0f, 0f);
             c.TacticalReloadTime  = new(1.8f, 2.4f, 0f);
@@ -93,10 +94,9 @@ namespace CGD.Weapons
             c.RangeFalloffEnd    = new(80f,   120f,  0f);
             c.DamageFalloffMin   = new(0.25f, 0.45f, 0f);
 
+            c.AmmoType          = AmmoType.LightRounds;
             // P90 is an outlier at 50 rounds; most SMGs are 20–32 → bias low
             c.MagazineSize      = new(20,   50,   -0.5f);
-            c.ReserveAmmo       = new(60,   100,  0f);
-            c.ReserveMultiplier = new(3f,   4f,    0f);
 
             c.ReloadTime          = new(1.8f, 2.5f, 0f);
             c.TacticalReloadTime  = new(1.4f, 2.1f, 0f);
@@ -158,10 +158,11 @@ namespace CGD.Weapons
             c.RangeFalloffEnd    = new(50f,   80f,   0f);
             c.DamageFalloffMin   = new(0.30f, 0.60f, 0f);
 
+            // Standard pistols share the SMG light pool; hand-cannon variants (Deagle,
+            // .44 Magnum revolvers) override to HeavyRounds on their individual WeaponData.
+            c.AmmoType          = AmmoType.LightRounds;
             // Deagle 7, Five-seveN 20, Glock 17 17 → slight low bias
             c.MagazineSize      = new(7,    20,   -0.2f);
-            c.ReserveAmmo       = new(35,   80,   0f);
-            c.ReserveMultiplier = new(3f,   5f,    0f);
 
             c.ReloadTime          = new(1.5f, 2.2f, 0f);
             c.TacticalReloadTime  = new(1.1f, 1.8f, 0f);
@@ -222,9 +223,8 @@ namespace CGD.Weapons
             c.RangeFalloffEnd    = new(400f,  1000f, 0f);
             c.DamageFalloffMin   = new(0.60f, 0.90f, 0f);  // retain damage at range
 
+            c.AmmoType          = AmmoType.HeavyRounds;
             c.MagazineSize      = new(5,    10,   0f);
-            c.ReserveAmmo       = new(20,   35,   0f);
-            c.ReserveMultiplier = new(2f,   3f,   0f);
 
             c.ReloadTime          = new(2.8f, 5.0f, 0f);
             c.TacticalReloadTime  = new(2.0f, 4.5f, 0f);
@@ -285,10 +285,9 @@ namespace CGD.Weapons
             c.RangeFalloffEnd    = new(150f,  300f,  0f);
             c.DamageFalloffMin   = new(0.35f, 0.55f, 0f);
 
+            c.AmmoType          = AmmoType.StandardRounds;
             // Belt-fed: 75 baseline, up to 200; weighted toward lower end of the belt range
             c.MagazineSize      = new(75,   200,  -0.3f);
-            c.ReserveAmmo       = new(125,  225,  0f);
-            c.ReserveMultiplier = new(1.5f, 2.5f,  0f);  // fewer spare belts
 
             c.ReloadTime          = new(4.5f, 8.0f, 0f);  // slow belt/drum swap
             c.TacticalReloadTime  = new(3.8f, 6.5f, 0f);
@@ -353,9 +352,8 @@ namespace CGD.Weapons
             c.RangeFalloffEnd    = new(25f,   45f,   0f);
             c.DamageFalloffMin   = new(0.10f, 0.25f, 0f);  // steep dropoff
 
+            c.AmmoType          = AmmoType.ShotgunShells;
             c.MagazineSize      = new(5,     8,     0f);
-            c.ReserveAmmo       = new(20,    36,    0f);
-            c.ReserveMultiplier = new(3f,    5f,    0f);
 
             c.ReloadTime          = new(2.5f, 4.5f, 0f);   // shell-by-shell reload takes longer
             c.TacticalReloadTime  = new(2.0f, 3.5f, 0f);

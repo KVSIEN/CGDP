@@ -90,7 +90,7 @@
 - HUD prompt appears bottom-center of the screen showing a blue "E" key badge and the action label (e.g. "Pick Up  Assault Rifle"); disappears instantly when out of range
 - Weapon pickups: place a `WeaponPickup` component on any world object, assign a `WeaponData` asset; picking it up fills the first empty loadout slot and equips it; if all four slots are full, your active weapon is swapped out and left behind in the pickup's place, keeping its remaining ammo
 - Random weapon pickups: add `RandomWeaponPickup` alongside `WeaponPickup` and assign a `WeaponCategoryData` asset; each time the object spawns a unique weapon is generated with randomised stats drawn from the category's thresholds
-- Ammo pickups: `AmmoPickup` adds reserve ammo to whichever weapon the player currently has equipped
+- Ammo pickups: `AmmoPickup` adds a set amount of a specific `MunitionDefinition` to the player's shared inventory — every weapon that draws from that pool benefits at once
 - Health pickups: `HealthPickup` restores a set amount of health
 - Pickups only show a prompt when they would do something — no health pickup at full health, no ammo pickup without a weapon — so they aren't wasted
 - Doors: press E on a `Door` to swing it open or closed (no animation — a plain procedural rotation)
@@ -131,7 +131,7 @@
 ## Weapon Loadout
 - Four weapon slots on the player; press 1, 2, 3, or 4 to equip the weapon in that slot
 - Switching to a slot equips the weapon and cancels any reload in progress
-- Each weapon keeps its own magazine and reserve ammo — switching away and back doesn't refill it
+- Each weapon keeps its own loaded magazine; reserve ammo is a shared pool per `AmmoType` — two SMGs share the same LightRounds supply, an SMG + sniper diversify across two pools, a hand cannon + sniper both compete for scarce HeavyRounds
 - Inventory panel (press I) shows all four loadout slots, highlights the active weapon, and lists each weapon's name; empty slots are shown as "— Empty —"
 - Starting weapons are configurable in the Inspector via WeaponData ScriptableObject assets
 
@@ -168,7 +168,8 @@
 - Headshot multiplier — each weapon's headshot bonus applies when a shot or projectile lands on a critical hitbox (the head by default)
 - Damage type and armor penetration per weapon (and per weapon category for generated weapons) — e.g. Lightning rounds hit shields harder
 - Weapons can't fire or reload while stunned, mantling, or mid-roll
-- Magazine and reserve ammo tracked per weapon; reserve ammo is snapped to full magazine-sized clips so counts stay in whole-mag multiples; ammo display in HUD stays in sync
+- Magazine is per weapon; reserve is a shared inventory pool keyed by `AmmoType` (LightRounds / StandardRounds / HeavyRounds / ShotgunShells / Arrows / EnergyCells). Reloading pulls rounds from that pool into the magazine; the HUD reserve display reads live from the inventory
+- Weapons come loaded with one full magazine on first pickup; if you drop an empty weapon and pick it back up, it stays empty — the pickup grant only happens once per weapon instance
 - Tactical reload (round in chamber) is faster than an empty reload
 - Auto-reload: pulling the trigger on an empty magazine, or keeping it held as the magazine runs dry, starts a reload; with no reserve ammo left it plays the empty click instead
 - Weapon stats are grouped into three user-facing families that map directly to how the weapon *feels* — Accuracy, Control, Handling
@@ -257,4 +258,4 @@
 ## Death & Respawn
 - When health reaches zero the player loses control, the HUD hides, and a death screen is shown
 - Player automatically respawns after a short delay, returning to the designated spawn point
-- On respawn, health and every carried weapon's ammo are restored, ability cooldowns reset, and leftover momentum and status effects are cleared
+- On respawn, health is restored and every carried weapon's magazine is refilled; reserve ammo in the shared inventory pool is not touched (the ability to lose gathered inventory on death lands with the extraction loop). Ability cooldowns reset, and leftover momentum and status effects are cleared

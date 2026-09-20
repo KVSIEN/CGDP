@@ -28,11 +28,11 @@ Global Volume                (URP post-processing)
 ```
 Player                       [PlayerInputHandler, PlayerHealth, PlayerMovement,
                                PlayerDodge, PlayerMantle, PlayerAbilities,
-                               PlayerInteraction, WeaponController,
-                               PlayerWeaponLoadout, MeleeController,
-                               GrenadeController, PlayerLifecycle,
-                               PlayerFootsteps, PlayerAudio, Stunnable,
-                               StatusEffectController]
+                               PlayerInteraction, PlayerInventory,
+                               WeaponController, PlayerWeaponLoadout,
+                               MeleeController, GrenadeController,
+                               PlayerLifecycle, PlayerFootsteps, PlayerAudio,
+                               Stunnable, StatusEffectController]
   Rigidbody + CapsuleCollider on the Player root (required by PlayerMovement/PlayerDodge/PlayerMantle)
   - CameraRig
     - Main Camera             [Camera, UniversalAdditionalCameraData, PlayerCamera]
@@ -54,7 +54,8 @@ Wiring, by component:
 - **PlayerCamera** (on Main Camera) — assign `_input` = Player, `_movement` = Player, `_playerBody` = Player Body, `_headAnchor` = Head Anchor, `_camera` = the Camera component on the same object, `_firstPersonHideRenderers` = Player Body's renderer(s).
 - **PlayerAbilities** — assign `_health` = Player's `PlayerHealth`, `_cameraTransform` = Main Camera, and `_slots[0..3]` = ability assets (`DashAbility.asset`, `HealAbility.asset`, `ProjectileAbility.asset`, `ShockwaveAbility.asset`, or `None` for an empty slot).
 - **PlayerInteraction** — assign `_forwardReference` = Main Camera. `_requireLineOfSight` (default on) ignores interactables behind anything on `_occlusionMask`.
-- **WeaponController** — assign `_input` = Player, `_camera` = PlayerCamera, `_crosshair` = HUD's Crosshair object, `_muzzle` = Muzzle, `_visuals` = WeaponVisuals on WeaponRig. It fires whatever `PlayerWeaponLoadout` equips — no weapon asset is assigned here.
+- **PlayerInventory** — no references to wire. Holds the shared `Inventory` that ammo pools, loot drops and consumables all flow through.
+- **WeaponController** — assign `_input` = Player, `_camera` = PlayerCamera, `_crosshair` = HUD's Crosshair object, `_muzzle` = Muzzle, `_visuals` = WeaponVisuals on WeaponRig. `_inventory` auto-resolves via `GetComponentInParent` if not wired. It fires whatever `PlayerWeaponLoadout` equips — no weapon asset is assigned here.
 - **PlayerWeaponLoadout** — assign `_startingWeapons[0..3]` = `WeaponData` assets, e.g. `DefaultWeaponData` (optional — empty slots are filled by pickups). Must share the GameObject with `WeaponController` and `PlayerHealth` (it refills weapons when the player is revived).
 - **MeleeController** — assign `_camera` = PlayerCamera, `_data` = a `MeleeWeaponData` asset. No other wiring — resolves `PlayerInputHandler`/`PlayerMovement` via `GetComponent` on the same object.
 - **GrenadeController** — assign `_camera` = PlayerCamera, `_data` = a `GrenadeData` asset (which in turn needs a `GrenadePrefab` — see below). No other wiring — resolves `PlayerInputHandler`/`PlayerMovement`/`Collider` via `GetComponent` on the same object.

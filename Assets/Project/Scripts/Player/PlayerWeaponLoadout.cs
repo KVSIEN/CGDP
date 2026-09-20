@@ -103,7 +103,7 @@ namespace CGD.Player
         public void RefillAll()
         {
             foreach (WeaponInstance weapon in _slots)
-                weapon?.Refill();
+                weapon?.RefillMagazine();
 
             if (_activeSlot >= 0) Equip(_activeSlot);
         }

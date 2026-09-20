@@ -1,24 +1,31 @@
 using UnityEngine;
-using CGD.Weapons;
+using CGD.Items;
+using CGD.Player;
 
 namespace CGD.Interaction
 {
     // Attach to a world GameObject with a Collider (set Is Trigger = true).
-    // Adds reserve ammo to the player's currently equipped weapon on interact.
+    // Adds a stack of the referenced munition to the player's shared inventory.
     [RequireComponent(typeof(Collider))]
     public class AmmoPickup : MonoBehaviour, IInteractable
     {
+        [Tooltip("Which munition (and therefore which shared AmmoType pool) this pickup grants.")]
+        [SerializeField] private MunitionDefinition _munition;
         [SerializeField] private int _amount = 30;
 
-        public string InteractLabel => "Pick Up  Ammo";
+        public string InteractLabel =>
+            _munition != null ? $"Pick Up  {_munition.DisplayName} ×{_amount}" : "Pick Up  Ammo";
 
         public bool CanInteract(GameObject player) =>
-            player.TryGetComponent(out WeaponController weapon) && weapon.Current != null;
+            _munition != null && _amount > 0 && player.TryGetComponent(out PlayerInventory _);
 
         public void Interact(GameObject player)
         {
-            if (player.TryGetComponent(out WeaponController weapon) && weapon.AddReserveAmmo(_amount))
-                Destroy(gameObject);
+            if (_munition == null || _amount <= 0) return;
+            if (!player.TryGetComponent(out PlayerInventory inventory)) return;
+
+            inventory.Inventory.Add(_munition, _amount);
+            Destroy(gameObject);
         }
     }
 }

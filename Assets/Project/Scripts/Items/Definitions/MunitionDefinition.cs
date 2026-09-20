@@ -8,7 +8,7 @@ namespace CGD.Items
     public class MunitionDefinition : ItemDefinition
     {
         [Header("Munition")]
-        [SerializeField] private AmmoType _ammoType = AmmoType.Bullets;
+        [SerializeField] private AmmoType _ammoType = AmmoType.StandardRounds;
         [SerializeField] private int _maxStack = 999;
 
         public AmmoType AmmoType => _ammoType;

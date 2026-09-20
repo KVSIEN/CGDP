@@ -46,8 +46,8 @@ namespace CGD.Weapons
             d.DamageFalloffMin   = cat.DamageFalloffMin.EvaluateClamped();
 
             // ── Ammo ──────────────────────────────────────────────────────────────
+            d.AmmoType     = cat.AmmoType;
             d.MagazineSize = roll.Sample(ItemStat.MagazineSize, cat.MagazineSize);
-            d.ReserveAmmo  = WeaponData.NormalizeReserveAmmo(d.MagazineSize, roll.Sample(ItemStat.AmmoReserve, cat.ReserveAmmo));
 
             // ── Reload ────────────────────────────────────────────────────────────
             d.ReloadTime         = roll.Sample(ItemStat.ReloadTime, cat.ReloadTime);
