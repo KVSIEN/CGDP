@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bd3583691f680f40925447c7e1e95a3, type: 3}
+  m_Name: Kar98k_T1
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.WeaponData
+  WeaponName: Kar98k
+  FireBehavior: {fileID: 11400000, guid: ca566d8dc066bdc49b9f7028754076c0, type: 2}
+  OnHitEffects: []
+  FireMode: 0
+  RoundsPerMinute: 45
+  BurstCount: 1
+  BurstInterval: 0
+  PelletCount: 1
+  ChargeTime: 0.8
+  MinChargeToFire: 0.15
+  Damage: 95
+  DamageType: 0
+  ArmorPenetration: 0.2
+  HeadshotMultiplier: 2.8
+  RangeOptimal: 120
+  RangeFalloffEnd: 500
+  DamageFalloffMin: 0.75
+  MaxRange: 1500
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 80
+  AmmoType: 4
+  MagazineSize: 5
+  ReloadTime: 4
+  TacticalReloadTime: 3.2
+  HipSpreadDeg: 12
+  AdsSpreadDeg: 0.01
+  AdsSpreadMultiplier: 0
+  HotAdsSpreadMultiplier: 0
+  SpreadPerShot: 3
+  SpreadRecovery: 5
+  MaxSpread: 20
+  RecoilScale: {x: 1.5, y: 4.5}
+  RecoilJitter: {x: 0.2, y: 0.08}
+  RecoilHorizontalBias: 0
+  HorizontalDriftMode: 0
+  MaxAccumulatedRecoil: 5
+  MaxAccumulatedHorizontalRecoil: 2
+  RecoilHeatPerShot: 0
+  RecoilHeatCooldown: 2
+  MaxHeatRecoilMultiplier: 1
+  RecoilHeatJitterMultiplier: 1
+  RecoilRecoverySpeed: 4
+  RecoilRecoveryFraction: 1
+  RecoilRecoveryDelay: 0.25
+  AdsRecoilRecoveryFraction: 1
+  AdsRecoilMultiplier: 0.65
+  HipRecoilVerticalMultiplier: 0.05
+  HipRecoilHorizontalMultiplier: 0.05
+  DrawTime: 0.7
+  LookSwayAmount: 0.85
+  LookSwayRecovery: 7
+  IdleSwayAmount: 0.8
+  IdleSwaySpeed: 0.5
+  MoveSwayAmount: 1.7
+  AdsFovDeg: 24
+  AdsSpeed: 4
+  FireSound: {fileID: 0}
+  ReloadSound: {fileID: 0}
+  EmptySound: {fileID: 0}

@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bd3583691f680f40925447c7e1e95a3, type: 3}
+  m_Name: MP5_T1
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.WeaponData
+  WeaponName: MP5
+  FireBehavior: {fileID: 11400000, guid: ca566d8dc066bdc49b9f7028754076c0, type: 2}
+  OnHitEffects: []
+  FireMode: 1
+  RoundsPerMinute: 850
+  BurstCount: 3
+  BurstInterval: 0.065
+  PelletCount: 1
+  ChargeTime: 0.8
+  MinChargeToFire: 0.15
+  Damage: 18
+  DamageType: 0
+  ArmorPenetration: 0
+  HeadshotMultiplier: 2
+  RangeOptimal: 25
+  RangeFalloffEnd: 100
+  DamageFalloffMin: 0.3
+  MaxRange: 400
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 30
+  AmmoType: 2
+  MagazineSize: 30
+  ReloadTime: 2.2
+  TacticalReloadTime: 1.7
+  HipSpreadDeg: 2
+  AdsSpreadDeg: 0.03
+  AdsSpreadMultiplier: 0
+  HotAdsSpreadMultiplier: 0
+  SpreadPerShot: 0.7
+  SpreadRecovery: 18
+  MaxSpread: 5.5
+  RecoilScale: {x: 0.7, y: 0.85}
+  RecoilJitter: {x: 0.4, y: 0.2}
+  RecoilHorizontalBias: 0
+  HorizontalDriftMode: 0
+  MaxAccumulatedRecoil: 10
+  MaxAccumulatedHorizontalRecoil: 5
+  RecoilHeatPerShot: 0.05
+  RecoilHeatCooldown: 1.7
+  MaxHeatRecoilMultiplier: 1.5
+  RecoilHeatJitterMultiplier: 2.2
+  RecoilRecoverySpeed: 6.5
+  RecoilRecoveryFraction: 0.6
+  RecoilRecoveryDelay: 0.1
+  AdsRecoilRecoveryFraction: 0.9
+  AdsRecoilMultiplier: 0.4
+  HipRecoilVerticalMultiplier: 0.13
+  HipRecoilHorizontalMultiplier: 0.13
+  DrawTime: 0.45
+  LookSwayAmount: 0.35
+  LookSwayRecovery: 14
+  IdleSwayAmount: 0.25
+  IdleSwaySpeed: 0.85
+  MoveSwayAmount: 0.85
+  AdsFovDeg: 52
+  AdsSpeed: 15
+  FireSound: {fileID: 0}
+  ReloadSound: {fileID: 0}
+  EmptySound: {fileID: 0}

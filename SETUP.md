@@ -182,7 +182,7 @@ Switch (any name)             [Collider (isTrigger), Switch]
 | `Enemies/<Name>EnemyData` (one per enemy type — `DefaultEnemyData`, `TargetDummyEnemyData`) | `EnemyAI`, `EnemyHealth` |
 | `Combat/HitboxProfiles/<Name>HitboxProfile` (optional, one per character type — `DefaultHitboxProfile`, `TargetDummyHitboxProfile`) | `EnemyHealth`, `PlayerHealth` |
 | `Combat/StatusEffects/` (`BleedEffect`, `FireEffect`, `IceEffect`, `LightningEffect`, `PoisonEffect`) | referenced by whatever applies the effect via `StatusEffectController` |
-| `Weapons/Ranged/<Name>WeaponData` (per weapon — `DefaultWeaponData`) | `PlayerWeaponLoadout`, `WeaponController`, `WeaponPickup` |
+| `Weapons/Ranged/<Name>WeaponData` (per weapon — `DefaultWeaponData` is the generic starter; hand-authored Common-tier examples live under `Weapons/Ranged/T1/`: `M4A1_T1`, `MP5_T1`, `Glock17_T1`, `DesertEagle_T1`, `Kar98k_T1`, `M249_T1`, `M870_T1` — one per category, `DesertEagle_T1` shows the AmmoType override to HeavyRounds) | `PlayerWeaponLoadout`, `WeaponController`, `WeaponPickup` |
 | `Weapons/Categories/<Name>Category` (per category) — assign `_rollProfile` = one of the family-specific `StatRollProfile` assets below | `RandomWeaponPickup`, `WeaponGenerator` |
 | `Items/Profiles/<Family>Profile` (one per weapon family — `StandardFirearmProfile`, `PrecisionRifleProfile`, `AutomaticSupportProfile`, `ShotgunProfile`) — right-click the asset and pick the matching `Axes/...` preset | `GearDefinition._rollProfile` on each `WeaponCategoryData` |
 | `Items/DefaultStatRollProfile` (optional — assign to each `WeaponCategoryData`'s `RollProfile`; without one, stats roll uniformly and quality is ignored) | `WeaponCategoryData`, `ArmorDefinition` |

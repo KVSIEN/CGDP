@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bd3583691f680f40925447c7e1e95a3, type: 3}
-  m_Name: DefaultWeaponData
+  m_Name: M4A1_T1
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.WeaponData
-  WeaponName: Standard Rifle
+  WeaponName: M4A1
   FireBehavior: {fileID: 11400000, guid: ca566d8dc066bdc49b9f7028754076c0, type: 2}
   OnHitEffects: []
   FireMode: 1
-  RoundsPerMinute: 750
+  RoundsPerMinute: 720
   BurstCount: 3
   BurstInterval: 0.075
   PelletCount: 1
   ChargeTime: 0.8
   MinChargeToFire: 0.15
-  Damage: 25
+  Damage: 22
   DamageType: 0
   ArmorPenetration: 0
   HeadshotMultiplier: 2
@@ -36,20 +36,20 @@ MonoBehaviour:
   NoiseRadius: 40
   AmmoType: 3
   MagazineSize: 30
-  ReloadTime: 2.6
+  ReloadTime: 2.7
   TacticalReloadTime: 2.1
-  HipSpreadDeg: 2.5
-  AdsSpreadDeg: 0.01
+  HipSpreadDeg: 2.8
+  AdsSpreadDeg: 0.03
   AdsSpreadMultiplier: 0
   HotAdsSpreadMultiplier: 0
-  SpreadPerShot: 0.8
+  SpreadPerShot: 0.9
   SpreadRecovery: 14
-  MaxSpread: 6
-  RecoilScale: {x: 0.55, y: 1.2}
-  RecoilJitter: {x: 0.35, y: 0.1667}
+  MaxSpread: 6.5
+  RecoilScale: {x: 0.6, y: 1.3}
+  RecoilJitter: {x: 0.35, y: 0.17}
   RecoilHorizontalBias: 0.15
   HorizontalDriftMode: 0
-  MaxAccumulatedRecoil: 14
+  MaxAccumulatedRecoil: 15
   MaxAccumulatedHorizontalRecoil: 7
   RecoilHeatPerShot: 0.06
   RecoilHeatCooldown: 1.5
@@ -60,15 +60,15 @@ MonoBehaviour:
   RecoilRecoveryDelay: 0.12
   AdsRecoilRecoveryFraction: 1
   AdsRecoilMultiplier: 0.45
-  HipRecoilVerticalMultiplier: 0.15
+  HipRecoilVerticalMultiplier: 0.18
   HipRecoilHorizontalMultiplier: 0.15
-  DrawTime: 0.5
-  LookSwayAmount: 0.5
+  DrawTime: 0.65
+  LookSwayAmount: 0.55
   LookSwayRecovery: 10
   IdleSwayAmount: 0.4
   IdleSwaySpeed: 0.7
   MoveSwayAmount: 1
-  AdsFovDeg: 45
+  AdsFovDeg: 42
   AdsSpeed: 10
   FireSound: {fileID: 0}
   ReloadSound: {fileID: 0}

@@ -3,7 +3,13 @@ using CGD.Items;
 namespace CGD.Weapons
 {
     // Realistic per-type stat thresholds, applied from WeaponCategoryData's
-    // "Apply Type Defaults" context menu.
+    // "Apply Type Defaults" context menu. Every range here spans the full
+    // Common → Legendary roll window; the quality lean picks where inside
+    // it each individual stat lands.
+    //
+    // Per-category TTK targets (against the 100 EHP baseline enemy) come
+    // from WEAPON_BALANCE.md. When editing a range, verify the midpoint
+    // still produces the target STK/TTK for that category.
     public static class WeaponCategoryDefaults
     {
         public static void Apply(WeaponCategoryData c)
@@ -19,6 +25,7 @@ namespace CGD.Weapons
             }
         }
 
+        // Target: 4–5 STK, ~0.35s TTK, 30–60m optimal. All-rounder niche.
         private static void ApplyAR(WeaponCategoryData c)
         {
             c.Names     = new[] { "M4A1", "AK-47", "SCAR-L", "HK416", "AR-15", "M16A4" };
@@ -79,6 +86,7 @@ namespace CGD.Weapons
             c.AdsSpeed  = new(9f,  12f, 0f);
         }
 
+        // Target: 5–6 STK, ~0.35s TTK, 5–20m optimal. Mobile close-range TTK niche.
         private static void ApplySMG(WeaponCategoryData c)
         {
             c.Names     = new[] { "MP5", "UMP-45", "P90", "Vector", "MP7", "PP-19 Bizon" };
@@ -142,6 +150,9 @@ namespace CGD.Weapons
             c.AdsSpeed  = new(14f, 18f, 0f);
         }
 
+        // Target: 3–4 STK, ~0.5s TTK, 15–25m optimal. Always-ready backup niche.
+        // Damage range is intentionally wide (20–55) to cover hand-cannon variants
+        // that override AmmoType to HeavyRounds and land at 2 STK (~0.4s TTK).
         private static void ApplyPistol(WeaponCategoryData c)
         {
             c.Names     = new[] { "M9", "Glock 17", "Desert Eagle", "USP-S", "P250", "Five-seveN" };
@@ -208,6 +219,9 @@ namespace CGD.Weapons
             c.AdsSpeed  = new(16f, 20f, 0f);
         }
 
+        // Target: 1 STK, 0.6–1.2s TTK (cycle-dominated), 80–200m optimal.
+        // TTFK from ambush niche. Headshot must one-shot; body must one-shot on
+        // high-damage rolls (>= 100 damage).
         private static void ApplySniper(WeaponCategoryData c)
         {
             c.Names     = new[] { "AWP", "Barrett M82A1", "L96A1", "M24", "Kar98k", "SV-98" };
@@ -270,6 +284,9 @@ namespace CGD.Weapons
             c.AdsSpeed  = new(3f,  5f,  0f);
         }
 
+        // Target: 3–4 STK, ~0.25s TTK, 30–70m optimal. Sustained TTK,
+        // multi-target niche. Best DPS in the roster; pays for it with slowest
+        // handling, longest reload, worst first-shot spread.
         private static void ApplyLMG(WeaponCategoryData c)
         {
             c.Names     = new[] { "M249 SAW", "MG42", "RPK", "Negev", "M60", "PKM" };
@@ -335,6 +352,9 @@ namespace CGD.Weapons
             c.AdsSpeed  = new(5f,  7f,  0f);
         }
 
+        // Target: 1 STK at 3–8m (0.15–0.25s effective TTK), useless past 20m.
+        // Instant close-range kill niche. All-pellets-hit is the design contract
+        // — miss half the pellets and TTK doubles or you drop to 2-shot.
         private static void ApplyShotgun(WeaponCategoryData c)
         {
             c.Names     = new[] { "M870", "SPAS-12", "Benelli M3", "Mossberg 500", "KSG", "AA-12" };

@@ -205,6 +205,7 @@
 ### Tuning
 - All values tunable per weapon: RPM, damage, ranges, Accuracy (spreads, bloom, recovery, cap), Control (kick, jitter, drift, buildup, recovery), Handling (draw, sway), reload times
 - Design targets for inter-category (AR vs SMG vs Sniper etc.) and intra-tier (Common vs Legendary) balance live in `WEAPON_BALANCE.md` in the project root — TTK targets per category, off-range falloff expectations, tier feel goals, and the derivation from `WeaponCategoryData` FloatRanges
+- Hand-authored Tier 1 (Common) reference weapons live under `Data/Weapons/Ranged/T1/` — one per category (M4A1, MP5, Glock 17, Kar98k, M249, M870) plus a Desert Eagle hand-cannon variant that shows the Pistol category's HeavyRounds override. These are the "what Common feels like" baseline for every category
 
 ## Melee Combat
 - Tap the melee key for a light attack; hold it past a configurable threshold before releasing for a heavier finisher instead

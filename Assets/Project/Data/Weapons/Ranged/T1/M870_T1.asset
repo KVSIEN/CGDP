@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bd3583691f680f40925447c7e1e95a3, type: 3}
+  m_Name: M870_T1
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.WeaponData
+  WeaponName: M870
+  FireBehavior: {fileID: 11400000, guid: e2cbfa746aa878d4aa23d60289c75ece, type: 2}
+  OnHitEffects: []
+  FireMode: 0
+  RoundsPerMinute: 60
+  BurstCount: 1
+  BurstInterval: 0
+  PelletCount: 8
+  ChargeTime: 0.8
+  MinChargeToFire: 0.15
+  Damage: 12
+  DamageType: 0
+  ArmorPenetration: 0
+  HeadshotMultiplier: 1.75
+  RangeOptimal: 10
+  RangeFalloffEnd: 30
+  DamageFalloffMin: 0.15
+  MaxRange: 100
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 55
+  AmmoType: 5
+  MagazineSize: 6
+  ReloadTime: 3.5
+  TacticalReloadTime: 2.8
+  HipSpreadDeg: 12
+  AdsSpreadDeg: 3.5
+  AdsSpreadMultiplier: 0.45
+  HotAdsSpreadMultiplier: 0.6
+  SpreadPerShot: 1
+  SpreadRecovery: 10
+  MaxSpread: 10
+  RecoilScale: {x: 0.8, y: 3.5}
+  RecoilJitter: {x: 0.3, y: 0.15}
+  RecoilHorizontalBias: 0
+  HorizontalDriftMode: 0
+  MaxAccumulatedRecoil: 5
+  MaxAccumulatedHorizontalRecoil: 3
+  RecoilHeatPerShot: 0.2
+  RecoilHeatCooldown: 1.8
+  MaxHeatRecoilMultiplier: 1.2
+  RecoilHeatJitterMultiplier: 1.3
+  RecoilRecoverySpeed: 5
+  RecoilRecoveryFraction: 0.9
+  RecoilRecoveryDelay: 0.2
+  AdsRecoilRecoveryFraction: 1
+  AdsRecoilMultiplier: 0.65
+  HipRecoilVerticalMultiplier: 0.42
+  HipRecoilHorizontalMultiplier: 0.3
+  DrawTime: 0.6
+  LookSwayAmount: 0.65
+  LookSwayRecovery: 9
+  IdleSwayAmount: 0.45
+  IdleSwaySpeed: 0.6
+  MoveSwayAmount: 1.3
+  AdsFovDeg: 50
+  AdsSpeed: 9
+  FireSound: {fileID: 0}
+  ReloadSound: {fileID: 0}
+  EmptySound: {fileID: 0}

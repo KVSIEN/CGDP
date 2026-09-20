@@ -226,6 +226,35 @@ prototyping but should be filled in before shipping.
 
 ---
 
+## Tier 1 Reference Weapons
+
+Seven hand-authored Common-tier (Tier 1) assets live in
+`Assets/Project/Data/Weapons/Ranged/T1/` — one per category plus a hand-cannon
+variant. They are the concrete example of what "Common feels like" and the
+first thing to compare a new weapon against.
+
+| Asset             | Category    | Damage × RPM        | Ammo           | STK / TTK    | Notes                                        |
+|-------------------|-------------|---------------------|----------------|--------------|----------------------------------------------|
+| `M4A1_T1`         | AR          | 22 × 720            | StandardRounds | 5 / 0.33s    | Sits mid-band; the reliable baseline         |
+| `MP5_T1`          | SMG         | 18 × 850            | LightRounds    | 6 / 0.35s    | Erratic horizontal recoil, snappy handling   |
+| `Glock17_T1`      | Pistol      | 25 × 400 (Semi)     | LightRounds    | 4 / 0.45s    | Snappiest ADS in the roster                  |
+| `DesertEagle_T1`  | Pistol      | 55 × 300 (Semi)     | HeavyRounds    | 2 / 0.4s     | Overrides AmmoType — hand-cannon niche       |
+| `Kar98k_T1`       | Sniper      | 95 × 45 (bolt)      | HeavyRounds    | 1 / 1.3s     | Body-shot two-taps only if damage rolls hot  |
+| `M249_T1`         | LMG         | 30 × 700            | StandardRounds | 4 / 0.26s    | Best DPS, worst handling & 6.5s reload       |
+| `M870_T1`         | Shotgun     | 12 × 8 pellets × 60 | ShotgunShells  | 1 / 0.15s    | All-pellets-hit at ≤10m; drops to 2-shot past that |
+
+Higher tiers (T2–T5) aren't authored yet — those variants come from the
+`WeaponGenerator` rolling `WeaponCategoryData` with a `StatRollProfile` and
+its quality curve, once each category has its profile assigned.
+
+The T1 assets are hand-tuned rather than rolled because we want a known
+Common-tier baseline for every category *before* the roll system produces
+per-weapon variance. When higher tiers land, they should be measurably
+stronger than the T1 asset in the same category — that comparison is the
+diagnostic for whether the quality curve is doing its job.
+
+---
+
 ## Balancing Workflow
 
 For each new or modified weapon:
