@@ -19,10 +19,12 @@ namespace CGD.Interaction
 
         public string InteractLabel => Weapon != null ? $"Pick Up  {Weapon.Data.WeaponName}" : "Pick Up";
 
-        public void SetData(WeaponData data)
+        // Used by RandomWeaponPickup to hand over an already-rolled weapon, so its
+        // quality and attachment slots survive being picked up.
+        public void SetWeapon(WeaponInstance weapon)
         {
-            _data   = data;
-            _weapon = null;
+            _weapon = weapon;
+            _data   = weapon?.Data;
         }
 
         public bool CanInteract(GameObject player) =>

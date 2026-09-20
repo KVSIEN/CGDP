@@ -96,6 +96,22 @@
 - Doors: press E on a `Door` to swing it open or closed (no animation — a plain procedural rotation)
 - Switches: press E on a `Switch` to toggle one or more linked doors remotely
 
+## Items
+
+- Every item the player can hold shares one definition type, split into two families:
+  - **Stackable** — resources, consumables, munitions and attachments. These have no per-item variation at all: a better version is a separate item at a higher tier, not a luckier roll. Wood is wood; ironwood is its own item
+  - **Rolled** — weapons and armor. Every piece is unique, with its own quality score and stats
+- Items are tagged with the reality they came from (Tech, Bio, Void, or neutral)
+- **Quality and tiers** — rolled gear has a quality score from 1 to 100, banded into five tiers: Common (1–20), Uncommon (21–40), Rare (41–60), Epic (61–80), Legendary (81–100)
+- **Tradeoffs** — quality decides how much total power a piece has; tradeoff axes decide how that power is spread. High damage is paid for with fire rate and recoil, a large magazine is paid for with reload time, tight spread is paid for with draw speed and sway
+  - At low quality the tradeoff is brutal: a hard-hitting Common fires like a musket
+  - At high quality the same tradeoff still shapes the weapon's character, but the cost side stays perfectly usable — a Legendary is strong across the board and still has a personality
+  - A bad roll is possible at every tier, and a good Common can outperform a poorly rolled Rare
+- **Attachments** — craftable modifiers fitted into a weapon or armor piece's slots. Their effects are fixed, not rolled, and many carry a drawback alongside their benefit
+  - Fitting is fully reversible: attachments sit on top of the item's own roll rather than overwriting it, so removing one restores the original
+  - Higher-tier gear comes with more attachment slots (1 at Common through 4 at Legendary)
+- **Inventory** — holds counted stacks and unique items side by side, with no capacity limit
+
 ## Procedural Weapon Generation
 - Six weapon categories: AR, SMG, Pistol, Sniper, LMG, Shotgun — each defined by a `WeaponCategoryData` ScriptableObject
 - Every stat (damage, RPM, magazine size, spread, recoil, range, reload time, etc.) is defined as a min/max range with an optional bias value
@@ -109,6 +125,8 @@
   - **Shotgun** — 60–120 RPM semi/auto, 5–8 shell tube, 8–12 pellets per shot at 10–15 damage each, very short optimal range (8–15 m) with steep falloff, wide pellet cone (8–15° hip, 2–4° ADS), heavy per-shot recoil
 - Several stats (ADS bloom, recoil recovery fraction, recovery delay, ADS recoil multiplier, hipfire camera kick) are automatically derived from the category type and fire rate so the weapon feels correct without manual tuning
 - Create category assets via **Assets → Create → CGD → Weapon Category**, set the `Type` field, then right-click the asset and choose **Apply Type Defaults** to fill in all thresholds; values can be freely tweaked afterward
+- Generated weapons now roll a quality score and tier, which decides where each stat lands inside its category range — an SMG still rolls SMG damage, just high or low within it
+- Stats that carry a weapon's *power* (damage, fire rate, magazine, reload, recoil, spread, range, draw, sway) are driven by quality and the tradeoff axes. Stats that only give it *character* (recoil recovery, heat behaviour, burst timing) stay random, so high-tier weapons don't all start feeling the same
 
 ## Weapon Loadout
 - Four weapon slots on the player; press 1, 2, 3, or 4 to equip the weapon in that slot

@@ -1,0 +1,125 @@
+using UnityEngine;
+
+namespace CGD.Items
+{
+    // Turns a quality score into a set of per-stat outcomes.
+    //
+    // Quality answers "how much power does this item have"; the tradeoff axes answer
+    // "how is that power distributed". Keeping them separate is what lets the GDD's
+    // two requirements coexist — low tiers forced into clear tradeoffs, top tiers
+    // strong across the board — which a plain range shift can't express.
+    //
+    //   base   = BaseFloor  + BaseGain    * quality   (lifts every stat)
+    //   spread = SpreadCeil - SpreadDecay * quality   (how hard tradeoffs bite)
+    //
+    //   desirability = base +/- lean * spread
+    //
+    // At quality 10 (base .17, spread .47) a full lean buys a strong stat by pinning
+    // its opposite to the floor. At quality 95 (base .77, spread .17) the same lean
+    // still shapes the weapon's character but the cost side stays perfectly usable.
+    //
+    // Shared across categories on purpose: one profile defines the game's power
+    // curve, and a category only chooses which stats oppose each other.
+    [CreateAssetMenu(fileName = "StatRollProfile", menuName = "CGD/Items/Stat Roll Profile")]
+    public class StatRollProfile : ScriptableObject
+    {
+        [Header("Quality Curve")]
+        [Tooltip("Desirability every stat starts from at quality 1")]
+        [Range(0f, 1f)] public float BaseFloor = 0.10f;
+        [Tooltip("Desirability added on top by the time quality reaches 100")]
+        [Range(0f, 1f)] public float BaseGain = 0.70f;
+        [Tooltip("How far a full lean moves a stat at quality 1")]
+        [Range(0f, 1f)] public float SpreadCeil = 0.50f;
+        [Tooltip("How much of that swing quality 100 removes")]
+        [Range(0f, 1f)] public float SpreadDecay = 0.35f;
+
+        [Header("Free Stats")]
+        [Tooltip("Random wobble applied to stats that sit on no axis, so they aren't identical every roll")]
+        [Range(0f, 0.5f)] public float FreeStatVariance = 0.10f;
+
+        [Header("Tradeoffs")]
+        public TradeoffAxis[] Axes;
+
+        [Header("Attachments")]
+        [Tooltip("Attachment slots granted per tier, indexed Common -> Legendary")]
+        public int[] AttachmentSlotsPerTier = { 1, 1, 2, 3, 4 };
+
+        public ItemRoll Roll(ItemTier tier) => Roll(ItemTiers.RollQuality(tier));
+
+        public ItemRoll Roll(int quality)
+        {
+            float q      = ItemTiers.Normalize(quality);
+            float basis  = BaseFloor + BaseGain * q;
+            float spread = Mathf.Max(0f, SpreadCeil - SpreadDecay * q);
+
+            var desirability = new float[ItemStatTraits.Count];
+            var onAxis       = new bool[ItemStatTraits.Count];
+
+            if (Axes != null)
+            {
+                foreach (TradeoffAxis axis in Axes)
+                {
+                    float lean = Random.Range(-1f, 1f);
+                    Assign(axis.Gains, basis + lean * spread, desirability, onAxis);
+                    Assign(axis.Costs, basis - lean * spread, desirability, onAxis);
+                }
+            }
+
+            for (int i = 0; i < desirability.Length; i++)
+            {
+                if (onAxis[i]) continue;
+                desirability[i] = Mathf.Clamp01(basis + Random.Range(-FreeStatVariance, FreeStatVariance));
+            }
+
+            return new ItemRoll(quality, desirability);
+        }
+
+        public int AttachmentSlots(ItemTier tier)
+        {
+            int index = (int)tier;
+            if (AttachmentSlotsPerTier == null || index >= AttachmentSlotsPerTier.Length) return 0;
+            return Mathf.Max(0, AttachmentSlotsPerTier[index]);
+        }
+
+        // A stat listed on more than one axis keeps the last assignment rather than
+        // compounding, so overlapping axes degrade predictably instead of stacking
+        // into an unreachable value.
+        private static void Assign(ItemStat[] stats, float value, float[] desirability, bool[] onAxis)
+        {
+            if (stats == null) return;
+
+            foreach (ItemStat stat in stats)
+            {
+                if (stat == ItemStat.None) continue;
+                desirability[(int)stat] = Mathf.Clamp01(value);
+                onAxis[(int)stat]       = true;
+            }
+        }
+
+        [ContextMenu("Apply Default Firearm Axes")]
+        public void ApplyDefaultFirearmAxes()
+        {
+            Axes = new[]
+            {
+                new TradeoffAxis
+                {
+                    Name  = "Punch",
+                    Gains = new[] { ItemStat.Damage },
+                    Costs = new[] { ItemStat.FireRate, ItemStat.Recoil },
+                },
+                new TradeoffAxis
+                {
+                    Name  = "Capacity",
+                    Gains = new[] { ItemStat.MagazineSize, ItemStat.AmmoReserve },
+                    Costs = new[] { ItemStat.ReloadTime },
+                },
+                new TradeoffAxis
+                {
+                    Name  = "Precision",
+                    Gains = new[] { ItemStat.Spread },
+                    Costs = new[] { ItemStat.DrawTime, ItemStat.Sway },
+                },
+            };
+        }
+    }
+}

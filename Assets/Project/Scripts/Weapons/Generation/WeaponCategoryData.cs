@@ -1,6 +1,7 @@
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
+using CGD.Items;
 
 namespace CGD.Weapons
 {
@@ -8,7 +9,7 @@ namespace CGD.Weapons
     // Right-click the asset and choose "Apply Type Defaults" to auto-fill realistic thresholds,
     // then tweak individual ranges as needed.
     [CreateAssetMenu(fileName = "WeaponCategory", menuName = "CGD/Weapons/Weapon Category")]
-    public class WeaponCategoryData : ScriptableObject
+    public class WeaponCategoryData : GearDefinition
     {
         [Header("Identity")]
         public WeaponType Type;
@@ -99,6 +100,12 @@ namespace CGD.Weapons
         [Header("ADS")]
         public FloatRange AdsFovDeg = new(40f, 48f);
         public FloatRange AdsSpeed  = new(8f,  12f);
+
+        // A weapon's stats live as named fields on generated WeaponData rather than in
+        // a StatBlock, because the firing code reads them directly. The roll still
+        // comes from the shared quality curve, so weapons and armor scale together.
+        public override ItemInstance CreateInstance(ItemRoll roll) =>
+            WeaponGenerator.Generate(this, roll);
 
         // ── Context Menu ──────────────────────────────────────────────────────────
 

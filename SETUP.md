@@ -179,12 +179,25 @@ Switch (any name)             [Collider (isTrigger), Switch]
 | `Combat/StatusEffects/` (`BleedEffect`, `FireEffect`, `IceEffect`, `LightningEffect`, `PoisonEffect`) | referenced by whatever applies the effect via `StatusEffectController` |
 | `Weapons/Ranged/<Name>WeaponData` (per weapon — `DefaultWeaponData`) | `PlayerWeaponLoadout`, `WeaponController`, `WeaponPickup` |
 | `Weapons/Categories/<Name>Category` (per category) | `RandomWeaponPickup`, `WeaponGenerator` |
+| `Items/DefaultStatRollProfile` (optional — assign to each `WeaponCategoryData`'s `RollProfile`; without one, stats roll uniformly and quality is ignored) | `WeaponCategoryData`, `ArmorDefinition` |
 | `Weapons/FireBehaviors/` (`HitscanFireBehavior`, `ShotgunFireBehavior`, `ProjectileFireBehavior` → `Prefabs/Weapons/Projectile`) | assigned on each `WeaponCategoryData` / `WeaponData` `FireBehavior` |
 | `Abilities/` (`DashAbility`, `HealAbility`, `ProjectileAbility` → `Prefabs/Weapons/Projectile`, `ShockwaveAbility`) — each has `MaxCharges` and `CastTime` | `PlayerAbilities._slots` |
 | `Weapons/Melee/DefaultMeleeWeaponData` | `MeleeController` |
 | `Weapons/Throwables/DefaultGrenadeData` (its `GrenadePrefab` — `Prefabs/Weapons/FragGrenade` — needs a `Rigidbody` + non-trigger `Collider` + `Grenade` component) | `GrenadeController` |
 | `Audio/DefaultSurfaceDatabase` (empty until surface `SoundBank`s exist) | `PlayerFootsteps` |
 | `SoundBank` assets (per sound — weapon fire/reload/empty, melee swing/hit, grenade throw/explosion, player hurt/death, enemy hurt/death/attack/ranged-attack, footstep walk/sprint/crouch per surface) | Various — all optional; systems work silently without them |
+
+### Stat Roll Profile
+
+`StatRollProfile` (**Assets → Create → CGD → Items → Stat Roll Profile**) is the one
+asset that defines how item quality converts into stats, so it is meant to be a
+**single shared asset** assigned to every `WeaponCategoryData` and `ArmorDefinition`.
+Right-click it and choose **Apply Default Firearm Axes** to fill in the tradeoff axes,
+the same way `WeaponCategoryData` has **Apply Type Defaults**.
+
+Leaving `RollProfile` empty is supported and reproduces the previous behaviour exactly:
+every stat rolls uniformly within its authored range, and the item falls back to
+quality 1 / Common with no attachment slots.
 
 `InputBindingSettings` and `PlayerMovementSettings` are each a **single shared asset**
 referenced by multiple components — don't accidentally create per-component duplicates,

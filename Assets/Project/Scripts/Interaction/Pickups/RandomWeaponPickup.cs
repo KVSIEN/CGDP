@@ -18,7 +18,7 @@ namespace CGD.Interaction
                 : _categories[Random.Range(0, _categories.Length)];
 
             if (cat == null) return;
-            GetComponent<WeaponPickup>().SetData(WeaponGenerator.Generate(cat));
+            GetComponent<WeaponPickup>().SetWeapon(WeaponGenerator.Generate(cat));
         }
     }
 }
