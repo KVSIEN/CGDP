@@ -17,14 +17,22 @@ namespace CGD.Weapons
             return (rot * new Vector3(offset.x, offset.y, 1f)).normalized;
         }
 
+        // The one place a fire behavior turns weapon stats into a DamageInfo. Falloff for
+        // hitscan and pellets goes through the damageScale; projectiles pass 1f and carry
+        // the info forward until impact.
+        protected static DamageInfo BuildDamageInfo(in FireContext ctx, float damageScale = 1f)
+        {
+            WeaponData d = ctx.Data;
+            return new DamageInfo(d.Damage * damageScale, d.ArmorPenetration, d.DamageType,
+                                  d.HeadshotMultiplier, ctx.Source, d.OnHitEffects);
+        }
+
         protected static void ApplyHitDamage(RaycastHit hit, in FireContext ctx)
         {
             WeaponData data = ctx.Data;
             float t       = Mathf.InverseLerp(data.RangeOptimal, data.RangeFalloffEnd, hit.distance);
             float falloff = Mathf.Lerp(1f, data.DamageFalloffMin, t);
-            var   info    = new DamageInfo(data.Damage * falloff, data.ArmorPenetration, data.DamageType,
-                data.HeadshotMultiplier, ctx.Source, data.OnHitEffects);
-            Hitbox.ApplyHit(hit.collider, info, hit.point);
+            Hitbox.ApplyHit(hit.collider, BuildDamageInfo(ctx, falloff), hit.point);
         }
     }
 }

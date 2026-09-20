@@ -33,10 +33,7 @@ namespace CGD.Weapons
             Vector3    origin = ctx.Muzzle != null ? ctx.Muzzle.position : ctx.CameraPosition;
             GameObject go     = PrefabPool.Spawn(_prefab.gameObject, origin, Quaternion.LookRotation(ctx.Direction));
 
-            WeaponData data = ctx.Data;
-            var hit = new DamageInfo(data.Damage, data.ArmorPenetration, data.DamageType,
-                data.HeadshotMultiplier, ctx.Source, data.OnHitEffects);
-            go.GetComponent<Projectile>().Launch(hit, ctx.Direction * speed, gravity, _lifetime);
+            go.GetComponent<Projectile>().Launch(BuildDamageInfo(ctx), ctx.Direction * speed, gravity, _lifetime);
         }
     }
 }
