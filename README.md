@@ -9,13 +9,13 @@ runtime-built HUD.
 - [TASKS.md](TASKS.md) — open work
 - [CLAUDE.md](CLAUDE.md) — coding guidelines
 
-Open `Assets/_Project/Scenes/Sandbox.unity` to play.
+Open `Assets/Project/Scenes/Sandbox.unity` to play.
 
 ## Project layout
 
 ```
 Assets/
-  _Project/                 everything owned by this project
+  Project/                  everything owned by this project
     Art/                    Animations, Fonts, Materials, PhysicsMaterials, Shaders, Textures
     Audio/                  Music, SFX
     Data/                   ScriptableObject assets, one folder per feature

@@ -26,5 +26,5 @@ Completed work is described in [FEATURES.md](FEATURES.md); full task history is 
 - Systems: pickups, doors and switches
 - Input: gamepad bindings, name-based saves, conflict detection, native rebinding, unified Move/Look, UGUI settings menu
 - Audio: pooled sources and sound banks, weapon/melee/grenade/player/enemy sounds, surface-aware footsteps
-- Project structure: `_Project` layout, feature folders, namespaces, assembly definition
+- Project structure: `Project` layout, feature folders, namespaces, assembly definition
 - Default data set: an asset for every data type, Sniper category, projectile and grenade prefabs

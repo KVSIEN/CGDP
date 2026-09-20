@@ -2,10 +2,10 @@
 
 How to wire every system into a playable scene. This describes the *intended* setup —
 component hierarchy, required references, and which ScriptableObject assets each
-system needs. Cross-check against `Assets/_Project/Scenes/Sandbox.unity` for a working
+system needs. Cross-check against `Assets/Project/Scenes/Sandbox.unity` for a working
 reference scene built to this layout.
 
-ScriptableObject assets live under `Assets/_Project/Data/<Feature>/` (see the table at
+ScriptableObject assets live under `Assets/Project/Data/<Feature>/` (see the table at
 the end). Folder layout is described in `README.md`.
 
 ## Scene Root

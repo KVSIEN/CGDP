@@ -40,7 +40,7 @@ Language: C#
 
 Source folders:
 
-- Assets/_Project/ (all project-owned content — layout in README.md)
+- Assets/Project/ (all project-owned content — layout in README.md)
 - ProjectSettings/
 
 Assets/ThirdParty/ and Assets/TextMesh Pro/ are imported content; don't edit them.
@@ -230,8 +230,8 @@ Comments should explain "why", not "what".
 
 Organize by feature. The layout is documented in README.md:
 
-- scripts: Assets/_Project/Scripts/<Feature>/ (sub-folders per concern when a feature grows)
-- ScriptableObject assets: Assets/_Project/Data/<Feature>/ — never inside Scripts/
+- scripts: Assets/Project/Scripts/<Feature>/ (sub-folders per concern when a feature grows)
+- ScriptableObject assets: Assets/Project/Data/<Feature>/ — never inside Scripts/
 - no .cs files outside Scripts/
 
 Namespaces follow the top-level script folder: `namespace CGD.<Feature>`.
