@@ -183,7 +183,8 @@ Switch (any name)             [Collider (isTrigger), Switch]
 | `Combat/HitboxProfiles/<Name>HitboxProfile` (optional, one per character type — `DefaultHitboxProfile`, `TargetDummyHitboxProfile`) | `EnemyHealth`, `PlayerHealth` |
 | `Combat/StatusEffects/` (`BleedEffect`, `FireEffect`, `IceEffect`, `LightningEffect`, `PoisonEffect`) | referenced by whatever applies the effect via `StatusEffectController` |
 | `Weapons/Ranged/<Name>WeaponData` (per weapon — `DefaultWeaponData`) | `PlayerWeaponLoadout`, `WeaponController`, `WeaponPickup` |
-| `Weapons/Categories/<Name>Category` (per category) | `RandomWeaponPickup`, `WeaponGenerator` |
+| `Weapons/Categories/<Name>Category` (per category) — assign `_rollProfile` = one of the family-specific `StatRollProfile` assets below | `RandomWeaponPickup`, `WeaponGenerator` |
+| `Items/Profiles/<Family>Profile` (one per weapon family — `StandardFirearmProfile`, `PrecisionRifleProfile`, `AutomaticSupportProfile`, `ShotgunProfile`) — right-click the asset and pick the matching `Axes/...` preset | `GearDefinition._rollProfile` on each `WeaponCategoryData` |
 | `Items/DefaultStatRollProfile` (optional — assign to each `WeaponCategoryData`'s `RollProfile`; without one, stats roll uniformly and quality is ignored) | `WeaponCategoryData`, `ArmorDefinition` |
 | `Weapons/FireBehaviors/` (`HitscanFireBehavior`, `ShotgunFireBehavior`, `ProjectileFireBehavior` → `Prefabs/Weapons/Projectile`) | assigned on each `WeaponCategoryData` / `WeaponData` `FireBehavior` |
 | `Abilities/` (`DashAbility`, `HealAbility`, `ProjectileAbility` → `Prefabs/Weapons/Projectile`, `ShockwaveAbility`) — each has `MaxCharges` and `CastTime` | `PlayerAbilities._slots` |

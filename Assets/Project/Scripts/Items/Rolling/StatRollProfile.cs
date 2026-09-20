@@ -96,8 +96,10 @@ namespace CGD.Items
             }
         }
 
-        [ContextMenu("Apply Default Firearm Axes")]
-        public void ApplyDefaultFirearmAxes()
+        // ── Family presets (see WEAPON_BALANCE.md for the design rationale) ──
+
+        [ContextMenu("Axes/Standard Firearm (SMG · AR · Pistol)")]
+        public void ApplyStandardFirearmAxes()
         {
             Axes = new[]
             {
@@ -110,7 +112,7 @@ namespace CGD.Items
                 new TradeoffAxis
                 {
                     Name  = "Capacity",
-                    Gains = new[] { ItemStat.MagazineSize, ItemStat.AmmoReserve },
+                    Gains = new[] { ItemStat.MagazineSize },
                     Costs = new[] { ItemStat.ReloadTime },
                 },
                 new TradeoffAxis
@@ -118,6 +120,92 @@ namespace CGD.Items
                     Name  = "Precision",
                     Gains = new[] { ItemStat.Spread },
                     Costs = new[] { ItemStat.DrawTime, ItemStat.Sway },
+                },
+            };
+        }
+
+        // Snipers / DMRs / hand cannons — damage costs cycle and mag capacity,
+        // because bigger rounds chamber slower and pack fewer per magazine.
+        // Range costs handling weight: a long barrel is unwieldy in hand.
+        [ContextMenu("Axes/Precision Rifle (Sniper · DMR · Hand cannon)")]
+        public void ApplyPrecisionRifleAxes()
+        {
+            Axes = new[]
+            {
+                new TradeoffAxis
+                {
+                    Name  = "Punch",
+                    Gains = new[] { ItemStat.Damage },
+                    Costs = new[] { ItemStat.ReloadTime, ItemStat.MagazineSize },
+                },
+                new TradeoffAxis
+                {
+                    Name  = "Reach",
+                    Gains = new[] { ItemStat.Range },
+                    Costs = new[] { ItemStat.DrawTime, ItemStat.Sway },
+                },
+                new TradeoffAxis
+                {
+                    Name  = "Precision",
+                    Gains = new[] { ItemStat.Spread },
+                    Costs = new[] { ItemStat.FireRate },
+                },
+            };
+        }
+
+        // LMGs — mag capacity costs handling; sustained fire trades recoil
+        // control for RPM; big rounds still cost accuracy but the tradeoff is
+        // gentler than a precision rifle's.
+        [ContextMenu("Axes/Automatic Support (LMG)")]
+        public void ApplyAutomaticSupportAxes()
+        {
+            Axes = new[]
+            {
+                new TradeoffAxis
+                {
+                    Name  = "Capacity",
+                    Gains = new[] { ItemStat.MagazineSize },
+                    Costs = new[] { ItemStat.ReloadTime, ItemStat.DrawTime },
+                },
+                new TradeoffAxis
+                {
+                    Name  = "Suppression",
+                    Gains = new[] { ItemStat.FireRate },
+                    Costs = new[] { ItemStat.Recoil, ItemStat.Sway },
+                },
+                new TradeoffAxis
+                {
+                    Name  = "Weight",
+                    Gains = new[] { ItemStat.Damage },
+                    Costs = new[] { ItemStat.Spread },
+                },
+            };
+        }
+
+        // Shotguns — per-pellet damage costs pattern tightness; tube capacity
+        // costs shell-by-shell reload speed; a snappier cycle costs kick and draw.
+        [ContextMenu("Axes/Shotgun")]
+        public void ApplyShotgunAxes()
+        {
+            Axes = new[]
+            {
+                new TradeoffAxis
+                {
+                    Name  = "Slug",
+                    Gains = new[] { ItemStat.Damage },
+                    Costs = new[] { ItemStat.Spread },
+                },
+                new TradeoffAxis
+                {
+                    Name  = "Tube",
+                    Gains = new[] { ItemStat.MagazineSize },
+                    Costs = new[] { ItemStat.ReloadTime },
+                },
+                new TradeoffAxis
+                {
+                    Name  = "Recovery",
+                    Gains = new[] { ItemStat.FireRate },
+                    Costs = new[] { ItemStat.Recoil, ItemStat.DrawTime },
                 },
             };
         }

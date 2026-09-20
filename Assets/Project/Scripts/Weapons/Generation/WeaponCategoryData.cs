@@ -2,7 +2,6 @@ using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
 using CGD.Items;
-using CGD.Items;
 
 namespace CGD.Weapons
 {

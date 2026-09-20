@@ -204,6 +204,7 @@
 
 ### Tuning
 - All values tunable per weapon: RPM, damage, ranges, Accuracy (spreads, bloom, recovery, cap), Control (kick, jitter, drift, buildup, recovery), Handling (draw, sway), reload times
+- Design targets for inter-category (AR vs SMG vs Sniper etc.) and intra-tier (Common vs Legendary) balance live in `WEAPON_BALANCE.md` in the project root — TTK targets per category, off-range falloff expectations, tier feel goals, and the derivation from `WeaponCategoryData` FloatRanges
 
 ## Melee Combat
 - Tap the melee key for a light attack; hold it past a configurable threshold before releasing for a heavier finisher instead
