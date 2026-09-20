@@ -76,6 +76,7 @@ HUD                           [Canvas, CanvasScaler, GraphicRaycaster, HUDManage
   - Abilities                  [AbilityHUD]
   - Dodge                      [DodgeHUD]
   - Inventory                  [InventoryHUD]
+  - ItemInventory              [ItemInventoryHUD]
   - Interact                   [InteractHUD]
   - HitEffect                  [HitEffect]
   - Velocity                   [VelocityHUD]
@@ -97,9 +98,10 @@ Don't leave stray instances of either parented under the HUD canvas.
 - **AbilityHUD** — assign `_abilities` = Player's `PlayerAbilities`.
 - **DodgeHUD** — assign `_dodge` = Player's `PlayerDodge`.
 - **InventoryHUD** — assign `_input` = Player, `_loadout` = Player's `PlayerWeaponLoadout`. Requires a `CanvasGroup` on the same object (used to fade the panel in/out).
+- **ItemInventoryHUD** — assign `_input` = Player, `_inventory` = Player's `PlayerInventory` (auto-resolved by scene lookup if left unset). Requires a `CanvasGroup` on the same object. Opens/closes on the same Inventory action as `InventoryHUD` — both panels sit as siblings under the HUD canvas.
 - **InteractHUD** — assign `_interaction` = Player's `PlayerInteraction`. Builds its own world-space prompt via `DamagePopup.GetOrCreateOverlayCamera()` — no manual camera setup needed.
 
-`InventoryHUD` and `InteractHUD` are excluded from `HUDManager.ShowAll()`/it only
+`InventoryHUD`, `ItemInventoryHUD` and `InteractHUD` are excluded from `HUDManager.ShowAll()`/it only
 shows a fixed subset — see `HUDManager.cs` before assuming every element reacts to
 show/hide the same way.
 

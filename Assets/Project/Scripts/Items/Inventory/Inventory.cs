@@ -18,6 +18,24 @@ namespace CGD.Items
         public IReadOnlyList<ItemStack>    Stacks => _stacks;
         public IReadOnlyList<ItemInstance> Items  => _items;
 
+        // One stack = one slot regardless of its count; each unique gear piece is
+        // one slot too. Matches how the HUD lists things — one line per entry.
+        public int SlotCount => _stacks.Count + _items.Count;
+
+        // Stackable weight is per-unit × count; gear weight is per-instance.
+        public float TotalWeight
+        {
+            get
+            {
+                float total = 0f;
+                foreach (ItemStack stack in _stacks)
+                    if (stack.Definition != null) total += stack.Definition.Weight * stack.Count;
+                foreach (ItemInstance item in _items)
+                    total += item.Weight;
+                return total;
+            }
+        }
+
         public event Action Changed;
 
         // Adds to existing stacks first, then opens new ones, spilling into as many

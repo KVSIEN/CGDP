@@ -15,6 +15,8 @@ namespace CGD.Weapons
         public WeaponData Data { get; }
         public int Magazine { get; internal set; }
 
+        public override string DisplayName => Data != null ? Data.WeaponName : "Weapon";
+
         // Hand-authored weapon placed directly in a scene: no roll behind it, so no
         // quality and no attachment slots. Spawns loaded.
         public WeaponInstance(WeaponData data) : base(null)

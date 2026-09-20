@@ -20,6 +20,11 @@ namespace CGD.Items
         public int            Quality    { get; }
         public ItemTier       Tier       { get; }
 
+        // Overridable so subclasses like WeaponInstance can present a rolled name
+        // (e.g. the individual gun's WeaponName) instead of the category label.
+        public virtual string DisplayName => Definition != null ? Definition.DisplayName : "Unknown";
+        public virtual float  Weight      => Definition != null ? Definition.Weight       : 0f;
+
         // The item's own rolled stats. Weapons leave this empty and keep their stats
         // on generated WeaponData instead; see WeaponInstance.
         public StatBlock BaseStats { get; } = new();

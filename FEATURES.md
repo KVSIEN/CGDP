@@ -133,6 +133,7 @@
 - Switching to a slot equips the weapon and cancels any reload in progress
 - Each weapon keeps its own loaded magazine; reserve ammo is a shared pool per `AmmoType` — two SMGs share the same LightRounds supply, an SMG + sniper diversify across two pools, a hand cannon + sniper both compete for scarce HeavyRounds
 - Inventory panel (press I) shows all four loadout slots, highlights the active weapon, and lists each weapon's name; empty slots are shown as "— Empty —"
+- Item inventory panel (also press I, sits to the right of the loadout) shows a flat list of everything carried — stackable items aggregated by definition (so all Light Rounds show as one line with a total count rather than one line per internal 999-cap stack) plus each unique gear piece; a header shows slots-used and total weight against per-player caps that turn orange when exceeded
 - Starting weapons are configurable in the Inspector via WeaponData ScriptableObject assets
 
 ## Input System
