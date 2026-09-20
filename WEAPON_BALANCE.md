@@ -102,7 +102,7 @@ lowering base damage.
 - **What a Legendary sniper feels like**: same one-shot potential, better bolt cycle (lower RPM tax), tighter first-shot scope, faster reload.
 
 ### DMR
-- **Best at**: precise ranged fire with follow-up shots; picks between Sniper and AR range bands.
+- **Best at**: precise ranged fire with follow-up shots; picks between Sniper and AR range bands. Hard-hitting variants (low RoF, heavy recoil, damage rolled to the top of the range) drop into two-shot territory to body — one-shot to head — trading cadence for burst damage.
 - **Weakness**: outclassed at extreme range by sniper, at close quarters by AR/SMG. StandardRounds shared with AR/LMG.
 - **What a Legendary DMR feels like**: near-sniper accuracy at half the cycle time.
 
