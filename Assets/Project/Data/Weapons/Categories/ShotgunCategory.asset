@@ -104,8 +104,8 @@ MonoBehaviour:
     Max: 16
     Bias: 0
   AdsSpreadDeg:
-    Min: 1.5
-    Max: 3.5
+    Min: 0.5
+    Max: 2
     Bias: 0
   AdsSpreadMultiplier:
     Min: 0.3
