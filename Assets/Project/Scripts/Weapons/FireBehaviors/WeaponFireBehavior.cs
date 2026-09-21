@@ -27,11 +27,14 @@ namespace CGD.Weapons
                                   d.HeadshotMultiplier, ctx.Source, d.OnHitEffects);
         }
 
+        // A weapon's range stats as a curve, so a shot resolved instantly and one resolved
+        // mid-flight by a projectile scale damage by distance the same way.
+        protected static DamageFalloff FalloffOf(WeaponData data) =>
+            new(data.RangeOptimal, data.RangeFalloffEnd, data.DamageFalloffMin);
+
         protected static void ApplyHitDamage(RaycastHit hit, in FireContext ctx)
         {
-            WeaponData data = ctx.Data;
-            float t       = Mathf.InverseLerp(data.RangeOptimal, data.RangeFalloffEnd, hit.distance);
-            float falloff = Mathf.Lerp(1f, data.DamageFalloffMin, t);
+            float falloff = FalloffOf(ctx.Data).Evaluate(hit.distance);
             Hitbox.ApplyHit(hit.collider, BuildDamageInfo(ctx, falloff), hit.point);
         }
     }

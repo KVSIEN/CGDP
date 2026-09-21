@@ -29,6 +29,12 @@ namespace CGD.Combat
             OnHitEffects       = onHitEffects;
         }
 
+        // Rescales the hit while keeping every other property. For damage that only learns
+        // its multiplier after the DamageInfo was built, such as a projectile that resolves
+        // range falloff at the moment of impact.
+        public DamageInfo WithDamageScale(float scale) =>
+            new(RawDamage * scale, ArmorPenetration, Type, CriticalMultiplier, Source, OnHitEffects);
+
         // Effective Armor = Armor × (1 − Armor Penetration%)
         // Effective Damage = Raw Damage × (100 / (100 + Effective Armor))
         public float ResolveDamage(float armor)

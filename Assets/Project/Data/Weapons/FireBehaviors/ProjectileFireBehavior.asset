@@ -13,5 +13,9 @@ MonoBehaviour:
   m_Name: ProjectileFireBehavior
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.ProjectileFireBehavior
   _prefab: {fileID: 2411218781784674235, guid: e4776271d68913142b1b6df795be0d43, type: 3}
-  _speed: 60
+  _speed: 900
   _lifetime: 5
+  _gravity: 0
+  _instantHitTime: 0.02
+  _lowChargeSpeedMultiplier: 0.05
+  _lowChargeGravityMultiplier: 3

@@ -4,10 +4,14 @@ using CGD.Core;
 
 namespace CGD.Combat
 {
-    // Traveling damage carrier. Advances under gravity each physics step and
-    // swept-raycasts between the previous and next position, so fast projectiles
-    // can never tunnel past thin colliders between frames. Pool-friendly: never
-    // Destroys itself, always Release.
+    // Traveling damage carrier. Advances under gravity once per frame and swept-raycasts
+    // between the previous and next position, so fast projectiles can never tunnel past
+    // thin colliders between frames. Pool-friendly: never Destroys itself, always Release.
+    //
+    // Stepping per frame rather than per physics tick is what keeps a fast round readable:
+    // at 50 Hz a 900 m/s bullet teleports 18 m at a time and reads as a stuttering slow
+    // object. The swept raycast covers whatever distance the frame actually took, so the
+    // variable timestep costs no collision accuracy.
     //
     // Existing prefabs still carry a kinematic Rigidbody + trigger Collider from
     // the old OnTrigger-based flow; the Awake safety net enforces those settings
@@ -18,59 +22,78 @@ namespace CGD.Combat
         private static readonly RaycastHit[] _hitBuffer = new RaycastHit[16];
         private static readonly HitDistanceComparer _distanceComparer = new();
 
-        private DamageInfo _hit;
-        private Vector3    _velocity;
-        private float      _gravity;
-        private float      _lifetime;
-        private float      _age;
-        private Transform  _ownerRoot;
+        private ProjectileLaunch _launch;
+        private Vector3       _velocity;
+        private float         _age;
+        private float         _distance;
+        private Transform     _ownerRoot;
+        private TrailRenderer _trail;
 
         private void Awake()
         {
             if (TryGetComponent<Rigidbody>(out var rb))     rb.isKinematic = true;
             if (TryGetComponent<Collider>(out var col))     col.isTrigger  = true;
+            TryGetComponent(out _trail);
         }
 
-        // Launch the projectile. `velocity` is metres per second (direction × speed
-        // at spawn) and `gravity` is downward acceleration in m/s² (0 = perfectly
-        // straight flight). The projectile passes through its own shooter and any
-        // trigger colliders, and stops on the first non-trigger it hits.
-        public void Launch(DamageInfo hit, Vector3 velocity, float gravity, float lifetime)
+        // Starts a flight. The projectile passes through its own shooter and any trigger
+        // colliders, and stops on the first non-trigger it hits.
+        public void Launch(in ProjectileLaunch launch)
         {
-            _hit       = hit;
-            _velocity  = velocity;
-            _gravity   = gravity;
-            _lifetime  = lifetime;
+            _launch    = launch;
+            _velocity  = launch.Velocity;
             _age       = 0f;
-            _ownerRoot = hit.Source.Owner != null ? hit.Source.Owner.transform.root : null;
+            _distance  = launch.DistanceTravelled;
+            _ownerRoot = launch.Damage.Source.Owner != null
+                       ? launch.Damage.Source.Owner.transform.root
+                       : null;
+
+            // A pooled instance still holds the trail of its last flight, which would
+            // otherwise streak across the map from wherever that round died.
+            if (_trail != null) _trail.Clear();
 
             FaceVelocity();
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
-            _age += Time.fixedDeltaTime;
-            if (_age >= _lifetime)
+            float dt = Time.deltaTime;
+
+            _age += dt;
+            if (_age >= _launch.Lifetime)
             {
-                PrefabPool.Release(gameObject);
+                Despawn();
                 return;
             }
 
             // Semi-implicit Euler: apply gravity first, then move by the new velocity.
             // Simpler than the exact ballistic formula and stable at the step sizes we use.
-            _velocity += Vector3.down * (_gravity * Time.fixedDeltaTime);
-            Vector3 step = _velocity * Time.fixedDeltaTime;
+            _velocity += Vector3.down * (_launch.Gravity * dt);
+
+            Vector3 step      = _velocity * dt;
+            float   length    = step.magnitude;
+            float   remaining = _launch.MaxDistance - _distance;
+
+            // Stop at max range itself rather than wherever the next frame boundary lands.
+            bool spent = length >= remaining;
+            if (spent && length > 0f) step *= remaining / length;
 
             if (TrySweep(transform.position, step, out RaycastHit hit))
             {
-                Hitbox.ApplyHit(hit.collider, _hit, hit.point);
-                PrefabPool.Release(gameObject);
+                float scale = _launch.Falloff.Evaluate(_distance + hit.distance);
+                Hitbox.ApplyHit(hit.collider, _launch.Damage.WithDamageScale(scale), hit.point);
+                Despawn();
                 return;
             }
 
             transform.position += step;
+            _distance          += spent ? remaining : length;
             FaceVelocity();
+
+            if (spent) Despawn();
         }
+
+        private void Despawn() => PrefabPool.Release(gameObject);
 
         private void FaceVelocity()
         {
@@ -87,7 +110,7 @@ namespace CGD.Combat
             if (distance <= 0f) return false;
 
             int count = Physics.RaycastNonAlloc(start, step / distance, _hitBuffer,
-                distance, ~0, QueryTriggerInteraction.Ignore);
+                distance, _launch.HitMask, QueryTriggerInteraction.Ignore);
             if (count == 0) return false;
 
             System.Array.Sort(_hitBuffer, 0, count, _distanceComparer);

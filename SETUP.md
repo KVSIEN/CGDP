@@ -21,6 +21,7 @@ Global Volume                (URP post-processing)
 - `GameManager` hosts `VisibilityCullingManager` — set `[DefaultExecutionOrder(-100)]` so it registers before `CullableObject.OnEnable()` runs elsewhere. Assign the scene's main `Camera` to its `_camera` field. `_batchFrames`, `_activationMargin`, `_deactivationMargin`, `_alwaysVisibleDistance` are tunable; defaults are fine to start.
 - `GameManager` also hosts `AudioPool`. `_initialSize` defaults to 16 pooled AudioSources; increase if many sounds play simultaneously (rapid-fire weapons, crowds). Optional: assign an Audio Mixer group on each `SoundBank`.
 - Projectiles, grenades and damage numbers are pooled at runtime under `DontDestroyOnLoad` roots (`PrefabPool`, `DamagePopups`) — nothing to place in the scene. Projectile and grenade prefabs are spawned through the pool, so don't destroy them manually.
+- `Prefabs/Weapons/Projectile` needs a `Projectile` component and a renderer; the `Rigidbody` and `SphereCollider` it still carries are leftovers and are forced kinematic/trigger at runtime. A `TrailRenderer` on the same GameObject is optional — `Projectile` finds it in `Awake` and clears it on every launch, which pooled instances need or a reused round streaks a trail in from wherever the last one died. Recommended settings for a rifle round: `Time` 0.05, `Min Vertex Distance` 0.1, width ~0.05 tapering to 0, an unlit/additive material.
 - `RespawnPoint` just needs a `Transform` — assign it to `PlayerLifecycle._spawnPoint`.
 
 ## Player Rig

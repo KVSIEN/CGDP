@@ -31,8 +31,19 @@ namespace CGD.Abilities
             var go = PrefabPool.Spawn(ProjectilePrefab, spawnPos, ctx.CameraTransform.rotation);
 
             // The projectile ignores its source's colliders, so it can't hit the caster.
+            // Abilities carry no range stats, so the shot neither falls off nor expires by
+            // distance — Lifetime alone bounds it.
             var hit = new DamageInfo(Damage, source: ctx.Source, onHitEffects: OnHitEffects);
-            go.GetComponent<Projectile>().Launch(hit, ctx.CameraTransform.forward * Speed, Gravity, Lifetime);
+            go.GetComponent<Projectile>().Launch(new ProjectileLaunch
+            {
+                Damage      = hit,
+                Velocity    = ctx.CameraTransform.forward * Speed,
+                Gravity     = Gravity,
+                Lifetime    = Lifetime,
+                MaxDistance = Mathf.Infinity,
+                HitMask     = ~0,
+                Falloff     = DamageFalloff.None,
+            });
         }
     }
 }
