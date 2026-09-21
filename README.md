@@ -28,6 +28,7 @@ Assets/
       Audio/                audio pool, sound banks, surface lookup
       Combat/               Damage/, Health/ (HealthManager, Hitbox), StatusEffects/, Projectile, Stunnable, Noise
       Core/                 shared utilities (cooldowns, ranges, settings save, Culling/)
+      Editor/               editor-only inspectors and tooling (CGD.Editor assembly)
       Enemies/              enemy components, perception, and AI/ (state classes)
       Input/                PlayerInputHandler and binding settings
       Interaction/          IInteractable, doors, switches, Pickups/
@@ -43,6 +44,9 @@ Assets/
 
 - **Namespaces** follow the top-level script folder: `CGD.Combat`, `CGD.Weapons`, `CGD.UI`, …
   All runtime scripts compile into `CGD.Runtime` (`Scripts/CGD.Runtime.asmdef`).
+  Editor-only scripts live in `Scripts/Editor/` and compile into `CGD.Editor`
+  (`Scripts/Editor/CGD.Editor.asmdef`), which references `CGD.Runtime` and is excluded
+  from builds. Nothing in `CGD.Runtime` may reference it.
 - **Data assets** are named `<Name><Type>` (`PistolCategory`, `HitscanFireBehavior`,
   `TargetDummyEnemyData`) and created from `Create > CGD > <Feature> > …`.
 - **Moving files:** do it inside Unity, or move each file together with its `.meta` while

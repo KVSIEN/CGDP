@@ -12,6 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 522962483bd84074e8d7de7a151a8cfd, type: 3}
   m_Name: ShotgunCategory
   m_EditorClassIdentifier: Assembly-CSharp::WeaponCategoryData
+  _displayName: Item
+  _description: 
+  _icon: {fileID: 0}
+  _reality: 0
+  _tier: 0
+  _weight: 0.1
+  _rollProfile: {fileID: 0}
+  _statRanges: []
   Type: 5
   Names:
   - M870
@@ -20,11 +28,13 @@ MonoBehaviour:
   - Mossberg 500
   - KSG
   - AA-12
+  - Saiga-12
+  - Winchester 1897
   FireModes: 00000000000000000000000001000000
   FireBehavior: {fileID: 11400000, guid: e2cbfa746aa878d4aa23d60289c75ece, type: 2}
   RPM:
-    Min: 60
-    Max: 120
+    Min: 50
+    Max: 260
     Bias: 0
   BurstCount:
     Min: 1
@@ -35,13 +45,13 @@ MonoBehaviour:
     Max: 0
     Bias: 0
   PelletCount:
-    Min: 8
+    Min: 6
     Max: 12
     Bias: 0
   OnHitEffects: []
   Damage:
-    Min: 10
-    Max: 15
+    Min: 9
+    Max: 18
     Bias: 0
   DamageType: 0
   ArmorPenetration:
@@ -53,35 +63,28 @@ MonoBehaviour:
     Max: 2
     Bias: 0
   RangeOptimal:
-    Min: 8
-    Max: 15
+    Min: 6
+    Max: 20
     Bias: 0
   RangeFalloffEnd:
-    Min: 25
-    Max: 45
+    Min: 22
+    Max: 55
     Bias: 0
   DamageFalloffMin:
     Min: 0.1
     Max: 0.25
     Bias: 0
+  AmmoType: 5
   MagazineSize:
-    Min: 5
-    Max: 8
-    Bias: 0
-  ReserveAmmo:
-    Min: 20
-    Max: 36
-    Bias: 0
-  ReserveMultiplier:
-    Min: 3
-    Max: 5
+    Min: 4
+    Max: 10
     Bias: 0
   ReloadTime:
-    Min: 2.5
+    Min: 2.2
     Max: 4.5
     Bias: 0
   TacticalReloadTime:
-    Min: 2
+    Min: 1.8
     Max: 3.5
     Bias: 0
   TacticalReloadBonus:
@@ -90,19 +93,19 @@ MonoBehaviour:
     Bias: 0
   DrawTime:
     Min: 0.5
-    Max: 0.7
+    Max: 0.85
     Bias: 0
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295
   NoiseRadius: 40
   HipSpreadDeg:
-    Min: 8
-    Max: 15
+    Min: 6
+    Max: 16
     Bias: 0
   AdsSpreadDeg:
-    Min: 2
-    Max: 4
+    Min: 1.5
+    Max: 3.5
     Bias: 0
   AdsSpreadMultiplier:
     Min: 0.3
@@ -118,10 +121,10 @@ MonoBehaviour:
     Bias: 0
   SpreadRecovery:
     Min: 8
-    Max: 14
+    Max: 16
     Bias: 0
   RecoilScaleVertical:
-    Min: 2.5
+    Min: 1.6
     Max: 5
     Bias: 0
   RecoilJitterVertical:
@@ -129,7 +132,7 @@ MonoBehaviour:
     Max: 0.213
     Bias: 0
   RecoilScaleHorizontal:
-    Min: 0.5
+    Min: 0.4
     Max: 1.2
     Bias: 0
   RecoilHorizontalBias:
@@ -138,11 +141,11 @@ MonoBehaviour:
     Bias: 0
   MaxAccumulatedRecoil:
     Min: 4
-    Max: 8
+    Max: 10
     Bias: 0
   MaxAccumulatedHorizontalRecoil:
     Min: 2
-    Max: 4
+    Max: 5
     Bias: 0
   RecoilHeatPerShot:
     Min: 0
@@ -156,20 +159,24 @@ MonoBehaviour:
     Min: 1
     Max: 1.2
     Bias: 0
+  RecoilHeatJitterMultiplier:
+    Min: 1.2
+    Max: 1.4
+    Bias: 0
   HotAdsSpreadMultiplier:
     Min: 0.35
     Max: 0.65
     Bias: 0
   RecoilRecoverySpeed:
     Min: 4
-    Max: 6
+    Max: 7
     Bias: 0
   RecoilRecoveryFraction:
     Min: 0.7
     Max: 1
     Bias: 0
   RecoilRecoveryDelay:
-    Min: 0.15
+    Min: 0.12
     Max: 0.3
     Bias: 0
   AdsRecoilRecoveryFraction:
@@ -187,4 +194,32 @@ MonoBehaviour:
   HipRecoilHorizontalMultiplier:
     Min: 0.2
     Max: 0.4
+    Bias: 0
+  LookSwayAmount:
+    Min: 0.45
+    Max: 0.8
+    Bias: 0
+  LookSwayRecovery:
+    Min: 7
+    Max: 11
+    Bias: 0
+  IdleSwayAmount:
+    Min: 0.3
+    Max: 0.6
+    Bias: 0
+  IdleSwaySpeed:
+    Min: 0.5
+    Max: 0.7
+    Bias: 0
+  MoveSwayAmount:
+    Min: 0.9
+    Max: 1.6
+    Bias: 0
+  AdsFovDeg:
+    Min: 45
+    Max: 58
+    Bias: 0
+  AdsSpeed:
+    Min: 8
+    Max: 13
     Bias: 0

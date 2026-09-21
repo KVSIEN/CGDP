@@ -12,6 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 522962483bd84074e8d7de7a151a8cfd, type: 3}
   m_Name: SniperCategory
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.WeaponCategoryData
+  _displayName: Item
+  _description: 
+  _icon: {fileID: 0}
+  _reality: 0
+  _tier: 0
+  _weight: 0.1
+  _rollProfile: {fileID: 0}
+  _statRanges: []
   Type: 3
   Names:
   - AWP
@@ -20,11 +28,14 @@ MonoBehaviour:
   - M24
   - Kar98k
   - SV-98
+  - SVD Dragunov
+  - SR-25
+  - Mk 14 EBR
   FireModes: 00000000
   FireBehavior: {fileID: 11400000, guid: ca566d8dc066bdc49b9f7028754076c0, type: 2}
   RPM:
-    Min: 30
-    Max: 80
+    Min: 35
+    Max: 260
     Bias: 0
   BurstCount:
     Min: 1
@@ -40,8 +51,8 @@ MonoBehaviour:
     Bias: 0
   OnHitEffects: []
   Damage:
-    Min: 70
-    Max: 160
+    Min: 45
+    Max: 170
     Bias: 0
   DamageType: 0
   ArmorPenetration:
@@ -53,35 +64,28 @@ MonoBehaviour:
     Max: 3
     Bias: 0
   RangeOptimal:
-    Min: 80
-    Max: 200
+    Min: 50
+    Max: 220
     Bias: 0
   RangeFalloffEnd:
-    Min: 400
+    Min: 250
     Max: 1000
     Bias: 0
   DamageFalloffMin:
     Min: 0.6
     Max: 0.9
     Bias: 0
+  AmmoType: 4
   MagazineSize:
     Min: 5
-    Max: 10
-    Bias: 0
-  ReserveAmmo:
-    Min: 20
-    Max: 35
-    Bias: 0
-  ReserveMultiplier:
-    Min: 2
-    Max: 3
-    Bias: 0
+    Max: 20
+    Bias: -0.3
   ReloadTime:
-    Min: 2.8
+    Min: 2.4
     Max: 5
     Bias: 0
   TacticalReloadTime:
-    Min: 2
+    Min: 1.9
     Max: 4.5
     Bias: 0
   TacticalReloadBonus:
@@ -89,15 +93,15 @@ MonoBehaviour:
     Max: 0.8
     Bias: 0
   DrawTime:
-    Min: 0.5
-    Max: 0.7
+    Min: 0.6
+    Max: 1
     Bias: 0
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295
   NoiseRadius: 40
   HipSpreadDeg:
-    Min: 8
+    Min: 6
     Max: 15
     Bias: 0
   AdsSpreadDeg:
@@ -109,19 +113,19 @@ MonoBehaviour:
     Max: 0
     Bias: 0
   SpreadPerShot:
-    Min: 2
+    Min: 1.5
     Max: 4
     Bias: 0
   MaxSpread:
-    Min: 15
+    Min: 12
     Max: 25
     Bias: 0
   SpreadRecovery:
     Min: 4
-    Max: 8
+    Max: 10
     Bias: 0
   RecoilScaleVertical:
-    Min: 3
+    Min: 1.8
     Max: 6
     Bias: 0
   RecoilJitterVertical:
@@ -129,7 +133,7 @@ MonoBehaviour:
     Max: 0.178
     Bias: 0
   RecoilScaleHorizontal:
-    Min: 0.8
+    Min: 0.6
     Max: 1.8
     Bias: 0
   RecoilHorizontalBias:
@@ -138,23 +142,27 @@ MonoBehaviour:
     Bias: 0
   MaxAccumulatedRecoil:
     Min: 3
-    Max: 6
+    Max: 8
     Bias: 0
   MaxAccumulatedHorizontalRecoil:
     Min: 1.5
-    Max: 3
+    Max: 4
     Bias: 0
   RecoilHeatPerShot:
     Min: 0
-    Max: 0
+    Max: 0.04
     Bias: 0
   RecoilHeatCooldown:
-    Min: 2
-    Max: 2
+    Min: 1.5
+    Max: 2.5
     Bias: 0
   MaxHeatRecoilMultiplier:
     Min: 1
-    Max: 1
+    Max: 1.3
+    Bias: 0
+  RecoilHeatJitterMultiplier:
+    Min: 1
+    Max: 1.4
     Bias: 0
   HotAdsSpreadMultiplier:
     Min: 0
@@ -162,14 +170,14 @@ MonoBehaviour:
     Bias: 0
   RecoilRecoverySpeed:
     Min: 3.5
-    Max: 5
+    Max: 6
     Bias: 0
   RecoilRecoveryFraction:
     Min: 0.85
     Max: 1
     Bias: 0
   RecoilRecoveryDelay:
-    Min: 0.18
+    Min: 0.15
     Max: 0.35
     Bias: 0
   AdsRecoilRecoveryFraction:
@@ -187,4 +195,32 @@ MonoBehaviour:
   HipRecoilHorizontalMultiplier:
     Min: 0.05
     Max: 0.05
+    Bias: 0
+  LookSwayAmount:
+    Min: 0.55
+    Max: 1
+    Bias: 0
+  LookSwayRecovery:
+    Min: 6
+    Max: 11
+    Bias: 0
+  IdleSwayAmount:
+    Min: 0.45
+    Max: 1
+    Bias: 0
+  IdleSwaySpeed:
+    Min: 0.4
+    Max: 0.6
+    Bias: 0
+  MoveSwayAmount:
+    Min: 1
+    Max: 1.9
+    Bias: 0
+  AdsFovDeg:
+    Min: 14
+    Max: 34
+    Bias: 0
+  AdsSpeed:
+    Min: 3
+    Max: 8
     Bias: 0

@@ -1,0 +1,18 @@
+{
+    "name": "CGD.Editor",
+    "rootNamespace": "CGD.Editor",
+    "references": [
+        "CGD.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

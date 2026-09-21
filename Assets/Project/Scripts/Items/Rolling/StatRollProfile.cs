@@ -97,7 +97,21 @@ namespace CGD.Items
         }
 
         // ── Family presets (see WEAPON_BALANCE.md for the design rationale) ──
+        //
+        // Every preset below obeys one rule: no stat appears on two axes. Assign()
+        // overwrites rather than compounds, so a stat on two axes silently loses
+        // the first axis' lean and that axis stops being a tradeoff at all.
+        //
+        // Each preset also pins FireRate opposite Damage, directly or through a
+        // shared axis. That pairing is what keeps a widened category band safe —
+        // without it a roll can take the top of the RPM band and the top of the
+        // damage band together and land at a fraction of the category's TTK target.
 
+        // Punch carries Range as well as Damage, which is what splits a category
+        // into subtypes: lean negative and you get a fast, tight, short-ranged CQB
+        // weapon (carbine, Glock, PDW); lean positive and you get a slow, kicking,
+        // long-ranged one (battle rifle, hand cannon, heavy SMG). The category's
+        // authored band sets how far apart those two poles sit.
         [ContextMenu("Axes/Standard Firearm (SMG · AR · Pistol)")]
         public void ApplyStandardFirearmAxes()
         {
@@ -106,7 +120,7 @@ namespace CGD.Items
                 new TradeoffAxis
                 {
                     Name  = "Punch",
-                    Gains = new[] { ItemStat.Damage },
+                    Gains = new[] { ItemStat.Damage, ItemStat.Range },
                     Costs = new[] { ItemStat.FireRate, ItemStat.Recoil },
                 },
                 new TradeoffAxis
@@ -124,9 +138,15 @@ namespace CGD.Items
             };
         }
 
-        // Snipers / DMRs / hand cannons — damage costs cycle and mag capacity,
-        // because bigger rounds chamber slower and pack fewer per magazine.
+        // Snipers / DMRs / hand cannons — damage costs cycle rate, reload and mag
+        // capacity, because bigger rounds chamber slower and pack fewer per
+        // magazine. That single axis is what spans the category: lean negative for
+        // a semi-auto DMR (fast cycle, modest damage, deep magazine), lean positive
+        // for a bolt-action anti-materiel rifle (one huge round at a time).
         // Range costs handling weight: a long barrel is unwieldy in hand.
+        //
+        // FireRate moved onto Punch from the old Precision axis. It was previously
+        // on Precision alone, which left it free to roll high alongside high damage.
         [ContextMenu("Axes/Precision Rifle (Sniper · DMR · Hand cannon)")]
         public void ApplyPrecisionRifleAxes()
         {
@@ -136,7 +156,7 @@ namespace CGD.Items
                 {
                     Name  = "Punch",
                     Gains = new[] { ItemStat.Damage },
-                    Costs = new[] { ItemStat.ReloadTime, ItemStat.MagazineSize },
+                    Costs = new[] { ItemStat.FireRate, ItemStat.ReloadTime, ItemStat.MagazineSize },
                 },
                 new TradeoffAxis
                 {
@@ -148,19 +168,30 @@ namespace CGD.Items
                 {
                     Name  = "Precision",
                     Gains = new[] { ItemStat.Spread },
-                    Costs = new[] { ItemStat.FireRate },
+                    Costs = new[] { ItemStat.Recoil },
                 },
             };
         }
 
-        // LMGs — mag capacity costs handling; sustained fire trades recoil
-        // control for RPM; big rounds still cost accuracy but the tradeoff is
-        // gentler than a precision rifle's.
+        // LMGs — cyclic rate costs per-round punch and recoil control, which spans
+        // the category from a high-cyclic MG42-class hose (fast, light rounds,
+        // wild) to a heavy GPMG (slow, hard-hitting, controllable). Mag capacity
+        // costs handling, because a 200-round belt is dead weight to swap and swing.
+        //
+        // Damage moved onto Suppression from its own "Weight" axis. On a separate
+        // axis it could roll to the top of the band at the same time as FireRate,
+        // which at the widened 500–1200 RPM band produced a ~0.1s TTK.
         [ContextMenu("Axes/Automatic Support (LMG)")]
         public void ApplyAutomaticSupportAxes()
         {
             Axes = new[]
             {
+                new TradeoffAxis
+                {
+                    Name  = "Suppression",
+                    Gains = new[] { ItemStat.FireRate },
+                    Costs = new[] { ItemStat.Damage, ItemStat.Recoil },
+                },
                 new TradeoffAxis
                 {
                     Name  = "Capacity",
@@ -169,21 +200,21 @@ namespace CGD.Items
                 },
                 new TradeoffAxis
                 {
-                    Name  = "Suppression",
-                    Gains = new[] { ItemStat.FireRate },
-                    Costs = new[] { ItemStat.Recoil, ItemStat.Sway },
-                },
-                new TradeoffAxis
-                {
-                    Name  = "Weight",
-                    Gains = new[] { ItemStat.Damage },
-                    Costs = new[] { ItemStat.Spread },
+                    Name  = "Handling",
+                    Gains = new[] { ItemStat.Spread },
+                    Costs = new[] { ItemStat.Sway },
                 },
             };
         }
 
-        // Shotguns — per-pellet damage costs pattern tightness; tube capacity
-        // costs shell-by-shell reload speed; a snappier cycle costs kick and draw.
+        // Shotguns — cycle speed costs per-pellet punch, spanning the category from
+        // a slow pump firing heavy buck (one-shot at contact range) to a fast
+        // auto-shotgun trading per-shell damage for follow-up. Tube capacity costs
+        // shell-by-shell reload; a tighter pattern costs kick.
+        //
+        // Damage moved onto Cycle from the old "Slug" axis for the same reason as
+        // the LMG: uncoupled, a roll could take 18 dmg × 12 pellets at 260 RPM and
+        // one-shot on full auto.
         [ContextMenu("Axes/Shotgun")]
         public void ApplyShotgunAxes()
         {
@@ -191,9 +222,9 @@ namespace CGD.Items
             {
                 new TradeoffAxis
                 {
-                    Name  = "Slug",
-                    Gains = new[] { ItemStat.Damage },
-                    Costs = new[] { ItemStat.Spread },
+                    Name  = "Cycle",
+                    Gains = new[] { ItemStat.FireRate },
+                    Costs = new[] { ItemStat.Damage, ItemStat.DrawTime },
                 },
                 new TradeoffAxis
                 {
@@ -203,9 +234,9 @@ namespace CGD.Items
                 },
                 new TradeoffAxis
                 {
-                    Name  = "Recovery",
-                    Gains = new[] { ItemStat.FireRate },
-                    Costs = new[] { ItemStat.Recoil, ItemStat.DrawTime },
+                    Name  = "Pattern",
+                    Gains = new[] { ItemStat.Spread },
+                    Costs = new[] { ItemStat.Recoil },
                 },
             };
         }

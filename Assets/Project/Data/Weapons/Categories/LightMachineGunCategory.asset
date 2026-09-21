@@ -12,6 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 522962483bd84074e8d7de7a151a8cfd, type: 3}
   m_Name: LightMachineGunCategory
   m_EditorClassIdentifier: Assembly-CSharp::WeaponCategoryData
+  _displayName: Item
+  _description: 
+  _icon: {fileID: 0}
+  _reality: 0
+  _tier: 0
+  _weight: 0.1
+  _rollProfile: {fileID: 0}
+  _statRanges: []
   Type: 4
   Names:
   - M249 SAW
@@ -20,18 +28,20 @@ MonoBehaviour:
   - Negev
   - M60
   - PKM
+  - MG3
+  - Stoner 63
   FireModes: 01000000
   FireBehavior: {fileID: 11400000, guid: ca566d8dc066bdc49b9f7028754076c0, type: 2}
   RPM:
-    Min: 600
-    Max: 950
+    Min: 500
+    Max: 1200
     Bias: 0
   BurstCount:
     Min: 3
     Max: 3
     Bias: 0
   BurstInterval:
-    Min: 0.07
+    Min: 0.05
     Max: 0.1
     Bias: 0
   PelletCount:
@@ -40,8 +50,8 @@ MonoBehaviour:
     Bias: 0
   OnHitEffects: []
   Damage:
-    Min: 28
-    Max: 42
+    Min: 24
+    Max: 45
     Bias: 0
   DamageType: 0
   ArmorPenetration:
@@ -53,52 +63,45 @@ MonoBehaviour:
     Max: 2
     Bias: 0
   RangeOptimal:
-    Min: 40
-    Max: 70
+    Min: 35
+    Max: 80
     Bias: 0
   RangeFalloffEnd:
-    Min: 150
-    Max: 300
+    Min: 140
+    Max: 320
     Bias: 0
   DamageFalloffMin:
     Min: 0.35
     Max: 0.55
     Bias: 0
+  AmmoType: 3
   MagazineSize:
-    Min: 75
+    Min: 50
     Max: 200
     Bias: -0.3
-  ReserveAmmo:
-    Min: 125
-    Max: 225
-    Bias: 0
-  ReserveMultiplier:
-    Min: 1.5
-    Max: 2.5
-    Bias: 0
   ReloadTime:
-    Min: 4.5
-    Max: 8
+    Min: 4
+    Max: 8.5
     Bias: 0
   TacticalReloadTime:
-    Min: 3.8
-    Max: 6.5
+    Min: 3.4
+    Max: 7
     Bias: 0
   TacticalReloadBonus:
     Min: 0.5
     Max: 1.5
     Bias: 0
   DrawTime:
-    Min: 0.5
-    Max: 0.7
+    Min: 0.75
+    Max: 1.15
     Bias: 0
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295
   NoiseRadius: 40
   HipSpreadDeg:
-    Min: 3.5
-    Max: 6
+    Min: 3
+    Max: 6.5
     Bias: 0
   AdsSpreadDeg:
     Min: 0.01
@@ -109,40 +112,40 @@ MonoBehaviour:
     Max: 0
     Bias: 0
   SpreadPerShot:
-    Min: 0.8
-    Max: 1.4
+    Min: 0.7
+    Max: 1.5
     Bias: 0
   MaxSpread:
-    Min: 10
-    Max: 16
+    Min: 9
+    Max: 17
     Bias: 0
   SpreadRecovery:
     Min: 6
-    Max: 10
+    Max: 11
     Bias: 0
   RecoilScaleVertical:
-    Min: 1.2
-    Max: 2.2
+    Min: 1
+    Max: 2.4
     Bias: 0
   RecoilJitterVertical:
     Min: 0.176
     Max: 0.353
     Bias: 0
   RecoilScaleHorizontal:
-    Min: 0.8
-    Max: 1.4
+    Min: 0.7
+    Max: 1.5
     Bias: 0
   RecoilHorizontalBias:
     Min: -0.25
     Max: 0.25
     Bias: 0
   MaxAccumulatedRecoil:
-    Min: 20
-    Max: 35
+    Min: 18
+    Max: 38
     Bias: 0
   MaxAccumulatedHorizontalRecoil:
-    Min: 10
-    Max: 17
+    Min: 9
+    Max: 18
     Bias: 0
   RecoilHeatPerShot:
     Min: 0.02
@@ -155,6 +158,10 @@ MonoBehaviour:
   MaxHeatRecoilMultiplier:
     Min: 1.5
     Max: 1.9
+    Bias: 0
+  RecoilHeatJitterMultiplier:
+    Min: 2
+    Max: 2.8
     Bias: 0
   HotAdsSpreadMultiplier:
     Min: 0
@@ -187,4 +194,32 @@ MonoBehaviour:
   HipRecoilHorizontalMultiplier:
     Min: 0.18
     Max: 0.3
+    Bias: 0
+  LookSwayAmount:
+    Min: 0.7
+    Max: 1
+    Bias: 0
+  LookSwayRecovery:
+    Min: 5
+    Max: 8
+    Bias: 0
+  IdleSwayAmount:
+    Min: 0.45
+    Max: 0.85
+    Bias: 0
+  IdleSwaySpeed:
+    Min: 0.4
+    Max: 0.6
+    Bias: 0
+  MoveSwayAmount:
+    Min: 1.4
+    Max: 2.2
+    Bias: 0
+  AdsFovDeg:
+    Min: 40
+    Max: 52
+    Bias: 0
+  AdsSpeed:
+    Min: 4
+    Max: 8
     Bias: 0

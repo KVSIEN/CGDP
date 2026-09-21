@@ -1270,15 +1270,15 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27d634b2a8f706c46b1ec217278fa213, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RandomWeaponPickup
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Interaction.RandomWeaponPickup
   _categories:
-  - {fileID: 11400000, guid: 0396f48522a2c3742b7e10cebd6e6141, type: 2}
-  - {fileID: 11400000, guid: ebd589c952325cf4888029914e9d941b, type: 2}
   - {fileID: 11400000, guid: ef20e19e7da2caa4f873416a54a13b19, type: 2}
   - {fileID: 11400000, guid: dff160e7c52e5dc4cae48410a434e46f, type: 2}
+  - {fileID: 11400000, guid: 0396f48522a2c3742b7e10cebd6e6141, type: 2}
   - {fileID: 11400000, guid: f3b2e8b952dc3764ca03065c900517f4, type: 2}
   - {fileID: 11400000, guid: 02bb08d19679e974ea3323a78326cc20, type: 2}
-  _fixedIndex: 4
+  - {fileID: 11400000, guid: ebd589c952325cf4888029914e9d941b, type: 2}
+  _fixedIndex: -1
 --- !u!114 &542727092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1416,6 +1416,7 @@ Transform:
   - {fileID: 2112730624}
   - {fileID: 1230599300}
   - {fileID: 1660548672}
+  - {fileID: 1255501654}
   - {fileID: 261037684}
   - {fileID: 410087041}
   - {fileID: 1716879155}
@@ -2855,6 +2856,217 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1230599299}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1255501653
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1255501654}
+  - component: {fileID: 1255501659}
+  - component: {fileID: 1255501658}
+  - component: {fileID: 1255501657}
+  - component: {fileID: 1255501656}
+  - component: {fileID: 1255501655}
+  m_Layer: 0
+  m_Name: AmmoPickup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1255501654
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255501653}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3, y: 1, z: 3}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 682983114}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1255501655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255501653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
+  _renderers: []
+  _showStableChecks: 1
+  _hideStableChecks: 2
+--- !u!114 &1255501656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255501653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c96873aad6f90bd42a6c9f19123fc054, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Interaction.AmmoPickup
+  _munition: {fileID: 11400000, guid: d5375b8a1eaae554abdd94d43aa9d6a9, type: 2}
+  _amount: 100
+--- !u!135 &1255501657
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255501653}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1255501658
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255501653}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1255501659
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255501653}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1266115361
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1266115362}
+  - component: {fileID: 1266115364}
+  - component: {fileID: 1266115363}
+  m_Layer: 5
+  m_Name: ItemInventory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1266115362
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1266115361}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2051602390}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1266115363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1266115361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1d93cb4726024444b2b54791fd2208c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ItemInventoryHUD
+  _input: {fileID: 1555766056}
+  _inventory: {fileID: 1555766066}
+  _panelWidth: 320
+  _panelHeight: 380
+  _padding: 14
+  _rowHeight: 20
+  _edgeOffset: {x: 40, y: 0}
+--- !u!225 &1266115364
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1266115361}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1272141993
 GameObject:
   m_ObjectHideFlags: 0
@@ -3647,6 +3859,7 @@ GameObject:
   - component: {fileID: 1555766059}
   - component: {fileID: 1555766058}
   - component: {fileID: 1555766063}
+  - component: {fileID: 1555766066}
   - component: {fileID: 1555766062}
   - component: {fileID: 1555766051}
   - component: {fileID: 1555766050}
@@ -3881,6 +4094,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponController
   _input: {fileID: 1555766056}
   _camera: {fileID: 330585548}
+  _inventory: {fileID: 1555766066}
   _crosshair: {fileID: 277604014}
   _muzzle: {fileID: 1731207348}
   _visuals: {fileID: 1762606842}
@@ -3901,9 +4115,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerWeaponLoadout
   _startingWeapons:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 3fbfe5747d3e4d9187c80b44848d7457, type: 2}
+  - {fileID: 11400000, guid: de31a2086ef44e318fe011b995d866d8, type: 2}
+  - {fileID: 11400000, guid: f2876e2980ca469691b9ecab24aabf01, type: 2}
   - {fileID: 0}
   _activeWeapon: {fileID: 0}
   _equippedWeapons:
@@ -3936,6 +4150,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc9caf2a0ec94fb082f8ce644a0ce248, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.Stunnable
+--- !u!114 &1555766066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1555766049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c2637bb0c98fc747b5ed53400f5f3f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Player.PlayerInventory
+  _startingStacks:
+  - Definition: {fileID: 11400000, guid: 10eba0c2f89b31e47ab8b6953d4899bc, type: 2}
+    Count: 100
+  - Definition: {fileID: 11400000, guid: ccd78f0d89cb6e84abb013e9c41d8f1b, type: 2}
+    Count: 100
+  - Definition: {fileID: 11400000, guid: 27b7234948caf4b418bf4e68f5ae5e8c, type: 2}
+    Count: 100
+  - Definition: {fileID: 11400000, guid: d5375b8a1eaae554abdd94d43aa9d6a9, type: 2}
+    Count: 100
+  _maxSlots: 24
+  _maxWeight: 50
 --- !u!1 &1629601953
 GameObject:
   m_ObjectHideFlags: 0
@@ -4928,6 +5165,13 @@ MonoBehaviour:
     Rise: 0.0015
     Pushback: 0.02
   _adsMaxRecoverTime: 0.15
+  _lookPitchScale: 0.06
+  _lookYawScale: 0.08
+  _lookRollFactor: 0.15
+  _moveBobAmplitude: 0.012
+  _moveBobSpeed: 5
+  _moveBobMaxSpeed: 6
+  _swayDamping: 4
 --- !u!1 &1766896605
 GameObject:
   m_ObjectHideFlags: 0
@@ -5665,6 +5909,7 @@ RectTransform:
   - {fileID: 126377343}
   - {fileID: 1913707791}
   - {fileID: 1494457031}
+  - {fileID: 1266115362}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

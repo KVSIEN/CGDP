@@ -203,14 +203,64 @@ use different tradeoff axes without a code change.
 
 `StatRollProfile` has ContextMenu presets for each weapon family:
 
-- **Standard Firearm** (SMG, AR, Pistol): Punch (Damage ↔ FireRate + Recoil),
-  Capacity (Mag ↔ ReloadTime), Precision (Spread ↔ DrawTime + Sway).
-- **Precision Rifle** (Sniper, DMR, Hand cannon): Punch (Damage ↔ ReloadTime +
-  Mag), Reach (Range ↔ DrawTime + Sway), Precision (Spread ↔ FireRate).
-- **Automatic Support** (LMG): Capacity (Mag ↔ ReloadTime + DrawTime),
-  Suppression (FireRate ↔ Recoil + Sway), Weight (Damage ↔ Spread).
-- **Shotgun**: Slug (Damage ↔ Spread), Tube (Mag ↔ ReloadTime), Recovery
-  (FireRate ↔ Recoil + DrawTime).
+- **Standard Firearm** (SMG, AR, Pistol): Punch (Damage + **Range** ↔ FireRate +
+  Recoil), Capacity (Mag ↔ ReloadTime), Precision (Spread ↔ DrawTime + Sway).
+- **Precision Rifle** (Sniper, DMR, Hand cannon): Punch (Damage ↔ **FireRate** +
+  ReloadTime + Mag), Reach (Range ↔ DrawTime + Sway), Precision (Spread ↔ Recoil).
+- **Automatic Support** (LMG): Suppression (FireRate ↔ **Damage** + Recoil),
+  Capacity (Mag ↔ ReloadTime + DrawTime), Handling (Spread ↔ Sway).
+- **Shotgun**: Cycle (FireRate ↔ **Damage** + DrawTime), Tube (Mag ↔ ReloadTime),
+  Pattern (Spread ↔ Recoil).
+
+Two invariants hold across every preset. Breaking either one silently unbalances
+the category, so check them after any axis edit:
+
+1. **No stat appears on two axes.** `StatRollProfile.Assign` overwrites rather
+   than compounds, so the later axis wins and the earlier one stops being a
+   tradeoff at all.
+2. **Damage and FireRate always sit on opposite sides of one axis.** This is what
+   makes the wide subtype bands below safe. Left uncoupled, a roll takes the top
+   of the RPM band and the top of the damage band together and lands at a
+   fraction of the category's TTK target.
+
+### Subtype bands
+
+Each category's ranges in `WeaponCategoryDefaults` span a *band between two
+subtypes*, not a window around one reference weapon. The Punch/Suppression/Cycle
+axis decides which end a weapon lands on, so the band reads as a spectrum:
+
+| Category | Fast pole (lean −) | Slow pole (lean +) | T1 anchor |
+|---|---|---|---|
+| AR      | CQB carbine — 900 RPM, 18 dmg, 30 m  | Battle rifle — 450 RPM, 34 dmg, 90 m   | `M4A1_T1` 720×22, 50 m |
+| SMG     | PDW / machine pistol — 1200 RPM, 13 dmg, 12 m | Heavy SMG — 600 RPM, 28 dmg, 40 m | `MP5_T1` 850×18, 25 m |
+| Pistol  | Glock — 600 RPM, 20 dmg, 12 m        | Hand cannon — 200 RPM, 60 dmg, 35 m    | `Glock17_T1` 400×25 / `DesertEagle_T1` 300×55 |
+| Sniper  | Semi-auto DMR — 260 RPM, 45 dmg, 50 m | Bolt / AMR — 35 RPM, 170 dmg, 220 m   | `Kar98k_T1` 45×95, 120 m |
+| LMG     | High-cyclic MG — 1200 RPM, 24 dmg    | Heavy GPMG — 500 RPM, 45 dmg           | `M249_T1` 700×30, 55 m |
+| Shotgun | Auto — 260 RPM, 9 dmg × 6 pellets    | Pump — 60 RPM, 18 dmg × 8 pellets      | `M870_T1` 60×12×8, 10 m |
+
+The Sniper band is where the **DMR row** in the category table above comes from.
+There is no separate DMR `WeaponType` — marksman rifles are the fast end of
+Sniper, reached by a negative Punch lean.
+
+Shotgun `PelletCount` stays ≥ 6 deliberately. It rolls uniformly rather than
+through an axis, so a 1-pellet "slug" roll could not have its damage
+compensated. Slugs need their own category or a PelletCount↔Damage axis first.
+
+Pole TTKs measured with the doc's `(N−1) × 60/RPM` formula against 100 EHP:
+
+| Category | Fast pole | Slow pole | Target |
+|---|---|---|---|
+| AR      | 6 STK, 0.33 s | 3 STK, 0.27 s | ~0.35 s |
+| SMG     | 8 STK, 0.35 s | 4 STK, 0.30 s | ~0.35 s |
+| Pistol  | 5 STK, 0.40 s | 2 STK, 0.30 s | ~0.50 s / hand cannon ~0.40 s |
+| Sniper  | 3 STK, 0.46 s | 1 STK        | ~0.40 s DMR / 0.6–1.2 s bolt |
+| LMG     | 5 STK, 0.20 s | 3 STK, 0.24 s | ~0.25 s |
+| Shotgun | 2 STK, 0.23 s | 1 STK        | 0.15–0.25 s |
+
+The pistol slow pole is the one outlier: 0.30 s against the hand-cannon row's
+~0.40 s target. `DesertEagle_T1` is already hotter still (300 RPM × 55 dmg =
+2 STK, 0.20 s), so the band is not introducing the problem — but the hand-cannon
+cycle rate wants a playtest pass.
 
 **Recommended asset layout:** one `StatRollProfile` per family in
 `Assets/Project/Data/Items/Profiles/` (e.g. `StandardFirearmProfile.asset`,

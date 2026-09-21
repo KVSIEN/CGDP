@@ -112,6 +112,7 @@
   - Fitting is fully reversible: attachments sit on top of the item's own roll rather than overwriting it, so removing one restores the original
   - Higher-tier gear comes with more attachment slots (1 at Common through 4 at Legendary)
 - **Inventory** — holds counted stacks and unique items side by side, with no capacity limit
+- **Starting contents** — the player can be set up to spawn with a list of stackable items (typically a munition stack per caliber they expect to use). Left empty, the player spawns with an empty pack and zero reserve ammo, so the first magazine is all they have until they find a pickup
 
 ## Procedural Weapon Generation
 - Six weapon categories: AR, SMG, Pistol, Sniper, LMG, Shotgun — each defined by a `WeaponCategoryData` ScriptableObject
