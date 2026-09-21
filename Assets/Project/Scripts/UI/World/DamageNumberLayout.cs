@@ -2,24 +2,34 @@ using UnityEngine;
 
 namespace CGD.UI
 {
-    // Where each hit in a group sits, kept free of pooling and rendering so the shape a burst
+    // Where each hit in a group lands, kept free of pooling and rendering so the shape a burst
     // builds can be reasoned about (and changed) on its own.
     public static class DamageNumberLayout
     {
-        // Hits step out sideways in a fixed order — middle, right, left, further right, further
-        // left — and lift slightly as the group deepens. Nothing here is random: the same burst
-        // always builds the same shape, which is what makes a cluster readable at a glance
-        // rather than merely tidy. Numbers are free to overlap; the pattern alone decides.
-        public static Vector2 SlotOffset(int indexInCluster)
+        // A point somewhere in a small patch around the impact, widening a little as the group
+        // fills. Deliberately scattered: hits should read as a loose cluster on the target, and
+        // any fixed ordering — however tidy on paper — lines the numbers up into rows or trails
+        // that the eye follows instead of reading the group as a whole.
+        public static Vector2 ScatterOffset(int indexInCluster)
         {
-            if (indexInCluster <= 0) return Vector2.zero;
+            float growth = Mathf.Min(indexInCluster, DamageNumberStyle.ScatterGrowthMax)
+                         * DamageNumberStyle.ScatterGrowthPx;
 
-            int   slot = indexInCluster % DamageNumberStyle.ColumnSlots;
-            int   step = (slot + 1) / 2;
-            float x    = (slot % 2 == 1 ? step : -step) * DamageNumberStyle.ColumnStepPx;
-            float y    = Mathf.Min(indexInCluster, DamageNumberStyle.RowStepMax) * DamageNumberStyle.RowStepPx;
+            Vector2 unit = Random.insideUnitCircle;
+            return new Vector2(unit.x * (DamageNumberStyle.ScatterXPx + growth),
+                               unit.y * (DamageNumberStyle.ScatterYPx + growth * 0.5f));
+        }
 
-            return new Vector2(x, y);
+        // The direction and speed a number is thrown at. Every one differs, so two numbers that
+        // happen to land on the same spot still separate as they rise.
+        public static Vector2 LaunchVelocity()
+        {
+            float tilt  = Random.Range(-DamageNumberStyle.LaunchTiltDeg, DamageNumberStyle.LaunchTiltDeg)
+                        * Mathf.Deg2Rad;
+            float speed = DamageNumberStyle.RiseSpeedPx
+                        * Random.Range(1f - DamageNumberStyle.SpeedVariance, 1f + DamageNumberStyle.SpeedVariance);
+
+            return new Vector2(Mathf.Sin(tilt), Mathf.Cos(tilt)) * speed;
         }
     }
 }

@@ -4605,13 +4605,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Player.PlayerInventory
   _startingStacks:
   - Definition: {fileID: 11400000, guid: 10eba0c2f89b31e47ab8b6953d4899bc, type: 2}
-    Count: 100
+    Count: 999
   - Definition: {fileID: 11400000, guid: ccd78f0d89cb6e84abb013e9c41d8f1b, type: 2}
-    Count: 100
+    Count: 999
   - Definition: {fileID: 11400000, guid: 27b7234948caf4b418bf4e68f5ae5e8c, type: 2}
-    Count: 100
+    Count: 999
   - Definition: {fileID: 11400000, guid: d5375b8a1eaae554abdd94d43aa9d6a9, type: 2}
-    Count: 100
+    Count: 999
   _maxSlots: 24
   _maxWeight: 50
 --- !u!1 &1629601953

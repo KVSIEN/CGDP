@@ -50,8 +50,8 @@ namespace CGD.UI
             _text.outlineColor       = Color.black;
         }
 
-        // stackDepth is how many numbers were already clustered here, which decides the slot
-        // this one takes in the group and which way it is thrown.
+        // stackDepth is how many numbers were already clustered here, which widens the patch
+        // this one can land in.
         public void Show(float damage, Vector3 anchor, bool crit, int stackDepth, int sortingOrder)
         {
             int   rounded = Mathf.Max(1, Mathf.RoundToInt(damage));
@@ -65,11 +65,8 @@ namespace CGD.UI
             _heightPx = Mathf.Lerp(DamageNumberStyle.MinHeightPx, DamageNumberStyle.MaxHeightPx, weight)
                       * (crit ? DamageNumberStyle.CritSizeScale : 1f);
 
-            _offset = DamageNumberLayout.SlotOffset(stackDepth);
-            // Thrown up and away from the middle of the group, so a group opens slightly as it
-            // rises instead of every number tracking the same line up the screen.
-            float side = _offset.x > 0.01f ? 1f : _offset.x < -0.01f ? -1f : 0f;
-            _velocity  = new Vector2(side * DamageNumberStyle.SideSpeedPx, DamageNumberStyle.RiseSpeedPx);
+            _offset   = DamageNumberLayout.ScatterOffset(stackDepth);
+            _velocity = DamageNumberLayout.LaunchVelocity();
 
             _text.text      = rounded.ToString();
             _text.fontSize  = FontSize;

@@ -14,22 +14,27 @@ namespace CGD.UI
 
         // ── Placement ─────────────────────────────────────────────────────────
         // Hits landing within this many metres of each other count as one group, which is what
-        // keeps a shotgun blast to one tidy cluster instead of ten numbers on a single point.
+        // keeps a shotgun blast to one cluster instead of ten numbers on a single point.
         public const float ClusterRadius = 1.6f;
-        // Successive hits in a group step out sideways in a fixed alternating order — no
-        // randomness anywhere, so the same burst always builds the same recognisable shape.
-        public const float ColumnStepPx  = 14f;
-        public const int   ColumnSlots   = 5;   // pattern repeats after this many
-        public const float RowStepPx     = 7f; // slight lift per hit, so repeats never land exactly on each other
-        public const int   RowStepMax    = 6;   // rows stop climbing after this, keeping the group compact
+        // A new number lands anywhere in a small patch around the impact — wider than it is
+        // tall, since numbers are wider than they are tall. Scattered rather than patterned:
+        // a pattern that never repeats draws the eye into lines, which is exactly what a group
+        // of hits should not look like.
+        public const float ScatterXPx      = 18f;
+        public const float ScatterYPx      = 10f;
+        // The patch widens a little for each number already in the group, so a long burst
+        // spreads instead of packing ever tighter into the same spot.
+        public const float ScatterGrowthPx = 3f;
+        public const int   ScatterGrowthMax = 6;
 
         // ── Motion ────────────────────────────────────────────────────────────
-        // A toss: thrown up out of the impact, slowed by gravity, with a small sideways push
-        // away from the middle of the group. Keep SideSpeedPx well under ColumnStepPx or the
-        // spread it adds over a number's life washes out the pattern the group was placed in.
-        public const float RiseSpeedPx  = 170f;
-        public const float SideSpeedPx  = 8f;
-        public const float GravityPx    = 200f;
+        // A toss: thrown up out of the impact and slowed by gravity. Each number gets its own
+        // tilt and speed, so no two take the same path and the group breaks up as it rises
+        // without any of them wandering far from the impact.
+        public const float RiseSpeedPx      = 170f;
+        public const float LaunchTiltDeg    = 20f;   // random tilt either side of straight up
+        public const float SpeedVariance    = 0.25f; // share either side of RiseSpeedPx
+        public const float GravityPx        = 60f;
 
         // ── Life ──────────────────────────────────────────────────────────────
         public const float HoldSeconds   = 0.45f;
