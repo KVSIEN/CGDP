@@ -21,7 +21,7 @@ namespace CGD.Enemies
 
         protected override void OnDamageTaken(float amount, Vector3 point, bool isCritical)
         {
-            DamagePopup.Spawn(amount, point + _popupOffset, isCritical);
+            DamageNumbers.Spawn(amount, point + _popupOffset, isCritical);
             _healthBar?.ShowDamage(Health, MaxHealth);
         }
     }

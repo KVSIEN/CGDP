@@ -31,7 +31,7 @@ MonoBehaviour:
   - MG3
   - Stoner 63
   FireModes: 01000000
-  FireBehavior: {fileID: 11400000, guid: ca566d8dc066bdc49b9f7028754076c0, type: 2}
+  FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:
     Min: 500
     Max: 1200

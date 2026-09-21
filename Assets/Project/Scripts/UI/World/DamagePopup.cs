@@ -1,171 +1,149 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 using TMPro;
 
 namespace CGD.UI
 {
-    // Floating damage number. Popups are pooled: each is built once and reused, so a
-    // shotgun blast doesn't create a canvas per pellet.
+    // One floating damage number: white with a black outline, a deep orange when the hit was
+    // critical. Owns its own look, motion and lifetime, while where it sits relative to the
+    // other numbers is the business of DamageNumbers, which projects it every frame. Pooled and
+    // built once, so a shotgun blast costs no allocations.
     public class DamagePopup : MonoBehaviour
     {
-        private const float FloatSpeed = 1.5f;   // world units per second
-        private const float FadeDelay  = 0.35f;
-        private const float FadeSpeed  = 3.5f;
-        private const float NormalPx   = 52f;
-        private const float HeadshotPx = 64f;
+        private const float RectHeight = 60f; // canvas rect the rendered pixel height is scaled from
+        private const float FontSize   = 40f; // within that rect, so glyphs fill FontSize/RectHeight of it
 
-        private static readonly Color NormalColor   = Color.red;
-        private static readonly Color HeadshotColor = new Color(1f, 0.85f, 0.1f, 1f);
-
-        private static readonly Stack<DamagePopup> _pool = new();
-        private static Transform _poolRoot;
-        private static Camera    _overlayCamera;
+        private static readonly Color NormalColor = Color.white;
+        private static readonly Color CritColor   = new Color(0.95f, 0.42f, 0.06f, 1f);
 
         private Canvas          _canvas;
         private CanvasGroup     _group;
         private TextMeshProUGUI _text;
-        private float           _fadeTimer;
-        private Camera          _cam;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics()
-        {
-            _pool.Clear();
-            _poolRoot      = null;
-            _overlayCamera = null;
-        }
+        private Vector3 _anchor;    // impact point in world space
+        private Vector2 _offset;    // where it sits now, in pixels from the anchor
+        private Vector2 _velocity;  // px/s, thrown up out of the impact and pulled back down
+        private float   _heightPx;
+        private float   _age;
+        private float   _hold;
+        private float   _kick;
+        private bool    _crit;
 
-        // ── Overlay camera ────────────────────────────────────────────────────
+        public Vector3 Anchor => _anchor;
+        public Vector2 Offset => _offset;
+        public float   Age    => _age;
 
-        public static Camera GetOrCreateOverlayCamera()
-        {
-            if (_overlayCamera != null) return _overlayCamera;
-
-            int layer   = LayerMask.NameToLayer("UI");
-            var mainCam = Camera.main;
-
-            // Parent to main camera so it always shares its transform
-            var go = new GameObject("DamagePopupCamera");
-            go.transform.SetParent(mainCam.transform, false);
-
-            var cam = go.AddComponent<Camera>();
-            cam.clearFlags  = CameraClearFlags.Depth;
-            cam.cullingMask = 1 << layer;
-            cam.depth       = mainCam.depth + 1;
-
-            var camData = go.AddComponent<UniversalAdditionalCameraData>();
-            camData.renderType = CameraRenderType.Overlay;
-
-            // Add to main camera's URP stack
-            var mainData = mainCam.GetComponent<UniversalAdditionalCameraData>();
-            mainData.cameraStack.Add(cam);
-
-            // Exclude layer from main camera so it isn't rendered twice
-            mainCam.cullingMask &= ~(1 << layer);
-
-            _overlayCamera = cam;
-            return cam;
-        }
-
-        // ── Spawn ─────────────────────────────────────────────────────────────
-
-        public static void Spawn(float damage, Vector3 worldPos, bool headshot)
-        {
-            DamagePopup popup = null;
-            while (popup == null && _pool.Count > 0)
-                popup = _pool.Pop();
-
-            if (popup == null) popup = Create();
-            popup.Show(damage, worldPos, headshot);
-        }
-
-        private static DamagePopup Create()
-        {
-            if (_poolRoot == null)
-            {
-                var root = new GameObject("DamagePopups");
-                DontDestroyOnLoad(root);
-                _poolRoot = root.transform;
-            }
-
-            var go = new GameObject("DamagePopup");
-            go.layer = LayerMask.NameToLayer("UI");
-            go.transform.SetParent(_poolRoot, false);
-
-            var popup = go.AddComponent<DamagePopup>();
-            popup.Build();
-            return popup;
-        }
-
-        private void Build()
+        public void Build()
         {
             _canvas = gameObject.AddComponent<Canvas>();
             _canvas.renderMode      = RenderMode.WorldSpace;
             _canvas.overrideSorting = true;
-            _canvas.sortingOrder    = 0;
 
-            ((RectTransform)_canvas.transform).sizeDelta = new Vector2(200f, 60f);
+            ((RectTransform)_canvas.transform).sizeDelta = new Vector2(200f, RectHeight);
 
             _group = gameObject.AddComponent<CanvasGroup>();
 
             _text = UIFactory.MakeText("Text", (RectTransform)transform, gameObject.layer);
             UIFactory.Stretch(_text.rectTransform);
-            _text.alignment    = TextAlignmentOptions.Center;
-            _text.outlineWidth = 0.25f;
-            _text.outlineColor = Color.black;
+            _text.alignment          = TextAlignmentOptions.Center;
+            _text.textWrappingMode   = TextWrappingModes.NoWrap;
+            _text.outlineWidth       = 0.3f;
+            _text.outlineColor       = Color.black;
         }
 
-        private void Show(float damage, Vector3 worldPos, bool headshot)
+        // stackDepth is how many numbers were already clustered here, which decides the slot
+        // this one takes in the group and which way it is thrown.
+        public void Show(float damage, Vector3 anchor, bool crit, int stackDepth, int sortingOrder)
         {
-            _cam = Camera.main;
-            var overlayCam = GetOrCreateOverlayCamera();
-            _canvas.worldCamera = overlayCam;
+            int   rounded = Mathf.Max(1, Mathf.RoundToInt(damage));
+            float weight  = Mathf.Clamp01(damage / DamageNumberStyle.SizeRefDamage);
 
-            float dist      = Vector3.Distance(_cam.transform.position, worldPos);
-            float unitPerPx = dist * Mathf.Tan(overlayCam.fieldOfView * 0.5f * Mathf.Deg2Rad) * 2f / Screen.height;
-            float targetPx  = headshot ? HeadshotPx : NormalPx;
+            _crit     = crit;
+            _anchor   = anchor;
+            _age      = 0f;
+            _kick     = 0f;
+            _hold     = DamageNumberStyle.HoldSeconds + (crit ? DamageNumberStyle.CritHoldBonus : 0f);
+            _heightPx = Mathf.Lerp(DamageNumberStyle.MinHeightPx, DamageNumberStyle.MaxHeightPx, weight)
+                      * (crit ? DamageNumberStyle.CritSizeScale : 1f);
 
-            var rt = (RectTransform)transform;
-            rt.position   = worldPos;
-            rt.localScale = Vector3.one * (targetPx * unitPerPx / 60f);
-            rt.rotation   = _cam.transform.rotation;
+            _offset = DamageNumberLayout.SlotOffset(stackDepth);
+            // Thrown up and away from the middle of the group, so a group opens slightly as it
+            // rises instead of every number tracking the same line up the screen.
+            float side = _offset.x > 0.01f ? 1f : _offset.x < -0.01f ? -1f : 0f;
+            _velocity  = new Vector2(side * DamageNumberStyle.SideSpeedPx, DamageNumberStyle.RiseSpeedPx);
 
-            _text.text      = Mathf.RoundToInt(damage).ToString();
-            _text.color     = headshot ? HeadshotColor : NormalColor;
-            _text.fontSize  = headshot ? 48f : 36f;
-            _text.fontStyle = headshot ? FontStyles.Bold : FontStyles.Normal;
+            _text.text      = rounded.ToString();
+            _text.fontSize  = FontSize;
+            _text.fontStyle = crit ? FontStyles.Bold : FontStyles.Normal;
+            _text.color     = crit ? CritColor : NormalColor;
 
-            _group.alpha = 1f;
-            _fadeTimer   = FadeDelay;
+            // Re-fetched on every show: a pooled number can outlive the camera it last rendered
+            // through, and a scene load builds a new one.
+            _canvas.worldCamera  = UIOverlayCamera.GetOrCreate();
+            // Left disabled until it has been placed, so a reused number can never flash for a
+            // frame at the position its last life ended in.
+            _canvas.enabled      = false;
+            _canvas.sortingOrder = sortingOrder;
+            _group.alpha         = 1f;
             gameObject.SetActive(true);
         }
 
-        // ── Update ────────────────────────────────────────────────────────────
+        // Bumped when another hit lands in the same cluster.
+        public void Kick() => _kick = DamageNumberStyle.KickSeconds;
 
-        private void LateUpdate()
+        // Starts this number fading now, however much hold it had left.
+        public void Retire() => _hold = Mathf.Min(_hold, _age);
+
+        // Advances motion and fade. Returns false once the number is spent.
+        public bool Tick(float deltaTime)
         {
-            if (_cam == null)
+            _age += deltaTime;
+
+            _velocity.y -= DamageNumberStyle.GravityPx * deltaTime;
+            _offset     += _velocity * deltaTime;
+
+            if (_kick > 0f) _kick -= deltaTime;
+
+            float fadeAge = _age - _hold;
+            if (fadeAge <= 0f)
             {
-                Release();
-                return;
+                _group.alpha = 1f;
+                return true;
             }
 
-            transform.position += Vector3.up * (FloatSpeed * Time.deltaTime);
-            transform.rotation  = _cam.transform.rotation;
-
-            _fadeTimer -= Time.deltaTime;
-            if (_fadeTimer >= 0f) return;
-
-            _group.alpha -= FadeSpeed * Time.deltaTime;
-            if (_group.alpha <= 0f)
-                Release();
+            _group.alpha = 1f - fadeAge / DamageNumberStyle.FadeSeconds;
+            return _group.alpha > 0f;
         }
 
-        private void Release()
+        // Places the number at the screen position worked out for it, at the anchor's depth,
+        // sized so its rendered height matches _heightPx however far away it is.
+        public void Place(Camera camera, Vector2 screenPosition, float depth, float pixelHeightToWorld)
         {
-            gameObject.SetActive(false);
-            _pool.Push(this);
+            var rt = (RectTransform)transform;
+            rt.position   = camera.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, depth));
+            rt.rotation   = camera.transform.rotation;
+            rt.localScale = Vector3.one * (_heightPx * pixelHeightToWorld / RectHeight * Scale());
+        }
+
+        public void SetVisible(bool visible)
+        {
+            if (_canvas.enabled != visible) _canvas.enabled = visible;
+        }
+
+        // Pops in past full size and settles back, then rides any kicks from later hits.
+        private float Scale()
+        {
+            float scale = 1f;
+
+            float peak = DamageNumberStyle.PunchPeakScale + (_crit ? DamageNumberStyle.CritPunchBonus : 0f);
+            if (_age < DamageNumberStyle.PunchRise)
+                scale = Mathf.Lerp(DamageNumberStyle.PunchFromScale, peak, _age / DamageNumberStyle.PunchRise);
+            else if (_age < DamageNumberStyle.PunchRise + DamageNumberStyle.PunchSettle)
+                scale = Mathf.Lerp(peak, 1f, (_age - DamageNumberStyle.PunchRise) / DamageNumberStyle.PunchSettle);
+
+            if (_kick > 0f)
+                scale += DamageNumberStyle.KickScale * (_kick / DamageNumberStyle.KickSeconds);
+
+            return scale;
         }
     }
 }

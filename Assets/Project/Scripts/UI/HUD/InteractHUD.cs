@@ -42,7 +42,7 @@ namespace CGD.UI
 
             _canvas                = _worldPrompt.AddComponent<Canvas>();
             _canvas.renderMode     = RenderMode.WorldSpace;
-            _canvas.worldCamera    = DamagePopup.GetOrCreateOverlayCamera();
+            _canvas.worldCamera    = UIOverlayCamera.GetOrCreate();
             _canvas.overrideSorting = true;
             _canvas.sortingOrder   = 1;
 

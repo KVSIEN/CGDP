@@ -20,7 +20,7 @@ Global Volume                (URP post-processing)
 
 - `GameManager` hosts `VisibilityCullingManager` — set `[DefaultExecutionOrder(-100)]` so it registers before `CullableObject.OnEnable()` runs elsewhere. Assign the scene's main `Camera` to its `_camera` field. `_batchFrames`, `_activationMargin`, `_deactivationMargin`, `_alwaysVisibleDistance` are tunable; defaults are fine to start.
 - `GameManager` also hosts `AudioPool`. `_initialSize` defaults to 16 pooled AudioSources; increase if many sounds play simultaneously (rapid-fire weapons, crowds). Optional: assign an Audio Mixer group on each `SoundBank`.
-- Projectiles, grenades and damage numbers are pooled at runtime under `DontDestroyOnLoad` roots (`PrefabPool`, `DamagePopups`) — nothing to place in the scene. Projectile and grenade prefabs are spawned through the pool, so don't destroy them manually.
+- Projectiles, grenades and damage numbers are pooled at runtime under `DontDestroyOnLoad` roots (`PrefabPool`, `DamageNumbers`) — nothing to place in the scene. Projectile and grenade prefabs are spawned through the pool, so don't destroy them manually.
 - `Prefabs/Weapons/Projectile` needs a `Projectile` component and a renderer; the `Rigidbody` and `SphereCollider` it still carries are leftovers and are forced kinematic/trigger at runtime. A `TrailRenderer` on the same GameObject is optional — `Projectile` finds it in `Awake` and clears it on every launch, which pooled instances need or a reused round streaks a trail in from wherever the last one died. Recommended settings for a rifle round: `Time` 0.05, `Min Vertex Distance` 0.1, width ~0.05 tapering to 0, an unlit/additive material.
 - `RespawnPoint` just needs a `Transform` — assign it to `PlayerLifecycle._spawnPoint`.
 
@@ -87,9 +87,9 @@ HUD                           [Canvas, CanvasScaler, GraphicRaycaster, HUDManage
 
 All HUD elements build their own visuals at runtime via `UIFactory` — no child UI
 objects need to be pre-built, just the empty GameObject with a `RectTransform` and the
-matching component. Damage popups (`DamagePopup`) and enemy health bars
+matching component. Damage numbers (`DamageNumbers`) and enemy health bars
 (`EnemyHealthBar`) are **not** placed here — they're spawned/self-built at runtime by
-`DamagePopup.Spawn()` and by the `EnemyHealthBar` component on each enemy, respectively.
+`DamageNumbers.Spawn()` and by the `EnemyHealthBar` component on each enemy, respectively.
 Don't leave stray instances of either parented under the HUD canvas.
 
 - **HUDManager** — no references to wire; it finds every `HUDElement` among its children when the scene starts, so new HUD elements only need to be placed under `HUD`.
@@ -101,7 +101,7 @@ Don't leave stray instances of either parented under the HUD canvas.
 - **DodgeHUD** — assign `_dodge` = Player's `PlayerDodge`.
 - **InventoryHUD** — assign `_input` = Player, `_loadout` = Player's `PlayerWeaponLoadout`. Requires a `CanvasGroup` on the same object (used to fade the panel in/out).
 - **ItemInventoryHUD** — assign `_input` = Player, `_inventory` = Player's `PlayerInventory` (auto-resolved by scene lookup if left unset). Requires a `CanvasGroup` on the same object. Opens/closes on the same Inventory action as `InventoryHUD` — both panels sit as siblings under the HUD canvas.
-- **InteractHUD** — assign `_interaction` = Player's `PlayerInteraction`. Builds its own world-space prompt via `DamagePopup.GetOrCreateOverlayCamera()` — no manual camera setup needed.
+- **InteractHUD** — assign `_interaction` = Player's `PlayerInteraction`. Builds its own world-space prompt via `UIOverlayCamera.GetOrCreate()` — no manual camera setup needed.
 - **WeaponPickupHUD** — assign `_interaction` = Player's `PlayerInteraction`. Requires a `CanvasGroup`. Screen-anchored top-right; builds itself in `Awake` and only shows when the current interactable is a `WeaponPickup`. No wiring per pickup — stats are read from the pickup's `WeaponInstance` directly.
 
 `InventoryHUD`, `ItemInventoryHUD`, `InteractHUD` and `WeaponPickupHUD` are excluded from `HUDManager.ShowAll()`/it only
@@ -188,7 +188,7 @@ Switch (any name)             [Collider (isTrigger), Switch]
 | `Items/Profiles/<Family>Profile` (one per weapon family — `StandardFirearmProfile`, `PrecisionRifleProfile`, `AutomaticSupportProfile`, `ShotgunProfile`) — right-click the asset and pick the matching `Axes/...` preset | `GearDefinition._rollProfile` on each `WeaponCategoryData` |
 | `Items/Munitions/<Name>Munitions` (one per caliber in use — `StandardMunitions`, plus Light/Heavy/ShotgunShells as weapons need them) — each sets the `AmmoType` pool it feeds | `AmmoPickup._munition`, `PlayerInventory._startingStacks` |
 | `Items/DefaultStatRollProfile` (optional — assign to each `WeaponCategoryData`'s `RollProfile`; without one, stats roll uniformly and quality is ignored) | `WeaponCategoryData`, `ArmorDefinition` |
-| `Weapons/FireBehaviors/` (`HitscanFireBehavior`, `ShotgunFireBehavior`, `ProjectileFireBehavior` → `Prefabs/Weapons/Projectile`) | assigned on each `WeaponCategoryData` / `WeaponData` `FireBehavior` |
+| `Weapons/FireBehaviors/` (`HitscanFireBehavior`, `ShotgunFireBehavior`, `ProjectileFireBehavior` → `Prefabs/Weapons/Projectile`) — as authored, AR/SMG/Pistol/Sniper/LMG categories all point at `ProjectileFireBehavior`, and `ShotgunFireBehavior` has `Projectile Pellets` ticked with `Prefab` = `Prefabs/Weapons/ShotgunPellet` (speed 400, lifetime 2, gravity 0, instant-hit 0.02); `HitscanFireBehavior` is assigned to nothing but stays available. Unticking `Projectile Pellets`, or clearing that prefab, drops the shotgun back to raycast pellets | assigned on each `WeaponCategoryData` / `WeaponData` `FireBehavior` |
 | `Abilities/` (`DashAbility`, `HealAbility`, `ProjectileAbility` → `Prefabs/Weapons/Projectile`, `ShockwaveAbility`) — each has `MaxCharges` and `CastTime` | `PlayerAbilities._slots` |
 | `Weapons/Melee/DefaultMeleeWeaponData` | `MeleeController` |
 | `Weapons/Throwables/DefaultGrenadeData` (its `GrenadePrefab` — `Prefabs/Weapons/FragGrenade` — needs a `Rigidbody` + non-trigger `Collider` + `Grenade` component) | `GrenadeController` |

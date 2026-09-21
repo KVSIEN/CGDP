@@ -1,5 +1,6 @@
 using UnityEngine;
 using CGD.Combat;
+using CGD.Core;
 
 namespace CGD.Weapons
 {
@@ -36,6 +37,44 @@ namespace CGD.Weapons
         {
             float falloff = FalloffOf(ctx.Data).Evaluate(hit.distance);
             Hitbox.ApplyHit(hit.collider, BuildDamageInfo(ctx, falloff), hit.point);
+        }
+
+        // Resolves one round in two stages. The stretch it would cross within a frame or two
+        // resolves as a plain raycast, so point-blank fire registers on the frame the trigger
+        // breaks; past that the shot becomes a real projectile that sweeps its own path each
+        // frame. Both stages run along the same ray and share one falloff curve, so where a
+        // shot happens to change hands is invisible to the player.
+        protected static void FireProjectileShot(in FireContext ctx, Vector3 direction, in ProjectileShot shot)
+        {
+            if (!shot.IsValid) return;
+
+            float maxRange     = ctx.Data.EffectiveMaxRange;
+            float instantRange = Mathf.Min(shot.Speed * shot.InstantHitTime, maxRange);
+
+            if (instantRange > 0f &&
+                Physics.Raycast(ctx.CameraPosition, direction, out RaycastHit hit,
+                                instantRange, ctx.Data.HitMask, QueryTriggerInteraction.Ignore))
+            {
+                ApplyHitDamage(hit, ctx);
+                return;
+            }
+
+            // Nothing that close, so hand the rest of the flight to a projectile starting where
+            // the raycast stopped — the two stages neither overlap nor leave a gap.
+            Vector3    origin = ctx.CameraPosition + direction * instantRange;
+            GameObject go     = PrefabPool.Spawn(shot.Prefab.gameObject, origin, Quaternion.LookRotation(direction));
+
+            go.GetComponent<Projectile>().Launch(new ProjectileLaunch
+            {
+                Damage            = BuildDamageInfo(ctx),
+                Velocity          = direction * shot.Speed,
+                Gravity           = shot.Gravity,
+                Lifetime          = shot.Lifetime,
+                MaxDistance       = maxRange,
+                HitMask           = ctx.Data.HitMask,
+                Falloff           = FalloffOf(ctx.Data),
+                DistanceTravelled = instantRange,
+            });
         }
     }
 }
