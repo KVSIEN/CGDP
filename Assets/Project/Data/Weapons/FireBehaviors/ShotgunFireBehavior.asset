@@ -14,7 +14,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShotgunFireBehavior
   _projectilePellets: 1
   _prefab: {fileID: 2411218781784674235, guid: 0647c4bbb039d2a47811719c510e2a64, type: 3}
-  _speed: 400
-  _lifetime: 2
-  _gravity: 0
-  _instantHitTime: 0.02

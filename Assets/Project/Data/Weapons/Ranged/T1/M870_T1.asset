@@ -22,6 +22,12 @@ MonoBehaviour:
   PelletCount: 8
   ChargeTime: 0.8
   MinChargeToFire: 0.15
+  ProjectileSpeed: 400
+  ProjectileLifetime: 2
+  ProjectileGravity: 0
+  ProjectileInstantHitTime: 0.02
+  LowChargeSpeedMultiplier: 0.4
+  LowChargeGravityMultiplier: 3
   Damage: 12
   DamageType: 0
   ArmorPenetration: 0

@@ -47,6 +47,40 @@ namespace CGD.Weapons
         [Range(0f, 1f)]
         public float MinChargeToFire = 0.15f;
 
+        // ── Projectile Physics (Projectile & Shotgun-projectile fire behaviors) ──
+        [Header("Projectile Physics")]
+        [Tooltip("Muzzle velocity at full charge (m/s). Only used when the equipped FireBehavior spawns projectiles — hitscan weapons ignore this field. Real-bullet range: ~400-1000 m/s; arrow-class: ~40-80; rocket-class: ~30-150.")]
+        [Min(0.1f)]
+        public float ProjectileSpeed = 900f;
+        [Tooltip("How long a projectile lives before self-releasing (seconds).")]
+        [Min(0.1f)]
+        public float ProjectileLifetime = 5f;
+        [Tooltip("Downward acceleration in m/s² applied to the projectile at full charge. 0 = perfectly straight flight (bullets, plasma). Higher = arrow-like arc.")]
+        [Min(0f)]
+        public float ProjectileGravity = 0f;
+        [Tooltip("Flight time under which a shot resolves instantly as a raycast instead of spawning a projectile. Multiplied by the shot's speed to get the range, so faster rounds stay instant further out. 0 = always simulate a projectile.")]
+        [Min(0f)]
+        public float ProjectileInstantHitTime = 0.02f;
+        [Tooltip("Speed multiplier when the shot is released at minimum charge. Only used with Charge fire mode; ignored otherwise.")]
+        [Range(0.05f, 1f)]
+        public float LowChargeSpeedMultiplier = 0.4f;
+        [Tooltip("Gravity multiplier when the shot is released at minimum charge. Bows want this well above 1 so weak shots plummet.")]
+        [Min(1f)]
+        public float LowChargeGravityMultiplier = 3f;
+
+        // Per-weapon projectile physics resolved against a charge fraction. Non-charge
+        // fire modes pass 1f and the multipliers become no-ops, so both callers can use
+        // the same helper without special-casing.
+        public float GetProjectileSpeed(float charge)
+        {
+            return ProjectileSpeed * Mathf.Lerp(LowChargeSpeedMultiplier, 1f, Mathf.Clamp01(charge));
+        }
+
+        public float GetProjectileGravity(float charge)
+        {
+            return ProjectileGravity * Mathf.Lerp(LowChargeGravityMultiplier, 1f, Mathf.Clamp01(charge));
+        }
+
         // ── Damage ────────────────────────────────────────────────────────────
         [Header("Damage")]
         public float Damage = 25f;
