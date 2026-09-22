@@ -74,11 +74,12 @@
 - Abilities can store several charges; spent charges recharge one after another
 - Optional cast time: the ability fires after a short delay and is cancelled if the player is stunned, mantling or rolling; the slot fills up while casting
 - An ability that wouldn't do anything isn't used (e.g. Heal at full health), so no charge is spent
-- Four built-in abilities: Dash, Projectile, Heal, and Shockwave
+- Five built-in abilities: Dash, Projectile, Heal, Shockwave, and Timeline
   - **Dash** — bursts the player horizontally in their move direction (or camera forward if idle)
   - **Projectile** — fires a projectile from the camera that deals damage (and optional status effects) on impact; configurable speed, lifetime and gravity drop
   - **Heal** — instantly restores a set amount of health
   - **Shockwave** — damages nearby enemies and launches nearby rigidbodies away from the player
+  - **Timeline** — runs an ActionTimeline via TimelineAbilityRunner; only one timeline ability can play at a time
 - All ability values (cooldown, force, damage, etc.) are tunable on the ScriptableObject asset
 - HUD shows four coloured slots at the bottom of the screen; a dark overlay drains away as the next charge recovers, and multi-charge abilities show their charge count
 
@@ -225,6 +226,23 @@
 - Each target is damaged at most once per swing regardless of how many ticks or rays touch it
 - Per-step critical multiplier — applied when a Thrust or Sweep hits a critical region (head by default); tunable per combo step so a heavy finisher can crit harder than a quick jab
 - Debug drawing shows the cast rays (Thrust/Sweep) or overlap sphere (Slam) each physics tick during the Active window
+- When a MeleeAttackStep has an ActionTimeline assigned, the Active phase is driven by the timeline system instead of the legacy hit resolver — the timeline controls what shapes fire on which frames, while Windup and Recovery remain time-based
+
+## Action Timeline System
+- A data-driven frame-data system for choreographing per-frame hitbox logic for any ability or attack
+- An ActionTimeline ScriptableObject defines a sequence of events across integer frame indices (one frame = one FixedUpdate tick at 50 Hz)
+- An ActionTimelineRunner ticks through the timeline, activating and deactivating events each frame
+- Events are polymorphic ([SerializeReference]) and stateless — all runtime state lives on the runner's ActionContext
+- Available event types:
+  - **ShapeHitEvent** — physics queries (SphereCast, Arc, Sphere, Box) with configurable damage, dedup, and region resolution; covers melee thrusts, sweeps, slams, AOE circles, and cones
+  - **SpawnProjectileEvent** — spawns a projectile prefab via PrefabPool
+  - **BeamEvent** — continuous raycast or SphereCast forward each tick (no dedup, intentional per-tick damage)
+  - **SpawnZoneEvent** — spawns a persistent zone prefab (trap or lingering AOE) at a resolved position
+  - **ForceEvent** — applies a force impulse to the caster or hit targets
+  - **SoundEvent** — plays a SoundBank at the action origin
+- Each event can resolve its position in one of three coordinate spaces: CameraRelative (melee default), WorldOffset (ground-targeted), or WorldAbsolute
+- PersistentZone MonoBehaviour self-manages lifetime, periodic overlap checks, and pool release; supports one-shot traps (damages once then releases) and lingering AOEs (damages periodically until expired)
+- Events can use a shared dedup set (one hit per target across the entire timeline) or per-event dedup (each event tracks its own targets independently)
 
 ## Grenades
 - Hold the grenade key to aim — a predicted trajectory arc is drawn from the throw point, accounting for gravity, and stops early at the first surface it would hit

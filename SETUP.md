@@ -173,6 +173,39 @@ Switch (any name)             [Collider (isTrigger), Switch]
 - Any other world object that should respond to the Interact key just needs a component implementing `IInteractable` (`InteractLabel`, `Interact(GameObject)`, and optionally `CanInteract(GameObject)` to hide the prompt when it wouldn't do anything) — no other wiring required, `PlayerInteraction` finds it via an `OverlapSphere` scan.
 - Environment meshes that should be frustum-culled need a `CullableObject` component — leave `_renderers` empty to auto-collect from children, or assign explicitly for multi-renderer objects.
 
+## Timeline Ability Runner
+
+```
+Player (root)
+├── (existing components)
+├── TimelineAbilityRunner
+│   └── Serialized refs:
+│       _debugDraw     → bool (default true)
+│       _debugDuration → float (default 0.3)
+```
+
+Required on the Player when using TimelineAbility assets. TimelineAbility.Execute()
+looks up this component to start the timeline. Only one timeline ability can play
+at a time (IsPlaying gates further activations).
+
+---
+
+## Persistent Zone
+
+```
+ZonePrefab
+└── Components: PersistentZone
+    └── Serialized refs:
+        _lifetime, _radius, _tickInterval, _damage,
+        _armorPenetration, _damageType, _onHitEffects[],
+        _triggerOnce
+```
+
+Spawned by SpawnZoneEvent via PrefabPool. PersistentZone.Init() receives
+DamageSource + LayerMask at spawn time.
+
+---
+
 ## Required ScriptableObject Assets
 
 | Asset | Used by |
@@ -189,7 +222,8 @@ Switch (any name)             [Collider (isTrigger), Switch]
 | `Items/Munitions/<Name>Munitions` (one per caliber in use — `StandardMunitions`, plus Light/Heavy/ShotgunShells as weapons need them) — each sets the `AmmoType` pool it feeds | `AmmoPickup._munition`, `PlayerInventory._startingStacks` |
 | `Items/DefaultStatRollProfile` (optional — assign to each `WeaponCategoryData`'s `RollProfile`; without one, stats roll uniformly and quality is ignored) | `WeaponCategoryData`, `ArmorDefinition` |
 | `Weapons/FireBehaviors/` (`HitscanFireBehavior`, `ShotgunFireBehavior`, `ProjectileFireBehavior` → `Prefabs/Weapons/Projectile`) — as authored, AR/SMG/Pistol/Sniper/LMG categories all point at `ProjectileFireBehavior`, and `ShotgunFireBehavior` has `Projectile Pellets` ticked with `Prefab` = `Prefabs/Weapons/ShotgunPellet` (speed 400, lifetime 2, gravity 0, instant-hit 0.02); `HitscanFireBehavior` is assigned to nothing but stays available. Unticking `Projectile Pellets`, or clearing that prefab, drops the shotgun back to raycast pellets | assigned on each `WeaponCategoryData` / `WeaponData` `FireBehavior` |
-| `Abilities/` (`DashAbility`, `HealAbility`, `ProjectileAbility` → `Prefabs/Weapons/Projectile`, `ShockwaveAbility`) — each has `MaxCharges` and `CastTime` | `PlayerAbilities._slots` |
+| `Combat/ActionTimelines/` (ActionTimeline assets — e.g. `SwordSlash`, `GroundSlam`) | `MeleeAttackStep.Timeline`, `TimelineAbility.Timeline` |
+| `Abilities/` (`DashAbility`, `HealAbility`, `ProjectileAbility` → `Prefabs/Weapons/Projectile`, `ShockwaveAbility`, `TimelineAbility` → ActionTimeline asset) — each has `MaxCharges` and `CastTime` | `PlayerAbilities._slots` |
 | `Weapons/Melee/DefaultMeleeWeaponData` | `MeleeController` |
 | `Weapons/Throwables/DefaultGrenadeData` (its `GrenadePrefab` — `Prefabs/Weapons/FragGrenade` — needs a `Rigidbody` + non-trigger `Collider` + `Grenade` component) | `GrenadeController` |
 | `Audio/DefaultSurfaceDatabase` (empty until surface `SoundBank`s exist) | `PlayerFootsteps` |
