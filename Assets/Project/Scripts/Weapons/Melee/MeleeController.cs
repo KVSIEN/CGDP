@@ -18,6 +18,7 @@ namespace CGD.Weapons
         [SerializeField] private float _debugDuration = 0.3f;
 
         private readonly MeleeHitResolver _resolver = new();
+        private readonly ActionTimelineRunner _runner = new();
 
         private PlayerInputHandler _input;
         private PlayerMovement     _movement;
@@ -28,6 +29,8 @@ namespace CGD.Weapons
         private int   _comboIndex;
         private float _comboResetTimer;
         private MeleeAttackStep _activeStep;
+        private bool _usingTimeline;
+        private ActionContext _timelineCtx;
 
         private bool  _heldLastFrame;
         private float _holdTimer;
@@ -85,7 +88,22 @@ namespace CGD.Weapons
             if (_phase != Phase.Active || _activeStep == null) return;
 
             Transform cam = _camera.transform;
-            _resolver.Tick(cam.position, cam.forward, cam.up, _debugDraw, _debugDuration);
+
+            if (_usingTimeline)
+            {
+                _timelineCtx.Origin  = cam.position;
+                _timelineCtx.Forward = cam.forward;
+                _timelineCtx.Up      = cam.up;
+
+                _runner.Tick();
+
+                if (!_runner.IsRunning)
+                    ExitActive();
+            }
+            else
+            {
+                _resolver.Tick(cam.position, cam.forward, cam.up, _debugDraw, _debugDuration);
+            }
         }
 
         private void StartAttack(bool heavy)
@@ -112,7 +130,8 @@ namespace CGD.Weapons
                     break;
 
                 case Phase.Active:
-                    ExitActive();
+                    if (!_usingTimeline)
+                        ExitActive();
                     break;
 
                 case Phase.Recovery:
@@ -123,25 +142,54 @@ namespace CGD.Weapons
 
         private void EnterActive()
         {
-            _phase      = Phase.Active;
-            _phaseTimer = _activeStep.ActiveTime;
+            _phase = Phase.Active;
+            _usingTimeline = _activeStep.Timeline != null;
 
-            var info = new DamageInfo(
-                _activeStep.Damage,
-                _activeStep.ArmorPenetration,
-                _activeStep.DamageType,
-                _activeStep.CriticalMultiplier,
-                _damageSource,
-                _activeStep.OnHitEffects);
+            if (_usingTimeline)
+            {
+                ActionTimeline timeline = _activeStep.Timeline;
+                _phaseTimer = timeline.TotalFrames * Time.fixedDeltaTime;
 
-            _resolver.Begin(_activeStep, info, _data.HitMask, transform.root);
+                Transform cam = _camera.transform;
+                _timelineCtx = new ActionContext
+                {
+                    Origin        = cam.position,
+                    Forward       = cam.forward,
+                    Up            = cam.up,
+                    SourceRoot    = transform.root,
+                    Source        = _damageSource,
+                    HitMask       = timeline.HitMask,
+                    DebugDraw     = _debugDraw,
+                    DebugDuration = _debugDuration,
+                };
+
+                _runner.Begin(timeline, _timelineCtx);
+            }
+            else
+            {
+                _phaseTimer = _activeStep.ActiveTime;
+
+                var info = new DamageInfo(
+                    _activeStep.Damage,
+                    _activeStep.ArmorPenetration,
+                    _activeStep.DamageType,
+                    _activeStep.CriticalMultiplier,
+                    _damageSource,
+                    _activeStep.OnHitEffects);
+
+                _resolver.Begin(_activeStep, info, _data.HitMask, transform.root);
+            }
         }
 
         private void ExitActive()
         {
-            _resolver.End();
+            if (_usingTimeline)
+                _runner.Stop();
+            else
+                _resolver.End();
 
-            if (_resolver.HitAnything)
+            bool hitAnything = _usingTimeline ? _runner.HitAnything : _resolver.HitAnything;
+            if (hitAnything)
                 _activeStep.HitSound?.Play(transform.position);
 
             _phase      = Phase.Recovery;

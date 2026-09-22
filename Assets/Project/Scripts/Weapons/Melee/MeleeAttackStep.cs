@@ -8,6 +8,10 @@ namespace CGD.Weapons
     [Serializable]
     public class MeleeAttackStep
     {
+        [Header("Timeline")]
+        [Tooltip("When set, the Active phase uses this timeline instead of the legacy hit resolver. Damage, hit detection and sound are defined by the timeline's events.")]
+        public ActionTimeline Timeline;
+
         [Header("Damage")]
         public float Damage = 20f;
         [Range(0f, 1f)] public float ArmorPenetration = 0f;
@@ -18,7 +22,7 @@ namespace CGD.Weapons
         [Header("Timing")]
         [Tooltip("Delay before the hit window opens.")]
         public float WindupTime = 0.1f;
-        [Tooltip("How long the hit window stays open. Detection runs every physics tick during this window.")]
+        [Tooltip("How long the hit window stays open. Ignored when a Timeline is set (derived from TotalFrames).")]
         public float ActiveTime = 0.15f;
         [Tooltip("Delay after the hit window closes before another attack can start, unless a combo input was buffered.")]
         public float RecoveryTime = 0.25f;
