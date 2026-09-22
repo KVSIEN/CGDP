@@ -217,7 +217,14 @@
 - Light attacks chain into a combo string — pressing again while the current attack is swinging or recovering queues the next step, which fires the instant the current one finishes; the string resets back to the first step after a short period of no input
 - Damage resolves through the same Effective Damage pipeline as guns and abilities (armor, penetration, damage type all apply)
 - Independent of the equipped ranged weapon — always available regardless of which gun is out
-- No animations yet — a wireframe sphere is drawn at the hit location while the attack is active so timing and reach are visible during testing
+- Hit registration runs continuously during the Active window (every physics tick), not a single-frame check — moving targets are caught mid-swing
+- Three hit shapes per attack step:
+  - **Thrust** — single SphereCast forward (stabs, pokes); resolves hitbox regions so headshots and limb hits apply their multipliers
+  - **Sweep** — fan of SphereCasts across a configurable horizontal arc (slashes, backhands); each ray resolves hitbox regions independently; ray count and arc width are tunable per step
+  - **Slam** — OverlapSphere at the impact point (overhead smashes, ground pounds); area damage with no region resolution, hits everything in the radius once
+- Each target is damaged at most once per swing regardless of how many ticks or rays touch it
+- Per-step critical multiplier — applied when a Thrust or Sweep hits a critical region (head by default); tunable per combo step so a heavy finisher can crit harder than a quick jab
+- Debug drawing shows the cast rays (Thrust/Sweep) or overlap sphere (Slam) each physics tick during the Active window
 
 ## Grenades
 - Hold the grenade key to aim — a predicted trajectory arc is drawn from the throw point, accounting for gravity, and stops early at the first surface it would hit

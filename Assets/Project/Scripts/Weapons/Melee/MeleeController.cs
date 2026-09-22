@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Input;
@@ -6,10 +5,6 @@ using CGD.Player;
 
 namespace CGD.Weapons
 {
-    // Standalone light/heavy melee attack, independent of the equipped ranged weapon.
-    // Tap the melee action for a light attack (chains into the next combo step if
-    // pressed again during Active/Recovery); hold past HeavyHoldThreshold before
-    // releasing for a heavy finisher instead.
     [RequireComponent(typeof(PlayerInputHandler))]
     public class MeleeController : MonoBehaviour
     {
@@ -19,11 +14,10 @@ namespace CGD.Weapons
         [SerializeField] private PlayerCamera    _camera;
 
         [Header("Debug")]
-        [SerializeField] private bool  _debugDrawHitbox   = true;
-        [SerializeField] private float _debugDrawDuration = 0.5f;
+        [SerializeField] private bool  _debugDraw     = true;
+        [SerializeField] private float _debugDuration = 0.3f;
 
-        private static readonly Collider[] _hitBuffer = new Collider[16];
-        private static readonly HashSet<IDamageable> _hitTargets = new();
+        private readonly MeleeHitResolver _resolver = new();
 
         private PlayerInputHandler _input;
         private PlayerMovement     _movement;
@@ -42,8 +36,8 @@ namespace CGD.Weapons
 
         private void Awake()
         {
-            _input    = GetComponent<PlayerInputHandler>();
-            _movement = GetComponent<PlayerMovement>();
+            _input        = GetComponent<PlayerInputHandler>();
+            _movement     = GetComponent<PlayerMovement>();
             _damageSource = DamageSource.Of(gameObject);
         }
 
@@ -86,6 +80,14 @@ namespace CGD.Weapons
             TickPhase(Time.deltaTime);
         }
 
+        private void FixedUpdate()
+        {
+            if (_phase != Phase.Active || _activeStep == null) return;
+
+            Transform cam = _camera.transform;
+            _resolver.Tick(cam.position, cam.forward, cam.up, _debugDraw, _debugDuration);
+        }
+
         private void StartAttack(bool heavy)
         {
             _activeStep = heavy ? _data.HeavyAttack : _data.LightCombo[_comboIndex];
@@ -106,20 +108,44 @@ namespace CGD.Weapons
             switch (_phase)
             {
                 case Phase.Windup:
-                    _phase      = Phase.Active;
-                    _phaseTimer = _activeStep.ActiveTime;
-                    ResolveHit();
+                    EnterActive();
                     break;
 
                 case Phase.Active:
-                    _phase      = Phase.Recovery;
-                    _phaseTimer = _activeStep.RecoveryTime;
+                    ExitActive();
                     break;
 
                 case Phase.Recovery:
                     EndAttack();
                     break;
             }
+        }
+
+        private void EnterActive()
+        {
+            _phase      = Phase.Active;
+            _phaseTimer = _activeStep.ActiveTime;
+
+            var info = new DamageInfo(
+                _activeStep.Damage,
+                _activeStep.ArmorPenetration,
+                _activeStep.DamageType,
+                _activeStep.CriticalMultiplier,
+                _damageSource,
+                _activeStep.OnHitEffects);
+
+            _resolver.Begin(_activeStep, info, _data.HitMask, transform.root);
+        }
+
+        private void ExitActive()
+        {
+            _resolver.End();
+
+            if (_resolver.HitAnything)
+                _activeStep.HitSound?.Play(transform.position);
+
+            _phase      = Phase.Recovery;
+            _phaseTimer = _activeStep.RecoveryTime;
         }
 
         private void EndAttack()
@@ -133,60 +159,6 @@ namespace CGD.Weapons
 
             _phase           = Phase.Idle;
             _comboResetTimer = _data.ComboResetTime;
-        }
-
-        private void ResolveHit()
-        {
-            Vector3 origin  = _camera.transform.position;
-            Vector3 forward = _camera.transform.forward;
-            Vector3 center  = origin + forward * _activeStep.Range;
-
-            int count = Physics.OverlapSphereNonAlloc(center, _activeStep.Radius, _hitBuffer,
-                _data.HitMask, QueryTriggerInteraction.Ignore);
-
-            var info = new DamageInfo(_activeStep.Damage, _activeStep.ArmorPenetration, _activeStep.DamageType,
-                source: _damageSource, onHitEffects: _activeStep.OnHitEffects);
-
-            _hitTargets.Clear();
-            bool hitAnything = false;
-            for (int i = 0; i < count; i++)
-            {
-                if (_hitBuffer[i].transform.root == transform.root) continue;
-                IDamageable target = Hitbox.FindDamageable(_hitBuffer[i]);
-                if (target != null && _hitTargets.Add(target))
-                {
-                    target.TakeDamage(info);
-                    hitAnything = true;
-                }
-            }
-
-            if (hitAnything)
-                _activeStep.HitSound?.Play(center);
-
-            if (_debugDrawHitbox)
-                DebugDrawSphere(center, _activeStep.Radius, _activeStep.DebugColor, _debugDrawDuration);
-        }
-
-        // No animations yet — draw a wireframe sphere so the attack's timing and
-        // reach are visible in the Scene view while playing.
-        private static void DebugDrawSphere(Vector3 center, float radius, Color color, float duration)
-        {
-            DrawCircle(center, Vector3.right, Vector3.up,      radius, color, duration);
-            DrawCircle(center, Vector3.up,    Vector3.forward, radius, color, duration);
-            DrawCircle(center, Vector3.forward, Vector3.right, radius, color, duration);
-        }
-
-        private static void DrawCircle(Vector3 center, Vector3 tangent, Vector3 bitangent, float radius, Color color, float duration)
-        {
-            const int segments = 16;
-            Vector3 prev = center + tangent * radius;
-            for (int i = 1; i <= segments; i++)
-            {
-                float t = i / (float)segments * Mathf.PI * 2f;
-                Vector3 next = center + (tangent * Mathf.Cos(t) + bitangent * Mathf.Sin(t)) * radius;
-                Debug.DrawLine(prev, next, color, duration);
-                prev = next;
-            }
         }
     }
 }
