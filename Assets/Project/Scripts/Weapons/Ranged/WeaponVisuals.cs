@@ -4,16 +4,8 @@ using UnityEngine;
 namespace CGD.Weapons
 {
     /// <summary>
-    /// Weapon-pivot visual behaviour (child of the camera). Combines independent motions on
-    /// the same transform, all in local space so the rest pose is preserved:
-    ///   * Hip kick  - spring pushed by AddKick; the gun itself rears up and rolls, because
-    ///                 from the hip the camera barely moves.
-    ///   * ADS kick  - timed pulse pushed by AddKick; while aiming the camera carries the climb
-    ///                 and bullets go to the crosshair, so the pulse is guaranteed back at zero
-    ///                 before the next round can fire — the sights are centred on the crosshair
-    ///                 whenever a shot leaves.
-    ///   * Sway      - pulled by look input, movement and idle breathing (amounts from the
-    ///                 equipped WeaponData). Fades out while aiming for the same reason.
+    /// Weapon-pivot visual behaviour: hip kick (spring), ADS kick (timed pulse that
+    /// settles before the next round), and sway (look/move/idle, fades while aiming).
     /// </summary>
     public class WeaponVisuals : MonoBehaviour
     {
@@ -172,20 +164,14 @@ namespace CGD.Weapons
             posTarget = Vector3.zero;
             if (_data == null) return;
 
-            // All sway fades out while aiming: bullets go to the crosshair, so any sway would
-            // push the sights off the point the shot actually goes to.
             float swayScale = 1f - _adsT;
             if (swayScale <= 0f) return;
 
-            // Look sway: weapon lags opposite the aim direction, spring pulls it back once
-            // input stops. Vertical look (y) drives pitch; horizontal look (x) drives yaw plus
-            // a subtle roll for weight.
             float lookAmount = _data.LookSwayAmount * swayScale;
             rotTarget.x += -_lookInput.y * _lookPitchScale * lookAmount;
             rotTarget.y += -_lookInput.x * _lookYawScale   * lookAmount;
             rotTarget.z += -_lookInput.x * _lookYawScale   * lookAmount * _lookRollFactor;
 
-            // Idle breathing: slow Perlin drift on pitch/yaw.
             float t     = Time.time * _data.IdleSwaySpeed + _idlePhaseOffset;
             float idleX = (Mathf.PerlinNoise(t, 0f)      - 0.5f) * 2f;
             float idleY = (Mathf.PerlinNoise(0f, t + 5f) - 0.5f) * 2f;
@@ -193,8 +179,6 @@ namespace CGD.Weapons
             rotTarget.x += idleX * idleAmp;
             rotTarget.y += idleY * idleAmp;
 
-            // Move bob: sinusoidal position/rotation while grounded and moving. Vertical bob
-            // at 2x horizontal gives the classic figure-8 walk pattern.
             if (_isGrounded && _horizontalSpeed > 0.1f)
             {
                 float speedT   = Mathf.Clamp01(_horizontalSpeed / _moveBobMaxSpeed);

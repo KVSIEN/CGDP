@@ -29,8 +29,10 @@ namespace CGD.Core
         [SerializeField] private int _batchFrames = 4;
 
         private static VisibilityCullingManager _instance;
+        private static readonly System.Predicate<CullableObject> IsNull = o => o == null;
 
         private readonly List<CullableObject> _objects = new();
+        private readonly HashSet<CullableObject> _registered = new();
         private readonly Plane[] _frustumPlanes = new Plane[6];
         private int _batchIndex;
 
@@ -43,11 +45,16 @@ namespace CGD.Core
 
         public static void Register(CullableObject obj)
         {
-            if (_instance == null || _instance._objects.Contains(obj)) return;
+            if (_instance == null || !_instance._registered.Add(obj)) return;
             _instance._objects.Add(obj);
         }
 
-        public static void Unregister(CullableObject obj) => _instance?._objects.Remove(obj);
+        public static void Unregister(CullableObject obj)
+        {
+            if (_instance == null) return;
+            _instance._registered.Remove(obj);
+            _instance._objects.Remove(obj);
+        }
 
         private void LateUpdate()
         {
@@ -90,7 +97,10 @@ namespace CGD.Core
 
             // Clean up entries for destroyed objects once per full cycle.
             if (_batchIndex == 0)
-                _objects.RemoveAll(o => o == null);
+            {
+                _objects.RemoveAll(IsNull);
+                _registered.RemoveWhere(o => o == null);
+            }
         }
     }
 }

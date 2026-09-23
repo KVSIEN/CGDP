@@ -2,25 +2,6 @@ using UnityEngine;
 
 namespace CGD.Weapons
 {
-    // One shot's worth of recoil, computed from the current weapon and state.
-    // WeaponController turns this into calls on PlayerCamera and WeaponVisuals.
-    public struct RecoilShot
-    {
-        // Camera-side kick — these are the values passed to PlayerCamera.AddRecoil.
-        public float VertKick;
-        public float HorizKick;
-        // Weapon-model kick before the hip/ADS camera share is applied — the values passed
-        // to WeaponVisuals.AddKick so the gun animates the full kick regardless of ADS.
-        public float GunVert;
-        public float GunHoriz;
-        // Interpolated recovery fraction between hip and ADS, so ADS returns further to origin.
-        public float RecoveryFraction;
-    }
-
-    // Owns all recoil state for one weapon: the accumulated climb, the heat buildup, and
-    // the horizontal drift-sign that flips at the cap in Alternating mode. Given adsT it
-    // returns the numbers WeaponController needs; given a Tick it drains heat and eases
-    // the at-cap vertical overshoot back before the next round fires.
     public class RecoilProcessor
     {
         private WeaponData _data;

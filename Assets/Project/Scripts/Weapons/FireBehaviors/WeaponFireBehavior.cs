@@ -33,6 +33,22 @@ namespace CGD.Weapons
         protected static DamageFalloff FalloffOf(WeaponData data) =>
             new(data.RangeOptimal, data.RangeFalloffEnd, data.DamageFalloffMin);
 
+        protected static void FireHitscanRay(in FireContext ctx, Vector3 direction)
+        {
+            float range  = ctx.Data.EffectiveMaxRange;
+            bool  didHit = Physics.Raycast(ctx.CameraPosition, direction, out RaycastHit hit,
+                range, ctx.Data.HitMask, QueryTriggerInteraction.Ignore);
+
+            if (ctx.DebugDraw)
+            {
+                Vector3 origin = ctx.Muzzle != null ? ctx.Muzzle.position : ctx.CameraPosition;
+                Vector3 end    = didHit ? hit.point : origin + direction * range;
+                Debug.DrawLine(origin, end, didHit ? ctx.DebugHitColor : ctx.DebugMissColor, ctx.DebugLineDuration);
+            }
+
+            if (didHit) ApplyHitDamage(hit, ctx);
+        }
+
         protected static void ApplyHitDamage(RaycastHit hit, in FireContext ctx)
         {
             float falloff = FalloffOf(ctx.Data).Evaluate(hit.distance);

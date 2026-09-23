@@ -1,8 +1,6 @@
 using System;
 using UnityEngine;
-using CGD.Input;
-
-namespace CGD.Core
+namespace CGD.Input
 {
     public static class SettingsSave
     {

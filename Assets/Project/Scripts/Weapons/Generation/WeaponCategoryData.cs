@@ -106,8 +106,6 @@ namespace CGD.Weapons
         public override ItemInstance CreateInstance(ItemRoll roll) =>
             WeaponGenerator.Generate(this, roll);
 
-        // ── Context Menu ──────────────────────────────────────────────────────────
-
         [ContextMenu("Apply Type Defaults")]
         public void ApplyTypeDefaults() => WeaponCategoryDefaults.Apply(this);
     }

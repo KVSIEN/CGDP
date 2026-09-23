@@ -2,24 +2,10 @@ using UnityEngine;
 
 namespace CGD.Items
 {
-    // Turns a quality score into a set of per-stat outcomes.
-    //
-    // Quality answers "how much power does this item have"; the tradeoff axes answer
-    // "how is that power distributed". Keeping them separate is what lets the GDD's
-    // two requirements coexist — low tiers forced into clear tradeoffs, top tiers
-    // strong across the board — which a plain range shift can't express.
-    //
-    //   base   = BaseFloor  + BaseGain    * quality   (lifts every stat)
-    //   spread = SpreadCeil - SpreadDecay * quality   (how hard tradeoffs bite)
-    //
-    //   desirability = base +/- lean * spread
-    //
-    // At quality 10 (base .17, spread .47) a full lean buys a strong stat by pinning
-    // its opposite to the floor. At quality 95 (base .77, spread .17) the same lean
-    // still shapes the weapon's character but the cost side stays perfectly usable.
-    //
-    // Shared across categories on purpose: one profile defines the game's power
-    // curve, and a category only chooses which stats oppose each other.
+    // Quality → per-stat desirability via tradeoff axes.
+    // base rises with quality (every stat improves); spread shrinks (tradeoffs soften).
+    // Low tiers force sharp tradeoffs, high tiers are strong across the board.
+    // Shared across categories — each category only picks which stats oppose each other.
     [CreateAssetMenu(fileName = "StatRollProfile", menuName = "CGD/Items/Stat Roll Profile")]
     public class StatRollProfile : ScriptableObject
     {
@@ -96,22 +82,10 @@ namespace CGD.Items
             }
         }
 
-        // ── Family presets (see WEAPON_BALANCE.md for the design rationale) ──
-        //
-        // Every preset below obeys one rule: no stat appears on two axes. Assign()
-        // overwrites rather than compounds, so a stat on two axes silently loses
-        // the first axis' lean and that axis stops being a tradeoff at all.
-        //
-        // Each preset also pins FireRate opposite Damage, directly or through a
-        // shared axis. That pairing is what keeps a widened category band safe —
-        // without it a roll can take the top of the RPM band and the top of the
-        // damage band together and land at a fraction of the category's TTK target.
+        // No stat may appear on two axes (Assign overwrites, so the first axis' lean is lost).
+        // Every preset pins FireRate opposite Damage to prevent uncapped TTK.
 
-        // Punch carries Range as well as Damage, which is what splits a category
-        // into subtypes: lean negative and you get a fast, tight, short-ranged CQB
-        // weapon (carbine, Glock, PDW); lean positive and you get a slow, kicking,
-        // long-ranged one (battle rifle, hand cannon, heavy SMG). The category's
-        // authored band sets how far apart those two poles sit.
+        // Punch axis splits subtypes: lean negative → fast CQB, lean positive → slow long-range.
         [ContextMenu("Axes/Standard Firearm (SMG · AR · Pistol)")]
         public void ApplyStandardFirearmAxes()
         {
@@ -138,15 +112,7 @@ namespace CGD.Items
             };
         }
 
-        // Snipers / DMRs / hand cannons — damage costs cycle rate, reload and mag
-        // capacity, because bigger rounds chamber slower and pack fewer per
-        // magazine. That single axis is what spans the category: lean negative for
-        // a semi-auto DMR (fast cycle, modest damage, deep magazine), lean positive
-        // for a bolt-action anti-materiel rifle (one huge round at a time).
-        // Range costs handling weight: a long barrel is unwieldy in hand.
-        //
-        // FireRate moved onto Punch from the old Precision axis. It was previously
-        // on Precision alone, which left it free to roll high alongside high damage.
+        // Punch spans semi-auto DMR → bolt-action; Range costs handling weight.
         [ContextMenu("Axes/Precision Rifle (Sniper · DMR · Hand cannon)")]
         public void ApplyPrecisionRifleAxes()
         {
@@ -173,14 +139,7 @@ namespace CGD.Items
             };
         }
 
-        // LMGs — cyclic rate costs per-round punch and recoil control, which spans
-        // the category from a high-cyclic MG42-class hose (fast, light rounds,
-        // wild) to a heavy GPMG (slow, hard-hitting, controllable). Mag capacity
-        // costs handling, because a 200-round belt is dead weight to swap and swing.
-        //
-        // Damage moved onto Suppression from its own "Weight" axis. On a separate
-        // axis it could roll to the top of the band at the same time as FireRate,
-        // which at the widened 500–1200 RPM band produced a ~0.1s TTK.
+        // Suppression spans high-cyclic hose → slow heavy GPMG; Capacity costs handling.
         [ContextMenu("Axes/Automatic Support (LMG)")]
         public void ApplyAutomaticSupportAxes()
         {
@@ -207,14 +166,7 @@ namespace CGD.Items
             };
         }
 
-        // Shotguns — cycle speed costs per-pellet punch, spanning the category from
-        // a slow pump firing heavy buck (one-shot at contact range) to a fast
-        // auto-shotgun trading per-shell damage for follow-up. Tube capacity costs
-        // shell-by-shell reload; a tighter pattern costs kick.
-        //
-        // Damage moved onto Cycle from the old "Slug" axis for the same reason as
-        // the LMG: uncoupled, a roll could take 18 dmg × 12 pellets at 260 RPM and
-        // one-shot on full auto.
+        // Cycle spans slow pump → fast auto-shotgun; Tube costs reload; Pattern costs kick.
         [ContextMenu("Axes/Shotgun")]
         public void ApplyShotgunAxes()
         {

@@ -11,7 +11,6 @@ namespace CGD.Items
     {
         None = 0,
 
-        // ── Weapon ────────────────────────────────────────────────────────────
         Damage           = 1,
         FireRate         = 2,
         CritChance       = 3,
@@ -29,7 +28,6 @@ namespace CGD.Items
         DrawTime         = 15,
         Sway             = 16,
 
-        // ── Armor ─────────────────────────────────────────────────────────────
         Health            = 17,
         Armor             = 18,
         Shield            = 19,

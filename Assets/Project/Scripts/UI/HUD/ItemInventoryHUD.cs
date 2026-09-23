@@ -77,8 +77,6 @@ namespace CGD.UI
                 Toggle();
         }
 
-        // ── HUDElement overrides ──────────────────────────────────────────────
-
         public override bool ShowWithHud => false;
 
         public override void Show()
@@ -111,8 +109,6 @@ namespace CGD.UI
 
             RebuildRows(inv);
         }
-
-        // ── Row rendering ─────────────────────────────────────────────────────
 
         private void RebuildRows(Inventory inv)
         {
@@ -191,8 +187,6 @@ namespace CGD.UI
             _nameRows.Add(nameLabel);
             _countRows.Add(countLabel);
         }
-
-        // ── Panel construction ────────────────────────────────────────────────
 
         private void BuildPanel()
         {

@@ -127,8 +127,6 @@ namespace CGD.Enemies
                 transform.rotation, Quaternion.LookRotation(flat), TurnSpeed * deltaTime);
         }
 
-        // -- Melee Attack ---------------------------------------------------------
-
         internal void TryStartAttack()
         {
             if (IsAttacking || !_attackCooldown.IsReady) return;

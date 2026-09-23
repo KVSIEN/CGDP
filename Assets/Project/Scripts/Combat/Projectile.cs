@@ -4,19 +4,8 @@ using CGD.Core;
 
 namespace CGD.Combat
 {
-    // Traveling damage carrier. Advances under gravity once per frame and swept-raycasts
-    // between the previous and next position, so fast projectiles can never tunnel past
-    // thin colliders between frames. Pool-friendly: never Destroys itself, always Release.
-    //
-    // Stepping per frame rather than per physics tick is what keeps a fast round readable:
-    // at 50 Hz a 900 m/s bullet teleports 18 m at a time and reads as a stuttering slow
-    // object. The swept raycast covers whatever distance the frame actually took, so the
-    // variable timestep costs no collision accuracy.
-    //
-    // Existing prefabs still carry a kinematic Rigidbody + trigger Collider from
-    // the old OnTrigger-based flow; the Awake safety net enforces those settings
-    // so a prefab left over from that setup can't fall or shove things around.
-    // New prefabs don't need either component.
+    // Swept-raycast projectile that advances per frame (not per FixedUpdate) for smooth
+    // motion. Pool-friendly: always releases, never destroys.
     public class Projectile : MonoBehaviour
     {
         private static readonly RaycastHit[] _hitBuffer = new RaycastHit[16];

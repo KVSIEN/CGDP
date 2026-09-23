@@ -2,19 +2,6 @@ using UnityEngine;
 
 namespace CGD.Combat
 {
-    public enum StatusStacking
-    {
-        // One instance; reapplying refreshes the duration.
-        Refresh,
-        // Stacks up to MaxStacks on one shared timer that every application refreshes.
-        Stack,
-        // Every application runs its own timer; the stack count is the number still running.
-        Independent,
-    }
-
-    // Base class for all status effects. Create a new effect by inheriting from this
-    // and implementing Tick. Add the CreateAssetMenu attribute so it appears in the
-    // Project right-click menu.
     public abstract class StatusEffect : ScriptableObject
     {
         [Header("Info")]

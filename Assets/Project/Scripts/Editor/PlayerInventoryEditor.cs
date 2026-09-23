@@ -5,15 +5,7 @@ using CGD.Player;
 
 namespace CGD.Editor
 {
-    // Runtime view of PlayerInventory's contents.
-    //
-    // The Inventory is a plain C# class behind a get-only property, so Unity's
-    // serializer cannot show it and the default Inspector is blank below the
-    // authored fields. This draws the live contents instead, and offers a grant
-    // control for testing loot and ammo flows without hunting for a pickup.
-    //
-    // Play mode only — outside it there is no Inventory to read, and the
-    // authored StartingStacks array on the component is the thing to edit.
+    // Play-mode Inspector: shows live Inventory contents and a grant control for testing.
     [CustomEditor(typeof(PlayerInventory))]
     public class PlayerInventoryEditor : UnityEditor.Editor
     {

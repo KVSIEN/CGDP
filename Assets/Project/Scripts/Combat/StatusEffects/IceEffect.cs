@@ -2,16 +2,8 @@ using UnityEngine;
 
 namespace CGD.Combat
 {
-    // Pure debuff — deals no damage. Each stack grants SlowPerStack movement slow and
-    // ArmorReductionPerStack armor reduction; at MaxStacks the target is stunned for
-    // StunDuration with an extra ArmorReductionBonus, reaching 100% slow / 20% armor
-    // reduction while stunned. Tick() recomputes totals from the current stack count
-    // each call, so decay (see below) self-corrects automatically without Ice needing
-    // to track any state of its own — required since this asset is shared across every
-    // target it's applied to.
-    // Set Stacking to Stack, MaxStacks to 5 and DecayOneStackAtATime to true on the asset to match the
-    // spec (5% slow / 2% armor reduction per stack, one stack lost every Duration
-    // seconds without a new one).
+    // Pure debuff: slow + armor reduction per stack, stun at max stacks.
+    // Stateless — Tick() recomputes from stack count, safe on shared assets.
     [CreateAssetMenu(fileName = "IceEffect", menuName = "CGD/Combat/Status Effects/Ice")]
     public class IceEffect : StatusEffect
     {

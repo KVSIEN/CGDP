@@ -5,25 +5,15 @@ using CGD.Items;
 
 namespace CGD.Weapons
 {
-    public enum FireMode { Semi, Auto, Burst, Charge }
-
-    // Alternating: horizontal drift ping-pongs between the caps, so long sprays
-    // sway both ways regardless of which sign the bias started with. OneWay:
-    // drift only pushes in the direction of RecoilHorizontalBias and stops at the
-    // cap — used for weapons with a signature always-one-side pull.
-    public enum HorizontalDriftMode { Alternating, OneWay }
-
     [CreateAssetMenu(fileName = "NewWeapon", menuName = "CGD/Weapons/Weapon Data")]
     public class WeaponData : ScriptableObject
     {
         [Header("Identity")]
         public string WeaponName = "Rifle";
 
-        // ── Fire Behavior ─────────────────────────────────────────────────────
         [Header("Fire Behavior")]
         public WeaponFireBehavior FireBehavior;
 
-        // ── Firing ────────────────────────────────────────────────────────────
         [Header("On Hit")]
         [Tooltip("Status effects each hit may apply")]
         public StatusEffectApplication[] OnHitEffects;
@@ -47,7 +37,6 @@ namespace CGD.Weapons
         [Range(0f, 1f)]
         public float MinChargeToFire = 0.15f;
 
-        // ── Projectile Physics (Projectile & Shotgun-projectile fire behaviors) ──
         [Header("Projectile Physics")]
         [Tooltip("Muzzle velocity at full charge (m/s). Only used when the equipped FireBehavior spawns projectiles — hitscan weapons ignore this field. Real-bullet range: ~400-1000 m/s; arrow-class: ~40-80; rocket-class: ~30-150.")]
         [Min(0.1f)]
@@ -81,7 +70,6 @@ namespace CGD.Weapons
             return ProjectileGravity * Mathf.Lerp(LowChargeGravityMultiplier, 1f, Mathf.Clamp01(charge));
         }
 
-        // ── Damage ────────────────────────────────────────────────────────────
         [Header("Damage")]
         public float Damage = 25f;
         public DamageType DamageType = DamageType.Physical;
@@ -103,7 +91,6 @@ namespace CGD.Weapons
         [Tooltip("How far away enemies hear it (0 = silent)")]
         public float NoiseRadius = 40f;
 
-        // ── Ammo & Reload ────────────────────────────────────────────────────
         [Header("Ammo & Reload")]
         [Tooltip("Which shared pool this weapon draws from. Multiple weapons of the same AmmoType share their reserve.")]
         public AmmoType AmmoType = AmmoType.LightRounds;
@@ -113,7 +100,6 @@ namespace CGD.Weapons
         [Tooltip("Reload with a round still chambered (faster)")]
         public float TacticalReloadTime = 2.1f;
 
-        // ── Accuracy (where bullets land) ─────────────────────────────────────
         [Header("Accuracy")]
         [Tooltip("Cone half-angle while hip-firing (degrees)")]
         public float HipSpreadDeg  = 2.5f;
@@ -140,7 +126,6 @@ namespace CGD.Weapons
             return Mathf.Lerp(AdsSpreadMultiplier, Mathf.Max(AdsSpreadMultiplier, HotAdsSpreadMultiplier), heat);
         }
 
-        // ── Control — Kick ───────────────────────────────────────────────
         [Header("Control — Kick")]
         [Tooltip("Per-shot recoil magnitude (degrees): x = horizontal, y = vertical")]
         public Vector2 RecoilScale = new Vector2(0.55f, 1.2f);
@@ -156,7 +141,6 @@ namespace CGD.Weapons
         [Tooltip("Cap on total accumulated sideways recoil (degrees), either direction. Drift that reaches it swings back the other way.")]
         public float MaxAccumulatedHorizontalRecoil = 7f;
 
-        // ── Control — Buildup (heat over sustained fire) ─────────────────
         [Header("Control — Buildup")]
         [Tooltip("Heat added per shot, as a fraction of full heat (0.1 = full after 10 shots, 0 = no build-up)")]
         [Range(0f, 1f)]
@@ -171,7 +155,6 @@ namespace CGD.Weapons
         [Range(1f, 5f)]
         public float RecoilHeatJitterMultiplier = 1.75f;
 
-        // ── Control — Recovery ───────────────────────────────────────────
         [Header("Control — Recovery")]
         [Tooltip("Speed at which accumulated recoil recovers toward zero (higher = snappier)")]
         public float RecoilRecoverySpeed = 6f;
@@ -193,7 +176,6 @@ namespace CGD.Weapons
         [Range(0f, 1f)]
         public float HipRecoilHorizontalMultiplier = 0.15f;
 
-        // ── Handling (how the weapon moves in hand) ───────────────────────────
         [Header("Handling")]
         [Tooltip("Seconds to draw and ready the weapon after swapping to this slot")]
         public float DrawTime = 0.5f;
@@ -209,7 +191,6 @@ namespace CGD.Weapons
         [Tooltip("Sway amplitude while walking/sprinting, scaled by move speed. All sway fades out while aiming so the sights stay on the crosshair.")]
         public float MoveSwayAmount = 1.0f;
 
-        // ── ADS (per-weapon camera behaviour while aiming) ────────────────────
         [Header("ADS")]
         [Tooltip("Camera field-of-view while fully aimed (degrees). Lower = more zoom. Sniper scopes want 20-30, ARs 40-45, pistols 55-60.")]
         [Min(1f)]
@@ -218,7 +199,6 @@ namespace CGD.Weapons
         [Min(0.1f)]
         public float AdsSpeed = 10f;
 
-        // ── Audio ─────────────────────────────────────────────────────────────
         [Header("Audio")]
         public SoundBank FireSound;
         public SoundBank ReloadSound;

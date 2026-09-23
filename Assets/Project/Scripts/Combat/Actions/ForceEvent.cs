@@ -3,8 +3,6 @@ using UnityEngine;
 
 namespace CGD.Combat
 {
-    public enum ForceTarget { Self, HitTargets }
-
     [Serializable]
     public class ForceEvent : IActionEvent
     {

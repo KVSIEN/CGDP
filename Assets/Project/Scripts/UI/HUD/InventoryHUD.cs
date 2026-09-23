@@ -80,8 +80,6 @@ namespace CGD.UI
             }
         }
 
-        // ── HUDElement overrides ──────────────────────────────────────────────
-
         public override bool ShowWithHud => false;
 
         public override void Show()
@@ -104,8 +102,6 @@ namespace CGD.UI
         }
 
         public override void Refresh() { }
-
-        // ── Helpers ───────────────────────────────────────────────────────────
 
         private void LockInput(bool inventoryOpen)
         {

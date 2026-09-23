@@ -180,8 +180,6 @@ namespace CGD.Player
             pitchRecovery = Mathf.Clamp(pitchRecovery, 0f, Mathf.Max(0f, _recoilOriginPitch - _pitch));
             _pitch += pitchRecovery;
 
-            // Yaw: bidirectional — move toward origin by the step amount without overshooting.
-            // The previous code clamped to [0, …] which broke leftward drift recovery entirely.
             float yawStep = Mathf.Abs((prevYaw - _recoilYaw) * _recoilRecoveryFraction);
             float yawGap  = _recoilOriginYaw - _yaw;
             _yaw += Mathf.Clamp(yawGap, -yawStep, yawStep);
@@ -230,9 +228,7 @@ namespace CGD.Player
             _yaw += look.x * mult;
             _pitch = Mathf.Clamp(_pitch - look.y * mult, _minPitch, _maxPitch);
 
-            // When the player actively pulls down against active recoil, accumulate the movement.
-            // Once they've moved enough to show deliberate counterplay, shift the recovery origin
-            // to wherever they've aimed — so recovery settles there instead of the pre-burst origin.
+            // Deliberate counter-pull shifts the recovery origin so it settles where the player aimed.
             if (_recoilPitch > 0f && look.y < 0f)
             {
                 _counterplayAccum += (-look.y) * mult;
@@ -261,9 +257,6 @@ namespace CGD.Player
 
         private void UpdateCamera()
         {
-            // Rotation is identical in both modes — the only thing that changes is position.
-            // This guarantees the aim direction (and therefore crosshair aim point) is the
-            // same throughout the entire transition.
             Quaternion rotation = Quaternion.Euler(_currentPitch, _currentYaw, 0f);
             transform.rotation = rotation;
 
@@ -327,14 +320,12 @@ namespace CGD.Player
                 return;
             }
 
-            // Find what the camera crosshair is aimed at.
             Vector3 camForward = transform.forward;
             float maxDist = _tpDistance + 100f;
             Vector3 aimPoint = Physics.Raycast(transform.position, camForward, out RaycastHit camHit, maxDist, _collisionMask, QueryTriggerInteraction.Ignore)
                 ? camHit.point
                 : transform.position + camForward * maxDist;
 
-            // Check if the player's head has line-of-sight to that aim point.
             Vector3 toAim = aimPoint - _headAnchor.position;
             if (Physics.Raycast(_headAnchor.position, toAim.normalized, out RaycastHit headHit, toAim.magnitude - 0.05f, _collisionMask, QueryTriggerInteraction.Ignore))
             {

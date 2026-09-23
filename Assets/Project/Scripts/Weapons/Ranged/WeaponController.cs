@@ -11,11 +11,8 @@ using CGD.UI;
 namespace CGD.Weapons
 {
     /// <summary>
-    /// Fires whichever WeaponInstance is equipped (PlayerWeaponLoadout owns the carried
-    /// weapons). Attach to the player root and wire up references in the Inspector.
-    /// Fire behaviour (hitscan, shotgun, projectile) comes from the equipped weapon's data.
-    /// Recoil and spread state live in RecoilProcessor and SpreadProcessor so this class
-    /// stays focused on input, ammo, reload and fire-dispatch.
+    /// Player weapon-firing controller. Delegates recoil to RecoilProcessor, spread to
+    /// SpreadProcessor, visuals to WeaponVisuals; this class handles input, ammo and fire-dispatch.
     /// </summary>
     public class WeaponController : MonoBehaviour
     {
@@ -32,7 +29,6 @@ namespace CGD.Weapons
         [SerializeField] private Color _debugHitColor  = Color.red;
         [SerializeField] private Color _debugMissColor = Color.yellow;
 
-        // ── Runtime state ─────────────────────────────────────────────────────
         private readonly RecoilProcessor _recoil = new();
         private readonly SpreadProcessor _spread = new();
 
@@ -48,6 +44,8 @@ namespace CGD.Weapons
         // the trigger goes up. Reset on Equip so a swap can never carry someone else's charge.
         private float _chargeTimer;
         private bool  _wasChargeHeld;
+        private WaitForSeconds _burstWait;
+        private float          _burstWaitInterval;
 
         /// <summary>Fired whenever magazine, reserve, or reload state changes. Args: magazine, reserve, isReloading.</summary>
         public event Action<int, int, bool> OnAmmoChanged;
@@ -64,16 +62,13 @@ namespace CGD.Weapons
         private WeaponData D        => _current.Data;
         private Vector3    SoundPos => _muzzle != null ? _muzzle.position : transform.position;
 
-        // ── Lifecycle ─────────────────────────────────────────────────────────
-
         private void Awake()
         {
             _movement     = GetComponent<PlayerMovement>();
             _damageSource = DamageSource.Of(gameObject);
             if (_inventory == null) _inventory = GetComponentInParent<PlayerInventory>();
 
-            // Re-notify the HUD whenever the shared pool changes so the reserve
-            // display stays in sync with pickups and loot drops.
+            // Keep HUD reserve count in sync with shared pool.
             if (_inventory != null) _inventory.Inventory.Changed += NotifyAmmoChanged;
         }
 
@@ -91,8 +86,7 @@ namespace CGD.Weapons
         {
             if (_current == null) return;
 
-            // Sway keeps ticking through draw and reload so the weapon never freezes
-            // mid-animation. Only the fire/reload/spread logic gates on those states.
+            // Sway ticks through draw/reload so the weapon never freezes mid-animation.
             PushSwayInputs();
 
             if (_drawTimer > 0f)
@@ -132,8 +126,6 @@ namespace CGD.Weapons
             _visuals.SetSwayInputs(_input.LookInput, horizSpeed, grounded, _camera != null ? _camera.AdsT : 0f);
         }
 
-        // ── Public API ────────────────────────────────────────────────────────
-
         /// <summary>Swap the active weapon at runtime (null = unarmed).</summary>
         public void Equip(WeaponInstance weapon)
         {
@@ -156,8 +148,6 @@ namespace CGD.Weapons
         }
 
 
-        // ── Input polling ─────────────────────────────────────────────────────
-
         private void HandleFireInput()
         {
             if (!_fireCooldown.IsReady) return;
@@ -167,10 +157,7 @@ namespace CGD.Weapons
 
             if (_current.Magazine <= 0)
             {
-                // Pulling the trigger on an empty gun, or still holding it as the magazine
-                // runs dry, reloads; with no reserve left it just clicks. Charge state is
-                // synced to the current trigger position so a still-held trigger after a
-                // reload doesn't instantly fire whatever was queued before.
+                // Sync charge to trigger so post-reload hold doesn't instantly fire.
                 _chargeTimer   = 0f;
                 _wasChargeHeld = triggerHeld;
                 if (_burstPending || !(triggerHeld || triggerPress)) return;
@@ -216,8 +203,6 @@ namespace CGD.Weapons
 
         private bool CanReload => _current.Magazine < D.MagazineSize && Reserve > 0;
 
-        // ── Fire ──────────────────────────────────────────────────────────────
-
         private void TryFire(float charge = 1f)
         {
             if (_current.Magazine <= 0) return;
@@ -237,12 +222,18 @@ namespace CGD.Weapons
         private IEnumerator FireBurst()
         {
             _burstPending = true;
+            float interval = D.BurstInterval;
+            if (_burstWait == null || !Mathf.Approximately(_burstWaitInterval, interval))
+            {
+                _burstWait = new WaitForSeconds(interval);
+                _burstWaitInterval = interval;
+            }
             for (int i = 0; i < D.BurstCount; i++)
             {
                 if (_current.Magazine <= 0) break;
                 TryFire();
                 if (i < D.BurstCount - 1)
-                    yield return new WaitForSeconds(D.BurstInterval);
+                    yield return _burstWait;
             }
             _burstPending = false;
         }
@@ -269,8 +260,7 @@ namespace CGD.Weapons
             float   spreadDeg = _spread.EffectiveConeDeg(adsT, _recoil.Heat);
             Vector3 forward   = _camera.transform.forward;
 
-            // Ray originates from camera centre — avoids TP parallax where muzzle→target
-            // diverges from camera forward for close geometry, causing shots to miss.
+            // Camera-origin ray avoids muzzle parallax in third-person.
             D.FireBehavior.Execute(new FireContext
             {
                 CameraPosition    = _camera.transform.position,
@@ -288,8 +278,6 @@ namespace CGD.Weapons
             });
         }
 
-        // ── Reload ────────────────────────────────────────────────────────────
-
         private IEnumerator Reload()
         {
             _isReloading = true;
@@ -306,8 +294,7 @@ namespace CGD.Weapons
             if (taken > 0)
             {
                 _current.Magazine += taken;
-                // Inventory.Remove fires Changed which triggers NotifyAmmoChanged, so the
-                // final ammo-changed event covers both the mag add and the reserve drop.
+                // Remove fires Changed, which covers both mag and reserve in one event.
                 _inventory.Inventory.Remove(D.AmmoType, taken);
             }
 
@@ -315,15 +302,11 @@ namespace CGD.Weapons
             NotifyAmmoChanged();
         }
 
-        // ── Crosshair ─────────────────────────────────────────────────────────
-
         private void UpdateCrosshair()
         {
             if (_crosshair == null) return;
             _crosshair.SetDynamicSpread(_spread.EffectiveConeDeg(_camera.AdsT, _recoil.Heat));
         }
-
-        // ── Helpers ───────────────────────────────────────────────────────────
 
         private void NotifyAmmoChanged()
         {

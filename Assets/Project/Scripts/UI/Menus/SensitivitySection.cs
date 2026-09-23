@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using CGD.Core;
+using CGD.Input;
 using CGD.Player;
 
 namespace CGD.UI

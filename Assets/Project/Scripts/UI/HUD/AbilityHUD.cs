@@ -107,8 +107,6 @@ namespace CGD.UI
         // HUDElement contract — this element drives itself in Update, so Refresh is a no-op.
         public override void Refresh() { }
 
-        // ── Helpers ────────────────────────────────────────────────────────────────
-
         private static string ChargeLabel(int charges) =>
             charges < ChargeText.Length ? ChargeText[charges] : charges.ToString();
 

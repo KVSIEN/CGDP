@@ -111,7 +111,7 @@ namespace CGD.Weapons
             }
 
             if (debug)
-                DebugDrawSphere(center, _step.Radius, _step.DebugColor, debugDur);
+                DebugDrawUtil.Sphere(center, _step.Radius, _step.DebugColor, debugDur);
         }
 
         private void ProcessCastHits(int count)
@@ -135,25 +135,5 @@ namespace CGD.Weapons
             }
         }
 
-        private static void DebugDrawSphere(Vector3 center, float radius, Color color, float duration)
-        {
-            const int seg = 16;
-            DrawCircle(center, Vector3.right, Vector3.up,      radius, color, duration, seg);
-            DrawCircle(center, Vector3.up,    Vector3.forward, radius, color, duration, seg);
-            DrawCircle(center, Vector3.forward, Vector3.right, radius, color, duration, seg);
-        }
-
-        private static void DrawCircle(Vector3 center, Vector3 tan, Vector3 bitan,
-            float radius, Color color, float duration, int segments)
-        {
-            Vector3 prev = center + tan * radius;
-            for (int i = 1; i <= segments; i++)
-            {
-                float a = i / (float)segments * Mathf.PI * 2f;
-                Vector3 next = center + (tan * Mathf.Cos(a) + bitan * Mathf.Sin(a)) * radius;
-                Debug.DrawLine(prev, next, color, duration);
-                prev = next;
-            }
-        }
     }
 }

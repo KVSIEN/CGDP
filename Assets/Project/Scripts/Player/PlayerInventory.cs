@@ -4,22 +4,8 @@ using CGD.Items;
 
 namespace CGD.Player
 {
-    // Thin MonoBehaviour wrapper around the plain-C# Inventory so other player
-    // components (WeaponController, pickups, HUDs) can find it via GetComponent.
-    // The Inventory itself has no Unity dependencies and is shared with other
-    // storage contexts (docked ship, loot containers) later.
-    //
-    // That independence is why the Inventory itself is not visible in the
-    // Inspector: it is a plain class behind a get-only property, so Unity's
-    // serializer never sees it. StartingStacks below is the authoring surface
-    // instead — it seeds the runtime Inventory once, the same way
-    // PlayerWeaponLoadout seeds its starting weapons.
-    //
-    // MaxSlots and MaxWeight are advisory: the HUD reads them for the capacity
-    // and weight readouts, but the Inventory does not currently reject adds that
-    // would exceed either — the GDD's extraction loop puts its tension on what
-    // the player *risks bringing in*, not on pack space. Enforcement is a later
-    // knob if a run-based cap is wanted.
+    // MonoBehaviour wrapper around plain-C# Inventory for GetComponent access.
+    // StartingStacks seeds the runtime Inventory; MaxSlots/MaxWeight are advisory (HUD only).
     public class PlayerInventory : MonoBehaviour
     {
         // Stackables only. Gear needs an ItemRoll to instantiate, and starting

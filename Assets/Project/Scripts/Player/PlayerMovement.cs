@@ -67,8 +67,7 @@ namespace CGD.Player
             _rb.interpolation = RigidbodyInterpolation.Interpolate;
             _rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
-            // Zero-friction material prevents wall/surface contact from dampening
-            // vertical velocity (e.g. jump height being reduced while touching a wall).
+            // Prevents wall contact from dampening vertical velocity.
             _col.material = new PhysicsMaterial("PlayerNoFriction")
             {
                 staticFriction  = 0f,
@@ -131,9 +130,7 @@ namespace CGD.Player
 
         private void CheckGround()
         {
-            // Cast from the capsule centre so the sphere starts well above the ground.
-            // SphereCast silently returns false when the sphere already overlaps a collider
-            // at its origin, which happened when we cast from near the feet.
+            // Cast from capsule centre — SphereCast returns false when the sphere overlaps at origin.
             Vector3 capsuleCenter = transform.position + _col.center;
             float castRadius      = _col.radius * 0.9f;
             float castDistance    = _col.height * 0.5f - castRadius + _settings.GroundCheckDistance;

@@ -3,16 +3,8 @@ using UnityEngine;
 
 namespace CGD.UI
 {
-    // Spawns and arranges every damage number in the game. Creates itself on the first hit
-    // and lives under DontDestroyOnLoad, so nothing needs placing in a scene.
-    //
-    // Each hit gets its own number — a ten-pellet blast shows ten — and hits landing close
-    // together are laid out as one group: each takes the next slot in a fixed alternating
-    // pattern around the impact and is thrown upward from there. The group stays deliberately
-    // tight and numbers overlap where they cross; nothing pushes them apart, so the pattern
-    // alone decides the shape a burst builds. Offsets are in screen pixels, so spacing reads the
-    // same at any range, and each number is placed back in the world at the depth of its own
-    // impact to keep it sitting on the thing it came from.
+    // Auto-creates under DontDestroyOnLoad on first hit. Clusters nearby hits into groups
+    // and arranges them in screen-space pixels so spacing is range-independent.
     public class DamageNumbers : MonoBehaviour
     {
         private const float MinDepth = 0.2f; // nearer than this, the anchor is level with or behind the camera
@@ -22,8 +14,9 @@ namespace CGD.UI
         private readonly Stack<DamagePopup> _pool   = new();
         private readonly List<DamagePopup>  _active = new();
 
-        private int _uiLayer;
-        private int _sortingOrder;
+        private Camera _cachedCamera;
+        private int    _uiLayer;
+        private int    _sortingOrder;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics() => _instance = null;
@@ -110,7 +103,8 @@ namespace CGD.UI
         {
             if (_active.Count == 0) return;
 
-            var camera = Camera.main;
+            if (_cachedCamera == null) _cachedCamera = Camera.main;
+            var camera = _cachedCamera;
             if (camera == null)
             {
                 ReleaseAll();

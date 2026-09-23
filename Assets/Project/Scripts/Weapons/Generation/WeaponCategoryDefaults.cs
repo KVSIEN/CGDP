@@ -2,27 +2,10 @@ using CGD.Items;
 
 namespace CGD.Weapons
 {
-    // Realistic per-type stat thresholds, applied from WeaponCategoryData's
-    // "Apply Type Defaults" context menu.
-    //
-    // Each range spans the category's *subtype band*, not one reference weapon.
-    // An AR band covers a short-barrelled CQB carbine at one end and a slow,
-    // hard-hitting battle rifle at the other; a pistol band covers a Glock at
-    // one end and a Desert Eagle at the other. Which end a given weapon lands
-    // on is decided by the StatRollProfile's tradeoff axes, not by chance — the
-    // Punch axis ties Damage and Range against FireRate and Recoil, so a fast
-    // roll comes out short-ranged and a long-ranged roll comes out slow.
-    //
-    // That coupling is why these bands are only safe with a profile assigned.
-    // Without one, GearDefinition falls back to ItemRoll.Unrolled() and every
-    // stat rolls independently, which lets a single weapon take the best end of
-    // every band at once.
-    //
-    // The T1 assets in Data/Weapons/Ranged/T1/ are the anchors: each sits inside
-    // its category's band, roughly mid-way, and the band was widened outward
-    // from it. Per-category TTK targets come from WEAPON_BALANCE.md; when
-    // editing a range, verify both *poles* still produce an acceptable STK/TTK,
-    // not just the midpoint.
+    // Per-type stat ranges for the "Apply Type Defaults" context menu.
+    // Each band spans the full subtype spectrum (e.g. CQB carbine to battle rifle).
+    // Tradeoff axes in StatRollProfile decide where in each band a roll lands;
+    // without a profile every stat rolls independently and can stack the best ends.
     public static class WeaponCategoryDefaults
     {
         public static void Apply(WeaponCategoryData c)
@@ -38,13 +21,7 @@ namespace CGD.Weapons
             }
         }
 
-        // Target: 4–5 STK, ~0.35s TTK, 30–60m optimal. All-rounder niche.
-        //
-        // Subtype band, anchored on M4A1_T1 (22 dmg × 720 RPM, 50m → 5 STK, 0.33s):
-        //   fast pole — CQB carbine:  ~900 RPM, ~18 dmg, ~30m → 6 STK, 0.33s
-        //   slow pole — battle rifle: ~450 RPM, ~34 dmg, ~90m → 3 STK, 0.27s
-        // The slow pole deliberately overlaps WEAPON_BALANCE.md's DMR row; that
-        // document already notes DMR-class weapons emerge from low-RoF rolls.
+        // 4–5 STK, ~0.35s TTK, 30–60m. Band: CQB carbine (900 RPM) → battle rifle (450 RPM).
         private static void ApplyAR(WeaponCategoryData c)
         {
             c.Names     = new[] { "M4A1", "AK-47", "SCAR-L", "HK416", "AR-15", "M16A4",
@@ -107,11 +84,7 @@ namespace CGD.Weapons
             c.AdsSpeed  = new(7f,  13f, 0f);
         }
 
-        // Target: 5–6 STK, ~0.35s TTK, 5–20m optimal. Mobile close-range TTK niche.
-        //
-        // Subtype band, anchored on MP5_T1 (18 dmg × 850 RPM, 25m → 6 STK, 0.35s):
-        //   fast pole — machine pistol / PDW: ~1200 RPM, ~13 dmg, ~12m → 8 STK, 0.35s
-        //   slow pole — heavy SMG (UMP-45):   ~600 RPM,  ~28 dmg, ~40m → 4 STK, 0.30s
+        // 5–6 STK, ~0.35s TTK, 5–20m. Band: PDW (1200 RPM) → heavy SMG (600 RPM).
         private static void ApplySMG(WeaponCategoryData c)
         {
             c.Names     = new[] { "MP5", "UMP-45", "P90", "Vector", "MP7", "PP-19 Bizon",
@@ -177,14 +150,7 @@ namespace CGD.Weapons
             c.AdsSpeed  = new(12f, 20f, 0f);
         }
 
-        // Target: 3–4 STK, ~0.5s TTK, 15–25m optimal. Always-ready backup niche.
-        //
-        // Subtype band, anchored on Glock17_T1 (25 dmg × 400 RPM → 4 STK, 0.45s)
-        // and DesertEagle_T1 (55 dmg × 300 RPM → 2 STK):
-        //   fast pole — Glock / machine pistol: ~600 RPM, ~20 dmg, ~12m → 5 STK, 0.40s
-        //   mid       — M1911 class:            ~350 RPM, ~38 dmg, ~22m → 3 STK, 0.34s
-        //   slow pole — hand cannon / revolver: ~200 RPM, ~60 dmg, ~35m → 2 STK, 0.30s
-        // Hand-cannon rolls override AmmoType to HeavyRounds on their WeaponData.
+        // 3–4 STK, ~0.5s TTK, 15–25m. Band: Glock (600 RPM) → hand cannon (200 RPM).
         private static void ApplyPistol(WeaponCategoryData c)
         {
             c.Names     = new[] { "M9", "Glock 17", "Desert Eagle", "USP-S", "P250", "Five-seveN",
@@ -253,13 +219,7 @@ namespace CGD.Weapons
             c.AdsSpeed  = new(12f, 20f, 0f);
         }
 
-        // Target: 1 STK, 0.6–1.2s TTK (cycle-dominated), 80–200m optimal.
-        //
-        // Subtype band, anchored on Kar98k_T1 (95 dmg × 45 RPM, 120m). This band
-        // is what produces WEAPON_BALANCE.md's DMR row — there is no separate DMR
-        // WeaponType, so semi-auto marksman rifles are the fast end of Sniper:
-        //   fast pole — semi-auto DMR (SVD/SR-25): ~260 RPM, ~45 dmg, ~50m  → 3 STK, 0.46s
-        //   slow pole — bolt / anti-materiel:      ~35 RPM, ~170 dmg, ~220m → 1 STK
+        // 1 STK, 0.6–1.2s TTK, 80–200m. Band: semi-auto DMR (260 RPM) → bolt-action (35 RPM).
         private static void ApplySniper(WeaponCategoryData c)
         {
             c.Names     = new[] { "AWP", "Barrett M82A1", "L96A1", "M24", "Kar98k", "SV-98",
@@ -324,13 +284,7 @@ namespace CGD.Weapons
             c.AdsSpeed  = new(3f,  8f,  0f);
         }
 
-        // Target: 3–4 STK, ~0.25s TTK, 30–70m optimal. Sustained TTK,
-        // multi-target niche. Best DPS in the roster; pays for it with slowest
-        // handling, longest reload, worst first-shot spread.
-        //
-        // Subtype band, anchored on M249_T1 (30 dmg × 700 RPM, 55m → 4 STK, 0.26s):
-        //   fast pole — high-cyclic MG (MG42): ~1200 RPM, ~24 dmg → 5 STK, 0.20s
-        //   slow pole — heavy GPMG (M60/PKM):  ~500 RPM,  ~45 dmg → 3 STK, 0.24s
+        // 3–4 STK, ~0.25s TTK, 30–70m. Band: high-cyclic MG (1200 RPM) → GPMG (500 RPM).
         private static void ApplyLMG(WeaponCategoryData c)
         {
             c.Names     = new[] { "M249 SAW", "MG42", "RPK", "Negev", "M60", "PKM",
@@ -398,17 +352,8 @@ namespace CGD.Weapons
             c.AdsSpeed  = new(4f,  8f,  0f);
         }
 
-        // Target: 1 STK at 3–8m (0.15–0.25s effective TTK), useless past 20m.
-        // All-pellets-hit is the design contract — miss half the pellets and TTK
-        // doubles or you drop to 2-shot.
-        //
-        // Subtype band, anchored on M870_T1 (12 dmg × 8 pellets × 60 RPM, 10m):
-        //   slow pole — pump, heavy buck: ~60 RPM,  ~18 dmg × 8 = 144 → 1 STK
-        //   fast pole — auto (AA-12):     ~260 RPM, ~9 dmg  × 6 = 54  → 2 STK, 0.23s
-        // PelletCount stays ≥ 6: it rolls uniformly rather than through an axis,
-        // so a 1-pellet "slug" roll could not have its damage compensated and
-        // would just be a broken weapon. Slugs need their own category or a
-        // PelletCount↔Damage axis before that band can open up.
+        // 1 STK at 3–8m, useless past 20m. Band: pump (60 RPM) → auto (260 RPM).
+        // PelletCount stays ≥ 6 — slugs need a separate category or PelletCount↔Damage axis.
         private static void ApplyShotgun(WeaponCategoryData c)
         {
             c.Names     = new[] { "M870", "SPAS-12", "Benelli M3", "Mossberg 500", "KSG", "AA-12",

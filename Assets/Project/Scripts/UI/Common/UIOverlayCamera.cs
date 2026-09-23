@@ -3,9 +3,7 @@ using UnityEngine.Rendering.Universal;
 
 namespace CGD.UI
 {
-    // The shared overlay camera every world-space UI canvas renders through: it sits on the
-    // main camera, draws only the UI layer, and is stacked on top of the main camera so
-    // world-space text is never hidden by geometry it happens to stand inside.
+    // Overlay camera stacked on main so world-space UI is never hidden by scene geometry.
     public static class UIOverlayCamera
     {
         private static Camera _camera;

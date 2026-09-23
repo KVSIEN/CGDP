@@ -4,10 +4,7 @@ using CGD.Weapons;
 
 namespace CGD.Interaction
 {
-    // Attach to a world GameObject with a Collider (set Is Trigger = true).
-    // Assign a WeaponData asset in the Inspector (or let RandomWeaponPickup generate one).
-    // Picking it up fills the first empty loadout slot; with every slot full it swaps
-    // with the active weapon, which is left behind here with its remaining ammo.
+    // World pickup: fills the first empty loadout slot, or swaps with the active weapon.
     [RequireComponent(typeof(Collider))]
     public class WeaponPickup : MonoBehaviour, IInteractable
     {
@@ -15,10 +12,6 @@ namespace CGD.Interaction
 
         private WeaponInstance _weapon;
 
-        // Public so hover UIs (WeaponPickupHUD, comparison tooltips) can read the
-        // rolled instance's stats before the player commits to picking it up. Lazily
-        // instantiates so hand-authored pickups get a WeaponInstance the same shape
-        // as procedurally generated ones.
         public WeaponInstance Weapon => _weapon ??= _data != null ? new WeaponInstance(_data) : null;
 
         public string InteractLabel => Weapon != null ? $"Pick Up  {Weapon.Data.WeaponName}" : "Pick Up";

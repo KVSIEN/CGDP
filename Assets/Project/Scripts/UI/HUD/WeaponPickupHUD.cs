@@ -96,8 +96,6 @@ namespace CGD.UI
             if (!IsVisible) ShowInternal();
         }
 
-        // ── HUDElement overrides ──────────────────────────────────────────────
-
         // Not part of ShowAll — visibility is driven entirely by what the player is
         // hovering, so a HUD-wide toggle (death screen, pause) shouldn't reopen it.
         public override bool ShowWithHud => false;
@@ -105,8 +103,6 @@ namespace CGD.UI
         public override void Show() => ShowInternal();
         public override void Hide() => HideInternal();
         public override void Refresh() { if (_shownWeapon != null) Populate(_shownWeapon); }
-
-        // ── Population ────────────────────────────────────────────────────────
 
         private void Populate(WeaponInstance weapon)
         {
@@ -185,8 +181,6 @@ namespace CGD.UI
             vals[index].text = val;
         }
 
-        // ── Formatting helpers ────────────────────────────────────────────────
-
         private static string FireModeLabel(FireMode mode, int burstCount) => mode switch
         {
             FireMode.Semi   => "Semi",
@@ -216,8 +210,6 @@ namespace CGD.UI
             ItemTier.Legendary => TierLegendary,
             _                  => TierCommon,
         };
-
-        // ── Panel construction ────────────────────────────────────────────────
 
         private void BuildPanel()
         {

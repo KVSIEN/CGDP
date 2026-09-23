@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using CGD.Core;
 
 namespace CGD.Input
 {

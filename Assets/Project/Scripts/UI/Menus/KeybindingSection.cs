@@ -99,8 +99,6 @@ namespace CGD.UI
             RefreshAllRows();
         }
 
-        // ── Rebind state machine ────────────────────────────────────────────────
-
         private void BeginRebind(GameAction action, bool primary)
         {
             var inputAction = _input.GetInputAction(action);
@@ -200,8 +198,6 @@ namespace CGD.UI
 
         private static string BindingLabel(string path) =>
             string.IsNullOrEmpty(path) ? "—" : InputControlPath.ToHumanReadableString(path);
-
-        // ── UI construction ─────────────────────────────────────────────────────
 
         private void Build(RectTransform window, float windowWidth)
         {
@@ -332,8 +328,6 @@ namespace CGD.UI
 
             _rebindOverlay.SetActive(false);
         }
-
-        // ── Per-row refresh ──────────────────────────────────────────────────────
 
         private void RefreshAllRows()
         {
