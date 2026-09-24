@@ -10,6 +10,7 @@
 - Moving platform support — player inherits the platform's velocity
 - External impulse support — explosions, knockback, jump pads can all push the player via `AddImpulse`
 - Dodge — two-phase system inspired by God of War: tap Q for a quick sidestep, then tap Q again within a short window to commit to a full dodge roll in the same direction; if the window expires the roll is cancelled and only a shorter sidestep cooldown applies; completing the full roll uses the longer cooldown; both phases show on the HUD cooldown indicator
+- Optional stamina — sprinting can drain a stamina meter and stop when it runs out, and dodges can cost stamina; once emptied, stamina has to recover past a threshold before it can be used again (off unless a stamina cost is set)
 - Slide — press crouch while sprinting to slide; launches at a configurable speed then decelerates smoothly; exits when speed drops below a threshold, the timer runs out, crouch is released, or the player leaves the ground
 - Vault / Mantle — press Jump while airborne near a ledge to interact with it; low ledges are vaulted over with a velocity boost, taller ledges are mantled by smoothly pulling the player up onto the surface; works identically in first-person and third-person
 - All movement values (speeds, jump height, gravity, etc.) are tunable in a ScriptableObject without touching code
@@ -74,18 +75,21 @@
 - Abilities can store several charges; spent charges recharge one after another
 - Optional cast time: the ability fires after a short delay and is cancelled if the player is stunned, mantling or rolling; the slot fills up while casting
 - An ability that wouldn't do anything isn't used (e.g. Heal at full health), so no charge is spent
-- Five built-in abilities: Dash, Projectile, Heal, Shockwave, and Timeline
+- Abilities can cost a resource (mana, energy...) as well as using a charge; an ability you can't afford doesn't fire and keeps its charge
+- Six built-in abilities: Dash, Projectile, Heal, Shockwave, Targeted, and Timeline
   - **Dash** — bursts the player horizontally in their move direction (or camera forward if idle)
   - **Projectile** — fires a projectile from the camera that deals damage (and optional status effects) on impact; configurable speed, lifetime and gravity drop
   - **Heal** — instantly restores a set amount of health
   - **Shockwave** — damages nearby enemies and launches nearby rigidbodies away from the player
-  - **Timeline** — runs an ActionTimeline via TimelineAbilityRunner; only one timeline ability can play at a time
+  - **Targeted** — damages and/or heals whoever its targeting rule picks: the enemy under the crosshair, everything in a cone, allies around the player, the nearest enemy, or an area where the player aims; it isn't used when it wouldn't affect anyone
+  - **Timeline** — runs an ActionTimeline via TimelineAbilityRunner; only one timeline ability can play at a time; can be ground-targeted so its area effects land where the player aims
 - All ability values (cooldown, force, damage, etc.) are tunable on the ScriptableObject asset
 - HUD shows four coloured slots at the bottom of the screen; a dark overlay drains away as the next charge recovers, and multi-charge abilities show their charge count
 
 ## Interaction System
 - `IInteractable` interface — any world object can implement it to become interactable
-- Player scans for nearby interactables each frame using a zero-allocation sphere overlap (configurable range, default 2.5 m); always selects the closest one
+- Player scans for nearby interactables each frame using a zero-allocation sphere overlap (configurable range, default 2.5 m) and picks the one being looked at most directly; objects can be given a higher priority so they win when several overlap
+- Optional highlight — the object the player is aiming at can glow so it's obvious which one E will use
 - Press E to trigger the interaction; prompts only appear when something is actually in range
 - Hold interactions: doors and switches can require holding E for a set time; the prompt shows a progress bar and releasing early cancels
 - Interactables behind walls or other solid objects are ignored (line-of-sight check, can be turned off)
@@ -97,7 +101,11 @@
 - Health pickups: `HealthPickup` restores a set amount of health
 - Pickups only show a prompt when they would do something — no health pickup at full health, no ammo pickup without a weapon — so they aren't wasted
 - Doors: press E on a `Door` to swing it open or closed (no animation — a plain procedural rotation)
-- Switches: press E on a `Switch` to toggle one or more linked doors remotely
+- Locked doors — a door can require an item (e.g. a keycard); without it the prompt reads "Locked (Red Keycard)", with it the prompt reads "Unlock" and the door opens and stays unlocked; the key can be used up or kept
+- Switches: press E on a `Switch` to toggle one or more linked doors remotely (switches bypass door locks)
+- Generic interactables — terminals, levers, buttons, NPC conversation starters and similar can be set up entirely in the Inspector: a label, optional hold time, optional required item, single use or a cooldown, and events for what happens (and for trying without the required item)
+- Item pickups — any inventory item (resources, consumables, munitions, keycards, rolled gear) can lie in the world as a pickup showing its name and count
+- Chests and containers — open once to spill their loot; can be locked behind a key
 
 ## Items
 
@@ -253,7 +261,8 @@
 
 ## Enemy AI
 - Three AI states — Patrol, Alert, Chase — each its own small state class
-- Enemies find targets by team: any character on another team can be detected, so no player reference needs wiring
+- Enemies find targets by team: any character on an opposing team can be detected, so no player reference needs wiring; teamless props such as breakable crates are ignored
+- Enemies can be spawned from the object pool and reused: a reused enemy comes back at full health and starts patrolling again
 - Patrol follows an ordered list of waypoints, looping continuously; idles in place if no waypoints are assigned
 - Alert sends the enemy to the last known position and returns to patrol after a configurable duration or on arrival
 - Two combat types per enemy: Melee or Ranged, selectable on the EnemyData asset
@@ -268,6 +277,50 @@
 - State color indicator: mesh tints grey (patrol), yellow (alert), red (chase) via MaterialPropertyBlock — no material instances created
 - World-space health bar appears above the enemy on damage and fades out after a configurable delay; billboards toward the camera
 - All parameters (health, speeds, sight, hearing, combat type, attack, ranged stats, alert duration) are tunable per enemy type via an EnemyData ScriptableObject
+
+## Object Pooling
+- Frequently spawned objects — projectiles, grenades, zones, pickups, particle effects and enemies — are reused instead of created and destroyed, avoiding hitches and garbage collection
+- Pools grow on demand; they can also be pre-filled when a scene starts so the first burst of gunfire or the first enemy wave doesn't stutter
+- Reused objects reset themselves (health, AI state, rolled contents), so a recycled object behaves like a fresh one
+- Particle effects return themselves to the pool when they finish playing
+- Everything still in flight is recalled when a new scene loads, so nothing leaks from one level into the next
+- Dead enemies and broken props can be removed after a delay (and reused when they came from a pool)
+
+## Loot & Drops
+- Enemies, breakable props and chests drop loot from Loot Table assets
+- **Guaranteed drops** — always dropped (a boss key, a quest item)
+- **Weighted drops** — a set number of draws (fixed or a range) from a weighted list, with a configurable chance of a draw coming up empty; draws can be made unique so the same entry isn't picked twice
+- **Nested tables** — an entry can roll another table, so shared pools like "common ammo" are authored once and reused
+- **Rarity** — weapons and gear that drop get a tier (Common → Legendary) from the table's rarity odds, and their stats roll at that tier; a luck value makes empty draws rarer and high tiers likelier
+- Drops can be stacks of items, individually rolled weapons and gear, or any world object (health orbs, effects)
+- Drops scatter around the source and settle onto the ground; weapons become weapon pickups, everything else an item pickup
+- Breakable props — crates and barrels can be given health so any attack breaks them, spilling their loot
+- Included: a default enemy loot table dropping ammo of every caliber and, occasionally, a rolled rifle or SMG
+
+## Game Flow
+- The game moves between clear states: boot, main menu, loading, playing, paused, level transition, game over and victory; impossible moves (pausing from the main menu, winning while loading) are refused
+- Pausing freezes gameplay time and world audio; the settings menu doubles as the pause menu and can't be opened during game over or loading
+- Level loading runs in the background with progress for a loading screen, preceded by a short transition for fade-outs or results
+- Restart level, return to main menu, start game and quit are available to UI buttons
+- The player's death can end the run with a game-over state instead of respawning (per-scene option)
+- UI panels can be shown only in certain states (pause panel, game-over screen, loading screen) without code
+- The cursor is captured during play and released in menus automatically
+
+## Targeting
+- One shared set of targeting rules for abilities, attacks and effects: **Self**, **Raycast** (under the crosshair), **Area** (around the caster or where they aim on the ground), **Cone**, **Nearest** (the N closest), and **Ground** (a point, no characters)
+- Each rule picks by relation — self, allies, enemies, neutral, or any mix — and can require clear line of sight and cap the number of targets (nearest first)
+- Targeting rules are assets, so a new ability can reuse "enemies in a 60° cone" or "allies within 8 m" without code
+- Enemy AI uses the same system to find the nearest visible hostile
+
+## Resources (Meters)
+- A generic system for consumable, regenerating values: stamina, mana, energy, rage, oxygen, battery charge, and so on — each defined by an asset with a name, colour, capacity, starting fill and regeneration
+- Regeneration can refill (stamina, mana) or decay (rage), and pauses for a moment after the meter is pushed the other way
+- Exhaustion — a meter emptied to zero can be locked until it refills past a threshold
+- Meters can be spent all-or-nothing (ability costs), drained continuously (sprinting), restored, and have their capacity changed by upgrades
+- Resource zones drain or restore a meter while you stand in them — water drains oxygen, a shrine restores mana — and can hurt you once the meter is empty (drowning)
+- A HUD panel shows a coloured bar for each of the player's meters
+- Shields run on the same regeneration model
+- Included meters: Stamina, Mana, Oxygen and Rage
 
 ## Visibility Culling
 - Objects outside the camera frustum have their renderers disabled automatically, reducing draw calls without deactivating GameObjects

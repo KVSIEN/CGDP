@@ -2,12 +2,14 @@ using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
 using CGD.Input;
+using CGD.Meters;
 using CGD.Player;
 
 namespace CGD.Abilities
 {
-    // Runs the four ability slots: input, charges and their recharge, and cast times.
-    // Only one ability casts at a time; a cast is cancelled when the player can't act.
+    // Runs the four ability slots: input, charges and their recharge, resource costs and
+    // cast times. Only one ability casts at a time; a cast is cancelled when the player
+    // can't act. Costs are paid from the MeterSet on the player, when the ability fires.
     [RequireComponent(typeof(PlayerInputHandler))]
     public class PlayerAbilities : MonoBehaviour
     {
@@ -22,6 +24,7 @@ namespace CGD.Abilities
 
         private PlayerInputHandler _input;
         private PlayerMovement _movement;
+        private MeterSet _meters;
         private int[] _charges;
         private CooldownTimer[] _recharges;
         private AbilityContext _ctx;
@@ -42,6 +45,7 @@ namespace CGD.Abilities
         {
             _input     = GetComponent<PlayerInputHandler>();
             _movement  = GetComponent<PlayerMovement>();
+            TryGetComponent(out _meters);
             _charges   = new int[_slots.Length];
             _recharges = new CooldownTimer[_slots.Length];
             RefillCharges();
@@ -84,6 +88,7 @@ namespace CGD.Abilities
                 if (!_input.GetAction(SlotActions[i])) continue;
                 if (_charges[i] <= 0)                  continue;
                 if (!_movement.CanAct)                 continue;
+                if (!ability.Cost.CanAfford(_meters))  continue;
                 if (!ability.CanExecute(_ctx))         continue;
 
                 if (ability.CastTime > 0f)
@@ -129,12 +134,14 @@ namespace CGD.Abilities
 
             int slot = _castingSlot;
             _castingSlot = -1;
-            if (_slots[slot].CanExecute(_ctx)) Fire(slot);
+            Ability ability = _slots[slot];
+            if (ability.Cost.CanAfford(_meters) && ability.CanExecute(_ctx)) Fire(slot);
         }
 
         private void Fire(int slot)
         {
             Ability ability = _slots[slot];
+            if (!ability.Cost.TryPay(_meters)) return;
             ability.Execute(_ctx);
 
             bool wasFull = _charges[slot] >= ability.MaxCharges;

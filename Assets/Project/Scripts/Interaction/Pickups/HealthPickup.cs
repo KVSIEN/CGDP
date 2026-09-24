@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Core;
 using CGD.Player;
 
 namespace CGD.Interaction
@@ -10,7 +11,7 @@ namespace CGD.Interaction
     {
         [SerializeField] private float _amount = 25f;
 
-        public string InteractLabel => "Pick Up  Health";
+        public string GetInteractLabel(GameObject interactor) => "Pick Up  Health";
 
         public bool CanInteract(GameObject player) =>
             player.TryGetComponent(out PlayerHealth health) && !health.IsDead && health.Health < health.MaxHealth;
@@ -20,7 +21,7 @@ namespace CGD.Interaction
             if (!CanInteract(player)) return;
 
             player.GetComponent<PlayerHealth>().Heal(_amount);
-            Destroy(gameObject);
+            PrefabPool.Release(gameObject);
         }
     }
 }

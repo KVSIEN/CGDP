@@ -15,7 +15,8 @@ namespace CGD.Abilities
 
         public bool IsPlaying => _runner.IsRunning;
 
-        public void Play(ActionTimeline timeline, AbilityContext abilityCtx)
+        // targetPoint anchors WorldOffset events (ground-targeted abilities); null = none.
+        public void Play(ActionTimeline timeline, AbilityContext abilityCtx, Vector3? targetPoint = null)
         {
             _cameraTransform = abilityCtx.CameraTransform;
 
@@ -27,6 +28,8 @@ namespace CGD.Abilities
                 SourceRoot    = abilityCtx.PlayerTransform.root,
                 Source        = abilityCtx.Source,
                 HitMask       = timeline.HitMask,
+                HasTarget     = targetPoint.HasValue,
+                TargetPoint   = targetPoint ?? Vector3.zero,
                 DebugDraw     = _debugDraw,
                 DebugDuration = _debugDuration,
             };

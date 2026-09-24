@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Core;
 using CGD.Player;
 using CGD.Weapons;
 
@@ -6,7 +7,7 @@ namespace CGD.Interaction
 {
     // World pickup: fills the first empty loadout slot, or swaps with the active weapon.
     [RequireComponent(typeof(Collider))]
-    public class WeaponPickup : MonoBehaviour, IInteractable
+    public class WeaponPickup : MonoBehaviour, IInteractable, IPoolable
     {
         [SerializeField] private WeaponData _data;
 
@@ -14,7 +15,7 @@ namespace CGD.Interaction
 
         public WeaponInstance Weapon => _weapon ??= _data != null ? new WeaponInstance(_data) : null;
 
-        public string InteractLabel => Weapon != null ? $"Pick Up  {Weapon.Data.WeaponName}" : "Pick Up";
+        public string GetInteractLabel(GameObject interactor) => Weapon != null ? $"Pick Up  {Weapon.Data.WeaponName}" : "Pick Up";
 
         // Used by RandomWeaponPickup to hand over an already-rolled weapon, so its
         // quality and attachment slots survive being picked up.
@@ -23,6 +24,9 @@ namespace CGD.Interaction
             _weapon = weapon;
             _data   = weapon?.Data;
         }
+
+        // A pooled pickup is handed its weapon by whoever spawns it (see LootDropper).
+        public void OnDespawned() => _weapon = null;
 
         public bool CanInteract(GameObject player) =>
             Weapon != null && player.TryGetComponent<PlayerWeaponLoadout>(out _);
@@ -34,7 +38,7 @@ namespace CGD.Interaction
             WeaponInstance replaced = loadout.AddWeapon(Weapon);
             if (replaced == null)
             {
-                Destroy(gameObject);
+                PrefabPool.Release(gameObject);
                 return;
             }
 

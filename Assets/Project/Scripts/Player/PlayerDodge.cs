@@ -1,6 +1,7 @@
 using UnityEngine;
 using CGD.Core;
 using CGD.Input;
+using CGD.Meters;
 
 namespace CGD.Player
 {
@@ -27,6 +28,7 @@ namespace CGD.Player
         private PlayerMovement _movement;
         private Rigidbody _rb;
         private PlayerInputHandler _input;
+        private MeterSet _meters;
 
         private CooldownTimer _dodgeCooldown;
         private DodgePhase _dodgePhase;
@@ -40,13 +42,14 @@ namespace CGD.Player
             _rb       = GetComponent<Rigidbody>();
             _movement = GetComponent<PlayerMovement>();
             _input    = GetComponent<PlayerInputHandler>();
+            TryGetComponent(out _meters);
         }
 
         private void Update()
         {
             if (_input.GetAction(GameAction.Dodge))
             {
-                if (_dodgePhase == DodgePhase.None && _dodgeCooldown.IsReady)
+                if (_dodgePhase == DodgePhase.None && _dodgeCooldown.IsReady && _settings.DodgeCost.CanAfford(_meters))
                     _dodgeQueued = true;
                 else if (_dodgePhase == DodgePhase.Sidestep)
                     _rollQueued = true;
@@ -63,6 +66,7 @@ namespace CGD.Player
             if (_dodgeQueued)
             {
                 _dodgeQueued = false;
+                if (!_settings.DodgeCost.TryPay(_meters)) return;
                 _dodgeDir = _movement.MoveDirection.magnitude > 0.1f
                     ? _movement.MoveDirection
                     : -Vector3.ProjectOnPlane(_movement.CameraTransform.forward, Vector3.up).normalized;

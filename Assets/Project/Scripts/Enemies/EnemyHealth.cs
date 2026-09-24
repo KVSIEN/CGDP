@@ -1,10 +1,11 @@
 using UnityEngine;
 using CGD.Combat;
+using CGD.Core;
 using CGD.UI;
 
 namespace CGD.Enemies
 {
-    public class EnemyHealth : HealthManager
+    public class EnemyHealth : HealthManager, IPoolable
     {
         [SerializeField] private EnemyData      _data;
         [SerializeField] private EnemyHealthBar _healthBar;
@@ -23,6 +24,12 @@ namespace CGD.Enemies
         {
             DamageNumbers.Spawn(amount, point + _popupOffset, isCritical);
             _healthBar?.ShowDamage(Health, MaxHealth);
+        }
+
+        // A pooled enemy comes back at full health; OnRevived lets its other systems reset.
+        public void OnSpawned()
+        {
+            if (IsDead) Revive();
         }
     }
 }

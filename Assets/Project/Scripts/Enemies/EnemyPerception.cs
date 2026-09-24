@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
+using CGD.Targeting;
 
 namespace CGD.Enemies
 {
@@ -10,13 +12,12 @@ namespace CGD.Enemies
     {
         private const float EyeHeight = 1.5f;
 
-        private static readonly Collider[] _hitBuffer = new Collider[32];
-
         private readonly Transform _self;
         private readonly EnemyData _data;
-        private readonly LayerMask _targetMask;
         private readonly LayerMask _obstacleMask;
         private readonly Team      _team;
+        private readonly TargetFilter        _hostiles;
+        private readonly List<HealthManager> _candidates = new();
         private bool _hasLead;
 
         public HealthManager Target            { get; private set; }
@@ -27,9 +28,9 @@ namespace CGD.Enemies
         {
             _self             = self;
             _data             = data;
-            _targetMask       = targetMask;
             _obstacleMask     = obstacleMask;
             _team             = team;
+            _hostiles         = new TargetFilter(TargetAffiliation.Enemies, team, null, targetMask);
             LastKnownPosition = self.position;
         }
 
@@ -82,28 +83,17 @@ namespace CGD.Enemies
 
         private bool IsHostile(DamageSource source) => source.Team != Team.None && source.Team != _team;
 
+        // Nearest first, so the line-of-sight raycasts stop at the first visible hostile.
         private HealthManager FindDetectableHostile()
         {
-            int count = Physics.OverlapSphereNonAlloc(_self.position, _data.SightRange, _hitBuffer,
-                _targetMask, QueryTriggerInteraction.Ignore);
+            TargetQuery.Sphere(_self.position, _data.SightRange, _hostiles, _candidates);
+            TargetQuery.SortByDistance(_candidates, _self.position);
 
-            HealthManager nearest = null;
-            float nearestSqrDist = float.MaxValue;
-
-            for (int i = 0; i < count; i++)
+            foreach (HealthManager candidate in _candidates)
             {
-                if (Hitbox.FindDamageable(_hitBuffer[i]) is not HealthManager candidate) continue;
-                if (candidate.Team == _team || candidate.IsDead || !CanDetect(candidate)) continue;
-
-                float sqrDist = (candidate.transform.position - _self.position).sqrMagnitude;
-                if (sqrDist < nearestSqrDist)
-                {
-                    nearestSqrDist = sqrDist;
-                    nearest = candidate;
-                }
+                if (CanDetect(candidate)) return candidate;
             }
-
-            return nearest;
+            return null;
         }
 
         private bool CanDetect(HealthManager target) => IsWithinProximity(target) || CanSee(target);

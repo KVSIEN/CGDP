@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using CGD.Meters;
 
 namespace CGD.Combat
 {
@@ -11,8 +12,7 @@ namespace CGD.Combat
         [SerializeField] private HitboxProfile _hitboxProfile;
 
         private float _currentHealth;
-        private float _shield;
-        private float _shieldRegenTimer;
+        private Meter _shield;
         private float _armorReductionPercent;
         private StatusEffectController _statusEffects;
 
@@ -28,7 +28,7 @@ namespace CGD.Combat
         protected virtual Vector3 DefaultHitPoint => transform.position;
 
         public float Health => _currentHealth;
-        public float Shield => _shield;
+        public float Shield => _shield.Current;
         public bool  IsDead => _currentHealth <= 0f;
         public float ArmorReductionPercent
         {
@@ -47,10 +47,15 @@ namespace CGD.Combat
         protected virtual void Awake()
         {
             TryGetComponent(out _statusEffects);
+            // The shield is a regenerating resource like any other, so it runs on Meter.
+            _shield = new Meter(new MeterSettings(MaxShield, ShieldRegenRate, ShieldRegenDelay));
             ResetHealth();
         }
 
-        private void Update() => TickShieldRegen(Time.deltaTime);
+        private void Update()
+        {
+            if (_shield.Tick(Time.deltaTime)) OnChanged?.Invoke();
+        }
 
         public void TakeDamage(DamageInfo info) => ApplyDamage(info, 1f, DefaultHitPoint, false);
 
@@ -78,7 +83,7 @@ namespace CGD.Combat
         private void ResetHealth()
         {
             _currentHealth = StartingHealth;
-            _shield        = MaxShield;
+            _shield.Fill();
             OnChanged?.Invoke();
         }
 
@@ -91,16 +96,16 @@ namespace CGD.Combat
             OnHit?.Invoke(info);
 
             float amount = info.ResolveDamage(Armor * (1f - _armorReductionPercent)) * multiplier;
-            _shieldRegenTimer = ShieldRegenDelay;
+            _shield.SuppressRegen();
 
-            if (_shield > 0f)
+            if (!_shield.IsEmpty)
             {
                 // Lightning hits the shield harder; the extra bite is undone before
                 // computing what carries over so only the shield portion is boosted.
                 float shieldMult = info.Type == DamageType.Lightning ? DamageInfo.LightningShieldBonus : 1f;
-                float absorbed   = Mathf.Min(_shield, amount * shieldMult);
-                _shield -= absorbed;
-                amount  -= absorbed / shieldMult;
+                float absorbed   = Mathf.Min(_shield.Current, amount * shieldMult);
+                _shield.Drain(absorbed);
+                amount -= absorbed / shieldMult;
             }
 
             if (amount > 0f)
@@ -129,20 +134,6 @@ namespace CGD.Combat
                 if (application.Effect != null && UnityEngine.Random.value < application.Chance)
                     _statusEffects.Apply(application.Effect, info);
             }
-        }
-
-        private void TickShieldRegen(float deltaTime)
-        {
-            if (_shield >= MaxShield) return;
-
-            if (_shieldRegenTimer > 0f)
-            {
-                _shieldRegenTimer -= deltaTime;
-                return;
-            }
-
-            _shield = Mathf.Min(_shield + ShieldRegenRate * deltaTime, MaxShield);
-            OnChanged?.Invoke();
         }
     }
 }

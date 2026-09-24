@@ -19,20 +19,26 @@ Assets/
     Art/                    Animations, Fonts, Materials, PhysicsMaterials, Shaders, Textures
     Audio/                  Music, SFX
     Data/                   ScriptableObject assets, one folder per feature
-      Abilities/  Audio/  Combat/  Enemies/  Input/  Player/  UI/  Weapons/
+      Abilities/  Audio/  Combat/  Enemies/  Flow/  Input/  Items/  Loot/  Meters/
+      Player/  Targeting/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters, Environment, Pickups, UI, VFX, Weapons
     Scenes/                 Sandbox.unity (+ its baked NavMesh folder)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
-      Abilities/            ability assets and the player's ability slots
+      Abilities/            ability assets (incl. TargetedAbility) and the player's ability slots
       Audio/                audio pool, sound banks, surface lookup
-      Combat/               Damage/, Health/ (HealthManager, Hitbox), StatusEffects/, Projectile, Stunnable, Noise
-      Core/                 shared utilities (cooldowns, ranges, settings save, Culling/)
+      Combat/               Damage/, Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/, Projectile, Stunnable, Noise
+      Core/                 shared utilities (cooldowns, ranges, Culling/, Pooling/ — PrefabPool, IPoolable)
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly)
       Enemies/              enemy components, perception, and AI/ (state classes)
+      Flow/                 GameFlow, GameState/GameStateMachine, settings and UI commands
       Input/                PlayerInputHandler and binding settings
-      Interaction/          IInteractable, doors, switches, Pickups/
+      Interaction/          IInteractable, doors, switches, EventInteractable, highlights, Pickups/
+      Items/                item definitions, inventory, quality rolls, stats
+      Loot/                 LootTable, LootDropper, LootContainer
+      Meters/               generic resources (stamina, mana, oxygen…): Meter, MeterSet, MeterCost, MeterZone
       Player/               movement, camera, health, lifecycle, player audio
+      Targeting/            TargetQuery, TargetFilter and TargetSelector assets (Selectors/)
       UI/                   Common/ (UIFactory), HUD/, Menus/, World/ (popups, enemy bars)
       Weapons/              Ranged/, FireBehaviors/, Generation/, Melee/, Throwables/
     Settings/               URP assets, volume profiles, project-wide input actions

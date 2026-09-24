@@ -1,12 +1,14 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Input;
 using CGD.Interaction;
 
 namespace CGD.Player
 {
-    // Picks the interactable the player is looking at most directly within range and
-    // triggers it on the Interact key — instantly, or after holding the key for the
-    // target's HoldDuration.
+    // Picks the interactable the player is looking at most directly within range (higher
+    // InteractPriority first) and triggers it on the Interact key — instantly, or after
+    // holding the key for the target's HoldDuration. Focus listeners on the target are
+    // told when it gains and loses focus, for highlights and similar feedback.
     [RequireComponent(typeof(PlayerInputHandler))]
     public class PlayerInteraction : MonoBehaviour
     {
@@ -20,7 +22,7 @@ namespace CGD.Player
         [SerializeField] private LayerMask _occlusionMask      = ~0;
 
         public bool          HasTarget      => _current != null;
-        public string        TargetLabel    => _current?.InteractLabel ?? string.Empty;
+        public string        TargetLabel    => _current?.GetInteractLabel(gameObject) ?? string.Empty;
         public IInteractable Current        => _current;
         public Vector3       TargetPosition => _currentCollider != null ? _currentCollider.transform.position : Vector3.zero;
         // 0..1 while holding the key on a hold interaction; 0 otherwise.
@@ -36,6 +38,7 @@ namespace CGD.Player
 
         private readonly Collider[]   _buffer    = new Collider[16];
         private readonly RaycastHit[] _losBuffer = new RaycastHit[8];
+        private readonly List<IInteractionFocusListener> _focusListeners = new();
 
         private void Awake()
         {
@@ -44,9 +47,15 @@ namespace CGD.Player
 
         private void Update()
         {
-            IInteractable previous = _current;
+            IInteractable previous         = _current;
+            Collider      previousCollider = _currentCollider;
             FindBest();
-            if (_current != previous) ResetHold();
+            if (_current != previous)
+            {
+                ResetHold();
+                NotifyFocus(previousCollider, false);
+                NotifyFocus(_currentCollider, true);
+            }
 
             if (_current == null) return;
 
@@ -95,6 +104,7 @@ namespace CGD.Player
 
             IInteractable best         = null;
             Collider      bestCollider = null;
+            int           bestPriority = int.MinValue;
             float         bestScore    = float.MinValue;
 
             for (int i = 0; i < count; i++)
@@ -109,11 +119,14 @@ namespace CGD.Player
                 float   alignment = Vector3.Dot(forward, dir);
                 if (alignment <= 0f) continue;
 
-                // Score favours objects more aligned with look direction; distance is secondary.
-                float score = alignment - mag / _range;
-                if (score <= bestScore) continue;
+                // Priority decides first; then the score favours objects more aligned with
+                // the look direction, with distance secondary.
+                int   priority = candidate.InteractPriority;
+                float score    = alignment - mag / _range;
+                if (priority < bestPriority || (priority == bestPriority && score <= bestScore)) continue;
                 if (_requireLineOfSight && IsOccluded(eyeOrigin, dir, mag, col)) continue;
 
+                bestPriority = priority;
                 bestScore    = score;
                 best         = candidate;
                 bestCollider = col;
@@ -121,6 +134,24 @@ namespace CGD.Player
 
             _current         = best;
             _currentCollider = bestCollider;
+        }
+
+        private void OnDisable()
+        {
+            NotifyFocus(_currentCollider, false);
+            _current         = null;
+            _currentCollider = null;
+            ResetHold();
+        }
+
+        private void NotifyFocus(Collider target, bool focused)
+        {
+            if (target == null) return;
+
+            target.GetComponents(_focusListeners);
+            foreach (IInteractionFocusListener listener in _focusListeners)
+                listener.OnInteractionFocus(focused);
+            _focusListeners.Clear();
         }
 
         // Blocked when a solid collider other than the target itself or the player's own

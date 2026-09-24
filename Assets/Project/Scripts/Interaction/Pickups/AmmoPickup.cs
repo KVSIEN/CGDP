@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Core;
 using CGD.Items;
 using CGD.Player;
 
@@ -13,7 +14,7 @@ namespace CGD.Interaction
         [SerializeField] private MunitionDefinition _munition;
         [SerializeField] private int _amount = 30;
 
-        public string InteractLabel =>
+        public string GetInteractLabel(GameObject interactor) =>
             _munition != null ? $"Pick Up  {_munition.DisplayName} ×{_amount}" : "Pick Up  Ammo";
 
         public bool CanInteract(GameObject player) =>
@@ -25,7 +26,7 @@ namespace CGD.Interaction
             if (!player.TryGetComponent(out PlayerInventory inventory)) return;
 
             inventory.Inventory.Add(_munition, _amount);
-            Destroy(gameObject);
+            PrefabPool.Release(gameObject);
         }
     }
 }

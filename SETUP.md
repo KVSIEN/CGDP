@@ -11,7 +11,8 @@ the end). Folder layout is described in `README.md`.
 ## Scene Root
 
 ```
-GameManager                  [VisibilityCullingManager, AudioPool]
+GameManager                  [VisibilityCullingManager, AudioPool, PoolPrewarmer?]
+GameFlow                     [GameFlow]   (its own root GameObject — see Game Flow below)
 RespawnPoint                 (empty transform — spawn point for PlayerLifecycle)
 EventSystem                  (Unity default: EventSystem, InputSystemUIInputModule)
 Directional Light            (Light + UniversalAdditionalLightData)
@@ -20,7 +21,9 @@ Global Volume                (URP post-processing)
 
 - `GameManager` hosts `VisibilityCullingManager` — set `[DefaultExecutionOrder(-100)]` so it registers before `CullableObject.OnEnable()` runs elsewhere. Assign the scene's main `Camera` to its `_camera` field. `_batchFrames`, `_activationMargin`, `_deactivationMargin`, `_alwaysVisibleDistance` are tunable; defaults are fine to start.
 - `GameManager` also hosts `AudioPool`. `_initialSize` defaults to 16 pooled AudioSources; increase if many sounds play simultaneously (rapid-fire weapons, crowds). Optional: assign an Audio Mixer group on each `SoundBank`.
-- Projectiles, grenades and damage numbers are pooled at runtime under `DontDestroyOnLoad` roots (`PrefabPool`, `DamageNumbers`) — nothing to place in the scene. Projectile and grenade prefabs are spawned through the pool, so don't destroy them manually.
+- Projectiles, grenades, zones, loot pickups and damage numbers are pooled at runtime under `DontDestroyOnLoad` roots (`PrefabPool`, `DamageNumbers`) — nothing to place in the scene. Anything spawned through `PrefabPool` must be removed with `PrefabPool.Release`, never `Destroy` (release also destroys objects that weren't pooled, so it's always safe). `PrefabPool` adds a `PooledInstance` component to each instance itself — never add one by hand.
+- **PoolPrewarmer** (optional, e.g. on `GameManager`) — list `_entries` of `Prefab` + `Count` to create idle instances when the scene starts (projectile, frag grenade, pickup prefabs, an enemy wave). Pools still grow on demand without it.
+- Pooled prefabs whose components hold per-use state implement `IPoolable` (`OnSpawned`/`OnDespawned`) — `EnemyHealth`, `EnemyAI`, `WeaponPickup`, `ItemPickup`, `LootContainer` and `PooledLifetime` already do. One-shot VFX prefabs get a **PooledLifetime** (`_lifetime` = 0 releases when its particles finish) and are spawned with `PrefabPool.Spawn`.
 - `Prefabs/Weapons/Projectile` needs a `Projectile` component and a renderer; the `Rigidbody` and `SphereCollider` it still carries are leftovers and are forced kinematic/trigger at runtime. A `TrailRenderer` on the same GameObject is optional — `Projectile` finds it in `Awake` and clears it on every launch, which pooled instances need or a reused round streaks a trail in from wherever the last one died. Recommended settings for a rifle round: `Time` 0.05, `Min Vertex Distance` 0.1, width ~0.05 tapering to 0, an unlit/additive material.
 - `RespawnPoint` just needs a `Transform` — assign it to `PlayerLifecycle._spawnPoint`.
 
@@ -65,7 +68,11 @@ Wiring, by component:
 - **Weapon model colliders** — the gun mesh under WeaponRig must have no colliders (remove the BoxCollider that Unity adds to primitives). Shots are raycast from the camera centre, so while aiming a collider on the sights blocks every shot; colliders there would also become part of the Player Rigidbody's collision shape.
 - **PlayerFootsteps** — assign `_surfaces` = `SurfaceDatabase.asset`. Step intervals (`_walkInterval`, `_sprintInterval`, `_crouchInterval`) and `_groundMask` are tunable; defaults are fine to start. No other wiring — resolves `PlayerMovement` via `GetComponent`.
 - **PlayerAudio** — assign `_health` = Player's `PlayerHealth`, `_hurtSound` / `_deathSound` = `SoundBank` assets (optional — silent when unassigned).
-- **PlayerLifecycle** — assign `_health`, `_movement`, `_abilities`, `_input` = the matching Player components, `_hud` = HUD's `HUDManager`, `_spawnPoint` = `RespawnPoint`, `_deathScreen` = a death-screen UI object if one exists (optional).
+- **PlayerLifecycle** — assign `_health`, `_movement`, `_abilities`, `_input` = the matching Player components, `_hud` = HUD's `HUDManager`, `_spawnPoint` = `RespawnPoint`, `_deathScreen` = a death-screen UI object if one exists (optional). Tick `_gameOverOnDeath` to end the run through `GameFlow` (state GameOver) instead of respawning — ignored when the scene has no `GameFlow`.
+- **MeterSet** (optional) — add to the Player root and list `_definitions` = the resource meters the player has (`StaminaMeter`, `ManaMeter`, `OxygenMeter`, `RageMeter` from `Data/Meters/`). Resets every meter when `PlayerHealth` revives. Required as soon as anything charges a meter:
+  - Sprint/dodge stamina: on `PlayerMovementSettings.asset` set `SprintCost` (per second) and/or `DodgeCost` → `Meter` = `StaminaMeter`. Leave `Meter` empty for free sprinting/dodging (the default).
+  - Ability costs: set `Cost` → `Meter` + `Amount` on an ability asset.
+  - A cost naming a meter the player's `MeterSet` doesn't list (or with no `MeterSet`) can never be paid — the sprint/dodge/ability is blocked, not free.
 
 ## HUD Canvas
 
@@ -83,6 +90,8 @@ HUD                           [Canvas, CanvasScaler, GraphicRaycaster, HUDManage
   - HitEffect                  [HitEffect]
   - Velocity                   [VelocityHUD]
   - StatusEffects              [StatusEffectHUD]
+  - Meters                     [MeterHUD]          (optional)
+  - PausePanel / GameOverPanel / LoadingPanel      (optional — see Game Flow)
 ```
 
 All HUD elements build their own visuals at runtime via `UIFactory` — no child UI
@@ -102,6 +111,7 @@ Don't leave stray instances of either parented under the HUD canvas.
 - **InventoryHUD** — assign `_input` = Player, `_loadout` = Player's `PlayerWeaponLoadout`. Requires a `CanvasGroup` on the same object (used to fade the panel in/out).
 - **ItemInventoryHUD** — assign `_input` = Player, `_inventory` = Player's `PlayerInventory` (auto-resolved by scene lookup if left unset). Requires a `CanvasGroup` on the same object. Opens/closes on the same Inventory action as `InventoryHUD` — both panels sit as siblings under the HUD canvas.
 - **InteractHUD** — assign `_interaction` = Player's `PlayerInteraction`. Builds its own world-space prompt via `UIOverlayCamera.GetOrCreate()` — no manual camera setup needed.
+- **MeterHUD** — assign `_meters` = Player's `MeterSet`. One bar per listed meter, stacked above the health panel (`_screenPadding`); hides itself when the player has no meters.
 - **WeaponPickupHUD** — assign `_interaction` = Player's `PlayerInteraction`. Requires a `CanvasGroup`. Screen-anchored top-right; builds itself in `Awake` and only shows when the current interactable is a `WeaponPickup`. No wiring per pickup — stats are read from the pickup's `WeaponInstance` directly.
 
 `InventoryHUD`, `ItemInventoryHUD`, `InteractHUD` and `WeaponPickupHUD` are excluded from `HUDManager.ShowAll()`/it only
@@ -118,13 +128,26 @@ SettingsMenu                  [RectTransform, SettingsMenu]   (must be under the
 - Its own `RectTransform` must be stretched to fill the screen (anchors `(0,0)`–`(1,1)`, zero offsets) — it builds a centered 680×520 window and a full-screen rebind-listening overlay inside itself at runtime via `UIFactory`, same convention as the rest of the HUD.
 - Assign `_camera` = Main Camera's `PlayerCamera`, `_input` = Player, `_bindings` = the same `InputBindingSettings.asset` used by `PlayerInputHandler`, `_hud` = HUD's `HUDManager`.
 - No child objects need to be pre-built — the window, sensitivity sliders/fields, the scrollable keybinding list (one row per entry in `InputBindingSettings.Bindings`), and the rebind overlay are all constructed in `Awake()`.
-- Escape toggles it; it disables `PlayerInputHandler.InputEnabled` and unlocks the cursor while open.
+- Escape toggles it; it disables `PlayerInputHandler.InputEnabled` and unlocks the cursor while open. With a `GameFlow` in the scene it is also the pause menu: opening pauses (`GameState.Paused`), closing resumes, and it won't open outside `Playing` (game over, loading).
+
+## Game Flow
+
+```
+GameFlow                      [GameFlow]          (root GameObject, nothing else on it)
+```
+
+- One `GameFlow` per scene that should be playable from the editor. It moves itself to `DontDestroyOnLoad`; when a later scene brings its own copy, that copy destroys **its whole GameObject** — so never put `GameFlow` on `GameManager` or anything else.
+- Assign `_settings` = `Data/Flow/GameFlowSettings.asset` (optional — without it there is no menu scene and no transition delays). In the settings, `_mainMenuScene` names the menu scene (leave empty until one exists) and `_firstLevelScene` the level "Start Game" loads. Every scene loaded by name must be in the Build Profile's scene list.
+- Scene objects never reference `GameFlow` directly (it may come from an earlier scene). UI buttons call a **GameFlowCommands** component in their own scene instead: add it to any object (e.g. the menu canvas) and point `Button.onClick` at `GameFlowCommands.Resume`, `RestartLevel`, `LoadMainMenu`, `StartGame`, `LoadScene(string)`, `Quit`…
+- **GameStateView** — shows a UI object only in chosen states. Put it on an always-active object (e.g. the HUD canvas root or its own empty child), set `_target` = the panel to toggle (**not** the object holding the view), and `_visibleIn` = e.g. `Paused` for a pause panel, `GameOver` for a game-over screen, `Loading` + `LevelTransition` for a loading screen.
+- Time scale, `AudioListener.pause` and the cursor lock are owned by `GameFlow` — don't set them elsewhere.
 
 ## Enemy
 
 ```
 Enemy                         [NavMeshAgent, EnemyAI, EnemyStateVisuals, EnemyHealth, EnemyHealthBar,
-                               EnemyAudio, Stunnable, StatusEffectController]
+                               EnemyAudio, Stunnable, StatusEffectController,
+                               LootDropper?, DespawnOnDeath?]
 ```
 
 - Requires baked NavMesh (`NavMesh Surface` in the scene, baked over the walkable ground).
@@ -134,6 +157,8 @@ Enemy                         [NavMeshAgent, EnemyAI, EnemyStateVisuals, EnemyHe
 - **EnemyHealthBar** — no references required; it builds its own world-space canvas in `Awake`.
 - **EnemyAudio** — assign `_hurtSound` / `_deathSound` = `SoundBank` assets (optional — silent when unassigned). No other wiring — resolves `EnemyHealth` via `GetComponent`.
 - **StatusEffectController** (on the Player and the target dummy in the reference scene) — lets status effects apply to that character. Must sit on the same GameObject as its `PlayerHealth`/`EnemyHealth`; optionally list `_immunities`. Without it, on-hit status effects are ignored for that character.
+- **LootDropper** (optional) — assign `_table` = a `LootTable` (e.g. `Data/Loot/DefaultLootTable`), `_itemPickupPrefab` and `_weaponPickupPrefab` (see Loot below). With `_dropOnDeath` ticked it drops when `EnemyHealth` dies.
+- **DespawnOnDeath** (optional) — removes the body `_delay` seconds after death (returned to the pool when the enemy was spawned with `PrefabPool.Spawn`, destroyed otherwise). Enemies spawned from the pool reset themselves on reuse (health, patrol state, agent position).
 - **Stunnable** — required by `PlayerMovement` and `EnemyAI` (Unity adds it automatically); holds stun and slow state that status effects write to. No references to wire.
 - **Teams** — `PlayerHealth` is always on the Player team; each enemy's team comes from `EnemyData.Team` (default Enemy). Attackers take their team from the `HealthManager` on their own GameObject or a parent, so weapon, melee, grenade and ability components must live on (or under) the character that owns them.
 - **On-hit effects** — fill `OnHitEffects` (effect asset + chance) on a `WeaponData`/`WeaponCategoryData`, a `MeleeWeaponData` attack step, or a `GrenadeData`, using the assets in `Data/Combat/StatusEffects/`.
@@ -160,8 +185,12 @@ Enemy                         [EnemyHealth (or PlayerHealth) — the HealthManag
 WeaponPickup (any name)       [Collider (isTrigger), WeaponPickup, CullableObject?]
 AmmoPickup (any name)         [Collider (isTrigger), AmmoPickup, CullableObject?]
 HealthPickup (any name)       [Collider (isTrigger), HealthPickup, CullableObject?]
-Door (any name)               [Collider (solid — blocks the player when closed), Door]
-Switch (any name)             [Collider (isTrigger), Switch]
+ItemPickup (any name)         [Collider (isTrigger), ItemPickup, CullableObject?]
+Door (any name)               [Collider (solid — blocks the player when closed), Door, InteractionHighlight?]
+Switch (any name)             [Collider (isTrigger), Switch, InteractionHighlight?]
+Terminal / Lever / NPC …      [Collider, EventInteractable, InteractionHighlight?]
+Chest (any name)              [Collider, LootContainer, LootDropper]
+Crate (any name)              [Collider (solid), Destructible, LootDropper, DespawnOnDeath]
 ```
 
 - **WeaponPickup** — assign `_data` = a fixed `WeaponData` asset, **or**
@@ -169,8 +198,34 @@ Switch (any name)             [Collider (isTrigger), Switch]
 - **AmmoPickup** — assign `_munition` = a `MunitionDefinition` asset (this decides which shared `AmmoType` pool the rounds land in) and `_amount` (rounds granted; default 30). Adds to the interacting player's `PlayerInventory`, not to the equipped weapon — any weapon drawing that caliber sees the rounds.
 - **HealthPickup** — assign `_amount` (health restored; default 25). No reference wiring — finds `PlayerHealth` via `GetComponent` on the interacting player.
 - **Door** — place the GameObject's pivot at the hinge edge, not the center (the whole object rotates in place). Assign `_openAngle`/`_openSpeed` as needed, and `_holdDuration` > 0 to require holding E. Directly interactable with E; a `Switch` can also toggle it via `Toggle()`.
+- **Door lock** (optional) — set `_key` → `Item` = the key's `ItemDefinition` (e.g. a keycard `ResourceDefinition`), `Count`, and `Consume` to use it up. Empty `Item` = never locked.
 - **Switch** — assign `_label` and `_doors[]` = one or more `Door` components to toggle when interacted with (`_holdDuration` works like on `Door`). Doesn't need to be near the doors it controls.
-- Any other world object that should respond to the Interact key just needs a component implementing `IInteractable` (`InteractLabel`, `Interact(GameObject)`, and optionally `CanInteract(GameObject)` to hide the prompt when it wouldn't do anything) — no other wiring required, `PlayerInteraction` finds it via an `OverlapSphere` scan.
+- **ItemPickup** — assign `_item` (any `ItemDefinition`) and `_count` for a hand-placed pickup; loot drops fill it at runtime instead.
+- **EventInteractable** — for objects that don't need their own script: set `_label`, `_holdDuration`, `_priority`, optional `_requirement` (item needed / consumed), `_singleUse` or `_cooldown`, and wire `_onInteract` (receives the interacting GameObject) and `_onRequirementMissing` in the Inspector.
+- **InteractionHighlight** (optional, next to any interactable) — tints `_renderers` (empty = all child renderers) while aimed at. Works on materials with a `_BaseColor` property (URP Lit/Unlit).
+- Any other world object that should respond to the Interact key just needs a component implementing `IInteractable` (`GetInteractLabel(GameObject)`, `Interact(GameObject)`, and optionally `CanInteract(GameObject)` to hide the prompt when it wouldn't do anything, `HoldDuration`, and `InteractPriority` to win over overlapping interactables) — no other wiring required, `PlayerInteraction` finds it via an `OverlapSphere` scan. Components implementing `IInteractionFocusListener` on the same GameObject are told when it gains or loses focus.
+
+## Loot
+
+- **LootTable** (`Create > CGD > Loot > Loot Table`) — `_guaranteed` entries always drop; `_rolls` draws are made from `_pool` by `Weight`, with `_nothingWeight` as the empty-draw weight and `_uniqueDraws` to forbid repeats. Each entry's `Kind` picks which reference is used: `Item` (stackables drop as one stack of `Count`; `GearDefinition`s such as weapon categories drop `Count` rolled pieces), `Table` (rolls a nested table `Count` times), `Prefab` (spawns `Count` copies through `PrefabPool`). `_tierWeights` sets rarity odds for rolled gear; empty = the gear's own tier. New list entries may start with `Weight` 0 and `Count` 0–0 — set them (Count is always at least 1).
+- **LootDropper** — needs two pickup prefabs, created once and shared by every dropper:
+  - `ItemPickup` prefab: a small mesh + trigger `Collider` + `ItemPickup` (+ optional `InteractionHighlight`). No `RandomWeaponPickup`.
+  - `WeaponPickup` prefab: the same with `WeaponPickup` instead (leave `_data` empty).
+  - Without the matching prefab a drop of that kind is skipped. `_dropOffset`, `_scatterRadius`, `_groundMask` and `_groundClearance` control placement; `_luck` skews the table.
+- **LootContainer** — requires a `LootDropper` on the same object (untick `_dropOnDeath`, it has no health anyway). Set `_label`, `_holdDuration`, optional `_requirement` (a key), and `_onOpened` for lid animation/sound. Opens once; resets when reused from the pool.
+- **Destructible** — a teamless `HealthManager` (`_maxHealth`, `_armor`) for breakable props: add `LootDropper` to spill loot and `DespawnOnDeath` (`_delay` 0) to remove the wreck.
+
+## Targeting
+
+- **TargetSelector** assets (`Create > CGD > Targeting > …`: Self, Raycast, Area, Cone, Nearest, Ground) live in `Data/Targeting/`. Common fields: `_affiliation` (flags: Self, Allies, Enemies, Neutral), `_targetMask`, `_maxTargets` (0 = all, nearest kept first), `_requireLineOfSight` + `_obstacleMask`. Shared and stateless — reference the same asset from as many abilities as you like.
+- **TargetedAbility** (`Create > CGD > Abilities > Targeted`) — assign `Targeting` = a selector, then `Damage` (+ penetration, type, on-hit effects) and/or `Heal`. Slot it into `PlayerAbilities._slots` like any ability.
+- **TimelineAbility** — optional `Targeting` (e.g. `DefaultGroundTargetSelector`); its point becomes the ActionTimeline's target, used by events in `WorldOffset` space.
+
+## Resource Meters
+
+- **MeterDefinition** (`Create > CGD > Meters > Meter Definition`, in `Data/Meters/`) — display name, colour, `_maxValue`, `_startRatio`, `_regenRate` (positive refills, negative decays), `_regenDelay`, `_exhaustionRecovery` (0 = no lockout).
+- **MeterSet** on each character that owns meters (see Player Rig). Other characters (enemies) can have one too.
+- **MeterZone** — a trigger `Collider` + `MeterZone`: `_meter`, `_ratePerSecond` (negative drains), optional `_damageWhenEmpty` per `_damageInterval` (drowning). Characters need a `Rigidbody` (the player has one) for triggers to register.
 - Environment meshes that should be frustum-culled need a `CullableObject` component — leave `_renderers` empty to auto-collect from children, or assign explicitly for multi-renderer objects.
 
 ## Timeline Ability Runner
@@ -226,6 +281,10 @@ DamageSource + LayerMask at spawn time.
 | `Abilities/` (`DashAbility`, `HealAbility`, `ProjectileAbility` → `Prefabs/Weapons/Projectile`, `ShockwaveAbility`, `TimelineAbility` → ActionTimeline asset) — each has `MaxCharges` and `CastTime` | `PlayerAbilities._slots` |
 | `Weapons/Melee/DefaultMeleeWeaponData` | `MeleeController` |
 | `Weapons/Throwables/DefaultGrenadeData` (its `GrenadePrefab` — `Prefabs/Weapons/FragGrenade` — needs a `Rigidbody` + non-trigger `Collider` + `Grenade` component) | `GrenadeController` |
+| `Meters/` (`StaminaMeter`, `ManaMeter`, `OxygenMeter`, `RageMeter`) | `MeterSet._definitions`, `MeterCost` fields (`PlayerMovementSettings.SprintCost`/`DodgeCost`, `Ability.Cost`), `MeterZone._meter` |
+| `Flow/GameFlowSettings` (optional) | `GameFlow._settings` |
+| `Targeting/` (`DefaultSelf`, `DefaultRaycast`, `DefaultArea`, `AimedArea`, `FriendlyArea`, `DefaultCone`, `DefaultNearest`, `DefaultGround` + `TargetSelector`) | `TargetedAbility.Targeting`, `TimelineAbility.Targeting` |
+| `Loot/DefaultLootTable` (ammo of every caliber, occasional rolled AR/SMG, rarity odds 60/25/10/4/1) | `LootDropper._table` |
 | `Audio/DefaultSurfaceDatabase` (empty until surface `SoundBank`s exist) | `PlayerFootsteps` |
 | `SoundBank` assets (per sound — weapon fire/reload/empty, melee swing/hit, grenade throw/explosion, player hurt/death, enemy hurt/death/attack/ranged-attack, footstep walk/sprint/crouch per surface) | Various — all optional; systems work silently without them |
 

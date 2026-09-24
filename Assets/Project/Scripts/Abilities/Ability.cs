@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Meters;
 
 namespace CGD.Abilities
 {
@@ -16,6 +17,10 @@ namespace CGD.Abilities
         public float Cooldown = 5f;
         [Tooltip("Uses stored at once; spent charges recharge one after another")]
         [Min(1)] public int MaxCharges = 1;
+
+        [Header("Cost")]
+        [Tooltip("Resource spent on each use (mana, energy...). Leave Meter empty for none.")]
+        public MeterCost Cost;
 
         [Header("Casting")]
         [Tooltip("Delay between pressing the key and the ability firing (0 = instant). Cancelled if the player is stunned, mantling or rolling.")]

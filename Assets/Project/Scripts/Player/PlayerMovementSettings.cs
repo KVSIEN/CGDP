@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Meters;
 
 namespace CGD.Player
 {
@@ -51,6 +52,12 @@ namespace CGD.Player
         [Tooltip("How long the full roll velocity is held before movement takes over")]
         public float RollDuration = 0.6f;
         public float DodgeCooldown = 1.5f;
+
+        [Header("Stamina")]
+        [Tooltip("Drained per second while sprinting; sprint stops when it runs out. Leave Meter empty for free sprinting.")]
+        public MeterCost SprintCost;
+        [Tooltip("Spent when a dodge starts (the follow-up roll is included). Leave Meter empty for free dodges.")]
+        public MeterCost DodgeCost;
 
         [Header("Slide")]
         public float SlideSpeed = 11f;

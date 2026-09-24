@@ -12,10 +12,10 @@ namespace CGD.Interaction
         [Tooltip("Seconds the Interact key must be held (0 = instant)")]
         [SerializeField] private float _holdDuration = 0f;
 
-        public string InteractLabel => _label;
+        public string GetInteractLabel(GameObject interactor) => _label;
         public float HoldDuration => _holdDuration;
 
-        public void Interact(GameObject player)
+        public void Interact(GameObject interactor)
         {
             foreach (Door door in _doors)
             {

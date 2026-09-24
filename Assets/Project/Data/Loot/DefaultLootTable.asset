@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce450f5037ef45358449e48afea096fb, type: 3}
+  m_Name: DefaultLootTable
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Loot.LootTable
+  _guaranteed: []
+  _rolls:
+    Min: 1
+    Max: 2
+    Bias: 0
+  _pool:
+  - Kind: 0
+    Item: {fileID: 11400000, guid: d5375b8a1eaae554abdd94d43aa9d6a9, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 15
+      Max: 30
+      Bias: 0
+    Weight: 4
+  - Kind: 0
+    Item: {fileID: 11400000, guid: ccd78f0d89cb6e84abb013e9c41d8f1b, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 20
+      Max: 40
+      Bias: 0
+    Weight: 3
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 27b7234948caf4b418bf4e68f5ae5e8c, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 4
+      Max: 8
+      Bias: 0
+    Weight: 2
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 10eba0c2f89b31e47ab8b6953d4899bc, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 3
+      Max: 6
+      Bias: 0
+    Weight: 1
+  - Kind: 0
+    Item: {fileID: 11400000, guid: ef20e19e7da2caa4f873416a54a13b19, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.5
+  - Kind: 0
+    Item: {fileID: 11400000, guid: ebd589c952325cf4888029914e9d941b, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.5
+  _nothingWeight: 2
+  _uniqueDraws: 0
+  _tierWeights:
+  - Tier: 0
+    Weight: 60
+  - Tier: 1
+    Weight: 25
+  - Tier: 2
+    Weight: 10
+  - Tier: 3
+    Weight: 4
+  - Tier: 4
+    Weight: 1

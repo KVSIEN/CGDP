@@ -2,13 +2,16 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using CGD.Core;
+using CGD.Flow;
 using CGD.Input;
 using CGD.Player;
 
 namespace CGD.UI
 {
     /// <summary>
-    /// ESC toggles this menu open/closed.
+    /// ESC toggles this menu open/closed; it doubles as the pause menu, so opening it pauses
+    /// the game through GameFlow (when the scene has one) and it can't open while GameFlow
+    /// is in a non-gameplay state such as GameOver.
     /// Builds its own UGUI panel at runtime (same convention as the rest of the HUD via
     /// UIFactory) — requires a RectTransform under a Canvas, see SETUP.md.
     /// </summary>
@@ -41,15 +44,19 @@ namespace CGD.UI
             if (Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 if (_keybindings.IsListening) { _keybindings.CancelRebind(); return; }
-                if (_isOpen) Close(); else Open();
+                if (_isOpen) Close(); else if (CanOpen) Open();
                 return;
             }
 
             _keybindings.Tick(Time.unscaledDeltaTime);
         }
 
+        private static bool CanOpen =>
+            GameFlow.Instance == null || GameFlow.Instance.State == GameState.Playing;
+
         private void Open()
         {
+            GameFlow.Instance?.Pause();
             _isOpen = true;
             _panel.SetActive(true);
             _input.InputEnabled = false;
@@ -67,6 +74,7 @@ namespace CGD.UI
             _input.InputEnabled = true;
             _hud.ShowAll();
             CursorLock.Set(true);
+            GameFlow.Instance?.Resume();
         }
 
         private void BuildUI()

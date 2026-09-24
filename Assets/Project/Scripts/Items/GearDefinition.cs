@@ -21,8 +21,12 @@ namespace CGD.Items
         public StatRollProfile RollProfile => _rollProfile;
         public StatRange[]     StatRanges  => _statRanges;
 
-        public ItemRoll Roll() =>
-            _rollProfile != null ? _rollProfile.Roll(Tier) : ItemRoll.Unrolled();
+        public ItemRoll Roll() => Roll(Tier);
+
+        // Rolls at a specific tier instead of the definition's own — how loot tables
+        // express rarity (the same rifle can drop Common or Legendary).
+        public ItemRoll Roll(ItemTier tier) =>
+            _rollProfile != null ? _rollProfile.Roll(tier) : ItemRoll.Unrolled();
 
         public int AttachmentSlots(ItemTier tier) =>
             _rollProfile != null ? _rollProfile.AttachmentSlots(tier) : 0;

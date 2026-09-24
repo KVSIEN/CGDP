@@ -2,14 +2,16 @@ using System.Collections;
 using UnityEngine;
 using CGD.Abilities;
 using CGD.Core;
+using CGD.Flow;
 using CGD.Input;
 using CGD.UI;
 
 namespace CGD.Player
 {
     // Death and respawn flow: locks control and shows the death screen, then moves the
-    // player to the spawn point and revives them. Per-system resets (ammo, cooldowns,
-    // status effects) happen in those systems via PlayerHealth's OnDeath/OnRevived.
+    // player to the spawn point and revives them — or, with Game Over On Death, ends the
+    // run through GameFlow instead. Per-system resets (ammo, cooldowns, status effects)
+    // happen in those systems via PlayerHealth's OnDeath/OnRevived.
     public class PlayerLifecycle : MonoBehaviour
     {
         [SerializeField] private PlayerHealth        _health;
@@ -20,6 +22,8 @@ namespace CGD.Player
         [SerializeField] private Transform           _spawnPoint;
         [SerializeField] private float               _respawnDelay = 3f;
         [SerializeField] private GameObject          _deathScreen;
+        [Tooltip("End the run (GameFlow → GameOver) after the delay instead of respawning. Needs a GameFlow in the scene.")]
+        [SerializeField] private bool                _gameOverOnDeath;
 
         private void Awake()
         {
@@ -40,6 +44,8 @@ namespace CGD.Player
         private IEnumerator RespawnRoutine()
         {
             yield return new WaitForSeconds(_respawnDelay);
+
+            if (_gameOverOnDeath && GameFlow.Instance != null && GameFlow.Instance.GameOver()) yield break;
             Respawn();
         }
 

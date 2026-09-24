@@ -1,6 +1,7 @@
 using UnityEngine;
 using CGD.Combat;
 using CGD.Input;
+using CGD.Meters;
 
 namespace CGD.Player
 {
@@ -43,6 +44,7 @@ namespace CGD.Player
         private PlayerDodge _dodge;
         private PlayerMantle _mantle;
         private Stunnable _stunnable;
+        private MeterSet _meters;
 
         private float _coyoteTimer;
         private float _jumpBufferTimer;
@@ -61,6 +63,7 @@ namespace CGD.Player
             _dodge  = GetComponent<PlayerDodge>();
             _mantle = GetComponent<PlayerMantle>();
             _stunnable = GetComponent<Stunnable>();
+            TryGetComponent(out _meters);
 
             _rb.useGravity = false;
             _rb.freezeRotation = true;
@@ -188,7 +191,8 @@ namespace CGD.Player
                 return;
 
             Vector2 rawInput = _input.MoveInput;
-            _isSprinting = _input.GetAction(GameAction.Sprint) && rawInput.magnitude > 0.1f && !IsCrouching && IsGrounded && !IsSliding;
+            _isSprinting = _input.GetAction(GameAction.Sprint) && rawInput.magnitude > 0.1f && !IsCrouching && IsGrounded && !IsSliding
+                        && _settings.SprintCost.TryDrain(_meters, Time.fixedDeltaTime);
 
             if (IsSliding)
             {

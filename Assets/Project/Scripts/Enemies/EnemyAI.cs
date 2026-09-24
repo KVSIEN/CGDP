@@ -10,7 +10,7 @@ namespace CGD.Enemies
     [RequireComponent(typeof(NavMeshAgent))]
     [RequireComponent(typeof(EnemyHealth))]
     [RequireComponent(typeof(Stunnable))]
-    public class EnemyAI : MonoBehaviour
+    public class EnemyAI : MonoBehaviour, IPoolable
     {
         public enum AiState { Patrol, Alert, Chase }
 
@@ -171,6 +171,22 @@ namespace CGD.Enemies
         {
             Agent.enabled = false;
             enabled = false;
+        }
+
+        // Reused from PrefabPool: wake the agent back up at the spawn position and start
+        // over from Patrol. The first spawn is handled by Start.
+        public void OnSpawned()
+        {
+            if (_current == null) return;
+
+            Agent.enabled = true;
+            Agent.Warp(transform.position);
+            enabled      = true;
+            IsAttacking  = false;
+            _wasStunned  = false;
+            _attackCooldown.Reset();
+            Perception.LoseTarget();
+            ChangeState(AiState.Patrol);
         }
     }
 }
