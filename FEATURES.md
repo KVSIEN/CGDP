@@ -346,3 +346,17 @@
 - When health reaches zero the player loses control, the HUD hides, and a death screen is shown
 - Player automatically respawns after a short delay, returning to the designated spawn point
 - On respawn, health is restored and every carried weapon's magazine is refilled; reserve ammo in the shared inventory pool is not touched (the ability to lose gathered inventory on death lands with the extraction loop). Ability cooldowns reset, and leftover momentum and status effects are cleared
+
+## Map Graph Generation
+- Maps start as a pure experience graph — no room geometry yet. Each node is what the player meets there (Start, Combat, Elite, Puzzle, Shop, Event, Treasure, Boss, Exit), and connections say how they link: normal, shortcut, secret or locked
+- The generator builds a main path from Start through the Boss to the Exit, adds side branches that either dead-end or rejoin the main path further ahead, and adds shortcuts that skip rooms along the main path. Branch entrances can be secret or locked
+- The same seed and settings always give the same map, so a good map can be kept by its seed
+- Constraints live in a settings asset: main path length, branch count and length, how often branches rejoin, how many shortcuts, a connection limit per room, and for each room type a minimum and maximum count, a weight, where it can go (anywhere, main path only, branches only), how deep into the run it can appear, whether two of the same type can sit next to each other, and whether it prefers dead ends (for example, treasure as a reward for exploring)
+- Room types with the tightest placement rules are placed first, so broad types like Combat can't take the only rooms a Treasure could use. Constraints that can't be met are reported instead of failing silently
+- Each room gets an intensity from a difficulty curve over the run (rising, a breather before the boss, then the boss at full intensity), adjusted per room type with a little variation
+- Factions each claim a starting room and their influence fades with every connection away from it; each room belongs to the strongest faction there, if any
+- **Map Graph editor** (Window › CGD › Map Graph): generate from a seed or roll a new seed, pan and zoom, click to select, drag nodes around, shift-drag between nodes to connect them, right-click to add, retype, lock, disconnect or delete, and edit a node's type, intensity, faction and connections in the side panel. Every edit can be undone
+- View modes colour the graph by room type, intensity, faction, required vs optional (rooms every route to the Exit must pass through), or branch. Selecting a node highlights the route to it from Start, and can dim everything outside its branch
+- The generated graph and your hand edits are kept separately: edited rooms are marked, edits can be reverted to the generated version, and regenerating asks first when there are edits
+- Locked nodes survive regeneration: the new map keeps a room of the same type at a similar depth on the same kind of route (main path or branch), with the same intensity
+- The side panel checks the graph as you edit: exactly one Start and Exit, a Boss, the Exit reachable, every room reachable, and every room-type rule (counts, placement, depth, neighbours, connection limit) still met

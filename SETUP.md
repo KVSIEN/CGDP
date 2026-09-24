@@ -261,6 +261,21 @@ DamageSource + LayerMask at spawn time.
 
 ---
 
+## Map Graph
+
+Editor-only for now: nothing in a scene references the map graph yet. A later stage
+that turns the graph into rooms will read `MapGraphAsset.Graph`.
+
+- `Map/DefaultMapGenerationSettings` (`MapGenerationSettings`) holds the constraints.
+- `Map/SandboxMapGraph` (`MapGraphAsset`) needs `_settings` (a
+  `MapGenerationSettings` asset) and a `_seed`. It ships empty — open it with
+  **Window › CGD › Map Graph** (or the asset's **Open Map Graph Editor** button) and
+  press **Generate**.
+- New graphs: **Create › CGD › Map › Map Graph** or **Create Map Graph…** in the empty
+  window, then assign the settings in the window's toolbar.
+
+---
+
 ## Required ScriptableObject Assets
 
 | Asset | Used by |
@@ -285,6 +300,8 @@ DamageSource + LayerMask at spawn time.
 | `Flow/GameFlowSettings` (optional) | `GameFlow._settings` |
 | `Targeting/` (`DefaultSelf`, `DefaultRaycast`, `DefaultArea`, `AimedArea`, `FriendlyArea`, `DefaultCone`, `DefaultNearest`, `DefaultGround` + `TargetSelector`) | `TargetedAbility.Targeting`, `TimelineAbility.Targeting` |
 | `Loot/DefaultLootTable` (ammo of every caliber, occasional rolled AR/SMG, rarity odds 60/25/10/4/1) | `LootDropper._table` |
+| `Map/DefaultMapGenerationSettings` (constraints: path/branch shape, room-type rules, intensity curve, factions) | `MapGraphAsset._settings` |
+| `Map/<Name>MapGraph` (per map — `SandboxMapGraph`) | Map Graph window; nothing in a scene yet |
 | `Audio/DefaultSurfaceDatabase` (empty until surface `SoundBank`s exist) | `PlayerFootsteps` |
 | `SoundBank` assets (per sound — weapon fire/reload/empty, melee swing/hit, grenade throw/explosion, player hurt/death, enemy hurt/death/attack/ranged-attack, footstep walk/sprint/crouch per surface) | Various — all optional; systems work silently without them |
 
