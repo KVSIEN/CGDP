@@ -69,13 +69,20 @@ namespace CGD.Quests
             TimeRemaining = Definition.TimeLimit;
         }
 
-        // Returns true when any objective's count changed.
-        internal bool Report(in QuestEvent e)
+        // Returns true when any objective's count changed; finished is the objective this
+        // event completed, if any.
+        internal bool Report(in QuestEvent e, out ObjectiveProgress finished)
         {
             bool progressed = false;
+            finished = null;
+
             foreach (ObjectiveProgress objective in _objectives)
-                if (objective.Definition.Counts(e) && IsListening(objective))
-                    progressed |= objective.Add(e.Amount);
+            {
+                if (!objective.Definition.Counts(e) || !IsListening(objective) || !objective.Add(e.Amount)) continue;
+
+                progressed = true;
+                if (objective.IsComplete) finished = objective;
+            }
             return progressed;
         }
 

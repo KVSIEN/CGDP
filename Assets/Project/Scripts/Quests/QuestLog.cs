@@ -16,6 +16,8 @@ namespace CGD.Quests
 
         // State or objective progress changed.
         public event Action<QuestProgress> QuestChanged;
+        public event Action<QuestProgress> QuestStarted;
+        public event Action<QuestProgress, ObjectiveProgress> ObjectiveCompleted;
         public event Action<QuestProgress> QuestCompleted;
         public event Action<QuestProgress> QuestFailed;
 
@@ -47,9 +49,10 @@ namespace CGD.Quests
             for (int i = 0; i < _quests.Count; i++)
             {
                 QuestProgress quest = _quests[i];
-                if (!quest.IsActive || !quest.Report(e)) continue;
+                if (!quest.IsActive || !quest.Report(e, out ObjectiveProgress finished)) continue;
 
                 QuestChanged?.Invoke(quest);
+                if (finished != null) ObjectiveCompleted?.Invoke(quest, finished);
                 if (quest.RequiredComplete) Complete(quest);
             }
         }
@@ -69,6 +72,7 @@ namespace CGD.Quests
 
             quest.Begin();
             QuestChanged?.Invoke(quest);
+            QuestStarted?.Invoke(quest);
             if (quest.RequiredComplete) Complete(quest);
             return true;
         }

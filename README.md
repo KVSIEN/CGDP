@@ -19,7 +19,7 @@ Assets/
     Art/                    Animations, Fonts, Materials, PhysicsMaterials, Shaders, Textures
     Audio/                  Music, SFX
     Data/                   ScriptableObject assets, one folder per feature
-      Abilities/  Audio/  CameraEffects/  Combat/  Enemies/  Flow/  Input/  Items/  Loot/  Map/  Meters/
+      Abilities/  Audio/  CameraEffects/  Combat/  Enemies/  Feedback/  Flow/  Input/  Items/  Loot/  Map/  Meters/
       Player/  Quests/  Stats/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters, Environment, Pickups, UI, VFX, Weapons
@@ -33,6 +33,7 @@ Assets/
                             Random/ — Seed, RandomStream, SeedVariants; StateMachine/ — StateMachine<T>, IState)
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window)
       Enemies/              enemy components, perception, and AI/ (state classes)
+      Feedback/             FeedbackBus, FeedbackPreset, FeedbackPlayer (feed, flash, rumble, shake), combat/quest feedback
       Flow/                 GameFlow, GameState/GameStateMachine, settings and UI commands
       Input/                PlayerInputHandler and binding settings
       Interaction/          IInteractable, doors, switches, EventInteractable, highlights, Pickups/
@@ -47,6 +48,7 @@ Assets/
       Timing/               GameClock (fixed ticks, pause, time scale, scheduling) and GameTime
       UI/                   Common/ (UIFactory), HUD/, Menus/, World/ (popups, enemy bars)
       Weapons/              Ranged/, FireBehaviors/, Generation/, Melee/, Throwables/
+      WorldMap/             WorldMapArea (bounds, background, fog of war), MapMarker, MapRevealer, projection
     Settings/               URP assets, volume profiles, project-wide input actions
   ThirdParty/               imported asset packs
   TextMesh Pro/             TMP essentials

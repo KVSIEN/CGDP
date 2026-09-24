@@ -1,5 +1,6 @@
 using UnityEngine;
 using CGD.Core;
+using CGD.Feedback;
 using CGD.Items;
 using CGD.Player;
 using CGD.Quests;
@@ -52,6 +53,8 @@ namespace CGD.Interaction
             else                             return;
 
             QuestEvents.Report(ObjectiveKind.Collect, _item, _count);
+            FeedbackBus.Notify(_instance != null ? $"Picked up {_instance.DisplayName}" : $"+{_count} {_item.DisplayName}",
+                               NotificationStyle.Reward);
 
             PrefabPool.Release(gameObject);
         }

@@ -25,6 +25,8 @@ Global Volume                (URP post-processing)
 - **PoolPrewarmer** (optional, e.g. on `GameManager`) — list `_entries` of `Prefab` + `Count` to create idle instances when the scene starts (projectile, frag grenade, pickup prefabs, an enemy wave). Pools still grow on demand without it.
 - Pooled prefabs whose components hold per-use state implement `IPoolable` (`OnSpawned`/`OnDespawned`) — `EnemyHealth`, `EnemyAI`, `WeaponPickup`, `ItemPickup`, `LootContainer` and `PooledLifetime` already do. One-shot VFX prefabs get a **PooledLifetime** (`_lifetime` = 0 releases when its particles finish) and are spawned with `PrefabPool.Spawn`.
 - `Prefabs/Weapons/Projectile` needs a `Projectile` component and a renderer; the `Rigidbody` and `SphereCollider` it still carries are leftovers and are forced kinematic/trigger at runtime. A `TrailRenderer` on the same GameObject is optional — `Projectile` finds it in `Awake` and clears it on every launch, which pooled instances need or a reused round streaks a trail in from wherever the last one died. Recommended settings for a rifle round: `Time` 0.05, `Min Vertex Distance` 0.1, width ~0.05 tapering to 0, an unlit/additive material.
+- **WorldMapArea** (optional, its own GameObject at the centre of the playable area, e.g. `WorldMap`) — set `_size` to the area's X/Z extent in metres. `_source`: `Capture` (renders the layers in `_captureMask` from `_captureHeight` above, once, at scene start), `Texture` (assign `_texture`, a top-down image covering exactly the area, +Z up), `MapGraph` (assign `_graph`, e.g. `Data/Map/SandboxMapGraph` — generate it first), or `None`. Fog of war is on by default (`_fogCellSize` metres per cell). The minimap, world map and `MapRevealer` all reference it.
+- **MapMarker** — add to anything that should show on the maps (enemy prefabs, pickups, objective zones such as a `QuestSignalTrigger`). Set shape/colour/size; tick `_clampToEdge` for objectives. No references to wire.
 - `RespawnPoint` just needs a `Transform` — assign it to `PlayerLifecycle._spawnPoint`.
 
 ## Player Rig
@@ -37,7 +39,8 @@ Player                       [PlayerInputHandler, PlayerHealth, PlayerMovement,
                                MeleeController, GrenadeController,
                                PlayerLifecycle, PlayerFootsteps, PlayerAudio,
                                Stunnable, StatusEffectController,
-                               CharacterStats?, QuestTracker?, PlayerLockOn?]
+                               CharacterStats?, QuestTracker?, PlayerLockOn?,
+                               MapRevealer?, CombatFeedback?, QuestFeedback?, FeedbackPlayer?]
   Rigidbody + CapsuleCollider on the Player root (required by PlayerMovement/PlayerDodge/PlayerMantle)
   - CameraRig
     - Main Camera             [Camera, UniversalAdditionalCameraData, PlayerCamera,
@@ -74,6 +77,10 @@ Wiring, by component:
 - **CharacterStats** (optional) — holds the player's stat modifiers (buffs, debuffs). No references required; list permanent `_presets` if any. Needed for the `DamageBoostAbility` (a `StatBuffAbility`) to do anything; `PlayerHealth` and `WeaponController` read through it when present.
 - **QuestTracker** (optional) — list `_quests` = every `QuestDefinition` this scene can run, chained quests included (e.g. `Data/Quests/TargetPracticeQuest`, `ResupplyQuest`). `_inventory` (where rewards go) is found on the Player if left empty. Pair it with a `QuestHUD` under the HUD.
 - **PlayerLockOn** (optional) — assign `_camera` = Main Camera's `PlayerCamera`, `_selector` = `Data/Targeting/DefaultConeTargetSelector` (or any `TargetSelector`). Bound to the `LockOn` action (middle mouse / T). Resolves `PlayerInputHandler` and `PlayerHealth` via `GetComponent`, so it must sit on the Player root.
+- **MapRevealer** (optional) — assign `_area` = the scene's `WorldMapArea`. Uncovers fog within `_radius` metres as the player moves.
+- **FeedbackPlayer** (optional, one per scene — on the Player root) — assign `_notifications` = HUD's `NotificationHUD`, `_screenFlash` = HUD's `ScreenFlashHUD`, `_cameraEffects` = Main Camera's `CameraEffectsController`. Any left empty is skipped. `_vibration` / `_vibrationStrength` control gamepad rumble. Without a `FeedbackPlayer` nothing shows — gameplay still raises the events.
+- **CombatFeedback** (optional, on the Player root) — assign `_hitMarker` = HUD's `HitMarkerHUD` and the presets from `Data/Feedback/`: `_hit` = `HitFeedbackPreset`, `_criticalHit` = `CriticalHitFeedbackPreset`, `_kill` = `KillFeedbackPreset`, `_damageTaken` = `DamageTakenFeedbackPreset`, `_lowHealth` = `LowHealthFeedbackPreset`. Must sit on the character whose hits it confirms (weapons, grenades and abilities on or under it count).
+- **QuestFeedback** (optional) — assign `_tracker` = the Player's `QuestTracker` and `_started`/`_objectiveComplete`/`_completed`/`_failed` = the matching `Quest…FeedbackPreset` / `ObjectiveCompleteFeedbackPreset`.
 - **CameraEffectsController** (optional, on Main Camera next to `PlayerCamera`) — assign `_settings` = `Data/CameraEffects/DefaultCameraEffectSettings` (defaults are used without one) and `_shakeOnDamageOf` = Player's `PlayerHealth` (optional). Picks up explosion shake by itself (`CameraImpulses`). Must be on the GameObject with the `Camera` component — effects are applied only while that camera renders.
 - **MeterSet** (optional) — add to the Player root and list `_definitions` = the resource meters the player has (`StaminaMeter`, `ManaMeter`, `OxygenMeter`, `RageMeter` from `Data/Meters/`). Resets every meter when `PlayerHealth` revives. Required as soon as anything charges a meter:
   - Sprint/dodge stamina: on `PlayerMovementSettings.asset` set `SprintCost` (per second) and/or `DodgeCost` → `Meter` = `StaminaMeter`. Leave `Meter` empty for free sprinting/dodging (the default).
@@ -98,6 +105,11 @@ HUD                           [Canvas, CanvasScaler, GraphicRaycaster, HUDManage
   - StatusEffects              [StatusEffectHUD]
   - Meters                     [MeterHUD]          (optional)
   - Quests                     [QuestHUD]          (optional)
+  - Minimap                    [MinimapHUD]        (optional)
+  - WorldMap                   [WorldMapHUD, CanvasGroup] (optional)
+  - Notifications              [NotificationHUD]   (optional)
+  - HitMarker                  [HitMarkerHUD]      (optional)
+  - ScreenFlash                [ScreenFlashHUD]    (optional)
   - PausePanel / GameOverPanel / LoadingPanel      (optional — see Game Flow)
 ```
 
@@ -120,6 +132,11 @@ Don't leave stray instances of either parented under the HUD canvas.
 - **InteractHUD** — assign `_interaction` = Player's `PlayerInteraction`. Builds its own world-space prompt via `UIOverlayCamera.GetOrCreate()` — no manual camera setup needed.
 - **MeterHUD** — assign `_meters` = Player's `MeterSet`. One bar per listed meter, stacked above the health panel (`_screenPadding`); hides itself when the player has no meters.
 - **QuestHUD** — assign `_tracker` = Player's `QuestTracker`. Top-left under the HUD's other panels (`_screenPadding`); hidden while no quest is active.
+- **MinimapHUD** — assign `_area` = the scene's `WorldMapArea`, `_viewer` = Main Camera (its position is the centre, its facing the rotation). Top-right below the velocity readout (`_screenPadding`); `_range` = metres from centre to edge.
+- **WorldMapHUD** — assign `_input` = Player, `_area` = `WorldMapArea`, `_viewer` = Main Camera. Requires a `CanvasGroup`. Opens/closes on the Map action (M); pauses game time while open unless `_pauseWhileOpen` is off. Keep it above the other HUD elements in the hierarchy (lower siblings draw on top).
+- **NotificationHUD** — no references; `FeedbackPlayer` feeds it. Top-centre.
+- **HitMarkerHUD** — no references; `CombatFeedback` drives it. Centred on the crosshair.
+- **ScreenFlashHUD** — no references; `FeedbackPlayer` drives it. Stretches over the screen; place it near the top of the HUD's children so it draws under the other panels. (Damage flash and the low-health vignette remain on `HitEffect`.)
 - **WeaponPickupHUD** — assign `_interaction` = Player's `PlayerInteraction`. Requires a `CanvasGroup`. Screen-anchored top-right; builds itself in `Awake` and only shows when the current interactable is a `WeaponPickup`. No wiring per pickup — stats are read from the pickup's `WeaponInstance` directly.
 
 `InventoryHUD`, `ItemInventoryHUD`, `InteractHUD` and `WeaponPickupHUD` are excluded from `HUDManager.ShowAll()`/it only
@@ -326,6 +343,7 @@ that turns the graph into rooms will read `MapGraphAsset.Graph`.
 | `Timing/GameTimeSettings` (optional — 60 ticks/s, 8 ticks max per frame, physics step scales with time) | `GameTime._settings` |
 | `Stats/<Name>ModifierPreset` (`HardDifficultyModifierPreset` — enemy health +50%, damage +25%; `DamageBoostModifierPreset` — damage +30%) | `CharacterStats._presets`, `StatBuffAbility.Buff` |
 | `Quests/<Name>Quest` (`TargetPracticeQuest` → unlocks `ResupplyQuest`) and `Quests/<Name>QuestSignal` (`ShootingRangeClearedQuestSignal`, not used by a quest yet) | `QuestTracker._quests`; signals are raised from UnityEvents or `QuestSignalTrigger` |
+| `Feedback/<Name>FeedbackPreset` (`Hit`, `CriticalHit`, `Kill`, `DamageTaken`, `LowHealth`, `QuestStarted`, `ObjectiveComplete`, `QuestCompleted`, `QuestFailed` — messages use `{0}` for the enemy/quest name; sounds unassigned) | `CombatFeedback`, `QuestFeedback`, or anything calling `FeedbackBus.Play` |
 | `CameraEffects/DefaultCameraEffectSettings` (optional — shake, kick spring, FOV recovery, lag, damage shake) | `CameraEffectsController._settings` |
 | `Audio/DefaultSurfaceDatabase` (empty until surface `SoundBank`s exist) | `PlayerFootsteps` |
 | `SoundBank` assets (per sound — weapon fire/reload/empty, melee swing/hit, grenade throw/explosion, player hurt/death, enemy hurt/death/attack/ranged-attack, footstep walk/sprint/crouch per surface) | Various — all optional; systems work silently without them |

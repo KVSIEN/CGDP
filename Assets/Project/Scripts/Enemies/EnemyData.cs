@@ -7,6 +7,9 @@ namespace CGD.Enemies
     [CreateAssetMenu(fileName = "EnemyData", menuName = "CGD/Enemies/Enemy Data")]
     public class EnemyData : ScriptableObject
     {
+        [Tooltip("Shown in kill confirmations")]
+        public string DisplayName = "Enemy";
+
         [Tooltip("Enemies never damage their own team")]
         public Team Team = Team.Enemy;
 

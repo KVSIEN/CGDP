@@ -417,3 +417,20 @@
 - Camera transitions: blend the view smoothly to another viewpoint (death cam, door, boss intro) and back
 - Effects are visual only — shake never moves where your shots go
 - Lock-on (middle mouse or T): locks the aim onto the enemy nearest the centre of view and keeps it there; press again to release. The lock drops when the target dies or gets too far away
+
+## Minimap & World Map
+- A round minimap in the top-right corner shows the area around the player, turning with the view so the player arrow always points up (or fixed north-up, per setting)
+- Press M for the full world map: the whole area, every marker and the player's position and heading; the game pauses and controls lock while it's open
+- Fog of war: the map starts dark and is uncovered around the player as they explore; things in unexplored areas stay hidden
+- Markers for anything placed in the world — enemies, pickups, objectives — in a chosen shape (circle, square, diamond, or an arrow that shows facing), colour and size; markers can be minimap-only or world-map-only, disappear when their enemy dies, and objective markers stay pinned to the minimap's edge when out of range
+- The map picture can be a top-down snapshot of the level taken automatically when the scene starts, a hand-made image, or — for procedurally generated runs — the map graph drawn as a schematic of rooms and connections in each room type's colour
+- Explored areas can be saved and restored
+
+## Feedback & Notifications
+- One place for how the game responds to events: messages, screen flashes, controller vibration, camera shake and sounds are bundled into reusable feedback presets, so each reaction is tuned in one asset
+- Message feed at the top of the screen for pickups ("+30 Standard Rounds", "Picked up …"), kills, quest updates and warnings, coloured by kind (info, success, reward, warning, danger); repeated messages stack into "×3" instead of flooding the feed, and old messages fade out
+- Hit markers around the crosshair confirm every hit you land: white for hits, orange for critical hits, a bigger red marker for kills — also for grenade and ability damage
+- Kill confirmation: "Eliminated Target Dummy"
+- Controller vibration for dealing and taking damage — bigger hits rumble harder, overlapping hits build up, and vibration stops while paused or when the game loses focus; can be turned off
+- A low-health warning (message, red pulse, rumble) the moment health drops below 30%, re-armed once you heal back above it
+- Quest announcements: new quest, objective complete, quest complete (with a golden flash), quest failed

@@ -1,5 +1,6 @@
 using UnityEngine;
 using CGD.Core;
+using CGD.Feedback;
 using CGD.Items;
 using CGD.Player;
 using CGD.Quests;
@@ -28,6 +29,7 @@ namespace CGD.Interaction
 
             inventory.Inventory.Add(_munition, _amount);
             QuestEvents.Report(ObjectiveKind.Collect, _munition, _amount);
+            FeedbackBus.Notify($"+{_amount} {_munition.DisplayName}", NotificationStyle.Reward);
             PrefabPool.Release(gameObject);
         }
     }

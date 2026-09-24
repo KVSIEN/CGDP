@@ -7,6 +7,7 @@
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Minimap/world map (fog of war, markers, captured/procedural backgrounds) and feedback system (notification feed, hit markers, kill confirms, rumble, flashes, quest announcements)
 - Framework systems: deterministic seeds (map layers, weapon rolls, loot), game clock (ticks, pause, time scale), state machine (EnemyAI on it), stat modifiers (CharacterStats, presets, buffs), quests (objectives, chains, rewards, HUD), camera effects (shake, kicks, FOV, lag, blends, lock-on)
 - Core systems: object pooling (IPoolable, prewarm, VFX lifetime, pooled enemies), loot tables and drops (rarity, nesting, chests, breakables), game flow states (pause, loading, game over), targeting rules, interaction framework (locks, priority, highlights, event interactables), generic resource meters (stamina, mana, oxygen, rage; shield runs on it)
 - Combat: melee combos, throwable grenades, armor/shield mitigation, hitboxes with per-region multipliers, teams, attacker info and on-hit status effects on every attack

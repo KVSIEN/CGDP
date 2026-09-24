@@ -28,6 +28,18 @@ namespace CGD.UI
             return text;
         }
 
+        // Stretched to fill its parent — map layers, render-texture views.
+        public static RawImage MakeRawImage(string name, RectTransform parent, int layer = -1)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(RawImage));
+            if (layer >= 0) go.layer = layer;
+            go.transform.SetParent(parent, false);
+            var image = go.GetComponent<RawImage>();
+            image.raycastTarget = false;
+            Stretch(image.rectTransform);
+            return image;
+        }
+
         public static void Stretch(RectTransform rt)
         {
             rt.anchorMin = Vector2.zero;

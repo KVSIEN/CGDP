@@ -1,5 +1,6 @@
 using UnityEngine;
 using CGD.Core;
+using CGD.Feedback;
 using CGD.Player;
 using CGD.Weapons;
 
@@ -35,7 +36,9 @@ namespace CGD.Interaction
         {
             if (Weapon == null || !player.TryGetComponent(out PlayerWeaponLoadout loadout)) return;
 
-            WeaponInstance replaced = loadout.AddWeapon(Weapon);
+            WeaponInstance picked   = Weapon;
+            WeaponInstance replaced = loadout.AddWeapon(picked);
+            FeedbackBus.Notify($"Picked up {picked.DisplayName}", NotificationStyle.Reward);
             if (replaced == null)
             {
                 PrefabPool.Release(gameObject);

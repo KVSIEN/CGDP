@@ -30,6 +30,9 @@ namespace CGD.Combat
         // Feedback position for damage without a hit point, e.g. status effect ticks.
         protected virtual Vector3 DefaultHitPoint => transform.position;
 
+        // Shown in kill confirmations and similar feedback.
+        public virtual string DisplayName => name;
+
         public float Health => _currentHealth;
         public float Shield => _shield.Current;
         public bool  IsDead => _currentHealth <= 0f;
@@ -105,6 +108,7 @@ namespace CGD.Combat
             OnHit?.Invoke(info);
 
             float amount = info.ResolveDamage(Armor * (1f - _armorReductionPercent)) * multiplier;
+            float dealt  = amount;
             _shield.SuppressRegen();
 
             if (!_shield.IsEmpty)
@@ -125,6 +129,7 @@ namespace CGD.Combat
             }
 
             OnChanged?.Invoke();
+            CombatEvents.Report(new DamageReport(this, info.Source, dealt, point, isCritical, IsDead));
             if (IsDead)
             {
                 OnDeath?.Invoke();
