@@ -84,6 +84,7 @@
   - **Targeted** — damages and/or heals whoever its targeting rule picks: the enemy under the crosshair, everything in a cone, allies around the player, the nearest enemy, or an area where the player aims; it isn't used when it wouldn't affect anyone
   - **Timeline** — runs an ActionTimeline via TimelineAbilityRunner; only one timeline ability can play at a time; can be ground-targeted so its area effects land where the player aims
   - **Stat Buff** — applies a set of stat modifiers to the player for a while (included: Damage Boost, +30% damage for 8 seconds)
+- Included ready-made: **Cone Blast** (a targeted blast hitting enemies in front of you) and **Ground Slam** (a timeline ability that smashes the area in front of you and knocks targets back)
 - All ability values (cooldown, force, damage, etc.) are tunable on the ScriptableObject asset
 - HUD shows four coloured slots at the bottom of the screen; a dark overlay drains away as the next charge recovers, and multi-charge abilities show their charge count
 
@@ -122,6 +123,7 @@
 - **Attachments** — craftable modifiers fitted into a weapon or armor piece's slots. Their effects are fixed, not rolled, and many carry a drawback alongside their benefit
   - Fitting is fully reversible: attachments sit on top of the item's own roll rather than overwriting it, so removing one restores the original
   - Higher-tier gear comes with more attachment slots (1 at Common through 4 at Legendary)
+- **Included baseline items** — one of each kind to copy from: Combat Vest (torso armor rolling armor and bonus health), Extended Magazine (attachment: +25% magazine, 10% slower reload), Bandage (consumable), Scrap Metal (crafting resource)
 - **Inventory** — holds counted stacks and unique items side by side, with no capacity limit
 - **Starting contents** — the player can be set up to spawn with a list of stackable items (typically a munition stack per caliber they expect to use). Left empty, the player spawns with an empty pack and zero reserve ammo, so the first magazine is all they have until they find a pickup
 

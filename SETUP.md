@@ -326,13 +326,15 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Enemies/` | `DefaultEnemyData`, `TargetDummyEnemyData` | EnemyAI, EnemyHealth |
 | `Combat/HitboxProfiles/` | `DefaultHitboxProfile`, `TargetDummyHitboxProfile` | EnemyHealth, PlayerHealth |
 | `Combat/StatusEffects/` | Bleed, Fire, Ice, Lightning, Poison | on-hit effect lists |
+| `Combat/ActionTimelines/` | `GroundSlamTimeline` | TimelineAbility, melee attack steps |
 | `Weapons/Ranged/` | `DefaultWeaponData`, `T1/` examples per category | Loadout, WeaponPickup |
 | `Weapons/Categories/` | one per weapon type | RandomWeaponPickup, loot |
 | `Weapons/FireBehaviors/` | Hitscan, Projectile, Shotgun | weapon data / categories |
 | `Weapons/Melee/`, `Weapons/Throwables/` | `DefaultMeleeWeaponData`, `DefaultGrenadeData` | MeleeController, GrenadeController |
 | `Items/Munitions/` | one per caliber | AmmoPickup, PlayerInventory |
-| `Items/` | `StatRollProfile` | weapon categories (see note) |
-| `Abilities/` | Dash, Heal, Projectile, Shockwave, DamageBoost | PlayerAbilities |
+| `Items/` | `StatRollProfile` | weapon categories, `CombatVestArmor` (see note) |
+| `Items/Armor/`, `Attachments/`, `Consumables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `ScrapMetalResource` (one baseline each) | loot tables, pickups, quest rewards |
+| `Abilities/` | Dash, Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`) | PlayerAbilities |
 | `Targeting/` | `Default…TargetSelector`, `AimedArea…`, `FriendlyArea…` | abilities, PlayerLockOn |
 | `Meters/` | Stamina, Mana, Oxygen, Rage | MeterSet, costs, MeterZone |
 | `Loot/` | `DefaultLootTable` | LootDropper |
@@ -343,7 +345,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Map/` | `DefaultMapGenerationSettings`, `SandboxMapGraph` | Map Graph window, WorldMapArea |
 | `Audio/` | `DefaultSurfaceDatabase` | PlayerFootsteps |
 
-**Sounds** — every `SoundBank` slot is optional; systems stay silent without one.
+**Sounds** — every `SoundBank` slot is optional; systems stay silent without one. There are no audio clips in the project yet, so no `SoundBank` assets exist.
 
 **Weapon quality is off.** No weapon category has a `_rollProfile` yet, so generated weapons
 roll at quality 1 / Common. To turn it on: create one `StatRollProfile` per weapon family,

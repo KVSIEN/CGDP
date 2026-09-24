@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56f563f68d5e46709e438cce7d12586d, type: 3}
+  m_Name: GroundSlamTimeline
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.ActionTimeline
+  TotalFrames: 30
+  Events:
+  - rid: 1000
+  - rid: 1001
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseFrame: 12
+  NoiseRadius: 25
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: ShapeHitEvent, ns: CGD.Combat, asm: CGD.Runtime}
+      data:
+        _startFrame: 12
+        _endFrame: -1
+        _shape: 0
+        _space: 0
+        _range: 0
+        _radius: 3.5
+        _offset: {x: 0, y: -1, z: 1}
+        _arcDeg: 90
+        _rayCount: 5
+        _halfExtents: {x: 0.5, y: 0.5, z: 0.5}
+        _damage: 35
+        _armorPenetration: 0
+        _damageType: 0
+        _criticalMultiplier: 1
+        _onHitEffects: []
+        _useSharedDedup: 1
+        _usePointHit: 0
+    - rid: 1001
+      type: {class: ForceEvent, ns: CGD.Combat, asm: CGD.Runtime}
+      data:
+        _startFrame: 12
+        _target: 1
+        _force: 8
+        _direction: {x: 0, y: 0.6, z: 1}
+        _forceMode: 1
