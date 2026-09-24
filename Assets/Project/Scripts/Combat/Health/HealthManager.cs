@@ -33,6 +33,9 @@ namespace CGD.Combat
         // Shown in kill confirmations and similar feedback.
         public virtual string DisplayName => name;
 
+        // Ignores all damage while set (dev console "god").
+        public bool IsInvulnerable { get; set; }
+
         public float Health => _currentHealth;
         public float Shield => _shield.Current;
         public bool  IsDead => _currentHealth <= 0f;
@@ -103,7 +106,7 @@ namespace CGD.Combat
 
         private void ApplyDamage(DamageInfo info, float multiplier, Vector3 point, bool isCritical)
         {
-            if (IsDead || !CanBeDamagedBy(info.Source)) return;
+            if (IsDead || IsInvulnerable || !CanBeDamagedBy(info.Source)) return;
 
             OnHit?.Invoke(info);
 

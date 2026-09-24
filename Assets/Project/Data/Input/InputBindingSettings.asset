@@ -109,3 +109,19 @@ MonoBehaviour:
     PrimaryPath: <Mouse>/middleButton
     SecondaryPath: <Keyboard>/t
     Mode: 0
+  - Action: 24
+    PrimaryPath: <Keyboard>/backquote
+    SecondaryPath: 
+    Mode: 0
+  - Action: 25
+    PrimaryPath: <Keyboard>/tab
+    SecondaryPath: 
+    Mode: 0
+  - Action: 26
+    PrimaryPath: <Keyboard>/z
+    SecondaryPath: 
+    Mode: 0
+  - Action: 27
+    PrimaryPath: <Keyboard>/b
+    SecondaryPath: 
+    Mode: 0

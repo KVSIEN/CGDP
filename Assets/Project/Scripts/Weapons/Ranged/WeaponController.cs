@@ -208,14 +208,14 @@ namespace CGD.Weapons
                 StartCoroutine(Reload());
         }
 
-        private bool CanReload => _current.Magazine < D.MagazineSize && Reserve > 0;
+        private bool CanReload => _current.Magazine < _current.MagazineSize && Reserve > 0;
 
         private void TryFire(float charge = 1f)
         {
             if (_current.Magazine <= 0) return;
 
             _current.Magazine--;
-            _fireCooldown.Start(60f / D.RoundsPerMinute);
+            _fireCooldown.Start(60f / _current.RoundsPerMinute);
             NotifyAmmoChanged();
 
             ApplyRecoil();
@@ -257,8 +257,8 @@ namespace CGD.Weapons
 
         // Soonest the next round can fire: burst shots follow BurstInterval rather than RPM.
         private float ShotInterval => D.FireMode == FireMode.Burst
-            ? Mathf.Min(60f / D.RoundsPerMinute, D.BurstInterval)
-            : 60f / D.RoundsPerMinute;
+            ? Mathf.Min(60f / _current.RoundsPerMinute, D.BurstInterval)
+            : 60f / _current.RoundsPerMinute;
 
         private void CastBullet(float charge)
         {
@@ -288,11 +288,8 @@ namespace CGD.Weapons
         }
 
         // Base damage → the weapon's attachments → the wielder's buffs and debuffs.
-        private float ResolveDamage()
-        {
-            float damage = _current.Modify(ItemStat.Damage, D.Damage);
-            return _stats != null ? _stats.Apply(ItemStat.Damage, damage) : damage;
-        }
+        private float ResolveDamage() =>
+            _stats != null ? _stats.Apply(ItemStat.Damage, _current.Damage) : _current.Damage;
 
         private IEnumerator Reload()
         {
@@ -301,10 +298,10 @@ namespace CGD.Weapons
 
             D.ReloadSound.TryPlay(SoundPos);
 
-            float time = _current.Magazine > 0 ? D.TacticalReloadTime : D.ReloadTime;
+            float time = _current.Magazine > 0 ? _current.TacticalReloadTime : _current.ReloadTime;
             yield return new WaitForSeconds(time);
 
-            int needed    = D.MagazineSize - _current.Magazine;
+            int needed    = _current.MagazineSize - _current.Magazine;
             int available = _inventory != null ? _inventory.Inventory.CountOf(D.AmmoType) : 0;
             int taken     = Mathf.Min(needed, available);
             if (taken > 0)

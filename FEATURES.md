@@ -420,6 +420,33 @@
 - Effects are visual only — shake never moves where your shots go
 - Lock-on (middle mouse or T): locks the aim onto the enemy nearest the centre of view and keeps it there; press again to release. The lock drops when the target dies or gets too far away
 
+## Equipment
+- Press Tab for the Character window: worn armor per slot (helm, torso, gloves, legs, boots, backslot), carried weapons, and what's in the pack
+- Click armor in the pack to wear it (whatever was in that slot goes back to the pack); click worn armor to take it off
+- Worn armor adds everything it rolled — armor, health, resistances — to the player, including the effect of any attachments fitted to it
+- Attachments: pick one from the pack, then click the armor or weapon to fit it; click a fitted attachment to take it back off. Some attachments only fit certain armor slots
+- Attachments on weapons change the weapon for real: magazine size, reload time, fire rate and damage all follow them (e.g. Extended Magazine: +25% magazine, slower reload)
+
+## Consumables
+- Two quick-use slots (Z and B) shown bottom-right with how many of each are left
+- Using an item takes its use time, shown as a filling bar; it's only spent once the use finishes
+- Taking damage interrupts items that need concentration (the Bandage), as do being stunned, mantling or rolling; pressing the key again cancels
+- Effects: healing, removing all status effects, a timed stat buff, and restoring a resource meter
+- Included: Bandage (1.5 s, heals 35 and stops bleeding and other effects) and Combat Stim (0.5 s, +30% damage for 15 s and 50 stamina)
+- Choose what sits in each quick slot from the Character window
+
+## Crafting
+- Crafting stations in the world open a crafting window listing their recipes, what each needs and how much of it you have
+- Recipes you can afford can be crafted instantly; the ingredients are taken and the result goes into the pack (armor is rolled fresh)
+- Included recipes: Bandage ×2 (2 Cloth), Combat Stim (4 Scrap Metal, 1 Cloth), Extended Magazine (12 Scrap Metal), Combat Vest (20 Scrap Metal, 6 Cloth)
+
+## Dev Console
+- Backquote (`) opens a console in development builds; commands have help, history (Up/Down) and Tab completion
+- `give <item> [count]`, `weapon <category> [seed] [tier]` (same seed and tier = same gun), `spawn <enemy> [count]`
+- `god`, `heal`, `buff <preset> [seconds]`, `timescale <x>`, `revealmap`
+- `quest list`, `quest start|complete <quest>`, `quest step <quest> <n>` to jump straight to any objective
+- Names can be partial ("give scrap 20")
+
 ## Minimap & World Map
 - A round minimap in the top-right corner shows the area around the player, turning with the view so the player arrow always points up (or fixed north-up, per setting)
 - Press M for the full world map: the whole area, every marker and the player's position and heading; the game pauses and controls lock while it's open

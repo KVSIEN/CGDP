@@ -26,5 +26,9 @@ namespace CGD.Input
         Weapon3,
         Weapon4,
         LockOn,
+        Console,
+        Character,
+        QuickUse1,
+        QuickUse2,
     }
 }

@@ -37,6 +37,9 @@ namespace CGD.Items
         public int AttachmentSlots { get; }
         public bool HasFreeSlot => _attachments.Count < AttachmentSlots;
 
+        // Fitted attachments changed — wearers re-apply stats, weapons re-clamp their mag.
+        public event System.Action AttachmentsChanged;
+
         public ItemInstance(GearDefinition definition, ItemRoll roll)
         {
             Definition      = definition;
@@ -57,12 +60,24 @@ namespace CGD.Items
             Tier       = definition != null ? definition.Tier : ItemTier.Common;
         }
 
-        public bool TryAttach(AttachmentDefinition attachment)
+        // A free slot, and the attachment fits this kind of gear: attachments that name
+        // armor slots only fit armor worn there; ones that name none fit anything.
+        public bool CanHost(AttachmentDefinition attachment)
         {
             if (attachment == null || !HasFreeSlot) return false;
 
+            EquipmentSlot[] slots = attachment.ArmorSlots;
+            if (slots == null || slots.Length == 0) return true;
+            return Definition is ArmorDefinition armor && System.Array.IndexOf(slots, armor.Slot) >= 0;
+        }
+
+        public bool TryAttach(AttachmentDefinition attachment)
+        {
+            if (!CanHost(attachment)) return false;
+
             _attachments.Add(attachment);
             _modifiersDirty = true;
+            AttachmentsChanged?.Invoke();
             return true;
         }
 
@@ -71,6 +86,7 @@ namespace CGD.Items
             if (!_attachments.Remove(attachment)) return false;
 
             _modifiersDirty = true;
+            AttachmentsChanged?.Invoke();
             return true;
         }
 

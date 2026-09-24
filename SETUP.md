@@ -67,7 +67,8 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
                     Stunnable, StatusEffectController, Rigidbody, CapsuleCollider]
                    + optional: MeterSet, TimelineAbilityRunner, CharacterStats,
                      QuestTracker, PlayerLockOn, MapRevealer, FeedbackPlayer,
-                     CombatFeedback, QuestFeedback
+                     CombatFeedback, QuestFeedback, PlayerEquipment,
+                     PlayerConsumables, DevCommands
   CameraRig
     Main Camera    [Camera, PlayerCamera, CameraEffectsController?]
       WeaponRig    [WeaponVisuals]
@@ -137,6 +138,7 @@ HUD                [Canvas, CanvasScaler, GraphicRaycaster, HUDManager]
   StatusEffects    [StatusEffectHUD]
   Meters           [MeterHUD]?
   Velocity         [VelocityHUD]
+  QuickUse         [QuickUseHUD]?
   Minimap          [MinimapHUD]?
   Quests           [QuestHUD]?
   Notifications    [NotificationHUD]?
@@ -145,6 +147,9 @@ HUD                [Canvas, CanvasScaler, GraphicRaycaster, HUDManager]
   Inventory        [InventoryHUD, CanvasGroup]
   ItemInventory    [ItemInventoryHUD, CanvasGroup]
   WorldMap         [WorldMapHUD, CanvasGroup]?   ← keep near the bottom (draws on top)
+  Character        [CharacterPanel, CanvasGroup]?
+  Crafting         [CraftingPanel, CanvasGroup]?
+  DevConsole       [DevConsolePanel, CanvasGroup]?
   SettingsMenu     [SettingsMenu]
 ```
 
@@ -234,6 +239,7 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 | Anything else | Collider, `EventInteractable` | `_label`, `_requirement`?, `_onInteract` event |
 | Chest | Collider, `LootContainer`, `LootDropper` | Untick the dropper's `_dropOnDeath` |
 | Breakable crate | solid Collider, `Destructible`, `LootDropper`, `DespawnOnDeath` | `_maxHealth`; `_delay` 0 |
+| Crafting station | Collider, `CraftingStation` | `_label`, `_recipes` = recipe assets (e.g. all of `Data/Crafting/`) |
 
 - Add **InteractionHighlight**? to any interactable to tint it while aimed at (URP Lit/Unlit).
 - Add **CullableObject** to world meshes that should be culled off-screen.
@@ -254,6 +260,28 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 - **LootDropper** needs two shared prefabs: an `ItemPickup` prefab and a `WeaponPickup` prefab (leave its `_data` empty).
 
 ---
+
+## Equipment, Consumables & Crafting
+
+| Component | Assign | Notes |
+|---|---|---|
+| **PlayerEquipment** (Player) | — | Worn armor. Needs `CharacterStats` on the Player for armor stats to count. |
+| **PlayerConsumables** (Player) | `_slots`? = starting quick-use items (e.g. `BandageConsumable`) | Z / B use them. Slots can be changed in the Character panel. |
+| **CharacterPanel** (HUD) | `_input` = Player, `_inventory`, `_equipment`, `_loadout`, `_consumables` = the Player's components | Opens with Tab. |
+| **QuickUseHUD** (HUD) | `_consumables`, `_inventory` = the Player's components | |
+| **CraftingPanel** (HUD) | `_input` = Player | Opens when a `CraftingStation` is used. |
+
+- Attachments need a free slot: gear only has slots when its category/definition has a `_rollProfile` (weapons have none yet — see [Assets](#assets)).
+- Armor slot restrictions come from the attachment's `_armorSlots` (empty = fits anything, including weapons).
+
+## Dev Console
+
+| Component | Assign | Notes |
+|---|---|---|
+| **DevCommands** (Player) | `_catalog` = `DevTools/DevCatalog`, `_aim` = Main Camera, `_quests`? = QuestTracker, `_map`? = WorldMapArea | Development builds only unless `_allowInReleaseBuilds`. |
+| **DevConsolePanel** (HUD) | `_input` = Player, `_commands` = the Player's DevCommands | Opens with ` (backquote). |
+
+- Type `help` for commands. Anything the console can hand out by name is listed in `DevCatalog` — add new items, weapon categories, enemy prefabs and buffs there.
 
 ## Stats & Buffs
 
@@ -333,7 +361,9 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Weapons/Melee/`, `Weapons/Throwables/` | `DefaultMeleeWeaponData`, `DefaultGrenadeData` | MeleeController, GrenadeController |
 | `Items/Munitions/` | one per caliber | AmmoPickup, PlayerInventory |
 | `Items/` | `StatRollProfile` | weapon categories, `CombatVestArmor` (see note) |
-| `Items/Armor/`, `Attachments/`, `Consumables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `ScrapMetalResource` (one baseline each) | loot tables, pickups, quest rewards |
+| `Items/Armor/`, `Attachments/`, `Consumables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `StimConsumable`, `ScrapMetalResource`, `ClothResource` | pickups, loot, recipes, quest rewards |
+| `Crafting/` | `BandageRecipe`, `CombatStimRecipe`, `ExtendedMagazineRecipe`, `CombatVestRecipe` | CraftingStation |
+| `DevTools/` | `DevCatalog` (all items, weapon categories, buffs; no enemy prefabs exist yet) | DevCommands |
 | `Abilities/` | Dash, Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`) | PlayerAbilities |
 | `Targeting/` | `Default…TargetSelector`, `AimedArea…`, `FriendlyArea…` | abilities, PlayerLockOn |
 | `Meters/` | Stamina, Mana, Oxygen, Rage | MeterSet, costs, MeterZone |

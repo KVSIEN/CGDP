@@ -1,3 +1,4 @@
+using UnityEngine;
 using CGD.Items;
 
 namespace CGD.Weapons
@@ -9,7 +10,8 @@ namespace CGD.Weapons
     //
     // Inherits ItemInstance, so a generated weapon carries the same quality, tier
     // and attachment slots as any other piece of gear. Its stats stay on Data rather
-    // than in BaseStats because the firing code reads those fields directly.
+    // than in BaseStats because the firing code reads those fields directly; the
+    // properties below are those fields with fitted attachments applied.
     public class WeaponInstance : ItemInstance
     {
         public WeaponData Data { get; }
@@ -30,13 +32,26 @@ namespace CGD.Weapons
         {
             Data     = data;
             Magazine = data != null ? data.MagazineSize : 0;
+            AttachmentsChanged += ClampMagazine;
         }
+
+        public float Damage             => Modify(ItemStat.Damage, Data.Damage);
+        public int   MagazineSize       => Mathf.Max(1, Mathf.RoundToInt(Modify(ItemStat.MagazineSize, Data.MagazineSize)));
+        public float ReloadTime         => Mathf.Max(0.1f, Modify(ItemStat.ReloadTime, Data.ReloadTime));
+        public float TacticalReloadTime => Mathf.Max(0.1f, Modify(ItemStat.ReloadTime, Data.TacticalReloadTime));
+        public float RoundsPerMinute    => Mathf.Max(1f, Modify(ItemStat.FireRate, Data.RoundsPerMinute));
 
         // Called on player revive. Refills the loaded mag only — reserve is inventory
         // state and lives outside the weapon.
         public void RefillMagazine()
         {
-            if (Data != null) Magazine = Data.MagazineSize;
+            if (Data != null) Magazine = MagazineSize;
+        }
+
+        // Taking off a bigger magazine can't leave more rounds loaded than now fit.
+        private void ClampMagazine()
+        {
+            if (Data != null) Magazine = Mathf.Min(Magazine, MagazineSize);
         }
     }
 }

@@ -43,6 +43,33 @@ namespace CGD.Quests
             return quest != null && Fail(quest);
         }
 
+        // Debug: puts the quest at a step by completing every objective before
+        // objectiveIndex (int.MaxValue completes the quest). Unlocks and starts it first
+        // if needed. Returns false for an unknown quest.
+        public bool SkipTo(QuestDefinition definition, int objectiveIndex)
+        {
+            QuestProgress quest = Get(definition);
+            if (quest == null) return false;
+
+            if (quest.State is QuestState.Locked or QuestState.Failed) quest.TryEnter(QuestState.Available);
+            if (quest.State == QuestState.Available) Start(quest);
+            if (!quest.IsActive) return quest.State == QuestState.Completed;
+
+            int end = Math.Min(objectiveIndex, quest.Objectives.Count);
+            for (int i = 0; i < end; i++)
+            {
+                ObjectiveProgress objective = quest.Objectives[i];
+                if (objective.IsComplete) continue;
+
+                objective.Add(objective.Definition.RequiredCount);
+                ObjectiveCompleted?.Invoke(quest, objective);
+            }
+
+            QuestChanged?.Invoke(quest);
+            if (quest.RequiredComplete) Complete(quest);
+            return true;
+        }
+
         public void Report(QuestEvent e)
         {
             // Completing a quest can start others; they only count events from now on.

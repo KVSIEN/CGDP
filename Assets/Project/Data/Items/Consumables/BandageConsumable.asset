@@ -19,4 +19,11 @@ MonoBehaviour:
   _tier: 0
   _weight: 0.1
   _castTime: 1.5
+  _interruptedByDamage: 1
   _maxStack: 10
+  _heal: 35
+  _cleanse: 1
+  _buff: {fileID: 0}
+  _buffDuration: 10
+  _restoreMeter: {fileID: 0}
+  _restoreAmount: 0

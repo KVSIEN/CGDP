@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c071eefddd9261b4e9165dcb50927f67, type: 3}
   m_Name: LightMunition
   m_EditorClassIdentifier: CGD.Runtime::CGD.Items.MunitionDefinition
-  _displayName: Item
+  _displayName: Light Rounds
   _description: 
   _icon: {fileID: 0}
   _reality: 0

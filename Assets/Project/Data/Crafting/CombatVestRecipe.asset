@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2b03a1ac81c40189a4f6f66900704c8, type: 3}
+  m_Name: CombatVestRecipe
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Crafting.RecipeDefinition
+  _ingredients:
+  - Item: {fileID: 11400000, guid: 38dc2ecd5c694b6d95bec2842742160a, type: 2}
+    Count: 20
+  - Item: {fileID: 11400000, guid: ea01b7ed4b454a53a57f032c90bd2b12, type: 2}
+    Count: 6
+  _output:
+    Item: {fileID: 11400000, guid: 5358d22025294ac09819b7ed8c46e02c, type: 2}
+    Count: 1
