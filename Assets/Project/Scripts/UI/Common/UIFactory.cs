@@ -35,6 +35,16 @@ namespace CGD.UI
             rt.offsetMin = rt.offsetMax = Vector2.zero;
         }
 
+        // Pins a HUD panel to a screen corner ((0,0) bottom-left … (1,1) top-right), with
+        // padding measured inward from that corner.
+        public static void AnchorToCorner(RectTransform rt, Vector2 corner, Vector2 padding)
+        {
+            rt.anchorMin = rt.anchorMax = rt.pivot = corner;
+            rt.anchoredPosition = new Vector2(
+                corner.x > 0.5f ? -padding.x : padding.x,
+                corner.y > 0.5f ? -padding.y : padding.y);
+        }
+
         public static void Place(RectTransform rt, Vector2 pos, Vector2 size)
         {
             rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f);

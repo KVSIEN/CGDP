@@ -116,7 +116,7 @@ Don't leave stray instances of either parented under the HUD canvas.
 - **AbilityHUD** — assign `_abilities` = Player's `PlayerAbilities`.
 - **DodgeHUD** — assign `_dodge` = Player's `PlayerDodge`.
 - **InventoryHUD** — assign `_input` = Player, `_loadout` = Player's `PlayerWeaponLoadout`. Requires a `CanvasGroup` on the same object (used to fade the panel in/out).
-- **ItemInventoryHUD** — assign `_input` = Player, `_inventory` = Player's `PlayerInventory` (auto-resolved by scene lookup if left unset). Requires a `CanvasGroup` on the same object. Opens/closes on the same Inventory action as `InventoryHUD` — both panels sit as siblings under the HUD canvas.
+- **ItemInventoryHUD** — assign `_input` = Player, `_inventory` = Player's `PlayerInventory` (required — the panel stays empty without it). Requires a `CanvasGroup` on the same object. Opens/closes on the same Inventory action as `InventoryHUD` — both panels sit as siblings under the HUD canvas.
 - **InteractHUD** — assign `_interaction` = Player's `PlayerInteraction`. Builds its own world-space prompt via `UIOverlayCamera.GetOrCreate()` — no manual camera setup needed.
 - **MeterHUD** — assign `_meters` = Player's `MeterSet`. One bar per listed meter, stacked above the health panel (`_screenPadding`); hides itself when the player has no meters.
 - **QuestHUD** — assign `_tracker` = Player's `QuestTracker`. Top-left under the HUD's other panels (`_screenPadding`); hidden while no quest is active.
@@ -309,18 +309,17 @@ that turns the graph into rooms will read `MapGraphAsset.Graph`.
 | `Combat/HitboxProfiles/<Name>HitboxProfile` (optional, one per character type — `DefaultHitboxProfile`, `TargetDummyHitboxProfile`) | `EnemyHealth`, `PlayerHealth` |
 | `Combat/StatusEffects/` (`BleedEffect`, `FireEffect`, `IceEffect`, `LightningEffect`, `PoisonEffect`) | referenced by whatever applies the effect via `StatusEffectController` |
 | `Weapons/Ranged/<Name>WeaponData` (per weapon — `DefaultWeaponData` is the generic starter; hand-authored Common-tier examples live under `Weapons/Ranged/T1/`: `M4A1_T1`, `MP5_T1`, `Glock17_T1`, `DesertEagle_T1`, `Kar98k_T1`, `M249_T1`, `M870_T1` — one per category, `DesertEagle_T1` shows the AmmoType override to HeavyRounds) | `PlayerWeaponLoadout`, `WeaponController`, `WeaponPickup` |
-| `Weapons/Categories/<Name>Category` (per category) — assign `_rollProfile` = one of the family-specific `StatRollProfile` assets below | `RandomWeaponPickup`, `WeaponGenerator` |
-| `Items/Profiles/<Family>Profile` (one per weapon family — `StandardFirearmProfile`, `PrecisionRifleProfile`, `AutomaticSupportProfile`, `ShotgunProfile`) — right-click the asset and pick the matching `Axes/...` preset | `GearDefinition._rollProfile` on each `WeaponCategoryData` |
+| `Weapons/Categories/<Name>Category` (per category) — `_rollProfile` = a `StatRollProfile` (see below; **none are assigned yet**, so generated weapons currently roll uniformly at quality 1 / Common) | `RandomWeaponPickup`, `WeaponGenerator` |
 | `Items/Munitions/<Name>Munitions` (one per caliber in use — `StandardMunitions`, plus Light/Heavy/ShotgunShells as weapons need them) — each sets the `AmmoType` pool it feeds | `AmmoPickup._munition`, `PlayerInventory._startingStacks` |
-| `Items/DefaultStatRollProfile` (optional — assign to each `WeaponCategoryData`'s `RollProfile`; without one, stats roll uniformly and quality is ignored) | `WeaponCategoryData`, `ArmorDefinition` |
+| `Items/StatRollProfile` (quality curve; its `Axes` are still empty and nothing references it yet) | `WeaponCategoryData._rollProfile`, `ArmorDefinition._rollProfile` |
 | `Weapons/FireBehaviors/` (`HitscanFireBehavior`, `ShotgunFireBehavior`, `ProjectileFireBehavior` → `Prefabs/Weapons/Projectile`) — as authored, AR/SMG/Pistol/Sniper/LMG categories all point at `ProjectileFireBehavior`, and `ShotgunFireBehavior` has `Projectile Pellets` ticked with `Prefab` = `Prefabs/Weapons/ShotgunPellet` (speed 400, lifetime 2, gravity 0, instant-hit 0.02); `HitscanFireBehavior` is assigned to nothing but stays available. Unticking `Projectile Pellets`, or clearing that prefab, drops the shotgun back to raycast pellets | assigned on each `WeaponCategoryData` / `WeaponData` `FireBehavior` |
-| `Combat/ActionTimelines/` (ActionTimeline assets — e.g. `SwordSlash`, `GroundSlam`) | `MeleeAttackStep.Timeline`, `TimelineAbility.Timeline` |
+| `Combat/ActionTimelines/` (ActionTimeline assets, one per choreographed attack — none authored yet) | `MeleeAttackStep.Timeline`, `TimelineAbility.Timeline` |
 | `Abilities/` (`DashAbility`, `HealAbility`, `ProjectileAbility` → `Prefabs/Weapons/Projectile`, `ShockwaveAbility`, `TimelineAbility` → ActionTimeline asset, `DamageBoostAbility` → `DamageBoostModifierPreset`, needs `CharacterStats` on the Player) — each has `MaxCharges` and `CastTime` | `PlayerAbilities._slots` |
 | `Weapons/Melee/DefaultMeleeWeaponData` | `MeleeController` |
 | `Weapons/Throwables/DefaultGrenadeData` (its `GrenadePrefab` — `Prefabs/Weapons/FragGrenade` — needs a `Rigidbody` + non-trigger `Collider` + `Grenade` component) | `GrenadeController` |
 | `Meters/` (`StaminaMeter`, `ManaMeter`, `OxygenMeter`, `RageMeter`) | `MeterSet._definitions`, `MeterCost` fields (`PlayerMovementSettings.SprintCost`/`DodgeCost`, `Ability.Cost`), `MeterZone._meter` |
 | `Flow/GameFlowSettings` (optional) | `GameFlow._settings` |
-| `Targeting/` (`DefaultSelf`, `DefaultRaycast`, `DefaultArea`, `AimedArea`, `FriendlyArea`, `DefaultCone`, `DefaultNearest`, `DefaultGround` + `TargetSelector`) | `TargetedAbility.Targeting`, `TimelineAbility.Targeting` |
+| `Targeting/` (`DefaultSelfTargetSelector`, `DefaultRaycastTargetSelector`, `DefaultAreaTargetSelector`, `AimedAreaTargetSelector`, `FriendlyAreaTargetSelector`, `DefaultConeTargetSelector`, `DefaultNearestTargetSelector`, `DefaultGroundTargetSelector`) | `TargetedAbility.Targeting`, `TimelineAbility.Targeting` |
 | `Loot/DefaultLootTable` (ammo of every caliber, occasional rolled AR/SMG, rarity odds 60/25/10/4/1) | `LootDropper._table` |
 | `Map/DefaultMapGenerationSettings` (constraints: path/branch shape, room-type rules, intensity curve, factions) | `MapGraphAsset._settings` |
 | `Map/<Name>MapGraph` (per map — `SandboxMapGraph`) | Map Graph window; nothing in a scene yet |
@@ -333,11 +332,13 @@ that turns the graph into rooms will read `MapGraphAsset.Graph`.
 
 ### Stat Roll Profile
 
-`StatRollProfile` (**Assets → Create → CGD → Items → Stat Roll Profile**) is the one
-asset that defines how item quality converts into stats, so it is meant to be a
-**single shared asset** assigned to every `WeaponCategoryData` and `ArmorDefinition`.
-Right-click it and choose **Apply Default Firearm Axes** to fill in the tradeoff axes,
-the same way `WeaponCategoryData` has **Apply Type Defaults**.
+`StatRollProfile` (**Assets → Create → CGD → Items → Stat Roll Profile**) defines how
+item quality converts into stats: the quality curve plus the tradeoff axes (which stats
+oppose each other). The curve is shared, but the axes differ per weapon family, so the
+intended setup is one profile per family — right-click it and pick the matching preset:
+**Axes/Standard Firearm (SMG · AR · Pistol)**, **Axes/Precision Rifle**,
+**Axes/Automatic Support (LMG)** or **Axes/Shotgun** — and assign it to that family's
+`WeaponCategoryData._rollProfile` (and to `ArmorDefinition`s as needed).
 
 Leaving `RollProfile` empty is supported and reproduces the previous behaviour exactly:
 every stat rolls uniformly within its authored range, and the item falls back to

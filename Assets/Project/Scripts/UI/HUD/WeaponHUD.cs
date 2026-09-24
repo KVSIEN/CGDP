@@ -33,7 +33,7 @@ namespace CGD.UI
 
         private void Awake()
         {
-            SetupAnchor();
+            UIFactory.AnchorToCorner(GetComponent<RectTransform>(), new Vector2(1f, 0f), _screenPadding);
             Build();
         }
 
@@ -97,13 +97,6 @@ namespace CGD.UI
 
             _reserveText.text = _reserve.ToString();
             _reserveText.color = _reserve == 0 ? _emptyColor : _dimColor;
-        }
-
-        private void SetupAnchor()
-        {
-            var rt = GetComponent<RectTransform>();
-            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(1f, 0f);
-            rt.anchoredPosition = new Vector2(-_screenPadding.x, _screenPadding.y);
         }
 
         private void Build()

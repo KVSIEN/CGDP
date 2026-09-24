@@ -15,7 +15,7 @@ namespace CGD.Combat
 
         public void OnEnter(ActionContext ctx)
         {
-            _sound?.Play(ctx.Origin);
+            _sound.TryPlay(ctx.Origin);
         }
 
         public void OnTick(ActionContext ctx) { }

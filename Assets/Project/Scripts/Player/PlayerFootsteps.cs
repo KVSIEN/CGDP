@@ -54,7 +54,7 @@ namespace CGD.Player
         private void PlayFootstep()
         {
             SoundBank bank = ResolveBank();
-            bank?.Play(transform.position);
+            bank.TryPlay(transform.position);
         }
 
         private SoundBank ResolveBank()

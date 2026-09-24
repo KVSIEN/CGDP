@@ -19,9 +19,6 @@ namespace CGD.Items
 
         public void Clear() => System.Array.Clear(_values, 0, _values.Length);
 
-        public void CopyFrom(StatBlock other) =>
-            System.Array.Copy(other._values, _values, _values.Length);
-
         public bool Has(ItemStat stat) => !Mathf.Approximately(_values[(int)stat], 0f);
     }
 }

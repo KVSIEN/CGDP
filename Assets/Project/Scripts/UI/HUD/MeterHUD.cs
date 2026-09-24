@@ -78,8 +78,7 @@ namespace CGD.UI
         private void Build()
         {
             var self = GetComponent<RectTransform>();
-            self.anchorMin = self.anchorMax = self.pivot = Vector2.zero;
-            self.anchoredPosition = _screenPadding;
+            UIFactory.AnchorToCorner(self, new Vector2(0f, 0f), _screenPadding);
 
             var bg = UIFactory.MakeImage("Background", self);
             bg.color = _backgroundColor;

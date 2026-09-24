@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using CGD.Core;
 using CGD.Input;
 using CGD.Items;
@@ -52,7 +51,6 @@ namespace CGD.UI
         private void Awake()
         {
             _cg = GetComponent<CanvasGroup>();
-            if (_inventory == null) _inventory = FindPlayerInventory();
 
             BuildPanel();
             SetAlpha(false);
@@ -263,14 +261,5 @@ namespace CGD.UI
         }
 
         private static Color Warning() => new(1f, 0.55f, 0.35f, 1f);
-
-        private static PlayerInventory FindPlayerInventory()
-        {
-#if UNITY_2023_1_OR_NEWER
-            return Object.FindFirstObjectByType<PlayerInventory>();
-#else
-            return Object.FindObjectOfType<PlayerInventory>();
-#endif
-        }
     }
 }

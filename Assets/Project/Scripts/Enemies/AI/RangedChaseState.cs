@@ -165,7 +165,7 @@ namespace CGD.Enemies
                 dir = WeaponFireBehavior.ComputeSpreadDirection(dir, data.SpreadAngle);
 
             SoundBank fireSound = data.RangedAttackSound != null ? data.RangedAttackSound : data.AttackSound;
-            fireSound?.Play(Ai.transform.position);
+            fireSound.TryPlay(Ai.transform.position);
 
             if (Physics.Raycast(eyePos, dir, out var hit, data.SightRange, ~0, QueryTriggerInteraction.Ignore))
             {

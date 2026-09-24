@@ -34,6 +34,23 @@ namespace CGD.UI
             _worldPrompt.SetActive(false);
         }
 
+        // Labels are built strings, so they're refreshed only when the target changes or
+        // is used rather than every frame.
+        private void OnEnable()
+        {
+            if (_interaction == null) return;
+
+            _interaction.TargetChanged += RefreshLabel;
+            RefreshLabel();
+        }
+
+        private void OnDisable()
+        {
+            if (_interaction != null) _interaction.TargetChanged -= RefreshLabel;
+        }
+
+        private void RefreshLabel() => _labelText.text = _interaction.TargetLabel;
+
         private void BuildWorldPrompt()
         {
             int layer        = LayerMask.NameToLayer("UI");
@@ -104,7 +121,6 @@ namespace CGD.UI
 
             if (!hasTarget) return;
 
-            _labelText.text = _interaction.TargetLabel;
             _holdBar.anchorMax = new Vector2(_interaction.HoldProgress, 0.1f);
 
             Vector3 targetPos = _interaction.TargetPosition + Vector3.up * _yOffset;

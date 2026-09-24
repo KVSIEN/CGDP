@@ -11,8 +11,7 @@ namespace CGD.CameraEffects
         private float     _target;
         private float     _speed;
 
-        public bool      IsActive  => _weight > 0f || _target > 0f;
-        public Transform Viewpoint => _viewpoint;
+        public bool IsActive => _weight > 0f || _target > 0f;
 
         public void BlendTo(Transform viewpoint, float duration)
         {

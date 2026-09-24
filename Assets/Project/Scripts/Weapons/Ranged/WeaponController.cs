@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using CGD.Audio;
 using CGD.CameraEffects;
 using CGD.Combat;
 using CGD.Core;
@@ -168,7 +169,7 @@ namespace CGD.Weapons
                 _wasChargeHeld = triggerHeld;
                 if (_burstPending || !(triggerHeld || triggerPress)) return;
                 if (CanReload) StartCoroutine(Reload());
-                else if (triggerPress) D.EmptySound?.Play(SoundPos);
+                else if (triggerPress) D.EmptySound.TryPlay(SoundPos);
                 return;
             }
 
@@ -221,7 +222,7 @@ namespace CGD.Weapons
             CastBullet(charge);
             _spread.AddBloom();
 
-            D.FireSound?.Play(SoundPos);
+            D.FireSound.TryPlay(SoundPos);
             Noise.Emit(transform.position, D.NoiseRadius, _damageSource);
         }
 
@@ -250,7 +251,7 @@ namespace CGD.Weapons
             RecoilShot shot = _recoil.Fire(adsT);
             _camera.AddRecoil(shot.VertKick, shot.HorizKick, D.RecoilRecoverySpeed,
                               shot.RecoveryFraction, D.RecoilRecoveryDelay);
-            _visuals?.AddKick(shot.GunVert, shot.GunHoriz, adsT, ShotInterval);
+            if (_visuals != null) _visuals.AddKick(shot.GunVert, shot.GunHoriz, adsT, ShotInterval);
             if (_cameraEffects != null) _cameraEffects.AddRecoil(shot.VertKick, shot.HorizKick);
         }
 
@@ -298,7 +299,7 @@ namespace CGD.Weapons
             _isReloading = true;
             NotifyAmmoChanged();
 
-            D.ReloadSound?.Play(SoundPos);
+            D.ReloadSound.TryPlay(SoundPos);
 
             float time = _current.Magazine > 0 ? D.TacticalReloadTime : D.ReloadTime;
             yield return new WaitForSeconds(time);

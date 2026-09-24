@@ -23,7 +23,7 @@ namespace CGD.Player
             _health.OnDeath   -= PlayDeath;
         }
 
-        private void PlayHurt(float damage) => _hurtSound?.Play(transform.position);
-        private void PlayDeath()            => _deathSound?.Play(transform.position);
+        private void PlayHurt(float damage) => _hurtSound.TryPlay(transform.position);
+        private void PlayDeath()            => _deathSound.TryPlay(transform.position);
     }
 }

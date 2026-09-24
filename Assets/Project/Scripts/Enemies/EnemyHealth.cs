@@ -34,7 +34,7 @@ namespace CGD.Enemies
         protected override void OnDamageTaken(float amount, Vector3 point, bool isCritical)
         {
             DamageNumbers.Spawn(amount, point + _popupOffset, isCritical);
-            _healthBar?.ShowDamage(Health, MaxHealth);
+            if (_healthBar != null) _healthBar.ShowDamage(Health, MaxHealth);
         }
 
         // A pooled enemy comes back at full health; OnRevived lets its other systems reset.

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Input;
@@ -22,13 +23,17 @@ namespace CGD.Player
         [SerializeField] private LayerMask _occlusionMask      = ~0;
 
         public bool          HasTarget      => _current != null;
-        public string        TargetLabel    => _current?.GetInteractLabel(gameObject) ?? string.Empty;
+        public string        TargetLabel    => _current != null ? _current.GetInteractLabel(gameObject) : string.Empty;
         public IInteractable Current        => _current;
         public Vector3       TargetPosition => _currentCollider != null ? _currentCollider.transform.position : Vector3.zero;
         // 0..1 while holding the key on a hold interaction; 0 otherwise.
         public float   HoldProgress   => _current != null && _current.HoldDuration > 0f
             ? Mathf.Clamp01(_holdTimer / _current.HoldDuration)
             : 0f;
+
+        // The target changed, or the current one was used (its label may have changed,
+        // e.g. a door that now opens instead of closes). Lets UI rebuild the label only then.
+        public event Action TargetChanged;
 
         private PlayerInputHandler _input;
         private IInteractable      _current;
@@ -55,6 +60,7 @@ namespace CGD.Player
                 ResetHold();
                 NotifyFocus(previousCollider, false);
                 NotifyFocus(_currentCollider, true);
+                TargetChanged?.Invoke();
             }
 
             if (_current == null) return;
@@ -62,7 +68,7 @@ namespace CGD.Player
             if (_current.HoldDuration <= 0f)
             {
                 if (_input.GetAction(GameAction.Interact))
-                    _current.Interact(gameObject);
+                    Use();
                 return;
             }
 
@@ -85,7 +91,13 @@ namespace CGD.Player
 
             _holdCompleted = true;
             _holdTimer     = 0f;
+            Use();
+        }
+
+        private void Use()
+        {
             _current.Interact(gameObject);
+            TargetChanged?.Invoke();
         }
 
         private void ResetHold()

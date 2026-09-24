@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 using CGD.Player;
 
@@ -24,43 +23,19 @@ namespace CGD.UI
 
         private void Awake()
         {
-            SetupAnchor();
-            Build();
-        }
-
-        private void SetupAnchor()
-        {
-            var rt = GetComponent<RectTransform>();
-            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(1f, 1f);
-            rt.anchoredPosition = new Vector2(-_screenPadding.x, -_screenPadding.y);
-            rt.sizeDelta = new Vector2(_panelWidth, _panelHeight);
-        }
-
-        private void Build()
-        {
             var self = GetComponent<RectTransform>();
+            UIFactory.AnchorToCorner(self, new Vector2(1f, 1f), _screenPadding);
+            self.sizeDelta = new Vector2(_panelWidth, _panelHeight);
 
-            var bgGo = new GameObject("Background", typeof(RectTransform), typeof(Image));
-            bgGo.transform.SetParent(self, false);
-            var bgImg = bgGo.GetComponent<Image>();
-            bgImg.color         = _backgroundColor;
-            bgImg.raycastTarget = false;
-            var bgRt = bgGo.GetComponent<RectTransform>();
-            bgRt.anchorMin = Vector2.zero;
-            bgRt.anchorMax = Vector2.one;
-            bgRt.offsetMin = bgRt.offsetMax = Vector2.zero;
+            var background = UIFactory.MakeImage("Background", self);
+            background.color = _backgroundColor;
+            UIFactory.Stretch(background.rectTransform);
 
-            var textGo = new GameObject("SpeedText", typeof(RectTransform), typeof(TextMeshProUGUI));
-            textGo.transform.SetParent(self, false);
-            _text               = textGo.GetComponent<TextMeshProUGUI>();
-            _text.color         = _textColor;
-            _text.fontSize      = 12f;
-            _text.alignment     = TextAlignmentOptions.Center;
-            _text.raycastTarget = false;
-            var textRt = _text.GetComponent<RectTransform>();
-            textRt.anchorMin = Vector2.zero;
-            textRt.anchorMax = Vector2.one;
-            textRt.offsetMin = textRt.offsetMax = Vector2.zero;
+            _text           = UIFactory.MakeText("SpeedText", self);
+            _text.color     = _textColor;
+            _text.fontSize  = 12f;
+            _text.alignment = TextAlignmentOptions.Center;
+            UIFactory.Stretch(_text.rectTransform);
         }
 
         public override void Refresh() { }

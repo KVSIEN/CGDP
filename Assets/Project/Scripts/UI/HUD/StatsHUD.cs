@@ -28,7 +28,7 @@ namespace CGD.UI
 
         private void Awake()
         {
-            SetupAnchor();
+            UIFactory.AnchorToCorner(GetComponent<RectTransform>(), new Vector2(0f, 0f), _screenPadding);
             Build();
 
             if (_playerHealth != null)
@@ -41,13 +41,6 @@ namespace CGD.UI
         {
             if (_playerHealth != null)
                 _playerHealth.OnChanged -= Refresh;
-        }
-
-        private void SetupAnchor()
-        {
-            var rt = GetComponent<RectTransform>();
-            rt.anchorMin = rt.anchorMax = rt.pivot = Vector2.zero;
-            rt.anchoredPosition = _screenPadding;
         }
 
         private void Build()

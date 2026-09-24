@@ -28,8 +28,7 @@ namespace CGD.UI
         private void Awake()
         {
             var rt = GetComponent<RectTransform>();
-            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0f, 1f);
-            rt.anchoredPosition = new Vector2(_screenPadding.x, -_screenPadding.y);
+            UIFactory.AnchorToCorner(rt, new Vector2(0f, 1f), _screenPadding);
             rt.sizeDelta = new Vector2(_width, 0f);
 
             _background = UIFactory.MakeImage("Background", rt);

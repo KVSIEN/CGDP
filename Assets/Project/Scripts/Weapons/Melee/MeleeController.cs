@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Audio;
 using CGD.Combat;
 using CGD.Input;
 using CGD.Player;
@@ -114,7 +115,7 @@ namespace CGD.Weapons
             _phase      = Phase.Windup;
             _phaseTimer = _activeStep.WindupTime;
 
-            _activeStep.SwingSound?.Play(transform.position);
+            _activeStep.SwingSound.TryPlay(transform.position);
             Noise.Emit(transform.position, _data.NoiseRadius, _damageSource);
         }
 
@@ -190,7 +191,7 @@ namespace CGD.Weapons
 
             bool hitAnything = _usingTimeline ? _runner.HitAnything : _resolver.HitAnything;
             if (hitAnything)
-                _activeStep.HitSound?.Play(transform.position);
+                _activeStep.HitSound.TryPlay(transform.position);
 
             _phase      = Phase.Recovery;
             _phaseTimer = _activeStep.RecoveryTime;

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using CGD.Map;
 using UnityEditor;
@@ -118,7 +117,7 @@ namespace CGD.Editor
 
             foreach (MapConnection connection in session.Graph.Connections)
             {
-                if (!TryGetCurve(connection, session, out Curve curve)) continue;
+                if (!TryGetCurve(connection, session, out MapGraphCurve curve)) continue;
 
                 bool dimmed = session.IsDimmed(connection.A) && session.IsDimmed(connection.B);
                 Color color = MapGraphStyle.ConnectionColor(connection.Type);
@@ -392,49 +391,20 @@ namespace CGD.Editor
             if (node != null)
             {
                 session.SelectNode(node.Id);
-                BuildNodeMenu(menu, node, session);
+                MapGraphContextMenu.AddNodeItems(menu, node, session);
             }
             else if (connection != null)
             {
                 session.SelectConnection(connection);
-                BuildConnectionMenu(menu, connection, session);
+                MapGraphContextMenu.AddConnectionItems(menu, connection, session);
             }
             else
             {
-                Vector2 world = ToWorld(mouse, session);
-                foreach (MapNodeType type in Enum.GetValues(typeof(MapNodeType)))
-                    menu.AddItem(new GUIContent($"Add Node/{type}"), false, () => session.AddNode(type, world));
+                MapGraphContextMenu.AddCanvasItems(menu, ToWorld(mouse, session), session);
             }
 
             menu.ShowAsContext();
             e.Use();
-        }
-
-        private static void BuildNodeMenu(GenericMenu menu, MapNode node, MapGraphEditorSession session)
-        {
-            foreach (MapNodeType type in Enum.GetValues(typeof(MapNodeType)))
-                menu.AddItem(new GUIContent($"Type/{type}"), node.Type == type, () => session.SetType(node, type));
-
-            bool locked = session.Asset.IsLocked(node.Id);
-            menu.AddItem(new GUIContent(locked ? "Unlock" : "Lock"), false, () => session.SetLocked(node, !locked));
-
-            var neighbors = new List<int>();
-            session.Graph.GetNeighbors(node.Id, neighbors);
-            foreach (int neighbor in neighbors)
-                menu.AddItem(new GUIContent($"Disconnect/#{neighbor}"), false, () => session.Disconnect(node.Id, neighbor));
-
-            menu.AddSeparator("");
-            menu.AddItem(new GUIContent("Delete Node"), false, () => session.DeleteNode(node.Id));
-        }
-
-        private static void BuildConnectionMenu(GenericMenu menu, MapConnection connection, MapGraphEditorSession session)
-        {
-            foreach (ConnectionType type in Enum.GetValues(typeof(ConnectionType)))
-                menu.AddItem(new GUIContent($"Type/{type}"), connection.Type == type,
-                             () => session.SetConnectionType(connection, type));
-
-            menu.AddSeparator("");
-            menu.AddItem(new GUIContent("Delete Connection"), false, () => session.Disconnect(connection.A, connection.B));
         }
 
         // --- Hit testing -----------------------------------------------------------
@@ -452,58 +422,22 @@ namespace CGD.Editor
         private MapConnection HitConnection(Vector2 point, MapGraphEditorSession session)
         {
             foreach (MapConnection connection in session.Graph.Connections)
-                if (TryGetCurve(connection, session, out Curve curve) && curve.Distance(point) <= ConnectionHitRadius)
+                if (TryGetCurve(connection, session, out MapGraphCurve curve) && curve.Distance(point) <= ConnectionHitRadius)
                     return connection;
             return null;
         }
 
         // --- Curves ----------------------------------------------------------------
 
-        private bool TryGetCurve(MapConnection connection, MapGraphEditorSession session, out Curve curve)
+        private bool TryGetCurve(MapConnection connection, MapGraphEditorSession session, out MapGraphCurve curve)
         {
             curve = default;
             if (!session.Graph.TryGetNode(connection.A, out MapNode a)) return false;
             if (!session.Graph.TryGetNode(connection.B, out MapNode b)) return false;
 
-            // Always run left → right so tangents point along the flow of the map.
-            if (a.Position.x > b.Position.x) (a, b) = (b, a);
-
-            Vector2 start = ToScreen(a.Position, session);
-            Vector2 end   = ToScreen(b.Position, session);
-            float   pull  = Mathf.Max(Mathf.Abs(end.x - start.x) * 0.5f, 30f * session.Zoom);
-
-            // Shortcuts run between nodes on the same row; arc them over the nodes they skip.
-            float arc = connection.Type == ConnectionType.Shortcut ? -Mathf.Abs(end.x - start.x) * 0.35f : 0f;
-
-            curve = new Curve(start, end,
-                              start + new Vector2(pull, arc),
-                              end   + new Vector2(-pull, arc));
+            curve = MapGraphCurve.Between(ToScreen(a.Position, session), ToScreen(b.Position, session),
+                                          connection.Type, session.Zoom);
             return true;
-        }
-
-        private readonly struct Curve
-        {
-            private readonly Vector2 _start;
-            private readonly Vector2 _end;
-            private readonly Vector2 _startTangent;
-            private readonly Vector2 _endTangent;
-
-            public Curve(Vector2 start, Vector2 end, Vector2 startTangent, Vector2 endTangent)
-            {
-                _start        = start;
-                _end          = end;
-                _startTangent = startTangent;
-                _endTangent   = endTangent;
-            }
-
-            public Vector2 Midpoint =>
-                0.125f * (_start + _end) + 0.375f * (_startTangent + _endTangent);
-
-            public void Draw(Color color, float width) =>
-                Handles.DrawBezier(_start, _end, _startTangent, _endTangent, color, null, width);
-
-            public float Distance(Vector2 point) =>
-                HandleUtility.DistancePointBezier(point, _start, _end, _startTangent, _endTangent);
         }
 
         private void EnsureStyles()

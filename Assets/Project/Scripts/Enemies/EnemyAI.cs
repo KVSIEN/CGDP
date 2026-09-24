@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using CGD.Audio;
 using CGD.Combat;
 using CGD.Core;
 using CGD.Items;
@@ -147,7 +148,7 @@ namespace CGD.Enemies
 
         private void ResolveAttack()
         {
-            _data.AttackSound?.Play(transform.position);
+            _data.AttackSound.TryPlay(transform.position);
 
             float   range  = _data.AttackRange;
             Vector3 center = transform.position + Vector3.up + transform.forward * (range * 0.5f);

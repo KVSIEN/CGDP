@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using CGD.Audio;
 using CGD.Combat;
 using CGD.Core;
 using CGD.Input;
@@ -91,7 +92,7 @@ namespace CGD.Weapons
             _carried--;
             OnCountChanged?.Invoke(_carried);
 
-            _data.ThrowSound?.Play(transform.position);
+            _data.ThrowSound.TryPlay(transform.position);
         }
 
         private void DrawTrajectoryPreview()

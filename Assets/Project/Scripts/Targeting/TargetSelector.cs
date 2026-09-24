@@ -1,5 +1,4 @@
 using UnityEngine;
-using CGD.Combat;
 
 namespace CGD.Targeting
 {

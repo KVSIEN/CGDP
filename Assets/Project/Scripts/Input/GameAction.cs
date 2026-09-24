@@ -1,5 +1,3 @@
-using CGD.Weapons;
-
 namespace CGD.Input
 {
     public enum GameAction

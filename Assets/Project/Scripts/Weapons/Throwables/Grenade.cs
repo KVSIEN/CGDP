@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Audio;
 using CGD.CameraEffects;
 using CGD.Combat;
 using CGD.Core;
@@ -63,7 +64,7 @@ namespace CGD.Weapons
                     source: _source, onHitEffects: _data.OnHitEffects));
             }
 
-            _data.ExplosionSound?.Play(transform.position);
+            _data.ExplosionSound.TryPlay(transform.position);
             Noise.Emit(transform.position, _data.NoiseRadius, _source);
             CameraImpulses.Emit(transform.position, _data.ShakeRadius, _data.CameraTrauma);
             _initialized = false;

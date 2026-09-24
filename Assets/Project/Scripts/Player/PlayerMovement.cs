@@ -35,7 +35,6 @@ namespace CGD.Player
         public bool IsStunned => _stunnable.IsStunned;
 
         public Vector3 MoveDirection   => _moveDirection;
-        public float CoyoteTimer       => _coyoteTimer;
         public Transform CameraTransform => _cameraTransform;
 
         private Rigidbody _rb;

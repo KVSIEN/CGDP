@@ -28,7 +28,7 @@ namespace CGD.Enemies
             _health.OnDeath   -= OnDeath;
         }
 
-        private void OnDamaged(float amount) => _hurtSound?.Play(transform.position);
-        private void OnDeath()               => _deathSound?.Play(transform.position);
+        private void OnDamaged(float amount) => _hurtSound.TryPlay(transform.position);
+        private void OnDeath()               => _deathSound.TryPlay(transform.position);
     }
 }

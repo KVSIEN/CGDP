@@ -66,8 +66,6 @@ namespace CGD.Player
         [Header("Mesh Visibility")]
         [SerializeField] private Renderer[] _firstPersonHideRenderers;
 
-        public CameraMode ActiveMode => _transitionT < 0.5f ? CameraMode.FirstPerson : CameraMode.ThirdPerson;
-
         private float _yaw;
         private float _pitch;
         private float _currentYaw;
@@ -101,14 +99,11 @@ namespace CGD.Player
         public bool    IsAimObstructed  { get; private set; }
         public Vector3 ObstructionPoint { get; private set; }
         public Camera  Camera           => _camera;
-        public bool  IsAiming => _adsT > 0.01f;
         /// <summary>0 = hip, 1 = fully aimed. Used by WeaponController for spread/recoil scaling.</summary>
         public float AdsT     => _adsT;
 
         public Transform LockTarget => _lockTarget;
 
-        public float MouseSensitivity   => _mouseSensitivity;
-        public float GamepadSensitivity => _gamepadSensitivity;
 
         public void SetSensitivity(float mouse, float gamepad)
         {

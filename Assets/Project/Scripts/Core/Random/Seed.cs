@@ -41,9 +41,6 @@ namespace CGD.Core
 
         public RandomStream Stream() => new(this);
 
-        // Handy for Unity APIs and inspector fields that only take an int.
-        public int ToInt() => unchecked((int)(Value ^ (Value >> 32)));
-
         public bool Equals(Seed other) => Value == other.Value;
         public override bool Equals(object obj) => obj is Seed other && Equals(other);
         public override int GetHashCode() => Value.GetHashCode();
