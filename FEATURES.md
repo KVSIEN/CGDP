@@ -83,6 +83,7 @@
   - **Shockwave** — damages nearby enemies and launches nearby rigidbodies away from the player
   - **Targeted** — damages and/or heals whoever its targeting rule picks: the enemy under the crosshair, everything in a cone, allies around the player, the nearest enemy, or an area where the player aims; it isn't used when it wouldn't affect anyone
   - **Timeline** — runs an ActionTimeline via TimelineAbilityRunner; only one timeline ability can play at a time; can be ground-targeted so its area effects land where the player aims
+  - **Stat Buff** — applies a set of stat modifiers to the player for a while (included: Damage Boost, +30% damage for 8 seconds)
 - All ability values (cooldown, force, damage, etc.) are tunable on the ScriptableObject asset
 - HUD shows four coloured slots at the bottom of the screen; a dark overlay drains away as the next charge recovers, and multi-charge abilities show their charge count
 
@@ -139,6 +140,7 @@
 - Create category assets via **Assets → Create → CGD → Weapon Category**, set the `Type` field, then right-click the asset and choose **Apply Type Defaults** to fill in all thresholds; values can be freely tweaked afterward
 - Generated weapons now roll a quality score and tier, which decides where each stat lands inside its category range — an SMG still rolls SMG damage, just high or low within it
 - Stats that carry a weapon's *power* (damage, fire rate, magazine, reload, recoil, spread, range, draw, sway) are driven by quality and the tradeoff axes. Stats that only give it *character* (recoil recovery, heat behaviour, burst timing) stay random, so high-tier weapons don't all start feeling the same
+- Every generated weapon has a seed: the same category, tier and seed rebuild exactly the same weapon — name, fire mode, quality and every stat. A random weapon pickup can be given a fixed seed so it always offers the same gun
 
 ## Weapon Loadout
 - Four weapon slots on the player; press 1, 2, 3, or 4 to equip the weapon in that slot
@@ -260,7 +262,7 @@
 - Independent of the four ability slots and the equipped ranged weapon — its own dedicated key
 
 ## Enemy AI
-- Three AI states — Patrol, Alert, Chase — each its own small state class
+- AI states — Patrol, Alert, Chase, Stunned, Dead — run on the shared state machine; Patrol, Alert and Chase each decide where to go next, a stun interrupts any of them and hands back to whatever was interrupted, and death is final until the enemy respawns
 - Enemies find targets by team: any character on an opposing team can be detected, so no player reference needs wiring; teamless props such as breakable crates are ignored
 - Enemies can be spawned from the object pool and reused: a reused enemy comes back at full health and starts patrolling again
 - Patrol follows an ordered list of waypoints, looping continuously; idles in place if no waypoints are assigned
@@ -274,7 +276,7 @@
 - Getting hit alerts an enemy to the attacker, even from behind
 - Losing the target switches the enemy to Alert for investigation; detecting it again immediately re-enters Chase
 - Stuns and slows (e.g. from Ice) stop or slow enemies the same way they affect the player
-- State color indicator: mesh tints grey (patrol), yellow (alert), red (chase) via MaterialPropertyBlock — no material instances created
+- State color indicator: mesh tints grey (patrol), yellow (alert), red (chase), blue (stunned), dark (dead) via MaterialPropertyBlock — no material instances created
 - World-space health bar appears above the enemy on damage and fades out after a configurable delay; billboards toward the camera
 - All parameters (health, speeds, sight, hearing, combat type, attack, ranged stats, alert duration) are tunable per enemy type via an EnemyData ScriptableObject
 
@@ -296,6 +298,7 @@
 - Drops scatter around the source and settle onto the ground; weapons become weapon pickups, everything else an item pickup
 - Breakable props — crates and barrels can be given health so any attack breaks them, spilling their loot
 - Included: a default enemy loot table dropping ammo of every caliber and, occasionally, a rolled rifle or SMG
+- Loot rolls are seedable: rolling a table from the same seed gives the same drops, and every weapon or piece of gear in them rolls the same stats
 
 ## Game Flow
 - The game moves between clear states: boot, main menu, loading, playing, paused, level transition, game over and victory; impossible moves (pausing from the main menu, winning while loading) are refused
@@ -351,6 +354,7 @@
 - Maps start as a pure experience graph — no room geometry yet. Each node is what the player meets there (Start, Combat, Elite, Puzzle, Shop, Event, Treasure, Boss, Exit), and connections say how they link: normal, shortcut, secret or locked
 - The generator builds a main path from Start through the Boss to the Exit, adds side branches that either dead-end or rejoin the main path further ahead, and adds shortcuts that skip rooms along the main path. Branch entrances can be secret or locked
 - The same seed and settings always give the same map, so a good map can be kept by its seed
+- Each generation layer — layout, room types, intensity, factions — can be rerolled on its own from the editor: reroll the room types and the layout stays exactly the same; reroll factions and types and intensity stay the same. A new seed starts every layer fresh
 - Constraints live in a settings asset: main path length, branch count and length, how often branches rejoin, how many shortcuts, a connection limit per room, and for each room type a minimum and maximum count, a weight, where it can go (anywhere, main path only, branches only), how deep into the run it can appear, whether two of the same type can sit next to each other, and whether it prefers dead ends (for example, treasure as a reward for exploring)
 - Room types with the tightest placement rules are placed first, so broad types like Combat can't take the only rooms a Treasure could use. Constraints that can't be met are reported instead of failing silently
 - Each room gets an intensity from a difficulty curve over the run (rising, a breather before the boss, then the boss at full intensity), adjusted per room type with a little variation
@@ -360,3 +364,56 @@
 - The generated graph and your hand edits are kept separately: edited rooms are marked, edits can be reverted to the generated version, and regenerating asks first when there are edits
 - Locked nodes survive regeneration: the new map keeps a room of the same type at a similar depth on the same kind of route (main path or branch), with the same intensity
 - The side panel checks the graph as you edit: exactly one Start and Exit, a Boss, the Exit reachable, every room reachable, and every room-type rule (counts, placement, depth, neighbours, connection limit) still met
+
+## Seeds
+- Everything generated has its own deterministic seed, branching from a parent: a map's layout and room types, each loot roll, each weapon. The same seed always produces the same result on every machine
+- A layer's seed depends only on its parent and its name, never on what else was generated first, so changing how one system rolls can't shift another
+- Seeds can be typed as numbers or any text ("banana" is a valid seed)
+- Things generated without a chosen seed still get a random one and remember it, so any weapon can be reproduced afterwards
+
+## Game Time
+- A central game clock counts time in fixed ticks — 60 per game-second by default (one tick = 1/60 s) — independent of frame rate, for systems that need deterministic timing
+- Pausing, slow motion and other time scaling all go through the clock, and Unity's physics, animation and movement follow it
+- Several things can pause at once (pause menu, cutscene): time resumes only when all of them let go
+- Speed changes stack: slow motion during a hit-stop is slower still; a speed change can last a fixed real-time duration (e.g. a 0.1 s hit-stop) and ends by itself
+- Physics steps shrink with slow motion so it stays smooth
+- Callbacks can be scheduled a number of game seconds or ticks ahead
+- A long frame hitch runs at most a few ticks instead of freezing to catch up
+- Quest time limits and temporary buffs run on game time, so they pause with the game and slow down in slow motion
+
+## State Machines
+- One reusable state machine for anything with states — characters, enemies, weapons, bosses, doors, machines, quests
+- States switch when a condition becomes true, when a state or event asks, or forcibly (respawn/reset)
+- "From any state" transitions cover interrupts like Stunned or Dead in one line instead of in every state
+- A rule can forbid moves outright (nothing leaves Dead, a finished quest can't fail)
+- Tracks the previous state and time spent in the current one
+- Small machines can be built from plain callbacks, without a class per state
+
+## Stats & Modifiers
+- A generic modifier system for any stat: flat bonuses, percentage bonuses that add together (+10% and +10% = +20%), multipliers that compound (+10% and +10% = +21%), and overrides that fix a value outright
+- Modifiers remember where they came from, so removing an attachment, a buff or a difficulty setting removes exactly its bonuses
+- A character's damage, health and armor combine: base value → equipment (weapon attachments) → permanent presets (e.g. difficulty) → temporary buffs and debuffs
+- Temporary modifiers expire on game time and are cleared when the character dies and revives
+- Presets group modifiers into one asset: included are Hard Difficulty (enemies +50% health, +25% damage) and Damage Boost (+30% damage)
+- Enemies with the Hard Difficulty preset get tougher without touching their enemy data
+
+## Quests
+- Quests are assets made of objectives: kill a number of a given enemy type, collect a number of an item, or wait for a scene event (talking to someone, reaching a place, pressing a switch)
+- Objectives can be optional, or unlock one at a time in order
+- Quests move through Locked → Available → Active → Completed or Failed; impossible moves (failing a finished quest) are refused
+- Chains: a quest unlocks when all its prerequisite quests are complete, and can start automatically
+- Time limits in game seconds; a failed quest can be allowed to retry
+- Rewards (items or freshly rolled gear) go straight into the inventory on completion
+- A quest panel on the HUD lists active quests with their objectives, progress counts, finished objectives struck through and a countdown for timed quests
+- Included: a two-quest chain for the sandbox — Target Practice (destroy 3 target dummies, pays 60 rounds) unlocks Resupply (pick up 30 rounds)
+
+## Camera Effects
+- Screen shake from "trauma": hits and explosions add trauma, which fades over time; many small hits blend into one shake instead of fighting each other
+- Explosions shake every nearby camera, fading with distance
+- Taking damage shakes the camera in proportion to the hit
+- Each shot gives the view a springy kick on top of the weapon's aim recoil
+- FOV punches that ease back (for dashes, boosts, explosions)
+- Optional camera lag that makes the view trail sudden movement slightly (off by default — it's uncomfortable in first person)
+- Camera transitions: blend the view smoothly to another viewpoint (death cam, door, boss intro) and back
+- Effects are visual only — shake never moves where your shots go
+- Lock-on (middle mouse or T): locks the aim onto the enemy nearest the centre of view and keeps it there; press again to release. The lock drops when the target dies or gets too far away

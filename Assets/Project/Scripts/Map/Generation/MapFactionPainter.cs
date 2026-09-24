@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Core;
 using UnityEngine;
 
 namespace CGD.Map
@@ -9,9 +10,14 @@ namespace CGD.Map
     internal class MapFactionPainter
     {
         private readonly MapGenerationContext _context;
+        private readonly RandomStream         _random;
         private readonly List<int>            _neighbors = new();
 
-        public MapFactionPainter(MapGenerationContext context) => _context = context;
+        public MapFactionPainter(MapGenerationContext context)
+        {
+            _context = context;
+            _random  = context.StreamFor(MapGenerator.FactionsLayer);
+        }
 
         public void Paint()
         {
@@ -29,7 +35,7 @@ namespace CGD.Map
                     return;
                 }
 
-                MapSlot origin = _context.Pick(origins);
+                MapSlot origin = _random.Pick(origins);
                 origins.Remove(origin);
                 Spread(faction, origin.NodeId);
             }

@@ -52,6 +52,7 @@ namespace CGD.Input
                 new() { Action = GameAction.Weapon2,           PrimaryPath = "<Keyboard>/2",                                       Mode = InputActionMode.Pressed },
                 new() { Action = GameAction.Weapon3,           PrimaryPath = "<Keyboard>/3",                                       Mode = InputActionMode.Pressed },
                 new() { Action = GameAction.Weapon4,           PrimaryPath = "<Keyboard>/4",                                       Mode = InputActionMode.Pressed },
+                new() { Action = GameAction.LockOn,            PrimaryPath = "<Mouse>/middleButton", SecondaryPath = "<Keyboard>/t", Mode = InputActionMode.Pressed },
             };
         }
     }

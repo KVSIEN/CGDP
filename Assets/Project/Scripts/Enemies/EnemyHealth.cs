@@ -1,6 +1,8 @@
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
+using CGD.Items;
+using CGD.Quests;
 using CGD.UI;
 
 namespace CGD.Enemies
@@ -12,13 +14,22 @@ namespace CGD.Enemies
         [SerializeField] private Vector3        _popupOffset = new Vector3(0f, 0.3f, 0f);
 
         public override Team  Team      => _data.Team;
-        public override float MaxHealth => _data.MaxHealth;
-        public override float Armor     => _data.Armor;
+        public override float MaxHealth => WithModifiers(ItemStat.Health, _data.MaxHealth);
+        public override float Armor     => WithModifiers(ItemStat.Armor, _data.Armor);
         public override float MaxShield => _data.MaxShield;
         protected override float ShieldRegenDelay => _data.ShieldRegenDelay;
         protected override float ShieldRegenRate  => _data.ShieldRegenRate;
 
         protected override Vector3 DefaultHitPoint => transform.position + Vector3.up * 1.5f;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            OnDeath += ReportKill;
+        }
+
+        // Kill objectives count enemies by their EnemyData.
+        private void ReportKill() => QuestEvents.Report(ObjectiveKind.Kill, _data);
 
         protected override void OnDamageTaken(float amount, Vector3 point, bool isCritical)
         {

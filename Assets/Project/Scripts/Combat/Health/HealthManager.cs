@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
+using CGD.Items;
 using CGD.Meters;
+using CGD.Stats;
 
 namespace CGD.Combat
 {
@@ -15,6 +17,7 @@ namespace CGD.Combat
         private Meter _shield;
         private float _armorReductionPercent;
         private StatusEffectController _statusEffects;
+        private CharacterStats _stats;
 
         public abstract Team  Team      { get; }
         public abstract float MaxHealth { get; }
@@ -47,6 +50,7 @@ namespace CGD.Combat
         protected virtual void Awake()
         {
             TryGetComponent(out _statusEffects);
+            TryGetComponent(out _stats);
             // The shield is a regenerating resource like any other, so it runs on Meter.
             _shield = new Meter(new MeterSettings(MaxShield, ShieldRegenRate, ShieldRegenDelay));
             ResetHealth();
@@ -88,6 +92,11 @@ namespace CGD.Combat
         }
 
         protected virtual void OnDamageTaken(float amount, Vector3 point, bool isCritical) { }
+
+        // A base value with this character's stat modifiers (buffs, difficulty) applied,
+        // for subclasses' MaxHealth/Armor. Unchanged when there's no CharacterStats.
+        protected float WithModifiers(ItemStat stat, float baseValue) =>
+            _stats != null ? _stats.Apply(stat, baseValue) : baseValue;
 
         private void ApplyDamage(DamageInfo info, float multiplier, Vector3 point, bool isCritical)
         {

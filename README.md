@@ -19,8 +19,8 @@ Assets/
     Art/                    Animations, Fonts, Materials, PhysicsMaterials, Shaders, Textures
     Audio/                  Music, SFX
     Data/                   ScriptableObject assets, one folder per feature
-      Abilities/  Audio/  Combat/  Enemies/  Flow/  Input/  Items/  Loot/  Map/  Meters/
-      Player/  Targeting/  UI/  Weapons/
+      Abilities/  Audio/  CameraEffects/  Combat/  Enemies/  Flow/  Input/  Items/  Loot/  Map/  Meters/
+      Player/  Quests/  Stats/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters, Environment, Pickups, UI, VFX, Weapons
     Scenes/                 Sandbox.unity (+ its baked NavMesh folder)
@@ -28,7 +28,9 @@ Assets/
       Abilities/            ability assets (incl. TargetedAbility) and the player's ability slots
       Audio/                audio pool, sound banks, surface lookup
       Combat/               Damage/, Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/, Projectile, Stunnable, Noise
-      Core/                 shared utilities (cooldowns, ranges, Culling/, Pooling/ — PrefabPool, IPoolable)
+      CameraEffects/        shake, kicks, FOV punches, lag, view blends (CameraEffectsController), CameraImpulses
+      Core/                 shared utilities (cooldowns, ranges, Culling/, Pooling/ — PrefabPool, IPoolable,
+                            Random/ — Seed, RandomStream, SeedVariants; StateMachine/ — StateMachine<T>, IState)
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window)
       Enemies/              enemy components, perception, and AI/ (state classes)
       Flow/                 GameFlow, GameState/GameStateMachine, settings and UI commands
@@ -38,8 +40,11 @@ Assets/
       Loot/                 LootTable, LootDropper, LootContainer
       Map/                  map graph data (Graph/: MapGraph, MapNode, analysis) and Generation/ (constraints, generator passes, validator)
       Meters/               generic resources (stamina, mana, oxygen…): Meter, MeterSet, MeterCost, MeterZone
-      Player/               movement, camera, health, lifecycle, player audio
+      Player/               movement, camera, lock-on, health, lifecycle, player audio
+      Quests/               quest/objective definitions, QuestLog, QuestTracker, QuestEvents, signals
+      Stats/                generic stat modifiers (ModifierSet, Stat, TimedModifiers), CharacterStats, presets
       Targeting/            TargetQuery, TargetFilter and TargetSelector assets (Selectors/)
+      Timing/               GameClock (fixed ticks, pause, time scale, scheduling) and GameTime
       UI/                   Common/ (UIFactory), HUD/, Menus/, World/ (popups, enemy bars)
       Weapons/              Ranged/, FireBehaviors/, Generation/, Melee/, Throwables/
     Settings/               URP assets, volume profiles, project-wide input actions

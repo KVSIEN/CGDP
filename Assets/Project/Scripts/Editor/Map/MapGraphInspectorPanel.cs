@@ -180,8 +180,31 @@ namespace CGD.Editor
                 EditorGUILayout.LabelField(type.ToString(), $"{graph.CountOf(type)}{limits}");
             }
 
+            DrawLayers(session);
             DrawMessages("Validation", session.Issues, MessageType.Warning, "No issues.");
             DrawMessages("Last generation", session.Asset.GenerationWarnings, MessageType.Info, null);
+        }
+
+        // Each generation layer can be rerolled on its own; everything else keeps its
+        // numbers. Later layers still react to a changed layout.
+        private static void DrawLayers(MapGraphEditorSession session)
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Seed layers", EditorStyles.miniBoldLabel);
+
+            using (new EditorGUI.DisabledScope(session.Asset.Settings == null))
+            {
+                foreach (string layer in MapGenerator.Layers)
+                {
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        EditorGUILayout.LabelField(layer, $"variant {session.Asset.LayerVariant(layer)}");
+                        if (!GUILayout.Button("Reroll", GUILayout.Width(60f))) continue;
+                        if (session.ConfirmDiscardEdits()) session.RerollLayer(layer);
+                        GUIUtility.ExitGUI();
+                    }
+                }
+            }
         }
 
         private static void DrawMessages(string title, IReadOnlyList<string> messages, MessageType type, string emptyText)

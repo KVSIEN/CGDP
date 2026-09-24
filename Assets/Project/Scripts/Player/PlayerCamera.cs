@@ -59,6 +59,10 @@ namespace CGD.Player
         [SerializeField] private float _sprintFOV = 80f;
         [SerializeField] private float _fovSpeed = 8f;
 
+        [Header("Lock-On")]
+        [Tooltip("Degrees per second the view turns toward a locked target")]
+        [SerializeField] private float _lockOnTurnSpeed = 360f;
+
         [Header("Mesh Visibility")]
         [SerializeField] private Renderer[] _firstPersonHideRenderers;
 
@@ -90,6 +94,8 @@ namespace CGD.Player
         private float _recoilOriginPitch;
         private float _recoilOriginYaw;
         private float _counterplayAccum;
+        private Transform _lockTarget;
+        private float     _lockHeight;
         [SerializeField] private float _counterplayThreshold = 2f;
 
         public bool    IsAimObstructed  { get; private set; }
@@ -99,6 +105,8 @@ namespace CGD.Player
         /// <summary>0 = hip, 1 = fully aimed. Used by WeaponController for spread/recoil scaling.</summary>
         public float AdsT     => _adsT;
 
+        public Transform LockTarget => _lockTarget;
+
         public float MouseSensitivity   => _mouseSensitivity;
         public float GamepadSensitivity => _gamepadSensitivity;
 
@@ -107,6 +115,16 @@ namespace CGD.Player
             _mouseSensitivity   = mouse;
             _gamepadSensitivity = gamepad;
         }
+
+        // Steers the aim toward target (at heightOffset above its pivot) until cleared.
+        // Real aim, not a visual effect: shots follow it. Look input still adds on top.
+        public void SetLockTarget(Transform target, float heightOffset)
+        {
+            _lockTarget = target;
+            _lockHeight = heightOffset;
+        }
+
+        public void ClearLockTarget() => _lockTarget = null;
 
         // Pushed by WeaponController on Equip so each weapon can carry its own aim
         // zoom (sniper vs pistol) and transition speed (heavy vs snappy). Non-positive
@@ -241,8 +259,25 @@ namespace CGD.Player
             if (_recoilYaw != 0f && Mathf.Abs(look.x) > 0.01f)
                 _recoilOriginYaw = _yaw;
 
+            SteerToLockTarget();
+
             _currentYaw = Mathf.SmoothDampAngle(_currentYaw, _yaw, ref _yawVelocity, _rotationSmoothing);
             _currentPitch = Mathf.SmoothDampAngle(_currentPitch, _pitch, ref _pitchVelocity, _rotationSmoothing);
+        }
+
+        private void SteerToLockTarget()
+        {
+            if (_lockTarget == null) return;
+
+            Vector3 toTarget = _lockTarget.position + Vector3.up * _lockHeight - transform.position;
+            if (toTarget.sqrMagnitude < 0.01f) return;
+
+            float targetYaw   = Mathf.Atan2(toTarget.x, toTarget.z) * Mathf.Rad2Deg;
+            float targetPitch = -Mathf.Asin(Mathf.Clamp(toTarget.normalized.y, -1f, 1f)) * Mathf.Rad2Deg;
+            float step        = _lockOnTurnSpeed * Time.deltaTime;
+
+            _yaw   = Mathf.MoveTowardsAngle(_yaw, targetYaw, step);
+            _pitch = Mathf.Clamp(Mathf.MoveTowardsAngle(_pitch, targetPitch, step), _minPitch, _maxPitch);
         }
 
         private void UpdateTransition()

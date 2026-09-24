@@ -19,6 +19,8 @@ namespace CGD.Core
 
         public float Evaluate() => Lerp(UnityEngine.Random.value);
 
+        public float Evaluate(RandomStream random) => Lerp(random.Value);
+
         // Samples at an explicit 0..1 position instead of a random one, applying the
         // same bias curve. Lets a caller decide where in the range a value lands
         // (see ItemRoll) while keeping authored bias meaningful.
@@ -30,5 +32,7 @@ namespace CGD.Core
 
         // Clamp the result to the range (guards against floating-point edge cases)
         public float EvaluateClamped() => Mathf.Clamp(Evaluate(), Min, Max);
+
+        public float EvaluateClamped(RandomStream random) => Mathf.Clamp(Evaluate(random), Min, Max);
     }
 }

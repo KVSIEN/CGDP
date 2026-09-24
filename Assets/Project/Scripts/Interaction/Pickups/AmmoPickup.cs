@@ -2,6 +2,7 @@ using UnityEngine;
 using CGD.Core;
 using CGD.Items;
 using CGD.Player;
+using CGD.Quests;
 
 namespace CGD.Interaction
 {
@@ -26,6 +27,7 @@ namespace CGD.Interaction
             if (!player.TryGetComponent(out PlayerInventory inventory)) return;
 
             inventory.Inventory.Add(_munition, _amount);
+            QuestEvents.Report(ObjectiveKind.Collect, _munition, _amount);
             PrefabPool.Release(gameObject);
         }
     }

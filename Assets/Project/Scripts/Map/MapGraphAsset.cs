@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Core;
 using UnityEngine;
 
 namespace CGD.Map
@@ -11,11 +12,17 @@ namespace CGD.Map
     //
     // Locked nodes survive regeneration: each becomes a pin, so the new map keeps a
     // node of that type at a similar depth with the same intensity.
+    //
+    // Each generation layer (MapGenerator.Layers) has a reroll counter on top of the
+    // seed, so one layer can be regenerated while the others stay exactly as they were.
     [CreateAssetMenu(fileName = "MapGraph", menuName = "CGD/Map/Map Graph")]
     public class MapGraphAsset : ScriptableObject
     {
         [SerializeField] private MapGenerationSettings _settings;
         [SerializeField] private int                   _seed;
+        [SerializeField, HideInInspector] private SeedVariants _layerVariants = new();
+        // The seed the layer variants belong to; they reset when generating from another.
+        [SerializeField, HideInInspector] private int          _variantsSeed;
         [SerializeField, HideInInspector] private MapGraph     _generated = new();
         [SerializeField, HideInInspector] private MapGraph     _graph     = new();
         [SerializeField, HideInInspector] private List<int>    _lockedNodeIds      = new();
@@ -28,6 +35,8 @@ namespace CGD.Map
         public MapGraph Generated => _generated;
 
         public IReadOnlyList<string> GenerationWarnings => _generationWarnings;
+
+        public int LayerVariant(string layer) => _layerVariants.VariantOf(layer);
 
         public bool IsLocked(int nodeId) => _lockedNodeIds.Contains(nodeId);
 
@@ -51,14 +60,36 @@ namespace CGD.Map
         }
 
         // Replaces both graphs. Hand edits are discarded; locked nodes are carried over.
+        // A different seed starts every layer from scratch; the same seed keeps any
+        // layer rerolls.
         public bool Regenerate(int seed)
         {
             if (_settings == null) return false;
+            if (seed != _variantsSeed) _layerVariants.Clear();
 
+            _seed         = seed;
+            _variantsSeed = seed;
+            Generate();
+            return true;
+        }
+
+        // Regenerates with new numbers for one layer only (see MapGenerator.Layers).
+        public bool RerollLayer(string layer)
+        {
+            if (_settings == null) return false;
+            if (_seed != _variantsSeed) _layerVariants.Clear();
+
+            _variantsSeed = _seed;
+            _layerVariants.Reroll(layer);
+            Generate();
+            return true;
+        }
+
+        private void Generate()
+        {
             List<MapNodePin> pins = BuildPins();
-            MapGenerationResult result = new MapGenerator(_settings).Generate(seed, pins);
+            MapGenerationResult result = new MapGenerator(_settings).Generate(CGD.Core.Seed.From(_seed), _layerVariants, pins);
 
-            _seed      = seed;
             _generated = result.Graph;
             _graph     = result.Graph.Clone();
 
@@ -68,7 +99,6 @@ namespace CGD.Map
                     _lockedNodeIds.Add(id);
 
             _generationWarnings = new List<string>(result.Warnings);
-            return true;
         }
 
         public void RevertEdits()

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Core;
 using UnityEngine;
 
 namespace CGD.Map
@@ -14,13 +15,18 @@ namespace CGD.Map
         private const int PlacementAttempts = 8;
 
         private readonly MapGenerationContext _context;
+        private readonly RandomStream         _random;
         private readonly List<int>            _mainPath = new();
         private readonly List<LaneSpan>       _occupiedLanes = new();
 
         // Rooms between Start and Boss; Boss sits at column RoomCount + 1.
         private int _roomCount;
 
-        public MapLayoutBuilder(MapGenerationContext context) => _context = context;
+        public MapLayoutBuilder(MapGenerationContext context)
+        {
+            _context = context;
+            _random  = context.StreamFor(MapGenerator.LayoutLayer);
+        }
 
         private MapGraph              Graph    => _context.Graph;
         private MapGenerationSettings Settings => _context.Settings;
@@ -30,12 +36,12 @@ namespace CGD.Map
         {
             BuildMainPath();
 
-            int branches = _context.Roll(Settings.BranchCount);
+            int branches = Settings.BranchCount.Evaluate(_random);
             for (int i = 0; i < branches; i++)
                 if (!TryAddBranch())
                     _context.Warnings.Add($"Only placed {i} of {branches} branches — raise Max Connections Per Node or the main path length.");
 
-            int shortcuts = _context.Roll(Settings.ShortcutCount);
+            int shortcuts = Settings.ShortcutCount.Evaluate(_random);
             for (int i = 0; i < shortcuts; i++)
                 if (!TryAddShortcut())
                     _context.Warnings.Add($"Only placed {i} of {shortcuts} shortcuts.");
@@ -43,7 +49,7 @@ namespace CGD.Map
 
         private void BuildMainPath()
         {
-            _roomCount = Mathf.Max(1, _context.Roll(Settings.MainPathLength));
+            _roomCount = Mathf.Max(1, Settings.MainPathLength.Evaluate(_random));
 
             AddMainNode(MapNodeType.Start, 0);
             for (int column = 1; column <= _roomCount; column++)
@@ -69,10 +75,10 @@ namespace CGD.Map
         {
             for (int attempt = 0; attempt < PlacementAttempts; attempt++)
             {
-                int attachColumn = _context.Random.Next(0, _roomCount + 1);
+                int attachColumn = _random.Range(0, _roomCount + 1);
                 if (IsFull(_mainPath[attachColumn])) continue;
 
-                AddBranch(attachColumn, Mathf.Max(1, _context.Roll(Settings.BranchLength)));
+                AddBranch(attachColumn, Mathf.Max(1, Settings.BranchLength.Evaluate(_random)));
                 return true;
             }
             return false;
@@ -90,7 +96,7 @@ namespace CGD.Map
 
             bool rejoins = rejoinColumn <= _roomCount
                         && !IsFull(_mainPath[rejoinColumn])
-                        && _context.Chance(Settings.BranchRejoinChance);
+                        && _random.Chance(Settings.BranchRejoinChance);
 
             int lane     = ClaimLane(firstColumn, lastColumn);
             int previous = _mainPath[attachColumn];
@@ -113,8 +119,8 @@ namespace CGD.Map
 
         private ConnectionType RollEntranceType()
         {
-            if (_context.Chance(Settings.LockedBranchChance)) return ConnectionType.Locked;
-            if (_context.Chance(Settings.SecretBranchChance)) return ConnectionType.Secret;
+            if (_random.Chance(Settings.LockedBranchChance)) return ConnectionType.Locked;
+            if (_random.Chance(Settings.SecretBranchChance)) return ConnectionType.Secret;
             return ConnectionType.Normal;
         }
 
@@ -123,8 +129,8 @@ namespace CGD.Map
         {
             for (int attempt = 0; attempt < PlacementAttempts; attempt++)
             {
-                int from = _context.Random.Next(0, _roomCount + 1);
-                int to   = from + _context.Random.Next(2, 4);
+                int from = _random.Range(0, _roomCount + 1);
+                int to   = from + _random.Range(2, 4);
                 if (to > _roomCount) continue;
 
                 int a = _mainPath[from];
@@ -142,7 +148,7 @@ namespace CGD.Map
         // aren't already used by another branch on that side.
         private int ClaimLane(int firstColumn, int lastColumn)
         {
-            int side = _context.Chance(0.5f) ? -1 : 1;
+            int side = _random.Sign();
             int lane = side;
 
             while (_occupiedLanes.Exists(s => s.Lane == lane && s.Overlaps(firstColumn, lastColumn)))

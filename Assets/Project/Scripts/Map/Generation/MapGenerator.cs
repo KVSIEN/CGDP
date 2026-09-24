@@ -1,15 +1,26 @@
 using System;
 using System.Collections.Generic;
+using CGD.Core;
 
 namespace CGD.Map
 {
     // Turns MapGenerationSettings and a seed into a MapGraph. Deterministic: the same
-    // settings, seed and pins always produce the same graph.
+    // settings, seed, layer variants and pins always produce the same graph.
     //
-    // Runs as separate passes — structure, types, intensity, factions — so each
-    // concern can be tuned or replaced without touching the others.
+    // Runs as separate passes — structure, types, intensity, factions — each with its
+    // own seed layer, so a layer can be rerolled (SeedVariants.Reroll) without changing
+    // the layers before it. Later layers read earlier results, so a new layout still
+    // changes the types placed on it.
     public class MapGenerator
     {
+        public const string LayoutLayer    = "layout";
+        public const string TypesLayer     = "types";
+        public const string IntensityLayer = "intensity";
+        public const string FactionsLayer  = "factions";
+
+        public static readonly IReadOnlyList<string> Layers =
+            new[] { LayoutLayer, TypesLayer, IntensityLayer, FactionsLayer };
+
         private readonly MapGenerationSettings _settings;
 
         public MapGenerator(MapGenerationSettings settings)
@@ -17,11 +28,11 @@ namespace CGD.Map
             _settings = settings != null ? settings : throw new ArgumentNullException(nameof(settings));
         }
 
-        public MapGenerationResult Generate(int seed) => Generate(seed, Array.Empty<MapNodePin>());
+        public MapGenerationResult Generate(Seed seed) => Generate(seed, null, Array.Empty<MapNodePin>());
 
-        public MapGenerationResult Generate(int seed, IReadOnlyList<MapNodePin> pins)
+        public MapGenerationResult Generate(Seed seed, SeedVariants variants, IReadOnlyList<MapNodePin> pins)
         {
-            var context = new MapGenerationContext(_settings, seed);
+            var context = new MapGenerationContext(_settings, seed, variants);
 
             new MapLayoutBuilder(context).Build();
 

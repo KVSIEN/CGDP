@@ -97,7 +97,7 @@ namespace CGD.Editor
             EditorGUILayout.LabelField($"Gear ({contents.Items.Count})", EditorStyles.miniBoldLabel);
 
             foreach (ItemInstance item in contents.Items)
-                EditorGUILayout.LabelField($"    {item.DisplayName}", $"{item.Tier} Q{item.Quality}");
+                EditorGUILayout.LabelField($"    {item.DisplayName}", $"{item.Tier} Q{item.Quality}  seed {item.Seed}");
         }
 
         private void DrawGrantControl(Inventory contents)

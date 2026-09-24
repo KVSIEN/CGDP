@@ -1,3 +1,4 @@
+using CGD.Core;
 using UnityEngine;
 
 namespace CGD.Items
@@ -30,10 +31,13 @@ namespace CGD.Items
         [Tooltip("Attachment slots granted per tier, indexed Common -> Legendary")]
         public int[] AttachmentSlotsPerTier = { 1, 1, 2, 3, 4 };
 
-        public ItemRoll Roll(ItemTier tier) => Roll(ItemTiers.RollQuality(tier));
+        public ItemRoll Roll(ItemTier tier, Seed seed) =>
+            Roll(ItemTiers.RollQuality(tier, seed.Derive(ItemRoll.QualityLayer).Stream()), seed);
 
-        public ItemRoll Roll(int quality)
+        public ItemRoll Roll(int quality, Seed seed)
         {
+            RandomStream random = seed.Derive(ItemRoll.StatsLayer).Stream();
+
             float q      = ItemTiers.Normalize(quality);
             float basis  = BaseFloor + BaseGain * q;
             float spread = Mathf.Max(0f, SpreadCeil - SpreadDecay * q);
@@ -45,7 +49,7 @@ namespace CGD.Items
             {
                 foreach (TradeoffAxis axis in Axes)
                 {
-                    float lean = Random.Range(-1f, 1f);
+                    float lean = random.Range(-1f, 1f);
                     Assign(axis.Gains, basis + lean * spread, desirability, onAxis);
                     Assign(axis.Costs, basis - lean * spread, desirability, onAxis);
                 }
@@ -54,10 +58,10 @@ namespace CGD.Items
             for (int i = 0; i < desirability.Length; i++)
             {
                 if (onAxis[i]) continue;
-                desirability[i] = Mathf.Clamp01(basis + Random.Range(-FreeStatVariance, FreeStatVariance));
+                desirability[i] = Mathf.Clamp01(basis + random.Range(-FreeStatVariance, FreeStatVariance));
             }
 
-            return new ItemRoll(quality, desirability);
+            return new ItemRoll(quality, desirability, seed);
         }
 
         public int AttachmentSlots(ItemTier tier)

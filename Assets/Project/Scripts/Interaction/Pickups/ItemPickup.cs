@@ -2,6 +2,7 @@ using UnityEngine;
 using CGD.Core;
 using CGD.Items;
 using CGD.Player;
+using CGD.Quests;
 
 namespace CGD.Interaction
 {
@@ -49,6 +50,8 @@ namespace CGD.Interaction
             if (_instance != null)           inventory.Inventory.Add(_instance);
             else if (_item != null)          inventory.Inventory.Add(_item, _count);
             else                             return;
+
+            QuestEvents.Report(ObjectiveKind.Collect, _item, _count);
 
             PrefabPool.Release(gameObject);
         }

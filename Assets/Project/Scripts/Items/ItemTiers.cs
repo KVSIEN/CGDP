@@ -19,7 +19,7 @@ namespace CGD.Items
             return new IntRange(max - BandSize + 1, max);
         }
 
-        public static int RollQuality(ItemTier tier) => QualityRange(tier).Evaluate();
+        public static int RollQuality(ItemTier tier, RandomStream random) => QualityRange(tier).Evaluate(random);
 
         public static ItemTier FromQuality(int quality) =>
             (ItemTier)((Clamp(quality) - 1) / BandSize);

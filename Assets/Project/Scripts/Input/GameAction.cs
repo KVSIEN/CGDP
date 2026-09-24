@@ -27,5 +27,6 @@ namespace CGD.Input
         Weapon2,
         Weapon3,
         Weapon4,
+        LockOn,
     }
 }

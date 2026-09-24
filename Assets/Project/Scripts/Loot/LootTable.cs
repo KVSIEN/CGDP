@@ -13,6 +13,9 @@ namespace CGD.Loot
     // can point at other tables, so shared pools ("common ammo", "boss uniques") are
     // authored once and nested. Gear rolled here gets its rarity from Tier Weights, which
     // luck skews toward the higher tiers.
+    //
+    // Every draw comes from one RandomStream, and each gear drop gets the stream's next
+    // seed, so rolling a table from the same seed yields the same drops, rolls and all.
     [CreateAssetMenu(fileName = "NewLootTable", menuName = "CGD/Loot/Loot Table")]
     public class LootTable : ScriptableObject
     {
@@ -37,41 +40,44 @@ namespace CGD.Loot
 
         // Appends this table's drops to results. Luck 0 = authored odds; positive luck makes
         // empty draws rarer and higher tiers likelier (1 = each tier step ×2).
-        public void Roll(List<LootDrop> results, float luck = 0f) => Roll(results, Mathf.Max(0f, luck), 0);
+        public void Roll(List<LootDrop> results, float luck = 0f) => Roll(results, luck, Seed.Random());
 
-        private void Roll(List<LootDrop> results, float luck, int depth)
+        public void Roll(List<LootDrop> results, float luck, Seed seed) =>
+            Roll(results, Mathf.Max(0f, luck), seed.Stream(), 0);
+
+        private void Roll(List<LootDrop> results, float luck, RandomStream random, int depth)
         {
             if (depth > MaxNesting) return;
 
             foreach (LootEntry entry in _guaranteed)
             {
-                if (entry != null && entry.IsValid) Resolve(entry, results, luck, depth);
+                if (entry != null && entry.IsValid) Resolve(entry, results, luck, random, depth);
             }
 
-            RollPool(results, luck, depth);
+            RollPool(results, luck, random, depth);
         }
 
-        private void RollPool(List<LootDrop> results, float luck, int depth)
+        private void RollPool(List<LootDrop> results, float luck, RandomStream random, int depth)
         {
             if (_pool.Length == 0) return;
 
             // Loot is rolled occasionally, not per frame; a small array keeps this readable.
             bool[] drawn   = _uniqueDraws ? new bool[_pool.Length] : null;
             float  nothing = _nothingWeight / (1f + luck);
-            int    draws   = _rolls.Evaluate();
+            int    draws   = _rolls.Evaluate(random);
 
             for (int i = 0; i < draws; i++)
             {
-                int index = Draw(drawn, nothing);
+                int index = Draw(drawn, nothing, random);
                 if (index < 0) continue;
 
                 if (drawn != null) drawn[index] = true;
-                Resolve(_pool[index], results, luck, depth);
+                Resolve(_pool[index], results, luck, random, depth);
             }
         }
 
         // Index of the drawn pool entry, or -1 for an empty draw.
-        private int Draw(bool[] drawn, float nothingWeight)
+        private int Draw(bool[] drawn, float nothingWeight, RandomStream random)
         {
             float total = nothingWeight;
             for (int i = 0; i < _pool.Length; i++)
@@ -79,7 +85,7 @@ namespace CGD.Loot
 
             if (total <= 0f) return -1;
 
-            float pick = UnityEngine.Random.value * total;
+            float pick = random.Value * total;
             for (int i = 0; i < _pool.Length; i++)
             {
                 pick -= WeightOf(i, drawn);
@@ -95,19 +101,19 @@ namespace CGD.Loot
             return entry.Weight;
         }
 
-        private void Resolve(LootEntry entry, List<LootDrop> results, float luck, int depth)
+        private void Resolve(LootEntry entry, List<LootDrop> results, float luck, RandomStream random, int depth)
         {
-            int count = entry.RollCount();
+            int count = entry.RollCount(random);
 
             switch (entry.Kind)
             {
                 case LootEntryKind.Item:
-                    AddItem(entry.Item, count, results, luck);
+                    AddItem(entry.Item, count, results, luck, random);
                     break;
 
                 case LootEntryKind.Table:
                     for (int i = 0; i < count; i++)
-                        entry.Table.Roll(results, luck, depth + 1);
+                        entry.Table.Roll(results, luck, random, depth + 1);
                     break;
 
                 case LootEntryKind.Prefab:
@@ -118,7 +124,7 @@ namespace CGD.Loot
         }
 
         // Stackables drop as one counted stack; gear rolls one unique piece per count.
-        private void AddItem(ItemDefinition item, int count, List<LootDrop> results, float luck)
+        private void AddItem(ItemDefinition item, int count, List<LootDrop> results, float luck, RandomStream random)
         {
             if (item is not GearDefinition gear)
             {
@@ -128,12 +134,12 @@ namespace CGD.Loot
 
             for (int i = 0; i < count; i++)
             {
-                ItemInstance instance = gear.CreateInstance(gear.Roll(RollTier(gear.Tier, luck)));
+                ItemInstance instance = gear.CreateInstance(gear.Roll(RollTier(gear.Tier, luck, random), random.NextSeed()));
                 if (instance != null) results.Add(LootDrop.Gear(instance));
             }
         }
 
-        private ItemTier RollTier(ItemTier fallback, float luck)
+        private ItemTier RollTier(ItemTier fallback, float luck, RandomStream random)
         {
             float total = 0f;
             foreach (TierWeight tier in _tierWeights)
@@ -141,7 +147,7 @@ namespace CGD.Loot
 
             if (total <= 0f) return fallback;
 
-            float pick = UnityEngine.Random.value * total;
+            float pick = random.Value * total;
             foreach (TierWeight tier in _tierWeights)
             {
                 pick -= LuckWeighted(tier, luck);

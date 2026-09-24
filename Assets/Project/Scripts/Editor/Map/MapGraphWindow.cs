@@ -120,12 +120,7 @@ namespace CGD.Editor
 
         private void TryRegenerate(int seed)
         {
-            bool confirmed = !_session.HasEdits() || EditorUtility.DisplayDialog(
-                "Regenerate map?",
-                "This replaces hand edits with a freshly generated graph. Locked nodes are kept.",
-                "Regenerate", "Cancel");
-
-            if (!confirmed) return;
+            if (!_session.ConfirmDiscardEdits()) return;
 
             _session.Regenerate(seed);
             _canvas.Frame(_session, new Vector2(position.width - PanelWidth, position.height));

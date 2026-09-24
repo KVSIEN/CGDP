@@ -18,6 +18,8 @@ namespace CGD.Core
 
         public int Evaluate() => Lerp(UnityEngine.Random.value);
 
+        public int Evaluate(RandomStream random) => Lerp(random.Value);
+
         // Samples at an explicit 0..1 position instead of a random one, applying the
         // same bias curve. See FloatRange.Lerp.
         public int Lerp(float t)

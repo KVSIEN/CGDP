@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Core;
 using UnityEngine;
 
 namespace CGD.Map
@@ -15,12 +16,17 @@ namespace CGD.Map
         private const float DeadEndWeightMultiplier = 4f;
 
         private readonly MapGenerationContext          _context;
+        private readonly RandomStream                  _random;
         private readonly HashSet<int>                  _assigned  = new();
         private readonly Dictionary<MapNodeType, int>  _counts    = new();
         private readonly List<int>                     _neighbors = new();
         private readonly List<MapSlot>                 _candidates = new();
 
-        public MapTypeAssigner(MapGenerationContext context) => _context = context;
+        public MapTypeAssigner(MapGenerationContext context)
+        {
+            _context = context;
+            _random  = context.StreamFor(MapGenerator.TypesLayer);
+        }
 
         // Node id each pin landed on, or MapGenerationResult.PinNotPlaced.
         public List<int> PinnedNodeIds { get; } = new();
@@ -104,7 +110,7 @@ namespace CGD.Map
                 if (_candidates.Count == 0)
                     CollectCandidates(rule, deadEndsOnly: false);
 
-                SetType(_context.Pick(_candidates), rule.Type);
+                SetType(_random.Pick(_candidates), rule.Type);
             }
         }
 
@@ -142,7 +148,7 @@ namespace CGD.Map
                 if (!_assigned.Contains(slot.NodeId))
                     _candidates.Add(slot);
 
-            Shuffle(_candidates);
+            _random.Shuffle(_candidates);
 
             foreach (MapSlot slot in _candidates)
                 SetType(slot, RollType(slot));
@@ -156,7 +162,7 @@ namespace CGD.Map
 
             if (total <= 0f) return Settings.FillType;
 
-            float roll = _context.NextFloat() * total;
+            float roll = _random.Value * total;
             foreach (MapNodeTypeRule rule in Settings.NodeRules)
             {
                 roll -= FillWeight(rule, slot);
@@ -200,14 +206,5 @@ namespace CGD.Map
         }
 
         private int CountOf(MapNodeType type) => _counts.TryGetValue(type, out int count) ? count : 0;
-
-        private void Shuffle(List<MapSlot> slots)
-        {
-            for (int i = slots.Count - 1; i > 0; i--)
-            {
-                int j = _context.Random.Next(i + 1);
-                (slots[i], slots[j]) = (slots[j], slots[i]);
-            }
-        }
     }
 }

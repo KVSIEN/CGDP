@@ -12,6 +12,8 @@ namespace CGD.Enemies
         [SerializeField] private Color _patrolColor = new Color(0.5f, 0.5f, 0.5f);
         [SerializeField] private Color _alertColor  = new Color(1f,   0.8f, 0f  );
         [SerializeField] private Color _chaseColor  = new Color(1f,   0.15f, 0.15f);
+        [SerializeField] private Color _stunnedColor = new Color(0.3f, 0.6f, 1f);
+        [SerializeField] private Color _deadColor    = new Color(0.15f, 0.15f, 0.15f);
 
         private static readonly int ColorId = Shader.PropertyToID("_BaseColor");
 
@@ -36,9 +38,11 @@ namespace CGD.Enemies
         {
             Color color = state switch
             {
-                EnemyAI.AiState.Alert => _alertColor,
-                EnemyAI.AiState.Chase => _chaseColor,
-                _                     => _patrolColor,
+                EnemyAI.AiState.Alert   => _alertColor,
+                EnemyAI.AiState.Chase   => _chaseColor,
+                EnemyAI.AiState.Stunned => _stunnedColor,
+                EnemyAI.AiState.Dead    => _deadColor,
+                _                       => _patrolColor,
             };
 
             _mpb.SetColor(ColorId, color);

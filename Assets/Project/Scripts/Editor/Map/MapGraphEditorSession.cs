@@ -200,6 +200,21 @@ namespace CGD.Editor
             Changed();
         }
 
+        public void RerollLayer(string layer)
+        {
+            Record($"Reroll Map {layer}");
+            _asset.RerollLayer(layer);
+            ClearSelection();
+            Changed();
+        }
+
+        // True when there's nothing to lose, or the user agreed to lose it.
+        public bool ConfirmDiscardEdits() =>
+            !HasEdits() || EditorUtility.DisplayDialog(
+                "Regenerate map?",
+                "This replaces hand edits with a freshly generated graph. Locked nodes are kept.",
+                "Regenerate", "Cancel");
+
         public void RevertEdits()
         {
             Record("Revert Map Edits");

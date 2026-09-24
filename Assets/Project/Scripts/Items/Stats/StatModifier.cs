@@ -1,9 +1,11 @@
 using System;
+using CGD.Stats;
 
 namespace CGD.Items
 {
-    // One stat change contributed by an attachment. Value may be negative, which is
-    // how an attachment carries a drawback alongside its benefit.
+    // One authored stat change — on an attachment, or in a StatModifierPreset. Value may
+    // be negative, which is how an attachment carries a drawback alongside its benefit.
+    // At runtime it becomes a Modifier in a ModifierSet (see CGD.Stats).
     [Serializable]
     public struct StatModifier
     {

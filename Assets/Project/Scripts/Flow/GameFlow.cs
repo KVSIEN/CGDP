@@ -3,13 +3,14 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using CGD.Core;
+using CGD.Timing;
 
 namespace CGD.Flow
 {
     // Owns the game's high-level state (menu, playing, paused, loading, game over...) and
-    // everything that has to change with it: time scale, world audio, the cursor and
-    // scene loading. Gameplay and UI ask it to change state; they never touch
-    // Time.timeScale or SceneManager themselves.
+    // everything that has to change with it: pausing game time, world audio, the cursor
+    // and scene loading. Gameplay and UI ask it to change state; they never pause the
+    // clock or touch SceneManager themselves. Time itself belongs to GameTime.
     //
     // Persists across scene loads. Every scene may contain one so it can be played
     // straight from the editor — the first to wake up wins and later copies remove
@@ -65,7 +66,7 @@ namespace CGD.Flow
             if (Instance != this) return;
 
             Instance = null;
-            Time.timeScale      = 1f;
+            if (GameTime.Exists) GameTime.Instance.Clock.Resume(this);
             AudioListener.pause = false;
         }
 
@@ -147,7 +148,8 @@ namespace CGD.Flow
         private void OnStateChanged(GameState previous, GameState next)
         {
             bool paused = next == GameState.Paused;
-            Time.timeScale      = paused ? 0f : 1f;
+            if (paused) GameTime.Instance.Clock.Pause(this);
+            else        GameTime.Instance.Clock.Resume(this);
             AudioListener.pause = paused && _settings.PauseAudio;
             CursorLock.Set(next == GameState.Playing);
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.CameraEffects;
 using CGD.Combat;
 using CGD.Core;
 
@@ -64,6 +65,7 @@ namespace CGD.Weapons
 
             _data.ExplosionSound?.Play(transform.position);
             Noise.Emit(transform.position, _data.NoiseRadius, _source);
+            CameraImpulses.Emit(transform.position, _data.ShakeRadius, _data.CameraTrauma);
             _initialized = false;
             PrefabPool.Release(gameObject);
         }

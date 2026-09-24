@@ -1,3 +1,4 @@
+using CGD.Core;
 using UnityEngine;
 
 namespace CGD.Items
@@ -21,12 +22,13 @@ namespace CGD.Items
         public StatRollProfile RollProfile => _rollProfile;
         public StatRange[]     StatRanges  => _statRanges;
 
-        public ItemRoll Roll() => Roll(Tier);
+        public ItemRoll Roll() => Roll(Tier, Seed.Random());
 
         // Rolls at a specific tier instead of the definition's own — how loot tables
-        // express rarity (the same rifle can drop Common or Legendary).
-        public ItemRoll Roll(ItemTier tier) =>
-            _rollProfile != null ? _rollProfile.Roll(tier) : ItemRoll.Unrolled();
+        // express rarity (the same rifle can drop Common or Legendary). The same tier and
+        // seed always give the same roll.
+        public ItemRoll Roll(ItemTier tier, Seed seed) =>
+            _rollProfile != null ? _rollProfile.Roll(tier, seed) : ItemRoll.Unrolled(seed);
 
         public int AttachmentSlots(ItemTier tier) =>
             _rollProfile != null ? _rollProfile.AttachmentSlots(tier) : 0;

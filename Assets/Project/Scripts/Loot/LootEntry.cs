@@ -29,6 +29,6 @@ namespace CGD.Loot
         };
 
         // At least one: an entry that was picked should drop something.
-        public int RollCount() => Mathf.Max(1, Count.Evaluate());
+        public int RollCount(RandomStream random) => Mathf.Max(1, Count.Evaluate(random));
     }
 }

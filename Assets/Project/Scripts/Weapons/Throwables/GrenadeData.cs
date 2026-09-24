@@ -27,6 +27,11 @@ namespace CGD.Weapons
         [Tooltip("How far away enemies hear it (0 = silent)")]
         public float NoiseRadius = 50f;
 
+        [Header("Camera")]
+        [Tooltip("Shake at the blast centre (0..1), fading to nothing at Shake Radius")]
+        [Range(0f, 1f)] public float CameraTrauma = 0.8f;
+        public float ShakeRadius = 25f;
+
         [Header("On Hit")]
         [Tooltip("Status effects each hit may apply")]
         public StatusEffectApplication[] OnHitEffects;

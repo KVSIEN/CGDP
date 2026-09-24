@@ -12,7 +12,7 @@ the end). Folder layout is described in `README.md`.
 
 ```
 GameManager                  [VisibilityCullingManager, AudioPool, PoolPrewarmer?]
-GameFlow                     [GameFlow]   (its own root GameObject — see Game Flow below)
+GameFlow                     [GameFlow, GameTime?]   (its own root GameObject — see Game Flow below)
 RespawnPoint                 (empty transform — spawn point for PlayerLifecycle)
 EventSystem                  (Unity default: EventSystem, InputSystemUIInputModule)
 Directional Light            (Light + UniversalAdditionalLightData)
@@ -36,10 +36,12 @@ Player                       [PlayerInputHandler, PlayerHealth, PlayerMovement,
                                WeaponController, PlayerWeaponLoadout,
                                MeleeController, GrenadeController,
                                PlayerLifecycle, PlayerFootsteps, PlayerAudio,
-                               Stunnable, StatusEffectController]
+                               Stunnable, StatusEffectController,
+                               CharacterStats?, QuestTracker?, PlayerLockOn?]
   Rigidbody + CapsuleCollider on the Player root (required by PlayerMovement/PlayerDodge/PlayerMantle)
   - CameraRig
-    - Main Camera             [Camera, UniversalAdditionalCameraData, PlayerCamera]
+    - Main Camera             [Camera, UniversalAdditionalCameraData, PlayerCamera,
+                               CameraEffectsController?]
       - WeaponRig              [WeaponVisuals]
         - Weapon               [WeaponAimPose] (gun mesh — no colliders on it or its children)
           - Muzzle             (empty transform — fire origin)
@@ -59,7 +61,7 @@ Wiring, by component:
 - **PlayerAbilities** — assign `_health` = Player's `PlayerHealth`, `_cameraTransform` = Main Camera, and `_slots[0..3]` = ability assets (`DashAbility.asset`, `HealAbility.asset`, `ProjectileAbility.asset`, `ShockwaveAbility.asset`, or `None` for an empty slot).
 - **PlayerInteraction** — assign `_forwardReference` = Main Camera. `_requireLineOfSight` (default on) ignores interactables behind anything on `_occlusionMask`.
 - **PlayerInventory** — assign `_startingStacks[]` = the stackable items the player spawns with, each a `Definition` (e.g. a `MunitionDefinition` such as `StandardMunitions`) plus a `Count`. Leave it empty to spawn with nothing — there is no implicit starting ammo, so a weapon's reserve reads 0 until a munition stack is listed here or an `AmmoPickup` is collected. Holds the shared `Inventory` that ammo pools, loot drops and consumables all flow through. The `Inventory` itself is a plain C# class and cannot appear in the Inspector; its live contents are shown in play mode by `PlayerInventoryEditor`, which also offers a debug "Add to Inventory" control.
-- **WeaponController** — assign `_input` = Player, `_camera` = PlayerCamera, `_crosshair` = HUD's Crosshair object, `_muzzle` = Muzzle, `_visuals` = WeaponVisuals on WeaponRig. `_inventory` auto-resolves via `GetComponentInParent` if not wired. It fires whatever `PlayerWeaponLoadout` equips — no weapon asset is assigned here.
+- **WeaponController** — assign `_input` = Player, `_camera` = PlayerCamera, `_crosshair` = HUD's Crosshair object, `_muzzle` = Muzzle, `_visuals` = WeaponVisuals on WeaponRig, `_cameraEffects` = Main Camera's `CameraEffectsController` (optional — a view kick per shot). `_inventory` auto-resolves via `GetComponentInParent` if not wired. It fires whatever `PlayerWeaponLoadout` equips — no weapon asset is assigned here.
 - **PlayerWeaponLoadout** — assign `_startingWeapons[0..3]` = `WeaponData` assets, e.g. `DefaultWeaponData` (optional — empty slots are filled by pickups). Must share the GameObject with `WeaponController` and `PlayerHealth` (it refills weapons when the player is revived).
 - **MeleeController** — assign `_camera` = PlayerCamera, `_data` = a `MeleeWeaponData` asset. No other wiring — resolves `PlayerInputHandler`/`PlayerMovement` via `GetComponent` on the same object.
 - **GrenadeController** — assign `_camera` = PlayerCamera, `_data` = a `GrenadeData` asset (which in turn needs a `GrenadePrefab` — see below). No other wiring — resolves `PlayerInputHandler`/`PlayerMovement`/`Collider` via `GetComponent` on the same object.
@@ -69,6 +71,10 @@ Wiring, by component:
 - **PlayerFootsteps** — assign `_surfaces` = `SurfaceDatabase.asset`. Step intervals (`_walkInterval`, `_sprintInterval`, `_crouchInterval`) and `_groundMask` are tunable; defaults are fine to start. No other wiring — resolves `PlayerMovement` via `GetComponent`.
 - **PlayerAudio** — assign `_health` = Player's `PlayerHealth`, `_hurtSound` / `_deathSound` = `SoundBank` assets (optional — silent when unassigned).
 - **PlayerLifecycle** — assign `_health`, `_movement`, `_abilities`, `_input` = the matching Player components, `_hud` = HUD's `HUDManager`, `_spawnPoint` = `RespawnPoint`, `_deathScreen` = a death-screen UI object if one exists (optional). Tick `_gameOverOnDeath` to end the run through `GameFlow` (state GameOver) instead of respawning — ignored when the scene has no `GameFlow`.
+- **CharacterStats** (optional) — holds the player's stat modifiers (buffs, debuffs). No references required; list permanent `_presets` if any. Needed for the `DamageBoostAbility` (a `StatBuffAbility`) to do anything; `PlayerHealth` and `WeaponController` read through it when present.
+- **QuestTracker** (optional) — list `_quests` = every `QuestDefinition` this scene can run, chained quests included (e.g. `Data/Quests/TargetPracticeQuest`, `ResupplyQuest`). `_inventory` (where rewards go) is found on the Player if left empty. Pair it with a `QuestHUD` under the HUD.
+- **PlayerLockOn** (optional) — assign `_camera` = Main Camera's `PlayerCamera`, `_selector` = `Data/Targeting/DefaultConeTargetSelector` (or any `TargetSelector`). Bound to the `LockOn` action (middle mouse / T). Resolves `PlayerInputHandler` and `PlayerHealth` via `GetComponent`, so it must sit on the Player root.
+- **CameraEffectsController** (optional, on Main Camera next to `PlayerCamera`) — assign `_settings` = `Data/CameraEffects/DefaultCameraEffectSettings` (defaults are used without one) and `_shakeOnDamageOf` = Player's `PlayerHealth` (optional). Picks up explosion shake by itself (`CameraImpulses`). Must be on the GameObject with the `Camera` component — effects are applied only while that camera renders.
 - **MeterSet** (optional) — add to the Player root and list `_definitions` = the resource meters the player has (`StaminaMeter`, `ManaMeter`, `OxygenMeter`, `RageMeter` from `Data/Meters/`). Resets every meter when `PlayerHealth` revives. Required as soon as anything charges a meter:
   - Sprint/dodge stamina: on `PlayerMovementSettings.asset` set `SprintCost` (per second) and/or `DodgeCost` → `Meter` = `StaminaMeter`. Leave `Meter` empty for free sprinting/dodging (the default).
   - Ability costs: set `Cost` → `Meter` + `Amount` on an ability asset.
@@ -91,6 +97,7 @@ HUD                           [Canvas, CanvasScaler, GraphicRaycaster, HUDManage
   - Velocity                   [VelocityHUD]
   - StatusEffects              [StatusEffectHUD]
   - Meters                     [MeterHUD]          (optional)
+  - Quests                     [QuestHUD]          (optional)
   - PausePanel / GameOverPanel / LoadingPanel      (optional — see Game Flow)
 ```
 
@@ -112,6 +119,7 @@ Don't leave stray instances of either parented under the HUD canvas.
 - **ItemInventoryHUD** — assign `_input` = Player, `_inventory` = Player's `PlayerInventory` (auto-resolved by scene lookup if left unset). Requires a `CanvasGroup` on the same object. Opens/closes on the same Inventory action as `InventoryHUD` — both panels sit as siblings under the HUD canvas.
 - **InteractHUD** — assign `_interaction` = Player's `PlayerInteraction`. Builds its own world-space prompt via `UIOverlayCamera.GetOrCreate()` — no manual camera setup needed.
 - **MeterHUD** — assign `_meters` = Player's `MeterSet`. One bar per listed meter, stacked above the health panel (`_screenPadding`); hides itself when the player has no meters.
+- **QuestHUD** — assign `_tracker` = Player's `QuestTracker`. Top-left under the HUD's other panels (`_screenPadding`); hidden while no quest is active.
 - **WeaponPickupHUD** — assign `_interaction` = Player's `PlayerInteraction`. Requires a `CanvasGroup`. Screen-anchored top-right; builds itself in `Awake` and only shows when the current interactable is a `WeaponPickup`. No wiring per pickup — stats are read from the pickup's `WeaponInstance` directly.
 
 `InventoryHUD`, `ItemInventoryHUD`, `InteractHUD` and `WeaponPickupHUD` are excluded from `HUDManager.ShowAll()`/it only
@@ -140,7 +148,12 @@ GameFlow                      [GameFlow]          (root GameObject, nothing else
 - Assign `_settings` = `Data/Flow/GameFlowSettings.asset` (optional — without it there is no menu scene and no transition delays). In the settings, `_mainMenuScene` names the menu scene (leave empty until one exists) and `_firstLevelScene` the level "Start Game" loads. Every scene loaded by name must be in the Build Profile's scene list.
 - Scene objects never reference `GameFlow` directly (it may come from an earlier scene). UI buttons call a **GameFlowCommands** component in their own scene instead: add it to any object (e.g. the menu canvas) and point `Button.onClick` at `GameFlowCommands.Resume`, `RestartLevel`, `LoadMainMenu`, `StartGame`, `LoadScene(string)`, `Quit`…
 - **GameStateView** — shows a UI object only in chosen states. Put it on an always-active object (e.g. the HUD canvas root or its own empty child), set `_target` = the panel to toggle (**not** the object holding the view), and `_visibleIn` = e.g. `Paused` for a pause panel, `GameOver` for a game-over screen, `Loading` + `LevelTransition` for a loading screen.
-- Time scale, `AudioListener.pause` and the cursor lock are owned by `GameFlow` — don't set them elsewhere.
+- `AudioListener.pause` and the cursor lock are owned by `GameFlow` — don't set them elsewhere. Pausing goes through the game clock (below).
+
+### Game Time
+
+- **GameTime** (optional) — add to the `GameFlow` GameObject and assign `_settings` = `Data/Timing/GameTimeSettings` (tick rate, max ticks per frame, physics-step scaling). Without one, the first system that needs game time creates a `GameTime` with default settings (60 ticks/s) under `DontDestroyOnLoad`. Like `GameFlow`, the first instance wins and later copies remove themselves.
+- `GameTime` owns `Time.timeScale` (and scales `Time.fixedDeltaTime` with it). Nothing else may write `Time.timeScale`: pause with `GameTime.Instance.Clock.Pause(owner)`/`Resume(owner)` and slow time with `Clock.RequestScale(...)`. `GameFlow` pauses through it.
 
 ## Enemy
 
@@ -152,7 +165,9 @@ Enemy                         [NavMeshAgent, EnemyAI, EnemyStateVisuals, EnemyHe
 
 - Requires baked NavMesh (`NavMesh Surface` in the scene, baked over the walkable ground).
 - **EnemyAI** — assign `_data` = the enemy's `EnemyData` asset (e.g. `DefaultEnemyData`), `_waypoints` = patrol point transforms (optional — idles if empty), `_targetMask` = layers hostile characters are on (default Everything), `_obstacleMask` = geometry layers that block line-of-sight. No player reference — targets are found by team. Requires `Stunnable` (added automatically). Set `CombatType` to `Melee` or `Ranged` on the `EnemyData` asset — ranged enemies use additional fields (`PreferredRange`, `SpreadAngle`, `BurstCount`, `BurstInterval`, `StrafeInterval`, `StrafeDistance`, `RangedAttackSound`).
-- **EnemyStateVisuals** (optional) — assign `_renderers` = the enemy's renderer(s) for the patrol/alert/chase color tint.
+- **EnemyStateVisuals** (optional) — assign `_renderers` = the enemy's renderer(s) for the patrol/alert/chase/stunned/dead color tint.
+- **CharacterStats** (optional) — list `_presets` = e.g. `Data/Stats/HardDifficultyModifierPreset` to make this enemy tougher. `EnemyHealth` (health, armor) and `EnemyAI` (attack damage) read through it when present.
+- **Kill objectives** — `EnemyHealth` reports each death with its `EnemyData`, so a Kill objective targets the `EnemyData` asset (e.g. `TargetDummyEnemyData`). Nothing to wire.
 - **EnemyHealth** — assign `_data` = the same `EnemyData` asset, `_healthBar` = the `EnemyHealthBar` on the same object, `_hitboxProfile` = a `HitboxProfile` asset, e.g. `DefaultHitboxProfile` (optional — see Hitboxes).
 - **EnemyHealthBar** — no references required; it builds its own world-space canvas in `Awake`.
 - **EnemyAudio** — assign `_hurtSound` / `_deathSound` = `SoundBank` assets (optional — silent when unassigned). No other wiring — resolves `EnemyHealth` via `GetComponent`.
@@ -194,7 +209,7 @@ Crate (any name)              [Collider (solid), Destructible, LootDropper, Desp
 ```
 
 - **WeaponPickup** — assign `_data` = a fixed `WeaponData` asset, **or**
-- add **RandomWeaponPickup** alongside it and assign `_categories` = one or more `WeaponCategoryData` assets (`AssaultRifleCategory`, `SubMachineGunCategory`, `PistolCategory`, `SniperCategory`, `ShotgunCategory`, `LightMachineGunCategory` — the scene's pickups don't list `SniperCategory` yet) plus `_fixedIndex = -1` for a random pick.
+- add **RandomWeaponPickup** alongside it and assign `_categories` = one or more `WeaponCategoryData` assets (`AssaultRifleCategory`, `SubMachineGunCategory`, `PistolCategory`, `SniperCategory`, `ShotgunCategory`, `LightMachineGunCategory` — the scene's pickups don't list `SniperCategory` yet) plus `_fixedIndex = -1` for a random pick. Optional `_seed`: any number or text makes the pickup offer the same weapon (and category) every time; empty = random.
 - **AmmoPickup** — assign `_munition` = a `MunitionDefinition` asset (this decides which shared `AmmoType` pool the rounds land in) and `_amount` (rounds granted; default 30). Adds to the interacting player's `PlayerInventory`, not to the equipped weapon — any weapon drawing that caliber sees the rounds.
 - **HealthPickup** — assign `_amount` (health restored; default 25). No reference wiring — finds `PlayerHealth` via `GetComponent` on the interacting player.
 - **Door** — place the GameObject's pivot at the hinge edge, not the center (the whole object rotates in place). Assign `_openAngle`/`_openSpeed` as needed, and `_holdDuration` > 0 to require holding E. Directly interactable with E; a `Switch` can also toggle it via `Toggle()`.
@@ -261,6 +276,13 @@ DamageSource + LayerMask at spawn time.
 
 ---
 
+## Quests
+
+- Quests are `QuestDefinition` assets (**Create › CGD › Quests › Quest**) run by the Player's `QuestTracker` (see Player Rig) and shown by `QuestHUD`.
+- Objective targets: **Kill** → an `EnemyData`; **Collect** → an `ItemDefinition` (counted when an `ItemPickup`/`AmmoPickup` is collected); **Signal** → a `QuestSignal` asset.
+- Raising a signal from the scene: point any UnityEvent (e.g. `EventInteractable`, `Switch`) at the `QuestSignal` asset's `Raise()`, or add a **QuestSignalTrigger** (trigger `Collider` + `_signal`) for "reach this place" objectives — it fires when the Player enters.
+- Quests that aren't auto-start are started by `QuestTracker.StartQuest(QuestDefinition)` — callable from a UnityEvent.
+
 ## Map Graph
 
 Editor-only for now: nothing in a scene references the map graph yet. A later stage
@@ -293,7 +315,7 @@ that turns the graph into rooms will read `MapGraphAsset.Graph`.
 | `Items/DefaultStatRollProfile` (optional — assign to each `WeaponCategoryData`'s `RollProfile`; without one, stats roll uniformly and quality is ignored) | `WeaponCategoryData`, `ArmorDefinition` |
 | `Weapons/FireBehaviors/` (`HitscanFireBehavior`, `ShotgunFireBehavior`, `ProjectileFireBehavior` → `Prefabs/Weapons/Projectile`) — as authored, AR/SMG/Pistol/Sniper/LMG categories all point at `ProjectileFireBehavior`, and `ShotgunFireBehavior` has `Projectile Pellets` ticked with `Prefab` = `Prefabs/Weapons/ShotgunPellet` (speed 400, lifetime 2, gravity 0, instant-hit 0.02); `HitscanFireBehavior` is assigned to nothing but stays available. Unticking `Projectile Pellets`, or clearing that prefab, drops the shotgun back to raycast pellets | assigned on each `WeaponCategoryData` / `WeaponData` `FireBehavior` |
 | `Combat/ActionTimelines/` (ActionTimeline assets — e.g. `SwordSlash`, `GroundSlam`) | `MeleeAttackStep.Timeline`, `TimelineAbility.Timeline` |
-| `Abilities/` (`DashAbility`, `HealAbility`, `ProjectileAbility` → `Prefabs/Weapons/Projectile`, `ShockwaveAbility`, `TimelineAbility` → ActionTimeline asset) — each has `MaxCharges` and `CastTime` | `PlayerAbilities._slots` |
+| `Abilities/` (`DashAbility`, `HealAbility`, `ProjectileAbility` → `Prefabs/Weapons/Projectile`, `ShockwaveAbility`, `TimelineAbility` → ActionTimeline asset, `DamageBoostAbility` → `DamageBoostModifierPreset`, needs `CharacterStats` on the Player) — each has `MaxCharges` and `CastTime` | `PlayerAbilities._slots` |
 | `Weapons/Melee/DefaultMeleeWeaponData` | `MeleeController` |
 | `Weapons/Throwables/DefaultGrenadeData` (its `GrenadePrefab` — `Prefabs/Weapons/FragGrenade` — needs a `Rigidbody` + non-trigger `Collider` + `Grenade` component) | `GrenadeController` |
 | `Meters/` (`StaminaMeter`, `ManaMeter`, `OxygenMeter`, `RageMeter`) | `MeterSet._definitions`, `MeterCost` fields (`PlayerMovementSettings.SprintCost`/`DodgeCost`, `Ability.Cost`), `MeterZone._meter` |
@@ -302,6 +324,10 @@ that turns the graph into rooms will read `MapGraphAsset.Graph`.
 | `Loot/DefaultLootTable` (ammo of every caliber, occasional rolled AR/SMG, rarity odds 60/25/10/4/1) | `LootDropper._table` |
 | `Map/DefaultMapGenerationSettings` (constraints: path/branch shape, room-type rules, intensity curve, factions) | `MapGraphAsset._settings` |
 | `Map/<Name>MapGraph` (per map — `SandboxMapGraph`) | Map Graph window; nothing in a scene yet |
+| `Timing/GameTimeSettings` (optional — 60 ticks/s, 8 ticks max per frame, physics step scales with time) | `GameTime._settings` |
+| `Stats/<Name>ModifierPreset` (`HardDifficultyModifierPreset` — enemy health +50%, damage +25%; `DamageBoostModifierPreset` — damage +30%) | `CharacterStats._presets`, `StatBuffAbility.Buff` |
+| `Quests/<Name>Quest` (`TargetPracticeQuest` → unlocks `ResupplyQuest`) and `Quests/<Name>QuestSignal` (`ShootingRangeClearedQuestSignal`, not used by a quest yet) | `QuestTracker._quests`; signals are raised from UnityEvents or `QuestSignalTrigger` |
+| `CameraEffects/DefaultCameraEffectSettings` (optional — shake, kick spring, FOV recovery, lag, damage shake) | `CameraEffectsController._settings` |
 | `Audio/DefaultSurfaceDatabase` (empty until surface `SoundBank`s exist) | `PlayerFootsteps` |
 | `SoundBank` assets (per sound — weapon fire/reload/empty, melee swing/hit, grenade throw/explosion, player hurt/death, enemy hurt/death/attack/ranged-attack, footstep walk/sprint/crouch per surface) | Various — all optional; systems work silently without them |
 

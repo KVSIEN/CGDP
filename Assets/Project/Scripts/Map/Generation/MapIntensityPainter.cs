@@ -1,3 +1,5 @@
+using CGD.Core;
+
 namespace CGD.Map
 {
     // Intensity = the depth curve, plus the type's bonus, plus a little jitter so
@@ -5,8 +7,13 @@ namespace CGD.Map
     internal class MapIntensityPainter
     {
         private readonly MapGenerationContext _context;
+        private readonly RandomStream         _random;
 
-        public MapIntensityPainter(MapGenerationContext context) => _context = context;
+        public MapIntensityPainter(MapGenerationContext context)
+        {
+            _context = context;
+            _random  = context.StreamFor(MapGenerator.IntensityLayer);
+        }
 
         public void Paint()
         {
@@ -29,7 +36,7 @@ namespace CGD.Map
             }
 
             float bonus  = settings.GetRule(type)?.IntensityBonus ?? 0f;
-            float jitter = (_context.NextFloat() * 2f - 1f) * settings.IntensityJitter;
+            float jitter = _random.Range(-1f, 1f) * settings.IntensityJitter;
             return settings.BaseIntensity(progress) + bonus + jitter;
         }
     }

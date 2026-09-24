@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using CGD.CameraEffects;
 using CGD.Combat;
 using CGD.Core;
 using CGD.Input;
 using CGD.Items;
 using CGD.Player;
+using CGD.Stats;
 using CGD.UI;
 
 namespace CGD.Weapons
@@ -18,6 +20,8 @@ namespace CGD.Weapons
     {
         [SerializeField] private PlayerInputHandler _input;
         [SerializeField] private PlayerCamera       _camera;
+        [Tooltip("Optional — adds a visual view kick on each shot")]
+        [SerializeField] private CameraEffectsController _cameraEffects;
         [SerializeField] private PlayerInventory    _inventory; // reserve ammo pool; auto-fetched from same object if unset
         [SerializeField] private CrosshairHUD       _crosshair;
         [SerializeField] private Transform          _muzzle;    // optional: origin for visual FX
@@ -33,6 +37,7 @@ namespace CGD.Weapons
         private readonly SpreadProcessor _spread = new();
 
         private WeaponInstance _current;
+        private CharacterStats _stats;
         private PlayerMovement _movement;
         private DamageSource   _damageSource;
         private CooldownTimer  _fireCooldown;
@@ -67,6 +72,7 @@ namespace CGD.Weapons
             _movement     = GetComponent<PlayerMovement>();
             _damageSource = DamageSource.Of(gameObject);
             if (_inventory == null) _inventory = GetComponentInParent<PlayerInventory>();
+            _stats = GetComponentInParent<CharacterStats>();
 
             // Keep HUD reserve count in sync with shared pool.
             if (_inventory != null) _inventory.Inventory.Changed += NotifyAmmoChanged;
@@ -245,6 +251,7 @@ namespace CGD.Weapons
             _camera.AddRecoil(shot.VertKick, shot.HorizKick, D.RecoilRecoverySpeed,
                               shot.RecoveryFraction, D.RecoilRecoveryDelay);
             _visuals?.AddKick(shot.GunVert, shot.GunHoriz, adsT, ShotInterval);
+            if (_cameraEffects != null) _cameraEffects.AddRecoil(shot.VertKick, shot.HorizKick);
         }
 
         // Soonest the next round can fire: burst shots follow BurstInterval rather than RPM.
@@ -269,6 +276,7 @@ namespace CGD.Weapons
                 Direction         = WeaponFireBehavior.ComputeSpreadDirection(forward, spreadDeg),
                 Muzzle            = _muzzle,
                 Data              = D,
+                Damage            = ResolveDamage(),
                 Source            = _damageSource,
                 Charge            = charge,
                 DebugDraw         = _debugDrawBullets,
@@ -276,6 +284,13 @@ namespace CGD.Weapons
                 DebugMissColor    = _debugMissColor,
                 DebugLineDuration = _debugLineDuration,
             });
+        }
+
+        // Base damage → the weapon's attachments → the wielder's buffs and debuffs.
+        private float ResolveDamage()
+        {
+            float damage = _current.Modify(ItemStat.Damage, D.Damage);
+            return _stats != null ? _stats.Apply(ItemStat.Damage, damage) : damage;
         }
 
         private IEnumerator Reload()

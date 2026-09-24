@@ -105,3 +105,7 @@ MonoBehaviour:
     PrimaryPath: <Keyboard>/4
     SecondaryPath: 
     Mode: 0
+  - Action: 23
+    PrimaryPath: <Mouse>/middleButton
+    SecondaryPath: <Keyboard>/t
+    Mode: 0

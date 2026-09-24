@@ -1,5 +1,6 @@
 using UnityEngine;
 using CGD.Combat;
+using CGD.Items;
 
 namespace CGD.Player
 {
@@ -20,8 +21,8 @@ namespace CGD.Player
         [Tooltip("Shield points restored per second once regen starts")]
         [SerializeField] private float _shieldRegenRate = 10f;
 
-        public override float MaxHealth => _maxHealth;
-        public override float Armor     => _armor;
+        public override float MaxHealth => WithModifiers(ItemStat.Health, _maxHealth);
+        public override float Armor     => WithModifiers(ItemStat.Armor, _armor);
         public override float MaxShield => _maxShield;
         protected override float ShieldRegenDelay => _shieldRegenDelay;
         protected override float ShieldRegenRate  => _shieldRegenRate;

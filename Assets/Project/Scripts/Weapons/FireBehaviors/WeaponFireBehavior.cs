@@ -24,7 +24,7 @@ namespace CGD.Weapons
         protected static DamageInfo BuildDamageInfo(in FireContext ctx, float damageScale = 1f)
         {
             WeaponData d = ctx.Data;
-            return new DamageInfo(d.Damage * damageScale, d.ArmorPenetration, d.DamageType,
+            return new DamageInfo(ctx.Damage * damageScale, d.ArmorPenetration, d.DamageType,
                                   d.HeadshotMultiplier, ctx.Source, d.OnHitEffects);
         }
 
