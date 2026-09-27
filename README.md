@@ -20,7 +20,7 @@ Assets/
     Audio/                  Music, SFX
     Data/                   ScriptableObject assets, one folder per feature
       Abilities/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Enemies/  Feedback/  Flow/  Input/  Items/  Loot/  Map/  Meters/
-      Player/  Quests/  Stats/  Targeting/  Timing/  UI/  Weapons/
+      Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters, Environment, Pickups, UI, VFX, Weapons
     Scenes/                 Sandbox.unity (+ its baked NavMesh folder)
@@ -46,6 +46,7 @@ Assets/
       Player/               movement, camera, lock-on, health, lifecycle, player audio
       Quests/               quest/objective definitions, QuestLog, QuestTracker, QuestEvents, signals
       Stats/                generic stat modifiers (ModifierSet, Stat, TimedModifiers), CharacterStats, presets
+      Stealth/              Stealthable (hide state), StealthStatus (rules), ConcealmentZone (bushes, smoke), StealthSettings
       Targeting/            TargetQuery, TargetFilter and TargetSelector assets (Selectors/)
       Timing/               GameClock (fixed ticks, pause, time scale, scheduling) and GameTime
       UI/                   Common/ (UIFactory), HUD/, Menus/, World/ (popups, enemy bars)

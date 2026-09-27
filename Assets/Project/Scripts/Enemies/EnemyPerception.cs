@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
+using CGD.Stealth;
 using CGD.Targeting;
 
 namespace CGD.Enemies
@@ -8,6 +9,10 @@ namespace CGD.Enemies
     // What an enemy knows about hostile characters: the current target, whether it is
     // detected right now (seen, or within proximity range), and the last position worth
     // investigating. Noise and incoming hits create "leads" the AI can follow up on.
+    //
+    // Stealth: a hidden character (in cover or cloaked) is only detected within its
+    // short reveal range — sight and proximity don't apply. Noise it makes still gives
+    // a lead to investigate, and smoke between the eyes and a target blocks sight.
     public class EnemyPerception
     {
         private const float EyeHeight = 1.5f;
@@ -96,7 +101,17 @@ namespace CGD.Enemies
             return null;
         }
 
-        private bool CanDetect(HealthManager target) => IsWithinProximity(target) || CanSee(target);
+        private bool CanDetect(HealthManager target)
+        {
+            bool hasStealth = Stealthable.TryGet(target, out Stealthable stealth);
+
+            bool detected = hasStealth && stealth.IsHidden
+                ? stealth.IsExposedTo(_self.position)
+                : IsWithinProximity(target) || CanSee(target);
+
+            if (detected && hasStealth) stealth.NotifySpotted();
+            return detected;
+        }
 
         private bool IsWithinProximity(HealthManager target) =>
             (target.transform.position - _self.position).sqrMagnitude <= _data.HearingRadius * _data.HearingRadius;
@@ -110,6 +125,7 @@ namespace CGD.Enemies
             if (dist > _data.SightRange) return false;
             if (Vector3.Angle(_self.forward, toTarget) > _data.SightAngle * 0.5f) return false;
 
+            if (ConcealmentZone.BlocksLine(eyePos, target.transform.position)) return false;
             return !Physics.Raycast(eyePos, toTarget / dist, dist, _obstacleMask, QueryTriggerInteraction.Ignore);
         }
     }

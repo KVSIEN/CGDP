@@ -7,6 +7,7 @@ using CGD.Core;
 using CGD.Items;
 using CGD.Player;
 using CGD.Quests;
+using CGD.Stealth;
 using CGD.Stats;
 using CGD.Timing;
 using CGD.Weapons;
@@ -52,6 +53,7 @@ namespace CGD.DevTools
             Console.Register("spawn",     "<enemy> [count]",          "Spawn enemies where you're looking", Spawn);
             Console.Register("god",       "[on|off]",                 "Toggle taking no damage", God);
             Console.Register("heal",      "",                         "Restore full health", _ => Heal());
+            Console.Register("cloak",     "[seconds]",                "Become hidden anywhere for a while", Cloak);
             Console.Register("buff",      "<preset> [seconds]",       "Apply a stat modifier preset for a while", Buff);
             Console.Register("timescale", "<scale>",                  "Set game speed (1 = normal)", TimeScale);
             Console.Register("revealmap", "",                         "Uncover all fog of war", _ => RevealMap());
@@ -149,6 +151,15 @@ namespace CGD.DevTools
 
             _health.Heal(_health.MaxHealth);
             return "Healed.";
+        }
+
+        private string Cloak(string[] args)
+        {
+            if (!TryGetComponent(out Stealthable stealth)) return "Needs a Stealthable on the Player.";
+
+            float seconds = args.Length > 0 ? ParseFloat(args[0]) : 30f;
+            stealth.Cloak(seconds, breaksOnAttack: false);
+            return $"Cloaked for {seconds:0.#}s.";
         }
 
         private string Buff(string[] args)

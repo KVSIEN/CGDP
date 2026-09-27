@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33a9dc639ca493e4d8654dbac89c47bc, type: 3}
+  m_Name: SmokeGrenadeData
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.GrenadeData
+  GrenadeName: Smoke Grenade
+  GrenadePrefab: {fileID: 3424364988567009664, guid: 79be582424e8357498037e5240babdf2, type: 3}
+  ThrowForce: 18
+  MaxCarried: 2
+  FuseTime: 1.5
+  ExplosionRadius: 4
+  ExplosionDamage: 0
+  ArmorPenetration: 0
+  DamageType: 0
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 10
+  OnHitEffects: []
+  ThrowSound: {fileID: 0}
+  ExplosionSound: {fileID: 0}
+  TrajectorySteps: 30
+  TrajectoryStepTime: 0.1
+  DebugColor: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+  CameraTrauma: 0
+  ShakeRadius: 0
+  SmokeCloudPrefab: {fileID: 1261393525805050153, guid: 827e3d5493f241db90bb6e66790662c5, type: 3}

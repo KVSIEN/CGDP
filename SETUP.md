@@ -21,7 +21,7 @@ Build a new playable scene in this order:
 3. **Player** — the rig below, then its wiring.
 4. **HUD** — canvas and the elements you want.
 5. **Enemies, pickups, interactables.**
-6. **Optional systems** — map, quests, feedback, camera effects.
+6. **Optional systems** — map, quests, feedback, stealth, camera effects.
 
 **Missing from Sandbox** (add when needed): `GameFlow`, `AudioPool`, `MeleeController`,
 `GrenadeController`, `PlayerFootsteps`, `PlayerAudio`, `TimelineAbilityRunner`, and every
@@ -68,7 +68,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
                    + optional: MeterSet, TimelineAbilityRunner, CharacterStats,
                      QuestTracker, PlayerLockOn, MapRevealer, FeedbackPlayer,
                      CombatFeedback, QuestFeedback, PlayerEquipment,
-                     PlayerConsumables, DevCommands
+                     PlayerConsumables, DevCommands, Stealthable
   CameraRig
     Main Camera    [Camera, PlayerCamera, CameraEffectsController?]
       WeaponRig    [WeaponVisuals]
@@ -130,6 +130,7 @@ HUD                [Canvas, CanvasScaler, GraphicRaycaster, HUDManager]
   ScreenFlash      [ScreenFlashHUD]?         ← keep near the top (draws underneath)
   HitEffect        [HitEffect]
   Crosshair        [CrosshairHUD]
+  Stealth          [StealthHUD]?
   HitMarker        [HitMarkerHUD]?
   Stats            [StatsHUD]
   Weapon           [WeaponHUD]
@@ -174,6 +175,7 @@ Later children draw on top. `HUDManager` finds every element by itself.
 | **WorldMapHUD** | `_input` = Player, `_area` = WorldMapArea, `_viewer` = Main Camera | Opens with M. |
 | **NotificationHUD**, **ScreenFlashHUD** | — | Driven by `FeedbackPlayer`. |
 | **HitMarkerHUD** | — | Driven by `CombatFeedback`. |
+| **StealthHUD** | `_stealth` = Player's Stealthable | HIDDEN / REVEALED / SPOTTED under the crosshair. |
 
 Damage numbers and enemy health bars build themselves — don't place them under the HUD.
 
@@ -327,6 +329,18 @@ Background `_source` options:
 
 All presets are in `Data/Feedback/`.
 
+## Stealth
+
+| Component | Assign | Notes |
+|---|---|---|
+| **Stealthable** (Player) | `_settings` = `Stealth/StealthSettings`, `_spottedFeedback`? = `Feedback/SpottedFeedbackPreset` | Without it, enemies ignore bushes and smoke. |
+| **ConcealmentZone** (bush) | a Collider sized to the foliage · `_kind` = Bush · `_requiresCrouch`? | Collider becomes a trigger. Put the object on **Ignore Raycast** so shots pass through. |
+| **ConcealmentZone** (smoke) | on `Prefabs/VFX/SmokeCloud` — `_kind` = Smoke, `_blocksSight` ticked | Spawned by `Weapons/Throwables/SmokeGrenadeData` (set it as a GrenadeController's `_data`). |
+| **StealthAbility** | add `Abilities/StealthAbility` to a PlayerAbilities slot | Needs Stealthable. |
+
+- Enemies need **no** changes — `EnemyPerception` checks stealth automatically.
+- `SmokeCloud` has no visual yet: add a Particle System (and a matching collider radius, default 4 m).
+
 ## Camera Effects & Lock-On
 
 | Component | Assign | Notes |
@@ -358,19 +372,20 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Weapons/Ranged/` | `DefaultWeaponData`, `T1/` examples per category | Loadout, WeaponPickup |
 | `Weapons/Categories/` | one per weapon type | RandomWeaponPickup, loot |
 | `Weapons/FireBehaviors/` | Hitscan, Projectile, Shotgun | weapon data / categories |
-| `Weapons/Melee/`, `Weapons/Throwables/` | `DefaultMeleeWeaponData`, `DefaultGrenadeData` | MeleeController, GrenadeController |
+| `Weapons/Melee/`, `Weapons/Throwables/` | `DefaultMeleeWeaponData`, `DefaultGrenadeData`, `SmokeGrenadeData` | MeleeController, GrenadeController |
 | `Items/Munitions/` | one per caliber | AmmoPickup, PlayerInventory |
 | `Items/` | `StatRollProfile` | weapon categories, `CombatVestArmor` (see note) |
 | `Items/Armor/`, `Attachments/`, `Consumables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `StimConsumable`, `ScrapMetalResource`, `ClothResource` | pickups, loot, recipes, quest rewards |
 | `Crafting/` | `BandageRecipe`, `CombatStimRecipe`, `ExtendedMagazineRecipe`, `CombatVestRecipe` | CraftingStation |
 | `DevTools/` | `DevCatalog` (all items, weapon categories, buffs; no enemy prefabs exist yet) | DevCommands |
-| `Abilities/` | Dash, Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`) | PlayerAbilities |
+| `Abilities/` | Dash, Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`), Stealth (needs `Stealthable`) | PlayerAbilities |
 | `Targeting/` | `Default…TargetSelector`, `AimedArea…`, `FriendlyArea…` | abilities, PlayerLockOn |
 | `Meters/` | Stamina, Mana, Oxygen, Rage | MeterSet, costs, MeterZone |
 | `Loot/` | `DefaultLootTable` | LootDropper |
 | `Stats/` | `HardDifficultyModifierPreset`, `DamageBoostModifierPreset` | CharacterStats, Stat Buff ability |
 | `Quests/` | `TargetPracticeQuest` → `ResupplyQuest`, `ShootingRangeClearedQuestSignal` | QuestTracker |
-| `Feedback/` | nine `…FeedbackPreset`s | CombatFeedback, QuestFeedback |
+| `Feedback/` | ten `…FeedbackPreset`s | CombatFeedback, QuestFeedback, Stealthable |
+| `Stealth/` | `StealthSettings` (shared) | Stealthable |
 | `CameraEffects/` | `DefaultCameraEffectSettings` | CameraEffectsController |
 | `Map/` | `DefaultMapGenerationSettings`, `SandboxMapGraph` | Map Graph window, WorldMapArea |
 | `Audio/` | `DefaultSurfaceDatabase` | PlayerFootsteps |

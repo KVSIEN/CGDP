@@ -67,6 +67,8 @@ namespace CGD.Weapons
             _data.ExplosionSound.TryPlay(transform.position);
             Noise.Emit(transform.position, _data.NoiseRadius, _source);
             CameraImpulses.Emit(transform.position, _data.ShakeRadius, _data.CameraTrauma);
+            if (_data.SmokeCloudPrefab != null)
+                PrefabPool.Spawn(_data.SmokeCloudPrefab, transform.position, Quaternion.identity);
             _initialized = false;
             PrefabPool.Release(gameObject);
         }

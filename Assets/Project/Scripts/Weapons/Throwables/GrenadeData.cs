@@ -27,6 +27,10 @@ namespace CGD.Weapons
         [Tooltip("How far away enemies hear it (0 = silent)")]
         public float NoiseRadius = 50f;
 
+        [Header("Smoke")]
+        [Tooltip("Optional — spawned where it lands (a pooled prefab with a Smoke ConcealmentZone and a PooledLifetime)")]
+        public GameObject SmokeCloudPrefab;
+
         [Header("Camera")]
         [Tooltip("Shake at the blast centre (0..1), fading to nothing at Shake Radius")]
         [Range(0f, 1f)] public float CameraTrauma = 0.8f;

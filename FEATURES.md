@@ -443,7 +443,7 @@
 ## Dev Console
 - Backquote (`) opens a console in development builds; commands have help, history (Up/Down) and Tab completion
 - `give <item> [count]`, `weapon <category> [seed] [tier]` (same seed and tier = same gun), `spawn <enemy> [count]`
-- `god`, `heal`, `buff <preset> [seconds]`, `timescale <x>`, `revealmap`
+- `god`, `heal`, `buff <preset> [seconds]`, `timescale <x>`, `revealmap`, `cloak [seconds]`
 - `quest list`, `quest start|complete <quest>`, `quest step <quest> <n>` to jump straight to any objective
 - Names can be partial ("give scrap 20")
 
@@ -463,3 +463,15 @@
 - Controller vibration for dealing and taking damage — bigger hits rumble harder, overlapping hits build up, and vibration stops while paused or when the game loses focus; can be turned off
 - A low-health warning (message, red pulse, rumble) the moment health drops below 30%, re-armed once you heal back above it
 - Quest announcements: new quest, objective complete, quest complete (with a golden flash), quest failed
+
+## Stealth
+- Step into a bush or a smoke cloud, or use the Stealth ability, and you become hidden: a HIDDEN label appears under the crosshair
+- Hidden players can only be noticed by enemies right next to them (about 2.5 m); an enemy standing inside the same bush or smoke sees you from further away (about 6 m)
+- Crouching makes you harder to notice, sprinting easier
+- Some bushes only hide you while crouching
+- Smoke also blocks enemies' line of sight through it, so you can cross open ground behind a smoke grenade
+- Shooting, swinging or using abilities gives your position away for a moment (REVEALED); silenced weapons don't
+- The Stealth ability hides you anywhere for 6 seconds; attacking ends it early
+- If an enemy spots you while you're trying to hide, a "Spotted!" warning and a quick rumble let you know
+- Enemies can still hear noise and come to investigate even when they can't see you
+- Smoke grenade: bursts into a smoke cloud that lasts 15 seconds and deals no damage
