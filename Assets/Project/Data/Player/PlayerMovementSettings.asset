@@ -37,7 +37,7 @@ MonoBehaviour:
   MaxStepHeight: 0.3
   StepCheckDistance: 0.45
   StepClimbSpeed: 8
-  SidestepForce: 5
+  SidestepForce: 6
   SidestepDuration: 0.15
   RollWindowDuration: 0.75
   SidestepCooldown: 1
