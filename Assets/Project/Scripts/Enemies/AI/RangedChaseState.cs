@@ -3,6 +3,7 @@ using UnityEngine.AI;
 using CGD.Audio;
 using CGD.Combat;
 using CGD.Core;
+using CGD.Impacts;
 using CGD.Weapons;
 
 namespace CGD.Enemies
@@ -166,11 +167,13 @@ namespace CGD.Enemies
 
             SoundBank fireSound = data.RangedAttackSound != null ? data.RangedAttackSound : data.AttackSound;
             fireSound.TryPlay(Ai.transform.position);
+            Ai.NotifyFired();
 
             if (Physics.Raycast(eyePos, dir, out var hit, data.SightRange, ~0, QueryTriggerInteraction.Ignore))
             {
                 var info = new DamageInfo(data.AttackDamage, source: _source);
                 Hitbox.ApplyHit(hit.collider, info, hit.point);
+                ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet);
             }
         }
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
+using CGD.Impacts;
 
 namespace CGD.Weapons
 {
@@ -124,13 +125,18 @@ namespace CGD.Weapons
                 IDamageable target = Hitbox.FindDamageable(col);
                 if (target == null || !_hitThisSwing.Add(target)) continue;
 
-                Vector3 point = CastBuffer[i].point;
+                Vector3 point  = CastBuffer[i].point;
+                Vector3 normal = CastBuffer[i].normal;
                 // SphereCast reports zero when the sphere starts overlapping — use the
                 // collider's closest surface point as a reasonable fallback.
                 if (point == Vector3.zero)
-                    point = col.ClosestPoint(_sourceRoot.position);
+                {
+                    point  = col.ClosestPoint(_sourceRoot.position);
+                    normal = _sourceRoot.position - point;
+                }
 
                 Hitbox.ApplyHit(col, _info, point);
+                if (normal.sqrMagnitude > 0.0001f) ImpactEvents.Report(point, normal.normalized, col, ImpactKind.Melee);
                 HitAnything = true;
             }
         }

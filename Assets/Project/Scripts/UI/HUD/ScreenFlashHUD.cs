@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using CGD.Settings;
 
 namespace CGD.UI
 {
@@ -30,7 +31,7 @@ namespace CGD.UI
         {
             if (_image == null || duration <= 0f) return;
 
-            float strength = color.a * Mathf.Clamp01(intensity);
+            float strength = color.a * Mathf.Clamp01(intensity) * GameSettings.Current.FlashIntensity;
             if (CurrentAlpha() > strength) return;
 
             _color     = color;

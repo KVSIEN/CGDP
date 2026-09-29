@@ -20,6 +20,7 @@ namespace CGD.Weapons
 
         /// <summary>Fired whenever the carried count changes.</summary>
         public event Action<int> OnCountChanged;
+        public event Action Thrown;
 
         public int Carried => _carried;
 
@@ -91,6 +92,7 @@ namespace CGD.Weapons
 
             _carried--;
             OnCountChanged?.Invoke(_carried);
+            Thrown?.Invoke();
 
             _data.ThrowSound.TryPlay(transform.position);
         }

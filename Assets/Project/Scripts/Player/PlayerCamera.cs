@@ -1,6 +1,7 @@
 using UnityEngine;
 using CGD.Core;
 using CGD.Input;
+using CGD.Settings;
 
 namespace CGD.Player
 {
@@ -327,7 +328,9 @@ namespace CGD.Player
         private void UpdateFOV()
         {
             if (_camera == null) return;
-            float hipFOV = _movement.IsSprinting ? _sprintFOV : _baseFOV;
+            // The player's FOV setting replaces the authored base; sprint keeps its authored widening.
+            float baseFOV = GameSettings.Current.FieldOfView;
+            float hipFOV  = _movement.IsSprinting ? baseFOV + (_sprintFOV - _baseFOV) : baseFOV;
             float target = Mathf.Lerp(hipFOV, _adsFOV, _adsT);
             _camera.fieldOfView = Mathf.Lerp(_camera.fieldOfView, target, _fovSpeed * Time.deltaTime);
         }

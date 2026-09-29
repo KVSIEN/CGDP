@@ -1,6 +1,7 @@
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
+using CGD.Impacts;
 
 namespace CGD.Weapons
 {
@@ -53,6 +54,7 @@ namespace CGD.Weapons
         {
             float falloff = FalloffOf(ctx.Data).Evaluate(hit.distance);
             Hitbox.ApplyHit(hit.collider, BuildDamageInfo(ctx, falloff), hit.point);
+            ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet);
         }
 
         // Resolves one round in two stages. The stretch it would cross within a frame or two

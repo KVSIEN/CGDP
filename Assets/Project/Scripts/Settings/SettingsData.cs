@@ -1,0 +1,39 @@
+using System;
+using UnityEngine;
+
+namespace CGD.Settings
+{
+    // Player preferences outside of controls: audio, video and accessibility. Stored as JSON,
+    // so a field added later simply keeps its default in older saves.
+    [Serializable]
+    public class SettingsData
+    {
+        // Audio (0..1)
+        public float MasterVolume    = 1f;
+        public float EffectsVolume   = 1f;
+        public float MusicVolume     = 0.8f;
+        public float InterfaceVolume = 1f;
+
+        // Video
+        // 0 = keep the current resolution (first launch uses whatever the player launched with).
+        public int  ResolutionWidth;
+        public int  ResolutionHeight;
+        public FullScreenMode WindowMode = FullScreenMode.FullScreenWindow;
+        // -1 = keep the project's default quality level.
+        public int  QualityLevel = -1;
+        public bool VSync        = true;
+        // 0 = unlimited (only used while VSync is off).
+        public int  FrameRateLimit;
+        public float FieldOfView = 70f;
+
+        // Accessibility (0..1 scales)
+        public float CameraShake    = 1f;
+        public float FlashIntensity = 1f;
+        public bool  DamageVignette = true;
+
+        public const float MinFieldOfView = 60f;
+        public const float MaxFieldOfView = 110f;
+
+        public SettingsData Clone() => (SettingsData)MemberwiseClone();
+    }
+}

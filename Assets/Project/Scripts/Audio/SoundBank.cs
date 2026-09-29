@@ -16,6 +16,8 @@ namespace CGD.Audio
         [SerializeField] private float _spatialBlend = 1f;
         [Tooltip("Optional mixer group (e.g. SFX, Footsteps) for volume control")]
         [SerializeField] private AudioMixerGroup _mixerGroup;
+        [Tooltip("Which volume slider in the settings menu this sound follows")]
+        [SerializeField] private AudioCategory _category = AudioCategory.Effects;
 
         public void Play(Vector3 position) => Play(position, 1f);
 
@@ -28,7 +30,7 @@ namespace CGD.Audio
 
             float pitch  = Random.Range(_minPitch, _maxPitch);
             float volume = Random.Range(_minVolume, _maxVolume) * volumeScale;
-            AudioPool.Instance.Play(clip, position, volume, pitch, _spatialBlend, _mixerGroup);
+            AudioPool.Instance.Play(clip, position, volume, pitch, _spatialBlend, _mixerGroup, _category);
         }
     }
 }

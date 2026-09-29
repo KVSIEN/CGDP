@@ -39,6 +39,10 @@ namespace CGD.Enemies
         private float _windupTimer;
 
         public event Action<AiState> StateChanged;
+        // Melee wind-up begins (the hit lands AttackWindup seconds later).
+        public event Action AttackStarted;
+        // A ranged shot leaves the enemy.
+        public event Action Fired;
 
         public AiState State => _machine.IsRunning ? _machine.Current : AiState.Patrol;
 
@@ -112,6 +116,9 @@ namespace CGD.Enemies
             _machine.Tick(dt);
         }
 
+        // For enemies spawned at runtime (level builder, dev console) instead of placed with a route.
+        public void SetWaypoints(Transform[] waypoints) => _waypoints = waypoints;
+
         internal void ChangeState(AiState state) => _machine.TryChangeTo(state);
 
         internal void SetSpeed(float speed) => Agent.speed = speed * _stunnable.SpeedMultiplier;
@@ -133,7 +140,10 @@ namespace CGD.Enemies
             IsAttacking  = true;
             _windupTimer = _data.AttackWindup;
             _attackCooldown.Start(_data.AttackWindup + _data.AttackCooldown);
+            AttackStarted?.Invoke();
         }
+
+        internal void NotifyFired() => Fired?.Invoke();
 
         private void TickAttack(float dt)
         {

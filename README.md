@@ -19,13 +19,14 @@ Assets/
     Art/                    Animations, Fonts, Materials, PhysicsMaterials, Shaders, Textures
     Audio/                  Music, SFX
     Data/                   ScriptableObject assets, one folder per feature
-      Abilities/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Enemies/  Feedback/  Flow/  Input/  Items/  Loot/  Map/  Meters/
-      Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
+      Abilities/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Enemies/  Feedback/  Flow/  Impacts/  Input/  Items/  Level/
+      Loot/  Map/  Meters/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters, Environment, Pickups, UI, VFX, Weapons
     Scenes/                 Sandbox.unity (+ its baked NavMesh folder)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            ability assets (incl. TargetedAbility) and the player's ability slots
+      Animation/            Animator parameter bridge (AnimatorBridge, AnimatorParams), PlayerAnimator, EnemyAnimator, Ragdoll
       Audio/                audio pool, sound banks, surface lookup
       CameraEffects/        shake, kicks, FOV punches, lag, view blends (CameraEffectsController), CameraImpulses
       Combat/               Damage/, Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/, Projectile, Stunnable, Noise
@@ -37,14 +38,18 @@ Assets/
       Enemies/              enemy components, perception, and AI/ (state classes)
       Feedback/             FeedbackBus, FeedbackPreset, FeedbackPlayer (feed, flash, rumble, shake), combat/quest feedback
       Flow/                 GameFlow, GameState/GameStateMachine, settings and UI commands
+      Impacts/              ImpactEvents (hit broadcast), ImpactDatabase (effects per surface), ImpactSpawner, DecalPool
       Input/                PlayerInputHandler and binding settings
       Interaction/          IInteractable, doors, switches, EventInteractable, highlights, Pickups/
       Items/                item definitions, inventory, equipment, quality rolls, stats
+      Level/                map graph → level: LevelLayoutBuilder (rooms, CorridorRouter), LevelGeometryBuilder,
+                            RoomPopulator, LevelBuilder (scene entry point), LevelExit, LevelBuildSettings
       Loot/                 LootTable, LootDropper, LootContainer
       Map/                  map graph data (Graph/: MapGraph, MapNode, analysis) and Generation/ (constraints, generator passes, validator)
       Meters/               generic resources (stamina, mana, oxygen…): Meter, MeterSet, MeterCost, MeterZone
       Player/               movement, camera, lock-on, health, lifecycle, player audio
       Quests/               quest/objective definitions, QuestLog, QuestTracker, QuestEvents, signals
+      Settings/             GameSettings (audio, video, accessibility preferences) and SettingsData
       Stats/                generic stat modifiers (ModifierSet, Stat, TimedModifiers), CharacterStats, presets
       Stealth/              Stealthable (hide state), StealthStatus (rules), ConcealmentZone (bushes, smoke), StealthSettings
       Targeting/            TargetQuery, TargetFilter and TargetSelector assets (Selectors/)

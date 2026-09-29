@@ -175,7 +175,12 @@
 - While a slot is listening, tapping Escape cancels and leaves the binding as it was; holding Escape clears the slot so it is unbound
 - Duplicate binding warning — the same key, mouse button or gamepad button can be bound to several actions; when that happens a brief orange notice names the other actions, and every slot sharing a control stays highlighted orange in the keybinding list until one of them is changed
 - Reset to Defaults button restores all keybindings to their original values
-- All settings (sensitivity and keybindings) are saved to disk and automatically restored on next launch
+- The menu has four tabs: Controls (sensitivity and keybindings), Audio, Video and Accessibility. Reset Defaults resets only the tab you're on
+- **Audio** — Master, Effects, Music and Interface volume sliders, heard straight away
+- **Video** — resolution, window mode (fullscreen, borderless, windowed), quality level, VSync, frame rate limit (when VSync is off) and field of view (60–110°). Sprinting still widens the view on top of the chosen FOV. Resolution and window mode apply in builds, not in the editor's Game view
+- **Accessibility** — camera shake & kicks strength (0% turns off shake, weapon kicks and FOV punches), screen flash strength (hit flash and feedback flashes), and the low-health red vignette on or off. Hold vs. toggle is set per action on the Controls tab
+- Audio, video and accessibility changes preview live and are saved when the menu closes
+- All settings are saved to disk and automatically restored on next launch, applied before the first scene appears
 
 ## Weapon System
 - Data-driven weapon setup via ScriptableObject assets — create a new gun by filling in a single asset, no code needed
@@ -349,6 +354,7 @@
 - Player feedback audio: a PlayerAudio component subscribes to the player's health events and plays hurt/death sounds
 - Surface-aware footsteps: PlayerFootsteps raycasts downward each step to identify the ground surface; a SurfaceDatabase ScriptableObject maps PhysicMaterials to separate walk, sprint, and crouch SoundBanks; individual surfaces can override via a SurfaceTag component; step interval scales with movement speed
 - All sound fields are optional — systems work silently when no SoundBank is assigned, same as before
+- Each SoundBank follows one of the settings menu's volume sliders (Effects, Music or Interface), on top of Master
 
 ## Death & Respawn
 - When health reaches zero the player loses control, the HUD hides, and a death screen is shown
@@ -356,7 +362,7 @@
 - On respawn, health is restored and every carried weapon's magazine is refilled; reserve ammo in the shared inventory pool is not touched (the ability to lose gathered inventory on death lands with the extraction loop). Ability cooldowns reset, and leftover momentum and status effects are cleared
 
 ## Map Graph Generation
-- Maps start as a pure experience graph — no room geometry yet. Each node is what the player meets there (Start, Combat, Elite, Puzzle, Shop, Event, Treasure, Boss, Exit), and connections say how they link: normal, shortcut, secret or locked
+- Maps start as a pure experience graph — rooms and connections without geometry; a [generated level](#generated-levels) turns one into a playable level. Each node is what the player meets there (Start, Combat, Elite, Puzzle, Shop, Event, Treasure, Boss, Exit), and connections say how they link: normal, shortcut, secret or locked
 - The generator builds a main path from Start through the Boss to the Exit, adds side branches that either dead-end or rejoin the main path further ahead, and adds shortcuts that skip rooms along the main path. Branch entrances can be secret or locked
 - The same seed and settings always give the same map, so a good map can be kept by its seed
 - Each generation layer — layout, room types, intensity, factions — can be rerolled on its own from the editor: reroll the room types and the layout stays exactly the same; reroll factions and types and intensity stay the same. A new seed starts every layer fresh
@@ -479,3 +485,24 @@
 - If an enemy spots you while you're trying to hide, a "Spotted!" warning and a quick rumble let you know
 - Enemies can still hear noise and come to investigate even when they can't see you
 - Smoke grenade: bursts into a smoke cloud that lasts 15 seconds and deals no damage
+
+## Generated Levels
+- A scene can build its whole level from a map graph when it loads: every room in the graph becomes a square room, and every connection becomes a corridor between the two rooms
+- Rooms sit where the graph places them, so the main path runs left to right and branches sit above and below it. Corridors are routed around rooms, and two different connections never join up. The rare map where two corridors have to cross is reported as a warning
+- Locked and secret connections get their gate (a locked door, a breakable fake wall) on the side the player arrives from, so a locked branch is locked from the main path
+- Rooms are filled by type: enemies (more in higher-intensity rooms, patrolling the room), a centrepiece (for example a chest in Treasure rooms, a crafting station in Shops, a boss) and scattered props
+- The player starts in the Start room. The Exit room has a way out that ends the run in victory (hold Interact to leave)
+- A level can use a fixed, hand-checked map graph or generate a fresh one each play. The same seed always gives the same map and the same room contents
+- The world map and minimap resize to fit the generated level
+
+## Character Animation
+- The player and enemies drive their model's animations from what they're actually doing: walking and strafing speed, sprinting, crouching, sliding, mantling, rolling, jumping and falling, aiming, reloading, firing, melee combo steps, grenade throws, getting hit, being stunned and dying
+- Enemies switch to an alert stance once they notice a target, and play their attack as the wind-up starts
+- Animations are cosmetic: attacks land on the same timing with or without a rigged model, and characters without one play exactly as before
+- Respawned players and reused enemies start from a clean pose instead of the end of their death animation
+
+## Impacts & Ragdolls
+- Bullets, projectiles, enemy shots and melee hits leave per-surface impact effects: a decal (bullet hole), a burst of particles and an impact sound, each chosen by what was hit (concrete, metal, wood… by physics material). Characters use a separate "flesh" set
+- Melee and bullets can look and sound different on the same surface
+- Decals stick to moving objects such as doors, and disappear with objects that break. Only the newest ones are kept (128 by default), so long fights never pile up
+- Characters with a ragdoll go limp when they die and are knocked away from whoever landed the killing blow. They get back up in a clean pose when revived or reused

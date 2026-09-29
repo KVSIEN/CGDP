@@ -17,14 +17,16 @@ How to wire each system into a scene: what goes where, and what to assign.
 Build a new playable scene in this order:
 
 1. **Scene root** — GameManager, GameFlow, RespawnPoint, EventSystem, light, volume.
-2. **Level** — geometry with `CullableObject`, a baked **NavMesh Surface**.
+2. **Level** — geometry with `CullableObject`, a baked **NavMesh Surface** — or a
+   [generated level](#generated-levels) built from a map graph.
 3. **Player** — the rig below, then its wiring.
 4. **HUD** — canvas and the elements you want.
 5. **Enemies, pickups, interactables.**
 6. **Optional systems** — map, quests, feedback, stealth, camera effects.
 
 **Missing from Sandbox** (add when needed): `GameFlow`, `AudioPool`, `MeleeController`,
-`GrenadeController`, `PlayerFootsteps`, `PlayerAudio`, `TimelineAbilityRunner`, and every
+`GrenadeController`, `PlayerFootsteps`, `PlayerAudio`, `TimelineAbilityRunner`, animation and
+ragdoll components (no rigged models yet), and every
 system from [Stats](#stats--buffs) onwards. The target dummies have no `EnemyAI` (they stand still).
 
 ---
@@ -185,6 +187,11 @@ Damage numbers and enemy health bars build themselves — don't place them under
 |---|---|
 | `_camera` = PlayerCamera, `_input` = Player, `_bindings` = `InputBindingSettings`, `_hud` = HUD | Stretch its RectTransform to fill the screen. Escape opens it; it doubles as the pause menu when a `GameFlow` exists. |
 
+The Audio, Video and Accessibility tabs need no wiring. They apply to every scene:
+- Volume works through `AudioPool` (Master scales everything). Set each `SoundBank`'s `_category` (Effects / Music / Interface) to pick which slider it follows.
+- Field of view replaces `PlayerCamera._baseFOV`. `_sprintFOV` keeps its authored widening on top.
+- Camera shake scales everything `CameraEffectsController` adds. Screen flashes scale `ScreenFlashHUD` and `HitEffect`.
+
 ---
 
 ## Game Flow & Time
@@ -218,6 +225,33 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 | **StatusEffectController** | `_immunities`? | Without it, status effects are ignored. |
 
 **Enemy type** is all in its `EnemyData`: team, health, speeds, senses, melee or ranged, display name (used in kill messages).
+
+### Animation & Ragdoll (Player or Enemy)
+
+Characters play without these. Add them once a rigged model with an Animator Controller exists.
+
+```
+Enemy / Player     [EnemyAnimator or PlayerAnimator, Ragdoll?]
+  Model            [Animator]                  ← rigged mesh
+    …bones         [Rigidbody, Collider, Hitbox?]   ← ragdoll bodies (Unity's Ragdoll Wizard)
+```
+
+| Component | Assign | Notes |
+|---|---|---|
+| **PlayerAnimator** (Player) | `_animator` = the body model's Animator, `_camera`? = PlayerCamera | Reads the Player's movement, health, weapons, melee and grenades. |
+| **EnemyAnimator** (Enemy) | `_animator` = the model's Animator | Reads EnemyAI, NavMeshAgent and EnemyHealth. |
+| **Ragdoll**? | `_animator`, `_bones`? (empty = every child Rigidbody), `_disableOnDeath` = the root movement collider | Bones stay kinematic while alive. |
+
+**Animator parameters** (all optional; the controller only needs the ones it uses):
+
+| Type | Names |
+|---|---|
+| Float | `Speed`, `ForwardSpeed`, `StrafeSpeed`, `VerticalSpeed`, `Aim` |
+| Bool | `Grounded`, `Crouching`, `Sprinting`, `Sliding`, `Mantling`, `Rolling`, `Stunned`, `Reloading`, `Alerted`, `Dead` |
+| Int | `AttackIndex` (combo step, −1 = heavy) |
+| Trigger | `Attack`, `Fire`, `Throw`, `Hit` |
+
+Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Author the clips to match.
 
 ### Hitboxes (Player or Enemy)
 
@@ -350,7 +384,55 @@ All presets are in `Data/Feedback/`.
 
 ## Map Graph (editor tool)
 
-Not used by scenes yet. Open **Window › CGD › Map Graph**, pick `Map/SandboxMapGraph`, press **Generate**.
+Open **Window › CGD › Map Graph**, pick `Map/SandboxMapGraph`, press **Generate**. Scenes use graphs through a [generated level](#generated-levels).
+
+## Generated Levels
+
+A scene can build its level from a map graph at load instead of using hand-placed geometry.
+Start from a copy of the Sandbox scene and delete its level geometry, target dummies and NavMesh data.
+
+```
+Level              [LevelBuilder, NavMeshSurface]   ← at the origin, unrotated
+  (rooms, corridors, doors, props and patrol routes are created here at runtime)
+```
+
+| Component | Assign | Notes |
+|---|---|---|
+| **LevelBuilder** | `_settings` = `Level/DefaultLevelBuildSettings` · `_graphAsset` = a `MapGraphAsset` **or** `_generation` = `Map/DefaultMapGenerationSettings` · `_seed` (0 = random) · `_navMesh` = its NavMeshSurface · `_player` = Player · `_spawnPoint` = RespawnPoint · `_worldMap`? = WorldMapArea | Logs a warning for every corridor that had to cross another. |
+| **NavMeshSurface** | Collect Objects = **Current Object Hierarchy** | Rebuilt at runtime. Don't bake it. |
+
+`LevelBuildSettings` holds the grid sizes, wall materials, door prefabs and one **Rooms** entry per room type.
+Each entry lists enemy prefabs (count read at the room's intensity), a centrepiece and props.
+- **Enemy prefabs** need `EnemyAI`. None exist yet, so generated rooms start empty.
+- **Door prefabs**: origin at the doorway centre on the floor, +Z pointing out of the room. The opening is one tile wide (`_tileSize`).
+  - Normal is optional.
+  - Locked is typically a `Door` with a key.
+  - Secret is, for example, a `Destructible` fake wall.
+  - Closed doors cut the NavMesh, so enemies don't follow the player through them.
+- **Exit**: when the Exit room's content has no `LevelExit`, a plain exit pad is added. Using it calls `GameFlow.Victory`.
+- **Obstacle masks**: generated geometry goes on `_geometryLayer`. Keep that layer in enemies' `_obstacleMask` and in weapons' hit masks.
+
+## Impact Effects
+
+```
+ImpactEffects      [ImpactSpawner]   ← one per scene (e.g. under GameManager)
+```
+
+| Component | Assign | Notes |
+|---|---|---|
+| **ImpactSpawner** | `_database` = `Impacts/DefaultImpactDatabase`, `_maxDecals` | Without it, hits leave nothing behind. |
+
+`ImpactDatabase` picks effects per surface and per hit kind (Bullet / Melee):
+- Characters (Hitbox or HealthManager) use **Flesh**.
+- Other colliders match on their **physics material** (the same ones `SurfaceDatabase` uses).
+- Anything else uses **Default**.
+
+Each effect is optional:
+- a decal material (transparent; e.g. a bullet-hole texture)
+- a VFX prefab (needs `PooledLifetime`)
+- a `SoundBank`
+
+The default asset has no decal textures or VFX yet.
 
 ---
 
@@ -389,6 +471,8 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `CameraEffects/` | `DefaultCameraEffectSettings` | CameraEffectsController |
 | `Map/` | `DefaultMapGenerationSettings`, `SandboxMapGraph` | Map Graph window, WorldMapArea |
 | `Audio/` | `DefaultSurfaceDatabase` | PlayerFootsteps |
+| `Level/` | `DefaultLevelBuildSettings` (Gridbox materials, room rules without prefabs) | LevelBuilder |
+| `Impacts/` | `DefaultImpactDatabase` (empty effects) | ImpactSpawner |
 
 **Sounds** — every `SoundBank` slot is optional; systems stay silent without one. There are no audio clips in the project yet, so no `SoundBank` assets exist.
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using CGD.Settings;
 
 namespace CGD.Audio
 {
@@ -46,14 +47,14 @@ namespace CGD.Audio
         }
 
         public void Play(AudioClip clip, Vector3 position, float volume = 1f, float pitch = 1f,
-            float spatialBlend = 1f, AudioMixerGroup mixerGroup = null)
+            float spatialBlend = 1f, AudioMixerGroup mixerGroup = null, AudioCategory category = AudioCategory.Effects)
         {
             if (clip == null) return;
 
             var source = _available.Count > 0 ? _available.Pop() : CreateSource();
             source.transform.position     = position;
             source.clip                   = clip;
-            source.volume                 = volume;
+            source.volume                 = volume * GameSettings.Volume(category);
             source.pitch                  = pitch;
             source.spatialBlend           = spatialBlend;
             source.outputAudioMixerGroup  = mixerGroup;

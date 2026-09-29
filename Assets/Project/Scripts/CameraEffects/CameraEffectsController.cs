@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using CGD.Combat;
+using CGD.Settings;
 
 namespace CGD.CameraEffects
 {
@@ -95,7 +96,9 @@ namespace CGD.CameraEffects
         private void LateUpdate()
         {
             float dt = Time.deltaTime;
-            _offset    = _shake.Evaluate(dt, _settings) + _kick.Evaluate(dt, _settings) + _fov.Evaluate(dt, _settings);
+            // Always evaluated so effects decay normally; the accessibility setting only scales what's shown.
+            CameraOffset effects = _shake.Evaluate(dt, _settings) + _kick.Evaluate(dt, _settings) + _fov.Evaluate(dt, _settings);
+            _offset    = effects.Scaled(GameSettings.Current.CameraShake);
             _lagOffset = _lag.Evaluate(transform.position, dt, _settings);
             _blend.Advance(dt);
         }

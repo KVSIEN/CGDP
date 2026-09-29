@@ -1,0 +1,137 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2b894ab142a40d392b7b6585b812f87, type: 3}
+  m_Name: DefaultLevelBuildSettings
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.LevelBuildSettings
+  _tileSize: 3
+  _roomTiles: 8
+  _gapTiles: 6
+  _wallHeight: 4
+  _wallThickness: 0.3
+  _floorThickness: 0.2
+  _floorMaterial: {fileID: 2100000, guid: 981abf7a53e6a964fba6bc48555ec31a, type: 2}
+  _corridorFloorMaterial: {fileID: 2100000, guid: dfc08c90188302847afb04f628582097, type: 2}
+  _wallMaterial: {fileID: 2100000, guid: 2ab8149ec4775284bada96c1b85b4a09, type: 2}
+  _geometryLayer: 0
+  _doorPrefab: {fileID: 0}
+  _lockedDoorPrefab: {fileID: 0}
+  _secretDoorPrefab: {fileID: 0}
+  _rooms:
+  - Type: 0
+    Enemies: []
+    EnemyCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Props: []
+    PropCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+  - Type: 1
+    Enemies: []
+    EnemyCount:
+      Min: 2
+      Max: 5
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Props: []
+    PropCount:
+      Min: 2
+      Max: 4
+      Bias: 0
+  - Type: 2
+    Enemies: []
+    EnemyCount:
+      Min: 3
+      Max: 6
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Props: []
+    PropCount:
+      Min: 2
+      Max: 4
+      Bias: 0
+  - Type: 3
+    Enemies: []
+    EnemyCount:
+      Min: 0
+      Max: 1
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Props: []
+    PropCount:
+      Min: 1
+      Max: 3
+      Bias: 0
+  - Type: 4
+    Enemies: []
+    EnemyCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Props: []
+    PropCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+  - Type: 5
+    Enemies: []
+    EnemyCount:
+      Min: 0
+      Max: 2
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Props: []
+    PropCount:
+      Min: 1
+      Max: 3
+      Bias: 0
+  - Type: 6
+    Enemies: []
+    EnemyCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Props: []
+    PropCount:
+      Min: 1
+      Max: 3
+      Bias: 0
+  - Type: 7
+    Enemies: []
+    EnemyCount:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Props: []
+    PropCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+  - Type: 8
+    Enemies: []
+    EnemyCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Props: []
+    PropCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+  _spawnMarginTiles: 1

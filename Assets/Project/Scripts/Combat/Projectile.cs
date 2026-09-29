@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Core;
+using CGD.Impacts;
 
 namespace CGD.Combat
 {
@@ -71,6 +72,7 @@ namespace CGD.Combat
             {
                 float scale = _launch.Falloff.Evaluate(_distance + hit.distance);
                 Hitbox.ApplyHit(hit.collider, _launch.Damage.WithDamageScale(scale), hit.point);
+                ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet);
                 Despawn();
                 return;
             }

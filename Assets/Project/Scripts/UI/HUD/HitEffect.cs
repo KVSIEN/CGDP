@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using CGD.Player;
+using CGD.Settings;
 
 namespace CGD.UI
 {
@@ -67,14 +68,16 @@ namespace CGD.UI
 
         private void OnPlayerDamaged(float amount)
         {
-            _flashGroup.alpha = 1f;
+            _flashGroup.alpha = GameSettings.Current.FlashIntensity;
         }
 
         public override void Refresh()
         {
             if (_playerHealth == null || _vignetteImage == null) return;
             float ratio    = _playerHealth.MaxHealth > 0f ? _playerHealth.Health / _playerHealth.MaxHealth : 0f;
-            float vigAlpha = Mathf.Clamp01(1f - ratio / _vignetteHealthThreshold) * _vignetteMaxAlpha;
+            float vigAlpha = GameSettings.Current.DamageVignette
+                ? Mathf.Clamp01(1f - ratio / _vignetteHealthThreshold) * _vignetteMaxAlpha
+                : 0f;
             _vignetteImage.color = new Color(1f, 0f, 0f, vigAlpha);
         }
 

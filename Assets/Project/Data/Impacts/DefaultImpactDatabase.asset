@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4206d7f505cc4916899ead6dd49bd32c, type: 3}
+  m_Name: DefaultImpactDatabase
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Impacts.ImpactDatabase
+  _surfaces: []
+  _default:
+    Material: {fileID: 0}
+    Bullet:
+      Decal: {fileID: 0}
+      DecalSize:
+        Min: 0.08
+        Max: 0.14
+        Bias: 0
+      Vfx: {fileID: 0}
+      Sound: {fileID: 0}
+    Melee:
+      Decal: {fileID: 0}
+      DecalSize:
+        Min: 0.08
+        Max: 0.14
+        Bias: 0
+      Vfx: {fileID: 0}
+      Sound: {fileID: 0}
+  _flesh:
+    Material: {fileID: 0}
+    Bullet:
+      Decal: {fileID: 0}
+      DecalSize:
+        Min: 0.08
+        Max: 0.14
+        Bias: 0
+      Vfx: {fileID: 0}
+      Sound: {fileID: 0}
+    Melee:
+      Decal: {fileID: 0}
+      DecalSize:
+        Min: 0.08
+        Max: 0.14
+        Bias: 0
+      Vfx: {fileID: 0}
+      Sound: {fileID: 0}

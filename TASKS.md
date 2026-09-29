@@ -7,6 +7,7 @@
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Settings tabs (audio, video, accessibility), character animation bridge and ragdolls, levels generated from map graphs, per-surface impact effects and decals
 - Stealth: hiding in bushes and smoke, stealth ability, proximity reveal, smoke grenade, stealth HUD
 - Equipment slots and attachment fitting, quick-use consumables, crafting stations and recipes, dev console with cheats
 - Minimap/world map (fog of war, markers, captured/procedural backgrounds) and feedback system (notification feed, hit markers, kill confirms, rumble, flashes, quest announcements)

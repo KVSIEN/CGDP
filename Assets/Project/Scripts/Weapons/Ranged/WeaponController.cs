@@ -55,6 +55,8 @@ namespace CGD.Weapons
 
         /// <summary>Fired whenever magazine, reserve, or reload state changes. Args: magazine, reserve, isReloading.</summary>
         public event Action<int, int, bool> OnAmmoChanged;
+        // Once per shot: every round of a burst, one per shotgun blast.
+        public event Action Fired;
 
         public WeaponInstance Current => _current;
         public WeaponData     Data    => _current?.Data;
@@ -224,6 +226,7 @@ namespace CGD.Weapons
 
             D.FireSound.TryPlay(SoundPos);
             Noise.Emit(transform.position, D.NoiseRadius, _damageSource);
+            Fired?.Invoke();
         }
 
         private IEnumerator FireBurst()

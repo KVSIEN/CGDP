@@ -32,6 +32,7 @@ namespace CGD.WorldMap
         [SerializeField] private Color _fogColor = new(0.02f, 0.02f, 0.03f, 1f);
 
         private Texture2D _fogTexture;
+        private bool      _awake;
 
         public MapProjection Projection { get; private set; }
         public Texture       Background { get; private set; }
@@ -45,6 +46,7 @@ namespace CGD.WorldMap
         {
             Projection = new MapProjection(transform.position, _size);
             if (_fogOfWar) CreateFog();
+            _awake = true;
         }
 
         // Scene geometry is only guaranteed to be in place once every Awake has run.
@@ -65,6 +67,21 @@ namespace CGD.WorldMap
             if (_fogTexture != null) Destroy(_fogTexture);
             if (Background is RenderTexture rt) rt.Release();
             if (Background != null && Background != _texture) Destroy(Background);
+        }
+
+        // Re-centres and resizes the area — for levels generated at runtime, whose size isn't
+        // known in the editor. Call before Start: the background is drawn then. Called after
+        // Awake, the fog starts over at the new size.
+        public void SetBounds(Vector3 center, Vector2 size)
+        {
+            transform.position = center;
+            _size = size;
+            if (!_awake) return;
+
+            Projection = new MapProjection(center, size);
+            if (!_fogOfWar) return;
+            if (_fogTexture != null) Destroy(_fogTexture);
+            CreateFog();
         }
 
         public bool IsExplored(Vector3 world) => Fog == null || Fog.IsExplored(Projection.ToNormalized(world));

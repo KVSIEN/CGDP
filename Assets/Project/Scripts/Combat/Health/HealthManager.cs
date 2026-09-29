@@ -39,6 +39,12 @@ namespace CGD.Combat
         public float Health => _currentHealth;
         public float Shield => _shield.Current;
         public bool  IsDead => _currentHealth <= 0f;
+
+        // The latest hit that got through (team and invulnerability checks) — lets death
+        // reactions such as a ragdoll fall away from whoever landed it.
+        public DamageSource LastHitSource { get; private set; }
+        public Vector3      LastHitPoint  { get; private set; }
+
         public float ArmorReductionPercent
         {
             get => _armorReductionPercent;
@@ -108,6 +114,8 @@ namespace CGD.Combat
         {
             if (IsDead || IsInvulnerable || !CanBeDamagedBy(info.Source)) return;
 
+            LastHitSource = info.Source;
+            LastHitPoint  = point;
             OnHit?.Invoke(info);
 
             float amount = info.ResolveDamage(Armor * (1f - _armorReductionPercent)) * multiplier;

@@ -19,6 +19,8 @@ namespace CGD.CameraEffects
         public Vector3 Rotation { get; }
         public float   Fov      { get; }
 
+        public CameraOffset Scaled(float scale) => new(Position * scale, Rotation * scale, Fov * scale);
+
         public static CameraOffset operator +(CameraOffset a, CameraOffset b) =>
             new(a.Position + b.Position, a.Rotation + b.Rotation, a.Fov + b.Fov);
     }

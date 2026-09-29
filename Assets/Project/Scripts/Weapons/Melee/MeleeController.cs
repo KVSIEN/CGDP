@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using CGD.Audio;
 using CGD.Combat;
@@ -37,6 +38,9 @@ namespace CGD.Weapons
         private float _holdTimer;
         private bool  _comboBuffered;
         private bool  _bufferedHeavy;
+
+        // Combo step index of a light attack, or -1 for the heavy attack.
+        public event Action<int> AttackStarted;
 
         private void Awake()
         {
@@ -109,6 +113,7 @@ namespace CGD.Weapons
 
         private void StartAttack(bool heavy)
         {
+            AttackStarted?.Invoke(heavy ? -1 : _comboIndex);
             _activeStep = heavy ? _data.HeavyAttack : _data.LightCombo[_comboIndex];
             _comboIndex = heavy ? 0 : (_comboIndex + 1) % _data.LightCombo.Length;
 
