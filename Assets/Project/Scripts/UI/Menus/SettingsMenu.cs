@@ -41,9 +41,15 @@ namespace CGD.UI
 
         private void Update()
         {
+            // While rebinding, KeybindingSection owns Escape (tap = cancel, hold = clear).
+            if (_keybindings.IsListening)
+            {
+                _keybindings.Tick(Time.unscaledDeltaTime);
+                return;
+            }
+
             if (Keyboard.current.escapeKey.wasPressedThisFrame)
             {
-                if (_keybindings.IsListening) { _keybindings.CancelRebind(); return; }
                 if (_isOpen) Close(); else if (CanOpen) Open();
                 return;
             }
