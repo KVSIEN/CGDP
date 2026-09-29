@@ -444,11 +444,12 @@
 - Included recipes: Bandage ×2 (2 Cloth), Combat Stim (4 Scrap Metal, 1 Cloth), Extended Magazine (12 Scrap Metal), Combat Vest (20 Scrap Metal, 6 Cloth)
 
 ## Dev Console
-- Backquote (`) opens a console in development builds; commands have help, history (Up/Down) and Tab completion
-- `give <item> [count]`, `weapon <category> [seed] [tier]` (same seed and tier = same gun), `spawn <enemy> [count]`
-- `god`, `heal`, `buff <preset> [seconds]`, `timescale <x>`, `revealmap`
-- `quest list`, `quest start|complete <quest>`, `quest step <quest> <n>` to jump straight to any objective
-- Names can be partial ("give scrap 20")
+- Backquote (`) opens a console in development builds; commands start with a slash (`/help`), with history (Up/Down) and Tab completion. Escape closes it
+- While the console is open every other keybind is muted, so typing a letter never triggers a hotkey like the inventory, map or weapon slots
+- `/give <item> [count]`, `/weapon <category> [seed] [tier]` (same seed and tier = same gun), `/spawn <enemy> [count]`
+- `/god`, `/heal`, `/buff <preset> [seconds]`, `/timescale <x>`, `/revealmap`
+- `/quest list`, `/quest start|complete <quest>`, `/quest step <quest> <n>` to jump straight to any objective
+- Names can be partial ("/give scrap 20")
 
 ## Minimap & World Map
 - A round minimap in the top-right corner shows the area around the player, turning with the view so the player arrow always points up (or fixed north-up, per setting)

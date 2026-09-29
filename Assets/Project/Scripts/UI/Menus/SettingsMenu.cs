@@ -48,6 +48,9 @@ namespace CGD.UI
                 return;
             }
 
+            // Escape belongs to the dev console while it is being typed into.
+            if (Keyboard.current.escapeKey.wasPressedThisFrame && _input.TextEntryActive) return;
+
             if (Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 if (_isOpen) Close(); else if (CanOpen) Open();
