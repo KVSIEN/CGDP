@@ -18,6 +18,7 @@ MonoBehaviour:
   _reality: 0
   _tier: 0
   _weight: 0.1
+  _baseValue: 140
   _rollProfile: {fileID: 0}
   _statRanges: []
   Type: 5

@@ -152,6 +152,8 @@ HUD                [Canvas, CanvasScaler, GraphicRaycaster, HUDManager]
   WorldMap         [WorldMapHUD, CanvasGroup]?   ← keep near the bottom (draws on top)
   Character        [CharacterPanel, CanvasGroup]?
   Crafting         [CraftingPanel, CanvasGroup]?
+  Dialogue         [DialoguePanel, CanvasGroup]?
+  Shop             [ShopPanel, CanvasGroup]?
   DevConsole       [DevConsolePanel, CanvasGroup]?
   SettingsMenu     [SettingsMenu]
 ```
@@ -309,6 +311,41 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 
 - Attachments need a free slot: gear only has slots when its category/definition has a `_rollProfile` (weapons have none yet — see [Assets](#assets)).
 - Armor slot restrictions come from the attachment's `_armorSlots` (empty = fits anything, including weapons).
+
+## Vendors & Dialogue
+
+```
+Gunsmith           [Collider, Npc, Vendor]      ← any NPC: a Collider and an Npc; add a Vendor to trade
+HUD
+  Dialogue         [DialoguePanel, CanvasGroup]
+  Shop             [ShopPanel, CanvasGroup]
+```
+
+| Component | Assign | Notes |
+|---|---|---|
+| **Npc** | `_displayName`, `_dialogue` = a `DialogueDefinition`, `_faceListener` | Interact to talk. Needs a non-trigger Collider within the Player's interact range. |
+| **Vendor**? | `_displayName`, `_catalog` = a `ShopCatalog`, `_seed`? (empty = new stock each play), `_restockInterval`? (0 = once) | Opened by a dialogue choice with `OpenShopDialogueAction`, or by anything calling `OpenFor(player)`. |
+| **DialoguePanel** (HUD) | `_input` = Player | Choices can also be picked with the weapon-slot keys (1–4). |
+| **ShopPanel** (HUD) | `_input` = Player | |
+| **PlayerInventory** | `_startingStacks` += `Economy/CreditsCurrency` × amount | Money is an inventory item. Sandbox starts with 1,500 cr. |
+
+**Dialogue assets** (`Create › CGD › Dialogue › …`):
+- **Dialogue**: nodes with an `Id`, a line of `Text` and `Choices`.
+- **Choices**: each has `Text`, `Next` (a node Id; empty = end), optional `Conditions` and `Actions`.
+- **Actions** are shared assets:
+  - `OpenShopDialogueAction` opens the speaker's Vendor.
+- **Conditions** are one asset per rule:
+  - `Has Item` shows a choice only while the player carries an item.
+
+**Shop assets** (`Create › CGD › Economy › …`):
+- **Shop Catalog**: the currency, a `PriceTable`, a list of **stock sources**, and whether the vendor buys items and takes trade-ins.
+- **Item Stock**: fixed goods. Stackables are sold in bundles; gear rolls fresh on each restock. The price comes from the price table unless overridden.
+- **Rolled Weapon Stock**: N weapons from a set of categories and tiers.
+- **Price Table**: the quality → value curve, buy markup and sell ratio. Every item's worth starts from its `_baseValue` (on the item or weapon-category asset).
+
+The Sandbox **Gunsmith** stands at (5, 0, −3):
+- It uses `GunsmithDialogue` and `GunsmithShopCatalog`: ammo for every caliber, plus 4–6 rolled weapons.
+- Rolled weapons are all Common until the weapon categories get a `_rollProfile` (see [Assets](#assets)). The stock's tier range needs one to have any effect.
 
 ## Dev Console
 
@@ -473,6 +510,8 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Audio/` | `DefaultSurfaceDatabase` | PlayerFootsteps |
 | `Level/` | `DefaultLevelBuildSettings` (Gridbox materials, room rules without prefabs) | LevelBuilder |
 | `Impacts/` | `DefaultImpactDatabase` (empty effects) | ImpactSpawner |
+| `Economy/` | `CreditsCurrency`, `DefaultPriceTable`, `Shops/GunsmithShopCatalog`, `Stock/GunsmithAmmoStock`, `Stock/GunsmithWeaponStock` | Vendor, PlayerInventory, DevCatalog |
+| `Dialogue/` | `GunsmithDialogue`, `Actions/OpenShopDialogueAction` | Npc |
 
 **Sounds** — every `SoundBank` slot is optional; systems stay silent without one. There are no audio clips in the project yet, so no `SoundBank` assets exist.
 

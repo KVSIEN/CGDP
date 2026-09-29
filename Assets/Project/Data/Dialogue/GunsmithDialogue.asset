@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2539d8f4ac4c45a4867fbb72f18c5a04, type: 3}
+  m_Name: GunsmithDialogue
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Dialogue.DialogueDefinition
+  _startNode: greeting
+  _nodes:
+  - Id: greeting
+    Text: Rounds for every caliber, and a few pieces I've tuned myself. Credits only.
+    Choices:
+    - Text: Let's trade.
+      Next: 
+      Conditions: []
+      Actions:
+      - {fileID: 11400000, guid: 7fb567a497c1415c9e7f234fc121efed, type: 2}
+    - Text: Who are you?
+      Next: about
+      Conditions: []
+      Actions: []
+    - Text: Just looking. Bye.
+      Next: 
+      Conditions: []
+      Actions: []
+  - Id: about
+    Text: Just the one who keeps this range stocked. Every gun on my table was rolled fresh this morning. None of them are the same twice.
+    Choices:
+    - Text: Show me what you've got.
+      Next: 
+      Conditions: []
+      Actions:
+      - {fileID: 11400000, guid: 7fb567a497c1415c9e7f234fc121efed, type: 2}
+    - Text: Back to business.
+      Next: greeting
+      Conditions: []
+      Actions: []
+    - Text: Goodbye.
+      Next: 
+      Conditions: []
+      Actions: []

@@ -7,6 +7,7 @@
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Economy (currency items, price tables, vendors with stock sources, buying/selling/trade-ins) and branching NPC dialogue with actions and conditions; Sandbox Gunsmith vendor
 - Settings tabs (audio, video, accessibility), character animation bridge and ragdolls, levels generated from map graphs, per-surface impact effects and decals
 - Stealth: hiding in bushes and smoke, stealth ability, proximity reveal, smoke grenade, stealth HUD
 - Equipment slots and attachment fitting, quick-use consumables, crafting stations and recipes, dev console with cheats

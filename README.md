@@ -19,8 +19,8 @@ Assets/
     Art/                    Animations, Fonts, Materials, PhysicsMaterials, Shaders, Textures
     Audio/                  Music, SFX
     Data/                   ScriptableObject assets, one folder per feature
-      Abilities/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Enemies/  Feedback/  Flow/  Impacts/  Input/  Items/  Level/
-      Loot/  Map/  Meters/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
+      Abilities/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Dialogue/  Economy/  Enemies/  Feedback/  Flow/  Impacts/
+      Input/  Items/  Level/  Loot/  Map/  Meters/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters, Environment, Pickups, UI, VFX, Weapons
     Scenes/                 Sandbox.unity (+ its baked NavMesh folder)
@@ -34,6 +34,9 @@ Assets/
                             Random/ — Seed, RandomStream, SeedVariants; StateMachine/ — StateMachine<T>, IState)
       Crafting/             RecipeDefinition, Crafter (rules), CraftingStation
       DevTools/             dev console: DevConsole (commands), DevCommands (cheats), DevCatalog
+      Dialogue/             DialogueDefinition (nodes, choices), Conversation (runtime), Npc, Actions/, Conditions/
+      Economy/              CurrencyDefinition, Wallet, PriceTable, Vendor; Shops/ — Shop (buy/sell/trade-in),
+                            ShopCatalog, stock sources (ItemStock, RolledWeaponStock), listings
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window)
       Enemies/              enemy components, perception, and AI/ (state classes)
       Feedback/             FeedbackBus, FeedbackPreset, FeedbackPlayer (feed, flash, rumble, shake), combat/quest feedback

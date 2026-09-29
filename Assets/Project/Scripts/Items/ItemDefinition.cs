@@ -20,6 +20,8 @@ namespace CGD.Items
         [SerializeField] private ItemTier _tier = ItemTier.Common;
         [Tooltip("Weight per unit (kg). Stackables multiply by stack count; gear counts once.")]
         [SerializeField, Min(0f)] private float _weight = 0.1f;
+        [Tooltip("Worth of one unit before quality, in the standard currency. Shops price from it; 0 = can't be bought or sold")]
+        [SerializeField, Min(0)] private int _baseValue = 1;
 
         public string   DisplayName => string.IsNullOrEmpty(_displayName) ? name : _displayName;
         public string   Description => _description;
@@ -27,6 +29,7 @@ namespace CGD.Items
         public Reality  Reality     => _reality;
         public ItemTier Tier        => _tier;
         public float    Weight      => _weight;
+        public int      BaseValue   => _baseValue;
 
         // Stackables override this. Gear stays at 1 because every piece is unique.
         public virtual int MaxStack => 1;

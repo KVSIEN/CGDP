@@ -36,11 +36,6 @@ namespace CGD.UI
         private static readonly Color Footer  = new(1f,    1f,    1f,    0.70f);
 
         // Standard loot-tier palette — reusable later for inventory tooltips.
-        private static readonly Color TierCommon    = new(0.75f, 0.75f, 0.75f, 1f);
-        private static readonly Color TierUncommon  = new(0.30f, 0.85f, 0.30f, 1f);
-        private static readonly Color TierRare      = new(0.30f, 0.60f, 0.90f, 1f);
-        private static readonly Color TierEpic      = new(0.70f, 0.35f, 0.90f, 1f);
-        private static readonly Color TierLegendary = new(0.90f, 0.70f, 0.30f, 1f);
 
         // 5 rows per column captures the essentials without turning into a wall of
         // numbers; contextual footer picks up the mode-specific extras.
@@ -111,7 +106,7 @@ namespace CGD.UI
 
             _nameText.text = string.IsNullOrEmpty(d.WeaponName) ? "Weapon" : d.WeaponName;
 
-            _subtitleText.color = TierColor(weapon.Tier);
+            _subtitleText.color = TierColors.Of(weapon.Tier);
             _subtitleText.text  = BuildSubtitle(weapon, d);
 
             SetRow(0, _leftKeys, _leftVals,  "Damage",    d.Damage.ToString("0.#"));
@@ -202,14 +197,6 @@ namespace CGD.UI
             _                       => "None",
         };
 
-        private static Color TierColor(ItemTier tier) => tier switch
-        {
-            ItemTier.Uncommon  => TierUncommon,
-            ItemTier.Rare      => TierRare,
-            ItemTier.Epic      => TierEpic,
-            ItemTier.Legendary => TierLegendary,
-            _                  => TierCommon,
-        };
 
         private void BuildPanel()
         {
@@ -254,7 +241,7 @@ namespace CGD.UI
             _subtitleText = UIFactory.MakeText("Subtitle", _rectTransform);
             _subtitleText.fontSize  = 11f;
             _subtitleText.fontStyle = FontStyles.Bold;
-            _subtitleText.color     = TierCommon;
+            _subtitleText.color     = TierColors.Of(ItemTier.Common);
             _subtitleText.alignment = TextAlignmentOptions.MidlineLeft;
             PlaceRow(_subtitleText.rectTransform, y, subtitleHeight);
             y -= subtitleHeight + ruleGap;

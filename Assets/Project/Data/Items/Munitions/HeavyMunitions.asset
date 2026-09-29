@@ -18,5 +18,6 @@ MonoBehaviour:
   _reality: 0
   _tier: 0
   _weight: 0.1
+  _baseValue: 2
   _ammoType: 4
   _maxStack: 999

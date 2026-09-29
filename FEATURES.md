@@ -506,3 +506,20 @@
 - Melee and bullets can look and sound different on the same surface
 - Decals stick to moving objects such as doors, and disappear with objects that break. Only the newest ones are kept (128 by default), so long fights never pile up
 - Characters with a ragdoll go limp when they die and are knocked away from whoever landed the killing blow. They get back up in a clean pose when revived or reused
+
+## Economy & Shops
+- Money is carried like any other item. Credits are the standard currency, and more currencies can exist side by side (each shop names the one it takes). Anything that can hand out items can hand out money: loot, pickups, quest rewards, the dev console (`/give credits 500`)
+- Vendors sell from a shelf that is stocked when the level starts, and optionally restocked on a timer. The same vendor seed always gives the same shelf
+- Goods can be bundles of stackable items (30 rounds, 2 bandages), rolled gear, or freshly generated weapons, each vendor mixing whatever its catalog lists
+- Prices follow each item's worth: stackables per unit, rolled gear and weapons scaled by quality (a Legendary is worth several times a Common of the same kind). Vendors can charge a markup
+- Items can be limited in number (sold out until the next restock) or unlimited
+- A bought weapon goes straight into a free weapon slot. With every slot full it replaces the weapon in hand, which the vendor takes in trade and credits against the price. The shop shows this before you buy
+- The player can sell items from their pack for a fraction of their worth. Cheap bulk goods like ammo sell in the smallest bundle worth a coin (Shift sells the whole stack). Nothing can be bought and sold back for a profit
+- The shop window lists the shelf in tier colours with prices, what's out of reach (can't afford, no free slot) and the player's balance
+
+## Dialogue & NPCs
+- NPCs can be talked to with the Interact key. They turn to face the player and open a dialogue window with their name, their line and the player's replies
+- Conversations branch: replies lead to other lines, loop back, or end the talk. The first four replies can also be picked with the number keys
+- Replies can do things as well as move the talk along, such as opening the NPC's shop. Replies can also be shown only when a condition holds (for example, only while the player carries a certain item)
+- Closing the window walks away from the conversation at any point
+- In the Sandbox, the **Gunsmith** greets the player. "Let's trade" opens a shop with ammo for every caliber and a rotating selection of randomly rolled weapons. The player starts with 1,500 credits
