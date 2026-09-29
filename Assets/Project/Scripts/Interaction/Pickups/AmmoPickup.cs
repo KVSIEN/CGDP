@@ -19,6 +19,8 @@ namespace CGD.Interaction
         public string GetInteractLabel(GameObject interactor) =>
             _munition != null ? $"Pick Up  {_munition.DisplayName} ×{_amount}" : "Pick Up  Ammo";
 
+        public bool IgnoreLineOfSight => true;
+
         public bool CanInteract(GameObject player) =>
             _munition != null && _amount > 0 && player.TryGetComponent(out PlayerInventory _);
 

@@ -29,6 +29,8 @@ namespace CGD.Interaction
         // A pooled pickup is handed its weapon by whoever spawns it (see LootDropper).
         public void OnDespawned() => _weapon = null;
 
+        public bool IgnoreLineOfSight => true;
+
         public bool CanInteract(GameObject player) =>
             Weapon != null && player.TryGetComponent<PlayerWeaponLoadout>(out _);
 

@@ -18,7 +18,7 @@ namespace CGD.UI
         [SerializeField] private Color _textColor = new Color(0.92f, 0.92f, 0.92f, 1f);
 
         [Header("Layout")]
-        [SerializeField] private Vector2 _screenPadding = new Vector2(20f, 20f);
+        [SerializeField] private Vector2 _screenPadding = new Vector2(20f, 64f);
         [SerializeField] private Vector2 _innerPadding = new Vector2(12f, 12f);
         [SerializeField] private float _panelWidth = 200f;
         [SerializeField] private float _barHeight = 8f;

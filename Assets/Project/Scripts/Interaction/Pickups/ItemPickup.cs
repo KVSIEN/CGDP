@@ -41,6 +41,8 @@ namespace CGD.Interaction
             return _count > 1 ? $"Pick Up  {_item.DisplayName} ×{_count}" : $"Pick Up  {_item.DisplayName}";
         }
 
+        public bool IgnoreLineOfSight => true;
+
         public bool CanInteract(GameObject interactor) =>
             (_instance != null || _item != null) && interactor.TryGetComponent(out PlayerInventory _);
 

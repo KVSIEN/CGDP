@@ -21,6 +21,7 @@ namespace CGD.UI
 
         private GameObject _rebindOverlay;
         private TextMeshProUGUI _conflictText;
+        private TextMeshProUGUI _promptText;
 
         private TextMeshProUGUI[] _primaryLabels;
         private TextMeshProUGUI[] _secondaryLabels;
@@ -58,7 +59,9 @@ namespace CGD.UI
                 BeginRebind((GameAction)_listeningAction, _listeningPrimary);
             }
 
-            _rebindOverlay.SetActive(IsListening);
+            // Stays up while a conflict warning is showing, with the prompt swapped for it.
+            _rebindOverlay.SetActive(IsListening || _conflictMessageTimer > 0f);
+            _promptText.gameObject.SetActive(IsListening);
 
             if (_conflictMessageTimer > 0f)
             {
@@ -75,12 +78,15 @@ namespace CGD.UI
         public void CancelRebind()
         {
             int prevAction = _listeningAction;
+            bool rebindWasRunning = _rebindStarted;
 
             _rebindOperation?.Cancel();
             _rebindOperation      = null;
             _listeningAction      = -1;
             _rebindStarted        = false;
             _conflictMessageTimer = 0f;
+
+            if (rebindWasRunning) _input.RebuildActions(); // re-enable the action and drop the transient override
 
             if (prevAction >= 0)
             {
@@ -101,6 +107,8 @@ namespace CGD.UI
         private void BeginRebind(GameAction action, bool primary)
         {
             var inputAction = _input.GetInputAction(action);
+            // Unity refuses to rebind an enabled action; RebuildActions() re-enables it afterwards.
+            inputAction.Disable();
             int bindingIndex = primary ? 0 : 1;
 
             _rebindOperation = inputAction.PerformInteractiveRebinding(bindingIndex)
@@ -303,27 +311,38 @@ namespace CGD.UI
             _rebindOverlay = overlayGO;
 
             var overlayImg = overlayGO.GetComponent<Image>();
-            overlayImg.color = new Color(0f, 0f, 0f, 0.6f);
+            overlayImg.color = new Color(0f, 0f, 0f, 0.8f);
             overlayImg.raycastTarget = true; // block clicks to the window while listening
-            UIFactory.Stretch(overlayGO.GetComponent<RectTransform>());
+            var overlayRt = overlayGO.GetComponent<RectTransform>();
+            UIFactory.Stretch(overlayRt);
 
-            var promptText = UIFactory.MakeText("Prompt", overlayGO.GetComponent<RectTransform>());
-            promptText.text = "Press any key, mouse, or gamepad button\n(Escape to cancel)";
-            promptText.fontSize = 16f;
+            // Opaque card so the prompt never blends into the keybinding rows behind it.
+            var card = UIFactory.MakeImage("PromptCard", overlayRt);
+            card.color = new Color(0.1f, 0.1f, 0.15f, 1f);
+            var cardRt = card.rectTransform;
+            cardRt.anchorMin = cardRt.anchorMax = cardRt.pivot = new Vector2(0.5f, 0.5f);
+            cardRt.anchoredPosition = Vector2.zero;
+            cardRt.sizeDelta = new Vector2(440f, 130f);
+
+            var promptText = UIFactory.MakeText("Prompt", cardRt);
+            _promptText = promptText;
+            promptText.text = "Press any key, mouse or gamepad button\n<size=13><color=#9AA0B0>Escape to cancel</color></size>";
+            promptText.fontSize = 17f;
+            promptText.color = Color.white;
             promptText.alignment = TextAlignmentOptions.Center;
             promptText.rectTransform.anchorMin = promptText.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
             promptText.rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            promptText.rectTransform.anchoredPosition = new Vector2(0f, 25f);
-            promptText.rectTransform.sizeDelta = new Vector2(400f, 50f);
+            promptText.rectTransform.anchoredPosition = new Vector2(0f, 14f);
+            promptText.rectTransform.sizeDelta = new Vector2(410f, 60f);
 
-            _conflictText = UIFactory.MakeText("ConflictMessage", overlayGO.GetComponent<RectTransform>());
+            _conflictText = UIFactory.MakeText("ConflictMessage", cardRt);
             _conflictText.fontSize = 14f;
-            _conflictText.color = new Color(1f, 0.3f, 0.3f, 1f);
+            _conflictText.color = new Color(1f, 0.4f, 0.4f, 1f);
             _conflictText.alignment = TextAlignmentOptions.Center;
             _conflictText.rectTransform.anchorMin = _conflictText.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
             _conflictText.rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            _conflictText.rectTransform.anchoredPosition = new Vector2(0f, -25f);
-            _conflictText.rectTransform.sizeDelta = new Vector2(400f, 30f);
+            _conflictText.rectTransform.anchoredPosition = new Vector2(0f, -38f);
+            _conflictText.rectTransform.sizeDelta = new Vector2(410f, 30f);
 
             _rebindOverlay.SetActive(false);
         }

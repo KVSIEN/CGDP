@@ -22,5 +22,9 @@ namespace CGD.Interaction
         // Breaks ties between overlapping interactables: higher wins before look direction
         // is considered (e.g. a keycard lying in front of the door it opens).
         int InteractPriority => 0;
+
+        // True skips PlayerInteraction's line-of-sight check, so the target can be used while
+        // hidden behind or sunk into geometry (pickups that fall through the floor).
+        bool IgnoreLineOfSight => false;
     }
 }

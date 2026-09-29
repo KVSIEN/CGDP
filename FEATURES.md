@@ -33,6 +33,7 @@
   - In third person: pulls the camera in closer and centers the shoulder offset
   - The held weapon smoothly raises from its hip position to a centred aim position and back
   - Reduces look sensitivity while aiming; all transitions are smooth
+  - Movement slows to the ADS walk speed (a Player Movement Settings value) while aiming; it caps walking and sprinting but never speeds up crouching
 
 ## HUD / UI
 - Modular HUD system — elements (crosshair, stats) are independent and can be shown or hidden individually
@@ -102,6 +103,7 @@
 - Ammo pickups: `AmmoPickup` adds a set amount of a specific `MunitionDefinition` to the player's shared inventory — every weapon that draws from that pool benefits at once
 - Health pickups: `HealthPickup` restores a set amount of health
 - Pickups only show a prompt when they would do something — no health pickup at full health, no ammo pickup without a weapon — so they aren't wasted
+- Pickups (weapons, ammo, health, items) can be picked up even when hidden behind a wall or sunk into the floor, as long as they are within range and inside the camera view (anything off-screen is ignored); doors, switches and containers still need a clear line of sight
 - Doors: press E on a `Door` to swing it open or closed (no animation — a plain procedural rotation)
 - Locked doors — a door can require an item (e.g. a keycard); without it the prompt reads "Locked (Red Keycard)", with it the prompt reads "Unlock" and the door opens and stays unlocked; the key can be used up or kept
 - Switches: press E on a `Switch` to toggle one or more linked doors remotely (switches bypass door locks)

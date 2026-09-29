@@ -18,9 +18,13 @@ namespace CGD.Player
         [SerializeField] private Transform _forwardReference;   // assign camera transform
 
         [Header("Line of Sight")]
-        [Tooltip("Ignore interactables with solid geometry between the view and them")]
+        [Tooltip("Ignore interactables with solid geometry between the view and them. Pickups are exempt.")]
         [SerializeField] private bool      _requireLineOfSight = true;
         [SerializeField] private LayerMask _occlusionMask      = ~0;
+
+        [Header("View")]
+        [Tooltip("Ignore interactables outside the camera's view frustum")]
+        [SerializeField] private bool      _requireOnScreen    = true;
 
         public bool          HasTarget      => _current != null;
         public string        TargetLabel    => _current != null ? _current.GetInteractLabel(gameObject) : string.Empty;
@@ -40,6 +44,8 @@ namespace CGD.Player
         private Collider           _currentCollider;
         private float              _holdTimer;
         private bool               _holdCompleted;
+        private Camera             _camera;
+        private readonly Plane[]   _frustum = new Plane[6];
 
         private readonly Collider[]   _buffer    = new Collider[16];
         private readonly RaycastHit[] _losBuffer = new RaycastHit[8];
@@ -48,6 +54,8 @@ namespace CGD.Player
         private void Awake()
         {
             _input = GetComponent<PlayerInputHandler>();
+            if (_forwardReference == null || !_forwardReference.TryGetComponent(out _camera))
+                _camera = GetComponentInChildren<Camera>(true);
         }
 
         private void Update()
@@ -114,6 +122,9 @@ namespace CGD.Player
             Vector3 forward   = _forwardReference != null ? _forwardReference.forward : transform.forward;
             Vector3 eyeOrigin = _forwardReference != null ? _forwardReference.position : transform.position;
 
+            bool checkView = _requireOnScreen && _camera != null;
+            if (checkView) GeometryUtility.CalculateFrustumPlanes(_camera, _frustum);
+
             IInteractable best         = null;
             Collider      bestCollider = null;
             int           bestPriority = int.MinValue;
@@ -130,13 +141,14 @@ namespace CGD.Player
                 Vector3 dir       = mag > 0.05f ? toTarget / mag : forward;
                 float   alignment = Vector3.Dot(forward, dir);
                 if (alignment <= 0f) continue;
+                if (checkView && !GeometryUtility.TestPlanesAABB(_frustum, col.bounds)) continue;
 
                 // Priority decides first; then the score favours objects more aligned with
                 // the look direction, with distance secondary.
                 int   priority = candidate.InteractPriority;
                 float score    = alignment - mag / _range;
                 if (priority < bestPriority || (priority == bestPriority && score <= bestScore)) continue;
-                if (_requireLineOfSight && IsOccluded(eyeOrigin, dir, mag, col)) continue;
+                if (_requireLineOfSight && !candidate.IgnoreLineOfSight && IsOccluded(eyeOrigin, dir, mag, col)) continue;
 
                 bestPriority = priority;
                 bestScore    = score;

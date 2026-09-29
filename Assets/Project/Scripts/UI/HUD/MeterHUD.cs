@@ -24,7 +24,7 @@ namespace CGD.UI
 
         [Header("Layout")]
         [Tooltip("Bottom-left corner; leave room for the health panel below")]
-        [SerializeField] private Vector2 _screenPadding = new Vector2(20f, 76f);
+        [SerializeField] private Vector2 _screenPadding = new Vector2(20f, 126f);
         [SerializeField] private Vector2 _innerPadding  = new Vector2(12f, 10f);
         [SerializeField] private float   _panelWidth    = 200f;
         [SerializeField] private float   _barHeight     = 6f;
