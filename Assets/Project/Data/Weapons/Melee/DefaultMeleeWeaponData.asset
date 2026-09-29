@@ -17,52 +17,68 @@ MonoBehaviour:
   - Damage: 20
     ArmorPenetration: 0
     DamageType: 0
+    CriticalMultiplier: 1.5
     WindupTime: 0.08
     ActiveTime: 0.1
     RecoveryTime: 0.2
+    HitShape: 1
     Range: 1.6
     Radius: 0.6
-    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+    SweepArcDeg: 90
+    SweepRays: 5
     OnHitEffects: []
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
   - Damage: 22
     ArmorPenetration: 0
     DamageType: 0
+    CriticalMultiplier: 1.5
     WindupTime: 0.08
     ActiveTime: 0.1
     RecoveryTime: 0.22
+    HitShape: 0
     Range: 1.6
     Radius: 0.6
-    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+    SweepArcDeg: 90
+    SweepRays: 5
     OnHitEffects: []
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
   - Damage: 30
     ArmorPenetration: 0.1
     DamageType: 0
+    CriticalMultiplier: 1.5
     WindupTime: 0.12
     ActiveTime: 0.1
     RecoveryTime: 0.35
+    HitShape: 2
     Range: 1.8
     Radius: 0.75
-    DebugColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+    SweepArcDeg: 90
+    SweepRays: 5
     OnHitEffects: []
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   HeavyAttack:
     Damage: 55
     ArmorPenetration: 0.3
     DamageType: 0
+    CriticalMultiplier: 1.5
     WindupTime: 0.3
     ActiveTime: 0.12
     RecoveryTime: 0.5
+    HitShape: 2
     Range: 2
     Radius: 0.9
-    DebugColor: {r: 1, g: 0, b: 0, a: 1}
+    SweepArcDeg: 90
+    SweepRays: 5
     OnHitEffects: []
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 0, b: 0, a: 1}
   HeavyHoldThreshold: 0.35
   ComboResetTime: 1
   HitMask:

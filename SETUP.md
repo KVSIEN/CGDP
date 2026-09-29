@@ -283,7 +283,7 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 | **DevCommands** (Player) | `_catalog` = `DevTools/DevCatalog`, `_aim` = Main Camera, `_quests`? = QuestTracker, `_map`? = WorldMapArea | Development builds only unless `_allowInReleaseBuilds`. |
 | **DevConsolePanel** (HUD) | `_input` = Player, `_commands` = the Player's DevCommands | Opens with ` (backquote). |
 
-- Type `help` for commands. Anything the console can hand out by name is listed in `DevCatalog` — add new items, weapon categories, enemy prefabs and buffs there.
+- Type `/help` for commands (every command starts with `/`). Anything the console can hand out by name is listed in `DevCatalog` — add new items, weapon categories, enemy prefabs and buffs there.
 
 ## Stats & Buffs
 

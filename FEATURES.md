@@ -33,6 +33,7 @@
   - In third person: pulls the camera in closer and centers the shoulder offset
   - The held weapon smoothly raises from its hip position to a centred aim position and back
   - Reduces look sensitivity while aiming; all transitions are smooth
+  - Movement slows to the ADS walk speed (a Player Movement Settings value) while aiming; it caps walking and sprinting but never speeds up crouching
 
 ## HUD / UI
 - Modular HUD system — elements (crosshair, stats) are independent and can be shown or hidden individually
@@ -102,6 +103,7 @@
 - Ammo pickups: `AmmoPickup` adds a set amount of a specific `MunitionDefinition` to the player's shared inventory — every weapon that draws from that pool benefits at once
 - Health pickups: `HealthPickup` restores a set amount of health
 - Pickups only show a prompt when they would do something — no health pickup at full health, no ammo pickup without a weapon — so they aren't wasted
+- Pickups (weapons, ammo, health, items) can be picked up even when hidden behind a wall or sunk into the floor, as long as they are within range and inside the camera view (anything off-screen is ignored); doors, switches and containers still need a clear line of sight
 - Doors: press E on a `Door` to swing it open or closed (no animation — a plain procedural rotation)
 - Locked doors — a door can require an item (e.g. a keycard); without it the prompt reads "Locked (Red Keycard)", with it the prompt reads "Unlock" and the door opens and stays unlocked; the key can be used up or kept
 - Switches: press E on a `Switch` to toggle one or more linked doors remotely (switches bypass door locks)
@@ -170,7 +172,8 @@
 - Press Escape at any time to open or close the settings menu
 - Mouse and gamepad sensitivity sliders with live preview; changes are applied and saved on confirmation
 - Full keybinding editor — every action shows its primary and secondary slot; click a slot then press any key, mouse, or gamepad button to rebind it
-- Duplicate binding protection — rebinding to a key/mouse/gamepad button already used by another action (or the same action's other slot) is rejected with an on-screen warning instead of silently overwriting it
+- While a slot is listening, tapping Escape cancels and leaves the binding as it was; holding Escape clears the slot so it is unbound
+- Duplicate binding warning — the same key, mouse button or gamepad button can be bound to several actions; when that happens a brief orange notice names the other actions, and every slot sharing a control stays highlighted orange in the keybinding list until one of them is changed
 - Reset to Defaults button restores all keybindings to their original values
 - All settings (sensitivity and keybindings) are saved to disk and automatically restored on next launch
 
@@ -441,11 +444,12 @@
 - Included recipes: Bandage ×2 (2 Cloth), Combat Stim (4 Scrap Metal, 1 Cloth), Extended Magazine (12 Scrap Metal), Combat Vest (20 Scrap Metal, 6 Cloth)
 
 ## Dev Console
-- Backquote (`) opens a console in development builds; commands have help, history (Up/Down) and Tab completion
-- `give <item> [count]`, `weapon <category> [seed] [tier]` (same seed and tier = same gun), `spawn <enemy> [count]`
-- `god`, `heal`, `buff <preset> [seconds]`, `timescale <x>`, `revealmap`, `cloak [seconds]`
-- `quest list`, `quest start|complete <quest>`, `quest step <quest> <n>` to jump straight to any objective
-- Names can be partial ("give scrap 20")
+- Backquote (`) opens a console in development builds; commands start with a slash (`/help`), with history (Up/Down) and Tab completion. Escape closes it
+- While the console is open every other keybind is muted, so typing a letter never triggers a hotkey like the inventory, map or weapon slots
+- `/give <item> [count]`, `/weapon <category> [seed] [tier]` (same seed and tier = same gun), `/spawn <enemy> [count]`
+- `/god`, `/heal`, `/buff <preset> [seconds]`, `/timescale <x>`, `/revealmap`, `/cloak [seconds]`
+- `/quest list`, `/quest start|complete <quest>`, `/quest step <quest> <n>` to jump straight to any objective
+- Names can be partial ("/give scrap 20")
 
 ## Minimap & World Map
 - A round minimap in the top-right corner shows the area around the player, turning with the view so the player arrow always points up (or fixed north-up, per setting)

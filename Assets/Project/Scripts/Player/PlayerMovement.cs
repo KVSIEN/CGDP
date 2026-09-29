@@ -205,9 +205,12 @@ namespace CGD.Player
                 return;
             }
 
-            float targetSpeed = (IsCrouching ? _settings.CrouchSpeed
+            float stanceSpeed = IsCrouching ? _settings.CrouchSpeed
                 : IsSprinting ? _settings.SprintSpeed
-                : _settings.WalkSpeed) * _stunnable.SpeedMultiplier;
+                : _settings.WalkSpeed;
+            if (_input.GetAction(GameAction.AimDownSights))
+                stanceSpeed = Mathf.Min(stanceSpeed, _settings.AdsWalkSpeed);
+            float targetSpeed = stanceSpeed * _stunnable.SpeedMultiplier;
 
             _moveDirection = Vector3.zero;
             if (rawInput.magnitude > 0.01f)

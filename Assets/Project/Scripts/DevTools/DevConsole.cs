@@ -12,6 +12,8 @@ namespace CGD.DevTools
         private readonly Dictionary<string, Command> _commands = new(StringComparer.OrdinalIgnoreCase);
         private readonly List<string> _history = new();
 
+        public const char CommandPrefix = '/';
+
         public DevConsole()
         {
             Register("help", "[command]", "List commands, or show one command's usage", Help);
@@ -24,12 +26,18 @@ namespace CGD.DevTools
 
         public string Execute(string line)
         {
-            string[] tokens = Tokenize(line);
-            if (tokens.Length == 0) return string.Empty;
+            string trimmed = (line ?? string.Empty).Trim();
+            if (trimmed.Length == 0) return string.Empty;
 
-            _history.Add(line.Trim());
+            _history.Add(trimmed);
+            if (trimmed[0] != CommandPrefix)
+                return $"Commands start with {CommandPrefix}  —  try {CommandPrefix}help.";
+
+            string[] tokens = Tokenize(trimmed.Substring(1));
+            if (tokens.Length == 0) return $"Type {CommandPrefix}help for commands.";
+
             if (!_commands.TryGetValue(tokens[0], out Command command))
-                return $"Unknown command '{tokens[0]}'. Type help.";
+                return $"Unknown command '{tokens[0]}'. Type {CommandPrefix}help.";
 
             var args = new string[tokens.Length - 1];
             Array.Copy(tokens, 1, args, 0, args.Length);
@@ -40,7 +48,7 @@ namespace CGD.DevTools
             }
             catch (UsageException)
             {
-                return $"Usage: {command.Name} {command.Usage}";
+                return $"Usage: {CommandPrefix}{command.Name} {command.Usage}";
             }
             catch (Exception e)
             {
@@ -51,10 +59,11 @@ namespace CGD.DevTools
         // Command names starting with the typed prefix, alphabetical.
         public List<string> Complete(string prefix)
         {
+            prefix = (prefix ?? string.Empty).TrimStart(CommandPrefix);
             var matches = new List<string>();
             foreach (string name in _commands.Keys)
-                if (name.StartsWith(prefix ?? string.Empty, StringComparison.OrdinalIgnoreCase))
-                    matches.Add(name);
+                if (name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    matches.Add(CommandPrefix + name);
             matches.Sort(StringComparer.OrdinalIgnoreCase);
             return matches;
         }
@@ -83,7 +92,9 @@ namespace CGD.DevTools
         private string Help(string[] args)
         {
             if (args.Length > 0)
-                return _commands.TryGetValue(args[0], out Command c) ? $"{c.Name} {c.Usage}\n  {c.Description}" : $"Unknown command '{args[0]}'.";
+                return _commands.TryGetValue(args[0].TrimStart(CommandPrefix), out Command c)
+                    ? $"{CommandPrefix}{c.Name} {c.Usage}\n  {c.Description}"
+                    : $"Unknown command '{args[0]}'.";
 
             var names = new List<string>(_commands.Keys);
             names.Sort(StringComparer.OrdinalIgnoreCase);
@@ -92,7 +103,7 @@ namespace CGD.DevTools
             foreach (string name in names)
             {
                 Command c = _commands[name];
-                text.Append(c.Name).Append(' ').Append(c.Usage).Append("  — ").Append(c.Description).Append('\n');
+                text.Append(CommandPrefix).Append(c.Name).Append(' ').Append(c.Usage).Append("  — ").Append(c.Description).Append('\n');
             }
             return text.ToString().TrimEnd();
         }

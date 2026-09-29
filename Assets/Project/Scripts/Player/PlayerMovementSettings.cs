@@ -10,6 +10,8 @@ namespace CGD.Player
         public float WalkSpeed = 5f;
         public float SprintSpeed = 9f;
         public float CrouchSpeed = 2.5f;
+        [Tooltip("Speed cap while aiming down sights. Replaces walk/sprint speed (not added to it); never speeds up crouching.")]
+        public float AdsWalkSpeed = 3f;
         public float Acceleration = 25f;
         public float Deceleration = 40f;
         public float AirControl = 0.35f;

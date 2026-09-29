@@ -13,6 +13,8 @@ namespace CGD.Interaction
 
         public string GetInteractLabel(GameObject interactor) => "Pick Up  Health";
 
+        public bool IgnoreLineOfSight => true;
+
         public bool CanInteract(GameObject player) =>
             player.TryGetComponent(out PlayerHealth health) && !health.IsDead && health.Health < health.MaxHealth;
 

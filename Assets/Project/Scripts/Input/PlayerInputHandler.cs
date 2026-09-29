@@ -30,6 +30,21 @@ namespace CGD.Input
 
         public bool InputEnabled { get; set; } = true;
 
+        // True while the player is typing into a text field (the dev console). Overlay hotkeys
+        // that bypass InputEnabled (inventory, map, weapon slots...) are muted so typing "i"
+        // doesn't open the inventory. Stays true for the frame it ends, so the key that ended
+        // the entry (Escape) isn't also read as a hotkey by code that runs later that frame.
+        public bool TextEntryActive => _textEntryActive || _textEntryEndFrame == Time.frameCount;
+
+        private bool _textEntryActive;
+        private int  _textEntryEndFrame = -1;
+
+        public void SetTextEntry(bool active)
+        {
+            if (_textEntryActive && !active) _textEntryEndFrame = Time.frameCount;
+            _textEntryActive = active;
+        }
+
         private void Awake()
         {
             _actions = new InputAction[ActionCount];
@@ -180,7 +195,9 @@ namespace CGD.Input
         public bool WasPressed(GameAction action) => InputEnabled && (_actions[(int)action]?.WasPressedThisFrame() ?? false);
 
         // Bypasses InputEnabled — use only for overlay toggles (inventory, pause) that must work while input is locked
-        public bool WasPressedRaw(GameAction action) => _actions[(int)action]?.WasPressedThisFrame() ?? false;
+        // (still muted during text entry, except the console toggle itself)
+        public bool WasPressedRaw(GameAction action) =>
+            (!TextEntryActive || action == GameAction.Console) && (_actions[(int)action]?.WasPressedThisFrame() ?? false);
 
         // Exposes the underlying InputAction for the settings menu to drive
         // InputActionRebindingExtensions.PerformInteractiveRebinding directly.

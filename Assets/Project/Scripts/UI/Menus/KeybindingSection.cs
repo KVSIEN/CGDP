@@ -11,19 +11,26 @@ namespace CGD.UI
     public class KeybindingSection
     {
         private const float RowHeight = 28f;
+        private const float EscapeHoldToClear = 0.6f;
 
         private static readonly string[] ModeLabels = { "Press", "Hold", "Toggle", "Dbl" };
         private static readonly Color ModeSelectedColor   = new Color(0.3f, 0.55f, 1f, 0.95f);
         private static readonly Color ModeUnselectedColor = new Color(0.16f, 0.16f, 0.22f, 0.95f);
+        private static readonly Color SlotNormalColor  = new Color(0.16f, 0.16f, 0.22f, 0.95f);
+        private static readonly Color SlotSharedColor  = new Color(0.65f, 0.32f, 0.05f, 0.95f);
+        private static readonly Color SharedTextColor  = new Color(1f, 0.75f, 0.35f, 1f);
 
         private readonly PlayerInputHandler   _input;
         private readonly InputBindingSettings _bindings;
 
         private GameObject _rebindOverlay;
         private TextMeshProUGUI _conflictText;
+        private TextMeshProUGUI _promptText;
 
         private TextMeshProUGUI[] _primaryLabels;
         private TextMeshProUGUI[] _secondaryLabels;
+        private Image[] _primaryImages;
+        private Image[] _secondaryImages;
         private Image[][] _modeButtonImages;
 
         // Rebind state: -1 = not listening
@@ -34,6 +41,9 @@ namespace CGD.UI
         private InputActionRebindingExtensions.RebindingOperation _rebindOperation;
 
         // Transient warning shown when a rebind attempt conflicts with an existing binding
+        private float  _escapeHeldTime;
+        private bool   _escapeHoldHandled;
+
         private string _conflictMessage;
         private float  _conflictMessageTimer;
 
@@ -58,7 +68,10 @@ namespace CGD.UI
                 BeginRebind((GameAction)_listeningAction, _listeningPrimary);
             }
 
-            _rebindOverlay.SetActive(IsListening);
+            TickEscape(unscaledDeltaTime);
+            // Stays up while a conflict warning is showing, with the prompt swapped for it.
+            _rebindOverlay.SetActive(IsListening || _conflictMessageTimer > 0f);
+            _promptText.gameObject.SetActive(IsListening);
 
             if (_conflictMessageTimer > 0f)
             {
@@ -72,15 +85,56 @@ namespace CGD.UI
             }
         }
 
+        // Tap Escape = leave the slot as it was; hold Escape = unbind it.
+        private void TickEscape(float unscaledDeltaTime)
+        {
+            var escape = Keyboard.current?.escapeKey;
+            if (!IsListening || escape == null)
+            {
+                _escapeHeldTime    = 0f;
+                _escapeHoldHandled = false;
+                return;
+            }
+
+            if (escape.wasPressedThisFrame && _escapeHeldTime <= 0f) _escapeHeldTime = 0.0001f;
+
+            if (escape.isPressed)
+            {
+                if (_escapeHoldHandled) return;
+
+                _escapeHeldTime += unscaledDeltaTime;
+                if (_escapeHeldTime < EscapeHoldToClear) return;
+
+                _escapeHoldHandled = true;
+                ClearListeningSlot();
+                return;
+            }
+
+            if (_escapeHeldTime > 0f) CancelRebind();
+            _escapeHeldTime    = 0f;
+            _escapeHoldHandled = false;
+        }
+
+        private void ClearListeningSlot()
+        {
+            var action  = (GameAction)_listeningAction;
+            bool primary = _listeningPrimary;
+            CancelRebind();
+            WriteRebind(action, primary, string.Empty);
+        }
+
         public void CancelRebind()
         {
             int prevAction = _listeningAction;
+            bool rebindWasRunning = _rebindStarted;
 
             _rebindOperation?.Cancel();
             _rebindOperation      = null;
             _listeningAction      = -1;
             _rebindStarted        = false;
             _conflictMessageTimer = 0f;
+
+            if (rebindWasRunning) _input.RebuildActions(); // re-enable the action and drop the transient override
 
             if (prevAction >= 0)
             {
@@ -101,10 +155,13 @@ namespace CGD.UI
         private void BeginRebind(GameAction action, bool primary)
         {
             var inputAction = _input.GetInputAction(action);
+            // Unity refuses to rebind an enabled action; RebuildActions() re-enables it afterwards.
+            inputAction.Disable();
             int bindingIndex = primary ? 0 : 1;
 
             _rebindOperation = inputAction.PerformInteractiveRebinding(bindingIndex)
                 .WithControlsExcluding("<Keyboard>/escape")
+                .WithControlsExcluding("<Keyboard>/anyKey") // would also match the Escape press used to cancel/clear
                 .WithControlsExcluding("<Mouse>/position")
                 .WithControlsExcluding("<Mouse>/delta")
                 .OnMatchWaitForAnother(0.05f)
@@ -121,39 +178,37 @@ namespace CGD.UI
             _rebindOperation = null;
             _rebindStarted   = false;
 
-            GameAction? conflict = FindConflict(action, primary, path);
-            if (conflict.HasValue)
-            {
-                _input.RebuildActions(); // discard the transient override — nothing was persisted
-                _conflictMessage      = $"{BindingLabel(path)} is already bound to {conflict.Value}";
-                _conflictMessageTimer = 2.5f;
-                _listeningAction      = -1;
-
-                int row = RowIndexOf(action);
-                if (row >= 0) RefreshRow(row);
-                return;
-            }
-
+            // Sharing a control between actions is allowed; the player is warned and both slots
+            // stay highlighted in the list until one of them is changed.
+            string sharedWith = FindSharedActions(action, primary, path);
             WriteRebind(action, primary, path);
+
+            if (sharedWith.Length == 0) return;
+            _conflictMessage      = $"{BindingLabel(path)} is also bound to {sharedWith}";
+            _conflictMessageTimer = 3f;
         }
 
-        // Returns the action already using this control path, if any — excluding the exact
-        // slot currently being rebound (so re-picking the same input isn't a conflict with
-        // itself, but colliding with the binding's *other* slot still is).
-        private GameAction? FindConflict(GameAction action, bool primary, string path)
+        // Comma-separated actions that use this control path in a slot other than the one
+        // given (so a slot is never shared with itself); empty when the path is unshared.
+        private string FindSharedActions(GameAction action, bool primary, string path)
         {
-            if (string.IsNullOrEmpty(path)) return null;
+            if (string.IsNullOrEmpty(path)) return string.Empty;
 
+            var names = new System.Collections.Generic.List<string>();
             foreach (var b in _bindings.Bindings)
             {
                 bool isOwnPrimarySlot   = b.Action == action && primary;
                 bool isOwnSecondarySlot = b.Action == action && !primary;
 
-                if (!isOwnPrimarySlot   && b.PrimaryPath   == path) return b.Action;
-                if (!isOwnSecondarySlot && b.SecondaryPath == path) return b.Action;
+                bool shared = (!isOwnPrimarySlot && b.PrimaryPath == path)
+                           || (!isOwnSecondarySlot && b.SecondaryPath == path);
+                if (shared) names.Add(b.Action.ToString());
             }
-            return null;
+            return string.Join(", ", names);
         }
+
+        private bool IsShared(GameAction action, bool primary, string path) =>
+            FindSharedActions(action, primary, path).Length > 0;
 
         private void WriteRebind(GameAction action, bool primary, string path)
         {
@@ -172,8 +227,7 @@ namespace CGD.UI
             _listeningAction      = -1;
             _conflictMessageTimer = 0f;
 
-            int row = RowIndexOf(action);
-            if (row >= 0) RefreshRow(row);
+            RefreshAllRows();
         }
 
         private void StartListening(GameAction action, bool primary)
@@ -213,6 +267,8 @@ namespace CGD.UI
             int count = _bindings.Bindings.Count;
             _primaryLabels     = new TextMeshProUGUI[count];
             _secondaryLabels   = new TextMeshProUGUI[count];
+            _primaryImages     = new Image[count];
+            _secondaryImages   = new Image[count];
             _modeButtonImages  = new Image[count][];
 
             float contentHeight = count * RowHeight;
@@ -221,6 +277,8 @@ namespace CGD.UI
 
             for (int i = 0; i < count; i++)
                 BuildBindingRow(i, content, i * RowHeight);
+
+            RefreshAllRows(); // rows built earlier can only see sharing with later rows now
         }
 
         private static void MakeColumnHeader(RectTransform window, string label, float x, float width)
@@ -273,11 +331,13 @@ namespace CGD.UI
             UIFactory.Place(primaryBtn.GetComponent<RectTransform>(), new Vector2(145f, -rowY), new Vector2(120f, 24f));
             primaryBtn.onClick.AddListener(() => StartListening(b.Action, true));
             _primaryLabels[rowIndex] = primaryLabel;
+            _primaryImages[rowIndex] = (Image)primaryBtn.targetGraphic;
 
             var secondaryBtn = UIFactory.MakeButton("Secondary_" + rowIndex, content, "", out var secondaryLabel);
             UIFactory.Place(secondaryBtn.GetComponent<RectTransform>(), new Vector2(270f, -rowY), new Vector2(120f, 24f));
             secondaryBtn.onClick.AddListener(() => StartListening(b.Action, false));
             _secondaryLabels[rowIndex] = secondaryLabel;
+            _secondaryImages[rowIndex] = (Image)secondaryBtn.targetGraphic;
 
             var modeImages = new Image[ModeLabels.Length];
             float modeBtnWidth = 195f / ModeLabels.Length;
@@ -303,27 +363,38 @@ namespace CGD.UI
             _rebindOverlay = overlayGO;
 
             var overlayImg = overlayGO.GetComponent<Image>();
-            overlayImg.color = new Color(0f, 0f, 0f, 0.6f);
+            overlayImg.color = new Color(0f, 0f, 0f, 0.8f);
             overlayImg.raycastTarget = true; // block clicks to the window while listening
-            UIFactory.Stretch(overlayGO.GetComponent<RectTransform>());
+            var overlayRt = overlayGO.GetComponent<RectTransform>();
+            UIFactory.Stretch(overlayRt);
 
-            var promptText = UIFactory.MakeText("Prompt", overlayGO.GetComponent<RectTransform>());
-            promptText.text = "Press any key, mouse, or gamepad button\n(Escape to cancel)";
-            promptText.fontSize = 16f;
+            // Opaque card so the prompt never blends into the keybinding rows behind it.
+            var card = UIFactory.MakeImage("PromptCard", overlayRt);
+            card.color = new Color(0.1f, 0.1f, 0.15f, 1f);
+            var cardRt = card.rectTransform;
+            cardRt.anchorMin = cardRt.anchorMax = cardRt.pivot = new Vector2(0.5f, 0.5f);
+            cardRt.anchoredPosition = Vector2.zero;
+            cardRt.sizeDelta = new Vector2(440f, 130f);
+
+            var promptText = UIFactory.MakeText("Prompt", cardRt);
+            _promptText = promptText;
+            promptText.text = "Press any key, mouse or gamepad button\n<size=13><color=#9AA0B0>Tap Escape to cancel  ·  Hold Escape to clear the binding</color></size>";
+            promptText.fontSize = 17f;
+            promptText.color = Color.white;
             promptText.alignment = TextAlignmentOptions.Center;
             promptText.rectTransform.anchorMin = promptText.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
             promptText.rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            promptText.rectTransform.anchoredPosition = new Vector2(0f, 25f);
-            promptText.rectTransform.sizeDelta = new Vector2(400f, 50f);
+            promptText.rectTransform.anchoredPosition = new Vector2(0f, 14f);
+            promptText.rectTransform.sizeDelta = new Vector2(410f, 60f);
 
-            _conflictText = UIFactory.MakeText("ConflictMessage", overlayGO.GetComponent<RectTransform>());
+            _conflictText = UIFactory.MakeText("ConflictMessage", cardRt);
             _conflictText.fontSize = 14f;
-            _conflictText.color = new Color(1f, 0.3f, 0.3f, 1f);
+            _conflictText.color = SharedTextColor;
             _conflictText.alignment = TextAlignmentOptions.Center;
             _conflictText.rectTransform.anchorMin = _conflictText.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
             _conflictText.rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            _conflictText.rectTransform.anchoredPosition = new Vector2(0f, -25f);
-            _conflictText.rectTransform.sizeDelta = new Vector2(400f, 30f);
+            _conflictText.rectTransform.anchoredPosition = new Vector2(0f, -38f);
+            _conflictText.rectTransform.sizeDelta = new Vector2(410f, 30f);
 
             _rebindOverlay.SetActive(false);
         }
@@ -343,9 +414,23 @@ namespace CGD.UI
             _primaryLabels[rowIndex].text   = waitPri ? "▪▪▪" : BindingLabel(b.PrimaryPath);
             _secondaryLabels[rowIndex].text = waitSec ? "▪▪▪" : BindingLabel(b.SecondaryPath);
 
+            // Controls shared with another action are shown in orange in both places they appear.
+            ApplySlotStyle(rowIndex, true,  IsShared(b.Action, true,  b.PrimaryPath));
+            ApplySlotStyle(rowIndex, false, IsShared(b.Action, false, b.SecondaryPath));
+
             var images = _modeButtonImages[rowIndex];
             for (int m = 0; m < images.Length; m++)
                 images[m].color = (int)b.Mode == m ? ModeSelectedColor : ModeUnselectedColor;
+        }
+
+        private void ApplySlotStyle(int rowIndex, bool primary, bool shared)
+        {
+            var image = primary ? _primaryImages[rowIndex] : _secondaryImages[rowIndex];
+            var label = primary ? _primaryLabels[rowIndex] : _secondaryLabels[rowIndex];
+            if (image == null || label == null) return;
+
+            image.color = shared ? SlotSharedColor : SlotNormalColor;
+            label.color = shared ? SharedTextColor : Color.white;
         }
 
         private void OnModeClicked(int rowIndex, int modeIndex)

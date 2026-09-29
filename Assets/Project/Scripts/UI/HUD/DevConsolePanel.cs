@@ -45,7 +45,7 @@ namespace CGD.UI
             _field.onSubmit.AddListener(Submit);
             _field.onValueChanged.AddListener(StripToggleKey);
 
-            Print("Type help for commands.");
+            Print("Type /help for commands.");
         }
 
         private void Update()
@@ -64,9 +64,12 @@ namespace CGD.UI
 
         public override void Refresh() { }
 
+        protected override void OnClosed() => _input?.SetTextEntry(false);
+
         protected override void OnOpened()
         {
             _historyIndex = _commands.Console.History.Count;
+            _input?.SetTextEntry(true);
             Focus();
         }
 
@@ -75,6 +78,7 @@ namespace CGD.UI
             Keyboard keyboard = Keyboard.current;
             if (keyboard == null) return;
 
+            if (keyboard.escapeKey.wasPressedThisFrame)    { Hide(); return; }
             if (keyboard.upArrowKey.wasPressedThisFrame)   StepHistory(-1);
             if (keyboard.downArrowKey.wasPressedThisFrame) StepHistory(1);
             if (keyboard.tabKey.wasPressedThisFrame)       Autocomplete();
