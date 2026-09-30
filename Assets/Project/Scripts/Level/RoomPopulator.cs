@@ -6,7 +6,9 @@ using CGD.Enemies;
 
 namespace CGD.Level
 {
-    // Fills rooms with what their RoomContentRule asks for. Props and centrepieces go in
+    // Fills rooms with what their RoomContentRule asks for, on tiles the room's structure
+    // leaves free: never on pillars, in doorways or on the centre spot, and props also
+    // keep off the walkways so routes through the room stay clear. Props and centrepieces go in
     // before the NavMesh is built (so it walks around them), enemies after (they need it).
     // Every placement comes from the level's seed, so the same seed gives the same level.
     public class RoomPopulator
@@ -15,6 +17,9 @@ namespace CGD.Level
         private readonly LevelLayout _layout;
         private readonly Transform _parent;
         private readonly RandomStream _random;
+
+        private const RoomTileTags NeverSpawnOn = RoomTileTags.Structure | RoomTileTags.NearDoor | RoomTileTags.Centre;
+        private const RoomTileTags KeepPropsOff = RoomTileTags.Walkway;
 
         // Tiles still free to spawn on, per room, in shuffled order.
         private readonly Dictionary<int, List<Vector2Int>> _freeTiles = new();
@@ -39,7 +44,7 @@ namespace CGD.Level
 
                 if (rule.Props.Length == 0) continue;
                 int count = rule.PropCount.Evaluate(_random);
-                for (int i = 0; i < count && TryTakeTile(room, out Vector3 position); i++)
+                for (int i = 0; i < count && TryTakeTile(room, KeepPropsOff, out Vector3 position); i++)
                     Object.Instantiate(_random.Pick(rule.Props), position, RandomYaw(), _parent);
             }
         }
@@ -55,7 +60,7 @@ namespace CGD.Level
                 if (count <= 0) continue;
 
                 Transform[] route = CreatePatrolRoute(room);
-                for (int i = 0; i < count && TryTakeTile(room, out Vector3 position); i++)
+                for (int i = 0; i < count && TryTakeTile(room, RoomTileTags.None, out Vector3 position); i++)
                 {
                     GameObject enemy = PrefabPool.Spawn(_random.Pick(rule.Enemies), OnNavMesh(position), RandomYaw());
                     if (enemy.TryGetComponent(out EnemyAI ai)) ai.SetWaypoints(route);
@@ -97,7 +102,8 @@ namespace CGD.Level
             return best;
         }
 
-        private bool TryTakeTile(LevelRoom room, out Vector3 position)
+        // Takes the last free tile without any of the `avoid` tags.
+        private bool TryTakeTile(LevelRoom room, RoomTileTags avoid, out Vector3 position)
         {
             if (!_freeTiles.TryGetValue(room.Node.Id, out List<Vector2Int> free))
             {
@@ -106,40 +112,28 @@ namespace CGD.Level
                 _freeTiles[room.Node.Id] = free;
             }
 
-            if (free.Count == 0)
+            for (int i = free.Count - 1; i >= 0; i--)
             {
-                position = default;
-                return false;
+                Vector2Int tile = free[i];
+                if (room.Structure != null && room.Structure.Has(tile, avoid)) continue;
+
+                free.RemoveAt(i);
+                position = _parent.TransformPoint(_layout.TileToLocal(tile));
+                return true;
             }
 
-            Vector2Int tile = free[free.Count - 1];
-            free.RemoveAt(free.Count - 1);
-            position = _parent.TransformPoint(_layout.TileToLocal(tile));
-            return true;
+            position = default;
+            return false;
         }
 
-        // Inside the spawn margin, away from doorways and the centrepiece spot.
+        // Inside the spawn margin, off pillars, doorways and the centre spot.
         private List<Vector2Int> SpawnableTiles(LevelRoom room)
         {
             var tiles = new List<Vector2Int>();
             foreach (Vector2Int tile in InnerTiles(room))
-            {
-                if (Vector2.Distance(tile + Vector2.one * 0.5f, room.Anchor) < 1.5f) continue;
-                if (NearDoorway(room, tile)) continue;
-                tiles.Add(tile);
-            }
+                if (room.Structure == null || !room.Structure.Has(tile, NeverSpawnOn))
+                    tiles.Add(tile);
             return tiles;
-        }
-
-        private bool NearDoorway(LevelRoom room, Vector2Int tile)
-        {
-            foreach (LevelDoorway doorway in _layout.Doorways)
-            {
-                if (doorway.Room != room) continue;
-                Vector2Int d = doorway.RoomTile - tile;
-                if (Mathf.Abs(d.x) + Mathf.Abs(d.y) <= 2) return true;
-            }
-            return false;
         }
 
         // Floor tiles at least the spawn margin away from every wall — or, in a room too

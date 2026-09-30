@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DefaultLevelBuildSettings
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.LevelBuildSettings
   _tileSize: 3
-  _roomTiles: 8
+  _roomTiles: 12
   _gapTiles: 6
   _wallHeight: 4
   _wallThickness: 0.3
@@ -27,7 +27,8 @@ MonoBehaviour:
   _secretDoorPrefab: {fileID: 0}
   _rooms:
   - Type: 0
-    Shapes: []
+    Functions:
+    - {fileID: 11400000, guid: 921ce82c13644f47a1398a4bd8c57f7c, type: 2}
     Enemies: []
     EnemyCount:
       Min: 0
@@ -40,7 +41,11 @@ MonoBehaviour:
       Max: 0
       Bias: 0
   - Type: 1
-    Shapes: []
+    Functions:
+    - {fileID: 11400000, guid: 78e94437fb0b468ba1e4ee209af9794e, type: 2}
+    - {fileID: 11400000, guid: f1a29d511be545d8a4c85396a4afaaa1, type: 2}
+    - {fileID: 11400000, guid: 63b916f7fceb4acaa3cc3927d812e126, type: 2}
+    - {fileID: 11400000, guid: 08cd1e9257174de791f3c87772ab5ce1, type: 2}
     Enemies: []
     EnemyCount:
       Min: 2
@@ -53,7 +58,9 @@ MonoBehaviour:
       Max: 4
       Bias: 0
   - Type: 2
-    Shapes: []
+    Functions:
+    - {fileID: 11400000, guid: 78e94437fb0b468ba1e4ee209af9794e, type: 2}
+    - {fileID: 11400000, guid: 92d1e5f9bd594b108cc8fd4599755ee4, type: 2}
     Enemies: []
     EnemyCount:
       Min: 3
@@ -66,7 +73,9 @@ MonoBehaviour:
       Max: 4
       Bias: 0
   - Type: 3
-    Shapes: []
+    Functions:
+    - {fileID: 11400000, guid: f1a29d511be545d8a4c85396a4afaaa1, type: 2}
+    - {fileID: 11400000, guid: 08cd1e9257174de791f3c87772ab5ce1, type: 2}
     Enemies: []
     EnemyCount:
       Min: 0
@@ -79,7 +88,10 @@ MonoBehaviour:
       Max: 3
       Bias: 0
   - Type: 4
-    Shapes: []
+    Functions:
+    - {fileID: 11400000, guid: 08cd1e9257174de791f3c87772ab5ce1, type: 2}
+    - {fileID: 11400000, guid: 92d1e5f9bd594b108cc8fd4599755ee4, type: 2}
+    - {fileID: 11400000, guid: 921ce82c13644f47a1398a4bd8c57f7c, type: 2}
     Enemies: []
     EnemyCount:
       Min: 0
@@ -92,7 +104,10 @@ MonoBehaviour:
       Max: 0
       Bias: 0
   - Type: 5
-    Shapes: []
+    Functions:
+    - {fileID: 11400000, guid: 63b916f7fceb4acaa3cc3927d812e126, type: 2}
+    - {fileID: 11400000, guid: 921ce82c13644f47a1398a4bd8c57f7c, type: 2}
+    - {fileID: 11400000, guid: 08cd1e9257174de791f3c87772ab5ce1, type: 2}
     Enemies: []
     EnemyCount:
       Min: 0
@@ -105,7 +120,9 @@ MonoBehaviour:
       Max: 3
       Bias: 0
   - Type: 6
-    Shapes: []
+    Functions:
+    - {fileID: 11400000, guid: f1a29d511be545d8a4c85396a4afaaa1, type: 2}
+    - {fileID: 11400000, guid: 92d1e5f9bd594b108cc8fd4599755ee4, type: 2}
     Enemies: []
     EnemyCount:
       Min: 0
@@ -118,10 +135,8 @@ MonoBehaviour:
       Max: 3
       Bias: 0
   - Type: 7
-    Shapes:
-    - {fileID: 11400000, guid: 3cf90817eefb42238292adbde28bfc6b, type: 2}
-    - {fileID: 11400000, guid: b6cf0b4dec9d4419a4b96c63d8278140, type: 2}
-    - {fileID: 11400000, guid: ab825d68623d4d908c1f0c3cf462451d, type: 2}
+    Functions:
+    - {fileID: 11400000, guid: 1887c786dd76484486fe11f74ae49b7d, type: 2}
     Enemies: []
     EnemyCount:
       Min: 1
@@ -134,7 +149,8 @@ MonoBehaviour:
       Max: 0
       Bias: 0
   - Type: 8
-    Shapes: []
+    Functions:
+    - {fileID: 11400000, guid: f0736e858ed446dd83190f73a1fa73bb, type: 2}
     Enemies: []
     EnemyCount:
       Min: 0

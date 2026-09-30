@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Map;
@@ -14,7 +15,7 @@ namespace CGD.Level
         [Tooltip("Metres per tile. Corridors are one tile wide, so this is also the corridor width")]
         [SerializeField, Min(1f)] private float _tileSize = 3f;
         [Tooltip("Room width and depth, in tiles")]
-        [SerializeField, Min(4)] private int _roomTiles = 8;
+        [SerializeField, Min(4)] private int _roomTiles = 12;
         [Tooltip("Tiles between neighbouring rooms, where corridors run")]
         [SerializeField, Min(4)] private int _gapTiles = 6;
 
@@ -38,7 +39,7 @@ namespace CGD.Level
 
         [Header("Rooms")]
         [SerializeField] private List<RoomContentRule> _rooms = new();
-        [Tooltip("Floor plans rooms pick from, unless their content rule lists its own. Empty = square rooms")]
+        [Tooltip("Floor plans for rooms without a function, or whose function lists none. Empty = square rooms")]
         [SerializeField] private List<RoomShape> _shapes = new();
         [Tooltip("Narrowest passage a generated room may have, in tiles")]
         [SerializeField, Min(1)] private int _minRoomWidthTiles = 2;
@@ -68,10 +69,9 @@ namespace CGD.Level
 
         public RoomContentRule RuleFor(MapNodeType type) => _rooms.Find(r => r.Type == type);
 
-        public IReadOnlyList<RoomShape> ShapesFor(MapNodeType type)
-        {
-            RoomContentRule rule = RuleFor(type);
-            return rule?.Shapes != null && rule.Shapes.Length > 0 ? rule.Shapes : _shapes;
-        }
+        public IReadOnlyList<RoomShape> DefaultShapes => _shapes;
+
+        public IReadOnlyList<RoomFunction> FunctionsFor(MapNodeType type) =>
+            (IReadOnlyList<RoomFunction>)RuleFor(type)?.Functions ?? Array.Empty<RoomFunction>();
     }
 }

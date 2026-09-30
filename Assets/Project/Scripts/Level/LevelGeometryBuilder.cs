@@ -3,13 +3,15 @@ using UnityEngine;
 
 namespace CGD.Level
 {
-    // Builds floors, walls and doors for a LevelLayout under a parent transform. A wall
-    // goes on every edge between a walkable tile and a non-walkable one, so doorways are
-    // simply the edges where a corridor tile meets a room tile, and any room shape gets
-    // its outline walled.
+    // Builds floors, walls, room structure (pillars, inner walls) and doors for a
+    // LevelLayout under a parent transform. Walls come from LevelWallBuilder; doorways are
+    // simply where a corridor tile meets a room tile.
     public class LevelGeometryBuilder
     {
-        private static readonly Vector2Int[] Directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
+        private static readonly Vector2Int[] Neighbours =
+        {
+            new(-1, -1), new(0, -1), new(1, -1), new(-1, 0), new(1, 0), new(-1, 1), new(0, 1), new(1, 1),
+        };
 
         private readonly LevelBuildSettings _settings;
 
@@ -20,73 +22,66 @@ namespace CGD.Level
             var roomFloors     = new BoxMeshBuilder();
             var corridorFloors = new BoxMeshBuilder();
             var walls          = new BoxMeshBuilder();
+            var structure      = new BoxMeshBuilder();
 
-            float tile  = layout.TileSize;
-            float floor = _settings.FloorThickness;
-
-            foreach (Vector2Int t in layout.WalkableTiles)
-            {
-                var floors = layout.IsCorridor(t) ? corridorFloors : roomFloors;
-                floors.AddBox(layout.TileToLocal(t) + Vector3.down * (floor * 0.5f), new Vector3(tile, floor, tile));
-            }
-            AddWalls(layout, walls);
+            AddFloors(layout, roomFloors, corridorFloors);
+            new LevelWallBuilder(_settings, layout, walls).Build();
+            foreach (LevelRoom room in layout.Rooms.Values)
+                if (room.Structure != null) AddStructure(layout, room, structure, parent);
 
             CreatePart("RoomFloors",     roomFloors,     _settings.FloorMaterial,         parent);
             CreatePart("CorridorFloors", corridorFloors, _settings.CorridorFloorMaterial, parent);
             CreatePart("Walls",          walls,          _settings.WallMaterial,          parent);
+            CreatePart("Structure",      structure,      _settings.WallMaterial,          parent);
             PlaceDoors(layout, parent);
         }
 
-        // Collects the wall edges per side and line, then merges each unbroken run into one
-        // box — a long wall is one box, not one per tile, which keeps the mesh and its
-        // collider small whatever shape the rooms have.
-        private void AddWalls(LevelLayout layout, BoxMeshBuilder walls)
+        // Curved-wall rooms also get floor on the ring of tiles around them: their diagonal
+        // walls cut through those tiles.
+        private void AddFloors(LevelLayout layout, BoxMeshBuilder roomFloors, BoxMeshBuilder corridorFloors)
         {
-            var edges = new Dictionary<(int side, int line), List<int>>();
+            var extra = new HashSet<Vector2Int>();
             foreach (Vector2Int t in layout.WalkableTiles)
-                for (int side = 0; side < Directions.Length; side++)
-                {
-                    Vector2Int dir = Directions[side];
-                    if (layout.IsWalkable(t + dir)) continue;
-
-                    bool alongZ = dir.x != 0;
-                    var key = (side, alongZ ? t.x : t.y);
-                    if (!edges.TryGetValue(key, out List<int> positions)) edges[key] = positions = new List<int>();
-                    positions.Add(alongZ ? t.y : t.x);
-                }
-
-            foreach (var ((side, line), positions) in edges)
             {
-                positions.Sort();
-                int runStart = positions[0];
-                for (int i = 1; i <= positions.Count; i++)
-                {
-                    if (i < positions.Count && positions[i] == positions[i - 1] + 1) continue;
-                    AddWallRun(layout, walls, Directions[side], line, runStart, positions[i - 1]);
-                    if (i < positions.Count) runStart = positions[i];
-                }
+                AddFloorTile(layout, layout.IsCorridor(t) ? corridorFloors : roomFloors, t);
+
+                LevelRoom room = layout.RoomAt(t);
+                if (room == null || !room.Footprint.CurvedWalls) continue;
+                foreach (Vector2Int n in Neighbours)
+                    if (!layout.IsWalkable(t + n)) extra.Add(t + n);
             }
+            foreach (Vector2Int t in extra) AddFloorTile(layout, roomFloors, t);
         }
 
-        // A wall along the outer edge of tiles first..last on one line. It sits just outside
-        // the tiles and overlaps its neighbours at the ends, so walls meeting at a corner
-        // leave no gap.
-        private void AddWallRun(LevelLayout layout, BoxMeshBuilder walls, Vector2Int dir, int line, int first, int last)
+        private void AddFloorTile(LevelLayout layout, BoxMeshBuilder floors, Vector2Int t)
         {
-            float tile      = layout.TileSize;
-            float height    = _settings.WallHeight;
+            float tile = layout.TileSize, floor = _settings.FloorThickness;
+            floors.AddBox(layout.TileToLocal(t) + Vector3.down * (floor * 0.5f), new Vector3(tile, floor, tile));
+        }
+
+        private void AddStructure(LevelLayout layout, LevelRoom room, BoxMeshBuilder boxes, Transform parent)
+        {
+            float tile = layout.TileSize;
+            float height = room.WallHeight;
+
+            foreach (StructurePillar pillar in room.Structure.Pillars)
+            {
+                Vector3 foot = new Vector3(pillar.Position.x, 0f, pillar.Position.y) * tile;
+                if (pillar.Prefab != null)
+                    Object.Instantiate(pillar.Prefab, parent.TransformPoint(foot), parent.rotation, parent);
+                else
+                    boxes.AddBox(foot + Vector3.up * (height * 0.5f), new Vector3(pillar.Width, height, pillar.Width));
+            }
+
+            // Inner walls stand centred on the edge between their two tiles.
             float thickness = _settings.WallThickness;
-            bool alongZ = dir.x != 0;
-
-            Vector2Int a = alongZ ? new Vector2Int(line, first) : new Vector2Int(first, line);
-            Vector2Int b = alongZ ? new Vector2Int(line, last)  : new Vector2Int(last, line);
-            Vector3 centre  = (layout.TileToLocal(a) + layout.TileToLocal(b)) * 0.5f;
-            Vector3 outward = new(dir.x, 0f, dir.y);
-            float length = (last - first + 1) * tile + thickness * 2f;
-
-            Vector3 position = centre + outward * ((tile + thickness) * 0.5f) + Vector3.up * (height * 0.5f);
-            Vector3 size = alongZ ? new Vector3(thickness, height, length) : new Vector3(length, height, thickness);
-            walls.AddBox(position, size);
+            foreach (PartitionEdge edge in room.Structure.Partitions)
+            {
+                float h = edge.Height > 0f ? Mathf.Min(edge.Height, height) : height;
+                Vector3 centre = (layout.TileToLocal(edge.Tile) + layout.TileToLocal(edge.Other)) * 0.5f + Vector3.up * (h * 0.5f);
+                Vector3 size = edge.Side.x != 0 ? new Vector3(thickness, h, tile + thickness) : new Vector3(tile + thickness, h, thickness);
+                boxes.AddBox(centre, size);
+            }
         }
 
         private void PlaceDoors(LevelLayout layout, Transform parent)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -51,6 +52,27 @@ namespace CGD.Core
         }
 
         public T Pick<T>(IReadOnlyList<T> items) => items[Range(0, items.Count)];
+
+        // Picks proportionally to weight; items weighing 0 or less are never picked.
+        // Returns default when nothing has any weight.
+        public T PickWeighted<T>(IReadOnlyList<T> items, Func<T, float> weight)
+        {
+            float total = 0f;
+            foreach (T item in items) total += Mathf.Max(0f, weight(item));
+            if (total <= 0f) return default;
+
+            float roll = Range(0f, total);
+            T last = default;
+            foreach (T item in items)
+            {
+                float w = weight(item);
+                if (w <= 0f) continue;
+                last = item;
+                roll -= w;
+                if (roll < 0f) return item;
+            }
+            return last;
+        }
 
         public void Shuffle<T>(IList<T> items)
         {

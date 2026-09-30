@@ -30,3 +30,4 @@ MonoBehaviour:
     Bias: 0
   _allowRotation: 1
   _allowMirror: 1
+  _curvedWalls: 0

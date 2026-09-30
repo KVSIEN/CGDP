@@ -16,15 +16,19 @@ namespace CGD.Level
 
         public bool IsEmpty => _vertices.Count == 0;
 
-        public void AddBox(Vector3 center, Vector3 size)
+        public void AddBox(Vector3 center, Vector3 size) => AddBox(center, size, Quaternion.identity);
+
+        // A box turned about its centre (diagonal walls).
+        public void AddBox(Vector3 center, Vector3 size, Quaternion rotation)
         {
             Vector3 h = size * 0.5f;
-            AddFace(center, Vector3.up,      Vector3.right,   Vector3.forward, h.y, h.x, h.z);
-            AddFace(center, Vector3.down,    Vector3.right,   Vector3.back,    h.y, h.x, h.z);
-            AddFace(center, Vector3.right,   Vector3.forward, Vector3.up,      h.x, h.z, h.y);
-            AddFace(center, Vector3.left,    Vector3.back,    Vector3.up,      h.x, h.z, h.y);
-            AddFace(center, Vector3.forward, Vector3.left,    Vector3.up,      h.z, h.x, h.y);
-            AddFace(center, Vector3.back,    Vector3.right,   Vector3.up,      h.z, h.x, h.y);
+            Vector3 up = rotation * Vector3.up, right = rotation * Vector3.right, forward = rotation * Vector3.forward;
+            AddFace(center,  up,      right,    forward, h.y, h.x, h.z);
+            AddFace(center, -up,      right,   -forward, h.y, h.x, h.z);
+            AddFace(center,  right,   forward,  up,      h.x, h.z, h.y);
+            AddFace(center, -right,  -forward,  up,      h.x, h.z, h.y);
+            AddFace(center,  forward, -right,   up,      h.z, h.x, h.y);
+            AddFace(center, -forward,  right,   up,      h.z, h.x, h.y);
         }
 
         public Mesh ToMesh(string name)

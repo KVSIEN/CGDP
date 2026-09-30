@@ -37,7 +37,7 @@ namespace CGD.Level
             for (int x = 0; x < width; x++)
                 for (int y = 0; y < depth; y++)
                     if (floor[x, y]) tiles.Add(area.min + Orient(new Vector2Int(x, y), width, depth, turns, mirror));
-            return new RoomFootprint(tiles);
+            return new RoomFootprint(tiles, shape.CurvedWalls);
         }
 
         // A tiny tolerance keeps tiles lying exactly on a part's edge from flickering in and

@@ -2,17 +2,16 @@
 
 ## Open
 - Room generation, next steps (starship rooms):
-  - Room functions (Restaurant, Park, Lobby, Casino, Quarters…) per MapNodeType: allowed shapes, size, ceiling, structure style
-  - Arc walls for domes/circles (true curves instead of stepped tiles)
-  - Structure rules: reserved walk lanes between doors, grid/ring/corner pillars, centre pieces, partitions (ship-wide pillar grid)
-  - Tile tags (Edge, Centre, NearDoor, Walkway, Zone) for the prop pass
   - Multi-cell rooms (2×1, 2×2) and hand-built landmark room prefabs with door sockets
+  - Prop pass per function using tile tags and zones (tables in dining zones, crates along cargo walls…)
+  - Ceilings (per-room height is in place), finer curves for large domes
 -   Blender integration for Claude
     https://github.com/ahujasid/blender-mcp
 
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Room functions (8 starship room kinds: size, height, shapes, structure), curved dome walls, structure rules (ship-wide pillar grid, column rings, corner columns, dividers, counters), walkways, tile tags and zones
 - Room shapes: rooms as tile footprints, RoomShape assets (Rect, L, T, U, Cross, Ring, Dome), door sockets, merged wall runs
 - Economy (currency items, price tables, vendors with stock sources, buying/selling/trade-ins) and branching NPC dialogue with actions and conditions; Sandbox Gunsmith vendor
 - Settings tabs (audio, video, accessibility), character animation bridge and ragdolls, levels generated from map graphs, per-surface impact effects and decals

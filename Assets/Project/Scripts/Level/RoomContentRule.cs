@@ -11,8 +11,8 @@ namespace CGD.Level
     {
         public MapNodeType Type;
 
-        [Tooltip("Floor plans for this room type. Empty = the build settings' shapes")]
-        public RoomShape[] Shapes = Array.Empty<RoomShape>();
+        [Tooltip("What rooms of this type can be (Lobby, Park…), picked by weight. Empty = plain rooms from the build settings' shapes")]
+        public RoomFunction[] Functions = Array.Empty<RoomFunction>();
 
         [Tooltip("Enemy prefabs to pick from (each needs EnemyAI)")]
         public GameObject[] Enemies = Array.Empty<GameObject>();

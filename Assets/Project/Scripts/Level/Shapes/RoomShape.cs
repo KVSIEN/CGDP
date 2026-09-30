@@ -18,11 +18,14 @@ namespace CGD.Level
         [SerializeField] private IntRange _connections = new(1, 8);
         [SerializeField] private bool _allowRotation = true;
         [SerializeField] private bool _allowMirror = true;
+        [Tooltip("Cut the stair-steps of round outlines into diagonal walls (domes, circles)")]
+        [SerializeField] private bool _curvedWalls;
 
         public IReadOnlyList<RoomShapePart> Parts => _parts;
         public float Weight        => _weight;
         public bool  AllowRotation => _allowRotation;
         public bool  AllowMirror   => _allowMirror;
+        public bool  CurvedWalls   => _curvedWalls;
 
         public bool Suits(int connections) => connections >= _connections.Min && connections <= _connections.Max;
     }

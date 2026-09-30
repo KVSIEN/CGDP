@@ -13,8 +13,9 @@ namespace CGD.Level
         private readonly List<Vector2Int> _tiles;
         private readonly List<DoorSocket> _sockets = new();
 
-        public RoomFootprint(IEnumerable<Vector2Int> tiles)
+        public RoomFootprint(IEnumerable<Vector2Int> tiles, bool curvedWalls = false)
         {
+            CurvedWalls = curvedWalls;
             _lookup = new HashSet<Vector2Int>(tiles);
             // Sorted so everything iterating the tiles (sockets, spawn spots) is the same for
             // the same seed.
@@ -36,6 +37,8 @@ namespace CGD.Level
         public IReadOnlyList<Vector2Int> Tiles   => _tiles;
         public IReadOnlyList<DoorSocket> Sockets => _sockets;
         public int     Count  => _tiles.Count;
+        // Walls follow RoomOutline's smoothed outline instead of the tile edges.
+        public bool    CurvedWalls { get; }
         public RectInt Bounds { get; }
 
         // Middle of the bounds, in tile units — for which way another room lies.

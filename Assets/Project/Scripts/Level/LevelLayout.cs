@@ -10,6 +10,7 @@ namespace CGD.Level
     {
         private readonly HashSet<Vector2Int> _walkable = new();
         private readonly HashSet<Vector2Int> _corridorTiles = new();
+        private readonly Dictionary<Vector2Int, LevelRoom> _roomTiles = new();
 
         public LevelLayout(float tileSize) => TileSize = tileSize;
 
@@ -23,11 +24,16 @@ namespace CGD.Level
 
         public bool IsWalkable(Vector2Int tile) => _walkable.Contains(tile);
         public bool IsCorridor(Vector2Int tile) => _corridorTiles.Contains(tile);
+        public LevelRoom RoomAt(Vector2Int tile) => _roomTiles.TryGetValue(tile, out LevelRoom room) ? room : null;
 
         public void AddRoom(LevelRoom room)
         {
             Rooms[room.Node.Id] = room;
-            foreach (Vector2Int tile in room.Footprint.Tiles) _walkable.Add(tile);
+            foreach (Vector2Int tile in room.Footprint.Tiles)
+            {
+                _walkable.Add(tile);
+                _roomTiles[tile] = room;
+            }
         }
 
         public void AddCorridor(IReadOnlyList<Vector2Int> tiles)

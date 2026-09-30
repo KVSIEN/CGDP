@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782486c3ed6a422a9b324498ab198d59, type: 3}
+  m_Name: RestaurantRoomFunction
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
+  _displayName: Restaurant
+  _weight: 1
+  _shapes:
+  - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
+  - {fileID: 11400000, guid: 54a81013066a481a856586f0fee8dd3a, type: 2}
+  _size:
+    Min: 10
+    Max: 12
+    Bias: 0
+  _wallHeight: 4
+  _structure:
+  - {fileID: 11400000, guid: 441755acee644d76be46572a30aa6aa8, type: 2}
