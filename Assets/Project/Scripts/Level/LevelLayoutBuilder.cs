@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Core;
 using CGD.Map;
 
 namespace CGD.Level
@@ -7,9 +8,10 @@ namespace CGD.Level
     // Turns a MapGraph into a LevelLayout:
     //   1. Each node gets a grid cell from its editor position (the generator already lays
     //      nodes out on a column/lane grid; hand-moved nodes snap to the nearest free cell).
-    //   2. Each cell holds one square room, with a gap around it for corridors.
-    //   3. Each connection becomes a corridor from a doorway on the facing side of one room
-    //      to the other, routed around every room.
+    //   2. Each cell holds one room, with a gap around it for corridors. Its floor plan
+    //      (square, T, cross, ring…) comes from RoomShapeSelector.
+    //   3. Each connection becomes a corridor from a door socket facing one room to one
+    //      facing the other, routed around every room.
     // Corridors keep a wall's width apart so two connections never merge into one — the
     // level has exactly the routes the graph has. When that's impossible (crossing
     // shortcuts) the corridors cross and a warning says so.
@@ -23,7 +25,8 @@ namespace CGD.Level
 
         public LevelLayoutBuilder(LevelBuildSettings settings) => _settings = settings;
 
-        public LevelLayout Build(MapGraph graph, Vector2 nodeSpacing)
+        // `seed` varies the room shapes; the same seed and graph give the same layout.
+        public LevelLayout Build(MapGraph graph, Vector2 nodeSpacing, Seed seed)
         {
             var layout = new LevelLayout(_settings.TileSize);
             if (graph == null || graph.Nodes.Count == 0)
@@ -32,16 +35,18 @@ namespace CGD.Level
                 return layout;
             }
 
-            PlaceRooms(graph, nodeSpacing, layout);
+            PlaceRooms(graph, nodeSpacing, seed.Derive("rooms"), layout);
             BuildCorridors(graph, layout);
             return layout;
         }
 
         // --- Rooms ---------------------------------------------------------------------
 
-        private void PlaceRooms(MapGraph graph, Vector2 nodeSpacing, LevelLayout layout)
+        private void PlaceRooms(MapGraph graph, Vector2 nodeSpacing, Seed seed, LevelLayout layout)
         {
             var taken = new HashSet<Vector2Int>();
+            var shapes = new RoomShapeSelector(_settings);
+            Dictionary<int, int> connections = CountConnections(graph);
             Vector2 spacing = new(Mathf.Max(1f, nodeSpacing.x), Mathf.Max(1f, nodeSpacing.y));
             int cell = _settings.CellTiles;
             int inset = _settings.GapTiles / 2;
@@ -55,9 +60,24 @@ namespace CGD.Level
                 Vector2Int coords = NearestFreeCell(preferred, taken);
                 taken.Add(coords);
 
-                var tiles = new RectInt(coords.x * cell + inset, coords.y * cell + inset, _settings.RoomTiles, _settings.RoomTiles);
-                layout.AddRoom(new LevelRoom(node, tiles));
+                var area = new RectInt(coords.x * cell + inset, coords.y * cell + inset, _settings.RoomTiles, _settings.RoomTiles);
+                connections.TryGetValue(node.Id, out int count);
+                RoomFootprint footprint = shapes.Build(node, count, area, seed.Derive(node.Id).Stream());
+                layout.AddRoom(new LevelRoom(node, footprint));
             }
+        }
+
+        private static Dictionary<int, int> CountConnections(MapGraph graph)
+        {
+            var counts = new Dictionary<int, int>();
+            foreach (MapConnection connection in graph.Connections)
+            {
+                counts.TryGetValue(connection.A, out int a);
+                counts.TryGetValue(connection.B, out int b);
+                counts[connection.A] = a + 1;
+                counts[connection.B] = b + 1;
+            }
+            return counts;
         }
 
         private static Vector2Int NearestFreeCell(Vector2Int preferred, HashSet<Vector2Int> taken)
@@ -86,8 +106,10 @@ namespace CGD.Level
             foreach (LevelRoom room in layout.Rooms.Values)
             {
                 usedDoors[room.Node.Id] = new HashSet<Vector2Int>();
-                RectInt ring = Expand(room.Tiles, 1);
-                foreach (Vector2Int tile in ring.allPositionsWithin) blocked.Add(tile);
+                foreach (Vector2Int tile in room.Footprint.Tiles)
+                    for (int dx = -1; dx <= 1; dx++)
+                        for (int dy = -1; dy <= 1; dy++)
+                            blocked.Add(tile + new Vector2Int(dx, dy));
             }
 
             var router = new CorridorRouter(Expand(Bounds(layout), _settings.GapTiles));
@@ -185,38 +207,35 @@ namespace CGD.Level
 
             var doors = new List<Door>(4);
             foreach (Vector2Int side in new[] { primary, secondary, -secondary, -primary })
-                if (TryPickDoorOnSide(room.Tiles, side, toOther, used, out Door door))
+                if (TryPickSocket(room, side, toOther, used, out Door door))
                     doors.Add(door);
             return doors;
         }
 
-        // Slots go centre first, then outward — toward the other room before away from it —
-        // keeping clear of the corners.
-        private static bool TryPickDoorOnSide(RectInt tiles, Vector2Int side, Vector2 toOther, HashSet<Vector2Int> used, out Door door)
+        // Of the free sockets facing `side`: the outermost first (the end of a T's arm, not
+        // the notch beside it), then the one nearest the middle of that side, leaning toward
+        // the other room.
+        private static bool TryPickSocket(LevelRoom room, Vector2Int side, Vector2 toOther, HashSet<Vector2Int> used, out Door door)
         {
-            bool horizontal = side.y != 0;
-            int length = horizontal ? tiles.width : tiles.height;
-            int centre = length / 2;
-            int toward = (horizontal ? toOther.x : toOther.y) >= 0f ? 1 : -1;
-
-            for (int step = 0; step < length; step++)
-            {
-                int offset = (step + 1) / 2 * DoorSpacing * (step % 2 == 1 ? toward : -toward);
-                int along = centre + offset;
-                if (along < 1 || along > length - 2) continue;
-
-                Vector2Int inside = horizontal
-                    ? new Vector2Int(tiles.xMin + along, side.y > 0 ? tiles.yMax - 1 : tiles.yMin)
-                    : new Vector2Int(side.x > 0 ? tiles.xMax - 1 : tiles.xMin, tiles.yMin + along);
-                Vector2Int outside = inside + side;
-
-                if (IsNearUsed(outside, used)) continue;
-                door = new Door(inside, outside);
-                return true;
-            }
-
+            var across = new Vector2(side.y, side.x);
+            float toward = Mathf.Sign(Vector2.Dot(toOther, across));
+            float bestScore = float.MinValue;
             door = default;
-            return false;
+
+            foreach (DoorSocket socket in room.Footprint.Sockets)
+            {
+                if (socket.Outward != side || IsNearUsed(socket.Outside, used)) continue;
+
+                Vector2 offset = socket.Inside + new Vector2(0.5f, 0.5f) - room.Center;
+                float sideways = Vector2.Dot(offset, across);
+                float score = Vector2.Dot(offset, side) * 100f - Mathf.Abs(sideways)
+                            + (Mathf.Sign(sideways) == toward ? 0.1f : 0f);
+                if (score <= bestScore) continue;
+
+                bestScore = score;
+                door = new Door(socket.Inside, socket.Outside);
+            }
+            return bestScore > float.MinValue;
         }
 
         private static bool IsNearUsed(Vector2Int tile, HashSet<Vector2Int> used)
@@ -248,8 +267,8 @@ namespace CGD.Level
             Vector2Int min = new(int.MaxValue, int.MaxValue), max = new(int.MinValue, int.MinValue);
             foreach (LevelRoom room in layout.Rooms.Values)
             {
-                min = Vector2Int.Min(min, room.Tiles.min);
-                max = Vector2Int.Max(max, room.Tiles.max);
+                min = Vector2Int.Min(min, room.Footprint.Bounds.min);
+                max = Vector2Int.Max(max, room.Footprint.Bounds.max);
             }
             return new RectInt(min, max - min);
         }

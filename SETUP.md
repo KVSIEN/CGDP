@@ -438,8 +438,11 @@ Level              [LevelBuilder, NavMeshSurface]   ← at the origin, unrotated
 | **LevelBuilder** | `_settings` = `Level/DefaultLevelBuildSettings` · `_graphAsset` = a `MapGraphAsset` **or** `_generation` = `Map/DefaultMapGenerationSettings` · `_seed` (0 = random) · `_navMesh` = its NavMeshSurface · `_player` = Player · `_spawnPoint` = RespawnPoint · `_worldMap`? = WorldMapArea | Logs a warning for every corridor that had to cross another. |
 | **NavMeshSurface** | Collect Objects = **Current Object Hierarchy** | Rebuilt at runtime. Don't bake it. |
 
-`LevelBuildSettings` holds the grid sizes, wall materials, door prefabs and one **Rooms** entry per room type.
-Each entry lists enemy prefabs (count read at the room's intensity), a centrepiece and props.
+`LevelBuildSettings` holds the grid sizes, wall materials, door prefabs, the room **Shapes** and one **Rooms** entry per room type.
+Each entry lists its own shapes (empty = the settings' shapes), enemy prefabs (count read at the room's intensity), a centrepiece and props.
+- **Room shapes** are `RoomShape` assets in `Level/Shapes/` (Rectangle, L, T, U, Cross, Ring, Dome). A shape is only used for rooms whose
+  connection count is in its `_connections` range; if nothing fits, the room is a plain square. With an empty **Shapes** list every room is square.
+  Shapes scale to `_roomTiles` — at the default 8 tiles, domes look stepped; 10–12 gives rounder rooms.
 - **Enemy prefabs** need `EnemyAI`. None exist yet, so generated rooms start empty.
 - **Door prefabs**: origin at the doorway centre on the floor, +Z pointing out of the room. The opening is one tile wide (`_tileSize`).
   - Normal is optional.
@@ -508,7 +511,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `CameraEffects/` | `DefaultCameraEffectSettings` | CameraEffectsController |
 | `Map/` | `DefaultMapGenerationSettings`, `SandboxMapGraph` | Map Graph window, WorldMapArea |
 | `Audio/` | `DefaultSurfaceDatabase` | PlayerFootsteps |
-| `Level/` | `DefaultLevelBuildSettings` (Gridbox materials, room rules without prefabs) | LevelBuilder |
+| `Level/` | `DefaultLevelBuildSettings` (Gridbox materials, room rules without prefabs), `Shapes/` (seven `…RoomShape`s) | LevelBuilder |
 | `Impacts/` | `DefaultImpactDatabase` (empty effects) | ImpactSpawner |
 | `Economy/` | `CreditsCurrency`, `DefaultPriceTable`, `Shops/GunsmithShopCatalog`, `Stock/GunsmithAmmoStock`, `Stock/GunsmithWeaponStock` | Vendor, PlayerInventory, DevCatalog |
 | `Dialogue/` | `GunsmithDialogue`, `Actions/OpenShopDialogueAction` | Npc |

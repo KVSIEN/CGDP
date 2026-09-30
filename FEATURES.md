@@ -487,12 +487,15 @@
 - Smoke grenade: bursts into a smoke cloud that lasts 15 seconds and deals no damage
 
 ## Generated Levels
-- A scene can build its whole level from a map graph when it loads: every room in the graph becomes a square room, and every connection becomes a corridor between the two rooms
+- A scene can build its whole level from a map graph when it loads: every room in the graph becomes a room, and every connection becomes a corridor between the two rooms
+- Rooms come in different floor plans: rectangles, L, T and U shapes, crosses, rings around an enclosed courtyard, and round domes. Each room varies the proportions (arm widths, courtyard size) and may be turned or mirrored, so no two rooms of the same shape look identical
+- Shapes suit their place in the map: hub rooms with many connections favour crosses and domes, and each room type can have its own set (the Boss room is a dome, cross or ring arena). Rooms are always one connected space, with every passage at least two tiles (6 m) wide
+- Doorways sit on straight stretches of wall — at the end of an arm rather than tucked into a corner — never open into a ring's courtyard, and face the room they lead to
 - Rooms sit where the graph places them, so the main path runs left to right and branches sit above and below it. Corridors are routed around rooms, and two different connections never join up. The rare map where two corridors have to cross is reported as a warning
 - Locked and secret connections get their gate (a locked door, a breakable fake wall) on the side the player arrives from, so a locked branch is locked from the main path
-- Rooms are filled by type: enemies (more in higher-intensity rooms, patrolling the room), a centrepiece (for example a chest in Treasure rooms, a crafting station in Shops, a boss) and scattered props
+- Rooms are filled by type: enemies (more in higher-intensity rooms, patrolling out to the far ends of the room), a centrepiece (for example a chest in Treasure rooms, a crafting station in Shops, a boss) and scattered props
 - The player starts in the Start room. The Exit room has a way out that ends the run in victory (hold Interact to leave)
-- A level can use a fixed, hand-checked map graph or generate a fresh one each play. The same seed always gives the same map and the same room contents
+- A level can use a fixed, hand-checked map graph or generate a fresh one each play. The same seed always gives the same map, the same room shapes and the same room contents
 - The world map and minimap resize to fit the generated level
 
 ## Character Animation

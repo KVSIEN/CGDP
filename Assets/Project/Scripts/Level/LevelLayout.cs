@@ -27,7 +27,7 @@ namespace CGD.Level
         public void AddRoom(LevelRoom room)
         {
             Rooms[room.Node.Id] = room;
-            foreach (Vector2Int tile in room.Tiles.allPositionsWithin) _walkable.Add(tile);
+            foreach (Vector2Int tile in room.Footprint.Tiles) _walkable.Add(tile);
         }
 
         public void AddCorridor(IReadOnlyList<Vector2Int> tiles)
@@ -42,7 +42,7 @@ namespace CGD.Level
         // Centre of a tile, on the floor.
         public Vector3 TileToLocal(Vector2Int tile) => new((tile.x + 0.5f) * TileSize, 0f, (tile.y + 0.5f) * TileSize);
 
-        public Vector3 RoomCenterLocal(LevelRoom room) => new(room.Center.x * TileSize, 0f, room.Center.y * TileSize);
+        public Vector3 RoomCenterLocal(LevelRoom room) => new(room.Anchor.x * TileSize, 0f, room.Anchor.y * TileSize);
 
         // World-space footprint of everything walkable, for fitting the world map to the level.
         public Rect LocalBounds()

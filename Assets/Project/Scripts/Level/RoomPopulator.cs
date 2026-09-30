@@ -65,17 +65,18 @@ namespace CGD.Level
 
         public Vector3 RoomCenter(LevelRoom room) => _parent.TransformPoint(_layout.RoomCenterLocal(room));
 
-        // A loop around the inside of the room, a spawn margin in from the walls.
+        // A loop through the room's outermost reachable spots (north-east, south-east,
+        // south-west, north-west), a spawn margin in from the walls. For a cross or T these
+        // are the arms, for a ring its corners.
         private Transform[] CreatePatrolRoute(LevelRoom room)
         {
             var holder = new GameObject($"PatrolRoute_{room.Node.Id}").transform;
             holder.SetParent(_parent, false);
 
-            RectInt inner = Inner(room);
+            List<Vector2Int> inner = InnerTiles(room);
             Vector2Int[] corners =
             {
-                new(inner.xMin, inner.yMin), new(inner.xMax - 1, inner.yMin),
-                new(inner.xMax - 1, inner.yMax - 1), new(inner.xMin, inner.yMax - 1),
+                Extreme(inner, 1, 1), Extreme(inner, 1, -1), Extreme(inner, -1, -1), Extreme(inner, -1, 1),
             };
 
             var route = new Transform[corners.Length];
@@ -86,6 +87,14 @@ namespace CGD.Level
                 route[i].localPosition = _layout.TileToLocal(corners[i]);
             }
             return route;
+        }
+
+        private static Vector2Int Extreme(List<Vector2Int> tiles, int x, int y)
+        {
+            Vector2Int best = tiles[0];
+            foreach (Vector2Int tile in tiles)
+                if (tile.x * x + tile.y * y > best.x * x + best.y * y) best = tile;
+            return best;
         }
 
         private bool TryTakeTile(LevelRoom room, out Vector3 position)
@@ -113,10 +122,9 @@ namespace CGD.Level
         private List<Vector2Int> SpawnableTiles(LevelRoom room)
         {
             var tiles = new List<Vector2Int>();
-            Vector2 centre = room.Center;
-            foreach (Vector2Int tile in Inner(room).allPositionsWithin)
+            foreach (Vector2Int tile in InnerTiles(room))
             {
-                if (Vector2.Distance(tile + Vector2.one * 0.5f, centre) < 1.5f) continue;
+                if (Vector2.Distance(tile + Vector2.one * 0.5f, room.Anchor) < 1.5f) continue;
                 if (NearDoorway(room, tile)) continue;
                 tiles.Add(tile);
             }
@@ -134,11 +142,15 @@ namespace CGD.Level
             return false;
         }
 
-        private RectInt Inner(LevelRoom room)
+        // Floor tiles at least the spawn margin away from every wall — or, in a room too
+        // narrow for that, as far from the walls as it allows.
+        private List<Vector2Int> InnerTiles(LevelRoom room)
         {
-            int margin = Mathf.Min(_settings.SpawnMarginTiles, (room.Tiles.width - 1) / 2);
-            return new RectInt(room.Tiles.xMin + margin, room.Tiles.yMin + margin,
-                room.Tiles.width - margin * 2, room.Tiles.height - margin * 2);
+            var tiles = new List<Vector2Int>();
+            for (int margin = _settings.SpawnMarginTiles; margin >= 0 && tiles.Count == 0; margin--)
+                foreach (Vector2Int tile in room.Footprint.Tiles)
+                    if (room.Footprint.IsInterior(tile, margin)) tiles.Add(tile);
+            return tiles;
         }
 
         private Quaternion RandomYaw() => _parent.rotation * Quaternion.Euler(0f, _random.Range(0f, 360f), 0f);

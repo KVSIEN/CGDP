@@ -4,8 +4,8 @@ using CGD.Map;
 
 namespace CGD.Level
 {
-    // How a MapGraph becomes geometry: tile and room sizes, how far apart rooms sit, what
-    // the walls look like, which door goes on each kind of connection, and what each room
+    // How a MapGraph becomes geometry: tile and room sizes, how far apart rooms sit, room
+    // shapes, what the walls look like, which door goes on each kind of connection, and what each room
     // type is filled with.
     [CreateAssetMenu(fileName = "LevelBuildSettings", menuName = "CGD/Level/Level Build Settings")]
     public class LevelBuildSettings : ScriptableObject
@@ -38,6 +38,10 @@ namespace CGD.Level
 
         [Header("Rooms")]
         [SerializeField] private List<RoomContentRule> _rooms = new();
+        [Tooltip("Floor plans rooms pick from, unless their content rule lists its own. Empty = square rooms")]
+        [SerializeField] private List<RoomShape> _shapes = new();
+        [Tooltip("Narrowest passage a generated room may have, in tiles")]
+        [SerializeField, Min(1)] private int _minRoomWidthTiles = 2;
         [Tooltip("Keeps spawned enemies and props this many tiles away from the walls")]
         [SerializeField, Min(0)] private int _spawnMarginTiles = 1;
 
@@ -53,6 +57,7 @@ namespace CGD.Level
         public Material WallMaterial          => _wallMaterial;
         public int   GeometryLayer  => _geometryLayer;
         public int   SpawnMarginTiles => _spawnMarginTiles;
+        public int   MinRoomWidthTiles => _minRoomWidthTiles;
 
         public GameObject DoorPrefabFor(ConnectionType type) => type switch
         {
@@ -62,5 +67,11 @@ namespace CGD.Level
         };
 
         public RoomContentRule RuleFor(MapNodeType type) => _rooms.Find(r => r.Type == type);
+
+        public IReadOnlyList<RoomShape> ShapesFor(MapNodeType type)
+        {
+            RoomContentRule rule = RuleFor(type);
+            return rule?.Shapes != null && rule.Shapes.Length > 0 ? rule.Shapes : _shapes;
+        }
     }
 }

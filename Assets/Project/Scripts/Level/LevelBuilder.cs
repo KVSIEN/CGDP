@@ -23,7 +23,7 @@ namespace CGD.Level
         [Tooltip("Build this graph. Leave empty to generate one from the settings below")]
         [SerializeField] private MapGraphAsset _graphAsset;
         [SerializeField] private MapGenerationSettings _generation;
-        [Tooltip("0 = a new random seed every play. Also drives room contents")]
+        [Tooltip("0 = a new random seed every play. Also drives room shapes and contents")]
         [SerializeField] private int _seed;
         [SerializeField] private LevelBuildSettings _settings;
 
@@ -57,7 +57,7 @@ namespace CGD.Level
                 return;
             }
 
-            Layout = new LevelLayoutBuilder(_settings).Build(Graph, nodeSpacing);
+            Layout = new LevelLayoutBuilder(_settings).Build(Graph, nodeSpacing, Seed);
             foreach (string warning in Layout.Warnings)
                 Debug.LogWarning($"{name}: {warning}", this);
 

@@ -46,7 +46,8 @@ Assets/
       Interaction/          IInteractable, doors, switches, EventInteractable, highlights, Pickups/
       Items/                item definitions, inventory, equipment, quality rolls, stats
       Level/                map graph → level: LevelLayoutBuilder (rooms, CorridorRouter), LevelGeometryBuilder,
-                            RoomPopulator, LevelBuilder (scene entry point), LevelExit, LevelBuildSettings
+                            RoomPopulator, LevelBuilder (scene entry point), LevelExit, LevelBuildSettings;
+                            Shapes/ — RoomShape assets, RoomShapeRasterizer, RoomFootprint (tiles + door sockets)
       Loot/                 LootTable, LootDropper, LootContainer
       Map/                  map graph data (Graph/: MapGraph, MapNode, analysis) and Generation/ (constraints, generator passes, validator)
       Meters/               generic resources (stamina, mana, oxygen…): Meter, MeterSet, MeterCost, MeterZone

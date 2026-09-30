@@ -5,11 +5,14 @@ using CGD.Map;
 
 namespace CGD.Level
 {
-    // What a room of one MapNodeType is filled with when the level is built.
+    // What a room of one MapNodeType looks like and is filled with when the level is built.
     [Serializable]
     public class RoomContentRule
     {
         public MapNodeType Type;
+
+        [Tooltip("Floor plans for this room type. Empty = the build settings' shapes")]
+        public RoomShape[] Shapes = Array.Empty<RoomShape>();
 
         [Tooltip("Enemy prefabs to pick from (each needs EnemyAI)")]
         public GameObject[] Enemies = Array.Empty<GameObject>();

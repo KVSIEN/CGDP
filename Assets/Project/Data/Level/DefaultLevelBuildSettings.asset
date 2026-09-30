@@ -27,6 +27,7 @@ MonoBehaviour:
   _secretDoorPrefab: {fileID: 0}
   _rooms:
   - Type: 0
+    Shapes: []
     Enemies: []
     EnemyCount:
       Min: 0
@@ -39,6 +40,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
   - Type: 1
+    Shapes: []
     Enemies: []
     EnemyCount:
       Min: 2
@@ -51,6 +53,7 @@ MonoBehaviour:
       Max: 4
       Bias: 0
   - Type: 2
+    Shapes: []
     Enemies: []
     EnemyCount:
       Min: 3
@@ -63,6 +66,7 @@ MonoBehaviour:
       Max: 4
       Bias: 0
   - Type: 3
+    Shapes: []
     Enemies: []
     EnemyCount:
       Min: 0
@@ -75,6 +79,7 @@ MonoBehaviour:
       Max: 3
       Bias: 0
   - Type: 4
+    Shapes: []
     Enemies: []
     EnemyCount:
       Min: 0
@@ -87,6 +92,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
   - Type: 5
+    Shapes: []
     Enemies: []
     EnemyCount:
       Min: 0
@@ -99,6 +105,7 @@ MonoBehaviour:
       Max: 3
       Bias: 0
   - Type: 6
+    Shapes: []
     Enemies: []
     EnemyCount:
       Min: 0
@@ -111,6 +118,10 @@ MonoBehaviour:
       Max: 3
       Bias: 0
   - Type: 7
+    Shapes:
+    - {fileID: 11400000, guid: 3cf90817eefb42238292adbde28bfc6b, type: 2}
+    - {fileID: 11400000, guid: b6cf0b4dec9d4419a4b96c63d8278140, type: 2}
+    - {fileID: 11400000, guid: ab825d68623d4d908c1f0c3cf462451d, type: 2}
     Enemies: []
     EnemyCount:
       Min: 1
@@ -123,6 +134,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
   - Type: 8
+    Shapes: []
     Enemies: []
     EnemyCount:
       Min: 0
@@ -134,4 +146,13 @@ MonoBehaviour:
       Min: 0
       Max: 0
       Bias: 0
+  _shapes:
+  - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
+  - {fileID: 11400000, guid: 54a81013066a481a856586f0fee8dd3a, type: 2}
+  - {fileID: 11400000, guid: 9eb4483ea2cb4971b2a8c97462165979, type: 2}
+  - {fileID: 11400000, guid: 9d1594db951546cdb53b46fc04bb78a8, type: 2}
+  - {fileID: 11400000, guid: b6cf0b4dec9d4419a4b96c63d8278140, type: 2}
+  - {fileID: 11400000, guid: ab825d68623d4d908c1f0c3cf462451d, type: 2}
+  - {fileID: 11400000, guid: 3cf90817eefb42238292adbde28bfc6b, type: 2}
+  _minRoomWidthTiles: 2
   _spawnMarginTiles: 1
