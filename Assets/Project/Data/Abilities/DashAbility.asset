@@ -17,4 +17,4 @@ MonoBehaviour:
   Cooldown: 4
   MaxCharges: 1
   CastTime: 0
-  Force: 12
+  Move: {fileID: 11400000, guid: 5b0c27c9588c454180713631a7e456fa, type: 2}

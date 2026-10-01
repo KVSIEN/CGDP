@@ -33,6 +33,8 @@ namespace CGD.Player
         private float _buffered;
         private int _airDodgesUsed;
         private bool _invulnerable;
+        // The running move came from an ability: its cooldown belongs to the ability, not the dodge.
+        private bool _fromAbility;
 
         // Read by DodgeHUD to size the cooldown overlay.
         public CooldownTimer Cooldown => _cooldown;
@@ -66,7 +68,10 @@ namespace CGD.Player
             _input    = GetComponent<PlayerInputHandler>();
             TryGetComponent(out _meters);
             TryGetComponent(out _health);
-            _motion.Ended += cooldown => _cooldown.Start(cooldown);
+            _motion.Ended += cooldown =>
+            {
+                if (!_fromAbility) _cooldown.Start(cooldown);
+            };
         }
 
         private void OnDisable()
@@ -99,7 +104,7 @@ namespace CGD.Player
             _cooldown.Tick(dt);
             if (_buffered > 0f)
             {
-                _buffered = TryStart() ? 0f : _buffered - dt;
+                _buffered = TryStartDodge() ? 0f : _buffered - dt;
             }
 
             if (_motion.Tick(dt, Flat(_movement.MoveDirection), out Vector2 velocity))
@@ -110,28 +115,50 @@ namespace CGD.Player
             SetInvulnerable(_motion.IsInvulnerable);
         }
 
-        private bool TryStart()
+        // Whether `move` could start right now, ignoring the dodge's own cooldown and cost —
+        // for abilities that perform a dodge-style move (Dash) and keep their own.
+        public bool CanPerform(DodgeDefinition move) =>
+            CanStart(move) && TryGetDirection(move, out _);
+
+        // Performs `move` for an ability. The air-dodge limit still applies.
+        public bool TryPerform(DodgeDefinition move)
         {
-            if (_motion.IsActive || _definition == null || _definition.Stages.Count == 0) return false;
-            if (!_cooldown.IsReady) return false;
-
-            bool grounded = _movement.IsGrounded;
-            if (!grounded && _airDodgesUsed >= _definition.AirDodges) return false;
-            if (!TryGetDirection(out Vector2 direction)) return false;
-            if (!_definition.Cost.TryPay(_meters)) return false;
-
-            if (!grounded) _airDodgesUsed++;
-            _motion.Start(_definition.Stages, direction);
+            if (!CanStart(move) || !TryGetDirection(move, out Vector2 direction)) return false;
+            Begin(move, direction, fromAbility: true);
             return true;
         }
 
-        private bool TryGetDirection(out Vector2 direction)
+        private bool TryStartDodge()
+        {
+            if (!CanStart(_definition) || !_cooldown.IsReady) return false;
+            if (!TryGetDirection(_definition, out Vector2 direction)) return false;
+            if (!_definition.Cost.TryPay(_meters)) return false;
+
+            Begin(_definition, direction, fromAbility: false);
+            return true;
+        }
+
+        private bool CanStart(DodgeDefinition move)
+        {
+            if (move == null || move.Stages.Count == 0 || _motion.IsActive) return false;
+            if (_movement.IsMantling || _movement.IsStunned) return false;
+            return _movement.IsGrounded || _airDodgesUsed < move.AirDodges;
+        }
+
+        private void Begin(DodgeDefinition move, Vector2 direction, bool fromAbility)
+        {
+            if (!_movement.IsGrounded) _airDodgesUsed++;
+            _fromAbility = fromAbility;
+            _motion.Start(move.Stages, direction);
+        }
+
+        private bool TryGetDirection(DodgeDefinition move, out Vector2 direction)
         {
             direction = Flat(_movement.MoveDirection);
             if (direction.sqrMagnitude > InputDeadzone * InputDeadzone) return true;
 
             Vector2 forward = Flat(_movement.CameraTransform.forward).normalized;
-            switch (_definition.WithoutInput)
+            switch (move.WithoutInput)
             {
                 case DodgeFallbackDirection.Backward: direction = -forward; return true;
                 case DodgeFallbackDirection.Forward:  direction = forward;  return true;

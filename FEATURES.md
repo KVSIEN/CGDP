@@ -74,6 +74,7 @@
 - **Poison** — stacks up to 5; each stack makes the ticks much stronger
 - **Fire** — damage over time based on the hit that applied it, still reduced by armor
 - **Ice** — each stack slows and lowers armor; at 5 stacks the target is stunned; stacks wear off one at a time
+- Stuns and slows from different sources combine sensibly: a new stun never cuts a longer one short, and the strongest slow applies — one slow wearing off doesn't cancel another
 - **Lightning** — jumps from the target to nearby characters on the same side, weaker with each jump; more stacks mean more jumps
 - Each effect chooses how repeat hits stack: refresh the timer, add stacks on one timer, or give every stack its own timer
 - Characters can be made immune to specific effects
@@ -88,7 +89,7 @@
 - An ability that wouldn't do anything isn't used (e.g. Heal at full health), so no charge is spent
 - Abilities can cost a resource (mana, energy...) as well as using a charge; an ability you can't afford doesn't fire and keeps its charge
 - Six built-in abilities: Dash, Projectile, Heal, Shockwave, Targeted, and Timeline
-  - **Dash** — bursts the player horizontally in their move direction (or camera forward if idle)
+  - **Dash** — a quick committed dash in the move direction (or camera forward if idle), performed like a dodge (same steering, animation and air limit); it uses the ability's cooldown, not the dodge's
   - **Projectile** — fires a projectile from the camera that deals damage (and optional status effects) on impact; configurable speed, lifetime and gravity drop
   - **Heal** — instantly restores a set amount of health
   - **Shockwave** — damages nearby enemies and launches nearby rigidbodies away from the player

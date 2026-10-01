@@ -28,7 +28,7 @@ namespace CGD.Combat
             bool stunned = stunnable != null && stunnable.IsStunned;
 
             if (stunnable != null)
-                stunnable.SpeedMultiplier = stunned ? 0f : 1f - clampedStacks * SlowPerStack;
+                stunnable.SetSlow(this, stunned ? 0f : 1f - clampedStacks * SlowPerStack);
 
             float armorReduction = clampedStacks * ArmorReductionPerStack;
             if (stunned) armorReduction += StunArmorReductionBonus;
@@ -40,7 +40,7 @@ namespace CGD.Combat
             target.Damageable.ArmorReductionPercent = 0f;
 
             if (target.Stunnable != null)
-                target.Stunnable.SpeedMultiplier = 1f;
+                target.Stunnable.ClearSlow(this);
         }
     }
 }

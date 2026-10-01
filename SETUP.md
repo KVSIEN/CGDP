@@ -497,7 +497,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 |---|---|---|
 | `Input/` | `InputBindingSettings` (shared) | PlayerInputHandler, SettingsMenu |
 | `Player/` | `PlayerMovementSettings` (shared) | PlayerMovement, PlayerDodge, PlayerMantle |
-| `Player/Dodges/` | `SidestepRoll`, `CommittedRoll`, `SteerableBoost`, `LongDash`, `AirDash` (`…Dodge`) — stages with speed, curve, steering, i-frames, commitment, follow-up press, cooldown | PlayerDodge, DevCatalog |
+| `Player/Dodges/` | `SidestepRoll`, `CommittedRoll`, `SteerableBoost`, `LongDash`, `AirDash`, `AbilityDash` (`…Dodge`; the last is the Dash ability's `Move`) — stages with speed, curve, steering, i-frames, commitment, follow-up press, cooldown | PlayerDodge, DevCatalog |
 | `UI/` | `CrosshairSettings` | CrosshairHUD |
 | `Flow/` | `GameFlowSettings` | GameFlow |
 | `Timing/` | `GameTimeSettings` | GameTime |
@@ -514,7 +514,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Items/Armor/`, `Attachments/`, `Consumables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `StimConsumable`, `ScrapMetalResource`, `ClothResource` | pickups, loot, recipes, quest rewards |
 | `Crafting/` | `BandageRecipe`, `CombatStimRecipe`, `ExtendedMagazineRecipe`, `CombatVestRecipe` | CraftingStation |
 | `DevTools/` | `DevCatalog` (all items, weapon categories, buffs; no enemy prefabs exist yet) | DevCommands |
-| `Abilities/` | Dash, Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`), Stealth (needs `Stealthable`) | PlayerAbilities |
+| `Abilities/` | Dash (needs `PlayerDodge`), Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`), Stealth (needs `Stealthable`) | PlayerAbilities |
 | `Targeting/` | `Default…TargetSelector`, `AimedArea…`, `FriendlyArea…` | abilities, PlayerLockOn |
 | `Meters/` | Stamina, Mana, Oxygen, Rage | MeterSet, costs, MeterZone |
 | `Loot/` | `DefaultLootTable` | LootDropper |
