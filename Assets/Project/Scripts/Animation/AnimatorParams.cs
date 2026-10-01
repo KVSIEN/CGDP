@@ -20,6 +20,7 @@ namespace CGD.Animation
         public static readonly int Sliding   = Animator.StringToHash("Sliding");
         public static readonly int Mantling  = Animator.StringToHash("Mantling");
         public static readonly int Rolling   = Animator.StringToHash("Rolling");
+        public static readonly int Dashing   = Animator.StringToHash("Dashing");
         public static readonly int Stunned   = Animator.StringToHash("Stunned");
         public static readonly int Reloading = Animator.StringToHash("Reloading");
         public static readonly int Alerted   = Animator.StringToHash("Alerted");

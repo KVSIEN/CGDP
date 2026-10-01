@@ -55,10 +55,11 @@ namespace CGD.DevTools
             Console.Register("heal",      "",                         "Restore full health", _ => Heal());
             Console.Register("cloak",     "[seconds]",                "Become hidden anywhere for a while", Cloak);
             Console.Register("buff",      "<preset> [seconds]",       "Apply a stat modifier preset for a while", Buff);
+            Console.Register("dodge",     "[type]",                   "Show or switch the dodge type", Dodge);
             Console.Register("timescale", "<scale>",                  "Set game speed (1 = normal)", TimeScale);
             Console.Register("revealmap", "",                         "Uncover all fog of war", _ => RevealMap());
             Console.Register("quest",     "list | start <q> | step <q> <n> | complete <q>", "Inspect or jump quest progress", Quest);
-            Console.Register("list",      "items|weapons|enemies|buffs", "Show what the catalog can hand out", List);
+            Console.Register("list",      "items|weapons|enemies|buffs|dodges", "Show what the catalog can hand out", List);
         }
 
         // --- Items -----------------------------------------------------------------
@@ -175,6 +176,19 @@ namespace CGD.DevTools
             return $"{preset.name} for {seconds:0.#}s.";
         }
 
+        private string Dodge(string[] args)
+        {
+            if (!TryGetComponent(out PlayerDodge dodge)) return "No PlayerDodge on this object.";
+            if (args.Length == 0)
+                return dodge.Definition != null ? $"Dodge: {dodge.Definition.name}. Switch with dodge <type> (see list dodges)." : "No dodge type set.";
+
+            DodgeDefinition definition = Find(_catalog != null ? _catalog.Dodges : null, args[0], d => d.DisplayName, out string error);
+            if (definition == null) return error;
+
+            dodge.Definition = definition;
+            return $"Dodge: {definition.name}.";
+        }
+
         // --- Quests ----------------------------------------------------------------
 
         private string Quest(string[] args)
@@ -246,6 +260,7 @@ namespace CGD.DevTools
             else if (Is(args[0], "weapons")) foreach (var w in _catalog.Weapons) { if (w != null) text.Append(w.name).Append('\n'); }
             else if (Is(args[0], "enemies")) foreach (var e in _catalog.Enemies) { if (e != null) text.Append(e.name).Append('\n'); }
             else if (Is(args[0], "buffs"))   foreach (var b in _catalog.Buffs)   { if (b != null) text.Append(b.name).Append('\n'); }
+            else if (Is(args[0], "dodges"))  foreach (var d in _catalog.Dodges)  { if (d != null) text.Append(d.name).Append("  (").Append(d.DisplayName).Append(")\n"); }
             else throw new UsageException();
 
             return text.Length > 0 ? text.ToString().TrimEnd() : "(empty)";

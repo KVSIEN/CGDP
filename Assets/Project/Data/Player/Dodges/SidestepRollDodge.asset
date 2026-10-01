@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f20e8974c04b4bc486d8259e348249c6, type: 3}
+  m_Name: SidestepRollDodge
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Player.DodgeDefinition
+  _displayName: Dodge
+  _cost:
+    Meter: {fileID: 0}
+    Amount: 0
+  _withoutInput: 0
+  _airDodges: 0
+  _stages:
+  - Label: STEP
+    Duration: 0.15
+    Speed: 6
+    SpeedCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Steering: 0
+    TurnRate: 180
+    Redirect: 1
+    IgnoreGravity: 0
+    Commits: 0
+    InvulnerableFrom: 0
+    InvulnerableTo: 0
+    Pose: 0
+    Advance: 1
+    FollowUpWindow: 0.75
+    Cooldown: 1
+  - Label: ROLL
+    Duration: 0.25
+    Speed: 7
+    SpeedCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Steering: 2
+    TurnRate: 180
+    Redirect: 1
+    IgnoreGravity: 0
+    Commits: 1
+    InvulnerableFrom: 0
+    InvulnerableTo: 0.2
+    Pose: 1
+    Advance: 0
+    FollowUpWindow: 0.5
+    Cooldown: 1.5

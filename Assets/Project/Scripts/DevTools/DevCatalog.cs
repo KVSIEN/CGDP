@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Items;
+using CGD.Player;
 using CGD.Stats;
 using CGD.Weapons;
 
 namespace CGD.DevTools
 {
-    // What the dev console can hand out by name: items, weapon categories, enemy prefabs
-    // and buffs. Names match the asset name or display name, ignoring case and spaces;
+    // What the dev console can hand out by name: items, weapon categories, enemy prefabs,
+    // buffs and dodge types. Names match the asset name or display name, ignoring case and spaces;
     // a unique partial match works too ("scrap" → Scrap Metal).
     [CreateAssetMenu(fileName = "DevCatalog", menuName = "CGD/Dev Tools/Dev Catalog")]
     public class DevCatalog : ScriptableObject
@@ -17,11 +18,13 @@ namespace CGD.DevTools
         [SerializeField] private WeaponCategoryData[] _weapons    = Array.Empty<WeaponCategoryData>();
         [SerializeField] private GameObject[]         _enemies    = Array.Empty<GameObject>();
         [SerializeField] private StatModifierPreset[] _buffs      = Array.Empty<StatModifierPreset>();
+        [SerializeField] private DodgeDefinition[]    _dodges     = Array.Empty<DodgeDefinition>();
 
         public IReadOnlyList<ItemDefinition>     Items   => _items;
         public IReadOnlyList<WeaponCategoryData> Weapons => _weapons;
         public IReadOnlyList<GameObject>         Enemies => _enemies;
         public IReadOnlyList<StatModifierPreset> Buffs   => _buffs;
+        public IReadOnlyList<DodgeDefinition>    Dodges  => _dodges;
 
         // Exact match first, then a single partial match. Null (with a reason) otherwise.
         public static T Find<T>(IReadOnlyList<T> options, string query, Func<T, string> displayName, out string error) where T : UnityEngine.Object

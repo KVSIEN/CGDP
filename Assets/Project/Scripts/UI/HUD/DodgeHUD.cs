@@ -17,8 +17,9 @@ namespace CGD.UI
 
         private static readonly Color ReadyColor    = new Color(0.25f, 0.55f, 1f,  0.85f);
         private static readonly Color CooldownColor = new Color(0.1f,  0.1f,  0.1f, 0.85f);
-        private static readonly Color StepColor     = new Color(1f,    0.75f, 0.1f, 0.85f);
-        private static readonly Color RollColor     = new Color(0.15f, 0.9f,  0.4f, 0.85f);
+        // While dodging: amber when you can still act, green while committed (roll, dash).
+        private static readonly Color FreeColor      = new Color(1f,    0.75f, 0.1f, 0.85f);
+        private static readonly Color CommittedColor = new Color(0.15f, 0.9f,  0.4f, 0.85f);
         private static readonly Color OverlayColor  = new Color(0f,    0f,    0f,   0.65f);
 
         private Image          _bg;
@@ -63,27 +64,20 @@ namespace CGD.UI
         {
             if (_dodge == null) return;
 
-            var phase = _dodge.CurrentDodgePhase;
-
-            if (phase == PlayerDodge.DodgePhase.Sidestep)
+            if (_dodge.IsDodging)
             {
-                _bg.color = StepColor;
+                _bg.color = _dodge.IsCommitted ? CommittedColor : FreeColor;
                 _overlay.rectTransform.anchorMax = new Vector2(1f, 0f);
-                _nameLabel.text = "STEP";
-            }
-            else if (phase == PlayerDodge.DodgePhase.Roll)
-            {
-                _bg.color = RollColor;
-                _overlay.rectTransform.anchorMax = new Vector2(1f, 0f);
-                _nameLabel.text = "ROLL";
             }
             else
             {
                 float ratio = _dodge.Cooldown.Ratio;
                 _bg.color = Color.Lerp(CooldownColor, ReadyColor, ratio);
                 _overlay.rectTransform.anchorMax = new Vector2(1f, 1f - ratio);
-                _nameLabel.text = "DODGE";
             }
+
+            string label = _dodge.Label.ToUpperInvariant();
+            if (_nameLabel.text != label) _nameLabel.text = label;
         }
 
         public override void Refresh() { }

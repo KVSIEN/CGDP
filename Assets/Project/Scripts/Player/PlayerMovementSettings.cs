@@ -40,26 +40,9 @@ namespace CGD.Player
         public float StepCheckDistance = 0.45f;
         public float StepClimbSpeed = 8f;
 
-        [Header("Dodge")]
-        [Tooltip("Speed sustained during the sidestep burst")]
-        public float SidestepForce = 7f;
-        [Tooltip("How long the sidestep velocity is held before movement takes over")]
-        public float SidestepDuration = 0.15f;
-        [Tooltip("How long after the sidestep the player can press Dodge again to roll")]
-        public float RollWindowDuration = 0.5f;
-        [Tooltip("Cooldown applied when the sidestep is used but the roll window expires unused")]
-        public float SidestepCooldown = 0.7f;
-        [Tooltip("Speed sustained during the full roll")]
-        public float DodgeForce = 12f;
-        [Tooltip("How long the full roll velocity is held before movement takes over")]
-        public float RollDuration = 0.6f;
-        public float DodgeCooldown = 1.5f;
-
         [Header("Stamina")]
         [Tooltip("Drained per second while sprinting; sprint stops when it runs out. Leave Meter empty for free sprinting.")]
         public MeterCost SprintCost;
-        [Tooltip("Spent when a dodge starts (the follow-up roll is included). Leave Meter empty for free dodges.")]
-        public MeterCost DodgeCost;
 
         [Header("Slide")]
         public float SlideSpeed = 11f;

@@ -36,6 +36,12 @@ namespace CGD.Combat
         // Ignores all damage while set (dev console "god").
         public bool IsInvulnerable { get; set; }
 
+        // Brief invulnerability (dodge i-frames). Counted, so overlapping sources don't end
+        // each other's, and kept apart from IsInvulnerable so god mode survives a dodge.
+        private int _invulnerabilityHolds;
+        public void AddInvulnerability() => _invulnerabilityHolds++;
+        public void RemoveInvulnerability() => _invulnerabilityHolds = Mathf.Max(0, _invulnerabilityHolds - 1);
+
         public float Health => _currentHealth;
         public float Shield => _shield.Current;
         public bool  IsDead => _currentHealth <= 0f;
@@ -112,7 +118,7 @@ namespace CGD.Combat
 
         private void ApplyDamage(DamageInfo info, float multiplier, Vector3 point, bool isCritical)
         {
-            if (IsDead || IsInvulnerable || !CanBeDamagedBy(info.Source)) return;
+            if (IsDead || IsInvulnerable || _invulnerabilityHolds > 0 || !CanBeDamagedBy(info.Source)) return;
 
             LastHitSource = info.Source;
             LastHitPoint  = point;

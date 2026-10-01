@@ -32,7 +32,7 @@ namespace CGD.Player
         // Shared gate for abilities/actions that shouldn't run during an exclusive
         // movement state (mid-mantle the Rigidbody is kinematic; mid-dodge-roll it's
         // forcibly overwritten each FixedUpdate), so neither would have any real effect.
-        public bool CanAct => !IsMantling && !_dodge.IsRolling && !IsStunned;
+        public bool CanAct => !IsMantling && !_dodge.IsCommitted && !IsStunned;
 
         public bool IsStunned => _stunnable.IsStunned;
 
@@ -197,8 +197,8 @@ namespace CGD.Player
 
         private void HandleMovement()
         {
-            if (_dodge.CurrentDodgePhase == PlayerDodge.DodgePhase.Roll && _dodge.LockDodgeDirection)
-                return;
+            // The dodge sets the velocity itself while it moves the player.
+            if (_dodge.IsDrivingMovement) return;
 
             Vector2 rawInput = _input.MoveInput;
             _isSprinting = _input.GetAction(GameAction.Sprint) && rawInput.magnitude > 0.1f && !IsCrouching && IsGrounded && !IsSliding

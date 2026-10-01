@@ -37,17 +37,7 @@ MonoBehaviour:
   MaxStepHeight: 0.3
   StepCheckDistance: 0.45
   StepClimbSpeed: 8
-  SidestepForce: 6
-  SidestepDuration: 0.15
-  RollWindowDuration: 0.75
-  SidestepCooldown: 1
-  DodgeForce: 7
-  RollDuration: 0.25
-  DodgeCooldown: 1.5
   SprintCost:
-    Meter: {fileID: 0}
-    Amount: 0
-  DodgeCost:
     Meter: {fileID: 0}
     Amount: 0
   SlideSpeed: 10

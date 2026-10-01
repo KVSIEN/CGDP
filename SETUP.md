@@ -89,7 +89,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 |---|---|
 | **PlayerInputHandler** | `_bindings` = `Input/InputBindingSettings` |
 | **PlayerMovement** | `_settings` = `Player/PlayerMovementSettings`, `_cameraTransform` = Main Camera, `_playerMesh` = Player Body |
-| **PlayerDodge** | `_settings` = same `PlayerMovementSettings` |
+| **PlayerDodge** | `_definition` = a dodge from `Player/Dodges/` (default `SidestepRollDodge`) |
 | **PlayerMantle** | `_settings` = same `PlayerMovementSettings`, `_cameraTransform` = Main Camera |
 | **PlayerCamera** (Main Camera) | `_input`, `_movement` = Player · `_playerBody` = Player Body · `_headAnchor` = Head Anchor · `_camera` = its own Camera · `_firstPersonHideRenderers` = Player Body renderers |
 
@@ -120,7 +120,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 | **PlayerAudio** | `_health` = PlayerHealth, `_hurtSound`?, `_deathSound`? | |
 | **MeterSet**? | `_definitions` = meters from `Data/Meters/` | Needed before any stamina/mana cost can be paid. |
 
-**Meter costs** — set `SprintCost`/`DodgeCost` on `PlayerMovementSettings`, or `Cost` on an ability.
+**Meter costs** — set `SprintCost` on `PlayerMovementSettings`, `_cost` on a dodge, or `Cost` on an ability.
 A cost for a meter the Player doesn't have is **blocked**, not free.
 
 ---
@@ -249,7 +249,7 @@ Enemy / Player     [EnemyAnimator or PlayerAnimator, Ragdoll?]
 | Type | Names |
 |---|---|
 | Float | `Speed`, `ForwardSpeed`, `StrafeSpeed`, `VerticalSpeed`, `Aim` |
-| Bool | `Grounded`, `Crouching`, `Sprinting`, `Sliding`, `Mantling`, `Rolling`, `Stunned`, `Reloading`, `Alerted`, `Dead` |
+| Bool | `Grounded`, `Crouching`, `Sprinting`, `Sliding`, `Mantling`, `Rolling`, `Dashing`, `Stunned`, `Reloading`, `Alerted`, `Dead` |
 | Int | `AttackIndex` (combo step, −1 = heavy) |
 | Trigger | `Attack`, `Fire`, `Throw`, `Hit` |
 
@@ -354,7 +354,7 @@ The Sandbox **Gunsmith** stands at (5, 0, −3):
 | **DevCommands** (Player) | `_catalog` = `DevTools/DevCatalog`, `_aim` = Main Camera, `_quests`? = QuestTracker, `_map`? = WorldMapArea | Development builds only unless `_allowInReleaseBuilds`. |
 | **DevConsolePanel** (HUD) | `_input` = Player, `_commands` = the Player's DevCommands | Opens with ` (backquote). |
 
-- Type `/help` for commands (every command starts with `/`). Anything the console can hand out by name is listed in `DevCatalog` — add new items, weapon categories, enemy prefabs and buffs there.
+- Type `/help` for commands (every command starts with `/`). Anything the console can hand out by name is listed in `DevCatalog` — add new items, weapon categories, enemy prefabs, buffs and dodges there.
 
 ## Stats & Buffs
 
@@ -497,6 +497,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 |---|---|---|
 | `Input/` | `InputBindingSettings` (shared) | PlayerInputHandler, SettingsMenu |
 | `Player/` | `PlayerMovementSettings` (shared) | PlayerMovement, PlayerDodge, PlayerMantle |
+| `Player/Dodges/` | `SidestepRoll`, `CommittedRoll`, `SteerableBoost`, `LongDash`, `AirDash` (`…Dodge`) — stages with speed, curve, steering, i-frames, commitment, follow-up press, cooldown | PlayerDodge, DevCatalog |
 | `UI/` | `CrosshairSettings` | CrosshairHUD |
 | `Flow/` | `GameFlowSettings` | GameFlow |
 | `Timing/` | `GameTimeSettings` | GameTime |

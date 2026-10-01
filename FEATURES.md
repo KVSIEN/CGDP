@@ -9,7 +9,17 @@
 - Step climbing — automatically steps up small ledges without getting stuck
 - Moving platform support — player inherits the platform's velocity
 - External impulse support — explosions, knockback, jump pads can all push the player via `AddImpulse`
-- Dodge — two-phase system inspired by God of War: tap Q for a quick sidestep, then tap Q again within a short window to commit to a full dodge roll in the same direction; if the window expires the roll is cancelled and only a shorter sidestep cooldown applies; completing the full roll uses the longer cooldown; both phases show on the HUD cooldown indicator
+- Dodge (Q) — several dodge styles, one active at a time:
+  - **Sidestep + roll** (default, inspired by God of War): a quick sidestep; press again within a short window (or during the step) to follow up with a full roll in the direction you're holding. Skipping the roll only costs the shorter sidestep cooldown
+  - **Committed roll**: one longer roll that can't be steered once started
+  - **Steerable boost**: a long burst you can curve toward where you're steering, and keep shooting during; usable once in the air
+  - **Long dash**: a fast, long dash straight in the direction you're holding (no input, no dash)
+  - **Air dash**: a short dash that holds your height, usable once per jump
+- Rolls and dashes have brief invulnerability (i-frames) and lock out attacks and abilities until they finish; sidesteps and boosts don't
+- Dodging with no movement input steps backward (or forward, for dashes)
+- A dodge pressed just before it's ready (end of cooldown, landing) still comes out
+- Being stunned or starting a mantle cancels a dodge
+- The HUD dodge indicator names the current move (STEP, ROLL, BOOST, DASH), turns green while committed and refills during the cooldown
 - Optional stamina — sprinting can drain a stamina meter and stop when it runs out, and dodges can cost stamina; once emptied, stamina has to recover past a threshold before it can be used again (off unless a stamina cost is set)
 - Slide — press crouch while sprinting to slide; launches at a configurable speed then decelerates smoothly; exits when speed drops below a threshold, the timer runs out, crouch is released, or the player leaves the ground
 - Mantle — hold forward (W) and press Jump facing a ledge to pull up onto it, from the ground or mid-jump (a jump that rises to a ledge still catches it for a moment); only ledges between a minimum and maximum height can be mantled — lower obstacles are simply jumped over, and there must be room to stand on top; the pull-up speed scales with ledge height (low ledges are quick, tall ones slower, tunable per height); works identically in first-person and third-person
@@ -453,7 +463,7 @@
 - Backquote (`) opens a console in development builds; commands start with a slash (`/help`), with history (Up/Down) and Tab completion. Escape closes it
 - While the console is open every other keybind is muted, so typing a letter never triggers a hotkey like the inventory, map or weapon slots
 - `/give <item> [count]`, `/weapon <category> [seed] [tier]` (same seed and tier = same gun), `/spawn <enemy> [count]`
-- `/god`, `/heal`, `/buff <preset> [seconds]`, `/timescale <x>`, `/revealmap`, `/cloak [seconds]`
+- `/god`, `/heal`, `/buff <preset> [seconds]`, `/timescale <x>`, `/revealmap`, `/cloak [seconds]`, `/dodge [type]` (switch dodge style to try them out)
 - `/quest list`, `/quest start|complete <quest>`, `/quest step <quest> <n>` to jump straight to any objective
 - Names can be partial ("/give scrap 20")
 

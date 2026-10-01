@@ -1,41 +1,63 @@
 using UnityEngine;
+using CGD.Combat;
 using CGD.Core;
 using CGD.Input;
 using CGD.Meters;
 
 namespace CGD.Player
 {
+    // Performs the player's dodge as described by a DodgeDefinition (sidestep into roll,
+    // committed roll, steerable boost, long dash…). DodgeMotion runs the stages; this
+    // component reads input, starts dodges when allowed, applies their velocity and
+    // i-frames, and cancels them when the player is stunned or mantles.
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(PlayerInputHandler))]
-    // Runs after PlayerMovement's default execution order so dodge velocity overrides
-    // whatever HandleMovement/HandleSlide set this frame, same as when it was ticked
-    // from inside PlayerMovement.FixedUpdate() after those calls.
+    // Runs after PlayerMovement so the dodge velocity overrides whatever movement set this step.
     [DefaultExecutionOrder(100)]
     public class PlayerDodge : MonoBehaviour
     {
-        public enum DodgePhase { None, Sidestep, Roll }
+        // A press this soon before the dodge is ready (cooldown, landing) still dodges.
+        private const float InputBuffer = 0.15f;
+        private const float InputDeadzone = 0.1f;
 
-        [SerializeField] private PlayerMovementSettings _settings;
-        [SerializeField] private bool _lockDodgeDirection;
+        [SerializeField] private DodgeDefinition _definition;
 
-        // Read by DodgeHUD to size the cooldown overlay.
-        public CooldownTimer Cooldown => _dodgeCooldown;
-
-        public DodgePhase CurrentDodgePhase => _dodgePhase;
-        public bool IsRolling => _dodgePhase == DodgePhase.Roll;
-        public bool LockDodgeDirection => _lockDodgeDirection;
-
+        private readonly DodgeMotion _motion = new();
         private PlayerMovement _movement;
         private Rigidbody _rb;
         private PlayerInputHandler _input;
         private MeterSet _meters;
+        private HealthManager _health;
 
-        private CooldownTimer _dodgeCooldown;
-        private DodgePhase _dodgePhase;
-        private float _dodgePhaseTimer;
-        private Vector3 _dodgeDir;
-        private bool _dodgeQueued;
-        private bool _rollQueued;
+        private CooldownTimer _cooldown;
+        private float _buffered;
+        private int _airDodgesUsed;
+        private bool _invulnerable;
+
+        // Read by DodgeHUD to size the cooldown overlay.
+        public CooldownTimer Cooldown => _cooldown;
+
+        // Swappable at runtime (perks, gear, the dev console); cancels a dodge in progress.
+        public DodgeDefinition Definition
+        {
+            get => _definition;
+            set
+            {
+                _motion.Cancel();
+                _definition = value;
+            }
+        }
+
+        public bool IsDodging            => _motion.IsActive;
+        public bool IsDrivingMovement    => _motion.IsMoving;
+        public bool IsCommitted          => _motion.IsCommitted;
+        public bool IsWaitingForFollowUp => _motion.IsWaitingForFollowUp;
+        public bool IsRolling            => _motion.Pose == DodgePose.Roll;
+        public bool IsDashing            => _motion.Pose == DodgePose.Dash;
+
+        // The running stage's label, or the dodge's name when idle.
+        public string Label => _motion.IsActive ? _motion.Stage.Label
+                             : _definition != null ? _definition.DisplayName : string.Empty;
 
         private void Awake()
         {
@@ -43,91 +65,90 @@ namespace CGD.Player
             _movement = GetComponent<PlayerMovement>();
             _input    = GetComponent<PlayerInputHandler>();
             TryGetComponent(out _meters);
+            TryGetComponent(out _health);
+            _motion.Ended += cooldown => _cooldown.Start(cooldown);
+        }
+
+        private void OnDisable()
+        {
+            _motion.Cancel();
+            SetInvulnerable(false);
         }
 
         private void Update()
         {
-            if (_input.GetAction(GameAction.Dodge))
-            {
-                if (_dodgePhase == DodgePhase.None && _dodgeCooldown.IsReady && _settings.DodgeCost.CanAfford(_meters))
-                    _dodgeQueued = true;
-                else if (_dodgePhase == DodgePhase.Sidestep)
-                    _rollQueued = true;
-            }
+            if (!_input.GetAction(GameAction.Dodge)) return;
+
+            if (_motion.IsActive) _motion.PressDodge();
+            else _buffered = InputBuffer;
         }
 
         private void FixedUpdate()
         {
-            if (_movement.IsMantling || _movement.IsStunned) return;
+            float dt = Time.fixedDeltaTime;
+            if (_movement.IsGrounded) _airDodgesUsed = 0;
 
-            _dodgeCooldown.Tick(Time.fixedDeltaTime);
-
-            // Phase 1 — sidestep: capture direction and start the window
-            if (_dodgeQueued)
+            if (_movement.IsMantling || _movement.IsStunned)
             {
-                _dodgeQueued = false;
-                if (!_settings.DodgeCost.TryPay(_meters)) return;
-                _dodgeDir = _movement.MoveDirection.magnitude > 0.1f
-                    ? _movement.MoveDirection
-                    : -Vector3.ProjectOnPlane(_movement.CameraTransform.forward, Vector3.up).normalized;
-                _dodgePhase      = DodgePhase.Sidestep;
-                _dodgePhaseTimer = _settings.RollWindowDuration;
-            }
-
-            if (_dodgePhase == DodgePhase.None) return;
-
-            _dodgePhaseTimer -= Time.fixedDeltaTime;
-
-            if (_dodgePhase == DodgePhase.Sidestep)
-            {
-                // Sustain sidestep velocity for SidestepDuration
-                float elapsed = _settings.RollWindowDuration - _dodgePhaseTimer;
-                if (elapsed < _settings.SidestepDuration)
-                {
-                    _rb.linearVelocity = new Vector3(
-                        _dodgeDir.x * _settings.SidestepForce,
-                        _rb.linearVelocity.y,
-                        _dodgeDir.z * _settings.SidestepForce);
-                }
-
-                // Second press within the window → commit to the full roll, re-capture direction from current input
-                if (_rollQueued)
-                {
-                    _rollQueued = false;
-                    if (_movement.MoveDirection.magnitude > 0.1f)
-                        _dodgeDir = _movement.MoveDirection;
-                    _dodgePhase      = DodgePhase.Roll;
-                    _dodgePhaseTimer = _settings.RollDuration;
-                    return;
-                }
-
-                // Window expired without a roll → short cooldown
-                if (_dodgePhaseTimer <= 0f)
-                {
-                    _rollQueued = false;
-                    _dodgePhase = DodgePhase.None;
-                    _dodgeCooldown.Start(_settings.SidestepCooldown);
-                }
+                _motion.Cancel();
+                _buffered = 0f;
+                SetInvulnerable(false);
                 return;
             }
 
-            // Phase 2 — roll: sustain velocity at DodgeForce for the full duration
-            if (_dodgePhase == DodgePhase.Roll)
+            _cooldown.Tick(dt);
+            if (_buffered > 0f)
             {
-                if (!_lockDodgeDirection && _movement.MoveDirection.magnitude > 0.1f)
-                    _dodgeDir = _movement.MoveDirection;
+                _buffered = TryStart() ? 0f : _buffered - dt;
+            }
 
-                _rb.linearVelocity = new Vector3(
-                    _dodgeDir.x * _settings.DodgeForce,
-                    _rb.linearVelocity.y,
-                    _dodgeDir.z * _settings.DodgeForce);
+            if (_motion.Tick(dt, Flat(_movement.MoveDirection), out Vector2 velocity))
+            {
+                float y = _motion.Stage.IgnoreGravity ? 0f : _rb.linearVelocity.y;
+                _rb.linearVelocity = new Vector3(velocity.x, y, velocity.y);
+            }
+            SetInvulnerable(_motion.IsInvulnerable);
+        }
 
-                if (_dodgePhaseTimer <= 0f)
-                {
-                    _dodgePhase = DodgePhase.None;
-                    _dodgeCooldown.Start(_settings.DodgeCooldown);
-                }
+        private bool TryStart()
+        {
+            if (_motion.IsActive || _definition == null || _definition.Stages.Count == 0) return false;
+            if (!_cooldown.IsReady) return false;
+
+            bool grounded = _movement.IsGrounded;
+            if (!grounded && _airDodgesUsed >= _definition.AirDodges) return false;
+            if (!TryGetDirection(out Vector2 direction)) return false;
+            if (!_definition.Cost.TryPay(_meters)) return false;
+
+            if (!grounded) _airDodgesUsed++;
+            _motion.Start(_definition.Stages, direction);
+            return true;
+        }
+
+        private bool TryGetDirection(out Vector2 direction)
+        {
+            direction = Flat(_movement.MoveDirection);
+            if (direction.sqrMagnitude > InputDeadzone * InputDeadzone) return true;
+
+            Vector2 forward = Flat(_movement.CameraTransform.forward).normalized;
+            switch (_definition.WithoutInput)
+            {
+                case DodgeFallbackDirection.Backward: direction = -forward; return true;
+                case DodgeFallbackDirection.Forward:  direction = forward;  return true;
+                default: return false;
             }
         }
+
+        // Held through HealthManager's counted invulnerability, so it never clears god mode
+        // or another source's i-frames.
+        private void SetInvulnerable(bool value)
+        {
+            if (value == _invulnerable || _health == null) return;
+            _invulnerable = value;
+            if (value) _health.AddInvulnerability();
+            else _health.RemoveInvulnerability();
+        }
+
+        private static Vector2 Flat(Vector3 v) => new(v.x, v.z);
     }
 }

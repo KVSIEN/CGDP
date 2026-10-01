@@ -10,6 +10,7 @@
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Dodge styles as data (sidestep+roll, committed roll, steerable boost, long dash, air dash), i-frames, input buffer, air dodges, stun/mantle cancel
 - Multi-cell rooms (2×1, 2×2), landmark rooms (Reactor Core), prop pass per room function with placeholder props, optional ceilings
 - Room functions (8 starship room kinds: size, height, shapes, structure), curved dome walls, structure rules (ship-wide pillar grid, column rings, corner columns, dividers, counters), walkways, tile tags and zones
 - Room shapes: rooms as tile footprints, RoomShape assets (Rect, L, T, U, Cross, Ring, Dome), door sockets, merged wall runs

@@ -5083,8 +5083,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 625b018488164bf45a077e0aa815a619, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDodge
-  _settings: {fileID: 11400000, guid: e79043a5d9ffa4646a759591456b06a1, type: 2}
-  _lockDodgeDirection: 0
+  _definition: {fileID: 11400000, guid: c920c8d57cdd42c2a9a8ab26ee1ec5ec, type: 2}
 --- !u!114 &1555766062
 MonoBehaviour:
   m_ObjectHideFlags: 0

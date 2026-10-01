@@ -54,7 +54,7 @@ Assets/
       Loot/                 LootTable, LootDropper, LootContainer
       Map/                  map graph data (Graph/: MapGraph, MapNode, analysis) and Generation/ (constraints, generator passes, validator)
       Meters/               generic resources (stamina, mana, oxygen…): Meter, MeterSet, MeterCost, MeterZone
-      Player/               movement, camera, lock-on, health, lifecycle, player audio
+      Player/               movement, camera, lock-on, health, lifecycle, player audio; Dodge/ (DodgeDefinition stages, DodgeMotion)
       Quests/               quest/objective definitions, QuestLog, QuestTracker, QuestEvents, signals
       Settings/             GameSettings (audio, video, accessibility preferences) and SettingsData
       Stats/                generic stat modifiers (ModifierSet, Stat, TimedModifiers), CharacterStats, presets

@@ -61,6 +61,7 @@ namespace CGD.Animation
             if (_movement != null) UpdateLocomotion(dt);
 
             _bridge.SetBool(AnimatorParams.Rolling,   _dodge != null && _dodge.IsRolling);
+            _bridge.SetBool(AnimatorParams.Dashing,   _dodge != null && _dodge.IsDashing);
             _bridge.SetBool(AnimatorParams.Reloading, _weapons != null && _weapons.IsReloading);
             _bridge.SetBool(AnimatorParams.Dead,      _health != null && _health.IsDead);
             if (_camera != null) _bridge.SetFloat(AnimatorParams.Aim, _camera.AdsT);
