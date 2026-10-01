@@ -7,8 +7,9 @@ namespace CGD.Level
     // doorways are known) its structure.
     public class LevelRoom
     {
-        public LevelRoom(MapNode node, RoomFootprint footprint, RoomFunction function, float wallHeight)
+        public LevelRoom(MapNode node, RoomFootprint footprint, RoomFunction function, float wallHeight, LandmarkRoomDefinition landmark = null)
         {
+            Landmark   = landmark;
             Node       = node;
             Footprint  = footprint;
             Function   = function;
@@ -20,6 +21,8 @@ namespace CGD.Level
         public RoomFunction  Function   { get; }    // null for a plain room
         public float         WallHeight { get; }    // metres
         public RoomStructure Structure  { get; private set; }
+        // The hand-built interior placed in this room, if any.
+        public LandmarkRoomDefinition Landmark { get; }
 
         // Middle of the room's bounds, in tile units.
         public Vector2 Center => Footprint.Center;

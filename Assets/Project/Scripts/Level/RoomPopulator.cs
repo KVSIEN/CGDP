@@ -6,9 +6,10 @@ using CGD.Enemies;
 
 namespace CGD.Level
 {
-    // Fills rooms with what their RoomContentRule asks for, on tiles the room's structure
-    // leaves free: never on pillars, in doorways or on the centre spot, and props also
-    // keep off the walkways so routes through the room stay clear. Props and centrepieces go in
+    // Furnishes rooms from their function (RoomPropPlanner), then fills them with what their
+    // RoomContentRule asks for, on tiles the room's structure leaves free: never on pillars,
+    // furniture, in doorways or on the centre spot, and props also keep off the walkways so
+    // routes through the room stay clear. Props and centrepieces go in
     // before the NavMesh is built (so it walks around them), enemies after (they need it).
     // Every placement comes from the level's seed, so the same seed gives the same level.
     public class RoomPopulator
@@ -18,7 +19,7 @@ namespace CGD.Level
         private readonly Transform _parent;
         private readonly RandomStream _random;
 
-        private const RoomTileTags NeverSpawnOn = RoomTileTags.Structure | RoomTileTags.NearDoor | RoomTileTags.Centre;
+        private const RoomTileTags NeverSpawnOn = RoomTileTags.Structure | RoomTileTags.Prop | RoomTileTags.NearDoor | RoomTileTags.Centre;
         private const RoomTileTags KeepPropsOff = RoomTileTags.Walkway;
 
         // Tiles still free to spawn on, per room, in shuffled order.
@@ -36,6 +37,12 @@ namespace CGD.Level
         {
             foreach (LevelRoom room in _layout.Rooms.Values)
             {
+                foreach (PlannedProp prop in RoomPropPlanner.Plan(room, _random))
+                {
+                    Vector3 local = new Vector3(prop.Position.x, 0f, prop.Position.y) * _layout.TileSize;
+                    Object.Instantiate(prop.Prefab, _parent.TransformPoint(local), _parent.rotation * Quaternion.Euler(0f, prop.Yaw, 0f), _parent);
+                }
+
                 RoomContentRule rule = _settings.RuleFor(room.Node.Type);
                 if (rule == null) continue;
 

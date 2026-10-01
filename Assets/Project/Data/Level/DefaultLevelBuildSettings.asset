@@ -22,6 +22,9 @@ MonoBehaviour:
   _corridorFloorMaterial: {fileID: 2100000, guid: dfc08c90188302847afb04f628582097, type: 2}
   _wallMaterial: {fileID: 2100000, guid: 2ab8149ec4775284bada96c1b85b4a09, type: 2}
   _geometryLayer: 0
+  _buildCeilings: 0
+  _ceilingMaterial: {fileID: 0}
+  _ceilingLayer: 0
   _doorPrefab: {fileID: 0}
   _lockedDoorPrefab: {fileID: 0}
   _secretDoorPrefab: {fileID: 0}
@@ -61,6 +64,7 @@ MonoBehaviour:
     Functions:
     - {fileID: 11400000, guid: 78e94437fb0b468ba1e4ee209af9794e, type: 2}
     - {fileID: 11400000, guid: 92d1e5f9bd594b108cc8fd4599755ee4, type: 2}
+    - {fileID: 11400000, guid: 491c4e646321419bba9afc3861fbac22, type: 2}
     Enemies: []
     EnemyCount:
       Min: 3

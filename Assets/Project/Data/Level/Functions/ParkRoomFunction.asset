@@ -18,9 +18,24 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ab825d68623d4d908c1f0c3cf462451d, type: 2}
   - {fileID: 11400000, guid: 3cf90817eefb42238292adbde28bfc6b, type: 2}
   - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
+  _cells: {x: 2, y: 1}
   _size:
     Min: 0
     Max: 0
     Bias: 0
   _wallHeight: 8
+  _openCeiling: 1
+  _landmark: {fileID: 0}
   _structure: []
+  _props:
+  - Prefabs:
+    - {fileID: 126843052005683991, guid: d07f3118f7ae4dbf92f6c478e7a8da78, type: 3}
+    Count:
+      Min: 8
+      Max: 14
+      Bias: 0
+    On: 0
+    Avoid: 124
+    Zone: 0
+    Facing: 1
+    Spacing: 1

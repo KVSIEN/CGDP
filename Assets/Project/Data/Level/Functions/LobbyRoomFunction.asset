@@ -18,11 +18,37 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9eb4483ea2cb4971b2a8c97462165979, type: 2}
   - {fileID: 11400000, guid: b6cf0b4dec9d4419a4b96c63d8278140, type: 2}
   - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
+  _cells: {x: 1, y: 1}
   _size:
     Min: 0
     Max: 0
     Bias: 0
   _wallHeight: 5
+  _openCeiling: 0
+  _landmark: {fileID: 0}
   _structure:
   - {fileID: 11400000, guid: 6c99a485ddf44f11809d1c26d6d910dc, type: 2}
   - {fileID: 11400000, guid: 0779a8c9bfd943528d256e313c2460f9, type: 2}
+  _props:
+  - Prefabs:
+    - {fileID: 126843052005683991, guid: d07f3118f7ae4dbf92f6c478e7a8da78, type: 3}
+    Count:
+      Min: 2
+      Max: 4
+      Bias: 0
+    On: 2
+    Avoid: 124
+    Zone: 0
+    Facing: 1
+    Spacing: 0
+  - Prefabs:
+    - {fileID: 126843052005683991, guid: d07f3118f7ae4dbf92f6c478e7a8da78, type: 3}
+    Count:
+      Min: 2
+      Max: 4
+      Bias: 0
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Spacing: 3

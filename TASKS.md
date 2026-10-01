@@ -2,15 +2,15 @@
 
 ## Open
 - Room generation, next steps (starship rooms):
-  - Multi-cell rooms (2×1, 2×2) and hand-built landmark room prefabs with door sockets
-  - Prop pass per function using tile tags and zones (tables in dining zones, crates along cargo walls…)
-  - Ceilings (per-room height is in place), finer curves for large domes
+  - Real art for placeholder props and the Reactor Core interior; interior lighting for ceilings
+  - Finer curves for large domes; landmark rotation
 -   Blender integration for Claude
     https://github.com/ahujasid/blender-mcp
 
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Multi-cell rooms (2×1, 2×2), landmark rooms (Reactor Core), prop pass per room function with placeholder props, optional ceilings
 - Room functions (8 starship room kinds: size, height, shapes, structure), curved dome walls, structure rules (ship-wide pillar grid, column rings, corner columns, dividers, counters), walkways, tile tags and zones
 - Room shapes: rooms as tile footprints, RoomShape assets (Rect, L, T, U, Cross, Ring, Dome), door sockets, merged wall runs
 - Economy (currency items, price tables, vendors with stock sources, buying/selling/trade-ins) and branching NPC dialogue with actions and conditions; Sandbox Gunsmith vendor

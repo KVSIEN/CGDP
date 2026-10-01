@@ -14,6 +14,11 @@ namespace CGD.Level
         private readonly List<DoorSocket> _sockets = new();
 
         public RoomFootprint(IEnumerable<Vector2Int> tiles, bool curvedWalls = false)
+            : this(tiles, curvedWalls, null) { }
+
+        // fixedSockets replaces the automatic doorway spots (a hand-built room's doorways);
+        // entries not on the outline facing out are dropped.
+        private RoomFootprint(IEnumerable<Vector2Int> tiles, bool curvedWalls, IEnumerable<DoorSocket> fixedSockets)
         {
             CurvedWalls = curvedWalls;
             _lookup = new HashSet<Vector2Int>(tiles);
@@ -24,7 +29,8 @@ namespace CGD.Level
 
             Bounds = ComputeBounds(_tiles);
             Anchor = ComputeAnchor();
-            FindSockets();
+            if (fixedSockets == null) FindSockets();
+            else AddFixedSockets(fixedSockets);
         }
 
         public static RoomFootprint Rectangle(RectInt rect)
@@ -32,6 +38,13 @@ namespace CGD.Level
             var tiles = new List<Vector2Int>(rect.width * rect.height);
             foreach (Vector2Int tile in rect.allPositionsWithin) tiles.Add(tile);
             return new RoomFootprint(tiles);
+        }
+
+        public static RoomFootprint Rectangle(RectInt rect, IEnumerable<DoorSocket> sockets)
+        {
+            var tiles = new List<Vector2Int>(rect.width * rect.height);
+            foreach (Vector2Int tile in rect.allPositionsWithin) tiles.Add(tile);
+            return new RoomFootprint(tiles, false, sockets);
         }
 
         public IReadOnlyList<Vector2Int> Tiles   => _tiles;
@@ -108,6 +121,13 @@ namespace CGD.Level
 
                     _sockets.Add(new DoorSocket(tile, side));
                 }
+        }
+
+        private void AddFixedSockets(IEnumerable<DoorSocket> sockets)
+        {
+            foreach (DoorSocket socket in sockets)
+                if (_lookup.Contains(socket.Inside) && !_lookup.Contains(socket.Outside))
+                    _sockets.Add(socket);
         }
 
         private bool IsStraightWall(Vector2Int neighbour, Vector2Int side) =>

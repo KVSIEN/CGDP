@@ -443,7 +443,8 @@ Each entry lists its **Functions**, enemy prefabs (count read at the room's inte
 
 | Asset | Folder | Sets |
 |---|---|---|
-| **RoomFunction** (Lobby, Restaurant, Park, Casino, CrewQuarters, CargoBay, GrandAtrium, DockingBay) | `Level/Functions/` | `_shapes` (empty = the settings' shapes), `_size` in tiles (0 = `_roomTiles`), `_wallHeight` (0 = the settings'), `_structure` rules in order |
+| **RoomFunction** (Lobby, Restaurant, Park, Casino, CrewQuarters, CargoBay, GrandAtrium, DockingBay, ReactorCore) | `Level/Functions/` | `_shapes` (empty = the settings' shapes), `_cells` (1–2 each way), `_size` in tiles (single-cell only; 0 = `_roomTiles`), `_wallHeight` (0 = the settings'), `_openCeiling`, `_landmark`?, `_structure` rules in order, `_props` |
+| **LandmarkRoomDefinition** (ReactorCore) | `Level/Landmarks/` | `_prefab` (interior; origin at the room's south-west floor corner), `_sizeTiles`, `_doorways` (tile + side), `_occupiedTiles` (furniture) |
 | **RoomShape** (Rectangle, L, T, U, Cross, Ring, Dome) | `Level/Shapes/` | parts, `_connections` range, `_curvedWalls` (Dome) |
 | **Structure rules** (Wide/Dense Pillar Grid, Column Ring, Corner Pillars, Divider Wall, Service Counter) | `Level/Structure/` | spacing, sizes, heights; optional `_pillarPrefab` (origin at the base) replaces the plain box |
 
@@ -451,6 +452,10 @@ Each entry lists its **Functions**, enemy prefabs (count read at the room's inte
 - A shape is only used for rooms whose connection count is in its `_connections` range; if nothing fits, the room is a square.
 - `_roomTiles` is 12: at 8, doorway clearance fills most of a room and pillars rarely fit.
 - Pillars and inner walls use the wall material and go on `_geometryLayer` with the walls.
+- A landmark that doesn't fit its cells, or has fewer doorways than the room's connections, falls back to a generated room (with a warning).
+- **Props** (`_props` on a function): prefabs, count, `On` tags (Edge = along walls, Corner…), `Avoid` tags, `Zone` (Largest = main space, Others = rooms split off by inner walls), `Facing`, `Spacing`.
+  Placeholder props (Crate, Table, Bed, Planter, SlotMachine) are in `Prefabs/Environment/Props/` — origin at the base, +Z the front. Swap in real art there.
+- **Ceilings**: tick `_buildCeilings` (off by default). Interiors then need lights. Put `_ceilingLayer` on its own layer and keep it out of the `WorldMapArea` capture mask; ceilings are left out of the NavMesh automatically.
 - **Enemy prefabs** need `EnemyAI`. None exist yet, so generated rooms start empty.
 - **Door prefabs**: origin at the doorway centre on the floor, +Z pointing out of the room. The opening is one tile wide (`_tileSize`).
   - Normal is optional.
@@ -519,7 +524,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `CameraEffects/` | `DefaultCameraEffectSettings` | CameraEffectsController |
 | `Map/` | `DefaultMapGenerationSettings`, `SandboxMapGraph` | Map Graph window, WorldMapArea |
 | `Audio/` | `DefaultSurfaceDatabase` | PlayerFootsteps |
-| `Level/` | `DefaultLevelBuildSettings` (Gridbox materials, room rules without prefabs), `Functions/` (eight `…RoomFunction`s), `Shapes/` (seven `…RoomShape`s), `Structure/` (six `…StructureRule`s) | LevelBuilder |
+| `Level/` | `DefaultLevelBuildSettings` (Gridbox materials, room rules without prefabs), `Functions/` (nine `…RoomFunction`s), `Shapes/` (seven `…RoomShape`s), `Structure/` (six `…StructureRule`s), `Landmarks/` (`ReactorCoreLandmarkRoom`) | LevelBuilder |
 | `Impacts/` | `DefaultImpactDatabase` (empty effects) | ImpactSpawner |
 | `Economy/` | `CreditsCurrency`, `DefaultPriceTable`, `Shops/GunsmithShopCatalog`, `Stock/GunsmithAmmoStock`, `Stock/GunsmithWeaponStock` | Vendor, PlayerInventory, DevCatalog |
 | `Dialogue/` | `GunsmithDialogue`, `Actions/OpenShopDialogueAction` | Npc |

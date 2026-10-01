@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.AI.Navigation;
 
 namespace CGD.Level
 {
@@ -24,23 +25,27 @@ namespace CGD.Level
             var walls          = new BoxMeshBuilder();
             var structure      = new BoxMeshBuilder();
 
-            AddFloors(layout, roomFloors, corridorFloors);
+            Dictionary<Vector2Int, LevelRoom> outerRing = AddFloors(layout, roomFloors, corridorFloors);
             new LevelWallBuilder(_settings, layout, walls).Build();
             foreach (LevelRoom room in layout.Rooms.Values)
+            {
                 if (room.Structure != null) AddStructure(layout, room, structure, parent);
+                if (room.Landmark != null) PlaceLandmark(layout, room, parent);
+            }
 
             CreatePart("RoomFloors",     roomFloors,     _settings.FloorMaterial,         parent);
             CreatePart("CorridorFloors", corridorFloors, _settings.CorridorFloorMaterial, parent);
             CreatePart("Walls",          walls,          _settings.WallMaterial,          parent);
             CreatePart("Structure",      structure,      _settings.WallMaterial,          parent);
+            if (_settings.BuildCeilings) BuildCeilings(layout, outerRing, parent);
             PlaceDoors(layout, parent);
         }
 
         // Curved-wall rooms also get floor on the ring of tiles around them: their diagonal
-        // walls cut through those tiles.
-        private void AddFloors(LevelLayout layout, BoxMeshBuilder roomFloors, BoxMeshBuilder corridorFloors)
+        // walls cut through those tiles. Returns that ring, with the room each tile is for.
+        private Dictionary<Vector2Int, LevelRoom> AddFloors(LevelLayout layout, BoxMeshBuilder roomFloors, BoxMeshBuilder corridorFloors)
         {
-            var extra = new HashSet<Vector2Int>();
+            var extra = new Dictionary<Vector2Int, LevelRoom>();
             foreach (Vector2Int t in layout.WalkableTiles)
             {
                 AddFloorTile(layout, layout.IsCorridor(t) ? corridorFloors : roomFloors, t);
@@ -48,15 +53,60 @@ namespace CGD.Level
                 LevelRoom room = layout.RoomAt(t);
                 if (room == null || !room.Footprint.CurvedWalls) continue;
                 foreach (Vector2Int n in Neighbours)
-                    if (!layout.IsWalkable(t + n)) extra.Add(t + n);
+                    if (!layout.IsWalkable(t + n)) extra[t + n] = room;
             }
-            foreach (Vector2Int t in extra) AddFloorTile(layout, roomFloors, t);
+            foreach (Vector2Int t in extra.Keys) AddFloorTile(layout, roomFloors, t);
+            return extra;
+        }
+
+        // A slab on top of every tile at its room's wall height (corridors at the default),
+        // merged into one box per row of equal height. Rooms with an open ceiling stay open.
+        // The ceiling is left out of the NavMesh so nothing walks on the roof.
+        private void BuildCeilings(LevelLayout layout, Dictionary<Vector2Int, LevelRoom> outerRing, Transform parent)
+        {
+            var rows = new Dictionary<(int y, float height), List<int>>();
+            void Add(Vector2Int t, LevelRoom room)
+            {
+                if (room != null && room.Function != null && room.Function.OpenCeiling) return;
+                var key = (t.y, room != null ? room.WallHeight : _settings.WallHeight);
+                if (!rows.TryGetValue(key, out List<int> xs)) rows[key] = xs = new List<int>();
+                xs.Add(t.x);
+            }
+            foreach (Vector2Int t in layout.WalkableTiles) Add(t, layout.RoomAt(t));
+            foreach (var (t, room) in outerRing) Add(t, room);
+
+            var ceilings = new BoxMeshBuilder();
+            float tile = layout.TileSize, thickness = _settings.FloorThickness;
+            foreach (var ((y, height), xs) in rows)
+            {
+                xs.Sort();
+                int start = xs[0];
+                for (int i = 1; i <= xs.Count; i++)
+                {
+                    if (i < xs.Count && xs[i] == xs[i - 1] + 1) continue;
+                    Vector3 centre = (layout.TileToLocal(new Vector2Int(start, y)) + layout.TileToLocal(new Vector2Int(xs[i - 1], y))) * 0.5f;
+                    ceilings.AddBox(centre + Vector3.up * (height + thickness * 0.5f), new Vector3((xs[i - 1] - start + 1) * tile, thickness, tile));
+                    if (i < xs.Count) start = xs[i];
+                }
+            }
+
+            GameObject part = CreatePart("Ceilings", ceilings, _settings.CeilingMaterial, parent, _settings.CeilingLayer);
+            if (part != null) part.AddComponent<NavMeshModifier>().ignoreFromBuild = true;
         }
 
         private void AddFloorTile(LevelLayout layout, BoxMeshBuilder floors, Vector2Int t)
         {
             float tile = layout.TileSize, floor = _settings.FloorThickness;
             floors.AddBox(layout.TileToLocal(t) + Vector3.down * (floor * 0.5f), new Vector3(tile, floor, tile));
+        }
+
+        // The interior prefab's origin goes on the room's south-west floor corner.
+        private static void PlaceLandmark(LevelLayout layout, LevelRoom room, Transform parent)
+        {
+            if (room.Landmark.Prefab == null) return;
+            Vector2Int min = room.Footprint.Bounds.min;
+            Vector3 corner = new Vector3(min.x, 0f, min.y) * layout.TileSize;
+            Object.Instantiate(room.Landmark.Prefab, parent.TransformPoint(corner), parent.rotation, parent);
         }
 
         private void AddStructure(LevelLayout layout, LevelRoom room, BoxMeshBuilder boxes, Transform parent)
@@ -100,12 +150,12 @@ namespace CGD.Level
             }
         }
 
-        private void CreatePart(string name, BoxMeshBuilder builder, Material material, Transform parent)
+        private GameObject CreatePart(string name, BoxMeshBuilder builder, Material material, Transform parent, int layer = -1)
         {
-            if (builder.IsEmpty) return;
+            if (builder.IsEmpty) return null;
 
             var go = new GameObject(name, typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider));
-            go.layer = _settings.GeometryLayer;
+            go.layer = layer >= 0 ? layer : _settings.GeometryLayer;
             go.isStatic = true;
             go.transform.SetParent(parent, false);
 
@@ -113,6 +163,7 @@ namespace CGD.Level
             go.GetComponent<MeshFilter>().sharedMesh     = mesh;
             go.GetComponent<MeshCollider>().sharedMesh   = mesh;
             if (material != null) go.GetComponent<MeshRenderer>().sharedMaterial = material;
+            return go;
         }
     }
 }

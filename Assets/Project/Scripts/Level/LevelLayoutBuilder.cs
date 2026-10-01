@@ -6,14 +6,10 @@ using CGD.Map;
 namespace CGD.Level
 {
     // Turns a MapGraph into a LevelLayout:
-    //   1. Each node gets a grid cell from its editor position (the generator already lays
-    //      nodes out on a column/lane grid; hand-moved nodes snap to the nearest free cell).
-    //   2. Each cell holds one room, with a gap around it for corridors. The room picks a
-    //      function (lobby, park…) for its type, which sets its size and height; its floor
-    //      plan (square, T, cross, ring…) comes from RoomShapeSelector.
-    //   3. Each connection becomes a corridor from a door socket facing one room to one
+    //   1. RoomPlacer gives each node a room: cells, function, size and floor plan.
+    //   2. Each connection becomes a corridor from a door socket facing one room to one
     //      facing the other, routed around every room.
-    //   4. With the doorways fixed, each room's structure (walkways, pillars, dividers) is
+    //   3. With the doorways fixed, each room's structure (walkways, pillars, dividers) is
     //      planned by RoomStructurePlanner.
     // Corridors keep a wall's width apart so two connections never merge into one — the
     // level has exactly the routes the graph has. When that's impossible (crossing
@@ -24,8 +20,6 @@ namespace CGD.Level
         // corridors still have a wall between them.
         private const int DoorSpacing = 2;
 
-        // Smallest room a function may ask for: room for a doorway on each side.
-        private const int MinRoomTiles = 4;
 
         private readonly LevelBuildSettings _settings;
 
@@ -41,46 +35,10 @@ namespace CGD.Level
                 return layout;
             }
 
-            PlaceRooms(graph, nodeSpacing, seed.Derive("rooms"), layout);
+            new RoomPlacer(_settings).Place(graph, nodeSpacing, seed.Derive("rooms"), layout);
             BuildCorridors(graph, layout);
             PlanStructures(seed.Derive("structure"), layout);
             return layout;
-        }
-
-        // --- Rooms ---------------------------------------------------------------------
-
-        private void PlaceRooms(MapGraph graph, Vector2 nodeSpacing, Seed seed, LevelLayout layout)
-        {
-            var taken = new HashSet<Vector2Int>();
-            var shapes = new RoomShapeSelector(_settings.MinRoomWidthTiles);
-            Dictionary<int, int> connections = CountConnections(graph);
-            Vector2 spacing = new(Mathf.Max(1f, nodeSpacing.x), Mathf.Max(1f, nodeSpacing.y));
-            int cell = _settings.CellTiles;
-
-            foreach (MapNode node in graph.Nodes)
-            {
-                // The editor's y grows downward; the level's tile y is world +z.
-                var preferred = new Vector2Int(
-                    Mathf.RoundToInt(node.Position.x / spacing.x),
-                    -Mathf.RoundToInt(node.Position.y / spacing.y));
-                Vector2Int coords = NearestFreeCell(preferred, taken);
-                taken.Add(coords);
-
-                RandomStream random = seed.Derive(node.Id).Stream();
-                RoomFunction function = random.PickWeighted(_settings.FunctionsFor(node.Type), f => f != null ? f.Weight : 0f);
-
-                // Smaller rooms sit in the middle of their cell.
-                int size  = function != null ? function.RollSize(random, MinRoomTiles, _settings.RoomTiles) : _settings.RoomTiles;
-                int inset = _settings.GapTiles / 2 + (_settings.RoomTiles - size) / 2;
-                var area  = new RectInt(coords.x * cell + inset, coords.y * cell + inset, size, size);
-
-                IReadOnlyList<RoomShape> shapeList = function != null && function.Shapes.Count > 0 ? function.Shapes : _settings.DefaultShapes;
-                connections.TryGetValue(node.Id, out int count);
-                RoomFootprint footprint = shapes.Build(shapeList, count, area, random);
-
-                float height = function != null && function.WallHeight > 0f ? function.WallHeight : _settings.WallHeight;
-                layout.AddRoom(new LevelRoom(node, footprint, function, height));
-            }
         }
 
         private static void PlanStructures(Seed seed, LevelLayout layout)
@@ -88,33 +46,6 @@ namespace CGD.Level
             var planner = new RoomStructurePlanner();
             foreach (LevelRoom room in layout.Rooms.Values)
                 room.AttachStructure(planner.Plan(room, layout.Doorways, seed.Derive(room.Node.Id).Stream()));
-        }
-
-        private static Dictionary<int, int> CountConnections(MapGraph graph)
-        {
-            var counts = new Dictionary<int, int>();
-            foreach (MapConnection connection in graph.Connections)
-            {
-                counts.TryGetValue(connection.A, out int a);
-                counts.TryGetValue(connection.B, out int b);
-                counts[connection.A] = a + 1;
-                counts[connection.B] = b + 1;
-            }
-            return counts;
-        }
-
-        private static Vector2Int NearestFreeCell(Vector2Int preferred, HashSet<Vector2Int> taken)
-        {
-            if (!taken.Contains(preferred)) return preferred;
-
-            for (int radius = 1; ; radius++)
-                for (int dx = -radius; dx <= radius; dx++)
-                    for (int dy = -radius; dy <= radius; dy++)
-                    {
-                        if (Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dy)) != radius) continue;
-                        var candidate = preferred + new Vector2Int(dx, dy);
-                        if (!taken.Contains(candidate)) return candidate;
-                    }
         }
 
         // --- Corridors -------------------------------------------------------------------

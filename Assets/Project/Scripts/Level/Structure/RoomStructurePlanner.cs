@@ -7,6 +7,7 @@ namespace CGD.Level
     // Lays out one room's structure once its doorways are known: tags the edge, corner,
     // centre and doorway tiles, reserves a walkway from every doorway to the centre, runs the
     // room function's structure rules, then works out the zones their inner walls make.
+    // A landmark room brings its own interior: its furniture tiles are marked instead.
     public class RoomStructurePlanner
     {
         private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
@@ -25,7 +26,9 @@ namespace CGD.Level
                 TagWalkway(structure, doorway.RoomTile, centre);
             }
 
-            if (room.Function != null)
+            if (room.Landmark != null)
+                TagLandmark(structure, room);
+            else if (room.Function != null)
                 foreach (RoomStructureRule rule in room.Function.Structure)
                     if (rule != null) rule.Apply(structure, random);
 
@@ -35,6 +38,14 @@ namespace CGD.Level
 
         private static Vector2Int CentreTile(LevelRoom room) =>
             new(Mathf.FloorToInt(room.Anchor.x), Mathf.FloorToInt(room.Anchor.y));
+
+        private static void TagLandmark(RoomStructure structure, LevelRoom room)
+        {
+            Vector2Int origin = room.Footprint.Bounds.min;
+            foreach (Vector2Int local in room.Landmark.OccupiedTiles)
+                if (room.Footprint.Contains(origin + local))
+                    structure.Tag(origin + local, RoomTileTags.Structure);
+        }
 
         private static void TagWalls(RoomStructure structure)
         {

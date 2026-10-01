@@ -29,6 +29,13 @@ namespace CGD.Level
         [Tooltip("Layer the generated floors and walls go on (should be in enemies' obstacle mask)")]
         [SerializeField] private int _geometryLayer;
 
+        [Header("Ceilings")]
+        [Tooltip("Roof every room and corridor at its wall height. Interiors then need their own lights")]
+        [SerializeField] private bool _buildCeilings;
+        [SerializeField] private Material _ceilingMaterial;
+        [Tooltip("Keep this layer out of the world map's capture mask, or the top-down snapshot sees only roofs")]
+        [SerializeField] private int _ceilingLayer;
+
         [Header("Doors")]
         [Tooltip("Origin at the doorway's centre on the floor, +Z pointing out of the room. Optional for normal connections")]
         [SerializeField] private GameObject _doorPrefab;
@@ -57,6 +64,9 @@ namespace CGD.Level
         public Material CorridorFloorMaterial => _corridorFloorMaterial != null ? _corridorFloorMaterial : _floorMaterial;
         public Material WallMaterial          => _wallMaterial;
         public int   GeometryLayer  => _geometryLayer;
+        public bool  BuildCeilings  => _buildCeilings;
+        public Material CeilingMaterial => _ceilingMaterial != null ? _ceilingMaterial : _wallMaterial;
+        public int   CeilingLayer   => _ceilingLayer;
         public int   SpawnMarginTiles => _spawnMarginTiles;
         public int   MinRoomWidthTiles => _minRoomWidthTiles;
 

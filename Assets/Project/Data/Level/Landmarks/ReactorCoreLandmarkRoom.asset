@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0b22f48a8b14820adb91e00ae36922f, type: 3}
+  m_Name: ReactorCoreLandmarkRoom
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.LandmarkRoomDefinition
+  _prefab: {fileID: 5672823017802467565, guid: d299988cf4ae4eb5834aa833214d78d6, type: 3}
+  _sizeTiles: {x: 12, y: 12}
+  _doorways:
+  - Tile: {x: 6, y: 11}
+    Side: 0
+  - Tile: {x: 11, y: 6}
+    Side: 1
+  - Tile: {x: 6, y: 0}
+    Side: 2
+  - Tile: {x: 0, y: 6}
+    Side: 3
+  _occupiedTiles:
+  - {x: 5, y: 5}
+  - {x: 5, y: 6}
+  - {x: 6, y: 5}
+  - {x: 6, y: 6}
+  - {x: 3, y: 5}
+  - {x: 8, y: 5}
+  - {x: 5, y: 3}
+  - {x: 5, y: 8}
