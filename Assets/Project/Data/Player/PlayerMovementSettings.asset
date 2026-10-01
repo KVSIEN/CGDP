@@ -57,10 +57,31 @@ MonoBehaviour:
   SlideDuration: 1.2
   MantleReach: 0.9
   MantleBufferTime: 0.3
-  VaultMaxHeight: 1.1
+  MantleMinHeight: 0.5
   MantleMaxHeight: 2.2
   MantleSpeed: 4
-  MantleTimeout: 0.8
+  MantleSpeedByHeight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1.5
+      inSlope: -0.75
+      outSlope: -0.75
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.75
+      inSlope: -0.75
+      outSlope: -0.75
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   MantleStepOver: 0.4
-  VaultUpImpulse: 4
-  VaultForwardImpulse: 5

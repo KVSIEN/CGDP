@@ -12,7 +12,7 @@
 - Dodge — two-phase system inspired by God of War: tap Q for a quick sidestep, then tap Q again within a short window to commit to a full dodge roll in the same direction; if the window expires the roll is cancelled and only a shorter sidestep cooldown applies; completing the full roll uses the longer cooldown; both phases show on the HUD cooldown indicator
 - Optional stamina — sprinting can drain a stamina meter and stop when it runs out, and dodges can cost stamina; once emptied, stamina has to recover past a threshold before it can be used again (off unless a stamina cost is set)
 - Slide — press crouch while sprinting to slide; launches at a configurable speed then decelerates smoothly; exits when speed drops below a threshold, the timer runs out, crouch is released, or the player leaves the ground
-- Vault / Mantle — press Jump while airborne near a ledge to interact with it; low ledges are vaulted over with a velocity boost, taller ledges are mantled by smoothly pulling the player up onto the surface; works identically in first-person and third-person
+- Mantle — hold forward (W) and press Jump facing a ledge to pull up onto it, from the ground or mid-jump (a jump that rises to a ledge still catches it for a moment); only ledges between a minimum and maximum height can be mantled — lower obstacles are simply jumped over, and there must be room to stand on top; the pull-up speed scales with ledge height (low ledges are quick, tall ones slower, tunable per height); works identically in first-person and third-person
 - All movement values (speeds, jump height, gravity, etc.) are tunable in a ScriptableObject without touching code
 
 ## Camera

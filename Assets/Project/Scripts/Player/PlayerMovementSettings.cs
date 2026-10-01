@@ -69,24 +69,20 @@ namespace CGD.Player
         public float SlideMinSpeed = 3f;
         public float SlideDuration = 1.2f;
 
-        [Header("Mantle / Vault")]
+        [Header("Mantle")]
         [Tooltip("Horizontal distance in front of the player to check for a ledge")]
         public float MantleReach = 0.9f;
-        [Tooltip("How long after pressing Jump (while airborne) to keep retrying the mantle each physics step")]
+        [Tooltip("How long after pressing Jump (while holding forward) to keep retrying the mantle each physics step, so a jump can carry the player up to a ledge")]
         public float MantleBufferTime = 0.3f;
-        [Tooltip("Ledge tops at or below this height relative to feet trigger a vault")]
-        public float VaultMaxHeight = 1.1f;
-        [Tooltip("Maximum ledge top height relative to feet that the player can mantle")]
+        [Tooltip("Lowest ledge top, relative to the feet, that can be mantled. Lower obstacles are just jumped over.")]
+        public float MantleMinHeight = 0.5f;
+        [Tooltip("Highest ledge top, relative to the feet, that can be mantled")]
         public float MantleMaxHeight = 2.2f;
-        [Tooltip("Speed at which the player is moved to the mantle target (m/s)")]
+        [Tooltip("Base speed at which the player is moved onto the ledge (m/s)")]
         public float MantleSpeed = 6f;
-        [Tooltip("Maximum time allowed to complete a mantle before it is cancelled")]
-        public float MantleTimeout = 0.8f;
+        [Tooltip("Multiplier on Mantle Speed by ledge height: 0 = Mantle Min Height, 1 = Mantle Max Height")]
+        public AnimationCurve MantleSpeedByHeight = AnimationCurve.Linear(0f, 1.5f, 1f, 0.75f);
         [Tooltip("How far past the ledge edge the player is placed after mantling")]
         public float MantleStepOver = 0.4f;
-        [Tooltip("Upward velocity impulse applied on a vault")]
-        public float VaultUpImpulse = 5f;
-        [Tooltip("Forward velocity impulse applied on a vault")]
-        public float VaultForwardImpulse = 5f;
     }
 }

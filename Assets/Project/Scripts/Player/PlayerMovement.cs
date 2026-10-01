@@ -11,6 +11,8 @@ namespace CGD.Player
     [RequireComponent(typeof(Stunnable))]
     public class PlayerMovement : MonoBehaviour
     {
+        private const float MantleForwardInputThreshold = 0.5f;
+
         [SerializeField] private PlayerMovementSettings _settings;
         [SerializeField] private Transform _cameraTransform;
         [SerializeField] private Transform _playerMesh;
@@ -87,7 +89,7 @@ namespace CGD.Player
             if (_input.GetAction(GameAction.Jump))
             {
                 _jumpBufferTimer = _settings.JumpBufferTime;
-                if (!IsGrounded)
+                if (IsHoldingForward)
                     _mantleBufferTimer = _settings.MantleBufferTime;
             }
 
@@ -106,26 +108,22 @@ namespace CGD.Player
             HandleCrouch();
             CheckGround();
 
-            if (!IsMantling)
+            // Before the jump so a mantleable ledge takes priority over jumping in place.
+            if (CanAct) TryMantle();
+            if (IsMantling) return;
+
+            if (!IsStunned)
             {
-                if (!IsStunned)
-                {
-                    HandleSlide();
-                    HandleMovement();
-                    HandleJump();
-
-                    _mantleBufferTimer -= Time.fixedDeltaTime;
-                    if (_mantleBufferTimer > 0f && _coyoteTimer <= 0f)
-                    {
-                        _mantle.TryInit();
-                        if (IsMantling) _mantleBufferTimer = 0f;
-                    }
-                }
-
-                ApplyGravity();
-                ClampFallSpeed();
+                HandleSlide();
+                HandleMovement();
+                HandleJump();
             }
+
+            ApplyGravity();
+            ClampFallSpeed();
         }
+
+        private bool IsHoldingForward => _input.MoveInput.y > MantleForwardInputThreshold;
 
         private Vector3 HorizontalVelocity => new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
         private Vector3 VelocityWithY(float y) => new Vector3(_rb.linearVelocity.x, y, _rb.linearVelocity.z);
@@ -150,6 +148,19 @@ namespace CGD.Player
                 _coyoteTimer -= Time.fixedDeltaTime;
                 _groundRb = null;
             }
+        }
+
+        // Jump while holding forward starts a mantle. The request stays buffered for a moment
+        // so a jump that falls short can still catch a ledge it rises up to.
+        private void TryMantle()
+        {
+            _mantleBufferTimer -= Time.fixedDeltaTime;
+            if (_mantleBufferTimer <= 0f || !IsHoldingForward) return;
+            if (!_mantle.TryStart()) return;
+
+            _mantleBufferTimer = 0f;
+            _jumpBufferTimer   = 0f;
+            _isSliding         = false;
         }
 
         private void HandleSlide()
