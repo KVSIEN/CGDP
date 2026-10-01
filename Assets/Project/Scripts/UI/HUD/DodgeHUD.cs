@@ -9,6 +9,7 @@ namespace CGD.UI
     public class DodgeHUD : HUDElement
     {
         [SerializeField] private PlayerDodge _dodge;
+        [SerializeField] private string _keyLabel = "C";
 
         [Header("Layout")]
         [SerializeField] private float _slotSize            = 56f;
@@ -44,7 +45,7 @@ namespace CGD.UI
             UIFactory.Stretch(_overlay.rectTransform);
 
             var keyLabel         = UIFactory.MakeText("DodgeKey", _bg.rectTransform);
-            keyLabel.text        = "Q";
+            keyLabel.text        = _keyLabel;
             keyLabel.fontSize    = 11f;
             keyLabel.color       = new Color(1f, 1f, 1f, 0.7f);
             keyLabel.alignment   = TextAlignmentOptions.TopLeft;

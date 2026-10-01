@@ -12,6 +12,11 @@ namespace CGD.Input
         public Vector2 LookInput { get; private set; }
         public bool IsGamepadLook { get; private set; }
 
+        // Set while a selection wheel is open: the camera stops turning (LookInput reads
+        // zero) and the wheel steers with WheelLook instead.
+        public bool LookBlocked { get; set; }
+        public Vector2 WheelLook { get; private set; }
+
         private static readonly int ActionCount = Enum.GetValues(typeof(GameAction)).Length;
 
         private const float DoubleClickWindow = 0.3f;
@@ -130,13 +135,15 @@ namespace CGD.Input
             {
                 MoveInput     = Vector2.zero;
                 LookInput     = Vector2.zero;
+                WheelLook     = Vector2.zero;
                 IsGamepadLook = false;
                 Array.Clear(_results, 0, _results.Length);
                 return;
             }
 
             MoveInput = _moveAction.ReadValue<Vector2>();
-            LookInput = _lookAction.ReadValue<Vector2>();
+            WheelLook = _lookAction.ReadValue<Vector2>();
+            LookInput = LookBlocked ? Vector2.zero : WheelLook;
             IsGamepadLook = _lookAction.activeControl?.device is Gamepad;
 
             float now = Time.unscaledTime;

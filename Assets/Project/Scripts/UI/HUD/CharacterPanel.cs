@@ -13,13 +13,13 @@ namespace CGD.UI
     //   click pack armor        → wear it
     //   click an attachment     → pick it, then click a gear line on the left to fit it
     //   click a fitted one      → remove it back to the pack
-    //   click a consumable      → cycle which quick-use slot it sits in
+    //   click a slot item       → cycle which item slot (5–8) it sits in
     public class CharacterPanel : ModalPanel
     {
         [SerializeField] private PlayerInventory   _inventory;
         [SerializeField] private PlayerEquipment   _equipment;
         [SerializeField] private PlayerWeaponLoadout _loadout;
-        [SerializeField] private PlayerConsumables _consumables;
+        [SerializeField] private PlayerItemSlots _itemSlots;
 
         private UIButtonList _worn;
         private UIButtonList _pack;
@@ -134,14 +134,15 @@ namespace CGD.UI
             }
             if (!any) _pack.Label("none");
 
-            if (_consumables != null)
+            if (_itemSlots != null)
             {
-                _pack.Heading("Consumables  (click to set quick slot)");
+                _pack.Heading("Consumables & throwables  (click to set item slot)");
                 any = false;
                 foreach (ItemStack stack in inventory.Stacks)
                 {
-                    if (stack.Definition is not ConsumableDefinition consumable) continue;
-                    _pack.Add($"{consumable.DisplayName} ×{stack.Count}{SlotSuffix(consumable)}", () => CycleSlot(consumable));
+                    ItemDefinition item = stack.Definition;
+                    if (!PlayerItemSlots.IsSlottable(item)) continue;
+                    _pack.Add($"{item.DisplayName} ×{stack.Count}{SlotSuffix(item)}", () => CycleSlot(item));
                     any = true;
                 }
                 if (!any) _pack.Label("none");
@@ -161,28 +162,21 @@ namespace CGD.UI
             Refresh();
         }
 
-        // None → slot 1 → slot 2 → none.
-        private void CycleSlot(ConsumableDefinition consumable)
+        // None → slot 1 → … → slot 4 → none.
+        private void CycleSlot(ItemDefinition item)
         {
-            int current = SlotOf(consumable);
-            if (current >= 0) _consumables.SetSlot(current, null);
+            int current = _itemSlots.SlotOf(item);
+            if (current >= 0) _itemSlots.SetSlot(current, null);
 
             int next = current + 1;
-            if (next < PlayerConsumables.SlotCount) _consumables.SetSlot(next, consumable);
+            if (next < PlayerItemSlots.SlotCount) _itemSlots.SetSlot(next, item);
             Refresh();
         }
 
-        private int SlotOf(ConsumableDefinition consumable)
+        private string SlotSuffix(ItemDefinition item)
         {
-            for (int i = 0; i < PlayerConsumables.SlotCount; i++)
-                if (_consumables.Slots[i] == consumable) return i;
-            return -1;
-        }
-
-        private string SlotSuffix(ConsumableDefinition consumable)
-        {
-            int slot = SlotOf(consumable);
-            return slot >= 0 ? $"   [quick {slot + 1}]" : "";
+            int slot = _itemSlots.SlotOf(item);
+            return slot >= 0 ? $"   [item slot {slot + 1}]" : "";
         }
 
         private static string Describe(ItemInstance item) =>

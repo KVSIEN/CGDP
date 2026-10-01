@@ -2,12 +2,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Input;
+using CGD.Items;
+using CGD.UI;
 using CGD.Weapons;
 
 namespace CGD.Player
 {
     // Owns the carried weapons (each with its own ammo) and tells WeaponController
-    // which one to fire. Refills every weapon when the player is revived.
+    // which one to fire. Refills every weapon when the player is revived. Pressing a slot
+    // key equips that slot; holding it opens the weapon wheel to put another weapon there —
+    // one from another slot (they swap) or a spare from the pack (the old one goes to the pack).
     [RequireComponent(typeof(PlayerInputHandler))]
     [RequireComponent(typeof(WeaponController))]
     public class PlayerWeaponLoadout : MonoBehaviour
@@ -16,6 +20,8 @@ namespace CGD.Player
 
         [Tooltip("Weapons carried at start; empty slots are filled by pickups")]
         [SerializeField] private WeaponData[] _startingWeapons = new WeaponData[SlotCount];
+        [Tooltip("Optional — the wheel shown while holding a slot key")]
+        [SerializeField] private SlotWheelHUD _wheel;
 
         // Inspector mirror of the runtime loadout; overwritten on every change, so edits here do nothing.
         [Header("Runtime (read-only)")]
@@ -31,6 +37,12 @@ namespace CGD.Player
         private WeaponController   _weapon;
         private HealthManager      _health;
         private int                _activeSlot = -1;
+        private PlayerInventory    _inventory;
+        private SlotKeyWheel       _keys;
+
+        // The wheel's choices for the slot being held, in order.
+        private readonly List<WeaponInstance> _wheelWeapons = new();
+        private readonly List<string>         _wheelLabels  = new();
 
         private static readonly GameAction[] SlotActions =
         {
@@ -44,6 +56,8 @@ namespace CGD.Player
         {
             _input  = GetComponent<PlayerInputHandler>();
             _weapon = GetComponent<WeaponController>();
+            TryGetComponent(out _inventory);
+            _keys = new SlotKeyWheel(_input, _wheel, SlotActions, "Weapon");
 
             for (int i = 0; i < Mathf.Min(SlotCount, _startingWeapons.Length); i++)
             {
@@ -65,14 +79,9 @@ namespace CGD.Player
             EquipSlot(0);
         }
 
-        private void Update()
-        {
-            for (int i = 0; i < SlotActions.Length; i++)
-            {
-                if (_input.GetAction(SlotActions[i]))
-                    EquipSlot(i);
-            }
-        }
+        private void OnDisable() => _keys.Cancel();
+
+        private void Update() => _keys.Tick(Time.deltaTime, EquipSlot, null, WheelOptions, ChooseFromWheel);
 
         public void EquipSlot(int index)
         {
@@ -98,6 +107,47 @@ namespace CGD.Player
             _slots[target] = weapon;
             Equip(target);
             return replaced;
+        }
+
+        // Every weapon in the other slots, then the spares in the pack.
+        private IReadOnlyList<string> WheelOptions(int slot)
+        {
+            _wheelWeapons.Clear();
+            _wheelLabels.Clear();
+
+            for (int i = 0; i < SlotCount; i++)
+            {
+                if (_slots[i] == null) continue;
+                _wheelWeapons.Add(_slots[i]);
+                _wheelLabels.Add(i == slot ? $"{_slots[i].DisplayName}  (here)" : $"{_slots[i].DisplayName}  [{i + 1}]");
+            }
+
+            if (_inventory != null)
+                foreach (ItemInstance item in _inventory.Inventory.Items)
+                {
+                    if (item is not WeaponInstance spare) continue;
+                    _wheelWeapons.Add(spare);
+                    _wheelLabels.Add($"{spare.DisplayName}  (pack)");
+                }
+            return _wheelLabels;
+        }
+
+        private void ChooseFromWheel(int slot, int option)
+        {
+            if (option < 0 || option >= _wheelWeapons.Count) return;
+            WeaponInstance chosen = _wheelWeapons[option];
+
+            int from = System.Array.IndexOf(_slots, chosen);
+            if (from >= 0)
+            {
+                (_slots[from], _slots[slot]) = (_slots[slot], _slots[from]);
+            }
+            else if (_inventory != null && _inventory.Inventory.Remove(chosen))
+            {
+                if (_slots[slot] != null) _inventory.Inventory.Add(_slots[slot]);
+                _slots[slot] = chosen;
+            }
+            Equip(slot);
         }
 
         public void RefillAll()

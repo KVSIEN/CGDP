@@ -44,6 +44,7 @@ namespace CGD.Weapons
         private CooldownTimer  _fireCooldown;
         private float _drawTimer;
         private bool  _isReloading;
+        private bool  _holstered;
         private bool  _burstPending;
 
         // Charge fire mode: accumulates while the trigger is held, releases on the frame
@@ -63,6 +64,7 @@ namespace CGD.Weapons
         public int  Magazine          => _current?.Magazine ?? 0;
         public int  Reserve           => _inventory != null && _current != null ? _inventory.Inventory.CountOf(_current.Data.AmmoType) : 0;
         public bool IsReloading       => _isReloading;
+        public bool IsHolstered       => _holstered;
         /// <summary>0 at rest, 1 fully charged. Always 0 for non-Charge fire modes.</summary>
         public float ChargeRatio      => Data != null && Data.FireMode == FireMode.Charge && Data.ChargeTime > 0f
                                           ? Mathf.Clamp01(_chargeTimer / Data.ChargeTime) : 0f;
@@ -91,9 +93,27 @@ namespace CGD.Weapons
             if (_crosshair != null) _crosshair.SetDynamicSpread(0f);
         }
 
+        // Put away while something else is in hand (a readied grenade): no firing or
+        // reloading and the weapon model is hidden. Taking it out again draws it.
+        public void SetHolstered(bool holstered)
+        {
+            if (_holstered == holstered) return;
+            _holstered = holstered;
+            if (_visuals != null) _visuals.gameObject.SetActive(!holstered);
+
+            if (holstered)
+            {
+                StopAllCoroutines();
+                _isReloading  = false;
+                _burstPending = false;
+                if (_crosshair != null) _crosshair.SetDynamicSpread(0f);
+            }
+            else Equip(_current);
+        }
+
         private void Update()
         {
-            if (_current == null) return;
+            if (_current == null || _holstered) return;
 
             // Sway ticks through draw/reload so the weapon never freezes mid-animation.
             PushSwayInputs();

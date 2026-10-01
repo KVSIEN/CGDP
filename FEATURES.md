@@ -9,7 +9,7 @@
 - Step climbing — automatically steps up small ledges without getting stuck
 - Moving platform support — player inherits the platform's velocity
 - External impulse support — explosions, knockback, jump pads can all push the player via `AddImpulse`
-- Dodge (Q) — several dodge styles, one active at a time:
+- Dodge (C, or optionally a double-tap of Crouch while moving) — several dodge styles, one active at a time:
   - **Sidestep + roll** (default, inspired by God of War): a quick sidestep; press again within a short window (or during the step) to follow up with a full roll in the direction you're holding. Skipping the roll only costs the shorter sidestep cooldown
   - **Committed roll**: one longer roll that can't be steered once started
   - **Steerable boost**: a long burst you can curve toward where you're steering, and keep shooting during; usable once in the air
@@ -175,7 +175,8 @@
   - Toggle — pressing the key flips it on or off
 - Bindings can be remapped at runtime via the settings menu, driven entirely by the Input System's own interactive rebinding — no hand-rolled key/device translation code
 - Every action can be bound to a keyboard key, mouse button, or gamepad button (any mix of two, primary and secondary) — rebinding listens for input from any connected device and picks up whatever is pressed first
-- Default actions: Jump, Sprint, Crouch, Dodge, Attack, Melee (G), Grenade (H), Aim, Reload, Interact, Abilities 1–4 (unbound), Weapon slots 1–4 (keys 1–4), Pause, Switch View, Inventory (I), Map, Shoulder Swap (X)
+- Default keys (keyboard plus left/right mouse only — no extra mouse buttons, since not every mouse has them): Jump (Space), Sprint (Shift), Crouch (Ctrl), Dodge (C), Attack (left mouse), Aim (right mouse), Reload (R), Interact (E), Melee (V), Abilities 1–4 (Q, F, G, X), Weapon slots 1–4 (1–4), Item slots 1–4 (5–8), Shoulder Swap (H), Lock-on (T), Switch View (F5), Inventory (I), Character (Tab), Map (M), Pause (Esc), Console (`)
+- Hold any weapon key (1–4) or item key (5–8) to open a selection wheel for that slot: move the mouse (or stick) toward a choice and release to pick it; release in the middle to cancel. The camera holds still while the wheel is open
 - Move and Look are built the same way as every other action (WASD/arrows + gamepad left stick for Move, mouse delta + gamepad right stick for Look) — one input pipeline for the whole game instead of a separate non-remappable asset just for movement
 
 ## Settings Menu
@@ -276,11 +277,12 @@
 - Events can use a shared dedup set (one hit per target across the entire timeline) or per-event dedup (each event tracks its own targets independently)
 
 ## Grenades
-- Hold the grenade key to aim — a predicted trajectory arc is drawn from the throw point, accounting for gravity, and stops early at the first surface it would hit
-- Release to throw; the grenade flies with real physics (gravity, bouncing) and detonates after a fixed fuse time
+- Grenades are items: they're looted, bought, crafted and picked up like anything else, carried in the pack (Frag ×3, Smoke ×2 per stack) and put on an item slot (5–8)
+- Pressing a grenade's item key puts it in your hand (the gun is put away); hold the attack button to aim — a predicted trajectory arc is drawn from the throw point, accounting for gravity, and stops early at the first surface it would hit
+- Release to throw; the grenade flies with real physics (gravity, bouncing) and detonates after a fixed fuse time. Your weapon comes back afterwards
+- Aim, a weapon key, or the same item key again puts the grenade away without throwing
 - Explosion deals damage in a radius, falling off linearly with distance from the blast center, through the same Effective Damage pipeline as everything else
-- Limited carried count, like ammo — throwing decrements it, a pickup or event can restock it via `AddGrenades`
-- Independent of the four ability slots and the equipped ranged weapon — its own dedicated key
+- Included: Frag Grenade and Smoke Grenade (a smoke cloud that hides you and blocks sight lines)
 
 ## Enemy AI
 - AI states — Patrol, Alert, Chase, Stunned, Dead — run on the shared state machine; Patrol, Alert and Chase each decide where to go next, a stun interrupts any of them and hands back to whatever was interrupted, and death is final until the enemy respawns
@@ -438,7 +440,7 @@
 - Optional camera lag that makes the view trail sudden movement slightly (off by default — it's uncomfortable in first person)
 - Camera transitions: blend the view smoothly to another viewpoint (death cam, door, boss intro) and back
 - Effects are visual only — shake never moves where your shots go
-- Lock-on (middle mouse or T): locks the aim onto the enemy nearest the centre of view and keeps it there; press again to release. The lock drops when the target dies or gets too far away
+- Lock-on (T): locks the aim onto the enemy nearest the centre of view and keeps it there; press again to release. The lock drops when the target dies or gets too far away
 
 ## Equipment
 - Press Tab for the Character window: worn armor per slot (helm, torso, gloves, legs, boots, backslot), carried weapons, and what's in the pack
@@ -448,12 +450,12 @@
 - Attachments on weapons change the weapon for real: magazine size, reload time, fire rate and damage all follow them (e.g. Extended Magazine: +25% magazine, slower reload)
 
 ## Consumables
-- Two quick-use slots (Z and B) shown bottom-right with how many of each are left
+- Four item slots (keys 5–8) for consumables and throwables, shown bottom-right with how many of each are left; the row of a grenade in hand lights up
 - Using an item takes its use time, shown as a filling bar; it's only spent once the use finishes
 - Taking damage interrupts items that need concentration (the Bandage), as do being stunned, mantling or rolling; pressing the key again cancels
 - Effects: healing, removing all status effects, a timed stat buff, and restoring a resource meter
 - Included: Bandage (1.5 s, heals 35 and stops bleeding and other effects) and Combat Stim (0.5 s, +30% damage for 15 s and 50 stamina)
-- Choose what sits in each quick slot from the Character window
+- Choose what sits in each item slot by holding its key (item wheel) or from the Character window
 
 ## Crafting
 - Crafting stations in the world open a crafting window listing their recipes, what each needs and how much of it you have

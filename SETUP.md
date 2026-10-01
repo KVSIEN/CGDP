@@ -25,7 +25,7 @@ Build a new playable scene in this order:
 6. **Optional systems** — map, quests, feedback, stealth, camera effects.
 
 **Missing from Sandbox** (add when needed): `GameFlow`, `AudioPool`, `MeleeController`,
-`GrenadeController`, `PlayerFootsteps`, `PlayerAudio`, `TimelineAbilityRunner`, animation and
+`PlayerFootsteps`, `PlayerAudio`, `TimelineAbilityRunner`, animation and
 ragdoll components (no rigged models yet), and every
 system from [Stats](#stats--buffs) onwards. The target dummies have no `EnemyAI` (they stand still).
 
@@ -65,12 +65,12 @@ Global Volume
 Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodge,
                     PlayerMantle, PlayerInteraction, PlayerInventory, PlayerAbilities,
                     WeaponController, PlayerWeaponLoadout, MeleeController,
-                    GrenadeController, PlayerLifecycle, PlayerFootsteps, PlayerAudio,
+                    ThrowableController, PlayerLifecycle, PlayerFootsteps, PlayerAudio,
                     Stunnable, StatusEffectController, Rigidbody, CapsuleCollider]
                    + optional: MeterSet, TimelineAbilityRunner, CharacterStats,
                      QuestTracker, PlayerLockOn, MapRevealer, FeedbackPlayer,
                      CombatFeedback, QuestFeedback, PlayerEquipment,
-                     PlayerConsumables, DevCommands, Stealthable
+                     PlayerItemSlots, DevCommands, Stealthable
   CameraRig
     Main Camera    [Camera, PlayerCamera, CameraEffectsController?]
       WeaponRig    [WeaponVisuals]
@@ -89,7 +89,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 |---|---|
 | **PlayerInputHandler** | `_bindings` = `Input/InputBindingSettings` |
 | **PlayerMovement** | `_settings` = `Player/PlayerMovementSettings`, `_cameraTransform` = Main Camera, `_playerMesh` = Player Body |
-| **PlayerDodge** | `_definition` = a dodge from `Player/Dodges/` (default `SidestepRollDodge`) |
+| **PlayerDodge** | `_definition` = a dodge from `Player/Dodges/` (default `SidestepRollDodge`), `_doubleTapCrouch` (also dodge by double-tapping Crouch while moving) |
 | **PlayerMantle** | `_settings` = same `PlayerMovementSettings`, `_cameraTransform` = Main Camera |
 | **PlayerCamera** (Main Camera) | `_input`, `_movement` = Player · `_playerBody` = Player Body · `_headAnchor` = Head Anchor · `_camera` = its own Camera · `_firstPersonHideRenderers` = Player Body renderers |
 
@@ -98,9 +98,9 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 | Component | Assign | Notes |
 |---|---|---|
 | **WeaponController** | `_input` = Player, `_camera` = PlayerCamera, `_crosshair` = HUD Crosshair, `_muzzle` = Muzzle, `_visuals` = WeaponRig, `_cameraEffects`? = Main Camera | Fires whatever the loadout equips. |
-| **PlayerWeaponLoadout** | `_startingWeapons`? = `WeaponData` assets | Empty slots fill from pickups. |
+| **PlayerWeaponLoadout** | `_startingWeapons`? = `WeaponData` assets, `_wheel`? = HUD SlotWheel | Empty slots fill from pickups. Holding 1–4 opens the weapon wheel (other slots + spare weapons in the pack). |
 | **MeleeController** | `_camera` = PlayerCamera, `_data` = `Weapons/Melee/DefaultMeleeWeaponData` | |
-| **GrenadeController** | `_camera` = PlayerCamera, `_data` = `Weapons/Throwables/DefaultGrenadeData` | |
+| **ThrowableController** | `_camera` = PlayerCamera | Throws the grenade an item slot readies. Grenades are items (`Items/Throwables/`). |
 | **PlayerAbilities** | `_health` = PlayerHealth, `_cameraTransform` = Main Camera, `_slots` = up to 4 ability assets | |
 | **TimelineAbilityRunner**? | — | Needed for `TimelineAbility` assets. |
 | **WeaponVisuals** (WeaponRig) | — | Kick and sway are tuned on the component and the `WeaponData`. |
@@ -141,7 +141,7 @@ HUD                [Canvas, CanvasScaler, GraphicRaycaster, HUDManager]
   StatusEffects    [StatusEffectHUD]
   Meters           [MeterHUD]?
   Velocity         [VelocityHUD]
-  QuickUse         [QuickUseHUD]?
+  ItemSlots        [ItemSlotsHUD]?
   Minimap          [MinimapHUD]?
   Quests           [QuestHUD]?
   Notifications    [NotificationHUD]?
@@ -304,9 +304,10 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 | Component | Assign | Notes |
 |---|---|---|
 | **PlayerEquipment** (Player) | — | Worn armor. Needs `CharacterStats` on the Player for armor stats to count. |
-| **PlayerConsumables** (Player) | `_slots`? = starting quick-use items (e.g. `BandageConsumable`) | Z / B use them. Slots can be changed in the Character panel. |
-| **CharacterPanel** (HUD) | `_input` = Player, `_inventory`, `_equipment`, `_loadout`, `_consumables` = the Player's components | Opens with Tab. |
-| **QuickUseHUD** (HUD) | `_consumables`, `_inventory` = the Player's components | |
+| **PlayerItemSlots** (Player) | `_slots`? = starting items for keys 5–8 (consumables or throwables), `_wheel`? = HUD SlotWheel | Holding a key opens the item wheel. Throwables need `ThrowableController`. |
+| **CharacterPanel** (HUD) | `_input` = Player, `_inventory`, `_equipment`, `_loadout`, `_itemSlots` = the Player's components | Opens with Tab. |
+| **ItemSlotsHUD** (HUD) | `_slots`, `_inventory`, `_throwing`? = the Player's components | |
+| **SlotWheelHUD** (HUD, starts inactive) | — | Shared by `PlayerItemSlots._wheel` and `PlayerWeaponLoadout._wheel`. Keep it near the bottom of the HUD so it draws on top. |
 | **CraftingPanel** (HUD) | `_input` = Player | Opens when a `CraftingStation` is used. |
 
 - Attachments need a free slot: gear only has slots when its category/definition has a `_rollProfile` (weapons have none yet — see [Assets](#assets)).
@@ -406,7 +407,7 @@ All presets are in `Data/Feedback/`.
 |---|---|---|
 | **Stealthable** (Player) | `_settings` = `Stealth/StealthSettings`, `_spottedFeedback`? = `Feedback/SpottedFeedbackPreset` | Without it, enemies ignore bushes and smoke. |
 | **ConcealmentZone** (bush) | a Collider sized to the foliage · `_kind` = Bush · `_requiresCrouch`? | Collider becomes a trigger. Put the object on **Ignore Raycast** so shots pass through. |
-| **ConcealmentZone** (smoke) | on `Prefabs/VFX/SmokeCloud` — `_kind` = Smoke, `_blocksSight` ticked | Spawned by `Weapons/Throwables/SmokeGrenadeData` (set it as a GrenadeController's `_data`). |
+| **ConcealmentZone** (smoke) | on `Prefabs/VFX/SmokeCloud` — `_kind` = Smoke, `_blocksSight` ticked | Spawned by `Weapons/Throwables/SmokeGrenadeData`, thrown via the `SmokeGrenadeThrowable` item. |
 | **StealthAbility** | add `Abilities/StealthAbility` to a PlayerAbilities slot | Needs Stealthable. |
 
 - Enemies need **no** changes — `EnemyPerception` checks stealth automatically.
@@ -417,7 +418,7 @@ All presets are in `Data/Feedback/`.
 | Component | Assign | Notes |
 |---|---|---|
 | **CameraEffectsController** (Main Camera) | `_settings`? = `CameraEffects/DefaultCameraEffectSettings`, `_shakeOnDamageOf`? = PlayerHealth | Must be on the object with the Camera. |
-| **PlayerLockOn** (Player) | `_camera` = PlayerCamera, `_selector` = `Targeting/DefaultConeTargetSelector` | Middle mouse or T. |
+| **PlayerLockOn** (Player) | `_camera` = PlayerCamera, `_selector` = `Targeting/DefaultConeTargetSelector` | T. |
 
 ## Map Graph (editor tool)
 
@@ -508,10 +509,10 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Weapons/Ranged/` | `DefaultWeaponData`, `T1/` examples per category | Loadout, WeaponPickup |
 | `Weapons/Categories/` | one per weapon type | RandomWeaponPickup, loot |
 | `Weapons/FireBehaviors/` | Hitscan, Projectile, Shotgun | weapon data / categories |
-| `Weapons/Melee/`, `Weapons/Throwables/` | `DefaultMeleeWeaponData`, `DefaultGrenadeData`, `SmokeGrenadeData` | MeleeController, GrenadeController |
+| `Weapons/Melee/`, `Weapons/Throwables/` | `DefaultMeleeWeaponData`, `DefaultGrenadeData`, `SmokeGrenadeData` | MeleeController, throwable items |
 | `Items/Munitions/` | one per caliber | AmmoPickup, PlayerInventory |
 | `Items/` | `StatRollProfile` | weapon categories, `CombatVestArmor` (see note) |
-| `Items/Armor/`, `Attachments/`, `Consumables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `StimConsumable`, `ScrapMetalResource`, `ClothResource` | pickups, loot, recipes, quest rewards |
+| `Items/Armor/`, `Attachments/`, `Consumables/`, `Throwables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `StimConsumable`, `FragGrenadeThrowable`, `SmokeGrenadeThrowable`, `ScrapMetalResource`, `ClothResource` | pickups, loot, recipes, quest rewards |
 | `Crafting/` | `BandageRecipe`, `CombatStimRecipe`, `ExtendedMagazineRecipe`, `CombatVestRecipe` | CraftingStation |
 | `DevTools/` | `DevCatalog` (all items, weapon categories, buffs; no enemy prefabs exist yet) | DevCommands |
 | `Abilities/` | Dash (needs `PlayerDodge`), Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`), Stealth (needs `Stealthable`) | PlayerAbilities |

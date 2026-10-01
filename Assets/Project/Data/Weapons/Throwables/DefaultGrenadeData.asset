@@ -15,7 +15,6 @@ MonoBehaviour:
   GrenadeName: Frag Grenade
   GrenadePrefab: {fileID: 3424364988567009664, guid: 79be582424e8357498037e5240babdf2, type: 3}
   ThrowForce: 18
-  MaxCarried: 3
   FuseTime: 2.5
   ExplosionRadius: 5
   ExplosionDamage: 80

@@ -19,8 +19,11 @@ namespace CGD.Player
         // A press this soon before the dodge is ready (cooldown, landing) still dodges.
         private const float InputBuffer = 0.15f;
         private const float InputDeadzone = 0.1f;
+        private const float DoubleTapWindow = 0.3f;
 
         [SerializeField] private DodgeDefinition _definition;
+        [Tooltip("Also dodge by double-tapping Crouch while moving")]
+        [SerializeField] private bool _doubleTapCrouch;
 
         private readonly DodgeMotion _motion = new();
         private PlayerMovement _movement;
@@ -35,6 +38,7 @@ namespace CGD.Player
         private bool _invulnerable;
         // The running move came from an ability: its cooldown belongs to the ability, not the dodge.
         private bool _fromAbility;
+        private float _lastCrouchTap = float.NegativeInfinity;
 
         // Read by DodgeHUD to size the cooldown overlay.
         public CooldownTimer Cooldown => _cooldown;
@@ -82,10 +86,25 @@ namespace CGD.Player
 
         private void Update()
         {
-            if (!_input.GetAction(GameAction.Dodge)) return;
+            if (_input.GetAction(GameAction.Dodge) || DoubleTappedCrouch()) PressDodge();
+        }
 
+        private void PressDodge()
+        {
             if (_motion.IsActive) _motion.PressDodge();
             else _buffered = InputBuffer;
+        }
+
+        // Two Crouch presses in quick succession with a direction held. Crouch toggles, so
+        // the pair leaves the stance as it was.
+        private bool DoubleTappedCrouch()
+        {
+            if (!_doubleTapCrouch || !_input.WasPressed(GameAction.Crouch)) return false;
+
+            bool doubleTap = Time.time - _lastCrouchTap <= DoubleTapWindow
+                          && _input.MoveInput.sqrMagnitude > InputDeadzone * InputDeadzone;
+            _lastCrouchTap = doubleTap ? float.NegativeInfinity : Time.time;
+            return doubleTap;
         }
 
         private void FixedUpdate()

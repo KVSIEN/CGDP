@@ -13,8 +13,6 @@ namespace CGD.Weapons
 
         [Header("Throw")]
         public float ThrowForce = 18f;
-        [Tooltip("Starting and maximum number carried.")]
-        public int MaxCarried = 3;
 
         [Header("Explosion")]
         [Tooltip("Seconds after being thrown before it detonates.")]

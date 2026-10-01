@@ -15,7 +15,6 @@ MonoBehaviour:
   GrenadeName: Smoke Grenade
   GrenadePrefab: {fileID: 3424364988567009664, guid: 79be582424e8357498037e5240babdf2, type: 3}
   ThrowForce: 18
-  MaxCarried: 2
   FuseTime: 1.5
   ExplosionRadius: 4
   ExplosionDamage: 0

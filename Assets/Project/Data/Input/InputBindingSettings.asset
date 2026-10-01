@@ -23,10 +23,10 @@ MonoBehaviour:
     Mode: 1
   - Action: 2
     PrimaryPath: <Keyboard>/leftCtrl
-    SecondaryPath: <Keyboard>/c
+    SecondaryPath: 
     Mode: 2
   - Action: 3
-    PrimaryPath: <Keyboard>/q
+    PrimaryPath: <Keyboard>/c
     SecondaryPath: 
     Mode: 0
   - Action: 4
@@ -34,94 +34,98 @@ MonoBehaviour:
     SecondaryPath: 
     Mode: 1
   - Action: 5
-    PrimaryPath: <Keyboard>/g
+    PrimaryPath: <Keyboard>/v
     SecondaryPath: 
     Mode: 1
   - Action: 6
-    PrimaryPath: <Keyboard>/h
-    SecondaryPath: 
-    Mode: 1
-  - Action: 7
     PrimaryPath: <Mouse>/rightButton
     SecondaryPath: 
     Mode: 1
-  - Action: 8
+  - Action: 7
     PrimaryPath: <Keyboard>/r
     SecondaryPath: 
     Mode: 0
-  - Action: 9
+  - Action: 8
     PrimaryPath: <Keyboard>/e
-    SecondaryPath: <Keyboard>/f
+    SecondaryPath: 
+    Mode: 0
+  - Action: 9
+    PrimaryPath: <Keyboard>/q
+    SecondaryPath: 
     Mode: 0
   - Action: 10
-    PrimaryPath: 
+    PrimaryPath: <Keyboard>/f
     SecondaryPath: 
     Mode: 0
   - Action: 11
-    PrimaryPath: 
+    PrimaryPath: <Keyboard>/g
     SecondaryPath: 
     Mode: 0
   - Action: 12
-    PrimaryPath: 
-    SecondaryPath: 
-    Mode: 0
-  - Action: 13
-    PrimaryPath: 
-    SecondaryPath: 
-    Mode: 0
-  - Action: 14
-    PrimaryPath: <Keyboard>/escape
-    SecondaryPath: 
-    Mode: 0
-  - Action: 15
-    PrimaryPath: <Keyboard>/v
-    SecondaryPath: 
-    Mode: 0
-  - Action: 16
-    PrimaryPath: <Keyboard>/i
-    SecondaryPath: 
-    Mode: 0
-  - Action: 17
-    PrimaryPath: <Keyboard>/m
-    SecondaryPath: 
-    Mode: 0
-  - Action: 18
     PrimaryPath: <Keyboard>/x
     SecondaryPath: 
     Mode: 0
-  - Action: 19
+  - Action: 13
+    PrimaryPath: <Keyboard>/escape
+    SecondaryPath: 
+    Mode: 0
+  - Action: 14
+    PrimaryPath: <Keyboard>/f5
+    SecondaryPath: 
+    Mode: 0
+  - Action: 15
+    PrimaryPath: <Keyboard>/i
+    SecondaryPath: 
+    Mode: 0
+  - Action: 16
+    PrimaryPath: <Keyboard>/m
+    SecondaryPath: 
+    Mode: 0
+  - Action: 17
+    PrimaryPath: <Keyboard>/h
+    SecondaryPath: 
+    Mode: 0
+  - Action: 18
     PrimaryPath: <Keyboard>/1
     SecondaryPath: 
     Mode: 0
-  - Action: 20
+  - Action: 19
     PrimaryPath: <Keyboard>/2
     SecondaryPath: 
     Mode: 0
-  - Action: 21
+  - Action: 20
     PrimaryPath: <Keyboard>/3
     SecondaryPath: 
     Mode: 0
-  - Action: 22
+  - Action: 21
     PrimaryPath: <Keyboard>/4
     SecondaryPath: 
     Mode: 0
-  - Action: 23
-    PrimaryPath: <Mouse>/middleButton
-    SecondaryPath: <Keyboard>/t
+  - Action: 22
+    PrimaryPath: <Keyboard>/t
+    SecondaryPath: 
     Mode: 0
-  - Action: 24
+  - Action: 23
     PrimaryPath: <Keyboard>/backquote
     SecondaryPath: 
     Mode: 0
-  - Action: 25
+  - Action: 24
     PrimaryPath: <Keyboard>/tab
     SecondaryPath: 
     Mode: 0
+  - Action: 25
+    PrimaryPath: <Keyboard>/5
+    SecondaryPath: 
+    Mode: 0
   - Action: 26
-    PrimaryPath: <Keyboard>/z
+    PrimaryPath: <Keyboard>/6
     SecondaryPath: 
     Mode: 0
   - Action: 27
-    PrimaryPath: <Keyboard>/b
+    PrimaryPath: <Keyboard>/7
+    SecondaryPath: 
+    Mode: 0
+  - Action: 28
+    PrimaryPath: <Keyboard>/8
     SecondaryPath: 
     Mode: 0

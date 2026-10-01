@@ -24,7 +24,7 @@ namespace CGD.Animation
         private HealthManager     _health;
         private WeaponController  _weapons;
         private MeleeController   _melee;
-        private GrenadeController _grenades;
+        private ThrowableController _grenades;
 
         private void Awake()
         {

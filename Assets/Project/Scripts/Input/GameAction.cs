@@ -8,7 +8,6 @@ namespace CGD.Input
         Dodge,
         Attack,
         Melee,
-        Grenade,
         AimDownSights,
         Reload,
         Interact,
@@ -28,7 +27,9 @@ namespace CGD.Input
         LockOn,
         Console,
         Character,
-        QuickUse1,
-        QuickUse2,
+        Item1,
+        Item2,
+        Item3,
+        Item4,
     }
 }

@@ -9,7 +9,7 @@ namespace CGD.Weapons
 {
     // Required prefab setup: Rigidbody (isKinematic = false, useGravity = true),
     // Collider (isTrigger = false) — needs real physics to arc and bounce.
-    // GrenadeController.Throw() calls Init() right after spawning; the thrower's team is
+    // ThrowableController.Throw() calls Init() right after spawning; the thrower's team is
     // immune to the explosion.
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(Collider))]
