@@ -6,14 +6,19 @@ namespace CGD.Map
     {
         public const int PinNotPlaced = -1;
 
-        public MapGenerationResult(MapGraph graph, IReadOnlyList<int> pinnedNodeIds, IReadOnlyList<string> warnings)
+        public MapGenerationResult(MapGraph graph, MapLayoutSettings layout, IReadOnlyList<int> pinnedNodeIds,
+                                   IReadOnlyList<string> warnings)
         {
             Graph         = graph;
+            Layout        = layout;
             PinnedNodeIds = pinnedNodeIds;
             Warnings      = warnings;
         }
 
         public MapGraph Graph { get; }
+
+        // The layout the style picked for this seed.
+        public MapLayoutSettings Layout { get; }
 
         // One entry per pin passed to the generator, in the same order: the node that
         // received it, or PinNotPlaced.

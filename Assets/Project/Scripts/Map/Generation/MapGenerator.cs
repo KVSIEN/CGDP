@@ -4,13 +4,14 @@ using CGD.Core;
 
 namespace CGD.Map
 {
-    // Turns MapGenerationSettings and a seed into a MapGraph. Deterministic: the same
-    // settings, seed, layer variants and pins always produce the same graph.
+    // Turns a MapGenerationSettings style and a seed into a MapGraph. Deterministic: the
+    // same settings, seed, layer variants and pins always produce the same graph.
     //
     // Runs as separate passes — structure, types, intensity, factions — each with its
     // own seed layer, so a layer can be rerolled (SeedVariants.Reroll) without changing
     // the layers before it. Later layers read earlier results, so a new layout still
-    // changes the types placed on it.
+    // changes the types placed on it. Which of the style's layouts is used belongs to the
+    // layout layer, so rerolling the layout can also change the map's shape style.
     public class MapGenerator
     {
         public const string LayoutLayer    = "layout";
@@ -25,17 +26,21 @@ namespace CGD.Map
 
         public MapGenerator(MapGenerationSettings settings)
         {
-            _settings = settings != null ? settings : throw new ArgumentNullException(nameof(settings));
+            if (settings == null) throw new ArgumentNullException(nameof(settings));
+            if (!settings.CanGenerate)
+                throw new ArgumentException($"{settings.name} needs content and at least one layout.", nameof(settings));
+            _settings = settings;
         }
 
         public MapGenerationResult Generate(Seed seed) => Generate(seed, null, Array.Empty<MapNodePin>());
 
         public MapGenerationResult Generate(Seed seed, SeedVariants variants, IReadOnlyList<MapNodePin> pins)
         {
-            var context = new MapGenerationContext(_settings, seed, variants);
+            RandomStream layout = MapGenerationContext.StreamFor(seed, variants, LayoutLayer);
+            var context = new MapGenerationContext(_settings.PickLayout(layout), _settings.Content, _settings.NodeSpacing,
+                                                   seed, variants);
 
-            // Rooms, extra links and gates all belong to the layout layer.
-            RandomStream layout = context.StreamFor(LayoutLayer);
+            // Rooms, extra links, gates and keys all belong to the layout layer.
             new MapLayoutBuilder(context, layout).Build();
             new MapLinkBuilder(context, layout).Build();
             new MapGatePlacer(context, layout).Place();
@@ -49,7 +54,7 @@ namespace CGD.Map
 
             new MapFactionPainter(context).Paint();
 
-            return new MapGenerationResult(context.Graph, types.PinnedNodeIds, context.Warnings);
+            return new MapGenerationResult(context.Graph, context.Layout, types.PinnedNodeIds, context.Warnings);
         }
 
         private static void ApplyPinnedIntensity(MapGraph graph, IReadOnlyList<MapNodePin> pins, IReadOnlyList<int> nodeIds)

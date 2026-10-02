@@ -6,14 +6,14 @@ namespace CGD.Map
 {
     // Grows the rooms as a tree on MapGrid: a main path walked out from Start to the Boss
     // and Exit, hub branches off Start, then branches off the path (or off earlier
-    // branches) until the map reaches its room count. Each new room takes a free cell
+    // branches) until the map has its optional rooms. Each new room takes a free cell
     // next to the room it hangs off. Branches may rejoin a neighbouring room; every
     // other extra link is MapLinkBuilder's job.
     //
     // Rooms are created with the fill type; MapTypeAssigner decides the real types.
     internal class MapLayoutBuilder
     {
-        // Consecutive failed branches before the map stops growing short of its room count.
+        // Consecutive failed branches before the map stops growing short of its optional rooms.
         private const int PlacementAttempts = 16;
         private const int NoRoom = -1;
 
@@ -33,23 +33,25 @@ namespace CGD.Map
 
         private MapGraph              Graph    => _context.Graph;
         private MapGrid               Grid     => _context.Grid;
-        private MapGenerationSettings Settings => _context.Settings;
+        private MapLayoutSettings     Layout   => _context.Layout;
+        private MapNodeType           FillType => _context.Content.FillType;
 
         public void Build()
         {
-            int target = Settings.RoomCount.Evaluate(_random);
-
             BuildMainPath();
+
+            int optional = Layout.OptionalRooms.Evaluate(_random);
+            int target   = Graph.Nodes.Count + optional;
             AddHubBranches(target);
-            FillWithBranches(target);
+            FillWithBranches(target, optional);
         }
 
         // Never steps back toward Start's column, so the path can't box itself in and the
         // boss always ends up further from Start than anything on the path.
         private void BuildMainPath()
         {
-            MapPathSettings path = Settings.MainPath;
-            int length = Mathf.Max(1, path.Length.Evaluate(_random), Settings.MinBossDepth - 1);
+            MapPathSettings path = Layout.MainPath;
+            int length = Layout.MainPathLength(path.Length.Evaluate(_random));
 
             Vector2Int heading = Vector2Int.right;
             int previous = AddRoom(MapNodeType.Start, Vector2Int.zero, NoRoom);
@@ -57,7 +59,7 @@ namespace CGD.Map
 
             for (int i = 0; i < length; i++)
             {
-                previous = AddPathRoom(Settings.FillType, previous, ref heading, path.Winding);
+                previous = AddPathRoom(FillType, previous, ref heading, path.Winding);
                 _pathRooms.Add(previous);
             }
 
@@ -74,7 +76,7 @@ namespace CGD.Map
 
         private void AddHubBranches(int target)
         {
-            int count = Settings.Branches.HubBranches.Evaluate(_random);
+            int count = Layout.Branches.HubBranches.Evaluate(_random);
             for (int i = 0; i < count; i++)
                 if (!TryAddBranch(_pathRooms[0], target))
                 {
@@ -83,18 +85,18 @@ namespace CGD.Map
                 }
         }
 
-        private void FillWithBranches(int target)
+        private void FillWithBranches(int target, int optional)
         {
             int failures = 0;
             while (Graph.Nodes.Count < target && failures < PlacementAttempts)
                 failures = TryAddBranch(PickAttachRoom(), target) ? 0 : failures + 1;
 
             if (Graph.Nodes.Count < target)
-                _context.Warnings.Add($"Reached {Graph.Nodes.Count} of {target} rooms — raise Max Spread or Max Connections Per Node.");
+                _context.Warnings.Add($"Placed {optional - (target - Graph.Nodes.Count)} of {optional} optional rooms — raise Max Spread or Max Connections Per Node.");
         }
 
         private int PickAttachRoom() =>
-            _branchRooms.Count > 0 && _random.Chance(Settings.Branches.ForkChance)
+            _branchRooms.Count > 0 && _random.Chance(Layout.Branches.ForkChance)
                 ? _random.Pick(_branchRooms)
                 : _random.Pick(_pathRooms);
 
@@ -102,7 +104,7 @@ namespace CGD.Map
         {
             if (_context.IsFull(attachId)) return false;
 
-            MapBranchSettings branches = Settings.Branches;
+            MapBranchSettings branches = Layout.Branches;
             // Hub branches still get a room when the path alone already meets the target.
             int roomsLeft = Mathf.Max(1, target - Graph.Nodes.Count);
             int length    = Mathf.Min(Mathf.Max(1, branches.Length.Evaluate(_random)), roomsLeft);
@@ -114,7 +116,7 @@ namespace CGD.Map
                 if (!TryStep(Grid.CellOf(previous), ref heading, branches.Winding, allowBackward: true, out Vector2Int cell))
                     break;
 
-                previous = AddRoom(Settings.FillType, cell, previous);
+                previous = AddRoom(FillType, cell, previous);
                 _branchRooms.Add(previous);
             }
 
@@ -154,7 +156,7 @@ namespace CGD.Map
 
         private int AddRoom(MapNodeType type, Vector2Int cell, int linkFrom)
         {
-            Vector2 spacing = Settings.NodeSpacing;
+            Vector2 spacing = _context.NodeSpacing;
             MapNode node = Graph.AddNode(type, new Vector2(cell.x * spacing.x, cell.y * spacing.y));
             Grid.Place(node.Id, cell);
 

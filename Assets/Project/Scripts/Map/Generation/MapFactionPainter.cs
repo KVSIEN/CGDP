@@ -21,7 +21,7 @@ namespace CGD.Map
 
         public void Paint()
         {
-            IReadOnlyList<string> factions = _context.Settings.Factions;
+            IReadOnlyList<string> factions = _context.Content.Factions;
             if (factions.Count == 0) return;
 
             var origins = new List<MapSlot>(_context.Slots);
@@ -44,8 +44,8 @@ namespace CGD.Map
         private void Spread(int faction, int originId)
         {
             MapGraph graph     = _context.Graph;
-            float    falloff   = _context.Settings.FactionFalloff;
-            float    threshold = _context.Settings.FactionThreshold;
+            float    falloff   = _context.Content.FactionFalloff;
+            float    threshold = _context.Content.FactionThreshold;
 
             var hops     = new Dictionary<int, int> { [originId] = 0 };
             var frontier = new Queue<int>();

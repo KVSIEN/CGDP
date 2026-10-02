@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace CGD.Map
@@ -9,7 +10,11 @@ namespace CGD.Map
         // Connections from `from` to every node it can reach. `ignored` is treated as
         // missing, which tells whether one connection is the only way into part of the map.
         public static Dictionary<int, int> Distances(MapGraph graph, int from, bool includeShortcuts,
-                                                     MapConnection ignored = null)
+                                                     MapConnection ignored = null) =>
+            Distances(graph, from, c => c != ignored && (includeShortcuts || c.Type != ConnectionType.Shortcut));
+
+        // Same, following only the connections `canPass` accepts.
+        public static Dictionary<int, int> Distances(MapGraph graph, int from, Predicate<MapConnection> canPass)
         {
             var distances = new Dictionary<int, int>();
             if (!graph.TryGetNode(from, out _)) return distances;
@@ -24,8 +29,7 @@ namespace CGD.Map
 
                 foreach (MapConnection connection in graph.Connections)
                 {
-                    if (connection == ignored || !connection.Connects(current)) continue;
-                    if (!includeShortcuts && connection.Type == ConnectionType.Shortcut) continue;
+                    if (!connection.Connects(current) || !canPass(connection)) continue;
 
                     int next = connection.Other(current);
                     if (distances.ContainsKey(next)) continue;
@@ -48,6 +52,39 @@ namespace CGD.Map
             return Distances(graph, start.Id, includeShortcuts: true).TryGetValue(boss.Id, out int distance)
                 ? distance
                 : int.MaxValue;
+        }
+
+        // Plays the map from `from`: walks everywhere not behind a Locked connection,
+        // opens each Locked connection whose door and key room are both reached, and
+        // repeats. Returns the Locked connections that never open — a missing key, a key
+        // behind its own door, or keys locked behind each other.
+        public static List<MapConnection> UnopenableLocks(MapGraph graph, int from)
+        {
+            var opened = new HashSet<MapConnection>();
+
+            while (true)
+            {
+                Dictionary<int, int> reached = Distances(graph, from, c => c.Type != ConnectionType.Locked || opened.Contains(c));
+                bool openedAny = false;
+
+                foreach (MapConnection connection in graph.Connections)
+                {
+                    if (connection.Type != ConnectionType.Locked || opened.Contains(connection)) continue;
+                    if (!connection.HasKey || !reached.ContainsKey(connection.KeyNodeId)) continue;
+                    if (!reached.ContainsKey(connection.A) && !reached.ContainsKey(connection.B)) continue;
+
+                    opened.Add(connection);
+                    openedAny = true;
+                }
+
+                if (openedAny) continue;
+
+                var closed = new List<MapConnection>();
+                foreach (MapConnection connection in graph.Connections)
+                    if (connection.Type == ConnectionType.Locked && !opened.Contains(connection))
+                        closed.Add(connection);
+                return closed;
+            }
         }
     }
 }

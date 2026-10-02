@@ -23,6 +23,7 @@ namespace CGD.Map
         private readonly Dictionary<int, int>       _branch   = new();
         private readonly HashSet<int>               _required = new();
         private readonly HashSet<int>               _mainPath = new();
+        private readonly HashSet<int>               _behindGate = new();
         private readonly List<int>                  _mainPathOrder;
         private readonly List<int>                  _neighborBuffer = new();
 
@@ -42,6 +43,11 @@ namespace CGD.Map
                 _depth.TryAdd(entry.Key, entry.Value);
             foreach (int depth in _depth.Values)
                 if (depth > MaxDepth) MaxDepth = depth;
+
+            Dictionary<int, int> ungated = MapGraphSearch.Distances(graph, StartId, c => !c.IsGate);
+            foreach (int id in _reachable)
+                if (!ungated.ContainsKey(id))
+                    _behindGate.Add(id);
 
             _mainPathOrder = FindPath(StartId, ExitId, Unreachable, includeShortcuts: false);
             if (_mainPathOrder.Count == 0)
@@ -78,6 +84,9 @@ namespace CGD.Map
         public bool IsReachable(int id) => _reachable.Contains(id);
 
         public bool IsOnMainPath(int id) => _mainPath.Contains(id);
+
+        // Reachable, but only through a Locked or Secret connection.
+        public bool IsBehindGate(int id) => _behindGate.Contains(id);
 
         // Every Start → Exit route passes through this node.
         public bool IsRequired(int id) => _required.Contains(id);

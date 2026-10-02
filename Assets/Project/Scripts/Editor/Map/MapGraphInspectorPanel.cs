@@ -67,19 +67,19 @@ namespace CGD.Editor
                 session.MoveNode(node, position);
             }
 
-            DrawNodeAnalysis(node, session.Analysis);
+            DrawNodeAnalysis(node, session);
             DrawNodeConnections(node, session);
         }
 
         private static void DrawFaction(MapNode node, MapGraphEditorSession session)
         {
-            MapGenerationSettings settings = session.Asset.Settings;
-            int factionCount = settings != null ? settings.Factions.Count : 0;
+            MapContentSettings content = session.Asset.Content;
+            int factionCount = content != null ? content.Factions.Count : 0;
 
             var options = new string[factionCount + 1];
             options[0] = "None";
             for (int i = 0; i < factionCount; i++)
-                options[i + 1] = settings.Factions[i];
+                options[i + 1] = content.Factions[i];
 
             EditorGUI.BeginChangeCheck();
             int faction = EditorGUILayout.Popup("Faction", node.Faction + 1, options) - 1;
@@ -89,8 +89,9 @@ namespace CGD.Editor
             if (EditorGUI.EndChangeCheck()) session.SetFaction(node, faction, influence);
         }
 
-        private static void DrawNodeAnalysis(MapNode node, MapGraphAnalysis analysis)
+        private static void DrawNodeAnalysis(MapNode node, MapGraphEditorSession session)
         {
+            MapGraphAnalysis analysis = session.Analysis;
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Analysis", EditorStyles.miniBoldLabel);
 
@@ -104,6 +105,12 @@ namespace CGD.Editor
             EditorGUILayout.LabelField("Depth", $"{analysis.Depth(node.Id)}  ({analysis.Progress(node.Id):0%})");
             EditorGUILayout.LabelField("Route", analysis.IsRequired(node.Id) ? "Required" : "Optional");
             EditorGUILayout.LabelField("Placement", branch == MapGraphAnalysis.MainPathBranch ? "Main path" : $"Branch {branch + 1}");
+            if (analysis.IsBehindGate(node.Id))
+                EditorGUILayout.LabelField("Access", "Behind a Locked or Secret gate");
+
+            foreach (MapConnection connection in session.Graph.Connections)
+                if (connection.Type == ConnectionType.Locked && connection.KeyNodeId == node.Id)
+                    EditorGUILayout.LabelField("Holds key for", $"#{connection.A} ↔ #{connection.B}");
         }
 
         private void DrawNodeConnections(MapNode node, MapGraphEditorSession session)
@@ -142,12 +149,33 @@ namespace CGD.Editor
         {
             EditorGUILayout.LabelField($"Connection #{connection.A} ↔ #{connection.B}", EditorStyles.boldLabel);
             DrawConnectionTypePopup(connection, session);
+            if (connection.Type == ConnectionType.Locked)
+                DrawKeyRoomPopup(connection, session);
 
             if (GUILayout.Button("Delete Connection"))
             {
                 session.Disconnect(connection.A, connection.B);
                 GUIUtility.ExitGUI();
             }
+        }
+
+        // Any node can be picked; the validator flags a key the player can't reach.
+        private static void DrawKeyRoomPopup(MapConnection connection, MapGraphEditorSession session)
+        {
+            IReadOnlyList<MapNode> nodes = session.Graph.Nodes;
+            var labels = new string[nodes.Count + 1];
+            labels[0] = "None";
+            int selected = 0;
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                labels[i + 1] = $"#{nodes[i].Id} {nodes[i].Type}";
+                if (nodes[i].Id == connection.KeyNodeId) selected = i + 1;
+            }
+
+            EditorGUI.BeginChangeCheck();
+            int picked = EditorGUILayout.Popup(new GUIContent("Key room", "Where the key that opens this door is placed"), selected, labels);
+            if (EditorGUI.EndChangeCheck())
+                session.SetKeyRoom(connection, picked == 0 ? MapConnection.NoKey : nodes[picked - 1].Id);
         }
 
         private static void DrawConnectionTypePopup(MapConnection connection, MapGraphEditorSession session)
@@ -163,10 +191,14 @@ namespace CGD.Editor
         {
             MapGraph              graph    = session.Graph;
             MapGraphAnalysis      analysis = session.Analysis;
-            MapGenerationSettings settings = session.Asset.Settings;
+            MapContentSettings    content  = session.Asset.Content;
+            MapLayoutSettings     layout   = session.Asset.Layout;
 
             EditorGUILayout.LabelField("Graph", EditorStyles.boldLabel);
             EditorGUILayout.LabelField("Seed", session.Asset.Seed.ToString());
+            EditorGUILayout.LabelField("Layout", layout != null
+                ? $"{layout.name}  ({layout.MinRoomCount}–{layout.MaxRoomCount} rooms)"
+                : "—");
             EditorGUILayout.LabelField("Nodes / Connections", $"{graph.Nodes.Count} / {graph.Connections.Count}");
             EditorGUILayout.LabelField("Main path", analysis.ExitReachable ? $"{analysis.MainPath.Count} nodes" : "Exit unreachable");
             EditorGUILayout.LabelField("Branches", analysis.BranchCount.ToString());
@@ -175,7 +207,7 @@ namespace CGD.Editor
             EditorGUILayout.LabelField("Node types", EditorStyles.miniBoldLabel);
             foreach (MapNodeType type in System.Enum.GetValues(typeof(MapNodeType)))
             {
-                MapNodeTypeRule rule = settings != null ? settings.GetRule(type) : null;
+                MapNodeTypeRule rule = content != null ? content.GetRule(type) : null;
                 string limits = rule != null ? $"  ({rule.Min}–{rule.Max})" : "";
                 EditorGUILayout.LabelField(type.ToString(), $"{graph.CountOf(type)}{limits}");
             }
@@ -192,7 +224,7 @@ namespace CGD.Editor
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Seed layers", EditorStyles.miniBoldLabel);
 
-            using (new EditorGUI.DisabledScope(session.Asset.Settings == null))
+            using (new EditorGUI.DisabledScope(!session.Asset.CanGenerate))
             {
                 foreach (string layer in MapGenerator.Layers)
                 {

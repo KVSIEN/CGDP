@@ -102,7 +102,7 @@ namespace CGD.Editor
             EditorGUIUtility.labelWidth = 0f;
             serialized.ApplyModifiedProperties();
 
-            using (new EditorGUI.DisabledScope(asset.Settings == null))
+            using (new EditorGUI.DisabledScope(!asset.CanGenerate))
             {
                 if (GUILayout.Button(new GUIContent("Generate", "Rebuild the map from this seed"), EditorStyles.toolbarButton))
                     TryRegenerate(asset.Seed);

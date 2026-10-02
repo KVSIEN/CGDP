@@ -131,13 +131,18 @@ namespace CGD.Editor
                 curve.Draw(color, ConnectionWidth);
 
                 if (connection.Type != ConnectionType.Normal && session.Zoom >= LabelMinZoom)
-                    DrawConnectionLabel(curve.Midpoint, connection.Type);
+                    DrawConnectionLabel(curve.Midpoint, connection);
             }
         }
 
-        private void DrawConnectionLabel(Vector2 at, ConnectionType type)
+        // Locked links also name their key room, so a missing key is visible at a glance.
+        private void DrawConnectionLabel(Vector2 at, MapConnection connection)
         {
-            var content = new GUIContent(type.ToString());
+            ConnectionType type = connection.Type;
+            string text = type != ConnectionType.Locked ? type.ToString()
+                        : connection.HasKey ? $"Locked · key #{connection.KeyNodeId}"
+                        : "Locked · no key";
+            var content = new GUIContent(text);
             Vector2 size = _linkLabelStyle.CalcSize(content);
             var rect = new Rect(at - size * 0.5f, size);
 
@@ -203,7 +208,7 @@ namespace CGD.Editor
             {
                 MapGraphViewMode.Intensity        => $"intensity {node.Intensity:0.00}",
                 MapGraphViewMode.Faction          => node.HasFaction
-                    ? $"{session.Asset.Settings?.FactionName(node.Faction) ?? node.Faction.ToString()} {node.FactionInfluence:0.00}"
+                    ? $"{session.Asset.Content?.FactionName(node.Faction) ?? node.Faction.ToString()} {node.FactionInfluence:0.00}"
                     : "no faction",
                 MapGraphViewMode.RequiredOptional => !analysis.IsReachable(node.Id) ? "unreachable"
                     : analysis.IsRequired(node.Id) ? "required" : "optional",
@@ -217,7 +222,7 @@ namespace CGD.Editor
         {
             if (Event.current.type != EventType.Repaint) return;
 
-            MapGraphStyle.CollectLegend(session.ViewMode, session.Asset.Settings, session.Analysis, _legend);
+            MapGraphStyle.CollectLegend(session.ViewMode, session.Asset.Content, session.Analysis, _legend);
 
             const float line = 16f;
             var box = new Rect(8f, local.height - 8f - _legend.Count * line - 8f, 140f, _legend.Count * line + 8f);

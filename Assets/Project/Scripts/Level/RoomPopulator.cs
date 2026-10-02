@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using CGD.Core;
 using CGD.Enemies;
+using CGD.Map;
 
 namespace CGD.Level
 {
@@ -53,6 +54,21 @@ namespace CGD.Level
                 int count = rule.PropCount.Evaluate(_random);
                 for (int i = 0; i < count && TryTakeTile(room, KeepPropsOff, out Vector3 position); i++)
                     Object.Instantiate(_random.Pick(rule.Props), position, RandomYaw(), _parent);
+            }
+        }
+
+        // One key per Locked connection, in the room the map graph chose for it.
+        public void PlaceKeys(MapGraph graph)
+        {
+            if (_settings.KeyPrefab == null) return;
+
+            foreach (MapConnection connection in graph.Connections)
+            {
+                if (connection.Type != ConnectionType.Locked || !connection.HasKey) continue;
+                if (!_layout.Rooms.TryGetValue(connection.KeyNodeId, out LevelRoom room)) continue;
+
+                if (TryTakeTile(room, KeepPropsOff, out Vector3 position))
+                    Object.Instantiate(_settings.KeyPrefab, position, RandomYaw(), _parent);
             }
         }
 

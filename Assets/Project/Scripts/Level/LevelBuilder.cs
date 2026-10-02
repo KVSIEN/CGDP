@@ -7,11 +7,11 @@ using CGD.WorldMap;
 namespace CGD.Level
 {
     // Builds a playable level from a map graph when the scene loads: rooms and corridors,
-    // doors on connections, room contents, a NavMesh for enemies, the player in the Start
-    // room and a way out in the Exit room.
+    // doors on connections (and keys for the locked ones), room contents, a NavMesh for
+    // enemies, the player in the Start room and a way out in the Exit room.
     //
     // The graph is either a MapGraphAsset (a hand-checked map, same every time) or generated
-    // on the spot from MapGenerationSettings and a seed. Seed 0 rolls a new one every play;
+    // on the spot from a MapGenerationSettings style and a seed. Seed 0 rolls a new one every play;
     // the one used is shown in Seed so a good level can be kept.
     //
     // Runs before everything else so the level exists by the time other components wake up
@@ -53,7 +53,7 @@ namespace CGD.Level
             Graph = ResolveGraph(out Vector2 nodeSpacing);
             if (Graph == null)
             {
-                Debug.LogError($"{name}: LevelBuilder needs a map graph asset or map generation settings.", this);
+                Debug.LogError($"{name}: LevelBuilder needs a map graph asset, or map generation settings with content and a layout.", this);
                 return;
             }
 
@@ -65,6 +65,7 @@ namespace CGD.Level
 
             var populator = new RoomPopulator(_settings, Layout, transform, Seed.Derive("contents").Stream());
             populator.PlaceProps();
+            populator.PlaceKeys(Graph);
             PlaceExit(populator);
 
             if (_navMesh != null) _navMesh.BuildNavMesh();
@@ -83,7 +84,9 @@ namespace CGD.Level
             }
 
             nodeSpacing = _generation != null ? _generation.NodeSpacing : Vector2.one;
-            return _generation != null ? new MapGenerator(_generation).Generate(Seed.Derive("map")).Graph : null;
+            return _generation != null && _generation.CanGenerate
+                ? new MapGenerator(_generation).Generate(Seed.Derive("map")).Graph
+                : null;
         }
 
         private void PlacePlayer(RoomPopulator populator)

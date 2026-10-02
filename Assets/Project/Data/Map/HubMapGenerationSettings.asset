@@ -12,51 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e539a428874b4d719f355044351e1273, type: 3}
   m_Name: HubMapGenerationSettings
   m_EditorClassIdentifier: CGD.Runtime::CGD.Map.MapGenerationSettings
-  _roomCount:
-    Min: 16
-    Max: 22
-    Bias: 0
-  _minBossDepth: 6
-  _maxSpread: 4
-  _maxConnectionsPerNode: 4
-  _mainPath:
-    _length:
-      Min: 6
-      Max: 8
-      Bias: 0
-    _winding: 0.2
-  _branches:
-    _length:
-      Min: 2
-      Max: 4
-      Bias: 0
-    _winding: 0.4
-    _forkChance: 0.2
-    _hubBranches:
-      Min: 3
-      Max: 3
-      Bias: 0
-    _rejoinChance: 0.4
-  _loops:
-    _loopCount:
-      Min: 2
-      Max: 3
-      Bias: 0
-    _shortcutCount:
-      Min: 1
-      Max: 2
-      Bias: 0
-    _shortcutReach: 2
-    _shortcutMinSkip: 2
-  _gates:
-    _lockedChance: 0.1
-    _secretChance: 0.2
-    _maxGates: 2
-  _earlyTreasureDepth:
-    Min: 0
-    Max: 0
-    Bias: 0
-  _factions:
-  - TECH
-  - BIO
-  - VOID
+  _layouts:
+  - _layout: {fileID: 11400000, guid: a91c845ebbfa4848b10ae03f9b3d8e89, type: 2}
+    _weight: 1
+  _content: {fileID: 11400000, guid: 1902458f4af7428cabd44a36a39d755a, type: 2}
+  _nodeSpacing: {x: 220, y: 110}

@@ -424,6 +424,23 @@ All presets are in `Data/Feedback/`.
 
 Open **Window › CGD › Map Graph**, pick `Map/SandboxMapGraph`, press **Generate**. Scenes use graphs through a [generated level](#generated-levels).
 
+A map **style** (`MapGenerationSettings`) is what a `MapGraphAsset` or `LevelBuilder` references. It wires two kinds of asset together:
+
+```
+…MapGenerationSettings (style)    Map/
+  _layouts  = one or more MapLayoutSettings + weight   Map/Layouts/   ← shape; each seed picks one by weight
+  _content  = one MapContentSettings                   Map/Content/   ← room types, guaranteed rooms, intensity, factions
+```
+
+| Asset | Create menu | Assign |
+|---|---|---|
+| **MapLayoutSettings** | CGD › Map › Map Layout Settings | sizes, main path, branches, loops, gates (incl. `_minDepth` and the key preferences) |
+| **MapContentSettings** | CGD › Map › Map Content Settings | `_nodeRules`, `_fillType`, guaranteed rooms (`_earlyRoom` + `_earlyRoomDepth`, `_gatedAreaReward`, `_bossApproach`), intensity curve, `_factions` |
+| **MapGenerationSettings** | CGD › Map › Map Generation Settings | `_layouts` (at least one, weight 0 = never unless all are 0), `_content` (required), `_nodeSpacing` |
+
+- **Generate** stays disabled until the style has content and at least one layout.
+- A new map style is usually just a new style asset pointing at existing layouts and content.
+
 ## Generated Levels
 
 A scene can build its level from a map graph at load instead of using hand-placed geometry.
@@ -436,10 +453,10 @@ Level              [LevelBuilder, NavMeshSurface]   ← at the origin, unrotated
 
 | Component | Assign | Notes |
 |---|---|---|
-| **LevelBuilder** | `_settings` = `Level/DefaultLevelBuildSettings` · `_graphAsset` = a `MapGraphAsset` **or** `_generation` = a `Map/…MapGenerationSettings` style (e.g. `BranchingMapGenerationSettings`) · `_seed` (0 = random) · `_navMesh` = its NavMeshSurface · `_player` = Player · `_spawnPoint` = RespawnPoint · `_worldMap`? = WorldMapArea | Logs a warning for every corridor that had to cross another. |
+| **LevelBuilder** | `_settings` = `Level/DefaultLevelBuildSettings` · `_graphAsset` = a `MapGraphAsset` **or** `_generation` = a `Map/…MapGenerationSettings` style (e.g. `BranchingMapGenerationSettings`, or `RandomMapGenerationSettings` for a different shape each run) · `_seed` (0 = random) · `_navMesh` = its NavMeshSurface · `_player` = Player · `_spawnPoint` = RespawnPoint · `_worldMap`? = WorldMapArea | Logs a warning for every corridor that had to cross another. |
 | **NavMeshSurface** | Collect Objects = **Current Object Hierarchy** | Rebuilt at runtime. Don't bake it. |
 
-`LevelBuildSettings` holds the grid sizes, wall materials, door prefabs, the default room **Shapes** and one **Rooms** entry per room type.
+`LevelBuildSettings` holds the grid sizes, wall materials, door prefabs, the key prefab, the default room **Shapes** and one **Rooms** entry per room type.
 Each entry lists its **Functions**, enemy prefabs (count read at the room's intensity), a centrepiece and props.
 
 | Asset | Folder | Sets |
@@ -463,6 +480,7 @@ Each entry lists its **Functions**, enemy prefabs (count read at the room's inte
   - Locked is typically a `Door` with a key.
   - Secret is, for example, a `Destructible` fake wall.
   - Closed doors cut the NavMesh, so enemies don't follow the player through them.
+- **Keys**: `_keyPrefab` is placed in the room the map graph picks for each Locked connection. Make it a pickup (e.g. `ItemPickup`) of the item the locked door's `Door._key` asks for, and tick `_key.Consume` so each key opens one door. The door and key prefabs are empty in `DefaultLevelBuildSettings`, so generated gates are open passages and no keys spawn until they're assigned.
 - **Exit**: when the Exit room's content has no `LevelExit`, a plain exit pad is added. Using it calls `GameFlow.Victory`.
 - **Obstacle masks**: generated geometry goes on `_geometryLayer`. Keep that layer in enemies' `_obstacleMask` and in weapons' hit masks.
 
@@ -524,7 +542,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Feedback/` | ten `…FeedbackPreset`s | CombatFeedback, QuestFeedback, Stealthable |
 | `Stealth/` | `StealthSettings` (shared) | Stealthable |
 | `CameraEffects/` | `DefaultCameraEffectSettings` | CameraEffectsController |
-| `Map/` | map styles `Linear`/`Branching`/`Hub`/`Labyrinth` `…MapGenerationSettings`, `SandboxMapGraph` (uses Branching) | Map Graph window, WorldMapArea |
+| `Map/` | map styles `Linear`/`Branching`/`Hub`/`Labyrinth`/`Random` `…MapGenerationSettings`, `SandboxMapGraph` (uses Branching); `Layouts/` (`Linear`/`Branching`/`Hub`/`Labyrinth` `…MapLayoutSettings`), `Content/` (`Standard`/`TreasureHunt`/`Gauntlet` `…MapContentSettings`) | Map Graph window, LevelBuilder |
 | `Audio/` | `DefaultSurfaceDatabase` | PlayerFootsteps |
 | `Level/` | `DefaultLevelBuildSettings` (Gridbox materials, room rules without prefabs), `Functions/` (nine `…RoomFunction`s), `Shapes/` (seven `…RoomShape`s), `Structure/` (six `…StructureRule`s), `Landmarks/` (`ReactorCoreLandmarkRoom`) | LevelBuilder |
 | `Impacts/` | `DefaultImpactDatabase` (empty effects) | ImpactSpawner |

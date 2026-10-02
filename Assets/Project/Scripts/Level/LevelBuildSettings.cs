@@ -43,6 +43,8 @@ namespace CGD.Level
         [SerializeField] private GameObject _lockedDoorPrefab;
         [Tooltip("Gate for Secret connections (e.g. a Destructible fake wall)")]
         [SerializeField] private GameObject _secretDoorPrefab;
+        [Tooltip("Placed in the room the map graph picks for each Locked gate's key (e.g. an ItemPickup of the item the locked door asks for). Empty = no keys are placed")]
+        [SerializeField] private GameObject _keyPrefab;
 
         [Header("Rooms")]
         [SerializeField] private List<RoomContentRule> _rooms = new();
@@ -76,6 +78,8 @@ namespace CGD.Level
             ConnectionType.Secret => _secretDoorPrefab,
             _                     => _doorPrefab,
         };
+
+        public GameObject KeyPrefab => _keyPrefab;
 
         public RoomContentRule RuleFor(MapNodeType type) => _rooms.Find(r => r.Type == type);
 

@@ -51,7 +51,7 @@ namespace CGD.Editor
             _                                 => TypeColor(node.Type)
         };
 
-        public static void CollectLegend(MapGraphViewMode mode, MapGenerationSettings settings,
+        public static void CollectLegend(MapGraphViewMode mode, MapContentSettings content,
                                          MapGraphAnalysis analysis, List<(Color color, string label)> legend)
         {
             legend.Clear();
@@ -68,9 +68,9 @@ namespace CGD.Editor
                     break;
                 case MapGraphViewMode.Faction:
                     legend.Add((NoFaction, "None"));
-                    if (settings != null)
-                        for (int i = 0; i < settings.Factions.Count; i++)
-                            legend.Add((PaletteColor(i), settings.Factions[i]));
+                    if (content != null)
+                        for (int i = 0; i < content.Factions.Count; i++)
+                            legend.Add((PaletteColor(i), content.Factions[i]));
                     break;
                 case MapGraphViewMode.RequiredOptional:
                     legend.Add((Required, "Required"));

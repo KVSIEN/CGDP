@@ -20,7 +20,7 @@ namespace CGD.Map
         }
 
         private MapGraph        Graph => _context.Graph;
-        private MapLoopSettings Loops => _context.Settings.Loops;
+        private MapLoopSettings Loops => _context.Layout.Loops;
 
         public void Build()
         {

@@ -24,7 +24,7 @@ namespace CGD.Map
 
         private float IntensityFor(MapNodeType type, float progress)
         {
-            MapGenerationSettings settings = _context.Settings;
+            MapContentSettings content = _context.Content;
 
             switch (type)
             {
@@ -32,12 +32,12 @@ namespace CGD.Map
                 case MapNodeType.Exit:
                     return 0f;
                 case MapNodeType.Boss:
-                    return settings.BossIntensity;
+                    return content.BossIntensity;
             }
 
-            float bonus  = settings.GetRule(type)?.IntensityBonus ?? 0f;
-            float jitter = _random.Range(-1f, 1f) * settings.IntensityJitter;
-            return settings.BaseIntensity(progress) + bonus + jitter;
+            float bonus  = content.GetRule(type)?.IntensityBonus ?? 0f;
+            float jitter = _random.Range(-1f, 1f) * content.IntensityJitter;
+            return content.BaseIntensity(progress) + bonus + jitter;
         }
     }
 }

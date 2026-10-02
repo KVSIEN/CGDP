@@ -3,14 +3,18 @@ using CGD.Core;
 
 namespace CGD.Map
 {
-    // Turns some entrances to optional areas into Locked or Secret connections. An
-    // entrance is a connection that is the only way into part of the map holding
-    // neither the Boss nor the Exit, so a gate on it can't be walked around. Runs after
-    // every other link, so nothing added later can open a second way in.
+    // Turns some entrances to optional areas into Locked or Secret connections, then
+    // gives every Locked one a key room. An entrance is a connection that is the only way
+    // into part of the map holding neither the Boss nor the Exit, so a gate on it can't
+    // be walked around. Runs after every other link, so nothing added later can open a
+    // second way in.
     internal class MapGatePlacer
     {
+        private const int NoRoom = -1;
+
         private readonly MapGenerationContext _context;
         private readonly RandomStream         _random;
+        private readonly List<int>            _candidates = new();
 
         public MapGatePlacer(MapGenerationContext context, RandomStream random)
         {
@@ -19,30 +23,35 @@ namespace CGD.Map
         }
 
         private MapGraph        Graph => _context.Graph;
-        private MapGateSettings Gates => _context.Settings.Gates;
+        private MapGateSettings Gates => _context.Layout.Gates;
+
+        public void Place()
+        {
+            if (!Gates.Enabled) return;
+
+            PlaceGates();
+            PlaceKeys();
+        }
 
         // Shallowest entrances first, and none inside an area already gated, so a gate
         // sits at the mouth of an area rather than nested deep inside another.
-        public void Place()
+        private void PlaceGates()
         {
-            if (Gates.MaxGates <= 0 || (Gates.LockedChance <= 0f && Gates.SecretChance <= 0f)) return;
-
             List<Entrance> entrances = FindEntrances();
             entrances.Sort((a, b) => a.Depth.CompareTo(b.Depth));
 
-            var gated  = new HashSet<int>();
-            int placed = 0;
+            var gated = new HashSet<int>();
             foreach (Entrance entrance in entrances)
             {
-                if (placed == Gates.MaxGates) return;
-                if (gated.Contains(entrance.Outside)) continue;
+                if (_context.GatedAreas.Count == Gates.MaxGates) return;
+                if (entrance.Depth < Gates.MinDepth || gated.Contains(entrance.Outside)) continue;
 
                 ConnectionType type = RollGate();
                 if (type == ConnectionType.Normal) continue;
 
                 entrance.Connection.Type = type;
                 gated.UnionWith(entrance.Area);
-                placed++;
+                _context.GatedAreas.Add(new MapGatedArea(entrance.Connection, entrance.Outside, entrance.Area));
             }
         }
 
@@ -51,6 +60,65 @@ namespace CGD.Map
             if (_random.Chance(Gates.LockedChance)) return ConnectionType.Locked;
             if (_random.Chance(Gates.SecretChance)) return ConnectionType.Secret;
             return ConnectionType.Normal;
+        }
+
+        // Keys only go where the player can walk without opening any gate, so no key is
+        // ever shut away behind its own door or another one. Preferences relax one at a
+        // time until a room qualifies; a gate with no room at all goes back to Normal.
+        private void PlaceKeys()
+        {
+            int startId = Graph.FindFirst(MapNodeType.Start).Id;
+            Dictionary<int, int> open = MapGraphSearch.Distances(Graph, startId, c => !c.IsGate);
+            var analysis = new MapGraphAnalysis(Graph);
+            var keyRooms = new HashSet<int>();
+
+            for (int i = _context.GatedAreas.Count - 1; i >= 0; i--)
+            {
+                MapGatedArea area = _context.GatedAreas[i];
+                if (area.Gate.Type != ConnectionType.Locked) continue;
+
+                int key = PickKeyRoom(open, analysis, analysis.Depth(area.OutsideId), keyRooms);
+                if (key == NoRoom)
+                {
+                    area.Gate.Type = ConnectionType.Normal;
+                    _context.GatedAreas.RemoveAt(i);
+                    _context.Warnings.Add($"No room can hold the key for the gate at #{area.OutsideId} — it was left open.");
+                    continue;
+                }
+
+                area.Gate.KeyNodeId = key;
+                keyRooms.Add(key);
+            }
+        }
+
+        private int PickKeyRoom(Dictionary<int, int> open, MapGraphAnalysis analysis, int gateDepth, HashSet<int> keyRooms)
+        {
+            // Least important preference first to drop: off the main path, then before the
+            // gate, then one key per room.
+            for (int relaxed = 0; relaxed <= 3; relaxed++)
+            {
+                bool offPath    = Gates.KeyOffMainPath && relaxed < 1;
+                bool beforeGate = Gates.KeyBeforeGate  && relaxed < 2;
+                bool unshared   = relaxed < 3;
+
+                _candidates.Clear();
+                foreach (int id in open.Keys)
+                {
+                    if (!Graph.TryGetNode(id, out MapNode node) || node.Type.IsStructural()) continue;
+                    if (offPath && analysis.IsOnMainPath(id)) continue;
+                    if (beforeGate && analysis.Depth(id) > gateDepth) continue;
+                    if (unshared && keyRooms.Contains(id)) continue;
+                    _candidates.Add(id);
+                }
+
+                if (_candidates.Count > 0)
+                {
+                    // Dictionary order isn't part of the seed's contract; sorting keeps it deterministic.
+                    _candidates.Sort();
+                    return _random.Pick(_candidates);
+                }
+            }
+            return NoRoom;
         }
 
         // The room on Start's side must be Start or a junction, so the gate sits where the

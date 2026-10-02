@@ -4,41 +4,33 @@ using CGD.Core;
 namespace CGD.Map
 {
     // Checks a graph — generated or hand-edited — against structural sanity and the
-    // settings' constraints, so edits that break a rule show up immediately.
+    // layout's and content's constraints, so edits that break a rule show up immediately.
+    // Either settings asset may be null; its checks are then skipped.
     public static class MapGraphValidator
     {
-        public static List<string> Validate(MapGraph graph, MapGraphAnalysis analysis, MapGenerationSettings settings)
+        public static List<string> Validate(MapGraph graph, MapGraphAnalysis analysis,
+                                            MapLayoutSettings layout, MapContentSettings content)
         {
             var issues = new List<string>();
 
             CheckStructure(graph, analysis, issues);
-            if (settings == null) return issues;
+            CheckLocks(graph, analysis, issues);
 
-            CheckRuleCounts(graph, settings, issues);
-            CheckNodes(graph, analysis, settings, issues);
-            CheckEarlyTreasure(graph, analysis, settings, issues);
-            CheckBossDepth(graph, settings, issues);
-            return issues;
-        }
-
-        private static void CheckBossDepth(MapGraph graph, MapGenerationSettings settings, List<string> issues)
-        {
-            int distance = MapGraphSearch.BossDistance(graph);
-            if (distance != int.MaxValue && distance < settings.MinBossDepth)
-                issues.Add($"Boss is {distance} connections from Start (minimum {settings.MinBossDepth}).");
-        }
-
-        private static void CheckEarlyTreasure(MapGraph graph, MapGraphAnalysis analysis, MapGenerationSettings settings, List<string> issues)
-        {
-            if (!settings.HasEarlyTreasure) return;
-
-            IntRange window = settings.EarlyTreasureDepth;
-            foreach (MapNode node in graph.Nodes)
+            if (layout != null)
             {
-                int depth = analysis.Depth(node.Id);
-                if (node.Type == MapNodeType.Treasure && depth >= window.Min && depth <= window.Max) return;
+                CheckBossDepth(graph, layout, issues);
+                CheckConnectionLimit(graph, layout, issues);
             }
-            issues.Add($"No Treasure {window.Min}–{window.Max} rooms from Start.");
+
+            if (content != null)
+            {
+                CheckRuleCounts(graph, content, issues);
+                CheckNodes(graph, analysis, content, issues);
+                CheckEarlyRoom(graph, analysis, content, issues);
+                CheckGatedRewards(graph, analysis, content, issues);
+                CheckBossApproach(graph, analysis, content, issues);
+            }
+            return issues;
         }
 
         private static void CheckStructure(MapGraph graph, MapGraphAnalysis analysis, List<string> issues)
@@ -64,13 +56,45 @@ namespace CGD.Map
             if (count != 1) issues.Add($"Expected exactly one {type} node, found {count}.");
         }
 
-        private static void CheckRuleCounts(MapGraph graph, MapGenerationSettings settings, List<string> issues)
+        // A locked door the player can never open is a soft-lock when the Exit is behind
+        // it, and lost content otherwise — both are worth flagging.
+        private static void CheckLocks(MapGraph graph, MapGraphAnalysis analysis, List<string> issues)
         {
-            foreach (MapNodeTypeRule rule in settings.NodeRules)
+            if (analysis.StartId == MapGraphAnalysis.Unreachable) return;
+
+            foreach (MapConnection connection in MapGraphSearch.UnopenableLocks(graph, analysis.StartId))
             {
-                if (MapGenerationSettings.IsStructural(rule.Type))
+                string gate = $"Locked #{connection.A}–#{connection.B}";
+                if (!connection.HasKey)
+                    issues.Add($"{gate} has no key room.");
+                else if (!graph.TryGetNode(connection.KeyNodeId, out _))
+                    issues.Add($"{gate}: its key room #{connection.KeyNodeId} no longer exists.");
+                else
+                    issues.Add($"{gate} can't be opened: its key (#{connection.KeyNodeId}) is behind it or behind another locked door.");
+            }
+        }
+
+        private static void CheckBossDepth(MapGraph graph, MapLayoutSettings layout, List<string> issues)
+        {
+            int distance = MapGraphSearch.BossDistance(graph);
+            if (distance != int.MaxValue && distance < layout.MinBossDepth)
+                issues.Add($"Boss is {distance} connections from Start (minimum {layout.MinBossDepth}).");
+        }
+
+        private static void CheckConnectionLimit(MapGraph graph, MapLayoutSettings layout, List<string> issues)
+        {
+            foreach (MapNode node in graph.Nodes)
+                if (graph.Degree(node.Id) > layout.MaxConnectionsPerNode)
+                    issues.Add($"#{node.Id} has more than {layout.MaxConnectionsPerNode} connections.");
+        }
+
+        private static void CheckRuleCounts(MapGraph graph, MapContentSettings content, List<string> issues)
+        {
+            foreach (MapNodeTypeRule rule in content.NodeRules)
+            {
+                if (rule.Type.IsStructural())
                 {
-                    issues.Add($"Rule for {rule.Type} is ignored — Start, Boss and Exit are placed structurally.");
+                    issues.Add($"Rule for {rule.Type} is ignored — Start, Boss and Exit are placed by the layout.");
                     continue;
                 }
 
@@ -80,23 +104,24 @@ namespace CGD.Map
             }
         }
 
-        private static void CheckNodes(MapGraph graph, MapGraphAnalysis analysis, MapGenerationSettings settings, List<string> issues)
+        // The room before the Boss is exempt from its rule's depth and placement: the
+        // content asked for it there.
+        private static void CheckNodes(MapGraph graph, MapGraphAnalysis analysis, MapContentSettings content, List<string> issues)
         {
             var neighbors = new List<int>();
+            int bossApproach = content.BossApproach.Enabled ? BossApproachId(graph, analysis) : MapGraphAnalysis.Unreachable;
 
             foreach (MapNode node in graph.Nodes)
             {
-                if (graph.Degree(node.Id) > settings.MaxConnectionsPerNode)
-                    issues.Add($"#{node.Id} has more than {settings.MaxConnectionsPerNode} connections.");
+                MapNodeTypeRule rule = content.GetRule(node.Type);
+                if (rule == null || node.Type.IsStructural()) continue;
 
-                MapNodeTypeRule rule = settings.GetRule(node.Type);
-                if (rule == null || MapGenerationSettings.IsStructural(node.Type)) continue;
-
+                bool exempt = node.Id == bossApproach && node.Type == content.BossApproach.Type;
                 bool onMainPath = analysis.IsOnMainPath(node.Id);
-                if (!rule.AllowsPlacement(onMainPath))
+                if (!exempt && !rule.AllowsPlacement(onMainPath))
                     issues.Add($"#{node.Id} {node.Type} is {(onMainPath ? "on" : "off")} the main path (rule: {rule.Placement}).");
 
-                if (analysis.IsReachable(node.Id) && !rule.AllowsDepth(analysis.Progress(node.Id)))
+                if (!exempt && analysis.IsReachable(node.Id) && !rule.AllowsDepth(analysis.Progress(node.Id)))
                     issues.Add($"#{node.Id} {node.Type} is outside its allowed depth.");
 
                 if (!rule.AllowAdjacentSameType && HasNeighborOfType(graph, node, neighbors))
@@ -111,6 +136,68 @@ namespace CGD.Map
                 if (graph.TryGetNode(id, out MapNode other) && other.Type == node.Type)
                     return true;
             return false;
+        }
+
+        private static void CheckEarlyRoom(MapGraph graph, MapGraphAnalysis analysis, MapContentSettings content, List<string> issues)
+        {
+            if (!content.EarlyRoom.Enabled) return;
+
+            MapNodeType type   = content.EarlyRoom.Type;
+            IntRange    window = content.EarlyRoomDepth;
+            foreach (MapNode node in graph.Nodes)
+            {
+                int depth = analysis.Depth(node.Id);
+                if (node.Type == type && depth >= window.Min && depth <= window.Max) return;
+            }
+            issues.Add($"No {type} {window.Min}–{window.Max} rooms from Start.");
+        }
+
+        private static void CheckGatedRewards(MapGraph graph, MapGraphAnalysis analysis, MapContentSettings content, List<string> issues)
+        {
+            if (!content.GatedAreaReward.Enabled || analysis.StartId == MapGraphAnalysis.Unreachable) return;
+
+            MapNodeType type = content.GatedAreaReward.Type;
+            foreach (MapConnection gate in graph.Connections)
+            {
+                if (!gate.IsGate) continue;
+
+                // The area is whatever only this gate leads to. A gate with another way
+                // around it closes nothing off, so there's no area to reward.
+                Dictionary<int, int> around = MapGraphSearch.Distances(graph, analysis.StartId, c => c != gate);
+                bool closesOffArea = false, rewarded = false;
+                foreach (MapNode node in graph.Nodes)
+                {
+                    if (around.ContainsKey(node.Id) || !analysis.IsReachable(node.Id)) continue;
+                    closesOffArea = true;
+                    rewarded |= node.Type == type;
+                }
+
+                if (closesOffArea && !rewarded)
+                    issues.Add($"Nothing behind {gate.Type} #{gate.A}–#{gate.B} is a {type}.");
+            }
+        }
+
+        private static void CheckBossApproach(MapGraph graph, MapGraphAnalysis analysis, MapContentSettings content, List<string> issues)
+        {
+            if (!content.BossApproach.Enabled) return;
+
+            int id = BossApproachId(graph, analysis);
+            if (id == MapGraphAnalysis.Unreachable || !graph.TryGetNode(id, out MapNode node) || node.Type.IsStructural()) return;
+            if (node.Type != content.BossApproach.Type)
+                issues.Add($"The room before the Boss (#{id}) is {node.Type}, not {content.BossApproach.Type}.");
+        }
+
+        // The main path room just before the Boss.
+        private static int BossApproachId(MapGraph graph, MapGraphAnalysis analysis)
+        {
+            MapNode boss = graph.FindFirst(MapNodeType.Boss);
+            if (boss == null) return MapGraphAnalysis.Unreachable;
+
+            IReadOnlyList<int> path = analysis.MainPath;
+            int index = -1;
+            for (int i = 0; i < path.Count; i++)
+                if (path[i] == boss.Id) index = i;
+            return index > 0 ? path[index - 1] : MapGraphAnalysis.Unreachable;
         }
     }
 }

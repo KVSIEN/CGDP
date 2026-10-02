@@ -15,6 +15,9 @@ namespace CGD.Map
     //
     // Each generation layer (MapGenerator.Layers) has a reroll counter on top of the
     // seed, so one layer can be regenerated while the others stay exactly as they were.
+    //
+    // The style may offer several layouts; the one this graph was built on is kept so
+    // the graph is validated against the rules it was generated with.
     [CreateAssetMenu(fileName = "MapGraph", menuName = "CGD/Map/Map Graph")]
     public class MapGraphAsset : ScriptableObject
     {
@@ -23,6 +26,7 @@ namespace CGD.Map
         [SerializeField, HideInInspector] private SeedVariants _layerVariants = new();
         // The seed the layer variants belong to; they reset when generating from another.
         [SerializeField, HideInInspector] private int          _variantsSeed;
+        [SerializeField, HideInInspector] private MapLayoutSettings _layout;
         [SerializeField, HideInInspector] private MapGraph     _generated = new();
         [SerializeField, HideInInspector] private MapGraph     _graph     = new();
         [SerializeField, HideInInspector] private List<int>    _lockedNodeIds      = new();
@@ -30,6 +34,11 @@ namespace CGD.Map
 
         public MapGenerationSettings Settings => _settings;
         public int                   Seed     => _seed;
+        public bool                  CanGenerate => _settings != null && _settings.CanGenerate;
+
+        // The layout the current graph was generated on, and the style's content.
+        public MapLayoutSettings  Layout  => _layout;
+        public MapContentSettings Content => _settings != null ? _settings.Content : null;
 
         public MapGraph Graph     => _graph;
         public MapGraph Generated => _generated;
@@ -64,7 +73,7 @@ namespace CGD.Map
         // layer rerolls.
         public bool Regenerate(int seed)
         {
-            if (_settings == null) return false;
+            if (!CanGenerate) return false;
             if (seed != _variantsSeed) _layerVariants.Clear();
 
             _seed         = seed;
@@ -76,7 +85,7 @@ namespace CGD.Map
         // Regenerates with new numbers for one layer only (see MapGenerator.Layers).
         public bool RerollLayer(string layer)
         {
-            if (_settings == null) return false;
+            if (!CanGenerate) return false;
             if (_seed != _variantsSeed) _layerVariants.Clear();
 
             _variantsSeed = _seed;
@@ -92,6 +101,7 @@ namespace CGD.Map
 
             _generated = result.Graph;
             _graph     = result.Graph.Clone();
+            _layout    = result.Layout;
 
             _lockedNodeIds.Clear();
             foreach (int id in result.PinnedNodeIds)

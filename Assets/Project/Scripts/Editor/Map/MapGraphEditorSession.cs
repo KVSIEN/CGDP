@@ -80,7 +80,7 @@ namespace CGD.Editor
         public MapGraphAnalysis Analysis => _analysis ??= new MapGraphAnalysis(Graph);
 
         public IReadOnlyList<string> Issues =>
-            _issues ??= MapGraphValidator.Validate(Graph, Analysis, _asset.Settings);
+            _issues ??= MapGraphValidator.Validate(Graph, Analysis, _asset.Layout, _asset.Content);
 
         // Call after anything outside this class changes the asset (undo, regenerate).
         public void Invalidate()
@@ -294,6 +294,13 @@ namespace CGD.Editor
         {
             Record("Change Connection Type");
             connection.Type = type;
+            Changed();
+        }
+
+        public void SetKeyRoom(MapConnection connection, int nodeId)
+        {
+            Record("Change Key Room");
+            connection.KeyNodeId = nodeId;
             Changed();
         }
 

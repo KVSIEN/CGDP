@@ -15,7 +15,7 @@ namespace CGD.Map
         [Tooltip("Editor/debug position only — not room geometry")]
         [SerializeField] private Vector2     _position;
         [SerializeField, Range(0f, 1f)] private float _intensity;
-        [Tooltip("Index into MapGenerationSettings.Factions, or -1 for none")]
+        [Tooltip("Index into MapContentSettings.Factions, or -1 for none")]
         [SerializeField] private int         _faction = NoFaction;
         [SerializeField, Range(0f, 1f)] private float _factionInfluence;
 
