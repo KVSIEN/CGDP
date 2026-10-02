@@ -70,7 +70,7 @@ namespace CGD.Editor
                     legend.Add((NoFaction, "None"));
                     if (content != null)
                         for (int i = 0; i < content.Factions.Count; i++)
-                            legend.Add((PaletteColor(i), content.Factions[i]));
+                            legend.Add((PaletteColor(i), content.FactionName(i)));
                     break;
                 case MapGraphViewMode.RequiredOptional:
                     legend.Add((Required, "Required"));

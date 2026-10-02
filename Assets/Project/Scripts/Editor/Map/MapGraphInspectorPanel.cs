@@ -79,7 +79,7 @@ namespace CGD.Editor
             var options = new string[factionCount + 1];
             options[0] = "None";
             for (int i = 0; i < factionCount; i++)
-                options[i + 1] = content.Factions[i];
+                options[i + 1] = content.FactionName(i);
 
             EditorGUI.BeginChangeCheck();
             int faction = EditorGUILayout.Popup("Faction", node.Faction + 1, options) - 1;

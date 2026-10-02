@@ -278,6 +278,8 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 | Chest | Collider, `LootContainer`, `LootDropper` | Untick the dropper's `_dropOnDeath` |
 | Breakable crate | solid Collider, `Destructible`, `LootDropper`, `DespawnOnDeath` | `_maxHealth`; `_delay` 0 |
 | Crafting station | Collider, `CraftingStation` | `_label`, `_recipes` = recipe assets (e.g. all of `Data/Crafting/`) |
+| Ammo cache | solid Collider, `AmmoCache` | `_munitions` = all four munition assets, `_uses`, `_magazines`, `_contents`? = the visible ammo. Ready-made: `Prefabs/Environment/Props/AmmoCache`. |
+| Resource node | solid Collider, `ResourceNode` | `_resource`? (empty = placeholder, yields nothing), `_amount`, `_harvests`, `_holdDuration`, `_visual`?. Ready-made: `Prefabs/Environment/Props/ResourceNode`. |
 
 - Add **InteractionHighlight**? to any interactable to tint it while aimed at (URP Lit/Unlit).
 - Add **CullableObject** to world meshes that should be culled off-screen.
@@ -435,7 +437,7 @@ A map **style** (`MapGenerationSettings`) is what a `MapGraphAsset` or `LevelBui
 | Asset | Create menu | Assign |
 |---|---|---|
 | **MapLayoutSettings** | CGD › Map › Map Layout Settings | sizes, main path, branches, loops, gates (incl. `_minDepth` and the key preferences) |
-| **MapContentSettings** | CGD › Map › Map Content Settings | `_nodeRules`, `_fillType`, guaranteed rooms (`_earlyRoom` + `_earlyRoomDepth`, `_gatedAreaReward`, `_bossApproach`), intensity curve, `_factions` |
+| **MapContentSettings** | CGD › Map › Map Content Settings | `_nodeRules`, `_fillType`, guaranteed rooms (`_earlyRoom` + `_earlyRoomDepth`, `_gatedAreaReward`, `_bossApproach`), intensity curve, `_factions` = Faction assets from `Data/Factions/` |
 | **MapGenerationSettings** | CGD › Map › Map Generation Settings | `_layouts` (at least one, weight 0 = never unless all are 0), `_content` (required), `_nodeSpacing` |
 
 - **Generate** stays disabled until the style has content and at least one layout.
@@ -544,6 +546,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `CameraEffects/` | `DefaultCameraEffectSettings` | CameraEffectsController |
 | `Map/` | map styles `Linear`/`Branching`/`Hub`/`Labyrinth`/`Random` `…MapGenerationSettings`, `SandboxMapGraph` (uses Branching); `Layouts/` (`Linear`/`Branching`/`Hub`/`Labyrinth` `…MapLayoutSettings`), `Content/` (`Standard`/`TreasureHunt`/`Gauntlet` `…MapContentSettings`) | Map Graph window, LevelBuilder |
 | `Audio/` | `DefaultSurfaceDatabase` | PlayerFootsteps |
+| `Factions/` | `TechFaction`, `BioFaction`, `VoidFaction` — name, colour, floor tint, `_enemies` roster (empty until enemy prefabs exist) | MapContentSettings, LevelBuilder |
 | `Level/` | `DefaultLevelBuildSettings` (Gridbox materials, room rules without prefabs), `Functions/` (nine `…RoomFunction`s), `Shapes/` (seven `…RoomShape`s), `Structure/` (six `…StructureRule`s), `Landmarks/` (`ReactorCoreLandmarkRoom`) | LevelBuilder |
 | `Impacts/` | `DefaultImpactDatabase` (empty effects) | ImpactSpawner |
 | `Economy/` | `CreditsCurrency`, `DefaultPriceTable`, `Shops/GunsmithShopCatalog`, `Stock/GunsmithAmmoStock`, `Stock/GunsmithWeaponStock` | Vendor, PlayerInventory, DevCatalog |

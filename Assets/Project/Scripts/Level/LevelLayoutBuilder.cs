@@ -26,7 +26,8 @@ namespace CGD.Level
         public LevelLayoutBuilder(LevelBuildSettings settings) => _settings = settings;
 
         // `seed` varies the room shapes; the same seed and graph give the same layout.
-        public LevelLayout Build(MapGraph graph, Vector2 nodeSpacing, Seed seed)
+        // `content` resolves the graph's faction indices; without it rooms have no faction.
+        public LevelLayout Build(MapGraph graph, Vector2 nodeSpacing, Seed seed, MapContentSettings content = null)
         {
             var layout = new LevelLayout(_settings.TileSize);
             if (graph == null || graph.Nodes.Count == 0)
@@ -35,7 +36,7 @@ namespace CGD.Level
                 return layout;
             }
 
-            new RoomPlacer(_settings).Place(graph, nodeSpacing, seed.Derive("rooms"), layout);
+            new RoomPlacer(_settings).Place(graph, nodeSpacing, seed.Derive("rooms"), layout, content);
             BuildCorridors(graph, layout);
             PlanStructures(seed.Derive("structure"), layout);
             return layout;

@@ -10,6 +10,7 @@
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Faction assets (TECH/BIO/VOID) owning generated rooms (enemy roster, floor tint), ammo caches, placeholder resource nodes
 - Input layout (dodge C, abilities QFGX, items 5–8, shoulder swap H, no extra mouse buttons), hold-for-wheel on weapon/item keys, grenades as items readied from item slots
 - Dodge styles as data (sidestep+roll, committed roll, steerable boost, long dash, air dash), i-frames, input buffer, air dodges, stun/mantle cancel
 - Multi-cell rooms (2×1, 2×2), landmark rooms (Reactor Core), prop pass per room function with placeholder props, optional ceilings

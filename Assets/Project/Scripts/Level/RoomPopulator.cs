@@ -77,7 +77,9 @@ namespace CGD.Level
             foreach (LevelRoom room in _layout.Rooms.Values)
             {
                 RoomContentRule rule = _settings.RuleFor(room.Node.Type);
-                if (rule == null || rule.Enemies.Length == 0) continue;
+                if (rule == null) continue;
+                GameObject[] roster = EnemiesFor(room, rule);
+                if (roster.Length == 0) continue;
 
                 int count = rule.EnemyCount.Lerp(room.Node.Intensity);
                 if (count <= 0) continue;
@@ -85,11 +87,15 @@ namespace CGD.Level
                 Transform[] route = CreatePatrolRoute(room);
                 for (int i = 0; i < count && TryTakeTile(room, RoomTileTags.None, out Vector3 position); i++)
                 {
-                    GameObject enemy = PrefabPool.Spawn(_random.Pick(rule.Enemies), OnNavMesh(position), RandomYaw());
+                    GameObject enemy = PrefabPool.Spawn(_random.Pick(roster), OnNavMesh(position), RandomYaw());
                     if (enemy.TryGetComponent(out EnemyAI ai)) ai.SetWaypoints(route);
                 }
             }
         }
+
+        // A faction-held room fields that faction's enemies; how many still comes from the room type.
+        private static GameObject[] EnemiesFor(LevelRoom room, RoomContentRule rule) =>
+            room.Faction != null && room.Faction.Enemies.Length > 0 ? room.Faction.Enemies : rule.Enemies;
 
         public Vector3 RoomCenter(LevelRoom room) => _parent.TransformPoint(_layout.RoomCenterLocal(room));
 

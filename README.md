@@ -19,8 +19,8 @@ Assets/
     Art/                    Animations, Fonts, Materials, PhysicsMaterials, Shaders, Textures
     Audio/                  Music, SFX
     Data/                   ScriptableObject assets, one folder per feature
-      Abilities/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Dialogue/  Economy/  Enemies/  Feedback/  Flow/  Impacts/
-      Input/  Items/  Level/  Loot/  Map/  Meters/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
+      Abilities/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Dialogue/  Economy/  Enemies/  Factions/  Feedback/  Flow/
+      Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters, Environment (Props/, Landmarks/), Pickups, UI, VFX, Weapons
     Scenes/                 Sandbox.unity (+ its baked NavMesh folder)
@@ -39,6 +39,7 @@ Assets/
                             ShopCatalog, stock sources (ItemStock, RolledWeaponStock), listings
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window)
       Enemies/              enemy components, perception, and AI/ (state classes)
+      Factions/             FactionDefinition (name, colour, enemy roster) — used by the map graph and generated levels
       Feedback/             FeedbackBus, FeedbackPreset, FeedbackPlayer (feed, flash, rumble, shake), combat/quest feedback
       Flow/                 GameFlow, GameState/GameStateMachine, settings and UI commands
       Impacts/              ImpactEvents (hit broadcast), ImpactDatabase (effects per surface), ImpactSpawner, DecalPool

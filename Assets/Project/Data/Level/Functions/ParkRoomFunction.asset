@@ -39,3 +39,14 @@ MonoBehaviour:
     Zone: 0
     Facing: 1
     Spacing: 1
+  - Prefabs:
+    - {fileID: 246657195920720429, guid: 88c32b0875ef42b3affd87035644ef65, type: 3}
+    Count:
+      Min: 1
+      Max: 2
+      Bias: 0
+    On: 0
+    Avoid: 124
+    Zone: 0
+    Facing: 1
+    Spacing: 2

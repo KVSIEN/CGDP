@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Factions;
 using CGD.Map;
 
 namespace CGD.Level
@@ -7,8 +8,10 @@ namespace CGD.Level
     // doorways are known) its structure.
     public class LevelRoom
     {
-        public LevelRoom(MapNode node, RoomFootprint footprint, RoomFunction function, float wallHeight, LandmarkRoomDefinition landmark = null)
+        public LevelRoom(MapNode node, RoomFootprint footprint, RoomFunction function, float wallHeight,
+            LandmarkRoomDefinition landmark = null, FactionDefinition faction = null)
         {
+            Faction    = faction;
             Landmark   = landmark;
             Node       = node;
             Footprint  = footprint;
@@ -23,6 +26,8 @@ namespace CGD.Level
         public RoomStructure Structure  { get; private set; }
         // The hand-built interior placed in this room, if any.
         public LandmarkRoomDefinition Landmark { get; }
+        // The faction that holds this room, if any (from the map graph).
+        public FactionDefinition Faction { get; }
 
         // Middle of the room's bounds, in tile units.
         public Vector2 Center => Footprint.Center;

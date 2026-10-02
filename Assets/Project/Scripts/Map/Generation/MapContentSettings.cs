@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using CGD.Core;
 using UnityEngine;
+using CGD.Factions;
 
 namespace CGD.Map
 {
@@ -34,7 +36,7 @@ namespace CGD.Map
 
         [Header("Factions")]
         [Tooltip("Each faction claims one origin node; its influence fades with every connection away from it")]
-        [SerializeField] private string[] _factions = { "TECH", "BIO", "VOID" };
+        [SerializeField] private FactionDefinition[] _factions = Array.Empty<FactionDefinition>();
         [Tooltip("Influence kept per connection travelled")]
         [SerializeField, Range(0f, 1f)] private float _factionFalloff = 0.6f;
         [Tooltip("Nodes below this influence belong to no faction")]
@@ -51,7 +53,7 @@ namespace CGD.Map
         public float IntensityJitter => _intensityJitter;
         public float BossIntensity   => _bossIntensity;
 
-        public IReadOnlyList<string> Factions => _factions;
+        public IReadOnlyList<FactionDefinition> Factions => _factions;
         public float FactionFalloff   => _factionFalloff;
         public float FactionThreshold => _factionThreshold;
 
@@ -66,8 +68,14 @@ namespace CGD.Map
             return rule == null || placed < rule.Max;
         }
 
-        public string FactionName(int faction) =>
-            faction >= 0 && faction < _factions.Length ? _factions[faction] : "None";
+        public FactionDefinition GetFaction(int faction) =>
+            faction >= 0 && faction < _factions.Length ? _factions[faction] : null;
+
+        public string FactionName(int faction)
+        {
+            FactionDefinition definition = GetFaction(faction);
+            return definition != null ? definition.DisplayName : faction >= 0 ? $"Faction {faction}" : "None";
+        }
 
         private static List<MapNodeTypeRule> DefaultRules() => new()
         {

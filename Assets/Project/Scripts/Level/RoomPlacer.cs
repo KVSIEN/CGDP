@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Core;
+using CGD.Factions;
 using CGD.Map;
 
 namespace CGD.Level
@@ -26,7 +27,7 @@ namespace CGD.Level
             _shapes   = new RoomShapeSelector(settings.MinRoomWidthTiles);
         }
 
-        public void Place(MapGraph graph, Vector2 nodeSpacing, Seed seed, LevelLayout layout)
+        public void Place(MapGraph graph, Vector2 nodeSpacing, Seed seed, LevelLayout layout, MapContentSettings content)
         {
             Dictionary<int, Vector2Int> cells = AssignCells(graph, nodeSpacing);
             Dictionary<int, int> connections = CountConnections(graph);
@@ -40,10 +41,11 @@ namespace CGD.Level
                 connections.TryGetValue(node.Id, out int count);
 
                 float height = function != null && function.WallHeight > 0f ? function.WallHeight : _settings.WallHeight;
+                FactionDefinition faction = content != null && node.HasFaction ? content.GetFaction(node.Faction) : null;
                 LandmarkRoomDefinition landmark = function != null ? function.Landmark : null;
                 if (landmark != null && TryPlaceLandmark(landmark, BlockArea(block), count, out RoomFootprint landmarkFootprint))
                 {
-                    layout.AddRoom(new LevelRoom(node, landmarkFootprint, function, height, landmark));
+                    layout.AddRoom(new LevelRoom(node, landmarkFootprint, function, height, landmark, faction));
                     continue;
                 }
                 if (landmark != null)
@@ -51,7 +53,7 @@ namespace CGD.Level
 
                 RectInt area = RoomArea(block, function, random);
                 IReadOnlyList<RoomShape> shapeList = function != null && function.Shapes.Count > 0 ? function.Shapes : _settings.DefaultShapes;
-                layout.AddRoom(new LevelRoom(node, _shapes.Build(shapeList, count, area, random), function, height));
+                layout.AddRoom(new LevelRoom(node, _shapes.Build(shapeList, count, area, random), function, height, faction: faction));
             }
         }
 

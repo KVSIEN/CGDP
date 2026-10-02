@@ -50,14 +50,14 @@ namespace CGD.Level
             }
 
             Seed  = _seed != 0 ? Seed.From(_seed) : Seed.Random();
-            Graph = ResolveGraph(out Vector2 nodeSpacing);
+            Graph = ResolveGraph(out Vector2 nodeSpacing, out MapContentSettings content);
             if (Graph == null)
             {
                 Debug.LogError($"{name}: LevelBuilder needs a map graph asset, or map generation settings with content and a layout.", this);
                 return;
             }
 
-            Layout = new LevelLayoutBuilder(_settings).Build(Graph, nodeSpacing, Seed);
+            Layout = new LevelLayoutBuilder(_settings).Build(Graph, nodeSpacing, Seed, content);
             foreach (string warning in Layout.Warnings)
                 Debug.LogWarning($"{name}: {warning}", this);
 
@@ -75,15 +75,18 @@ namespace CGD.Level
             FitWorldMap();
         }
 
-        private MapGraph ResolveGraph(out Vector2 nodeSpacing)
+        // content: where the graph's faction indices point (null = rooms have no faction).
+        private MapGraph ResolveGraph(out Vector2 nodeSpacing, out MapContentSettings content)
         {
             if (_graphAsset != null)
             {
                 nodeSpacing = _graphAsset.Settings != null ? _graphAsset.Settings.NodeSpacing : Vector2.one;
+                content     = _graphAsset.Content;
                 return _graphAsset.Graph;
             }
 
             nodeSpacing = _generation != null ? _generation.NodeSpacing : Vector2.one;
+            content     = _generation != null ? _generation.Content : null;
             return _generation != null && _generation.CanGenerate
                 ? new MapGenerator(_generation).Generate(Seed.Derive("map")).Graph
                 : null;

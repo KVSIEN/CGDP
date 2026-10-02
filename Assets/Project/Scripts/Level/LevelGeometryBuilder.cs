@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.AI.Navigation;
+using CGD.Factions;
 
 namespace CGD.Level
 {
@@ -21,11 +22,12 @@ namespace CGD.Level
         public void Build(LevelLayout layout, Transform parent)
         {
             var roomFloors     = new BoxMeshBuilder();
+            var factionFloors  = new Dictionary<FactionDefinition, BoxMeshBuilder>();
             var corridorFloors = new BoxMeshBuilder();
             var walls          = new BoxMeshBuilder();
             var structure      = new BoxMeshBuilder();
 
-            Dictionary<Vector2Int, LevelRoom> outerRing = AddFloors(layout, roomFloors, corridorFloors);
+            Dictionary<Vector2Int, LevelRoom> outerRing = AddFloors(layout, roomFloors, factionFloors, corridorFloors);
             new LevelWallBuilder(_settings, layout, walls).Build();
             foreach (LevelRoom room in layout.Rooms.Values)
             {
@@ -34,6 +36,8 @@ namespace CGD.Level
             }
 
             CreatePart("RoomFloors",     roomFloors,     _settings.FloorMaterial,         parent);
+            foreach (var (faction, floors) in factionFloors)
+                CreatePart($"RoomFloors_{faction.name}", floors, TintedFloor(faction), parent);
             CreatePart("CorridorFloors", corridorFloors, _settings.CorridorFloorMaterial, parent);
             CreatePart("Walls",          walls,          _settings.WallMaterial,          parent);
             CreatePart("Structure",      structure,      _settings.WallMaterial,          parent);
@@ -43,20 +47,39 @@ namespace CGD.Level
 
         // Curved-wall rooms also get floor on the ring of tiles around them: their diagonal
         // walls cut through those tiles. Returns that ring, with the room each tile is for.
-        private Dictionary<Vector2Int, LevelRoom> AddFloors(LevelLayout layout, BoxMeshBuilder roomFloors, BoxMeshBuilder corridorFloors)
+        // Faction-held rooms get their own floor mesh in the faction's tint.
+        private Dictionary<Vector2Int, LevelRoom> AddFloors(LevelLayout layout, BoxMeshBuilder roomFloors,
+            Dictionary<FactionDefinition, BoxMeshBuilder> factionFloors, BoxMeshBuilder corridorFloors)
         {
+            BoxMeshBuilder FloorsOf(LevelRoom room)
+            {
+                if (room?.Faction == null || room.Faction.FloorTint <= 0f) return roomFloors;
+                if (!factionFloors.TryGetValue(room.Faction, out BoxMeshBuilder floors))
+                    factionFloors[room.Faction] = floors = new BoxMeshBuilder();
+                return floors;
+            }
+
             var extra = new Dictionary<Vector2Int, LevelRoom>();
             foreach (Vector2Int t in layout.WalkableTiles)
             {
-                AddFloorTile(layout, layout.IsCorridor(t) ? corridorFloors : roomFloors, t);
-
                 LevelRoom room = layout.RoomAt(t);
+                AddFloorTile(layout, layout.IsCorridor(t) ? corridorFloors : FloorsOf(room), t);
+
                 if (room == null || !room.Footprint.CurvedWalls) continue;
                 foreach (Vector2Int n in Neighbours)
                     if (!layout.IsWalkable(t + n)) extra[t + n] = room;
             }
-            foreach (Vector2Int t in extra.Keys) AddFloorTile(layout, roomFloors, t);
+            foreach (var (t, room) in extra) AddFloorTile(layout, FloorsOf(room), t);
             return extra;
+        }
+
+        // A copy of the floor material shifted toward the faction's colour.
+        private Material TintedFloor(FactionDefinition faction)
+        {
+            if (_settings.FloorMaterial == null) return null;
+            var material = new Material(_settings.FloorMaterial) { name = $"{_settings.FloorMaterial.name} ({faction.DisplayName})" };
+            material.color = Color.Lerp(material.color, faction.Color, faction.FloorTint);
+            return material;
         }
 
         // A slab on top of every tile at its room's wall height (corridors at the default),

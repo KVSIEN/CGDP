@@ -132,8 +132,8 @@ MonoBehaviour:
   _intensityJitter: 0.05
   _bossIntensity: 1
   _factions:
-  - TECH
-  - BIO
-  - VOID
+  - {fileID: 11400000, guid: 4dcd53174a8d445682c4f9a5c8d95ed4, type: 2}
+  - {fileID: 11400000, guid: 9df11072532741b0a4466eeeab99e06b, type: 2}
+  - {fileID: 11400000, guid: 6dfe42f935864a368a7aff83d9c78bf2, type: 2}
   _factionFalloff: 0.6
   _factionThreshold: 0.2

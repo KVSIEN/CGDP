@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CGD.Core;
 using UnityEngine;
+using CGD.Factions;
 
 namespace CGD.Map
 {
@@ -21,7 +22,7 @@ namespace CGD.Map
 
         public void Paint()
         {
-            IReadOnlyList<string> factions = _context.Content.Factions;
+            IReadOnlyList<FactionDefinition> factions = _context.Content.Factions;
             if (factions.Count == 0) return;
 
             var origins = new List<MapSlot>(_context.Slots);
@@ -31,7 +32,7 @@ namespace CGD.Map
             {
                 if (origins.Count == 0)
                 {
-                    _context.Warnings.Add($"No room left to seed faction '{factions[faction]}'.");
+                    _context.Warnings.Add($"No room left to seed faction '{_context.Content.FactionName(faction)}'.");
                     return;
                 }
 
