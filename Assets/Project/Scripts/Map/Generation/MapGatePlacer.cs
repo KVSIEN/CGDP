@@ -43,7 +43,7 @@ namespace CGD.Map
             var gated = new HashSet<int>();
             foreach (Entrance entrance in entrances)
             {
-                if (_context.GatedAreas.Count == Gates.MaxGates) return;
+                if (_context.GatedAreas.Count >= Gates.MaxGates + _context.Tuning.ExtraGates) return;
                 if (entrance.Depth < Gates.MinDepth || gated.Contains(entrance.Outside)) continue;
 
                 ConnectionType type = RollGate();
@@ -57,8 +57,8 @@ namespace CGD.Map
 
         private ConnectionType RollGate()
         {
-            if (_random.Chance(Gates.LockedChance)) return ConnectionType.Locked;
-            if (_random.Chance(Gates.SecretChance)) return ConnectionType.Secret;
+            if (_random.Chance(Gates.LockedChance * _context.Tuning.LockedMultiplier)) return ConnectionType.Locked;
+            if (_random.Chance(Gates.SecretChance * _context.Tuning.SecretMultiplier)) return ConnectionType.Secret;
             return ConnectionType.Normal;
         }
 

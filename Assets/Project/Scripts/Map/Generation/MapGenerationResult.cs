@@ -7,8 +7,9 @@ namespace CGD.Map
         public const int PinNotPlaced = -1;
 
         public MapGenerationResult(MapGraph graph, MapLayoutSettings layout, IReadOnlyList<int> pinnedNodeIds,
-                                   IReadOnlyList<string> warnings)
+                                   IReadOnlyList<string> warnings, IReadOnlyList<MapRunModifier> modifiers = null)
         {
+            Modifiers     = modifiers ?? System.Array.Empty<MapRunModifier>();
             Graph         = graph;
             Layout        = layout;
             PinnedNodeIds = pinnedNodeIds;
@@ -26,5 +27,8 @@ namespace CGD.Map
 
         // Constraints the generator couldn't satisfy. The graph is still usable.
         public IReadOnlyList<string> Warnings { get; }
+
+        // The run modifiers this map was generated with.
+        public IReadOnlyList<MapRunModifier> Modifiers { get; }
     }
 }

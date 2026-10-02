@@ -40,6 +40,10 @@ namespace CGD.Map
         public MapLayoutSettings  Layout  => _layout;
         public MapContentSettings Content => _settings != null ? _settings.Content : null;
 
+        // The run modifiers this seed (and its layer rerolls) gets from the style.
+        public MapRunTuning Tuning =>
+            _settings != null ? MapGenerator.PickModifiers(_settings, CGD.Core.Seed.From(_seed), _layerVariants) : MapRunTuning.None;
+
         public MapGraph Graph     => _graph;
         public MapGraph Generated => _generated;
 

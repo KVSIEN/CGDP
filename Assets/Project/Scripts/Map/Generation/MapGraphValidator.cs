@@ -5,12 +5,15 @@ namespace CGD.Map
 {
     // Checks a graph — generated or hand-edited — against structural sanity and the
     // layout's and content's constraints, so edits that break a rule show up immediately.
-    // Either settings asset may be null; its checks are then skipped.
+    // Either settings asset may be null; its checks are then skipped. Pass the run's
+    // modifiers (MapGenerator.PickModifiers) so rule counts are checked as they modify them.
     public static class MapGraphValidator
     {
         public static List<string> Validate(MapGraph graph, MapGraphAnalysis analysis,
-                                            MapLayoutSettings layout, MapContentSettings content)
+                                            MapLayoutSettings layout, MapContentSettings content,
+                                            MapRunTuning tuning = null)
         {
+            tuning ??= MapRunTuning.None;
             var issues = new List<string>();
 
             CheckStructure(graph, analysis, issues);
@@ -24,11 +27,19 @@ namespace CGD.Map
 
             if (content != null)
             {
-                CheckRuleCounts(graph, content, issues);
+                CheckRuleCounts(graph, content, tuning, issues);
                 CheckNodes(graph, analysis, content, issues);
-                CheckEarlyRoom(graph, analysis, content, issues);
-                CheckGatedRewards(graph, analysis, content, issues);
-                CheckBossApproach(graph, analysis, content, issues);
+                CheckPacing(graph, analysis, content.Pacing, issues);
+                foreach (MapGuarantee guarantee in content.Guarantees)
+                {
+                    if (guarantee == null || !guarantee.IsValid) continue;
+                    switch (guarantee.Spot)
+                    {
+                        case MapGuaranteeSpot.WithinDepth:     CheckWithinDepth(graph, analysis, guarantee, issues); break;
+                        case MapGuaranteeSpot.BehindEveryGate: CheckGatedRewards(graph, analysis, guarantee, issues); break;
+                        case MapGuaranteeSpot.BeforeBoss:      CheckBossApproach(graph, analysis, guarantee, issues); break;
+                    }
+                }
             }
             return issues;
         }
@@ -88,7 +99,7 @@ namespace CGD.Map
                     issues.Add($"#{node.Id} has more than {layout.MaxConnectionsPerNode} connections.");
         }
 
-        private static void CheckRuleCounts(MapGraph graph, MapContentSettings content, List<string> issues)
+        private static void CheckRuleCounts(MapGraph graph, MapContentSettings content, MapRunTuning tuning, List<string> issues)
         {
             foreach (MapNodeTypeRule rule in content.NodeRules)
             {
@@ -98,25 +109,25 @@ namespace CGD.Map
                     continue;
                 }
 
-                int count = graph.CountOf(rule.Type);
-                if (count < rule.Min) issues.Add($"{rule.Type}: {count} below minimum {rule.Min}.");
-                if (count > rule.Max) issues.Add($"{rule.Type}: {count} above maximum {rule.Max}.");
+                int count = graph.CountOf(rule.Type), min = tuning.Min(rule), max = tuning.Max(rule);
+                if (count < min) issues.Add($"{rule.Type}: {count} below minimum {min}.");
+                if (count > max) issues.Add($"{rule.Type}: {count} above maximum {max}.");
             }
         }
 
-        // The room before the Boss is exempt from its rule's depth and placement: the
-        // content asked for it there.
+        // A room a Before Boss guarantee asked for is exempt from its rule's depth and
+        // placement: the content asked for it there.
         private static void CheckNodes(MapGraph graph, MapGraphAnalysis analysis, MapContentSettings content, List<string> issues)
         {
             var neighbors = new List<int>();
-            int bossApproach = content.BossApproach.Enabled ? BossApproachId(graph, analysis) : MapGraphAnalysis.Unreachable;
+            int bossApproach = BossApproachId(graph, analysis);
 
             foreach (MapNode node in graph.Nodes)
             {
                 MapNodeTypeRule rule = content.GetRule(node.Type);
                 if (rule == null || node.Type.IsStructural()) continue;
 
-                bool exempt = node.Id == bossApproach && node.Type == content.BossApproach.Type;
+                bool exempt = node.Id == bossApproach && IsGuaranteedBeforeBoss(content, node.Type);
                 bool onMainPath = analysis.IsOnMainPath(node.Id);
                 if (!exempt && !rule.AllowsPlacement(onMainPath))
                     issues.Add($"#{node.Id} {node.Type} is {(onMainPath ? "on" : "off")} the main path (rule: {rule.Placement}).");
@@ -126,6 +137,44 @@ namespace CGD.Map
 
                 if (!rule.AllowAdjacentSameType && HasNeighborOfType(graph, node, neighbors))
                     issues.Add($"#{node.Id} {node.Type} is next to another {node.Type}.");
+
+                if (rule.MinSpacing > 1 && HasSameTypeWithin(graph, node, rule.MinSpacing - 1))
+                    issues.Add($"#{node.Id} {node.Type} is closer than {rule.MinSpacing} connections to another {node.Type}.");
+            }
+        }
+
+        private static bool IsGuaranteedBeforeBoss(MapContentSettings content, MapNodeType type)
+        {
+            foreach (MapGuarantee guarantee in content.Guarantees)
+                if (guarantee != null && guarantee.Spot == MapGuaranteeSpot.BeforeBoss && guarantee.Type == type) return true;
+            return false;
+        }
+
+        private static bool HasSameTypeWithin(MapGraph graph, MapNode node, int distance)
+        {
+            foreach (var (id, steps) in MapGraphSearch.Distances(graph, node.Id, includeShortcuts: true))
+                if (steps > 0 && steps <= distance && graph.TryGetNode(id, out MapNode other) && other.Type == node.Type)
+                    return true;
+            return false;
+        }
+
+        // Along the main path: fight runs and the room after an Elite.
+        private static void CheckPacing(MapGraph graph, MapGraphAnalysis analysis, MapPacingSettings pacing, List<string> issues)
+        {
+            IReadOnlyList<int> path = analysis.MainPath;
+            int run = 0;
+            for (int i = 0; i < path.Count; i++)
+            {
+                if (!graph.TryGetNode(path[i], out MapNode node)) continue;
+                bool combat = !node.Type.IsStructural() && pacing.IsCombat(node.Type);
+                run = combat ? run + 1 : 0;
+
+                if (pacing.MaxCombatInARow > 0 && run == pacing.MaxCombatInARow + 1)
+                    issues.Add($"More than {pacing.MaxCombatInARow} fights in a row on the main path (up to #{node.Id}).");
+
+                if (pacing.RestAfterElite && combat && i > 0 && graph.TryGetNode(path[i - 1], out MapNode before)
+                    && before.Type == MapNodeType.Elite)
+                    issues.Add($"#{node.Id} {node.Type} comes right after the Elite at #{before.Id}.");
             }
         }
 
@@ -138,25 +187,24 @@ namespace CGD.Map
             return false;
         }
 
-        private static void CheckEarlyRoom(MapGraph graph, MapGraphAnalysis analysis, MapContentSettings content, List<string> issues)
+        private static void CheckWithinDepth(MapGraph graph, MapGraphAnalysis analysis, MapGuarantee guarantee, List<string> issues)
         {
-            if (!content.EarlyRoom.Enabled) return;
-
-            MapNodeType type   = content.EarlyRoom.Type;
-            IntRange    window = content.EarlyRoomDepth;
+            IntRange window = guarantee.Depth;
+            int found = 0;
             foreach (MapNode node in graph.Nodes)
             {
                 int depth = analysis.Depth(node.Id);
-                if (node.Type == type && depth >= window.Min && depth <= window.Max) return;
+                if (node.Type == guarantee.Type && depth >= window.Min && depth <= window.Max) found++;
             }
-            issues.Add($"No {type} {window.Min}–{window.Max} rooms from Start.");
+            if (found < guarantee.Count)
+                issues.Add($"{found} of {guarantee.Count} {guarantee.Type} {window.Min}–{window.Max} rooms from Start.");
         }
 
-        private static void CheckGatedRewards(MapGraph graph, MapGraphAnalysis analysis, MapContentSettings content, List<string> issues)
+        private static void CheckGatedRewards(MapGraph graph, MapGraphAnalysis analysis, MapGuarantee guarantee, List<string> issues)
         {
-            if (!content.GatedAreaReward.Enabled || analysis.StartId == MapGraphAnalysis.Unreachable) return;
+            if (analysis.StartId == MapGraphAnalysis.Unreachable) return;
 
-            MapNodeType type = content.GatedAreaReward.Type;
+            MapNodeType type = guarantee.Type;
             foreach (MapConnection gate in graph.Connections)
             {
                 if (!gate.IsGate) continue;
@@ -177,14 +225,12 @@ namespace CGD.Map
             }
         }
 
-        private static void CheckBossApproach(MapGraph graph, MapGraphAnalysis analysis, MapContentSettings content, List<string> issues)
+        private static void CheckBossApproach(MapGraph graph, MapGraphAnalysis analysis, MapGuarantee guarantee, List<string> issues)
         {
-            if (!content.BossApproach.Enabled) return;
-
             int id = BossApproachId(graph, analysis);
             if (id == MapGraphAnalysis.Unreachable || !graph.TryGetNode(id, out MapNode node) || node.Type.IsStructural()) return;
-            if (node.Type != content.BossApproach.Type)
-                issues.Add($"The room before the Boss (#{id}) is {node.Type}, not {content.BossApproach.Type}.");
+            if (node.Type != guarantee.Type)
+                issues.Add($"The room before the Boss (#{id}) is {node.Type}, not {guarantee.Type}.");
         }
 
         // The main path room just before the Boss.

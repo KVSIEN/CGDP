@@ -45,7 +45,7 @@ namespace CGD.Map
         private void Spread(int faction, int originId)
         {
             MapGraph graph     = _context.Graph;
-            float    falloff   = _context.Content.FactionFalloff;
+            float    falloff   = _context.Tuning.FactionFalloffOverride > 0f ? _context.Tuning.FactionFalloffOverride : _context.Content.FactionFalloff;
             float    threshold = _context.Content.FactionThreshold;
 
             var hops     = new Dictionary<int, int> { [originId] = 0 };

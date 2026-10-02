@@ -166,6 +166,20 @@ MonoBehaviour:
       Min: 0
       Max: 0
       Bias: 0
+  - Type: 9
+    Functions:
+    - {fileID: 11400000, guid: b3d42bb6e6d6481283d78fa14413f453, type: 2}
+    Enemies: []
+    EnemyCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Props: []
+    PropCount:
+      Min: 0
+      Max: 0
+      Bias: 0
   _shapes:
   - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
   - {fileID: 11400000, guid: 54a81013066a481a856586f0fee8dd3a, type: 2}

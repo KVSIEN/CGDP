@@ -19,20 +19,21 @@ namespace CGD.Map
         [SerializeField] private MapNodeType _fillType = MapNodeType.Combat;
 
         [Header("Guaranteed Rooms")]
-        [Tooltip("One room of this type within Early Room Depth of Start, on a branch when one reaches that far")]
-        [SerializeField] private MapRoomGuarantee _earlyRoom = new(false, MapNodeType.Treasure);
-        [Tooltip("Rooms from Start the early room may sit at")]
-        [SerializeField] private IntRange _earlyRoomDepth = new(2, 3);
-        [Tooltip("One room of this type in every area behind a Locked or Secret gate, at its far end when it can — the reason to find the key or the hidden wall")]
-        [SerializeField] private MapRoomGuarantee _gatedAreaReward = new(true, MapNodeType.Treasure);
-        [Tooltip("The main path room just before the Boss, e.g. a Shop as a last stop. Ignores the type rule's depth and placement limits, but not its maximum")]
-        [SerializeField] private MapRoomGuarantee _bossApproach = new(false, MapNodeType.Shop);
+        [Tooltip("Rooms the content always asks for in a set place: before the Boss (ignores the type rule's depth and placement), behind every gate (the reason to find the key), or within a depth window from Start. Placed in that order, after pinned rooms")]
+        [SerializeField] private List<MapGuarantee> _guarantees = DefaultGuarantees();
+
+        [Header("Pacing")]
+        [SerializeField] private MapPacingSettings _pacing = new();
 
         [Header("Intensity")]
         [Tooltip("Base intensity by depth (0 = Start, 1 = Boss)")]
         [SerializeField] private AnimationCurve _intensityByDepth = DefaultIntensityCurve();
         [SerializeField, Range(0f, 0.5f)] private float _intensityJitter = 0.05f;
         [SerializeField, Range(0f, 1f)] private float _bossIntensity = 1f;
+
+        [Header("Sections")]
+        [Tooltip("Parts of the ship the run passes through, in order from Start to the Boss; each takes an equal share of the depth")]
+        [SerializeField] private MapSectionDefinition[] _sections = Array.Empty<MapSectionDefinition>();
 
         [Header("Factions")]
         [Tooltip("Each faction claims one origin node; its influence fades with every connection away from it")]
@@ -45,10 +46,9 @@ namespace CGD.Map
         public IReadOnlyList<MapNodeTypeRule> NodeRules => _nodeRules;
         public MapNodeType FillType => _fillType;
 
-        public MapRoomGuarantee EarlyRoom       => _earlyRoom;
-        public IntRange         EarlyRoomDepth  => _earlyRoomDepth;
-        public MapRoomGuarantee GatedAreaReward => _gatedAreaReward;
-        public MapRoomGuarantee BossApproach    => _bossApproach;
+        public IReadOnlyList<MapGuarantee> Guarantees => _guarantees;
+        public MapPacingSettings           Pacing     => _pacing;
+        public IReadOnlyList<MapSectionDefinition> Sections => _sections;
 
         public float IntensityJitter => _intensityJitter;
         public float BossIntensity   => _bossIntensity;
@@ -68,6 +68,19 @@ namespace CGD.Map
             return rule == null || placed < rule.Max;
         }
 
+        public MapSectionDefinition GetSection(int section) =>
+            section >= 0 && section < _sections.Length ? _sections[section] : null;
+
+        public string SectionName(int section)
+        {
+            MapSectionDefinition definition = GetSection(section);
+            return definition != null ? definition.DisplayName : section >= 0 ? $"Section {section}" : "None";
+        }
+
+        // The section a room at this depth (0 = Start, 1 = Boss) belongs to, or MapNode.NoSection.
+        public int SectionAt(float progress) =>
+            _sections.Length == 0 ? MapNode.NoSection : Mathf.Clamp(Mathf.FloorToInt(progress * _sections.Length), 0, _sections.Length - 1);
+
         public FactionDefinition GetFaction(int faction) =>
             faction >= 0 && faction < _factions.Length ? _factions[faction] : null;
 
@@ -84,7 +97,13 @@ namespace CGD.Map
             new(MapNodeType.Puzzle,   min: 0, max: 2,  weight: 1f,   intensityBonus: -0.2f),
             new(MapNodeType.Shop,     min: 1, max: 2,  weight: 0.6f, placement: MapPlacement.MainPathOnly, minDepth: 0.3f, maxDepth: 0.9f, allowAdjacentSameType: false, intensityBonus: -0.5f),
             new(MapNodeType.Event,    min: 1, max: 3,  weight: 1f,   minDepth: 0.1f, intensityBonus: -0.2f),
-            new(MapNodeType.Treasure, min: 1, max: 3,  weight: 0.8f, placement: MapPlacement.BranchOnly, preferDeadEnds: true, intensityBonus: -0.3f),
+            new(MapNodeType.Treasure, min: 1, max: 3,  weight: 0.8f, placement: MapPlacement.BranchOnly, preferDeadEnds: true, intensityBonus: -0.3f, minSpacing: 3),
+            new(MapNodeType.Resupply, min: 0, max: 2,  weight: 0.4f, placement: MapPlacement.MainPathOnly, minDepth: 0.3f, maxDepth: 0.9f, allowAdjacentSameType: false, intensityBonus: -0.5f, minSpacing: 3),
+        };
+
+        private static List<MapGuarantee> DefaultGuarantees() => new()
+        {
+            new(MapNodeType.Treasure, MapGuaranteeSpot.BehindEveryGate),
         };
 
         // Rises through the run, dips just before the boss to give a breather.

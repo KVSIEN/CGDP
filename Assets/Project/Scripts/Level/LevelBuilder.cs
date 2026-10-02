@@ -1,6 +1,9 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.AI.Navigation;
 using CGD.Core;
+using CGD.Feedback;
 using CGD.Map;
 using CGD.WorldMap;
 
@@ -40,6 +43,8 @@ namespace CGD.Level
         public Seed        Seed   { get; private set; }
         public MapGraph    Graph  { get; private set; }
         public LevelLayout Layout { get; private set; }
+        // The run modifiers the generated map rolled; empty for a MapGraphAsset.
+        public IReadOnlyList<MapRunModifier> Modifiers { get; private set; } = Array.Empty<MapRunModifier>();
 
         private void Awake()
         {
@@ -75,6 +80,19 @@ namespace CGD.Level
             FitWorldMap();
         }
 
+        // In Start, not Awake: the HUD subscribes to FeedbackBus in its OnEnable, after this
+        // builder (which runs first) has woken.
+        private void Start()
+        {
+            foreach (MapRunModifier modifier in Modifiers)
+            {
+                string message = string.IsNullOrEmpty(modifier.Description)
+                    ? modifier.DisplayName
+                    : $"{modifier.DisplayName}: {modifier.Description}";
+                FeedbackBus.Notify(message, NotificationStyle.Warning);
+            }
+        }
+
         // content: where the graph's faction indices point (null = rooms have no faction).
         private MapGraph ResolveGraph(out Vector2 nodeSpacing, out MapContentSettings content)
         {
@@ -87,9 +105,11 @@ namespace CGD.Level
 
             nodeSpacing = _generation != null ? _generation.NodeSpacing : Vector2.one;
             content     = _generation != null ? _generation.Content : null;
-            return _generation != null && _generation.CanGenerate
-                ? new MapGenerator(_generation).Generate(Seed.Derive("map")).Graph
-                : null;
+            if (_generation == null || !_generation.CanGenerate) return null;
+
+            MapGenerationResult result = new MapGenerator(_generation).Generate(Seed.Derive("map"));
+            Modifiers = result.Modifiers;
+            return result.Graph;
         }
 
         private void PlacePlayer(RoomPopulator populator)

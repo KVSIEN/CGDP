@@ -48,6 +48,19 @@ namespace CGD.Map
                     results.Add(nodeId);
         }
 
+        // Empty cells around a room, ignoring the spread limit: space a room spanning two
+        // cells in the generated level can grow into.
+        public int FreeNeighborCount(int nodeId)
+        {
+            int free = 0;
+            Vector2Int cell = _cells[nodeId];
+            foreach (Vector2Int direction in Directions)
+                if (!_rooms.ContainsKey(cell + direction)) free++;
+            return free;
+        }
+
+        public bool Contains(int nodeId) => _cells.ContainsKey(nodeId);
+
         public int Distance(int a, int b)
         {
             Vector2Int offset = _cells[a] - _cells[b];

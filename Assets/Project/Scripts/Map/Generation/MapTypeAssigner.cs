@@ -6,17 +6,21 @@ namespace CGD.Map
 {
     // Decides what each room is, in four passes:
     //   1. pins — locked nodes from the previous map claim the closest matching room
-    //   2. guaranteed rooms — the room before the Boss, a reward behind every gate and
-    //      the early room, when the content asks for them
+    //   2. guaranteed rooms — before the Boss, behind every gate, then depth windows, as
+    //      the content lists them
     //   3. minimums — each rule gets its Min rooms, dead ends first when it prefers them,
     //      most constrained rule first
     //   4. fill — remaining rooms roll a weighted rule that still has room under its Max
-    // A rule is only offered rooms matching its placement, depth and adjacency limits.
-    // Guaranteed rooms count toward their type's rule and never exceed its Max.
+    // A rule is only offered rooms matching its placement, depth, adjacency and spacing
+    // limits and the content's pacing; rules that want space prefer rooms with an empty
+    // grid cell beside them. Counts, weights and limits come through the run's modifiers
+    // (MapRunTuning). Guaranteed rooms count toward their type's rule and never exceed its Max.
     internal class MapTypeAssigner
     {
-        // Weight multiplier for PreferDeadEnds rules when filling a dead end.
+        // Weight multipliers when filling: PreferDeadEnds rules at a dead end, WantsSpace
+        // rules at a room with free cells around it.
         private const float DeadEndWeightMultiplier = 4f;
+        private const float SpaceWeightMultiplier   = 3f;
 
         private readonly MapGenerationContext          _context;
         private readonly RandomStream                  _random;
@@ -34,8 +38,10 @@ namespace CGD.Map
         // Node id each pin landed on, or MapGenerationResult.PinNotPlaced.
         public List<int> PinnedNodeIds { get; } = new();
 
-        private MapGraph              Graph    => _context.Graph;
-        private MapContentSettings    Content  => _context.Content;
+        private MapGraph           Graph   => _context.Graph;
+        private MapContentSettings Content => _context.Content;
+        private MapRunTuning       Tuning  => _context.Tuning;
+        private MapPacingSettings  Pacing  => Content.Pacing;
 
         public void Assign(IReadOnlyList<MapNodePin> pins)
         {
@@ -46,9 +52,9 @@ namespace CGD.Map
             foreach (MapNodePin pin in pins)
                 PinnedNodeIds.Add(PlacePin(pin));
 
-            PlaceBossApproach();
-            PlaceGatedRewards();
-            PlaceEarlyRoom();
+            PlaceGuarantees(MapGuaranteeSpot.BeforeBoss);
+            PlaceGuarantees(MapGuaranteeSpot.BehindEveryGate);
+            PlaceGuarantees(MapGuaranteeSpot.WithinDepth);
 
             PlaceMinimums();
 
@@ -90,13 +96,26 @@ namespace CGD.Map
             return best;
         }
 
+        // --- Guaranteed rooms ----------------------------------------------------------
+
+        private void PlaceGuarantees(MapGuaranteeSpot spot)
+        {
+            foreach (MapGuarantee guarantee in Content.Guarantees)
+            {
+                if (guarantee == null || !guarantee.IsValid || guarantee.Spot != spot) continue;
+                switch (spot)
+                {
+                    case MapGuaranteeSpot.BeforeBoss:      PlaceBossApproach(guarantee); break;
+                    case MapGuaranteeSpot.BehindEveryGate: PlaceGatedRewards(guarantee); break;
+                    case MapGuaranteeSpot.WithinDepth:     PlaceWithinDepth(guarantee);  break;
+                }
+            }
+        }
+
         // The main path room the Boss is entered from. Asking for it is explicit, so it
         // overrides the type rule's depth and placement — but not its maximum, and not a pin.
-        private void PlaceBossApproach()
+        private void PlaceBossApproach(MapGuarantee guarantee)
         {
-            MapRoomGuarantee guarantee = Content.BossApproach;
-            if (!guarantee.Enabled) return;
-
             MapSlot slot = BossApproachSlot();
             if (slot == null || _assigned.Contains(slot.NodeId)) return;
 
@@ -122,14 +141,11 @@ namespace CGD.Map
             return null;
         }
 
-        // One reward per gated area, unless a pin already put one there. Dead ends first,
-        // so the reward sits at the far end of the area; the rule's placement and depth
-        // are followed when any room in the area allows it.
-        private void PlaceGatedRewards()
+        // One per gated area, unless a pin already put one there. Dead ends first, so the
+        // reward sits at the far end of the area; the rule's limits are followed when any
+        // room in the area allows it.
+        private void PlaceGatedRewards(MapGuarantee guarantee)
         {
-            MapRoomGuarantee guarantee = Content.GatedAreaReward;
-            if (!guarantee.Enabled) return;
-
             MapNodeTypeRule rule = Content.GetRule(guarantee.Type);
             foreach (MapGatedArea area in _context.GatedAreas)
             {
@@ -174,42 +190,47 @@ namespace CGD.Map
             }
         }
 
-        // Follows the type's rule for placement and adjacency (the window stands in for its
-        // depth limits), and prefers a branch room so reaching it can mean leaving the
-        // main path. A pinned or gated-reward room of the type already in the window counts.
-        private void PlaceEarlyRoom()
+        // Count rooms in the window, minus any already there (pinned or gated rewards).
+        // Follows the type's rule apart from depth (the window replaces it) and prefers
+        // branch rooms, so reaching them can mean leaving the main path.
+        private void PlaceWithinDepth(MapGuarantee guarantee)
         {
-            MapRoomGuarantee guarantee = Content.EarlyRoom;
-            IntRange         window    = Content.EarlyRoomDepth;
-            if (!guarantee.Enabled || HasAssignedWithinDepth(guarantee.Type, window)) return;
-            if (!HasRoomFor(guarantee.Type)) return;
-
+            IntRange window = guarantee.Depth;
             MapNodeTypeRule rule = Content.GetRule(guarantee.Type);
-            _candidates.Clear();
-            foreach (MapSlot slot in _context.Slots)
-                if (slot.Depth >= window.Min && slot.Depth <= window.Max && CanPlaceIgnoringDepth(rule, guarantee.Type, slot))
-                    _candidates.Add(slot);
 
-            if (_candidates.Exists(s => !s.OnMainPath))
-                _candidates.RemoveAll(s => s.OnMainPath);
-
-            if (_candidates.Count == 0)
+            for (int placed = CountWithinDepth(guarantee.Type, window); placed < guarantee.Count; placed++)
             {
-                _context.Warnings.Add($"No room {window.Min}–{window.Max} deep can take the early {guarantee.Type}.");
-                return;
-            }
+                if (!HasRoomFor(guarantee.Type)) return;
 
-            SetType(_random.Pick(_candidates), guarantee.Type);
+                _candidates.Clear();
+                foreach (MapSlot slot in _context.Slots)
+                    if (slot.Depth >= window.Min && slot.Depth <= window.Max && CanPlaceIgnoringDepth(rule, guarantee.Type, slot))
+                        _candidates.Add(slot);
+
+                if (_candidates.Exists(s => !s.OnMainPath))
+                    _candidates.RemoveAll(s => s.OnMainPath);
+
+                if (_candidates.Count == 0)
+                {
+                    _context.Warnings.Add($"No room {window.Min}–{window.Max} deep can take guaranteed {guarantee.Type} {placed + 1} of {guarantee.Count}.");
+                    return;
+                }
+
+                SetType(_random.Pick(_candidates), guarantee.Type);
+            }
         }
 
-        private bool HasAssignedWithinDepth(MapNodeType type, IntRange window)
+        private int CountWithinDepth(MapNodeType type, IntRange window)
         {
+            int count = 0;
             foreach (MapSlot slot in _context.Slots)
                 if (_assigned.Contains(slot.NodeId) && slot.Depth >= window.Min && slot.Depth <= window.Max
                     && Graph.TryGetNode(slot.NodeId, out MapNode node) && node.Type == type)
-                    return true;
-            return false;
+                    count++;
+            return count;
         }
+
+        // --- Minimums and fill ----------------------------------------------------------
 
         // Most-constrained first: each step serves the rule with the fewest free rooms
         // left, so broad rules like Combat can't take the only rooms a narrow rule (a
@@ -223,13 +244,13 @@ namespace CGD.Map
 
             while (true)
             {
-                pending.RemoveAll(r => CountOf(r.Type) >= r.Min);
+                pending.RemoveAll(r => CountOf(r.Type) >= Tuning.Min(r));
                 if (pending.Count == 0) return;
 
                 MapNodeTypeRule rule = MostConstrained(pending, out int candidateCount);
                 if (candidateCount == 0)
                 {
-                    _context.Warnings.Add($"{rule.Type}: placed {CountOf(rule.Type)} of minimum {rule.Min} — no room matches its placement rules.");
+                    _context.Warnings.Add($"{rule.Type}: placed {CountOf(rule.Type)} of minimum {Tuning.Min(rule)} — no room matches its placement rules.");
                     pending.Remove(rule);
                     continue;
                 }
@@ -237,6 +258,8 @@ namespace CGD.Map
                 CollectCandidates(rule, deadEndsOnly: rule.PreferDeadEnds);
                 if (_candidates.Count == 0)
                     CollectCandidates(rule, deadEndsOnly: false);
+                if (rule.WantsSpace && _candidates.Exists(s => s.FreeNeighbors > 0))
+                    _candidates.RemoveAll(s => s.FreeNeighbors == 0);
 
                 SetType(_random.Pick(_candidates), rule.Type);
             }
@@ -288,7 +311,7 @@ namespace CGD.Map
             foreach (MapNodeTypeRule rule in Content.NodeRules)
                 total += FillWeight(rule, slot);
 
-            if (total <= 0f) return Content.FillType;
+            if (total <= 0f) return FallbackType(slot);
 
             float roll = _random.Value * total;
             foreach (MapNodeTypeRule rule in Content.NodeRules)
@@ -296,30 +319,98 @@ namespace CGD.Map
                 roll -= FillWeight(rule, slot);
                 if (roll < 0f) return rule.Type;
             }
-            return Content.FillType;
+            return FallbackType(slot);
+        }
+
+        // No rule can take the room: the fill type, or a calm type when a fight here would
+        // break the pacing — the rest type first, then any calm rule that allows this room
+        // and has room under its Max. Only when none does is the rest type forced in.
+        private MapNodeType FallbackType(MapSlot slot)
+        {
+            if (PacingAllows(Content.FillType, slot)) return Content.FillType;
+            if (CanFallBackTo(Pacing.RestType, slot)) return Pacing.RestType;
+
+            foreach (MapNodeTypeRule rule in Content.NodeRules)
+                if (!Pacing.IsCombat(rule.Type) && CanFallBackTo(rule.Type, slot))
+                    return rule.Type;
+
+            _context.Warnings.Add($"#{slot.NodeId} is a {Pacing.RestType} over its rule's limits: no calm room fits there and a fight would break the pacing.");
+            return Pacing.RestType;
+        }
+
+        private bool CanFallBackTo(MapNodeType type, MapSlot slot)
+        {
+            if (type.IsStructural() || !HasRoomFor(type)) return false;
+            MapNodeTypeRule rule = Content.GetRule(type);
+            return rule == null || CanPlace(rule, slot);
         }
 
         private float FillWeight(MapNodeTypeRule rule, MapSlot slot)
         {
-            if (CountOf(rule.Type) >= rule.Max || !CanPlace(rule, slot)) return 0f;
+            if (CountOf(rule.Type) >= Tuning.Max(rule) || !CanPlace(rule, slot)) return 0f;
 
-            bool favoured = rule.PreferDeadEnds && slot.IsDeadEnd;
-            return favoured ? rule.Weight * DeadEndWeightMultiplier : rule.Weight;
+            float weight = Tuning.Weight(rule);
+            if (rule.PreferDeadEnds && slot.IsDeadEnd)       weight *= DeadEndWeightMultiplier;
+            if (rule.WantsSpace && slot.FreeNeighbors > 0)   weight *= SpaceWeightMultiplier;
+            return weight;
         }
+
+        // --- Limits ---------------------------------------------------------------------
 
         private bool CanPlace(MapNodeTypeRule rule, MapSlot slot) =>
             rule.AllowsDepth(slot.Progress) && CanPlaceIgnoringDepth(rule, rule.Type, slot);
 
-        // `rule` may be null for a type without one: then only the room being free matters.
+        // `rule` may be null for a type without one: then only the room being free and the
+        // pacing matter.
         private bool CanPlaceIgnoringDepth(MapNodeTypeRule rule, MapNodeType type, MapSlot slot)
         {
             if (type.IsStructural() || _assigned.Contains(slot.NodeId)) return false;
+            if (!PacingAllows(type, slot)) return false;
             if (rule == null) return true;
             if (!rule.AllowsPlacement(slot.OnMainPath)) return false;
-            return rule.AllowAdjacentSameType || !HasAssignedNeighbor(slot.NodeId, type);
+            if (!rule.AllowAdjacentSameType && HasAssignedNeighbor(slot.NodeId, type)) return false;
+            return rule.MinSpacing <= 1 || !HasAssignedWithin(slot.NodeId, type, rule.MinSpacing - 1);
         }
 
-        private bool HasRoomFor(MapNodeType type) => Content.HasRoomFor(type, CountOf(type));
+        // On the main path: no more fights in a row than allowed, and none right after an Elite.
+        private bool PacingAllows(MapNodeType type, MapSlot slot)
+        {
+            if (slot.MainPathIndex < 0 || !Pacing.IsCombat(type)) return true;
+
+            List<int> path = _context.MainPath;
+            int i = slot.MainPathIndex;
+
+            if (Pacing.RestAfterElite)
+            {
+                if (i > 0 && AssignedTypeAt(path[i - 1]) == MapNodeType.Elite) return false;
+                if (type == MapNodeType.Elite && i + 1 < path.Count && IsAssignedCombat(path[i + 1])) return false;
+            }
+
+            if (Pacing.MaxCombatInARow <= 0) return true;
+            int run = 1;
+            for (int j = i - 1; j >= 0 && IsAssignedCombat(path[j]); j--) run++;
+            for (int j = i + 1; j < path.Count && IsAssignedCombat(path[j]); j++) run++;
+            return run <= Pacing.MaxCombatInARow;
+        }
+
+        private bool IsAssignedCombat(int nodeId)
+        {
+            MapNodeType? type = AssignedTypeAt(nodeId);
+            return type.HasValue && !type.Value.IsStructural() && Pacing.IsCombat(type.Value);
+        }
+
+        private MapNodeType? AssignedTypeAt(int nodeId) =>
+            _assigned.Contains(nodeId) && Graph.TryGetNode(nodeId, out MapNode node) ? node.Type : null;
+
+        // An assigned room of `type` within `distance` connections.
+        private bool HasAssignedWithin(int nodeId, MapNodeType type, int distance)
+        {
+            foreach (var (id, steps) in MapGraphSearch.Distances(Graph, nodeId, includeShortcuts: true))
+                if (steps > 0 && steps <= distance && AssignedTypeAt(id) == type) return true;
+            return false;
+        }
+
+        private bool HasRoomFor(MapNodeType type) => Tuning.HasRoomFor(Content, type, CountOf(type));
 
         private bool HasAssignedNeighbor(int nodeId, MapNodeType type)
         {

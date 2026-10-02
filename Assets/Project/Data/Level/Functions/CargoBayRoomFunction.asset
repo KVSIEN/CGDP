@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
   _displayName: Cargo Bay
   _weight: 1.5
+  _preferredSections:
+  - {fileID: 11400000, guid: 127b4364c57a4639989fe8ae021843f4, type: 2}
+  _sectionPreference: 3
   _shapes:
   - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
   - {fileID: 11400000, guid: 54a81013066a481a856586f0fee8dd3a, type: 2}

@@ -7,6 +7,7 @@ namespace CGD.Editor
         Intensity,
         Faction,
         RequiredOptional,
-        Branches
+        Branches,
+        Section
     }
 }

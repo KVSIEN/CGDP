@@ -111,6 +111,12 @@ namespace CGD.Editor
                     TryRegenerate(Random.Range(0, int.MaxValue));
             }
 
+            using (new EditorGUI.DisabledScope(!asset.CanGenerate))
+            {
+                if (GUILayout.Button(new GUIContent("Analyze", "Generate this style for many seeds and sum up what it produces"), EditorStyles.toolbarButton))
+                    MapStyleReportWindow.Open(asset.Settings);
+            }
+
             using (new EditorGUI.DisabledScope(!_session.HasEdits()))
             {
                 if (GUILayout.Button(new GUIContent("Revert Edits", "Back to the last generated graph"), EditorStyles.toolbarButton))

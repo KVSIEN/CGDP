@@ -40,7 +40,7 @@ namespace CGD.Map
         {
             BuildMainPath();
 
-            int optional = Layout.OptionalRooms.Evaluate(_random);
+            int optional = Mathf.Max(0, Layout.OptionalRooms.Evaluate(_random) + _context.Tuning.ExtraOptionalRooms);
             int target   = Graph.Nodes.Count + optional;
             AddHubBranches(target);
             FillWithBranches(target, optional);

@@ -80,7 +80,7 @@ namespace CGD.Editor
         public MapGraphAnalysis Analysis => _analysis ??= new MapGraphAnalysis(Graph);
 
         public IReadOnlyList<string> Issues =>
-            _issues ??= MapGraphValidator.Validate(Graph, Analysis, _asset.Layout, _asset.Content);
+            _issues ??= MapGraphValidator.Validate(Graph, Analysis, _asset.Layout, _asset.Content, _asset.Tuning);
 
         // Call after anything outside this class changes the asset (undo, regenerate).
         public void Invalidate()

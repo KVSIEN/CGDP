@@ -11,10 +11,11 @@ namespace CGD.Map
         private readonly SeedVariants _variants;
 
         public MapGenerationContext(MapLayoutSettings layout, MapContentSettings content, Vector2 nodeSpacing,
-                                    Seed seed, SeedVariants variants)
+                                    Seed seed, SeedVariants variants, MapRunTuning tuning)
         {
             Layout      = layout;
             Content     = content;
+            Tuning      = tuning;
             NodeSpacing = nodeSpacing;
             _seed     = seed;
             _variants = variants;
@@ -23,11 +24,15 @@ namespace CGD.Map
 
         public MapLayoutSettings  Layout     { get; }
         public MapContentSettings Content    { get; }
+        // The run's modifiers, applied on top of the layout and content.
+        public MapRunTuning       Tuning     { get; }
         // Editor position per grid cell, for each node's Position.
         public Vector2            NodeSpacing { get; }
         public MapGraph           Graph      { get; } = new();
         public MapGrid            Grid       { get; }
         public List<MapSlot>      Slots      { get; } = new();
+        // Start to Boss, in order.
+        public List<int>          MainPath   { get; } = new();
         public List<MapGatedArea> GatedAreas { get; } = new();
         public List<string>       Warnings   { get; } = new();
 
@@ -64,6 +69,8 @@ namespace CGD.Map
         {
             var analysis = new MapGraphAnalysis(Graph);
             Slots.Clear();
+            MainPath.Clear();
+            MainPath.AddRange(analysis.MainPath);
 
             foreach (MapNode node in Graph.Nodes)
             {
@@ -71,7 +78,9 @@ namespace CGD.Map
                 Slots.Add(new MapSlot(node.Id, analysis.Depth(node.Id), analysis.Progress(node.Id), onMainPath,
                                       node.Type.IsStructural())
                 {
-                    IsDeadEnd = !onMainPath && Graph.Degree(node.Id) == 1
+                    IsDeadEnd     = !onMainPath && Graph.Degree(node.Id) == 1,
+                    FreeNeighbors = Grid.Contains(node.Id) ? Grid.FreeNeighborCount(node.Id) : 0,
+                    MainPathIndex = MainPath.IndexOf(node.Id),
                 });
             }
         }

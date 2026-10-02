@@ -202,13 +202,16 @@ namespace CGD.Editor
             EditorGUILayout.LabelField("Nodes / Connections", $"{graph.Nodes.Count} / {graph.Connections.Count}");
             EditorGUILayout.LabelField("Main path", analysis.ExitReachable ? $"{analysis.MainPath.Count} nodes" : "Exit unreachable");
             EditorGUILayout.LabelField("Branches", analysis.BranchCount.ToString());
+            MapRunTuning tuning = session.Asset.Tuning;
+            EditorGUILayout.LabelField("Run modifiers", tuning.Modifiers.Count == 0
+                ? "none" : string.Join(", ", System.Linq.Enumerable.Select(tuning.Modifiers, m => m.DisplayName)));
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Node types", EditorStyles.miniBoldLabel);
             foreach (MapNodeType type in System.Enum.GetValues(typeof(MapNodeType)))
             {
                 MapNodeTypeRule rule = content != null ? content.GetRule(type) : null;
-                string limits = rule != null ? $"  ({rule.Min}–{rule.Max})" : "";
+                string limits = rule != null ? $"  ({tuning.Min(rule)}–{tuning.Max(rule)})" : "";
                 EditorGUILayout.LabelField(type.ToString(), $"{graph.CountOf(type)}{limits}");
             }
 

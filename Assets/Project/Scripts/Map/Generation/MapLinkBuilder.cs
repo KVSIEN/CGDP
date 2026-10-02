@@ -24,7 +24,7 @@ namespace CGD.Map
 
         public void Build()
         {
-            AddLinks(Loops.LoopCount.Evaluate(_random), ConnectionType.Normal, "loops");
+            AddLinks(Loops.LoopCount.Evaluate(_random) + _context.Tuning.ExtraLoops, ConnectionType.Normal, "loops");
             AddLinks(Loops.ShortcutCount.Evaluate(_random), ConnectionType.Shortcut, "shortcuts");
         }
 

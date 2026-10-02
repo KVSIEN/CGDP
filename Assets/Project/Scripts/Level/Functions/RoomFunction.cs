@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Core;
+using CGD.Map;
 
 namespace CGD.Level
 {
@@ -14,6 +15,10 @@ namespace CGD.Level
         [SerializeField] private string _displayName = "Room";
         [Tooltip("How often this function is picked relative to the others a room type lists")]
         [SerializeField, Min(0f)] private float _weight = 1f;
+        [Tooltip("Ship sections where this kind of room is more likely (crew quarters in Habitation, cargo bays in Engineering)")]
+        [SerializeField] private MapSectionDefinition[] _preferredSections = Array.Empty<MapSectionDefinition>();
+        [Tooltip("Weight multiplier inside a preferred section")]
+        [SerializeField, Min(1f)] private float _sectionPreference = 3f;
         [Tooltip("Floor plans for this kind of room. Empty = the build settings' shapes")]
         [SerializeField] private RoomShape[] _shapes = Array.Empty<RoomShape>();
         [Tooltip("Grid cells the room spans (1 or 2 each way; turned to fit). Falls back to one cell when its neighbours leave no room")]
@@ -40,6 +45,10 @@ namespace CGD.Level
         public IReadOnlyList<RoomShape>         Shapes    => _shapes;
         public IReadOnlyList<RoomStructureRule> Structure => _structure;
         public IReadOnlyList<RoomPropPlacement> Props     => _props;
+
+        // Weight for a room in `section` (null = no section).
+        public float WeightIn(MapSectionDefinition section) =>
+            section != null && Array.IndexOf(_preferredSections, section) >= 0 ? _weight * _sectionPreference : _weight;
 
         // Tiles per side for one room, between minTiles and maxTiles.
         public int RollSize(RandomStream random, int minTiles, int maxTiles)

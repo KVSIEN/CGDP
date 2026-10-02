@@ -9,7 +9,8 @@ namespace CGD.Level
     // Turns map nodes into rooms:
     //   1. Each node gets a grid cell from its editor position (the generator already lays
     //      nodes out on a column/lane grid; hand-moved nodes snap to the nearest free cell).
-    //   2. It picks a function (lobby, park…) for its type. A function spanning several cells
+    //   2. It picks a function (lobby, park…) for its type, favouring functions that prefer
+    //      the room's ship section. A function spanning several cells
     //      claims free neighbouring cells; with none free it stays in one.
     //   3. The room fills its cells minus a gap for corridors — a single-cell room may be
     //      smaller and centred — and gets a hand-built landmark or a generated floor plan.
@@ -36,7 +37,8 @@ namespace CGD.Level
             foreach (MapNode node in graph.Nodes)
             {
                 RandomStream random = seed.Derive(node.Id).Stream();
-                RoomFunction function = random.PickWeighted(_settings.FunctionsFor(node.Type), f => f != null ? f.Weight : 0f);
+                MapSectionDefinition section = content != null && node.HasSection ? content.GetSection(node.Section) : null;
+                RoomFunction function = random.PickWeighted(_settings.FunctionsFor(node.Type), f => f != null ? f.WeightIn(section) : 0f);
                 RectInt block = ClaimBlock(cells[node.Id], function != null ? function.Cells : Vector2Int.one, claimed, random);
                 connections.TryGetValue(node.Id, out int count);
 

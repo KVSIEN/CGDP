@@ -1,4 +1,5 @@
 using CGD.Core;
+using UnityEngine;
 
 namespace CGD.Map
 {
@@ -19,8 +20,12 @@ namespace CGD.Map
         {
             foreach (MapSlot slot in _context.Slots)
                 if (_context.Graph.TryGetNode(slot.NodeId, out MapNode node))
-                    node.Intensity = IntensityFor(node.Type, slot.Progress);
+                    node.Intensity = Mathf.Clamp01(IntensityFor(node.Type, slot.Progress) + OffsetFor(node.Type));
         }
+
+        // Run modifiers shift every room but the calm structural ones.
+        private float OffsetFor(MapNodeType type) =>
+            type == MapNodeType.Start || type == MapNodeType.Exit ? 0f : _context.Tuning.IntensityOffset;
 
         private float IntensityFor(MapNodeType type, float progress)
         {

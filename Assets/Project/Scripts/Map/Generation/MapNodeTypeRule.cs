@@ -23,6 +23,10 @@ namespace CGD.Map
         [Tooltip("Place at dead ends first and weight them heavier — rewards for exploring")]
         [SerializeField] private bool _preferDeadEnds;
         [SerializeField] private bool _allowAdjacentSameType = true;
+        [Tooltip("Fewest connections between two rooms of this type (0 = no limit). 3 keeps rewards spread out")]
+        [SerializeField, Min(0)] private int _minSpacing;
+        [Tooltip("Prefer rooms with an empty grid cell beside them, so a room function spanning two cells (Cargo Bay, Park) has space to spread into")]
+        [SerializeField] private bool _wantsSpace;
 
         [Header("Intensity")]
         [Tooltip("Added to the depth curve's intensity for this type")]
@@ -35,7 +39,7 @@ namespace CGD.Map
                                MapPlacement placement = MapPlacement.Anywhere,
                                float minDepth = 0f, float maxDepth = 1f,
                                bool preferDeadEnds = false, bool allowAdjacentSameType = true,
-                               float intensityBonus = 0f)
+                               float intensityBonus = 0f, int minSpacing = 0, bool wantsSpace = false)
         {
             _type                  = type;
             _min                   = min;
@@ -47,6 +51,8 @@ namespace CGD.Map
             _preferDeadEnds        = preferDeadEnds;
             _allowAdjacentSameType = allowAdjacentSameType;
             _intensityBonus        = intensityBonus;
+            _minSpacing            = minSpacing;
+            _wantsSpace            = wantsSpace;
         }
 
         public MapNodeType Type                  => _type;
@@ -57,6 +63,8 @@ namespace CGD.Map
         public bool        PreferDeadEnds        => _preferDeadEnds;
         public bool        AllowAdjacentSameType => _allowAdjacentSameType;
         public float       IntensityBonus        => _intensityBonus;
+        public int         MinSpacing            => _minSpacing;
+        public bool        WantsSpace            => _wantsSpace;
 
         public bool AllowsDepth(float progress) => progress >= _minDepth && progress <= _maxDepth;
 

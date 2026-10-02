@@ -20,5 +20,9 @@ namespace CGD.Map
         public bool  OnMainPath   { get; }
         public bool  IsStructural { get; }
         public bool  IsDeadEnd    { get; set; }
+        // Empty grid cells next to the room (see MapNodeTypeRule.WantsSpace).
+        public int   FreeNeighbors { get; set; }
+        // Position along the main path, or -1 off it.
+        public int   MainPathIndex { get; set; } = -1;
     }
 }

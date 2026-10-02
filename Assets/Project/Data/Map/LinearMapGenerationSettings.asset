@@ -16,4 +16,13 @@ MonoBehaviour:
   - _layout: {fileID: 11400000, guid: 849a432223644ae09ca42a1cd17ab9f7, type: 2}
     _weight: 1
   _content: {fileID: 11400000, guid: 1902458f4af7428cabd44a36a39d755a, type: 2}
+  _modifiers:
+  - {fileID: 11400000, guid: 56803629ed084491bc835bcd38814774, type: 2}
+  - {fileID: 11400000, guid: 94bd575e827d4c29a5927c05bb8f523c, type: 2}
+  - {fileID: 11400000, guid: 1d62319d90514b01b123ed34acf5dac1, type: 2}
+  - {fileID: 11400000, guid: 8cb36d8568fb4be5bfc9f6215b99fd58, type: 2}
+  _modifierCount:
+    Min: 0
+    Max: 1
+    Bias: 0
   _nodeSpacing: {x: 220, y: 110}

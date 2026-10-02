@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
   _displayName: Crew Quarters
   _weight: 1
+  _preferredSections:
+  - {fileID: 11400000, guid: bfa3b5c82e544118bf005f0e0cc4c841, type: 2}
+  _sectionPreference: 3
   _shapes:
   - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
   - {fileID: 11400000, guid: 54a81013066a481a856586f0fee8dd3a, type: 2}

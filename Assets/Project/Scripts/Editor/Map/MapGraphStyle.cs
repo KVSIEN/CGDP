@@ -48,6 +48,7 @@ namespace CGD.Editor
             MapGraphViewMode.Faction          => FactionColor(node),
             MapGraphViewMode.RequiredOptional => RequiredColor(node.Id, analysis),
             MapGraphViewMode.Branches         => BranchColor(analysis.BranchOf(node.Id)),
+            MapGraphViewMode.Section          => node.HasSection ? PaletteColor(node.Section) : NoFaction,
             _                                 => TypeColor(node.Type)
         };
 
@@ -76,6 +77,12 @@ namespace CGD.Editor
                     legend.Add((Required, "Required"));
                     legend.Add((Optional, "Optional"));
                     legend.Add((Unreachable, "Unreachable"));
+                    break;
+                case MapGraphViewMode.Section:
+                    legend.Add((NoFaction, "None"));
+                    if (content != null)
+                        for (int i = 0; i < content.Sections.Count; i++)
+                            legend.Add((PaletteColor(i), content.SectionName(i)));
                     break;
                 case MapGraphViewMode.Branches:
                     legend.Add((MainPath, "Main path"));

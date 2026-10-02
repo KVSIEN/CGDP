@@ -9,6 +9,7 @@ namespace CGD.Map
     public class MapNode
     {
         public const int NoFaction = -1;
+        public const int NoSection = -1;
 
         [SerializeField] private int         _id;
         [SerializeField] private MapNodeType _type;
@@ -18,6 +19,12 @@ namespace CGD.Map
         [Tooltip("Index into MapContentSettings.Factions, or -1 for none")]
         [SerializeField] private int         _faction = NoFaction;
         [SerializeField, Range(0f, 1f)] private float _factionInfluence;
+        [Tooltip("Index into MapContentSettings.Sections, or -1 for none")]
+        [SerializeField] private int         _section = NoSection;
+
+        // For serialization: keeps the field defaults (no faction, no section) for data
+        // saved before a field existed.
+        private MapNode() { }
 
         public MapNode(int id, MapNodeType type, Vector2 position)
         {
@@ -50,6 +57,9 @@ namespace CGD.Map
         public int   Faction          => _faction;
         public float FactionInfluence => _factionInfluence;
         public bool  HasFaction       => _faction != NoFaction;
+
+        public int  Section    { get => _section; set => _section = value < 0 ? NoSection : value; }
+        public bool HasSection => _section != NoSection;
 
         public void SetFaction(int faction, float influence)
         {

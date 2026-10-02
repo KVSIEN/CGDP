@@ -1,7 +1,8 @@
 namespace CGD.Map
 {
     // What the player experiences at a node. Start, Boss and Exit are structural:
-    // the generator places them itself, so type rules never produce them.
+    // the generator places them itself, so type rules never produce them. New types go at
+    // the end: assets store these as numbers.
     public enum MapNodeType
     {
         Start,
@@ -12,6 +13,7 @@ namespace CGD.Map
         Event,
         Treasure,
         Boss,
-        Exit
+        Exit,
+        Resupply,   // a calm stop with an ammo cache before more fighting
     }
 }

@@ -210,6 +210,9 @@ namespace CGD.Editor
                 MapGraphViewMode.Faction          => node.HasFaction
                     ? $"{session.Asset.Content?.FactionName(node.Faction) ?? node.Faction.ToString()} {node.FactionInfluence:0.00}"
                     : "no faction",
+                MapGraphViewMode.Section          => node.HasSection
+                    ? session.Asset.Content?.SectionName(node.Section) ?? node.Section.ToString()
+                    : "no section",
                 MapGraphViewMode.RequiredOptional => !analysis.IsReachable(node.Id) ? "unreachable"
                     : analysis.IsRequired(node.Id) ? "required" : "optional",
                 MapGraphViewMode.Branches         => analysis.BranchOf(node.Id) == MapGraphAnalysis.MainPathBranch

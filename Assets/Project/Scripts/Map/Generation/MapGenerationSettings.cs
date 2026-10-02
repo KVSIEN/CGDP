@@ -18,14 +18,37 @@ namespace CGD.Map
         [SerializeField] private List<MapLayoutOption> _layouts = new();
         [SerializeField] private MapContentSettings _content;
 
+        [Header("Run Modifiers")]
+        [Tooltip("Twists a run can get, picked by weight")]
+        [SerializeField] private List<MapRunModifier> _modifiers = new();
+        [Tooltip("How many modifiers each map gets (never the same one twice)")]
+        [SerializeField] private IntRange _modifierCount;
+
         [Header("Layout (editor only)")]
         [SerializeField] private Vector2 _nodeSpacing = new(220f, 110f);
 
         public IReadOnlyList<MapLayoutOption> Layouts => _layouts;
         public MapContentSettings Content     => _content;
         public Vector2            NodeSpacing => _nodeSpacing;
+        public IReadOnlyList<MapRunModifier> Modifiers => _modifiers;
+        public IntRange           ModifierCount => _modifierCount;
 
         public bool CanGenerate => _content != null && _layouts.Exists(o => o.Layout != null);
+
+        // ModifierCount distinct modifiers, by weight.
+        public List<MapRunModifier> PickModifiers(RandomStream random)
+        {
+            var pool   = _modifiers.FindAll(m => m != null && m.Weight > 0f);
+            var picked = new List<MapRunModifier>();
+            int count  = Mathf.Min(_modifierCount.Evaluate(random), pool.Count);
+            for (int i = 0; i < count; i++)
+            {
+                MapRunModifier modifier = random.PickWeighted(pool, m => m.Weight);
+                picked.Add(modifier);
+                pool.Remove(modifier);
+            }
+            return picked;
+        }
 
         // By weight; uniformly when every weight is 0. Null when no layout is assigned.
         public MapLayoutSettings PickLayout(RandomStream random)
