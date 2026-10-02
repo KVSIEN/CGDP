@@ -89,7 +89,9 @@ namespace CGD.UI
 
         public override void Refresh()
         {
-            if (!IsVisible || _conversation == null || _conversation.IsOver) return;
+            // Current is still null when the panel opens: the Npc raises ConversationStarted
+            // before Start(), and Start's Changed event refreshes again with the first line.
+            if (!IsVisible || _conversation?.Current == null) return;
 
             _line.text = _conversation.Current.Text;
 

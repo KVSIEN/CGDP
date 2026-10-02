@@ -90,10 +90,15 @@ namespace CGD.UI
         // Minimal functional Slider (Background / Fill Area+Fill / Handle Slide Area+Handle).
         public static Slider MakeSlider(string name, RectTransform parent, int layer = -1)
         {
-            var go = new GameObject(name, typeof(RectTransform), typeof(Slider));
+            var go = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Slider));
             if (layer >= 0) go.layer = layer;
             go.transform.SetParent(parent, false);
             var rt = go.GetComponent<RectTransform>();
+
+            // Invisible hit area over the whole slider: the visible track is too thin to grab,
+            // and MakeImage's graphics don't receive raycasts.
+            var hitArea = go.GetComponent<Image>();
+            hitArea.color = Color.clear;
 
             var bg = MakeImage("Background", rt, layer);
             bg.color = new Color(1f, 1f, 1f, 0.15f);
@@ -106,15 +111,16 @@ namespace CGD.UI
             var fillAreaRt = fillAreaGO.GetComponent<RectTransform>();
             fillAreaRt.anchorMin = new Vector2(0f, 0.3f);
             fillAreaRt.anchorMax = new Vector2(1f, 0.7f);
-            fillAreaRt.offsetMin = new Vector2(4f, 0f);
-            fillAreaRt.offsetMax = new Vector2(-4f, 0f);
+            // Same inset as the handle area so the fill ends at the handle's centre.
+            fillAreaRt.offsetMin = new Vector2(8f, 0f);
+            fillAreaRt.offsetMax = new Vector2(-8f, 0f);
 
+            // The Slider only drives the fill's anchors, so its offsets must be exactly zero.
             var fill = MakeImage("Fill", fillAreaRt, layer);
             fill.color = new Color(0.3f, 0.55f, 1f, 0.9f);
             fill.rectTransform.anchorMin = new Vector2(0f, 0f);
             fill.rectTransform.anchorMax = new Vector2(0f, 1f);
-            fill.rectTransform.offsetMin = Vector2.zero;
-            fill.rectTransform.sizeDelta = new Vector2(8f, 0f);
+            fill.rectTransform.offsetMin = fill.rectTransform.offsetMax = Vector2.zero;
 
             var handleAreaGO = new GameObject("Handle Slide Area", typeof(RectTransform));
             handleAreaGO.transform.SetParent(rt, false);

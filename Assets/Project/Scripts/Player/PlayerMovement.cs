@@ -197,10 +197,21 @@ namespace CGD.Player
 
         private void HandleMovement()
         {
+            Vector2 rawInput = _input.MoveInput;
+
+            // Kept current even while the dodge drives the velocity: steerable dodge stages
+            // turn toward it.
+            _moveDirection = Vector3.zero;
+            if (rawInput.magnitude > 0.01f)
+            {
+                Vector3 camForward = Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
+                Vector3 camRight = Vector3.ProjectOnPlane(_cameraTransform.right, Vector3.up).normalized;
+                _moveDirection = (camForward * rawInput.y + camRight * rawInput.x).normalized;
+            }
+
             // The dodge sets the velocity itself while it moves the player.
             if (_dodge.IsDrivingMovement) return;
 
-            Vector2 rawInput = _input.MoveInput;
             _isSprinting = _input.GetAction(GameAction.Sprint) && rawInput.magnitude > 0.1f && !IsCrouching && IsGrounded && !IsSliding
                         && _settings.SprintCost.TryDrain(_meters, Time.fixedDeltaTime);
 
@@ -222,14 +233,6 @@ namespace CGD.Player
             if (_input.GetAction(GameAction.AimDownSights))
                 stanceSpeed = Mathf.Min(stanceSpeed, _settings.AdsWalkSpeed);
             float targetSpeed = stanceSpeed * _stunnable.SpeedMultiplier;
-
-            _moveDirection = Vector3.zero;
-            if (rawInput.magnitude > 0.01f)
-            {
-                Vector3 camForward = Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
-                Vector3 camRight = Vector3.ProjectOnPlane(_cameraTransform.right, Vector3.up).normalized;
-                _moveDirection = (camForward * rawInput.y + camRight * rawInput.x).normalized;
-            }
 
             Vector3 targetDir = _moveDirection;
 
