@@ -438,11 +438,11 @@ A map **style** (`MapGenerationSettings`) is what a `MapGraphAsset` or `LevelBui
 | Asset | Create menu | Assign |
 |---|---|---|
 | **MapLayoutSettings** | CGD › Map › Map Layout Settings | sizes, main path, branches, loops, gates (incl. `_minDepth` and the key preferences) |
-| **MapContentSettings** | CGD › Map › Map Content Settings | `_nodeRules` (incl. `_minSpacing`, `_wantsSpace`), `_fillType`, `_guarantees` (type + spot: Within Depth / Behind Every Gate / Before Boss, count, depth band), `_pacing` (`_combatTypes`, `_maxCombatInARow`, `_restAfterElite`, `_restType`), intensity curve, `_sections` = `Map/Sections/` assets in run order, `_factions` = Faction assets from `Data/Factions/`, `_factionMixes` = `Map/FactionMixes/` assets + weight (empty = an even split, every room held) |
+| **MapContentSettings** | CGD › Map › Map Content Settings | `_nodeRules` (incl. `_minSpacing`, `_wantsSpace`), `_fillType`, `_guarantees` (type + spot: Within Depth / Behind Every Gate / Before Boss, count, depth band), `_pacing` (`_combatTypes`, `_maxCombatInARow`, `_restAfterElite`, `_restType`), intensity curve, `_sections` = `Map/Sections/` assets in run order, `_factions` = Faction assets from `Data/Factions/`, `_factionMixes` = `Map/FactionMixes/` assets + weight (empty = an even split). With factions listed every room belongs to one — the validator flags rooms without |
 | **MapGenerationSettings** | CGD › Map › Map Generation Settings | `_layouts` (at least one, weight 0 = never unless all are 0), `_content` (required), `_modifiers` = `Map/Modifiers/` assets, `_modifierCount` (0–1 on the ready-made styles), `_nodeSpacing` |
 | **MapSectionDefinition** | CGD › Map › Section | `_displayName`, `_color` (Section view mode) |
 | **MapRunModifier** | CGD › Map › Run Modifier | name, description (announced in the level), `_weight`, per-type adjustments (weight ×, extra min/max), extra rooms/loops/gates, locked/secret chance ×, intensity offset, `_factionMix` override |
-| **MapFactionMix** | CGD › Map › Faction Mix | `_dominance` (0 = even split, 1 = one faction holds almost everything), `_scatter` (chance a room is a random faction; 1 = fully random), `_unclaimed` (share held by no faction), `_pocketsPerFaction` |
+| **MapFactionMix** | CGD › Map › Faction Mix | `_dominance` (0 = even split, 1 = one faction holds almost everything), `_scatter` (chance a room is a random faction; 1 = fully random), `_pocketsPerFaction`. Every room always gets a faction |
 
 - **Generate** stays disabled until the style has content and at least one layout.
 - **Analyze** opens the style report for the asset's style (seed count and first seed in its toolbar).

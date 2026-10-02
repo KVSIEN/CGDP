@@ -36,6 +36,7 @@ namespace CGD.Map
         [SerializeField] private MapSectionDefinition[] _sections = Array.Empty<MapSectionDefinition>();
 
         [Header("Factions")]
+        [Tooltip("The realities rooms can belong to. With any listed, every room belongs to one; it sets the room's look and whose enemies it fields, not what the room is")]
         [SerializeField] private FactionDefinition[] _factions = Array.Empty<FactionDefinition>();
         [Tooltip("How the factions split the ship; each map rolls one by weight. Empty = an even split with no scatter")]
         [SerializeField] private List<MapFactionMixOption> _factionMixes = new();

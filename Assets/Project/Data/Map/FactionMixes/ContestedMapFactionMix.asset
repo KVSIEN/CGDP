@@ -15,5 +15,4 @@ MonoBehaviour:
   _displayName: Contested
   _dominance: 0.3
   _scatter: 0.05
-  _unclaimed: 0.2
-  _pocketsPerFaction: 2
+  _pocketsPerFaction: 3

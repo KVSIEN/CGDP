@@ -30,9 +30,8 @@ namespace CGD.Map
         public MapReportStat DeadEnds   { get; } = new();
         public MapReportStat Gates      { get; } = new();
         public MapReportStat Loops      { get; } = new();
-        // Per map, % of rooms held by its biggest faction and by none.
+        // Per map, % of rooms held by its biggest faction.
         public MapReportStat TopFaction { get; } = new();
-        public MapReportStat NoFaction  { get; } = new();
 
         public IReadOnlyDictionary<MapNodeType, MapReportStat> TypeCounts => _types;
         // Problem text (ids replaced by #n) → maps it appeared in.
@@ -118,9 +117,7 @@ namespace CGD.Map
             int top = 0;
             foreach (var (faction, count) in perFaction)
                 if (faction != MapNode.NoFaction && count > top) top = count;
-            perFaction.TryGetValue(MapNode.NoFaction, out int none);
             TopFaction.Add(Mathf.RoundToInt(100f * top / rooms));
-            NoFaction.Add(Mathf.RoundToInt(100f * none / rooms));
         }
 
         public string ToText()
@@ -143,10 +140,7 @@ namespace CGD.Map
 
             AppendShares(text, "Faction territory (share of all rooms)", _factionRooms, _totalRooms);
             if (_factionRooms.Count > 0)
-            {
                 text.AppendLine($"  Biggest faction  {TopFaction} % of a map's rooms");
-                text.AppendLine($"  No faction       {NoFaction} % of a map's rooms");
-            }
             AppendShares(text, "Faction mixes picked", _factionMixes, Maps);
             AppendShares(text, "Sections (share of all rooms)", _sectionRooms, _totalRooms);
             AppendShares(text, "Layouts picked", _layouts, Maps);

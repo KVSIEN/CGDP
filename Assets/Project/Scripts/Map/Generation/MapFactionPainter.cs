@@ -4,14 +4,15 @@ using UnityEngine;
 
 namespace CGD.Map
 {
-    // Splits the rooms between the factions as the map's faction mix asks:
-    //   1. shares — equal, or most of the rooms for one dominant faction picked per map;
-    //      the mix's unclaimed share is left to nobody
+    // Splits the rooms between the factions — the ship's warped realities — as the map's
+    // faction mix asks. Every room ends up in one of them; a faction only changes how a
+    // room looks and whose enemies it fields, never what the room is.
+    //   1. shares — equal, or most of the rooms for one dominant faction picked per map
     //   2. territories — each faction seeds its pockets (spread apart) and grows into
-    //      unclaimed neighbouring rooms until it holds its share; walled in, it reaches
-    //      past the rooms in its way
-    //   3. scatter — the anomaly flips rooms to a random faction (weighted by share), or
-    //      to nobody, regardless of territory
+    //      free neighbouring rooms until it holds its share; walled in, it reaches past
+    //      the rooms in its way
+    //   3. scatter — the anomaly flips rooms to a random faction (weighted by share),
+    //      regardless of territory
     // Influence is how firmly a room is held: 1 at a pocket's origin, less with each room
     // away from it, and a flat ScatteredInfluence for rooms the anomaly flipped.
     internal class MapFactionPainter
@@ -46,7 +47,6 @@ namespace CGD.Map
         // Without a mix: an even split, every room held, no scatter.
         private float Dominance => _mix != null ? _mix.Dominance : 0f;
         private float Scatter   => _mix != null ? _mix.Scatter   : 0f;
-        private float Unclaimed => _mix != null ? _mix.Unclaimed : 0f;
         private int   Pockets   => _mix != null ? _mix.PocketsPerFaction : 1;
 
         public void Paint()
@@ -57,15 +57,16 @@ namespace CGD.Map
             _shares = Shares(factions, Dominance, _random.Range(0, factions));
             _held   = new int[factions];
 
-            int claimable = Mathf.RoundToInt(Graph.Nodes.Count * (1f - Unclaimed));
+            int rooms = Graph.Nodes.Count;
             var quota = new int[factions];
             for (int f = 0; f < factions; f++)
-                quota[f] = Mathf.RoundToInt(_shares[f] * claimable);
+                quota[f] = Mathf.RoundToInt(_shares[f] * rooms);
 
             SeedOrigins(quota);
-            Grow(claimable, quota);
-            Grow(claimable, null);
-            ScatterRooms(factions);
+            Grow(rooms, quota);
+            Grow(rooms, null);
+            ClaimLeftovers();
+            ScatterRooms();
             Apply();
         }
 
@@ -128,15 +129,15 @@ namespace CGD.Map
         private static int DistanceOf(int nodeId, Dictionary<int, int> distance) =>
             distance.TryGetValue(nodeId, out int d) ? d : int.MaxValue;
 
-        // Grows one room at a time until `claimable` rooms are held. With a quota, only
+        // Grows one room at a time until `target` rooms are held. With a quota, only
         // factions under theirs grow, weighted by how far under they are; without (the
         // rooms quotas leave over from rounding), every faction does, weighted by share.
-        private void Grow(int claimable, int[] quota)
+        private void Grow(int target, int[] quota)
         {
             var frontier = new List<(int node, int from)>();
             var weights  = new float[_held.Length];
 
-            while (_owner.Count < claimable)
+            while (_owner.Count < target)
             {
                 float total = 0f;
                 for (int f = 0; f < _held.Length; f++)
@@ -219,7 +220,16 @@ namespace CGD.Map
             return 0;
         }
 
-        private void ScatterRooms(int factions)
+        // Only when no territory could start (a map with no room to seed one): every
+        // room still belongs to some reality.
+        private void ClaimLeftovers()
+        {
+            foreach (MapNode node in Graph.Nodes)
+                if (!_owner.ContainsKey(node.Id))
+                    Claim(node.Id, PickIndex(_shares, 1f), ScatteredInfluence);
+        }
+
+        private void ScatterRooms()
         {
             if (Scatter <= 0f) return;
 
@@ -227,12 +237,8 @@ namespace CGD.Map
             {
                 if (_origins.Contains(node.Id) || !_random.Chance(Scatter)) continue;
 
-                if (_owner.TryGetValue(node.Id, out int previous)) _held[previous]--;
-                _owner.Remove(node.Id);
-                _influence.Remove(node.Id);
-
-                if (!_random.Chance(Unclaimed))
-                    Claim(node.Id, PickIndex(_shares, 1f), ScatteredInfluence);
+                _held[_owner[node.Id]]--;
+                Claim(node.Id, PickIndex(_shares, 1f), ScatteredInfluence);
             }
         }
 
@@ -246,12 +252,7 @@ namespace CGD.Map
         private void Apply()
         {
             foreach (MapNode node in Graph.Nodes)
-            {
-                if (_owner.TryGetValue(node.Id, out int faction))
-                    node.SetFaction(faction, _influence[node.Id]);
-                else
-                    node.SetFaction(MapNode.NoFaction, 0f);
-            }
+                node.SetFaction(_owner[node.Id], _influence[node.Id]);
         }
     }
 }

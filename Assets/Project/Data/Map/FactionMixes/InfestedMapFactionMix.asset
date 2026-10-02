@@ -15,5 +15,4 @@ MonoBehaviour:
   _displayName: Infested
   _dominance: 0.8
   _scatter: 0.1
-  _unclaimed: 0
   _pocketsPerFaction: 1

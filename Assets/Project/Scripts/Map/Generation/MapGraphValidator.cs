@@ -30,6 +30,7 @@ namespace CGD.Map
                 CheckRuleCounts(graph, content, tuning, issues);
                 CheckNodes(graph, analysis, content, issues);
                 CheckPacing(graph, analysis, content.Pacing, issues);
+                CheckFactions(graph, content, issues);
                 foreach (MapGuarantee guarantee in content.Guarantees)
                 {
                     if (guarantee == null || !guarantee.IsValid) continue;
@@ -176,6 +177,17 @@ namespace CGD.Map
                     && before.Type == MapNodeType.Elite)
                     issues.Add($"#{node.Id} {node.Type} comes right after the Elite at #{before.Id}.");
             }
+        }
+
+        // With factions listed, every room is one of the ship's realities.
+        private static void CheckFactions(MapGraph graph, MapContentSettings content, List<string> issues)
+        {
+            int count = content.Factions.Count;
+            if (count == 0) return;
+
+            foreach (MapNode node in graph.Nodes)
+                if (!node.HasFaction || node.Faction >= count)
+                    issues.Add($"#{node.Id} {node.Type} belongs to no faction.");
         }
 
         private static bool HasNeighborOfType(MapGraph graph, MapNode node, List<int> neighbors)
