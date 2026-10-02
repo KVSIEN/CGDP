@@ -83,6 +83,7 @@ namespace CGD.Player
         private float _shoulderVelocity;
         private float _bodyRotVelocity;
         private float _adsT;
+        private float _lastZoomT;
         private float _crouchHeadOffset;
         private float _crouchHeadVelocity;
         private float _recoilPitch;
@@ -102,6 +103,10 @@ namespace CGD.Player
         public Camera  Camera           => _camera;
         /// <summary>0 = hip, 1 = fully aimed. Used by WeaponController for spread/recoil scaling.</summary>
         public float AdsT     => _adsT;
+        // How far the view is zoomed in (FOV and aim sensitivity), per the ADS Zoom setting:
+        // follows AdsT when Gradual; 0 until fully aimed in, then 1, when Snap. Accuracy and the
+        // weapon pose always follow AdsT, so the setting is purely how the zoom looks.
+        public float ZoomT    => GameSettings.Current.AdsZoom == AdsZoomMode.Snap ? (_adsT >= 1f ? 1f : 0f) : _adsT;
 
         public Transform LockTarget => _lockTarget;
 
@@ -236,7 +241,7 @@ namespace CGD.Player
         private void UpdateRotation()
         {
             Vector2 look = _input.LookInput;
-            float sensScale = Mathf.Lerp(1f, _adsSensitivityMult, _adsT);
+            float sensScale = Mathf.Lerp(1f, _adsSensitivityMult, ZoomT);
             float mult = (_input.IsGamepadLook ? _gamepadSensitivity * Time.deltaTime : _mouseSensitivity * 0.1f) * sensScale;
 
             _yaw += look.x * mult;
@@ -331,8 +336,13 @@ namespace CGD.Player
             // The player's FOV setting replaces the authored base; sprint keeps its authored widening.
             float baseFOV = GameSettings.Current.FieldOfView;
             float hipFOV  = _movement.IsSprinting ? baseFOV + (_sprintFOV - _baseFOV) : baseFOV;
-            float target = Mathf.Lerp(hipFOV, _adsFOV, _adsT);
-            _camera.fieldOfView = Mathf.Lerp(_camera.fieldOfView, target, _fovSpeed * Time.deltaTime);
+            float zoomT  = ZoomT;
+            float target = Mathf.Lerp(hipFOV, _adsFOV, zoomT);
+
+            // In Snap mode the zoom itself jumps; sprint widening still eases.
+            bool snapped = zoomT != _lastZoomT && GameSettings.Current.AdsZoom == AdsZoomMode.Snap;
+            _lastZoomT = zoomT;
+            _camera.fieldOfView = snapped ? target : Mathf.Lerp(_camera.fieldOfView, target, _fovSpeed * Time.deltaTime);
         }
 
         private void RefreshMeshVisibility()

@@ -25,6 +25,7 @@ namespace CGD.Settings
         // 0 = unlimited (only used while VSync is off).
         public int  FrameRateLimit;
         public float FieldOfView = 70f;
+        public AdsZoomMode AdsZoom = AdsZoomMode.Gradual;
 
         // Accessibility (0..1 scales)
         public float CameraShake    = 1f;

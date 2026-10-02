@@ -40,6 +40,7 @@
 - Body rotation is snappy in first-person and smooth in third-person
 - Aim Down Sights (hold right mouse / right stick) — works in both first and third person
   - Zoom (FOV) and transition speed are per-weapon: snipers scope deep and slowly, pistols barely zoom and snap in, ARs sit in the middle
+  - ADS Zoom setting (Video → Camera): **Gradual** narrows the view along with the aim-in (Battlefield style); **Snap** keeps the view as is until the aim-in finishes, then snaps to the zoom (Modern Warfare style) and back out the moment you let go. Aim sensitivity follows the zoom; accuracy and aim-in time are the same either way
   - In third person: pulls the camera in closer and centers the shoulder offset
   - The held weapon smoothly raises from its hip position to a centred aim position and back
   - Reduces look sensitivity while aiming; all transitions are smooth
@@ -189,7 +190,7 @@
 - Reset to Defaults button restores all keybindings to their original values
 - The menu has four tabs: Controls (sensitivity and keybindings), Audio, Video and Accessibility. Reset Defaults resets only the tab you're on
 - **Audio** — Master, Effects, Music and Interface volume sliders, heard straight away
-- **Video** — resolution, window mode (fullscreen, borderless, windowed), quality level, VSync, frame rate limit (when VSync is off) and field of view (60–110°). Sprinting still widens the view on top of the chosen FOV. Resolution and window mode apply in builds, not in the editor's Game view
+- **Video** — resolution, window mode (fullscreen, borderless, windowed), quality level, VSync, frame rate limit (when VSync is off), field of view (60–110°) and ADS zoom (gradual or snap). Sprinting still widens the view on top of the chosen FOV. Resolution and window mode apply in builds, not in the editor's Game view
 - **Accessibility** — camera shake & kicks strength (0% turns off shake, weapon kicks and FOV punches), screen flash strength (hit flash and feedback flashes), and the low-health red vignette on or off. Hold vs. toggle is set per action on the Controls tab
 - Audio, video and accessibility changes preview live and are saved when the menu closes
 - All settings are saved to disk and automatically restored on next launch, applied before the first scene appears
