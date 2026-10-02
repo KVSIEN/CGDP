@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c00cbf127d4469a357b5da37b62777, type: 3}
   m_Name: SandboxMapGraph
   m_EditorClassIdentifier: CGD.Runtime::CGD.Map.MapGraphAsset
-  _settings: {fileID: 11400000, guid: e76e4b5f49e64ad6b6bb9a5a3230ff7f, type: 2}
+  _settings: {fileID: 11400000, guid: bd11c0b882434fcb977742afc094805c, type: 2}
   _seed: 12345

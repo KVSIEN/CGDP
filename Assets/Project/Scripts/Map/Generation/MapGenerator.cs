@@ -34,7 +34,12 @@ namespace CGD.Map
         {
             var context = new MapGenerationContext(_settings, seed, variants);
 
-            new MapLayoutBuilder(context).Build();
+            // Rooms, extra links and gates all belong to the layout layer.
+            RandomStream layout = context.StreamFor(LayoutLayer);
+            new MapLayoutBuilder(context, layout).Build();
+            new MapLinkBuilder(context, layout).Build();
+            new MapGatePlacer(context, layout).Place();
+            context.DeriveSlots();
 
             var types = new MapTypeAssigner(context);
             types.Assign(pins);

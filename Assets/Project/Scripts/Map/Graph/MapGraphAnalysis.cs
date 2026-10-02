@@ -33,11 +33,11 @@ namespace CGD.Map
             StartId = graph.FindFirst(MapNodeType.Start)?.Id ?? Unreachable;
             ExitId  = graph.FindFirst(MapNodeType.Exit)?.Id  ?? Unreachable;
 
-            Dictionary<int, int> allRoutes = Distances(StartId, includeShortcuts: true);
+            Dictionary<int, int> allRoutes = MapGraphSearch.Distances(graph, StartId, includeShortcuts: true);
             _reachable = new HashSet<int>(allRoutes.Keys);
 
             // Nodes only reachable through a shortcut fall back to their shortcut depth.
-            _depth = Distances(StartId, includeShortcuts: false);
+            _depth = MapGraphSearch.Distances(graph, StartId, includeShortcuts: false);
             foreach (KeyValuePair<int, int> entry in allRoutes)
                 _depth.TryAdd(entry.Key, entry.Value);
             foreach (int depth in _depth.Values)
@@ -121,30 +121,6 @@ namespace CGD.Map
             path.Add(from);
             path.Reverse();
             return path;
-        }
-
-        private Dictionary<int, int> Distances(int from, bool includeShortcuts)
-        {
-            var distances = new Dictionary<int, int>();
-            if (from == Unreachable) return distances;
-
-            var frontier = new Queue<int>();
-            distances[from] = 0;
-            frontier.Enqueue(from);
-
-            while (frontier.Count > 0)
-            {
-                int current = frontier.Dequeue();
-
-                CollectNeighbors(current, includeShortcuts);
-                foreach (int next in _neighborBuffer)
-                {
-                    if (distances.ContainsKey(next)) continue;
-                    distances[next] = distances[current] + 1;
-                    frontier.Enqueue(next);
-                }
-            }
-            return distances;
         }
 
         private void CollectNeighbors(int id, bool includeShortcuts)

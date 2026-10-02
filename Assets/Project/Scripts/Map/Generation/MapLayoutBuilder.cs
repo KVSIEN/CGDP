@@ -4,179 +4,163 @@ using UnityEngine;
 
 namespace CGD.Map
 {
-    // Builds the connection structure: a main path from Start to Exit, side branches
-    // that dead-end or rejoin further ahead, and shortcuts that skip along the path.
-    // Every room is created with the fill type; MapTypeAssigner decides the real types.
+    // Grows the rooms as a tree on MapGrid: a main path walked out from Start to the Boss
+    // and Exit, hub branches off Start, then branches off the path (or off earlier
+    // branches) until the map reaches its room count. Each new room takes a free cell
+    // next to the room it hangs off. Branches may rejoin a neighbouring room; every
+    // other extra link is MapLinkBuilder's job.
     //
-    // Positions are a simple column/lane grid for the editor: column = steps along the
-    // main path, lane = rows above (-) or below (+) it.
+    // Rooms are created with the fill type; MapTypeAssigner decides the real types.
     internal class MapLayoutBuilder
     {
-        private const int PlacementAttempts = 8;
+        // Consecutive failed branches before the map stops growing short of its room count.
+        private const int PlacementAttempts = 16;
+        private const int NoRoom = -1;
 
         private readonly MapGenerationContext _context;
         private readonly RandomStream         _random;
-        private readonly List<int>            _mainPath = new();
-        private readonly List<LaneSpan>       _occupiedLanes = new();
+        // Start and the rooms between it and the Boss: where branches attach.
+        private readonly List<int>            _pathRooms   = new();
+        private readonly List<int>            _branchRooms = new();
+        private readonly List<Vector2Int>     _openCells   = new();
+        private readonly List<int>            _neighbors   = new();
 
-        // Rooms between Start and Boss; Boss sits at column RoomCount + 1.
-        private int _roomCount;
-
-        public MapLayoutBuilder(MapGenerationContext context)
+        public MapLayoutBuilder(MapGenerationContext context, RandomStream random)
         {
             _context = context;
-            _random  = context.StreamFor(MapGenerator.LayoutLayer);
+            _random  = random;
         }
 
         private MapGraph              Graph    => _context.Graph;
+        private MapGrid               Grid     => _context.Grid;
         private MapGenerationSettings Settings => _context.Settings;
-        private float BossColumn => _roomCount + 1;
 
         public void Build()
         {
+            int target = Settings.RoomCount.Evaluate(_random);
+
             BuildMainPath();
-
-            int branches = Settings.BranchCount.Evaluate(_random);
-            for (int i = 0; i < branches; i++)
-                if (!TryAddBranch())
-                    _context.Warnings.Add($"Only placed {i} of {branches} branches — raise Max Connections Per Node or the main path length.");
-
-            int shortcuts = Settings.ShortcutCount.Evaluate(_random);
-            for (int i = 0; i < shortcuts; i++)
-                if (!TryAddShortcut())
-                    _context.Warnings.Add($"Only placed {i} of {shortcuts} shortcuts.");
+            AddHubBranches(target);
+            FillWithBranches(target);
         }
 
+        // Never steps back toward Start's column, so the path can't box itself in and the
+        // boss always ends up further from Start than anything on the path.
         private void BuildMainPath()
         {
-            _roomCount = Mathf.Max(1, Settings.MainPathLength.Evaluate(_random));
+            MapPathSettings path = Settings.MainPath;
+            int length = Mathf.Max(1, path.Length.Evaluate(_random), Settings.MinBossDepth - 1);
 
-            AddMainNode(MapNodeType.Start, 0);
-            for (int column = 1; column <= _roomCount; column++)
-                AddMainNode(Settings.FillType, column);
-            AddMainNode(MapNodeType.Boss, _roomCount + 1);
-            AddMainNode(MapNodeType.Exit, _roomCount + 2);
-        }
+            Vector2Int heading = Vector2Int.right;
+            int previous = AddRoom(MapNodeType.Start, Vector2Int.zero, NoRoom);
+            _pathRooms.Add(previous);
 
-        private void AddMainNode(MapNodeType type, int column)
-        {
-            MapNode node = Graph.AddNode(type, Position(column, 0));
-            bool structural = MapGenerationSettings.IsStructural(type);
-            _context.Slots.Add(new MapSlot(node.Id, Progress(column), onMainPath: true, structural));
-
-            if (_mainPath.Count > 0)
-                Graph.Connect(_mainPath[^1], node.Id);
-            _mainPath.Add(node.Id);
-        }
-
-        // Branches attach anywhere from Start up to the last room before the boss, so
-        // the boss keeps a single entrance.
-        private bool TryAddBranch()
-        {
-            for (int attempt = 0; attempt < PlacementAttempts; attempt++)
+            for (int i = 0; i < length; i++)
             {
-                int attachColumn = _random.Range(0, _roomCount + 1);
-                if (IsFull(_mainPath[attachColumn])) continue;
-
-                AddBranch(attachColumn, Mathf.Max(1, Settings.BranchLength.Evaluate(_random)));
-                return true;
-            }
-            return false;
-        }
-
-        private void AddBranch(int attachColumn, int length)
-        {
-            int firstColumn = attachColumn + 1;
-            int lastColumn  = attachColumn + length;
-
-            // Rejoining at the branch's last column keeps the branch one step longer than
-            // the main path segment it runs beside, so the main path stays the shortest
-            // route and branch rooms keep the depth of their column.
-            int rejoinColumn = lastColumn;
-
-            bool rejoins = rejoinColumn <= _roomCount
-                        && !IsFull(_mainPath[rejoinColumn])
-                        && _random.Chance(Settings.BranchRejoinChance);
-
-            int lane     = ClaimLane(firstColumn, lastColumn);
-            int previous = _mainPath[attachColumn];
-
-            for (int column = firstColumn; column <= lastColumn; column++)
-            {
-                MapNode node = Graph.AddNode(Settings.FillType, Position(column, lane));
-                _context.Slots.Add(new MapSlot(node.Id, Progress(column), onMainPath: false, isStructural: false));
-
-                ConnectionType link = column == firstColumn ? RollEntranceType() : ConnectionType.Normal;
-                Graph.Connect(previous, node.Id, link);
-                previous = node.Id;
+                previous = AddPathRoom(Settings.FillType, previous, ref heading, path.Winding);
+                _pathRooms.Add(previous);
             }
 
-            if (rejoins)
-                Graph.Connect(previous, _mainPath[rejoinColumn]);
-            else
-                _context.GetSlot(previous).IsDeadEnd = true;
+            int boss = AddPathRoom(MapNodeType.Boss, previous, ref heading, path.Winding);
+            AddPathRoom(MapNodeType.Exit, boss, ref heading, path.Winding);
         }
 
-        private ConnectionType RollEntranceType()
+        private int AddPathRoom(MapNodeType type, int previous, ref Vector2Int heading, float winding)
         {
-            if (_random.Chance(Settings.LockedBranchChance)) return ConnectionType.Locked;
-            if (_random.Chance(Settings.SecretBranchChance)) return ConnectionType.Secret;
-            return ConnectionType.Normal;
+            // Stepping right is always open — nothing sits past the path's last column yet.
+            TryStep(Grid.CellOf(previous), ref heading, winding, allowBackward: false, out Vector2Int cell);
+            return AddRoom(type, cell, previous);
         }
 
-        // Skips one or two rooms ahead, never past the last room before the boss.
-        private bool TryAddShortcut()
+        private void AddHubBranches(int target)
         {
-            for (int attempt = 0; attempt < PlacementAttempts; attempt++)
+            int count = Settings.Branches.HubBranches.Evaluate(_random);
+            for (int i = 0; i < count; i++)
+                if (!TryAddBranch(_pathRooms[0], target))
+                {
+                    _context.Warnings.Add($"Only placed {i} of {count} hub branches — Start has no free side left.");
+                    return;
+                }
+        }
+
+        private void FillWithBranches(int target)
+        {
+            int failures = 0;
+            while (Graph.Nodes.Count < target && failures < PlacementAttempts)
+                failures = TryAddBranch(PickAttachRoom(), target) ? 0 : failures + 1;
+
+            if (Graph.Nodes.Count < target)
+                _context.Warnings.Add($"Reached {Graph.Nodes.Count} of {target} rooms — raise Max Spread or Max Connections Per Node.");
+        }
+
+        private int PickAttachRoom() =>
+            _branchRooms.Count > 0 && _random.Chance(Settings.Branches.ForkChance)
+                ? _random.Pick(_branchRooms)
+                : _random.Pick(_pathRooms);
+
+        private bool TryAddBranch(int attachId, int target)
+        {
+            if (_context.IsFull(attachId)) return false;
+
+            MapBranchSettings branches = Settings.Branches;
+            // Hub branches still get a room when the path alone already meets the target.
+            int roomsLeft = Mathf.Max(1, target - Graph.Nodes.Count);
+            int length    = Mathf.Min(Mathf.Max(1, branches.Length.Evaluate(_random)), roomsLeft);
+            int previous = attachId;
+            Vector2Int heading = Vector2Int.zero;
+
+            for (int i = 0; i < length; i++)
             {
-                int from = _random.Range(0, _roomCount + 1);
-                int to   = from + _random.Range(2, 4);
-                if (to > _roomCount) continue;
+                if (!TryStep(Grid.CellOf(previous), ref heading, branches.Winding, allowBackward: true, out Vector2Int cell))
+                    break;
 
-                int a = _mainPath[from];
-                int b = _mainPath[to];
-                if (IsFull(a) || IsFull(b)) continue;
-
-                if (Graph.Connect(a, b, ConnectionType.Shortcut)) return true;
-            }
-            return false;
-        }
-
-        private bool IsFull(int nodeId) => Graph.Degree(nodeId) >= Settings.MaxConnectionsPerNode;
-
-        // Picks a random side, then the lane closest to the main path whose columns
-        // aren't already used by another branch on that side.
-        private int ClaimLane(int firstColumn, int lastColumn)
-        {
-            int side = _random.Sign();
-            int lane = side;
-
-            while (_occupiedLanes.Exists(s => s.Lane == lane && s.Overlaps(firstColumn, lastColumn)))
-                lane += side;
-
-            _occupiedLanes.Add(new LaneSpan(lane, firstColumn, lastColumn));
-            return lane;
-        }
-
-        private float Progress(int column) => Mathf.Clamp01(column / BossColumn);
-
-        private Vector2 Position(int column, int lane) =>
-            new(column * Settings.NodeSpacing.x, lane * Settings.NodeSpacing.y);
-
-        private readonly struct LaneSpan
-        {
-            public LaneSpan(int lane, int firstColumn, int lastColumn)
-            {
-                Lane        = lane;
-                FirstColumn = firstColumn;
-                LastColumn  = lastColumn;
+                previous = AddRoom(Settings.FillType, cell, previous);
+                _branchRooms.Add(previous);
             }
 
-            public int Lane        { get; }
-            public int FirstColumn { get; }
-            public int LastColumn  { get; }
+            if (previous == attachId) return false;
 
-            public bool Overlaps(int first, int last) => first <= LastColumn && last >= FirstColumn;
+            if (_random.Chance(branches.RejoinChance))
+                TryRejoin(previous);
+            return true;
+        }
+
+        // Links a branch's last room to a neighbouring room it isn't already linked to.
+        private void TryRejoin(int endId)
+        {
+            Grid.CollectNeighborRooms(Grid.CellOf(endId), _neighbors);
+            _random.Shuffle(_neighbors);
+
+            foreach (int other in _neighbors)
+                if (!_context.IsBossOrExit(other) && _context.TryLink(endId, other))
+                    return;
+        }
+
+        // Keeps going straight unless the winding roll turns (or straight is blocked). A
+        // zero heading picks any open direction.
+        private bool TryStep(Vector2Int from, ref Vector2Int heading, float winding, bool allowBackward, out Vector2Int cell)
+        {
+            Grid.CollectOpenNeighbors(from, _openCells);
+            if (!allowBackward) _openCells.Remove(from + Vector2Int.left);
+
+            cell = from;
+            if (_openCells.Count == 0) return false;
+
+            bool straight = heading != Vector2Int.zero && _openCells.Contains(from + heading) && !_random.Chance(winding);
+            cell    = straight ? from + heading : _random.Pick(_openCells);
+            heading = cell - from;
+            return true;
+        }
+
+        private int AddRoom(MapNodeType type, Vector2Int cell, int linkFrom)
+        {
+            Vector2 spacing = Settings.NodeSpacing;
+            MapNode node = Graph.AddNode(type, new Vector2(cell.x * spacing.x, cell.y * spacing.y));
+            Grid.Place(node.Id, cell);
+
+            if (linkFrom != NoRoom)
+                Graph.Connect(linkFrom, node.Id);
+            return node.Id;
         }
     }
 }

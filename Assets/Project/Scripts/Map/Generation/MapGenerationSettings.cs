@@ -7,28 +7,31 @@ namespace CGD.Map
     // Constraints for MapGenerator: the shape of the map, which experiences go where,
     // how difficulty rises and how factions spread. The generator only answers "what
     // does the player experience, and how is it connected?" — no room geometry.
+    //
+    // The structure settings cover a wide range of map styles from one generator — a
+    // straight corridor, a branching spine, a hub around Start, a winding web — so a new
+    // kind of map is a new asset rather than new code.
     [CreateAssetMenu(fileName = "MapGenerationSettings", menuName = "CGD/Map/Map Generation Settings")]
     public class MapGenerationSettings : ScriptableObject
     {
-        [Header("Main Path")]
-        [Tooltip("Rooms between Start and Boss")]
-        [SerializeField] private IntRange _mainPathLength = new(6, 9);
-
-        [Header("Branches")]
-        [SerializeField] private IntRange _branchCount = new(2, 4);
-        [Tooltip("Rooms per branch")]
-        [SerializeField] private IntRange _branchLength = new(1, 3);
-        [Tooltip("Chance a branch reconnects to the main path further ahead instead of dead-ending")]
-        [SerializeField, Range(0f, 1f)] private float _branchRejoinChance = 0.3f;
-        [Tooltip("Chance a branch's entrance is Locked")]
-        [SerializeField, Range(0f, 1f)] private float _lockedBranchChance = 0.15f;
-        [Tooltip("Chance a branch's entrance is Secret (rolled only when not Locked)")]
-        [SerializeField, Range(0f, 1f)] private float _secretBranchChance = 0.15f;
-
-        [Header("Loops")]
-        [Tooltip("Shortcut connections that skip ahead along the main path")]
-        [SerializeField] private IntRange _shortcutCount = new(0, 1);
+        [Header("Size")]
+        [Tooltip("Total rooms, Start, Boss and Exit included. Branches are added until the map reaches it")]
+        [SerializeField] private IntRange _roomCount = new(14, 20);
+        [Tooltip("Fewest connections from Start to the Boss on any route, shortcuts included. Loops and shortcuts that would cut below it are skipped")]
+        [SerializeField, Min(2)] private int _minBossDepth = 5;
+        [Tooltip("Rows of rooms allowed above and below Start's. 0 = unlimited. Low values pack rooms into tangled maps; high values let them sprawl")]
+        [SerializeField, Min(0)] private int _maxSpread;
         [SerializeField, Min(2)] private int _maxConnectionsPerNode = 4;
+
+        [Header("Structure")]
+        [SerializeField] private MapPathSettings   _mainPath = new();
+        [SerializeField] private MapBranchSettings _branches = new();
+        [SerializeField] private MapLoopSettings   _loops    = new();
+        [SerializeField] private MapGateSettings   _gates    = new();
+
+        [Header("Early Loot")]
+        [Tooltip("Guarantees one Treasure this many rooms from Start, on a branch when one is that deep. 0–0 = off")]
+        [SerializeField] private IntRange _earlyTreasureDepth = new(0, 0);
 
         [Header("Node Types")]
         [Tooltip("Start, Boss and Exit are placed structurally; rules for them are ignored")]
@@ -44,7 +47,7 @@ namespace CGD.Map
 
         [Header("Factions")]
         [Tooltip("Each faction claims one origin node; its influence fades with every connection away from it")]
-        [SerializeField] private string[] _factions = { "Cult", "Machines" };
+        [SerializeField] private string[] _factions = { "TECH", "BIO", "VOID" };
         [Tooltip("Influence kept per connection travelled")]
         [SerializeField, Range(0f, 1f)] private float _factionFalloff = 0.6f;
         [Tooltip("Nodes below this influence belong to no faction")]
@@ -53,14 +56,18 @@ namespace CGD.Map
         [Header("Layout (editor only)")]
         [SerializeField] private Vector2 _nodeSpacing = new(220f, 110f);
 
-        public IntRange MainPathLength       => _mainPathLength;
-        public IntRange BranchCount          => _branchCount;
-        public IntRange BranchLength         => _branchLength;
-        public float    BranchRejoinChance   => _branchRejoinChance;
-        public float    LockedBranchChance   => _lockedBranchChance;
-        public float    SecretBranchChance   => _secretBranchChance;
-        public IntRange ShortcutCount        => _shortcutCount;
+        public IntRange RoomCount             => _roomCount;
+        public int      MinBossDepth          => _minBossDepth;
+        public int      MaxSpread             => _maxSpread;
         public int      MaxConnectionsPerNode => _maxConnectionsPerNode;
+
+        public MapPathSettings   MainPath => _mainPath;
+        public MapBranchSettings Branches => _branches;
+        public MapLoopSettings   Loops    => _loops;
+        public MapGateSettings   Gates    => _gates;
+
+        public IntRange EarlyTreasureDepth => _earlyTreasureDepth;
+        public bool     HasEarlyTreasure   => _earlyTreasureDepth.Max > 0;
 
         public IReadOnlyList<MapNodeTypeRule> NodeRules => _nodeRules;
         public MapNodeType FillType => _fillType;

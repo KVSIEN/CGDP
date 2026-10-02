@@ -4,11 +4,12 @@ using UnityEngine;
 
 namespace CGD.Map
 {
-    // Decides what each room is, in three passes:
+    // Decides what each room is, in four passes:
     //   1. pins — locked nodes from the previous map claim the closest matching room
-    //   2. minimums — each rule gets its Min rooms, dead ends first when it prefers them,
+    //   2. early loot — one Treasure within reach of Start, when the settings ask for it
+    //   3. minimums — each rule gets its Min rooms, dead ends first when it prefers them,
     //      most constrained rule first
-    //   3. fill — remaining rooms roll a weighted rule that still has room under its Max
+    //   4. fill — remaining rooms roll a weighted rule that still has room under its Max
     // A rule is only offered rooms matching its placement, depth and adjacency limits.
     internal class MapTypeAssigner
     {
@@ -42,6 +43,8 @@ namespace CGD.Map
 
             foreach (MapNodePin pin in pins)
                 PinnedNodeIds.Add(PlacePin(pin));
+
+            PlaceEarlyTreasure();
 
             PlaceMinimums();
 
@@ -81,6 +84,43 @@ namespace CGD.Map
                 bestDistance = distance;
             }
             return best;
+        }
+
+        // Still follows the Treasure rule's placement and adjacency limits, and prefers a
+        // branch room so reaching the loot can mean leaving the main path. A pinned
+        // Treasure already in the window counts.
+        private void PlaceEarlyTreasure()
+        {
+            if (!Settings.HasEarlyTreasure || HasAssignedWithinDepth(MapNodeType.Treasure, Settings.EarlyTreasureDepth)) return;
+
+            MapNodeTypeRule rule = Settings.GetRule(MapNodeType.Treasure) ?? new MapNodeTypeRule(MapNodeType.Treasure, 0, 99, 1f);
+            if (CountOf(MapNodeType.Treasure) >= rule.Max) return;
+
+            IntRange window = Settings.EarlyTreasureDepth;
+            _candidates.Clear();
+            foreach (MapSlot slot in _context.Slots)
+                if (slot.Depth >= window.Min && slot.Depth <= window.Max && CanPlace(rule, slot))
+                    _candidates.Add(slot);
+
+            if (_candidates.Exists(s => !s.OnMainPath))
+                _candidates.RemoveAll(s => s.OnMainPath);
+
+            if (_candidates.Count == 0)
+            {
+                _context.Warnings.Add($"No room {window.Min}–{window.Max} deep can take the early Treasure.");
+                return;
+            }
+
+            SetType(_random.Pick(_candidates), MapNodeType.Treasure);
+        }
+
+        private bool HasAssignedWithinDepth(MapNodeType type, IntRange window)
+        {
+            foreach (MapSlot slot in _context.Slots)
+                if (_assigned.Contains(slot.NodeId) && slot.Depth >= window.Min && slot.Depth <= window.Max
+                    && Graph.TryGetNode(slot.NodeId, out MapNode node) && node.Type == type)
+                    return true;
+            return false;
         }
 
         // Most-constrained first: each step serves the rule with the fewest free rooms

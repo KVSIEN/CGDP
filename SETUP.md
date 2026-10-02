@@ -436,7 +436,7 @@ Level              [LevelBuilder, NavMeshSurface]   ← at the origin, unrotated
 
 | Component | Assign | Notes |
 |---|---|---|
-| **LevelBuilder** | `_settings` = `Level/DefaultLevelBuildSettings` · `_graphAsset` = a `MapGraphAsset` **or** `_generation` = `Map/DefaultMapGenerationSettings` · `_seed` (0 = random) · `_navMesh` = its NavMeshSurface · `_player` = Player · `_spawnPoint` = RespawnPoint · `_worldMap`? = WorldMapArea | Logs a warning for every corridor that had to cross another. |
+| **LevelBuilder** | `_settings` = `Level/DefaultLevelBuildSettings` · `_graphAsset` = a `MapGraphAsset` **or** `_generation` = a `Map/…MapGenerationSettings` style (e.g. `BranchingMapGenerationSettings`) · `_seed` (0 = random) · `_navMesh` = its NavMeshSurface · `_player` = Player · `_spawnPoint` = RespawnPoint · `_worldMap`? = WorldMapArea | Logs a warning for every corridor that had to cross another. |
 | **NavMeshSurface** | Collect Objects = **Current Object Hierarchy** | Rebuilt at runtime. Don't bake it. |
 
 `LevelBuildSettings` holds the grid sizes, wall materials, door prefabs, the default room **Shapes** and one **Rooms** entry per room type.
@@ -524,7 +524,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Feedback/` | ten `…FeedbackPreset`s | CombatFeedback, QuestFeedback, Stealthable |
 | `Stealth/` | `StealthSettings` (shared) | Stealthable |
 | `CameraEffects/` | `DefaultCameraEffectSettings` | CameraEffectsController |
-| `Map/` | `DefaultMapGenerationSettings`, `SandboxMapGraph` | Map Graph window, WorldMapArea |
+| `Map/` | map styles `Linear`/`Branching`/`Hub`/`Labyrinth` `…MapGenerationSettings`, `SandboxMapGraph` (uses Branching) | Map Graph window, WorldMapArea |
 | `Audio/` | `DefaultSurfaceDatabase` | PlayerFootsteps |
 | `Level/` | `DefaultLevelBuildSettings` (Gridbox materials, room rules without prefabs), `Functions/` (nine `…RoomFunction`s), `Shapes/` (seven `…RoomShape`s), `Structure/` (six `…StructureRule`s), `Landmarks/` (`ReactorCoreLandmarkRoom`) | LevelBuilder |
 | `Impacts/` | `DefaultImpactDatabase` (empty effects) | ImpactSpawner |

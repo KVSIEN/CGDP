@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Core;
 
 namespace CGD.Map
 {
@@ -15,7 +16,29 @@ namespace CGD.Map
 
             CheckRuleCounts(graph, settings, issues);
             CheckNodes(graph, analysis, settings, issues);
+            CheckEarlyTreasure(graph, analysis, settings, issues);
+            CheckBossDepth(graph, settings, issues);
             return issues;
+        }
+
+        private static void CheckBossDepth(MapGraph graph, MapGenerationSettings settings, List<string> issues)
+        {
+            int distance = MapGraphSearch.BossDistance(graph);
+            if (distance != int.MaxValue && distance < settings.MinBossDepth)
+                issues.Add($"Boss is {distance} connections from Start (minimum {settings.MinBossDepth}).");
+        }
+
+        private static void CheckEarlyTreasure(MapGraph graph, MapGraphAnalysis analysis, MapGenerationSettings settings, List<string> issues)
+        {
+            if (!settings.HasEarlyTreasure) return;
+
+            IntRange window = settings.EarlyTreasureDepth;
+            foreach (MapNode node in graph.Nodes)
+            {
+                int depth = analysis.Depth(node.Id);
+                if (node.Type == MapNodeType.Treasure && depth >= window.Min && depth <= window.Max) return;
+            }
+            issues.Add($"No Treasure {window.Min}–{window.Max} rooms from Start.");
         }
 
         private static void CheckStructure(MapGraph graph, MapGraphAnalysis analysis, List<string> issues)
