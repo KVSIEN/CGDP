@@ -337,12 +337,24 @@ namespace CGD.Player
             float baseFOV = GameSettings.Current.FieldOfView;
             float hipFOV  = _movement.IsSprinting ? baseFOV + (_sprintFOV - _baseFOV) : baseFOV;
             float zoomT  = ZoomT;
-            float target = Mathf.Lerp(hipFOV, _adsFOV, zoomT);
+            float target = Mathf.Lerp(hipFOV, AdsFov(baseFOV), zoomT);
 
             // In Snap mode the zoom itself jumps; sprint widening still eases.
             bool snapped = zoomT != _lastZoomT && GameSettings.Current.AdsZoom == AdsZoomMode.Snap;
             _lastZoomT = zoomT;
             _camera.fieldOfView = snapped ? target : Mathf.Lerp(_camera.fieldOfView, target, _fovSpeed * Time.deltaTime);
+        }
+
+        // Weapon ADS FOVs are authored against the default hip FOV (_baseFOV). Independent uses
+        // them as they are; Affected keeps the weapon's magnification — the ratio of the view
+        // widths, tan(fov/2) — and applies it to the player's chosen FOV instead.
+        private float AdsFov(float playerFov)
+        {
+            if (GameSettings.Current.AdsFov != AdsFovMode.Affected) return _adsFOV;
+
+            float magnification = Mathf.Tan(_baseFOV * 0.5f * Mathf.Deg2Rad) / Mathf.Tan(_adsFOV * 0.5f * Mathf.Deg2Rad);
+            float halfWidth = Mathf.Tan(playerFov * 0.5f * Mathf.Deg2Rad) / magnification;
+            return 2f * Mathf.Atan(halfWidth) * Mathf.Rad2Deg;
         }
 
         private void RefreshMeshVisibility()

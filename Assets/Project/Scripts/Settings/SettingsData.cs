@@ -26,6 +26,7 @@ namespace CGD.Settings
         public int  FrameRateLimit;
         public float FieldOfView = 70f;
         public AdsZoomMode AdsZoom = AdsZoomMode.Gradual;
+        public AdsFovMode  AdsFov  = AdsFovMode.Independent;
 
         // Accessibility (0..1 scales)
         public float CameraShake    = 1f;

@@ -16,6 +16,7 @@ namespace CGD.UI
         private static readonly int[] FrameRateLimits = { 0, 30, 60, 120, 144, 165, 240 };
         private static readonly string[] FrameRateLabels = { "Unlimited", "30", "60", "120", "144", "165", "240" };
         private static readonly string[] AdsZoomLabels = { "Gradual", "Snap" };
+        private static readonly string[] AdsFovLabels  = { "Independent", "Affected" };
 
         private readonly Action _changed;
 
@@ -26,6 +27,7 @@ namespace CGD.UI
         private readonly OptionCycler  _frameRate;
         private readonly LabeledSlider _fov;
         private readonly OptionCycler  _adsZoom;
+        private readonly OptionCycler  _adsFov;
 
         private readonly List<Vector2Int> _resolutions = new();
         private SettingsData _draft;
@@ -50,6 +52,7 @@ namespace CGD.UI
             _fov = layout.Slider("Field of View", SettingsData.MinFieldOfView, SettingsData.MaxFieldOfView,
                 v => $"{Mathf.RoundToInt(v)}°", v => Set(d => d.FieldOfView = Mathf.Round(v)));
             _adsZoom = layout.Options("ADS Zoom", AdsZoomLabels, i => Set(d => d.AdsZoom = (AdsZoomMode)i));
+            _adsFov  = layout.Options("ADS Field of View", AdsFovLabels, i => Set(d => d.AdsFov = (AdsFovMode)i));
         }
 
         public void Load(SettingsData draft)
@@ -62,6 +65,7 @@ namespace CGD.UI
             _frameRate.SetIndexWithoutNotify(Math.Max(0, Array.IndexOf(FrameRateLimits, draft.FrameRateLimit)));
             _fov.SetValueWithoutNotify(draft.FieldOfView);
             _adsZoom.SetIndexWithoutNotify((int)draft.AdsZoom);
+            _adsFov.SetIndexWithoutNotify((int)draft.AdsFov);
         }
 
         public void ResetToDefaults()
@@ -73,6 +77,7 @@ namespace CGD.UI
             _draft.FrameRateLimit = defaults.FrameRateLimit;
             _draft.FieldOfView    = defaults.FieldOfView;
             _draft.AdsZoom        = defaults.AdsZoom;
+            _draft.AdsFov         = defaults.AdsFov;
             // Resolution stays: there's no sensible default beyond "what the monitor has now".
             Load(_draft);
             _changed();
