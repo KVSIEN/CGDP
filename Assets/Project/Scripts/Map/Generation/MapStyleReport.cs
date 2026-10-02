@@ -7,8 +7,8 @@ using UnityEngine;
 namespace CGD.Map
 {
     // Generates a style for many seeds and sums up what it produces: sizes, room type counts,
-    // structure, how often big-room types got space to spread into, faction territory,
-    // sections, layouts and modifiers picked, and every generation warning or validation
+    // structure, how often big-room types got space to spread into, faction territory and
+    // how evenly it's split, faction mixes, sections, layouts and modifiers picked, and every generation warning or validation
     // issue with how often it came up. For tuning settings without paging through seeds
     // one at a time (Map Graph window › Analyze).
     public class MapStyleReport
@@ -17,6 +17,7 @@ namespace CGD.Map
         private readonly Dictionary<MapNodeType, (int rooms, int withSpace)> _space = new();
         private readonly Dictionary<string, int> _factionRooms = new();
         private readonly Dictionary<string, int> _sectionRooms = new();
+        private readonly Dictionary<string, int> _factionMixes = new();
         private readonly Dictionary<string, int> _layouts = new();
         private readonly Dictionary<string, int> _modifiers = new();
         private readonly Dictionary<string, int> _problems = new();
@@ -29,6 +30,9 @@ namespace CGD.Map
         public MapReportStat DeadEnds   { get; } = new();
         public MapReportStat Gates      { get; } = new();
         public MapReportStat Loops      { get; } = new();
+        // Per map, % of rooms held by its biggest faction and by none.
+        public MapReportStat TopFaction { get; } = new();
+        public MapReportStat NoFaction  { get; } = new();
 
         public IReadOnlyDictionary<MapNodeType, MapReportStat> TypeCounts => _types;
         // Problem text (ids replaced by #n) → maps it appeared in.
@@ -64,7 +68,8 @@ namespace CGD.Map
                 if (connection.IsGate) gates++;
             Gates.Add(gates);
 
-            var perType = new Dictionary<MapNodeType, int>();
+            var perType    = new Dictionary<MapNodeType, int>();
+            var perFaction = new Dictionary<int, int>();
             var cells = new HashSet<Vector2Int>();
             foreach (MapNode node in graph.Nodes) cells.Add(CellOf(node, settings.NodeSpacing));
 
@@ -79,10 +84,14 @@ namespace CGD.Map
                 _space[node.Type] = (space.rooms + 1, space.withSpace + (free ? 1 : 0));
 
                 if (node.HasFaction) Increment(_factionRooms, content.FactionName(node.Faction));
+                perFaction.TryGetValue(node.Faction, out int held);
+                perFaction[node.Faction] = held + 1;
                 if (node.HasSection) Increment(_sectionRooms, content.SectionName(node.Section));
                 _totalRooms++;
             }
             DeadEnds.Add(deadEnds);
+            AddFactionSplit(perFaction, graph.Nodes.Count);
+            Increment(_factionMixes, result.FactionMix != null ? result.FactionMix.DisplayName : "(none)");
 
             foreach (MapNodeType type in System.Enum.GetValues(typeof(MapNodeType)))
             {
@@ -101,6 +110,17 @@ namespace CGD.Map
             foreach (string issue in MapGraphValidator.Validate(graph, analysis, result.Layout, content, new MapRunTuning(result.Modifiers)))
                 seen.Add(Normalize(issue));
             foreach (string problem in seen) Increment(_problems, problem);
+        }
+
+        private void AddFactionSplit(Dictionary<int, int> perFaction, int rooms)
+        {
+            if (rooms == 0) return;
+            int top = 0;
+            foreach (var (faction, count) in perFaction)
+                if (faction != MapNode.NoFaction && count > top) top = count;
+            perFaction.TryGetValue(MapNode.NoFaction, out int none);
+            TopFaction.Add(Mathf.RoundToInt(100f * top / rooms));
+            NoFaction.Add(Mathf.RoundToInt(100f * none / rooms));
         }
 
         public string ToText()
@@ -122,6 +142,12 @@ namespace CGD.Map
             }
 
             AppendShares(text, "Faction territory (share of all rooms)", _factionRooms, _totalRooms);
+            if (_factionRooms.Count > 0)
+            {
+                text.AppendLine($"  Biggest faction  {TopFaction} % of a map's rooms");
+                text.AppendLine($"  No faction       {NoFaction} % of a map's rooms");
+            }
+            AppendShares(text, "Faction mixes picked", _factionMixes, Maps);
             AppendShares(text, "Sections (share of all rooms)", _sectionRooms, _totalRooms);
             AppendShares(text, "Layouts picked", _layouts, Maps);
             AppendShares(text, "Run modifiers (share of maps)", _modifiers, Maps);

@@ -36,12 +36,9 @@ namespace CGD.Map
         [SerializeField] private MapSectionDefinition[] _sections = Array.Empty<MapSectionDefinition>();
 
         [Header("Factions")]
-        [Tooltip("Each faction claims one origin node; its influence fades with every connection away from it")]
         [SerializeField] private FactionDefinition[] _factions = Array.Empty<FactionDefinition>();
-        [Tooltip("Influence kept per connection travelled")]
-        [SerializeField, Range(0f, 1f)] private float _factionFalloff = 0.6f;
-        [Tooltip("Nodes below this influence belong to no faction")]
-        [SerializeField, Range(0f, 1f)] private float _factionThreshold = 0.2f;
+        [Tooltip("How the factions split the ship; each map rolls one by weight. Empty = an even split with no scatter")]
+        [SerializeField] private List<MapFactionMixOption> _factionMixes = new();
 
         public IReadOnlyList<MapNodeTypeRule> NodeRules => _nodeRules;
         public MapNodeType FillType => _fillType;
@@ -54,8 +51,7 @@ namespace CGD.Map
         public float BossIntensity   => _bossIntensity;
 
         public IReadOnlyList<FactionDefinition> Factions => _factions;
-        public float FactionFalloff   => _factionFalloff;
-        public float FactionThreshold => _factionThreshold;
+        public IReadOnlyList<MapFactionMixOption> FactionMixes => _factionMixes;
 
         public float BaseIntensity(float progress) => Mathf.Clamp01(_intensityByDepth.Evaluate(progress));
 
@@ -80,6 +76,16 @@ namespace CGD.Map
         // The section a room at this depth (0 = Start, 1 = Boss) belongs to, or MapNode.NoSection.
         public int SectionAt(float progress) =>
             _sections.Length == 0 ? MapNode.NoSection : Mathf.Clamp(Mathf.FloorToInt(progress * _sections.Length), 0, _sections.Length - 1);
+
+        // By weight; uniformly when every weight is 0. Null when no mix is assigned.
+        public MapFactionMix PickFactionMix(RandomStream random)
+        {
+            var options = _factionMixes.FindAll(o => o != null && o.Mix != null);
+            if (options.Count == 0) return null;
+
+            MapFactionMixOption picked = random.PickWeighted(options, o => o.Weight) ?? random.Pick(options);
+            return picked.Mix;
+        }
 
         public FactionDefinition GetFaction(int faction) =>
             faction >= 0 && faction < _factions.Length ? _factions[faction] : null;

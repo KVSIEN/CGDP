@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: InfestationMapRunModifier
   m_EditorClassIdentifier: CGD.Runtime::CGD.Map.MapRunModifier
   _displayName: Infestation
-  _description: One faction has spread through the ship.
+  _description: One faction has overrun most of the ship.
   _weight: 1
   _types: []
   _extraOptionalRooms: 0
@@ -22,4 +22,4 @@ MonoBehaviour:
   _secretChanceMultiplier: 1
   _extraGates: 0
   _intensityOffset: 0.1
-  _factionFalloff: 0.85
+  _factionMix: {fileID: 11400000, guid: 7189d2b2c89549ca9d259cb578d7f661, type: 2}

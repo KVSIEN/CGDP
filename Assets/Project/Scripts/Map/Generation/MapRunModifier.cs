@@ -28,8 +28,8 @@ namespace CGD.Map
         [Header("Intensity & Factions")]
         [Tooltip("Added to every room's intensity")]
         [SerializeField, Range(-0.5f, 0.5f)] private float _intensityOffset;
-        [Tooltip("Replaces the content's faction falloff (0 = keep). High values let factions spread over most of the map")]
-        [SerializeField, Range(0f, 1f)] private float _factionFalloff;
+        [Tooltip("Forces this faction mix instead of the content's roll (empty = keep)")]
+        [SerializeField] private MapFactionMix _factionMix;
 
         public string DisplayName => string.IsNullOrEmpty(_displayName) ? name : _displayName;
         public string Description => _description;
@@ -41,6 +41,6 @@ namespace CGD.Map
         public float  SecretChanceMultiplier => _secretChanceMultiplier;
         public int    ExtraGates             => _extraGates;
         public float  IntensityOffset        => _intensityOffset;
-        public float  FactionFalloff         => _factionFalloff;
+        public MapFactionMix FactionMix      => _factionMix;
     }
 }

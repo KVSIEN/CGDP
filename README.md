@@ -53,7 +53,7 @@ Assets/
                             Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), Rules/
                             RoomPlacer (cells, multi-cell rooms); Landmarks/ — hand-built rooms; Props/ — RoomPropPlanner
       Loot/                 LootTable, LootDropper, LootContainer
-      Map/                  map graph data (Graph/: MapGraph, MapNode, analysis) and Generation/ (layout, content and style settings, sections, run modifiers, generator passes, validator, style report)
+      Map/                  map graph data (Graph/: MapGraph, MapNode, analysis) and Generation/ (layout, content and style settings, sections, run modifiers, faction mixes, generator passes, validator, style report)
       Meters/               generic resources (stamina, mana, oxygen…): Meter, MeterSet, MeterCost, MeterZone
       Player/               movement, camera, lock-on, health, lifecycle, player audio; Dodge/ (DodgeDefinition stages, DodgeMotion)
       Quests/               quest/objective definitions, QuestLog, QuestTracker, QuestEvents, signals

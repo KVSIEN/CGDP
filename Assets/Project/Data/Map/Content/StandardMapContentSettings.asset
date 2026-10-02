@@ -165,5 +165,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4dcd53174a8d445682c4f9a5c8d95ed4, type: 2}
   - {fileID: 11400000, guid: 9df11072532741b0a4466eeeab99e06b, type: 2}
   - {fileID: 11400000, guid: 6dfe42f935864a368a7aff83d9c78bf2, type: 2}
-  _factionFalloff: 0.6
-  _factionThreshold: 0.2
+  _factionMixes:
+  - _mix: {fileID: 11400000, guid: 36d1e339c4954aa7aa768d108505abab, type: 2}
+    _weight: 3
+  - _mix: {fileID: 11400000, guid: 3dad9c7bb5f6474391ae5ae81e0a0d2d, type: 2}
+    _weight: 3
+  - _mix: {fileID: 11400000, guid: 7189d2b2c89549ca9d259cb578d7f661, type: 2}
+    _weight: 1
+  - _mix: {fileID: 11400000, guid: 5f59abb4eec8479c8effd7a19ac8b6a3, type: 2}
+    _weight: 1

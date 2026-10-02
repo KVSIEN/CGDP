@@ -22,4 +22,4 @@ MonoBehaviour:
   _secretChanceMultiplier: 1
   _extraGates: 2
   _intensityOffset: 0
-  _factionFalloff: 0
+  _factionMix: {fileID: 0}

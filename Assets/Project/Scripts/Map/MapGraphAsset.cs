@@ -44,6 +44,10 @@ namespace CGD.Map
         public MapRunTuning Tuning =>
             _settings != null ? MapGenerator.PickModifiers(_settings, CGD.Core.Seed.From(_seed), _layerVariants) : MapRunTuning.None;
 
+        // How the factions were split for this seed (null when the content lists no mix).
+        public MapFactionMix FactionMix =>
+            _settings != null ? MapGenerator.PickFactionMix(_settings, CGD.Core.Seed.From(_seed), _layerVariants, Tuning) : null;
+
         public MapGraph Graph     => _graph;
         public MapGraph Generated => _generated;
 

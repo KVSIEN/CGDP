@@ -24,7 +24,7 @@ namespace CGD.Map
                 LockedMultiplier   *= modifier.LockedChanceMultiplier;
                 SecretMultiplier   *= modifier.SecretChanceMultiplier;
                 IntensityOffset    += modifier.IntensityOffset;
-                if (modifier.FactionFalloff > 0f) FactionFalloffOverride = modifier.FactionFalloff;
+                if (modifier.FactionMix != null) FactionMixOverride = modifier.FactionMix;
             }
         }
 
@@ -36,8 +36,8 @@ namespace CGD.Map
         public float LockedMultiplier   { get; } = 1f;
         public float SecretMultiplier   { get; } = 1f;
         public float IntensityOffset    { get; }
-        // 0 = the content's own falloff.
-        public float FactionFalloffOverride { get; }
+        // Null = the content rolls its own mix. With several, the last modifier's wins.
+        public MapFactionMix FactionMixOverride { get; }
 
         public int Min(MapNodeTypeRule rule) => Mathf.Max(0, rule.Min + Sum(rule.Type, a => a.ExtraMin));
 

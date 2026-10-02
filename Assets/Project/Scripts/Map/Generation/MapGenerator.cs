@@ -56,10 +56,11 @@ namespace CGD.Map
             new MapIntensityPainter(context).Paint();
             ApplyPinnedIntensity(context.Graph, pins, types.PinnedNodeIds);
 
-            new MapFactionPainter(context).Paint();
+            MapFactionMix factionMix = PickFactionMix(_settings, seed, variants, tuning);
+            new MapFactionPainter(context, factionMix).Paint();
             PaintSections(context);
 
-            return new MapGenerationResult(context.Graph, context.Layout, types.PinnedNodeIds, context.Warnings, tuning.Modifiers);
+            return new MapGenerationResult(context.Graph, context.Layout, types.PinnedNodeIds, context.Warnings, tuning.Modifiers, factionMix);
         }
 
         // The modifiers a seed gets — also how the editor and validator recover them for a
@@ -68,6 +69,17 @@ namespace CGD.Map
         {
             if (settings == null || settings.Modifiers.Count == 0) return MapRunTuning.None;
             return new MapRunTuning(settings.PickModifiers(MapGenerationContext.StreamFor(seed, variants, ModifiersLayer)));
+        }
+
+        // The faction mix a seed gets: a modifier's, else the content's roll. Drawn from its
+        // own fork of the factions layer, so it rerolls with factions and can be recovered
+        // for a stored map like the modifiers.
+        public static MapFactionMix PickFactionMix(MapGenerationSettings settings, Seed seed, SeedVariants variants,
+                                                   MapRunTuning tuning)
+        {
+            if (tuning?.FactionMixOverride != null) return tuning.FactionMixOverride;
+            if (settings == null || settings.Content == null) return null;
+            return settings.Content.PickFactionMix(MapGenerationContext.StreamFor(seed, variants, FactionsLayer).Fork("mix"));
         }
 
         private static void PaintSections(MapGenerationContext context)

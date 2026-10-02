@@ -205,6 +205,8 @@ namespace CGD.Editor
             MapRunTuning tuning = session.Asset.Tuning;
             EditorGUILayout.LabelField("Run modifiers", tuning.Modifiers.Count == 0
                 ? "none" : string.Join(", ", System.Linq.Enumerable.Select(tuning.Modifiers, m => m.DisplayName)));
+            MapFactionMix factionMix = session.Asset.FactionMix;
+            EditorGUILayout.LabelField("Faction mix", factionMix != null ? factionMix.DisplayName : "—");
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Node types", EditorStyles.miniBoldLabel);
