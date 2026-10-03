@@ -26,8 +26,10 @@ MonoBehaviour:
   _ceilingMaterial: {fileID: 0}
   _ceilingLayer: 0
   _doorPrefab: {fileID: 0}
-  _lockedDoorPrefab: {fileID: 0}
-  _secretDoorPrefab: {fileID: 0}
+  _lockedDoorPrefab: {fileID: 4494289139160384286, guid: 7e0f49f9ae704307be0b4bb2b4bce5d4, type: 3}
+  _secretDoorPrefab: {fileID: 662976687211467739, guid: 9a4e1d91dd2a463999905d9be9643e33, type: 3}
+  _oneWayDoorPrefab: {fileID: 8852380287587554198, guid: 899e72ddcc424bfaaffcce7860c21e68, type: 3}
+  _keyPrefab: {fileID: 7354265223859290892, guid: 0559b69c7f8f4429a936f9b843089baf, type: 3}
   _buildDoorSigns: 1
   _doorSignMaterial: {fileID: 0}
   _dangerIntensity: 0.75

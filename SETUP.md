@@ -485,12 +485,18 @@ Each entry lists its **Functions**, enemy prefabs (count read at the room's inte
 - **Ceilings**: tick `_buildCeilings` (off by default). Interiors then need lights. Put `_ceilingLayer` on its own layer and keep it out of the `WorldMapArea` capture mask; ceilings are left out of the NavMesh automatically.
 - **Enemy prefabs** need `EnemyAI`. None exist yet, so generated rooms start empty.
 - **Door prefabs**: origin at the doorway centre on the floor, +Z pointing out of the room. The opening is one tile wide (`_tileSize`).
-  - One-way shortcuts use the normal `_doorPrefab`; it needs a `Door` (on the root or a child) — the builder bars it so it only opens from the corridor side. Without a door prefab they're open passages, like every other connection.
-  - Normal is optional.
-  - Locked is typically a `Door` with a key.
-  - Secret is, for example, a `Destructible` fake wall.
+  - `DefaultLevelBuildSettings` uses the ready-made ones in `Prefabs/Environment/Level/` (placeholder boxes in Gridbox colours; swap in real art there):
+
+    | Slot | Prefab | Is |
+    |---|---|---|
+    | `_doorPrefab` | — (empty) | normal connections stay open passages |
+    | `_lockedDoorPrefab` | `LockedLevelDoor` (yellow) | `Door` on the `Hinge` child, `_key` = `Items/Keycards/SecurityKeycard` ×1, Consume on |
+    | `_secretDoorPrefab` | `SecretLevelWall` (white, like the walls) | `Destructible` (60 HP) + `DespawnOnDeath` (0 s) on a wall-sized box: shoot it to open |
+    | `_oneWayDoorPrefab` | `LevelDoor` (cyan) | plain `Door` on the `Hinge` child; the builder bars it so it only opens from the corridor side. Empty = `_doorPrefab`; with neither, one-way shortcuts are open passages |
+    | `_keyPrefab` | `SecurityKeycardPickup` | `ItemPickup` of one `SecurityKeycard` |
+  - A one-way door prefab needs a `Door` on its root or a child.
   - Closed doors cut the NavMesh, so enemies don't follow the player through them.
-- **Keys**: `_keyPrefab` is placed in the room the map graph picks for each Locked connection. Make it a pickup (e.g. `ItemPickup`) of the item the locked door's `Door._key` asks for, and tick `_key.Consume` so each key opens one door. The door and key prefabs are empty in `DefaultLevelBuildSettings`, so generated gates are open passages and no keys spawn until they're assigned.
+- **Keys**: `_keyPrefab` is placed in the room the map graph picks for each Locked connection. Every key is reachable without opening a door, and each locked door uses one up, so one key item (`SecurityKeycard`) serves every door. For other locks, make the pickup's item match the door's `Door._key` and tick `_key.Consume`.
 - **Exit**: when the Exit room's content has no `LevelExit`, a plain exit pad is added. Using it calls `GameFlow.Victory`.
 - **Obstacle masks**: generated geometry goes on `_geometryLayer`. Keep that layer in enemies' `_obstacleMask` and in weapons' hit masks.
 
@@ -539,7 +545,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Weapons/FireBehaviors/` | Hitscan, Projectile, Shotgun | weapon data / categories |
 | `Weapons/Melee/`, `Weapons/Throwables/` | `DefaultMeleeWeaponData`, `DefaultGrenadeData`, `SmokeGrenadeData` | MeleeController, throwable items |
 | `Items/Munitions/` | one per caliber | AmmoPickup, PlayerInventory |
-| `Items/` | `StatRollProfile` | weapon categories, `CombatVestArmor` (see note) |
+| `Items/` | `StatRollProfile`, `Keycards/SecurityKeycard` (opens the generated levels' locked doors) | weapon categories, `CombatVestArmor` (see note) |
 | `Items/Armor/`, `Attachments/`, `Consumables/`, `Throwables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `StimConsumable`, `FragGrenadeThrowable`, `SmokeGrenadeThrowable`, `ScrapMetalResource`, `ClothResource` | pickups, loot, recipes, quest rewards |
 | `Crafting/` | `BandageRecipe`, `CombatStimRecipe`, `ExtendedMagazineRecipe`, `CombatVestRecipe` | CraftingStation |
 | `DevTools/` | `DevCatalog` (all items, weapon categories, buffs; no enemy prefabs exist yet) | DevCommands |

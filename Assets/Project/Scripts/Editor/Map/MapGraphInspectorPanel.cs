@@ -58,6 +58,7 @@ namespace CGD.Editor
             if (EditorGUI.EndChangeCheck()) session.SetIntensity(node, intensity);
 
             DrawFaction(node, session);
+            DrawSection(node, session);
 
             EditorGUI.BeginChangeCheck();
             Vector2 position = EditorGUILayout.Vector2Field("Position", node.Position);
@@ -92,6 +93,22 @@ namespace CGD.Editor
             EditorGUI.BeginChangeCheck();
             int breach = EditorGUILayout.Popup("Breaching faction", node.BreachFaction + 1, options) - 1;
             if (EditorGUI.EndChangeCheck()) session.SetBreachFaction(node, breach);
+        }
+
+        private static void DrawSection(MapNode node, MapGraphEditorSession session)
+        {
+            MapContentSettings content = session.Asset.Content;
+            int count = content != null ? content.Sections.Count : 0;
+            if (count == 0) return;
+
+            var options = new string[count + 1];
+            options[0] = "None";
+            for (int i = 0; i < count; i++)
+                options[i + 1] = content.SectionName(i);
+
+            EditorGUI.BeginChangeCheck();
+            int section = EditorGUILayout.Popup("Section", node.Section + 1, options) - 1;
+            if (EditorGUI.EndChangeCheck()) session.SetSection(node, section);
         }
 
         private static void DrawNodeAnalysis(MapNode node, MapGraphEditorSession session)
@@ -213,8 +230,7 @@ namespace CGD.Editor
             EditorGUILayout.LabelField("Main path", analysis.ExitReachable ? $"{analysis.MainPath.Count} nodes" : "Exit unreachable");
             EditorGUILayout.LabelField("Branches", analysis.BranchCount.ToString());
             MapRunTuning tuning = session.Asset.Tuning;
-            EditorGUILayout.LabelField("Run modifiers", tuning.Modifiers.Count == 0
-                ? "none" : string.Join(", ", System.Linq.Enumerable.Select(tuning.Modifiers, m => m.DisplayName)));
+            DrawModifiers(session, tuning);
             MapFactionMix factionMix = session.Asset.FactionMix;
             EditorGUILayout.LabelField("Faction mix", factionMix != null ? factionMix.DisplayName : "—");
 
@@ -228,7 +244,7 @@ namespace CGD.Editor
             }
 
             DrawLayers(session);
-            DrawMessages("Validation", session.Issues, MessageType.Warning, "No issues.");
+            DrawIssues(session);
             DrawMessages("Last generation", session.Asset.GenerationWarnings, MessageType.Info, null);
         }
 
@@ -252,6 +268,78 @@ namespace CGD.Editor
                     }
                 }
             }
+        }
+
+        // Stored with the map: what the level announces and pays out, and what limits are
+        // checked against. Regenerating rolls them afresh from the style.
+        private static void DrawModifiers(MapGraphEditorSession session, MapRunTuning tuning)
+        {
+            var modifiers = new List<MapRunModifier>(tuning.Modifiers);
+            EditorGUILayout.LabelField("Run modifiers", modifiers.Count == 0 ? "none" : "");
+
+            for (int i = 0; i < modifiers.Count; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUI.BeginChangeCheck();
+                var picked = (MapRunModifier)EditorGUILayout.ObjectField(modifiers[i], typeof(MapRunModifier), false);
+                bool remove = GUILayout.Button("×", GUILayout.Width(20f));
+                EditorGUILayout.EndHorizontal();
+                if (!EditorGUI.EndChangeCheck() && !remove) continue;
+
+                if (remove || picked == null) modifiers.RemoveAt(i);
+                else modifiers[i] = picked;
+                session.SetModifiers(modifiers);
+                return;
+            }
+
+            var added = (MapRunModifier)EditorGUILayout.ObjectField("Add modifier", null, typeof(MapRunModifier), false);
+            if (added != null && !modifiers.Contains(added))
+            {
+                modifiers.Add(added);
+                session.SetModifiers(modifiers);
+            }
+        }
+
+        // Each issue that names a room or connection selects and centres it when clicked.
+        private static void DrawIssues(MapGraphEditorSession session)
+        {
+            IReadOnlyList<string> issues = session.Issues;
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Validation", EditorStyles.miniBoldLabel);
+            if (issues.Count == 0)
+            {
+                EditorGUILayout.LabelField("No issues.", EditorStyles.miniLabel);
+                return;
+            }
+
+            foreach (string issue in issues)
+            {
+                EditorGUILayout.HelpBox(issue, MessageType.Warning);
+                Rect box = GUILayoutUtility.GetLastRect();
+                if (!MapIssueTarget.TryFind(issue, session.Graph, out MapNode node, out MapConnection connection)) continue;
+
+                EditorGUIUtility.AddCursorRect(box, MouseCursor.Link);
+                if (Event.current.type != EventType.MouseDown || !box.Contains(Event.current.mousePosition)) continue;
+
+                if (connection != null)
+                {
+                    session.SelectConnection(connection);
+                    session.Focus(SelectionCentre(session.Graph, connection));
+                }
+                else
+                {
+                    session.SelectNode(node.Id);
+                    session.Focus(node.Position);
+                }
+                Event.current.Use();
+            }
+        }
+
+        private static Vector2 SelectionCentre(MapGraph graph, MapConnection connection)
+        {
+            graph.TryGetNode(connection.A, out MapNode a);
+            graph.TryGetNode(connection.B, out MapNode b);
+            return (a.Position + b.Position) * 0.5f;
         }
 
         private static void DrawMessages(string title, IReadOnlyList<string> messages, MessageType type, string emptyText)

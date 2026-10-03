@@ -164,7 +164,7 @@ namespace CGD.Level
             {
                 if (!doorway.HasGate) continue;
 
-                GameObject prefab = _settings.DoorPrefabFor(doorway.Connection.Type);
+                GameObject prefab = _settings.DoorPrefabFor(doorway.Connection);
                 if (prefab == null) continue;
 
                 // On the edge between the room tile and the corridor tile, facing out of the room.

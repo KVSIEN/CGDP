@@ -171,6 +171,7 @@ namespace CGD.Editor
                 || !Mathf.Approximately(original.Intensity, node.Intensity)
                 || original.Faction != node.Faction
                 || original.BreachFaction != node.BreachFaction
+                || original.Section != node.Section
                 || !Mathf.Approximately(original.FactionInfluence, node.FactionInfluence);
         }
 
@@ -304,6 +305,23 @@ namespace CGD.Editor
             connection.OneWay = oneWay;
             Changed();
         }
+
+        public void SetSection(MapNode node, int section)
+        {
+            Record("Change Map Node Section");
+            node.Section = section;
+            Changed();
+        }
+
+        public void SetModifiers(IEnumerable<MapRunModifier> modifiers)
+        {
+            Record("Change Run Modifiers");
+            _asset.SetModifiers(modifiers);
+            Changed();
+        }
+
+        // Centres the view on a point of the graph, keeping the zoom.
+        public void Focus(Vector2 world) => Pan = -world * Zoom;
 
         public void SetBreachFaction(MapNode node, int faction)
         {

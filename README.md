@@ -22,7 +22,7 @@ Assets/
       Abilities/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Dialogue/  Economy/  Enemies/  Factions/  Feedback/  Flow/
       Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
-    Prefabs/                Characters, Environment (Props/, Landmarks/), Pickups, UI, VFX, Weapons
+    Prefabs/                Characters, Environment (Props/, Landmarks/, Level/ — doors, secret wall, keycard), Pickups, UI, VFX, Weapons
     Scenes/                 Sandbox.unity (+ its baked NavMesh folder)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            ability assets (incl. TargetedAbility) and the player's ability slots

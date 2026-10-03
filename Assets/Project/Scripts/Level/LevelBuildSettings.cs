@@ -43,6 +43,8 @@ namespace CGD.Level
         [SerializeField] private GameObject _lockedDoorPrefab;
         [Tooltip("Gate for Secret connections (e.g. a Destructible fake wall)")]
         [SerializeField] private GameObject _secretDoorPrefab;
+        [Tooltip("Door for one-way shortcuts; needs a Door (on the root or a child), which the builder bars from the near side. Empty = the normal door prefab")]
+        [SerializeField] private GameObject _oneWayDoorPrefab;
         [Tooltip("Placed in the room the map graph picks for each Locked gate's key (e.g. an ItemPickup of the item the locked door asks for). Empty = no keys are placed")]
         [SerializeField] private GameObject _keyPrefab;
 
@@ -80,10 +82,11 @@ namespace CGD.Level
         public int   SpawnMarginTiles => _spawnMarginTiles;
         public int   MinRoomWidthTiles => _minRoomWidthTiles;
 
-        public GameObject DoorPrefabFor(ConnectionType type) => type switch
+        public GameObject DoorPrefabFor(MapConnection connection) => connection.Type switch
         {
             ConnectionType.Locked => _lockedDoorPrefab,
             ConnectionType.Secret => _secretDoorPrefab,
+            _ when connection.OneWay && _oneWayDoorPrefab != null => _oneWayDoorPrefab,
             _                     => _doorPrefab,
         };
 

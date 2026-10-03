@@ -17,7 +17,9 @@ namespace CGD.Map
     // seed, so one layer can be regenerated while the others stay exactly as they were.
     //
     // The style may offer several layouts; the one this graph was built on is kept so
-    // the graph is validated against the rules it was generated with.
+    // the graph is validated against the rules it was generated with. The run modifiers
+    // and faction mix are kept too, so changing the style's lists later doesn't quietly
+    // change a saved map — and they can be edited like the graph itself.
     [CreateAssetMenu(fileName = "MapGraph", menuName = "CGD/Map/Map Graph")]
     public class MapGraphAsset : ScriptableObject
     {
@@ -31,6 +33,10 @@ namespace CGD.Map
         [SerializeField, HideInInspector] private MapGraph     _graph     = new();
         [SerializeField, HideInInspector] private List<int>    _lockedNodeIds      = new();
         [SerializeField, HideInInspector] private List<string> _generationWarnings = new();
+        // False for graphs saved before modifiers and mix were stored: those are recovered from the seed.
+        [SerializeField, HideInInspector] private bool                 _runStored;
+        [SerializeField, HideInInspector] private List<MapRunModifier> _modifiers = new();
+        [SerializeField, HideInInspector] private MapFactionMix        _factionMix;
 
         public MapGenerationSettings Settings => _settings;
         public int                   Seed     => _seed;
@@ -40,13 +46,36 @@ namespace CGD.Map
         public MapLayoutSettings  Layout  => _layout;
         public MapContentSettings Content => _settings != null ? _settings.Content : null;
 
-        // The run modifiers this seed (and its layer rerolls) gets from the style.
+        // The run modifiers this map was generated with (or edited to).
         public MapRunTuning Tuning =>
-            _settings != null ? MapGenerator.PickModifiers(_settings, CGD.Core.Seed.From(_seed), _layerVariants) : MapRunTuning.None;
+            _runStored ? new MapRunTuning(_modifiers.FindAll(m => m != null))
+            : _settings != null ? MapGenerator.PickModifiers(_settings, CGD.Core.Seed.From(_seed), _layerVariants)
+            : MapRunTuning.None;
 
-        // How the factions were split for this seed (null when the content lists no mix).
+        // How the factions were split for this map (null when the content lists no mix).
         public MapFactionMix FactionMix =>
-            _settings != null ? MapGenerator.PickFactionMix(_settings, CGD.Core.Seed.From(_seed), _layerVariants, Tuning) : null;
+            _runStored ? _factionMix
+            : _settings != null ? MapGenerator.PickFactionMix(_settings, CGD.Core.Seed.From(_seed), _layerVariants, Tuning)
+            : null;
+
+        public IReadOnlyList<MapRunModifier> Modifiers => Tuning.Modifiers;
+
+        // A hand edit to the run: what the level announces and pays out, and what the
+        // validator checks counts against. Regenerating rolls them afresh. (The faction mix
+        // stays a record of how factions were painted; edit rooms' factions instead.)
+        public void SetModifiers(IEnumerable<MapRunModifier> modifiers)
+        {
+            StoreRun();
+            _modifiers = new List<MapRunModifier>(modifiers);
+        }
+
+        private void StoreRun()
+        {
+            if (_runStored) return;
+            _modifiers  = new List<MapRunModifier>(Tuning.Modifiers);
+            _factionMix = FactionMix;
+            _runStored  = true;
+        }
 
         public MapGraph Graph     => _graph;
         public MapGraph Generated => _generated;
@@ -117,6 +146,9 @@ namespace CGD.Map
                     _lockedNodeIds.Add(id);
 
             _generationWarnings = new List<string>(result.Warnings);
+            _modifiers          = new List<MapRunModifier>(result.Modifiers);
+            _factionMix         = result.FactionMix;
+            _runStored          = true;
         }
 
         public void RevertEdits()
