@@ -55,9 +55,9 @@ namespace CGD.Map
         }
 
         // Plays the map from `from`: walks everywhere not behind a Locked connection,
-        // opens each Locked connection whose door and key room are both reached, and
-        // repeats. Returns the Locked connections that never open — a missing key, a key
-        // behind its own door, or keys locked behind each other.
+        // opens each Locked connection whose door and every key room (the key, each
+        // terminal) are reached, and repeats. Returns the Locked connections that never
+        // open — a missing key, a key behind its own door, or keys locked behind each other.
         public static List<MapConnection> UnopenableLocks(MapGraph graph, int from)
         {
             var opened = new HashSet<MapConnection>();
@@ -70,7 +70,7 @@ namespace CGD.Map
                 foreach (MapConnection connection in graph.Connections)
                 {
                     if (connection.Type != ConnectionType.Locked || opened.Contains(connection)) continue;
-                    if (!connection.HasKey || !reached.ContainsKey(connection.KeyNodeId)) continue;
+                    if (!AllKeysReached(connection, reached)) continue;
                     if (!reached.ContainsKey(connection.A) && !reached.ContainsKey(connection.B)) continue;
 
                     opened.Add(connection);
@@ -85,6 +85,14 @@ namespace CGD.Map
                         closed.Add(connection);
                 return closed;
             }
+        }
+
+        private static bool AllKeysReached(MapConnection connection, Dictionary<int, int> reached)
+        {
+            if (!connection.HasKey) return false;
+            foreach (int key in connection.KeyNodeIds)
+                if (!reached.ContainsKey(key)) return false;
+            return true;
         }
     }
 }

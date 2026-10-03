@@ -131,8 +131,8 @@ namespace CGD.Editor
                 EditorGUILayout.LabelField("Access", "Behind a Locked or Secret gate");
 
             foreach (MapConnection connection in session.Graph.Connections)
-                if (connection.Type == ConnectionType.Locked && connection.KeyNodeId == node.Id)
-                    EditorGUILayout.LabelField("Holds key for", $"#{connection.A} ↔ #{connection.B}");
+                if (connection.Type == ConnectionType.Locked && connection.HoldsKey(node.Id))
+                    EditorGUILayout.LabelField(connection.UsesSingleKey ? "Holds key for" : "Holds terminal for", $"#{connection.A} ↔ #{connection.B}");
         }
 
         private void DrawNodeConnections(MapNode node, MapGraphEditorSession session)
@@ -172,7 +172,7 @@ namespace CGD.Editor
             EditorGUILayout.LabelField($"Connection #{connection.A} ↔ #{connection.B}", EditorStyles.boldLabel);
             DrawConnectionTypePopup(connection, session);
             if (connection.Type == ConnectionType.Locked)
-                DrawKeyRoomPopup(connection, session);
+                DrawLock(connection, session);
 
             if (GUILayout.Button("Delete Connection"))
             {
@@ -181,8 +181,30 @@ namespace CGD.Editor
             }
         }
 
-        // Any node can be picked; the validator flags a key the player can't reach.
-        private static void DrawKeyRoomPopup(MapConnection connection, MapGraphEditorSession session)
+        // A Keycard lock has one key room; a Terminal lock lists a room per terminal.
+        private static void DrawLock(MapConnection connection, MapGraphEditorSession session)
+        {
+            EditorGUI.BeginChangeCheck();
+            var kind = (MapLockKind)EditorGUILayout.EnumPopup(new GUIContent("Lock", "What opens this door"), connection.Lock);
+            if (EditorGUI.EndChangeCheck()) session.SetLockKind(connection, kind);
+
+            if (connection.UsesSingleKey)
+            {
+                int key = connection.HasKey ? connection.KeyNodeIds[0] : NoRoom;
+                DrawKeyRoomPopup(connection, session, 0, key, new GUIContent("Key room", "Where the key that opens this door is placed"));
+                return;
+            }
+
+            for (int i = 0; i < connection.KeyNodeIds.Count; i++)
+                DrawKeyRoomPopup(connection, session, i, connection.KeyNodeIds[i], new GUIContent($"Terminal {i + 1}", "A room holding one of the terminals; all must be switched on"));
+            DrawKeyRoomPopup(connection, session, connection.KeyNodeIds.Count, NoRoom, new GUIContent("Add terminal"));
+        }
+
+        private const int NoRoom = -1;
+
+        // Any node can be picked; the validator flags a key or terminal the player can't reach.
+        // Picking None removes the room.
+        private static void DrawKeyRoomPopup(MapConnection connection, MapGraphEditorSession session, int index, int current, GUIContent label)
         {
             IReadOnlyList<MapNode> nodes = session.Graph.Nodes;
             var labels = new string[nodes.Count + 1];
@@ -191,13 +213,21 @@ namespace CGD.Editor
             for (int i = 0; i < nodes.Count; i++)
             {
                 labels[i + 1] = $"#{nodes[i].Id} {nodes[i].Type}";
-                if (nodes[i].Id == connection.KeyNodeId) selected = i + 1;
+                if (nodes[i].Id == current) selected = i + 1;
             }
 
             EditorGUI.BeginChangeCheck();
-            int picked = EditorGUILayout.Popup(new GUIContent("Key room", "Where the key that opens this door is placed"), selected, labels);
-            if (EditorGUI.EndChangeCheck())
-                session.SetKeyRoom(connection, picked == 0 ? MapConnection.NoKey : nodes[picked - 1].Id);
+            int picked = EditorGUILayout.Popup(label, selected, labels);
+            if (!EditorGUI.EndChangeCheck()) return;
+
+            if (picked == 0)
+            {
+                if (current != NoRoom) session.RemoveKeyRoom(connection, current);
+            }
+            else
+            {
+                session.SetKeyRoom(connection, index, nodes[picked - 1].Id);
+            }
         }
 
         private static void DrawConnectionTypePopup(MapConnection connection, MapGraphEditorSession session)

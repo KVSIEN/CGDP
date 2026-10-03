@@ -73,17 +73,35 @@ namespace CGD.Map
         // it, and lost content otherwise — both are worth flagging.
         private static void CheckLocks(MapGraph graph, MapGraphAnalysis analysis, List<string> issues)
         {
+            foreach (MapConnection connection in graph.Connections)
+                if (connection.Type == ConnectionType.Locked && connection.UsesSingleKey && connection.KeyNodeIds.Count > 1)
+                    issues.Add($"Locked #{connection.A}–#{connection.B} is a Keycard lock with {connection.KeyNodeIds.Count} key rooms; only one keycard is placed, in #{connection.KeyNodeIds[0]}.");
+
             if (analysis.StartId == MapGraphAnalysis.Unreachable) return;
 
-            foreach (MapConnection connection in MapGraphSearch.UnopenableLocks(graph, analysis.StartId))
+            List<MapConnection> closed = MapGraphSearch.UnopenableLocks(graph, analysis.StartId);
+            if (closed.Count == 0) return;
+
+            // What the player can reach with every openable lock opened.
+            var reachable = new HashSet<int>(MapGraphSearch.Distances(graph, analysis.StartId,
+                c => c.Type != ConnectionType.Locked || !closed.Contains(c)).Keys);
+            foreach (MapConnection connection in closed)
             {
                 string gate = $"Locked #{connection.A}–#{connection.B}";
+                string part = connection.UsesSingleKey ? "key" : "terminal";
                 if (!connection.HasKey)
-                    issues.Add($"{gate} has no key room.");
-                else if (!graph.TryGetNode(connection.KeyNodeId, out _))
-                    issues.Add($"{gate}: its key room #{connection.KeyNodeId} no longer exists.");
-                else
-                    issues.Add($"{gate} can't be opened: its key (#{connection.KeyNodeId}) is behind it or behind another locked door.");
+                {
+                    issues.Add($"{gate} has no {part} room.");
+                    continue;
+                }
+
+                foreach (int key in connection.KeyNodeIds)
+                {
+                    if (!graph.TryGetNode(key, out _))
+                        issues.Add($"{gate}: its {part} room #{key} no longer exists.");
+                    else if (!reachable.Contains(key))
+                        issues.Add($"{gate} can't be opened: its {part} (#{key}) is behind it or behind another locked door.");
+                }
             }
         }
 

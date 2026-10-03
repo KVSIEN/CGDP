@@ -8,6 +8,8 @@ namespace CGD.Interaction
     //
     // With a Key set the door starts locked: interacting while carrying the key unlocks
     // and opens it (optionally using the key up), and it stays unlocked afterwards.
+    // With a Condition set it also stays shut until that ConditionLock opens (terminals
+    // switched on, signals raised) — "do A and B to open the door".
     //
     // A one-way door (MakeOneWay, set by the level builder) is barred from one side: it
     // only opens for someone standing on its open side, and works both ways after that —
@@ -23,9 +25,13 @@ namespace CGD.Interaction
         [Header("Lock")]
         [Tooltip("Item needed to unlock the door. Empty = never locked.")]
         [SerializeField] private ItemRequirement _key;
+        [Tooltip("Optional: the door stays locked until this opens")]
+        [SerializeField] private ConditionLock _condition;
 
         public float HoldDuration => _holdDuration;
-        public bool  IsLocked     => _isLocked;
+        public bool  IsLocked     => _isLocked || IsHeldByCondition;
+
+        private bool IsHeldByCondition => _condition != null && !_condition.Progress.IsOpen;
 
         private bool        _isOpen;
         private bool        _isLocked;
@@ -52,6 +58,7 @@ namespace CGD.Interaction
         public string GetInteractLabel(GameObject interactor)
         {
             if (_isBarred && !IsOnOpenSide(interactor)) return "Barred from the other side";
+            if (IsHeldByCondition) return $"Locked  ({_condition.Describe()})";
             if (!_isLocked) return _isOpen ? "Close" : "Open";
             return _key.IsMetBy(interactor) ? "Unlock" : $"Locked  ({_key.Describe()})";
         }
@@ -64,6 +71,8 @@ namespace CGD.Interaction
                 _isBarred = false;
             }
 
+            if (IsHeldByCondition) return;
+
             if (_isLocked)
             {
                 if (!_key.TryUse(interactor)) return;
@@ -73,7 +82,7 @@ namespace CGD.Interaction
             Toggle();
         }
 
-        // Remote control (switches, scripted events) bypasses the lock.
+        // Remote control (switches, scripted events) bypasses both locks.
         public void Toggle() => _isOpen = !_isOpen;
 
         public void Unlock() => _isLocked = false;

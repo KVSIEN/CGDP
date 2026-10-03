@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Map;
 using Unity.AI.Navigation;
 using CGD.Factions;
 using CGD.Interaction;
@@ -20,6 +21,10 @@ namespace CGD.Level
         private readonly LevelBuildSettings _settings;
 
         public LevelGeometryBuilder(LevelBuildSettings settings) => _settings = settings;
+
+        // The gate placed on each Locked or Secret connection, so the populator can wire
+        // up what opens it (a terminal lock's terminals).
+        public Dictionary<MapConnection, GameObject> Gates { get; } = new();
 
         public void Build(LevelLayout layout, Transform parent)
         {
@@ -178,6 +183,7 @@ namespace CGD.Level
                 Vector3 position = (layout.TileToLocal(doorway.RoomTile) + layout.TileToLocal(doorway.OutsideTile)) * 0.5f;
                 Vector3 outward  = new(doorway.Outward.x, 0f, doorway.Outward.y);
                 GameObject door = Object.Instantiate(prefab, parent.TransformPoint(position), parent.rotation * Quaternion.LookRotation(outward), parent);
+                if (doorway.Connection.IsGate) Gates[doorway.Connection] = door;
 
                 // The door sits at the end nearer Start; a one-way door opens from the corridor
                 // side, i.e. for someone arriving from the deeper room.

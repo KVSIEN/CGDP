@@ -73,15 +73,16 @@ namespace CGD.Level
             }
 
             Layout = new LevelLayoutBuilder(_settings).Build(Graph, nodeSpacing, Seed, content);
-            new LevelGeometryBuilder(_settings).Build(Layout, transform);
+            var geometry = new LevelGeometryBuilder(_settings);
+            geometry.Build(Layout, transform);
             new DoorwaySignBuilder(_settings).Build(Layout, transform);
-            foreach (string warning in Layout.Warnings)
-                Debug.LogWarning($"{name}: {warning}", this);
 
             var populator = new RoomPopulator(_settings, Layout, transform, Seed.Derive("contents").Stream());
             populator.PlaceProps();
-            populator.PlaceKeys(Graph);
+            populator.PlaceKeys(Graph, geometry.Gates);
             PlaceExit(populator);
+            foreach (string warning in Layout.Warnings)
+                Debug.LogWarning($"{name}: {warning}", this);
             ApplyLootLuck();
 
             if (_navMesh != null) _navMesh.BuildNavMesh();

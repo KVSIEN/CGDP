@@ -335,10 +335,25 @@ namespace CGD.Editor
             Changed();
         }
 
-        public void SetKeyRoom(MapConnection connection, int nodeId)
+        public void SetLockKind(MapConnection connection, MapLockKind kind)
+        {
+            Record("Change Lock Kind");
+            connection.Lock = kind;
+            Changed();
+        }
+
+        // index past the end adds a room.
+        public void SetKeyRoom(MapConnection connection, int index, int nodeId)
         {
             Record("Change Key Room");
-            connection.KeyNodeId = nodeId;
+            connection.SetKeyRoom(index, nodeId);
+            Changed();
+        }
+
+        public void RemoveKeyRoom(MapConnection connection, int nodeId)
+        {
+            Record("Remove Key Room");
+            connection.RemoveKeyRoom(nodeId);
             Changed();
         }
 

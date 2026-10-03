@@ -53,14 +53,18 @@ namespace CGD.Level
         [Header("Doors")]
         [Tooltip("Origin at the doorway's centre on the floor, +Z pointing out of the room. Optional for normal connections")]
         [SerializeField] private GameObject _doorPrefab;
-        [Tooltip("Gate for Locked connections (e.g. a Door with a Key set)")]
+        [Tooltip("Gate for Keycard locks (e.g. a Door with a Key set)")]
         [SerializeField] private GameObject _lockedDoorPrefab;
+        [Tooltip("Gate for Terminal locks: a Door with a ConditionLock as its Condition. Empty = the locked door prefab")]
+        [SerializeField] private GameObject _terminalDoorPrefab;
         [Tooltip("Gate for Secret connections (e.g. a Destructible fake wall)")]
         [SerializeField] private GameObject _secretDoorPrefab;
         [Tooltip("Door for one-way shortcuts; needs a Door (on the root or a child), which the builder bars from the near side. Empty = the normal door prefab")]
         [SerializeField] private GameObject _oneWayDoorPrefab;
         [Tooltip("Placed in the room the map graph picks for each Locked gate's key (e.g. an ItemPickup of the item the locked door asks for). Empty = no keys are placed")]
         [SerializeField] private GameObject _keyPrefab;
+        [Tooltip("Placed in each room a Terminal lock picks (a LockTerminal), bound to that gate's ConditionLock. Empty = no terminals are placed")]
+        [SerializeField] private GameObject _terminalPrefab;
 
         [Header("Door Signs")]
         [Tooltip("A bar over each doorway in the colour of the room it leads to")]
@@ -112,13 +116,15 @@ namespace CGD.Level
 
         public GameObject DoorPrefabFor(MapConnection connection) => connection.Type switch
         {
+            ConnectionType.Locked when connection.Lock == MapLockKind.Terminals && _terminalDoorPrefab != null => _terminalDoorPrefab,
             ConnectionType.Locked => _lockedDoorPrefab,
             ConnectionType.Secret => _secretDoorPrefab,
             _ when connection.OneWay && _oneWayDoorPrefab != null => _oneWayDoorPrefab,
             _                     => _doorPrefab,
         };
 
-        public GameObject KeyPrefab => _keyPrefab;
+        public GameObject KeyPrefab      => _keyPrefab;
+        public GameObject TerminalPrefab => _terminalPrefab;
 
         public bool     BuildDoorSigns   => _buildDoorSigns;
         public Material DoorSignMaterial => _doorSignMaterial != null ? _doorSignMaterial : _floorMaterial;

@@ -26,7 +26,7 @@ namespace CGD.Map
             return node;
         }
 
-        // Also removes every connection touching the node, and any key it held.
+        // Also removes every connection touching the node, and any key or terminal it held.
         public bool RemoveNode(int id)
         {
             int index = _nodes.FindIndex(n => n.Id == id);
@@ -35,8 +35,7 @@ namespace CGD.Map
             _nodes.RemoveAt(index);
             _connections.RemoveAll(c => c.Connects(id));
             foreach (MapConnection connection in _connections)
-                if (connection.KeyNodeId == id)
-                    connection.KeyNodeId = MapConnection.NoKey;
+                connection.RemoveKeyRoom(id);
             return true;
         }
 

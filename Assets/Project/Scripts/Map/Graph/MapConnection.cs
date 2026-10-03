@@ -1,30 +1,30 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CGD.Map
 {
-    // An undirected link between two nodes. A Locked link also names the room holding
-    // its key. A one-way link starts barred and only opens from its deeper end — a return
-    // route back toward Start (after a death, the way home) rather than a way ahead.
+    // An undirected link between two nodes. A Locked link also says what opens it (its
+    // lock kind) and which rooms hold the parts: the key, or each terminal. A one-way link
+    // starts barred and only opens from its deeper end — a return route back toward Start
+    // (after a death, the way home) rather than a way ahead.
     [Serializable]
     public class MapConnection
     {
-        public const int NoKey = -1;
-
         [SerializeField] private int            _a;
         [SerializeField] private int            _b;
         [SerializeField] private ConnectionType _type;
-        [Tooltip("Node holding the key for a Locked connection, or -1")]
-        [SerializeField] private int            _keyNodeId = NoKey;
+        [SerializeField] private MapLockKind    _lock;
+        [Tooltip("Rooms holding what opens a Locked connection: the key, or one terminal each")]
+        [SerializeField] private List<int>      _keyNodeIds = new();
         [Tooltip("Opens only from the end further from Start; a normal passage once opened")]
         [SerializeField] private bool           _oneWay;
 
         public MapConnection(int a, int b, ConnectionType type)
         {
-            _a         = a;
-            _b         = b;
-            _type      = type;
-            _keyNodeId = NoKey;
+            _a    = a;
+            _b    = b;
+            _type = type;
         }
 
         public int A => _a;
@@ -36,15 +36,36 @@ namespace CGD.Map
             set => _type = value;
         }
 
-        // Only meaningful while Type is Locked; kept through other types so switching a
-        // link away from Locked and back doesn't lose its key.
-        public int KeyNodeId
+        // Lock kind and key rooms only matter while Type is Locked; they are kept through
+        // other types so switching a link away from Locked and back doesn't lose them.
+        public MapLockKind Lock
         {
-            get => _keyNodeId;
-            set => _keyNodeId = value;
+            get => _lock;
+            set => _lock = value;
         }
 
-        public bool HasKey => _keyNodeId != NoKey;
+        public IReadOnlyList<int> KeyNodeIds => _keyNodeIds;
+        public bool HasKey => _keyNodeIds.Count > 0;
+
+        // How many key rooms the lock kind uses: a keycard lies in one room only.
+        public bool UsesSingleKey => _lock == MapLockKind.Keycard;
+
+        public bool HoldsKey(int nodeId) => _keyNodeIds.Contains(nodeId);
+
+        public void AddKeyRoom(int nodeId)
+        {
+            if (!_keyNodeIds.Contains(nodeId)) _keyNodeIds.Add(nodeId);
+        }
+
+        public bool RemoveKeyRoom(int nodeId) => _keyNodeIds.Remove(nodeId);
+
+        public void SetKeyRoom(int index, int nodeId)
+        {
+            if (index < 0 || index >= _keyNodeIds.Count) AddKeyRoom(nodeId);
+            else if (!_keyNodeIds.Contains(nodeId)) _keyNodeIds[index] = nodeId;
+        }
+
+        public void ClearKeyRooms() => _keyNodeIds.Clear();
 
         public bool OneWay
         {
@@ -61,6 +82,11 @@ namespace CGD.Map
 
         public int Other(int nodeId) => nodeId == _a ? _b : _a;
 
-        public MapConnection Clone() => (MapConnection)MemberwiseClone();
+        public MapConnection Clone()
+        {
+            var copy = (MapConnection)MemberwiseClone();
+            copy._keyNodeIds = new List<int>(_keyNodeIds);
+            return copy;
+        }
     }
 }

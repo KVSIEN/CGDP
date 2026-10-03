@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using CGD.Core;
+using UnityEngine;
 
 namespace CGD.Map
 {
     // Turns some entrances to optional areas into Locked or Secret connections, then
-    // gives every Locked one a key room. An entrance is a connection that is the only way
+    // gives every Locked one its lock kind and key rooms (one keycard, or a terminal in
+    // each of several rooms). An entrance is a connection that is the only way
     // into part of the map holding neither the Boss nor the Exit, so a gate on it can't
     // be walked around. Runs after every other link, so nothing added later can open a
     // second way in.
@@ -62,8 +64,8 @@ namespace CGD.Map
             return ConnectionType.Normal;
         }
 
-        // Keys only go where the player can walk without opening any gate, so no key is
-        // ever shut away behind its own door or another one. Preferences relax one at a
+        // Keys and terminals only go where the player can walk without opening any gate, so
+        // none is ever shut away behind its own door or another one. Preferences relax one at a
         // time until a room qualifies; a gate with no room at all goes back to Normal.
         private void PlaceKeys()
         {
@@ -77,8 +79,18 @@ namespace CGD.Map
                 MapGatedArea area = _context.GatedAreas[i];
                 if (area.Gate.Type != ConnectionType.Locked) continue;
 
-                int key = PickKeyRoom(open, analysis, analysis.Depth(area.OutsideId), keyRooms);
-                if (key == NoRoom)
+                int depth = analysis.Depth(area.OutsideId);
+                int parts = RollLock(area.Gate);
+                area.Gate.ClearKeyRooms();
+                for (int p = 0; p < parts; p++)
+                {
+                    int key = PickKeyRoom(open, analysis, depth, keyRooms);
+                    if (key == NoRoom) break;
+                    area.Gate.AddKeyRoom(key);
+                    keyRooms.Add(key);
+                }
+
+                if (!area.Gate.HasKey)
                 {
                     area.Gate.Type = ConnectionType.Normal;
                     _context.GatedAreas.RemoveAt(i);
@@ -86,9 +98,17 @@ namespace CGD.Map
                     continue;
                 }
 
-                area.Gate.KeyNodeId = key;
-                keyRooms.Add(key);
+                // A terminal lock that found room for only one terminal is just a keycard door.
+                if (area.Gate.KeyNodeIds.Count == 1) area.Gate.Lock = MapLockKind.Keycard;
             }
+        }
+
+        // Picks the gate's lock kind; returns how many key rooms it needs.
+        private int RollLock(MapConnection gate)
+        {
+            bool terminals = _random.Chance(Gates.TerminalLockChance);
+            gate.Lock = terminals ? MapLockKind.Terminals : MapLockKind.Keycard;
+            return terminals ? Mathf.Max(2, Gates.TerminalCount.Evaluate(_random)) : 1;
         }
 
         private int PickKeyRoom(Dictionary<int, int> open, MapGraphAnalysis analysis, int gateDepth, HashSet<int> keyRooms)

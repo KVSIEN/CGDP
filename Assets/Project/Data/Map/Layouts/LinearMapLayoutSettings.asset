@@ -56,3 +56,8 @@ MonoBehaviour:
     _minDepth: 0
     _keyBeforeGate: 1
     _keyOffMainPath: 1
+    _terminalLockChance: 0.4
+    _terminalCount:
+      Min: 2
+      Max: 3
+      Bias: 0

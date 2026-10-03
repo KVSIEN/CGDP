@@ -22,7 +22,7 @@ Assets/
       Abilities/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Dialogue/  Economy/  Enemies/  Expedition/  Factions/  Feedback/  Flow/
       Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
-    Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors, secret wall, keycard, hub workbench; WallKit/ — placeholder wall art), Pickups, UI, VFX, Weapons
+    Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors (keycard, terminal), secret wall, keycard, terminal, hub workbench; WallKit/ — placeholder wall art), Pickups, UI, VFX, Weapons
     Scenes/                 Sandbox.unity (+ its baked NavMesh folder), MapTest.unity (generated level)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            ability assets (incl. TargetedAbility) and the player's ability slots
@@ -46,7 +46,8 @@ Assets/
       Flow/                 GameFlow, GameState/GameStateMachine, settings and UI commands
       Impacts/              ImpactEvents (hit broadcast), ImpactDatabase (effects per surface), ImpactSpawner, DecalPool
       Input/                PlayerInputHandler and binding settings
-      Interaction/          IInteractable, doors, switches, EventInteractable, highlights, Pickups/
+      Interaction/          IInteractable, doors, switches, EventInteractable, highlights, Pickups/,
+                            Locks/ — ConditionLock (multi-condition door locks), LockProgress (rule), LockTerminal
       Items/                item definitions, inventory, equipment, quality rolls, stats
       Level/                map graph → level: LevelLayoutBuilder (rooms, CorridorRouter), LevelGeometryBuilder,
                             RoomPopulator, LevelBuilder (scene entry point), LevelExit, LevelBuildSettings;

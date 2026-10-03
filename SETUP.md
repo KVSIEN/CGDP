@@ -273,7 +273,9 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 | Ammo pickup | trigger Collider, `AmmoPickup` | `_munition` = a munition asset, `_amount` |
 | Health pickup | trigger Collider, `HealthPickup` | `_amount` |
 | Item pickup | trigger Collider, `ItemPickup` | `_item`, `_count` |
-| Door | solid Collider, `Door` | Pivot on the hinge. `_openAngle`, `_holdDuration`?, `_key`? to lock it |
+| Door | solid Collider, `Door` | Pivot on the hinge. `_openAngle`, `_holdDuration`?, `_key`? to lock it, `_condition`? = a `ConditionLock` to keep it locked until conditions are met |
+| Condition lock | `ConditionLock` (on the door's object) | `_label` (shown as "Label 1/2"), `_required` (0 = all `_signals`), `_signals`? = `QuestSignal`s that each count once, `_onOpened`?. Other sources: a `LockTerminal`, or any UnityEvent calling `ConditionLock.Satisfy` with its own object as the argument (e.g. an `EventInteractable`'s `_onInteract`) — each distinct object counts once |
+| Terminal | Collider, `LockTerminal` | `_lock` = the door's `ConditionLock`, `_label`, `_holdDuration`, `_indicator`? (Renderer tinted Off/On). Ready-made: `Prefabs/Environment/Level/LockTerminal` |
 | Switch | Collider, `Switch` | `_label`, `_doors` |
 | Anything else | Collider, `EventInteractable` | `_label`, `_requirement`?, `_onInteract` event |
 | Chest | Collider, `LootContainer`, `LootDropper` | Untick the dropper's `_dropOnDeath` |
@@ -438,7 +440,7 @@ A map **style** (`MapGenerationSettings`) is what a `MapGraphAsset` or `LevelBui
 
 | Asset | Create menu | Assign |
 |---|---|---|
-| **MapLayoutSettings** | CGD › Map › Map Layout Settings | sizes, main path, branches, loops (incl. `_oneWayShortcutChance`), gates (incl. `_minDepth` and the key preferences) |
+| **MapLayoutSettings** | CGD › Map › Map Layout Settings | sizes, main path, branches, loops (incl. `_oneWayShortcutChance`), gates (incl. `_minDepth`, the key preferences, `_terminalLockChance` and `_terminalCount`) |
 | **MapContentSettings** | CGD › Map › Map Content Settings | `_nodeRules` (incl. `_minSpacing`, `_wantsSpace`), `_fillType`, `_guarantees` (type + spot: Within Depth / Behind Every Gate / Before Boss, count, depth band), `_pacing` (`_combatTypes`, `_maxCombatInARow`, `_restAfterElite`, `_restType`), intensity curve, `_sections` = `Map/Sections/` assets in run order, `_factions` = Faction assets from `Data/Factions/`, `_factionMixes` = `Map/FactionMixes/` assets + weight (empty = an even split). With factions listed every room belongs to one — the validator flags rooms without |
 | **MapGenerationSettings** | CGD › Map › Map Generation Settings | `_layouts` (at least one, weight 0 = never unless all are 0), `_content` (required), `_modifiers` = `Map/Modifiers/` assets, `_modifierCount` (0–1 on the ready-made styles, 0–2 on Random), `_maxWarnings` / `_maxAnomalies` (2 / 1), `_nodeSpacing` |
 | **MapSectionDefinition** | CGD › Map › Section | `_displayName`, `_color` (Section view mode) |
@@ -495,13 +497,16 @@ Each entry lists its **Functions**, enemy prefabs (count read at the room's inte
     | Slot | Prefab | Is |
     |---|---|---|
     | `_doorPrefab` | — (empty) | normal connections stay open passages |
-    | `_lockedDoorPrefab` | `LockedLevelDoor` (yellow) | `Door` on the `Hinge` child, `_key` = `Items/Keycards/SecurityKeycard` ×1, Consume on |
+    | `_lockedDoorPrefab` | `LockedLevelDoor` (yellow) | Keycard locks: `Door` on the `Hinge` child, `_key` = `Items/Keycards/SecurityKeycard` ×1, Consume on |
+    | `_terminalDoorPrefab` | `TerminalLevelDoor` (orange) | Terminal locks: `Door` + `ConditionLock` on the `Hinge` child, the Door's `_condition` = that lock, no `_key`. The builder sets how many terminals it needs. Empty = `_lockedDoorPrefab` |
     | `_secretDoorPrefab` | `SecretLevelWall` (white, like the walls) | `Destructible` (60 HP) + `DespawnOnDeath` (0 s) on a wall-sized box: shoot it to open |
     | `_oneWayDoorPrefab` | `LevelDoor` (cyan) | plain `Door` on the `Hinge` child; the builder bars it so it only opens from the corridor side. Empty = `_doorPrefab`; with neither, one-way shortcuts are open passages |
     | `_keyPrefab` | `SecurityKeycardPickup` | `ItemPickup` of one `SecurityKeycard` |
+    | `_terminalPrefab` | `LockTerminal` | `LockTerminal` on a console box (origin at the base), `_indicator` = its light. One per terminal room, bound to its door's `ConditionLock` at build time |
   - A one-way door prefab needs a `Door` on its root or a child.
   - Closed doors cut the NavMesh, so enemies don't follow the player through them.
-- **Keys**: `_keyPrefab` is placed in the room the map graph picks for each Locked connection. Every key is reachable without opening a door, and each locked door uses one up, so one key item (`SecurityKeycard`) serves every door. For other locks, make the pickup's item match the door's `Door._key` and tick `_key.Consume`.
+- **Keys**: `_keyPrefab` is placed in the room the map graph picks for each Keycard-locked connection. Every key is reachable without opening a door, and each locked door uses one up, so one key item (`SecurityKeycard`) serves every door. For other locks, make the pickup's item match the door's `Door._key` and tick `_key.Consume`.
+- **Terminals**: for each Terminal-locked connection, `_terminalPrefab` is placed in every room the graph lists, and each one is bound to the `ConditionLock` found on that connection's door. A missing terminal prefab, or a door without a `ConditionLock`, is logged as a level warning.
 - **Exit**: when the Exit room's content has no `LevelExit`, a plain exit pad is added. Using it ("Extract") calls `GameFlow.Victory`.
 - **Start room (hub)**: the Start entry's centrepiece is `Prefabs/Environment/Level/HubWorkbench` — a `CraftingStation` (`_recipes` = the four `Data/Crafting` recipes) with its bench 2.5 m from its origin, so the player doesn't spawn inside it. The Start entry keeps `EnemyCount` 0.
 

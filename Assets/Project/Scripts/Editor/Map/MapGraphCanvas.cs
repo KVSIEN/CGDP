@@ -135,13 +135,12 @@ namespace CGD.Editor
             }
         }
 
-        // Locked links also name their key room, so a missing key is visible at a glance.
+        // Locked links also name their key or terminal rooms, so a missing one is visible at a glance.
         private void DrawConnectionLabel(Vector2 at, MapConnection connection)
         {
             ConnectionType type = connection.Type;
             string text = type != ConnectionType.Locked ? type.ToString()
-                        : connection.HasKey ? $"Locked · key #{connection.KeyNodeId}"
-                        : "Locked · no key";
+                        : LockLabel(connection);
             if (connection.OneWay) text += " · one-way";
             var content = new GUIContent(text);
             Vector2 size = _linkLabelStyle.CalcSize(content);
@@ -150,6 +149,14 @@ namespace CGD.Editor
             EditorGUI.DrawRect(rect, MapGraphStyle.Background);
             _linkLabelStyle.normal.textColor = MapGraphStyle.ConnectionColor(type);
             GUI.Label(rect, content, _linkLabelStyle);
+        }
+
+        private static string LockLabel(MapConnection connection)
+        {
+            if (connection.UsesSingleKey)
+                return connection.HasKey ? $"Locked · key #{connection.KeyNodeIds[0]}" : "Locked · no key";
+            if (!connection.HasKey) return "Locked · no terminals";
+            return "Locked · terminals #" + string.Join(" #", connection.KeyNodeIds);
         }
 
         private void DrawPendingConnection(MapGraphEditorSession session)

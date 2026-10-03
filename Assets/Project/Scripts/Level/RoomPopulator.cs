@@ -4,6 +4,7 @@ using UnityEngine.AI;
 using CGD.Core;
 using CGD.Enemies;
 using CGD.Factions;
+using CGD.Interaction;
 using CGD.Map;
 
 namespace CGD.Level
@@ -58,19 +59,65 @@ namespace CGD.Level
             }
         }
 
-        // One key per Locked connection, in the room the map graph chose for it.
-        public void PlaceKeys(MapGraph graph)
+        // What opens each Locked connection, in the rooms the map graph chose: one key for a
+        // Keycard lock, and for a Terminal lock a terminal per room, bound to the gate's
+        // ConditionLock (`gates`: the door placed on each connection).
+        public void PlaceKeys(MapGraph graph, IReadOnlyDictionary<MapConnection, GameObject> gates)
         {
-            if (_settings.KeyPrefab == null) return;
-
             foreach (MapConnection connection in graph.Connections)
             {
                 if (connection.Type != ConnectionType.Locked || !connection.HasKey) continue;
-                if (!_layout.Rooms.TryGetValue(connection.KeyNodeId, out LevelRoom room)) continue;
 
-                if (TryTakeTile(room, KeepPropsOff, out Vector3 position))
-                    Object.Instantiate(_settings.KeyPrefab, position, RandomYaw(), _parent);
+                if (connection.Lock == MapLockKind.Terminals) PlaceTerminals(connection, gates);
+                else                                          PlaceKey(connection);
             }
+        }
+
+        private void PlaceKey(MapConnection connection)
+        {
+            if (_settings.KeyPrefab == null) return;
+            if (!_layout.Rooms.TryGetValue(connection.KeyNodeIds[0], out LevelRoom room)) return;
+
+            if (TryTakeTile(room, KeepPropsOff, out Vector3 position))
+                Object.Instantiate(_settings.KeyPrefab, position, RandomYaw(), _parent);
+        }
+
+        private void PlaceTerminals(MapConnection connection, IReadOnlyDictionary<MapConnection, GameObject> gates)
+        {
+            string gate = $"Terminal lock #{connection.A}–#{connection.B}";
+            if (_settings.TerminalPrefab == null)
+            {
+                _layout.Warnings.Add($"{gate} has no terminals: the build settings have no terminal prefab.");
+                return;
+            }
+
+            ConditionLock conditionLock = gates.TryGetValue(connection, out GameObject door) && door != null
+                ? door.GetComponentInChildren<ConditionLock>()
+                : null;
+            if (conditionLock == null)
+            {
+                _layout.Warnings.Add($"{gate} can't be opened by terminals: its door has no ConditionLock.");
+                return;
+            }
+
+            int placed = 0;
+            foreach (int keyRoom in connection.KeyNodeIds)
+            {
+                if (!_layout.Rooms.TryGetValue(keyRoom, out LevelRoom room)) continue;
+                if (!TryTakeTile(room, KeepPropsOff, out Vector3 position)) continue;
+
+                GameObject terminal = Object.Instantiate(_settings.TerminalPrefab, position, RandomYaw(), _parent);
+                if (terminal.TryGetComponent(out LockTerminal lockTerminal))
+                {
+                    lockTerminal.Bind(conditionLock);
+                    placed++;
+                }
+            }
+
+            if (placed < connection.KeyNodeIds.Count)
+                _layout.Warnings.Add($"{gate}: only {placed} of {connection.KeyNodeIds.Count} terminals could be placed.");
+            // Never ask for more terminals than exist, or the door could never open.
+            conditionLock.SetRequired(Mathf.Max(1, placed));
         }
 
         public void SpawnEnemies()

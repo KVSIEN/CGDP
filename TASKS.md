@@ -11,6 +11,7 @@
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Lock variants: condition locks ("do A and B") for doors — terminals, events, quest signals; generated Terminal locks (2–3 terminals in separate rooms) with editor and validator support
 - Expedition core loop: starting-room hub with workbench and random loadout, Exit as extraction, lose everything on death, ship hold + pack screen between runs
 - Tier-1 capsule enemies per reality (Maintenance Bot, Scavenger, Husk) at ≈100 effective health, in the faction rosters
 - MapTest scene (generated levels with the full player setup, blueprint world map and minimap, feedback)
