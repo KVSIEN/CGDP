@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a5818fd430c4cc680cea35ea8eaf04f, type: 3}
+  m_Name: VoidWallKit
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.WallKit
+  _straight: {fileID: 3101009608764645541, guid: 608d801db13b4586b7f5cf365e1134f9, type: 3}
+  _angled: {fileID: 1230387102507832561, guid: 32f370774b88433f976a3b68355b3ff9, type: 3}
+  _post: {fileID: 6477375601566982726, guid: 0dea806cb6e748b984bab8b8538f8801, type: 3}
+  _doorFrame: {fileID: 7822259691650695555, guid: f333c5d1cdf34de3b0b2c59764bf44c7, type: 3}
+  _pieceLength: 3
+  _pieceHeight: 4
+  _postMinAngle: 30

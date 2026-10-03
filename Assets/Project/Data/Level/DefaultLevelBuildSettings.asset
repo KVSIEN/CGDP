@@ -25,6 +25,14 @@ MonoBehaviour:
   _roomChamfer: 1
   _curveSmoothing: 2
   _chamferCorridorBends: 1
+  _wallKit: {fileID: 11400000, guid: 3fef0224256e4fcf8222e1be28ded44e, type: 2}
+  _factionWallKits:
+  - Faction: {fileID: 11400000, guid: 4dcd53174a8d445682c4f9a5c8d95ed4, type: 2}
+    Kit: {fileID: 11400000, guid: 3fef0224256e4fcf8222e1be28ded44e, type: 2}
+  - Faction: {fileID: 11400000, guid: 9df11072532741b0a4466eeeab99e06b, type: 2}
+    Kit: {fileID: 11400000, guid: e732e8cfe9734b87a528fda09d969856, type: 2}
+  - Faction: {fileID: 11400000, guid: 6dfe42f935864a368a7aff83d9c78bf2, type: 2}
+    Kit: {fileID: 11400000, guid: d02529b5f80c4781b91c4feae6a8cbf5, type: 2}
   _buildCeilings: 0
   _ceilingMaterial: {fileID: 0}
   _ceilingLayer: 0

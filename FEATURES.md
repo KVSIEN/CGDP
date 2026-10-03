@@ -547,6 +547,11 @@
 - Shapes suit their place in the map: hub rooms with many connections favour crosses and domes. Rooms are always one connected space, with every passage at least two tiles (6 m) wide
 - Domes and rings have smooth, rounded walls: the stair-steps of a round floor plan become an arc of short wall pieces with gentle bends (about 11° each by default), never moving the walls beside a doorway
 - Room corners are bevelled at 45° by default — the ship-interior look — one tile deep, two in the Grand Atrium and Docking Bay. Only outside corners are cut (never inside ones), never where a doorway is close by, and nothing is placed in the cut-off space; corner props move to the spots on either side of the bevel. Corridor bends are bevelled on their outside corner too. Both can be turned off, and each kind of room can set its own depth
+- Walls wear a modular art kit instead of plain boxes: wall panels repeated along every wall, angled pieces on bevels and rounded walls, posts at corners and on either side of each doorway, and a frame around every doorway. Each reality has its own placeholder kit, after the GDD's art direction:
+  - **TECH** (the ship's own luxury interior, also used for corridors): clean light panels, dark trims and fluorescent white-blue light strips
+  - **BIO**: weathered metal overtaken by moss and roots, with glowing bioluminescent pods
+  - **VOID**: near-black panels with slabs set at impossible angles, violet cracks of light and frost along the floor
+  A room wears the kit of the faction that holds it, so the reality is readable from the walls alone
 - The Map Graph window's blueprint shows the bevels and the curved walls exactly as they're built
 - Rooms have structure: rows of support columns in lobbies, cargo and docking bays (lined up across the whole ship), colonnades circling atriums and casinos, columns framing the inside corners of L, T and cross rooms, kitchen walls in restaurants, cabin walls in crew quarters and a bar counter in casinos
 - A clear walkway always runs from every doorway to the middle of the room: no column, wall or prop is ever placed on it, and inner walls always leave gaps where it passes, so no part of a room is ever walled off

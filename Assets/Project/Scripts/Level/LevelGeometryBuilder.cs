@@ -7,7 +7,8 @@ using CGD.Interaction;
 namespace CGD.Level
 {
     // Builds floors, walls, room structure (pillars, inner walls) and doors for a
-    // LevelLayout under a parent transform. Walls come from LevelWallBuilder; doorways are
+    // LevelLayout under a parent transform. Walls come from LevelWallBuilder (dressed with the
+    // settings' wall kit when there is one: the boxes then only collide); doorways are
     // simply where a corridor tile meets a room tile.
     public class LevelGeometryBuilder
     {
@@ -29,7 +30,8 @@ namespace CGD.Level
             var structure      = new BoxMeshBuilder();
 
             Dictionary<Vector2Int, LevelRoom> outerRing = AddFloors(layout, roomFloors, factionFloors, corridorFloors);
-            new LevelWallBuilder(_settings, layout, walls).Build();
+            LevelWallPlan wallPlan = LevelWallPlan.Create(layout, _settings);
+            new LevelWallBuilder(_settings, layout, walls).Build(wallPlan);
             foreach (LevelRoom room in layout.Rooms.Values)
             {
                 if (room.Structure != null) AddStructure(layout, room, structure, parent);
@@ -40,7 +42,12 @@ namespace CGD.Level
             foreach (var (faction, floors) in factionFloors)
                 CreatePart($"RoomFloors_{faction.name}", floors, TintedFloor(faction), parent);
             CreatePart("CorridorFloors", corridorFloors, _settings.CorridorFloorMaterial, parent);
-            CreatePart("Walls",          walls,          _settings.WallMaterial,          parent);
+            GameObject wallBoxes = CreatePart("Walls", walls, _settings.WallMaterial, parent);
+            if (_settings.WallKit != null)
+            {
+                if (wallBoxes != null) wallBoxes.GetComponent<MeshRenderer>().enabled = false;
+                PlaceWallKit(layout, wallPlan, parent);
+            }
             CreatePart("Structure",      structure,      _settings.WallMaterial,          parent);
             if (_settings.BuildCeilings) BuildCeilings(layout, outerRing, parent);
             PlaceDoors(layout, parent);
@@ -176,6 +183,21 @@ namespace CGD.Level
                 // side, i.e. for someone arriving from the deeper room.
                 if (doorway.Connection.OneWay) MakeOneWay(layout, doorway, door, parent.TransformDirection(outward));
             }
+        }
+
+        // Visual only: the kit pieces have no colliders to keep in sync with the boxes.
+        private void PlaceWallKit(LevelLayout layout, LevelWallPlan wallPlan, Transform parent)
+        {
+            var holder = new GameObject("WallKit").transform;
+            holder.SetParent(parent, false);
+            foreach (WallKitPlacement piece in WallKitPlanner.Plan(layout, wallPlan, _settings.WallKitFor))
+            {
+                GameObject instance = Object.Instantiate(piece.Prefab, holder);
+                instance.transform.SetLocalPositionAndRotation(piece.Position, piece.Rotation);
+                instance.transform.localScale = piece.Scale;
+            }
+            // Hundreds of small pieces per level: batch them, they never move.
+            StaticBatchingUtility.Combine(holder.gameObject);
         }
 
         private static void MakeOneWay(LevelLayout layout, LevelDoorway doorway, GameObject door, Vector3 openSide)

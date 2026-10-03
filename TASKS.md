@@ -10,6 +10,7 @@
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Modular wall kits (placeholder TECH/BIO/VOID art per the GDD), per-faction
 - Smoothly rounded dome and ring walls
 - 45° bevelled room corners and corridor bends (shared wall plan for building and blueprint)
 - Map Graph Blueprint mode (graph laid out as the level's floor plan)

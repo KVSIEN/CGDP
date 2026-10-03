@@ -37,6 +37,12 @@ namespace CGD.Level
         [Tooltip("Cut the outside corner of every corridor bend at 45°")]
         [SerializeField] private bool _chamferCorridorBends = true;
 
+        [Header("Wall Kit")]
+        [Tooltip("Art placed along every wall (straight pieces, bevels, posts, door frames). The box walls stay as invisible collision. Empty = plain box walls")]
+        [SerializeField] private WallKit _wallKit;
+        [Tooltip("Kits for rooms a faction holds, instead of the one above (corridors always use it)")]
+        [SerializeField] private List<FactionWallKit> _factionWallKits = new();
+
         [Header("Ceilings")]
         [Tooltip("Roof every room and corridor at its wall height. Interiors then need their own lights")]
         [SerializeField] private bool _buildCeilings;
@@ -87,6 +93,17 @@ namespace CGD.Level
         public int   RoomChamfer    => _roomChamfer;
         public bool  ChamferCorridorBends => _chamferCorridorBends;
         public int   CurveSmoothing => _curveSmoothing;
+        public WallKit WallKit      => _wallKit;
+
+        // The kit a room's walls use: its faction's, else the default. Null room = a corridor.
+        public WallKit WallKitFor(LevelRoom room)
+        {
+            if (_wallKit == null) return null;
+            if (room?.Faction == null) return _wallKit;
+
+            FactionWallKit match = _factionWallKits.Find(k => k != null && k.Faction == room.Faction && k.Kit != null);
+            return match != null ? match.Kit : _wallKit;
+        }
         public bool  BuildCeilings  => _buildCeilings;
         public Material CeilingMaterial => _ceilingMaterial != null ? _ceilingMaterial : _wallMaterial;
         public int   CeilingLayer   => _ceilingLayer;

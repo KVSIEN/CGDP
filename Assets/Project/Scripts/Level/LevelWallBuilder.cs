@@ -21,9 +21,9 @@ namespace CGD.Level
         private float Tile      => _layout.TileSize;
         private float Thickness => _settings.WallThickness;
 
-        public void Build()
+        public void Build(LevelWallPlan plan)
         {
-            foreach (LevelWallPlan.Segment segment in LevelWallPlan.Create(_layout, _settings).Segments)
+            foreach (LevelWallPlan.Segment segment in plan.Segments)
                 AddSegment(segment);
             AddLintels();
         }

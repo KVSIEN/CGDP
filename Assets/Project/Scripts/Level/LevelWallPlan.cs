@@ -16,9 +16,9 @@ namespace CGD.Level
     {
         public readonly struct Segment
         {
-            public Segment(Vector2 from, Vector2 to, float height, bool squareEnds)
+            public Segment(Vector2 from, Vector2 to, float height, bool squareEnds, LevelRoom room)
             {
-                From = from; To = to; Height = height; SquareEnds = squareEnds;
+                From = from; To = to; Height = height; SquareEnds = squareEnds; Room = room;
             }
 
             public Vector2 From       { get; }
@@ -27,6 +27,8 @@ namespace CGD.Level
             // Tile-edge runs reach a full wall thickness past each end so corners close;
             // outline pieces meet at angles and only need half.
             public bool    SquareEnds { get; }
+            // The room the wall bounds; null for a corridor wall.
+            public LevelRoom Room     { get; }
         }
 
         private const float CorridorCut = 0.5f;
@@ -46,7 +48,7 @@ namespace CGD.Level
             {
                 if (room.Outline == null) continue;
                 foreach ((Vector2 from, Vector2 to) in room.Outline.Segments)
-                    plan.Segments.Add(new Segment(from, to, room.WallHeight, squareEnds: false));
+                    plan.Segments.Add(new Segment(from, to, room.WallHeight, squareEnds: false, room));
                 plan.Cuts.AddRange(room.Outline.Cuts);
             }
             foreach (var (tile, (a, b)) in bends)
@@ -77,7 +79,8 @@ namespace CGD.Level
 
         private void AddTileEdgeRuns(LevelLayout layout, float corridorHeight, Dictionary<Vector2Int, (Vector2Int, Vector2Int)> bends)
         {
-            var edges = new Dictionary<(int side, int line, float height), List<int>>();
+            // Keyed by room too (null = corridor), so each run belongs to one room.
+            var edges = new Dictionary<(int side, int line, float height, LevelRoom room), List<int>>();
             foreach (Vector2Int t in layout.WalkableTiles)
             {
                 LevelRoom room = layout.RoomAt(t);
@@ -92,34 +95,34 @@ namespace CGD.Level
                     if (isBend && (dir == cut.Item1 || dir == cut.Item2)) continue;
 
                     bool alongY = dir.x != 0;
-                    var key = (side, alongY ? t.x : t.y, height);
+                    var key = (side, alongY ? t.x : t.y, height, room);
                     if (!edges.TryGetValue(key, out List<int> positions)) edges[key] = positions = new List<int>();
                     positions.Add(alongY ? t.y : t.x);
                 }
             }
 
-            foreach (var ((side, line, height), positions) in edges)
+            foreach (var ((side, line, height, room), positions) in edges)
             {
                 positions.Sort();
                 int runStart = positions[0];
                 for (int i = 1; i <= positions.Count; i++)
                 {
                     if (i < positions.Count && positions[i] == positions[i - 1] + 1) continue;
-                    AddEdgeRun(Sides[side], line, runStart, positions[i - 1], height);
+                    AddEdgeRun(Sides[side], line, runStart, positions[i - 1], height, room);
                     if (i < positions.Count) runStart = positions[i];
                 }
             }
         }
 
         // The outer edge of tiles first..last on one line, travelling with the floor on the left.
-        private void AddEdgeRun(Vector2Int side, int line, int first, int last, float height)
+        private void AddEdgeRun(Vector2Int side, int line, int first, int last, float height, LevelRoom room)
         {
             Vector2 from, to;
             if (side == Vector2Int.down)       { from = new(first, line);       to = new(last + 1, line); }
             else if (side == Vector2Int.right) { from = new(line + 1, first);   to = new(line + 1, last + 1); }
             else if (side == Vector2Int.up)    { from = new(last + 1, line + 1); to = new(first, line + 1); }
             else                               { from = new(line, last + 1);    to = new(line, first); }
-            Segments.Add(new Segment(from, to, height, squareEnds: true));
+            Segments.Add(new Segment(from, to, height, squareEnds: true, room));
         }
 
         // The bend tile's two outer walls, each stopping half a tile short of their shared
@@ -141,9 +144,9 @@ namespace CGD.Level
             Vector2 cutB = corner + dirSecond * CorridorCut;
             Vector2 secondEnd = corner + dirSecond;
 
-            Segments.Add(new Segment(firstStart, cutA, height, squareEnds: true));
-            Segments.Add(new Segment(cutA, cutB, height, squareEnds: false));
-            Segments.Add(new Segment(cutB, secondEnd, height, squareEnds: true));
+            Segments.Add(new Segment(firstStart, cutA, height, squareEnds: true, room: null));
+            Segments.Add(new Segment(cutA, cutB, height, squareEnds: false, room: null));
+            Segments.Add(new Segment(cutB, secondEnd, height, squareEnds: true, room: null));
             Cuts.Add((cutA, corner, cutB));
         }
 
