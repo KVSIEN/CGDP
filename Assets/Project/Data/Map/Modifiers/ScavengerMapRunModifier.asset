@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: ScavengerMapRunModifier
   m_EditorClassIdentifier: CGD.Runtime::CGD.Map.MapRunModifier
   _displayName: Scavenger
+  _kind: 1
   _description: Supplies were left behind. More loot, fewer shops.
   _weight: 1
+  _lootLuck: 0
   _types:
   - Type: 6
     WeightMultiplier: 2

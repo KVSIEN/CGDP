@@ -50,6 +50,9 @@ namespace CGD.Loot
             if (_health != null) _health.OnDeath -= Drop;
         }
 
+        // Run-wide bonuses (a warning's loot luck) stack on top of the authored luck.
+        public void AddLuck(float amount) => _luck = Mathf.Max(0f, _luck + amount);
+
         public void Drop()
         {
             if (_table == null) return;

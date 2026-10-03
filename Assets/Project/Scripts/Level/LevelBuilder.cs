@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.AI.Navigation;
 using CGD.Core;
 using CGD.Feedback;
+using CGD.Loot;
 using CGD.Map;
 using CGD.WorldMap;
 
@@ -43,7 +44,7 @@ namespace CGD.Level
         public Seed        Seed   { get; private set; }
         public MapGraph    Graph  { get; private set; }
         public LevelLayout Layout { get; private set; }
-        // The run modifiers the generated map rolled; empty for a MapGraphAsset.
+        // The run modifiers the map was generated with (a MapGraphAsset's are recovered from its seed).
         public IReadOnlyList<MapRunModifier> Modifiers { get; private set; } = Array.Empty<MapRunModifier>();
 
         private void Awake()
@@ -63,15 +64,16 @@ namespace CGD.Level
             }
 
             Layout = new LevelLayoutBuilder(_settings).Build(Graph, nodeSpacing, Seed, content);
+            new LevelGeometryBuilder(_settings).Build(Layout, transform);
+            new DoorwaySignBuilder(_settings).Build(Layout, transform);
             foreach (string warning in Layout.Warnings)
                 Debug.LogWarning($"{name}: {warning}", this);
-
-            new LevelGeometryBuilder(_settings).Build(Layout, transform);
 
             var populator = new RoomPopulator(_settings, Layout, transform, Seed.Derive("contents").Stream());
             populator.PlaceProps();
             populator.PlaceKeys(Graph);
             PlaceExit(populator);
+            ApplyLootLuck();
 
             if (_navMesh != null) _navMesh.BuildNavMesh();
             populator.SpawnEnemies();
@@ -89,8 +91,19 @@ namespace CGD.Level
                 string message = string.IsNullOrEmpty(modifier.Description)
                     ? modifier.DisplayName
                     : $"{modifier.DisplayName}: {modifier.Description}";
-                FeedbackBus.Notify(message, NotificationStyle.Warning);
+                FeedbackBus.Notify(message, modifier.Kind == MapRunModifierKind.Warning ? NotificationStyle.Warning : NotificationStyle.Info);
             }
+        }
+
+        // Warnings pay out through the level's loot containers (chests, caches): props and
+        // centrepieces placed under this builder.
+        private void ApplyLootLuck()
+        {
+            float luck = new MapRunTuning(Modifiers).LootLuck;
+            if (luck <= 0f) return;
+
+            foreach (LootDropper dropper in GetComponentsInChildren<LootDropper>(true))
+                dropper.AddLuck(luck);
         }
 
         // content: where the graph's faction indices point (null = rooms have no faction).
@@ -100,6 +113,7 @@ namespace CGD.Level
             {
                 nodeSpacing = _graphAsset.Settings != null ? _graphAsset.Settings.NodeSpacing : Vector2.one;
                 content     = _graphAsset.Content;
+                Modifiers   = _graphAsset.Tuning.Modifiers;
                 return _graphAsset.Graph;
             }
 

@@ -24,6 +24,7 @@ namespace CGD.Map
                 LockedMultiplier   *= modifier.LockedChanceMultiplier;
                 SecretMultiplier   *= modifier.SecretChanceMultiplier;
                 IntensityOffset    += modifier.IntensityOffset;
+                LootLuck           += modifier.LootLuck;
                 if (modifier.FactionMix != null) FactionMixOverride = modifier.FactionMix;
             }
         }
@@ -36,6 +37,7 @@ namespace CGD.Map
         public float LockedMultiplier   { get; } = 1f;
         public float SecretMultiplier   { get; } = 1f;
         public float IntensityOffset    { get; }
+        public float LootLuck           { get; }
         // Null = the content rolls its own mix. With several, the last modifier's wins.
         public MapFactionMix FactionMixOverride { get; }
 

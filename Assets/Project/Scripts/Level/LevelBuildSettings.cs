@@ -46,6 +46,14 @@ namespace CGD.Level
         [Tooltip("Placed in the room the map graph picks for each Locked gate's key (e.g. an ItemPickup of the item the locked door asks for). Empty = no keys are placed")]
         [SerializeField] private GameObject _keyPrefab;
 
+        [Header("Door Signs")]
+        [Tooltip("A bar over each doorway in the colour of the room it leads to")]
+        [SerializeField] private bool _buildDoorSigns = true;
+        [Tooltip("Copied and tinted per room type (emission is turned on). Empty = the floor material")]
+        [SerializeField] private Material _doorSignMaterial;
+        [Tooltip("Rooms at or above this intensity get a danger marker on their door signs (Elites and the Boss always do)")]
+        [SerializeField, Range(0f, 1f)] private float _dangerIntensity = 0.75f;
+
         [Header("Rooms")]
         [SerializeField] private List<RoomContentRule> _rooms = new();
         [Tooltip("Floor plans for rooms without a function, or whose function lists none. Empty = square rooms")]
@@ -80,6 +88,10 @@ namespace CGD.Level
         };
 
         public GameObject KeyPrefab => _keyPrefab;
+
+        public bool     BuildDoorSigns   => _buildDoorSigns;
+        public Material DoorSignMaterial => _doorSignMaterial != null ? _doorSignMaterial : _floorMaterial;
+        public float    DangerIntensity  => _dangerIntensity;
 
         public RoomContentRule RuleFor(MapNodeType type) => _rooms.Find(r => r.Type == type);
 

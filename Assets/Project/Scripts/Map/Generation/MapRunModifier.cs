@@ -11,9 +11,12 @@ namespace CGD.Map
     public class MapRunModifier : ScriptableObject
     {
         [SerializeField] private string _displayName = "Modifier";
+        [SerializeField] private MapRunModifierKind _kind = MapRunModifierKind.Warning;
         [SerializeField, TextArea(2, 4)] private string _description;
         [Tooltip("Relative chance to be picked")]
         [SerializeField, Min(0f)] private float _weight = 1f;
+        [Tooltip("Added to the luck of every loot container in the level — what a warning pays for its trouble")]
+        [SerializeField, Min(0f)] private float _lootLuck;
 
         [Header("Room Types")]
         [SerializeField] private List<MapTypeAdjustment> _types = new();
@@ -34,6 +37,8 @@ namespace CGD.Map
         public string DisplayName => string.IsNullOrEmpty(_displayName) ? name : _displayName;
         public string Description => _description;
         public float  Weight      => _weight;
+        public MapRunModifierKind Kind => _kind;
+        public float  LootLuck    => _lootLuck;
         public IReadOnlyList<MapTypeAdjustment> Types => _types;
         public int    ExtraOptionalRooms     => _extraOptionalRooms;
         public int    ExtraLoops             => _extraLoops;

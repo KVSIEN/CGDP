@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a9a93e5d42404c0d9b0a9f3171cc626e, type: 3}
-  m_Name: InfestationMapRunModifier
+  m_Name: FracturedHullMapRunModifier
   m_EditorClassIdentifier: CGD.Runtime::CGD.Map.MapRunModifier
-  _displayName: Infestation
-  _kind: 0
-  _description: One faction has overrun most of the ship.
+  _displayName: Fractured Hull
+  _kind: 1
+  _description: The anomaly tore new passages through the decks. More routes, more hidden ways.
   _weight: 1
-  _lootLuck: 0.25
+  _lootLuck: 0
   _types: []
-  _extraOptionalRooms: 0
-  _extraLoops: 0
+  _extraOptionalRooms: 1
+  _extraLoops: 2
   _lockedChanceMultiplier: 1
-  _secretChanceMultiplier: 1
+  _secretChanceMultiplier: 2
   _extraGates: 0
-  _intensityOffset: 0.1
-  _factionMix: {fileID: 11400000, guid: 7189d2b2c89549ca9d259cb578d7f661, type: 2}
+  _intensityOffset: 0
+  _factionMix: {fileID: 0}

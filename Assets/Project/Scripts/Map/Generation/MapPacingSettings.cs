@@ -9,7 +9,7 @@ namespace CGD.Map
     public class MapPacingSettings
     {
         [Tooltip("Room types that count as a fight")]
-        [SerializeField] private MapNodeType[] _combatTypes = { MapNodeType.Combat, MapNodeType.Elite };
+        [SerializeField] private MapNodeType[] _combatTypes = { MapNodeType.Combat, MapNodeType.Elite, MapNodeType.Breach };
         [Tooltip("Most fights in a row on the main path. 0 = no limit")]
         [SerializeField, Min(0)] private int _maxCombatInARow = 3;
         [Tooltip("The main path room right after an Elite is never a fight")]

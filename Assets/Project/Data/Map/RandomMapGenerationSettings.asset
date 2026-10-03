@@ -27,8 +27,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 94bd575e827d4c29a5927c05bb8f523c, type: 2}
   - {fileID: 11400000, guid: 1d62319d90514b01b123ed34acf5dac1, type: 2}
   - {fileID: 11400000, guid: 8cb36d8568fb4be5bfc9f6215b99fd58, type: 2}
+  - {fileID: 11400000, guid: 7bab5da8a251460f90a7f958eb6eb910, type: 2}
   _modifierCount:
     Min: 0
-    Max: 1
+    Max: 2
     Bias: 0
+  _maxWarnings: 2
+  _maxAnomalies: 1
   _nodeSpacing: {x: 220, y: 110}

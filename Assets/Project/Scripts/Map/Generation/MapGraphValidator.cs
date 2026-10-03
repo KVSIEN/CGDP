@@ -18,6 +18,7 @@ namespace CGD.Map
 
             CheckStructure(graph, analysis, issues);
             CheckLocks(graph, analysis, issues);
+            CheckOneWays(graph, analysis, issues);
 
             if (layout != null)
             {
@@ -85,6 +86,38 @@ namespace CGD.Map
                     issues.Add($"{gate} can't be opened: its key (#{connection.KeyNodeId}) is behind it or behind another locked door.");
             }
         }
+
+        // A one-way door opens from its deep end, so the player must be able to get there
+        // some other way — possibly through doors (locked or one-way) opened first. Locks are
+        // treated as openable here; CheckLocks reports the ones that aren't.
+        private static void CheckOneWays(MapGraph graph, MapGraphAnalysis analysis, List<string> issues)
+        {
+            if (analysis.StartId == MapGraphAnalysis.Unreachable) return;
+
+            var closed = new List<MapConnection>();
+            foreach (MapConnection connection in graph.Connections)
+            {
+                if (!connection.OneWay) continue;
+                if (connection.IsGate)
+                    issues.Add($"One-way #{connection.A}–#{connection.B} is also {connection.Type}; one-way only works on open passages.");
+                else
+                    closed.Add(connection);
+            }
+
+            bool openedAny = true;
+            while (openedAny && closed.Count > 0)
+            {
+                Dictionary<int, int> reached = MapGraphSearch.Distances(graph, analysis.StartId, c => !closed.Contains(c));
+                openedAny = closed.RemoveAll(c => reached.ContainsKey(DeepEnd(c, analysis))) > 0;
+            }
+
+            foreach (MapConnection connection in closed)
+                issues.Add($"One-way #{connection.A}–#{connection.B} can't be opened: its far side (#{DeepEnd(connection, analysis)}) is only reachable through it.");
+        }
+
+        // Ties go to B, matching where the level builder puts the door (at A when A is no deeper).
+        private static int DeepEnd(MapConnection connection, MapGraphAnalysis analysis) =>
+            analysis.Depth(connection.A) > analysis.Depth(connection.B) ? connection.A : connection.B;
 
         private static void CheckBossDepth(MapGraph graph, MapLayoutSettings layout, List<string> issues)
         {

@@ -437,11 +437,11 @@ A map **style** (`MapGenerationSettings`) is what a `MapGraphAsset` or `LevelBui
 
 | Asset | Create menu | Assign |
 |---|---|---|
-| **MapLayoutSettings** | CGD › Map › Map Layout Settings | sizes, main path, branches, loops, gates (incl. `_minDepth` and the key preferences) |
+| **MapLayoutSettings** | CGD › Map › Map Layout Settings | sizes, main path, branches, loops (incl. `_oneWayShortcutChance`), gates (incl. `_minDepth` and the key preferences) |
 | **MapContentSettings** | CGD › Map › Map Content Settings | `_nodeRules` (incl. `_minSpacing`, `_wantsSpace`), `_fillType`, `_guarantees` (type + spot: Within Depth / Behind Every Gate / Before Boss, count, depth band), `_pacing` (`_combatTypes`, `_maxCombatInARow`, `_restAfterElite`, `_restType`), intensity curve, `_sections` = `Map/Sections/` assets in run order, `_factions` = Faction assets from `Data/Factions/`, `_factionMixes` = `Map/FactionMixes/` assets + weight (empty = an even split). With factions listed every room belongs to one — the validator flags rooms without |
-| **MapGenerationSettings** | CGD › Map › Map Generation Settings | `_layouts` (at least one, weight 0 = never unless all are 0), `_content` (required), `_modifiers` = `Map/Modifiers/` assets, `_modifierCount` (0–1 on the ready-made styles), `_nodeSpacing` |
+| **MapGenerationSettings** | CGD › Map › Map Generation Settings | `_layouts` (at least one, weight 0 = never unless all are 0), `_content` (required), `_modifiers` = `Map/Modifiers/` assets, `_modifierCount` (0–1 on the ready-made styles, 0–2 on Random), `_maxWarnings` / `_maxAnomalies` (2 / 1), `_nodeSpacing` |
 | **MapSectionDefinition** | CGD › Map › Section | `_displayName`, `_color` (Section view mode) |
-| **MapRunModifier** | CGD › Map › Run Modifier | name, description (announced in the level), `_weight`, per-type adjustments (weight ×, extra min/max), extra rooms/loops/gates, locked/secret chance ×, intensity offset, `_factionMix` override |
+| **MapRunModifier** | CGD › Map › Run Modifier | name, `_kind` (Warning / Anomaly), description (announced in the level), `_weight`, `_lootLuck` (added to every loot container in the level), per-type adjustments (weight ×, extra min/max), extra rooms/loops/gates, locked/secret chance ×, intensity offset, `_factionMix` override |
 | **MapFactionMix** | CGD › Map › Faction Mix | `_dominance` (0 = even split, 1 = one faction holds almost everything), `_scatter` (chance a room is a random faction; 1 = fully random), `_pocketsPerFaction`. Every room always gets a faction |
 
 - **Generate** stays disabled until the style has content and at least one layout.
@@ -464,8 +464,8 @@ Level              [LevelBuilder, NavMeshSurface]   ← at the origin, unrotated
 | **LevelBuilder** | `_settings` = `Level/DefaultLevelBuildSettings` · `_graphAsset` = a `MapGraphAsset` **or** `_generation` = a `Map/…MapGenerationSettings` style (e.g. `BranchingMapGenerationSettings`, or `RandomMapGenerationSettings` for a different shape each run) · `_seed` (0 = random) · `_navMesh` = its NavMeshSurface · `_player` = Player · `_spawnPoint` = RespawnPoint · `_worldMap`? = WorldMapArea | Logs a warning for every corridor that had to cross another. Announces the run's modifiers through the HUD feed (needs a FeedbackPlayer in the scene). |
 | **NavMeshSurface** | Collect Objects = **Current Object Hierarchy** | Rebuilt at runtime. Don't bake it. |
 
-`LevelBuildSettings` holds the grid sizes, wall materials, door prefabs, the key prefab, the default room **Shapes** and one **Rooms** entry per room type.
-The Resupply entry uses `SupplyDepotRoomFunction` (an `AmmoCache` prop against a wall).
+`LevelBuildSettings` holds the grid sizes, wall materials, door prefabs, the key prefab, door signs (`_buildDoorSigns`, `_doorSignMaterial` — empty = the floor material, tinted and made emissive — and `_dangerIntensity`), the default room **Shapes** and one **Rooms** entry per room type.
+The Resupply entry uses `SupplyDepotRoomFunction` (an `AmmoCache` prop against a wall); the Breach entry uses the Combat functions and enemy count (its enemies come from the two factions' rosters).
 Each entry lists its **Functions**, enemy prefabs (count read at the room's intensity), a centrepiece and props.
 
 | Asset | Folder | Sets |
@@ -485,6 +485,7 @@ Each entry lists its **Functions**, enemy prefabs (count read at the room's inte
 - **Ceilings**: tick `_buildCeilings` (off by default). Interiors then need lights. Put `_ceilingLayer` on its own layer and keep it out of the `WorldMapArea` capture mask; ceilings are left out of the NavMesh automatically.
 - **Enemy prefabs** need `EnemyAI`. None exist yet, so generated rooms start empty.
 - **Door prefabs**: origin at the doorway centre on the floor, +Z pointing out of the room. The opening is one tile wide (`_tileSize`).
+  - One-way shortcuts use the normal `_doorPrefab`; it needs a `Door` (on the root or a child) — the builder bars it so it only opens from the corridor side. Without a door prefab they're open passages, like every other connection.
   - Normal is optional.
   - Locked is typically a `Door` with a key.
   - Secret is, for example, a `Destructible` fake wall.
@@ -551,7 +552,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Feedback/` | ten `…FeedbackPreset`s | CombatFeedback, QuestFeedback, Stealthable |
 | `Stealth/` | `StealthSettings` (shared) | Stealthable |
 | `CameraEffects/` | `DefaultCameraEffectSettings` | CameraEffectsController |
-| `Map/` | map styles `Linear`/`Branching`/`Hub`/`Labyrinth`/`Random` `…MapGenerationSettings`, `SandboxMapGraph` (uses Branching); `Layouts/` (`Linear`/`Branching`/`Hub`/`Labyrinth` `…MapLayoutSettings`), `Content/` (`Standard`/`TreasureHunt`/`Gauntlet` `…MapContentSettings`), `Sections/` (`Habitation`/`Commerce`/`Engineering` `…MapSection`), `Modifiers/` (`Lockdown`/`Scavenger`/`Infestation`/`Overrun` `…MapRunModifier`), `FactionMixes/` (`Infested`/`Balanced`/`Contested`/`Warped` `…MapFactionMix`) | Map Graph window, LevelBuilder |
+| `Map/` | map styles `Linear`/`Branching`/`Hub`/`Labyrinth`/`Random` `…MapGenerationSettings`, `SandboxMapGraph` (uses Branching); `Layouts/` (`Linear`/`Branching`/`Hub`/`Labyrinth` `…MapLayoutSettings`), `Content/` (`Standard`/`TreasureHunt`/`Gauntlet` `…MapContentSettings`), `Sections/` (`Habitation`/`Commerce`/`Engineering` `…MapSection`), `Modifiers/` (warnings `Lockdown`/`Infestation`/`Overrun`, anomalies `Scavenger`/`FracturedHull` `…MapRunModifier`), `FactionMixes/` (`Infested`/`Balanced`/`Contested`/`Warped` `…MapFactionMix`) | Map Graph window, LevelBuilder |
 | `Audio/` | `DefaultSurfaceDatabase` | PlayerFootsteps |
 | `Factions/` | `TechFaction`, `BioFaction`, `VoidFaction` — name, colour, floor tint, `_enemies` roster (empty until enemy prefabs exist) | MapContentSettings, LevelBuilder |
 | `Level/` | `DefaultLevelBuildSettings` (Gridbox materials, room rules without prefabs), `Functions/` (ten `…RoomFunction`s), `Shapes/` (seven `…RoomShape`s), `Structure/` (six `…StructureRule`s), `Landmarks/` (`ReactorCoreLandmarkRoom`) | LevelBuilder |

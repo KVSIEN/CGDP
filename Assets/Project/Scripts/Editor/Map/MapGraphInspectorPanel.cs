@@ -87,6 +87,11 @@ namespace CGD.Editor
                 ? EditorGUILayout.Slider("Influence", node.FactionInfluence, 0f, 1f)
                 : 1f;
             if (EditorGUI.EndChangeCheck()) session.SetFaction(node, faction, influence);
+
+            if (node.Type != MapNodeType.Breach) return;
+            EditorGUI.BeginChangeCheck();
+            int breach = EditorGUILayout.Popup("Breaching faction", node.BreachFaction + 1, options) - 1;
+            if (EditorGUI.EndChangeCheck()) session.SetBreachFaction(node, breach);
         }
 
         private static void DrawNodeAnalysis(MapNode node, MapGraphEditorSession session)
@@ -183,6 +188,11 @@ namespace CGD.Editor
             EditorGUI.BeginChangeCheck();
             var type = (ConnectionType)EditorGUILayout.EnumPopup(connection.Type);
             if (EditorGUI.EndChangeCheck()) session.SetConnectionType(connection, type);
+
+            if (connection.IsGate) return;
+            EditorGUI.BeginChangeCheck();
+            bool oneWay = EditorGUILayout.Toggle(new GUIContent("One-way", "Opens only from the end further from Start"), connection.OneWay);
+            if (EditorGUI.EndChangeCheck()) session.SetOneWay(connection, oneWay);
         }
 
         // --- Summary ---------------------------------------------------------------

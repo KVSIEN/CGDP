@@ -17,10 +17,13 @@ namespace CGD.Map
         [SerializeField, Min(1)] private int _shortcutReach = 2;
         [Tooltip("Fewest rooms a shortcut must skip")]
         [SerializeField, Min(1)] private int _shortcutMinSkip = 1;
+        [Tooltip("Chance a shortcut is one-way: barred until opened from its deep end, so it's a way back rather than a way ahead")]
+        [SerializeField, Range(0f, 1f)] private float _oneWayShortcutChance = 0.5f;
 
         public IntRange LoopCount       => _loopCount;
         public IntRange ShortcutCount   => _shortcutCount;
         public int      ShortcutReach   => _shortcutReach;
         public int      ShortcutMinSkip => _shortcutMinSkip;
+        public float    OneWayShortcutChance => _oneWayShortcutChance;
     }
 }

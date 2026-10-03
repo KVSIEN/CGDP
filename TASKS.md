@@ -10,6 +10,7 @@
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Door signs, one-way shortcuts, Breach rooms, warning/anomaly run modifiers
 - Faction mixes (Infested, Balanced, Contested, Warped) rolled per map
 - Map styles: guarantee list, pacing, same-type spacing, rooms that want space, Resupply rooms (Supply Depot), ship sections, run modifiers, Analyze report
 - Faction assets (TECH/BIO/VOID) owning generated rooms (enemy roster, floor tint), ammo caches, placeholder resource nodes

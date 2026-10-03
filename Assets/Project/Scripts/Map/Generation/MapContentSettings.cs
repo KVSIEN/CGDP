@@ -106,6 +106,7 @@ namespace CGD.Map
             new(MapNodeType.Event,    min: 1, max: 3,  weight: 1f,   minDepth: 0.1f, intensityBonus: -0.2f),
             new(MapNodeType.Treasure, min: 1, max: 3,  weight: 0.8f, placement: MapPlacement.BranchOnly, preferDeadEnds: true, intensityBonus: -0.3f, minSpacing: 3),
             new(MapNodeType.Resupply, min: 0, max: 2,  weight: 0.4f, placement: MapPlacement.MainPathOnly, minDepth: 0.3f, maxDepth: 0.9f, allowAdjacentSameType: false, intensityBonus: -0.5f, minSpacing: 3),
+            new(MapNodeType.Breach,   min: 0, max: 2,  weight: 0.6f, minDepth: 0.3f, allowAdjacentSameType: false, intensityBonus: 0.15f, minSpacing: 3),
         };
 
         private static List<MapGuarantee> DefaultGuarantees() => new()

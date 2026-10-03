@@ -13,6 +13,7 @@ namespace CGD.Map
     //      the rooms in its way
     //   3. scatter — the anomaly flips rooms to a random faction (weighted by share),
     //      regardless of territory
+    //   4. breaches — each Breach room also gets a second faction bleeding in
     // Influence is how firmly a room is held: 1 at a pocket's origin, less with each room
     // away from it, and a flat ScatteredInfluence for rooms the anomaly flipped.
     internal class MapFactionPainter
@@ -68,6 +69,7 @@ namespace CGD.Map
             ClaimLeftovers();
             ScatterRooms();
             Apply();
+            PickBreachFactions(factions);
         }
 
         // `dominant` takes Lerp(1/count, 1, dominance); the others split what's left evenly.
@@ -247,6 +249,31 @@ namespace CGD.Map
             _owner[nodeId]     = faction;
             _influence[nodeId] = influence;
             _held[faction]++;
+        }
+
+        // A Breach room is where a second reality bleeds in: the one most of its neighbours
+        // belong to, if any differs from its own, else a random other one.
+        private void PickBreachFactions(int factions)
+        {
+            var counts = new int[factions];
+            foreach (MapNode node in Graph.Nodes)
+            {
+                node.BreachFaction = MapNode.NoFaction;
+                if (node.Type != MapNodeType.Breach || factions < 2) continue;
+
+                System.Array.Clear(counts, 0, factions);
+                Graph.GetNeighbors(node.Id, _neighbors);
+                foreach (int id in _neighbors)
+                    if (_owner.TryGetValue(id, out int neighbor) && neighbor != node.Faction) counts[neighbor]++;
+
+                int best = MapNode.NoFaction;
+                for (int f = 0; f < factions; f++)
+                    if (counts[f] > 0 && (best == MapNode.NoFaction || counts[f] > counts[best])) best = f;
+
+                if (best == MapNode.NoFaction)
+                    best = (node.Faction + _random.Range(1, factions)) % factions;
+                node.BreachFaction = best;
+            }
         }
 
         private void Apply()

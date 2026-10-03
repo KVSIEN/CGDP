@@ -44,10 +44,11 @@ namespace CGD.Level
 
                 float height = function != null && function.WallHeight > 0f ? function.WallHeight : _settings.WallHeight;
                 FactionDefinition faction = content != null && node.HasFaction ? content.GetFaction(node.Faction) : null;
+                FactionDefinition breach  = content != null && node.HasBreachFaction ? content.GetFaction(node.BreachFaction) : null;
                 LandmarkRoomDefinition landmark = function != null ? function.Landmark : null;
                 if (landmark != null && TryPlaceLandmark(landmark, BlockArea(block), count, out RoomFootprint landmarkFootprint))
                 {
-                    layout.AddRoom(new LevelRoom(node, landmarkFootprint, function, height, landmark, faction));
+                    layout.AddRoom(new LevelRoom(node, landmarkFootprint, function, height, landmark, faction, breach));
                     continue;
                 }
                 if (landmark != null)
@@ -55,7 +56,7 @@ namespace CGD.Level
 
                 RectInt area = RoomArea(block, function, random);
                 IReadOnlyList<RoomShape> shapeList = function != null && function.Shapes.Count > 0 ? function.Shapes : _settings.DefaultShapes;
-                layout.AddRoom(new LevelRoom(node, _shapes.Build(shapeList, count, area, random), function, height, faction: faction));
+                layout.AddRoom(new LevelRoom(node, _shapes.Build(shapeList, count, area, random), function, height, faction: faction, breachFaction: breach));
             }
         }
 

@@ -4,7 +4,8 @@ using UnityEngine;
 namespace CGD.Map
 {
     // An undirected link between two nodes. A Locked link also names the room holding
-    // its key.
+    // its key. A one-way link starts barred and only opens from its deeper end — a return
+    // route back toward Start (after a death, the way home) rather than a way ahead.
     [Serializable]
     public class MapConnection
     {
@@ -15,6 +16,8 @@ namespace CGD.Map
         [SerializeField] private ConnectionType _type;
         [Tooltip("Node holding the key for a Locked connection, or -1")]
         [SerializeField] private int            _keyNodeId = NoKey;
+        [Tooltip("Opens only from the end further from Start; a normal passage once opened")]
+        [SerializeField] private bool           _oneWay;
 
         public MapConnection(int a, int b, ConnectionType type)
         {
@@ -42,6 +45,12 @@ namespace CGD.Map
         }
 
         public bool HasKey => _keyNodeId != NoKey;
+
+        public bool OneWay
+        {
+            get => _oneWay;
+            set => _oneWay = value;
+        }
 
         // Locked and Secret links close off what lies behind them until opened or found.
         public bool IsGate => _type == ConnectionType.Locked || _type == ConnectionType.Secret;

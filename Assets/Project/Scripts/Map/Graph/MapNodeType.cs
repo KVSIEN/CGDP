@@ -15,5 +15,6 @@ namespace CGD.Map
         Boss,
         Exit,
         Resupply,   // a calm stop with an ammo cache before more fighting
+        Breach,     // a fight where two realities overlap: both factions' enemies
     }
 }

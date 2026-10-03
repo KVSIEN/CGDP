@@ -28,6 +28,9 @@ MonoBehaviour:
   _doorPrefab: {fileID: 0}
   _lockedDoorPrefab: {fileID: 0}
   _secretDoorPrefab: {fileID: 0}
+  _buildDoorSigns: 1
+  _doorSignMaterial: {fileID: 0}
+  _dangerIntensity: 0.75
   _rooms:
   - Type: 0
     Functions:
@@ -179,6 +182,23 @@ MonoBehaviour:
     PropCount:
       Min: 0
       Max: 0
+      Bias: 0
+  - Type: 10
+    Functions:
+    - {fileID: 11400000, guid: 78e94437fb0b468ba1e4ee209af9794e, type: 2}
+    - {fileID: 11400000, guid: f1a29d511be545d8a4c85396a4afaaa1, type: 2}
+    - {fileID: 11400000, guid: 63b916f7fceb4acaa3cc3927d812e126, type: 2}
+    - {fileID: 11400000, guid: 08cd1e9257174de791f3c87772ab5ce1, type: 2}
+    Enemies: []
+    EnemyCount:
+      Min: 2
+      Max: 5
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Props: []
+    PropCount:
+      Min: 2
+      Max: 4
       Bias: 0
   _shapes:
   - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}

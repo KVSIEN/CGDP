@@ -9,9 +9,11 @@ namespace CGD.Level
     public class LevelRoom
     {
         public LevelRoom(MapNode node, RoomFootprint footprint, RoomFunction function, float wallHeight,
-            LandmarkRoomDefinition landmark = null, FactionDefinition faction = null)
+            LandmarkRoomDefinition landmark = null, FactionDefinition faction = null,
+            FactionDefinition breachFaction = null)
         {
-            Faction    = faction;
+            Faction       = faction;
+            BreachFaction = breachFaction;
             Landmark   = landmark;
             Node       = node;
             Footprint  = footprint;
@@ -28,6 +30,8 @@ namespace CGD.Level
         public LandmarkRoomDefinition Landmark { get; }
         // The faction that holds this room, if any (from the map graph).
         public FactionDefinition Faction { get; }
+        // Breach rooms: the second faction bleeding in, whose enemies fight here too.
+        public FactionDefinition BreachFaction { get; }
 
         // Middle of the room's bounds, in tile units.
         public Vector2 Center => Footprint.Center;

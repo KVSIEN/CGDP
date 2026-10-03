@@ -18,6 +18,7 @@ namespace CGD.Map
             MapNodeType.Boss     => new Color(0.6f, 0.1f, 0.1f),
             MapNodeType.Exit     => new Color(0.2f, 0.5f, 0.55f),
             MapNodeType.Resupply => new Color(0.35f, 0.7f, 0.6f),
+            MapNodeType.Breach   => new Color(0.6f, 0.25f, 0.75f),
             _                    => Color.gray
         };
     }

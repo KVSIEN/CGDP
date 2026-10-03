@@ -101,7 +101,7 @@ namespace CGD.Map
 
             Increment(_layouts, result.Layout != null ? result.Layout.name : "(none)");
             if (result.Modifiers.Count == 0) Increment(_modifiers, "(none)");
-            foreach (MapRunModifier modifier in result.Modifiers) Increment(_modifiers, modifier.DisplayName);
+            foreach (MapRunModifier modifier in result.Modifiers) Increment(_modifiers, $"{modifier.DisplayName} ({modifier.Kind})");
 
             // Each distinct problem counts once per map.
             var seen = new HashSet<string>();

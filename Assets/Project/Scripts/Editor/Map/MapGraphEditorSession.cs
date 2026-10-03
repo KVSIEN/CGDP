@@ -170,6 +170,7 @@ namespace CGD.Editor
                 || original.Position != node.Position
                 || !Mathf.Approximately(original.Intensity, node.Intensity)
                 || original.Faction != node.Faction
+                || original.BreachFaction != node.BreachFaction
                 || !Mathf.Approximately(original.FactionInfluence, node.FactionInfluence);
         }
 
@@ -185,7 +186,7 @@ namespace CGD.Editor
             foreach (MapConnection connection in Graph.Connections)
             {
                 MapConnection original = generated.GetConnection(connection.A, connection.B);
-                if (original == null || original.Type != connection.Type) return true;
+                if (original == null || original.Type != connection.Type || original.OneWay != connection.OneWay) return true;
             }
             return false;
         }
@@ -294,6 +295,20 @@ namespace CGD.Editor
         {
             Record("Change Connection Type");
             connection.Type = type;
+            Changed();
+        }
+
+        public void SetOneWay(MapConnection connection, bool oneWay)
+        {
+            Record("Change One-Way");
+            connection.OneWay = oneWay;
+            Changed();
+        }
+
+        public void SetBreachFaction(MapNode node, int faction)
+        {
+            Record("Change Breach Faction");
+            node.BreachFaction = faction;
             Changed();
         }
 

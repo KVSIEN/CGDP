@@ -8,6 +8,10 @@ namespace CGD.Interaction
     //
     // With a Key set the door starts locked: interacting while carrying the key unlocks
     // and opens it (optionally using the key up), and it stays unlocked afterwards.
+    //
+    // A one-way door (MakeOneWay, set by the level builder) is barred from one side: it
+    // only opens for someone standing on its open side, and works both ways after that —
+    // a shortcut the player unbars from the far end.
     [RequireComponent(typeof(Collider))]
     public class Door : MonoBehaviour, IInteractable
     {
@@ -27,6 +31,8 @@ namespace CGD.Interaction
         private bool        _isLocked;
         private float       _currentAngle;
         private Quaternion  _closedRotation;
+        private bool        _isBarred;
+        private Vector3     _openSide;
 
         private void Awake()
         {
@@ -45,12 +51,19 @@ namespace CGD.Interaction
 
         public string GetInteractLabel(GameObject interactor)
         {
+            if (_isBarred && !IsOnOpenSide(interactor)) return "Barred from the other side";
             if (!_isLocked) return _isOpen ? "Close" : "Open";
             return _key.IsMetBy(interactor) ? "Unlock" : $"Locked  ({_key.Describe()})";
         }
 
         public void Interact(GameObject interactor)
         {
+            if (_isBarred)
+            {
+                if (!IsOnOpenSide(interactor)) return;
+                _isBarred = false;
+            }
+
             if (_isLocked)
             {
                 if (!_key.TryUse(interactor)) return;
@@ -64,5 +77,15 @@ namespace CGD.Interaction
         public void Toggle() => _isOpen = !_isOpen;
 
         public void Unlock() => _isLocked = false;
+
+        // Bars the door until opened by someone on the `openSide` (world direction from the door).
+        public void MakeOneWay(Vector3 openSide)
+        {
+            _isBarred = true;
+            _openSide = openSide;
+        }
+
+        private bool IsOnOpenSide(GameObject interactor) =>
+            Vector3.Dot(interactor.transform.position - transform.position, _openSide) > 0f;
     }
 }

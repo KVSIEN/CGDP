@@ -19,6 +19,8 @@ namespace CGD.Map
         [Tooltip("Index into MapContentSettings.Factions, or -1 for none")]
         [SerializeField] private int         _faction = NoFaction;
         [SerializeField, Range(0f, 1f)] private float _factionInfluence;
+        [Tooltip("Breach rooms: the second reality bleeding in (index into MapContentSettings.Factions), or -1")]
+        [SerializeField] private int         _breachFaction = NoFaction;
         [Tooltip("Index into MapContentSettings.Sections, or -1 for none")]
         [SerializeField] private int         _section = NoSection;
 
@@ -57,6 +59,10 @@ namespace CGD.Map
         public int   Faction          => _faction;
         public float FactionInfluence => _factionInfluence;
         public bool  HasFaction       => _faction != NoFaction;
+
+        // The other faction in a Breach room; NoFaction elsewhere.
+        public int  BreachFaction    { get => _breachFaction; set => _breachFaction = value < 0 ? NoFaction : value; }
+        public bool HasBreachFaction => _breachFaction != NoFaction;
 
         public int  Section    { get => _section; set => _section = value < 0 ? NoSection : value; }
         public bool HasSection => _section != NoSection;

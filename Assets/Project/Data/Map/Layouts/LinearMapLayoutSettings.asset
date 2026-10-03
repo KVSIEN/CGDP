@@ -48,6 +48,7 @@ MonoBehaviour:
       Bias: 0
     _shortcutReach: 2
     _shortcutMinSkip: 1
+    _oneWayShortcutChance: 0.5
   _gates:
     _lockedChance: 0
     _secretChance: 0.3

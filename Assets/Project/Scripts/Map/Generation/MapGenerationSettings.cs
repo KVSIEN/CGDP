@@ -23,6 +23,10 @@ namespace CGD.Map
         [SerializeField] private List<MapRunModifier> _modifiers = new();
         [Tooltip("How many modifiers each map gets (never the same one twice)")]
         [SerializeField] private IntRange _modifierCount;
+        [Tooltip("Most warnings (harder runs) one map can get")]
+        [SerializeField, Min(0)] private int _maxWarnings = 2;
+        [Tooltip("Most anomalies (twists) one map can get")]
+        [SerializeField, Min(0)] private int _maxAnomalies = 1;
 
         [Header("Layout (editor only)")]
         [SerializeField] private Vector2 _nodeSpacing = new(220f, 110f);
@@ -35,17 +39,24 @@ namespace CGD.Map
 
         public bool CanGenerate => _content != null && _layouts.Exists(o => o.Layout != null);
 
-        // ModifierCount distinct modifiers, by weight.
+        // ModifierCount distinct modifiers, by weight, no more of each kind than its maximum.
         public List<MapRunModifier> PickModifiers(RandomStream random)
         {
             var pool   = _modifiers.FindAll(m => m != null && m.Weight > 0f);
             var picked = new List<MapRunModifier>();
-            int count  = Mathf.Min(_modifierCount.Evaluate(random), pool.Count);
-            for (int i = 0; i < count; i++)
+            int count  = _modifierCount.Evaluate(random);
+            int warnings = 0, anomalies = 0;
+
+            while (picked.Count < count)
             {
+                pool.RemoveAll(m => m.Kind == MapRunModifierKind.Warning ? warnings >= _maxWarnings : anomalies >= _maxAnomalies);
+                if (pool.Count == 0) break;
+
                 MapRunModifier modifier = random.PickWeighted(pool, m => m.Weight);
                 picked.Add(modifier);
                 pool.Remove(modifier);
+                if (modifier.Kind == MapRunModifierKind.Warning) warnings++;
+                else anomalies++;
             }
             return picked;
         }

@@ -5,7 +5,8 @@ using CGD.Core;
 namespace CGD.Map
 {
     // Adds the links that make a map more than a tree: loops between neighbouring rooms,
-    // then shortcuts from shallow rooms to deeper ones nearby. Neither touches the Boss
+    // then shortcuts from shallow rooms to deeper ones nearby — some one-way, opened from
+    // the deep end as a way back. Neither touches the Boss
     // or Exit, so the boss keeps a single entrance, and each is only kept when the Boss
     // stays at least MinBossDepth from Start.
     internal class MapLinkBuilder
@@ -39,7 +40,10 @@ namespace CGD.Map
             foreach ((int a, int b) in candidates)
             {
                 if (placed == target) break;
-                if (_context.TryLink(a, b, type)) placed++;
+                if (!_context.TryLink(a, b, type)) continue;
+                placed++;
+                if (type == ConnectionType.Shortcut && _random.Chance(Loops.OneWayShortcutChance))
+                    Graph.GetConnection(a, b).OneWay = true;
             }
 
             if (placed < target)

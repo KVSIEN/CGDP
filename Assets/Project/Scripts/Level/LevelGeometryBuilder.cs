@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.AI.Navigation;
 using CGD.Factions;
+using CGD.Interaction;
 
 namespace CGD.Level
 {
@@ -169,8 +170,21 @@ namespace CGD.Level
                 // On the edge between the room tile and the corridor tile, facing out of the room.
                 Vector3 position = (layout.TileToLocal(doorway.RoomTile) + layout.TileToLocal(doorway.OutsideTile)) * 0.5f;
                 Vector3 outward  = new(doorway.Outward.x, 0f, doorway.Outward.y);
-                Object.Instantiate(prefab, parent.TransformPoint(position), parent.rotation * Quaternion.LookRotation(outward), parent);
+                GameObject door = Object.Instantiate(prefab, parent.TransformPoint(position), parent.rotation * Quaternion.LookRotation(outward), parent);
+
+                // The door sits at the end nearer Start; a one-way door opens from the corridor
+                // side, i.e. for someone arriving from the deeper room.
+                if (doorway.Connection.OneWay) MakeOneWay(layout, doorway, door, parent.TransformDirection(outward));
             }
+        }
+
+        private static void MakeOneWay(LevelLayout layout, LevelDoorway doorway, GameObject door, Vector3 openSide)
+        {
+            Door hinge = door.GetComponentInChildren<Door>();
+            if (hinge != null)
+                hinge.MakeOneWay(openSide);
+            else
+                layout.Warnings.Add($"One-way #{doorway.Connection.A}–#{doorway.Connection.B} is open both ways: its door prefab has no Door.");
         }
 
         private GameObject CreatePart(string name, BoxMeshBuilder builder, Material material, Transform parent, int layer = -1)

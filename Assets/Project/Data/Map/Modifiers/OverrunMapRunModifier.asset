@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: OverrunMapRunModifier
   m_EditorClassIdentifier: CGD.Runtime::CGD.Map.MapRunModifier
   _displayName: Overrun
+  _kind: 0
   _description: The ship is crawling with hostiles.
   _weight: 0.75
+  _lootLuck: 0.75
   _types:
   - Type: 1
     WeightMultiplier: 1.5
