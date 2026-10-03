@@ -540,7 +540,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `UI/` | `CrosshairSettings` | CrosshairHUD |
 | `Flow/` | `GameFlowSettings` | GameFlow |
 | `Timing/` | `GameTimeSettings` | GameTime |
-| `Enemies/` | `DefaultEnemyData`, `TargetDummyEnemyData` | EnemyAI, EnemyHealth |
+| `Enemies/` | `MaintenanceBot`/`Scavenger`/`Husk` `…EnemyData` (tier 1, ≈100 effective health each), `DefaultEnemyData`, `TargetDummyEnemyData` | EnemyAI, EnemyHealth |
 | `Combat/HitboxProfiles/` | `DefaultHitboxProfile`, `TargetDummyHitboxProfile` | EnemyHealth, PlayerHealth |
 | `Combat/StatusEffects/` | Bleed, Fire, Ice, Lightning, Poison | on-hit effect lists |
 | `Combat/ActionTimelines/` | `GroundSlamTimeline` | TimelineAbility, melee attack steps |
