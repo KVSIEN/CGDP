@@ -545,7 +545,7 @@
 - Rooms are furnished to suit them: dining tables in restaurant halls with supply crates in the kitchen, beds along crew-quarter walls, slot machines lining the casino, crates stacked along cargo bay walls, planters in parks, lobbies and atriums. Furniture faces sensibly (backed against walls, lined up with the room) and never blocks doorways or walkways
 - Optional ceilings close every room and corridor at its own height; parks stay open to the sky
 - Shapes suit their place in the map: hub rooms with many connections favour crosses and domes. Rooms are always one connected space, with every passage at least two tiles (6 m) wide
-- Domes have smooth, angled walls instead of stair-stepped ones
+- Domes and rings have smooth, rounded walls: the stair-steps of a round floor plan become an arc of short wall pieces with gentle bends (about 11° each by default), never moving the walls beside a doorway
 - Room corners are bevelled at 45° by default — the ship-interior look — one tile deep, two in the Grand Atrium and Docking Bay. Only outside corners are cut (never inside ones), never where a doorway is close by, and nothing is placed in the cut-off space; corner props move to the spots on either side of the bevel. Corridor bends are bevelled on their outside corner too. Both can be turned off, and each kind of room can set its own depth
 - The Map Graph window's blueprint shows the bevels and the curved walls exactly as they're built
 - Rooms have structure: rows of support columns in lobbies, cargo and docking bays (lined up across the whole ship), colonnades circling atriums and casinos, columns framing the inside corners of L, T and cross rooms, kitchen walls in restaurants, cabin walls in crew quarters and a bar counter in casinos

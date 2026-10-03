@@ -53,13 +53,14 @@ namespace CGD.Level
         // Curved and chamfered rooms get their wall line now the doorways are fixed. Tiles a
         // chamfer cuts into are marked as structure, so props and enemies keep off them; the
         // tiles beside each cut become the room's corners for corner props.
-        private static void PlanOutlines(LevelLayout layout)
+        private void PlanOutlines(LevelLayout layout)
         {
             foreach (LevelRoom room in layout.Rooms.Values)
             {
                 if (!room.Footprint.CurvedWalls && room.Chamfer <= 0) continue;
 
-                RoomOutlinePlan outline = RoomOutline.Plan(room.Footprint, (tile, side) => layout.IsWalkable(tile + side), room.Chamfer);
+                RoomOutlinePlan outline = RoomOutline.Plan(room.Footprint, (tile, side) => layout.IsWalkable(tile + side),
+                                                            room.Chamfer, _settings.CurveSmoothing);
                 room.AttachOutline(outline);
                 foreach (Vector2Int tile in outline.CutTiles)
                     room.Structure?.Tag(tile, RoomTileTags.Structure);

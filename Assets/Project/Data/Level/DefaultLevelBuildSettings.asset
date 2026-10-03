@@ -23,6 +23,7 @@ MonoBehaviour:
   _wallMaterial: {fileID: 2100000, guid: 2ab8149ec4775284bada96c1b85b4a09, type: 2}
   _geometryLayer: 0
   _roomChamfer: 1
+  _curveSmoothing: 2
   _chamferCorridorBends: 1
   _buildCeilings: 0
   _ceilingMaterial: {fileID: 0}

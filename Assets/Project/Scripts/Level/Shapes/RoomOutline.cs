@@ -8,6 +8,9 @@ namespace CGD.Level
     // are whole numbers). The tile outline is traced into loops of straight runs.
     //   Curved rooms: runs shorter than LongRun are the stair-steps of a curve and are
     //   replaced by diagonals through their midpoints, so a dome gets 45° walls, not stairs.
+    //   `smoothing` rounds them further: each pass cuts every bend in two equal halves
+    //   (corner cutting, at most MaxSmoothingCut tiles back), so the walls become an arc of
+    //   short pieces — two passes turn 45° kinks into 11° ones. Wall ends at a doorway never move.
     //   Chamfered rooms: each outside corner where two long runs meet is cut at 45°,
     //   `chamfer` tiles back along both — unless a doorway is that close to it.
     // Long runs otherwise stay on the tile edges (that's where doorways sit), minus the
@@ -16,23 +19,95 @@ namespace CGD.Level
     {
         private const int LongRun = 3;
         public const int MaxChamfer = 2;
+        public const int MaxSmoothing = 3;
+        private const float MaxSmoothingCut = 0.5f;
 
         public static List<(Vector2 from, Vector2 to)> Build(RoomFootprint footprint, Func<Vector2Int, Vector2Int, bool> isOpening,
-                                                             int chamfer = 0) =>
-            Plan(footprint, isOpening, chamfer).Segments;
+                                                             int chamfer = 0, int smoothing = 0) =>
+            Plan(footprint, isOpening, chamfer, smoothing).Segments;
 
-        public static RoomOutlinePlan Plan(RoomFootprint footprint, Func<Vector2Int, Vector2Int, bool> isOpening, int chamfer = 0)
+        public static RoomOutlinePlan Plan(RoomFootprint footprint, Func<Vector2Int, Vector2Int, bool> isOpening,
+                                           int chamfer = 0, int smoothing = 0)
         {
-            chamfer = Mathf.Clamp(chamfer, 0, MaxChamfer);
+            chamfer   = Mathf.Clamp(chamfer, 0, MaxChamfer);
+            smoothing = footprint.CurvedWalls ? Mathf.Clamp(smoothing, 0, MaxSmoothing) : 0;
             var plan = new RoomOutlinePlan();
             foreach (List<Run> loop in TraceLoops(footprint))
             {
                 var cuts = CornerCuts(loop, chamfer, isOpening, plan);
                 var loopSegments = new List<(Vector2, Vector2)>();
                 AddLoop(loop, cuts, isOpening, loopSegments);
-                plan.Segments.AddRange(MergeCollinear(loopSegments));
+                List<(Vector2, Vector2)> merged = MergeCollinear(loopSegments);
+                plan.Segments.AddRange(smoothing > 0 ? Smooth(merged, smoothing) : merged);
             }
             return plan;
+        }
+
+        // Corner cutting over each joined chain of a loop's segments. A loop broken
+        // by doorways is several open chains whose ends stay put; an unbroken loop is closed.
+        private static List<(Vector2, Vector2)> Smooth(List<(Vector2 from, Vector2 to)> segments, int passes)
+        {
+            var result = new List<(Vector2, Vector2)>();
+            foreach (List<Vector2> chain in Chains(segments, out bool closed))
+            {
+                List<Vector2> points = chain;
+                for (int pass = 0; pass < passes; pass++)
+                    points = CutCorners(points, closed);
+
+                int edges = closed ? points.Count : points.Count - 1;
+                for (int i = 0; i < edges; i++)
+                    result.Add((points[i], points[(i + 1) % points.Count]));
+            }
+            return result;
+        }
+
+        // The segments as point chains, split wherever one doesn't start at the previous end.
+        // Starts at a chain's first segment so none is split across the list's ends.
+        private static List<List<Vector2>> Chains(List<(Vector2 from, Vector2 to)> segments, out bool closed)
+        {
+            int count = segments.Count, start = 0;
+            for (int i = 0; i < count; i++)
+                if (!Joins(segments[(i + count - 1) % count], segments[i])) { start = i; break; }
+
+            var chains = new List<List<Vector2>>();
+            for (int k = 0; k < count; k++)
+            {
+                var segment = segments[(start + k) % count];
+                if (k == 0 || !Joins(segments[(start + k - 1) % count], segment))
+                    chains.Add(new List<Vector2> { segment.from });
+                chains[chains.Count - 1].Add(segment.to);
+            }
+
+            // One chain whose end meets its start: a closed loop (drop the repeated point).
+            closed = chains.Count == 1 && count > 1 && Joins(segments[(start + count - 1) % count], segments[start]);
+            if (closed) chains[0].RemoveAt(chains[0].Count - 1);
+            return chains;
+        }
+
+        private static bool Joins((Vector2 from, Vector2 to) a, (Vector2 from, Vector2 to) b) => (a.to - b.from).sqrMagnitude < 1e-6f;
+
+        // Replaces each corner with two points the same distance back along both of its
+        // walls (a quarter of the shorter one, at most MaxSmoothingCut), so every pass
+        // splits a bend into two equal halves. An open chain's ends stay where they are.
+        private static List<Vector2> CutCorners(List<Vector2> points, bool closed)
+        {
+            var cut = new List<Vector2>();
+            int count = points.Count;
+            for (int i = 0; i < count; i++)
+            {
+                bool end = !closed && (i == 0 || i == count - 1);
+                if (end)
+                {
+                    cut.Add(points[i]);
+                    continue;
+                }
+
+                Vector2 p = points[i], previous = points[(i + count - 1) % count], next = points[(i + 1) % count];
+                float distance = Mathf.Min(MaxSmoothingCut, 0.25f * Mathf.Min((previous - p).magnitude, (next - p).magnitude));
+                cut.Add(p + (previous - p).normalized * distance);
+                cut.Add(p + (next - p).normalized * distance);
+            }
+            return cut;
         }
 
         // cuts[i]: tiles cut off the corner between run i and the next (0 = none). Records

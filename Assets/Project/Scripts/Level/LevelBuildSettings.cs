@@ -32,6 +32,8 @@ namespace CGD.Level
         [Header("Corners")]
         [Tooltip("Tiles cut off each outside room corner at 45° (0 = sharp). Room functions can override it")]
         [SerializeField, Range(0, RoomOutline.MaxChamfer)] private int _roomChamfer = 1;
+        [Tooltip("Rounding passes for curved rooms (domes, rings): 0 = 45° walls, more = smoother arcs of shorter wall pieces")]
+        [SerializeField, Range(0, RoomOutline.MaxSmoothing)] private int _curveSmoothing = 2;
         [Tooltip("Cut the outside corner of every corridor bend at 45°")]
         [SerializeField] private bool _chamferCorridorBends = true;
 
@@ -84,6 +86,7 @@ namespace CGD.Level
         public int   GeometryLayer  => _geometryLayer;
         public int   RoomChamfer    => _roomChamfer;
         public bool  ChamferCorridorBends => _chamferCorridorBends;
+        public int   CurveSmoothing => _curveSmoothing;
         public bool  BuildCeilings  => _buildCeilings;
         public Material CeilingMaterial => _ceilingMaterial != null ? _ceilingMaterial : _wallMaterial;
         public int   CeilingLayer   => _ceilingLayer;
