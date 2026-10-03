@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 444d49eb58cd4ab1a3f8ed2c5d0851bc, type: 3}
+  m_Name: DefaultEncounterSettings
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.EncounterSettings
+  _shutterPrefab: {fileID: 7400000000000000208, guid: e0deddb4b86c40debf6b40da03d3f3c4, type: 3}
+  _rewardPrefab: {fileID: 7400000000000000301, guid: 0237200ecfd543a68bbcdff245a28b41, type: 3}
+  _terminalPrefab: {fileID: 7320000000000000001, guid: 9d6e3b2a41c74f08b5e2c7a90f1d4e65, type: 3}
+  _waveSize:
+    Min: 2
+    Max: 5
+    Bias: 0
+  _spawnSpots: 8
+  _holdoutDuration: 75
+  _holdoutWaveInterval: 18
+  _holdoutRevealsMap: 1
+  _ambushWaves: 2
+  _riftWaves: 3
+  _stealthBonusLuck: 2
+  _alarmWaves: 1
+  _puzzleSwitchPrefab: {fileID: 7400000000000000401, guid: eaed1e82f19544fa98d2cef942d92bed, type: 3}
+  _puzzleDoorPrefab: {fileID: 7500000000000000000, guid: 29b9e8d140584c16916a679f989937d5, type: 3}
+  _puzzleNodes:
+    Min: 4
+    Max: 5
+    Bias: 0
+  _puzzleScramble: 2
+  _hazardEffects:
+  - {fileID: 11400000, guid: bf6df1793c34595468cf4ced8ff665bc, type: 2}
+  - {fileID: 11400000, guid: 117ab2ebb728f4c46ab77e8c72b19978, type: 2}
+  - {fileID: 11400000, guid: af0a6691caf9e4540b84b76580c8227f, type: 2}
+  - {fileID: 11400000, guid: fe4cda318e12b57468e09a8a3b0dc38b, type: 2}
+  _hazardTick: 1
+  _hazardMagnitude: 8
+  _hazardMaterial: {fileID: 2100000, guid: eeab0eff08d3435d98e452a61eb34004, type: 2}

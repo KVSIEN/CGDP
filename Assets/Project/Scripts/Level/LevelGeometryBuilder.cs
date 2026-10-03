@@ -179,16 +179,23 @@ namespace CGD.Level
                 GameObject prefab = _settings.DoorPrefabFor(doorway.Connection);
                 if (prefab == null) continue;
 
-                // On the edge between the room tile and the corridor tile, facing out of the room.
-                Vector3 position = (layout.TileToLocal(doorway.RoomTile) + layout.TileToLocal(doorway.OutsideTile)) * 0.5f;
-                Vector3 outward  = new(doorway.Outward.x, 0f, doorway.Outward.y);
-                GameObject door = Object.Instantiate(prefab, parent.TransformPoint(position), parent.rotation * Quaternion.LookRotation(outward), parent);
+                Pose pose = DoorwayPose(layout, doorway, parent);
+                GameObject door = Object.Instantiate(prefab, pose.position, pose.rotation, parent);
                 if (doorway.Connection.IsGate) Gates[doorway.Connection] = door;
 
                 // The door sits at the end nearer Start; a one-way door opens from the corridor
                 // side, i.e. for someone arriving from the deeper room.
-                if (doorway.Connection.OneWay) MakeOneWay(layout, doorway, door, parent.TransformDirection(outward));
+                if (doorway.Connection.OneWay) MakeOneWay(layout, doorway, door, pose.forward);
             }
+        }
+
+        // Where a door goes: on the edge between the room tile and the corridor tile, on the
+        // floor, +Z facing out of the room. World space.
+        public static Pose DoorwayPose(LevelLayout layout, LevelDoorway doorway, Transform parent)
+        {
+            Vector3 position = (layout.TileToLocal(doorway.RoomTile) + layout.TileToLocal(doorway.OutsideTile)) * 0.5f;
+            Vector3 outward  = new(doorway.Outward.x, 0f, doorway.Outward.y);
+            return new Pose(parent.TransformPoint(position), parent.rotation * Quaternion.LookRotation(outward));
         }
 
         // Visual only: the kit pieces have no colliders to keep in sync with the boxes.

@@ -8,7 +8,8 @@ namespace CGD.Expedition
     //   Kit     — what the player has packed to bring next; still theirs until deployed.
     //   Brought — what went into the current run from the ship.
     // Deploy hands the kit to the run. Extract moves everything carried into storage;
-    // Die keeps storage as it is — what was brought and gathered is gone.
+    // Die keeps storage as it is — what was brought and gathered is gone. An emergency
+    // extraction is in between: worn gear and half of every stack make it, loose gear doesn't.
     public class ExpeditionLedger
     {
         public Inventory Storage { get; } = new();
@@ -38,6 +39,24 @@ namespace CGD.Expedition
         // The player made it out with `carried`: all of it goes into the hold.
         public RunReport Extract(Inventory carried) => End(RunOutcome.Extracted, carried);
 
+        // Out through an escape pod: `worn` (weapons in hand, armour) is kept whole, of the
+        // `pack` only half of each stack (rounded down) — its loose gear is left behind.
+        public RunReport ExtractEmergency(Inventory worn, Inventory pack)
+        {
+            var kept = new Inventory();
+            TransferAll(worn, kept);
+            foreach (ItemStack stack in new List<ItemStack>(pack.Stacks))
+            {
+                int half = stack.Count / 2;
+                if (half > 0 && pack.Remove(stack.Definition, half)) kept.Add(stack.Definition, half);
+            }
+
+            var report = new RunReport(RunOutcome.EmergencyExtracted, CountUnits(kept), Brought, CountUnits(pack));
+            TransferAll(kept, Storage);
+            Finish(report);
+            return report;
+        }
+
         // The player died carrying `carried`: none of it comes back.
         public RunReport Die(Inventory carried) => End(RunOutcome.Died, carried);
 
@@ -45,11 +64,15 @@ namespace CGD.Expedition
         {
             var report = new RunReport(outcome, CountUnits(carried), Brought);
             if (outcome == RunOutcome.Extracted) TransferAll(carried, Storage);
+            Finish(report);
+            return report;
+        }
 
+        private void Finish(RunReport report)
+        {
             IsRunning  = false;
             Brought    = 0;
             LastReport = report;
-            return report;
         }
 
         public static int CountUnits(Inventory inventory)

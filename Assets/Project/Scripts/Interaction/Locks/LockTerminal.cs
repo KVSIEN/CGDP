@@ -2,8 +2,10 @@ using UnityEngine;
 
 namespace CGD.Interaction
 {
-    // A console that counts toward a ConditionLock once switched on (hold Interact).
-    // Hand-placed terminals reference their lock; a generated level binds them with Bind.
+    // A console that is switched on once (hold Interact): it counts toward its
+    // ConditionLock, if it has one, and raises SwitchedOn for anything else listening (a
+    // room encounter's uplink or vent controls). Hand-placed terminals reference their
+    // lock; a generated level binds them with Bind.
     [RequireComponent(typeof(Collider))]
     public class LockTerminal : MonoBehaviour, IInteractable
     {
@@ -21,22 +23,28 @@ namespace CGD.Interaction
         private MaterialPropertyBlock _block;
 
         public float HoldDuration => _holdDuration;
+        public bool  IsOn         => _isOn;
+
+        public event System.Action<LockTerminal> SwitchedOn;
 
         private void Awake() => ShowState();
 
         public void Bind(ConditionLock conditionLock) => _lock = conditionLock;
 
+        public void SetLabel(string label) => _label = label;
+
         public string GetInteractLabel(GameObject interactor) => _label;
 
-        public bool CanInteract(GameObject interactor) => !_isOn && _lock != null;
+        public bool CanInteract(GameObject interactor) => !_isOn;
 
         public void Interact(GameObject interactor)
         {
-            if (_isOn || _lock == null) return;
+            if (_isOn) return;
 
             _isOn = true;
-            _lock.Satisfy(this);
+            if (_lock != null) _lock.Satisfy(this);
             ShowState();
+            SwitchedOn?.Invoke(this);
         }
 
         private void ShowState()

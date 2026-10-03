@@ -107,6 +107,14 @@ namespace CGD.Map
             new(MapNodeType.Treasure, min: 1, max: 3,  weight: 0.8f, placement: MapPlacement.BranchOnly, preferDeadEnds: true, intensityBonus: -0.3f, minSpacing: 3),
             new(MapNodeType.Resupply, min: 0, max: 2,  weight: 0.4f, placement: MapPlacement.MainPathOnly, minDepth: 0.3f, maxDepth: 0.9f, allowAdjacentSameType: false, intensityBonus: -0.5f, minSpacing: 3),
             new(MapNodeType.Breach,   min: 0, max: 2,  weight: 0.6f, minDepth: 0.3f, allowAdjacentSameType: false, intensityBonus: 0.15f, minSpacing: 3),
+            new(MapNodeType.Lockdown, min: 0, max: 2,  weight: 0.8f, minDepth: 0.25f, allowAdjacentSameType: false, intensityBonus: 0.2f, minSpacing: 2),
+            new(MapNodeType.Holdout,  min: 0, max: 1,  weight: 0.4f, minDepth: 0.4f, allowAdjacentSameType: false, intensityBonus: 0.2f),
+            new(MapNodeType.Ambush,   min: 0, max: 1,  weight: 0.4f, placement: MapPlacement.BranchOnly, minDepth: 0.2f, preferDeadEnds: true, intensityBonus: -0.3f),
+            new(MapNodeType.Stealth,  min: 0, max: 1,  weight: 0.5f, minDepth: 0.2f),
+            new(MapNodeType.Rift,     min: 0, max: 1,  weight: 0.4f, minDepth: 0.5f, allowAdjacentSameType: false, intensityBonus: 0.3f, minSpacing: 3),
+            new(MapNodeType.Gamble,   min: 0, max: 1,  weight: 0.4f, minDepth: 0.2f, maxDepth: 0.9f, intensityBonus: -0.5f),
+            new(MapNodeType.EmergencyExit, min: 0, max: 1, weight: 0.5f, placement: MapPlacement.BranchOnly, minDepth: 0.4f, maxDepth: 0.8f, preferDeadEnds: true, intensityBonus: -0.3f),
+            new(MapNodeType.Hazard,   min: 0, max: 2,  weight: 0.5f, minDepth: 0.15f, allowAdjacentSameType: false, intensityBonus: 0.1f, minSpacing: 2),
         };
 
         private static List<MapGuarantee> DefaultGuarantees() => new()

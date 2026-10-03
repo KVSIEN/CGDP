@@ -24,6 +24,9 @@ namespace CGD.Loot
         public float HoldDuration => _holdDuration;
         public bool  IsOpened     => _opened;
 
+        // Raised after the loot has dropped (an Ambush springs on it).
+        public event System.Action Opened;
+
         private void Awake() => _dropper = GetComponent<LootDropper>();
 
         // A pooled container comes back full.
@@ -41,6 +44,7 @@ namespace CGD.Loot
             _opened = true;
             _dropper.Drop();
             _onOpened.Invoke();
+            Opened?.Invoke();
         }
     }
 }

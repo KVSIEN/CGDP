@@ -4,5 +4,6 @@ namespace CGD.Expedition
     {
         Extracted,
         Died,
+        EmergencyExtracted,   // out through an escape pod: only part of the haul kept
     }
 }

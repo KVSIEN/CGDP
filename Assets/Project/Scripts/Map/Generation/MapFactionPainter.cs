@@ -251,7 +251,7 @@ namespace CGD.Map
             _held[faction]++;
         }
 
-        // A Breach room is where a second reality bleeds in: the one most of its neighbours
+        // A Breach or Rift room is where a second reality bleeds in: the one most of its neighbours
         // belong to, if any differs from its own, else a random other one.
         private void PickBreachFactions(int factions)
         {
@@ -259,7 +259,7 @@ namespace CGD.Map
             foreach (MapNode node in Graph.Nodes)
             {
                 node.BreachFaction = MapNode.NoFaction;
-                if (node.Type != MapNodeType.Breach || factions < 2) continue;
+                if (!node.Type.HasSecondFaction() || factions < 2) continue;
 
                 System.Array.Clear(counts, 0, factions);
                 Graph.GetNeighbors(node.Id, _neighbors);

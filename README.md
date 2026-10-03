@@ -22,7 +22,7 @@ Assets/
       Abilities/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Dialogue/  Economy/  Enemies/  Expedition/  Factions/  Feedback/  Flow/
       Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
-    Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors (keycard, terminal), secret wall, keycard, terminal, hub workbench; WallKit/ — placeholder wall art), Pickups, UI, VFX, Weapons
+    Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors (keycard, terminal, puzzle), secret wall, keycard, terminal, hub workbench, encounter pieces (shutter, reward cache, loot pickups, puzzle switch, rift core, gamble station, escape pod); WallKit/ — placeholder wall art), Pickups, UI, VFX, Weapons
     Scenes/                 Sandbox.unity (+ its baked NavMesh folder), MapTest.unity (generated level)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            ability assets (incl. TargetedAbility) and the player's ability slots
@@ -35,7 +35,7 @@ Assets/
       Crafting/             RecipeDefinition, Crafter (rules), CraftingStation
       DevTools/             dev console: DevConsole (commands), DevCommands (cheats), DevCatalog
       Dialogue/             DialogueDefinition (nodes, choices), Conversation (runtime), Npc, Actions/, Conditions/
-      Economy/              CurrencyDefinition, Wallet, PriceTable, Vendor; Shops/ — Shop (buy/sell/trade-in),
+      Economy/              CurrencyDefinition, Wallet, PriceTable, Vendor, GambleMachine (+ GambleOdds); Shops/ — Shop (buy/sell/trade-in),
                             ShopCatalog, stock sources (ItemStock, RolledWeaponStock), listings
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report)
       Enemies/              enemy components, perception, and AI/ (state classes)
@@ -55,6 +55,8 @@ Assets/
                             RoomOutline (curved walls), LevelWallBuilder; Functions/ — RoomFunction;
                             Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), Rules/
                             RoomPlacer (cells, multi-cell rooms); Landmarks/ — hand-built rooms; Props/ — RoomPropPlanner
+                            Encounters/ — encounter rooms: RoomEncounter + one per room type, RoomEncounterBuilder,
+                            RoomShutter/RoomSeal, EncounterSpawner, rules (RoomArea, EnemyGroup, WaveSchedule, LightsOutPuzzle)
       Loot/                 LootTable, LootDropper, LootContainer
       Map/                  map graph data (Graph/: MapGraph, MapNode, analysis) and Generation/ (layout, content and style settings, sections, run modifiers, faction mixes, generator passes, validator, style report)
       Meters/               generic resources (stamina, mana, oxygen…): Meter, MeterSet, MeterCost, MeterZone

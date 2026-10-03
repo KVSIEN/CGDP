@@ -50,11 +50,19 @@ namespace CGD.UI
         {
             if (ModalPanel.Open != null) ModalPanel.Open.Hide();
 
-            _title.text   = report.Extracted ? "EXTRACTED" : "KILLED IN ACTION";
+            _title.text = report.Outcome switch
+            {
+                RunOutcome.Extracted          => "EXTRACTED",
+                RunOutcome.EmergencyExtracted => "EMERGENCY EXTRACTION",
+                _                             => "KILLED IN ACTION",
+            };
             _title.color  = report.Extracted ? new Color(0.5f, 1f, 0.6f) : new Color(1f, 0.45f, 0.4f);
-            _summary.text = report.Extracted
-                ? $"{report.Carried} items secured in the ship's hold."
-                : $"Lost {report.Carried} items, {report.Brought} of them brought from the ship.";
+            _summary.text = report.Outcome switch
+            {
+                RunOutcome.Extracted          => $"{report.Carried} items secured in the ship's hold.",
+                RunOutcome.EmergencyExtracted => $"{report.Carried} items secured; {report.Left} didn't fit in the escape pod.",
+                _                             => $"Lost {report.Carried} items, {report.Brought} of them brought from the ship.",
+            };
 
             Unsubscribe();
             Ledger.Storage.Changed += Refresh;

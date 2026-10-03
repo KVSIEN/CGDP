@@ -1,6 +1,7 @@
 # Unity Project – To-Do List
 
 ## Open
+- Encounter rooms, next steps: real art and sounds for shutters, consoles and the rift; a failsafe if a lockdown's last enemy gets stuck out of reach; enemies reacting to the Holdout uplink by heading for it
 - Expedition loop, next steps: save the ship hold to disk (needs an item catalog for gear), a real docked-ship scene, extraction only after the boss (or a timed early extraction)
 - Room generation, next steps (starship rooms):
   - Real art for placeholder props and the Reactor Core interior; interior lighting for ceilings
@@ -11,6 +12,7 @@
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Encounter rooms: Lockdown, Holdout, Puzzle (calibration ring, forward doors), Ambush, Stealth, Rift, Gamble, Emergency Exit (partial extraction), Hazard
 - Lock variants: condition locks ("do A and B") for doors — terminals, events, quest signals; generated Terminal locks (2–3 terminals in separate rooms) with editor and validator support
 - Expedition core loop: starting-room hub with workbench and random loadout, Exit as extraction, lose everything on death, ship hold + pack screen between runs
 - Tier-1 capsule enemies per reality (Maintenance Bot, Scavenger, Husk) at ≈100 effective health, in the faction rosters

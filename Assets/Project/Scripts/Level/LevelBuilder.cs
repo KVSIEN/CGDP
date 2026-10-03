@@ -31,6 +31,8 @@ namespace CGD.Level
         [Tooltip("0 = a new random seed every play (with a graph asset: the asset's seed). Also drives room shapes and contents")]
         [SerializeField] private int _seed;
         [SerializeField] private LevelBuildSettings _settings;
+        [Tooltip("Optional — how Lockdown, Holdout, Ambush, Stealth, Rift, Puzzle and Hazard rooms play. Empty = they play as plain rooms")]
+        [SerializeField] private EncounterSettings _encounters;
 
         [Header("Scene")]
         [Tooltip("Rebuilt after the geometry is placed. Set it to collect this object's children")]
@@ -87,6 +89,8 @@ namespace CGD.Level
 
             if (_navMesh != null) _navMesh.BuildNavMesh();
             populator.SpawnEnemies();
+            new RoomEncounterBuilder(_encounters, Layout, Graph, transform, populator, _player, _worldMap,
+                                     Seed.Derive("encounters").Stream(), new MapRunTuning(Modifiers).LootLuck).Build();
 
             PlacePlayer(populator);
             FitWorldMap();
@@ -151,7 +155,7 @@ namespace CGD.Level
         private void PlaceExit(RoomPopulator populator)
         {
             LevelRoom exit = FindRoom(MapNodeType.Exit);
-            if (exit == null || GetComponentInChildren<LevelExit>() != null) return;
+            if (exit == null || HasMainExit()) return;
 
             var pad = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             pad.name = "LevelExit";
@@ -159,6 +163,14 @@ namespace CGD.Level
             pad.transform.SetPositionAndRotation(populator.RoomCenter(exit) + Vector3.up * 0.1f, transform.rotation);
             pad.transform.localScale = new Vector3(2f, 0.1f, 2f);
             pad.AddComponent<LevelExit>();
+        }
+
+        // An Emergency Exit room's escape pod is an exit too, but not the way out.
+        private bool HasMainExit()
+        {
+            foreach (LevelExit levelExit in GetComponentsInChildren<LevelExit>())
+                if (!levelExit.IsEmergency) return true;
+            return false;
         }
 
         private void FitWorldMap()

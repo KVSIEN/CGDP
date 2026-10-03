@@ -109,6 +109,102 @@ MonoBehaviour:
     _minSpacing: 3
     _wantsSpace: 1
     _intensityBonus: 0.15
+  - _type: 11
+    _min: 0
+    _max: 2
+    _weight: 0.8
+    _placement: 0
+    _minDepth: 0.25
+    _maxDepth: 1
+    _preferDeadEnds: 0
+    _allowAdjacentSameType: 0
+    _minSpacing: 2
+    _wantsSpace: 1
+    _intensityBonus: 0.2
+  - _type: 12
+    _min: 0
+    _max: 1
+    _weight: 0.4
+    _placement: 0
+    _minDepth: 0.4
+    _maxDepth: 1
+    _preferDeadEnds: 0
+    _allowAdjacentSameType: 0
+    _minSpacing: 0
+    _wantsSpace: 1
+    _intensityBonus: 0.2
+  - _type: 13
+    _min: 0
+    _max: 1
+    _weight: 0.4
+    _placement: 2
+    _minDepth: 0.2
+    _maxDepth: 1
+    _preferDeadEnds: 1
+    _allowAdjacentSameType: 1
+    _minSpacing: 0
+    _wantsSpace: 0
+    _intensityBonus: -0.3
+  - _type: 14
+    _min: 0
+    _max: 1
+    _weight: 0.5
+    _placement: 0
+    _minDepth: 0.2
+    _maxDepth: 1
+    _preferDeadEnds: 0
+    _allowAdjacentSameType: 1
+    _minSpacing: 0
+    _wantsSpace: 1
+    _intensityBonus: 0
+  - _type: 15
+    _min: 0
+    _max: 1
+    _weight: 0.4
+    _placement: 0
+    _minDepth: 0.5
+    _maxDepth: 1
+    _preferDeadEnds: 0
+    _allowAdjacentSameType: 0
+    _minSpacing: 3
+    _wantsSpace: 1
+    _intensityBonus: 0.3
+  - _type: 16
+    _min: 0
+    _max: 1
+    _weight: 0.4
+    _placement: 0
+    _minDepth: 0.2
+    _maxDepth: 0.9
+    _preferDeadEnds: 0
+    _allowAdjacentSameType: 1
+    _minSpacing: 0
+    _wantsSpace: 0
+    _intensityBonus: -0.5
+  - _type: 17
+    _min: 0
+    _max: 1
+    _weight: 0.5
+    _placement: 2
+    _minDepth: 0.4
+    _maxDepth: 0.8
+    _preferDeadEnds: 1
+    _allowAdjacentSameType: 1
+    _minSpacing: 0
+    _wantsSpace: 0
+    _intensityBonus: -0.3
+  - _type: 18
+    _min: 0
+    _max: 2
+    _weight: 0.5
+    _placement: 0
+    _minDepth: 0.15
+    _maxDepth: 1
+    _preferDeadEnds: 0
+    _allowAdjacentSameType: 0
+    _minSpacing: 2
+    _wantsSpace: 0
+    _intensityBonus: 0.1
   _fillType: 1
   _guarantees:
   - _type: 6
@@ -123,6 +219,9 @@ MonoBehaviour:
     - 1
     - 2
     - 10
+    - 11
+    - 12
+    - 15
     _maxCombatInARow: 3
     _restAfterElite: 1
     _restType: 5

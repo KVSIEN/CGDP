@@ -89,7 +89,7 @@ namespace CGD.Editor
                 : 1f;
             if (EditorGUI.EndChangeCheck()) session.SetFaction(node, faction, influence);
 
-            if (node.Type != MapNodeType.Breach) return;
+            if (!node.Type.HasSecondFaction()) return;
             EditorGUI.BeginChangeCheck();
             int breach = EditorGUILayout.Popup("Breaching faction", node.BreachFaction + 1, options) - 1;
             if (EditorGUI.EndChangeCheck()) session.SetBreachFaction(node, breach);

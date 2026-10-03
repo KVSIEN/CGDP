@@ -352,6 +352,20 @@
 - After every run the ship screen shows how it went (EXTRACTED, or KILLED IN ACTION with what was lost), the ship's hold, and the kit for the next run: click an entry to pack it or put it back. **Deploy** starts a fresh run with the packed kit on top of the new starting loadout — armour is worn straight away when its slot is free, weapons fill free slots
 - Leaving a level mid-run (restart or main menu) counts as not making it out
 - The ship's hold lasts for the play session (it is not saved to disk yet)
+- An **Emergency Exit** room's escape pod is an early way out (hold Interact on "Emergency extract"): the run ends, your weapons and worn armour make it home, but only half of every stack in your pack fits and loose gear in the pack is left behind. The ship screen reads EMERGENCY EXTRACTION and says how much didn't fit
+
+## Encounter Rooms
+Rooms with rules of their own, mixed into generated maps alongside the usual fights, shops and treasure. Each one says what it is on its door sign (except the Ambush), and the map's validity checks still hold for all of them.
+- **Lockdown** — step inside and blast shutters slam down over every doorway. They only open once every enemy in the room is dead, and a reward cache drops. Enemies that wandered out before the doors closed are shut outside and don't count; an empty room calls in a wave instead
+- **Holdout** — an uplink terminal. Starting it (hold Interact) seals the room and enemies pour in every ~18 seconds while it uploads (75 s, with a countdown). When it finishes the shutters open, a reward drops, and the whole ship map is downloaded to your world map
+- **Puzzle** — the doors leading deeper are locked blue bulkheads until the room's calibration ring is solved: 4–5 consoles, each flipping itself and its two neighbours (the prompt says which), and every light must be green. The way back stays open, so you can always leave and return. A puzzle room with nowhere deeper to go drops a reward instead
+- **Ambush** — looks exactly like a Treasure room, down to the door sign and the cache in the middle. Open the cache and the doors seal while two waves drop in. The loot is real
+- **Stealth** — a guarded vault room. While no guard has spotted you, the vault holds extra loot. The first guard to give chase raises the alarm: the room seals, the bonus is gone, and the guards plus reinforcements must be beaten before the shutters open
+- **Rift** — a tear between the room's two realities around a glowing core. The room seals and waves come through from one reality, then the other, the last from both at once; when the last falls the rift collapses and a reward drops
+- **Gamble** — two machines: one takes credits, the other takes blood (a share of your health, never enough to kill you). Each pull busts, wins a normal drop or hits the jackpot (a drop with much better luck); every pull costs more than the last, and each machine runs dry after three
+- **Hazard** — a leak (fire, toxin, coolant or live wiring) that keeps afflicting everyone on the room's glowing floor — you and the enemies alike — until you find and switch on the vent controls somewhere in the room
+- **Emergency Exit** — an escape pod off the main path (see Expeditions)
+- Lockdown, Holdout and Rift rooms carry the red danger marker on their door signs; a sealed room announces itself, and every wave and countdown is called out in the HUD feed
 
 ## Targeting
 - One shared set of targeting rules for abilities, attacks and effects: **Self**, **Raycast** (under the crosshair), **Area** (around the caster or where they aim on the ground), **Cone**, **Nearest** (the N closest), and **Ground** (a point, no characters)
@@ -396,7 +410,7 @@
 - On respawn, health is restored and every carried weapon's magazine is refilled; reserve ammo in the shared inventory pool is not touched. Where a scene ends the run on death instead (the generated levels), everything carried is lost — see Expeditions. Ability cooldowns reset, and leftover momentum and status effects are cleared
 
 ## Map Graph Generation
-- Maps start as a pure experience graph — rooms and connections without geometry; a [generated level](#generated-levels) turns one into a playable level. Each node is what the player meets there (Start, Combat, Elite, Puzzle, Shop, Event, Treasure, Resupply, Breach, Boss, Exit), and connections say how they link: normal, shortcut, secret or locked — and any open passage can be one-way
+- Maps start as a pure experience graph — rooms and connections without geometry; a [generated level](#generated-levels) turns one into a playable level. Each node is what the player meets there (Start, Combat, Elite, Puzzle, Shop, Event, Treasure, Resupply, Breach, Boss, Exit, and the [encounter rooms](#encounter-rooms) Lockdown, Holdout, Ambush, Stealth, Rift, Gamble, Emergency Exit and Hazard), and connections say how they link: normal, shortcut, secret or locked — and any open passage can be one-way
 - One generator covers many styles of map: a near-straight corridor, a branching spine, a hub around the Start room, a winding labyrinth, or anything in between
 - A map style is made of two independent parts that mix freely: a **layout** (the map's shape) and **content** (what fills it). The same Treasure Hunt content works on a hub or a labyrinth, and the same labyrinth can be a treasure hunt or a gauntlet
 - A style can list several layouts with weights, so its shape changes from run to run (a hub one time, a labyrinth the next) while what fills it stays the same
@@ -578,7 +592,7 @@
 - Locked and secret connections get their gate (a locked door, a breakable fake wall) on the side the player arrives from, so a locked branch is locked from the main path
 - Generated levels have working gates out of the box: locked doors are yellow bulkheads that take a Security Keycard (one is placed for every locked door, always reachable before it, and used up on opening), secret passages are hidden behind a fake wall that looks like the others and breaks when shot, and one-way shortcuts are cyan doors. Ordinary passages stay open
 - A one-way shortcut's door is barred from the near side ("Barred from the other side") and opens for a player coming from the deep end; after that it opens both ways
-- Door signs: a glowing bar over every doorway, in the colour of the room it leads to (the same colours as the maps), so every fork is a readable choice — a Shop, a Treasure room, a Resupply stop. Doorways into an Elite, the Boss or any high-intensity room also show a red danger marker. Secret passages get no sign
+- Door signs: a glowing bar over every doorway, in the colour of the room it leads to (the same colours as the maps), so every fork is a readable choice — a Shop, a Treasure room, a Resupply stop. Doorways into an Elite, the Boss, a Lockdown, Holdout or Rift, or any high-intensity room also show a red danger marker; an Ambush's sign shows Treasure. Secret passages get no sign
 - Each locked door's key is placed in the room the map chose for it. Terminal-locked doors are orange bulkheads, with a terminal console (red light until switched on) in each room the map chose; the door unlocks once all of them are on
 - Rooms are filled by type: enemies (more in higher-intensity rooms, patrolling out to the far ends of the room), a centrepiece (for example a chest in Treasure rooms, a crafting station in Shops, a boss) and scattered props that stay off columns, doorways and walkways
 - The player starts in the Start room, a safe hub with a workbench. The Exit room has the extraction pad that ends the run in victory (hold Interact to extract)

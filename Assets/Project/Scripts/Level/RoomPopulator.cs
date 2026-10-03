@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using CGD.Combat;
 using CGD.Core;
 using CGD.Enemies;
 using CGD.Factions;
@@ -27,6 +28,9 @@ namespace CGD.Level
 
         // Tiles still free to spawn on, per room, in shuffled order.
         private readonly Dictionary<int, List<Vector2Int>> _freeTiles = new();
+        // Enemies placed in each room at build time, for the room's encounter.
+        private readonly Dictionary<int, List<HealthManager>> _roomEnemies = new();
+        private readonly Dictionary<int, Transform[]> _routes = new();
 
         public RoomPopulator(LevelBuildSettings settings, LevelLayout layout, Transform parent, RandomStream random)
         {
@@ -126,27 +130,66 @@ namespace CGD.Level
             {
                 RoomContentRule rule = _settings.RuleFor(room.Node.Type);
                 if (rule == null) continue;
-                GameObject[] roster = EnemiesFor(room.Faction, rule);
-                GameObject[] breach = room.BreachFaction != null ? EnemiesFor(room.BreachFaction, rule) : roster;
+                GameObject[] roster = RosterFor(room);
+                GameObject[] breach = SecondRosterFor(room);
                 if (roster.Length == 0 && breach.Length == 0) continue;
 
                 int count = rule.EnemyCount.Lerp(room.Node.Intensity);
                 if (count <= 0) continue;
 
-                Transform[] route = CreatePatrolRoute(room);
+                Transform[] route = PatrolRouteFor(room);
+                var placed = new List<HealthManager>();
                 for (int i = 0; i < count && TryTakeTile(room, RoomTileTags.None, out Vector3 position); i++)
                 {
                     // A Breach room alternates between its two factions' rosters.
                     bool fromBreach = roster.Length == 0 || (i % 2 == 1 && breach.Length > 0);
                     GameObject enemy = PrefabPool.Spawn(_random.Pick(fromBreach ? breach : roster), OnNavMesh(position), RandomYaw());
                     if (enemy.TryGetComponent(out EnemyAI ai)) ai.SetWaypoints(route);
+                    if (enemy.TryGetComponent(out HealthManager health)) placed.Add(health);
                 }
+                _roomEnemies[room.Node.Id] = placed;
             }
         }
 
         // A faction-held room fields that faction's enemies; how many still comes from the room type.
         private static GameObject[] EnemiesFor(FactionDefinition faction, RoomContentRule rule) =>
             faction != null && faction.Enemies.Length > 0 ? faction.Enemies : rule.Enemies;
+
+        public GameObject[] RosterFor(LevelRoom room)
+        {
+            RoomContentRule rule = _settings.RuleFor(room.Node.Type);
+            return rule != null ? EnemiesFor(room.Faction, rule) : room.Faction != null ? room.Faction.Enemies : System.Array.Empty<GameObject>();
+        }
+
+        // The second reality's roster in a Breach or Rift room; otherwise the room's own.
+        public GameObject[] SecondRosterFor(LevelRoom room)
+        {
+            if (room.BreachFaction == null) return RosterFor(room);
+            RoomContentRule rule = _settings.RuleFor(room.Node.Type);
+            return rule != null ? EnemiesFor(room.BreachFaction, rule) : room.BreachFaction.Enemies;
+        }
+
+        public IReadOnlyList<HealthManager> EnemiesIn(LevelRoom room) =>
+            _roomEnemies.TryGetValue(room.Node.Id, out List<HealthManager> enemies) ? enemies : System.Array.Empty<HealthManager>();
+
+        // Shared by everything patrolling the room, built once.
+        public Transform[] PatrolRouteFor(LevelRoom room)
+        {
+            if (!_routes.TryGetValue(room.Node.Id, out Transform[] route))
+                _routes[room.Node.Id] = route = CreatePatrolRoute(room);
+            return route;
+        }
+
+        // A free floor spot for a console or cache: off walkways, columns and doorways.
+        public bool TryTakeSpot(LevelRoom room, out Vector3 position) => TryTakeTile(room, KeepPropsOff, out position);
+
+        // A free floor spot for an enemy to arrive on.
+        public bool TryTakeSpawnSpot(LevelRoom room, out Vector3 position)
+        {
+            if (!TryTakeTile(room, RoomTileTags.None, out position)) return false;
+            position = OnNavMesh(position);
+            return true;
+        }
 
         public Vector3 RoomCenter(LevelRoom room) => _parent.TransformPoint(_layout.RoomCenterLocal(room));
 

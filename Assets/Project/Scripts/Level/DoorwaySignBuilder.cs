@@ -7,7 +7,8 @@ namespace CGD.Level
     // A glowing bar across the top of every doorway, on the room side, in the colour of the
     // room the doorway leads to (MapNodeColors, as on the maps) — so a route is a choice the
     // player can read before committing to it. Doorways into dangerous rooms (an Elite, the
-    // Boss, or high intensity) get a red marker under the bar. Secret passages get none.
+    // Boss, a Lockdown, Holdout or Rift, or high intensity) get a red marker under the bar.
+    // Secret passages get none.
     //
     // One mesh per colour, no colliders: signs are decoration, not geometry.
     public class DoorwaySignBuilder
@@ -35,7 +36,7 @@ namespace CGD.Level
                 if (doorway.Connection.Type == ConnectionType.Secret) continue;
                 if (!layout.Rooms.TryGetValue(doorway.Connection.Other(doorway.Room.Node.Id), out LevelRoom beyond)) continue;
 
-                AddSign(layout, doorway, MeshFor(meshes, MapNodeColors.Of(beyond.Node.Type)),
+                AddSign(layout, doorway, MeshFor(meshes, MapNodeColors.Of(beyond.Node.Type.SignType())),
                         IsDangerous(beyond.Node) ? MeshFor(meshes, DangerColor) : null);
             }
 
@@ -43,8 +44,13 @@ namespace CGD.Level
                 CreateSign(color, mesh, template, parent);
         }
 
-        private bool IsDangerous(MapNode node) =>
-            node.Type == MapNodeType.Elite || node.Type == MapNodeType.Boss || node.Intensity >= _settings.DangerIntensity;
+        // An Ambush gives nothing away: it signs as the Treasure room it pretends to be.
+        private bool IsDangerous(MapNode node) => node.Type switch
+        {
+            MapNodeType.Elite or MapNodeType.Boss or MapNodeType.Lockdown or MapNodeType.Holdout or MapNodeType.Rift => true,
+            MapNodeType.Ambush => false,
+            _ => node.Intensity >= _settings.DangerIntensity,
+        };
 
         // Just inside the room, hanging from the top of the doorway (corridor height).
         private void AddSign(LevelLayout layout, LevelDoorway doorway, BoxMeshBuilder bar, BoxMeshBuilder danger)

@@ -1087,6 +1087,7 @@ MonoBehaviour:
   _generation: {fileID: 11400000, guid: b8b4d92541b643b48e5f6347553a3639, type: 2}
   _seed: 0
   _settings: {fileID: 11400000, guid: 28c172bbb9304c2f97454c92901461b4, type: 2}
+  _encounters: {fileID: 11400000, guid: a26e312326e14f8894ff820d529a5808, type: 2}
   _navMesh: {fileID: 1211864641}
   _player: {fileID: 1258227947}
   _spawnPoint: {fileID: 1629601954}

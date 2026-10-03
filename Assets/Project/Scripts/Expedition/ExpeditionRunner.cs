@@ -14,7 +14,8 @@ namespace CGD.Expedition
     // player: at the start it hands over what was packed on the ship plus the starting
     // room's random loadout; when GameFlow reaches Victory (the player extracted at the
     // Exit) or GameOver (the player died) it settles the run — everything carried goes to
-    // the ship's hold, or is lost. Without a session (no GameFlow in the scene) it keeps a
+    // the ship's hold, or is lost; through an Emergency Exit's escape pod only part of it
+    // makes it (ExpeditionLedger.ExtractEmergency). Without a session (no GameFlow in the scene) it keeps a
     // ledger of its own so the scene still plays.
     [DefaultExecutionOrder(100)]   // after the player's own setup (starting stacks, loadout)
     public class ExpeditionRunner : MonoBehaviour
@@ -30,6 +31,7 @@ namespace CGD.Expedition
 
         private ExpeditionLedger _localLedger;
         private GameFlow _flow;
+        private bool _leftByEmergencyExit;
 
         public ExpeditionLedger Ledger =>
             ExpeditionSession.Instance != null ? ExpeditionSession.Instance.Ledger : _localLedger ??= new ExpeditionLedger();
@@ -44,11 +46,15 @@ namespace CGD.Expedition
 
             _flow = GameFlow.Instance;
             if (_flow != null) _flow.StateChanged += OnStateChanged;
+            LevelExit.Used += OnExitUsed;
         }
+
+        private void OnExitUsed(LevelExit exit) => _leftByEmergencyExit = exit.IsEmergency;
 
         private void OnDestroy()
         {
             if (_flow != null) _flow.StateChanged -= OnStateChanged;
+            LevelExit.Used -= OnExitUsed;
             // Leaving mid-run (restart, main menu) is not making it out: the kit is gone.
             if (Ledger.IsRunning) Ledger.Die(new Inventory());
         }
@@ -58,7 +64,9 @@ namespace CGD.Expedition
             if (!Ledger.IsRunning) return;
             if (next != GameState.Victory && next != GameState.GameOver) return;
 
-            RunReport report = next == GameState.Victory ? Ledger.Extract(Carried()) : Ledger.Die(Carried());
+            RunReport report = next != GameState.Victory ? Ledger.Die(Carried())
+                             : _leftByEmergencyExit   ? Ledger.ExtractEmergency(Worn(), Pack())
+                             : Ledger.Extract(Carried());
             RunEnded?.Invoke(report);
             // After listeners: closing an open crafting window hands input back to the player.
             if (_input != null) _input.InputEnabled = false;
@@ -67,16 +75,30 @@ namespace CGD.Expedition
         // Everything the player has on them: the pack, the weapon slots and worn armour.
         private Inventory Carried()
         {
-            var carried = new Inventory();
-            foreach (ItemStack stack in _inventory.Inventory.Stacks) carried.Add(stack.Definition, stack.Count);
-            foreach (ItemInstance item in _inventory.Inventory.Items) carried.Add(item);
+            Inventory carried = Pack();
+            ExpeditionLedger.TransferAll(Worn(), carried);
+            return carried;
+        }
+
+        private Inventory Pack()
+        {
+            var pack = new Inventory();
+            foreach (ItemStack stack in _inventory.Inventory.Stacks) pack.Add(stack.Definition, stack.Count);
+            foreach (ItemInstance item in _inventory.Inventory.Items) pack.Add(item);
+            return pack;
+        }
+
+        // Weapons in their slots and armour being worn.
+        private Inventory Worn()
+        {
+            var worn = new Inventory();
             if (_weapons != null)
                 foreach (WeaponInstance weapon in _weapons.Slots)
-                    if (weapon != null) carried.Add(weapon);
+                    if (weapon != null) worn.Add(weapon);
             if (_equipment != null)
-                foreach (ItemInstance worn in _equipment.Equipment.Worn)
-                    carried.Add(worn);
-            return carried;
+                foreach (ItemInstance piece in _equipment.Equipment.Worn)
+                    worn.Add(piece);
+            return worn;
         }
 
         // Weapons fill free slots, armour is worn where its slot is free; the rest goes in the pack.
