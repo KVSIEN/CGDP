@@ -65,5 +65,10 @@ namespace CGD.Enemies
         [Header("Audio")]
         public SoundBank AttackSound;
         public SoundBank RangedAttackSound;
+
+        // Raw damage it takes to kill from full: shield and health together, both behind
+        // armor (Effective Damage = Raw × 100 / (100 + Armor), GDD › Damage Calculation).
+        // Low-tier enemies sit around 100; each reality spreads it differently.
+        public float EffectiveHealth => (MaxHealth + MaxShield) * (1f + Mathf.Max(0f, Armor) / 100f);
     }
 }

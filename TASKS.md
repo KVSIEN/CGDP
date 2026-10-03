@@ -10,6 +10,7 @@
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Tier-1 capsule enemies per reality (Maintenance Bot, Scavenger, Husk) at ≈100 effective health, in the faction rosters
 - MapTest scene (generated levels with the full player setup, blueprint world map and minimap, feedback)
 - Modular wall kits (placeholder TECH/BIO/VOID art per the GDD), per-faction
 - Smoothly rounded dome and ring walls

@@ -15,4 +15,5 @@ MonoBehaviour:
   _displayName: BIO
   _color: {r: 0.35, g: 0.85, b: 0.35, a: 1}
   _floorTint: 0.3
-  _enemies: []
+  _enemies:
+  - {fileID: 6049590506595625700, guid: a91f3c7c0dcd4aed808a7ae84cb32d9b, type: 3}

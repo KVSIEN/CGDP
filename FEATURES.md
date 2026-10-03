@@ -306,6 +306,11 @@
 - State color indicator: mesh tints grey (patrol), yellow (alert), red (chase), blue (stunned), dark (dead) via MaterialPropertyBlock — no material instances created
 - World-space health bar appears above the enemy on damage and fades out after a configurable delay; billboards toward the camera
 - All parameters (health, speeds, sight, hearing, combat type, attack, ranged stats, alert duration) are tunable per enemy type via an EnemyData ScriptableObject
+- **Tier-1 enemy per reality** (placeholder capsules), each holding about 100 effective health — the raw damage it takes to kill one — spread the way its reality defends (GDD): armour cuts every hit before shields and health, so armour multiplies how long the rest lasts
+  - **Maintenance Bot** (TECH, Service tier): a white service chassis with a lit waist band and antenna. Armour first — 50 armour over 37 shield and 30 health. Slow but hard to crack; its shield comes back after 4 seconds
+  - **Scavenger** (BIO, Prey tier): a low, hunched creature with a mossy back and glowing pods. Health first — 80 health under 25 natural armour, no shield. Fast and quick to strike but light-hitting, with wide vision and keen hearing
+  - **Husk** (VOID, Affected tier): a near-black hollow figure with frost at its feet and a shard hanging over it. Wards first — 55 shield over 45 health, no armour; its ward recovers after 3 seconds. Slow, short-sighted, hits hard
+  - Each faction's rooms in a generated level are fought over by its enemy; Breach rooms mix two. Headshots land on a separate head hitbox, a coloured visor shows the AI state, and enemies show on the minimap and map once their area is explored
 
 ## Object Pooling
 - Frequently spawned objects — projectiles, grenades, zones, pickups, particle effects and enemies — are reused instead of created and destroyed, avoiding hitches and garbage collection
