@@ -9,7 +9,7 @@ runtime-built HUD.
 - [TASKS.md](TASKS.md) — open work
 - [CLAUDE.md](CLAUDE.md) — coding guidelines
 
-Open `Assets/Project/Scenes/Sandbox.unity` to play.
+Open `Assets/Project/Scenes/Sandbox.unity` to play, or `MapTest.unity` for a freshly generated level.
 
 ## Project layout
 
@@ -23,7 +23,7 @@ Assets/
       Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters, Environment (Props/, Landmarks/, Level/ — doors, secret wall, keycard; WallKit/ — placeholder wall art), Pickups, UI, VFX, Weapons
-    Scenes/                 Sandbox.unity (+ its baked NavMesh folder)
+    Scenes/                 Sandbox.unity (+ its baked NavMesh folder), MapTest.unity (generated level)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            ability assets (incl. TargetedAbility) and the player's ability slots
       Animation/            Animator parameter bridge (AnimatorBridge, AnimatorParams), PlayerAnimator, EnemyAnimator, Ragdoll

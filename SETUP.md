@@ -453,7 +453,8 @@ A map **style** (`MapGenerationSettings`) is what a `MapGraphAsset` or `LevelBui
 ## Generated Levels
 
 A scene can build its level from a map graph at load instead of using hand-placed geometry.
-Start from a copy of the Sandbox scene and delete its level geometry, target dummies and NavMesh data.
+**`Scenes/MapTest`** is ready-made: the Sandbox systems (Player, HUD, GameManager, GameFlow, EventSystem, Global Volume, RespawnPoint, Directional Light) and a `Level` object generating from `Map/RandomMapGenerationSettings` with `Level/DefaultLevelBuildSettings`, seed 0 (a new map every play and every restart). Change `_generation` or `_seed` on `Level` to test a style or keep a map; set `_graphAsset` to play a hand-edited graph. Its NavMeshSurface collects **Physics Colliders**, so the wall kit's visual pieces stay out of it. It has no world map, minimap or FeedbackPlayer yet (run modifiers aren't announced).
+For another scene, start from a copy of the Sandbox scene and delete its level geometry, target dummies and NavMesh data.
 
 ```
 Level              [LevelBuilder, NavMeshSurface]   ← at the origin, unrotated
