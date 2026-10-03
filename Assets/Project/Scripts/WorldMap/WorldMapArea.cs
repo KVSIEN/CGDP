@@ -84,6 +84,14 @@ namespace CGD.WorldMap
             CreateFog();
         }
 
+        // Draws `texture` (a top-down image covering exactly the area, +Z up) instead of the
+        // area's own background — for levels that render their own map. Call before Start.
+        public void SetBackground(Texture texture)
+        {
+            _source  = MapBackgroundSource.Texture;
+            _texture = texture;
+        }
+
         public bool IsExplored(Vector3 world) => Fog == null || Fog.IsExplored(Projection.ToNormalized(world));
 
         public void Reveal(Vector3 world, float radius)

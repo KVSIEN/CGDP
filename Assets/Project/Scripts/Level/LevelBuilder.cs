@@ -41,10 +41,14 @@ namespace CGD.Level
         [SerializeField] private Transform _spawnPoint;
         [Tooltip("Optional — resized to cover the level")]
         [SerializeField] private WorldMapArea _worldMap;
+        [Tooltip("Draw the world map and minimap from the level's floor plan (rooms coloured by type, walls, gates) instead of the area's own background")]
+        [SerializeField] private bool _blueprintMap = true;
 
         public Seed        Seed   { get; private set; }
         public MapGraph    Graph  { get; private set; }
         public LevelLayout Layout { get; private set; }
+
+        private Texture2D _mapTexture;
         // The run modifiers the map was generated with (a MapGraphAsset's are recovered from its seed).
         public IReadOnlyList<MapRunModifier> Modifiers { get; private set; } = Array.Empty<MapRunModifier>();
 
@@ -159,12 +163,44 @@ namespace CGD.Level
         private void FitWorldMap()
         {
             if (_worldMap == null) return;
+            if (_blueprintMap)
+            {
+                FitBlueprintMap();
+                return;
+            }
 
             Rect bounds = Layout.LocalBounds();
             const float Margin = 10f;
             _worldMap.SetBounds(
                 transform.TransformPoint(new Vector3(bounds.center.x, 0f, bounds.center.y)),
                 bounds.size + Vector2.one * Margin * 2f);
+        }
+
+        private void OnDestroy()
+        {
+            if (_mapTexture != null) Destroy(_mapTexture);
+        }
+
+        // The map covers exactly what the blueprint image does, so the image needs no scaling.
+        private void FitBlueprintMap()
+        {
+            Color32[] pixels = LevelBlueprint.Render(Layout, _settings, LevelBlueprint.Fill.RoomType,
+                                                     out int width, out int height, out Vector2Int tileOrigin);
+            var texture = _mapTexture = new Texture2D(width, height, TextureFormat.RGBA32, false)
+            {
+                name       = "LevelBlueprint",
+                filterMode = FilterMode.Bilinear,
+                wrapMode   = TextureWrapMode.Clamp,
+            };
+            texture.SetPixels32(pixels);
+            texture.Apply(false);
+
+            float tile = Layout.TileSize;
+            Vector2 size = new Vector2(width, height) / LevelBlueprint.PixelsPerTile * tile;
+            Vector2 min  = (Vector2)tileOrigin * tile;
+            Vector2 centre = min + size * 0.5f;
+            _worldMap.SetBounds(transform.TransformPoint(new Vector3(centre.x, 0f, centre.y)), size);
+            _worldMap.SetBackground(texture);
         }
 
         private LevelRoom FindRoom(MapNodeType type)

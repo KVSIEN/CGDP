@@ -564,9 +564,9 @@
 - Each locked door's key is placed in the room the map chose for it
 - Rooms are filled by type: enemies (more in higher-intensity rooms, patrolling out to the far ends of the room), a centrepiece (for example a chest in Treasure rooms, a crafting station in Shops, a boss) and scattered props that stay off columns, doorways and walkways
 - The player starts in the Start room. The Exit room has a way out that ends the run in victory (hold Interact to leave)
-- The MapTest scene plays a freshly generated level every time it starts or restarts, with the player in the Start room
+- The MapTest scene plays a freshly generated level every time it starts or restarts, with the player in the Start room, a minimap, the world map (M) and HUD notifications
 - A level can use a fixed, hand-checked map graph or generate a fresh one each play. The same seed always gives the same map, the same rooms (kind, shape and structure) and the same room contents
-- The world map and minimap resize to fit the generated level
+- The world map and minimap resize to fit the generated level and show its floor plan: room shapes coloured by room type, walls, bevels, curves and gate markers, uncovered by fog of war as the player explores
 - A generated level announces the run's modifiers when it starts
 
 ## Character Animation
