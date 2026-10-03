@@ -4,25 +4,77 @@ using UnityEngine;
 
 namespace CGD.Level
 {
-    // The wall line of a room with curved walls, in tile units (tile corners are whole
-    // numbers). The tile outline is traced into loops of straight runs; runs shorter than
-    // LongRun are the stair-steps of a curve and are replaced by diagonals through their
-    // midpoints, so a dome gets 45° walls instead of stairs. Long runs stay on the tile
-    // edges — that's where doorways sit — minus the openings `isOpening` reports.
+    // The wall line of a room whose walls leave the tile edges, in tile units (tile corners
+    // are whole numbers). The tile outline is traced into loops of straight runs.
+    //   Curved rooms: runs shorter than LongRun are the stair-steps of a curve and are
+    //   replaced by diagonals through their midpoints, so a dome gets 45° walls, not stairs.
+    //   Chamfered rooms: each outside corner where two long runs meet is cut at 45°,
+    //   `chamfer` tiles back along both — unless a doorway is that close to it.
+    // Long runs otherwise stay on the tile edges (that's where doorways sit), minus the
+    // openings `isOpening` reports.
     public static class RoomOutline
     {
         private const int LongRun = 3;
+        public const int MaxChamfer = 2;
 
-        public static List<(Vector2 from, Vector2 to)> Build(RoomFootprint footprint, Func<Vector2Int, Vector2Int, bool> isOpening)
+        public static List<(Vector2 from, Vector2 to)> Build(RoomFootprint footprint, Func<Vector2Int, Vector2Int, bool> isOpening,
+                                                             int chamfer = 0) =>
+            Plan(footprint, isOpening, chamfer).Segments;
+
+        public static RoomOutlinePlan Plan(RoomFootprint footprint, Func<Vector2Int, Vector2Int, bool> isOpening, int chamfer = 0)
         {
-            var segments = new List<(Vector2, Vector2)>();
+            chamfer = Mathf.Clamp(chamfer, 0, MaxChamfer);
+            var plan = new RoomOutlinePlan();
             foreach (List<Run> loop in TraceLoops(footprint))
             {
+                var cuts = CornerCuts(loop, chamfer, isOpening, plan);
                 var loopSegments = new List<(Vector2, Vector2)>();
-                AddLoop(loop, isOpening, loopSegments);
-                segments.AddRange(MergeCollinear(loopSegments));
+                AddLoop(loop, cuts, isOpening, loopSegments);
+                plan.Segments.AddRange(MergeCollinear(loopSegments));
             }
-            return segments;
+            return plan;
+        }
+
+        // cuts[i]: tiles cut off the corner between run i and the next (0 = none). Records
+        // each cut's triangle and the tiles it reaches into.
+        private static int[] CornerCuts(List<Run> runs, int chamfer, Func<Vector2Int, Vector2Int, bool> isOpening, RoomOutlinePlan plan)
+        {
+            var cuts = new int[runs.Count];
+            if (chamfer == 0) return cuts;
+
+            for (int i = 0; i < runs.Count; i++)
+            {
+                Run run = runs[i], next = runs[(i + 1) % runs.Count];
+                if (!CanCut(run, next, chamfer, isOpening)) continue;
+
+                cuts[i] = chamfer;
+                Vector2 corner = run.End;
+                plan.Cuts.Add((corner - (Vector2)run.Dir * chamfer, corner, corner + (Vector2)next.Dir * chamfer));
+
+                Vector2Int tile = run.Edges[run.Edges.Count - 1].Tile;
+                for (int back = 0; back < chamfer; back++)
+                    for (int inward = 0; back + inward < chamfer; inward++)
+                        plan.CutTiles.Add(tile - run.Dir * back + next.Dir * inward);
+                plan.CornerTiles.Add(tile - run.Dir * chamfer);
+                plan.CornerTiles.Add(tile + next.Dir * chamfer);
+            }
+            return cuts;
+        }
+
+        // An outside corner (the outline turns toward the floor, which is on the left)
+        // between two long runs, with no doorway on the edges the cut removes.
+        private static bool CanCut(Run run, Run next, int chamfer, Func<Vector2Int, Vector2Int, bool> isOpening)
+        {
+            if (!run.IsLong || !next.IsLong) return false;
+            if (next.Dir != new Vector2Int(-run.Dir.y, run.Dir.x)) return false;
+            if (run.Edges.Count <= chamfer || next.Edges.Count <= chamfer) return false;
+
+            for (int k = 0; k < chamfer; k++)
+            {
+                Edge a = run.Edges[run.Edges.Count - 1 - k], b = next.Edges[k];
+                if (isOpening(a.Tile, a.Side) || isOpening(b.Tile, b.Side)) return false;
+            }
+            return true;
         }
 
         private readonly struct Edge
@@ -48,19 +100,20 @@ namespace CGD.Level
             public bool IsLong   => Edges.Count >= LongRun;
         }
 
-        private static void AddLoop(List<Run> runs, Func<Vector2Int, Vector2Int, bool> isOpening, List<(Vector2, Vector2)> segments)
+        private static void AddLoop(List<Run> runs, int[] cuts, Func<Vector2Int, Vector2Int, bool> isOpening, List<(Vector2, Vector2)> segments)
         {
             int count = runs.Count;
             for (int i = 0; i < count; i++)
             {
                 Run run = runs[i], next = runs[(i + 1) % count], previous = runs[(i + count - 1) % count];
+                int cutBefore = cuts[(i + count - 1) % count], cutAfter = cuts[i];
 
-                float trimStart = run.IsLong && !previous.IsLong ? 0.5f : 0f;
-                float trimEnd   = run.IsLong && !next.IsLong     ? 0.5f : 0f;
+                float trimStart = (run.IsLong && !previous.IsLong ? 0.5f : 0f) + cutBefore;
+                float trimEnd   = (run.IsLong && !next.IsLong     ? 0.5f : 0f) + cutAfter;
                 if (run.IsLong) AddStraight(run, trimStart, trimEnd, isOpening, segments);
 
                 Vector2 end   = run.IsLong  ? run.End - (Vector2)run.Dir * trimEnd : run.Mid;
-                Vector2 start = next.IsLong ? next.Start + (Vector2)next.Dir * (!run.IsLong ? 0.5f : 0f) : next.Mid;
+                Vector2 start = next.IsLong ? next.Start + (Vector2)next.Dir * ((!run.IsLong ? 0.5f : 0f) + cutAfter) : next.Mid;
                 if (end != start) segments.Add((end, start));
             }
         }

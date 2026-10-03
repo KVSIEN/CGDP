@@ -29,6 +29,12 @@ namespace CGD.Level
         [Tooltip("Layer the generated floors and walls go on (should be in enemies' obstacle mask)")]
         [SerializeField] private int _geometryLayer;
 
+        [Header("Corners")]
+        [Tooltip("Tiles cut off each outside room corner at 45° (0 = sharp). Room functions can override it")]
+        [SerializeField, Range(0, RoomOutline.MaxChamfer)] private int _roomChamfer = 1;
+        [Tooltip("Cut the outside corner of every corridor bend at 45°")]
+        [SerializeField] private bool _chamferCorridorBends = true;
+
         [Header("Ceilings")]
         [Tooltip("Roof every room and corridor at its wall height. Interiors then need their own lights")]
         [SerializeField] private bool _buildCeilings;
@@ -76,6 +82,8 @@ namespace CGD.Level
         public Material CorridorFloorMaterial => _corridorFloorMaterial != null ? _corridorFloorMaterial : _floorMaterial;
         public Material WallMaterial          => _wallMaterial;
         public int   GeometryLayer  => _geometryLayer;
+        public int   RoomChamfer    => _roomChamfer;
+        public bool  ChamferCorridorBends => _chamferCorridorBends;
         public bool  BuildCeilings  => _buildCeilings;
         public Material CeilingMaterial => _ceilingMaterial != null ? _ceilingMaterial : _wallMaterial;
         public int   CeilingLayer   => _ceilingLayer;

@@ -546,6 +546,8 @@
 - Optional ceilings close every room and corridor at its own height; parks stay open to the sky
 - Shapes suit their place in the map: hub rooms with many connections favour crosses and domes. Rooms are always one connected space, with every passage at least two tiles (6 m) wide
 - Domes have smooth, angled walls instead of stair-stepped ones
+- Room corners are bevelled at 45° by default — the ship-interior look — one tile deep, two in the Grand Atrium and Docking Bay. Only outside corners are cut (never inside ones), never where a doorway is close by, and nothing is placed in the cut-off space; corner props move to the spots on either side of the bevel. Corridor bends are bevelled on their outside corner too. Both can be turned off, and each kind of room can set its own depth
+- The Map Graph window's blueprint shows the bevels and the curved walls exactly as they're built
 - Rooms have structure: rows of support columns in lobbies, cargo and docking bays (lined up across the whole ship), colonnades circling atriums and casinos, columns framing the inside corners of L, T and cross rooms, kitchen walls in restaurants, cabin walls in crew quarters and a bar counter in casinos
 - A clear walkway always runs from every doorway to the middle of the room: no column, wall or prop is ever placed on it, and inner walls always leave gaps where it passes, so no part of a room is ever walled off
 - Doorways sit on straight stretches of wall — at the end of an arm rather than tucked into a corner — never open into a ring's courtyard, and face the room they lead to

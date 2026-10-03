@@ -39,6 +39,7 @@ namespace CGD.Level
             new RoomPlacer(_settings).Place(graph, nodeSpacing, seed.Derive("rooms"), layout, content);
             BuildCorridors(graph, layout);
             PlanStructures(seed.Derive("structure"), layout);
+            PlanOutlines(layout);
             return layout;
         }
 
@@ -47,6 +48,24 @@ namespace CGD.Level
             var planner = new RoomStructurePlanner();
             foreach (LevelRoom room in layout.Rooms.Values)
                 room.AttachStructure(planner.Plan(room, layout.Doorways, seed.Derive(room.Node.Id).Stream()));
+        }
+
+        // Curved and chamfered rooms get their wall line now the doorways are fixed. Tiles a
+        // chamfer cuts into are marked as structure, so props and enemies keep off them; the
+        // tiles beside each cut become the room's corners for corner props.
+        private static void PlanOutlines(LevelLayout layout)
+        {
+            foreach (LevelRoom room in layout.Rooms.Values)
+            {
+                if (!room.Footprint.CurvedWalls && room.Chamfer <= 0) continue;
+
+                RoomOutlinePlan outline = RoomOutline.Plan(room.Footprint, (tile, side) => layout.IsWalkable(tile + side), room.Chamfer);
+                room.AttachOutline(outline);
+                foreach (Vector2Int tile in outline.CutTiles)
+                    room.Structure?.Tag(tile, RoomTileTags.Structure);
+                foreach (Vector2Int tile in outline.CornerTiles)
+                    if (!outline.CutTiles.Contains(tile)) room.Structure?.Tag(tile, RoomTileTags.Corner);
+            }
         }
 
         // --- Corridors -------------------------------------------------------------------

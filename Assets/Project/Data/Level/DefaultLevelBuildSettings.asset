@@ -22,6 +22,8 @@ MonoBehaviour:
   _corridorFloorMaterial: {fileID: 2100000, guid: dfc08c90188302847afb04f628582097, type: 2}
   _wallMaterial: {fileID: 2100000, guid: 2ab8149ec4775284bada96c1b85b4a09, type: 2}
   _geometryLayer: 0
+  _roomChamfer: 1
+  _chamferCorridorBends: 1
   _buildCeilings: 0
   _ceilingMaterial: {fileID: 0}
   _ceilingLayer: 0

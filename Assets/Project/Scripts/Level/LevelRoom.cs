@@ -10,8 +10,9 @@ namespace CGD.Level
     {
         public LevelRoom(MapNode node, RoomFootprint footprint, RoomFunction function, float wallHeight,
             LandmarkRoomDefinition landmark = null, FactionDefinition faction = null,
-            FactionDefinition breachFaction = null)
+            FactionDefinition breachFaction = null, int chamfer = 0)
         {
+            Chamfer       = chamfer;
             Faction       = faction;
             BreachFaction = breachFaction;
             Landmark   = landmark;
@@ -26,6 +27,10 @@ namespace CGD.Level
         public RoomFunction  Function   { get; }    // null for a plain room
         public float         WallHeight { get; }    // metres
         public RoomStructure Structure  { get; private set; }
+        // Tiles cut off each outside corner at 45° (0 = sharp corners).
+        public int           Chamfer    { get; }
+        // The wall line when it leaves the tile edges (curved or chamfered rooms); null otherwise.
+        public RoomOutlinePlan Outline  { get; private set; }
         // The hand-built interior placed in this room, if any.
         public LandmarkRoomDefinition Landmark { get; }
         // The faction that holds this room, if any (from the map graph).
@@ -41,6 +46,9 @@ namespace CGD.Level
         public string DisplayName => Function != null ? Function.DisplayName : Node.Type.ToString();
 
         // Set once by LevelLayoutBuilder after the corridors fix the doorways.
+        // Set once by LevelLayoutBuilder once the doorways are known (no chamfer cuts a doorway).
+        public void AttachOutline(RoomOutlinePlan outline) => Outline = outline;
+
         public void AttachStructure(RoomStructure structure)
         {
             if (Structure != null) throw new System.InvalidOperationException("Room structure is already set.");

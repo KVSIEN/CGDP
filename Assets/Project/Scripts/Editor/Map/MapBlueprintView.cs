@@ -76,7 +76,7 @@ namespace CGD.Editor
             Vector2 spacing = asset.Settings != null ? asset.Settings.NodeSpacing : Vector2.one;
             _layout = new LevelLayoutBuilder(settings).Build(session.Graph, spacing, Seed.From(asset.Seed), asset.Content);
 
-            Color32[] pixels = LevelBlueprint.Render(_layout, Fill, out int width, out int height, out _tileOrigin);
+            Color32[] pixels = LevelBlueprint.Render(_layout, settings, Fill, out int width, out int height, out _tileOrigin);
             if (_texture == null || _texture.width != width || _texture.height != height)
             {
                 if (_texture != null) Object.DestroyImmediate(_texture);

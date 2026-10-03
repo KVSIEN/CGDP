@@ -27,6 +27,8 @@ namespace CGD.Level
         [SerializeField] private IntRange _size;
         [Tooltip("Metres. 0 = the build settings' wall height")]
         [SerializeField, Min(0f)] private float _wallHeight;
+        [Tooltip("Tiles cut off each outside corner at 45°. -1 = the build settings' Room Chamfer")]
+        [SerializeField, Range(-1, RoomOutline.MaxChamfer)] private int _chamfer = -1;
         [Tooltip("No ceiling over this room even when the build settings add ceilings (parks, domes open to the stars)")]
         [SerializeField] private bool _openCeiling;
         [Tooltip("Optional hand-built room used instead of a generated floor plan and structure")]
@@ -42,6 +44,8 @@ namespace CGD.Level
         public Vector2Int Cells   => new(Mathf.Clamp(_cells.x, 1, 2), Mathf.Clamp(_cells.y, 1, 2));
         public LandmarkRoomDefinition Landmark => _landmark;
         public bool   OpenCeiling => _openCeiling;
+        // Corner chamfer in tiles, or `fallback` when this function doesn't set one.
+        public int    ChamferOr(int fallback) => _chamfer >= 0 ? _chamfer : fallback;
         public IReadOnlyList<RoomShape>         Shapes    => _shapes;
         public IReadOnlyList<RoomStructureRule> Structure => _structure;
         public IReadOnlyList<RoomPropPlacement> Props     => _props;

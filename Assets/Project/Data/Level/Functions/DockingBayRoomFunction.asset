@@ -26,6 +26,7 @@ MonoBehaviour:
     Max: 0
     Bias: 0
   _wallHeight: 7
+  _chamfer: 2
   _openCeiling: 0
   _landmark: {fileID: 0}
   _structure:

@@ -5,7 +5,8 @@ using CGD.Map;
 namespace CGD.Level
 {
     // A top-down floor plan of a LevelLayout, drawn blueprint-style: rooms filled in their
-    // room type's or faction's colour, corridors, walls (and inner walls) as light lines,
+    // room type's or faction's colour, corridors, walls (LevelWallPlan — the same lines the
+    // level is built from, chamfers and curves included) and inner walls as light lines,
     // pillars and landmark furniture as dark blocks, and a marker on every gated doorway —
     // so the level a graph becomes can be read without building it.
     //
@@ -27,7 +28,8 @@ namespace CGD.Level
         public enum Fill { RoomType, Faction }
 
         // `tileOrigin` is the tile at pixel (0, 0); pixel = (tile - origin) * PixelsPerTile.
-        public static Color32[] Render(LevelLayout layout, Fill fill, out int width, out int height, out Vector2Int tileOrigin)
+        public static Color32[] Render(LevelLayout layout, LevelBuildSettings settings, Fill fill,
+                                       out int width, out int height, out Vector2Int tileOrigin)
         {
             RectInt bounds = TileBounds(layout);
             tileOrigin = bounds.min - Vector2Int.one * MarginTiles;
@@ -45,8 +47,13 @@ namespace CGD.Level
                     canvas.FillTile(tile, Structure, inset: 1);
             }
 
-            foreach (Vector2Int tile in layout.WalkableTiles)
-                DrawWalls(layout, canvas, tile);
+            LevelWallPlan walls = LevelWallPlan.Create(layout, settings);
+            foreach (var (a, corner, b) in walls.Cuts)
+                canvas.FillTriangle(a, corner, b, Background);
+            foreach (LevelWallPlan.Segment segment in walls.Segments)
+                canvas.Line(segment.From, segment.To, Wall);
+            foreach (LevelRoom room in layout.Rooms.Values)
+                DrawPartitions(room, canvas);
 
             foreach (LevelDoorway doorway in layout.Doorways)
                 if (doorway.HasGate && GateColor(doorway.Connection, out Color32 color))
@@ -80,27 +87,13 @@ namespace CGD.Level
             return connection.IsGate || connection.OneWay;
         }
 
-        // A wall runs along every side of a walkable tile that faces solid space, another
-        // room, or a corridor it has no doorway into — plus a room's inner walls.
-        private static void DrawWalls(LevelLayout layout, Canvas canvas, Vector2Int tile)
+        private static void DrawPartitions(LevelRoom room, Canvas canvas)
         {
-            LevelRoom room = layout.RoomAt(tile);
-            foreach (Vector2Int side in Sides)
-            {
-                Vector2Int next = tile + side;
-                bool wall = !layout.IsWalkable(next)
-                         || (room != null && layout.RoomAt(next) != room && !IsDoorway(layout, tile, next))
-                         || (room != null && room.Structure != null && room.Structure.IsPartitioned(tile, next));
-                if (room == null && layout.RoomAt(next) != null) wall = false;   // drawn from the room's side
-                if (wall) canvas.FillEdge(tile, side, Wall, thickness: 1);
-            }
-        }
-
-        private static bool IsDoorway(LevelLayout layout, Vector2Int roomTile, Vector2Int outside)
-        {
-            foreach (LevelDoorway doorway in layout.Doorways)
-                if (doorway.RoomTile == roomTile && doorway.OutsideTile == outside) return true;
-            return false;
+            if (room.Structure == null) return;
+            foreach (Vector2Int tile in room.Footprint.Tiles)
+                foreach (Vector2Int side in Sides)
+                    if (room.Structure.IsPartitioned(tile, tile + side))
+                        canvas.FillEdge(tile, side, Wall, thickness: 1);
         }
 
         private static RectInt TileBounds(LevelLayout layout)
@@ -146,6 +139,47 @@ namespace CGD.Level
                 int far = PixelsPerTile - thickness;
                 if (side.x != 0) Fill(p.x + (side.x > 0 ? far : 0), p.y, thickness, PixelsPerTile, color);
                 else             Fill(p.x, p.y + (side.y > 0 ? far : 0), PixelsPerTile, thickness, color);
+            }
+
+            // A 1-pixel line between two points in tile units, nudged half a pixel to the
+            // right of its direction — the outside, where the built wall stands.
+            public void Line(Vector2 from, Vector2 to, Color32 color)
+            {
+                Vector2 a = ToPixel(from), b = ToPixel(to);
+                Vector2 dir = (b - a).normalized;
+                Vector2 outward = new Vector2(dir.y, -dir.x) * 0.5f;
+                int steps = Mathf.CeilToInt((b - a).magnitude * 2f);
+                for (int i = 0; i <= steps; i++)
+                {
+                    Vector2 p = Vector2.Lerp(a, b, steps == 0 ? 0f : (float)i / steps) + outward - Vector2.one * 0.5f;
+                    Set(Mathf.RoundToInt(p.x), Mathf.RoundToInt(p.y), color);
+                }
+            }
+
+            public void FillTriangle(Vector2 a, Vector2 b, Vector2 c, Color32 color)
+            {
+                Vector2 pa = ToPixel(a), pb = ToPixel(b), pc = ToPixel(c);
+                int minX = Mathf.FloorToInt(Mathf.Min(pa.x, Mathf.Min(pb.x, pc.x))), maxX = Mathf.CeilToInt(Mathf.Max(pa.x, Mathf.Max(pb.x, pc.x)));
+                int minY = Mathf.FloorToInt(Mathf.Min(pa.y, Mathf.Min(pb.y, pc.y))), maxY = Mathf.CeilToInt(Mathf.Max(pa.y, Mathf.Max(pb.y, pc.y)));
+                for (int y = minY; y < maxY; y++)
+                    for (int x = minX; x < maxX; x++)
+                        if (Inside(new Vector2(x + 0.5f, y + 0.5f), pa, pb, pc)) Set(x, y, color);
+            }
+
+            private static bool Inside(Vector2 p, Vector2 a, Vector2 b, Vector2 c)
+            {
+                float d1 = Cross(a, b, p), d2 = Cross(b, c, p), d3 = Cross(c, a, p);
+                bool negative = d1 < 0f || d2 < 0f || d3 < 0f, positive = d1 > 0f || d2 > 0f || d3 > 0f;
+                return !(negative && positive);
+            }
+
+            private static float Cross(Vector2 a, Vector2 b, Vector2 p) => (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
+
+            private Vector2 ToPixel(Vector2 tilePoint) => (tilePoint - _origin) * PixelsPerTile;
+
+            private void Set(int x, int y, Color32 color)
+            {
+                if (x >= 0 && x < _width && y >= 0 && y < _height) Pixels[y * _width + x] = color;
             }
 
             private void Fill(int x, int y, int w, int h, Color32 color)

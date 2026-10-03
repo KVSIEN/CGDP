@@ -56,7 +56,8 @@ namespace CGD.Level
 
                 RectInt area = RoomArea(block, function, random);
                 IReadOnlyList<RoomShape> shapeList = function != null && function.Shapes.Count > 0 ? function.Shapes : _settings.DefaultShapes;
-                layout.AddRoom(new LevelRoom(node, _shapes.Build(shapeList, count, area, random), function, height, faction: faction, breachFaction: breach));
+                layout.AddRoom(new LevelRoom(node, _shapes.Build(shapeList, count, area, random), function, height, faction: faction, breachFaction: breach,
+                                             chamfer: function != null ? function.ChamferOr(_settings.RoomChamfer) : _settings.RoomChamfer));
             }
         }
 
