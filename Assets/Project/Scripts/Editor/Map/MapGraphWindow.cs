@@ -1,3 +1,4 @@
+using CGD.Level;
 using CGD.Map;
 using UnityEditor;
 using UnityEngine;
@@ -6,16 +7,20 @@ namespace CGD.Editor
 {
     // Editor for MapGraphAsset: generate from a seed, then inspect and hand-edit the
     // result. Drawing and input live in MapGraphCanvas, the side panel in
-    // MapGraphInspectorPanel, and all edits go through MapGraphEditorSession.
+    // MapGraphInspectorPanel, and all edits go through MapGraphEditorSession. Blueprint
+    // mode (MapBlueprintView) shows the same graph laid out as the level's floor plan.
     public class MapGraphWindow : EditorWindow
     {
         private const float PanelWidth    = 300f;
         private const string DefaultFolder = "Assets/Project/Data/Map";
 
         [SerializeField] private MapGraphEditorSession _session = new();
+        [SerializeField] private bool               _blueprint;
+        [SerializeField] private LevelBuildSettings _blueprintSettings;
 
         private readonly MapGraphCanvas         _canvas = new();
         private readonly MapGraphInspectorPanel _panel  = new();
+        private readonly MapBlueprintView       _blueprintView = new();
 
         [MenuItem("Window/CGD/Map Graph")]
         public static void Open() => GetWindow<MapGraphWindow>();
@@ -50,7 +55,8 @@ namespace CGD.Editor
             float panelWidth = _session.HasGraph ? PanelWidth : 0f;
             var canvasRect = new Rect(0f, top, position.width - panelWidth, position.height - top);
 
-            _canvas.Draw(canvasRect, _session);
+            if (_blueprint && _session.HasGraph) _blueprintView.Draw(canvasRect, _session, _blueprintSettings);
+            else _canvas.Draw(canvasRect, _session);
 
             if (_session.HasGraph)
                 _panel.Draw(new Rect(canvasRect.xMax, top, panelWidth, canvasRect.height), _session);
@@ -77,15 +83,43 @@ namespace CGD.Editor
 
             GUILayout.FlexibleSpace();
 
+            _blueprint = GUILayout.Toggle(_blueprint,
+                new GUIContent("Blueprint", "Show the graph laid out as the level's floor plan"), EditorStyles.toolbarButton);
+            if (_blueprint) DrawBlueprintControls();
+            else DrawGraphControls();
+
+            if (GUILayout.Button(new GUIContent("Frame", "Fit the view (F)"), EditorStyles.toolbarButton))
+            {
+                var view = new Vector2(position.width - PanelWidth, position.height);
+                if (_blueprint) _blueprintView.Frame(view);
+                else _canvas.Frame(_session, view);
+            }
+        }
+
+        private void DrawGraphControls()
+        {
             _session.ViewMode = (MapGraphViewMode)EditorGUILayout.EnumPopup(
                 _session.ViewMode, EditorStyles.toolbarPopup, GUILayout.Width(120f));
             _session.HighlightPath = GUILayout.Toggle(_session.HighlightPath,
                 new GUIContent("Path", "Highlight the route from Start to the selected node"), EditorStyles.toolbarButton);
             _session.HighlightBranch = GUILayout.Toggle(_session.HighlightBranch,
                 new GUIContent("Branch", "Dim everything outside the selected node's branch"), EditorStyles.toolbarButton);
+        }
 
-            if (GUILayout.Button(new GUIContent("Frame", "Fit the graph to the view (F)"), EditorStyles.toolbarButton))
-                _canvas.Frame(_session, new Vector2(position.width - PanelWidth, position.height));
+        // The build settings the level would use; the project's first one until another is picked.
+        private void DrawBlueprintControls()
+        {
+            if (_blueprintSettings == null) _blueprintSettings = FindBuildSettings();
+            _blueprintSettings = (LevelBuildSettings)EditorGUILayout.ObjectField(
+                _blueprintSettings, typeof(LevelBuildSettings), false, GUILayout.Width(180f));
+            _blueprintView.Fill = (LevelBlueprint.Fill)EditorGUILayout.EnumPopup(
+                _blueprintView.Fill, EditorStyles.toolbarPopup, GUILayout.Width(90f));
+        }
+
+        private static LevelBuildSettings FindBuildSettings()
+        {
+            string[] guids = AssetDatabase.FindAssets("t:LevelBuildSettings");
+            return guids.Length > 0 ? AssetDatabase.LoadAssetAtPath<LevelBuildSettings>(AssetDatabase.GUIDToAssetPath(guids[0])) : null;
         }
 
         // Settings and seed are plain serialized fields on the asset, edited through

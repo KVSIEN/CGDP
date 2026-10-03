@@ -445,6 +445,7 @@ A map **style** (`MapGenerationSettings`) is what a `MapGraphAsset` or `LevelBui
 | **MapFactionMix** | CGD › Map › Faction Mix | `_dominance` (0 = even split, 1 = one faction holds almost everything), `_scatter` (chance a room is a random faction; 1 = fully random), `_pocketsPerFaction`. Every room always gets a faction |
 
 - **Generate** stays disabled until the style has content and at least one layout.
+- **Blueprint** shows the floor plan; its toolbar picks the `LevelBuildSettings` to lay out with (defaults to the project's first one, e.g. `Level/DefaultLevelBuildSettings`) and the fill (room type / faction). It uses the graph asset's seed, as `LevelBuilder` does with `_seed` 0.
 - **Analyze** opens the style report for the asset's style (seed count and first seed in its toolbar).
 - A room function only prefers sections listed in a style's content; a style without `_sections` gives every room no section.
 - A new map style is usually just a new style asset pointing at existing layouts and content.
@@ -461,7 +462,7 @@ Level              [LevelBuilder, NavMeshSurface]   ← at the origin, unrotated
 
 | Component | Assign | Notes |
 |---|---|---|
-| **LevelBuilder** | `_settings` = `Level/DefaultLevelBuildSettings` · `_graphAsset` = a `MapGraphAsset` **or** `_generation` = a `Map/…MapGenerationSettings` style (e.g. `BranchingMapGenerationSettings`, or `RandomMapGenerationSettings` for a different shape each run) · `_seed` (0 = random) · `_navMesh` = its NavMeshSurface · `_player` = Player · `_spawnPoint` = RespawnPoint · `_worldMap`? = WorldMapArea | Logs a warning for every corridor that had to cross another. Announces the run's modifiers through the HUD feed (needs a FeedbackPlayer in the scene). |
+| **LevelBuilder** | `_settings` = `Level/DefaultLevelBuildSettings` · `_graphAsset` = a `MapGraphAsset` **or** `_generation` = a `Map/…MapGenerationSettings` style (e.g. `BranchingMapGenerationSettings`, or `RandomMapGenerationSettings` for a different shape each run) · `_seed` (0 = random; with `_graphAsset`, 0 = the asset's seed) · `_navMesh` = its NavMeshSurface · `_player` = Player · `_spawnPoint` = RespawnPoint · `_worldMap`? = WorldMapArea | Logs a warning for every corridor that had to cross another. Announces the run's modifiers through the HUD feed (needs a FeedbackPlayer in the scene). |
 | **NavMeshSurface** | Collect Objects = **Current Object Hierarchy** | Rebuilt at runtime. Don't bake it. |
 
 `LevelBuildSettings` holds the grid sizes, wall materials, door prefabs, the key prefab, door signs (`_buildDoorSigns`, `_doorSignMaterial` — empty = the floor material, tinted and made emissive — and `_dangerIntensity`), the default room **Shapes** and one **Rooms** entry per room type.

@@ -15,8 +15,9 @@ namespace CGD.Level
     // enemies, the player in the Start room and a way out in the Exit room.
     //
     // The graph is either a MapGraphAsset (a hand-checked map, same every time) or generated
-    // on the spot from a MapGenerationSettings style and a seed. Seed 0 rolls a new one every play;
-    // the one used is shown in Seed so a good level can be kept.
+    // on the spot from a MapGenerationSettings style and a seed. Seed 0 rolls a new one every play
+    // (with a graph asset, 0 uses the asset's seed, matching its blueprint); the one used is
+    // shown in Seed so a good level can be kept.
     //
     // Runs before everything else so the level exists by the time other components wake up
     // (the world map fits itself to it, enemies find their NavMesh).
@@ -27,7 +28,7 @@ namespace CGD.Level
         [Tooltip("Build this graph. Leave empty to generate one from the settings below")]
         [SerializeField] private MapGraphAsset _graphAsset;
         [SerializeField] private MapGenerationSettings _generation;
-        [Tooltip("0 = a new random seed every play. Also drives room shapes and contents")]
+        [Tooltip("0 = a new random seed every play (with a graph asset: the asset's seed). Also drives room shapes and contents")]
         [SerializeField] private int _seed;
         [SerializeField] private LevelBuildSettings _settings;
 
@@ -55,7 +56,11 @@ namespace CGD.Level
                 return;
             }
 
-            Seed  = _seed != 0 ? Seed.From(_seed) : Seed.Random();
+            // A graph asset's own seed lays its rooms out the way the Map Graph window's
+            // blueprint shows them; only generated maps roll a fresh seed for 0.
+            Seed  = _seed != 0 ? Seed.From(_seed)
+                  : _graphAsset != null ? Seed.From(_graphAsset.Seed)
+                  : Seed.Random();
             Graph = ResolveGraph(out Vector2 nodeSpacing, out MapContentSettings content);
             if (Graph == null)
             {

@@ -83,8 +83,13 @@ namespace CGD.Editor
             _issues ??= MapGraphValidator.Validate(Graph, Analysis, _asset.Layout, _asset.Content, _asset.Tuning);
 
         // Call after anything outside this class changes the asset (undo, regenerate).
+        // Bumped by every Invalidate, so views that cache what they build from the graph
+        // (the blueprint) know when to rebuild.
+        public int Version { get; private set; }
+
         public void Invalidate()
         {
+            Version++;
             _analysis        = null;
             _issues          = null;
             _highlightedPath = null;

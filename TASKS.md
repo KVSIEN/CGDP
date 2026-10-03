@@ -10,6 +10,7 @@
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Map Graph Blueprint mode (graph laid out as the level's floor plan)
 - Level gate prefabs (locked door + keycard, secret wall, one-way door); saved graphs keep their run modifiers; editable sections; clickable validation issues
 - Door signs, one-way shortcuts, Breach rooms, warning/anomaly run modifiers
 - Faction mixes (Infested, Balanced, Contested, Warped) rolled per map
