@@ -203,6 +203,7 @@ The Audio, Video and Accessibility tabs need no wiring. They apply to every scen
 - UI buttons call a **GameFlowCommands** component (Resume, RestartLevel, LoadMainMenu, StartGame, Quit…) — never `GameFlow` directly.
 - **GameStateView** shows a panel only in chosen states: `_target` = the panel, `_visibleIn` = e.g. `Paused`. Put it on an always-active object, not on the panel.
 - **Time:** `GameTime` owns `Time.timeScale`. Pause or slow time through `GameTime.Instance.Clock`, never by setting `Time.timeScale`.
+- **Expeditions:** the `GameFlow` prefab also carries **ExpeditionSession** (no fields), which keeps the ship's hold and the packed kit across scene loads. A scene without it still plays; its runs just don't carry over.
 
 ---
 
@@ -453,7 +454,7 @@ A map **style** (`MapGenerationSettings`) is what a `MapGraphAsset` or `LevelBui
 ## Generated Levels
 
 A scene can build its level from a map graph at load instead of using hand-placed geometry.
-**`Scenes/MapTest`** is ready-made: the Sandbox systems (Player, HUD, GameManager, GameFlow, EventSystem, Global Volume, RespawnPoint, Directional Light) and a `Level` object generating from `Map/RandomMapGenerationSettings` with `Level/DefaultLevelBuildSettings`, seed 0 (a new map every play and every restart). Change `_generation` or `_seed` on `Level` to test a style or keep a map; set `_graphAsset` to play a hand-edited graph. Its NavMeshSurface collects **Physics Colliders**, so the wall kit's visual pieces stay out of it. It also has the map set up: a `WorldMap` object (`WorldMapArea`, fog of war on) that `LevelBuilder` fits to the level and paints with the level's blueprint; `Minimap`, `WorldMap` (M) and `ScreenFlash` elements added under the HUD; and `MapRevealer` + `FeedbackPlayer` added to the Player (run modifiers and pickups are announced). These are scene additions to the HUD and Player prefab instances — the prefabs themselves (and Sandbox) are unchanged.
+**`Scenes/MapTest`** is ready-made: the Sandbox systems (Player, HUD, GameManager, GameFlow, EventSystem, Global Volume, RespawnPoint, Directional Light) and a `Level` object generating from `Map/RandomMapGenerationSettings` with `Level/DefaultLevelBuildSettings`, seed 0 (a new map every play and every restart). Change `_generation` or `_seed` on `Level` to test a style or keep a map; set `_graphAsset` to play a hand-edited graph. Its NavMeshSurface collects **Physics Colliders**, so the wall kit's visual pieces stay out of it. It also has the map set up: a `WorldMap` object (`WorldMapArea`, fog of war on) that `LevelBuilder` fits to the level and paints with the level's blueprint; `Minimap`, `WorldMap` (M) and `ScreenFlash` elements added under the HUD; and `MapRevealer` + `FeedbackPlayer` added to the Player (run modifiers and pickups are announced). The expedition loop is wired too — see *Expedition loop* below. These are scene additions to the HUD and Player prefab instances — the prefabs themselves (and Sandbox) are unchanged.
 For another scene, start from a copy of the Sandbox scene and delete its level geometry, target dummies and NavMesh data.
 
 ```
@@ -501,7 +502,26 @@ Each entry lists its **Functions**, enemy prefabs (count read at the room's inte
   - A one-way door prefab needs a `Door` on its root or a child.
   - Closed doors cut the NavMesh, so enemies don't follow the player through them.
 - **Keys**: `_keyPrefab` is placed in the room the map graph picks for each Locked connection. Every key is reachable without opening a door, and each locked door uses one up, so one key item (`SecurityKeycard`) serves every door. For other locks, make the pickup's item match the door's `Door._key` and tick `_key.Consume`.
-- **Exit**: when the Exit room's content has no `LevelExit`, a plain exit pad is added. Using it calls `GameFlow.Victory`.
+- **Exit**: when the Exit room's content has no `LevelExit`, a plain exit pad is added. Using it ("Extract") calls `GameFlow.Victory`.
+- **Start room (hub)**: the Start entry's centrepiece is `Prefabs/Environment/Level/HubWorkbench` — a `CraftingStation` (`_recipes` = the four `Data/Crafting` recipes) with its bench 2.5 m from its origin, so the player doesn't spawn inside it. The Start entry keeps `EnemyCount` 0.
+
+### Expedition loop (extraction)
+
+```
+Expedition         [ExpeditionRunner]          ← scene root
+HUD (prefab instance)
+  ExpeditionScreen [ExpeditionScreen]          ← stretched RectTransform, layer UI, last child (draws on top)
+```
+
+| Component | Assign | Notes |
+|---|---|---|
+| **ExpeditionRunner** | `_inventory` = Player's PlayerInventory · `_weapons` = PlayerWeaponLoadout · `_equipment` = PlayerEquipment · `_input` = PlayerInputHandler · `_starterKit` = `Expedition/DefaultRunStarterKit` · `_level`? = the LevelBuilder (seeds the loadout) | Settles the run when GameFlow reaches Victory (extract) or GameOver (death). Needs `GameFlow` (with `ExpeditionSession`) in the scene. |
+| **ExpeditionScreen** | `_runner` = the ExpeditionRunner | Builds its own hidden panel; shows after a run with the hold, the next-run kit and Deploy (restarts the scene). |
+| **PlayerLifecycle** (Player) | `_gameOverOnDeath` = on | Death must end the run, or nothing is ever lost. |
+| **PlayerInventory** (Player) | `_startingStacks` = empty | The starting room's loadout replaces the Sandbox's dev ammo and credits. |
+
+`RunStarterKit` (`Data/Expedition/`): `_weaponCategories` (generated fresh, no category twice), `_weaponCount` (1–2), `_supplies` (item + count range each).
+`Scenes/MapTest` is wired this way: `Expedition` root, `ExpeditionScreen` added under the HUD instance, and the two Player overrides above as instance overrides (the Player prefab and Sandbox are unchanged).
 - **Obstacle masks**: generated geometry goes on `_geometryLayer`. Keep that layer in enemies' `_obstacleMask` and in weapons' hit masks.
 
 ## Impact Effects
@@ -552,6 +572,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Items/` | `StatRollProfile`, `Keycards/SecurityKeycard` (opens the generated levels' locked doors) | weapon categories, `CombatVestArmor` (see note) |
 | `Items/Armor/`, `Attachments/`, `Consumables/`, `Throwables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `StimConsumable`, `FragGrenadeThrowable`, `SmokeGrenadeThrowable`, `ScrapMetalResource`, `ClothResource` | pickups, loot, recipes, quest rewards |
 | `Crafting/` | `BandageRecipe`, `CombatStimRecipe`, `ExtendedMagazineRecipe`, `CombatVestRecipe` | CraftingStation |
+| `Expedition/` | `DefaultRunStarterKit` — the starting room's loadout (weapon categories, 1–2 weapons, supplies) | ExpeditionRunner |
 | `DevTools/` | `DevCatalog` (all items, weapon categories, buffs; no enemy prefabs exist yet) | DevCommands |
 | `Abilities/` | Dash (needs `PlayerDodge`), Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`), Stealth (needs `Stealthable`) | PlayerAbilities |
 | `Targeting/` | `Default…TargetSelector`, `AimedArea…`, `FriendlyArea…` | abilities, PlayerLockOn |

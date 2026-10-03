@@ -341,6 +341,16 @@
 - UI panels can be shown only in certain states (pause panel, game-over screen, loading screen) without code
 - The cursor is captured during play and released in menus automatically
 
+## Expeditions (Core Loop)
+- A run follows the GDD loop: start in the safe starting room, explore and gather, craft, push to the boss and extract — or die trying
+- The starting room is a hub: no enemies spawn there, and a **Hub Workbench** (all crafting recipes) stands beside the spawn spot, so you can come back to craft between pushes
+- Every run starts with a random but viable loadout from the starting room: one or two freshly generated weapons (pistol, SMG, assault rifle or shotgun — never the same kind twice), ammunition, bandages, sometimes a combat stim, a frag grenade or two and some scrap metal and cloth. The loadout comes from the level's seed, so a kept seed keeps its loadout
+- The Exit room's pad is the **extraction point** (hold Interact on "Extract"): everything you carry — the pack, your weapons and worn armour — goes into the ship's hold
+- **Dying loses everything** you carried: what you brought from the ship and what you found. The ship's hold itself is never at risk
+- After every run the ship screen shows how it went (EXTRACTED, or KILLED IN ACTION with what was lost), the ship's hold, and the kit for the next run: click an entry to pack it or put it back. **Deploy** starts a fresh run with the packed kit on top of the new starting loadout — armour is worn straight away when its slot is free, weapons fill free slots
+- Leaving a level mid-run (restart or main menu) counts as not making it out
+- The ship's hold lasts for the play session (it is not saved to disk yet)
+
 ## Targeting
 - One shared set of targeting rules for abilities, attacks and effects: **Self**, **Raycast** (under the crosshair), **Area** (around the caster or where they aim on the ground), **Cone**, **Nearest** (the N closest), and **Ground** (a point, no characters)
 - Each rule picks by relation — self, allies, enemies, neutral, or any mix — and can require clear line of sight and cap the number of targets (nearest first)
@@ -381,7 +391,7 @@
 ## Death & Respawn
 - When health reaches zero the player loses control, the HUD hides, and a death screen is shown
 - Player automatically respawns after a short delay, returning to the designated spawn point
-- On respawn, health is restored and every carried weapon's magazine is refilled; reserve ammo in the shared inventory pool is not touched (the ability to lose gathered inventory on death lands with the extraction loop). Ability cooldowns reset, and leftover momentum and status effects are cleared
+- On respawn, health is restored and every carried weapon's magazine is refilled; reserve ammo in the shared inventory pool is not touched. Where a scene ends the run on death instead (the generated levels), everything carried is lost — see Expeditions. Ability cooldowns reset, and leftover momentum and status effects are cleared
 
 ## Map Graph Generation
 - Maps start as a pure experience graph — rooms and connections without geometry; a [generated level](#generated-levels) turns one into a playable level. Each node is what the player meets there (Start, Combat, Elite, Puzzle, Shop, Event, Treasure, Resupply, Breach, Boss, Exit), and connections say how they link: normal, shortcut, secret or locked — and any open passage can be one-way
@@ -568,8 +578,8 @@
 - Door signs: a glowing bar over every doorway, in the colour of the room it leads to (the same colours as the maps), so every fork is a readable choice — a Shop, a Treasure room, a Resupply stop. Doorways into an Elite, the Boss or any high-intensity room also show a red danger marker. Secret passages get no sign
 - Each locked door's key is placed in the room the map chose for it
 - Rooms are filled by type: enemies (more in higher-intensity rooms, patrolling out to the far ends of the room), a centrepiece (for example a chest in Treasure rooms, a crafting station in Shops, a boss) and scattered props that stay off columns, doorways and walkways
-- The player starts in the Start room. The Exit room has a way out that ends the run in victory (hold Interact to leave)
-- The MapTest scene plays a freshly generated level every time it starts or restarts, with the player in the Start room, a minimap, the world map (M) and HUD notifications
+- The player starts in the Start room, a safe hub with a workbench. The Exit room has the extraction pad that ends the run in victory (hold Interact to extract)
+- The MapTest scene plays a freshly generated level every time it starts or restarts, with the player in the Start room, a minimap, the world map (M) and HUD notifications. It runs the full expedition loop: the player starts with only the starting loadout (no dev ammo), death ends the run, and the ship screen between runs leads into the next one
 - A level can use a fixed, hand-checked map graph or generate a fresh one each play. The same seed always gives the same map, the same rooms (kind, shape and structure) and the same room contents
 - The world map and minimap resize to fit the generated level and show its floor plan: room shapes coloured by room type, walls, bevels, curves and gate markers, uncovered by fog of war as the player explores
 - A generated level announces the run's modifiers when it starts

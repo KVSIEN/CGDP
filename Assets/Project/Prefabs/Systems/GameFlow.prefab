@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4114648683656734674}
   - component: {fileID: 4796938816161074795}
   - component: {fileID: 5384979517998721317}
+  - component: {fileID: 7261904418835127356}
   m_Layer: 0
   m_Name: GameFlow
   m_TagString: Untagged
@@ -59,3 +60,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.Timing.GameTime
   _settings: {fileID: 11400000, guid: cae3757d1b8e4ab0ac6992e575797920, type: 2}
+--- !u!114 &7261904418835127356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4108122531682339547}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 991a5510cae7457ba1b2399dfa441c8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Expedition.ExpeditionSession

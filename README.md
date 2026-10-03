@@ -19,10 +19,10 @@ Assets/
     Art/                    Animations, Fonts, Materials, PhysicsMaterials, Shaders, Textures
     Audio/                  Music, SFX
     Data/                   ScriptableObject assets, one folder per feature
-      Abilities/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Dialogue/  Economy/  Enemies/  Factions/  Feedback/  Flow/
+      Abilities/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Dialogue/  Economy/  Enemies/  Expedition/  Factions/  Feedback/  Flow/
       Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
-    Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors, secret wall, keycard; WallKit/ — placeholder wall art), Pickups, UI, VFX, Weapons
+    Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors, secret wall, keycard, hub workbench; WallKit/ — placeholder wall art), Pickups, UI, VFX, Weapons
     Scenes/                 Sandbox.unity (+ its baked NavMesh folder), MapTest.unity (generated level)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            ability assets (incl. TargetedAbility) and the player's ability slots
@@ -39,6 +39,8 @@ Assets/
                             ShopCatalog, stock sources (ItemStock, RolledWeaponStock), listings
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report)
       Enemies/              enemy components, perception, and AI/ (state classes)
+      Expedition/           the extraction loop: ExpeditionLedger (ship hold, packed kit, extract/die rules),
+                            ExpeditionSession (keeps it across loads), ExpeditionRunner (a run in a level), RunStarterKit
       Factions/             FactionDefinition (name, colour, enemy roster) — used by the map graph and generated levels
       Feedback/             FeedbackBus, FeedbackPreset, FeedbackPlayer (feed, flash, rumble, shake), combat/quest feedback
       Flow/                 GameFlow, GameState/GameStateMachine, settings and UI commands
