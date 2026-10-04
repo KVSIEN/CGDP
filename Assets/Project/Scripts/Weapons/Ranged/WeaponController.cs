@@ -41,9 +41,11 @@ namespace CGD.Weapons
         private WeaponInstance _current;
         private CharacterStats _stats;
         private PlayerMovement _movement;
+        private PlayerDodge    _dodge;
         private DamageSource   _damageSource;
         private CooldownTimer  _fireCooldown;
         private float _drawTimer;
+        private bool  _wasDodging;
         private bool  _isReloading;
         private bool  _holstered;
         private bool  _burstPending;
@@ -80,6 +82,7 @@ namespace CGD.Weapons
         private void Awake()
         {
             _movement     = GetComponent<PlayerMovement>();
+            TryGetComponent(out _dodge);
             _damageSource = DamageSource.Of(gameObject);
             if (_inventory == null) _inventory = GetComponentInParent<PlayerInventory>();
             _stats = GetComponentInParent<CharacterStats>();
@@ -118,6 +121,7 @@ namespace CGD.Weapons
 
         private void Update()
         {
+            bool dodgeStarted = DodgeStartedThisFrame();
             if (_current == null || _holstered) return;
 
             // Sway ticks through draw/reload so the weapon never freezes mid-animation.
@@ -125,8 +129,15 @@ namespace CGD.Weapons
 
             if (_drawTimer > 0f)
             {
-                _drawTimer -= Time.deltaTime;
-                return;
+                // Swap-dodge cancel: a dodge started during the draw covers the rest of it, so
+                // the weapon is ready as the dodge ends. Swapping mid-dodge draws in full —
+                // swap first, then roll.
+                if (dodgeStarted) _drawTimer = 0f;
+                else
+                {
+                    _drawTimer -= Time.deltaTime;
+                    return;
+                }
             }
 
             if (_isReloading) return;
@@ -149,6 +160,16 @@ namespace CGD.Weapons
             }
 
             UpdateCrosshair();
+        }
+
+        // Tracked every frame, even unarmed, so a dodge already under way at the swap
+        // doesn't count as starting during the draw.
+        private bool DodgeStartedThisFrame()
+        {
+            bool dodging = _dodge != null && _dodge.IsDrivingMovement;
+            bool started = dodging && !_wasDodging;
+            _wasDodging  = dodging;
+            return started;
         }
 
         private void PushSwayInputs()

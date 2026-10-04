@@ -97,7 +97,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 
 | Component | Assign | Notes |
 |---|---|---|
-| **WeaponController** | `_input` = Player, `_camera` = PlayerCamera, `_crosshair` = HUD Crosshair, `_muzzle` = Muzzle, `_visuals` = WeaponRig, `_cameraEffects`? = Main Camera | Fires whatever the loadout equips. |
+| **WeaponController** | `_input` = Player, `_camera` = PlayerCamera, `_crosshair` = HUD Crosshair, `_muzzle` = Muzzle, `_visuals` = WeaponRig, `_cameraEffects`? = Main Camera | Fires whatever the loadout equips. Reads `PlayerDodge` from the same object (optional) for the swap-dodge draw cancel. |
 | **PlayerWeaponLoadout** | `_startingWeapons`? = `WeaponData` assets, `_wheel`? = HUD SlotWheel | Empty slots fill from pickups. Holding 1–4 opens the weapon wheel (other slots + spare weapons in the pack). |
 | **MeleeController** | `_camera` = PlayerCamera, `_data` = `Weapons/Melee/DefaultMeleeWeaponData` | Quick melee (fists) and the equipped melee weapon. Must be on the **same object as PlayerHealth**: it blocks/parries hits as an `IDamageInterceptor`, which HealthManager only looks for on its own object. Stamina costs need a `MeterSet` with the category's stamina meter on that object too (without one, melee is free). Combo weaving reads `PlayerDodge` and `PlayerAbilities` from the same object (each optional). |
 | **ThrowableController** | `_camera` = PlayerCamera | Throws the grenade an item slot readies. Grenades are items (`Items/Throwables/`). |
