@@ -24,5 +24,8 @@ namespace CGD.Level
         [Tooltip("Scattered around the room (crates, cover, breakables)")]
         public GameObject[] Props = Array.Empty<GameObject>();
         public IntRange PropCount;
+
+        [Tooltip("One of these is always placed in every room of this type, picked at random (a Quiet room's resource, ammo cache or loot)")]
+        public GameObject[] Offerings = Array.Empty<GameObject>();
     }
 }

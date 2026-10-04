@@ -27,6 +27,7 @@ namespace CGD.Map
             MapNodeType.Gamble   => new Color(0.9f, 0.4f, 0.65f),
             MapNodeType.EmergencyExit => new Color(0.3f, 0.75f, 0.85f),
             MapNodeType.Hazard   => new Color(0.6f, 0.75f, 0.2f),
+            MapNodeType.Quiet    => new Color(0.55f, 0.75f, 0.7f),
             _                    => Color.gray
         };
     }

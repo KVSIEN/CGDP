@@ -355,7 +355,7 @@
 - An **Emergency Exit** room's escape pod is an early way out (hold Interact on "Emergency extract"): the run ends, your weapons and worn armour make it home, but only half of every stack in your pack fits and loose gear in the pack is left behind. The ship screen reads EMERGENCY EXTRACTION and says how much didn't fit
 
 ## Encounter Rooms
-Rooms with rules of their own, mixed into generated maps alongside the usual fights, shops and treasure. Each one says what it is on its door sign (except the Ambush), and the map's validity checks still hold for all of them.
+Rooms with rules of their own, mixed into generated maps alongside the usual fights, shops and treasure. They are the exception: in normal rooms (Combat, Elite, Breach and the rest) the doors never lock and the enemies simply patrol. Each one says what it is on its door sign (except the Ambush), and the map's validity checks still hold for all of them.
 - **Lockdown** — step inside and blast shutters slam down over every doorway. They only open once every enemy in the room is dead, and a reward cache drops. Enemies that wandered out before the doors closed are shut outside and don't count; an empty room calls in a wave instead
 - **Holdout** — an uplink terminal. Starting it (hold Interact) seals the room and enemies pour in every ~18 seconds while it uploads (75 s, with a countdown). When it finishes the shutters open, a reward drops, and the whole ship map is downloaded to your world map
 - **Puzzle** — the doors leading deeper are locked blue bulkheads until the room's calibration ring is solved: 4–5 consoles, each flipping itself and its two neighbours (the prompt says which), and every light must be green. The way back stays open, so you can always leave and return. A puzzle room with nowhere deeper to go drops a reward instead
@@ -365,6 +365,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - **Gamble** — two machines: one takes credits, the other takes blood (a share of your health, never enough to kill you). Each pull busts, wins a normal drop or hits the jackpot (a drop with much better luck); every pull costs more than the last, and each machine runs dry after three
 - **Hazard** — a leak (fire, toxin, coolant or live wiring) that keeps afflicting everyone on the room's glowing floor — you and the enemies alike — until you find and switch on the vent controls somewhere in the room
 - **Emergency Exit** — an escape pod off the main path (see Expeditions)
+- **Quiet** — once in a while (at most two per map, never next to each other) a room is simply peaceful: no enemies at all, and always something worth stopping for — a salvage node (scrap metal), an ammo cache or a loot cache
 - Lockdown, Holdout and Rift rooms carry the red danger marker on their door signs; a sealed room announces itself, and every wave and countdown is called out in the HUD feed
 
 ## Targeting
@@ -410,7 +411,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - On respawn, health is restored and every carried weapon's magazine is refilled; reserve ammo in the shared inventory pool is not touched. Where a scene ends the run on death instead (the generated levels), everything carried is lost — see Expeditions. Ability cooldowns reset, and leftover momentum and status effects are cleared
 
 ## Map Graph Generation
-- Maps start as a pure experience graph — rooms and connections without geometry; a [generated level](#generated-levels) turns one into a playable level. Each node is what the player meets there (Start, Combat, Elite, Puzzle, Shop, Event, Treasure, Resupply, Breach, Boss, Exit, and the [encounter rooms](#encounter-rooms) Lockdown, Holdout, Ambush, Stealth, Rift, Gamble, Emergency Exit and Hazard), and connections say how they link: normal, shortcut, secret or locked — and any open passage can be one-way
+- Maps start as a pure experience graph — rooms and connections without geometry; a [generated level](#generated-levels) turns one into a playable level. Each node is what the player meets there (Start, Combat, Elite, Puzzle, Shop, Event, Treasure, Resupply, Breach, Boss, Exit, and the [encounter rooms](#encounter-rooms) Lockdown, Holdout, Ambush, Stealth, Rift, Gamble, Emergency Exit and Hazard, plus the occasional peaceful Quiet room), and connections say how they link: normal, shortcut, secret or locked — and any open passage can be one-way
 - One generator covers many styles of map: a near-straight corridor, a branching spine, a hub around the Start room, a winding labyrinth, or anything in between
 - A map style is made of two independent parts that mix freely: a **layout** (the map's shape) and **content** (what fills it). The same Treasure Hunt content works on a hub or a labyrinth, and the same labyrinth can be a treasure hunt or a gauntlet
 - A style can list several layouts with weights, so its shape changes from run to run (a hub one time, a labyrinth the next) while what fills it stays the same

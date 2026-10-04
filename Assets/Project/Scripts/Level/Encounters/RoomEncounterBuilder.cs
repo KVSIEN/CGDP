@@ -41,7 +41,7 @@ namespace CGD.Level
             _lootLuck  = lootLuck;
         }
 
-        public static Type EncounterFor(MapNodeType type) => type switch
+        private static Type EncounterFor(MapNodeType type) => type switch
         {
             MapNodeType.Lockdown => typeof(LockdownEncounter),
             MapNodeType.Holdout  => typeof(HoldoutEncounter),
@@ -60,6 +60,7 @@ namespace CGD.Level
             var analysis = new MapGraphAnalysis(_graph);
             foreach (LevelRoom room in _layout.Rooms.Values)
             {
+                if (!room.Node.Type.IsEncounter()) continue;
                 Type encounterType = EncounterFor(room.Node.Type);
                 if (encounterType == null) continue;
 

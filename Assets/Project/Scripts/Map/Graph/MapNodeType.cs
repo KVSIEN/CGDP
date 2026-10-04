@@ -24,5 +24,6 @@ namespace CGD.Map
         Gamble,     // machines that take credits or health for a shot at loot
         EmergencyExit, // an escape pod: end the run early, keeping only part of the haul
         Hazard,     // a leak that keeps afflicting everyone inside until its vents are shut
+        Quiet,      // a rare peaceful room: no enemies, always a resource, ammo cache or loot cache
     }
 }

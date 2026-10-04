@@ -56,6 +56,9 @@ namespace CGD.Level
                 if (rule.Centerpiece != null)
                     Object.Instantiate(rule.Centerpiece, RoomCenter(room), RandomYaw(), _parent);
 
+                if (rule.Offerings.Length > 0 && TryTakeTile(room, KeepPropsOff, out Vector3 spot))
+                    Object.Instantiate(_random.Pick(rule.Offerings), spot, RandomYaw(), _parent);
+
                 if (rule.Props.Length == 0) continue;
                 int count = rule.PropCount.Evaluate(_random);
                 for (int i = 0; i < count && TryTakeTile(room, KeepPropsOff, out Vector3 position); i++)

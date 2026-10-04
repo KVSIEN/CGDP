@@ -12,6 +12,7 @@
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 
+- Quiet rooms (rare, peaceful, always a salvage node / ammo cache / loot cache); room rules can guarantee an offering
 - Encounter rooms: Lockdown, Holdout, Puzzle (calibration ring, forward doors), Ambush, Stealth, Rift, Gamble, Emergency Exit (partial extraction), Hazard
 - Lock variants: condition locks ("do A and B") for doors — terminals, events, quest signals; generated Terminal locks (2–3 terminals in separate rooms) with editor and validator support
 - Expedition core loop: starting-room hub with workbench and random loadout, Exit as extraction, lose everything on death, ship hold + pack screen between runs

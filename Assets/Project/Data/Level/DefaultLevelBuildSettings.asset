@@ -337,6 +337,27 @@ MonoBehaviour:
       Min: 1
       Max: 3
       Bias: 0
+  - Type: 19
+    Functions:
+    - {fileID: 11400000, guid: 63b916f7fceb4acaa3cc3927d812e126, type: 2}
+    - {fileID: 11400000, guid: 921ce82c13644f47a1398a4bd8c57f7c, type: 2}
+    - {fileID: 11400000, guid: f1a29d511be545d8a4c85396a4afaaa1, type: 2}
+    - {fileID: 11400000, guid: 08cd1e9257174de791f3c87772ab5ce1, type: 2}
+    Enemies: []
+    EnemyCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Props: []
+    PropCount:
+      Min: 1
+      Max: 3
+      Bias: 0
+    Offerings:
+    - {fileID: 246657195920720429, guid: 6b1f0e4c2d8a4e7b9c35a1f2d4e60b87, type: 3}
+    - {fileID: 7530473905300712717, guid: c9bf881dd67b4a0abd3f1f58135261a4, type: 3}
+    - {fileID: 7400000000000000301, guid: 0237200ecfd543a68bbcdff245a28b41, type: 3}
   _shapes:
   - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
   - {fileID: 11400000, guid: 54a81013066a481a856586f0fee8dd3a, type: 2}

@@ -205,6 +205,18 @@ MonoBehaviour:
     _minSpacing: 2
     _wantsSpace: 0
     _intensityBonus: 0.1
+  - _type: 19
+    _min: 0
+    _max: 2
+    _weight: 0.35
+    _placement: 0
+    _minDepth: 0.15
+    _maxDepth: 1
+    _preferDeadEnds: 0
+    _allowAdjacentSameType: 0
+    _minSpacing: 3
+    _wantsSpace: 0
+    _intensityBonus: -0.6
   _fillType: 1
   _guarantees:
   - _type: 6

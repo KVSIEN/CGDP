@@ -523,6 +523,7 @@ Each entry lists its **Functions**, enemy prefabs (count read at the room's inte
 
   Tuning on the same asset: wave size (read at room intensity), spawn spots, Holdout duration/interval/map reveal, Ambush and Rift waves, Stealth bonus luck and alarm waves, puzzle node count and scramble, hazard tick and strength.
 - **Encounter room rules** (`DefaultLevelBuildSettings` › Rooms): Lockdown and Stealth rooms get build-time enemies (`EnemyCount` 3–6 and 2–4) that the encounter watches; Holdout, Ambush, Rift and Puzzle start empty (their enemies arrive as waves); Hazard has a few. Centrepieces: Rift → `RiftCore`, Gamble → `GambleStation` (a credit machine and a blood machine: `GambleMachine` + `LootDropper` each, `_currency` = `Economy/CreditsCurrency`), Emergency Exit → `EscapePod` (`LevelExit` with `_emergency` on, hold 3 s). An Emergency Exit's pod doesn't stop the real Exit pad from being placed.
+- **Quiet rooms** are normal rooms (no encounter): their rule has `EnemyCount` 0 and **Offerings** = `Props/SalvageNode` (a `ResourceNode` yielding `ScrapMetalResource`), `Props/AmmoCache`, `Level/RewardCache`. Any room rule can list `Offerings`; one of them is always placed in every room of that type, on a free spot off the walkways.
 - Prefabs for all of the above are in `Prefabs/Environment/Level/`.
 
 ### Expedition loop (extraction)
