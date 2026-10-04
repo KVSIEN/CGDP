@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e369fc083624f838f9243546b309c2f, type: 3}
+  m_Name: VengeanceAbility
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.ReflectAbility
+  DisplayName: Vengeance
+  SlotColor: {r: 0.85, g: 0.25, b: 0.85, a: 1}
+  Cooldown: 30
+  MaxCharges: 1
+  Cost:
+    Meter: {fileID: 0}
+    Amount: 0
+  CastTime: 0
+  Profile: {fileID: 11400000, guid: b7b40c68e9f646b4988eaa521a56a8af, type: 2}

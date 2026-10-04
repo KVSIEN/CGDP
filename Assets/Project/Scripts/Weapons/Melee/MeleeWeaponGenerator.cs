@@ -44,8 +44,9 @@ namespace CGD.Weapons
             GuardSettings guard = cat.Guard;
             guard.BlockDamageMultiplier = Mathf.Clamp01(cat.BlockDamageMultiplier.EvaluateClamped(random));
             guard.ParryWindow           = Mathf.Max(0f, cat.ParryWindow.EvaluateClamped(random));
-            d.CanGuard = true;
-            d.Guard    = guard;
+            d.CanGuard     = true;
+            d.Guard        = guard;
+            d.ParryReflect = cat.ParryReflect;
 
             return new MeleeWeaponInstance(cat, roll, d);
         }

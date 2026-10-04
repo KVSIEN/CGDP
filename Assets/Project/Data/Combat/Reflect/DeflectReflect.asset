@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce575b065a4840478a1f44ca0ccc7e17, type: 3}
+  m_Name: DeflectReflect
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.ReflectProfile
+  Duration: 0.6
+  MaxCatches: 0
+  ArcDeg: 120
+  Negate: 1
+  ReturnShare: 0
+  ProjectilePrefab: {fileID: 3470164953719663744, guid: e4776271d68913142b1b6df795be0d43, type: 3}
+  ProjectileShare: 1
+  ProjectileAim: 0
+  ProjectileSpeed: 45
+  Timeline: {fileID: 0}
+  TimelineShare: 1
+  TimelineAim: 0
+  HealShare: 0
+  SelfBuff: {fileID: 0}
+  SelfBuffDuration: 5
+  AttackerEffects: []
+  AttackerStun: 0
+  CatchMessage: Deflected!

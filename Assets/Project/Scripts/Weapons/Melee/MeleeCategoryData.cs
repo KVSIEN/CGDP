@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Combat;
 using CGD.Core;
 using CGD.Items;
 using CGD.Meters;
@@ -49,6 +50,8 @@ namespace CGD.Weapons
         public FloatRange    ParryWindow           = new(0.2f, 0.2f);
         [Tooltip("Arc, stamina per blocked damage and parry stun (Block Damage and Parry Window are rolled above)")]
         public GuardSettings Guard                 = GuardSettings.Default;
+        [Tooltip("Optional: what a parry does with the parried hit (see ReflectProfile)")]
+        public ReflectProfile ParryReflect;
 
         public LayerMask HitMask = ~0;
         [Tooltip("How far away enemies hear a swing (0 = silent)")]

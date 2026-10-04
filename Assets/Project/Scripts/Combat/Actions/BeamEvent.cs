@@ -30,9 +30,9 @@ namespace CGD.Combat
 
         public void OnTick(ActionContext ctx)
         {
-            var info = new DamageInfo(
+            var info = ctx.Prepare(new DamageInfo(
                 _damagePerTick, _armorPenetration, _damageType,
-                _criticalMultiplier, ctx.Source, _onHitEffects);
+                _criticalMultiplier, ctx.Source, _onHitEffects));
 
             int count;
             if (_radius > 0f)

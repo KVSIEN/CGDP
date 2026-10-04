@@ -72,6 +72,7 @@ namespace CGD.Combat
             TryGetComponent(out _statusEffects);
             TryGetComponent(out _stats);
             _interceptors = GetComponents<IDamageInterceptor>();
+            System.Array.Sort(_interceptors, (a, b) => a.Order.CompareTo(b.Order));
             // The shield is a regenerating resource like any other, so it runs on Meter.
             _shield = new Meter(new MeterSettings(MaxShield, ShieldRegenRate, ShieldRegenDelay));
             ResetHealth();

@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce575b065a4840478a1f44ca0ccc7e17, type: 3}
+  m_Name: VengeanceReflect
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.ReflectProfile
+  Duration: 30
+  MaxCatches: 1
+  ArcDeg: 360
+  Negate: 0
+  ReturnShare: 0.75
+  ProjectilePrefab: {fileID: 0}
+  ProjectileShare: 1
+  ProjectileAim: 0
+  ProjectileSpeed: 40
+  Timeline: {fileID: 0}
+  TimelineShare: 1
+  TimelineAim: 0
+  HealShare: 0
+  SelfBuff: {fileID: 0}
+  SelfBuffDuration: 5
+  AttackerEffects: []
+  AttackerStun: 0
+  CatchMessage: Vengeance!

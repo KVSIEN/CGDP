@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Combat;
 
 namespace CGD.Weapons
 {
@@ -30,7 +31,7 @@ namespace CGD.Weapons
                                     System.Func<float, bool> canPay, out float damageThrough)
         {
             damageThrough = damage;
-            if (!IsRaised || !Covers(facing, toAttacker)) return GuardOutcome.Open;
+            if (!IsRaised || !FacingArc.Contains(facing, toAttacker, _settings.ArcDeg)) return GuardOutcome.Open;
 
             if (time - _raisedAt <= _settings.ParryWindow)
             {
@@ -47,14 +48,6 @@ namespace CGD.Weapons
 
             damageThrough = damage - stopped;
             return GuardOutcome.Blocked;
-        }
-
-        // Flat angle on the horizontal plane; hits with no known direction count as frontal.
-        private bool Covers(Vector3 facing, Vector3 toAttacker)
-        {
-            facing.y = 0f; toAttacker.y = 0f;
-            if (toAttacker.sqrMagnitude < 0.0001f || facing.sqrMagnitude < 0.0001f) return true;
-            return Vector3.Angle(facing, toAttacker) <= _settings.ArcDeg * 0.5f;
         }
     }
 }

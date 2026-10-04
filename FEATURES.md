@@ -98,8 +98,22 @@
   - **Targeted** — damages and/or heals whoever its targeting rule picks: the enemy under the crosshair, everything in a cone, allies around the player, the nearest enemy, or an area where the player aims; it isn't used when it wouldn't affect anyone
   - **Timeline** — runs an ActionTimeline via TimelineAbilityRunner; only one timeline ability can play at a time; can be ground-targeted so its area effects land where the player aims
   - **Stat Buff** — applies a set of stat modifiers to the player for a while (included: Damage Boost, +30% damage for 8 seconds)
+  - **Reflect** — puts up a reflect (see Reflects below)
 - Included ready-made: **Cone Blast** (a targeted blast hitting enemies in front of you) and **Ground Slam** (a timeline ability that smashes the area in front of you and knocks targets back)
 - All ability values (cooldown, force, damage, etc.) are tunable on the ScriptableObject asset
+
+### Reflects
+- A reflect catches incoming hits and turns their damage into something else. It can be put up by an ability or triggered by a melee parry
+- What it catches: for how long, how many hits (one, or everything until it ends), from which directions (all around or only in front), and how much of each caught hit is stopped (all of it, or none like a vengeance that lets you take the hit)
+- What the caught damage becomes — any combination of:
+  - **back to sender**: dealt straight to the attacker, wherever they are
+  - **a projectile**: fired where you aim (aim-based deflect), straight back at the attacker, or bounced off your facing like a mirror
+  - **a beam or slash**: any action timeline, scaled to the caught damage
+  - **healing** and/or a **temporary buff**
+  - **status effects** and/or a **stun** on the attacker
+- Reflects keep the hit's damage type (a reflected fire hit burns). They only catch hits with an attacker (not damage over time or hazards), work on the damage that gets past your guard (so a parried hit isn't caught twice), and reflected damage can never be reflected again
+- Included abilities (all instant cast): **Vengeance** (the next hit within 30 s is taken in full, 75% of it goes back to the attacker), **Deflect** (for 0.6 s, hits from the front are negated and fired back as projectiles where you aim) and **Absorb** (for 1.5 s, hits are negated and half of them heals you)
+- Melee weapons can give their parry a reflect: the included **Riposte Slash** answers a parry with a wide slash toward the attacker dealing 150% of the parried hit (assign it to a weapon or category's *Parry Reflect* to use it)
 - HUD shows four coloured slots at the bottom of the screen; a dark overlay drains away as the next charge recovers, and multi-charge abilities show their charge count
 
 ## Interaction System

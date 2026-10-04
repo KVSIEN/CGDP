@@ -37,6 +37,7 @@ namespace CGD.Weapons
         private PlayerMovement     _movement;
         private PlayerDodge        _dodge;
         private PlayerAbilities    _abilities;
+        private Reflector          _reflector;
         private MeterSet           _meters;
         private DamageSource       _damageSource;
         private Func<float, bool>  _payGuardStamina;
@@ -62,6 +63,8 @@ namespace CGD.Weapons
         public event Action<int> AttackStarted;
 
         public bool IsGuarding => _guard != null && _guard.IsRaised;
+        // Before a Reflector, so reflects work on what the guard lets through.
+        public int  Order      => 0;
 
         private MeleeWeaponData Data  => _equipped != null ? _equipped.Data  : _data;
         private ComboState      Combo => _equipped != null ? _equipped.Combo : _fistCombo;
@@ -78,6 +81,7 @@ namespace CGD.Weapons
             TryGetComponent(out _meters);
             TryGetComponent(out _dodge);
             TryGetComponent(out _abilities);
+            TryGetComponent(out _reflector);
         }
 
         private void OnEnable()
@@ -403,6 +407,8 @@ namespace CGD.Weapons
                 case GuardOutcome.Parried:
                     Stunnable stunnable = attacker.GetComponentInParent<Stunnable>();
                     if (stunnable != null) stunnable.ApplyStun(_equipped.Data.Guard.ParryStun);
+                    if (_equipped.Data.ParryReflect != null && _reflector != null)
+                        _reflector.Release(_equipped.Data.ParryReflect, info, amount, attacker);
                     Weave();
                     FeedbackBus.Notify("Parried!", NotificationStyle.Success);
                     break;

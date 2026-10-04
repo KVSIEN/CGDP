@@ -981,6 +981,7 @@ GameObject:
   - component: {fileID: 1833901739146808911}
   - component: {fileID: 7955571694433085783}
   - component: {fileID: 4375741012492944362}
+  - component: {fileID: 4173609184089539533}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -1217,6 +1218,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.MeleeController
   _data: {fileID: 11400000, guid: 57537cb8d0c3e5f48a2e4128514280e2, type: 2}
   _camera: {fileID: 725524174371652151}
+  _debugDraw: 1
+  _debugDuration: 0.3
+--- !u!114 &4173609184089539533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7429481957253513727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bde2ddc06e984e5facef1714f5d5acb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.Reflector
+  _aim: {fileID: 614517631974507758}
   _debugDraw: 1
   _debugDuration: 0.3
 --- !u!114 &6124529826492816662

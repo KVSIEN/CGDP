@@ -7,6 +7,10 @@ namespace CGD.Combat
     // HealthManager; it is found once on Awake.
     public interface IDamageInterceptor
     {
+        // Lower runs first; each sees what the previous ones let through
+        // (a melee guard runs before a Reflector, so a reflect works on damage taken).
+        int Order { get; }
+
         // Returns the damage that gets through (0 = fully stopped).
         float Intercept(in DamageInfo info, float amount, Vector3 point);
     }

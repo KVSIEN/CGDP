@@ -33,7 +33,7 @@ namespace CGD.Combat
 
             if (!go.TryGetComponent(out Projectile projectile)) return;
 
-            var info = new DamageInfo(_damage, source: ctx.Source, onHitEffects: _onHitEffects);
+            var info = ctx.Prepare(new DamageInfo(_damage, source: ctx.Source, onHitEffects: _onHitEffects));
             projectile.Launch(new ProjectileLaunch
             {
                 Damage    = info,

@@ -17,9 +17,13 @@ namespace CGD.Combat
         public readonly DamageSource Source;
         // Status effects the target may receive from this hit; null for none.
         public readonly StatusEffectApplication[] OnHitEffects;
+        // Damage sent back by a Reflector. It can't be reflected again, so two reflecting
+        // characters never bounce a hit between them forever.
+        public readonly bool IsReflected;
 
         public DamageInfo(float rawDamage, float armorPenetration = 0f, DamageType type = DamageType.Physical,
-            float criticalMultiplier = 1f, DamageSource source = default, StatusEffectApplication[] onHitEffects = null)
+            float criticalMultiplier = 1f, DamageSource source = default, StatusEffectApplication[] onHitEffects = null,
+            bool isReflected = false)
         {
             RawDamage          = rawDamage;
             ArmorPenetration   = Mathf.Clamp01(armorPenetration);
@@ -27,13 +31,17 @@ namespace CGD.Combat
             CriticalMultiplier = criticalMultiplier;
             Source             = source;
             OnHitEffects       = onHitEffects;
+            IsReflected        = isReflected;
         }
 
         // Rescales the hit while keeping every other property. For damage that only learns
         // its multiplier after the DamageInfo was built, such as a projectile that resolves
         // range falloff at the moment of impact.
         public DamageInfo WithDamageScale(float scale) =>
-            new(RawDamage * scale, ArmorPenetration, Type, CriticalMultiplier, Source, OnHitEffects);
+            new(RawDamage * scale, ArmorPenetration, Type, CriticalMultiplier, Source, OnHitEffects, IsReflected);
+
+        public DamageInfo AsReflected() =>
+            new(RawDamage, ArmorPenetration, Type, CriticalMultiplier, Source, OnHitEffects, true);
 
         // Effective Armor = Armor × (1 − Armor Penetration%)
         // Effective Damage = Raw Damage × (100 / (100 + Effective Armor))

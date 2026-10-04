@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Combat;
 using CGD.Meters;
 
 namespace CGD.Weapons
@@ -40,5 +41,7 @@ namespace CGD.Weapons
         [Tooltip("Off for quick-melee data such as fists, which can't block")]
         public bool CanGuard;
         public GuardSettings Guard = GuardSettings.Default;
+        [Tooltip("Optional: what a parry does with the parried hit — send it back, fire it where you aim, a riposte slash, heal… Needs a Reflector on the player")]
+        public ReflectProfile ParryReflect;
     }
 }

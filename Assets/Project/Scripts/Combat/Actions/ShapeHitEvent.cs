@@ -106,9 +106,9 @@ namespace CGD.Combat
 
         private DamageInfo BuildDamageInfo(ActionContext ctx)
         {
-            return new DamageInfo(
+            return ctx.Prepare(new DamageInfo(
                 _damage, _armorPenetration, _damageType,
-                _criticalMultiplier, ctx.Source, _onHitEffects);
+                _criticalMultiplier, ctx.Source, _onHitEffects));
         }
 
         private HashSet<IDamageable> GetDedup(ActionContext ctx)
