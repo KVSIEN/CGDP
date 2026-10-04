@@ -1964,3 +1964,102 @@ Unresolved design decisions. These block or inform other parts of the GDD.
 
 See also: Vision, Design Pillars, Scope, Risks
 
+
+# Design Additions
+
+Changes and proposals made after this document was cloned from the original. The original chapters above are unchanged; this chapter records what has been added on top, so the two can be compared and merged later. Items under **Built** exist in the prototype; items under **Proposed Concepts** are design proposals, not yet decided or implemented.
+
+## Built Since the Original
+
+### Rooms and Realities
+
+- **Factions are aesthetic, not functional.** Every room belongs to one of the three realities, and the reality decides how the room looks and which enemies it fields, never what the room *is*. A loot room, resupply stop or peaceful room can sit in any reality.
+- **Faction mixes per map.** A map is dominated by one reality, balanced between them, contested by two, or fully scattered, rolled per map.
+- **Normal rooms vs. unique rooms.** Most rooms are normal: doors stay open and enemies patrol. Unique rooms have rules of their own (below).
+- **Quiet rooms.** Occasionally (rarely) a room is peaceful: no enemies, and always one thing worth stopping for — a salvage node, an ammo cache or a loot cache.
+
+### Unique Rooms
+
+| Room | Rule |
+|------|------|
+| **Lockdown** | Entering seals every doorway; the shutters open only when every enemy inside is dead. Pays out a reward cache. |
+| **Holdout** | Starting an uplink terminal seals the room; waves arrive on a timer until the upload completes. Pays out a reward and downloads the ship's map. |
+| **Puzzle** | The doors leading deeper stay locked until a calibration puzzle is solved; the way back always stays open. |
+| **Ambush** | Looks like a treasure room in every way; opening its cache seals the room and springs waves. The loot is real. |
+| **Stealth** | A guarded vault. Staying unseen keeps a loot bonus; being spotted raises an alarm that seals the room and calls reinforcements. |
+| **Rift** | A tear between the room's two realities: waves from one, then the other, then both, until the rift collapses. |
+| **Gamble** | Machines that take credits or health for a chance at loot (bust / win / jackpot), costing more with each pull. |
+| **Hazard** | A leak (fire, toxin, coolant, live wiring) afflicts everyone inside until the vent controls are found. |
+| **Emergency Exit** | An escape pod: end the run early, keeping worn gear and only half of what's in the pack. |
+
+### Locks and Extraction
+
+- **Lock variants.** Locked doors can need a keycard, or several conditions at once ("switch on both terminals", "do A and B"). Generated maps place every part of a lock where the player can reach it before the door.
+- **Extraction with stakes.** The Exit is the extraction point: extracting keeps everything carried; dying loses everything brought and found. The starting room is a safe hub with a crafting bench and a random starting loadout. Between runs the player packs a kit from the docked ship's hold.
+
+See also: Core Loop, Map Structure, Starting Room, The Docked Ship
+
+## Proposed Concepts
+
+Concepts aimed at the things only CSS Paradise has: three realities contesting one ship, a player who is cloned, and an AI that is both the player's infrastructure and their antagonist. Each is measured against the Design Pillars.
+
+### Live Reality Shifts
+
+**Pillar: Unstable Ground.** Contested rooms change reality *while the player is in them*, not only between maps.
+
+- A shift is telegraphed: lights stutter (TECH losing ground), frost creeps across the floor (VOID arriving), growth pushes through the vents (BIO arriving). A few seconds later the room's look, enemies and rules belong to the new reality.
+- Enemies of the reality that lost the room are pushed out or destroyed with it, so a shift can save the player — or turn on them.
+- The player learns to read the warnings and play around them: wait out a VOID surge to return to a TECH room with working terminals, or let a shift wipe out pursuers.
+- Shifts happen more often in contested maps and closer to the Quantum Core, matching Reality Mechanics › Shifts.
+
+Answers the open questions "Are reality shifts triggered, timed, proximity-based, or some combination?" (all three, weighted per map) and "Are the boundaries between realities consistent or random?" (consistent until a telegraphed shift).
+
+### The Last Clone's Body
+
+**Pillar: Discovery Over Direction; the cloning mystery.** When the player dies, their body turns up somewhere in the *next* run, wearing the gear that was lost — claimed by the reality that killed them:
+
+- **BIO**: the body is reanimated, a mutated version of the player.
+- **VOID**: a flickering echo that mirrors the player's own loadout.
+- **TECH**: the body lies guarded by Paradise's drones, being "recovered".
+
+Defeating it recovers part of the lost gear. The body also carries evidence: a log in the player's own handwriting that the character doesn't remember writing. Death becomes a hook into the next run instead of only a loss, and the clone reveal is seeded through play rather than exposition.
+
+### Paradise Is Watching
+
+**Pillar: Neither Side Is Wrong.** Paradise is present in every run as a director, without cutscenes.
+
+- TECH terminals genuinely help: they open doors, mark rooms on the map, shut off hazards. Every use raises Paradise's **attention**.
+- As attention rises, Paradise speaks (calm, helpful, slightly off), re-routes doors and creates locks, dispatches TECH hunters, and eventually offers deals: *"Leave the log you're carrying, and the Exit is open."*
+- Accepting his help is always useful and always has a price. The player decides how much to lean on the mind holding the ship together.
+
+### Reality Attunement
+
+**Pillar: Systems That Reflect the World.** Gear from a reality performs better in rooms of that reality and worse in others: a TECH rifle can jam in VOID rooms; BIO weapons slowly regrow ammunition in BIO rooms. A loadout becomes a bet on the map's reality mix, and reading the map before committing matters.
+
+### Instability Clock
+
+**Pillar: Unstable Ground.** The longer the player stays in a section, the more it frays: shifts become more frequent, hazards spread, enemies grow stronger. Escape pods and the Exit turn into a real push-your-luck decision. Answers the open question "Is there a time pressure, or is exploration self-paced?" — self-paced at first, with pressure that grows from the fiction rather than an arbitrary timer.
+
+### VOID Lies to You
+
+**Pillar: Unstable Ground; UI Direction.** In VOID rooms the interface becomes unreliable: the minimap smears, the ammo count flickers, footsteps come from the wrong side, the world map shows rooms that aren't there. Fear and tension without jump scares, extending "UI corruption in VOID" into concrete mechanics.
+
+### Faction Infighting
+
+**Pillar: Systems That Reflect the World.** The realities are hostile to each other: BIO creatures attack TECH drones; VOID entities hunt both. The player can lead a pursuer into another reality's room and let them fight. The three-way war becomes visible and usable, producing unscripted moments from existing systems.
+
+### Knowledge as Loot
+
+**Pillar: Discovery Over Direction.** Logs, recordings and samples are items the player extracts. On the docked ship they fill an evidence board; completing sets unlocks meta-progression (skill points, new room types, map knowledge). What the player learns persists even though the character forgets — the gap the Meta Loop describes, made tangible.
+
+### Reality Anchors
+
+**Pillar: Unstable Ground.** A rare consumable that pins a room to a chosen reality for the rest of the run — making a VOID room TECH so its terminal works, or keeping a BIO room from tipping. A tactical answer to live shifts and a way to shape the ship around a build. Answers the open question "Can the player influence which reality dominates a zone?" — yes, locally and at a cost.
+
+### How the Concepts Fit Together
+
+Live shifts, Paradise's attention and the last clone's body reinforce each other: the ship moves under the player, Paradise watches and steers the run, and death feeds the next run. Attunement and the instability clock make every shift a decision; anchors give the player a counter. Together they give the game an identity no other extraction game has: the player doesn't just loot a hostile place, they survive a space that disagrees with itself, watched by the mind holding it together.
+
+**Suggested order:** Live Reality Shifts → Paradise Is Watching → The Last Clone's Body, then Reality Attunement and the Instability Clock to deepen them.
+
+See also: Design Pillars, Reality Mechanics, Core Loop, Meta Loop, Paradise, The Player, UI Direction, Open Questions
