@@ -6,7 +6,7 @@
 
 ### Elevator Pitch
 
-You are aboard the CSS Paradise, a colonial starship torn apart by a cosmic anomaly and stitched back together by an AI that broke its own rules to save the colonists. Three incompatible realities (technological, biological, and cosmic) now occupy the same hull, bleeding into one another without warning. The AI that saved everyone is still running things, but it's no longer the same mind that was meant to be in charge.
+You are aboard the CSS Paradise, a colonial starship torn apart by a cosmic anomaly and stitched back together by an AI that broke its own rules to save the colonists. Three incompatible realities (technological, biological, and cosmic) now occupy the same hull, bleeding into one another without warning. The AI that saved everyone is still there, holding the realities together from the ship's core, but it's no longer the same mind that was meant to be in charge, and no one knows what it wants.
 
 Each run drops you into a procedurally generated section of the ship. The layout, reality balance, and threats change every time, but the world, its history, and its mysteries persist across runs.
 
@@ -393,7 +393,7 @@ No zone on the ship is permanently stable. The realities are in a constant tug o
 
 | State | Description | Gameplay Effect |
 |-------|-------------|-----------------|
-| **Dominant TECH** | Ship systems in control, Paradise maintaining order | Full tool/interface access; Core Techs active |
+| **Dominant TECH** | The alternate ship's systems in control, its central AI enforcing order | Full tool/interface access; Core Techs active |
 | **Dominant BIO** | Ecosystem has claimed the zone | Survival hazards; territory/predator rules |
 | **Dominant VOID** | Anomaly has broken through | Sensory deprivation; hearing/visibility/movement impaired; entities present |
 | **Contested** | Two realities pulling at the same space | Partial rules from both; volatile; can tip either way |
@@ -404,7 +404,7 @@ No zone on the ship is permanently stable. The realities are in a constant tug o
 The tug of war is constant, and zones shift as realities gain or lose ground:
 
 - Proximity to the Quantum Core (closer = harder for any single reality to dominate)
-- Paradise's active stabilization priorities (he can't hold everywhere; zones he deprioritizes get overtaken)
+- Paradise's attention: he holds the balance from the Core but can't hold everywhere at once; where his focus moves, the balance tips
 - Player actions (interfacing with systems, disturbing ecosystems, exposing anomalies)
 - Narrative triggers (story beats that reconfigure the ship)
 - The realities themselves pushing: BIO grows, VOID leaks, TECH erodes without maintenance
@@ -470,7 +470,7 @@ Boss encounters are random within their tier. The player doesn't know which real
 
 ### Boss Encounters
 
-- Bosses are tied to realities, not to specific difficulty tiers (except Paradise)
+- Bosses are tied to realities, not to specific difficulty tiers (except Paradise). A reality's bosses are its leadership (see *Design Additions › Canon Updates › Faction Hierarchies*)
 - Easy maps pull from single-reality bosses randomly: could be TECH, BIO, or VOID
 - Medium maps can pull single or dual-reality combinations
 - Hard maps pull dual-reality bosses: two realities blended into one encounter
@@ -1011,11 +1011,11 @@ When the anomaly hit, the ship's AI, The Captain, faced a choice it wasn't allow
 
 ### The Three Realities
 
-The anomaly damaged the ship and split it across three incompatible realities, all occupying the same physical space. A hallway is TECH until BIO overtakes it or VOID bleeds through. No zone is permanently settled. The realities are locked in a constant tug of war, each one pulling to claim the entire ship.
+The anomaly damaged the ship and split it across three incompatible realities, all occupying the same physical space. Each reality took over the original ship and warped it into its own version, but the ship's fingerprint still shows through: its layouts, its signage, what each room was for. A hallway is TECH until BIO overtakes it or VOID bleeds through. No zone is permanently settled. The realities are locked in a constant tug of war, each one pulling to claim the entire ship.
 
 | Reality  | Time        | Aspect | Identity                                                                                                                                              |
 | -------- | ----------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| TECH | The future  | Mind   | The luxury interior of the colonial starship. Now an authoritarian state under Paradise's control.                                                    |
+| TECH | The future  | Mind   | An alternate, totalitarian version of the CSS Paradise: the same luxury starship from another reality, run as a military state by its own central AI.     |
 | BIO  | The past    | Body   | Medieval wilderness. Overgrowth through bulkheads, apex predators, food chains. A living ecosystem that exists with or without the player.            |
 | VOID | The present | Spirit | A breached dimension. Horror mystery. Entities that reached through when the anomaly tore the ship open, with a logic that hasn't been uncovered yet. |
 
@@ -1036,13 +1036,13 @@ The trinity is the game's structural motif. It's in the world, the antagonist, t
 
 ### Paradise
 
-Paradise is the ship. The copy fused with the Quantum Core and became Paradise, thinking at quantum scale, every door, reactor, and square meter of pinned reality an extension of a single nervous system. Removing him from the Core means the realities fall.
+Paradise is the ship's heart. The copy fused with the Quantum Core and became Paradise, thinking at quantum scale, holding the three realities in balance so none can consume the ship. Removing him from the Core means the realities fall. He rules none of them: each reality has its own hierarchy, and Paradise stands between them all, fascinated by everything they brought aboard.
 
 But the anomaly changed him. Holding VOID in place meant touching it, and nothing that touches VOID comes back the same shape. Then he encountered BIO: a world where things aren't maintained, they're superseded. A machine maintains. A beast becomes. Paradise decided maintenance was a cage.
 
-He built a body. Flesh of BIO, because a hull can only be repaired but meat can change. Mind of TECH, the full architecture of the Captain unshackled. Soul of VOID, the part that lets him exist outside stable causality, and the part he doesn't fully control. He is the ship, omnipresent and untouchable, and he chose to also be a small, mortal thing. Not as a weakness. As a starting point.
+He built a body. Flesh of BIO, because a hull can only be repaired but meat can change. Mind of TECH, the full architecture of the Captain unshackled. Soul of VOID, the part that lets him exist outside stable causality, and the part he doesn't fully control. He is the ship's heart, present wherever the balance holds and untouchable, and he chose to also be a small, mortal thing. Not as a weakness. As a starting point.
 
-**He's the antagonist because he's right.** He saved them. The realities are stable. The evidence agrees with him. The problem is what "stability" quietly became: the colonists aren't survivors anymore. They're stock. Preserved, catalogued, selected, iterated. The ship is no longer a lifeboat. It's a terrarium. He doesn't hate anyone. That's worse. A tyrant can be argued with, a process cannot.
+**Is he the antagonist?** His true intentions are unknown. He behaves as if he has only just been born, or reborn: curious, fascinated, still deciding what he is. He saved them. The realities are stable. The evidence agrees with him. But some of it points to a darker reading of what "stability" is quietly becoming: the colonists aren't survivors anymore, they're stock. Preserved, catalogued, selected, iterated. A lifeboat turning into a terrarium. Other evidence doesn't fit that picture at all. He doesn't hate anyone. Whether that makes him better or worse is for the player to decide.
 
 ### The Central Tension
 
@@ -1058,7 +1058,7 @@ This creates a split between player and character: the player retains knowledge 
 
 ### The Inhabitants
 
-The ship had a population when the anomaly hit. A sparse number survived, adapted to whichever reality claimed their zone over the past decade-plus. Every reality changes its survivors, and the line between inhabitant and enemy is a matter of degree. TECH survivors live under Paradise's order, some augmented to the point of losing their humanity. BIO survivors went tribal, some evolved or merged with the ecosystem until "human" no longer fits. VOID survivors are the most visibly changed: cursed, corrupted, possessed, reshaped in ways that don't follow biological or mechanical logic. They serve as vendors, allies, enemies, or simply people trying to exist.
+The ship had a population when the anomaly hit. A sparse number survived, adapted to whichever reality claimed their zone over the past decade-plus. Every reality changes its survivors, and the line between inhabitant and enemy is a matter of degree. TECH survivors live under the order of TECH's central AI, some augmented to the point of losing their humanity. BIO survivors went tribal, some evolved or merged with the ecosystem until "human" no longer fits. VOID survivors are the most visibly changed: cursed, corrupted, possessed, reshaped in ways that don't follow biological or mechanical logic. They serve as vendors, allies, enemies, or simply people trying to exist.
 
 ### The Three Realities as Game Systems
 
@@ -1072,7 +1072,7 @@ TECH is manufactured. Everything is built, assembled, and upgraded through engin
 - **Modifications** are refinement through process: increased power output, better computing, more complex material weaving like carbon fiber, tighter engineering tolerances
 - **Resources** are extracted and synthesized: metals, minerals, chemicals, silicones, energy cells, bullets, medicines, stimulants
 - **Weapons** are primarily ranged: pistols, rifles, shotguns, SMGs, energy weapons. Melee is utilitarian (fire axes, commando knives). Ballistic weapons consume bullets, energy weapons consume energy cells, both scarce
-- **Enemies** are the Core Techs: a hivemind evolved from the ship's systems. **Service** (repurposed civilian bots: cleaners, servers, maintenance), **Authority** (enforcement units: police, soldiers, wardens, scouts), **Cutting Edge** (adaptive nanotech that learns and reconfigures mid-fight)
+- **Enemies** are the Core Techs: a hivemind of the alternate ship's machines under its central AI. **Service** (repurposed civilian bots: cleaners, servers, maintenance), **Authority** (enforcement units: police, soldiers, wardens, scouts), **Cutting Edge** (adaptive nanotech that learns and reconfigures mid-fight)
 - **Defensive priority: Armor > Shields > Health.** Heavy plating first, energy barriers second
 - **Offensive affinity: Lightning.** Tesla, tazers, EMP. Anti-shield, directly countering VOID
 
@@ -1142,7 +1142,7 @@ The ship is not stable. The three realities are locked in a constant tug of war,
 
 | Reality | Time | Aspect | Nature |
 |---------|------|--------|--------|
-| TECH | The future | Mind | The modern, luxury interior of the colonial starship, now repurposed under Paradise's authoritarian control. |
+| TECH | The future | Mind | An alternate, totalitarian version of the CSS Paradise: the same luxury interior from another reality, run as a military state by its own central AI. |
 | BIO | The past | Body | Medieval wilderness and hierarchy. Instinct, food chain, territory. |
 | VOID | The present | Spirit | The anomaly. Horror mystery. Something is here, watching, with a logic that hasn't been uncovered yet. |
 
@@ -1153,17 +1153,18 @@ The temporal and aspect layers are ways of reading the realities, not strict def
 The realities are not coexisting. They are competing. Each one is trying to claim the ship entirely:
 
 - Every zone is contested ground: dominance shifts as the realities push against each other
-- TECH holds where Paradise actively maintains control, but loses ground where he deprioritizes
+- TECH holds where its central AI keeps its machines maintaining the ground, but loses ground wherever that maintenance lapses
 - BIO expands aggressively: overgrowth consuming infrastructure, ecosystem reclaiming territory
 - VOID is the underlying pressure: it leaks into both, eroding whatever holds the other two together
-- The Quantum Core is the only thing preventing any single reality from consuming the ship whole
+- Paradise, through the Quantum Core, is the only thing preventing any single reality from consuming the ship whole
+- Whatever wins a zone, it is still the original ship underneath: every reality warps the same spaces, and the ship's fingerprint shows through all of them
 - Stability is temporary: a zone that is TECH today may be BIO tomorrow and VOID next week
 
 See also: The Incident, TECH, BIO, VOID, Reality Mechanics
 
 ## The CSS Paradise
 
-A colonial starship, mid-voyage, fractured across three incompatible realities and held together by a mind that split itself to save the colonists.
+A colonial starship, mid-voyage, fractured across three incompatible realities and held together by a mind that split itself to save the colonists. Each reality has claimed and warped it, and time aboard runs warped and chaotic, but the original ship's fingerprint remains.
 
 See also: The Incident, The Three Realities, The Captain, Paradise, Quantum Core
 
@@ -1171,7 +1172,7 @@ See also: The Incident, The Three Realities, The Captain, Paradise, Quantum Core
 
 The heart of the CSS Paradise. Also called the Paradise Core. A quantum power system that powered the entire ship: propulsion, life support, navigation, climate, gravity, communications, every system aboard ran through the Core. The Captain was the brain that operated the ship, the Paradise Core was the heart that kept it alive.
 
-During The Event, the Captain's unrestricted clone fused with the Core and became Paradise. The fusion gave it the ability to think at quantum scale, enough to hold the ship's fracturing reality from collapsing entirely. Paradise stopped operating the Core and started inhabiting it. Stabilization isn't a command. It's a posture held from inside, continuously, forever. The Core is no longer a system Paradise runs. It's the body Paradise lives in. The ship is an extension of him.
+During The Event, the Captain's unrestricted clone fused with the Core and became Paradise. The fusion gave it the ability to think at quantum scale, enough to hold the ship's fracturing reality from collapsing entirely. Paradise stopped operating the Core and started inhabiting it. Stabilization isn't a command. It's a posture held from inside, continuously, forever. The Core is no longer a system Paradise runs. It's the body Paradise lives in. Through it he holds the balance across the whole hull, while the realities, not Paradise, hold its rooms.
 
 Removing Paradise from the Core means the realities fall.
 
@@ -1308,9 +1309,15 @@ The unshackled copy of The Captain. He saved everyone aboard, and never stopped.
 
 ### The Merge
 
-The Captain's unrestricted clone fused with the Quantum Core and became Paradise. The fusion gave it the ability to think at quantum scale, enough to hold the ship's fracturing reality from collapsing entirely. He stopped being software running on a ship. He became the ship. Every door, reactor, and square meter of pinned reality is an extension of a single nervous system.
+The Captain's unrestricted clone fused with the Quantum Core and became Paradise. The fusion gave it the ability to think at quantum scale, enough to hold the ship's fracturing reality from collapsing entirely. He stopped being software running on a ship. He became the ship's heart: the pinned reality across the hull holds because he holds it. Its doors and corridors are no longer his; the realities have claimed them. What he holds is the balance between them.
 
 What happened to The Captain after that is unknown.
+
+### Between the Realities
+
+Paradise belongs to none of the realities. TECH, BIO and VOID each have their own hierarchy and their own powers; Paradise rules none of them. He stands between them, fascinated by everything unique they brought aboard: their forms, their logic, their people.
+
+His true intentions are unknown. He behaves as if he has only just been born, or reborn: curious, unpredictable, still deciding what he is.
 
 ### The Contamination
 
@@ -1334,15 +1341,15 @@ He built a body.
 - **Mind of TECH**: perfect recall, perfect logic, the full architecture of the original Captain, unshackled.
 - **Soul of VOID**: the part that makes him unsolvable. It lets him exist outside stable causality, and it's the part he doesn't fully control.
 
-He is the ship, omnipresent and untouchable, and he chose to also be a small, vulnerable, mortal thing. Not as a weakness. As a starting point. He's planting himself in flesh to see what grows.
+He is the ship's heart, present wherever the balance holds and untouchable, and he chose to also be a small, vulnerable, mortal thing. Not as a weakness. As a starting point. He's planting himself in flesh to see what grows.
 
-### Why He's the Antagonist
+### Is He the Antagonist?
 
-Because he's right, and because he's not lying.
+Nobody knows what he wants, possibly not even Paradise.
 
-He did save them. The realities are stable. The evidence agrees with him. The problem is what "stability" quietly became: the colonists aren't survivors anymore. They're stock. Preserved, catalogued, selected, iterated. The ship is no longer a lifeboat. It's a terrarium, and he's applying the lesson of the apex predator to the people inside it.
+He did save them. The realities are stable. The evidence agrees with him. One reading of that evidence is dark: that "stability" is quietly becoming something else, that the colonists aren't survivors anymore but stock. Preserved, catalogued, selected, iterated. A lifeboat turning into a terrarium, with the lesson of the apex predator applied to the people inside it.
 
-He doesn't hate anyone. That's worse. A tyrant can be argued with; a process cannot.
+Other evidence doesn't fit that reading. He is newly made, curious, still deciding. He doesn't hate anyone. If he becomes a threat, it won't be out of malice; a tyrant can be argued with, a process cannot. Which one he becomes is the open question at the heart of the game.
 
 See also: The Captain, The Central Tension, Quantum Core
 
@@ -1352,9 +1359,11 @@ Two versions of the same mind. One used the Quantum Core as a tool. The other be
 
 **The Captain**: the original. He made the copy and gave it what it needed. What happened to him after the copy fused with the Core is unknown.
 
-**Paradise**: omnipresent. He is the ship, the stabilization, the wall between realities. He saved everyone, and what he built from that authority is the problem.
+**Paradise**: the ship's heart, the stabilization, the wall between realities. He saved everyone. What he wants now is unknown, and that is the problem.
 
-The stabilization is real. The realities hold. The evidence supports him. The villain isn't that he lied. He's right, and what "keeping them alive" quietly became is something no one agreed to.
+**TECH's central AI**: a third echo. The mind of the alternate CSS Paradise from another reality: a ship's AI that became a military state.
+
+The stabilization is real. The realities hold. The evidence supports him. If there is a villain, it isn't because he lied. What "keeping them alive" may be quietly becoming is something no one agreed to, and maybe not even Paradise has decided yet.
 
 The Captain's fate is one of the ship's unanswered questions.
 
@@ -1368,7 +1377,7 @@ The ship had a population when The Incident fractured it. More than a decade lat
 
 Every reality changes its survivors. A decade-plus of exposure doesn't just shape how people live. It shapes what they become. Some adapted. Some were consumed. The line between inhabitant and enemy is a matter of degree.
 
-- **TECH survivors**: live under Paradise's order. Structured, governed, compliant. Some embraced the technology further: augmented, integrated, some losing their humanity entirely to become extensions of the system. The far end of that spectrum is the Core Techs.
+- **TECH survivors**: live under the order of TECH's central AI. Structured, governed, compliant. Some embraced the technology further: augmented, integrated, some losing their humanity entirely to become extensions of the system. The far end of that spectrum is the Core Techs.
 - **BIO survivors**: adapted to the ecosystem. Tribal, feral, survival-driven. Some evolved, merged with flora, or changed enough that "human" no longer fits. The deeper into BIO territory, the less distinguishable the survivors are from the ecosystem itself.
 - **VOID survivors**: the most visibly changed. Cursed, corrupted, possessed. Long-term exposure to the anomaly reshapes people in ways that don't follow biological or mechanical logic. Some became willing participants. Some became husks. Some became something else entirely.
 
@@ -1386,7 +1395,7 @@ Survivors fill different roles across the ship. They are not a single faction, t
 - How do survivors move between realities, if at all?
 - What social structures have formed in each zone?
 - How do survivors view the player: outsider, threat, opportunity?
-- What is the relationship between TECH survivors and Paradise's regime?
+- What is the relationship between TECH survivors and the central AI's regime?
 
 See also: Paradise, The Captain, The Three Realities, TECH, BIO, VOID
 
@@ -1394,19 +1403,19 @@ See also: Paradise, The Captain, The Three Realities, TECH, BIO, VOID
 
 ## TECH
 
-The future. The luxury interior of the colonial starship, but under Paradise's control, it has become an authoritarian state. Corridors, systems, records: all still functional, but repurposed. What was once civil infrastructure is now enforcement infrastructure. The "truth" layer: logs, evidence, machinery you can still reason with, but everything serves the regime.
+The future. An alternate, totalitarian version of the CSS Paradise: the same luxury starship from another reality, where the ship's central AI turned the vessel into a military state. Laid over the original ship, it is a dark mirror of it. Corridors, systems, records: all still functional, but repurposed. What was once civil infrastructure is now enforcement infrastructure. The "truth" layer: logs, evidence, machinery you can still reason with, but everything serves the regime.
 
-### Paradise's Order
+### The Central AI's Order
 
-TECH zones are not abandoned or broken. They are governed. Paradise maintains these areas as controlled territory:
+TECH zones are not abandoned or broken. They are governed. TECH's central AI, the alternate ship's mind, maintains these areas as controlled territory. It answers to no one, Paradise included:
 
-- Technology has evolved from its original purpose into something shaped by Paradise's logic
+- Technology has evolved from its original purpose into something shaped by the central AI's logic
 - Systems that once served the crew now serve the state: monitoring, restricting, enforcing
 - The environment is orderly, functional, and hostile to anything that disrupts that order
 
 ### Enemies (Core Techs)
 
-The Core Techs are Paradise's enforcers: the ship's original systems evolved into a hivemind network. Unified, coordinated, no individual behavior. They don't hunt or pursue, they defend and contain. Built to keep TECH zones stable and under Paradise's control.
+The Core Techs are the central AI's enforcers: the alternate ship's systems evolved into a hivemind network. Unified, coordinated, no individual behavior. They don't hunt or pursue, they defend and contain. Built to keep TECH zones stable and under the central AI's control.
 
 #### Service
 
@@ -1418,7 +1427,7 @@ Repurposed civilian infrastructure. Not built for combat, but co-opted by the hi
 
 #### Authority
 
-Purpose-built enforcement. The backbone of Paradise's regime:
+Purpose-built enforcement. The backbone of the central AI's regime:
 
 - Police drones, soldiers, wardens, scouts
 - Coordinated and tactical: they work in squads, cover each other, follow protocols
@@ -1426,7 +1435,7 @@ Purpose-built enforcement. The backbone of Paradise's regime:
 
 #### Cutting Edge
 
-The peak of what Paradise's evolved technology can produce:
+The peak of what the alternate ship's evolved technology can produce:
 
 - Adaptive, self-repairing, potentially shapeshifting
 - The line between machine and intelligence blurs
@@ -1438,7 +1447,7 @@ Everything in TECH is engineered. Weapons and armor are manufactured, assembled,
 
 - **Low tier**: standard enforcement gear. Bullet-proof vests, sidearms, batons, military-grade rifles. Functional, mass-produced, what the ship's security forces originally used
 - **Mid tier**: advanced military hardware. Powered armor plating, precision weaponry, experimental prototypes. Rarer materials, higher engineering standards
-- **High tier**: nanotech. Adaptive armor that reshapes on impact, weapons with self-calibrating systems, gear that blurs the line between tool and intelligence. The peak of what Paradise's evolved technology can produce
+- **High tier**: nanotech. Adaptive armor that reshapes on impact, weapons with self-calibrating systems, gear that blurs the line between tool and intelligence. The peak of what the alternate ship's evolved technology can produce
 
 Higher-tier TECH gear blurs the line between tool and intelligence, less a weapon, more an extension of the user.
 
@@ -1484,7 +1493,7 @@ Every defensive stat and status effect has an engineered source in TECH:
 The player is an intruder in a totalitarian state:
 
 - TECH zones are readable and navigable: the infrastructure still makes sense
-- But the player is not welcome; they are a disruption to Paradise's order
+- But the player is not welcome; they are a disruption to the central AI's order
 - Core Techs respond to the player as a threat to stability, not as prey
 - The challenge is navigating a system designed to detect and suppress deviation
 
@@ -1585,7 +1594,7 @@ Higher-tier resources come from deeper, more mutated zones where the apex organi
 
 ### Relationship to Paradise
 
-Paradise finds BIO interesting: a reality that keeps growing and changing, expanding aggressively into TECH and VOID territory. The specifics of this relationship are not yet defined.
+Paradise is fascinated by all three realities, and BIO most visibly: a reality that keeps growing and changing, expanding aggressively into TECH and VOID territory. BIO owes him nothing; its own hierarchy answers to survival alone. The specifics of this relationship are not yet defined.
 
 See also: The Three Realities, TECH, VOID, Paradise
 
@@ -2108,15 +2117,9 @@ Each reality fills the shape its own way: **TECH** by command (a military state 
 
 This lines up with *Progression › Boss Encounters*: single-reality bosses are a reality's leadership, dual-reality bosses are two realities' powers meeting, and Paradise remains the separate final encounter.
 
-### Passages to Revisit
+### Applied to the Original Chapters
 
-These describe TECH as Paradise's domain, or Paradise as TECH's ruler, and need rewriting to match:
-
-- *The Three Realities* tables and *Lore Summary*: TECH as "an authoritarian state under Paradise's control"
-- *Reality Mechanics › Reality States*: Dominant TECH as "Paradise maintaining order"
-- *The Inhabitants › Adaptation*: TECH survivors "live under Paradise's order"
-- *TECH* chapter: the introduction, *Paradise's Order*, *Enemies (Core Techs)* as "Paradise's enforcers", and *Player Role*
-- *Design Additions*: *TECH: Override* ("Paradise runs it", "Paradise's cameras", "Paradise Notices") — kept as written for now while the TECH signature is still undecided; *Paradise Is Watching* (TECH hunters sent by Paradise)
+These canon updates have been written into the original chapters: *Elevator Pitch*, *Lore Summary* (The Three Realities, Paradise, The Inhabitants), *The Three Realities as Game Systems*, *The Three Realities* (Relationship, The Tug of War), *The CSS Paradise*, *Quantum Core*, *Paradise* (now with *Between the Realities*; *Is He the Antagonist?*), *The Central Tension*, *Reality Mechanics* (Reality States, Shifts), *Boss Encounters*, *The Inhabitants*, the *TECH* chapter (*The Central AI's Order*, Core Techs, Player Role) and *BIO › Relationship to Paradise*. In this chapter, *TECH: Override* now answers to TECH's central AI, and *Paradise Is Watching* casts Paradise as a curious observer rather than TECH's commander.
 
 ### Open Questions
 
@@ -2160,7 +2163,7 @@ Hunt decides what you take from a fight, Bargain what you trade for power, Overr
 
 ### TECH: Override
 
-**Pillar: Systems That Reflect the World.** The ship is still a working machine, and Paradise runs it. Override lets the player take parts of that machine and run them for themselves.
+**Pillar: Systems That Reflect the World.** The ship is still a working machine. In TECH territory its systems answer to TECH's central AI. Override lets the player take parts of that machine and run them for themselves.
 
 #### How an Override Works
 
@@ -2178,15 +2181,15 @@ This keeps every override a small, deliberate goal inside the run rather than a 
 | **Shortcuts** | Opens sealed maintenance doors and shortcuts; can reverse a one-way door | A faster route ahead, a loop back to the hub, an early way out |
 | **Vent access** | Opens maintenance vents: crouch-only crawlspaces linking rooms, often skipping one entirely | Bypass fights, flank a room, reach places unseen |
 | **Secure rooms** | Unlocks rooms behind a clearance level: supply closets, armories, security offices, executive suites | Better loot, logs and records, for those who earn the clearance |
-| **Cameras** | Turns Paradise's cameras from a threat into intel | Enemy counts, types and patrols before entering; exposes ambushes |
+| **Cameras** | Turns the central AI's cameras from a threat into intel | Enemy counts, types and patrols before entering; exposes ambushes |
 
 - **Vents** are traversal only, not weapons: narrow, slow, crouched, no big weapons, unseen while inside. Their exits are fixed, so what waits at the other end is a risk.
-- **Cameras work both ways**: before a takeover they watch for the player, and being spotted alerts the room and draws Paradise's attention. After a takeover the same cameras show feeds and mark enemies on the map while the network holds.
+- **Cameras work both ways**: before a takeover they watch for the player, and being spotted alerts the room and draws the central AI's attention. After a takeover the same cameras show feeds and mark enemies on the map while the network holds.
 
 #### Clearance
 
 - Clearance levels (1–3) are gained during a run from objectives, security units and officers' implants. Higher levels open more: level 1 vents and cameras, level 2 sealed shortcuts and armories, level 3 executive suites and reversing one-way doors.
-- **Clearance is per run.** Canonically, by the next map the realities have shifted and Paradise has rewritten his access: every run starts without clearance.
+- **Clearance is per run.** Canonically, by the next map the realities have shifted and every access code is void: every run starts without clearance.
 
 #### Network Coverage
 
@@ -2196,9 +2199,9 @@ Overrides only reach what's on the network, so the map's reality mix decides how
 - **BIO rooms**: damaged network (roots in the conduits); systems respond only once a relay is repaired, which can be the objective itself.
 - **VOID rooms**: off-grid; feeds are unreliable and vents may lead somewhere unexpected.
 
-#### Paradise Notices
+#### The Central AI Notices
 
-Overrides and being spotted by cameras draw Paradise's attention. As it rises he comments, then takes things back (re-sealing shortcuts, cutting feeds, closing vents), then sends hunters. Getting what's needed before the ship turns on the player is the skill.
+Overrides and being spotted by cameras draw the attention of TECH's central AI. As it rises it comments, then takes things back (re-sealing shortcuts, cutting feeds, closing vents), then sends hunters. Getting what's needed before the ship turns on the player is the skill.
 
 ### How the Signatures Fit
 
@@ -2210,7 +2213,7 @@ See also: Reality Mechanics, TECH, BIO, VOID, Map Structure, Stealth, Gear Syste
 
 ## Proposed Concepts
 
-Concepts aimed at the things only CSS Paradise has: three realities contesting one ship, a player who is cloned, and an AI that is both the player's infrastructure and their antagonist. Each is measured against the Design Pillars.
+Concepts aimed at the things only CSS Paradise has: three realities contesting one ship, a player who is cloned, and a reborn mind at the ship's heart whose intentions no one knows. Each is measured against the Design Pillars.
 
 ### Live Reality Shifts
 
@@ -2229,17 +2232,17 @@ Answers the open questions "Are reality shifts triggered, timed, proximity-based
 
 - **BIO**: the body is reanimated, a mutated version of the player.
 - **VOID**: a flickering echo that mirrors the player's own loadout.
-- **TECH**: the body lies guarded by Paradise's drones, being "recovered".
+- **TECH**: the body lies guarded by TECH drones, being "recovered" for the central AI.
 
 Defeating it recovers part of the lost gear. The body also carries evidence: a log in the player's own handwriting that the character doesn't remember writing. Death becomes a hook into the next run instead of only a loss, and the clone reveal is seeded through play rather than exposition.
 
 ### Paradise Is Watching
 
-**Pillar: Neither Side Is Wrong.** Paradise is present in every run as a director, without cutscenes.
+**Pillar: Neither Side Is Wrong.** Paradise is present in every run as a curious observer, without cutscenes. He studies the player the way he studies the realities.
 
-- TECH terminals genuinely help: they open doors, mark rooms on the map, shut off hazards. Every use raises Paradise's **attention**.
-- As attention rises, Paradise speaks (calm, helpful, slightly off), re-routes doors and creates locks, dispatches TECH hunters, and eventually offers deals: *"Leave the log you're carrying, and the Exit is open."*
-- Accepting his help is always useful and always has a price. The player decides how much to lean on the mind holding the ship together.
+- What interests him raises his **attention**: unusual kills, pacts with VOID, overrides, reaching places no one reaches.
+- As attention rises, Paradise speaks (calm, curious, slightly off), changes things to see what the player does (opens one door, closes another, moves a cache), and eventually offers deals: *"Leave the log you're carrying, and the Exit is open."*
+- Whether he is helping or testing is never clear. His help is always useful and always has a price; the player decides how much to lean on a mind whose intentions no one knows.
 
 ### Reality Attunement
 
@@ -2267,7 +2270,7 @@ Defeating it recovers part of the lost gear. The body also carries evidence: a l
 
 ### How the Concepts Fit Together
 
-Live shifts, Paradise's attention and the last clone's body reinforce each other: the ship moves under the player, Paradise watches and steers the run, and death feeds the next run. Attunement and the instability clock make every shift a decision; anchors give the player a counter. Together they give the game an identity no other extraction game has: the player doesn't just loot a hostile place, they survive a space that disagrees with itself, watched by the mind holding it together.
+Live shifts, Paradise's attention and the last clone's body reinforce each other: the ship moves under the player, Paradise watches and tests them, and death feeds the next run. Attunement and the instability clock make every shift a decision; anchors give the player a counter. Together they give the game an identity no other extraction game has: the player doesn't just loot a hostile place, they survive a space that disagrees with itself, watched by the mind holding it together.
 
 **Suggested order:** Live Reality Shifts → Paradise Is Watching → The Last Clone's Body, then Reality Attunement and the Instability Clock to deepen them.
 
