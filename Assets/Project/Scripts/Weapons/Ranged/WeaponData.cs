@@ -56,6 +56,9 @@ namespace CGD.Weapons
         [Tooltip("Gravity multiplier when the shot is released at minimum charge. Bows want this well above 1 so weak shots plummet.")]
         [Min(1f)]
         public float LowChargeGravityMultiplier = 3f;
+        [Tooltip("Damage multiplier when the shot is released at minimum charge (a half-drawn bow hits softer). 1 = charge doesn't affect damage. Only used with Charge fire mode.")]
+        [Range(0.05f, 1f)]
+        public float LowChargeDamageMultiplier = 1f;
 
         // Per-weapon projectile physics resolved against a charge fraction. Non-charge
         // fire modes pass 1f and the multipliers become no-ops, so both callers can use
@@ -68,6 +71,11 @@ namespace CGD.Weapons
         public float GetProjectileGravity(float charge)
         {
             return ProjectileGravity * Mathf.Lerp(LowChargeGravityMultiplier, 1f, Mathf.Clamp01(charge));
+        }
+
+        public float GetChargeDamageScale(float charge)
+        {
+            return Mathf.Lerp(LowChargeDamageMultiplier, 1f, Mathf.Clamp01(charge));
         }
 
         [Header("Damage")]

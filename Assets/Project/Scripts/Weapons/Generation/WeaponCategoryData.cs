@@ -27,6 +27,23 @@ namespace CGD.Weapons
         [Tooltip("Pellets per shot. 1 for all non-shotgun types.")]
         public IntRange   PelletCount  = new(1, 1);
 
+        [Header("Charge & Projectile")]
+        [Tooltip("Seconds to reach full draw (Charge fire mode only)")]
+        public FloatRange ChargeTime                 = new(0.8f, 0.8f);
+        [Tooltip("Releasing before this fraction of a full draw cancels the shot (Charge fire mode only)")]
+        public FloatRange MinChargeToFire            = new(0.15f, 0.15f);
+        [Tooltip("Muzzle velocity in m/s. Bullets ~400–1000, arrows ~40–80, bolts ~70–120")]
+        public FloatRange ProjectileSpeed            = new(900f, 900f);
+        [Tooltip("Downward acceleration in m/s². 0 = straight flight; arrows arc")]
+        public FloatRange ProjectileGravity          = new(0f, 0f);
+        public FloatRange ProjectileLifetime         = new(5f, 5f);
+        [Tooltip("Flight time resolved instantly as a raycast. 0 = always a visible projectile")]
+        public FloatRange ProjectileInstantHitTime   = new(0.02f, 0.02f);
+        [Tooltip("Speed, gravity and damage multipliers for a minimum-charge release (Charge fire mode only)")]
+        public FloatRange LowChargeSpeedMultiplier   = new(0.4f, 0.4f);
+        public FloatRange LowChargeGravityMultiplier = new(3f, 3f);
+        public FloatRange LowChargeDamageMultiplier  = new(1f, 1f);
+
         [Header("On Hit")]
         [Tooltip("Status effects each hit may apply")]
         public StatusEffectApplication[] OnHitEffects;

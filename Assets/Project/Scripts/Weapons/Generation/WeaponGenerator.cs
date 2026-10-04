@@ -39,6 +39,17 @@ namespace CGD.Weapons
             d.BurstInterval   = cat.BurstInterval.EvaluateClamped(random);
             d.PelletCount     = Mathf.Max(1, cat.PelletCount.Evaluate(random));
 
+            // A faster draw is a better bow, so charge time follows quality on the draw-speed axis.
+            d.ChargeTime                 = Mathf.Max(0f, roll.Sample(ItemStat.DrawTime, cat.ChargeTime));
+            d.MinChargeToFire            = Mathf.Clamp01(cat.MinChargeToFire.EvaluateClamped(random));
+            d.ProjectileSpeed            = Mathf.Max(0.1f, cat.ProjectileSpeed.EvaluateClamped(random));
+            d.ProjectileGravity          = Mathf.Max(0f, cat.ProjectileGravity.EvaluateClamped(random));
+            d.ProjectileLifetime         = Mathf.Max(0.1f, cat.ProjectileLifetime.EvaluateClamped(random));
+            d.ProjectileInstantHitTime   = Mathf.Max(0f, cat.ProjectileInstantHitTime.EvaluateClamped(random));
+            d.LowChargeSpeedMultiplier   = Mathf.Clamp(cat.LowChargeSpeedMultiplier.EvaluateClamped(random), 0.05f, 1f);
+            d.LowChargeGravityMultiplier = Mathf.Max(1f, cat.LowChargeGravityMultiplier.EvaluateClamped(random));
+            d.LowChargeDamageMultiplier  = Mathf.Clamp(cat.LowChargeDamageMultiplier.EvaluateClamped(random), 0.05f, 1f);
+
             d.DrawTime = roll.Sample(ItemStat.DrawTime, cat.DrawTime);
             d.HitMask  = cat.HitMask;
             d.NoiseRadius = cat.NoiseRadius;

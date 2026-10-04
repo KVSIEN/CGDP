@@ -12,12 +12,14 @@ namespace CGD.Weapons
         {
             switch (c.Type)
             {
-                case WeaponType.AR:      ApplyAR(c);      break;
-                case WeaponType.SMG:     ApplySMG(c);     break;
-                case WeaponType.Pistol:  ApplyPistol(c);  break;
-                case WeaponType.Sniper:  ApplySniper(c);  break;
-                case WeaponType.LMG:     ApplyLMG(c);     break;
-                case WeaponType.Shotgun: ApplyShotgun(c); break;
+                case WeaponType.AR:       ApplyAR(c);       break;
+                case WeaponType.SMG:      ApplySMG(c);      break;
+                case WeaponType.Pistol:   ApplyPistol(c);   break;
+                case WeaponType.Sniper:   ApplySniper(c);   break;
+                case WeaponType.LMG:      ApplyLMG(c);      break;
+                case WeaponType.Shotgun:  ApplyShotgun(c);  break;
+                case WeaponType.Bow:      ApplyBow(c);      break;
+                case WeaponType.Crossbow: ApplyCrossbow(c); break;
             }
         }
 
@@ -418,6 +420,163 @@ namespace CGD.Weapons
             // Minimal zoom — close-range weapon — moderate aim speed.
             c.AdsFovDeg = new(45f, 58f, 0f);
             c.AdsSpeed  = new(8f,  13f, 0f);
+        }
+
+        // Charge shot: hold to draw, release to loose one arrow that arcs and drops. Near-silent.
+        // Band: shortbow (fast draw, light hit) → warbow (slow draw, heavy hit).
+        private static void ApplyBow(WeaponCategoryData c)
+        {
+            c.Names     = new[] { "Recurve Bow", "Longbow", "Shortbow", "Compound Bow", "Horsebow",
+                                  "Flatbow", "Warbow", "Yumi" };
+            c.FireModes = new[] { FireMode.Charge };
+
+            c.RPM           = new(120,  200);   // brief recovery after the release
+            c.BurstCount    = new(1,    1);
+            c.BurstInterval = new(0f,   0f);
+
+            // A half-drawn bow shoots slow, drops fast and hits soft.
+            c.ChargeTime                 = new(0.6f,  1.2f,  0f);
+            c.MinChargeToFire            = new(0.2f,  0.2f,  0f);
+            c.ProjectileSpeed            = new(50f,   80f,   0f);
+            c.ProjectileGravity          = new(9f,    12f,   0f);
+            c.ProjectileLifetime         = new(6f,    6f,    0f);
+            c.ProjectileInstantHitTime   = new(0f,    0f,    0f);   // every arrow flies
+            c.LowChargeSpeedMultiplier   = new(0.35f, 0.45f, 0f);
+            c.LowChargeGravityMultiplier = new(2.5f,  3.5f,  0f);
+            c.LowChargeDamageMultiplier  = new(0.3f,  0.45f, 0f);
+
+            c.Damage             = new(55,    110,   0f);
+            c.ArmorPenetration   = new(0.1f,  0.25f, 0f);
+            c.HeadshotMultiplier = new(2.0f,  2.75f, 0f);
+            c.RangeOptimal       = new(30f,   60f,   0f);
+            c.RangeFalloffEnd    = new(80f,   150f,  0f);
+            c.DamageFalloffMin   = new(0.6f,  0.8f,  0f);   // drop does most of the work
+
+            c.AmmoType     = AmmoType.Arrows;
+            c.MagazineSize = new(1, 1);                      // one arrow nocked at a time
+
+            // "Reload" is nocking the next arrow.
+            c.ReloadTime          = new(0.35f, 0.7f, 0f);
+            c.TacticalReloadTime  = new(0.35f, 0.7f, 0f);
+            c.TacticalReloadBonus = new(0f,    0f,   0f);
+
+            c.DrawTime    = new(0.35f, 0.6f, 0f);
+            c.NoiseRadius = 8f;                              // a hunter's weapon
+
+            c.HipSpreadDeg        = new(0.6f, 1.6f, 0f);
+            c.AdsSpreadDeg        = new(0.01f, 0.01f, 0f);
+            c.AdsSpreadMultiplier = new(0f, 0f, 0f);
+            c.SpreadPerShot       = new(0f, 0f, 0f);
+            c.MaxSpread           = new(1.6f, 1.6f, 0f);
+            c.SpreadRecovery      = new(20f,  20f,  0f);
+
+            // Barely any kick, and nothing builds up between shots.
+            c.RecoilScaleVertical   = new(0.2f,  0.5f,  0f);
+            c.RecoilJitterVertical  = new(0.02f, 0.05f, 0f);
+            c.RecoilScaleHorizontal = new(0.05f, 0.15f, 0f);
+            c.RecoilHorizontalBias  = new(-0.05f, 0.05f, 0f);
+            c.MaxAccumulatedRecoil  = new(2f, 4f, 0f);
+            c.MaxAccumulatedHorizontalRecoil = new(1f, 2f, 0f);
+
+            c.RecoilHeatPerShot          = new(0f, 0f, 0f);
+            c.RecoilHeatCooldown         = new(1f, 1f, 0f);
+            c.MaxHeatRecoilMultiplier    = new(1f, 1f, 0f);
+            c.RecoilHeatJitterMultiplier = new(1f, 1f, 0f);
+            c.HotAdsSpreadMultiplier     = new(0f, 0f, 0f);
+
+            c.RecoilRecoverySpeed           = new(8f,    12f,  0f);
+            c.RecoilRecoveryFraction        = new(0.9f,  1f,   0f);
+            c.RecoilRecoveryDelay           = new(0.05f, 0.1f, 0f);
+            c.AdsRecoilRecoveryFraction     = new(1f,    1f,   0f);
+            c.AdsRecoilMultiplier           = new(0.6f,  0.8f, 0f);
+            c.HipRecoilVerticalMultiplier   = new(0.1f,  0.1f, 0f);
+            c.HipRecoilHorizontalMultiplier = new(0.1f,  0.1f, 0f);
+
+            // Holding a draw makes the aim waver more than a rifle's.
+            c.LookSwayAmount   = new(0.3f, 0.6f, 0f);
+            c.LookSwayRecovery = new(9f,   13f,  0f);
+            c.IdleSwayAmount   = new(0.3f, 0.7f, 0f);
+            c.IdleSwaySpeed    = new(0.6f, 0.9f, 0f);
+            c.MoveSwayAmount   = new(0.6f, 1.1f, 0f);
+
+            // No glass: a bow barely zooms.
+            c.AdsFovDeg = new(42f, 55f, 0f);
+            c.AdsSpeed  = new(8f,  12f, 0f);
+        }
+
+        // Point and shoot: bolts hit harder, pierce more armour and fly flatter than arrows,
+        // but cranking the next one takes time. Band: pistol crossbow → arbalest; rare
+        // repeating crossbows carry a few bolts.
+        private static void ApplyCrossbow(WeaponCategoryData c)
+        {
+            c.Names     = new[] { "Hand Crossbow", "Hunting Crossbow", "Arbalest", "Heavy Crossbow",
+                                  "Repeating Crossbow", "Pistol Crossbow", "Siege Crossbow" };
+            c.FireModes = new[] { FireMode.Semi };
+
+            c.RPM           = new(60,  150);   // only matters for repeaters
+            c.BurstCount    = new(1,   1);
+            c.BurstInterval = new(0f,  0f);
+
+            c.ProjectileSpeed          = new(80f, 120f, 0f);
+            c.ProjectileGravity        = new(5f,  8f,   0f);
+            c.ProjectileLifetime       = new(6f,  6f,   0f);
+            c.ProjectileInstantHitTime = new(0f,  0f,   0f);   // every bolt flies
+
+            c.Damage             = new(80,    160,   0f);
+            c.ArmorPenetration   = new(0.25f, 0.5f,  0f);
+            c.HeadshotMultiplier = new(2.0f,  2.5f,  0f);
+            c.RangeOptimal       = new(40f,   80f,   0f);
+            c.RangeFalloffEnd    = new(120f,  220f,  0f);
+            c.DamageFalloffMin   = new(0.7f,  0.85f, 0f);
+
+            c.AmmoType     = AmmoType.Arrows;               // bolts share the arrow pool for now
+            c.MagazineSize = new(1, 5, -0.6f);              // single-shot, repeaters are rare
+
+            // Cranking the string back.
+            c.ReloadTime          = new(1.4f, 3.2f, 0f);
+            c.TacticalReloadTime  = new(1.2f, 2.8f, 0f);
+            c.TacticalReloadBonus = new(0.2f, 0.4f, 0f);
+
+            c.DrawTime    = new(0.5f, 0.9f, 0f);
+            c.NoiseRadius = 10f;
+
+            c.HipSpreadDeg        = new(1.0f, 2.5f, 0f);
+            c.AdsSpreadDeg        = new(0.01f, 0.01f, 0f);
+            c.AdsSpreadMultiplier = new(0f, 0f, 0f);
+            c.SpreadPerShot       = new(0.3f, 0.8f, 0f);
+            c.MaxSpread           = new(3f,   5f,   0f);
+            c.SpreadRecovery      = new(10f,  16f,  0f);
+
+            c.RecoilScaleVertical   = new(0.6f,  1.4f,  0f);
+            c.RecoilJitterVertical  = new(0.05f, 0.12f, 0f);
+            c.RecoilScaleHorizontal = new(0.2f,  0.4f,  0f);
+            c.RecoilHorizontalBias  = new(-0.1f, 0.1f,  0f);
+            c.MaxAccumulatedRecoil  = new(3f, 6f, 0f);
+            c.MaxAccumulatedHorizontalRecoil = new(1.5f, 3f, 0f);
+
+            c.RecoilHeatPerShot          = new(0f, 0f, 0f);
+            c.RecoilHeatCooldown         = new(1f, 1f, 0f);
+            c.MaxHeatRecoilMultiplier    = new(1f, 1f, 0f);
+            c.RecoilHeatJitterMultiplier = new(1f, 1f, 0f);
+            c.HotAdsSpreadMultiplier     = new(0f, 0f, 0f);
+
+            c.RecoilRecoverySpeed           = new(5f,   8f,   0f);
+            c.RecoilRecoveryFraction        = new(0.9f, 1f,   0f);
+            c.RecoilRecoveryDelay           = new(0.1f, 0.2f, 0f);
+            c.AdsRecoilRecoveryFraction     = new(1f,   1f,   0f);
+            c.AdsRecoilMultiplier           = new(0.5f, 0.7f, 0f);
+            c.HipRecoilVerticalMultiplier   = new(0.1f, 0.1f, 0f);
+            c.HipRecoilHorizontalMultiplier = new(0.1f, 0.1f, 0f);
+
+            c.LookSwayAmount   = new(0.4f,  0.8f, 0f);
+            c.LookSwayRecovery = new(7f,    11f,  0f);
+            c.IdleSwayAmount   = new(0.25f, 0.5f, 0f);
+            c.IdleSwaySpeed    = new(0.5f,  0.8f, 0f);
+            c.MoveSwayAmount   = new(0.8f,  1.4f, 0f);
+
+            // A simple sight: more zoom than a bow, less than a scope.
+            c.AdsFovDeg = new(30f, 45f, 0f);
+            c.AdsSpeed  = new(6f,  10f, 0f);
         }
     }
 }

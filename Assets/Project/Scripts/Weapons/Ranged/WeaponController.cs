@@ -300,7 +300,7 @@ namespace CGD.Weapons
                 Direction         = WeaponFireBehavior.ComputeSpreadDirection(forward, spreadDeg),
                 Muzzle            = _muzzle,
                 Data              = D,
-                Damage            = ResolveDamage(),
+                Damage            = ResolveDamage() * D.GetChargeDamageScale(charge),
                 Source            = _damageSource,
                 Charge            = charge,
                 DebugDraw         = _debugDrawBullets,

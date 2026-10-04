@@ -1,0 +1,262 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 522962483bd84074e8d7de7a151a8cfd, type: 3}
+  m_Name: BowCategory
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.WeaponCategoryData
+  _displayName: Bow
+  _description: 
+  _icon: {fileID: 0}
+  _reality: 2
+  _tier: 0
+  _weight: 0.1
+  _baseValue: 120
+  _rollProfile: {fileID: 0}
+  _statRanges: []
+  Type: 6
+  Names:
+  - Recurve Bow
+  - Longbow
+  - Shortbow
+  - Compound Bow
+  - Horsebow
+  - Flatbow
+  - Warbow
+  - Yumi
+  FireModes: 03000000
+  FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
+  RPM:
+    Min: 120
+    Max: 200
+    Bias: 0
+  BurstCount:
+    Min: 1
+    Max: 1
+    Bias: 0
+  BurstInterval:
+    Min: 0
+    Max: 0
+    Bias: 0
+  PelletCount:
+    Min: 1
+    Max: 1
+    Bias: 0
+  ChargeTime:
+    Min: 0.6
+    Max: 1.2
+    Bias: 0
+  MinChargeToFire:
+    Min: 0.2
+    Max: 0.2
+    Bias: 0
+  ProjectileSpeed:
+    Min: 50
+    Max: 80
+    Bias: 0
+  ProjectileGravity:
+    Min: 9
+    Max: 12
+    Bias: 0
+  ProjectileLifetime:
+    Min: 6
+    Max: 6
+    Bias: 0
+  ProjectileInstantHitTime:
+    Min: 0
+    Max: 0
+    Bias: 0
+  LowChargeSpeedMultiplier:
+    Min: 0.35
+    Max: 0.45
+    Bias: 0
+  LowChargeGravityMultiplier:
+    Min: 2.5
+    Max: 3.5
+    Bias: 0
+  LowChargeDamageMultiplier:
+    Min: 0.3
+    Max: 0.45
+    Bias: 0
+  OnHitEffects: []
+  Damage:
+    Min: 55
+    Max: 110
+    Bias: 0
+  DamageType: 0
+  ArmorPenetration:
+    Min: 0.1
+    Max: 0.25
+    Bias: 0
+  HeadshotMultiplier:
+    Min: 2
+    Max: 2.75
+    Bias: 0
+  RangeOptimal:
+    Min: 30
+    Max: 60
+    Bias: 0
+  RangeFalloffEnd:
+    Min: 80
+    Max: 150
+    Bias: 0
+  DamageFalloffMin:
+    Min: 0.6
+    Max: 0.8
+    Bias: 0
+  AmmoType: 1
+  MagazineSize:
+    Min: 1
+    Max: 1
+    Bias: 0
+  ReloadTime:
+    Min: 0.35
+    Max: 0.7
+    Bias: 0
+  TacticalReloadTime:
+    Min: 0.35
+    Max: 0.7
+    Bias: 0
+  TacticalReloadBonus:
+    Min: 0
+    Max: 0
+    Bias: 0
+  DrawTime:
+    Min: 0.35
+    Max: 0.6
+    Bias: 0
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 8
+  HipSpreadDeg:
+    Min: 0.6
+    Max: 1.6
+    Bias: 0
+  AdsSpreadDeg:
+    Min: 0.01
+    Max: 0.01
+    Bias: 0
+  AdsSpreadMultiplier:
+    Min: 0
+    Max: 0
+    Bias: 0
+  SpreadPerShot:
+    Min: 0
+    Max: 0
+    Bias: 0
+  MaxSpread:
+    Min: 1.6
+    Max: 1.6
+    Bias: 0
+  SpreadRecovery:
+    Min: 20
+    Max: 20
+    Bias: 0
+  RecoilScaleVertical:
+    Min: 0.2
+    Max: 0.5
+    Bias: 0
+  RecoilJitterVertical:
+    Min: 0.02
+    Max: 0.05
+    Bias: 0
+  RecoilScaleHorizontal:
+    Min: 0.05
+    Max: 0.15
+    Bias: 0
+  RecoilHorizontalBias:
+    Min: -0.05
+    Max: 0.05
+    Bias: 0
+  MaxAccumulatedRecoil:
+    Min: 2
+    Max: 4
+    Bias: 0
+  MaxAccumulatedHorizontalRecoil:
+    Min: 1
+    Max: 2
+    Bias: 0
+  RecoilHeatPerShot:
+    Min: 0
+    Max: 0
+    Bias: 0
+  RecoilHeatCooldown:
+    Min: 1
+    Max: 1
+    Bias: 0
+  MaxHeatRecoilMultiplier:
+    Min: 1
+    Max: 1
+    Bias: 0
+  RecoilHeatJitterMultiplier:
+    Min: 1
+    Max: 1
+    Bias: 0
+  HotAdsSpreadMultiplier:
+    Min: 0
+    Max: 0
+    Bias: 0
+  RecoilRecoverySpeed:
+    Min: 8
+    Max: 12
+    Bias: 0
+  RecoilRecoveryFraction:
+    Min: 0.9
+    Max: 1
+    Bias: 0
+  RecoilRecoveryDelay:
+    Min: 0.05
+    Max: 0.1
+    Bias: 0
+  AdsRecoilRecoveryFraction:
+    Min: 1
+    Max: 1
+    Bias: 0
+  AdsRecoilMultiplier:
+    Min: 0.6
+    Max: 0.8
+    Bias: 0
+  HipRecoilVerticalMultiplier:
+    Min: 0.1
+    Max: 0.1
+    Bias: 0
+  HipRecoilHorizontalMultiplier:
+    Min: 0.1
+    Max: 0.1
+    Bias: 0
+  LookSwayAmount:
+    Min: 0.3
+    Max: 0.6
+    Bias: 0
+  LookSwayRecovery:
+    Min: 9
+    Max: 13
+    Bias: 0
+  IdleSwayAmount:
+    Min: 0.3
+    Max: 0.7
+    Bias: 0
+  IdleSwaySpeed:
+    Min: 0.6
+    Max: 0.9
+    Bias: 0
+  MoveSwayAmount:
+    Min: 0.6
+    Max: 1.1
+    Bias: 0
+  AdsFovDeg:
+    Min: 42
+    Max: 55
+    Bias: 0
+  AdsSpeed:
+    Min: 8
+    Max: 12
+    Bias: 0

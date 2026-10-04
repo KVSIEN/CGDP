@@ -586,10 +586,10 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Combat/StatusEffects/` | Bleed, Fire, Ice, Lightning, Poison | on-hit effect lists |
 | `Combat/ActionTimelines/` | `GroundSlamTimeline` | TimelineAbility, melee attack steps |
 | `Weapons/Ranged/` | `DefaultWeaponData`, `T1/` examples per category | Loadout, WeaponPickup |
-| `Weapons/Categories/` | one per weapon type | RandomWeaponPickup, loot |
+| `Weapons/Categories/` | one per weapon type (incl. `BowCategory`, `CrossbowCategory`: Projectile fire behavior, Arrows ammo; their arrow speed, drop and draw time are in the category's *Charge & Projectile* ranges) | RandomWeaponPickup, loot |
 | `Weapons/FireBehaviors/` | Hitscan, Projectile, Shotgun | weapon data / categories |
 | `Weapons/Melee/`, `Weapons/Throwables/` | `DefaultMeleeWeaponData`, `DefaultGrenadeData`, `SmokeGrenadeData` | MeleeController, throwable items |
-| `Items/Munitions/` | one per caliber | AmmoPickup, PlayerInventory |
+| `Items/Munitions/` | one per caliber (incl. `ArrowMunition` for bows and crossbows) | AmmoPickup, PlayerInventory |
 | `Items/` | `StatRollProfile`, `Keycards/SecurityKeycard` (opens the generated levels' locked doors) | weapon categories, `CombatVestArmor` (see note) |
 | `Items/Armor/`, `Attachments/`, `Consumables/`, `Throwables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `StimConsumable`, `FragGrenadeThrowable`, `SmokeGrenadeThrowable`, `ScrapMetalResource`, `ClothResource` | pickups, loot, recipes, quest rewards |
 | `Crafting/` | `BandageRecipe`, `CombatStimRecipe`, `ExtendedMagazineRecipe`, `CombatVestRecipe` | CraftingStation |

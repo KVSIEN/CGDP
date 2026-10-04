@@ -147,7 +147,7 @@
 - **Starting contents** — the player can be set up to spawn with a list of stackable items (typically a munition stack per caliber they expect to use). Left empty, the player spawns with an empty pack and zero reserve ammo, so the first magazine is all they have until they find a pickup
 
 ## Procedural Weapon Generation
-- Six weapon categories: AR, SMG, Pistol, Sniper, LMG, Shotgun — each defined by a `WeaponCategoryData` ScriptableObject
+- Eight weapon categories: AR, SMG, Pistol, Sniper, LMG, Shotgun, Bow and Crossbow — each defined by a `WeaponCategoryData` ScriptableObject
 - Every stat (damage, RPM, magazine size, spread, recoil, range, reload time, etc.) is defined as a min/max range with an optional bias value
 - Bias < 0 skews the random result toward the minimum (e.g. SMG mags weighted toward 20–30 despite max being 50); bias > 0 skews toward the maximum
 - Stat ranges reflect real-world and common game conventions per category:
@@ -157,7 +157,10 @@
   - **Sniper** — 30–80 RPM semi only, 5–10 rounds, 70–160 damage, 80–200 m optimal range, terrible hipfire, near-zero ADS spread
   - **LMG** — 600–950 RPM, 75–200 round belt/drum (weighted toward 75–120), slow reload (4.5–8 s), wide hipfire, high sustained recoil cap
   - **Shotgun** — 60–120 RPM semi/auto, 5–8 shell tube, 8–12 pellets per shot at 10–15 damage each, very short optimal range (8–15 m) with steep falloff, wide pellet cone (8–15° hip, 2–4° ADS), heavy per-shot recoil
+  - **Bow** — hold to draw, release to loose an arrow that flies and drops with real physics. A short draw shoots slower, drops faster and hits softer; tapping without drawing wastes nothing. One arrow is nocked at a time (keep holding attack to nock the next), barely any recoil, and nearly silent — enemies hear it from only ~8 m. Band: shortbow (quick draw, light) → warbow (slow draw, heavy hitter)
+  - **Crossbow** — point and shoot: bolts hit harder and pierce more armour than arrows and fly flatter, but cranking the next bolt takes 1.5–3 s. Most are single-shot; rare repeating crossbows hold up to five bolts. Quiet (~10 m)
 - Several stats (ADS bloom, recoil recovery fraction, recovery delay, ADS recoil multiplier, hipfire camera kick) are automatically derived from the category type and fire rate so the weapon feels correct without manual tuning
+- Bows and crossbows both draw from the shared **Arrows** pool. Draw speed rolls with quality, so a better bow draws faster
 - Create category assets via **Assets → Create → CGD → Weapon Category**, set the `Type` field, then right-click the asset and choose **Apply Type Defaults** to fill in all thresholds; values can be freely tweaked afterward
 - Generated weapons now roll a quality score and tier, which decides where each stat lands inside its category range — an SMG still rolls SMG damage, just high or low within it
 - Stats that carry a weapon's *power* (damage, fire rate, magazine, reload, recoil, spread, range, draw, sway) are driven by quality and the tradeoff axes. Stats that only give it *character* (recoil recovery, heat behaviour, burst timing) stay random, so high-tier weapons don't all start feeling the same
