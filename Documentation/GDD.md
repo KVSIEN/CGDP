@@ -2057,6 +2057,46 @@ Places where the prototype currently departs from the original chapters. Each is
 - **Hub stations**: the design has three stations (crafting, cooking, smithing). The prototype has one workbench with a few recipes.
 - **Room isolation**: the design treats rooms as safe once their door is closed. In the prototype doors are mostly open passages, and only unique rooms seal.
 
+## Canon Updates
+
+Decisions that change the original lore. The original chapters still describe the old version; the affected passages are listed below so they can be revised together.
+
+### Paradise Stands Apart
+
+- **Paradise is its own being.** Once it stabilized the realities, Paradise became an entity in its own right. It does not rule any reality; it holds the three in balance from the Quantum Core and stands apart from all of them.
+- **TECH is an alternate reality.** The TECH reality is not the CSS Paradise's original technology evolved under Paradise. It is a separate reality — a technological one — that occupies the ship alongside BIO and VOID, just as foreign to the ship as the other two.
+- **Each reality has its own hierarchy.** TECH, BIO and VOID each have their own leadership and big boss(es), independent of Paradise.
+
+### Faction Hierarchies (Baseline)
+
+Every reality follows the same broad shape; who sits at the top of each is still to be designed:
+
+| Rank | Role | In play |
+|------|------|---------|
+| **Rank and file** | The reality's common inhabitants and threats | Regular rooms (prototype: maintenance bot, scavenger, husk) |
+| **Elites** | Stronger, specialised members | Elite rooms, encounter-room waves |
+| **Lieutenants** | Named or unique figures who serve the leadership | Demi-bosses, boss unlock conditions |
+| **Leadership** | The reality's big boss(es) | Map bosses |
+
+This lines up with *Progression › Boss Encounters*: single-reality bosses are a reality's leadership, dual-reality bosses are two realities' powers meeting, and Paradise remains the separate final encounter.
+
+### Passages to Revisit
+
+These describe TECH as Paradise's domain and need rewriting to match:
+
+- *The Three Realities* tables and *Lore Summary*: TECH as "an authoritarian state under Paradise's control"
+- *Reality Mechanics › Reality States*: Dominant TECH as "Paradise maintaining order"
+- *The Inhabitants › Adaptation*: TECH survivors "live under Paradise's order"
+- *TECH* chapter: the introduction, *Paradise's Order*, *Enemies (Core Techs)* as "Paradise's enforcers", and *Player Role*
+- *Design Additions*: *TECH: Override* ("Paradise runs it", "Paradise's cameras", "Paradise Notices") — kept as written for now while the TECH signature is still undecided; *Paradise Is Watching* (TECH hunters sent by Paradise)
+
+### Open Questions
+
+- Who leads each reality: one ruler, a council, or something stranger?
+- What is Paradise's relationship to the three hierarchies: neutral warden, rival, enemy of all of them?
+- What is left of the ship's *original* technology (doors, cameras, terminals), and who controls it now: Paradise, the TECH reality, or no one? This decides whose systems an Override takes over.
+- Does the TECH reality have a mind of its own, separate from Paradise?
+
 ## Reality Signatures: Hunt, Bargain, Override
 
 **Chosen direction.** Each reality gives the player a signature way of playing, so a map's reality mix changes how a run is played, not only what is fought:
