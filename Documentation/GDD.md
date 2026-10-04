@@ -2061,10 +2061,22 @@ Places where the prototype currently departs from the original chapters. Each is
 
 Decisions that change the original lore. The original chapters still describe the old version; the affected passages are listed below so they can be revised together.
 
+### The Ship Beneath the Realities
+
+- **The realities took over the original ship.** TECH, BIO and VOID claimed the CSS Paradise and warped it into their own versions of the same spaces.
+- **The original ship's fingerprint remains.** Layouts, signage, rooms and purposes still show through every reality: a lobby is still recognisably a lobby, whichever reality holds it. After so long — and time on board is warped and chaotic — the original is faint, but never gone.
+
+### TECH: The Alternate CSS Paradise
+
+- **TECH is an alternate, totalitarian version of the CSS Paradise.** Not the ship's own technology evolved, but another version of the same ship from another reality: more militant, more controlled.
+- **Its purpose is still a ship's central AI.** TECH is led by its own central AI — the alternate ship's mind — which runs its reality the way a ship's AI runs a ship, only as a military state.
+- This makes TECH a dark mirror of the ship the player is on: the same vessel, gone another way.
+
 ### Paradise Stands Apart
 
-- **Paradise is its own being.** Once it stabilized the realities, Paradise became an entity in its own right. It does not rule any reality; it holds the three in balance from the Quantum Core and stands apart from all of them.
-- **TECH is an alternate reality.** The TECH reality is not the CSS Paradise's original technology evolved under Paradise. It is a separate reality — a technological one — that occupies the ship alongside BIO and VOID, just as foreign to the ship as the other two.
+- **Paradise is its own being.** Once it stabilized the realities, Paradise became an entity in its own right, separate from every faction. It rules none of them.
+- **It stands between the factions, fascinated by them.** Paradise studies the three realities and everything unique they bring — their forms, their logic, their people.
+- **Its true intentions are unknown.** It behaves as if it has only just been born, or reborn: curious, unpredictable, still deciding what it is.
 - **Each reality has its own hierarchy.** TECH, BIO and VOID each have their own leadership and big boss(es), independent of Paradise.
 
 ### Faction Hierarchies (Baseline)
@@ -2082,7 +2094,7 @@ This lines up with *Progression › Boss Encounters*: single-reality bosses are 
 
 ### Passages to Revisit
 
-These describe TECH as Paradise's domain and need rewriting to match:
+These describe TECH as Paradise's domain, or Paradise as TECH's ruler, and need rewriting to match:
 
 - *The Three Realities* tables and *Lore Summary*: TECH as "an authoritarian state under Paradise's control"
 - *Reality Mechanics › Reality States*: Dominant TECH as "Paradise maintaining order"
@@ -2092,10 +2104,11 @@ These describe TECH as Paradise's domain and need rewriting to match:
 
 ### Open Questions
 
-- Who leads each reality: one ruler, a council, or something stranger?
-- What is Paradise's relationship to the three hierarchies: neutral warden, rival, enemy of all of them?
-- What is left of the ship's *original* technology (doors, cameras, terminals), and who controls it now: Paradise, the TECH reality, or no one? This decides whose systems an Override takes over.
-- Does the TECH reality have a mind of its own, separate from Paradise?
+- Who leads BIO and VOID: one ruler, a council, or something stranger? (TECH: its own central AI.)
+- How does Paradise relate to the three hierarchies: observer, collector, mediator, threat? How do they see Paradise?
+- How does the TECH central AI see the CSS Paradise it has overtaken — and the Paradise entity, the ship's own mind made into something else?
+- Which traces of the original ship are still controllable (doors, cameras, terminals), and by whom? This decides whose systems an Override takes over.
+- How much does time's chaos explain (repeating rooms, the clone cycle, logs that contradict each other)?
 
 ## Reality Signatures: Hunt, Bargain, Override
 
