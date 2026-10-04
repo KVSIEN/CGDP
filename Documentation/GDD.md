@@ -2072,6 +2072,13 @@ Decisions that change the original lore. The original chapters still describe th
 - **Its purpose is still a ship's central AI.** TECH is led by its own central AI — the alternate ship's mind — which runs its reality the way a ship's AI runs a ship, only as a military state.
 - This makes TECH a dark mirror of the ship the player is on: the same vessel, gone another way.
 
+### VOID: No Throne, Only Depth
+
+- **VOID's "leadership" is its strongest entities**: true embodiments of phenomena, horrors and fears; cosmic entities from beyond the breach; or beings so exposed to VOID that little else of them remains.
+- **Rank is depth, not command.** Nothing in VOID gives orders. What stands higher is simply *more* VOID — closer to the source, purer, more itself. The existing tiers (*VOID › Enemies*: the Affected, the Manifested, the Entities) are steps on that same scale, and the leadership sits at its far end.
+- **Several can exist at once.** They don't rule together or serve one another; each holds its own domain and its own rules, true to *VOID › Enemies*: map-wide or domain-bound, each one a puzzle.
+- **Anyone can sink that far.** A cultist or survivor exposed long enough can become one of them, which makes VOID's top tier something that grows rather than a fixed roster.
+
 ### Paradise Stands Apart
 
 - **Paradise is its own being.** Once it stabilized the realities, Paradise became an entity in its own right, separate from every faction. It rules none of them.
@@ -2090,6 +2097,8 @@ Every reality follows the same broad shape; who sits at the top of each is still
 | **Lieutenants** | Named or unique figures who serve the leadership | Demi-bosses, boss unlock conditions |
 | **Leadership** | The reality's big boss(es) | Map bosses |
 
+Each reality fills the shape its own way: TECH as a military command under its central AI, VOID by depth of exposure rather than command (see above). BIO is still to be decided.
+
 This lines up with *Progression › Boss Encounters*: single-reality bosses are a reality's leadership, dual-reality bosses are two realities' powers meeting, and Paradise remains the separate final encounter.
 
 ### Passages to Revisit
@@ -2104,7 +2113,7 @@ These describe TECH as Paradise's domain, or Paradise as TECH's ruler, and need 
 
 ### Open Questions
 
-- Who leads BIO and VOID: one ruler, a council, or something stranger? (TECH: its own central AI.)
+- Who leads BIO: an apex creature, a hive mind, an ecosystem itself, adapted survivors? (TECH: its own central AI. VOID: its strongest entities.)
 - How does Paradise relate to the three hierarchies: observer, collector, mediator, threat? How do they see Paradise?
 - How does the TECH central AI see the CSS Paradise it has overtaken — and the Paradise entity, the ship's own mind made into something else?
 - Which traces of the original ship are still controllable (doors, cameras, terminals), and by whom? This decides whose systems an Override takes over.
