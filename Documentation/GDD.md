@@ -2079,6 +2079,13 @@ Decisions that change the original lore. The original chapters still describe th
 - **Several can exist at once.** They don't rule together or serve one another; each holds its own domain and its own rules, true to *VOID › Enemies*: map-wide or domain-bound, each one a puzzle.
 - **Anyone can sink that far.** A cultist or survivor exposed long enough can become one of them, which makes VOID's top tier something that grows rather than a fixed roster.
 
+### BIO: Survival of the Fittest
+
+- **BIO's leadership is whatever has proven itself strongest**: the most evolved, a hive mother, the one that has survived the longest, the apex predator or the alpha of its pack.
+- **Rank is earned by surviving.** BIO has no command and no throne, only the order of nature: what outlasts, out-adapts or out-hunts the rest rises to the top. A leader can be challenged, and replaced.
+- **Many shapes at the top.** A hive mother rules through her brood, an alpha through its pack, an apex alone through fear. Different territories can be held by different kinds of leaders.
+- Fits *BIO › Living Ecosystem* and the Hunt signature: the leadership is the hardest hunt of all.
+
 ### Paradise Stands Apart
 
 - **Paradise is its own being.** Once it stabilized the realities, Paradise became an entity in its own right, separate from every faction. It rules none of them.
@@ -2097,7 +2104,7 @@ Every reality follows the same broad shape; who sits at the top of each is still
 | **Lieutenants** | Named or unique figures who serve the leadership | Demi-bosses, boss unlock conditions |
 | **Leadership** | The reality's big boss(es) | Map bosses |
 
-Each reality fills the shape its own way: TECH as a military command under its central AI, VOID by depth of exposure rather than command (see above). BIO is still to be decided.
+Each reality fills the shape its own way: **TECH** by command (a military state under its central AI), **BIO** by survival (the strongest, oldest and most evolved rise), **VOID** by depth (the purer the VOID, the higher it stands).
 
 This lines up with *Progression › Boss Encounters*: single-reality bosses are a reality's leadership, dual-reality bosses are two realities' powers meeting, and Paradise remains the separate final encounter.
 
@@ -2113,7 +2120,6 @@ These describe TECH as Paradise's domain, or Paradise as TECH's ruler, and need 
 
 ### Open Questions
 
-- Who leads BIO: an apex creature, a hive mind, an ecosystem itself, adapted survivors? (TECH: its own central AI. VOID: its strongest entities.)
 - How does Paradise relate to the three hierarchies: observer, collector, mediator, threat? How do they see Paradise?
 - How does the TECH central AI see the CSS Paradise it has overtaken — and the Paradise entity, the ship's own mind made into something else?
 - Which traces of the original ship are still controllable (doors, cameras, terminals), and by whom? This decides whose systems an Override takes over.
