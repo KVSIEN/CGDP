@@ -1971,6 +1971,54 @@ Changes and proposals made after this document was cloned from the original. The
 
 ## Built Since the Original
 
+What the prototype currently does that the original chapters don't define yet. These are **baselines to build on and test**, not final decisions: values and content are placeholders, and anything here can change after playtesting.
+
+### Player
+
+- **Movement**: walk, sprint, crouch, slide, jump and mantle (pulling up onto ledges). Movement is physical and tuned for responsiveness rather than realism.
+- **Dodge**: a short evasive move with a brief window of invulnerability. Several dodge styles are prototyped (sidestep into roll, committed roll, steerable boost, dash) to find the one that fits the game.
+- **Camera**: both first- and third-person, switchable at any time, with aim-down-sights in both. This answers *Camera / Perspective* for the prototype only: both are kept until playtesting decides.
+- **Meters**: stamina is one instance of a general meter idea (oxygen, battery, mana-like resources), so reality-specific resources can reuse it.
+
+### Combat and Gear
+
+- **Prototype weapon families**: assault rifle, SMG, pistol, sniper, LMG and shotgun, each with its own stat ranges and generated per drop by tier and quality. They stand in for the reality weapon types until those are designed.
+- **Calibers**: reserve ammo is shared by caliber (light, standard, heavy, shells), so two weapons of the same caliber draw from one pool and the loadout becomes a supply decision.
+- **Melee**: always available alongside the gun — light attacks chain into a combo, a held attack is a heavier finisher.
+- **Throwables**: grenades are items like any other (frag, smoke), aimed with a predicted arc.
+- **Feedback**: hit markers, kill confirmations, screen shake and controller rumble make every hit readable.
+
+### Enemies
+
+- **One baseline enemy per reality**, each built on its reality's defensive priority and kept near the ~100 effective health baseline: a TECH maintenance bot (armour), a BIO scavenger (health), a VOID husk (shields).
+- **Behaviour**: enemies patrol, investigate what they see or hear, then chase and fight (melee or ranged). Stealth and noise feed into this.
+
+### Economy, NPCs and Quests
+
+- **Credits**: money is an item carried in the pack, so it can be found, lost and extracted like anything else.
+- **Vendors**: NPCs with rotating stock (supplies and freshly rolled weapons), prices based on an item's worth and quality, and trade-ins.
+- **Dialogue**: branching conversations whose replies can trigger actions (open a shop) or depend on what the player carries.
+- **Quests**: optional objectives (kill, collect, reach or trigger something) with rewards. No waypoints — they stay within *Discovery Over Direction*.
+- **Loot**: drops come from loot tables with rarity odds; a run's *luck* makes empty draws rarer and high tiers likelier.
+
+### Navigation and Readability
+
+- **Map**: a minimap and a full world map, both hidden under fog of war until explored. The map shows where the player has been, never where to go.
+- **Door signs**: a coloured light over each doorway shows the type of room beyond it (shop, treasure, resupply…), with a red marker for dangerous rooms, so every fork is a readable choice.
+- **Notifications**: a message feed announces pickups, kills, warnings and room events.
+
+### Map Generation
+
+- **Map styles**: linear, branching, hub-and-spoke and labyrinth layouts (or a random pick), each with its own feel.
+- **Loops and shortcuts**: maps include loops and shortcuts so the player can circle back. Some shortcuts are **one-way**: they open from the deep end, giving a faster way home.
+- **Gates**: optional areas can be locked (key or conditions) or hidden behind a breakable **secret wall**. A gated area always holds a reward.
+- **Ship sections**: Habitation, Commerce and Engineering shape which kinds of places appear where, a first step toward *Room Categories* and *Adjacency*.
+- **Places**: rooms are recognisable ship spaces — lobby, restaurant, park, casino, crew quarters, cargo bay, grand atrium, docking bay, supply depot — plus hand-built **landmark rooms** (Reactor Core).
+- **Pacing**: rules keep fights from stacking up (a breather after an elite, limits on fights in a row) and can guarantee certain rooms (a reward behind every gate, an early loot room, a stop before the boss).
+- **Run modifiers**: each run can roll **warnings** (harder, with better loot) and **anomalies** (twists like more secrets or extra loops), announced at the start.
+- **Resupply and Breach rooms**: calm stops with an ammo cache, and fights where two realities overlap.
+- **Seeds**: everything generated follows a seed, so a map, a loadout or a weapon can be reproduced and shared.
+
 ### Rooms and Realities
 
 - **Factions are aesthetic, not functional.** Every room belongs to one of the three realities, and the reality decides how the room looks and which enemies it fields, never what the room *is*. A loot room, resupply stop or peaceful room can sit in any reality.
@@ -1998,6 +2046,16 @@ Changes and proposals made after this document was cloned from the original. The
 - **Extraction with stakes.** The Exit is the extraction point: extracting keeps everything carried; dying loses everything brought and found. The starting room is a safe hub with a crafting bench and a random starting loadout. Between runs the player packs a kit from the docked ship's hold.
 
 See also: Core Loop, Map Structure, Starting Room, The Docked Ship
+
+### Differences to Resolve
+
+Places where the prototype currently departs from the original chapters. Each is a decision to make, not a change already made to the design:
+
+- **Map visibility**: *Map Structure* says there is no map. The prototype has a fog-of-war map that only shows explored space, and door signs that reveal room types. Keep, limit (e.g. map only through TECH terminals), or remove?
+- **Boss and extraction**: the design locks the boss behind unlock conditions and caps the run with the boss. In the prototype the Exit can be used without fighting the boss.
+- **Weapons and ammo**: the design defines weapons and ammo per reality (bows, relics, energy cells). The prototype uses modern weapon families and calibers as placeholders.
+- **Hub stations**: the design has three stations (crafting, cooking, smithing). The prototype has one workbench with a few recipes.
+- **Room isolation**: the design treats rooms as safe once their door is closed. In the prototype doors are mostly open passages, and only unique rooms seal.
 
 ## Proposed Concepts
 
