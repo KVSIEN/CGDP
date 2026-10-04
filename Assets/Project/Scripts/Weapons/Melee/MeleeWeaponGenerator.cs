@@ -33,6 +33,7 @@ namespace CGD.Weapons
             d.HeavyAttack        = Scale(cat.HeavyAttack, damage, reach, pen);
             d.HeavyHoldThreshold = cat.HeavyHoldThreshold;
             d.ComboResetTime     = cat.ComboResetTime;
+            d.WeaveWindow        = cat.WeaveWindow;
             d.HitMask            = cat.HitMask;
             d.NoiseRadius        = cat.NoiseRadius;
 

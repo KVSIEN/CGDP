@@ -86,6 +86,7 @@ MonoBehaviour:
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyHoldThreshold: 0.45
   ComboResetTime: 1.4
+  WeaveWindow: 2
   Damage:
     Min: 35
     Max: 55

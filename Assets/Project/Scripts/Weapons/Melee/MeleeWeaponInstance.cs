@@ -8,6 +8,10 @@ namespace CGD.Weapons
     {
         public MeleeWeaponData Data { get; }
 
+        // Lives on the weapon, not the controller, so switching away and back mid-combo
+        // continues the string (within the weapon's weave window).
+        public ComboState Combo { get; } = new();
+
         public override string DisplayName => Data != null ? Data.WeaponName : "Melee Weapon";
 
         public MeleeWeaponInstance(MeleeWeaponData data) : base((ItemDefinition)null) => Data = data;

@@ -288,6 +288,9 @@
 - With a melee weapon equipped the right mouse never zooms the camera
 - **Cancel windows**: once a swing has struck, the later part of its recovery can be cut short by raising the guard or dodging. The hit has already landed, and the combo carries on: slash, guard (or parry), then the next press continues with the second step, as long as it comes within the combo's reset time. Combo steps can be cancelled early in their recovery; finishers and heavy attacks only near the end, so committing to them still has a cost
 - Dodging is never blocked by a swing. Dodging before a swing's cancel window wastes that swing (its strike doesn't happen if it hadn't yet) and restarts the combo
+- **Combo weaving**: a dodge, a parry, an ability or switching weapons between combo steps keeps the next step waiting for the weapon's **weave window** (2–3 s; daggers longest, hammers shortest) instead of the short idle reset, counted from when the dodge ends. Doing nothing still resets the combo quickly. Weaving only holds the combo open; the buildup comes from the combo steps themselves (later steps hit harder or carry their own effects)
+- Abilities fired in a swing's cancel window cut its recovery short like a dodge; fired earlier, the swing simply carries on
+- **Combos survive weapon switches**: each melee weapon remembers its own place in its combo. Switch to a gun, shoot, and switch back within the weave window to continue with the next step (switching away before a swing's cancel window drops that combo). Heavy attacks always restart the combo
 
 ## Action Timeline System
 - A data-driven frame-data system for choreographing per-frame hitbox logic for any ability or attack

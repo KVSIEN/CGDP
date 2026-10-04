@@ -23,6 +23,8 @@ namespace CGD.Weapons
         public MeleeAttackStep HeavyAttack = new() { Damage = 2.5f };
         public float HeavyHoldThreshold = 0.35f;
         public float ComboResetTime     = 1.2f;
+        [Tooltip("Seconds the next combo step stays open after a dodge, parry, ability or weapon switch")]
+        public float WeaveWindow        = 2.5f;
 
         [Header("Rolls")]
         [Tooltip("Damage of a 1× step")]

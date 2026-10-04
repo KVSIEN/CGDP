@@ -22,6 +22,9 @@ namespace CGD.Weapons
         [Tooltip("Seconds of no input after a combo ends before the combo index resets to the first step.")]
         public float ComboResetTime = 1.2f;
 
+        [Tooltip("Seconds the next combo step stays open after a dodge, parry, ability, weapon switch or a guard/dodge cancel — longer than ComboResetTime, so weaving keeps a combo alive and idling doesn't")]
+        [Min(0f)] public float WeaveWindow = 2.5f;
+
         public LayerMask HitMask = ~0;
         [Tooltip("How far away enemies hear it (0 = silent)")]
         public float NoiseRadius = 8f;

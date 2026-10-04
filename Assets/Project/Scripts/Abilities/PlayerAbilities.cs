@@ -17,6 +17,9 @@ namespace CGD.Abilities
         [SerializeField] private PlayerHealth _health;
         [SerializeField] private Transform _cameraTransform;
 
+        // Raised when an ability fires, e.g. so a melee combo can be held open across it.
+        public event System.Action<Ability> AbilityUsed;
+
         // Read by AbilityHUD
         public Ability[] Slots => _slots;
         public int  CastingSlot => _castingSlot;
@@ -143,6 +146,7 @@ namespace CGD.Abilities
             Ability ability = _slots[slot];
             if (!ability.Cost.TryPay(_meters)) return;
             ability.Execute(_ctx);
+            AbilityUsed?.Invoke(ability);
 
             bool wasFull = _charges[slot] >= ability.MaxCharges;
             _charges[slot]--;

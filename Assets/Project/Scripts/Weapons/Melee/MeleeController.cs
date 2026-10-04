@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using CGD.Abilities;
 using CGD.Audio;
 using CGD.Combat;
 using CGD.Feedback;
@@ -13,6 +14,8 @@ namespace CGD.Weapons
     // equipped melee weapon on Attack as well. With a melee weapon equipped the aim input
     // raises its guard instead; as an IDamageInterceptor it blocks or parries hits while
     // raised, so it must sit on the same object as the player's HealthManager.
+    // Combos can be woven: a dodge, parry, ability or weapon switch between steps keeps
+    // the next step open for the weapon's weave window instead of the short idle reset.
     [RequireComponent(typeof(PlayerInputHandler))]
     public class MeleeController : MonoBehaviour, IDamageInterceptor
     {
@@ -32,17 +35,17 @@ namespace CGD.Weapons
         private PlayerInputHandler _input;
         private PlayerMovement     _movement;
         private PlayerDodge        _dodge;
+        private PlayerAbilities    _abilities;
         private MeterSet           _meters;
         private DamageSource       _damageSource;
         private Func<float, bool>  _payGuardStamina;
 
         private MeleeWeaponInstance _equipped;
         private MeleeGuard          _guard;
+        private readonly ComboState _fistCombo = new();
 
         private Phase _phase;
         private float _phaseTimer;
-        private int   _comboIndex;
-        private float _comboResetTimer;
         private MeleeAttackStep _activeStep;
         private bool _usingTimeline;
         private ActionContext _timelineCtx;
@@ -57,7 +60,8 @@ namespace CGD.Weapons
 
         public bool IsGuarding => _guard != null && _guard.IsRaised;
 
-        private MeleeWeaponData Data => _equipped != null ? _equipped.Data : _data;
+        private MeleeWeaponData Data  => _equipped != null ? _equipped.Data  : _data;
+        private ComboState      Combo => _equipped != null ? _equipped.Combo : _fistCombo;
         // Divides wind-up, strike and recovery; a timeline-driven strike keeps its authored frames.
         private float Speed => Mathf.Max(0.1f, Data.AttackSpeed);
 
@@ -69,13 +73,27 @@ namespace CGD.Weapons
             _payGuardStamina = TryPayStamina;
             TryGetComponent(out _meters);
             TryGetComponent(out _dodge);
+            TryGetComponent(out _abilities);
+        }
+
+        private void OnEnable()
+        {
+            if (_abilities != null) _abilities.AbilityUsed += OnAbilityUsed;
+        }
+
+        private void OnDisable()
+        {
+            if (_abilities != null) _abilities.AbilityUsed -= OnAbilityUsed;
         }
 
         // Called by the loadout when the active slot changes (null = a firearm or empty slot).
         public void Equip(MeleeWeaponInstance weapon)
         {
             if (_equipped == weapon) return;
-            InterruptSwing(keepCombo: false);
+            // Switching away is a weave like a dodge: the combo waits for the switch back,
+            // unless the swing is dropped before its cancel window.
+            if (_phase != Phase.Idle) InterruptSwing(keepCombo: InCancelWindow);
+            else                      Weave();
             _equipped = weapon;
             _guard    = weapon != null && weapon.Data.CanGuard ? new MeleeGuard(weapon.Data.Guard) : null;
         }
@@ -87,7 +105,6 @@ namespace CGD.Weapons
         private void Update()
         {
             if (Data == null) return;
-            if (_phase == Phase.Idle) TickComboReset();
             if (UpdateDodge()) return;
             if (_movement != null && !_movement.CanAct)
             {
@@ -148,24 +165,29 @@ namespace CGD.Weapons
             }
         }
 
-        // Keeps ticking while guarding or dodging, so the combo only carries over a
-        // cancel for ComboResetTime — long enough to weave in a parry, not to bank a step.
-        private void TickComboReset()
-        {
-            if (_comboResetTimer <= 0f) return;
-            _comboResetTimer -= Time.deltaTime;
-            if (_comboResetTimer <= 0f) _comboIndex = 0;
-        }
-
         // A dodge is never blocked and always ends the swing: inside the cancel window that
-        // keeps the combo going, earlier the swing and the combo are lost. Nothing else
-        // happens while the dodge moves the player. Returns true while dodging.
+        // keeps the combo going, earlier the swing and the combo are lost. The weave window
+        // counts from the end of the dodge. Nothing else happens while the dodge moves the
+        // player. Returns true while dodging.
         private bool UpdateDodge()
         {
             if (_dodge == null || !_dodge.IsDrivingMovement) return false;
             if (_phase != Phase.Idle) InterruptSwing(keepCombo: InCancelWindow);
+            Weave();
             _guard?.Lower();
             return true;
+        }
+
+        // An ability fired mid-combo. Before a swing's cancel window the swing simply carries on.
+        private void OnAbilityUsed(Ability ability)
+        {
+            if (InCancelWindow)            InterruptSwing(keepCombo: true);
+            else if (_phase == Phase.Idle) Weave();
+        }
+
+        private void Weave()
+        {
+            if (Data != null) Combo.Extend(Time.time, Data.WeaveWindow);
         }
 
         // The guard goes up between swings or in a swing's cancel window (keeping the combo);
@@ -199,9 +221,19 @@ namespace CGD.Weapons
             float cost = data.StaminaCost.Amount * (heavy ? data.HeavyStaminaMultiplier : 1f);
             if (!TryPayStamina(cost)) return false;
 
-            AttackStarted?.Invoke(heavy ? -1 : _comboIndex);
-            _activeStep = heavy ? data.HeavyAttack : data.LightCombo[_comboIndex];
-            _comboIndex = heavy ? 0 : (_comboIndex + 1) % data.LightCombo.Length;
+            if (heavy)
+            {
+                AttackStarted?.Invoke(-1);
+                _activeStep = data.HeavyAttack;
+                Combo.Reset();
+            }
+            else
+            {
+                int step = Combo.StepAt(Time.time);
+                AttackStarted?.Invoke(step);
+                _activeStep = data.LightCombo[step];
+                Combo.Begin(step, data.LightCombo.Length);
+            }
 
             _phase      = Phase.Windup;
             _phaseTimer = _activeStep.WindupTime / Speed;
@@ -306,8 +338,8 @@ namespace CGD.Weapons
                 if (StartAttack(_bufferedHeavy)) return;
             }
 
-            _phase           = Phase.Idle;
-            _comboResetTimer = Data.ComboResetTime;
+            _phase = Phase.Idle;
+            Combo.Release(Time.time, Data.ComboResetTime);
         }
 
         // Ends the swing under way (a cancel, dodge or weapon swap). Hits already dealt stand.
@@ -325,13 +357,8 @@ namespace CGD.Weapons
             _heldLastFrame = false;
             _holdTimer     = 0f;
 
-            if (keepCombo)
-            {
-                _comboResetTimer = Data.ComboResetTime;
-                return;
-            }
-            _comboIndex      = 0;
-            _comboResetTimer = 0f;
+            if (keepCombo) Combo.Release(Time.time, Data.WeaveWindow);
+            else           Combo.Reset();
         }
 
         public float Intercept(in DamageInfo info, float amount, Vector3 point)
@@ -348,6 +375,7 @@ namespace CGD.Weapons
                 case GuardOutcome.Parried:
                     Stunnable stunnable = attacker.GetComponentInParent<Stunnable>();
                     if (stunnable != null) stunnable.ApplyStun(_equipped.Data.Guard.ParryStun);
+                    Weave();
                     FeedbackBus.Notify("Parried!", NotificationStyle.Success);
                     break;
                 case GuardOutcome.Broken:
