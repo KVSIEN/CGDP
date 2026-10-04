@@ -37,6 +37,7 @@ MonoBehaviour:
     WindupTime: 0.1
     ActiveTime: 0.14
     RecoveryTime: 0.24
+    CancelFrom: 0.4
     HitShape: 1
     Range: 1.9
     Radius: 0.4
@@ -54,6 +55,7 @@ MonoBehaviour:
     WindupTime: 0.1
     ActiveTime: 0.14
     RecoveryTime: 0.24
+    CancelFrom: 0.4
     HitShape: 1
     Range: 1.9
     Radius: 0.4
@@ -71,6 +73,7 @@ MonoBehaviour:
     WindupTime: 0.14
     ActiveTime: 0.12
     RecoveryTime: 0.34
+    CancelFrom: 0.75
     HitShape: 0
     Range: 2.2
     Radius: 0.4
@@ -89,6 +92,7 @@ MonoBehaviour:
     WindupTime: 0.3
     ActiveTime: 0.18
     RecoveryTime: 0.45
+    CancelFrom: 0.75
     HitShape: 1
     Range: 2.1
     Radius: 0.45

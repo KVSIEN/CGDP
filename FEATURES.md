@@ -283,9 +283,11 @@
   - **Spear** — long-reach thrusts and a wide sweep; a narrow guard
 - Rolled stats: damage, **attack speed** (how fast every swing winds up, strikes and recovers) and armour penetration follow quality; reach, stamina cost and guard strength vary per weapon
 - Swings cost **stamina** when the character has a stamina meter (heavy attacks cost double); a swing that can't be paid doesn't start. Without a stamina meter, melee is free
-- **Block** (Aim, right mouse, while not swinging): raising the guard slows you to aiming speed and stops most of the damage from hits in front of you; what it stops costs stamina, and running out **breaks the guard** (the hit lands in full). Hits from behind or the side, and damage over time, ignore the guard
+- **Block** (Aim, right mouse, between swings or in a swing's cancel window): raising the guard slows you to aiming speed and stops most of the damage from hits in front of you; what it stops costs stamina, and running out **breaks the guard** (the hit lands in full). Hits from behind or the side, and damage over time, ignore the guard
 - **Parry**: a hit that lands just after raising the guard (within the weapon's parry window) is deflected completely — no damage, no on-hit effects — and stuns the attacker briefly. Holding the guard up doesn't keep the window open; lower it and raise it again for the next parry
 - With a melee weapon equipped the right mouse never zooms the camera
+- **Cancel windows**: once a swing has struck, the later part of its recovery can be cut short by raising the guard or dodging. The hit has already landed, and the combo carries on: slash, guard (or parry), then the next press continues with the second step, as long as it comes within the combo's reset time. Combo steps can be cancelled early in their recovery; finishers and heavy attacks only near the end, so committing to them still has a cost
+- Dodging is never blocked by a swing. Dodging before a swing's cancel window wastes that swing (its strike doesn't happen if it hadn't yet) and restarts the combo
 
 ## Action Timeline System
 - A data-driven frame-data system for choreographing per-frame hitbox logic for any ability or attack

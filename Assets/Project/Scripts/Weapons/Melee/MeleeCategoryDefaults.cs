@@ -5,6 +5,11 @@ namespace CGD.Weapons
     // window; heavy ones hit hard and pierce armour but swing slowly and parry poorly.
     public static class MeleeCategoryDefaults
     {
+        // Share of the recovery before a guard or dodge can cut it short (see MeleeAttackStep.CancelFrom).
+        // Combo steps cancel early so parries can be woven in; finishers and heavies commit.
+        private const float ComboStep = 0.4f;
+        private const float Finisher  = 0.75f;
+
         public static void Apply(MeleeCategoryData c)
         {
             switch (c.Type)
@@ -26,9 +31,9 @@ namespace CGD.Weapons
             {
                 Step(MeleeHitShape.Thrust, 1.0f, 0.06f, 0.10f, 0.16f, 1.6f, 0.32f),
                 Step(MeleeHitShape.Sweep,  1.0f, 0.06f, 0.10f, 0.18f, 1.5f, 0.32f, arc: 80f),
-                Step(MeleeHitShape.Thrust, 1.4f, 0.10f, 0.12f, 0.28f, 1.7f, 0.32f),
+                Step(MeleeHitShape.Thrust, 1.4f, 0.10f, 0.12f, 0.28f, 1.7f, 0.32f, cancel: Finisher),
             };
-            c.HeavyAttack        = Step(MeleeHitShape.Thrust, 2.5f, 0.20f, 0.12f, 0.40f, 1.8f, 0.35f, crit: 2f);
+            c.HeavyAttack        = Step(MeleeHitShape.Thrust, 2.5f, 0.20f, 0.12f, 0.40f, 1.8f, 0.35f, crit: 2f, cancel: Finisher);
             c.HeavyHoldThreshold = 0.3f;
             c.ComboResetTime     = 1.0f;
 
@@ -52,9 +57,9 @@ namespace CGD.Weapons
             {
                 Step(MeleeHitShape.Sweep,  1.00f, 0.10f, 0.14f, 0.24f, 1.9f, 0.40f, arc: 100f),
                 Step(MeleeHitShape.Sweep,  1.05f, 0.10f, 0.14f, 0.24f, 1.9f, 0.40f, arc: 100f),
-                Step(MeleeHitShape.Thrust, 1.40f, 0.14f, 0.12f, 0.34f, 2.2f, 0.40f),
+                Step(MeleeHitShape.Thrust, 1.40f, 0.14f, 0.12f, 0.34f, 2.2f, 0.40f, cancel: Finisher),
             };
-            c.HeavyAttack        = Step(MeleeHitShape.Sweep, 2.4f, 0.30f, 0.18f, 0.45f, 2.1f, 0.45f, arc: 140f);
+            c.HeavyAttack        = Step(MeleeHitShape.Sweep, 2.4f, 0.30f, 0.18f, 0.45f, 2.1f, 0.45f, arc: 140f, cancel: Finisher);
             c.HeavyHoldThreshold = 0.35f;
             c.ComboResetTime     = 1.2f;
 
@@ -77,9 +82,9 @@ namespace CGD.Weapons
             c.LightCombo = new[]
             {
                 Step(MeleeHitShape.Sweep, 1.0f, 0.16f, 0.14f, 0.30f, 1.9f, 0.45f, arc: 90f),
-                Step(MeleeHitShape.Slam,  1.3f, 0.22f, 0.10f, 0.40f, 1.6f, 0.80f),
+                Step(MeleeHitShape.Slam,  1.3f, 0.22f, 0.10f, 0.40f, 1.6f, 0.80f, cancel: Finisher),
             };
-            c.HeavyAttack        = Step(MeleeHitShape.Slam, 2.8f, 0.40f, 0.12f, 0.55f, 1.7f, 1.0f);
+            c.HeavyAttack        = Step(MeleeHitShape.Slam, 2.8f, 0.40f, 0.12f, 0.55f, 1.7f, 1.0f, cancel: Finisher);
             c.HeavyHoldThreshold = 0.4f;
             c.ComboResetTime     = 1.3f;
 
@@ -102,9 +107,9 @@ namespace CGD.Weapons
             c.LightCombo = new[]
             {
                 Step(MeleeHitShape.Slam, 1.0f, 0.24f, 0.12f, 0.42f, 1.7f, 0.9f),
-                Step(MeleeHitShape.Slam, 1.2f, 0.28f, 0.12f, 0.48f, 1.7f, 1.0f),
+                Step(MeleeHitShape.Slam, 1.2f, 0.28f, 0.12f, 0.48f, 1.7f, 1.0f, cancel: Finisher),
             };
-            c.HeavyAttack        = Step(MeleeHitShape.Slam, 3.0f, 0.50f, 0.14f, 0.65f, 1.8f, 1.2f);
+            c.HeavyAttack        = Step(MeleeHitShape.Slam, 3.0f, 0.50f, 0.14f, 0.65f, 1.8f, 1.2f, cancel: Finisher);
             c.HeavyHoldThreshold = 0.45f;
             c.ComboResetTime     = 1.4f;
 
@@ -128,9 +133,9 @@ namespace CGD.Weapons
             {
                 Step(MeleeHitShape.Thrust, 1.0f, 0.12f, 0.12f, 0.26f, 2.4f, 0.35f),
                 Step(MeleeHitShape.Thrust, 1.1f, 0.12f, 0.12f, 0.26f, 2.4f, 0.35f),
-                Step(MeleeHitShape.Sweep,  0.9f, 0.16f, 0.16f, 0.32f, 2.2f, 0.40f, arc: 140f),
+                Step(MeleeHitShape.Sweep,  0.9f, 0.16f, 0.16f, 0.32f, 2.2f, 0.40f, arc: 140f, cancel: Finisher),
             };
-            c.HeavyAttack        = Step(MeleeHitShape.Thrust, 2.5f, 0.32f, 0.14f, 0.45f, 2.8f, 0.40f);
+            c.HeavyAttack        = Step(MeleeHitShape.Thrust, 2.5f, 0.32f, 0.14f, 0.45f, 2.8f, 0.40f, cancel: Finisher);
             c.HeavyHoldThreshold = 0.35f;
             c.ComboResetTime     = 1.2f;
 
@@ -146,7 +151,8 @@ namespace CGD.Weapons
         }
 
         private static MeleeAttackStep Step(MeleeHitShape shape, float damage, float windup, float active,
-                                            float recovery, float range, float radius, float arc = 90f, float crit = 1.5f)
+                                            float recovery, float range, float radius, float arc = 90f, float crit = 1.5f,
+                                            float cancel = ComboStep)
         {
             return new MeleeAttackStep
             {
@@ -155,6 +161,7 @@ namespace CGD.Weapons
                 WindupTime         = windup,
                 ActiveTime         = active,
                 RecoveryTime       = recovery,
+                CancelFrom         = cancel,
                 Range              = range,
                 Radius             = radius,
                 SweepArcDeg        = arc,

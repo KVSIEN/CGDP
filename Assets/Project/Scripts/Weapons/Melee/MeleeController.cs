@@ -31,6 +31,7 @@ namespace CGD.Weapons
 
         private PlayerInputHandler _input;
         private PlayerMovement     _movement;
+        private PlayerDodge        _dodge;
         private MeterSet           _meters;
         private DamageSource       _damageSource;
         private Func<float, bool>  _payGuardStamina;
@@ -67,20 +68,27 @@ namespace CGD.Weapons
             _damageSource    = DamageSource.Of(gameObject);
             _payGuardStamina = TryPayStamina;
             TryGetComponent(out _meters);
+            TryGetComponent(out _dodge);
         }
 
         // Called by the loadout when the active slot changes (null = a firearm or empty slot).
         public void Equip(MeleeWeaponInstance weapon)
         {
             if (_equipped == weapon) return;
-            CancelAttack();
+            InterruptSwing(keepCombo: false);
             _equipped = weapon;
             _guard    = weapon != null && weapon.Data.CanGuard ? new MeleeGuard(weapon.Data.Guard) : null;
         }
 
+        // The tail of a swing's recovery (from its CancelFrom point) can be cut short.
+        private bool InCancelWindow =>
+            _phase == Phase.Recovery && _phaseTimer <= _activeStep.RecoveryTime / Speed * (1f - _activeStep.CancelFrom);
+
         private void Update()
         {
             if (Data == null) return;
+            if (_phase == Phase.Idle) TickComboReset();
+            if (UpdateDodge()) return;
             if (_movement != null && !_movement.CanAct)
             {
                 _guard?.Lower();
@@ -96,12 +104,6 @@ namespace CGD.Weapons
 
             if (_phase == Phase.Idle)
             {
-                if (_comboResetTimer > 0f)
-                {
-                    _comboResetTimer -= Time.deltaTime;
-                    if (_comboResetTimer <= 0f) _comboIndex = 0;
-                }
-
                 if (releasedThisFrame)
                 {
                     StartAttack(_holdTimer >= Data.HeavyHoldThreshold);
@@ -146,16 +148,43 @@ namespace CGD.Weapons
             }
         }
 
-        // The guard goes up only between swings; while it is up nothing else happens, and a
-        // swing held during it starts fresh once it drops. Returns true while guarding.
+        // Keeps ticking while guarding or dodging, so the combo only carries over a
+        // cancel for ComboResetTime — long enough to weave in a parry, not to bank a step.
+        private void TickComboReset()
+        {
+            if (_comboResetTimer <= 0f) return;
+            _comboResetTimer -= Time.deltaTime;
+            if (_comboResetTimer <= 0f) _comboIndex = 0;
+        }
+
+        // A dodge is never blocked and always ends the swing: inside the cancel window that
+        // keeps the combo going, earlier the swing and the combo are lost. Nothing else
+        // happens while the dodge moves the player. Returns true while dodging.
+        private bool UpdateDodge()
+        {
+            if (_dodge == null || !_dodge.IsDrivingMovement) return false;
+            if (_phase != Phase.Idle) InterruptSwing(keepCombo: InCancelWindow);
+            _guard?.Lower();
+            return true;
+        }
+
+        // The guard goes up between swings or in a swing's cancel window (keeping the combo);
+        // while it is up nothing else happens, and a swing held during it starts fresh once
+        // it drops. Returns true while guarding.
         private bool UpdateGuard()
         {
             if (_guard == null) return false;
 
-            if (_phase == Phase.Idle && _input.GetAction(GameAction.AimDownSights))
+            bool canRaise = _phase == Phase.Idle || InCancelWindow;
+            if (canRaise && _input.GetAction(GameAction.AimDownSights))
+            {
+                if (_phase != Phase.Idle) InterruptSwing(keepCombo: true);
                 _guard.Raise(Time.time);
+            }
             else
+            {
                 _guard.Lower();
+            }
 
             if (!_guard.IsRaised) return false;
             _heldLastFrame = false;
@@ -281,8 +310,8 @@ namespace CGD.Weapons
             _comboResetTimer = Data.ComboResetTime;
         }
 
-        // A weapon swap drops whatever swing was under way.
-        private void CancelAttack()
+        // Ends the swing under way (a cancel, dodge or weapon swap). Hits already dealt stand.
+        private void InterruptSwing(bool keepCombo)
         {
             if (_phase == Phase.Active)
             {
@@ -290,13 +319,19 @@ namespace CGD.Weapons
                 else                _resolver.End();
             }
 
-            _phase           = Phase.Idle;
-            _activeStep      = null;
+            _phase         = Phase.Idle;
+            _activeStep    = null;
+            _comboBuffered = false;
+            _heldLastFrame = false;
+            _holdTimer     = 0f;
+
+            if (keepCombo)
+            {
+                _comboResetTimer = Data.ComboResetTime;
+                return;
+            }
             _comboIndex      = 0;
             _comboResetTimer = 0f;
-            _comboBuffered   = false;
-            _heldLastFrame   = false;
-            _holdTimer       = 0f;
         }
 
         public float Intercept(in DamageInfo info, float amount, Vector3 point)

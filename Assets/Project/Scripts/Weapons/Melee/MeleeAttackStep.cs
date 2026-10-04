@@ -26,6 +26,8 @@ namespace CGD.Weapons
         public float ActiveTime = 0.15f;
         [Tooltip("Delay after the hit window closes before another attack can start, unless a combo input was buffered.")]
         public float RecoveryTime = 0.25f;
+        [Tooltip("Share of the recovery after which raising the guard or dodging cancels the rest and keeps the combo going. 0 = cancel right after the strike, 1 = fully committed (finishers)")]
+        [Range(0f, 1f)] public float CancelFrom = 0.5f;
 
         [Header("Hit Detection")]
         [Tooltip("Thrust: single SphereCast forward (stab). Sweep: fan of SphereCasts in a horizontal arc (slash). Slam: OverlapSphere at impact point (overhead smash).")]
