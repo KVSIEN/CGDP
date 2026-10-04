@@ -7,7 +7,8 @@ using CGD.Stats;
 namespace CGD.Combat
 {
     // Parent of a character's Hitboxes and the single place damage is resolved:
-    // region multiplier → armor → shield → health. Subclasses only supply their stats.
+    // region multiplier → armor → interceptors (a raised guard) → shield → health.
+    // Subclasses only supply their stats.
     public abstract class HealthManager : MonoBehaviour, IDamageable
     {
         [Tooltip("Per-region damage multipliers. Empty = every region ×1, Head still counts as critical.")]
@@ -17,6 +18,7 @@ namespace CGD.Combat
         private Meter _shield;
         private float _armorReductionPercent;
         private StatusEffectController _statusEffects;
+        private IDamageInterceptor[]   _interceptors = System.Array.Empty<IDamageInterceptor>();
         private CharacterStats _stats;
 
         public abstract Team  Team      { get; }
@@ -69,6 +71,7 @@ namespace CGD.Combat
         {
             TryGetComponent(out _statusEffects);
             TryGetComponent(out _stats);
+            _interceptors = GetComponents<IDamageInterceptor>();
             // The shield is a regenerating resource like any other, so it runs on Meter.
             _shield = new Meter(new MeterSettings(MaxShield, ShieldRegenRate, ShieldRegenDelay));
             ResetHealth();
@@ -124,7 +127,12 @@ namespace CGD.Combat
             LastHitPoint  = point;
             OnHit?.Invoke(info);
 
-            float amount = info.ResolveDamage(Armor * (1f - _armorReductionPercent)) * multiplier;
+            float resolved = info.ResolveDamage(Armor * (1f - _armorReductionPercent)) * multiplier;
+            float amount   = resolved;
+            foreach (IDamageInterceptor interceptor in _interceptors)
+                amount = Mathf.Max(0f, interceptor.Intercept(info, amount, point));
+            // A hit an interceptor stopped outright (a parry) carries no status effects either.
+            bool deflected = resolved > 0f && amount <= 0f;
             float dealt  = amount;
             _shield.SuppressRegen();
 
@@ -153,7 +161,7 @@ namespace CGD.Combat
                 return;
             }
 
-            ApplyOnHitEffects(info);
+            if (!deflected) ApplyOnHitEffects(info);
         }
 
         private void ApplyOnHitEffects(in DamageInfo info)

@@ -12,7 +12,7 @@ namespace CGD.Weapons
     // and attachment slots as any other piece of gear. Its stats stay on Data rather
     // than in BaseStats because the firing code reads those fields directly; the
     // properties below are those fields with fitted attachments applied.
-    public class WeaponInstance : ItemInstance
+    public class WeaponInstance : WeaponItem
     {
         public WeaponData Data { get; }
         public int Magazine { get; internal set; }
@@ -49,6 +49,8 @@ namespace CGD.Weapons
         {
             if (Data != null) Magazine = MagazineSize;
         }
+
+        public override void Refill() => RefillMagazine();
 
         // Taking off a bigger magazine can't leave more rounds loaded than now fit.
         private void ClampMagazine()

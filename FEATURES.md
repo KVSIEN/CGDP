@@ -175,6 +175,7 @@
 - Inventory panel (press I) shows all four loadout slots, highlights the active weapon, and lists each weapon's name; empty slots are shown as "— Empty —"
 - Item inventory panel (also press I, sits to the right of the loadout) shows a flat list of everything carried — stackable items aggregated by definition (so all Light Rounds show as one line with a total count rather than one line per internal 999-cap stack) plus each unique gear piece; a header shows slots-used and total weight against per-player caps that turn orange when exceeded
 - Starting weapons are configurable in the Inspector via WeaponData ScriptableObject assets
+- A slot can hold a melee weapon instead of a gun; it is equipped, swapped, picked up, bought, packed and dropped exactly like a firearm (melee weapons have no ammo, so ammo caches and revives skip them)
 
 ## Input System
 - All actions are defined in one place and can be reconfigured without touching code
@@ -260,7 +261,7 @@
 - Tap the melee key for a light attack; hold it past a configurable threshold before releasing for a heavier finisher instead
 - Light attacks chain into a combo string — pressing again while the current attack is swinging or recovering queues the next step, which fires the instant the current one finishes; the string resets back to the first step after a short period of no input
 - Damage resolves through the same Effective Damage pipeline as guns and abilities (armor, penetration, damage type all apply)
-- Independent of the equipped ranged weapon — always available regardless of which gun is out
+- Quick melee is independent of the equipped ranged weapon — always available regardless of which gun is out (bare fists by default; with a melee weapon equipped, the melee key swings that weapon)
 - Hit registration runs continuously during the Active window (every physics tick), not a single-frame check — moving targets are caught mid-swing
 - Three hit shapes per attack step:
   - **Thrust** — single SphereCast forward (stabs, pokes); resolves hitbox regions so headshots and limb hits apply their multipliers
@@ -270,6 +271,21 @@
 - Per-step critical multiplier — applied when a Thrust or Sweep hits a critical region (head by default); tunable per combo step so a heavy finisher can crit harder than a quick jab
 - Debug drawing shows the cast rays (Thrust/Sweep) or overlap sphere (Slam) each physics tick during the Active window
 - When a MeleeAttackStep has an ActionTimeline assigned, the Active phase is driven by the timeline system instead of the legacy hit resolver — the timeline controls what shapes fire on which frames, while Windup and Recovery remain time-based
+
+### Melee Weapons
+- Five melee weapon types, rolled like guns (quality, tier, seed → the same weapon every time): **Dagger**, **Sword**, **Axe**, **Hammer** and **Spear**
+- With a melee weapon in the active slot, **Attack** (left mouse) swings it: tap for the light combo, hold for the heavy attack. No ammo, reload or recoil
+- Each type has its own combo and feel:
+  - **Dagger** — very fast stab-slash-stab, short reach, a long parry window but a flimsy block
+  - **Sword** — two wide slashes into a thrust, a broad sweeping heavy; the all-rounder
+  - **Axe** — slower chop into an overhead slam, bites through armour
+  - **Hammer** — slow area slams that crush armour; the sturdiest block, the tightest parry
+  - **Spear** — long-reach thrusts and a wide sweep; a narrow guard
+- Rolled stats: damage, **attack speed** (how fast every swing winds up, strikes and recovers) and armour penetration follow quality; reach, stamina cost and guard strength vary per weapon
+- Swings cost **stamina** when the character has a stamina meter (heavy attacks cost double); a swing that can't be paid doesn't start. Without a stamina meter, melee is free
+- **Block** (Aim, right mouse, while not swinging): raising the guard slows you to aiming speed and stops most of the damage from hits in front of you; what it stops costs stamina, and running out **breaks the guard** (the hit lands in full). Hits from behind or the side, and damage over time, ignore the guard
+- **Parry**: a hit that lands just after raising the guard (within the weapon's parry window) is deflected completely — no damage, no on-hit effects — and stuns the attacker briefly. Holding the guard up doesn't keep the window open; lower it and raise it again for the next parry
+- With a melee weapon equipped the right mouse never zooms the camera
 
 ## Action Timeline System
 - A data-driven frame-data system for choreographing per-frame hitbox logic for any ability or attack

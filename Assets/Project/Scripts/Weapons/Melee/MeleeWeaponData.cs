@@ -1,7 +1,10 @@
 using UnityEngine;
+using CGD.Meters;
 
 namespace CGD.Weapons
 {
+    // A melee weapon's stats: its combo, heavy attack, speed, stamina cost and guard.
+    // Hand-authored for quick melee (fists), or generated from a MeleeCategoryData.
     [CreateAssetMenu(fileName = "NewMeleeWeapon", menuName = "CGD/Weapons/Melee Weapon Data")]
     public class MeleeWeaponData : ScriptableObject
     {
@@ -22,5 +25,17 @@ namespace CGD.Weapons
         public LayerMask HitMask = ~0;
         [Tooltip("How far away enemies hear it (0 = silent)")]
         public float NoiseRadius = 8f;
+
+        [Header("Handling")]
+        [Tooltip("Speeds up (above 1) or slows down every swing's wind-up, strike and recovery. Timeline-driven steps keep their authored speed")]
+        [Min(0.1f)] public float AttackSpeed = 1f;
+        [Tooltip("Paid per light attack; heavy attacks pay HeavyStaminaMultiplier times this. Characters without the meter swing for free")]
+        public MeterCost StaminaCost;
+        [Min(0f)] public float HeavyStaminaMultiplier = 2f;
+
+        [Header("Guard (alternate action)")]
+        [Tooltip("Off for quick-melee data such as fists, which can't block")]
+        public bool CanGuard;
+        public GuardSettings Guard = GuardSettings.Default;
     }
 }

@@ -99,7 +99,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 |---|---|---|
 | **WeaponController** | `_input` = Player, `_camera` = PlayerCamera, `_crosshair` = HUD Crosshair, `_muzzle` = Muzzle, `_visuals` = WeaponRig, `_cameraEffects`? = Main Camera | Fires whatever the loadout equips. |
 | **PlayerWeaponLoadout** | `_startingWeapons`? = `WeaponData` assets, `_wheel`? = HUD SlotWheel | Empty slots fill from pickups. Holding 1–4 opens the weapon wheel (other slots + spare weapons in the pack). |
-| **MeleeController** | `_camera` = PlayerCamera, `_data` = `Weapons/Melee/DefaultMeleeWeaponData` | |
+| **MeleeController** | `_camera` = PlayerCamera, `_data` = `Weapons/Melee/DefaultMeleeWeaponData` | Quick melee (fists) and the equipped melee weapon. Must be on the **same object as PlayerHealth**: it blocks/parries hits as an `IDamageInterceptor`, which HealthManager only looks for on its own object. Stamina costs need a `MeterSet` with the category's stamina meter on that object too (without one, melee is free). |
 | **ThrowableController** | `_camera` = PlayerCamera | Throws the grenade an item slot readies. Grenades are items (`Items/Throwables/`). |
 | **PlayerAbilities** | `_health` = PlayerHealth, `_cameraTransform` = Main Camera, `_slots` = up to 4 ability assets | |
 | **TimelineAbilityRunner**? | — | Needed for `TimelineAbility` assets. |
@@ -589,6 +589,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Weapons/Categories/` | one per weapon type (incl. `BowCategory`: Volley fire behavior, *Bows* section (`HasDrawStances`, vertical/horizontal draw multipliers, volley spacing), Pellet Count = arrows per shot; `CrossbowCategory`: Projectile fire behavior, `AutomaticMagazineSize` for autoloaders; both use Arrows ammo, with arrow speed, drop and draw time in *Charge & Projectile*) | RandomWeaponPickup, loot |
 | `Weapons/FireBehaviors/` | Hitscan, Projectile, Shotgun, Volley (bows: arrows fanned along the draw orientation; `_prefab` = `Prefabs/Weapons/Projectile`) | weapon data / categories |
 | `Weapons/Melee/`, `Weapons/Throwables/` | `DefaultMeleeWeaponData`, `DefaultGrenadeData`, `SmokeGrenadeData` | MeleeController, throwable items |
+| `Weapons/Melee/` | `Dagger`/`Sword`/`Axe`/`Hammer`/`Spear` `…MeleeCategory` (`MeleeCategoryData`: moveset template, rolled damage/speed/reach/penetration, `StaminaMeter` = `Meters/StaminaMeter`, guard; right-click → *Apply Type Defaults*) | loot tables, shop stock (ItemStock), DevCatalog items (`give`) |
 | `Items/Munitions/` | one per caliber (incl. `ArrowMunition` for bows and crossbows) | AmmoPickup, PlayerInventory |
 | `Items/` | `StatRollProfile`, `Keycards/SecurityKeycard` (opens the generated levels' locked doors) | weapon categories, `CombatVestArmor` (see note) |
 | `Items/Armor/`, `Attachments/`, `Consumables/`, `Throwables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `StimConsumable`, `FragGrenadeThrowable`, `SmokeGrenadeThrowable`, `ScrapMetalResource`, `ClothResource` | pickups, loot, recipes, quest rewards |

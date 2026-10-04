@@ -8,8 +8,9 @@ using CGD.Weapons;
 
 namespace CGD.Player
 {
-    // Owns the carried weapons (each with its own ammo) and tells WeaponController
-    // which one to fire. Refills every weapon when the player is revived. Pressing a slot
+    // Owns the carried weapons (firearms with their own ammo, or melee weapons) and hands
+    // the active one to its controller: WeaponController for firearms, MeleeController for
+    // melee weapons — the other one is left empty. Refills every weapon when the player is revived. Pressing a slot
     // key equips that slot; holding it opens the weapon wheel to put another weapon there —
     // one from another slot (they swap) or a spare from the pack (the old one goes to the pack).
     [RequireComponent(typeof(PlayerInputHandler))]
@@ -25,24 +26,25 @@ namespace CGD.Player
 
         // Inspector mirror of the runtime loadout; overwritten on every change, so edits here do nothing.
         [Header("Runtime (read-only)")]
-        [SerializeField] private WeaponData   _activeWeapon;
-        [SerializeField] private WeaponData[] _equippedWeapons = new WeaponData[SlotCount];
+        [SerializeField] private ScriptableObject   _activeWeapon;
+        [SerializeField] private ScriptableObject[] _equippedWeapons = new ScriptableObject[SlotCount];
 
-        private readonly WeaponInstance[] _slots = new WeaponInstance[SlotCount];
+        private readonly WeaponItem[] _slots = new WeaponItem[SlotCount];
 
-        public IReadOnlyList<WeaponInstance> Slots      => _slots;
-        public int                           ActiveSlot => _activeSlot;
+        public IReadOnlyList<WeaponItem> Slots      => _slots;
+        public int                       ActiveSlot => _activeSlot;
 
         private PlayerInputHandler _input;
         private WeaponController   _weapon;
+        private MeleeController    _melee;
         private HealthManager      _health;
         private int                _activeSlot = -1;
         private PlayerInventory    _inventory;
         private SlotKeyWheel       _keys;
 
         // The wheel's choices for the slot being held, in order.
-        private readonly List<WeaponInstance> _wheelWeapons = new();
-        private readonly List<string>         _wheelLabels  = new();
+        private readonly List<WeaponItem> _wheelWeapons = new();
+        private readonly List<string>     _wheelLabels  = new();
 
         private static readonly GameAction[] SlotActions =
         {
@@ -56,6 +58,7 @@ namespace CGD.Player
         {
             _input  = GetComponent<PlayerInputHandler>();
             _weapon = GetComponent<WeaponController>();
+            TryGetComponent(out _melee);
             TryGetComponent(out _inventory);
             _keys = new SlotKeyWheel(_input, _wheel, SlotActions, "Weapon");
 
@@ -92,7 +95,7 @@ namespace CGD.Player
 
         // Puts `weapon` in the first empty slot and equips it; with every slot full it
         // replaces the active weapon instead. Returns the replaced weapon, or null.
-        public WeaponInstance AddWeapon(WeaponInstance weapon)
+        public WeaponItem AddWeapon(WeaponItem weapon)
         {
             for (int i = 0; i < SlotCount; i++)
             {
@@ -103,7 +106,7 @@ namespace CGD.Player
             }
 
             int target = Mathf.Max(0, _activeSlot);
-            WeaponInstance replaced = _slots[target];
+            WeaponItem replaced = _slots[target];
             _slots[target] = weapon;
             Equip(target);
             return replaced;
@@ -125,7 +128,7 @@ namespace CGD.Player
             if (_inventory != null)
                 foreach (ItemInstance item in _inventory.Inventory.Items)
                 {
-                    if (item is not WeaponInstance spare) continue;
+                    if (item is not WeaponItem spare) continue;
                     _wheelWeapons.Add(spare);
                     _wheelLabels.Add($"{spare.DisplayName}  (pack)");
                 }
@@ -135,7 +138,7 @@ namespace CGD.Player
         private void ChooseFromWheel(int slot, int option)
         {
             if (option < 0 || option >= _wheelWeapons.Count) return;
-            WeaponInstance chosen = _wheelWeapons[option];
+            WeaponItem chosen = _wheelWeapons[option];
 
             int from = System.Array.IndexOf(_slots, chosen);
             if (from >= 0)
@@ -152,8 +155,8 @@ namespace CGD.Player
 
         public void RefillAll()
         {
-            foreach (WeaponInstance weapon in _slots)
-                weapon?.RefillMagazine();
+            foreach (WeaponItem weapon in _slots)
+                weapon?.Refill();
 
             if (_activeSlot >= 0) Equip(_activeSlot);
         }
@@ -161,19 +164,27 @@ namespace CGD.Player
         private void Equip(int index)
         {
             _activeSlot = index;
-            _weapon.Equip(_slots[index]);
+            _weapon.Equip(_slots[index] as WeaponInstance);
+            if (_melee != null) _melee.Equip(_slots[index] as MeleeWeaponInstance);
             RefreshInspectorView();
         }
 
         private void RefreshInspectorView()
         {
             if (_equippedWeapons == null || _equippedWeapons.Length != SlotCount)
-                _equippedWeapons = new WeaponData[SlotCount];
+                _equippedWeapons = new ScriptableObject[SlotCount];
 
             for (int i = 0; i < SlotCount; i++)
-                _equippedWeapons[i] = _slots[i]?.Data;
+                _equippedWeapons[i] = DataOf(_slots[i]);
 
-            _activeWeapon = _slots[_activeSlot]?.Data;
+            _activeWeapon = DataOf(_slots[_activeSlot]);
         }
+
+        private static ScriptableObject DataOf(WeaponItem weapon) => weapon switch
+        {
+            WeaponInstance firearm    => firearm.Data,
+            MeleeWeaponInstance melee => melee.Data,
+            _                         => null,
+        };
     }
 }

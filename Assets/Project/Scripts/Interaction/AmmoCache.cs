@@ -70,9 +70,9 @@ namespace CGD.Interaction
         private void CollectMagazineSizes(PlayerWeaponLoadout loadout)
         {
             _magazineSizes.Clear();
-            foreach (WeaponInstance weapon in loadout.Slots)
+            foreach (WeaponItem item in loadout.Slots)
             {
-                if (weapon == null) continue;
+                if (item is not WeaponInstance weapon) continue;
                 AmmoType type = weapon.Data.AmmoType;
                 _magazineSizes.TryGetValue(type, out int size);
                 _magazineSizes[type] = Mathf.Max(size, weapon.MagazineSize);

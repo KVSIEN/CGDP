@@ -136,6 +136,10 @@ namespace CGD.Player
             if (speed  > 0f) _adsSpeed = speed;
         }
 
+        // Set by WeaponController: off while no firearm is equipped, so a melee weapon's
+        // guard (same input) doesn't zoom.
+        public bool AdsAllowed { get; set; } = true;
+
         private void Awake()
         {
             SettingsSave.LoadSensitivity(out _mouseSensitivity, out _gamepadSensitivity);
@@ -175,7 +179,7 @@ namespace CGD.Player
 
         private void HandleADS()
         {
-            float target = _input.GetAction(GameAction.AimDownSights) ? 1f : 0f;
+            float target = AdsAllowed && _input.GetAction(GameAction.AimDownSights) ? 1f : 0f;
             _adsT = Mathf.MoveTowards(_adsT, target, _adsSpeed * Time.deltaTime);
         }
 

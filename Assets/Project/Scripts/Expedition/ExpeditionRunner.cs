@@ -93,7 +93,7 @@ namespace CGD.Expedition
         {
             var worn = new Inventory();
             if (_weapons != null)
-                foreach (WeaponInstance weapon in _weapons.Slots)
+                foreach (WeaponItem weapon in _weapons.Slots)
                     if (weapon != null) worn.Add(weapon);
             if (_equipment != null)
                 foreach (ItemInstance piece in _equipment.Equipment.Worn)
@@ -112,7 +112,7 @@ namespace CGD.Expedition
 
         private void GiveItem(ItemInstance item)
         {
-            if (item is WeaponInstance weapon && _weapons != null && HasFreeWeaponSlot())
+            if (item is WeaponItem weapon && _weapons != null && HasFreeWeaponSlot())
             {
                 _weapons.AddWeapon(weapon);
                 return;
@@ -127,7 +127,7 @@ namespace CGD.Expedition
 
         private bool HasFreeWeaponSlot()
         {
-            foreach (WeaponInstance slot in _weapons.Slots)
+            foreach (WeaponItem slot in _weapons.Slots)
                 if (slot == null) return true;
             return false;
         }

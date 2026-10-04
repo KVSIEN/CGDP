@@ -85,7 +85,7 @@ namespace CGD.UI
                 _worn.Heading("Weapons");
                 for (int i = 0; i < _loadout.Slots.Count; i++)
                 {
-                    WeaponInstance weapon = _loadout.Slots[i];
+                    WeaponItem weapon = _loadout.Slots[i];
                     if (weapon == null) _worn.Label($"{i + 1}: —");
                     else                GearLine($"{i + 1}: {Describe(weapon)}", weapon, null);
                 }

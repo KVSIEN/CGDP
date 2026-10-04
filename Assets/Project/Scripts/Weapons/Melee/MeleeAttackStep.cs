@@ -51,5 +51,8 @@ namespace CGD.Weapons
 
         [Header("Debug")]
         public Color DebugColor = Color.white;
+
+        // Generated weapons scale a template step, so each needs its own copy.
+        public MeleeAttackStep Clone() => (MeleeAttackStep)MemberwiseClone();
     }
 }

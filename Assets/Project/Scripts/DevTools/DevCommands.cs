@@ -93,7 +93,7 @@ namespace CGD.DevTools
             ItemTier tier = args.Length > 2 ? ParseTier(args[2]) : category.Tier;
             WeaponInstance weapon = WeaponGenerator.Generate(category, category.Roll(tier, seed));
 
-            WeaponInstance replaced = _loadout.AddWeapon(weapon);
+            WeaponItem replaced = _loadout.AddWeapon(weapon);
             if (replaced != null && _inventory != null) _inventory.Inventory.Add(replaced);
             return $"{weapon.DisplayName} ({weapon.Tier}, Q{weapon.Quality}) — seed {seed}";
         }

@@ -74,7 +74,8 @@ namespace CGD.UI
                 return;
             }
 
-            WeaponInstance weapon = _interaction.Current is WeaponPickup pickup ? pickup.Weapon : null;
+            // Melee weapons have no firearm stat card; their pickup prompt names them instead.
+            WeaponInstance weapon = _interaction.Current is WeaponPickup pickup ? pickup.Weapon as WeaponInstance : null;
 
             if (weapon == null)
             {

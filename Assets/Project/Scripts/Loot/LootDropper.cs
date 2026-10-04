@@ -76,7 +76,7 @@ namespace CGD.Loot
                     PrefabPool.Spawn(drop.Prefab, position, rotation);
                     break;
 
-                case LootDropKind.Instance when drop.Instance is WeaponInstance weapon:
+                case LootDropKind.Instance when drop.Instance is WeaponItem weapon:
                     if (_weaponPickupPrefab == null) return;
                     PrefabPool.Spawn(_weaponPickupPrefab, position, rotation).SetWeapon(weapon);
                     break;

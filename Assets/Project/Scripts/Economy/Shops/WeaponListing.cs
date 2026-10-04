@@ -7,9 +7,9 @@ namespace CGD.Economy
     // free slot, or in place of the active weapon, which the shop then takes in trade.
     public class WeaponListing : ShopListing
     {
-        public WeaponListing(WeaponInstance weapon, int price) : base(price, 1) => Weapon = weapon;
+        public WeaponListing(WeaponItem weapon, int price) : base(price, 1) => Weapon = weapon;
 
-        public WeaponInstance Weapon { get; }
+        public WeaponItem Weapon { get; }
 
         public override string   Name    => Weapon.DisplayName;
         public override ItemTier Tier    => Weapon.Tier;
@@ -23,7 +23,7 @@ namespace CGD.Economy
             var loadout = customer.Loadout;
             if (loadout == null) return null;
 
-            foreach (WeaponInstance slot in loadout.Slots)
+            foreach (WeaponItem slot in loadout.Slots)
                 if (slot == null) return null;
 
             return loadout.Slots[System.Math.Max(0, loadout.ActiveSlot)];

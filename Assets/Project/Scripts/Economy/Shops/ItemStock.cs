@@ -54,7 +54,7 @@ namespace CGD.Economy
                 if (price <= 0) continue;
 
                 // Weapon categories roll weapons, which belong in the loadout rather than the pack.
-                listings.Add(item is WeaponInstance weapon ? new WeaponListing(weapon, price) : new GearListing(item, price));
+                listings.Add(item is WeaponItem weapon ? new WeaponListing(weapon, price) : new GearListing(item, price));
             }
         }
     }

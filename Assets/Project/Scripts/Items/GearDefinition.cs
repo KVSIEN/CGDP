@@ -34,7 +34,7 @@ namespace CGD.Items
             _rollProfile != null ? _rollProfile.AttachmentSlots(tier) : 0;
 
         // Rolls this definition into a carryable instance. Weapon categories override
-        // to produce a WeaponInstance carrying generated WeaponData.
+        // to produce a weapon carrying generated weapon data (WeaponInstance, MeleeWeaponInstance).
         public virtual ItemInstance CreateInstance() => CreateInstance(Roll());
 
         public virtual ItemInstance CreateInstance(ItemRoll roll) => new(this, roll);

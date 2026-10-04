@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18b34f39be9449f78ec5cf626bb420a5, type: 3}
+  m_Name: HammerMeleeCategory
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.MeleeCategoryData
+  _displayName: Hammer
+  _description: 
+  _icon: {fileID: 0}
+  _reality: 0
+  _tier: 0
+  _weight: 0.1
+  _baseValue: 180
+  _rollProfile: {fileID: 0}
+  _statRanges: []
+  Type: 3
+  Names:
+  - Sledgehammer
+  - Maul
+  - War Hammer
+  - Breaching Hammer
+  - Mace
+  LightCombo:
+  - Timeline: {fileID: 0}
+    Damage: 1
+    ArmorPenetration: 0
+    DamageType: 0
+    CriticalMultiplier: 1.5
+    WindupTime: 0.24
+    ActiveTime: 0.12
+    RecoveryTime: 0.42
+    HitShape: 2
+    Range: 1.7
+    Radius: 0.9
+    SweepArcDeg: 90
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+  - Timeline: {fileID: 0}
+    Damage: 1.2
+    ArmorPenetration: 0
+    DamageType: 0
+    CriticalMultiplier: 1.5
+    WindupTime: 0.28
+    ActiveTime: 0.12
+    RecoveryTime: 0.48
+    HitShape: 2
+    Range: 1.7
+    Radius: 1
+    SweepArcDeg: 90
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+  HeavyAttack:
+    Timeline: {fileID: 0}
+    Damage: 3
+    ArmorPenetration: 0
+    DamageType: 0
+    CriticalMultiplier: 1.5
+    WindupTime: 0.5
+    ActiveTime: 0.14
+    RecoveryTime: 0.65
+    HitShape: 2
+    Range: 1.8
+    Radius: 1.2
+    SweepArcDeg: 90
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+  HeavyHoldThreshold: 0.45
+  ComboResetTime: 1.4
+  Damage:
+    Min: 35
+    Max: 55
+    Bias: 0
+  AttackSpeed:
+    Min: 0.65
+    Max: 0.85
+    Bias: 0
+  Reach:
+    Min: 1
+    Max: 1.1
+    Bias: 0
+  ArmorPenetration:
+    Min: 0.25
+    Max: 0.45
+    Bias: 0
+  StaminaMeter: {fileID: 11400000, guid: e97086cb23b549a9b402e8130ab73a15, type: 2}
+  StaminaCost:
+    Min: 14
+    Max: 20
+    Bias: 0
+  HeavyStaminaMultiplier: 2
+  BlockDamageMultiplier:
+    Min: 0.2
+    Max: 0.3
+    Bias: 0
+  ParryWindow:
+    Min: 0.1
+    Max: 0.14
+    Bias: 0
+  Guard:
+    BlockDamageMultiplier: 0.25
+    StaminaPerDamage: 0.65
+    ArcDeg: 120
+    ParryWindow: 0.12
+    ParryStun: 1.5
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 8

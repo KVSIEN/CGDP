@@ -177,6 +177,7 @@ namespace CGD.Weapons
 
             if (_visuals != null)   _visuals.Configure(weapon?.Data);
             if (_crosshair != null) _crosshair.SetDynamicSpread(0f);
+            if (_camera != null) _camera.AdsAllowed = weapon != null;
             if (_camera != null && weapon != null)
                 _camera.SetAdsProfile(weapon.Data.AdsFovDeg, weapon.Data.AdsSpeed);
             NotifyAmmoChanged();

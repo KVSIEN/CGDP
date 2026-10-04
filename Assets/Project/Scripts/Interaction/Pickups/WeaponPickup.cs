@@ -7,23 +7,24 @@ using CGD.Weapons;
 namespace CGD.Interaction
 {
     // World pickup: fills the first empty loadout slot, or swaps with the active weapon.
+    // Holds a firearm or a melee weapon; only a firearm can be hand-placed via Data.
     [RequireComponent(typeof(Collider))]
     public class WeaponPickup : MonoBehaviour, IInteractable, IPoolable
     {
         [SerializeField] private WeaponData _data;
 
-        private WeaponInstance _weapon;
+        private WeaponItem _weapon;
 
-        public WeaponInstance Weapon => _weapon ??= _data != null ? new WeaponInstance(_data) : null;
+        public WeaponItem Weapon => _weapon ??= _data != null ? new WeaponInstance(_data) : null;
 
-        public string GetInteractLabel(GameObject interactor) => Weapon != null ? $"Pick Up  {Weapon.Data.WeaponName}" : "Pick Up";
+        public string GetInteractLabel(GameObject interactor) => Weapon != null ? $"Pick Up  {Weapon.DisplayName}" : "Pick Up";
 
         // Used by RandomWeaponPickup to hand over an already-rolled weapon, so its
         // quality and attachment slots survive being picked up.
-        public void SetWeapon(WeaponInstance weapon)
+        public void SetWeapon(WeaponItem weapon)
         {
             _weapon = weapon;
-            _data   = weapon?.Data;
+            _data   = (weapon as WeaponInstance)?.Data;
         }
 
         // A pooled pickup is handed its weapon by whoever spawns it (see LootDropper).
@@ -38,8 +39,8 @@ namespace CGD.Interaction
         {
             if (Weapon == null || !player.TryGetComponent(out PlayerWeaponLoadout loadout)) return;
 
-            WeaponInstance picked   = Weapon;
-            WeaponInstance replaced = loadout.AddWeapon(picked);
+            WeaponItem picked   = Weapon;
+            WeaponItem replaced = loadout.AddWeapon(picked);
             FeedbackBus.Notify($"Picked up {picked.DisplayName}", NotificationStyle.Reward);
             if (replaced == null)
             {
@@ -47,8 +48,7 @@ namespace CGD.Interaction
                 return;
             }
 
-            _weapon = replaced;
-            _data   = replaced.Data;
+            SetWeapon(replaced);
         }
     }
 }
