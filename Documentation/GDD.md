@@ -2057,17 +2057,17 @@ Places where the prototype currently departs from the original chapters. Each is
 - **Hub stations**: the design has three stations (crafting, cooking, smithing). The prototype has one workbench with a few recipes.
 - **Room isolation**: the design treats rooms as safe once their door is closed. In the prototype doors are mostly open passages, and only unique rooms seal.
 
-## Reality Signatures: Hunt, Bargain, Augment
+## Reality Signatures: Hunt, Bargain, Override
 
-**Chosen direction.** Each reality gives the player a signature way of growing their gear, so a map's reality mix changes how a run is played, not only what is fought:
+**Chosen direction.** Each reality gives the player a signature way of playing, so a map's reality mix changes how a run is played, not only what is fought:
 
 | Reality | Signature | The rule | The player's question |
 |---------|-----------|----------|------------------------|
 | **BIO** | **Hunt** | How you kill decides what you harvest | *"What do I want out of this creature?"* |
 | **VOID** | **Bargain** | Relics grant power under conditions imposed on you | *"What am I willing to give up?"* |
-| **TECH** | **Augment** | Gear runs rules you write yourself | *"What rules do I want to run?"* |
+| **TECH** | **Override** | Earn access, then take control of the ship's systems | *"What do I take over, and how do I get in?"* |
 
-BIO is nature's terms, VOID is the anomaly's terms, TECH is your own terms, running on someone else's machine. Baselines below; numbers and content are placeholders.
+Hunt decides what you take from a fight, Bargain what you trade for power, Override how you move through and read the ship. Three different axes that don't overlap. Baselines below; numbers and content are placeholders.
 
 ### BIO: Hunt
 
@@ -2090,26 +2090,55 @@ BIO is nature's terms, VOID is the anomaly's terms, TECH is your own terms, runn
 - **Stacking deals** is the risk: several pacts together make a run powerful and fragile at the same time.
 - Fits VOID's tone in *VOID › Tone*: hidden logic, rules that feel like intent, power with a price.
 
-### TECH: Augment
+### TECH: Override
 
-**Pillar: Systems That Reflect the World.** TECH is order, computing and Paradise's network. TECH gear is programmed, not grown or bargained for.
+**Pillar: Systems That Reflect the World.** The ship is still a working machine, and Paradise runs it. Override lets the player take parts of that machine and run them for themselves.
 
-- **Protocols**: TECH weapons and armor have protocol slots. A protocol pairs a **trigger** with a **response**:
-  - Triggers: *on kill, on reload, on dodge, when shields break, on headshot, every few seconds in combat*
-  - Responses: *shield pulse, EMP burst, instant reload, mark target, overclock fire rate, deploy a turret*
-  - Examples: *on dodge → EMP burst* (evasion becomes offense); *when shields break → instant reload* (rewards fighting on the edge).
-- **Processing budget**: each piece of gear can run only so much, set by its quality (the Computing modification in *TECH › Modifications*). **Overclocking** past the budget gives stronger effects at the cost of heat and occasional misfires.
-- **Network coverage**: protocols run on Paradise's network — full strength in TECH rooms, patchy in BIO rooms, glitchy in VOID rooms (wrong triggers, delayed responses).
-- **Getting protocols**: taking down Core Techs **cleanly** (lightning, EMP) leaves their processor intact and yields protocol chips; explosives and fire leave scrap. How you kill matters here too, for different reasons than BIO.
-- Hook for later: protocols are Paradise's own code running on the player's gear, which he can notice.
+#### How an Override Works
+
+Overrides are earned, never free, and always done in person:
+
+1. **Earn access**: complete the objective tied to the system, for example restore power to a dead junction, take an access key from the section's security unit, clear a security office, or recover a data spike from a Core Tech.
+2. **Use the terminal**: with the objective done, the system's terminal accepts the override. There is no remote control; the player has to reach the terminal.
+
+This keeps every override a small, deliberate goal inside the run rather than a menu option.
+
+#### What Can Be Overridden
+
+| Override | What it does | What the player gains |
+|----------|--------------|-----------------------|
+| **Shortcuts** | Opens sealed maintenance doors and shortcuts; can reverse a one-way door | A faster route ahead, a loop back to the hub, an early way out |
+| **Vent access** | Opens maintenance vents: crouch-only crawlspaces linking rooms, often skipping one entirely | Bypass fights, flank a room, reach places unseen |
+| **Secure rooms** | Unlocks rooms behind a clearance level: supply closets, armories, security offices, executive suites | Better loot, logs and records, for those who earn the clearance |
+| **Cameras** | Turns Paradise's cameras from a threat into intel | Enemy counts, types and patrols before entering; exposes ambushes |
+
+- **Vents** are traversal only, not weapons: narrow, slow, crouched, no big weapons, unseen while inside. Their exits are fixed, so what waits at the other end is a risk.
+- **Cameras work both ways**: before a takeover they watch for the player, and being spotted alerts the room and draws Paradise's attention. After a takeover the same cameras show feeds and mark enemies on the map while the network holds.
+
+#### Clearance
+
+- Clearance levels (1–3) are gained during a run from objectives, security units and officers' implants. Higher levels open more: level 1 vents and cameras, level 2 sealed shortcuts and armories, level 3 executive suites and reversing one-way doors.
+- **Clearance is per run.** Canonically, by the next map the realities have shifted and Paradise has rewritten his access: every run starts without clearance.
+
+#### Network Coverage
+
+Overrides only reach what's on the network, so the map's reality mix decides how much of it can be taken over:
+
+- **TECH rooms**: fully networked.
+- **BIO rooms**: damaged network (roots in the conduits); systems respond only once a relay is repaired, which can be the objective itself.
+- **VOID rooms**: off-grid; feeds are unreliable and vents may lead somewhere unexpected.
+
+#### Paradise Notices
+
+Overrides and being spotted by cameras draw Paradise's attention. As it rises he comments, then takes things back (re-sealing shortcuts, cutting feeds, closing vents), then sends hunters. Getting what's needed before the ship turns on the player is the skill.
 
 ### How the Signatures Fit
 
-- **Map identity**: a BIO-heavy map plays like a hunt, a VOID-heavy map like a gamble, a TECH-heavy map like building a machine.
-- **Build freedom stays**: gear from all three realities can be combined (*Build Freedom*); the signatures are how each reality's gear *grows*, not a class choice.
-- **Element choice carries across**: lightning yields clean TECH kills, ice preserves BIO harvests, and VOID pacts can bend both.
+- **Map identity**: a BIO-heavy map plays like a hunt, a VOID-heavy map like a gamble, a TECH-heavy map like an infiltration.
+- **Build freedom stays**: gear from all three realities can be combined (*Build Freedom*); the signatures are ways of playing, not a class choice.
+- **They combine**: a camera finds an apex creature before the hunt; a vent opens a clean kill angle; a VOID pact can make overrides easier at a price.
 
-See also: Reality Mechanics, TECH, BIO, VOID, Gear System, Status Effects, Build Freedom
+See also: Reality Mechanics, TECH, BIO, VOID, Map Structure, Stealth, Gear System, Status Effects, Build Freedom
 
 ## Proposed Concepts
 
