@@ -2057,6 +2057,60 @@ Places where the prototype currently departs from the original chapters. Each is
 - **Hub stations**: the design has three stations (crafting, cooking, smithing). The prototype has one workbench with a few recipes.
 - **Room isolation**: the design treats rooms as safe once their door is closed. In the prototype doors are mostly open passages, and only unique rooms seal.
 
+## Reality Signatures: Hunt, Bargain, Augment
+
+**Chosen direction.** Each reality gives the player a signature way of growing their gear, so a map's reality mix changes how a run is played, not only what is fought:
+
+| Reality | Signature | The rule | The player's question |
+|---------|-----------|----------|------------------------|
+| **BIO** | **Hunt** | How you kill decides what you harvest | *"What do I want out of this creature?"* |
+| **VOID** | **Bargain** | Relics grant power under conditions imposed on you | *"What am I willing to give up?"* |
+| **TECH** | **Augment** | Gear runs rules you write yourself | *"What rules do I want to run?"* |
+
+BIO is nature's terms, VOID is the anomaly's terms, TECH is your own terms, running on someone else's machine. Baselines below; numbers and content are placeholders.
+
+### BIO: Hunt
+
+**Pillar: Systems That Reflect the World.** BIO creatures are an ecosystem to hunt, not just enemies to clear.
+
+- **How you kill matters**: the method decides the quality of what's harvested. Fire burns the hide; ice preserves organs at top quality; a clean headshot keeps the pelt intact; explosives ruin most of it.
+- **Better harvest, better gear**: BIO crafting and Living Modifications (symbiotic, parasitic, evolutionary) draw on harvest quality, so BIO gear is earned in the field rather than at a workbench.
+- **Ecosystem baseline**: grazers, predators and apex hunters. Signs (trails, nests, feeding sites) show what's nearby; bait (meat, spores) draws creatures in, including onto other enemies.
+- Ties status effects to rewards: every weapon and element choice matters outside the fight too.
+
+### VOID: Bargain
+
+**Pillar: Unstable Ground.** VOID power is never free. Relics and pacts offer strength under conditions.
+
+- **Pacts**: accepted at VOID altars or from relics found in VOID rooms. Each pairs a boon with a condition, for example:
+  - *+50% damage — you can't heal until the next room*
+  - *See every hidden wall — one door on this map now leads somewhere else*
+  - *Shields regenerate instantly — the next relic you find is taken*
+- **Breaking a condition has consequences**: the boon turns, a curse takes hold, or something in VOID takes notice.
+- **Stacking deals** is the risk: several pacts together make a run powerful and fragile at the same time.
+- Fits VOID's tone in *VOID › Tone*: hidden logic, rules that feel like intent, power with a price.
+
+### TECH: Augment
+
+**Pillar: Systems That Reflect the World.** TECH is order, computing and Paradise's network. TECH gear is programmed, not grown or bargained for.
+
+- **Protocols**: TECH weapons and armor have protocol slots. A protocol pairs a **trigger** with a **response**:
+  - Triggers: *on kill, on reload, on dodge, when shields break, on headshot, every few seconds in combat*
+  - Responses: *shield pulse, EMP burst, instant reload, mark target, overclock fire rate, deploy a turret*
+  - Examples: *on dodge → EMP burst* (evasion becomes offense); *when shields break → instant reload* (rewards fighting on the edge).
+- **Processing budget**: each piece of gear can run only so much, set by its quality (the Computing modification in *TECH › Modifications*). **Overclocking** past the budget gives stronger effects at the cost of heat and occasional misfires.
+- **Network coverage**: protocols run on Paradise's network — full strength in TECH rooms, patchy in BIO rooms, glitchy in VOID rooms (wrong triggers, delayed responses).
+- **Getting protocols**: taking down Core Techs **cleanly** (lightning, EMP) leaves their processor intact and yields protocol chips; explosives and fire leave scrap. How you kill matters here too, for different reasons than BIO.
+- Hook for later: protocols are Paradise's own code running on the player's gear, which he can notice.
+
+### How the Signatures Fit
+
+- **Map identity**: a BIO-heavy map plays like a hunt, a VOID-heavy map like a gamble, a TECH-heavy map like building a machine.
+- **Build freedom stays**: gear from all three realities can be combined (*Build Freedom*); the signatures are how each reality's gear *grows*, not a class choice.
+- **Element choice carries across**: lightning yields clean TECH kills, ice preserves BIO harvests, and VOID pacts can bend both.
+
+See also: Reality Mechanics, TECH, BIO, VOID, Gear System, Status Effects, Build Freedom
+
 ## Proposed Concepts
 
 Concepts aimed at the things only CSS Paradise has: three realities contesting one ship, a player who is cloned, and an AI that is both the player's infrastructure and their antagonist. Each is measured against the Design Pillars.
