@@ -4,12 +4,15 @@ using CGD.Core;
 using CGD.Input;
 using CGD.Meters;
 using CGD.Player;
+using CGD.Settings;
 
 namespace CGD.Abilities
 {
     // Runs the four ability slots: input, charges and their recharge, resource costs and
     // cast times. Only one ability casts at a time; a cast is cancelled when the player
     // can't act. Costs are paid from the MeterSet on the player, when the ability fires.
+    // With input buffering on, a press that can't go off yet (another ability on the same
+    // frame or casting, a dodge, a stun) waits briefly, so 1→2 in quick succession both fire.
     [RequireComponent(typeof(PlayerInputHandler))]
     public class PlayerAbilities : MonoBehaviour
     {
@@ -29,6 +32,7 @@ namespace CGD.Abilities
         private PlayerMovement _movement;
         private MeterSet _meters;
         private int[] _charges;
+        private InputBuffer[] _buffers;
         private CooldownTimer[] _recharges;
         private AbilityContext _ctx;
 
@@ -51,6 +55,8 @@ namespace CGD.Abilities
             TryGetComponent(out _meters);
             _charges   = new int[_slots.Length];
             _recharges = new CooldownTimer[_slots.Length];
+            _buffers   = new InputBuffer[_slots.Length];
+            for (int i = 0; i < _buffers.Length; i++) _buffers[i] = new InputBuffer();
             RefillCharges();
 
             _ctx = new AbilityContext
@@ -71,12 +77,17 @@ namespace CGD.Abilities
             if (_health != null) _health.OnRevived -= RefillCharges;
         }
 
-        private void OnDisable() => _castingSlot = -1;
+        private void OnDisable()
+        {
+            _castingSlot = -1;
+            foreach (InputBuffer buffer in _buffers) buffer.Clear();
+        }
 
         private void Update()
         {
             _ctx.MoveInput = _input.MoveInput;
             TickRecharges(Time.deltaTime);
+            BufferPresses();
 
             if (IsCasting)
             {
@@ -88,11 +99,13 @@ namespace CGD.Abilities
             {
                 Ability ability = _slots[i];
                 if (ability == null)                   continue;
-                if (!_input.GetAction(SlotActions[i])) continue;
+                if (!Pressed(i))                       continue;
                 if (_charges[i] <= 0)                  continue;
                 if (!_movement.CanAct)                 continue;
                 if (!ability.Cost.CanAfford(_meters))  continue;
                 if (!ability.CanExecute(_ctx))         continue;
+
+                _buffers[i].Clear();
 
                 if (ability.CastTime > 0f)
                 {
@@ -123,6 +136,18 @@ namespace CGD.Abilities
                 return castTime > 0f ? 1f - _castTimer / castTime : 1f;
             }
         }
+
+        private void BufferPresses()
+        {
+            if (!GameSettings.Current.InputBuffering) return;
+            for (int i = 0; i < _slots.Length; i++)
+                if (_input.GetAction(SlotActions[i])) _buffers[i].Press(Time.time);
+        }
+
+        // A press this frame, or (with input buffering) one still waiting. It is only used up
+        // when the ability actually goes off, so a press that fails a check can retry.
+        private bool Pressed(int slot) =>
+            _input.GetAction(SlotActions[slot]) || _buffers[slot].IsPending(Time.time);
 
         private void TickCast(float deltaTime)
         {

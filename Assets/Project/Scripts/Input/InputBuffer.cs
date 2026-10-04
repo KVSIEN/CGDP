@@ -13,10 +13,12 @@ namespace CGD.Input
 
         public void Clear() => _pressedAt = float.NegativeInfinity;
 
+        public bool IsPending(float now) => now - _pressedAt <= Window;
+
         // True once for a press still inside the window, which it then uses up.
         public bool Consume(float now)
         {
-            if (now - _pressedAt > Window) return false;
+            if (!IsPending(now)) return false;
             Clear();
             return true;
         }
