@@ -5,6 +5,7 @@ using CGD.Audio;
 using CGD.CameraEffects;
 using CGD.Combat;
 using CGD.Core;
+using CGD.Feedback;
 using CGD.Input;
 using CGD.Items;
 using CGD.Player;
@@ -66,8 +67,12 @@ namespace CGD.Weapons
         public bool IsReloading       => _isReloading;
         public bool IsHolstered       => _holstered;
         /// <summary>0 at rest, 1 fully charged. Always 0 for non-Charge fire modes.</summary>
-        public float ChargeRatio      => Data != null && Data.FireMode == FireMode.Charge && Data.ChargeTime > 0f
-                                          ? Mathf.Clamp01(_chargeTimer / Data.ChargeTime) : 0f;
+        public float ChargeRatio      => Data != null && Data.FireMode == FireMode.Charge && ChargeTime > 0f
+                                          ? Mathf.Clamp01(_chargeTimer / ChargeTime) : 0f;
+
+        // A bow's draw orientation reshapes its draw time, damage and spread.
+        private DrawStance Stance    => D.StanceFor(_current.Draw);
+        private float      ChargeTime => D.ChargeTime * Stance.ChargeTimeMultiplier;
 
         private WeaponData D        => _current.Data;
         private Vector3    SoundPos => _muzzle != null ? _muzzle.position : transform.position;
@@ -138,6 +143,7 @@ namespace CGD.Weapons
 
             if (_movement == null || _movement.CanAct)
             {
+                HandleStanceInput();
                 HandleFireInput();
                 HandleReloadInput();
             }
@@ -207,17 +213,29 @@ namespace CGD.Weapons
             }
         }
 
+        // Switching draw orientation drops the current draw, as re-gripping a bow would.
+        private void HandleStanceInput()
+        {
+            if (!D.HasDrawStances || !_input.GetAction(GameAction.WeaponMode)) return;
+
+            _current.Draw = _current.Draw == DrawOrientation.Vertical ? DrawOrientation.Horizontal : DrawOrientation.Vertical;
+            _chargeTimer  = 0f;
+            FeedbackBus.Notify(_current.Draw == DrawOrientation.Horizontal
+                ? "Horizontal draw: faster, wider"
+                : "Vertical draw: slower, precise");
+        }
+
         // Hold to charge, release to fire. Releasing before MinChargeToFire cancels the
         // shot with no ammo spent so tap-firing a bow doesn't waste arrows.
         private void HandleChargeInput(bool triggerHeld)
         {
             if (triggerHeld)
             {
-                _chargeTimer = Mathf.Min(_chargeTimer + Time.deltaTime, D.ChargeTime);
+                _chargeTimer = Mathf.Min(_chargeTimer + Time.deltaTime, ChargeTime);
             }
             else if (_wasChargeHeld)
             {
-                float charge = D.ChargeTime > 0f ? Mathf.Clamp01(_chargeTimer / D.ChargeTime) : 1f;
+                float charge = ChargeTime > 0f ? Mathf.Clamp01(_chargeTimer / ChargeTime) : 1f;
                 if (charge >= D.MinChargeToFire) TryFire(charge);
                 _chargeTimer = 0f;
             }
@@ -288,8 +306,10 @@ namespace CGD.Weapons
             if (D.FireBehavior == null) return;
 
             float   adsT      = _camera.AdsT;
-            float   spreadDeg = _spread.EffectiveConeDeg(adsT, _recoil.Heat);
+            DrawStance stance = Stance;
+            float   spreadDeg = _spread.EffectiveConeDeg(adsT, _recoil.Heat) * stance.SpreadMultiplier;
             Vector3 forward   = _camera.transform.forward;
+            Vector3 volleyAxis = _current.Draw == DrawOrientation.Horizontal ? _camera.transform.right : _camera.transform.up;
 
             // Camera-origin ray avoids muzzle parallax in third-person.
             D.FireBehavior.Execute(new FireContext
@@ -300,9 +320,10 @@ namespace CGD.Weapons
                 Direction         = WeaponFireBehavior.ComputeSpreadDirection(forward, spreadDeg),
                 Muzzle            = _muzzle,
                 Data              = D,
-                Damage            = ResolveDamage() * D.GetChargeDamageScale(charge),
+                Damage            = ResolveDamage() * D.GetChargeDamageScale(charge) * stance.DamageMultiplier,
                 Source            = _damageSource,
                 Charge            = charge,
+                VolleyAxis        = volleyAxis,
                 DebugDraw         = _debugDrawBullets,
                 DebugHitColor     = _debugHitColor,
                 DebugMissColor    = _debugMissColor,

@@ -16,6 +16,8 @@ namespace CGD.Weapons
     {
         public WeaponData Data { get; }
         public int Magazine { get; internal set; }
+        // How a bow is being held; each bow remembers its own. Ignored by weapons without draw stances.
+        public DrawOrientation Draw { get; set; }
 
         public override string DisplayName => Data != null ? Data.WeaponName : "Weapon";
 

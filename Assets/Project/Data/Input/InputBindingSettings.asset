@@ -129,3 +129,7 @@ MonoBehaviour:
     PrimaryPath: <Keyboard>/8
     SecondaryPath: 
     Mode: 0
+  - Action: 29
+    PrimaryPath: <Keyboard>/b
+    SecondaryPath: 
+    Mode: 0

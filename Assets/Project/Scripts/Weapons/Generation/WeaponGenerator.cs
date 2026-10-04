@@ -50,6 +50,11 @@ namespace CGD.Weapons
             d.LowChargeGravityMultiplier = Mathf.Max(1f, cat.LowChargeGravityMultiplier.EvaluateClamped(random));
             d.LowChargeDamageMultiplier  = Mathf.Clamp(cat.LowChargeDamageMultiplier.EvaluateClamped(random), 0.05f, 1f);
 
+            d.HasDrawStances   = cat.HasDrawStances;
+            d.VerticalDraw     = cat.VerticalDraw;
+            d.HorizontalDraw   = cat.HorizontalDraw;
+            d.VolleySpacingDeg = Mathf.Max(0f, cat.VolleySpacingDeg.EvaluateClamped(random));
+
             d.DrawTime = roll.Sample(ItemStat.DrawTime, cat.DrawTime);
             d.HitMask  = cat.HitMask;
             d.NoiseRadius = cat.NoiseRadius;
@@ -63,7 +68,9 @@ namespace CGD.Weapons
             d.DamageFalloffMin   = cat.DamageFalloffMin.EvaluateClamped(random);
 
             d.AmmoType     = cat.AmmoType;
-            d.MagazineSize = roll.Sample(ItemStat.MagazineSize, cat.MagazineSize);
+            bool automatic = d.FireMode == FireMode.Auto || d.FireMode == FireMode.Burst;
+            d.MagazineSize = roll.Sample(ItemStat.MagazineSize,
+                automatic && cat.AutomaticMagazineSize.Max > 0 ? cat.AutomaticMagazineSize : cat.MagazineSize);
 
             d.ReloadTime         = roll.Sample(ItemStat.ReloadTime, cat.ReloadTime);
             d.TacticalReloadTime = Mathf.Max(0.5f, roll.Sample(ItemStat.ReloadTime, cat.TacticalReloadTime));

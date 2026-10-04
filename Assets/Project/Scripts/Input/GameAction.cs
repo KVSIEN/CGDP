@@ -31,5 +31,6 @@ namespace CGD.Input
         Item2,
         Item3,
         Item4,
+        WeaponMode,     // bows: switch between a vertical and a horizontal draw
     }
 }

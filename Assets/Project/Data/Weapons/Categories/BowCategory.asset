@@ -32,7 +32,7 @@ MonoBehaviour:
   - Warbow
   - Yumi
   FireModes: 03000000
-  FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
+  FireBehavior: {fileID: 11400000, guid: 6d2f8a1c4b9e4f70a3c5e7d9b1f3a5c7, type: 2}
   RPM:
     Min: 120
     Max: 200
@@ -47,8 +47,8 @@ MonoBehaviour:
     Bias: 0
   PelletCount:
     Min: 1
-    Max: 1
-    Bias: 0
+    Max: 3
+    Bias: -0.6
   ChargeTime:
     Min: 0.6
     Max: 1.2
@@ -85,6 +85,19 @@ MonoBehaviour:
     Min: 0.3
     Max: 0.45
     Bias: 0
+  HasDrawStances: 1
+  VerticalDraw:
+    ChargeTimeMultiplier: 1.25
+    DamageMultiplier: 1.15
+    SpreadMultiplier: 0.6
+  HorizontalDraw:
+    ChargeTimeMultiplier: 0.65
+    DamageMultiplier: 0.8
+    SpreadMultiplier: 1.8
+  VolleySpacingDeg:
+    Min: 2.5
+    Max: 4
+    Bias: 0
   OnHitEffects: []
   Damage:
     Min: 55
@@ -115,6 +128,10 @@ MonoBehaviour:
   MagazineSize:
     Min: 1
     Max: 1
+    Bias: 0
+  AutomaticMagazineSize:
+    Min: 0
+    Max: 0
     Bias: 0
   ReloadTime:
     Min: 0.35

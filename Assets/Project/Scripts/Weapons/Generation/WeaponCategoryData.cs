@@ -44,6 +44,14 @@ namespace CGD.Weapons
         public FloatRange LowChargeGravityMultiplier = new(3f, 3f);
         public FloatRange LowChargeDamageMultiplier  = new(1f, 1f);
 
+        [Header("Bows")]
+        [Tooltip("Bows: the Weapon Mode key switches between a vertical and a horizontal draw")]
+        public bool       HasDrawStances;
+        public DrawStance VerticalDraw   = new(1.25f, 1.15f, 0.6f);
+        public DrawStance HorizontalDraw = new(0.65f, 0.8f,  1.8f);
+        [Tooltip("Angle between neighbouring arrows when a bow rolls more than one arrow (Pellet Count)")]
+        public FloatRange VolleySpacingDeg = new(3f, 3f);
+
         [Header("On Hit")]
         [Tooltip("Status effects each hit may apply")]
         public StatusEffectApplication[] OnHitEffects;
@@ -61,6 +69,8 @@ namespace CGD.Weapons
         [Tooltip("Which shared ammo pool weapons in this category draw from.")]
         public AmmoType   AmmoType           = AmmoType.StandardRounds;
         public IntRange   MagazineSize       = new(25, 35);
+        [Tooltip("Magazine for weapons that roll Auto or Burst (e.g. an autoloading crossbow). 0–0 = use Magazine Size")]
+        public IntRange   AutomaticMagazineSize = new(0, 0);
 
         [Header("Reload")]
         public FloatRange ReloadTime          = new(2.2f, 3.0f);

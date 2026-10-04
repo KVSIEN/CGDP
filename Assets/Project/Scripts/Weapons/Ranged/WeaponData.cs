@@ -37,6 +37,19 @@ namespace CGD.Weapons
         [Range(0f, 1f)]
         public float MinChargeToFire = 0.15f;
 
+        [Header("Draw Stances (bows)")]
+        [Tooltip("The Weapon Mode key switches this weapon between a vertical and a horizontal draw")]
+        public bool HasDrawStances;
+        public DrawStance VerticalDraw   = new(1.25f, 1.15f, 0.6f);
+        public DrawStance HorizontalDraw = new(0.65f, 0.8f,  1.8f);
+        [Tooltip("Angle between neighbouring arrows of a multishot volley")]
+        [Min(0f)]
+        public float VolleySpacingDeg = 3f;
+
+        public DrawStance StanceFor(DrawOrientation orientation) =>
+            !HasDrawStances ? DrawStance.Neutral
+            : orientation == DrawOrientation.Horizontal ? HorizontalDraw : VerticalDraw;
+
         [Header("Projectile Physics")]
         [Tooltip("Muzzle velocity at full charge (m/s). Only used when the equipped FireBehavior spawns projectiles — hitscan weapons ignore this field. Real-bullet range: ~400-1000 m/s; arrow-class: ~40-80; rocket-class: ~30-150.")]
         [Min(0.1f)]

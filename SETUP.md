@@ -586,8 +586,8 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Combat/StatusEffects/` | Bleed, Fire, Ice, Lightning, Poison | on-hit effect lists |
 | `Combat/ActionTimelines/` | `GroundSlamTimeline` | TimelineAbility, melee attack steps |
 | `Weapons/Ranged/` | `DefaultWeaponData`, `T1/` examples per category | Loadout, WeaponPickup |
-| `Weapons/Categories/` | one per weapon type (incl. `BowCategory`, `CrossbowCategory`: Projectile fire behavior, Arrows ammo; their arrow speed, drop and draw time are in the category's *Charge & Projectile* ranges) | RandomWeaponPickup, loot |
-| `Weapons/FireBehaviors/` | Hitscan, Projectile, Shotgun | weapon data / categories |
+| `Weapons/Categories/` | one per weapon type (incl. `BowCategory`: Volley fire behavior, *Bows* section (`HasDrawStances`, vertical/horizontal draw multipliers, volley spacing), Pellet Count = arrows per shot; `CrossbowCategory`: Projectile fire behavior, `AutomaticMagazineSize` for autoloaders; both use Arrows ammo, with arrow speed, drop and draw time in *Charge & Projectile*) | RandomWeaponPickup, loot |
+| `Weapons/FireBehaviors/` | Hitscan, Projectile, Shotgun, Volley (bows: arrows fanned along the draw orientation; `_prefab` = `Prefabs/Weapons/Projectile`) | weapon data / categories |
 | `Weapons/Melee/`, `Weapons/Throwables/` | `DefaultMeleeWeaponData`, `DefaultGrenadeData`, `SmokeGrenadeData` | MeleeController, throwable items |
 | `Items/Munitions/` | one per caliber (incl. `ArrowMunition` for bows and crossbows) | AmmoPickup, PlayerInventory |
 | `Items/` | `StatRollProfile`, `Keycards/SecurityKeycard` (opens the generated levels' locked doors) | weapon categories, `CombatVestArmor` (see note) |

@@ -422,7 +422,10 @@ namespace CGD.Weapons
             c.AdsSpeed  = new(8f,  13f, 0f);
         }
 
-        // Charge shot: hold to draw, release to loose one arrow that arcs and drops. Near-silent.
+        // Charge shot: hold to draw, release to loose an arrow that arcs and drops. Near-silent.
+        // Some bows loose 2–3 arrows at once. Every bow has two draws (Weapon Mode key):
+        // vertical is slower, harder-hitting and precise; horizontal is faster but weaker and
+        // wider, and fans a multishot volley sideways instead of stacking it.
         // Band: shortbow (fast draw, light hit) → warbow (slow draw, heavy hit).
         private static void ApplyBow(WeaponCategoryData c)
         {
@@ -433,6 +436,12 @@ namespace CGD.Weapons
             c.RPM           = new(120,  200);   // brief recovery after the release
             c.BurstCount    = new(1,    1);
             c.BurstInterval = new(0f,   0f);
+            c.PelletCount   = new(1,    3, -0.6f);   // arrows per shot: multishot bows are uncommon
+
+            c.HasDrawStances   = true;
+            c.VerticalDraw     = new(1.25f, 1.15f, 0.6f);   // draw time, damage, spread
+            c.HorizontalDraw   = new(0.65f, 0.8f,  1.8f);
+            c.VolleySpacingDeg = new(2.5f, 4f, 0f);
 
             // A half-drawn bow shoots slow, drops fast and hits soft.
             c.ChargeTime                 = new(0.6f,  1.2f,  0f);
@@ -505,17 +514,21 @@ namespace CGD.Weapons
         }
 
         // Point and shoot: bolts hit harder, pierce more armour and fly flatter than arrows,
-        // but cranking the next one takes time. Band: pistol crossbow → arbalest; rare
-        // repeating crossbows carry a few bolts.
+        // but cranking the next one takes time. Band: pistol crossbow → arbalest. Most are
+        // single-shot or small repeaters; less often an autoloader feeds bolts for burst or
+        // full-auto fire from a bigger magazine.
         private static void ApplyCrossbow(WeaponCategoryData c)
         {
             c.Names     = new[] { "Hand Crossbow", "Hunting Crossbow", "Arbalest", "Heavy Crossbow",
-                                  "Repeating Crossbow", "Pistol Crossbow", "Siege Crossbow" };
-            c.FireModes = new[] { FireMode.Semi };
+                                  "Repeating Crossbow", "Pistol Crossbow", "Siege Crossbow",
+                                  "Autoloading Crossbow" };
+            // 2 in 3 semi; burst and full-auto autoloaders split the rest.
+            c.FireModes = new[] { FireMode.Semi, FireMode.Semi, FireMode.Semi, FireMode.Semi,
+                                  FireMode.Burst, FireMode.Auto };
 
-            c.RPM           = new(60,  150);   // only matters for repeaters
-            c.BurstCount    = new(1,   1);
-            c.BurstInterval = new(0f,  0f);
+            c.RPM           = new(90,   240);
+            c.BurstCount    = new(3,    3);
+            c.BurstInterval = new(0.12f, 0.18f);
 
             c.ProjectileSpeed          = new(80f, 120f, 0f);
             c.ProjectileGravity        = new(5f,  8f,   0f);
@@ -530,7 +543,8 @@ namespace CGD.Weapons
             c.DamageFalloffMin   = new(0.7f,  0.85f, 0f);
 
             c.AmmoType     = AmmoType.Arrows;               // bolts share the arrow pool for now
-            c.MagazineSize = new(1, 5, -0.6f);              // single-shot, repeaters are rare
+            c.MagazineSize          = new(1, 5,  -0.6f);   // semi: single-shot, repeaters are rare
+            c.AutomaticMagazineSize = new(6, 15, -0.3f);   // autoloaders (burst / auto)
 
             // Cranking the string back.
             c.ReloadTime          = new(1.4f, 3.2f, 0f);
