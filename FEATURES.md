@@ -203,6 +203,7 @@
 - **Audio** — Master, Effects, Music and Interface volume sliders, heard straight away
 - **Video** — resolution, window mode (fullscreen, borderless, windowed), quality level, VSync, frame rate limit (when VSync is off), field of view (60–110°), ADS zoom (gradual or snap) and ADS field of view (independent or affected). Sprinting still widens the view on top of the chosen FOV. Resolution and window mode apply in builds, not in the editor's Game view
 - **Accessibility** — camera shake & kicks strength (0% turns off shake, weapon kicks and FOV punches), screen flash strength (hit flash and feedback flashes), and the low-health red vignette on or off. Hold vs. toggle is set per action on the Controls tab
+- **Input Buffering** (Accessibility tab, off by default): a press made while you can't act on it yet is remembered for 0.4 s and happens as soon as you can, like queued inputs in MOBAs. Covers firing while a gun is drawing, reloading, between shots or during a dodge (so *swap, roll, fire* shoots the moment the roll ends), and melee swings tapped during a dodge or stun. A press is never carried over to a different weapon; raising the guard drops a queued swing
 - Audio, video and accessibility changes preview live and are saved when the menu closes
 - All settings are saved to disk and automatically restored on next launch, applied before the first scene appears
 

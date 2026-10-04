@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CGD.Settings
 {
-    // Player preferences outside of controls: audio, video and accessibility. Stored as JSON,
+    // Player preferences outside of key bindings: audio, video, accessibility and input assists. Stored as JSON,
     // so a field added later simply keeps its default in older saves.
     [Serializable]
     public class SettingsData
@@ -32,6 +32,10 @@ namespace CGD.Settings
         public float CameraShake    = 1f;
         public float FlashIntensity = 1f;
         public bool  DamageVignette = true;
+
+        // Input assist: presses made while busy (drawing, dodging, between shots) happen as
+        // soon as possible instead of being dropped. Off by default, like most shooters.
+        public bool InputBuffering;
 
         public const float MinFieldOfView = 60f;
         public const float MaxFieldOfView = 110f;

@@ -7,6 +7,7 @@ using CGD.Feedback;
 using CGD.Input;
 using CGD.Meters;
 using CGD.Player;
+using CGD.Settings;
 
 namespace CGD.Weapons
 {
@@ -43,6 +44,8 @@ namespace CGD.Weapons
         private MeleeWeaponInstance _equipped;
         private MeleeGuard          _guard;
         private readonly ComboState _fistCombo = new();
+        private readonly InputBuffer _queuedSwing = new();
+        private bool _queuedHeavy;
 
         private Phase _phase;
         private float _phaseTimer;
@@ -62,6 +65,7 @@ namespace CGD.Weapons
 
         private MeleeWeaponData Data  => _equipped != null ? _equipped.Data  : _data;
         private ComboState      Combo => _equipped != null ? _equipped.Combo : _fistCombo;
+        private bool AttackHeld => _input.IsHeld(GameAction.Melee) || (_equipped != null && _input.IsHeld(GameAction.Attack));
         // Divides wind-up, strike and recovery; a timeline-driven strike keeps its authored frames.
         private float Speed => Mathf.Max(0.1f, Data.AttackSpeed);
 
@@ -94,6 +98,7 @@ namespace CGD.Weapons
             // unless the swing is dropped before its cancel window.
             if (_phase != Phase.Idle) InterruptSwing(keepCombo: InCancelWindow);
             else                      Weave();
+            _queuedSwing.Clear();
             _equipped = weapon;
             _guard    = weapon != null && weapon.Data.CanGuard ? new MeleeGuard(weapon.Data.Guard) : null;
         }
@@ -105,16 +110,17 @@ namespace CGD.Weapons
         private void Update()
         {
             if (Data == null) return;
-            if (UpdateDodge()) return;
-            if (_movement != null && !_movement.CanAct)
+            bool dodging = UpdateDodge();
+            if (dodging || (_movement != null && !_movement.CanAct))
             {
                 _guard?.Lower();
+                QueueWhileBusy();
                 return;
             }
 
             if (UpdateGuard()) return;
 
-            bool held = _input.IsHeld(GameAction.Melee) || (_equipped != null && _input.IsHeld(GameAction.Attack));
+            bool held = AttackHeld;
             bool releasedThisFrame = _heldLastFrame && !held;
             _heldLastFrame = held;
             if (held) _holdTimer += Time.deltaTime;
@@ -125,6 +131,10 @@ namespace CGD.Weapons
                 {
                     StartAttack(_holdTimer >= Data.HeavyHoldThreshold);
                     _holdTimer = 0f;
+                }
+                else if (_queuedSwing.Consume(Time.time))
+                {
+                    StartAttack(_queuedHeavy);
                 }
                 return;
             }
@@ -174,8 +184,25 @@ namespace CGD.Weapons
             if (_dodge == null || !_dodge.IsDrivingMovement) return false;
             if (_phase != Phase.Idle) InterruptSwing(keepCombo: InCancelWindow);
             Weave();
-            _guard?.Lower();
             return true;
+        }
+
+        // Swings are still read while dodging or stunned; with input buffering on, one
+        // released then is swung as soon as the player can act again.
+        private void QueueWhileBusy()
+        {
+            bool held = AttackHeld;
+            bool released = _heldLastFrame && !held;
+            _heldLastFrame = held;
+            if (held) _holdTimer += Time.deltaTime;
+            if (!released) return;
+
+            if (GameSettings.Current.InputBuffering)
+            {
+                _queuedSwing.Press(Time.time);
+                _queuedHeavy = _holdTimer >= Data.HeavyHoldThreshold;
+            }
+            _holdTimer = 0f;
         }
 
         // An ability fired mid-combo. Before a swing's cancel window the swing simply carries on.
@@ -201,6 +228,7 @@ namespace CGD.Weapons
             if (canRaise && _input.GetAction(GameAction.AimDownSights))
             {
                 if (_phase != Phase.Idle) InterruptSwing(keepCombo: true);
+                _queuedSwing.Clear();
                 _guard.Raise(Time.time);
             }
             else

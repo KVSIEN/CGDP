@@ -9,6 +9,7 @@ using CGD.Feedback;
 using CGD.Input;
 using CGD.Items;
 using CGD.Player;
+using CGD.Settings;
 using CGD.Stats;
 using CGD.UI;
 
@@ -37,6 +38,7 @@ namespace CGD.Weapons
 
         private readonly RecoilProcessor _recoil = new();
         private readonly SpreadProcessor _spread = new();
+        private readonly InputBuffer     _fireBuffer = new();
 
         private WeaponInstance _current;
         private CharacterStats _stats;
@@ -127,6 +129,9 @@ namespace CGD.Weapons
             // Sway ticks through draw/reload so the weapon never freezes mid-animation.
             PushSwayInputs();
 
+            if (GameSettings.Current.InputBuffering && _input.WasPressed(GameAction.Attack))
+                _fireBuffer.Press(Time.time);
+
             if (_drawTimer > 0f)
             {
                 // Swap-dodge cancel: a dodge started during the draw covers the rest of it, so
@@ -192,6 +197,7 @@ namespace CGD.Weapons
             _chargeTimer   = 0f;
             _wasChargeHeld = false;
             _drawTimer     = weapon != null ? weapon.Data.DrawTime : 0f;
+            _fireBuffer.Clear(); // a press meant for the previous weapon doesn't carry over
 
             _recoil.Configure(weapon?.Data);
             _spread.Configure(weapon?.Data);
@@ -210,7 +216,9 @@ namespace CGD.Weapons
             if (!_fireCooldown.IsReady) return;
 
             bool triggerHeld  = _input.GetAction(GameAction.Attack);
-            bool triggerPress = _input.WasPressed(GameAction.Attack);
+            // With input buffering, a press made while the gun couldn't fire (drawing,
+            // dodging, reloading, between shots) counts now. Held fire modes need no buffer.
+            bool triggerPress = _input.WasPressed(GameAction.Attack) | _fireBuffer.Consume(Time.time);
 
             if (_current.Magazine <= 0)
             {
