@@ -3,7 +3,8 @@ namespace CGD.Weapons
     // Per-type bands for the "Apply Type Defaults" context menu. Step damage is relative
     // to the rolled Damage. Light weapons trade damage for speed, reach and a long parry
     // window; heavy ones hit hard and pierce armour but swing slowly and parry poorly.
-    // Quick weapons get the longest weave window, since they are built around weaving.
+    // Quick weapons get the longest weave window, since they are built around weaving;
+    // hammers the longest swap-strike window, since skipping their slow wind-up pays most.
     public static class MeleeCategoryDefaults
     {
         // Share of the recovery before a guard or dodge can cut it short (see MeleeAttackStep.CancelFrom).
@@ -38,6 +39,7 @@ namespace CGD.Weapons
             c.HeavyHoldThreshold = 0.3f;
             c.ComboResetTime     = 1.0f;
             c.WeaveWindow        = 3.0f;
+            c.SwapStrikeWindow   = 0.4f;
 
             c.Damage           = new(14f,  22f);
             c.AttackSpeed      = new(1.2f, 1.5f);
@@ -65,6 +67,7 @@ namespace CGD.Weapons
             c.HeavyHoldThreshold = 0.35f;
             c.ComboResetTime     = 1.2f;
             c.WeaveWindow        = 2.5f;
+            c.SwapStrikeWindow   = 0.4f;
 
             c.Damage           = new(22f,  32f);
             c.AttackSpeed      = new(1.0f, 1.2f);
@@ -91,6 +94,7 @@ namespace CGD.Weapons
             c.HeavyHoldThreshold = 0.4f;
             c.ComboResetTime     = 1.3f;
             c.WeaveWindow        = 2.2f;
+            c.SwapStrikeWindow   = 0.4f;
 
             c.Damage           = new(28f,  40f);
             c.AttackSpeed      = new(0.85f, 1.0f);
@@ -117,6 +121,7 @@ namespace CGD.Weapons
             c.HeavyHoldThreshold = 0.45f;
             c.ComboResetTime     = 1.4f;
             c.WeaveWindow        = 2.0f;
+            c.SwapStrikeWindow   = 0.6f;
 
             c.Damage           = new(35f,  55f);
             c.AttackSpeed      = new(0.65f, 0.85f);
@@ -144,6 +149,7 @@ namespace CGD.Weapons
             c.HeavyHoldThreshold = 0.35f;
             c.ComboResetTime     = 1.2f;
             c.WeaveWindow        = 2.5f;
+            c.SwapStrikeWindow   = 0.3f;
 
             c.Damage           = new(24f,  36f);
             c.AttackSpeed      = new(0.95f, 1.15f);

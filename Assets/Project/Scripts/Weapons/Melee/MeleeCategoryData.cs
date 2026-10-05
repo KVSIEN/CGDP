@@ -26,6 +26,8 @@ namespace CGD.Weapons
         public float ComboResetTime     = 1.2f;
         [Tooltip("Seconds the next combo step stays open after a dodge, parry, ability or weapon switch")]
         public float WeaveWindow        = 2.5f;
+        [Tooltip("Seconds after swapping in during which the first swing skips its wind-up (0 = off)")]
+        public float SwapStrikeWindow   = 0.4f;
 
         [Header("Rolls")]
         [Tooltip("Damage of a 1× step")]

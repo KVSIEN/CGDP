@@ -58,6 +58,8 @@ namespace CGD.Weapons
         private float _holdTimer;
         private bool  _comboBuffered;
         private bool  _bufferedHeavy;
+        private float _pressedAt       = float.NegativeInfinity;
+        private float _swapStrikeUntil = float.NegativeInfinity;
 
         // Combo step index of a light attack, or -1 for the heavy attack.
         public event Action<int> AttackStarted;
@@ -103,6 +105,7 @@ namespace CGD.Weapons
             if (_phase != Phase.Idle) InterruptSwing(keepCombo: InCancelWindow);
             else                      Weave();
             _queuedSwing.Clear();
+            _swapStrikeUntil = weapon != null ? Time.time + weapon.Data.SwapStrikeWindow : float.NegativeInfinity;
             _equipped = weapon;
             _guard    = weapon != null && weapon.Data.CanGuard ? new MeleeGuard(weapon.Data.Guard) : null;
         }
@@ -124,10 +127,7 @@ namespace CGD.Weapons
 
             if (UpdateGuard()) return;
 
-            bool held = AttackHeld;
-            bool releasedThisFrame = _heldLastFrame && !held;
-            _heldLastFrame = held;
-            if (held) _holdTimer += Time.deltaTime;
+            bool releasedThisFrame = ReadAttackRelease();
 
             if (_phase == Phase.Idle)
             {
@@ -195,11 +195,7 @@ namespace CGD.Weapons
         // released then is swung as soon as the player can act again.
         private void QueueWhileBusy()
         {
-            bool held = AttackHeld;
-            bool released = _heldLastFrame && !held;
-            _heldLastFrame = held;
-            if (held) _holdTimer += Time.deltaTime;
-            if (!released) return;
+            if (!ReadAttackRelease()) return;
 
             if (GameSettings.Current.InputBuffering)
             {
@@ -246,6 +242,17 @@ namespace CGD.Weapons
             return true;
         }
 
+        // Tracks the attack input; true on the frame it is released.
+        private bool ReadAttackRelease()
+        {
+            bool held = AttackHeld;
+            if (held && !_heldLastFrame) _pressedAt = Time.time;
+            bool released = _heldLastFrame && !held;
+            _heldLastFrame = held;
+            if (held) _holdTimer += Time.deltaTime;
+            return released;
+        }
+
         // Returns false (and swings nothing) when the stamina can't be paid.
         private bool StartAttack(bool heavy)
         {
@@ -267,8 +274,13 @@ namespace CGD.Weapons
                 Combo.Begin(step, data.LightCombo.Length);
             }
 
+            // Swap strike: the first swing after swapping this weapon in skips its wind-up
+            // when it was pressed within the weapon's window (or held through the swap).
+            bool swapStrike  = _pressedAt <= _swapStrikeUntil;
+            _swapStrikeUntil = float.NegativeInfinity;
+
             _phase      = Phase.Windup;
-            _phaseTimer = _activeStep.WindupTime / Speed;
+            _phaseTimer = swapStrike ? 0f : _activeStep.WindupTime / Speed;
 
             _activeStep.SwingSound.TryPlay(transform.position);
             Noise.Emit(transform.position, data.NoiseRadius, _damageSource);

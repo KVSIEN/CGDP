@@ -105,6 +105,7 @@ MonoBehaviour:
   HeavyHoldThreshold: 0.3
   ComboResetTime: 1
   WeaveWindow: 3
+  SwapStrikeWindow: 0.4
   Damage:
     Min: 14
     Max: 22
