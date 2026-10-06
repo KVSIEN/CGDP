@@ -15,13 +15,13 @@ namespace CGD.DevTools
     public class DevCatalog : ScriptableObject
     {
         [SerializeField] private ItemDefinition[]     _items      = Array.Empty<ItemDefinition>();
-        [SerializeField] private WeaponCategoryData[] _weapons    = Array.Empty<WeaponCategoryData>();
+        [SerializeField] private WeaponCategory[]     _weapons    = Array.Empty<WeaponCategory>();
         [SerializeField] private GameObject[]         _enemies    = Array.Empty<GameObject>();
         [SerializeField] private StatModifierPreset[] _buffs      = Array.Empty<StatModifierPreset>();
         [SerializeField] private DodgeDefinition[]    _dodges     = Array.Empty<DodgeDefinition>();
 
         public IReadOnlyList<ItemDefinition>     Items   => _items;
-        public IReadOnlyList<WeaponCategoryData> Weapons => _weapons;
+        public IReadOnlyList<WeaponCategory>     Weapons => _weapons;
         public IReadOnlyList<GameObject>         Enemies => _enemies;
         public IReadOnlyList<StatModifierPreset> Buffs   => _buffs;
         public IReadOnlyList<DodgeDefinition>    Dodges  => _dodges;

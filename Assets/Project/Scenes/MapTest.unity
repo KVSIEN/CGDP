@@ -820,6 +820,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 580679351138367814, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
+      propertyPath: _meters
+      value: 
+      objectReference: {fileID: 4562809058032074976}
     - target: {fileID: 160411704699297099, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
       propertyPath: _weapon
       value: 
@@ -1521,3 +1525,14 @@ SceneRoots:
   - {fileID: 1271365120}
   - {fileID: 1909525078}
   - {fileID: 1482240602}
+--- !u!114 &4562809058032074976 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3965442110495912272, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
+  m_PrefabInstance: {fileID: 7657266172198037326}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89e5bc322dd34ab2a3bbc9e667fa3d1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Meters.MeterSet

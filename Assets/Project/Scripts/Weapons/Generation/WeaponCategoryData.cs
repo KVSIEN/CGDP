@@ -9,7 +9,7 @@ namespace CGD.Weapons
     // Right-click the asset and choose "Apply Type Defaults" to auto-fill realistic thresholds,
     // then tweak individual ranges as needed.
     [CreateAssetMenu(fileName = "WeaponCategory", menuName = "CGD/Weapons/Weapon Category")]
-    public class WeaponCategoryData : GearDefinition
+    public class WeaponCategoryData : WeaponCategory
     {
         [Header("Identity")]
         public WeaponType Type;
@@ -130,8 +130,7 @@ namespace CGD.Weapons
         // A weapon's stats live as named fields on generated WeaponData rather than in
         // a StatBlock, because the firing code reads them directly. The roll still
         // comes from the shared quality curve, so weapons and armor scale together.
-        public override ItemInstance CreateInstance(ItemRoll roll) =>
-            WeaponGenerator.Generate(this, roll);
+        public override WeaponItem Generate(ItemRoll roll) => WeaponGenerator.Generate(this, roll);
 
         [ContextMenu("Apply Type Defaults")]
         public void ApplyTypeDefaults() => WeaponCategoryDefaults.Apply(this);

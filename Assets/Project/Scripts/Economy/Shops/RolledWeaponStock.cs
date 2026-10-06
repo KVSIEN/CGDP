@@ -13,7 +13,8 @@ namespace CGD.Economy
     [CreateAssetMenu(fileName = "NewRolledWeaponStock", menuName = "CGD/Economy/Stock/Rolled Weapon Stock")]
     public class RolledWeaponStock : ShopStockSource
     {
-        [SerializeField] private WeaponCategoryData[] _categories = Array.Empty<WeaponCategoryData>();
+        [Tooltip("Firearm and melee categories alike")]
+        [SerializeField] private WeaponCategory[] _categories = Array.Empty<WeaponCategory>();
         [Tooltip("Weapons on the shelf after a restock")]
         [SerializeField] private IntRange _count = new(3, 5);
         [SerializeField] private ItemTier _minTier = ItemTier.Common;
@@ -26,11 +27,11 @@ namespace CGD.Economy
             int count = _count.Evaluate(random);
             for (int i = 0; i < count; i++)
             {
-                WeaponCategoryData category = random.Pick(_categories);
+                WeaponCategory category = random.Pick(_categories);
                 if (category == null) continue;
 
                 var tier = (ItemTier)random.Range((int)_minTier, (int)_maxTier + 1);
-                WeaponInstance weapon = WeaponGenerator.Generate(category, category.Roll(tier, random.NextSeed()));
+                WeaponItem weapon = category.Generate(tier, random.NextSeed());
 
                 int price = prices.BuyPrice(weapon);
                 if (price > 0) listings.Add(new WeaponListing(weapon, price));

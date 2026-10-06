@@ -11,7 +11,7 @@ namespace CGD.Weapons
     // them: step Damage values are relative (1 = the rolled Damage), step Range is
     // multiplied by the rolled Reach. Right-click → Apply Type Defaults fills a type's band.
     [CreateAssetMenu(fileName = "MeleeCategory", menuName = "CGD/Weapons/Melee Category")]
-    public class MeleeCategoryData : GearDefinition
+    public class MeleeCategoryData : WeaponCategory
     {
         [Header("Identity")]
         public MeleeWeaponType Type;
@@ -57,7 +57,7 @@ namespace CGD.Weapons
         [Tooltip("How far away enemies hear a swing (0 = silent)")]
         public float NoiseRadius = 8f;
 
-        public override ItemInstance CreateInstance(ItemRoll roll) => MeleeWeaponGenerator.Generate(this, roll);
+        public override WeaponItem Generate(ItemRoll roll) => MeleeWeaponGenerator.Generate(this, roll);
 
         [ContextMenu("Apply Type Defaults")]
         public void ApplyTypeDefaults() => MeleeCategoryDefaults.Apply(this);

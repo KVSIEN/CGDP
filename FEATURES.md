@@ -113,7 +113,7 @@
   - **status effects** and/or a **stun** on the attacker
 - Reflects keep the hit's damage type (a reflected fire hit burns). They only catch hits with an attacker (not damage over time or hazards), work on the damage that gets past your guard (so a parried hit isn't caught twice), and reflected damage can never be reflected again
 - Included abilities (all instant cast): **Vengeance** (the next hit within 30 s is taken in full, 75% of it goes back to the attacker), **Deflect** (for 0.6 s, hits from the front are negated and fired back as projectiles where you aim) and **Absorb** (for 1.5 s, hits are negated and half of them heals you)
-- Melee weapons can give their parry a reflect: the included **Riposte Slash** answers a parry with a wide slash toward the attacker dealing 150% of the parried hit (assign it to a weapon or category's *Parry Reflect* to use it)
+- Melee weapons can give their parry a reflect: **swords** answer a parry with a **Riposte Slash**, a wide slash toward the attacker dealing 150% of the parried hit (set any category's *Parry Reflect* to give other weapons one)
 - HUD shows four coloured slots at the bottom of the screen; a dark overlay drains away as the next charge recovers, and multi-charge abilities show their charge count
 
 ## Interaction System
@@ -292,6 +292,7 @@
 
 ### Melee Weapons
 - Five melee weapon types, rolled like guns (quality, tier, seed → the same weapon every time): **Dagger**, **Sword**, **Axe**, **Hammer** and **Spear**
+- Found like guns: as (rarer) loot drops, and on the Gunsmith's shelf (swords, axes and daggers)
 - With a melee weapon in the active slot, **Attack** (left mouse) swings it: tap for the light combo, hold for the heavy attack. No ammo, reload or recoil
 - Each type has its own combo and feel:
   - **Dagger** — very fast stab-slash-stab, short reach, a long parry window but a flimsy block
@@ -300,7 +301,7 @@
   - **Hammer** — slow area slams that crush armour; the sturdiest block, the tightest parry
   - **Spear** — long-reach thrusts and a wide sweep; a narrow guard
 - Rolled stats: damage, **attack speed** (how fast every swing winds up, strikes and recovers) and armour penetration follow quality; reach, stamina cost and guard strength vary per weapon
-- Swings cost **stamina** when the character has a stamina meter (heavy attacks cost double); a swing that can't be paid doesn't start. Without a stamina meter, melee is free
+- Swings cost **stamina** (heavy attacks cost double), shown as a bar above the health panel; a swing that can't be paid doesn't start. Stamina refills after a short pause. (A character without a stamina meter swings for free)
 - **Block** (Aim, right mouse, between swings or in a swing's cancel window): raising the guard slows you to aiming speed and stops most of the damage from hits in front of you; what it stops costs stamina, and running out **breaks the guard** (the hit lands in full). Hits from behind or the side, and damage over time, ignore the guard
 - **Parry**: a hit that lands just after raising the guard (within the weapon's parry window) is deflected completely — no damage, no on-hit effects — and stuns the attacker briefly. Holding the guard up doesn't keep the window open; lower it and raise it again for the next parry
 - With a melee weapon equipped the right mouse never zooms the camera

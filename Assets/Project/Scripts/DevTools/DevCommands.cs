@@ -86,12 +86,12 @@ namespace CGD.DevTools
             if (args.Length < 1) throw new UsageException();
             if (!Need(_loadout, "PlayerWeaponLoadout", out string missing)) return missing;
 
-            WeaponCategoryData category = Find(_catalog != null ? _catalog.Weapons : null, args[0], c => c.DisplayName, out string error);
+            WeaponCategory category = Find(_catalog != null ? _catalog.Weapons : null, args[0], c => c.DisplayName, out string error);
             if (category == null) return error;
 
             Seed seed = args.Length > 1 ? Seed.Parse(args[1]) : Seed.Random();
             ItemTier tier = args.Length > 2 ? ParseTier(args[2]) : category.Tier;
-            WeaponInstance weapon = WeaponGenerator.Generate(category, category.Roll(tier, seed));
+            WeaponItem weapon = category.Generate(tier, seed);
 
             WeaponItem replaced = _loadout.AddWeapon(weapon);
             if (replaced != null && _inventory != null) _inventory.Inventory.Add(replaced);

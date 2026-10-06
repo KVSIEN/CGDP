@@ -141,6 +141,7 @@ MonoBehaviour:
     ArcDeg: 120
     ParryWindow: 0.2
     ParryStun: 1.2
+  ParryReflect: {fileID: 11400000, guid: adda6cbf460d4c6e8d4b03b035b0b513, type: 2}
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295

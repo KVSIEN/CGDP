@@ -12,8 +12,8 @@ namespace CGD.Expedition
     [CreateAssetMenu(fileName = "RunStarterKit", menuName = "CGD/Expedition/Run Starter Kit")]
     public class RunStarterKit : ScriptableObject
     {
-        [Tooltip("Categories the starting weapons are generated from; no category twice in one run")]
-        [SerializeField] private WeaponCategoryData[] _weaponCategories = Array.Empty<WeaponCategoryData>();
+        [Tooltip("Categories (firearm or melee) the starting weapons are generated from; no category twice in one run")]
+        [SerializeField] private WeaponCategory[] _weaponCategories = Array.Empty<WeaponCategory>();
         [SerializeField] private IntRange _weaponCount = new(1, 2);
         [Tooltip("Consumables, ammunition and crafting materials, each rolled within its count")]
         [SerializeField] private List<StarterSupply> _supplies = new();
@@ -21,10 +21,10 @@ namespace CGD.Expedition
         public IReadOnlyList<StarterSupply> Supplies => _supplies;
 
         // WeaponCount distinct categories, in random order.
-        public List<WeaponCategoryData> PickWeaponCategories(RandomStream random)
+        public List<WeaponCategory> PickWeaponCategories(RandomStream random)
         {
-            var pool = new List<WeaponCategoryData>();
-            foreach (WeaponCategoryData category in _weaponCategories)
+            var pool = new List<WeaponCategory>();
+            foreach (WeaponCategory category in _weaponCategories)
                 if (category != null && !pool.Contains(category)) pool.Add(category);
 
             random.Shuffle(pool);

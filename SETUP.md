@@ -119,7 +119,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 | **PlayerLifecycle** | `_health`, `_movement`, `_abilities`, `_input` = Player · `_hud` = HUD · `_spawnPoint` = RespawnPoint · `_deathScreen`? | Tick `_gameOverOnDeath` to end the run instead of respawning. |
 | **PlayerFootsteps** | `_surfaces` = `Audio/DefaultSurfaceDatabase` | |
 | **PlayerAudio** | `_health` = PlayerHealth, `_hurtSound`?, `_deathSound`? | |
-| **MeterSet**? | `_definitions` = meters from `Data/Meters/` | Needed before any stamina/mana cost can be paid. |
+| **MeterSet** | `_definitions` = meters from `Data/Meters/` (the Player prefab has `StaminaMeter`) | Needed before any stamina/mana cost can be paid; melee swings and blocks spend stamina from it. |
 
 **Meter costs** — set `SprintCost` on `PlayerMovementSettings`, `_cost` on a dodge, or `Cost` on an ability.
 A cost for a meter the Player doesn't have is **blocked**, not free.
@@ -140,7 +140,7 @@ HUD                [Canvas, CanvasScaler, GraphicRaycaster, HUDManager]
   Abilities        [AbilityHUD]
   Dodge            [DodgeHUD]
   StatusEffects    [StatusEffectHUD]
-  Meters           [MeterHUD]?
+  Meters           [MeterHUD]   (in the HUD prefab)
   Velocity         [VelocityHUD]
   ItemSlots        [ItemSlotsHUD]?
   Minimap          [MinimapHUD]?
@@ -169,7 +169,7 @@ Later children draw on top. `HUDManager` finds every element by itself.
 | **AbilityHUD** | `_abilities` = PlayerAbilities | |
 | **DodgeHUD** | `_dodge` = PlayerDodge | |
 | **StatusEffectHUD** | `_target` = Player's StatusEffectController | |
-| **MeterHUD** | `_meters` = Player's MeterSet | Hides itself without meters. |
+| **MeterHUD** | `_meters` = Player's MeterSet (set on the HUD instance in Sandbox and MapTest) | Hides itself without meters. |
 | **VelocityHUD** | `_movement` = PlayerMovement | |
 | **InteractHUD** | `_interaction` = PlayerInteraction | |
 | **WeaponPickupHUD** | `_interaction` = PlayerInteraction | Shows when aiming at a weapon pickup. |
@@ -270,7 +270,7 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 
 | Object | Components | Assign |
 |---|---|---|
-| Weapon pickup | trigger Collider, `WeaponPickup` | `_data` = a `WeaponData`, **or** add `RandomWeaponPickup` with `_categories` (+ `_seed`? for a fixed weapon) |
+| Weapon pickup | trigger Collider, `WeaponPickup` | `_data` = a `WeaponData`, **or** add `RandomWeaponPickup` with `_categories` — firearm or melee categories (+ `_seed`? for a fixed weapon) |
 | Ammo pickup | trigger Collider, `AmmoPickup` | `_munition` = a munition asset, `_amount` |
 | Health pickup | trigger Collider, `HealthPickup` | `_amount` |
 | Item pickup | trigger Collider, `ItemPickup` | `_item`, `_count` |
@@ -542,7 +542,7 @@ HUD (prefab instance)
 | **PlayerLifecycle** (Player) | `_gameOverOnDeath` = on | Death must end the run, or nothing is ever lost. |
 | **PlayerInventory** (Player) | `_startingStacks` = empty | The starting room's loadout replaces the Sandbox's dev ammo and credits. |
 
-`RunStarterKit` (`Data/Expedition/`): `_weaponCategories` (generated fresh, no category twice), `_weaponCount` (1–2), `_supplies` (item + count range each).
+`RunStarterKit` (`Data/Expedition/`): `_weaponCategories` (firearm or melee; generated fresh, no category twice), `_weaponCount` (1–2), `_supplies` (item + count range each).
 `Scenes/MapTest` is wired this way: `Expedition` root, `ExpeditionScreen` added under the HUD instance, and the two Player overrides above as instance overrides (the Player prefab and Sandbox are unchanged).
 - **Obstacle masks**: generated geometry goes on `_geometryLayer`. Keep that layer in enemies' `_obstacleMask` and in weapons' hit masks.
 
@@ -590,7 +590,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Weapons/Categories/` | one per weapon type (incl. `BowCategory`: Volley fire behavior, *Bows* section (`HasDrawStances`, vertical/horizontal draw multipliers, volley spacing), Pellet Count = arrows per shot; `CrossbowCategory`: Projectile fire behavior, `AutomaticMagazineSize` for autoloaders; both use Arrows ammo, with arrow speed, drop and draw time in *Charge & Projectile*) | RandomWeaponPickup, loot |
 | `Weapons/FireBehaviors/` | Hitscan, Projectile, Shotgun, Volley (bows: arrows fanned along the draw orientation; `_prefab` = `Prefabs/Weapons/Projectile`) | weapon data / categories |
 | `Weapons/Melee/`, `Weapons/Throwables/` | `DefaultMeleeWeaponData`, `DefaultGrenadeData`, `SmokeGrenadeData` | MeleeController, throwable items |
-| `Weapons/Melee/` | `Dagger`/`Sword`/`Axe`/`Hammer`/`Spear` `…MeleeCategory` (`MeleeCategoryData`: moveset template, rolled damage/speed/reach/penetration, `StaminaMeter` = `Meters/StaminaMeter`, guard; right-click → *Apply Type Defaults*) | loot tables, shop stock (ItemStock), DevCatalog items (`give`) |
+| `Weapons/Melee/` | `Dagger`/`Sword`/`Axe`/`Hammer`/`Spear` `…MeleeCategory` (Sword: *Parry Reflect* = `RiposteSlashReflect`) (`MeleeCategoryData`: moveset template, rolled damage/speed/reach/penetration, `StaminaMeter` = `Meters/StaminaMeter`, guard; right-click → *Apply Type Defaults*) | `DefaultLootTable`, `GunsmithWeaponStock` (Sword, Axe, Dagger), DevCatalog weapons (`weapon sword`) |
 | `Items/Munitions/` | one per caliber (incl. `ArrowMunition` for bows and crossbows) | AmmoPickup, PlayerInventory |
 | `Items/` | `StatRollProfile`, `Keycards/SecurityKeycard` (opens the generated levels' locked doors) | weapon categories, `CombatVestArmor` (see note) |
 | `Items/Armor/`, `Attachments/`, `Consumables/`, `Throwables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `StimConsumable`, `RationConsumable` (instant), `FragGrenadeThrowable`, `SmokeGrenadeThrowable`, `ScrapMetalResource`, `ClothResource` | pickups, loot, recipes, quest rewards |
