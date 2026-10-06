@@ -8,7 +8,7 @@ namespace CGD.UI
     // Displays four ability slots anchored to the bottom-centre of the screen.
     // Each slot shows the ability's colour, a dark overlay that shrinks as the next
     // charge recharges (or grows while casting), and the charge count for multi-charge
-    // abilities.
+    // abilities. A slot whose resource cost can't be paid yet is dimmed.
     [RequireComponent(typeof(RectTransform))]
     public class AbilityHUD : HUDElement
     {
@@ -29,6 +29,7 @@ namespace CGD.UI
         private static readonly string[] ChargeText = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
         private static readonly Color EmptySlotColor = new Color(0.1f, 0.1f, 0.1f, 0.85f);
+        private const float UnaffordableAlpha = 0.25f;
         private static readonly Color    CooldownOverlayColor = new Color(0f, 0f, 0f, 0.65f);
 
         private void Awake()
@@ -87,7 +88,7 @@ namespace CGD.UI
 
                 // Tint the background with the ability's colour, or grey when empty
                 _slotBg[i].color = ability != null
-                    ? new Color(ability.SlotColor.r, ability.SlotColor.g, ability.SlotColor.b, 0.85f)
+                    ? new Color(ability.SlotColor.r, ability.SlotColor.g, ability.SlotColor.b, _abilities.CanAfford(i) ? 0.85f : UnaffordableAlpha)
                     : EmptySlotColor;
 
                 // Shrink the overlay from top to bottom as the cooldown recovers.

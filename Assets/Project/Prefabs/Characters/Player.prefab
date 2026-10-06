@@ -983,6 +983,7 @@ GameObject:
   - component: {fileID: 4375741012492944362}
   - component: {fileID: 4173609184089539533}
   - component: {fileID: 3965442110495912272}
+  - component: {fileID: 8126439145172421611}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -1235,6 +1236,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Meters.MeterSet
   _definitions:
   - {fileID: 11400000, guid: e97086cb23b549a9b402e8130ab73a15, type: 2}
+  - {fileID: 11400000, guid: b2f918708c344caf8f5e8b789fe0baac, type: 2}
+--- !u!114 &8126439145172421611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7429481957253513727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b296e04c59dc42098e4d4d851b0ff97f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Player.CombatMeterGain
+  _meter: {fileID: 11400000, guid: b2f918708c344caf8f5e8b789fe0baac, type: 2}
+  _perDamage: 0.25
+  _maxPerHit: 8
+  _perKill: 10
+  _perParry: 15
 --- !u!114 &4173609184089539533
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -127,6 +127,9 @@ namespace CGD.Abilities
         // Charges available in a slot (0 for an empty slot).
         public int GetCharges(int slot) => _slots[slot] != null ? _charges[slot] : 0;
 
+        // False while the slot's resource cost (e.g. earned Rage) can't be paid.
+        public bool CanAfford(int slot) => _slots[slot] != null && _slots[slot].Cost.CanAfford(_meters);
+
         // 1 when the slot can be used; otherwise how far the next charge has recharged.
         public float GetReadyRatio(int slot) => _charges[slot] > 0 ? 1f : _recharges[slot].Ratio;
 

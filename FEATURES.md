@@ -89,7 +89,8 @@
 - Abilities can store several charges; spent charges recharge one after another
 - Optional cast time: the ability fires after a short delay and is cancelled if the player is stunned, mantling or rolling; the slot fills up while casting
 - An ability that wouldn't do anything isn't used (e.g. Heal at full health), so no charge is spent
-- Abilities can cost a resource (mana, energy...) as well as using a charge; an ability you can't afford doesn't fire and keeps its charge
+- Abilities can cost a resource (mana, energy...) as well as using a charge; an ability you can't afford doesn't fire and keeps its charge, and its slot is dimmed until you can
+- **Rage (earned resource)**: most abilities only use a cooldown, but a few unique, potentially strong ones also (or instead) cost Rage. Rage isn't regenerated: it's earned by fighting — damage you deal (capped per hit), kills and parries — and drains away a few seconds after the fighting stops. Some abilities have no cooldown at all and a low Rage cost, so they can be used again and again for as long as you keep fighting well. Rage is shown as a bar with stamina above the health panel
 - Six built-in abilities: Dash, Projectile, Heal, Shockwave, Targeted, and Timeline
   - **Dash** — a quick committed dash in the move direction (or camera forward if idle), performed like a dodge (same steering, animation and air limit); it uses the ability's cooldown, not the dodge's
   - **Projectile** — fires a projectile from the camera that deals damage (and optional status effects) on impact; configurable speed, lifetime and gravity drop
@@ -99,7 +100,7 @@
   - **Timeline** — runs an ActionTimeline via TimelineAbilityRunner; only one timeline ability can play at a time; can be ground-targeted so its area effects land where the player aims
   - **Stat Buff** — applies a set of stat modifiers to the player for a while (included: Damage Boost, +30% damage for 8 seconds)
   - **Reflect** — puts up a reflect (see Reflects below)
-- Included ready-made: **Cone Blast** (a targeted blast hitting enemies in front of you), **Ground Slam** (a timeline ability that smashes the area in front of you and knocks targets back) and **Crushing Blow** (instant: 55 damage, 50% armour penetration, to the enemy under the crosshair up to 30 m — burst damage to stack with weapon hits)
+- Included ready-made: **Cone Blast** (a targeted blast hitting enemies in front of you), **Ground Slam** (a timeline ability that smashes the area in front of you and knocks targets back) **Crushing Blow** (instant: 55 damage, 50% armour penetration, to the enemy under the crosshair up to 30 m — burst damage to stack with weapon hits), and two Rage abilities: **Arc Lash** (no cooldown, 15 Rage: 20 lightning damage to the enemy under the crosshair, as often as you can pay) and **Overdrive** (25 s cooldown and 60 Rage: +30% damage for 12 s)
 - All ability values (cooldown, force, damage, etc.) are tunable on the ScriptableObject asset
 
 ### Reflects

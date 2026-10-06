@@ -63,6 +63,7 @@ namespace CGD.Weapons
 
         // Combo step index of a light attack, or -1 for the heavy attack.
         public event Action<int> AttackStarted;
+        public event Action Parried;
 
         public bool IsGuarding => _guard != null && _guard.IsRaised;
         // Before a Reflector, so reflects work on what the guard lets through.
@@ -424,6 +425,7 @@ namespace CGD.Weapons
                     if (_equipped.Data.ParryReflect != null && _reflector != null)
                         _reflector.Release(_equipped.Data.ParryReflect, info, amount, attacker);
                     Weave();
+                    Parried?.Invoke();
                     FeedbackBus.Notify("Parried!", NotificationStyle.Success);
                     break;
                 case GuardOutcome.Broken:
