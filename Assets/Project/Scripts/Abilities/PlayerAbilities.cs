@@ -22,6 +22,9 @@ namespace CGD.Abilities
 
         // Raised when an ability fires, e.g. so a melee combo can be held open across it.
         public event System.Action<Ability> AbilityUsed;
+        // Raised when an ability is activated: its cast begins, or it fires if instant.
+        // The hands are busy from here, so a reload in progress is cut off.
+        public event System.Action<Ability> AbilityStarted;
 
         // Read by AbilityHUD
         public Ability[] Slots => _slots;
@@ -106,6 +109,7 @@ namespace CGD.Abilities
                 if (!ability.CanExecute(_ctx))         continue;
 
                 _buffers[i].Clear();
+                AbilityStarted?.Invoke(ability);
 
                 if (ability.CastTime > 0f)
                 {

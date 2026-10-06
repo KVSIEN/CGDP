@@ -67,6 +67,8 @@ namespace CGD.Player
         public float CooldownRatio => _sharedCooldown.Ratio;
         public bool  OnCooldown    => !_sharedCooldown.IsReady;
 
+        // A consumable's use begins (instant ones end the same frame).
+        public event Action<ConsumableDefinition> UseStarted;
         // (item, completed) — false when interrupted.
         public event Action<ConsumableDefinition, bool> UseEnded;
         public event Action SlotsChanged;
@@ -213,6 +215,7 @@ namespace CGD.Player
 
             _using     = item;
             _remaining = item.CastTime;
+            UseStarted?.Invoke(item);
             if (_remaining <= 0f) Finish();
             return true;
         }

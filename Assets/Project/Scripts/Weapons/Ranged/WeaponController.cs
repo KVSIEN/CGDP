@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using CGD.Abilities;
 using CGD.Audio;
 using CGD.CameraEffects;
 using CGD.Combat;
@@ -47,6 +48,8 @@ namespace CGD.Weapons
         private CharacterStats _stats;
         private PlayerMovement _movement;
         private PlayerDodge    _dodge;
+        private PlayerAbilities _abilities;
+        private PlayerItemSlots _items;
         private DamageSource   _damageSource;
         private CooldownTimer  _fireCooldown;
         private float _drawTimer;
@@ -91,17 +94,34 @@ namespace CGD.Weapons
         {
             _movement     = GetComponent<PlayerMovement>();
             TryGetComponent(out _dodge);
+            TryGetComponent(out _abilities);
+            TryGetComponent(out _items);
             _damageSource = DamageSource.Of(gameObject);
             if (_inventory == null) _inventory = GetComponentInParent<PlayerInventory>();
             _stats = GetComponentInParent<CharacterStats>();
 
             // Keep HUD reserve count in sync with shared pool.
             if (_inventory != null) _inventory.Inventory.Changed += NotifyAmmoChanged;
+            if (_abilities != null) _abilities.AbilityStarted   += OnAbilityStarted;
+            if (_items     != null) _items.UseStarted           += OnItemUseStarted;
         }
 
         private void OnDestroy()
         {
             if (_inventory != null) _inventory.Inventory.Changed -= NotifyAmmoChanged;
+            if (_abilities != null) _abilities.AbilityStarted   -= OnAbilityStarted;
+            if (_items     != null) _items.UseStarted           -= OnItemUseStarted;
+        }
+
+        // Using an ability or a consumable takes the hands off the reload, like a sprint or
+        // dodge: lost before the commit point, done early after it. The weapon still waits for
+        // the ability or item, so these mostly just save the time.
+        private void OnAbilityStarted(Ability ability) => CancelReloadByAction();
+        private void OnItemUseStarted(ConsumableDefinition item) => CancelReloadByAction();
+
+        private void CancelReloadByAction()
+        {
+            if (_isReloading) InterruptReload();
         }
 
         private void OnDisable()
@@ -152,11 +172,11 @@ namespace CGD.Weapons
                 }
             }
 
-            // Breaking into a sprint stops the reload: lost before its commit point, and
+            // Breaking into a sprint or a dodge stops the reload: lost before its commit point,
             // done early after it (the rounds are already in).
             if (_isReloading)
             {
-                if (!sprintStarted) return;
+                if (!sprintStarted && !dodgeStarted) return;
                 InterruptReload();
             }
 
