@@ -55,6 +55,7 @@ namespace CGD.Weapons
         private float _drawTimer;
         private bool  _wasDodging;
         private bool  _wasSprinting;
+        private bool  _couldAct = true;
         private bool  _isReloading;
         private bool  _reloadCommitted;
         private Coroutine _reload;
@@ -151,6 +152,7 @@ namespace CGD.Weapons
         {
             bool dodgeStarted  = DodgeStartedThisFrame();
             bool sprintStarted = SprintStartedThisFrame();
+            bool lostControl   = ControlLostThisFrame();
             if (_current == null || _holstered) return;
 
             // Sway ticks through draw/reload so the weapon never freezes mid-animation.
@@ -172,11 +174,12 @@ namespace CGD.Weapons
                 }
             }
 
-            // Breaking into a sprint or a dodge stops the reload: lost before its commit point,
-            // done early after it (the rounds are already in).
+            // Anything that interrupts the player stops the reload — a sprint, a dodge, or losing
+            // control (stun, mantle, a committed roll): lost before its commit point, done early
+            // after it, since once the rounds are in the reload is technically finished.
             if (_isReloading)
             {
-                if (!sprintStarted && !dodgeStarted) return;
+                if (!sprintStarted && !dodgeStarted && !lostControl) return;
                 InterruptReload();
             }
 
@@ -454,6 +457,16 @@ namespace CGD.Weapons
             _isReloading     = false;
             _reloadCommitted = false;
             NotifyAmmoChanged();
+        }
+
+        // Stunned, mantling or in a committed roll since last frame. A future knockback that
+        // takes control away cancels reloads through here too.
+        private bool ControlLostThisFrame()
+        {
+            bool canAct = _movement == null || _movement.CanAct;
+            bool lost   = _couldAct && !canAct;
+            _couldAct   = canAct;
+            return lost;
         }
 
         private bool SprintStartedThisFrame()
