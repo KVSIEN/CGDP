@@ -38,6 +38,10 @@ namespace CGD.Map
         [SerializeField, Range(0f, 1f)] private float _tier3Depth = 0.7f;
         [Tooltip("Random ± added to a room's depth when picking its tier, so tiers rise with depth without following it exactly")]
         [SerializeField, Range(0f, 0.5f)] private float _tierJitter = 0.1f;
+        [Tooltip("Chance a room lands one tier above or below what its depth suggests (a tough room early, a calm one late)")]
+        [SerializeField, Range(0f, 1f)] private float _tierOutlierChance = 0.15f;
+        [Tooltip("Highest tier a room right next to Start can be, so a map always eases in")]
+        [SerializeField, Range(1, 3)] private int _firstRoomsMaxTier = 1;
 
         [Header("Sections")]
         [Tooltip("Parts of the ship the run passes through, in order from Start to the Boss; each takes an equal share of the depth")]
@@ -61,6 +65,8 @@ namespace CGD.Map
         public float Tier2Depth      => _tier2Depth;
         public float Tier3Depth      => _tier3Depth;
         public float TierJitter      => _tierJitter;
+        public float TierOutlierChance => _tierOutlierChance;
+        public int   FirstRoomsMaxTier => _firstRoomsMaxTier;
 
         public IReadOnlyList<FactionDefinition> Factions => _factions;
         public IReadOnlyList<MapFactionMixOption> FactionMixes => _factionMixes;

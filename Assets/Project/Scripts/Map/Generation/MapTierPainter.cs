@@ -3,10 +3,12 @@ using CGD.Core;
 
 namespace CGD.Map
 {
-    // Room tier 1–3 from how deep each room lies between Start and the Boss (plus jitter, so
-    // tiers rise with depth without following it exactly), so the map gets harder as the
-    // player pushes on: tougher enemies, rarer resources and slightly better loot higher up.
-    // Start, Exit, Boss and Shop rooms stay tier 1. Run modifiers that raise intensity push
+    // Room tier 1–3, guided by how deep each room lies between Start and the Boss, so the map
+    // gets harder as the player pushes on: tougher enemies, rarer resources and slightly
+    // better loot higher up. Depth is a guideline, not a rule: jitter blurs the thresholds and
+    // now and then a room lands a tier above or below (a tough room early, a calm one late).
+    // Rooms right next to Start never go above FirstRoomsMaxTier, and Start, Exit, Boss and
+    // Shop rooms stay tier 1. Run modifiers that raise intensity push
     // tiers up too and can add tier-3 rooms, and a tier-3 fight on the main path always has
     // a breather after it (otherwise it stays tier 2).
     internal class MapTierPainter
@@ -40,14 +42,21 @@ namespace CGD.Map
         {
             float jitter = Content.TierJitter;
             float depth  = slot.Progress + _context.Tuning.IntensityOffset + _random.Range(-jitter, jitter);
-            if (depth >= Content.Tier3Depth && CanBeTopTier(node, slot)) return 3;
-            return depth >= Content.Tier2Depth ? 2 : 1;
+            int tier = depth >= Content.Tier3Depth ? 3 : depth >= Content.Tier2Depth ? 2 : 1;
+
+            if (_random.Value < Content.TierOutlierChance)
+                tier += _random.Value < 0.5f ? -1 : 1;
+
+            if (slot.Depth <= 1) tier = System.Math.Min(tier, Content.FirstRoomsMaxTier);
+            if (tier >= 3 && !CanBeTopTier(node, slot)) tier = 2;
+            return System.Math.Clamp(tier, 1, 3);
         }
 
-        // The deepest tier-2 rooms that can take it go up first.
-        private static void PromoteExtra(List<(MapNode node, MapSlot slot)> candidates, int count)
+        // The deepest tier-2 rooms that can take it go up first (never one next to Start).
+        private void PromoteExtra(List<(MapNode node, MapSlot slot)> candidates, int count)
         {
             if (count <= 0) return;
+            candidates.RemoveAll(c => c.slot.Depth <= 1 && Content.FirstRoomsMaxTier < 3);
             candidates.Sort((a, b) => b.slot.Progress.CompareTo(a.slot.Progress));
             for (int i = 0; i < count && i < candidates.Count; i++)
                 candidates[i].node.Tier = 3;
