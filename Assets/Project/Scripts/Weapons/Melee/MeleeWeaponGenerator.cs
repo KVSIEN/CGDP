@@ -34,7 +34,6 @@ namespace CGD.Weapons
             d.HeavyHoldThreshold = cat.HeavyHoldThreshold;
             d.ComboResetTime     = cat.ComboResetTime;
             d.WeaveWindow        = cat.WeaveWindow;
-            d.SwapStrikeWindow   = cat.SwapStrikeWindow;
             d.HitMask            = cat.HitMask;
             d.NoiseRadius        = cat.NoiseRadius;
 

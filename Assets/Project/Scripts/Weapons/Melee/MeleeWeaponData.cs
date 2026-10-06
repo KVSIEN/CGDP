@@ -36,8 +36,6 @@ namespace CGD.Weapons
         [Tooltip("Paid per light attack; heavy attacks pay HeavyStaminaMultiplier times this. Characters without the meter swing for free")]
         public MeterCost StaminaCost;
         [Min(0f)] public float HeavyStaminaMultiplier = 2f;
-        [Tooltip("Swap strike: seconds after swapping to this weapon in which the first swing (light or heavy) skips its wind-up; holding attack through the swap counts too. 0 = off")]
-        [Min(0f)] public float SwapStrikeWindow;
 
         [Header("Guard (alternate action)")]
         [Tooltip("Off for quick-melee data such as fists, which can't block")]
