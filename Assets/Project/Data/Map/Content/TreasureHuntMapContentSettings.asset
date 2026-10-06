@@ -230,7 +230,6 @@ MonoBehaviour:
     - 12
     - 15
     _maxCombatInARow: 2
-    _restAfterTopTier: 1
     _restType: 5
   _intensityByDepth:
     serializedVersion: 2
