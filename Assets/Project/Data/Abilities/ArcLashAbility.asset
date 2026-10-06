@@ -16,9 +16,20 @@ MonoBehaviour:
   SlotColor: {r: 0.4, g: 0.75, b: 1, a: 1}
   Cooldown: 0
   MaxCharges: 1
+  ChargeSource: 0
   Cost:
-    Meter: {fileID: 11400000, guid: b2f918708c344caf8f5e8b789fe0baac, type: 2}
-    Amount: 15
+    Meter: {fileID: 0}
+    Amount: 0
+  Surge:
+    GainPerAction: 0.1
+    DrainPerSecond: 0.08
+    DrainDelay: 3
+    DrainFloor: 0
+  SurgeCost: 0.15
+  Scaling:
+    MaxSpend: 0
+    MaxPower: 1
+    Bonuses: []
   CastTime: 0
   Targeting: {fileID: 11400000, guid: a56df9097d26499b9cfa4c2aadaea878, type: 2}
   Damage: 20

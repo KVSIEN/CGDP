@@ -18,17 +18,19 @@ namespace CGD.Abilities
         public float Cooldown = 5f;
         [Tooltip("Uses stored at once; spent charges recharge one after another")]
         [Min(1)] public int MaxCharges = 1;
-        [Tooltip("What refills charges: the cooldown, resource earned in combat (Charge Meter), or both")]
+        [Tooltip("What refills charges: the cooldown, the Surge gauge filling up (a charge per full gauge), or both")]
         public ChargeSource ChargeSource = ChargeSource.Cooldown;
-        [Tooltip("Earned charges: the meter whose gains refill them (e.g. Rage). Spending a charge doesn't spend the meter")]
-        public MeterDefinition ChargeMeter;
-        [Tooltip("Earned charges: how much of the meter must be gained per charge")]
-        [Min(1f)] public float EarnedPerCharge = 25f;
 
         [Header("Cost")]
         [Tooltip("Resource spent on each use (mana, energy...). Leave Meter empty for none.")]
         public MeterCost Cost;
-        [Tooltip("Optional: spend more than the cost for a stronger cast")]
+
+        [Header("Surge")]
+        [Tooltip("This ability's own gauge, filled by combat actions (uncommon: most abilities only use a cooldown)")]
+        public SurgeSettings Surge = new();
+        [Tooltip("Share of the Surge gauge each use needs and spends (0 = none)")]
+        [Range(0f, 1f)] public float SurgeCost;
+        [Tooltip("Optional: spend more Surge than the cost for a stronger cast")]
         public ResourceScaling Scaling = new();
 
         [Header("Casting")]

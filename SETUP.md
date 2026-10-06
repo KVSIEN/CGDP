@@ -119,8 +119,8 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 | **PlayerLifecycle** | `_health`, `_movement`, `_abilities`, `_input` = Player · `_hud` = HUD · `_spawnPoint` = RespawnPoint · `_deathScreen`? | Tick `_gameOverOnDeath` to end the run instead of respawning. |
 | **PlayerFootsteps** | `_surfaces` = `Audio/DefaultSurfaceDatabase` | |
 | **PlayerAudio** | `_health` = PlayerHealth, `_hurtSound`?, `_deathSound`? | |
-| **MeterSet** | `_definitions` = meters from `Data/Meters/` (the Player prefab has `StaminaMeter` and `RageMeter`) | Needed before any stamina/mana cost can be paid; melee swings and blocks spend stamina from it, Rage abilities spend Rage. |
-| **CombatMeterGain** | `_meter` = `RageMeter` (must also be on the MeterSet); gain per damage / per-hit cap / per kill / per parry | Earns Rage from fighting. Needs a `MeterSet` on the same object; parries count when a `MeleeController` is there too. |
+| **MeterSet** | `_definitions` = meters from `Data/Meters/` (the Player prefab has `StaminaMeter`) | Needed before any stamina/mana cost can be paid; melee swings and blocks spend stamina from it. |
+| **CombatActions** | — | Counts the player's combat actions (hits, kills, parries) that fill ability Surge. Parries count when a `MeleeController` is on the same object. Without it Surge abilities never fill. |
 
 **Meter costs** — set `SprintCost` on `PlayerMovementSettings`, `_cost` on a dodge, or `Cost` on an ability.
 A cost for a meter the Player doesn't have is **blocked**, not free.
@@ -600,7 +600,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `DevTools/` | `DevCatalog` (all items, weapon categories, buffs; no enemy prefabs exist yet) | DevCommands |
 | `Abilities/` | Dash (needs `PlayerDodge`), Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`), Stealth (needs `Stealthable`) | PlayerAbilities |
 | `Abilities/` (instant strike) | `CrushingBlowAbility` (Targeted, `DefaultRaycastTargetSelector`) | PlayerAbilities |
-| `Abilities/` (Rage) | `ArcLashAbility` (Targeted, no cooldown, 15 Rage), `OverdriveAbility` (Stat Buff, 25 s + 60 Rage), `RuptureAbility` (Targeted, *Scaling*: spends 20–100 Rage for up to 4× damage, bleed at 50+), `StaticRoundsAbility` (Targeted, *Charge Source* = Earned from `RageMeter`, 25 per charge, 3 charges) — need `RageMeter` on the player's MeterSet and a `CombatMeterGain` | PlayerAbilities |
+| `Abilities/` (Surge) | `ArcLashAbility` (Targeted, no cooldown, 15% Surge), `OverdriveAbility` (Stat Buff, 25 s + a full, non-draining gauge), `RuptureAbility` (Targeted, *Scaling*: spends 20–100% for up to 4× damage, bleed at 50%+, 30% floor), `StaticRoundsAbility` (Targeted, *Charge Source* = Surge, +25% per action, 3 charges) — each ability's *Surge* section sets gain per action, drain rate, delay and floor; need `CombatActions` on the player | PlayerAbilities |
 | `Abilities/` (reflects) | `VengeanceAbility`, `DeflectAbility`, `AbsorbAbility` (Reflect — need a `Reflector` on the player) | PlayerAbilities |
 | `Combat/Reflect/` | `VengeanceReflect`, `DeflectReflect` (projectile = `Prefabs/Weapons/Projectile`), `AbsorbReflect`, `RiposteSlashReflect` (timeline = `ActionTimelines/RiposteSlashTimeline`, whose Damage 1 = the parried hit) | reflect abilities, melee *Parry Reflect* |
 | `Targeting/` | `Default…TargetSelector`, `AimedArea…`, `FriendlyArea…` | abilities, PlayerLockOn |

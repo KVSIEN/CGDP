@@ -33,8 +33,6 @@ namespace CGD.Meters
         public event Action Changed;
         // The moment the meter hits 0.
         public event Action Depleted;
-        // Amount actually added by Restore (gains, not regen) — e.g. Rage earned in combat.
-        public event Action<float> Restored;
 
         public Meter(MeterDefinition definition) : this(definition.Settings) => Definition = definition;
 
@@ -71,9 +69,7 @@ namespace CGD.Meters
             if (amount <= 0f || IsFull) return;
 
             if (_regenRate < 0f) SuppressRegen();
-            float before = _current;
             SetCurrent(_current + amount);
-            if (_current > before) Restored?.Invoke(_current - before);
         }
 
         public void Fill()  => SetCurrent(_max);

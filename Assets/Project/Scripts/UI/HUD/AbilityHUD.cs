@@ -8,7 +8,8 @@ namespace CGD.UI
     // Displays four ability slots anchored to the bottom-centre of the screen.
     // Each slot shows the ability's colour, a dark overlay that shrinks as the next
     // charge recharges (or grows while casting), and the charge count for multi-charge
-    // abilities. A slot whose resource cost can't be paid yet is dimmed.
+    // abilities. A slot whose cost can't be paid yet is dimmed, and Surge abilities show
+    // their own gauge as a thin bar along the slot's bottom edge.
     [RequireComponent(typeof(RectTransform))]
     public class AbilityHUD : HUDElement
     {
@@ -24,6 +25,8 @@ namespace CGD.UI
         private Image[]  _slotBg         = new Image[SlotCount];
         private Image[]  _cooldownOverlay = new Image[SlotCount];
         private TextMeshProUGUI[] _chargeLabels = new TextMeshProUGUI[SlotCount];
+        private Image[]  _surgeBg   = new Image[SlotCount];
+        private RectTransform[] _surgeFill = new RectTransform[SlotCount];
 
         // Cached so the per-frame charge label never allocates.
         private static readonly string[] ChargeText = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
@@ -31,6 +34,9 @@ namespace CGD.UI
         private static readonly Color EmptySlotColor = new Color(0.1f, 0.1f, 0.1f, 0.85f);
         private const float UnaffordableAlpha = 0.25f;
         private static readonly Color    CooldownOverlayColor = new Color(0f, 0f, 0f, 0.65f);
+        private static readonly Color    SurgeBgColor   = new Color(0f, 0f, 0f, 0.6f);
+        private static readonly Color    SurgeFillColor = new Color(1f, 0.85f, 0.3f, 1f);
+        private const float SurgeBarHeight = 5f;
 
         private void Awake()
         {
@@ -75,6 +81,23 @@ namespace CGD.UI
                 UIFactory.Stretch(charges.rectTransform);
                 charges.rectTransform.offsetMax = new Vector2(-3f, 0f);
                 _chargeLabels[i] = charges;
+
+                var surgeBg = UIFactory.MakeImage("Surge_" + i, bg.rectTransform);
+                surgeBg.color = SurgeBgColor;
+                RectTransform surgeRt = surgeBg.rectTransform;
+                surgeRt.anchorMin = Vector2.zero;
+                surgeRt.anchorMax = new Vector2(1f, 0f);
+                surgeRt.pivot     = new Vector2(0.5f, 0f);
+                surgeRt.offsetMin = Vector2.zero;
+                surgeRt.offsetMax = new Vector2(0f, SurgeBarHeight);
+                _surgeBg[i] = surgeBg;
+
+                var surgeFill = UIFactory.MakeImage("Fill", surgeRt);
+                surgeFill.color = SurgeFillColor;
+                _surgeFill[i] = surgeFill.rectTransform;
+                _surgeFill[i].anchorMin = Vector2.zero;
+                _surgeFill[i].anchorMax = new Vector2(0f, 1f);
+                _surgeFill[i].offsetMin = _surgeFill[i].offsetMax = Vector2.zero;
             }
         }
 
@@ -98,6 +121,10 @@ namespace CGD.UI
                     ? _abilities.CastProgress
                     : 1f - (ability != null ? _abilities.GetReadyRatio(i) : 1f);
                 _cooldownOverlay[i].rectTransform.anchorMax = new Vector2(1f, overlay);
+
+                bool hasSurge = ability != null && ability.Surge.IsActive;
+                if (_surgeBg[i].gameObject.activeSelf != hasSurge) _surgeBg[i].gameObject.SetActive(hasSurge);
+                if (hasSurge) _surgeFill[i].anchorMax = new Vector2(_abilities.GetSurge(i), 1f);
 
                 _chargeLabels[i].text = ability != null && ability.MaxCharges > 1
                     ? ChargeLabel(_abilities.GetCharges(i))

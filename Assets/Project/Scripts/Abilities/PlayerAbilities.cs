@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
@@ -14,8 +13,9 @@ namespace CGD.Abilities
     // can't act. Costs are paid from the MeterSet on the player, when the ability fires.
     // With input buffering on, a press that can't go off yet (another ability on the same
     // frame or casting, a dodge, a stun) waits briefly, so 1→2 in quick succession both fire.
-    // Abilities with resource scaling spend more than their cost for a stronger cast, and
-    // abilities with earned charges refill them from what their meter gains in combat.
+    // Surge abilities (uncommon) each have their own gauge, filled by the player's combat
+    // actions and draining per the ability's settings: it can pay a Surge cost, be spent in
+    // bulk for a stronger cast (scaling), or turn into a charge each time it fills.
     [RequireComponent(typeof(PlayerInputHandler))]
     public class PlayerAbilities : MonoBehaviour
     {
@@ -37,9 +37,9 @@ namespace CGD.Abilities
         private PlayerInputHandler _input;
         private PlayerMovement _movement;
         private MeterSet _meters;
+        private CombatActions _actions;
         private int[] _charges;
-        private float[] _earned;
-        private readonly List<(Meter meter, System.Action<float> handler)> _meterHooks = new();
+        private SurgeGauge[] _surges;
         private InputBuffer[] _buffers;
         private CooldownTimer[] _recharges;
         private AbilityContext _ctx;
@@ -61,11 +61,16 @@ namespace CGD.Abilities
             _input     = GetComponent<PlayerInputHandler>();
             _movement  = GetComponent<PlayerMovement>();
             TryGetComponent(out _meters);
+            TryGetComponent(out _actions);
             _charges   = new int[_slots.Length];
             _recharges = new CooldownTimer[_slots.Length];
-            _earned    = new float[_slots.Length];
+            _surges    = new SurgeGauge[_slots.Length];
             _buffers   = new InputBuffer[_slots.Length];
-            for (int i = 0; i < _buffers.Length; i++) _buffers[i] = new InputBuffer();
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                _surges[i]  = new SurgeGauge();
+                _buffers[i] = new InputBuffer();
+            }
             RefillCharges();
 
             _ctx = new AbilityContext
@@ -81,27 +86,19 @@ namespace CGD.Abilities
             if (_health != null) _health.OnRevived += RefillCharges;
         }
 
-        // MeterSet builds its meters in Awake, so the hooks wait for Start.
-        private void Start()
-        {
-            if (_meters == null) return;
-            foreach (Meter meter in _meters.Meters)
-            {
-                Meter m = meter;
-                System.Action<float> handler = amount => OnMeterGained(m, amount);
-                m.Restored += handler;
-                _meterHooks.Add((m, handler));
-            }
-        }
-
         private void OnDestroy()
         {
             if (_health != null) _health.OnRevived -= RefillCharges;
-            foreach (var (meter, handler) in _meterHooks) meter.Restored -= handler;
+        }
+
+        private void OnEnable()
+        {
+            if (_actions != null) _actions.Performed += OnCombatAction;
         }
 
         private void OnDisable()
         {
+            if (_actions != null) _actions.Performed -= OnCombatAction;
             _castingSlot = -1;
             foreach (InputBuffer buffer in _buffers) buffer.Clear();
         }
@@ -110,6 +107,7 @@ namespace CGD.Abilities
         {
             _ctx.MoveInput = _input.MoveInput;
             TickRecharges(Time.deltaTime);
+            TickSurges(Time.deltaTime);
             BufferPresses();
 
             if (IsCasting)
@@ -125,7 +123,7 @@ namespace CGD.Abilities
                 if (!Pressed(i))                       continue;
                 if (_charges[i] <= 0)                  continue;
                 if (!_movement.CanAct)                 continue;
-                if (!ability.Cost.CanAfford(_meters))  continue;
+                if (!CanAfford(i))                     continue;
                 if (!ability.CanExecute(_ctx))         continue;
 
                 _buffers[i].Clear();
@@ -147,18 +145,28 @@ namespace CGD.Abilities
         // Charges available in a slot (0 for an empty slot).
         public int GetCharges(int slot) => _slots[slot] != null ? _charges[slot] : 0;
 
-        // False while the slot's resource cost (e.g. earned Rage) can't be paid.
-        public bool CanAfford(int slot) => _slots[slot] != null && _slots[slot].Cost.CanAfford(_meters);
+        // False while the slot's resource or Surge cost can't be paid.
+        public bool CanAfford(int slot)
+        {
+            Ability ability = _slots[slot];
+            return ability != null && ability.Cost.CanAfford(_meters) && _surges[slot].Has(ability.SurgeCost);
+        }
+
+        // The slot's Surge gauge (0..1); 0 for abilities without Surge.
+        public float GetSurge(int slot) => _slots[slot] != null && _slots[slot].Surge.IsActive ? _surges[slot].Value : 0f;
 
         // 1 when the slot can be used; otherwise how far the next charge has recharged.
         public float GetReadyRatio(int slot)
         {
             if (_charges[slot] > 0) return 1f;
             Ability ability = _slots[slot];
-            float earned = ability != null && ability.ChargeSource != ChargeSource.Cooldown
-                ? Mathf.Clamp01(_earned[slot] / ability.EarnedPerCharge) : 0f;
-            return ability != null && ability.ChargeSource == ChargeSource.Earned
-                ? earned : Mathf.Max(earned, _recharges[slot].Ratio);
+            if (ability == null) return 0f;
+            return ability.ChargeSource switch
+            {
+                ChargeSource.Surge => _surges[slot].Value,
+                ChargeSource.Both  => Mathf.Max(_surges[slot].Value, _recharges[slot].Ratio),
+                _                  => _recharges[slot].Ratio,
+            };
         }
 
         // 0..1 progress of the current cast (0 when not casting).
@@ -198,53 +206,58 @@ namespace CGD.Abilities
             int slot = _castingSlot;
             _castingSlot = -1;
             Ability ability = _slots[slot];
-            if (ability.Cost.CanAfford(_meters) && ability.CanExecute(_ctx)) Fire(slot);
+            if (CanAfford(slot) && ability.CanExecute(_ctx)) Fire(slot);
         }
 
         private void Fire(int slot)
         {
             Ability ability = _slots[slot];
-            if (!TryPayCost(ability, out float spent)) return;
+            if (!TryPayCost(slot, out float surgeSpent)) return;
 
-            _ctx.Power        = ResourceSpend.Power(spent, ability.Cost.Amount, ability.Scaling.MaxSpend, ability.Scaling.MaxPower);
-            _ctx.BonusEffects = ability.Scaling.IsActive(ability.Cost) ? ability.Scaling.EffectsFor(spent) : null;
+            _ctx.Power        = ResourceSpend.Power(surgeSpent, ability.SurgeCost, ability.Scaling.MaxSpend, ability.Scaling.MaxPower);
+            _ctx.BonusEffects = ability.Scaling.IsActive(ability.SurgeCost) ? ability.Scaling.EffectsFor(surgeSpent) : null;
             ability.Execute(_ctx);
             AbilityUsed?.Invoke(ability);
 
             bool wasFull = _charges[slot] >= ability.MaxCharges;
             _charges[slot]--;
-            if (wasFull && ability.ChargeSource != ChargeSource.Earned) _recharges[slot].Start(ability.Cooldown);
+            if (wasFull && ability.ChargeSource != ChargeSource.Surge) _recharges[slot].Start(ability.Cooldown);
         }
 
-        // A scaled ability spends everything available up to its MaxSpend; others pay the cost.
-        private bool TryPayCost(Ability ability, out float spent)
+        // Pays the meter cost (mana…) and the Surge cost. A Surge-scaled ability spends all its
+        // Surge up to MaxSpend; `surgeSpent` is what it took.
+        private bool TryPayCost(int slot, out float surgeSpent)
         {
-            spent = ability.Cost.Amount;
-            if (!ability.Scaling.IsActive(ability.Cost)) return ability.Cost.TryPay(_meters);
-            if (_meters == null || !_meters.TryGet(ability.Cost.Meter, out Meter meter)) return false;
+            Ability ability = _slots[slot];
+            SurgeGauge surge = _surges[slot];
+            surgeSpent = ability.Scaling.IsActive(ability.SurgeCost)
+                ? ResourceSpend.Amount(surge.Value, ability.SurgeCost, ability.Scaling.MaxSpend)
+                : ability.SurgeCost;
 
-            spent = ResourceSpend.Amount(meter.Current, ability.Cost.Amount, ability.Scaling.MaxSpend);
-            return meter.TrySpend(spent);
+            if (!surge.Has(surgeSpent) || !ability.Cost.TryPay(_meters)) return false;
+            surge.TrySpend(surgeSpent);
+            return true;
         }
 
-        // Earned charges: what a meter gains in combat loads the charges of abilities tied to it.
-        private void OnMeterGained(Meter meter, float amount)
+        // Each combat action fills every Surge ability's gauge by its own rate; a full gauge
+        // becomes a charge for abilities charged by Surge.
+        private void OnCombatAction()
         {
             for (int i = 0; i < _slots.Length; i++)
             {
                 Ability ability = _slots[i];
-                if (ability == null || ability.ChargeSource == ChargeSource.Cooldown || ability.ChargeMeter == null) continue;
-                if (_charges[i] >= ability.MaxCharges) continue;
-                if (!_meters.TryGet(ability.ChargeMeter, out Meter chargeMeter) || chargeMeter != meter) continue;
+                if (ability == null || !ability.Surge.IsActive) continue;
 
-                _earned[i] += amount;
-                while (_earned[i] >= ability.EarnedPerCharge && _charges[i] < ability.MaxCharges)
-                {
-                    _earned[i] -= ability.EarnedPerCharge;
+                _surges[i].Gain(ability.Surge.GainPerAction, Time.time);
+                if (ability.ChargeSource != ChargeSource.Cooldown && _charges[i] < ability.MaxCharges && _surges[i].TrySpend(1f))
                     _charges[i]++;
-                }
-                if (_charges[i] >= ability.MaxCharges) _earned[i] = 0f;
             }
+        }
+
+        private void TickSurges(float deltaTime)
+        {
+            for (int i = 0; i < _slots.Length; i++)
+                if (_slots[i] != null && _slots[i].Surge.IsActive) _surges[i].Tick(deltaTime, Time.time, _slots[i].Surge);
         }
 
         private void TickRecharges(float deltaTime)
@@ -252,7 +265,7 @@ namespace CGD.Abilities
             for (int i = 0; i < _slots.Length; i++)
             {
                 Ability ability = _slots[i];
-                if (ability == null || ability.ChargeSource == ChargeSource.Earned || _charges[i] >= ability.MaxCharges) continue;
+                if (ability == null || ability.ChargeSource == ChargeSource.Surge || _charges[i] >= ability.MaxCharges) continue;
 
                 _recharges[i].Tick(deltaTime);
                 if (!_recharges[i].IsReady) continue;
@@ -268,11 +281,11 @@ namespace CGD.Abilities
             _castingSlot = -1;
             for (int i = 0; i < _slots.Length; i++)
             {
-                // Earned-only charges start empty: they have to be fought for.
+                // Surge-only charges start empty, like every Surge gauge: they have to be fought for.
                 Ability ability = _slots[i];
-                _charges[i] = ability == null || ability.ChargeSource == ChargeSource.Earned ? 0 : ability.MaxCharges;
+                _charges[i] = ability == null || ability.ChargeSource == ChargeSource.Surge ? 0 : ability.MaxCharges;
                 _recharges[i].Reset();
-                _earned[i]  = 0f;
+                _surges[i].Reset();
             }
         }
     }

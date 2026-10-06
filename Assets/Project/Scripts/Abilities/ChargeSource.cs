@@ -4,7 +4,7 @@ namespace CGD.Abilities
     public enum ChargeSource
     {
         Cooldown, // one charge per Cooldown, as usual
-        Earned,   // one charge per EarnedPerCharge of the charge meter gained in combat
+        Surge,    // one charge each time the ability's Surge gauge fills (it then empties)
         Both,     // either, whichever comes first
     }
 }

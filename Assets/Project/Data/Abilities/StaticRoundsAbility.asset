@@ -17,11 +17,15 @@ MonoBehaviour:
   Cooldown: 0
   MaxCharges: 3
   ChargeSource: 1
-  ChargeMeter: {fileID: 11400000, guid: b2f918708c344caf8f5e8b789fe0baac, type: 2}
-  EarnedPerCharge: 25
   Cost:
     Meter: {fileID: 0}
     Amount: 0
+  Surge:
+    GainPerAction: 0.25
+    DrainPerSecond: 0.08
+    DrainDelay: 3
+    DrainFloor: 0
+  SurgeCost: 0
   Scaling:
     MaxSpend: 0
     MaxPower: 1

@@ -17,16 +17,20 @@ MonoBehaviour:
   Cooldown: 6
   MaxCharges: 1
   ChargeSource: 0
-  ChargeMeter: {fileID: 0}
-  EarnedPerCharge: 25
   Cost:
-    Meter: {fileID: 11400000, guid: b2f918708c344caf8f5e8b789fe0baac, type: 2}
-    Amount: 20
+    Meter: {fileID: 0}
+    Amount: 0
+  Surge:
+    GainPerAction: 0.1
+    DrainPerSecond: 0.1
+    DrainDelay: 3
+    DrainFloor: 0.3
+  SurgeCost: 0.2
   Scaling:
-    MaxSpend: 100
+    MaxSpend: 1
     MaxPower: 4
     Bonuses:
-    - AtSpend: 50
+    - AtSpend: 0.5
       Effect:
         Effect: {fileID: 11400000, guid: f2a43b1c8de76a84490042e6d8d13b50, type: 2}
         Chance: 1

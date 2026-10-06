@@ -16,9 +16,20 @@ MonoBehaviour:
   SlotColor: {r: 0.9, g: 0.2, b: 0.15, a: 1}
   Cooldown: 25
   MaxCharges: 1
+  ChargeSource: 0
   Cost:
-    Meter: {fileID: 11400000, guid: b2f918708c344caf8f5e8b789fe0baac, type: 2}
-    Amount: 60
+    Meter: {fileID: 0}
+    Amount: 0
+  Surge:
+    GainPerAction: 0.1
+    DrainPerSecond: 0
+    DrainDelay: 3
+    DrainFloor: 0
+  SurgeCost: 1
+  Scaling:
+    MaxSpend: 0
+    MaxPower: 1
+    Bonuses: []
   CastTime: 0
   Buff: {fileID: 11400000, guid: 5713684b1c254fcea0d2d0fec15a10e7, type: 2}
   Duration: 12

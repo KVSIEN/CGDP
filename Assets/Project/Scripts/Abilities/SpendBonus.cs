@@ -4,11 +4,11 @@ using CGD.Combat;
 
 namespace CGD.Abilities
 {
-    // A status effect a resource-scaled ability adds once a cast spends at least AtSpend.
+    // A status effect a Surge-scaled ability adds once a cast spends at least AtSpend (a share of the gauge).
     [Serializable]
     public class SpendBonus
     {
-        [Min(0f)] public float AtSpend = 50f;
+        [Range(0f, 1f)] public float AtSpend = 0.5f;
         public StatusEffectApplication Effect;
     }
 }
