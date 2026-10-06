@@ -600,7 +600,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `DevTools/` | `DevCatalog` (all items, weapon categories, buffs; no enemy prefabs exist yet) | DevCommands |
 | `Abilities/` | Dash (needs `PlayerDodge`), Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`), Stealth (needs `Stealthable`) | PlayerAbilities |
 | `Abilities/` (instant strike) | `CrushingBlowAbility` (Targeted, `DefaultRaycastTargetSelector`) | PlayerAbilities |
-| `Abilities/` (Rage) | `ArcLashAbility` (Targeted, no cooldown, 15 Rage), `OverdriveAbility` (Stat Buff, 25 s + 60 Rage) — need `RageMeter` on the player's MeterSet and a `CombatMeterGain` | PlayerAbilities |
+| `Abilities/` (Rage) | `ArcLashAbility` (Targeted, no cooldown, 15 Rage), `OverdriveAbility` (Stat Buff, 25 s + 60 Rage), `RuptureAbility` (Targeted, *Scaling*: spends 20–100 Rage for up to 4× damage, bleed at 50+), `StaticRoundsAbility` (Targeted, *Charge Source* = Earned from `RageMeter`, 25 per charge, 3 charges) — need `RageMeter` on the player's MeterSet and a `CombatMeterGain` | PlayerAbilities |
 | `Abilities/` (reflects) | `VengeanceAbility`, `DeflectAbility`, `AbsorbAbility` (Reflect — need a `Reflector` on the player) | PlayerAbilities |
 | `Combat/Reflect/` | `VengeanceReflect`, `DeflectReflect` (projectile = `Prefabs/Weapons/Projectile`), `AbsorbReflect`, `RiposteSlashReflect` (timeline = `ActionTimelines/RiposteSlashTimeline`, whose Damage 1 = the parried hit) | reflect abilities, melee *Parry Reflect* |
 | `Targeting/` | `Default…TargetSelector`, `AimedArea…`, `FriendlyArea…` | abilities, PlayerLockOn |

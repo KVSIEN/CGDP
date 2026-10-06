@@ -15,5 +15,9 @@ namespace CGD.Abilities
         public PlayerHealth Health;
         public DamageSource Source;
         public Vector2 MoveInput;
+
+        // Set per cast by resource scaling: damage multiplier and extra on-hit effects.
+        public float Power = 1f;
+        public StatusEffectApplication[] BonusEffects;
     }
 }

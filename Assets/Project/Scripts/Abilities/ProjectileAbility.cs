@@ -33,7 +33,7 @@ namespace CGD.Abilities
             // The projectile ignores its source's colliders, so it can't hit the caster.
             // Abilities carry no range stats, so the shot neither falls off nor expires by
             // distance — Lifetime alone bounds it.
-            var hit = new DamageInfo(Damage, source: ctx.Source, onHitEffects: OnHitEffects);
+            var hit = new DamageInfo(Scaled(Damage, ctx), source: ctx.Source, onHitEffects: WithBonusEffects(OnHitEffects, ctx));
             go.GetComponent<Projectile>().Launch(new ProjectileLaunch
             {
                 Damage      = hit,

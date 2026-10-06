@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
@@ -13,6 +14,8 @@ namespace CGD.Abilities
     // can't act. Costs are paid from the MeterSet on the player, when the ability fires.
     // With input buffering on, a press that can't go off yet (another ability on the same
     // frame or casting, a dodge, a stun) waits briefly, so 1→2 in quick succession both fire.
+    // Abilities with resource scaling spend more than their cost for a stronger cast, and
+    // abilities with earned charges refill them from what their meter gains in combat.
     [RequireComponent(typeof(PlayerInputHandler))]
     public class PlayerAbilities : MonoBehaviour
     {
@@ -35,6 +38,8 @@ namespace CGD.Abilities
         private PlayerMovement _movement;
         private MeterSet _meters;
         private int[] _charges;
+        private float[] _earned;
+        private readonly List<(Meter meter, System.Action<float> handler)> _meterHooks = new();
         private InputBuffer[] _buffers;
         private CooldownTimer[] _recharges;
         private AbilityContext _ctx;
@@ -58,6 +63,7 @@ namespace CGD.Abilities
             TryGetComponent(out _meters);
             _charges   = new int[_slots.Length];
             _recharges = new CooldownTimer[_slots.Length];
+            _earned    = new float[_slots.Length];
             _buffers   = new InputBuffer[_slots.Length];
             for (int i = 0; i < _buffers.Length; i++) _buffers[i] = new InputBuffer();
             RefillCharges();
@@ -75,9 +81,23 @@ namespace CGD.Abilities
             if (_health != null) _health.OnRevived += RefillCharges;
         }
 
+        // MeterSet builds its meters in Awake, so the hooks wait for Start.
+        private void Start()
+        {
+            if (_meters == null) return;
+            foreach (Meter meter in _meters.Meters)
+            {
+                Meter m = meter;
+                System.Action<float> handler = amount => OnMeterGained(m, amount);
+                m.Restored += handler;
+                _meterHooks.Add((m, handler));
+            }
+        }
+
         private void OnDestroy()
         {
             if (_health != null) _health.OnRevived -= RefillCharges;
+            foreach (var (meter, handler) in _meterHooks) meter.Restored -= handler;
         }
 
         private void OnDisable()
@@ -131,7 +151,15 @@ namespace CGD.Abilities
         public bool CanAfford(int slot) => _slots[slot] != null && _slots[slot].Cost.CanAfford(_meters);
 
         // 1 when the slot can be used; otherwise how far the next charge has recharged.
-        public float GetReadyRatio(int slot) => _charges[slot] > 0 ? 1f : _recharges[slot].Ratio;
+        public float GetReadyRatio(int slot)
+        {
+            if (_charges[slot] > 0) return 1f;
+            Ability ability = _slots[slot];
+            float earned = ability != null && ability.ChargeSource != ChargeSource.Cooldown
+                ? Mathf.Clamp01(_earned[slot] / ability.EarnedPerCharge) : 0f;
+            return ability != null && ability.ChargeSource == ChargeSource.Earned
+                ? earned : Mathf.Max(earned, _recharges[slot].Ratio);
+        }
 
         // 0..1 progress of the current cast (0 when not casting).
         public float CastProgress
@@ -176,13 +204,47 @@ namespace CGD.Abilities
         private void Fire(int slot)
         {
             Ability ability = _slots[slot];
-            if (!ability.Cost.TryPay(_meters)) return;
+            if (!TryPayCost(ability, out float spent)) return;
+
+            _ctx.Power        = ResourceSpend.Power(spent, ability.Cost.Amount, ability.Scaling.MaxSpend, ability.Scaling.MaxPower);
+            _ctx.BonusEffects = ability.Scaling.IsActive(ability.Cost) ? ability.Scaling.EffectsFor(spent) : null;
             ability.Execute(_ctx);
             AbilityUsed?.Invoke(ability);
 
             bool wasFull = _charges[slot] >= ability.MaxCharges;
             _charges[slot]--;
-            if (wasFull) _recharges[slot].Start(ability.Cooldown);
+            if (wasFull && ability.ChargeSource != ChargeSource.Earned) _recharges[slot].Start(ability.Cooldown);
+        }
+
+        // A scaled ability spends everything available up to its MaxSpend; others pay the cost.
+        private bool TryPayCost(Ability ability, out float spent)
+        {
+            spent = ability.Cost.Amount;
+            if (!ability.Scaling.IsActive(ability.Cost)) return ability.Cost.TryPay(_meters);
+            if (_meters == null || !_meters.TryGet(ability.Cost.Meter, out Meter meter)) return false;
+
+            spent = ResourceSpend.Amount(meter.Current, ability.Cost.Amount, ability.Scaling.MaxSpend);
+            return meter.TrySpend(spent);
+        }
+
+        // Earned charges: what a meter gains in combat loads the charges of abilities tied to it.
+        private void OnMeterGained(Meter meter, float amount)
+        {
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                Ability ability = _slots[i];
+                if (ability == null || ability.ChargeSource == ChargeSource.Cooldown || ability.ChargeMeter == null) continue;
+                if (_charges[i] >= ability.MaxCharges) continue;
+                if (!_meters.TryGet(ability.ChargeMeter, out Meter chargeMeter) || chargeMeter != meter) continue;
+
+                _earned[i] += amount;
+                while (_earned[i] >= ability.EarnedPerCharge && _charges[i] < ability.MaxCharges)
+                {
+                    _earned[i] -= ability.EarnedPerCharge;
+                    _charges[i]++;
+                }
+                if (_charges[i] >= ability.MaxCharges) _earned[i] = 0f;
+            }
         }
 
         private void TickRecharges(float deltaTime)
@@ -190,7 +252,7 @@ namespace CGD.Abilities
             for (int i = 0; i < _slots.Length; i++)
             {
                 Ability ability = _slots[i];
-                if (ability == null || _charges[i] >= ability.MaxCharges) continue;
+                if (ability == null || ability.ChargeSource == ChargeSource.Earned || _charges[i] >= ability.MaxCharges) continue;
 
                 _recharges[i].Tick(deltaTime);
                 if (!_recharges[i].IsReady) continue;
@@ -206,8 +268,11 @@ namespace CGD.Abilities
             _castingSlot = -1;
             for (int i = 0; i < _slots.Length; i++)
             {
-                _charges[i] = _slots[i] != null ? _slots[i].MaxCharges : 0;
+                // Earned-only charges start empty: they have to be fought for.
+                Ability ability = _slots[i];
+                _charges[i] = ability == null || ability.ChargeSource == ChargeSource.Earned ? 0 : ability.MaxCharges;
                 _recharges[i].Reset();
+                _earned[i]  = 0f;
             }
         }
     }

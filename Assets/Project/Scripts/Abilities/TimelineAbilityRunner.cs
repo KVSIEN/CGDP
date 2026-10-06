@@ -32,6 +32,8 @@ namespace CGD.Abilities
                 TargetPoint   = targetPoint ?? Vector3.zero,
                 DebugDraw     = _debugDraw,
                 DebugDuration = _debugDuration,
+                // Resource scaling multiplies the timeline's damage events.
+                DamageScale   = abilityCtx.Power,
             };
 
             _runner.Begin(timeline, _ctx);

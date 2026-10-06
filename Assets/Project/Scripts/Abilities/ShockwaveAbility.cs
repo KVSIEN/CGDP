@@ -27,7 +27,8 @@ namespace CGD.Abilities
             Vector3 origin = ctx.PlayerTransform.position;
             int count = Physics.OverlapSphereNonAlloc(origin, Radius, _hitBuffer, HitMask, QueryTriggerInteraction.Ignore);
 
-            var hit = new DamageInfo(Damage, ArmorPenetration, DamageType, source: ctx.Source, onHitEffects: OnHitEffects);
+            var hit = new DamageInfo(Scaled(Damage, ctx), ArmorPenetration, DamageType, source: ctx.Source,
+                                     onHitEffects: WithBonusEffects(OnHitEffects, ctx));
             _damaged.Clear();
 
             for (int i = 0; i < count; i++)

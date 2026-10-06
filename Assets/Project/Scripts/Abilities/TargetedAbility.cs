@@ -32,7 +32,8 @@ namespace CGD.Abilities
         {
             if (Select(ctx) == 0) return;
 
-            var hit = new DamageInfo(Damage, ArmorPenetration, DamageType, source: ctx.Source, onHitEffects: OnHitEffects);
+            var hit = new DamageInfo(Scaled(Damage, ctx), ArmorPenetration, DamageType, source: ctx.Source,
+                                     onHitEffects: WithBonusEffects(OnHitEffects, ctx));
 
             foreach (HealthManager target in _targets.Targets)
             {
