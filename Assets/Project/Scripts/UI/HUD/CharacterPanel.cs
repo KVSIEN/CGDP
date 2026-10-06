@@ -7,8 +7,8 @@ using CGD.Weapons;
 
 namespace CGD.UI
 {
-    // Character window (Tab): what the player wears, their weapons and fitted attachments
-    // on the left; armor, attachments and consumables in the pack on the right.
+    // Character window (Tab): what the player wears, their weapons with their perks and fitted
+    // attachments on the left; armor, attachments and consumables in the pack on the right.
     //   click worn armor        → take it off
     //   click pack armor        → wear it
     //   click an attachment     → pick it, then click a gear line on the left to fit it
@@ -103,6 +103,10 @@ namespace CGD.UI
                 _worn.Add(text, () => onClick());
             else
                 _worn.Label(text);
+
+            if (gear is WeaponItem weapon)
+                foreach (WeaponPerk perk in weapon.Perks)
+                    if (perk != null) _worn.Label($"    * {perk.DisplayName}: {perk.Description}");
 
             foreach (AttachmentDefinition attachment in gear.Attachments)
                 _worn.Add($"    - {attachment.DisplayName}  (remove)", () => _equipment.Unfit(attachment, gear), _equipment != null);

@@ -184,6 +184,25 @@
 - Stats that carry a weapon's *power* (damage, fire rate, magazine, reload, recoil, spread, range, draw, sway) are driven by quality and the tradeoff axes. Stats that only give it *character* (recoil recovery, heat behaviour, burst timing) stay random, so high-tier weapons don't all start feeling the same
 - Every generated weapon has a seed: the same category, tier and seed rebuild exactly the same weapon — name, fire mode, quality and every stat. A random weapon pickup can be given a fixed seed so it always offers the same gun
 
+## Weapon Perks
+- On top of their stat rolls and attachment slots, generated weapons (guns and melee alike) roll **perks**: fixed traits that do something when a moment happens with that weapon in hand
+- **Triggers**: a **kill** with the weapon (grenades, abilities and an arrow still flying from a weapon you swapped away from don't count), a **parry** with it, or a **dodge** while holding it
+- **How many**: by tier — Common 0, Uncommon 1, Rare 1, Epic 2, Legendary 2 — plus a 25% chance of one more. A weapon never rolls the same perk twice, and only rolls perks that fit it (no reload perks on a sword, no parry perks on a gun). Perks are fixed for the weapon's life and part of its seed, so the same category, tier and seed give the same perks
+- **Included perks** (placeholders to tune):
+  - **Evasive Reload** (guns) — dodging fully reloads the weapon from reserve; 8 s cooldown
+  - **Slip Feed** (guns) — dodging loads 30% of the magazine from reserve
+  - **Kill Feed** (guns) — kills load 20% of the magazine from reserve
+  - **Quick Hands** (guns) — kills make reloads 30% faster for 6 s
+  - **Adrenaline** (any) — kills grant +25% damage for 5 s
+  - **Reap** (any) — kills restore 8% of maximum health
+  - **Riposte** (melee) — parrying grants +50% damage for 4 s
+  - **Second Wind** (melee) — parrying restores 30 stamina
+  - **Dancer** (melee) — dodging grants +30% attack speed for 3 s
+- **Buffs belong to the weapon that earned them**: swapping away ends them, so a perk never powers up the next weapon of a combo. Triggering one again restarts its timer rather than stacking
+- A perk with nothing to do (a full magazine, full health) doesn't go off and doesn't use its cooldown. Cooldowns are per perk, so two weapons with the same perk can't be swapped between to dodge-reload twice
+- A short notification names each perk as it goes off. Perks are listed under each weapon in the Character window, after the name on pickups, and in shop listings
+- Buffs and debuffs on the player now also reach fire rate, reload time and melee attack speed and damage (previously only gun damage)
+
 ## Weapon Loadout
 - Four weapon slots on the player; press 1, 2, 3, or 4 to equip the weapon in that slot
 - The scroll wheel cycles through the filled slots (down = next, up = previous), skipping empty ones and wrapping around

@@ -40,6 +40,9 @@ namespace CGD.Player
         private bool _fromAbility;
         private float _lastCrouchTap = float.NegativeInfinity;
 
+        // The player's own dodge starting (not an ability's dodge-style move), e.g. for weapon perks.
+        public event System.Action Dodged;
+
         // Read by DodgeHUD to size the cooldown overlay.
         public CooldownTimer Cooldown => _cooldown;
 
@@ -169,6 +172,7 @@ namespace CGD.Player
             if (!_movement.IsGrounded) _airDodgesUsed++;
             _fromAbility = fromAbility;
             _motion.Start(move.Stages, direction);
+            if (!fromAbility) Dodged?.Invoke();
         }
 
         private bool TryGetDirection(DodgeDefinition move, out Vector2 direction)

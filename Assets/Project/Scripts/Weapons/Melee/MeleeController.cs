@@ -9,6 +9,7 @@ using CGD.Items;
 using CGD.Meters;
 using CGD.Player;
 using CGD.Settings;
+using CGD.Stats;
 
 namespace CGD.Weapons
 {
@@ -41,6 +42,9 @@ namespace CGD.Weapons
         private PlayerItemSlots    _items;
         private Reflector          _reflector;
         private MeterSet           _meters;
+        private CharacterStats     _stats;
+        private DamageSource       _ownerSource;
+        // The owner plus the weapon in hand, so kills are credited to that weapon's perks.
         private DamageSource       _damageSource;
         private Func<float, bool>  _payGuardStamina;
 
@@ -73,13 +77,23 @@ namespace CGD.Weapons
         private ComboState      Combo => _equipped != null ? _equipped.Combo : _fistCombo;
         private bool AttackHeld => _input.IsHeld(GameAction.Melee) || (_equipped != null && _input.IsHeld(GameAction.Attack));
         // Divides wind-up, strike and recovery; a timeline-driven strike keeps its authored frames.
-        private float Speed => Mathf.Max(0.1f, Data.AttackSpeed);
+        private float Speed => Mathf.Max(0.1f, Wielder(ItemStat.FireRate, Data.AttackSpeed));
+
+        // A weapon value with the wielder's buffs and debuffs (e.g. a perk's damage boost) applied.
+        private float Wielder(ItemStat stat, float value) => _stats != null ? _stats.Apply(stat, value) : value;
+
+        // A timeline strike authors its own damage per event, so buffs reach it as a multiplier,
+        // measured on the step's damage so flat bonuses keep their size.
+        private float WielderDamageScale(float stepDamage) =>
+            stepDamage > 0f ? Wielder(ItemStat.Damage, stepDamage) / stepDamage : 1f;
 
         private void Awake()
         {
             _input           = GetComponent<PlayerInputHandler>();
             _movement        = GetComponent<PlayerMovement>();
-            _damageSource    = DamageSource.Of(gameObject);
+            _ownerSource     = DamageSource.Of(gameObject);
+            _damageSource    = _ownerSource;
+            _stats           = GetComponentInParent<CharacterStats>();
             _payGuardStamina = TryPayStamina;
             TryGetComponent(out _meters);
             TryGetComponent(out _dodge);
@@ -110,6 +124,7 @@ namespace CGD.Weapons
             else                      Weave();
             _queuedSwing.Clear();
             _equipped = weapon;
+            _damageSource = _ownerSource.WithWeapon(weapon);
             _guard    = weapon != null && weapon.Data.CanGuard ? new MeleeGuard(weapon.Data.Guard) : null;
         }
 
@@ -339,6 +354,7 @@ namespace CGD.Weapons
                     Up            = cam.up,
                     SourceRoot    = transform.root,
                     Source        = _damageSource,
+                    DamageScale   = WielderDamageScale(_activeStep.Damage),
                     HitMask       = timeline.HitMask,
                     DebugDraw     = _debugDraw,
                     DebugDuration = _debugDuration,
@@ -351,7 +367,7 @@ namespace CGD.Weapons
                 _phaseTimer = _activeStep.ActiveTime / Speed;
 
                 var info = new DamageInfo(
-                    _activeStep.Damage,
+                    Wielder(ItemStat.Damage, _activeStep.Damage),
                     _activeStep.ArmorPenetration,
                     _activeStep.DamageType,
                     _activeStep.CriticalMultiplier,

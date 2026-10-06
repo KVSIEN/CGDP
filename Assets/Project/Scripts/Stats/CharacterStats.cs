@@ -84,10 +84,14 @@ namespace CGD.Stats
         }
 
         // The whole preset for `seconds` of game time; End() the handle to cancel early.
-        public TimedModifier AddTimed(StatModifierPreset preset, float seconds)
+        public TimedModifier AddTimed(StatModifierPreset preset, float seconds) =>
+            AddTimed(preset != null ? preset.Modifiers : null, seconds);
+
+        // A group of modifiers (e.g. a weapon perk's buff) for `seconds`, ending together.
+        public TimedModifier AddTimed(IEnumerable<StatModifier> modifiers, float seconds)
         {
             EnsureInitialized();
-            return _timed.Add(Entries(preset), seconds);
+            return _timed.Add(Entries(modifiers), seconds);
         }
 
         public TimedModifier AddTimed(ItemStat stat, StatModifierOp op, float value, float seconds)
@@ -103,11 +107,11 @@ namespace CGD.Stats
             _timed.Clear();
         }
 
-        private static IEnumerable<(ItemStat, StatModifierOp, float)> Entries(StatModifierPreset preset)
+        private static IEnumerable<(ItemStat, StatModifierOp, float)> Entries(IEnumerable<StatModifier> modifiers)
         {
-            if (preset == null) yield break;
+            if (modifiers == null) yield break;
 
-            foreach (StatModifier modifier in preset.Modifiers)
+            foreach (StatModifier modifier in modifiers)
                 if (modifier.Stat != ItemStat.None)
                     yield return (modifier.Stat, modifier.Op, modifier.Value);
         }

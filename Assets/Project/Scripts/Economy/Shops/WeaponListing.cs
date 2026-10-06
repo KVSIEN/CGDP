@@ -13,7 +13,9 @@ namespace CGD.Economy
 
         public override string   Name    => Weapon.DisplayName;
         public override ItemTier Tier    => Weapon.Tier;
-        public override string   Details => $"{Weapon.Definition?.DisplayName} · Q{Weapon.Quality}";
+        public override string   Details => Weapon.Perks.Count > 0
+            ? $"{Weapon.Definition?.DisplayName} · Q{Weapon.Quality} · {Weapon.PerkNames()}"
+            : $"{Weapon.Definition?.DisplayName} · Q{Weapon.Quality}";
 
         public override string CannotDeliverReason(ShopCustomer customer) =>
             customer.Loadout == null ? "No weapon slots" : null;

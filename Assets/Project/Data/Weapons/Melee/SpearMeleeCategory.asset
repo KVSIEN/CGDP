@@ -21,6 +21,7 @@ MonoBehaviour:
   _baseValue: 150
   _rollProfile: {fileID: 0}
   _statRanges: []
+  _perkPool: {fileID: 11400000, guid: 46756d1ce4124b5c8905716c4d8a5986, type: 2}
   Type: 4
   Names:
   - Spear

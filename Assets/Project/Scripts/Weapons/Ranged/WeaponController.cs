@@ -50,6 +50,8 @@ namespace CGD.Weapons
         private PlayerDodge    _dodge;
         private PlayerAbilities _abilities;
         private PlayerItemSlots _items;
+        private DamageSource   _ownerSource;
+        // The owner plus the weapon in hand, so kills are credited to that weapon's perks.
         private DamageSource   _damageSource;
         private CooldownTimer  _fireCooldown;
         private float _drawTimer;
@@ -97,7 +99,8 @@ namespace CGD.Weapons
             TryGetComponent(out _dodge);
             TryGetComponent(out _abilities);
             TryGetComponent(out _items);
-            _damageSource = DamageSource.Of(gameObject);
+            _ownerSource  = DamageSource.Of(gameObject);
+            _damageSource = _ownerSource;
             if (_inventory == null) _inventory = GetComponentInParent<PlayerInventory>();
             _stats = GetComponentInParent<CharacterStats>();
 
@@ -237,6 +240,7 @@ namespace CGD.Weapons
             _reloadCommitted = false;
             _burstPending    = false;
             _current         = weapon;
+            _damageSource    = _ownerSource.WithWeapon(weapon);
             _chargeTimer     = 0f;
             _wasChargeHeld   = false;
             _drawTimer       = weapon != null && Time.time > weapon.QuickDrawUntil ? weapon.Data.DrawTime : 0f;
@@ -329,7 +333,7 @@ namespace CGD.Weapons
             if (_current.Magazine <= 0) return;
 
             _current.Magazine--;
-            _fireCooldown.Start(60f / _current.RoundsPerMinute);
+            _fireCooldown.Start(60f / RoundsPerMinute);
             NotifyAmmoChanged();
 
             ApplyRecoil();
@@ -372,8 +376,8 @@ namespace CGD.Weapons
 
         // Soonest the next round can fire: burst shots follow BurstInterval rather than RPM.
         private float ShotInterval => D.FireMode == FireMode.Burst
-            ? Mathf.Min(60f / _current.RoundsPerMinute, D.BurstInterval)
-            : 60f / _current.RoundsPerMinute;
+            ? Mathf.Min(60f / RoundsPerMinute, D.BurstInterval)
+            : 60f / RoundsPerMinute;
 
         private void CastBullet(float charge)
         {
@@ -406,8 +410,12 @@ namespace CGD.Weapons
         }
 
         // Base damage → the weapon's attachments → the wielder's buffs and debuffs.
-        private float ResolveDamage() =>
-            _stats != null ? _stats.Apply(ItemStat.Damage, _current.Damage) : _current.Damage;
+        private float ResolveDamage() => Wielder(ItemStat.Damage, _current.Damage);
+
+        private float RoundsPerMinute => Mathf.Max(1f, Wielder(ItemStat.FireRate, _current.RoundsPerMinute));
+
+        // A weapon value with the wielder's buffs and debuffs (e.g. a perk's faster reloads) applied.
+        private float Wielder(ItemStat stat, float value) => _stats != null ? _stats.Apply(stat, value) : value;
 
         private void StartReload() => _reload = StartCoroutine(Reload());
 
@@ -421,7 +429,8 @@ namespace CGD.Weapons
 
             D.ReloadSound.TryPlay(SoundPos);
 
-            float time   = _current.Magazine > 0 ? _current.TacticalReloadTime : _current.ReloadTime;
+            float time   = Mathf.Max(0.1f, Wielder(ItemStat.ReloadTime,
+                _current.Magazine > 0 ? _current.TacticalReloadTime : _current.ReloadTime));
             float commit = time * D.ReloadCommitPoint;
             yield return new WaitForSeconds(commit);
 
@@ -432,16 +441,24 @@ namespace CGD.Weapons
             EndReload();
         }
 
-        private void LoadMagazine()
+        private void LoadMagazine() => LoadRounds(_current.MagazineSize - _current.Magazine, free: false);
+
+        // Loads up to `count` rounds into the weapon in hand, outside a reload (perks use this).
+        // Rounds come from the reserve unless `free`. Returns how many went in.
+        public int LoadRounds(int count, bool free)
         {
-            int needed    = _current.MagazineSize - _current.Magazine;
-            int available = _inventory != null ? _inventory.Inventory.CountOf(D.AmmoType) : 0;
-            int taken     = Mathf.Min(needed, available);
-            if (taken <= 0) return;
+            if (_current == null) return 0;
+
+            int room      = _current.MagazineSize - _current.Magazine;
+            int available = free ? room : Reserve;
+            int taken     = Mathf.Min(Mathf.Min(count, room), available);
+            if (taken <= 0) return 0;
 
             _current.Magazine += taken;
             // Remove fires Changed, which covers both mag and reserve in one event.
-            _inventory.Inventory.Remove(D.AmmoType, taken);
+            if (!free) _inventory.Inventory.Remove(D.AmmoType, taken);
+            else       NotifyAmmoChanged();
+            return taken;
         }
 
         // Ends the reload where it is: finished if the rounds are in, lost if not.

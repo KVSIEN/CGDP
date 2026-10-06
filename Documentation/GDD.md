@@ -1994,6 +1994,7 @@ What the prototype currently does that the original chapters don't define yet. T
 - **Prototype weapon families**: assault rifle, SMG, pistol, sniper, LMG and shotgun, each with its own stat ranges and generated per drop by tier and quality. They stand in for the reality weapon types until those are designed.
 - **Calibers**: reserve ammo is shared by caliber (light, standard, heavy, shells), so two weapons of the same caliber draw from one pool and the loadout becomes a supply decision.
 - **Melee**: always available alongside the gun — light attacks chain into a combo, a held attack is a heavier finisher.
+- **Weapon perks**: on top of rolled stats and attachments, weapons roll 0–3 perks by tier — traits that fire on a kill with the weapon, a parry with it, or a dodge while holding it (dodging reloads part or all of the magazine, kills feed rounds or heal, parries restore stamina, short buffs). Buffs end when the weapon is swapped away, so each weapon's power stays its own. Deliberately basic for now; reload-cancel and swap-cancel conditions are left for later.
 - **Throwables**: grenades are items like any other (frag, smoke), aimed with a predicted arc.
 - **Feedback**: hit markers, kill confirmations, screen shake and controller rumble make every hit readable.
 

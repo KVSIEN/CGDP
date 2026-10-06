@@ -965,6 +965,7 @@ GameObject:
   - component: {fileID: 8251931946226978979}
   - component: {fileID: 8233850651781648286}
   - component: {fileID: 6179809563379863965}
+  - component: {fileID: 8231907445566778899}
   - component: {fileID: 1900267628680764221}
   - component: {fileID: 6124529826492816662}
   - component: {fileID: 8540137085081939376}
@@ -1653,3 +1654,15 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8231907445566778899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7429481957253513727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6b584ef98634676887e97e10eb5791e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Player.PlayerWeaponPerks

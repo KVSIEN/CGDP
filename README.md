@@ -69,7 +69,7 @@ Assets/
       Targeting/            TargetQuery, TargetFilter and TargetSelector assets (Selectors/)
       Timing/               GameClock (fixed ticks, pause, time scale, scheduling) and GameTime
       UI/                   Common/ (UIFactory), HUD/, Menus/, World/ (popups, enemy bars)
-      Weapons/              WeaponItem (what a loadout slot holds), WeaponCategory (firearm or melee, rolls WeaponItems), Ranged/, FireBehaviors/, Generation/, Melee/ (controller, guard, melee categories and generator), Throwables/
+      Weapons/              WeaponItem (what a loadout slot holds), WeaponCategory (firearm or melee, rolls WeaponItems), Ranged/, FireBehaviors/, Generation/, Melee/ (controller, guard, melee categories and generator), Perks/ (weapon perks, perk pool, dispatcher), Throwables/
       WorldMap/             WorldMapArea (bounds, background, fog of war), MapMarker, MapRevealer, projection
     Settings/               URP assets, volume profiles, project-wide input actions
   ThirdParty/               imported asset packs

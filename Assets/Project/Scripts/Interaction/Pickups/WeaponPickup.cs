@@ -17,7 +17,12 @@ namespace CGD.Interaction
 
         public WeaponItem Weapon => _weapon ??= _data != null ? new WeaponInstance(_data) : null;
 
-        public string GetInteractLabel(GameObject interactor) => Weapon != null ? $"Pick Up  {Weapon.DisplayName}" : "Pick Up";
+        public string GetInteractLabel(GameObject interactor)
+        {
+            if (Weapon == null) return "Pick Up";
+            string perks = Weapon.PerkNames();
+            return perks.Length > 0 ? $"Pick Up  {Weapon.DisplayName}  ({perks})" : $"Pick Up  {Weapon.DisplayName}";
+        }
 
         // Used by RandomWeaponPickup to hand over an already-rolled weapon, so its
         // quality and attachment slots survive being picked up.

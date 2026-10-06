@@ -35,6 +35,11 @@ namespace CGD.Player
 
         public IReadOnlyList<WeaponItem> Slots      => _slots;
         public int                       ActiveSlot => _activeSlot;
+        // The weapon in hand (null with an empty slot).
+        public WeaponItem                Active     => _equippedWeapon;
+
+        // A different weapon is now in hand.
+        public event System.Action<WeaponItem> ActiveChanged;
 
         private PlayerInputHandler _input;
         private WeaponController   _weapon;
@@ -197,12 +202,14 @@ namespace CGD.Player
         private void Equip(int index)
         {
             WeaponItem equipping = _slots[index];
-            if (_equippedWeapon != null && _equippedWeapon != equipping) _lastWeapon = _equippedWeapon;
+            bool changed = _equippedWeapon != equipping;
+            if (_equippedWeapon != null && changed) _lastWeapon = _equippedWeapon;
             _equippedWeapon = equipping;
             _activeSlot = index;
             _weapon.Equip(_slots[index] as WeaponInstance);
             if (_melee != null) _melee.Equip(_slots[index] as MeleeWeaponInstance);
             RefreshInspectorView();
+            if (changed) ActiveChanged?.Invoke(equipping);
         }
 
         private void RefreshInspectorView()

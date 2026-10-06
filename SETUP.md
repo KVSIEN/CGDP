@@ -64,7 +64,7 @@ Global Volume
 ```
 Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodge,
                     PlayerMantle, PlayerInteraction, PlayerInventory, PlayerAbilities,
-                    WeaponController, PlayerWeaponLoadout, MeleeController,
+                    WeaponController, PlayerWeaponLoadout, PlayerWeaponPerks, MeleeController,
                     ThrowableController, PlayerLifecycle, PlayerFootsteps, PlayerAudio,
                     Stunnable, StatusEffectController, Rigidbody, CapsuleCollider]
                    + optional: MeterSet, TimelineAbilityRunner, CharacterStats,
@@ -99,6 +99,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 |---|---|---|
 | **WeaponController** | `_input` = Player, `_camera` = PlayerCamera, `_crosshair` = HUD Crosshair, `_muzzle` = Muzzle, `_visuals` = WeaponRig, `_cameraEffects`? = Main Camera | Fires whatever the loadout equips. Reads `PlayerDodge` from the same object (optional) for the swap-dodge draw cancel. |
 | **PlayerWeaponLoadout** | `_startingWeapons`? = `WeaponData` assets, `_wheel`? = HUD SlotWheel | Empty slots fill from pickups. Holding 1–4 opens the weapon wheel (other slots + spare weapons in the pack). |
+| **PlayerWeaponPerks** | — (no fields) | Sets off the perks of the weapon in hand. Reads `PlayerWeaponLoadout`, `WeaponController`, `MeleeController` (parries), `PlayerDodge` (dodges), `PlayerHealth`, `MeterSet` from the same object and `CharacterStats` from it or a parent (perk buffs need it; each other part is optional). Perks themselves come from the weapon categories' `_perkPool`. |
 | **Reflector** | `_aim` = Main Camera (PlayerCamera's transform) | Catches hits for reflect abilities and parry reflects. Must be on the **same object as PlayerHealth** (it hooks into damage the way the melee guard does). Beam/slash reflects play their timeline from here — no `TimelineAbilityRunner` needed. |
 | **MeleeController** | `_camera` = PlayerCamera, `_data` = `Weapons/Melee/DefaultMeleeWeaponData` | Quick melee (fists) and the equipped melee weapon. Must be on the **same object as PlayerHealth**: it blocks/parries hits as an `IDamageInterceptor`, which HealthManager only looks for on its own object. Stamina costs need a `MeterSet` with the category's stamina meter on that object too (without one, melee is free). Combo weaving reads `PlayerDodge` and `PlayerAbilities` from the same object (each optional). |
 | **ThrowableController** | `_camera` = PlayerCamera | Throws the grenade an item slot readies. Grenades are items (`Items/Throwables/`). |
@@ -590,6 +591,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Combat/ActionTimelines/` | `GroundSlamTimeline` | TimelineAbility, melee attack steps |
 | `Weapons/Ranged/` | `DefaultWeaponData`, `T1/` examples per category | Loadout, WeaponPickup |
 | `Weapons/Categories/` | one per weapon type (incl. `BowCategory`: Volley fire behavior, *Bows* section (`HasDrawStances`, vertical/horizontal draw multipliers, volley spacing), Pellet Count = arrows per shot; `CrossbowCategory`: Projectile fire behavior, `AutomaticMagazineSize` for autoloaders; both use Arrows ammo, with arrow speed, drop and draw time in *Charge & Projectile*) | RandomWeaponPickup, loot |
+| `Weapons/Perks/` | `DefaultWeaponPerkPool` (weighted perks, perks per tier 0/1/1/2/2, 25% extra-perk chance), perk assets (`…Perk`: Load Rounds, Timed Buff, Heal, Restore Meter; each with a trigger Kill / Parry / Dodge, which weapons it fits, cooldown) | every category's `_perkPool` (firearm and melee) |
 | `Weapons/FireBehaviors/` | Hitscan, Projectile, Shotgun, Volley (bows: arrows fanned along the draw orientation; `_prefab` = `Prefabs/Weapons/Projectile`) | weapon data / categories |
 | `Weapons/Melee/`, `Weapons/Throwables/` | `DefaultMeleeWeaponData`, `DefaultGrenadeData`, `SmokeGrenadeData` | MeleeController, throwable items |
 | `Weapons/Melee/` | `Dagger`/`Sword`/`Axe`/`Hammer`/`Spear` `…MeleeCategory` (Sword: *Parry Reflect* = `RiposteSlashReflect`) (`MeleeCategoryData`: moveset template, rolled damage/speed/reach/penetration, `StaminaMeter` = `Meters/StaminaMeter`, guard; right-click → *Apply Type Defaults*) | `DefaultLootTable`, `GunsmithWeaponStock` (Sword, Axe, Dagger), DevCatalog weapons (`weapon sword`) |

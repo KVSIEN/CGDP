@@ -130,7 +130,7 @@ namespace CGD.Weapons
         // A weapon's stats live as named fields on generated WeaponData rather than in
         // a StatBlock, because the firing code reads them directly. The roll still
         // comes from the shared quality curve, so weapons and armor scale together.
-        public override WeaponItem Generate(ItemRoll roll) => WeaponGenerator.Generate(this, roll);
+        protected override WeaponItem Build(ItemRoll roll) => WeaponGenerator.Generate(this, roll);
 
         [ContextMenu("Apply Type Defaults")]
         public void ApplyTypeDefaults() => WeaponCategoryDefaults.Apply(this);
