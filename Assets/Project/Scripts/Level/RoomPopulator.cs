@@ -146,7 +146,10 @@ namespace CGD.Level
                 {
                     // A Breach room alternates between its two factions' rosters.
                     bool fromBreach = roster.Length == 0 || (i % 2 == 1 && breach.Length > 0);
-                    GameObject enemy = PrefabPool.Spawn(_random.Pick(fromBreach ? breach : roster), OnNavMesh(position), RandomYaw());
+                    int tier = RollTier(rule, room.Node.Intensity);
+                    GameObject[] pool = fromBreach ? SecondRosterFor(room, tier) : RosterFor(room, tier);
+                    if (pool.Length == 0) pool = fromBreach ? breach : roster;
+                    GameObject enemy = PrefabPool.Spawn(_random.Pick(pool), OnNavMesh(position), RandomYaw());
                     if (enemy.TryGetComponent(out EnemyAI ai)) ai.SetWaypoints(route);
                     if (enemy.TryGetComponent(out HealthManager health)) placed.Add(health);
                 }
@@ -155,8 +158,30 @@ namespace CGD.Level
         }
 
         // A faction-held room fields that faction's enemies; how many still comes from the room type.
-        private static GameObject[] EnemiesFor(FactionDefinition faction, RoomContentRule rule) =>
-            faction != null && faction.Enemies.Length > 0 ? faction.Enemies : rule.Enemies;
+        private static GameObject[] EnemiesFor(FactionDefinition faction, RoomContentRule rule, int tier = 1) =>
+            faction != null && faction.Enemies.Length > 0 ? faction.EnemiesOfTier(tier) : rule.Enemies;
+
+        // Each enemy's tier, by the room type's chances at the room's intensity.
+        private int RollTier(RoomContentRule rule, float intensity)
+        {
+            float roll  = _random.Value;
+            float tier3 = rule.Tier3Chance.Lerp(intensity);
+            if (roll < tier3) return 3;
+            return roll < tier3 + rule.Tier2Chance.Lerp(intensity) ? 2 : 1;
+        }
+
+        private GameObject[] RosterFor(LevelRoom room, int tier)
+        {
+            RoomContentRule rule = _settings.RuleFor(room.Node.Type);
+            return rule != null ? EnemiesFor(room.Faction, rule, tier) : room.Faction != null ? room.Faction.EnemiesOfTier(tier) : System.Array.Empty<GameObject>();
+        }
+
+        private GameObject[] SecondRosterFor(LevelRoom room, int tier)
+        {
+            if (room.BreachFaction == null) return RosterFor(room, tier);
+            RoomContentRule rule = _settings.RuleFor(room.Node.Type);
+            return rule != null ? EnemiesFor(room.BreachFaction, rule, tier) : room.BreachFaction.EnemiesOfTier(tier);
+        }
 
         public GameObject[] RosterFor(LevelRoom room)
         {

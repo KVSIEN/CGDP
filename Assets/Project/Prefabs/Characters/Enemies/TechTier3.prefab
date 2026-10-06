@@ -18,9 +18,9 @@ GameObject:
   - component: {fileID: 1828046211255957841}
   - component: {fileID: 227217836875213039}
   - component: {fileID: 1534385454803495124}
-  - component: {fileID: 5944867818991103523}
+  - component: {fileID: 3391009798104553536}
   m_Layer: 0
-  m_Name: MaintenanceBot
+  m_Name: TechTier3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,7 +36,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.000000, y: 0.000000, z: 0.000000, w: 1.000000}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1085832400377145388}
@@ -82,7 +82,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::EnemyHealth
   _hitboxProfile: {fileID: 11400000, guid: 9671d4e601525fc4690900d33b741822, type: 2}
-  _data: {fileID: 11400000, guid: 78888251441a448da8c9bd516ce7e0ee, type: 2}
+  _data: {fileID: 11400000, guid: dbbd674361634d299a2ddc2f5dae5f20, type: 2}
   _healthBar: {fileID: 5584239372062173934}
   _popupOffset: {x: 0, y: 0.3, z: 0}
 --- !u!114 &844769018740428543
@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a084fed7e1beb064eaf5e86dfa2449e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::EnemyAI
-  _data: {fileID: 11400000, guid: 78888251441a448da8c9bd516ce7e0ee, type: 2}
+  _data: {fileID: 11400000, guid: dbbd674361634d299a2ddc2f5dae5f20, type: 2}
   _waypoints: []
   _targetMask:
     serializedVersion: 2
@@ -810,7 +810,7 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5944867818991103523
+--- !u!114 &3391009798104553536
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

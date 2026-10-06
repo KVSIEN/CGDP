@@ -16,7 +16,7 @@ Completed work is described in [FEATURES.md](FEATURES.md); full task history is 
 - Encounter rooms: Lockdown, Holdout, Puzzle (calibration ring, forward doors), Ambush, Stealth, Rift, Gamble, Emergency Exit (partial extraction), Hazard
 - Lock variants: condition locks ("do A and B") for doors — terminals, events, quest signals; generated Terminal locks (2–3 terminals in separate rooms) with editor and validator support
 - Expedition core loop: starting-room hub with workbench and random loadout, Exit as extraction, lose everything on death, ship hold + pack screen between runs
-- Tier-1 capsule enemies per reality (Maintenance Bot, Scavenger, Husk) at ≈100 effective health, in the faction rosters
+- Tier-1 capsule enemies per reality (Maintenance Bot, Scavenger, Husk) at ≈100 effective health, in the faction rosters; placeholder tier 2–3 enemies per faction with random affixes (0/1/2 by tier), tier chances per room type
 - MapTest scene (generated levels with the full player setup, blueprint world map and minimap, feedback)
 - Modular wall kits (placeholder TECH/BIO/VOID art per the GDD), per-faction
 - Smoothly rounded dome and ring walls

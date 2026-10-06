@@ -492,7 +492,7 @@ Each entry lists its **Functions**, enemy prefabs (count read at the room's inte
 - **Props** (`_props` on a function): prefabs, count, `On` tags (Edge = along walls, Corner…), `Avoid` tags, `Zone` (Largest = main space, Others = rooms split off by inner walls), `Facing`, `Spacing`.
   Placeholder props (Crate, Table, Bed, Planter, SlotMachine) are in `Prefabs/Environment/Props/` — origin at the base, +Z the front. Swap in real art there.
 - **Ceilings**: tick `_buildCeilings` (off by default). Interiors then need lights. Put `_ceilingLayer` on its own layer and keep it out of the `WorldMapArea` capture mask; ceilings are left out of the NavMesh automatically.
-- **Enemy prefabs** need `EnemyAI`. The tier-1 ones are `Prefabs/Characters/Enemies/` `MaintenanceBot` (TECH), `Scavenger` (BIO) and `Husk` (VOID), in their factions' `_enemies`; how many spawn still comes from each room type's `EnemyCount`.
+- **Enemy prefabs** need `EnemyAI`, plus `EnemyAffixes` (`_pool` = `Enemies/DefaultEnemyAffixPool`) to roll affixes. In `Prefabs/Characters/Enemies/`: tier 1 `MaintenanceBot` (TECH), `Scavenger` (BIO) and `Husk` (VOID), and the placeholder tiers `TechTier2`/`TechTier3`, `BioTier2`/`BioTier3`, `VoidTier2`/`VoidTier3`, in their factions' `_tier1`/`_tier2`/`_tier3`. How many spawn comes from each room type's `EnemyCount`; how often each is tier 2 or 3 from its `Tier2Chance`/`Tier3Chance` (read at the room's intensity, like the count). Encounter waves (Holdout, Rift) still use tier 1.
 - **Door prefabs**: origin at the doorway centre on the floor, +Z pointing out of the room. The opening is one tile wide (`_tileSize`).
   - `DefaultLevelBuildSettings` uses the ready-made ones in `Prefabs/Environment/Level/` (placeholder boxes in Gridbox colours; swap in real art there):
 
@@ -583,7 +583,8 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `UI/` | `CrosshairSettings` | CrosshairHUD |
 | `Flow/` | `GameFlowSettings` | GameFlow |
 | `Timing/` | `GameTimeSettings` | GameTime |
-| `Enemies/` | `MaintenanceBot`/`Scavenger`/`Husk` `…EnemyData` (tier 1, ≈100 effective health each), `DefaultEnemyData`, `TargetDummyEnemyData` | EnemyAI, EnemyHealth |
+| `Enemies/` | `MaintenanceBot`/`Scavenger`/`Husk` `…EnemyData` (tier 1, ≈100 effective health each), `Tech`/`Bio`/`Void` `Tier2`/`Tier3` `…EnemyData` (placeholders, ≈2.5× / ≈5×; *Tier* set on each), `DefaultEnemyData`, `TargetDummyEnemyData` | EnemyAI, EnemyHealth |
+| `Enemies/`, `Enemies/Affixes/` | `DefaultEnemyAffixPool` (affixes per tier: 0 / 1 / 2), `Armored`/`Warded`/`Vital`/`Brutal`/`Swift` `…Affix` | EnemyAffixes |
 | `Combat/HitboxProfiles/` | `DefaultHitboxProfile`, `TargetDummyHitboxProfile` | EnemyHealth, PlayerHealth |
 | `Combat/StatusEffects/` | Bleed, Fire, Ice, Lightning, Poison | on-hit effect lists |
 | `Combat/ActionTimelines/` | `GroundSlamTimeline` | TimelineAbility, melee attack steps |
@@ -613,7 +614,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `CameraEffects/` | `DefaultCameraEffectSettings` | CameraEffectsController |
 | `Map/` | map styles `Linear`/`Branching`/`Hub`/`Labyrinth`/`Random` `…MapGenerationSettings`, `SandboxMapGraph` (uses Branching); `Layouts/` (`Linear`/`Branching`/`Hub`/`Labyrinth` `…MapLayoutSettings`), `Content/` (`Standard`/`TreasureHunt`/`Gauntlet` `…MapContentSettings`), `Sections/` (`Habitation`/`Commerce`/`Engineering` `…MapSection`), `Modifiers/` (warnings `Lockdown`/`Infestation`/`Overrun`, anomalies `Scavenger`/`FracturedHull` `…MapRunModifier`), `FactionMixes/` (`Infested`/`Balanced`/`Contested`/`Warped` `…MapFactionMix`) | Map Graph window, LevelBuilder |
 | `Audio/` | `DefaultSurfaceDatabase` | PlayerFootsteps |
-| `Factions/` | `TechFaction`, `BioFaction`, `VoidFaction` — name, colour, floor tint, `_enemies` roster (`MaintenanceBot` / `Scavenger` / `Husk`) | MapContentSettings, LevelBuilder |
+| `Factions/` | `TechFaction`, `BioFaction`, `VoidFaction` — name, colour, floor tint, tiered rosters `_tier1` (`MaintenanceBot` / `Scavenger` / `Husk`), `_tier2`, `_tier3` (an empty tier falls back to the one below) | MapContentSettings, LevelBuilder |
 | `Level/` | `DefaultEncounterSettings` (encounter rooms), `DefaultLevelBuildSettings` (Gridbox materials, room rules), `Functions/` (ten `…RoomFunction`s), `Shapes/` (seven `…RoomShape`s), `Structure/` (six `…StructureRule`s), `Landmarks/` (`ReactorCoreLandmarkRoom`), `WallKits/` (`Tech`/`Bio`/`Void` `…WallKit`) | LevelBuilder |
 | `Impacts/` | `DefaultImpactDatabase` (empty effects) | ImpactSpawner |
 | `Economy/` | `CreditsCurrency`, `DefaultPriceTable`, `Shops/GunsmithShopCatalog`, `Stock/GunsmithAmmoStock`, `Stock/GunsmithWeaponStock` | Vendor, PlayerInventory, DevCatalog |

@@ -15,5 +15,9 @@ MonoBehaviour:
   _displayName: VOID
   _color: {r: 0.6, g: 0.3, b: 0.9, a: 1}
   _floorTint: 0.3
-  _enemies:
+  _tier1:
   - {fileID: 2643170897715678307, guid: dd6d1969e3e145ed9d3851f294495994, type: 3}
+  _tier2:
+  - {fileID: 2643170897715678307, guid: 1c7718584e8c4ffba3db021faa317b44, type: 3}
+  _tier3:
+  - {fileID: 2643170897715678307, guid: 98d900a9a35c4b06b5dff96763f2d09e, type: 3}

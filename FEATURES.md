@@ -342,6 +342,9 @@
 - AI states — Patrol, Alert, Chase, Stunned, Dead — run on the shared state machine; Patrol, Alert and Chase each decide where to go next, a stun interrupts any of them and hands back to whatever was interrupted, and death is final until the enemy respawns
 - Enemies find targets by team: any character on an opposing team can be detected, so no player reference needs wiring; teamless props such as breakable crates are ignored
 - Enemies can be spawned from the object pool and reused: a reused enemy comes back at full health and starts patrolling again
+- **Enemy tiers**: every faction has three tiers of regular enemies. Tier 1 is the everyday roster (~100 effective health); tiers 2 and 3 are tougher (about 2.5× and 5× the effective health, harder hits) and a little bigger. For now tiers 2–3 are stat-only placeholders built on their faction's tier 1; their own looks and behaviour come later
+- How often higher tiers turn up depends on the room: rare in ordinary fights (more in their most intense rooms), common in Breach and Lockdown rooms, and Elite rooms are mostly tier 2 and 3
+- **Random affixes**: tier 2 enemies roll one random affix and tier 3 two (tier 1 none), named in front of them ("Brutal Warded Void Tier 3"): **Armored** (+40 armour), **Warded** (+40 shield, even on factions that normally have none), **Vital** (+60% health), **Brutal** (+40% damage) and **Swift** (+30% speed). Each spawn rolls afresh
 - Patrol follows an ordered list of waypoints, looping continuously; idles in place if no waypoints are assigned
 - Alert sends the enemy to the last known position and returns to patrol after a configurable duration or on arrival
 - Two combat types per enemy: Melee or Ranged, selectable on the EnemyData asset

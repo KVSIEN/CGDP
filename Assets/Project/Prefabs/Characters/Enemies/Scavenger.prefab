@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 904476545762498531}
   - component: {fileID: 4741370803780949481}
   - component: {fileID: 1024486869198731017}
+  - component: {fileID: 6867625824992677732}
   m_Layer: 0
   m_Name: Scavenger
   m_TagString: Untagged
@@ -809,3 +810,16 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6867625824992677732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6049590506595625700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c2b25a728824b1aa28b1b1e25d98b30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyAffixes
+  _pool: {fileID: 11400000, guid: 62955a7047154edaad77760d059e7271, type: 2}

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CGD.Factions
 {
@@ -16,12 +17,26 @@ namespace CGD.Factions
         [SerializeField] private Color _color = Color.white;
         [Tooltip("How strongly owned rooms' floors take on the colour (0 = untinted)")]
         [SerializeField, Range(0f, 1f)] private float _floorTint = 0.3f;
-        [Tooltip("Enemy prefabs (each needs EnemyAI) spawned in rooms this faction owns, instead of the room type's own; the room type still sets how many (none in peaceful rooms). Empty = the room type's enemies")]
-        [SerializeField] private GameObject[] _enemies = Array.Empty<GameObject>();
+        [Tooltip("Tier 1 (rank and file) enemy prefabs (each needs EnemyAI) spawned in rooms this faction owns, instead of the room type's own; the room type still sets how many (none in peaceful rooms) and how often higher tiers turn up. Empty = the room type's enemies")]
+        [FormerlySerializedAs("_enemies")]
+        [SerializeField] private GameObject[] _tier1 = Array.Empty<GameObject>();
+        [Tooltip("Tier 2: tougher enemies that roll random affixes")]
+        [SerializeField] private GameObject[] _tier2 = Array.Empty<GameObject>();
+        [Tooltip("Tier 3: the faction's strongest regular enemies, with more affixes")]
+        [SerializeField] private GameObject[] _tier3 = Array.Empty<GameObject>();
 
         public string DisplayName => string.IsNullOrEmpty(_displayName) ? name : _displayName;
         public Color  Color       => _color;
         public float  FloorTint   => _floorTint;
-        public GameObject[] Enemies => _enemies;
+        // Tier 1, the faction's everyday roster.
+        public GameObject[] Enemies => _tier1;
+
+        // The roster of `tier` (1–3), falling back to the next tier down when it's empty.
+        public GameObject[] EnemiesOfTier(int tier)
+        {
+            if (tier >= 3 && _tier3.Length > 0) return _tier3;
+            if (tier >= 2 && _tier2.Length > 0) return _tier2;
+            return _tier1;
+        }
     }
 }

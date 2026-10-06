@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51393a24a066471698ade57d6deca1e0, type: 3}
+  m_Name: DefaultEnemyAffixPool
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyAffixPool
+  _affixes:
+  - {fileID: 11400000, guid: 3b2902c9d3d649268ed08285955eb31b, type: 2}
+  - {fileID: 11400000, guid: 41fe0d423eff4af7a34cc82657703d20, type: 2}
+  - {fileID: 11400000, guid: cf1a0640bd8c4eb69babeb921b53def7, type: 2}
+  - {fileID: 11400000, guid: ebf2a08ec1704453b2bf1aee412829c3, type: 2}
+  - {fileID: 11400000, guid: 82b23571535b4e82b90c53d31dd19dc4, type: 2}
+  _countPerTier: 000000000100000002000000

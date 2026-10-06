@@ -39,7 +39,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8381aa9d021346ba95324f11ab1962e0, type: 2}
   - {fileID: 11400000, guid: 4b9e9aa6c1f54301a7c143d3108a9b3c, type: 2}
   - {fileID: 11400000, guid: 67ec4e6dacfe43a8bdb7e5ac9ed7bd22, type: 2}
-  _enemies: []
+  _enemies:
+  - {fileID: 4751797605688477134, guid: 54c366c401164802b7766c9304e684a7, type: 3}
+  - {fileID: 4751797605688477134, guid: 0d6653bfde83407ca7d64d102553034b, type: 3}
+  - {fileID: 4751797605688477134, guid: eea1342b9f4a4043bcaf9de2f1612f76, type: 3}
+  - {fileID: 6049590506595625700, guid: a91f3c7c0dcd4aed808a7ae84cb32d9b, type: 3}
+  - {fileID: 6049590506595625700, guid: ac306f43c35d4ab9b9a5366b143d2ee8, type: 3}
+  - {fileID: 6049590506595625700, guid: 2ad5d9dc8c644db798b13a4822e784b2, type: 3}
+  - {fileID: 2643170897715678307, guid: dd6d1969e3e145ed9d3851f294495994, type: 3}
+  - {fileID: 2643170897715678307, guid: 1c7718584e8c4ffba3db021faa317b44, type: 3}
+  - {fileID: 2643170897715678307, guid: 98d900a9a35c4b06b5dff96763f2d09e, type: 3}
   _buffs:
   - {fileID: 11400000, guid: 5713684b1c254fcea0d2d0fec15a10e7, type: 2}
   - {fileID: 11400000, guid: 85746fadc0034acc8ad3e31abac23e13, type: 2}

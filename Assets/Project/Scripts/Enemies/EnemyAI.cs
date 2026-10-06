@@ -119,6 +119,9 @@ namespace CGD.Enemies
         // For enemies spawned at runtime (level builder, dev console) instead of placed with a route.
         public void SetWaypoints(Transform[] waypoints) => _waypoints = waypoints;
 
+        // Rolled affixes run the enemy on a modified copy of its data (perception keeps the original).
+        public void UseData(EnemyData data) => _data = data;
+
         internal void ChangeState(AiState state) => _machine.TryChangeTo(state);
 
         internal void SetSpeed(float speed) => Agent.speed = speed * _stunnable.SpeedMultiplier;

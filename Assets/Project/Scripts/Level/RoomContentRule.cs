@@ -18,6 +18,10 @@ namespace CGD.Level
         public GameObject[] Enemies = Array.Empty<GameObject>();
         [Tooltip("Enemy count, read at the room's intensity: Min in the calmest rooms, Max at peak")]
         public IntRange EnemyCount;
+        [Tooltip("Chance (0–1) each enemy is tier 2, read at the room's intensity like the count. Faction rooms only")]
+        public FloatRange Tier2Chance;
+        [Tooltip("Chance (0–1) each enemy is tier 3, read at the room's intensity")]
+        public FloatRange Tier3Chance;
 
         [Tooltip("Placed in the middle of the room (a chest, a crafting station, a boss)")]
         public GameObject Centerpiece;

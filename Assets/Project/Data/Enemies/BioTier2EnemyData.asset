@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fa9dd37a1333c94ba199e2bd61bbee3, type: 3}
+  m_Name: BioTier2EnemyData
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
+  DisplayName: Bio Tier 2
+  Team: 2
+  Tier: 2
+  MaxHealth: 190
+  Armor: 35
+  MaxShield: 0
+  ShieldRegenDelay: 5
+  ShieldRegenRate: 0
+  PatrolSpeed: 2.5
+  ChaseSpeed: 6.0
+  SightRange: 14
+  SightAngle: 140
+  HearingRadius: 14
+  CombatType: 0
+  AttackRange: 1.4
+  AttackDamage: 12
+  AttackCooldown: 0.7
+  AttackWindup: 0.25
+  PreferredRange: 12
+  SpreadAngle: 3
+  BurstCount: 1
+  BurstInterval: 0.1
+  StrafeInterval: 2
+  StrafeDistance: 4
+  AlertDuration: 4
+  AttackSound: {fileID: 0}
+  RangedAttackSound: {fileID: 0}

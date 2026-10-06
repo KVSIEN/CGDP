@@ -106,6 +106,13 @@ namespace CGD.Combat
         // Teammates (and the source itself) are immune; teamless sources hit everyone.
         public bool CanBeDamagedBy(DamageSource source) => source.Team == Team.None || source.Team != Team;
 
+        // Re-reads the maxima (e.g. after an enemy's stats changed) and fills health and shield.
+        protected void RefillToMax()
+        {
+            _shield.SetMax(MaxShield, keepRatio: false);
+            ResetHealth();
+        }
+
         private void ResetHealth()
         {
             _currentHealth = StartingHealth;

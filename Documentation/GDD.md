@@ -2108,8 +2108,7 @@ Every reality follows the same broad shape; who sits at the top of each is still
 
 | Rank | Role | In play |
 |------|------|---------|
-| **Rank and file** | The reality's common inhabitants and threats | Regular rooms (prototype: maintenance bot, scavenger, husk) |
-| **Elites** | Stronger, specialised members | Elite rooms, encounter-room waves |
+| **Rank and file** | The reality's common enemies, in three tiers: tier 1 everyday threats, tiers 2 and 3 tougher ones that roll random affixes (none at tier 1, more each tier up) | Regular rooms, with higher tiers more common in tougher and Elite rooms (prototype: maintenance bot, scavenger, husk as tier 1; tiers 2–3 are stat-only placeholders until designed) |
 | **Lieutenants** | Named or unique figures who serve the leadership | Demi-bosses, boss unlock conditions |
 | **Leadership** | The reality's big boss(es) | Map bosses |
 

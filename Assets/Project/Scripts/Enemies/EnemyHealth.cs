@@ -13,6 +13,8 @@ namespace CGD.Enemies
         [SerializeField] private EnemyHealthBar _healthBar;
         [SerializeField] private Vector3        _popupOffset = new Vector3(0f, 0.3f, 0f);
 
+        public EnemyData Data => _data;
+
         public override string DisplayName =>
             string.IsNullOrEmpty(_data.DisplayName) ? base.DisplayName : _data.DisplayName;
 
@@ -38,6 +40,13 @@ namespace CGD.Enemies
         {
             DamageNumbers.Spawn(amount, point + _popupOffset, isCritical);
             if (_healthBar != null) _healthBar.ShowDamage(Health, MaxHealth);
+        }
+
+        // Swaps the stats this enemy runs on (its rolled affixes) and fills it up to the new maxima.
+        public void UseData(EnemyData data)
+        {
+            _data = data;
+            RefillToMax();
         }
 
         // A pooled enemy comes back at full health; OnRevived lets its other systems reset.

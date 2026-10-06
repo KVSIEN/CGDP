@@ -13,6 +13,9 @@ namespace CGD.Enemies
         [Tooltip("Enemies never damage their own team")]
         public Team Team = Team.Enemy;
 
+        [Tooltip("1 = rank and file; higher tiers are tougher and roll more random affixes (see EnemyAffixPool)")]
+        [Range(1, 3)] public int Tier = 1;
+
         [Header("Health")]
         public float MaxHealth = 100f;
         public float Armor     = 0f;
