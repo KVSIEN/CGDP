@@ -18,6 +18,9 @@ namespace CGD.Weapons
         public int Magazine { get; internal set; }
         // How a bow is being held; each bow remembers its own. Ignored by weapons without draw stances.
         public DrawOrientation Draw { get; set; }
+        // Reload swap-cancel: swapped away once its rounds were in, so swapping back
+        // before this game time skips the draw.
+        public float QuickDrawUntil { get; set; } = float.NegativeInfinity;
 
         public override string DisplayName => Data != null ? Data.WeaponName : "Weapon";
 

@@ -40,6 +40,9 @@ namespace CGD.Weapons
         private readonly SpreadProcessor _spread = new();
         private readonly InputBuffer     _fireBuffer = new();
 
+        // Seconds a weapon swapped away from after its reload's commit point comes back without a draw.
+        private const float QuickReturnWindow = 1f;
+
         private WeaponInstance _current;
         private CharacterStats _stats;
         private PlayerMovement _movement;
@@ -48,7 +51,10 @@ namespace CGD.Weapons
         private CooldownTimer  _fireCooldown;
         private float _drawTimer;
         private bool  _wasDodging;
+        private bool  _wasSprinting;
         private bool  _isReloading;
+        private bool  _reloadCommitted;
+        private Coroutine _reload;
         private bool  _holstered;
         private bool  _burstPending;
 
@@ -123,7 +129,8 @@ namespace CGD.Weapons
 
         private void Update()
         {
-            bool dodgeStarted = DodgeStartedThisFrame();
+            bool dodgeStarted  = DodgeStartedThisFrame();
+            bool sprintStarted = SprintStartedThisFrame();
             if (_current == null || _holstered) return;
 
             // Sway ticks through draw/reload so the weapon never freezes mid-animation.
@@ -145,7 +152,13 @@ namespace CGD.Weapons
                 }
             }
 
-            if (_isReloading) return;
+            // Breaking into a sprint stops the reload: lost before its commit point, and
+            // done early after it (the rounds are already in).
+            if (_isReloading)
+            {
+                if (!sprintStarted) return;
+                InterruptReload();
+            }
 
             float dt = Time.deltaTime;
             bool  cooldownReady   = _fireCooldown.IsReady;
@@ -190,13 +203,21 @@ namespace CGD.Weapons
         /// <summary>Swap the active weapon at runtime (null = unarmed).</summary>
         public void Equip(WeaponInstance weapon)
         {
+            // Reload swap-cancel: leaving a weapon once its rounds are in lets it come
+            // straight back, so swap away and back beats waiting out the reload's tail.
+            if (_current != null && _isReloading && _reloadCommitted)
+                _current.QuickDrawUntil = Time.time + QuickReturnWindow;
+
             StopAllCoroutines();
-            _isReloading   = false;
-            _burstPending  = false;
-            _current       = weapon;
-            _chargeTimer   = 0f;
-            _wasChargeHeld = false;
-            _drawTimer     = weapon != null ? weapon.Data.DrawTime : 0f;
+            _reload          = null;
+            _isReloading     = false;
+            _reloadCommitted = false;
+            _burstPending    = false;
+            _current         = weapon;
+            _chargeTimer     = 0f;
+            _wasChargeHeld   = false;
+            _drawTimer       = weapon != null && Time.time > weapon.QuickDrawUntil ? weapon.Data.DrawTime : 0f;
+            if (weapon != null) weapon.QuickDrawUntil = float.NegativeInfinity;
             _fireBuffer.Clear(); // a press meant for the previous weapon doesn't carry over
 
             _recoil.Configure(weapon?.Data);
@@ -226,7 +247,7 @@ namespace CGD.Weapons
                 _chargeTimer   = 0f;
                 _wasChargeHeld = triggerHeld;
                 if (_burstPending || !(triggerHeld || triggerPress)) return;
-                if (CanReload) StartCoroutine(Reload());
+                if (CanReload) StartReload();
                 else if (triggerPress) D.EmptySound.TryPlay(SoundPos);
                 return;
             }
@@ -275,7 +296,7 @@ namespace CGD.Weapons
         private void HandleReloadInput()
         {
             if (!_isReloading && _input.GetAction(GameAction.Reload) && CanReload)
-                StartCoroutine(Reload());
+                StartReload();
         }
 
         private bool CanReload => _current.Magazine < _current.MagazineSize && Reserve > 0;
@@ -365,28 +386,62 @@ namespace CGD.Weapons
         private float ResolveDamage() =>
             _stats != null ? _stats.Apply(ItemStat.Damage, _current.Damage) : _current.Damage;
 
+        private void StartReload() => _reload = StartCoroutine(Reload());
+
+        // The rounds go in at the commit point; the rest is the tail of the animation, which
+        // sprinting or a swap can skip. The magazine filling up is the cue that it's safe.
         private IEnumerator Reload()
         {
-            _isReloading = true;
+            _isReloading     = true;
+            _reloadCommitted = false;
             NotifyAmmoChanged();
 
             D.ReloadSound.TryPlay(SoundPos);
 
-            float time = _current.Magazine > 0 ? _current.TacticalReloadTime : _current.ReloadTime;
-            yield return new WaitForSeconds(time);
+            float time   = _current.Magazine > 0 ? _current.TacticalReloadTime : _current.ReloadTime;
+            float commit = time * D.ReloadCommitPoint;
+            yield return new WaitForSeconds(commit);
 
+            LoadMagazine();
+            _reloadCommitted = true;
+            if (time > commit) yield return new WaitForSeconds(time - commit);
+
+            EndReload();
+        }
+
+        private void LoadMagazine()
+        {
             int needed    = _current.MagazineSize - _current.Magazine;
             int available = _inventory != null ? _inventory.Inventory.CountOf(D.AmmoType) : 0;
             int taken     = Mathf.Min(needed, available);
-            if (taken > 0)
-            {
-                _current.Magazine += taken;
-                // Remove fires Changed, which covers both mag and reserve in one event.
-                _inventory.Inventory.Remove(D.AmmoType, taken);
-            }
+            if (taken <= 0) return;
 
-            _isReloading = false;
+            _current.Magazine += taken;
+            // Remove fires Changed, which covers both mag and reserve in one event.
+            _inventory.Inventory.Remove(D.AmmoType, taken);
+        }
+
+        // Ends the reload where it is: finished if the rounds are in, lost if not.
+        private void InterruptReload()
+        {
+            if (_reload != null) StopCoroutine(_reload);
+            EndReload();
+        }
+
+        private void EndReload()
+        {
+            _reload          = null;
+            _isReloading     = false;
+            _reloadCommitted = false;
             NotifyAmmoChanged();
+        }
+
+        private bool SprintStartedThisFrame()
+        {
+            bool sprinting = _movement != null && _movement.IsSprinting;
+            bool started   = sprinting && !_wasSprinting;
+            _wasSprinting  = sprinting;
+            return started;
         }
 
         private void UpdateCrosshair()

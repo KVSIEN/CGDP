@@ -120,6 +120,8 @@ namespace CGD.Weapons
         public float ReloadTime = 2.6f;
         [Tooltip("Reload with a round still chambered (faster)")]
         public float TacticalReloadTime = 2.1f;
+        [Tooltip("Share of the reload after which the rounds are in. Sprinting or swapping away after it skips the rest of the reload; before it, the reload is lost")]
+        [Range(0.3f, 1f)] public float ReloadCommitPoint = 0.8f;
 
         [Header("Accuracy")]
         [Tooltip("Cone half-angle while hip-firing (degrees)")]
