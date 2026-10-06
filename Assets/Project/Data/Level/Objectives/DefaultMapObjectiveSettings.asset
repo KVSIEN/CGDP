@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc4d96cef4304afbba6a1630a558ad56, type: 3}
+  m_Name: DefaultMapObjectiveSettings
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.MapObjectiveSettings
+  _templates:
+  - {fileID: 11400000, guid: 36f7f6c5087e4a64af3ce8ae42e089a8, type: 2}
+  - {fileID: 11400000, guid: 0643383c58e64814b777b37f8a294b31, type: 2}
+  - {fileID: 11400000, guid: f5d9d190cf8b4e0081d9717b92ccbc84, type: 2}
+  - {fileID: 11400000, guid: ec58b73f7f6a4994a9f746625147fed7, type: 2}
+  - {fileID: 11400000, guid: b940b1cb49064e43af5cc206c8208d86, type: 2}
+  - {fileID: 11400000, guid: b8bd94c7fc844267b7da0f0c99127ae6, type: 2}
+  - {fileID: 11400000, guid: a9686033d66b4a118e898a916af0d351, type: 2}
+  - {fileID: 11400000, guid: 59bf5f067ec947ccb37fffbd2bcca656, type: 2}
+  _mainCount:
+    Min: 1
+    Max: 2
+    Bias: 0
+  _sideCount:
+    Min: 0
+    Max: 3
+    Bias: 0
+  _bossDoorPrefab: {fileID: 0}
+  _consolePrefab: {fileID: 7320000000000000004, guid: 9d6e3b2a41c74f08b5e2c7a90f1d4e65, type: 3}
+  _retrievePickupPrefab: {fileID: 7400000000000000004, guid: 28f39229b0714304a0092dc56d59ce85, type: 3}
+  _retrieveItem: {fileID: 11400000, guid: 128aacf710814a3196756bafe930ae2d, type: 2}
+  _markerColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  _rewardCachePrefab: {fileID: 7400000000000000301, guid: faf0a0e336204d75988189b2bb42c58a, type: 3}
+  _cacheLuckByTier:
+  - 0
+  - 0.75
+  - 1.5
+  _currency: {fileID: 11400000, guid: 6de4f16914e84c22bcc6ca80c7f4047d, type: 2}
+  _currencyByTier: 190000003200000064000000

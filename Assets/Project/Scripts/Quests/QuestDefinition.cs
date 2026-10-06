@@ -41,5 +41,20 @@ namespace CGD.Quests
         public bool                  HasTimeLimit  => _timeLimit > 0f;
         public bool                  Retryable     => _retryable;
         public QuestReward[]         Rewards       => _rewards;
+
+        // A quest made at runtime (a generated map objective): starts as soon as it's added.
+        public static QuestDefinition CreateRuntime(string title, string description, ObjectiveDefinition[] objectives,
+                                                    bool sequential, QuestReward[] rewards)
+        {
+            var quest = CreateInstance<QuestDefinition>();
+            quest.name         = title;
+            quest._title       = title;
+            quest._description = description;
+            quest._objectives  = objectives;
+            quest._sequential  = sequential;
+            quest._rewards     = rewards ?? System.Array.Empty<QuestReward>();
+            quest._retryable   = false;
+            return quest;
+        }
     }
 }

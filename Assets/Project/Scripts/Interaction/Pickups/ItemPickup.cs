@@ -18,6 +18,9 @@ namespace CGD.Interaction
 
         private ItemInstance _instance;
 
+        // Raised when the player takes it (e.g. a map objective's item). Cleared when pooled.
+        public event System.Action<ItemPickup> PickedUp;
+
         public void SetStack(ItemDefinition item, int count)
         {
             _item     = item;
@@ -32,7 +35,11 @@ namespace CGD.Interaction
             _count    = 1;
         }
 
-        public void OnDespawned() => _instance = null;
+        public void OnDespawned()
+        {
+            _instance = null;
+            PickedUp  = null;
+        }
 
         public string GetInteractLabel(GameObject interactor)
         {
@@ -58,6 +65,7 @@ namespace CGD.Interaction
             FeedbackBus.Notify(_instance != null ? $"Picked up {_instance.DisplayName}" : $"+{_count} {_item.DisplayName}",
                                NotificationStyle.Reward);
 
+            PickedUp?.Invoke(this);
             PrefabPool.Release(gameObject);
         }
     }

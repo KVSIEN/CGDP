@@ -42,6 +42,17 @@ namespace CGD.WorldMap
 
         private void Awake() => TryGetComponent(out _health);
 
+        // For markers added at runtime (e.g. an objective's room): shown even where unexplored,
+        // and pinned to the map's edge when out of view.
+        public void Configure(MapMarkerShape shape, Color color, float size)
+        {
+            _shape           = shape;
+            _color           = color;
+            _size            = size;
+            _requireExplored = false;
+            _clampToEdge     = true;
+        }
+
         private void OnEnable()  => _active.Add(this);
         private void OnDisable() => _active.Remove(this);
 

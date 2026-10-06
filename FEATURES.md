@@ -419,6 +419,16 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - **Quiet** — once in a while (at most two per map, never next to each other) a room is simply peaceful: no enemies at all, and always something worth stopping for — a salvage node (scrap metal), an ammo cache or a loot cache
 - Lockdown, Holdout and Rift rooms carry the red danger marker on their door signs; a sealed room announces itself, and every wave and countdown is called out in the HUD feed
 
+## Map Objectives
+- Every generated level hands out **main objectives** (1–2) and **side objectives** (0–3), rolled from objective templates with the level's seed — the same seed always gives the same objectives in the same rooms
+- An objective is 1–3 steps, each in a specific room of the map: **Clear** it (kill every enemy there), **Activate** a console placed in it, or **Retrieve** a Data Core placed in it. Steps can go in order (the next one appears when the last is done) or all at once
+- Steps ask for rooms of a given tier, so objectives have a shape: **escalating** (tier 1 → 2 → 3), **themed** (all in tier-1 rooms, or all in tier-3 rooms), all in rooms of **one reality**, or anywhere
+- **Main objectives** lock the Boss room: its doors show "Objectives 0/2" and open once every main objective is done
+- **Side objectives** are optional and pay out when done: credits (25 / 50 / 100 by the highest room tier involved) and a reward cache in the last step's room, with better odds the higher the tier — a tier-3 side objective is the risky, rich one
+- Objectives show in the quest tracker ("Main: …", "Side: …") and each active step's room is marked on the world map and minimap (even unexplored, pinned to the edge when out of view)
+- Only rooms reachable before the Boss are used (no secret rooms, Start, Exit or Shop), no room hosts two steps, and objectives that don't fit a map are skipped. Rooms already cleared before a Clear step unlocks count straight away
+- Included templates — main: Escalation (clear tier 1 → 2 → 3), Override Sequence (three consoles anywhere, any order), Secure the Route (clear a tier 2 then a tier 3); either: Data Trail (console tier 1 → data core tier 2 → console tier 3); side: Salvage Run (two data cores in tier-1 rooms), Deep Recovery (a data core in a tier-3 room), Purge (two tier-3 rooms of one reality), Faction Sweep (three rooms of one reality)
+
 ## Targeting
 - One shared set of targeting rules for abilities, attacks and effects: **Self**, **Raycast** (under the crosshair), **Area** (around the caster or where they aim on the ground), **Cone**, **Nearest** (the N closest), and **Ground** (a point, no characters)
 - Each rule picks by relation — self, allies, enemies, neutral, or any mix — and can require clear line of sight and cap the number of targets (nearest first)

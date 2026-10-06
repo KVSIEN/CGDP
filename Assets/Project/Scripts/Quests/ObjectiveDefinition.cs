@@ -14,6 +14,18 @@ namespace CGD.Quests
         [Tooltip("Doesn't block the quest from completing")]
         [SerializeField] private bool          _optional;
 
+        // For objectives built at runtime (generated map objectives).
+        public ObjectiveDefinition(string description, ObjectiveKind kind, UnityEngine.Object target, int requiredCount = 1, bool optional = false)
+        {
+            _description   = description;
+            _kind          = kind;
+            _target        = target;
+            _requiredCount = requiredCount;
+            _optional      = optional;
+        }
+
+        public ObjectiveDefinition() { }
+
         public string        Description   => _description;
         public ObjectiveKind Kind          => _kind;
         public UnityEngine.Object Target   => _target;

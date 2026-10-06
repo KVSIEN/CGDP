@@ -55,6 +55,7 @@ Assets/
                             RoomOutline (curved walls), LevelWallBuilder; Functions/ — RoomFunction;
                             Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), Rules/
                             RoomPlacer (cells, multi-cell rooms); Landmarks/ — hand-built rooms; Props/ — RoomPropPlanner
+                            Objectives/ — map objectives: templates, MapObjectivePlanner, MapObjectiveRunner;
                             Encounters/ — encounter rooms: RoomEncounter + one per room type, RoomEncounterBuilder,
                             RoomShutter/RoomSeal, EncounterSpawner, rules (RoomArea, EnemyGroup, WaveSchedule, LightsOutPuzzle)
       Loot/                 LootTable, LootDropper, LootContainer

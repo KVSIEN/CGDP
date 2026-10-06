@@ -130,6 +130,8 @@ namespace CGD.Level
         };
 
         public GameObject KeyPrefab      => _keyPrefab;
+        // A door whose Condition is a ConditionLock (falls back to the keycard door).
+        public GameObject TerminalDoorPrefab => _terminalDoorPrefab != null ? _terminalDoorPrefab : _lockedDoorPrefab;
         public GameObject TerminalPrefab => _terminalPrefab;
 
         public bool     BuildDoorSigns   => _buildDoorSigns;

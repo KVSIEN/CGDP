@@ -988,7 +988,7 @@ Demi-bosses are a future development item. Their specific designs, spawn rules, 
 
 ### Open Questions
 
-- What are the possible unlock condition types? (Keys, puzzles, kills, demi-bosses, objectives?)
+- What are the possible unlock condition types? (Keys, puzzles, kills, demi-bosses, objectives?) — *Baseline built: generated main objectives (clear, activate, retrieve steps across room tiers) unlock the boss room; side objectives pay rewards. See Design Additions.*
 - How does reality dominance affect room types and encounters?
 - What does room scaling look like on higher difficulties? (More rooms? Longer boss distance? Fewer loot rooms? More unlock conditions?)
 - How many branches off the critical path on average?
@@ -2023,6 +2023,7 @@ What the prototype currently does that the original chapters don't define yet. T
 - **Gates**: optional areas can be locked (key or conditions) or hidden behind a breakable **secret wall**. A gated area always holds a reward.
 - **Ship sections**: Habitation, Commerce and Engineering shape which kinds of places appear where, a first step toward *Room Categories* and *Adjacency*.
 - **Places**: rooms are recognisable ship spaces — lobby, restaurant, park, casino, crew quarters, cargo bay, grand atrium, docking bay, supply depot — plus hand-built **landmark rooms** (Reactor Core).
+- **Map objectives**: each map rolls 1–2 main objectives that unlock the boss room and up to 3 optional side objectives for rewards. An objective is a few steps (clear a room, activate a console, retrieve an item), each in a room of a set tier — climbing tier 1 → 2 → 3, or staying in safe tier-1 or dangerous tier-3 rooms. Side rewards scale with the tiers involved.
 - **Room tiers**: every room is tier 1, 2 or 3, rising with its intensity (with some randomness). A room's tier sets how often its enemies are higher tier, and gives it slightly better loot and rarer resources. Tier 3 takes the place of a separate "elite room".
 - **Pacing**: rules keep fights from stacking up (a breather after a tier-3 fight, limits on fights in a row) and can guarantee certain rooms (a reward behind every gate, an early loot room, a stop before the boss).
 - **Run modifiers**: each run can roll **warnings** (harder, with better loot) and **anomalies** (twists like more secrets or extra loops), announced at the start.

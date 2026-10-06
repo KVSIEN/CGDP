@@ -85,6 +85,14 @@ namespace CGD.Level
 
         public float LootLuckFor(LevelRoom room) => _settings.LootLuckFor(room.Node.EffectiveTier);
 
+        // Whether SpawnEnemies will put enemies in this room (before it has run).
+        public bool WillHaveEnemies(LevelRoom room)
+        {
+            RoomContentRule rule = _settings.RuleFor(room.Node.Type);
+            return rule != null && rule.EnemyCount.Lerp(room.Node.Intensity) > 0
+                   && !(RosterFor(room).IsEmpty && SecondRosterFor(room).IsEmpty);
+        }
+
         // What opens each Locked connection, in the rooms the map graph chose: one key for a
         // Keycard lock, and for a Terminal lock a terminal per room, bound to the gate's
         // ConditionLock (`gates`: the door placed on each connection).

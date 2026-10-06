@@ -35,6 +35,9 @@ namespace CGD.Interaction
         // For a generated level, which knows how many terminals it placed.
         public void SetRequired(int required) => Progress.SetRequired(required);
 
+        // What the progress is called on the door's prompt ("Objectives 1/2").
+        public void SetLabel(string label) => _label = label;
+
         // Counts `source` as one met condition; for UnityEvents, pass the object doing it.
         public void Satisfy(Object source)
         {

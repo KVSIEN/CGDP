@@ -4,8 +4,10 @@ using UnityEngine;
 using Unity.AI.Navigation;
 using CGD.Core;
 using CGD.Feedback;
+using CGD.Interaction;
 using CGD.Loot;
 using CGD.Map;
+using CGD.Quests;
 using CGD.WorldMap;
 
 namespace CGD.Level
@@ -33,6 +35,8 @@ namespace CGD.Level
         [SerializeField] private LevelBuildSettings _settings;
         [Tooltip("Optional — how Lockdown, Holdout, Ambush, Stealth, Rift, Puzzle and Hazard rooms play. Empty = they play as plain rooms")]
         [SerializeField] private EncounterSettings _encounters;
+        [Tooltip("Optional — main objectives that open the Boss room and side objectives for rewards. Needs a QuestTracker on the player. Empty = no objectives")]
+        [SerializeField] private MapObjectiveSettings _objectives;
 
         [Header("Scene")]
         [Tooltip("Rebuilt after the geometry is placed. Set it to collect this object's children")]
@@ -75,11 +79,14 @@ namespace CGD.Level
             }
 
             Layout = new LevelLayoutBuilder(_settings).Build(Graph, nodeSpacing, Seed, content);
+            var populator = new RoomPopulator(_settings, Layout, transform, Seed.Derive("contents").Stream());
+            List<PlannedObjective> objectives = PlanObjectives(populator);
+
             var geometry = new LevelGeometryBuilder(_settings);
+            LockBossRoom(geometry, objectives);
             geometry.Build(Layout, transform);
             new DoorwaySignBuilder(_settings).Build(Layout, transform);
 
-            var populator = new RoomPopulator(_settings, Layout, transform, Seed.Derive("contents").Stream());
             populator.PlaceProps();
             populator.PlaceKeys(Graph, geometry.Gates);
             PlaceExit(populator);
@@ -92,8 +99,56 @@ namespace CGD.Level
             new RoomEncounterBuilder(_encounters, Layout, Graph, transform, populator, _player, _worldMap,
                                      Seed.Derive("encounters").Stream(), new MapRunTuning(Modifiers).LootLuck).Build();
 
+            StartObjectives(objectives, populator, geometry);
             PlacePlayer(populator);
             FitWorldMap();
+        }
+
+        // Only when the player can track quests; the same seed always plans the same objectives.
+        private List<PlannedObjective> PlanObjectives(RoomPopulator populator)
+        {
+            var none = new List<PlannedObjective>();
+            if (_objectives == null || _player == null || !_player.TryGetComponent(out QuestTracker _)) return none;
+
+            RandomStream random = Seed.Derive("objectives").Stream();
+            var planner = new MapObjectivePlanner(Graph, random,
+                node => Layout.Rooms.TryGetValue(node.Id, out LevelRoom room) && populator.WillHaveEnemies(room));
+            return planner.Plan(_objectives.Templates, _objectives.MainCount.Evaluate(random), _objectives.SideCount.Evaluate(random));
+        }
+
+        // With main objectives, every way into the Boss room gets a door that waits on them.
+        private void LockBossRoom(LevelGeometryBuilder geometry, List<PlannedObjective> objectives)
+        {
+            MapNode boss = Graph.FindFirst(MapNodeType.Boss);
+            if (boss == null || !objectives.Exists(o => o.IsMain)) return;
+
+            geometry.ObjectiveDoorPrefab = _objectives.BossDoorPrefab != null ? _objectives.BossDoorPrefab : _settings.TerminalDoorPrefab;
+            foreach (MapConnection connection in Graph.Connections)
+                if (connection.Connects(boss.Id)) geometry.ObjectiveGated.Add(connection);
+        }
+
+        private void StartObjectives(List<PlannedObjective> objectives, RoomPopulator populator, LevelGeometryBuilder geometry)
+        {
+            if (objectives.Count == 0) return;
+
+            int mainCount = objectives.FindAll(o => o.IsMain).Count;
+            var bossLocks = new List<ConditionLock>();
+            foreach (GameObject door in geometry.ObjectiveDoors)
+            {
+                ConditionLock bossLock = door.GetComponentInChildren<ConditionLock>();
+                if (bossLock == null)
+                {
+                    Debug.LogWarning($"{name}: the Boss room's objective door has no ConditionLock, so it can't wait on the main objectives.", door);
+                    continue;
+                }
+                bossLock.SetLabel("Objectives");
+                bossLock.SetRequired(mainCount);
+                bossLocks.Add(bossLock);
+            }
+
+            var runner = gameObject.AddComponent<MapObjectiveRunner>();
+            runner.Begin(objectives, Layout.Rooms, _objectives, populator, _player.GetComponent<QuestTracker>(), bossLocks,
+                         new MapRunTuning(Modifiers).LootLuck);
         }
 
         // In Start, not Awake: the HUD subscribes to FeedbackBus in its OnEnable, after this

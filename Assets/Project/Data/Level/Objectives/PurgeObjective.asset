@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3346b9e73a745398c0b0db448def270, type: 3}
+  m_Name: PurgeObjective
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.MapObjectiveTemplate
+  _title: Purge
+  _description: Clear two of the toughest rooms held by one reality.
+  _use: 2
+  _weight: 1
+  _steps:
+  - Action: 0
+    Tier: 3
+    Description: 
+  - Action: 0
+    Tier: 3
+    Description: 
+  _sequential: 0
+  _sameFaction: 1

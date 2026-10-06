@@ -26,6 +26,12 @@ namespace CGD.Level
         // up what opens it (a terminal lock's terminals).
         public Dictionary<MapConnection, GameObject> Gates { get; } = new();
 
+        // Connections whose door is replaced by ObjectiveDoorPrefab (the Boss room's, while it
+        // waits on main objectives); the doors placed there end up in ObjectiveDoors.
+        public HashSet<MapConnection> ObjectiveGated { get; } = new();
+        public GameObject ObjectiveDoorPrefab { get; set; }
+        public List<GameObject> ObjectiveDoors { get; } = new();
+
         public void Build(LevelLayout layout, Transform parent)
         {
             var roomFloors     = new BoxMeshBuilder();
@@ -176,12 +182,14 @@ namespace CGD.Level
             {
                 if (!doorway.HasGate) continue;
 
-                GameObject prefab = _settings.DoorPrefabFor(doorway.Connection);
+                bool objectiveGated = ObjectiveDoorPrefab != null && ObjectiveGated.Contains(doorway.Connection);
+                GameObject prefab = objectiveGated ? ObjectiveDoorPrefab : _settings.DoorPrefabFor(doorway.Connection);
                 if (prefab == null) continue;
 
                 Pose pose = DoorwayPose(layout, doorway, parent);
                 GameObject door = Object.Instantiate(prefab, pose.position, pose.rotation, parent);
-                if (doorway.Connection.IsGate) Gates[doorway.Connection] = door;
+                if (objectiveGated) ObjectiveDoors.Add(door);
+                else if (doorway.Connection.IsGate) Gates[doorway.Connection] = door;
 
                 // The door sits at the end nearer Start; a one-way door opens from the corridor
                 // side, i.e. for someone arriving from the deeper room.
