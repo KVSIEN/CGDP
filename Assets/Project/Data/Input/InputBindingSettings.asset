@@ -133,3 +133,15 @@ MonoBehaviour:
     PrimaryPath: <Keyboard>/b
     SecondaryPath: 
     Mode: 0
+  - Action: 30
+    PrimaryPath: <Mouse>/scroll/down
+    SecondaryPath: 
+    Mode: 0
+  - Action: 31
+    PrimaryPath: <Mouse>/scroll/up
+    SecondaryPath: 
+    Mode: 0
+  - Action: 32
+    PrimaryPath: 
+    SecondaryPath: 
+    Mode: 0

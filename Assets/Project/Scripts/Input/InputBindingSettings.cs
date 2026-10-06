@@ -27,7 +27,7 @@ namespace CGD.Input
         [ContextMenu("Reset to Defaults")]
         public void ResetToDefaults()
         {
-            // Keyboard plus left/right mouse only: extra mouse buttons aren't on every mouse.
+            // Keyboard plus left/right mouse and the scroll wheel: extra mouse buttons aren't on every mouse.
             Bindings = new List<ActionBinding>
             {
                 new() { Action = GameAction.Jump,              PrimaryPath = "<Keyboard>/space",     Mode = InputActionMode.Pressed },
@@ -60,6 +60,9 @@ namespace CGD.Input
                 new() { Action = GameAction.Item3,             PrimaryPath = "<Keyboard>/7",         Mode = InputActionMode.Pressed },
                 new() { Action = GameAction.Item4,             PrimaryPath = "<Keyboard>/8",         Mode = InputActionMode.Pressed },
                 new() { Action = GameAction.WeaponMode,        PrimaryPath = "<Keyboard>/b",         Mode = InputActionMode.Pressed },
+                new() { Action = GameAction.NextWeapon,        PrimaryPath = "<Mouse>/scroll/down",  Mode = InputActionMode.Pressed },
+                new() { Action = GameAction.PreviousWeapon,    PrimaryPath = "<Mouse>/scroll/up",    Mode = InputActionMode.Pressed },
+                new() { Action = GameAction.LastWeapon,        PrimaryPath = "",                     Mode = InputActionMode.Pressed },
             };
         }
     }

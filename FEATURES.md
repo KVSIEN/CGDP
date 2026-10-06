@@ -184,6 +184,8 @@
 
 ## Weapon Loadout
 - Four weapon slots on the player; press 1, 2, 3, or 4 to equip the weapon in that slot
+- The scroll wheel cycles through the filled slots (down = next, up = previous), skipping empty ones and wrapping around
+- **Last Weapon** swaps back to the weapon used before the current one, and pressing it again swaps back — a quick toggle between two weapons. It follows the weapon even if the wheel moved it to another slot, and does nothing once that weapon is no longer in a slot. Unbound by default; set a key in Settings → Controls
 - Switching to a slot equips the weapon and cancels any reload in progress
 - Each weapon keeps its own loaded magazine; reserve ammo is a shared pool per `AmmoType` — two SMGs share the same LightRounds supply, an SMG + sniper diversify across two pools, a hand cannon + sniper both compete for scarce HeavyRounds
 - Inventory panel (press I) shows all four loadout slots, highlights the active weapon, and lists each weapon's name; empty slots are shown as "— Empty —"
@@ -201,7 +203,7 @@
   - Toggle — pressing the key flips it on or off
 - Bindings can be remapped at runtime via the settings menu, driven entirely by the Input System's own interactive rebinding — no hand-rolled key/device translation code
 - Every action can be bound to a keyboard key, mouse button, or gamepad button (any mix of two, primary and secondary) — rebinding listens for input from any connected device and picks up whatever is pressed first
-- Default keys (keyboard plus left/right mouse only — no extra mouse buttons, since not every mouse has them): Jump (Space), Sprint (Shift), Crouch (Ctrl), Dodge (C), Attack (left mouse), Aim (right mouse), Reload (R), Interact (E), Melee (V), Abilities 1–4 (Q, F, G, X), Weapon slots 1–4 (1–4), Item slots 1–4 (5–8), Shoulder Swap (H), Weapon Mode (B — bow draw), Lock-on (T), Switch View (F5), Inventory (I), Character (Tab), Map (M), Pause (Esc), Console (`)
+- Default keys (keyboard plus left/right mouse and the scroll wheel — no extra mouse buttons, since not every mouse has them): Jump (Space), Sprint (Shift), Crouch (Ctrl), Dodge (C), Attack (left mouse), Aim (right mouse), Reload (R), Interact (E), Melee (V), Abilities 1–4 (Q, F, G, X), Weapon slots 1–4 (1–4), Next / Previous Weapon (scroll down / up), Last Weapon (unbound), Item slots 1–4 (5–8), Shoulder Swap (H), Weapon Mode (B — bow draw), Lock-on (T), Switch View (F5), Inventory (I), Character (Tab), Map (M), Pause (Esc), Console (`)
 - Hold any weapon key (1–4) or item key (5–8) to open a selection wheel for that slot: move the mouse (or stick) toward a choice and release to pick it; release in the middle to cancel. The camera holds still while the wheel is open
 - Move and Look are built the same way as every other action (WASD/arrows + gamepad left stick for Move, mouse delta + gamepad right stick for Look) — one input pipeline for the whole game instead of a separate non-remappable asset just for movement
 
