@@ -71,8 +71,14 @@ namespace CGD.Level
         [SerializeField] private bool _buildDoorSigns = true;
         [Tooltip("Copied and tinted per room type (emission is turned on). Empty = the floor material")]
         [SerializeField] private Material _doorSignMaterial;
-        [Tooltip("Rooms at or above this intensity get a danger marker on their door signs (Elites and the Boss always do)")]
+        [Tooltip("Rooms at or above this intensity get a danger marker on their door signs (tier-3 rooms and the Boss always do)")]
         [SerializeField, Range(0f, 1f)] private float _dangerIntensity = 0.75f;
+
+        [Header("Room tiers")]
+        [Tooltip("Enemy tier odds in rooms of tier 1, 2 and 3 (map node tier)")]
+        [SerializeField] private EnemyTierOdds[] _enemyTierOdds = { new(0.1f, 0f), new(0.45f, 0.1f), new(0.45f, 0.45f) };
+        [Tooltip("Extra loot luck on containers and rewards in rooms of tier 1, 2 and 3 (slightly better odds higher up)")]
+        [SerializeField] private float[] _lootLuckByTier = { 0f, 0.5f, 1f };
 
         [Header("Rooms")]
         [SerializeField] private List<RoomContentRule> _rooms = new();
@@ -131,6 +137,12 @@ namespace CGD.Level
         public float    DangerIntensity  => _dangerIntensity;
 
         public RoomContentRule RuleFor(MapNodeType type) => _rooms.Find(r => r.Type == type);
+
+        public EnemyTierOdds EnemyTierOddsFor(int roomTier) =>
+            _enemyTierOdds.Length == 0 ? default : _enemyTierOdds[Mathf.Clamp(roomTier - 1, 0, _enemyTierOdds.Length - 1)];
+
+        public float LootLuckFor(int roomTier) =>
+            _lootLuckByTier.Length == 0 ? 0f : _lootLuckByTier[Mathf.Clamp(roomTier - 1, 0, _lootLuckByTier.Length - 1)];
 
         public IReadOnlyList<RoomShape> DefaultShapes => _shapes;
 

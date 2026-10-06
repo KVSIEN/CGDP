@@ -19,6 +19,7 @@ namespace CGD.Map
             {
                 if (modifier == null) continue;
                 ExtraOptionalRooms += modifier.ExtraOptionalRooms;
+                ExtraTopTierRooms  += modifier.ExtraTopTierRooms;
                 ExtraLoops         += modifier.ExtraLoops;
                 ExtraGates         += modifier.ExtraGates;
                 LockedMultiplier   *= modifier.LockedChanceMultiplier;
@@ -32,6 +33,7 @@ namespace CGD.Map
         public IReadOnlyList<MapRunModifier> Modifiers => _modifiers;
 
         public int   ExtraOptionalRooms { get; }
+        public int   ExtraTopTierRooms  { get; }
         public int   ExtraLoops         { get; }
         public int   ExtraGates         { get; }
         public float LockedMultiplier   { get; } = 1f;

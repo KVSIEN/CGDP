@@ -7,7 +7,7 @@ namespace CGD.Map
     {
         Start,
         Combat,
-        Elite,
+        Elite,      // legacy: no longer generated (room tier 3 replaces it); old graphs treat it as a tier-3 fight
         Puzzle,
         Shop,
         Event,

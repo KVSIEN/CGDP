@@ -224,9 +224,9 @@ namespace CGD.Map
                 if (pacing.MaxCombatInARow > 0 && run == pacing.MaxCombatInARow + 1)
                     issues.Add($"More than {pacing.MaxCombatInARow} fights in a row on the main path (up to #{node.Id}).");
 
-                if (pacing.RestAfterElite && combat && i > 0 && graph.TryGetNode(path[i - 1], out MapNode before)
-                    && before.Type == MapNodeType.Elite)
-                    issues.Add($"#{node.Id} {node.Type} comes right after the Elite at #{before.Id}.");
+                if (pacing.RestAfterTopTier && combat && i > 0 && graph.TryGetNode(path[i - 1], out MapNode before)
+                    && before.EffectiveTier >= 3 && pacing.IsCombat(before.Type))
+                    issues.Add($"#{node.Id} {node.Type} comes right after the tier-3 fight at #{before.Id}.");
             }
         }
 

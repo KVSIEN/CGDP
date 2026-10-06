@@ -6,6 +6,7 @@ using CGD.Core;
 using CGD.Enemies;
 using CGD.Factions;
 using CGD.Interaction;
+using CGD.Loot;
 using CGD.Map;
 
 namespace CGD.Level
@@ -47,24 +48,42 @@ namespace CGD.Level
                 foreach (PlannedProp prop in RoomPropPlanner.Plan(room, _random))
                 {
                     Vector3 local = new Vector3(prop.Position.x, 0f, prop.Position.y) * _layout.TileSize;
-                    Object.Instantiate(prop.Prefab, _parent.TransformPoint(local), _parent.rotation * Quaternion.Euler(0f, prop.Yaw, 0f), _parent);
+                    Place(room, prop.Prefab, _parent.TransformPoint(local), _parent.rotation * Quaternion.Euler(0f, prop.Yaw, 0f));
                 }
 
                 RoomContentRule rule = _settings.RuleFor(room.Node.Type);
                 if (rule == null) continue;
 
                 if (rule.Centerpiece != null)
-                    Object.Instantiate(rule.Centerpiece, RoomCenter(room), RandomYaw(), _parent);
+                    Place(room, rule.Centerpiece, RoomCenter(room), RandomYaw());
 
                 if (rule.Offerings.Length > 0 && TryTakeTile(room, KeepPropsOff, out Vector3 spot))
-                    Object.Instantiate(_random.Pick(rule.Offerings), spot, RandomYaw(), _parent);
+                    Place(room, _random.Pick(rule.Offerings), spot, RandomYaw());
 
                 if (rule.Props.Length == 0) continue;
                 int count = rule.PropCount.Evaluate(_random);
                 for (int i = 0; i < count && TryTakeTile(room, KeepPropsOff, out Vector3 position); i++)
-                    Object.Instantiate(_random.Pick(rule.Props), position, RandomYaw(), _parent);
+                    Place(room, _random.Pick(rule.Props), position, RandomYaw());
             }
         }
+
+        // A room's things share its tier: containers roll with its loot luck and resource
+        // nodes yield by it.
+        private void Place(LevelRoom room, GameObject prefab, Vector3 position, Quaternion rotation)
+        {
+            GameObject placed = Object.Instantiate(prefab, position, rotation, _parent);
+            int tier = room.Node.EffectiveTier;
+
+            float luck = _settings.LootLuckFor(tier);
+            if (luck > 0f)
+                foreach (LootDropper dropper in placed.GetComponentsInChildren<LootDropper>(true))
+                    dropper.AddLuck(luck);
+
+            foreach (ResourceNode node in placed.GetComponentsInChildren<ResourceNode>(true))
+                node.SetTier(tier);
+        }
+
+        public float LootLuckFor(LevelRoom room) => _settings.LootLuckFor(room.Node.EffectiveTier);
 
         // What opens each Locked connection, in the rooms the map graph chose: one key for a
         // Keycard lock, and for a Terminal lock a terminal per room, bound to the gate's
@@ -133,9 +152,9 @@ namespace CGD.Level
             {
                 RoomContentRule rule = _settings.RuleFor(room.Node.Type);
                 if (rule == null) continue;
-                GameObject[] roster = RosterFor(room);
-                GameObject[] breach = SecondRosterFor(room);
-                if (roster.Length == 0 && breach.Length == 0) continue;
+                RoomRoster roster = RosterFor(room);
+                RoomRoster breach = SecondRosterFor(room);
+                if (roster.IsEmpty && breach.IsEmpty) continue;
 
                 int count = rule.EnemyCount.Lerp(room.Node.Intensity);
                 if (count <= 0) continue;
@@ -145,11 +164,10 @@ namespace CGD.Level
                 for (int i = 0; i < count && TryTakeTile(room, RoomTileTags.None, out Vector3 position); i++)
                 {
                     // A Breach room alternates between its two factions' rosters.
-                    bool fromBreach = roster.Length == 0 || (i % 2 == 1 && breach.Length > 0);
-                    int tier = RollTier(rule, room.Node.Intensity);
-                    GameObject[] pool = fromBreach ? SecondRosterFor(room, tier) : RosterFor(room, tier);
-                    if (pool.Length == 0) pool = fromBreach ? breach : roster;
-                    GameObject enemy = PrefabPool.Spawn(_random.Pick(pool), OnNavMesh(position), RandomYaw());
+                    bool fromBreach = roster.IsEmpty || (i % 2 == 1 && !breach.IsEmpty);
+                    GameObject prefab = (fromBreach ? breach : roster).Pick(_random);
+                    if (prefab == null) continue;
+                    GameObject enemy = PrefabPool.Spawn(prefab, OnNavMesh(position), RandomYaw());
                     if (enemy.TryGetComponent(out EnemyAI ai)) ai.SetWaypoints(route);
                     if (enemy.TryGetComponent(out HealthManager health)) placed.Add(health);
                 }
@@ -157,44 +175,18 @@ namespace CGD.Level
             }
         }
 
-        // A faction-held room fields that faction's enemies; how many still comes from the room type.
-        private static GameObject[] EnemiesFor(FactionDefinition faction, RoomContentRule rule, int tier = 1) =>
-            faction != null && faction.Enemies.Length > 0 ? faction.EnemiesOfTier(tier) : rule.Enemies;
-
-        // Each enemy's tier, by the room type's chances at the room's intensity.
-        private int RollTier(RoomContentRule rule, float intensity)
-        {
-            float roll  = _random.Value;
-            float tier3 = rule.Tier3Chance.Lerp(intensity);
-            if (roll < tier3) return 3;
-            return roll < tier3 + rule.Tier2Chance.Lerp(intensity) ? 2 : 1;
-        }
-
-        private GameObject[] RosterFor(LevelRoom room, int tier)
-        {
-            RoomContentRule rule = _settings.RuleFor(room.Node.Type);
-            return rule != null ? EnemiesFor(room.Faction, rule, tier) : room.Faction != null ? room.Faction.EnemiesOfTier(tier) : System.Array.Empty<GameObject>();
-        }
-
-        private GameObject[] SecondRosterFor(LevelRoom room, int tier)
-        {
-            if (room.BreachFaction == null) return RosterFor(room, tier);
-            RoomContentRule rule = _settings.RuleFor(room.Node.Type);
-            return rule != null ? EnemiesFor(room.BreachFaction, rule, tier) : room.BreachFaction.EnemiesOfTier(tier);
-        }
-
-        public GameObject[] RosterFor(LevelRoom room)
-        {
-            RoomContentRule rule = _settings.RuleFor(room.Node.Type);
-            return rule != null ? EnemiesFor(room.Faction, rule) : room.Faction != null ? room.Faction.Enemies : System.Array.Empty<GameObject>();
-        }
+        // A faction-held room fields that faction's enemies (by the room's tier); how many still
+        // comes from the room type.
+        public RoomRoster RosterFor(LevelRoom room) => RosterOf(room.Faction, room);
 
         // The second reality's roster in a Breach or Rift room; otherwise the room's own.
-        public GameObject[] SecondRosterFor(LevelRoom room)
+        public RoomRoster SecondRosterFor(LevelRoom room) => room.BreachFaction == null ? RosterFor(room) : RosterOf(room.BreachFaction, room);
+
+        private RoomRoster RosterOf(FactionDefinition faction, LevelRoom room)
         {
-            if (room.BreachFaction == null) return RosterFor(room);
             RoomContentRule rule = _settings.RuleFor(room.Node.Type);
-            return rule != null ? EnemiesFor(room.BreachFaction, rule) : room.BreachFaction.Enemies;
+            GameObject[] fallback = rule != null ? rule.Enemies : System.Array.Empty<GameObject>();
+            return new RoomRoster(faction, fallback, _settings.EnemyTierOddsFor(room.Node.EffectiveTier));
         }
 
         public IReadOnlyList<HealthManager> EnemiesIn(LevelRoom room) =>

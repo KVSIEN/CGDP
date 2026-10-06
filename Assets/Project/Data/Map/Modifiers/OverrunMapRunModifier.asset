@@ -22,11 +22,8 @@ MonoBehaviour:
     WeightMultiplier: 1.5
     ExtraMin: 0
     ExtraMax: 0
-  - Type: 2
-    WeightMultiplier: 1
-    ExtraMin: 1
-    ExtraMax: 1
   _extraOptionalRooms: 0
+  _extraTopTierRooms: 1
   _extraLoops: 0
   _lockedChanceMultiplier: 1
   _secretChanceMultiplier: 1

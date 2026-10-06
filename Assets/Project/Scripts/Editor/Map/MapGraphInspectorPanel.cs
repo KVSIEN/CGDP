@@ -57,6 +57,12 @@ namespace CGD.Editor
             float intensity = EditorGUILayout.Slider("Intensity", node.Intensity, 0f, 1f);
             if (EditorGUI.EndChangeCheck()) session.SetIntensity(node, intensity);
 
+            EditorGUI.BeginChangeCheck();
+            int tier = EditorGUILayout.IntSlider(
+                new GUIContent("Tier", "Room tier: tougher enemies, rarer resources and slightly better loot higher up"),
+                node.Tier, 1, 3);
+            if (EditorGUI.EndChangeCheck()) session.SetTier(node, tier);
+
             DrawFaction(node, session);
             DrawSection(node, session);
 

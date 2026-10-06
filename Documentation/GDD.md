@@ -2023,7 +2023,8 @@ What the prototype currently does that the original chapters don't define yet. T
 - **Gates**: optional areas can be locked (key or conditions) or hidden behind a breakable **secret wall**. A gated area always holds a reward.
 - **Ship sections**: Habitation, Commerce and Engineering shape which kinds of places appear where, a first step toward *Room Categories* and *Adjacency*.
 - **Places**: rooms are recognisable ship spaces — lobby, restaurant, park, casino, crew quarters, cargo bay, grand atrium, docking bay, supply depot — plus hand-built **landmark rooms** (Reactor Core).
-- **Pacing**: rules keep fights from stacking up (a breather after an elite, limits on fights in a row) and can guarantee certain rooms (a reward behind every gate, an early loot room, a stop before the boss).
+- **Room tiers**: every room is tier 1, 2 or 3, rising with its intensity (with some randomness). A room's tier sets how often its enemies are higher tier, and gives it slightly better loot and rarer resources. Tier 3 takes the place of a separate "elite room".
+- **Pacing**: rules keep fights from stacking up (a breather after a tier-3 fight, limits on fights in a row) and can guarantee certain rooms (a reward behind every gate, an early loot room, a stop before the boss).
 - **Run modifiers**: each run can roll **warnings** (harder, with better loot) and **anomalies** (twists like more secrets or extra loops), announced at the start.
 - **Resupply and Breach rooms**: calm stops with an ammo cache, and fights where two realities overlap.
 - **Seeds**: everything generated follows a seed, so a map, a loadout or a weapon can be reproduced and shared.
@@ -2108,7 +2109,7 @@ Every reality follows the same broad shape; who sits at the top of each is still
 
 | Rank | Role | In play |
 |------|------|---------|
-| **Rank and file** | The reality's common enemies, in three tiers: tier 1 everyday threats, tiers 2 and 3 tougher ones that roll random affixes (none at tier 1, more each tier up) | Regular rooms, with higher tiers more common in tougher and Elite rooms (prototype: maintenance bot, scavenger, husk as tier 1; tiers 2–3 are stat-only placeholders until designed) |
+| **Rank and file** | The reality's common enemies, in three tiers: tier 1 everyday threats, tiers 2 and 3 tougher ones that roll random affixes (none at tier 1, more each tier up) | Regular rooms, with higher tiers more common in higher-tier rooms (prototype: maintenance bot, scavenger, husk as tier 1; tiers 2–3 are stat-only placeholders until designed) |
 | **Lieutenants** | Named or unique figures who serve the leadership | Demi-bosses, boss unlock conditions |
 | **Leadership** | The reality's big boss(es) | Map bosses |
 

@@ -267,6 +267,13 @@ namespace CGD.Editor
             Changed();
         }
 
+        public void SetTier(MapNode node, int tier)
+        {
+            Record("Change Map Node Tier");
+            node.Tier = tier;
+            Changed();
+        }
+
         public void SetFaction(MapNode node, int faction, float influence)
         {
             Record("Change Map Node Faction");

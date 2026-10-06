@@ -31,6 +31,14 @@ namespace CGD.Map
         [SerializeField, Range(0f, 0.5f)] private float _intensityJitter = 0.05f;
         [SerializeField, Range(0f, 1f)] private float _bossIntensity = 1f;
 
+        [Header("Room tiers")]
+        [Tooltip("Rooms at or above this intensity are tier 2 (before jitter)")]
+        [SerializeField, Range(0f, 1f)] private float _tier2Intensity = 0.45f;
+        [Tooltip("Rooms at or above this intensity are tier 3 (before jitter)")]
+        [SerializeField, Range(0f, 1f)] private float _tier3Intensity = 0.75f;
+        [Tooltip("Random ± added to a room's intensity when picking its tier, so tiers don't follow depth exactly")]
+        [SerializeField, Range(0f, 0.5f)] private float _tierJitter = 0.1f;
+
         [Header("Sections")]
         [Tooltip("Parts of the ship the run passes through, in order from Start to the Boss; each takes an equal share of the depth")]
         [SerializeField] private MapSectionDefinition[] _sections = Array.Empty<MapSectionDefinition>();
@@ -50,6 +58,9 @@ namespace CGD.Map
 
         public float IntensityJitter => _intensityJitter;
         public float BossIntensity   => _bossIntensity;
+        public float Tier2Intensity  => _tier2Intensity;
+        public float Tier3Intensity  => _tier3Intensity;
+        public float TierJitter      => _tierJitter;
 
         public IReadOnlyList<FactionDefinition> Factions => _factions;
         public IReadOnlyList<MapFactionMixOption> FactionMixes => _factionMixes;
@@ -100,7 +111,6 @@ namespace CGD.Map
         private static List<MapNodeTypeRule> DefaultRules() => new()
         {
             new(MapNodeType.Combat,   min: 3, max: 99, weight: 5f),
-            new(MapNodeType.Elite,    min: 1, max: 3,  weight: 1.5f, minDepth: 0.4f, allowAdjacentSameType: false, intensityBonus: 0.25f),
             new(MapNodeType.Puzzle,   min: 0, max: 2,  weight: 1f,   intensityBonus: -0.2f),
             new(MapNodeType.Shop,     min: 1, max: 2,  weight: 0.6f, placement: MapPlacement.MainPathOnly, minDepth: 0.3f, maxDepth: 0.9f, allowAdjacentSameType: false, intensityBonus: -0.5f),
             new(MapNodeType.Event,    min: 1, max: 3,  weight: 1f,   minDepth: 0.1f, intensityBonus: -0.2f),

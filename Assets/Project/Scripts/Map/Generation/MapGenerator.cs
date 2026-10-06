@@ -21,9 +21,10 @@ namespace CGD.Map
         public const string TypesLayer     = "types";
         public const string IntensityLayer = "intensity";
         public const string FactionsLayer  = "factions";
+        public const string TiersLayer     = "tiers";
 
         public static readonly IReadOnlyList<string> Layers =
-            new[] { ModifiersLayer, LayoutLayer, TypesLayer, IntensityLayer, FactionsLayer };
+            new[] { ModifiersLayer, LayoutLayer, TypesLayer, IntensityLayer, TiersLayer, FactionsLayer };
 
         private readonly MapGenerationSettings _settings;
 
@@ -55,6 +56,7 @@ namespace CGD.Map
 
             new MapIntensityPainter(context).Paint();
             ApplyPinnedIntensity(context.Graph, pins, types.PinnedNodeIds);
+            new MapTierPainter(context).Paint();
 
             MapFactionMix factionMix = PickFactionMix(_settings, seed, variants, tuning);
             new MapFactionPainter(context, factionMix).Paint();

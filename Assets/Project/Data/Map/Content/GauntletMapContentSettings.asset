@@ -25,18 +25,6 @@ MonoBehaviour:
     _minSpacing: 0
     _wantsSpace: 1
     _intensityBonus: 0
-  - _type: 2
-    _min: 2
-    _max: 5
-    _weight: 2.5
-    _placement: 0
-    _minDepth: 0.25
-    _maxDepth: 1
-    _preferDeadEnds: 0
-    _allowAdjacentSameType: 0
-    _minSpacing: 0
-    _wantsSpace: 1
-    _intensityBonus: 0.25
   - _type: 4
     _min: 0
     _max: 1
@@ -230,7 +218,7 @@ MonoBehaviour:
     - 12
     - 15
     _maxCombatInARow: 4
-    _restAfterElite: 1
+    _restAfterTopTier: 1
     _restType: 5
   _intensityByDepth:
     serializedVersion: 2

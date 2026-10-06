@@ -46,6 +46,17 @@ MonoBehaviour:
   _buildDoorSigns: 1
   _doorSignMaterial: {fileID: 0}
   _dangerIntensity: 0.75
+  _enemyTierOdds:
+  - Tier2: 0.1
+    Tier3: 0
+  - Tier2: 0.45
+    Tier3: 0.1
+  - Tier2: 0.45
+    Tier3: 0.45
+  _lootLuckByTier:
+  - 0
+  - 0.5
+  - 1
   _rooms:
   - Type: 0
     Functions:
@@ -72,14 +83,6 @@ MonoBehaviour:
       Min: 2
       Max: 5
       Bias: 0
-    Tier2Chance:
-      Min: 0
-      Max: 0.2
-      Bias: 0
-    Tier3Chance:
-      Min: 0
-      Max: 0.05
-      Bias: 0
     Centerpiece: {fileID: 0}
     Props: []
     PropCount:
@@ -95,14 +98,6 @@ MonoBehaviour:
     EnemyCount:
       Min: 3
       Max: 6
-      Bias: 0
-    Tier2Chance:
-      Min: 0.5
-      Max: 0.6
-      Bias: 0
-    Tier3Chance:
-      Min: 0.25
-      Max: 0.4
       Bias: 0
     Centerpiece: {fileID: 0}
     Props: []
@@ -225,14 +220,6 @@ MonoBehaviour:
       Min: 2
       Max: 5
       Bias: 0
-    Tier2Chance:
-      Min: 0.1
-      Max: 0.25
-      Bias: 0
-    Tier3Chance:
-      Min: 0
-      Max: 0.1
-      Bias: 0
     Centerpiece: {fileID: 0}
     Props: []
     PropCount:
@@ -248,14 +235,6 @@ MonoBehaviour:
     EnemyCount:
       Min: 3
       Max: 6
-      Bias: 0
-    Tier2Chance:
-      Min: 0.1
-      Max: 0.3
-      Bias: 0
-    Tier3Chance:
-      Min: 0
-      Max: 0.1
       Bias: 0
     Centerpiece: {fileID: 0}
     Props: []
@@ -302,14 +281,6 @@ MonoBehaviour:
     EnemyCount:
       Min: 2
       Max: 4
-      Bias: 0
-    Tier2Chance:
-      Min: 0
-      Max: 0.15
-      Bias: 0
-    Tier3Chance:
-      Min: 0
-      Max: 0
       Bias: 0
     Centerpiece: {fileID: 0}
     Props: []
@@ -370,14 +341,6 @@ MonoBehaviour:
     EnemyCount:
       Min: 1
       Max: 3
-      Bias: 0
-    Tier2Chance:
-      Min: 0
-      Max: 0.15
-      Bias: 0
-    Tier3Chance:
-      Min: 0
-      Max: 0
       Bias: 0
     Centerpiece: {fileID: 0}
     Props: []

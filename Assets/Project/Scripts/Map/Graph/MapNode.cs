@@ -16,6 +16,8 @@ namespace CGD.Map
         [Tooltip("Editor/debug position only — not room geometry")]
         [SerializeField] private Vector2     _position;
         [SerializeField, Range(0f, 1f)] private float _intensity;
+        [Tooltip("Room tier 1–3: tougher enemies, rarer resources and slightly better loot higher up")]
+        [SerializeField, Range(1, 3)] private int _tier = 1;
         [Tooltip("Index into MapContentSettings.Factions, or -1 for none")]
         [SerializeField] private int         _faction = NoFaction;
         [SerializeField, Range(0f, 1f)] private float _factionInfluence;
@@ -55,6 +57,16 @@ namespace CGD.Map
             get => _intensity;
             set => _intensity = Mathf.Clamp01(value);
         }
+
+        // 1 = ordinary, 3 = the map's toughest rooms (see MapTierPainter).
+        public int Tier
+        {
+            get => Mathf.Clamp(_tier, 1, 3);
+            set => _tier = Mathf.Clamp(value, 1, 3);
+        }
+
+        // Graphs authored before room tiers used an Elite room for a tough fight; it counts as tier 3.
+        public int EffectiveTier => _type == MapNodeType.Elite ? 3 : Tier;
 
         public int   Faction          => _faction;
         public float FactionInfluence => _factionInfluence;

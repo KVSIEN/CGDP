@@ -28,6 +28,9 @@ namespace CGD.Map
         [SerializeField, Min(0f)] private float _secretChanceMultiplier = 1f;
         [SerializeField] private int _extraGates;
 
+        [Tooltip("Extra rooms raised to tier 3 (the most intense tier-2 rooms that can take it)")]
+        [SerializeField, Min(0)] private int _extraTopTierRooms;
+
         [Header("Intensity & Factions")]
         [Tooltip("Added to every room's intensity")]
         [SerializeField, Range(-0.5f, 0.5f)] private float _intensityOffset;
@@ -41,6 +44,7 @@ namespace CGD.Map
         public float  LootLuck    => _lootLuck;
         public IReadOnlyList<MapTypeAdjustment> Types => _types;
         public int    ExtraOptionalRooms     => _extraOptionalRooms;
+        public int    ExtraTopTierRooms      => _extraTopTierRooms;
         public int    ExtraLoops             => _extraLoops;
         public float  LockedChanceMultiplier => _lockedChanceMultiplier;
         public float  SecretChanceMultiplier => _secretChanceMultiplier;

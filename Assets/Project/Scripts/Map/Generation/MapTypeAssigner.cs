@@ -372,19 +372,14 @@ namespace CGD.Map
             return rule.MinSpacing <= 1 || !HasAssignedWithin(slot.NodeId, type, rule.MinSpacing - 1);
         }
 
-        // On the main path: no more fights in a row than allowed, and none right after an Elite.
+        // On the main path: no more fights in a row than allowed (the breather after a tier-3
+        // fight is kept by MapTierPainter, which runs once the types are set).
         private bool PacingAllows(MapNodeType type, MapSlot slot)
         {
             if (slot.MainPathIndex < 0 || !Pacing.IsCombat(type)) return true;
 
             List<int> path = _context.MainPath;
             int i = slot.MainPathIndex;
-
-            if (Pacing.RestAfterElite)
-            {
-                if (i > 0 && AssignedTypeAt(path[i - 1]) == MapNodeType.Elite) return false;
-                if (type == MapNodeType.Elite && i + 1 < path.Count && IsAssignedCombat(path[i + 1])) return false;
-            }
 
             if (Pacing.MaxCombatInARow <= 0) return true;
             int run = 1;

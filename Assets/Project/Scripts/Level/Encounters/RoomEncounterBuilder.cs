@@ -96,7 +96,7 @@ namespace CGD.Level
                                                _populator.PatrolRouteFor(room), _random);
 
             return new EncounterContext(room, area, floor, PlaceShutters(doorways, holder), spawner, _settings,
-                _populator.EnemiesIn(room), _player, _level, _layout.TileSize, _populator.RoomCenter(room), _random, _lootLuck,
+                _populator.EnemiesIn(room), _player, _level, _layout.TileSize, _populator.RoomCenter(room), _random, _lootLuck + _populator.LootLuckFor(room),
                 _worldMap, consoleSpots, ForwardDoorways(room, doorways, analysis));
         }
 
