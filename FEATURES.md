@@ -99,7 +99,7 @@
   - **Timeline** — runs an ActionTimeline via TimelineAbilityRunner; only one timeline ability can play at a time; can be ground-targeted so its area effects land where the player aims
   - **Stat Buff** — applies a set of stat modifiers to the player for a while (included: Damage Boost, +30% damage for 8 seconds)
   - **Reflect** — puts up a reflect (see Reflects below)
-- Included ready-made: **Cone Blast** (a targeted blast hitting enemies in front of you) and **Ground Slam** (a timeline ability that smashes the area in front of you and knocks targets back)
+- Included ready-made: **Cone Blast** (a targeted blast hitting enemies in front of you), **Ground Slam** (a timeline ability that smashes the area in front of you and knocks targets back) and **Crushing Blow** (instant: 55 damage, 50% armour penetration, to the enemy under the crosshair up to 30 m — burst damage to stack with weapon hits)
 - All ability values (cooldown, force, damage, etc.) are tunable on the ScriptableObject asset
 
 ### Reflects
@@ -217,7 +217,7 @@
 - **Audio** — Master, Effects, Music and Interface volume sliders, heard straight away
 - **Video** — resolution, window mode (fullscreen, borderless, windowed), quality level, VSync, frame rate limit (when VSync is off), field of view (60–110°), ADS zoom (gradual or snap) and ADS field of view (independent or affected). Sprinting still widens the view on top of the chosen FOV. Resolution and window mode apply in builds, not in the editor's Game view
 - **Accessibility** — camera shake & kicks strength (0% turns off shake, weapon kicks and FOV punches), screen flash strength (hit flash and feedback flashes), and the low-health red vignette on or off. Hold vs. toggle is set per action on the Controls tab
-- **Input Buffering** (Accessibility tab, off by default): a press made while you can't act on it yet is remembered for 0.4 s and happens as soon as you can, like queued inputs in MOBAs. Covers firing while a gun is drawing, reloading, between shots or during a dodge (so *swap, roll, fire* shoots the moment the roll ends), melee swings tapped during a dodge or stun, and abilities pressed while another ability is casting or going off, during a dodge or while stunned (so abilities 1→2 in quick succession both fire, even on the same frame). A press is never carried over to a different weapon; raising the guard drops a queued swing
+- **Input Buffering** (Accessibility tab, off by default): a press made while you can't act on it yet is remembered for 0.4 s and happens as soon as you can, like queued inputs in MOBAs. Covers firing while a gun is drawing, reloading, between shots or during a dodge (so *swap, roll, fire* shoots the moment the roll ends), melee swings tapped during a dodge or stun, abilities pressed while another ability is casting or going off, during a dodge or while stunned (so abilities 1→2 in quick succession both fire, even on the same frame), and consumables pressed while another is being used, on cooldown or during a dodge. A press is never carried over to a different weapon; raising the guard drops a queued swing
 - Audio, video and accessibility changes preview live and are saved when the menu closes
 - All settings are saved to disk and automatically restored on next launch, applied before the first scene appears
 
@@ -303,7 +303,7 @@
 - With a melee weapon equipped the right mouse never zooms the camera
 - **Cancel windows**: once a swing has struck, the later part of its recovery can be cut short by raising the guard or dodging. The hit has already landed, and the combo carries on: slash, guard (or parry), then the next press continues with the second step, as long as it comes within the combo's reset time. Combo steps can be cancelled early in their recovery; finishers and heavy attacks only near the end, so committing to them still has a cost
 - Dodging is never blocked by a swing. Dodging before a swing's cancel window wastes that swing (its strike doesn't happen if it hadn't yet) and restarts the combo
-- **Combo weaving**: a dodge, a parry, an ability or switching weapons between combo steps keeps the next step waiting for the weapon's **weave window** (2–3 s; daggers longest, hammers shortest) instead of the short idle reset, counted from when the dodge ends. Doing nothing still resets the combo quickly. Weaving only holds the combo open; the buildup comes from the combo steps themselves (later steps hit harder or carry their own effects)
+- **Combo weaving**: a dodge, a parry, an ability, a consumable or switching weapons between combo steps keeps the next step waiting for the weapon's **weave window** (2–3 s; daggers longest, hammers shortest) instead of the short idle reset, counted from when the dodge ends. Doing nothing still resets the combo quickly. Weaving only holds the combo open; the buildup comes from the combo steps themselves (later steps hit harder or carry their own effects)
 - Abilities fired in a swing's cancel window cut its recovery short like a dodge; fired earlier, the swing simply carries on
 - **Swap-dodge cancel**: swapping to a gun and then dodging skips the rest of its draw, so the gun is ready as soon as the dodge ends. Order matters: swapping while a dodge is already moving draws in full, so swap first, then roll. Melee weapons need no draw and come out instantly. Together with combo weaving this lets combos like *sword, sword → swap, roll → shotgun blast → swap → sword* land as one burst
 - **Combos survive weapon switches**: each melee weapon remembers its own place in its combo. Switch to a gun, shoot, and switch back within the weave window to continue with the next step (switching away before a swing's cancel window drops that combo). Heavy attacks always restart the combo
@@ -561,11 +561,12 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 
 ## Consumables
 - Four item slots (keys 5–8) for consumables and throwables, shown bottom-right with how many of each are left; the row of a grenade in hand lights up
-- Using an item takes its use time, shown as a filling bar; it's only spent once the use finishes
-- Taking damage interrupts items that need concentration (the Bandage), as do being stunned, mantling or rolling; pressing the key again cancels
+- **Channelled items** take their use time, shown as a filling bar, and start when the key is tapped; they're only spent once the use finishes. Taking damage interrupts items that need concentration (the Bandage), as do being stunned, mantling or rolling; tapping a channelled item again cancels
+- **Instant items** go off the moment the key goes down, so they can be woven into combos (eat between hits, or in the same moment as an ability). Each one puts **every** consumable on a short shared cooldown (shown as a grey bar draining over the consumable rows). Channelled items set no cooldown, so an instant item can follow straight after one finishes; pressing an instant item while channelling doesn't cancel the channel
+- Using a consumable mid-combo holds the melee combo open, like an ability
 - Effects: healing, removing all status effects, a timed stat buff, and restoring a resource meter
-- Included: Bandage (1.5 s, heals 35 and stops bleeding and other effects) and Combat Stim (0.5 s, +30% damage for 15 s and 50 stamina)
-- Choose what sits in each item slot by holding its key (item wheel) or from the Character window
+- Included: Bandage (1.5 s, heals 35 and stops bleeding and other effects), Combat Stim (0.5 s, +30% damage for 15 s and 50 stamina) and Ration (instant, heals 20, 1.5 s shared cooldown)
+- Choose what sits in each item slot by holding its key (item wheel) or from the Character window. Holding an instant item's key uses one before the wheel opens; the **Hold Instant Item for Wheel** setting (Accessibility tab, on by default) turns the wheel off for instant items so that never happens
 
 ## Crafting
 - Crafting stations in the world open a crafting window listing their recipes, what each needs and how much of it you have

@@ -9,14 +9,19 @@ namespace CGD.Items
     // reliable tool in a loadout full of rolled gear.
     //
     // CastTime is the GDD's commitment cost — instant items weave into a combo,
-    // channelled ones force the player to find a safe window. Effects land together
-    // when the cast finishes; any left empty are skipped. PlayerConsumables uses them.
+    // channelled ones force the player to find a safe window. An instant item pays with a
+    // shared cooldown instead: using one locks every consumable for a moment, while a
+    // channelled item doesn't, so an instant one can be combo'd right after it. Effects
+    // land together when the cast finishes; any left empty are skipped. PlayerItemSlots
+    // uses them.
     [CreateAssetMenu(fileName = "NewConsumable", menuName = "CGD/Items/Consumable")]
     public class ConsumableDefinition : ItemDefinition
     {
         [Header("Consumable")]
         [Tooltip("Seconds of channelling before the effect lands. 0 = instant.")]
         [SerializeField] private float _castTime;
+        [Tooltip("Instant items only: seconds every consumable is locked after using this one")]
+        [SerializeField, Min(0f)] private float _sharedCooldown = 1.5f;
         [Tooltip("Taking damage while channelling cancels the use (the item is kept)")]
         [SerializeField] private bool _interruptedByDamage = true;
         [SerializeField] private int   _maxStack = 20;
@@ -31,6 +36,8 @@ namespace CGD.Items
         [SerializeField, Min(0f)] private float _restoreAmount;
 
         public float CastTime             => Mathf.Max(0f, _castTime);
+        public bool  IsInstant            => CastTime <= 0f;
+        public float SharedCooldown       => _sharedCooldown;
         public bool  InterruptedByDamage  => _interruptedByDamage;
         public override int MaxStack      => Mathf.Max(1, _maxStack);
 

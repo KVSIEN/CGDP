@@ -593,11 +593,12 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Weapons/Melee/` | `Dagger`/`Sword`/`Axe`/`Hammer`/`Spear` `…MeleeCategory` (`MeleeCategoryData`: moveset template, rolled damage/speed/reach/penetration, `StaminaMeter` = `Meters/StaminaMeter`, guard; right-click → *Apply Type Defaults*) | loot tables, shop stock (ItemStock), DevCatalog items (`give`) |
 | `Items/Munitions/` | one per caliber (incl. `ArrowMunition` for bows and crossbows) | AmmoPickup, PlayerInventory |
 | `Items/` | `StatRollProfile`, `Keycards/SecurityKeycard` (opens the generated levels' locked doors) | weapon categories, `CombatVestArmor` (see note) |
-| `Items/Armor/`, `Attachments/`, `Consumables/`, `Throwables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `StimConsumable`, `FragGrenadeThrowable`, `SmokeGrenadeThrowable`, `ScrapMetalResource`, `ClothResource` | pickups, loot, recipes, quest rewards |
+| `Items/Armor/`, `Attachments/`, `Consumables/`, `Throwables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `StimConsumable`, `RationConsumable` (instant), `FragGrenadeThrowable`, `SmokeGrenadeThrowable`, `ScrapMetalResource`, `ClothResource` | pickups, loot, recipes, quest rewards |
 | `Crafting/` | `BandageRecipe`, `CombatStimRecipe`, `ExtendedMagazineRecipe`, `CombatVestRecipe` | CraftingStation |
 | `Expedition/` | `DefaultRunStarterKit` — the starting room's loadout (weapon categories, 1–2 weapons, supplies) | ExpeditionRunner |
 | `DevTools/` | `DevCatalog` (all items, weapon categories, buffs; no enemy prefabs exist yet) | DevCommands |
 | `Abilities/` | Dash (needs `PlayerDodge`), Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`), Stealth (needs `Stealthable`) | PlayerAbilities |
+| `Abilities/` (instant strike) | `CrushingBlowAbility` (Targeted, `DefaultRaycastTargetSelector`) | PlayerAbilities |
 | `Abilities/` (reflects) | `VengeanceAbility`, `DeflectAbility`, `AbsorbAbility` (Reflect — need a `Reflector` on the player) | PlayerAbilities |
 | `Combat/Reflect/` | `VengeanceReflect`, `DeflectReflect` (projectile = `Prefabs/Weapons/Projectile`), `AbsorbReflect`, `RiposteSlashReflect` (timeline = `ActionTimelines/RiposteSlashTimeline`, whose Damage 1 = the parried hit) | reflect abilities, melee *Parry Reflect* |
 | `Targeting/` | `Default…TargetSelector`, `AimedArea…`, `FriendlyArea…` | abilities, PlayerLockOn |

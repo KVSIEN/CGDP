@@ -8,8 +8,9 @@ using CGD.Weapons;
 namespace CGD.UI
 {
     // The item slots, bottom-right above the weapon panel: what each holds and how many
-    // are left, with a bar that fills while a consumable is being used and the row lit
-    // while its throwable is in hand.
+    // are left, with a bar that fills while a consumable is being used, a grey bar that
+    // drains over consumables while the shared cooldown runs, and the row lit while its
+    // throwable is in hand.
     [RequireComponent(typeof(RectTransform))]
     public class ItemSlotsHUD : HUDElement
     {
@@ -24,14 +25,16 @@ namespace CGD.UI
         [SerializeField] private float   _width     = 180f;
         [SerializeField] private float   _rowHeight = 24f;
 
-        private static readonly Color RowBg    = new(0f, 0f, 0f, 0.45f);
-        private static readonly Color FillColor = new(0.35f, 0.75f, 0.45f, 0.6f);
-        private static readonly Color ReadyBg   = new(0.25f, 0.55f, 1f, 0.6f);
+        private static readonly Color RowBg         = new(0f, 0f, 0f, 0.45f);
+        private static readonly Color FillColor     = new(0.35f, 0.75f, 0.45f, 0.6f);
+        private static readonly Color CooldownColor = new(0.6f, 0.6f, 0.6f, 0.4f);
+        private static readonly Color ReadyBg       = new(0.25f, 0.55f, 1f, 0.6f);
 
         private Image[] _rows;
 
         private TextMeshProUGUI[] _labels;
         private RectTransform[]   _fills;
+        private Image[]           _fillImages;
 
         private void Awake()
         {
@@ -42,6 +45,7 @@ namespace CGD.UI
             _labels = new TextMeshProUGUI[PlayerItemSlots.SlotCount];
             _rows   = new Image[PlayerItemSlots.SlotCount];
             _fills  = new RectTransform[PlayerItemSlots.SlotCount];
+            _fillImages = new Image[PlayerItemSlots.SlotCount];
 
             for (int i = 0; i < PlayerItemSlots.SlotCount; i++)
             {
@@ -52,6 +56,7 @@ namespace CGD.UI
 
                 Image fill = UIFactory.MakeImage("Fill", row.rectTransform);
                 fill.color = FillColor;
+                _fillImages[i] = fill;
                 _fills[i] = fill.rectTransform;
                 _fills[i].anchorMin = Vector2.zero;
                 _fills[i].anchorMax = new Vector2(0f, 1f);
@@ -87,8 +92,11 @@ namespace CGD.UI
             for (int i = 0; i < PlayerItemSlots.SlotCount; i++)
             {
                 ItemDefinition item = _slots.Slots[i];
-                bool using_ = _slots.IsUsing && _slots.Using == item;
-                _fills[i].anchorMax = new Vector2(using_ ? _slots.UseProgress : 0f, 1f);
+                bool  using_      = _slots.IsUsing && _slots.Using == item;
+                bool  coolingDown = !using_ && _slots.OnCooldown && item is ConsumableDefinition;
+                float fill        = using_ ? _slots.UseProgress : coolingDown ? 1f - _slots.CooldownRatio : 0f;
+                _fills[i].anchorMax  = new Vector2(fill, 1f);
+                _fillImages[i].color = coolingDown ? CooldownColor : FillColor;
                 _rows[i].color = inHand != null && inHand == item ? ReadyBg : RowBg;
             }
         }

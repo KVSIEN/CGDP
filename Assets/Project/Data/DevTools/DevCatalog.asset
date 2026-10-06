@@ -31,6 +31,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8381aa9d021346ba95324f11ab1962e0, type: 2}
   - {fileID: 11400000, guid: 4b9e9aa6c1f54301a7c143d3108a9b3c, type: 2}
   - {fileID: 11400000, guid: 67ec4e6dacfe43a8bdb7e5ac9ed7bd22, type: 2}
+  - {fileID: 11400000, guid: ca217931b63e4ef49ad284d8a7901b82, type: 2}
   _weapons:
   - {fileID: 11400000, guid: ef20e19e7da2caa4f873416a54a13b19, type: 2}
   - {fileID: 11400000, guid: dff160e7c52e5dc4cae48410a434e46f, type: 2}

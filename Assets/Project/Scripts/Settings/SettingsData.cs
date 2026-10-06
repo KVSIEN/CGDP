@@ -36,6 +36,9 @@ namespace CGD.Settings
         // Input assist: presses made while busy (drawing, dodging, between shots) happen as
         // soon as possible instead of being dropped. Off by default, like most shooters.
         public bool InputBuffering;
+        // Holding an instant item's slot key opens the item wheel. The item is used on key
+        // down, so opening the wheel this way also uses one; turn off to never do that.
+        public bool InstantItemWheel = true;
 
         public const float MinFieldOfView = 60f;
         public const float MaxFieldOfView = 110f;

@@ -15,6 +15,7 @@ namespace CGD.UI
         private readonly LabeledSlider _flash;
         private readonly OptionCycler  _vignette;
         private readonly OptionCycler  _buffering;
+        private readonly OptionCycler  _instantItemWheel;
 
         private SettingsData _draft;
 
@@ -29,7 +30,8 @@ namespace CGD.UI
             _vignette = layout.Toggle("Low Health Vignette", on => Set(d => d.DamageVignette = on));
 
             layout.Header("Input");
-            _buffering = layout.Toggle("Input Buffering", on => Set(d => d.InputBuffering = on));
+            _buffering        = layout.Toggle("Input Buffering", on => Set(d => d.InputBuffering = on));
+            _instantItemWheel = layout.Toggle("Hold Instant Item for Wheel", on => Set(d => d.InstantItemWheel = on));
         }
 
         public void Load(SettingsData draft)
@@ -39,6 +41,7 @@ namespace CGD.UI
             _flash.SetValueWithoutNotify(draft.FlashIntensity);
             _vignette.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(draft.DamageVignette));
             _buffering.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(draft.InputBuffering));
+            _instantItemWheel.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(draft.InstantItemWheel));
         }
 
         public void ResetToDefaults()
@@ -47,7 +50,8 @@ namespace CGD.UI
             _draft.CameraShake    = defaults.CameraShake;
             _draft.FlashIntensity = defaults.FlashIntensity;
             _draft.DamageVignette = defaults.DamageVignette;
-            _draft.InputBuffering = defaults.InputBuffering;
+            _draft.InputBuffering   = defaults.InputBuffering;
+            _draft.InstantItemWheel = defaults.InstantItemWheel;
             Load(_draft);
             _changed();
         }

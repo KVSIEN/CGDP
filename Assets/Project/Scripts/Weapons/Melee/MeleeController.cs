@@ -5,6 +5,7 @@ using CGD.Audio;
 using CGD.Combat;
 using CGD.Feedback;
 using CGD.Input;
+using CGD.Items;
 using CGD.Meters;
 using CGD.Player;
 using CGD.Settings;
@@ -15,7 +16,7 @@ namespace CGD.Weapons
     // equipped melee weapon on Attack as well. With a melee weapon equipped the aim input
     // raises its guard instead; as an IDamageInterceptor it blocks or parries hits while
     // raised, so it must sit on the same object as the player's HealthManager.
-    // Combos can be woven: a dodge, parry, ability or weapon switch between steps keeps
+    // Combos can be woven: a dodge, parry, ability, consumable or weapon switch between steps keeps
     // the next step open for the weapon's weave window instead of the short idle reset.
     [RequireComponent(typeof(PlayerInputHandler))]
     public class MeleeController : MonoBehaviour, IDamageInterceptor
@@ -37,6 +38,7 @@ namespace CGD.Weapons
         private PlayerMovement     _movement;
         private PlayerDodge        _dodge;
         private PlayerAbilities    _abilities;
+        private PlayerItemSlots    _items;
         private Reflector          _reflector;
         private MeterSet           _meters;
         private DamageSource       _damageSource;
@@ -81,17 +83,20 @@ namespace CGD.Weapons
             TryGetComponent(out _meters);
             TryGetComponent(out _dodge);
             TryGetComponent(out _abilities);
+            TryGetComponent(out _items);
             TryGetComponent(out _reflector);
         }
 
         private void OnEnable()
         {
             if (_abilities != null) _abilities.AbilityUsed += OnAbilityUsed;
+            if (_items     != null) _items.UseEnded         += OnItemUsed;
         }
 
         private void OnDisable()
         {
             if (_abilities != null) _abilities.AbilityUsed -= OnAbilityUsed;
+            if (_items     != null) _items.UseEnded         -= OnItemUsed;
         }
 
         // Called by the loadout when the active slot changes (null = a firearm or empty slot).
@@ -209,8 +214,17 @@ namespace CGD.Weapons
             _holdTimer = 0f;
         }
 
-        // An ability fired mid-combo. Before a swing's cancel window the swing simply carries on.
-        private void OnAbilityUsed(Ability ability)
+        private void OnAbilityUsed(Ability ability) => WeaveAction();
+
+        // A consumable used mid-combo weaves like an ability; a cancelled channel doesn't.
+        private void OnItemUsed(ConsumableDefinition item, bool completed)
+        {
+            if (completed) WeaveAction();
+        }
+
+        // An ability or consumable between steps. Before a swing's cancel window the swing
+        // simply carries on.
+        private void WeaveAction()
         {
             if (InCancelWindow)            InterruptSwing(keepCombo: true);
             else if (_phase == Phase.Idle) Weave();

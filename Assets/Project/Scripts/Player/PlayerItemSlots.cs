@@ -2,21 +2,28 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
+using CGD.Core;
 using CGD.Input;
 using CGD.Items;
 using CGD.Meters;
+using CGD.Settings;
 using CGD.Stats;
 using CGD.UI;
 using CGD.Weapons;
 
 namespace CGD.Player
 {
-    // The item slots (keys 5–8). Tapping a slot uses what's on it:
-    //   - a consumable starts its use: after its cast time the item is taken from the
-    //     inventory and its effects apply. The use is cancelled (and the item kept) when the
-    //     player takes damage (if the item says so), is stunned, mantles or rolls, or taps again.
+    // The item slots (keys 5–8). Using what's on a slot:
+    //   - an instant consumable goes off on key down, so it can be woven into a combo, and
+    //     locks every consumable for its shared cooldown.
+    //   - a channelled consumable starts on a tap: after its cast time the item is taken from
+    //     the inventory and its effects apply. The use is cancelled (and the item kept) when the
+    //     player takes damage (if the item says so), is stunned, mantles or rolls, or taps a
+    //     channelled item again. It sets no shared cooldown, so an instant item can follow it.
     //   - a throwable is readied in hand by ThrowableController (tap again to put it away).
-    // Holding a slot's key opens the item wheel to choose what goes on that slot.
+    // Holding a slot's key opens the item wheel to choose what goes on that slot (for an
+    // instant item only if the InstantItemWheel setting is on). With input buffering on, a
+    // use that can't happen yet is retried briefly.
     [RequireComponent(typeof(PlayerInputHandler), typeof(PlayerInventory))]
     public class PlayerItemSlots : MonoBehaviour
     {
@@ -43,6 +50,10 @@ namespace CGD.Player
         // The wheel's choices for the slot being held: null = empty, then each item.
         private readonly List<ItemDefinition> _wheelItems = new();
         private readonly List<string>         _wheelLabels = new();
+        private static readonly string[]      NoWheel      = Array.Empty<string>();
+
+        private readonly InputBuffer[] _buffers = new InputBuffer[SlotCount];
+        private CooldownTimer _sharedCooldown;
 
         private ConsumableDefinition _using;
         private float _remaining;
@@ -52,6 +63,9 @@ namespace CGD.Player
         public bool IsUsing => _using != null;
         // 0..1 through the current use.
         public float UseProgress => IsUsing && _using.CastTime > 0f ? 1f - _remaining / _using.CastTime : 0f;
+        // 1 when consumables are usable; rises from 0 while the shared cooldown runs.
+        public float CooldownRatio => _sharedCooldown.Ratio;
+        public bool  OnCooldown    => !_sharedCooldown.IsReady;
 
         // (item, completed) — false when interrupted.
         public event Action<ConsumableDefinition, bool> UseEnded;
@@ -69,6 +83,7 @@ namespace CGD.Player
             TryGetComponent(out _throwing);
             if (_slots.Length != SlotCount) Array.Resize(ref _slots, SlotCount);
             _keys = new SlotKeyWheel(_input, _wheel, SlotActions, "Item");
+            for (int i = 0; i < SlotCount; i++) _buffers[i] = new InputBuffer();
         }
 
         private void OnEnable()
@@ -81,13 +96,19 @@ namespace CGD.Player
             if (_health != null) _health.OnDamaged -= OnDamaged;
             _keys.Cancel();
             Cancel();
+            foreach (InputBuffer buffer in _buffers) buffer.Clear();
         }
 
         private void Update()
         {
-            _keys.Tick(Time.deltaTime, null, UseSlot, WheelOptions, ChooseFromWheel);
+            _sharedCooldown.Tick(Time.deltaTime);
+            _keys.Tick(Time.deltaTime, PressSlot, TapSlot, WheelOptions, ChooseFromWheel);
 
-            if (!IsUsing) return;
+            if (!IsUsing)
+            {
+                RetryBuffered();
+                return;
+            }
 
             if (_movement != null && !_movement.CanAct)
             {
@@ -115,13 +136,21 @@ namespace CGD.Player
 
         public int SlotOf(ItemDefinition item) => item != null ? Array.IndexOf(_slots, item) : -1;
 
-        private void UseSlot(int index)
+        // Key down: instant consumables go off right away instead of waiting for the tap.
+        private void PressSlot(int index)
+        {
+            if (_slots[index] is ConsumableDefinition { IsInstant: true } instant) Use(index, instant);
+        }
+
+        private void TapSlot(int index)
         {
             switch (_slots[index])
             {
+                case ConsumableDefinition { IsInstant: true }:
+                    break; // already used on key down
                 case ConsumableDefinition consumable:
                     if (IsUsing) Cancel();
-                    else         TryUse(consumable);
+                    else         Use(index, consumable);
                     break;
                 case ThrowableDefinition throwable when _throwing != null:
                     Cancel();
@@ -130,9 +159,30 @@ namespace CGD.Player
             }
         }
 
+        private void Use(int slot, ConsumableDefinition item)
+        {
+            if (TryUse(item)) _buffers[slot].Clear();
+            else if (GameSettings.Current.InputBuffering) _buffers[slot].Press(Time.time);
+        }
+
+        // A use that failed shortly before (mid-channel, on cooldown, rolling) goes off as
+        // soon as it can, e.g. an instant item pressed just before a channel finishes.
+        private void RetryBuffered()
+        {
+            for (int i = 0; i < SlotCount; i++)
+            {
+                if (!_buffers[i].IsPending(Time.time)) continue;
+                if (_slots[i] is ConsumableDefinition item && TryUse(item)) _buffers[i].Clear();
+                if (IsUsing) return;
+            }
+        }
+
         // Empty first, then every slottable item carried, with counts.
         private IReadOnlyList<string> WheelOptions(int slot)
         {
+            if (_slots[slot] is ConsumableDefinition { IsInstant: true } && !GameSettings.Current.InstantItemWheel)
+                return NoWheel;
+
             _wheelItems.Clear();
             _wheelLabels.Clear();
             _wheelItems.Add(null);
@@ -157,7 +207,7 @@ namespace CGD.Player
 
         public bool TryUse(ConsumableDefinition item)
         {
-            if (item == null || IsUsing || !_inventory.Inventory.Has(item, 1)) return false;
+            if (item == null || IsUsing || !_sharedCooldown.IsReady || !_inventory.Inventory.Has(item, 1)) return false;
             if (_movement != null && !_movement.CanAct) return false;
             if (_health != null && _health.IsDead) return false;
 
@@ -189,6 +239,7 @@ namespace CGD.Player
             if (!_inventory.Inventory.Remove(item, 1)) return;
 
             Apply(item);
+            if (item.IsInstant) _sharedCooldown.Start(item.SharedCooldown);
             UseEnded?.Invoke(item, true);
         }
 
