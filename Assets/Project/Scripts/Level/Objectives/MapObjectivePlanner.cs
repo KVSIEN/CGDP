@@ -65,16 +65,20 @@ namespace CGD.Level
             topTier = 1;
             int faction = template.SameFaction ? PickFaction(template.Steps[0]) : MapNode.NoFaction;
             var taken = new HashSet<int>();
+            int previousTier = 0;
 
             foreach (ObjectiveStepTemplate step in template.Steps)
             {
+                int after = previousTier;
                 var options = _candidates.FindAll(n => !_used.Contains(n.Id) && !taken.Contains(n.Id) && Fits(step, n)
+                                                       && FitsOrder(template.TierOrder, after, n.EffectiveTier)
                                                        && (!template.SameFaction || n.Faction == faction));
                 if (options.Count == 0) return false;
 
                 MapNode room = _random.Pick(options);
                 taken.Add(room.Id);
                 rooms.Add(room.Id);
+                previousTier = room.EffectiveTier;
                 topTier = Math.Max(topTier, room.EffectiveTier);
             }
             return true;
@@ -86,6 +90,14 @@ namespace CGD.Level
             var options = _candidates.FindAll(n => !_used.Contains(n.Id) && Fits(first, n));
             return options.Count > 0 ? _random.Pick(options).Faction : MapNode.NoFaction;
         }
+
+        // previousTier 0 = the first step, which is free.
+        private static bool FitsOrder(ObjectiveTierOrder order, int previousTier, int tier) => order switch
+        {
+            ObjectiveTierOrder.NeverDown => tier >= previousTier,
+            ObjectiveTierOrder.Same      => previousTier == 0 || tier == previousTier,
+            _                            => true,
+        };
 
         private bool Fits(ObjectiveStepTemplate step, MapNode room) =>
             step.AcceptsTier(room.EffectiveTier) && (step.Action != ObjectiveAction.Clear || _canClear(room));

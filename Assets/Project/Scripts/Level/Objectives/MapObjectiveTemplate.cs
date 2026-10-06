@@ -3,9 +3,10 @@ using UnityEngine;
 
 namespace CGD.Level
 {
-    // A kind of map objective: a few steps, each in a room of a given tier, done in order or
-    // in any order. Escalating ones climb through tiers 1 → 2 → 3; themed ones keep every
-    // step in rooms of one tier (or one faction). A map rolls its objectives from these.
+    // A kind of map objective: a few steps, each in a room within a tier range, done in order
+    // or in any order. The ranges and the tier order decide the shape: a fixed climb 1 → 2 → 3,
+    // any combination that never goes down (1-1-3, 1-2-2…), every step in one tier, or one
+    // faction's rooms. A map rolls its objectives (and their tiers) from these.
     [CreateAssetMenu(fileName = "MapObjective", menuName = "CGD/Level/Map Objective")]
     public class MapObjectiveTemplate : ScriptableObject
     {
@@ -18,6 +19,8 @@ namespace CGD.Level
         [SerializeField] private ObjectiveStepTemplate[] _steps = Array.Empty<ObjectiveStepTemplate>();
         [Tooltip("Steps unlock one at a time, in order. Otherwise all count at once")]
         [SerializeField] private bool _sequential = true;
+        [Tooltip("How the steps' room tiers relate, within each step's range")]
+        [SerializeField] private ObjectiveTierOrder _tierOrder = ObjectiveTierOrder.Any;
         [Tooltip("Every step in rooms of the same faction")]
         [SerializeField] private bool _sameFaction;
 
@@ -28,6 +31,7 @@ namespace CGD.Level
         public ObjectiveStepTemplate[] Steps => _steps;
         public bool   Sequential  => _sequential;
         public bool   SameFaction => _sameFaction;
+        public ObjectiveTierOrder TierOrder => _tierOrder;
 
         public bool CanBe(bool main) => _use == ObjectiveUse.Either || _use == (main ? ObjectiveUse.Main : ObjectiveUse.Side);
     }

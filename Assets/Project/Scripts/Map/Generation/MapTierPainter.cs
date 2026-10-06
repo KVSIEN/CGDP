@@ -3,11 +3,12 @@ using CGD.Core;
 
 namespace CGD.Map
 {
-    // Room tier 1–3 from each room's intensity (plus jitter, so tiers don't follow depth
-    // exactly): tougher enemies, rarer resources and slightly better loot higher up. Start,
-    // Exit, Boss and Shop rooms stay tier 1. Run modifiers can raise extra rooms to tier 3,
-    // and a tier-3 fight on the main path always has a breather after it (otherwise it
-    // stays tier 2).
+    // Room tier 1–3 from how deep each room lies between Start and the Boss (plus jitter, so
+    // tiers rise with depth without following it exactly), so the map gets harder as the
+    // player pushes on: tougher enemies, rarer resources and slightly better loot higher up.
+    // Start, Exit, Boss and Shop rooms stay tier 1. Run modifiers that raise intensity push
+    // tiers up too and can add tier-3 rooms, and a tier-3 fight on the main path always has
+    // a breather after it (otherwise it stays tier 2).
     internal class MapTierPainter
     {
         private readonly MapGenerationContext _context;
@@ -38,16 +39,16 @@ namespace CGD.Map
         private int TierFor(MapNode node, MapSlot slot)
         {
             float jitter = Content.TierJitter;
-            float roll   = node.Intensity + _random.Range(-jitter, jitter);
-            if (roll >= Content.Tier3Intensity && CanBeTopTier(node, slot)) return 3;
-            return roll >= Content.Tier2Intensity ? 2 : 1;
+            float depth  = slot.Progress + _context.Tuning.IntensityOffset + _random.Range(-jitter, jitter);
+            if (depth >= Content.Tier3Depth && CanBeTopTier(node, slot)) return 3;
+            return depth >= Content.Tier2Depth ? 2 : 1;
         }
 
-        // The most intense tier-2 rooms that can take it go up first.
+        // The deepest tier-2 rooms that can take it go up first.
         private static void PromoteExtra(List<(MapNode node, MapSlot slot)> candidates, int count)
         {
             if (count <= 0) return;
-            candidates.Sort((a, b) => b.node.Intensity.CompareTo(a.node.Intensity));
+            candidates.Sort((a, b) => b.slot.Progress.CompareTo(a.slot.Progress));
             for (int i = 0; i < count && i < candidates.Count; i++)
                 candidates[i].node.Tier = 3;
         }

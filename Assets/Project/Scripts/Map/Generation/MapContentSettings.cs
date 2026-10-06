@@ -32,11 +32,11 @@ namespace CGD.Map
         [SerializeField, Range(0f, 1f)] private float _bossIntensity = 1f;
 
         [Header("Room tiers")]
-        [Tooltip("Rooms at or above this intensity are tier 2 (before jitter)")]
-        [SerializeField, Range(0f, 1f)] private float _tier2Intensity = 0.45f;
-        [Tooltip("Rooms at or above this intensity are tier 3 (before jitter)")]
-        [SerializeField, Range(0f, 1f)] private float _tier3Intensity = 0.75f;
-        [Tooltip("Random ± added to a room's intensity when picking its tier, so tiers don't follow depth exactly")]
+        [Tooltip("Rooms at least this deep are tier 2 (0 = Start, 1 = the Boss; before jitter)")]
+        [SerializeField, Range(0f, 1f)] private float _tier2Depth = 0.35f;
+        [Tooltip("Rooms at least this deep are tier 3")]
+        [SerializeField, Range(0f, 1f)] private float _tier3Depth = 0.7f;
+        [Tooltip("Random ± added to a room's depth when picking its tier, so tiers rise with depth without following it exactly")]
         [SerializeField, Range(0f, 0.5f)] private float _tierJitter = 0.1f;
 
         [Header("Sections")]
@@ -58,8 +58,8 @@ namespace CGD.Map
 
         public float IntensityJitter => _intensityJitter;
         public float BossIntensity   => _bossIntensity;
-        public float Tier2Intensity  => _tier2Intensity;
-        public float Tier3Intensity  => _tier3Intensity;
+        public float Tier2Depth      => _tier2Depth;
+        public float Tier3Depth      => _tier3Depth;
         public float TierJitter      => _tierJitter;
 
         public IReadOnlyList<FactionDefinition> Factions => _factions;

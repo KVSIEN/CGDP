@@ -28,7 +28,7 @@ namespace CGD.Map
         [SerializeField, Min(0f)] private float _secretChanceMultiplier = 1f;
         [SerializeField] private int _extraGates;
 
-        [Tooltip("Extra rooms raised to tier 3 (the most intense tier-2 rooms that can take it)")]
+        [Tooltip("Extra rooms raised to tier 3 (the deepest tier-2 rooms that can take it)")]
         [SerializeField, Min(0)] private int _extraTopTierRooms;
 
         [Header("Intensity & Factions")]

@@ -18,10 +18,13 @@ MonoBehaviour:
   _weight: 1
   _steps:
   - Action: 0
-    Tier: 2
+    MinTier: 2
+    MaxTier: 2
     Description: 
   - Action: 0
-    Tier: 3
+    MinTier: 3
+    MaxTier: 3
     Description: 
   _sequential: 1
+  _tierOrder: 0
   _sameFaction: 0

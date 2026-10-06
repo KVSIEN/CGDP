@@ -10,17 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e3346b9e73a745398c0b0db448def270, type: 3}
-  m_Name: DeepRecoveryObjective
+  m_Name: MixedOpsObjective
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.MapObjectiveTemplate
-  _title: Deep Recovery
-  _description: Recover a data core from one of the ship's most dangerous rooms.
-  _use: 2
+  _title: Mixed Ops
+  _description: Clear a room, switch on a console and recover a data core, each no easier than the last.
+  _use: 0
   _weight: 1
   _steps:
+  - Action: 0
+    MinTier: 1
+    MaxTier: 3
+    Description: 
+  - Action: 1
+    MinTier: 1
+    MaxTier: 3
+    Description: 
   - Action: 2
-    MinTier: 3
+    MinTier: 1
     MaxTier: 3
     Description: 
   _sequential: 1
-  _tierOrder: 0
+  _tierOrder: 1
   _sameFaction: 0
