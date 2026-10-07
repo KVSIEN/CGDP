@@ -29,7 +29,6 @@ namespace CGD.UI
 
         private void Awake()
         {
-            _cam = Camera.main;
             BuildWorldPrompt();
             _worldPrompt.SetActive(false);
         }
@@ -120,6 +119,9 @@ namespace CGD.UI
                 _worldPrompt.SetActive(hasTarget);
 
             if (!hasTarget) return;
+
+            if (_cam == null) _cam = Camera.main;
+            if (_cam == null) return;
 
             _holdBar.anchorMax = new Vector2(_interaction.HoldProgress, 0.1f);
 

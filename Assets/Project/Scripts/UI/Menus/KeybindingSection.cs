@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using CGD.Input;
 
@@ -11,7 +10,6 @@ namespace CGD.UI
     public class KeybindingSection
     {
         private const float RowHeight = 28f;
-        private const float EscapeHoldToClear = 0.6f;
 
         private static readonly string[] ModeLabels = { "Press", "Hold", "Toggle", "Dbl" };
         private static readonly Color ModeSelectedColor   = new Color(0.3f, 0.55f, 1f, 0.95f);
@@ -22,6 +20,7 @@ namespace CGD.UI
 
         private readonly PlayerInputHandler   _input;
         private readonly InputBindingSettings _bindings;
+        private readonly KeybindingRebinder   _rebinder;
 
         private GameObject _rebindOverlay;
         private TextMeshProUGUI _conflictText;
@@ -33,211 +32,38 @@ namespace CGD.UI
         private Image[] _secondaryImages;
         private Image[][] _modeButtonImages;
 
-        // Rebind state: -1 = not listening
-        private int  _listeningAction = -1;
-        private bool _listeningPrimary;
-        private int  _listenStartFrame;
-        private bool _rebindStarted;
-        private InputActionRebindingExtensions.RebindingOperation _rebindOperation;
-
-        // Transient warning shown when a rebind attempt conflicts with an existing binding
-        private float  _escapeHeldTime;
-        private bool   _escapeHoldHandled;
-
-        private string _conflictMessage;
-        private float  _conflictMessageTimer;
-
-        public bool IsListening => _listeningAction >= 0;
+        public bool IsListening => _rebinder.IsListening;
 
         public KeybindingSection(RectTransform window, RectTransform overlayParent,
             PlayerInputHandler input, InputBindingSettings bindings, float windowWidth)
         {
             _input    = input;
             _bindings = bindings;
+            _rebinder = new KeybindingRebinder(input, bindings);
+            _rebinder.ActionChanged   += RefreshActionRow;
+            _rebinder.BindingsChanged += RefreshAllRows;
             Build(window, windowWidth);
             BuildRebindOverlay(overlayParent);
         }
 
         public void Tick(float unscaledDeltaTime)
         {
-            // Defer starting the interactive rebind by one frame so the mouse click that
-            // opened the listening UI isn't immediately captured as the new binding.
-            if (IsListening && !_rebindStarted && Time.frameCount > _listenStartFrame)
-            {
-                _rebindStarted = true;
-                BeginRebind((GameAction)_listeningAction, _listeningPrimary);
-            }
+            _rebinder.Tick(unscaledDeltaTime);
 
-            TickEscape(unscaledDeltaTime);
             // Stays up while a conflict warning is showing, with the prompt swapped for it.
-            _rebindOverlay.SetActive(IsListening || _conflictMessageTimer > 0f);
+            bool conflict = _rebinder.HasConflictMessage;
+            _rebindOverlay.SetActive(IsListening || conflict);
             _promptText.gameObject.SetActive(IsListening);
-
-            if (_conflictMessageTimer > 0f)
-            {
-                _conflictMessageTimer -= unscaledDeltaTime;
-                _conflictText.gameObject.SetActive(true);
-                _conflictText.text = _conflictMessage;
-            }
-            else
-            {
-                _conflictText.gameObject.SetActive(false);
-            }
+            _conflictText.gameObject.SetActive(conflict);
+            if (conflict) _conflictText.text = _rebinder.ConflictMessage;
         }
 
-        // Tap Escape = leave the slot as it was; hold Escape = unbind it.
-        private void TickEscape(float unscaledDeltaTime)
+        public void CancelRebind() => _rebinder.CancelRebind();
+
+        public void ResetToDefaults() => _rebinder.ResetToDefaults();
+
+        private void RefreshActionRow(GameAction action)
         {
-            var escape = Keyboard.current?.escapeKey;
-            if (!IsListening || escape == null)
-            {
-                _escapeHeldTime    = 0f;
-                _escapeHoldHandled = false;
-                return;
-            }
-
-            if (escape.wasPressedThisFrame && _escapeHeldTime <= 0f) _escapeHeldTime = 0.0001f;
-
-            if (escape.isPressed)
-            {
-                if (_escapeHoldHandled) return;
-
-                _escapeHeldTime += unscaledDeltaTime;
-                if (_escapeHeldTime < EscapeHoldToClear) return;
-
-                _escapeHoldHandled = true;
-                ClearListeningSlot();
-                return;
-            }
-
-            if (_escapeHeldTime > 0f) CancelRebind();
-            _escapeHeldTime    = 0f;
-            _escapeHoldHandled = false;
-        }
-
-        private void ClearListeningSlot()
-        {
-            var action  = (GameAction)_listeningAction;
-            bool primary = _listeningPrimary;
-            CancelRebind();
-            WriteRebind(action, primary, string.Empty);
-        }
-
-        public void CancelRebind()
-        {
-            int prevAction = _listeningAction;
-            bool rebindWasRunning = _rebindStarted;
-
-            _rebindOperation?.Cancel();
-            _rebindOperation      = null;
-            _listeningAction      = -1;
-            _rebindStarted        = false;
-            _conflictMessageTimer = 0f;
-
-            if (rebindWasRunning) _input.RebuildActions(); // re-enable the action and drop the transient override
-
-            if (prevAction >= 0)
-            {
-                int row = RowIndexOf((GameAction)prevAction);
-                if (row >= 0) RefreshRow(row);
-            }
-        }
-
-        public void ResetToDefaults()
-        {
-            CancelRebind();
-            _bindings.ResetToDefaults();
-            _input.RebuildActions();
-            SettingsSave.DeleteBindings();
-            RefreshAllRows();
-        }
-
-        private void BeginRebind(GameAction action, bool primary)
-        {
-            var inputAction = _input.GetInputAction(action);
-            // Unity refuses to rebind an enabled action; RebuildActions() re-enables it afterwards.
-            inputAction.Disable();
-            int bindingIndex = primary ? 0 : 1;
-
-            _rebindOperation = inputAction.PerformInteractiveRebinding(bindingIndex)
-                .WithControlsExcluding("<Keyboard>/escape")
-                .WithControlsExcluding("<Keyboard>/anyKey") // would also match the Escape press used to cancel/clear
-                .WithControlsExcluding("<Mouse>/position")
-                .WithControlsExcluding("<Mouse>/delta")
-                .OnMatchWaitForAnother(0.05f)
-                .OnComplete(op => OnRebindCompleted(action, primary, bindingIndex, op))
-                .OnCancel(op => op.Dispose())
-                .Start();
-        }
-
-        private void OnRebindCompleted(GameAction action, bool primary, int bindingIndex,
-            InputActionRebindingExtensions.RebindingOperation op)
-        {
-            string path = op.action.bindings[bindingIndex].effectivePath;
-            op.Dispose();
-            _rebindOperation = null;
-            _rebindStarted   = false;
-
-            // Sharing a control between actions is allowed; the player is warned and both slots
-            // stay highlighted in the list until one of them is changed.
-            string sharedWith = FindSharedActions(action, primary, path);
-            WriteRebind(action, primary, path);
-
-            if (sharedWith.Length == 0) return;
-            _conflictMessage      = $"{BindingLabel(path)} is also bound to {sharedWith}";
-            _conflictMessageTimer = 3f;
-        }
-
-        // Comma-separated actions that use this control path in a slot other than the one
-        // given (so a slot is never shared with itself); empty when the path is unshared.
-        private string FindSharedActions(GameAction action, bool primary, string path)
-        {
-            if (string.IsNullOrEmpty(path)) return string.Empty;
-
-            var names = new System.Collections.Generic.List<string>();
-            foreach (var b in _bindings.Bindings)
-            {
-                bool isOwnPrimarySlot   = b.Action == action && primary;
-                bool isOwnSecondarySlot = b.Action == action && !primary;
-
-                bool shared = (!isOwnPrimarySlot && b.PrimaryPath == path)
-                           || (!isOwnSecondarySlot && b.SecondaryPath == path);
-                if (shared) names.Add(b.Action.ToString());
-            }
-            return string.Join(", ", names);
-        }
-
-        private bool IsShared(GameAction action, bool primary, string path) =>
-            FindSharedActions(action, primary, path).Length > 0;
-
-        private void WriteRebind(GameAction action, bool primary, string path)
-        {
-            for (int i = 0; i < _bindings.Bindings.Count; i++)
-            {
-                if (_bindings.Bindings[i].Action != action) continue;
-                var b = _bindings.Bindings[i];
-                if (primary) b.PrimaryPath   = path;
-                else         b.SecondaryPath = path;
-                _bindings.Bindings[i] = b;
-                break;
-            }
-
-            _input.RebuildActions();
-            SettingsSave.SaveBindings(_bindings);
-            _listeningAction      = -1;
-            _conflictMessageTimer = 0f;
-
-            RefreshAllRows();
-        }
-
-        private void StartListening(GameAction action, bool primary)
-        {
-            _listeningAction      = (int)action;
-            _listeningPrimary     = primary;
-            _listenStartFrame     = Time.frameCount;
-            _rebindStarted        = false;
-            _conflictMessageTimer = 0f;
-
             int row = RowIndexOf(action);
             if (row >= 0) RefreshRow(row);
         }
@@ -248,9 +74,6 @@ namespace CGD.UI
                 if (_bindings.Bindings[i].Action == action) return i;
             return -1;
         }
-
-        private static string BindingLabel(string path) =>
-            string.IsNullOrEmpty(path) ? "—" : InputControlPath.ToHumanReadableString(path);
 
         private void Build(RectTransform window, float windowWidth)
         {
@@ -329,13 +152,13 @@ namespace CGD.UI
 
             var primaryBtn = UIFactory.MakeButton("Primary_" + rowIndex, content, "", out var primaryLabel);
             UIFactory.Place(primaryBtn.GetComponent<RectTransform>(), new Vector2(145f, -rowY), new Vector2(120f, 24f));
-            primaryBtn.onClick.AddListener(() => StartListening(b.Action, true));
+            primaryBtn.onClick.AddListener(() => _rebinder.StartListening(b.Action, true));
             _primaryLabels[rowIndex] = primaryLabel;
             _primaryImages[rowIndex] = (Image)primaryBtn.targetGraphic;
 
             var secondaryBtn = UIFactory.MakeButton("Secondary_" + rowIndex, content, "", out var secondaryLabel);
             UIFactory.Place(secondaryBtn.GetComponent<RectTransform>(), new Vector2(270f, -rowY), new Vector2(120f, 24f));
-            secondaryBtn.onClick.AddListener(() => StartListening(b.Action, false));
+            secondaryBtn.onClick.AddListener(() => _rebinder.StartListening(b.Action, false));
             _secondaryLabels[rowIndex] = secondaryLabel;
             _secondaryImages[rowIndex] = (Image)secondaryBtn.targetGraphic;
 
@@ -408,15 +231,15 @@ namespace CGD.UI
         private void RefreshRow(int rowIndex)
         {
             var b = _bindings.Bindings[rowIndex];
-            bool waitPri = _listeningAction == (int)b.Action && _listeningPrimary;
-            bool waitSec = _listeningAction == (int)b.Action && !_listeningPrimary;
+            bool waitPri = _rebinder.IsListeningTo(b.Action, true);
+            bool waitSec = _rebinder.IsListeningTo(b.Action, false);
 
-            _primaryLabels[rowIndex].text   = waitPri ? "▪▪▪" : BindingLabel(b.PrimaryPath);
-            _secondaryLabels[rowIndex].text = waitSec ? "▪▪▪" : BindingLabel(b.SecondaryPath);
+            _primaryLabels[rowIndex].text   = waitPri ? "▪▪▪" : KeybindingRebinder.BindingLabel(b.PrimaryPath);
+            _secondaryLabels[rowIndex].text = waitSec ? "▪▪▪" : KeybindingRebinder.BindingLabel(b.SecondaryPath);
 
             // Controls shared with another action are shown in orange in both places they appear.
-            ApplySlotStyle(rowIndex, true,  IsShared(b.Action, true,  b.PrimaryPath));
-            ApplySlotStyle(rowIndex, false, IsShared(b.Action, false, b.SecondaryPath));
+            ApplySlotStyle(rowIndex, true,  _rebinder.IsShared(b.Action, true,  b.PrimaryPath));
+            ApplySlotStyle(rowIndex, false, _rebinder.IsShared(b.Action, false, b.SecondaryPath));
 
             var images = _modeButtonImages[rowIndex];
             for (int m = 0; m < images.Length; m++)
