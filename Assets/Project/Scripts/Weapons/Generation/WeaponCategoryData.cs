@@ -6,8 +6,7 @@ using CGD.Items;
 namespace CGD.Weapons
 {
     // Create one asset per weapon type via Assets > Create > CGD > Weapons > Weapon Category.
-    // Right-click the asset and choose "Apply Type Defaults" to auto-fill realistic thresholds,
-    // then tweak individual ranges as needed.
+    // Duplicate an existing category of a similar type to start from realistic thresholds.
     [CreateAssetMenu(fileName = "WeaponCategory", menuName = "CGD/Weapons/Weapon Category")]
     public class WeaponCategoryData : WeaponCategory
     {
@@ -139,8 +138,5 @@ namespace CGD.Weapons
         // a StatBlock, because the firing code reads them directly. The roll still
         // comes from the shared quality curve, so weapons and armor scale together.
         public override WeaponItem Generate(ItemRoll roll) => WeaponGenerator.Generate(this, roll);
-
-        [ContextMenu("Apply Type Defaults")]
-        public void ApplyTypeDefaults() => WeaponCategoryDefaults.Apply(this);
     }
 }

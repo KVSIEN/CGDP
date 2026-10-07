@@ -184,7 +184,7 @@
 - Any category can be given firing styles and stat styles like these (weighted), so shotguns could later roll burst or full-auto too
 - Several stats (ADS bloom, recoil recovery fraction, recovery delay, ADS recoil multiplier, hipfire camera kick) are automatically derived from the category type and fire rate so the weapon feels correct without manual tuning
 - Bows and crossbows both draw from the shared **Arrows** pool. Draw speed rolls with quality, so a better bow draws faster
-- Create category assets via **Assets → Create → CGD → Weapon Category**, set the `Type` field, then right-click the asset and choose **Apply Type Defaults** to fill in all thresholds; values can be freely tweaked afterward
+- Create category assets via **Assets → Create → CGD → Weapon Category**, set the `Type` field, or duplicate an existing category of a similar type to start from its thresholds; values can be freely tweaked afterward
 - Generated weapons now roll a quality score and tier, which decides where each stat lands inside its category range — an SMG still rolls SMG damage, just high or low within it
 - Stats that carry a weapon's *power* (damage, fire rate, magazine, reload, recoil, spread, range, draw, sway) are driven by quality and the tradeoff axes. Stats that only give it *character* (recoil recovery, heat behaviour, burst timing) stay random, so high-tier weapons don't all start feeling the same
 - Every generated weapon has a seed: the same category, tier and seed rebuild exactly the same weapon — name, fire mode, quality and every stat. A random weapon pickup can be given a fixed seed so it always offers the same gun

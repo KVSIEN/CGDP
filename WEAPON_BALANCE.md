@@ -225,7 +225,7 @@ the category, so check them after any axis edit:
 
 ### Subtype bands
 
-Each category's ranges in `WeaponCategoryDefaults` span a *band between two
+Each category asset's ranges (`Data/Weapons/Categories`) span a *band between two
 subtypes*, not a window around one reference weapon. The Punch/Suppression/Cycle
 axis decides which end a weapon lands on, so the band reads as a spectrum:
 
