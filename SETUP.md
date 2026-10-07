@@ -547,7 +547,7 @@ HUD (prefab instance)
 | **PlayerLifecycle** (Player) | `_gameOverOnDeath` = on | Death must end the run, or nothing is ever lost. |
 | **PlayerInventory** (Player) | `_startingStacks` = empty | The starting room's loadout replaces the Sandbox's dev ammo and credits. |
 
-`RunStarterKit` (`Data/Expedition/`): `_startingWeapon` (a weapon category, rolled fresh each run — `Weapons/Categories/ModularPistolCategory`), `_gear` + `_gearCount` (random extra gear — armor or weapon categories — no piece twice; default `Items/Armor/CombatVestArmor`, 0–1), `_supplies` (item + count range each).
+`RunStarterKit` (`Data/Expedition/`): `_startingWeapon` (a weapon category, rolled fresh each run — `Weapons/Categories/ModularPistolCategory`), `_startingOffhands` (one-handed melee categories; one is rolled into the starting weapon's offhand — default `Weapons/Melee/` Dagger, Sword, Axe; empty = none), `_gear` + `_gearCount` (random extra gear — armor or weapon categories — no piece twice; default `Items/Armor/CombatVestArmor`, 0–1), `_supplies` (item + count range each).
 `Scenes/MapTest` is wired this way: `Expedition` root, `ExpeditionScreen` added under the HUD instance, and the two Player overrides above as instance overrides (the Player prefab and Sandbox are unchanged).
 - **Obstacle masks**: generated geometry goes on `_geometryLayer`. Keep that layer in enemies' `_obstacleMask` and in weapons' hit masks.
 
@@ -607,7 +607,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Items/Armor/`, `Attachments/`, `Consumables/`, `Throwables/`, `Resources/` | `CombatVestArmor`, `ExtendedMagazineAttachment`, `BandageConsumable`, `StimConsumable`, `RationConsumable` (instant), `FragGrenadeThrowable`, `SmokeGrenadeThrowable`, `ScrapMetalResource`, `ClothResource` | pickups, loot, recipes, quest rewards |
 | `Crafting/` | `BandageRecipe`, `CombatStimRecipe`, `ExtendedMagazineRecipe`, `CombatVestRecipe` | CraftingStation |
 | `Level/Objectives/` | `DefaultMapObjectiveSettings` (templates, 1–2 main / 0–3 side per map, console = `Environment/Level/LockTerminal`, retrieve pickup = `LootItemPickup` with `Items/Resources/DataCoreResource`, reward cache = `RewardCache`, credits and cache luck per tier), objective templates (`…Objective`: steps of Clear / Activate / Retrieve, each with a room tier range `MinTier`–`MaxTier`; `_tierOrder` Any / Never Down / Same; in order or not; same faction or not; main / side / either) | LevelBuilder |
-| `Expedition/` | `DefaultRunStarterKit` — the starting room's loadout (Modular Pistol, 0–1 random gear, supplies) | ExpeditionRunner |
+| `Expedition/` | `DefaultRunStarterKit` — the starting room's loadout (Modular Pistol + a random Dagger/Sword/Axe offhand, 0–1 random gear, supplies) | ExpeditionRunner |
 | `DevTools/` | `DevCatalog` (all items, weapon categories, buffs; no enemy prefabs exist yet) | DevCommands |
 | `Abilities/` | Dash (needs `PlayerDodge`), Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`), Stealth (needs `Stealthable`) | PlayerAbilities |
 | `Abilities/` (instant strike) | `CrushingBlowAbility` (Targeted, `DefaultRaycastTargetSelector`) | PlayerAbilities |

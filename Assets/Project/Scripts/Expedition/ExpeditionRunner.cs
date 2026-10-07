@@ -134,6 +134,23 @@ namespace CGD.Expedition
             return false;
         }
 
+        // Its own seed layer, so adding the offhand didn't shift the gear and supply rolls of a kept seed.
+        // With no free offhand it falls back to a weapon slot of its own, like any other weapon.
+        private void GiveStartingOffhand(Seed seed)
+        {
+            RandomStream random = seed.Derive("starter offhand").Stream();
+            WeaponCategory category = _starterKit.PickStartingOffhand(random);
+            if (category == null) return;
+
+            WeaponItem offhand = category.Generate(category.Tier, random.NextSeed());
+            _inventory.Inventory.Add(offhand);
+            if (_weapons == null || !_weapons.AssignOffhandToFreeSlot(offhand))
+            {
+                _inventory.Inventory.Remove(offhand);
+                GiveItem(offhand);
+            }
+        }
+
         private void GiveStarterKit()
         {
             if (_starterKit == null) return;
@@ -143,6 +160,7 @@ namespace CGD.Expedition
 
             WeaponCategory weapon = _starterKit.StartingWeapon;
             if (weapon != null) GiveItem(weapon.Generate(weapon.Tier, random.NextSeed()));
+            GiveStartingOffhand(seed);
 
             foreach (GearDefinition gear in _starterKit.PickGear(random))
                 GiveItem(gear.CreateInstance(gear.Roll(gear.Tier, random.NextSeed())));
