@@ -91,6 +91,33 @@ MonoBehaviour:
       Bias: 0
     Weight: 0.1
   - Kind: 0
+    Item: {fileID: 11400000, guid: 5488c49bdb6e45949839decd21ba578a, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.1
+  - Kind: 0
+    Item: {fileID: 11400000, guid: e543c9d0350149b7b2a8fccb62df61b1, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.08
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 2657a4903bc940308839559253d0ef19, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.05
+  - Kind: 0
     Item: {fileID: 11400000, guid: 8381aa9d021346ba95324f11ab1962e0, type: 2}
     Table: {fileID: 0}
     Prefab: {fileID: 0}

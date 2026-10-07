@@ -22,6 +22,7 @@ MonoBehaviour:
   _rollProfile: {fileID: 0}
   _statRanges: []
   _perkPool: {fileID: 11400000, guid: 46756d1ce4124b5c8905716c4d8a5986, type: 2}
+  _oneHanded: 1
   Type: 1
   Names:
   - Machete
@@ -143,6 +144,13 @@ MonoBehaviour:
     ParryWindow: 0.2
     ParryStun: 1.2
   ParryReflect: {fileID: 11400000, guid: adda6cbf460d4c6e8d4b03b035b0b513, type: 2}
+  OffhandPenalty:
+  - Stat: 14
+    Op: 1
+    Value: 0.25
+  - Stat: 13
+    Op: 1
+    Value: 0.25
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295

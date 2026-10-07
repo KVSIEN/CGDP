@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: DevCatalog
   m_EditorClassIdentifier: CGD.Runtime::CGD.DevTools.DevCatalog
   _items:
+  - {fileID: 11400000, guid: 5488c49bdb6e45949839decd21ba578a, type: 2}
+  - {fileID: 11400000, guid: e543c9d0350149b7b2a8fccb62df61b1, type: 2}
+  - {fileID: 11400000, guid: 2657a4903bc940308839559253d0ef19, type: 2}
   - {fileID: 11400000, guid: 5358d22025294ac09819b7ed8c46e02c, type: 2}
   - {fileID: 11400000, guid: c0ff1fa4f6e344029a61aede6c07b510, type: 2}
   - {fileID: 11400000, guid: 2b46c142e6a241e48bc8aa612d12a4e3, type: 2}

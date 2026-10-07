@@ -29,6 +29,9 @@ namespace CGD.Expedition
         [Tooltip("Optional — rolls the starting loadout from the level's seed, so a kept seed keeps its loadout")]
         [SerializeField] private LevelBuilder        _level;
 
+        // Beside the inventory on the Player, when it has one: the offhand item counts as carried,
+        // and a shield handed over goes straight into a free offhand.
+        private PlayerOffhand _offhand;
         private ExpeditionLedger _localLedger;
         private GameFlow _flow;
         private bool _leftByEmergencyExit;
@@ -41,6 +44,7 @@ namespace CGD.Expedition
 
         private void Start()
         {
+            if (_inventory != null) _inventory.TryGetComponent(out _offhand);
             Give(Ledger.Deploy());
             GiveStarterKit();
 
@@ -88,13 +92,15 @@ namespace CGD.Expedition
             return pack;
         }
 
-        // Weapons in their slots and armour being worn.
+        // Weapons in their slots, the offhand item and armour being worn.
         private Inventory Worn()
         {
             var worn = new Inventory();
             if (_weapons != null)
                 foreach (WeaponItem weapon in _weapons.Slots)
                     if (weapon != null) worn.Add(weapon);
+            if (_offhand != null && _offhand.Item != null)
+                worn.Add(_offhand.Item);
             if (_equipment != null)
                 foreach (ItemInstance piece in _equipment.Equipment.Worn)
                     worn.Add(piece);
@@ -118,9 +124,14 @@ namespace CGD.Expedition
                 return;
             }
 
-            // Wear takes the armour out of the pack, so it goes in first; if it can't be
-            // worn it simply stays there.
+            // Wear and Hold take the item out of the pack, so it goes in first; if it can't be
+            // worn or held it simply stays there.
             _inventory.Inventory.Add(item);
+            if (item is ShieldInstance && _offhand != null && _offhand.Item == null)
+            {
+                _offhand.Hold(item);
+                return;
+            }
             if (item.Definition is ArmorDefinition armor && _equipment != null && _equipment.Equipment.Get(armor.Slot) == null)
                 _equipment.Wear(item);
         }

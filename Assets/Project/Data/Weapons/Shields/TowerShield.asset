@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 596404193d1242c5aefb51d56f03b1d7, type: 3}
+  m_Name: TowerShield
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.ShieldDefinition
+  _displayName: Tower Shield
+  _description: A heavy wall carried in front. Blocks hits from in front on its own, so the gun can still aim, but it drains stamina with every hit and weighs on the gun.
+  _icon: {fileID: 0}
+  _reality: 0
+  _tier: 0
+  _weight: 10
+  _baseValue: 160
+  _rollProfile: {fileID: 11400000, guid: 17e540ee9242e574e855d1eef9dcb80a, type: 2}
+  _statRanges: []
+  _perkPool: {fileID: 0}
+  _guaranteedPerks: []
+  Names:
+  - Tower Shield
+  - Pavise
+  - Mantlet
+  BlocksPassively: 1
+  BlockDamageMultiplier:
+    Min: 0.3
+    Max: 0.15
+    Bias: 0
+  StaminaPerDamage:
+    Min: 0.45
+    Max: 0.6
+    Bias: 0
+  Guard:
+    BlockDamageMultiplier: 0.3
+    StaminaPerDamage: 0.45
+    ArcDeg: 120
+    ParryWindow: 0.12
+    ParryStun: 1.8
+    WhiffExposure: 0.5
+  Bash:
+    Timeline: {fileID: 0}
+    Damage: 1
+    ArmorPenetration: 0
+    DamageType: 0
+    CriticalMultiplier: 1
+    WindupTime: 0.08
+    ActiveTime: 0.12
+    RecoveryTime: 0.5
+    CancelFrom: 1
+    HitShape: 1
+    Range: 1.6
+    Radius: 0.5
+    SweepArcDeg: 70
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 0.5, g: 0.8, b: 1, a: 1}
+  BashDamage:
+    Min: 16
+    Max: 26
+    Bias: 0
+  StaminaMeter: {fileID: 11400000, guid: e97086cb23b549a9b402e8130ab73a15, type: 2}
+  BashStaminaCost: 14
+  ParryReflect: {fileID: 0}
+  MainHandPenalty:
+  - Stat: 14
+    Op: 1
+    Value: 0.35
+  - Stat: 13
+    Op: 1
+    Value: 0.35
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 8

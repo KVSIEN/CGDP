@@ -3,6 +3,7 @@ using CGD.Combat;
 using CGD.Core;
 using CGD.Items;
 using CGD.Meters;
+using CGD.Stats;
 
 namespace CGD.Weapons
 {
@@ -55,6 +56,14 @@ namespace CGD.Weapons
         public GuardSettings Guard                 = GuardSettings.Default;
         [Tooltip("Optional: what a parry does with the parried hit (see ReflectProfile)")]
         public ReflectProfile ParryReflect;
+
+        [Header("Offhand")]
+        [Tooltip("One-handed types only: what holding it in the offhand costs the main-hand gun")]
+        public StatModifier[] OffhandPenalty =
+        {
+            new(ItemStat.Spread, StatModifierOp.Multiplicative, 0.25f),
+            new(ItemStat.Recoil, StatModifierOp.Multiplicative, 0.25f),
+        };
 
         public LayerMask HitMask = ~0;
         [Tooltip("How far away enemies hear a swing (0 = silent)")]

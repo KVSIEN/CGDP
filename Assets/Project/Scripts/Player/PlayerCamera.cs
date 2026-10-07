@@ -139,6 +139,8 @@ namespace CGD.Player
         // Set by WeaponController: off while no firearm is equipped, so a melee weapon's
         // guard (same input) doesn't zoom.
         public bool AdsAllowed { get; set; } = true;
+        // Set by MeleeController: a held shield raises on the aim input instead.
+        public bool AimTakenByGuard { get; set; }
 
         // Aiming down sights began (the aim input went down while aiming is allowed).
         public event System.Action AimStarted;
@@ -183,7 +185,7 @@ namespace CGD.Player
 
         private void HandleADS()
         {
-            bool aiming = AdsAllowed && _input.GetAction(GameAction.AimDownSights);
+            bool aiming = AdsAllowed && !AimTakenByGuard && _input.GetAction(GameAction.AimDownSights);
             if (aiming && !_aimHeld) AimStarted?.Invoke();
             _aimHeld = aiming;
             float target = aiming ? 1f : 0f;

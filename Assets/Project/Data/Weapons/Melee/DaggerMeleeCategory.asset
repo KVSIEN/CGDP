@@ -22,6 +22,7 @@ MonoBehaviour:
   _rollProfile: {fileID: 0}
   _statRanges: []
   _perkPool: {fileID: 11400000, guid: 46756d1ce4124b5c8905716c4d8a5986, type: 2}
+  _oneHanded: 1
   Type: 0
   Names:
   - Combat Knife
@@ -142,6 +143,13 @@ MonoBehaviour:
     ArcDeg: 100
     ParryWindow: 0.28
     ParryStun: 1.6
+  OffhandPenalty:
+  - Stat: 14
+    Op: 1
+    Value: 0.15
+  - Stat: 13
+    Op: 1
+    Value: 0.15
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295

@@ -15,12 +15,17 @@ namespace CGD.UI
     //   click an attachment     → pick it, then click a gear line on the left to fit it
     //   click a fitted one      → remove it back to the pack
     //   click a slot item       → cycle which item slot (5–8) it sits in
+    //   click the offhand item  → put it back in the pack
+    //   click a pack shield or one-handed melee weapon → hold it in the offhand
     public class CharacterPanel : ModalPanel
     {
         [SerializeField] private PlayerInventory   _inventory;
         [SerializeField] private PlayerEquipment   _equipment;
         [SerializeField] private PlayerWeaponLoadout _loadout;
         [SerializeField] private PlayerItemSlots _itemSlots;
+
+        // Sits beside the inventory on the Player.
+        private PlayerOffhand _offhand;
 
         private UIButtonList _worn;
         private UIButtonList _pack;
@@ -52,9 +57,11 @@ namespace CGD.UI
 
         protected override void OnOpened()
         {
+            if (_offhand == null && _inventory != null) _inventory.TryGetComponent(out _offhand);
             _selected = null;
             _inventory.Inventory.Changed += Refresh;
             if (_equipment != null) _equipment.Changed += Refresh;
+            if (_offhand   != null) _offhand.Changed   += Refresh;
             Refresh();
         }
 
@@ -64,6 +71,7 @@ namespace CGD.UI
             if (_inventory == null) return;
             _inventory.Inventory.Changed -= Refresh;
             if (_equipment != null) _equipment.Changed -= Refresh;
+            if (_offhand   != null) _offhand.Changed   -= Refresh;
         }
 
         private void RebuildWorn()
@@ -90,6 +98,14 @@ namespace CGD.UI
                     if (weapon == null) _worn.Label($"{i + 1}: —");
                     else                GearLine($"{i + 1}: {Describe(weapon)}", weapon, null);
                 }
+            }
+
+            if (_offhand != null)
+            {
+                ItemInstance held = _offhand.Item;
+                string unused = _offhand.IsActive ? "" : "  (unused: two-handed weapon in hand)";
+                if (held == null) _worn.Label("Offhand: —");
+                else              GearLine($"Offhand: {Describe(held)}{unused}", held, () => _offhand.Release());
             }
             _worn.End();
         }
@@ -126,6 +142,19 @@ namespace CGD.UI
                 any = true;
             }
             if (!any) _pack.Label("none");
+
+            if (_offhand != null)
+            {
+                _pack.Heading("Offhand (shields, one-handed melee weapons)");
+                any = false;
+                foreach (ItemInstance item in inventory.Items)
+                {
+                    if (!PlayerOffhand.CanHold(item)) continue;
+                    _pack.Add($"{DescribeWithPerks(item)}  → offhand", () => _offhand.Hold(item));
+                    any = true;
+                }
+                if (!any) _pack.Label("none");
+            }
 
             _pack.Heading("Attachments");
             any = false;

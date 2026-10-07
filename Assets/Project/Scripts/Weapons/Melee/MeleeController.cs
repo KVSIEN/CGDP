@@ -13,18 +13,23 @@ using CGD.Stats;
 
 namespace CGD.Weapons
 {
-    // Swings the player's melee. The Melee key bashes with whatever is in hand: a gun's bash
-    // (or the offhand knife a perk swaps in), a melee weapon's guard bash, or fists. The start
-    // of every bash parries. With a melee weapon equipped, Attack swings its combo, the aim
-    // input raises its guard (block), and Attack while the guard is up bashes too. As an
-    // IDamageInterceptor it parries and blocks hits, so it must sit on the same object as the
-    // player's HealthManager.
-    // Combos can be woven: a dodge, parry, ability, consumable or weapon switch between steps keeps
-    // the next step open for the weapon's weave window instead of the short idle reset.
+    // The player's melee, both hands.
+    //   Main hand: a melee weapon swings its combo on Attack (tap light, hold heavy); a gun fires
+    //   through WeaponController instead.
+    //   Melee key (the other hand): an offhand weapon (PlayerOffhand) swings its own combo — its
+    //   opening strike parries; otherwise it bashes with a shield, the melee weapon in hand, the
+    //   gun's bash (or a Tactical Knife), or fists. The start of every bash parries.
+    //   Aim input: raises the guard — a shield's if one is held (a gun then can't aim; a tower
+    //   shield blocks by itself and leaves the aim free), else the melee weapon's. Attack while
+    //   the guard is up bashes with it.
+    // As an IDamageInterceptor it parries and blocks hits, so it must sit on the same object as
+    // the player's HealthManager. Combos can be woven: a dodge, parry, ability, consumable or
+    // weapon switch between steps keeps the next step open for the weapon's weave window.
     [RequireComponent(typeof(PlayerInputHandler))]
     public class MeleeController : MonoBehaviour, IDamageInterceptor
     {
         private enum Phase { Idle, Windup, Active, Recovery }
+        private enum Hand  { None, Main, Off }
 
         [Tooltip("Fists: the bash while the weapon in hand has none of its own, or the hands are empty")]
         [SerializeField] private MeleeWeaponData _data;
@@ -40,8 +45,14 @@ namespace CGD.Weapons
         [SerializeField] private bool  _debugDraw     = true;
         [SerializeField] private float _debugDuration = 0.3f;
 
-        private readonly MeleeHitResolver _resolver = new();
-        private readonly ActionTimelineRunner _runner = new();
+        public const int HeavyAttackIndex = -1;
+        public const int BashIndex        = -2;
+
+        private readonly MeleeStrike _strike    = new();
+        private readonly MeleeGuard  _guard     = new();
+        private readonly SwingInput  _mainInput = new();
+        private readonly SwingInput  _offInput  = new();
+        private readonly InputBuffer _queuedBash = new();
 
         private PlayerInputHandler _input;
         private PlayerMovement     _movement;
@@ -52,71 +63,70 @@ namespace CGD.Weapons
         private MeterSet           _meters;
         private CharacterStats     _stats;
         private DamageSource       _ownerSource;
-        // The owner plus the weapon in hand, so kills are credited to that weapon's perks.
-        private DamageSource       _damageSource;
         private Func<float, bool>  _payGuardStamina;
 
         private WeaponItem          _inHand;
-        private MeleeWeaponInstance _equipped;
+        private MeleeWeaponInstance _mainWeapon;
         // The bash of the gun in hand (null = fists).
         private MeleeWeaponData     _gunBash;
-        private MeleeGuard          _guard;
-        private readonly InputBuffer _queuedSwing = new();
-        private readonly InputBuffer _queuedBash  = new();
-        private bool _queuedHeavy;
-        // A bash started from the guard with Attack: that press must not also swing once released.
-        private bool _swallowAttack;
-        private bool _bashing;
+        private IOffhand            _offhand;
+        private MeleeWeaponInstance _offWeapon;
+        // Whose guard blocks (a shield, or the melee weapon in hand); null = nothing blocks.
+        private MeleeWeaponData     _guardData;
+        // What opened the current parry window: its stun and parry reflect answer a parry.
+        private MeleeWeaponData     _parryData;
 
+        // The swing under way.
         private Phase _phase;
         private float _phaseTimer;
-        private MeleeAttackStep _activeStep;
-        private bool _usingTimeline;
-        private ActionContext _timelineCtx;
-
-        private bool  _heldLastFrame;
-        private float _holdTimer;
-        private bool  _comboBuffered;
-        private bool  _bufferedHeavy;
-
-        public const int HeavyAttackIndex = -1;
-        public const int BashIndex        = -2;
+        private MeleeAttackStep     _activeStep;
+        private MeleeWeaponData     _swingData;
+        private MeleeWeaponInstance _swingWeapon;
+        private DamageSource        _swingSource;
+        private bool                _swingIsBash;
+        // The next swing, asked for while this one plays.
+        private Hand _bufferedHand;
+        private bool _bufferedHeavy;
 
         // Combo step index of a light attack, HeavyAttackIndex or BashIndex.
         public event Action<int> AttackStarted;
         public event Action Parried;
 
-        public bool IsGuarding => _guard != null && _guard.IsRaised;
+        public bool IsGuarding => _guard.IsRaised;
         // Before a Reflector, so reflects work on what the guard lets through.
         public int  Order      => 0;
 
-        private MeleeWeaponData Data  => _equipped != null ? _equipped.Data : _gunBash != null ? _gunBash : _data;
-        // Only melee weapons have combos; bashes don't chain.
-        private ComboState      Combo => _equipped?.Combo;
-        // Divides wind-up, strike and recovery; a timeline-driven strike keeps its authored frames.
-        private float Speed => Mathf.Max(0.1f, Stat(ItemStat.FireRate, Data.AttackSpeed));
+        // What the Melee key bashes with when the offhand holds no weapon.
+        private MeleeWeaponData BashData =>
+            _offhand != null    ? _offhand.OffhandData
+            : _mainWeapon != null ? _mainWeapon.Data
+            : _gunBash != null    ? _gunBash
+            : _data;
 
-        // A weapon value through the equipped weapon (its passive perks and attachments), then
-        // the wielder's buffs and debuffs. Fists have only the wielder's.
+        // Divides wind-up, strike and recovery; a timeline-driven strike keeps its authored frames.
+        private float Speed => Mathf.Max(0.1f, Stat(ItemStat.FireRate, _swingData.AttackSpeed));
+
+        // The tail of a swing's recovery (from its CancelFrom point) can be cut short.
+        private bool InCancelWindow =>
+            _phase == Phase.Recovery && _phaseTimer <= _activeStep.RecoveryTime / Speed * (1f - _activeStep.CancelFrom);
+
+        private bool CanStartAction => (_phase == Phase.Idle || InCancelWindow) && !_guard.IsExposed(Time.time);
+
+        // A value through the swinging weapon (its passive perks and attachments), then the
+        // wielder's buffs and debuffs. Bashes with fists, guns and shields have only the wielder's.
         private float Stat(ItemStat stat, float value)
         {
-            if (_equipped != null) value = _equipped.Modify(stat, value);
+            if (_swingWeapon != null) value = _swingWeapon.Modify(stat, value);
             return _stats != null ? _stats.Apply(stat, value) : value;
         }
-
-        // A timeline strike authors its own damage per event, so buffs reach it as a multiplier,
-        // measured on the step's damage so flat bonuses keep their size.
-        private float DamageScale(float stepDamage) =>
-            stepDamage > 0f ? Stat(ItemStat.Damage, stepDamage) / stepDamage : 1f;
 
         private void Awake()
         {
             _input           = GetComponent<PlayerInputHandler>();
             _movement        = GetComponent<PlayerMovement>();
             _ownerSource     = DamageSource.Of(gameObject);
-            _damageSource    = _ownerSource;
             _stats           = GetComponentInParent<CharacterStats>();
-            _payGuardStamina = TryPayStamina;
+            _payGuardStamina = amount => TryPayStamina(_guardData, amount);
             TryGetComponent(out _meters);
             TryGetComponent(out _dodge);
             TryGetComponent(out _abilities);
@@ -141,33 +151,54 @@ namespace CGD.Weapons
         public void Equip(WeaponItem weapon)
         {
             if (_inHand == weapon) return;
-            // Switching away is a weave like a dodge: the combo waits for the switch back,
-            // unless the swing is dropped before its cancel window.
-            if (_phase != Phase.Idle) InterruptSwing(keepCombo: InCancelWindow);
-            else                      Weave();
-            _queuedSwing.Clear();
-            _queuedBash.Clear();
-            _inHand   = weapon;
-            _equipped = weapon as MeleeWeaponInstance;
-            _gunBash  = weapon is WeaponInstance gun ? gun.QuickMelee : null;
-            // A gun's bash credits the gun, so its kill and hit perks answer to it.
-            _damageSource = _ownerSource.WithWeapon(weapon);
+            ChangeHands();
+            _mainInput.ClearQueue();
+            _inHand     = weapon;
+            _mainWeapon = weapon as MeleeWeaponInstance;
+            _gunBash    = weapon is WeaponInstance gun ? gun.QuickMelee : null;
             RebuildGuard();
         }
 
-        private void RebuildGuard() => _guard = Data != null ? new MeleeGuard(Data.Guard) : null;
+        // Called by PlayerOffhand: what the offhand holds while the main hand leaves room for it (null = nothing).
+        public void SetOffhand(IOffhand offhand)
+        {
+            if (_offhand == offhand) return;
+            ChangeHands();
+            _offInput.ClearQueue();
+            _offhand   = offhand;
+            _offWeapon = offhand as MeleeWeaponInstance;
+            RebuildGuard();
+        }
 
-        // The tail of a swing's recovery (from its CancelFrom point) can be cut short.
-        private bool InCancelWindow =>
-            _phase == Phase.Recovery && _phaseTimer <= _activeStep.RecoveryTime / Speed * (1f - _activeStep.CancelFrom);
+        // Switching what's in hand is a weave like a dodge: a combo waits for the switch back,
+        // unless the swing is dropped before its cancel window.
+        private void ChangeHands()
+        {
+            if (_phase != Phase.Idle) InterruptSwing(keepCombo: InCancelWindow);
+            else                      Weave();
+            _queuedBash.Clear();
+        }
+
+        // A shield always takes the guard; otherwise a melee weapon in hand guards with its own.
+        private void RebuildGuard()
+        {
+            bool shield = _offhand != null && _offhand.IsShield;
+            _guardData = shield ? _offhand.OffhandData
+                       : _mainWeapon != null && _mainWeapon.Data.CanGuard ? _mainWeapon.Data
+                       : null;
+
+            bool passive = shield && _offhand.BlocksPassively;
+            _guard.SetBlock(_guardData != null ? _guardData.Guard : (GuardSettings?)null, passive);
+            // A raised shield uses the aim input, so a gun can't aim behind it.
+            if (_camera != null) _camera.AimTakenByGuard = _guardData != null && !passive && _inHand is WeaponInstance;
+        }
 
         private void Update()
         {
-            if (Data == null) return;
             bool dodging = UpdateDodge();
             if (dodging || (_movement != null && !_movement.CanAct))
             {
-                _guard?.Lower();
+                _guard.Lower();
                 QueueWhileBusy();
                 return;
             }
@@ -175,59 +206,51 @@ namespace CGD.Weapons
             if (TryBash()) return;
             if (UpdateGuard()) return;
 
-            bool held = ReadAttackHeld();
-            bool releasedThisFrame = _heldLastFrame && !held;
-            _heldLastFrame = held;
-            if (held) _holdTimer += Time.deltaTime;
+            float now = Time.time;
+            bool mainReleased = ReadSwing(_mainInput, Hand.Main, out bool mainHeavy);
+            bool offReleased  = ReadSwing(_offInput,  Hand.Off,  out bool offHeavy);
 
             if (_phase == Phase.Idle)
             {
-                if (releasedThisFrame)
-                {
-                    StartAttack(_holdTimer >= Data.HeavyHoldThreshold);
-                    _holdTimer = 0f;
-                }
-                else if (_queuedSwing.Consume(Time.time))
-                {
-                    StartAttack(_queuedHeavy);
-                }
+                if      (mainReleased) StartAttack(Hand.Main, mainHeavy);
+                else if (offReleased)  StartAttack(Hand.Off,  offHeavy);
+                else if (_mainInput.ConsumeQueued(now, out bool heavy)) StartAttack(Hand.Main, heavy);
+                else if (_offInput.ConsumeQueued(now,  out heavy))      StartAttack(Hand.Off,  heavy);
                 return;
             }
 
-            if (releasedThisFrame)
-            {
-                if (!_comboBuffered)
-                {
-                    _comboBuffered = true;
-                    _bufferedHeavy = _holdTimer >= Data.HeavyHoldThreshold;
-                }
-                _holdTimer = 0f;
-            }
-
+            if      (mainReleased) BufferNext(Hand.Main, mainHeavy);
+            else if (offReleased)  BufferNext(Hand.Off,  offHeavy);
             TickPhase(Time.deltaTime);
         }
 
         private void FixedUpdate()
         {
             if (_phase != Phase.Active || _activeStep == null) return;
+            if (!_strike.Tick(_camera.transform, _debugDraw, _debugDuration)) ExitActive();
+        }
 
-            Transform cam = _camera.transform;
+        private MeleeWeaponInstance WeaponOf(Hand hand) => hand switch
+        {
+            Hand.Main => _mainWeapon,
+            Hand.Off  => _offWeapon,
+            _         => null,
+        };
 
-            if (_usingTimeline)
-            {
-                _timelineCtx.Origin  = cam.position;
-                _timelineCtx.Forward = cam.forward;
-                _timelineCtx.Up      = cam.up;
+        // Attack swings the melee weapon in hand; the Melee key swings an offhand weapon.
+        private bool ReadSwing(SwingInput input, Hand hand, out bool heavy)
+        {
+            MeleeWeaponInstance weapon = WeaponOf(hand);
+            GameAction button = hand == Hand.Main ? GameAction.Attack : GameAction.Melee;
+            bool held = weapon != null && _input.IsHeld(button);
+            return input.Read(held, Time.deltaTime, weapon != null ? weapon.Data.HeavyHoldThreshold : 0f, out heavy);
+        }
 
-                _runner.Tick();
-
-                if (!_runner.IsRunning)
-                    ExitActive();
-            }
-            else
-            {
-                _resolver.Tick(cam.position, cam.forward, cam.up, _debugDraw, _debugDuration);
-            }
+        private void BufferNext(Hand hand, bool heavy)
+        {
+            if (_bufferedHand != Hand.None) return;
+            _bufferedHand  = hand;
+            _bufferedHeavy = heavy;
         }
 
         // A dodge is never blocked and always ends the swing: inside the cancel window that
@@ -242,25 +265,16 @@ namespace CGD.Weapons
             return true;
         }
 
-        // Swings are still read while dodging or stunned; with input buffering on, one
-        // released then is swung as soon as the player can act again.
+        // Swings and bashes are still read while dodging or stunned; with input buffering on,
+        // one pressed then happens as soon as the player can act again.
         private void QueueWhileBusy()
         {
-            if (GameSettings.Current.InputBuffering && _input.WasPressed(GameAction.Melee))
+            bool buffering = GameSettings.Current.InputBuffering;
+            if (buffering && _offWeapon == null && _input.WasPressed(GameAction.Melee))
                 _queuedBash.Press(Time.time);
 
-            bool held = ReadAttackHeld();
-            bool released = _heldLastFrame && !held;
-            _heldLastFrame = held;
-            if (held) _holdTimer += Time.deltaTime;
-            if (!released) return;
-
-            if (GameSettings.Current.InputBuffering)
-            {
-                _queuedSwing.Press(Time.time);
-                _queuedHeavy = _holdTimer >= Data.HeavyHoldThreshold;
-            }
-            _holdTimer = 0f;
+            if (ReadSwing(_mainInput, Hand.Main, out bool heavy) && buffering) _mainInput.Queue(Time.time, heavy);
+            if (ReadSwing(_offInput,  Hand.Off,  out heavy)      && buffering) _offInput.Queue(Time.time, heavy);
         }
 
         private void OnAbilityUsed(Ability ability) => WeaveAction();
@@ -281,24 +295,21 @@ namespace CGD.Weapons
 
         private void Weave()
         {
-            if (Data != null) Combo?.Extend(Time.time, Data.WeaveWindow);
+            float now = Time.time;
+            if (_mainWeapon != null) _mainWeapon.Combo.Extend(now, _mainWeapon.Data.WeaveWindow);
+            if (_offWeapon  != null) _offWeapon.Combo.Extend(now, _offWeapon.Data.WeaveWindow);
         }
 
-        // Attack only swings a melee weapon, and not while the press that bashed is still held.
-        private bool ReadAttackHeld()
-        {
-            bool held = _equipped != null && _input.IsHeld(GameAction.Attack);
-            if (!held) _swallowAttack = false;
-            return held && !_swallowAttack;
-        }
-
-        // The Melee key bashes; with the guard up, so does Attack. A bash starts between swings
-        // or in a swing's cancel window; pressed earlier (or while dodging) it is buffered when
-        // input buffering is on. Returns true when a bash started.
+        // The Melee key bashes (unless the offhand holds a weapon, which swings instead); with
+        // the guard up and no gun in hand, Attack bashes with the guard. A bash starts between swings or in a
+        // swing's cancel window, never while exposed; pressed earlier (or while dodging) it is
+        // buffered when input buffering is on. Returns true when a bash started.
         private bool TryBash()
         {
-            bool pressed = _input.WasPressed(GameAction.Melee) || (IsGuarding && _input.WasPressed(GameAction.Attack));
-            if ((_phase != Phase.Idle && !InCancelWindow) || _guard.IsExposed(Time.time))
+            // With a gun in hand Attack keeps firing (from behind a raised shield); V bashes.
+            bool guardBash = IsGuarding && _inHand is not WeaponInstance && _input.WasPressed(GameAction.Attack);
+            bool pressed   = guardBash || (_offWeapon == null && _input.WasPressed(GameAction.Melee));
+            if (!CanStartAction)
             {
                 if (pressed && GameSettings.Current.InputBuffering) _queuedBash.Press(Time.time);
                 return false;
@@ -306,46 +317,44 @@ namespace CGD.Weapons
 
             if (!pressed && !_queuedBash.Consume(Time.time)) return false;
             _queuedBash.Clear();
-            return StartBash();
+            return StartBash(guardBash ? _guardData : BashData);
         }
 
         // Returns false (and bashes nothing) when the stamina can't be paid.
-        private bool StartBash()
+        private bool StartBash(MeleeWeaponData data)
         {
-            MeleeWeaponData data = Data;
-            if (!TryPayStamina(data.StaminaCost.Amount)) return false;
+            if (!TryPayStamina(data, data.StaminaCost.Amount)) return false;
 
             // Like raising the guard: a swing in its cancel window ends, keeping the combo.
             if (_phase != Phase.Idle) InterruptSwing(keepCombo: true);
             _guard.Lower();
-            _guard.OpenParry(Time.time);
-            _swallowAttack = _input.IsHeld(GameAction.Attack);
-            _heldLastFrame = false;
-            _holdTimer     = 0f;
+            OpenParry(data);
+            // The Attack press that bashed from the guard must not also swing when released.
+            if (_input.IsHeld(GameAction.Attack)) _mainInput.Swallow();
 
-            AttackStarted?.Invoke(BashIndex);
-            _bashing    = true;
-            _activeStep = data.Bash;
-            _phase      = Phase.Windup;
-            _phaseTimer = _activeStep.WindupTime / Speed;
-
-            _activeStep.SwingSound.TryPlay(transform.position);
-            Noise.Emit(transform.position, data.NoiseRadius, _damageSource);
+            MeleeWeaponInstance weapon = _mainWeapon != null && data == _mainWeapon.Data ? _mainWeapon : null;
+            BeginSwing(data, weapon, data.Bash, bash: true, BashIndex);
             return true;
+        }
+
+        private void OpenParry(MeleeWeaponData data)
+        {
+            _guard.OpenParry(Time.time, data.Guard);
+            _parryData = data;
         }
 
         // The guard goes up between swings or in a swing's cancel window (keeping the combo);
         // while it is up nothing else happens, and a swing held during it starts fresh once
-        // it drops. Returns true while guarding.
+        // it drops. A passive (tower) shield needs no raising. Returns true while guarding.
         private bool UpdateGuard()
         {
-            if (!Data.CanGuard) return false;
+            if (!_guard.CanBlock || _guard.IsPassive) return false;
 
-            bool canRaise = (_phase == Phase.Idle || InCancelWindow) && !_guard.IsExposed(Time.time);
-            if (canRaise && _input.GetAction(GameAction.AimDownSights))
+            if (CanStartAction && _input.GetAction(GameAction.AimDownSights))
             {
                 if (_phase != Phase.Idle) InterruptSwing(keepCombo: true);
-                _queuedSwing.Clear();
+                _mainInput.ClearQueue();
+                _offInput.ClearQueue();
                 _guard.Raise();
             }
             else
@@ -354,46 +363,58 @@ namespace CGD.Weapons
             }
 
             if (!_guard.IsRaised) return false;
-            _heldLastFrame = false;
-            _holdTimer     = 0f;
+            _mainInput.Reset();
+            _offInput.Reset();
             return true;
         }
 
         // Returns false (and swings nothing) when the stamina can't be paid.
-        private bool StartAttack(bool heavy)
+        private bool StartAttack(Hand hand, bool heavy)
         {
-            MeleeWeaponData data = Data;
-            float cost = data.StaminaCost.Amount * (heavy ? data.HeavyStaminaMultiplier : 1f);
-            if (!TryPayStamina(cost)) return false;
+            MeleeWeaponInstance weapon = WeaponOf(hand);
+            if (weapon == null) return false;
 
-            _bashing = false;
+            MeleeWeaponData data = weapon.Data;
+            float cost = data.StaminaCost.Amount * (heavy ? data.HeavyStaminaMultiplier : 1f);
+            if (!TryPayStamina(data, cost)) return false;
+
             if (heavy)
             {
-                AttackStarted?.Invoke(HeavyAttackIndex);
-                _activeStep = data.HeavyAttack;
-                Combo.Reset();
-            }
-            else
-            {
-                int step = Combo.StepAt(Time.time);
-                AttackStarted?.Invoke(step);
-                _activeStep = data.LightCombo[step];
-                Combo.Begin(step, data.LightCombo.Length);
+                weapon.Combo.Reset();
+                BeginSwing(data, weapon, data.HeavyAttack, bash: false, HeavyAttackIndex);
+                return true;
             }
 
-            _phase      = Phase.Windup;
-            _phaseTimer = _activeStep.WindupTime / Speed;
-
-            _activeStep.SwingSound.TryPlay(transform.position);
-            Noise.Emit(transform.position, data.NoiseRadius, _damageSource);
+            int step = weapon.Combo.StepAt(Time.time);
+            weapon.Combo.Begin(step, data.LightCombo.Length);
+            // An offhand weapon's opening strike parries, like a bash; the rest of its string doesn't.
+            if (hand == Hand.Off && step == 0) OpenParry(data);
+            BeginSwing(data, weapon, data.LightCombo[step], bash: false, step);
             return true;
+        }
+
+        private void BeginSwing(MeleeWeaponData data, MeleeWeaponInstance weapon, MeleeAttackStep step, bool bash, int index)
+        {
+            _swingData    = data;
+            _swingWeapon  = weapon;
+            _swingIsBash  = bash;
+            // Kills are credited to the swinging weapon, or for a bash to the gun in hand.
+            _swingSource  = _ownerSource.WithWeapon(weapon != null ? weapon : _inHand);
+            _activeStep   = step;
+            _bufferedHand = Hand.None;
+            _phase        = Phase.Windup;
+            _phaseTimer   = step.WindupTime / Speed;
+
+            AttackStarted?.Invoke(index);
+            step.SwingSound.TryPlay(transform.position);
+            Noise.Emit(transform.position, data.NoiseRadius, _swingSource);
         }
 
         // Stamina is optional on melee: unlike MeterCost.TryPay, a character without the
         // weapon's meter swings and blocks for free.
-        private bool TryPayStamina(float amount)
+        private bool TryPayStamina(MeleeWeaponData data, float amount)
         {
-            MeterDefinition definition = Data.StaminaCost.Meter;
+            MeterDefinition definition = data != null ? data.StaminaCost.Meter : null;
             if (definition == null || amount <= 0f || _meters == null || !_meters.TryGet(definition, out var meter)) return true;
             return meter.TrySpend(amount);
         }
@@ -410,8 +431,7 @@ namespace CGD.Weapons
                     break;
 
                 case Phase.Active:
-                    if (!_usingTimeline)
-                        ExitActive();
+                    if (!_strike.UsesTimeline) ExitActive();
                     break;
 
                 case Phase.Recovery:
@@ -423,58 +443,39 @@ namespace CGD.Weapons
         private void EnterActive()
         {
             _phase = Phase.Active;
-            _usingTimeline = _activeStep.Timeline != null;
+            Transform aim = _camera.transform;
 
-            if (_usingTimeline)
+            if (_activeStep.Timeline != null)
             {
-                ActionTimeline timeline = _activeStep.Timeline;
-                _phaseTimer = timeline.TotalFrames * Time.fixedDeltaTime;
-
-                Transform cam = _camera.transform;
-                _timelineCtx = new ActionContext
-                {
-                    Origin        = cam.position,
-                    Forward       = cam.forward,
-                    Up            = cam.up,
-                    SourceRoot    = transform.root,
-                    Source        = _damageSource,
-                    DamageScale   = DamageScale(_activeStep.Damage),
-                    HitMask       = timeline.HitMask,
-                    DebugDraw     = _debugDraw,
-                    DebugDuration = _debugDuration,
-                };
-
-                _runner.Begin(timeline, _timelineCtx);
+                _phaseTimer = _strike.BeginTimeline(_activeStep.Timeline, aim, transform.root, _swingSource,
+                                                    DamageScale(_activeStep.Damage), _debugDraw, _debugDuration);
+                return;
             }
-            else
-            {
-                _phaseTimer = _activeStep.ActiveTime / Speed;
 
-                bool crit = UnityEngine.Random.value < Stat(ItemStat.CritChance, 0f);
-                var info = new DamageInfo(
-                    Stat(ItemStat.Damage, _activeStep.Damage),
-                    Mathf.Clamp01(Stat(ItemStat.ArmorPenetration, _activeStep.ArmorPenetration)),
-                    _activeStep.DamageType,
-                    Mathf.Max(1f, Stat(ItemStat.CritDamage, _activeStep.CriticalMultiplier)),
-                    _damageSource,
-                    _activeStep.OnHitEffects,
-                    bonuses: new HitBonuses(crit, Stat(ItemStat.StatusChance, 0f), Stat(ItemStat.StatusDamage, 0f)));
+            _phaseTimer = _activeStep.ActiveTime / Speed;
 
-                float reach = Mathf.Max(0.1f, Stat(ItemStat.Range, 1f));
-                _resolver.Begin(_activeStep, info, Data.HitMask, transform.root, reach);
-            }
+            bool crit = UnityEngine.Random.value < Stat(ItemStat.CritChance, 0f);
+            var info = new DamageInfo(
+                Stat(ItemStat.Damage, _activeStep.Damage),
+                Mathf.Clamp01(Stat(ItemStat.ArmorPenetration, _activeStep.ArmorPenetration)),
+                _activeStep.DamageType,
+                Mathf.Max(1f, Stat(ItemStat.CritDamage, _activeStep.CriticalMultiplier)),
+                _swingSource,
+                _activeStep.OnHitEffects,
+                bonuses: new HitBonuses(crit, Stat(ItemStat.StatusChance, 0f), Stat(ItemStat.StatusDamage, 0f)));
+
+            float reach = Mathf.Max(0.1f, Stat(ItemStat.Range, 1f));
+            _strike.BeginShapes(_activeStep, info, _swingData.HitMask, transform.root, reach);
         }
+
+        // A timeline strike authors its own damage per event, so buffs reach it as a multiplier,
+        // measured on the step's damage so flat bonuses keep their size.
+        private float DamageScale(float stepDamage) =>
+            stepDamage > 0f ? Stat(ItemStat.Damage, stepDamage) / stepDamage : 1f;
 
         private void ExitActive()
         {
-            if (_usingTimeline)
-                _runner.Stop();
-            else
-                _resolver.End();
-
-            bool hitAnything = _usingTimeline ? _runner.HitAnything : _resolver.HitAnything;
-            if (hitAnything)
-                _activeStep.HitSound.TryPlay(transform.position);
+            if (_strike.End()) _activeStep.HitSound.TryPlay(transform.position);
 
             _phase      = Phase.Recovery;
             _phaseTimer = _activeStep.RecoveryTime / Speed;
@@ -482,41 +483,39 @@ namespace CGD.Weapons
 
         private void EndAttack()
         {
-            if (_comboBuffered)
+            if (_bufferedHand != Hand.None)
             {
-                _comboBuffered = false;
-                if (StartAttack(_bufferedHeavy)) return;
+                Hand next = _bufferedHand;
+                _bufferedHand = Hand.None;
+                if (StartAttack(next, _bufferedHeavy)) return;
             }
 
             _phase = Phase.Idle;
             // A bash leaves the combo where it was, like raising the guard.
-            if (!_bashing) Combo?.Release(Time.time, Data.ComboResetTime);
+            if (!_swingIsBash && _swingWeapon != null) _swingWeapon.Combo.Release(Time.time, _swingData.ComboResetTime);
         }
 
         // Ends the swing under way (a cancel, dodge or weapon swap). Hits already dealt stand.
         private void InterruptSwing(bool keepCombo)
         {
-            if (_phase == Phase.Active)
-            {
-                if (_usingTimeline) _runner.Stop();
-                else                _resolver.End();
-            }
+            if (_phase == Phase.Active) _strike.End();
 
-            _phase         = Phase.Idle;
-            _activeStep    = null;
-            _comboBuffered = false;
-            _heldLastFrame = false;
-            _holdTimer     = 0f;
+            _phase        = Phase.Idle;
+            _activeStep   = null;
+            _bufferedHand = Hand.None;
+            _mainInput.Reset();
+            _offInput.Reset();
 
-            if (keepCombo) Combo?.Release(Time.time, Data.WeaveWindow);
-            else           Combo?.Reset();
+            if (_swingWeapon == null) return;
+            if (keepCombo) _swingWeapon.Combo.Release(Time.time, _swingData.WeaveWindow);
+            else           _swingWeapon.Combo.Reset();
         }
 
         public float Intercept(in DamageInfo info, float amount, Vector3 point)
         {
             // Only hits with an attacker can be parried or guarded; status ticks and hazards go through.
             GameObject attacker = info.Source.Owner;
-            if (_guard == null || attacker == null) return amount;
+            if (attacker == null) return amount;
 
             Vector3 toAttacker = attacker.transform.position - transform.position;
             GuardOutcome outcome = _guard.Resolve(Time.time, _camera.transform.forward, toAttacker, amount,
@@ -536,14 +535,14 @@ namespace CGD.Weapons
             return through;
         }
 
-        // A parried strike up close staggers the attacker, and the weapon's own parry reflect
-        // (a sword's riposte) answers it.
+        // A parried strike up close staggers the attacker, and the parrying weapon's own parry
+        // reflect (a sword's riposte) answers it.
         private void Stagger(in DamageInfo info, float amount, GameObject attacker)
         {
             Stunnable stunnable = attacker.GetComponentInParent<Stunnable>();
-            if (stunnable != null) stunnable.ApplyStun(Data.Guard.ParryStun);
-            if (Data.ParryReflect != null && _reflector != null)
-                _reflector.Release(Data.ParryReflect, info, amount, attacker);
+            if (stunnable != null) stunnable.ApplyStun(_parryData.Guard.ParryStun);
+            if (_parryData.ParryReflect != null && _reflector != null)
+                _reflector.Release(_parryData.ParryReflect, info, amount, attacker);
             FeedbackBus.Notify("Parried!", NotificationStyle.Success);
         }
 

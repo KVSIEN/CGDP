@@ -308,7 +308,12 @@
 - Hand-authored Tier 1 (Common) reference weapons live under `Data/Weapons/Ranged/T1/` — one per category (M4A1, MP5, Glock 17, Kar98k, M249, M870) plus a Desert Eagle hand-cannon variant that shows the Pistol category's HeavyRounds override. These are the "what Common feels like" baseline for every category
 
 ## Melee Combat
-- **Quick melee** (Melee key, V) is a **bash** with whatever is in hand: a pistol whip with a pistol, a rifle butt with the other guns, a guard bash with a melee weapon, a punch with empty hands. A gun with the Tactical Knife perk stabs with an offhand knife instead
+- **The Melee key (V) is the other hand.** What it does depends on the offhand:
+  - **An offhand weapon** (a one-handed dagger, sword or axe): tap V for its light combo, hold V for its heavy attack. Its **opening strike parries** like a bash; the rest of the string doesn't. Aiming stays on the right mouse, so a pistol keeps its sights
+  - **A shield**: V is a **shield bash** that parries
+  - **Nothing**: V bashes with the weapon in hand (below)
+  - Holding something in the offhand costs the main gun some accuracy and recoil control: a dagger a little (+15% spread and recoil), a sword more (+25%), an axe most (+35%); shields from +10% (buckler) to +35% (tower shield). An offhand item replaces a gun's Tactical Knife
+- **Quick melee** (Melee key, V, with an empty offhand) is a **bash** with whatever is in hand: a pistol whip with a pistol, a rifle butt with the other guns, a guard bash with a melee weapon, a punch with empty hands. A gun with the Tactical Knife perk stabs with an offhand knife instead
 - **Parrying is done with the bash**, with every weapon: a hit from in front landing within the parry window from the start of a bash (0.2 s for gun bashes and fists, per weapon for melee weapons) is deflected completely — no damage, no on-hit effects. Parries set off parry perks
   - **Up close** (within ~4 m) a parry **staggers** the attacker briefly, and the weapon's parry reflect answers it (a sword's riposte)
   - **A parried shot** from further away is **deflected**: fired back where you aim, with the shot's damage
@@ -340,6 +345,10 @@
 - Rolled stats: damage, **attack speed** (how fast every swing winds up, strikes and recovers) and armour penetration follow quality; reach, stamina cost and guard strength vary per weapon
 - Swings cost **stamina** (heavy attacks cost double), shown as a bar above the health panel; a swing that can't be paid doesn't start. Stamina refills after a short pause. (A character without a stamina meter swings for free)
 - **Block** (Aim, right mouse, between swings or in a swing's cancel window): raising the guard slows you to aiming speed and stops most of the damage from hits in front of you; what it stops costs stamina, and running out **breaks the guard** (the hit lands in full). Hits from behind or the side, and damage over time, ignore the guard
+- **Shields** are the blockers: with one held, the right mouse raises the **shield** instead of the weapon's guard. It lets far less through (about 3–30% depending on the shield and its roll), costs little stamina per blocked hit, covers a wide arc, and blocks gunfire as well as blows. A melee weapon's own guard is for parrying; it blocks worse
+  - **With a gun**, raising the shield replaces aiming down sights (no zoom, hip-fire accuracy); the gun can still fire from behind it, and V bashes
+  - **Buckler**: small, light on the gun, blocks least, longest parry window. **Riot Shield**: the widest arc and the strongest block. **Tower Shield**: blocks hits from in front **on its own** without being raised — so a gun can still aim — but every blocked hit costs stamina, it weighs most on the gun, and it stops covering you for a moment after a missed parry
+  - Shields roll a tier like other gear: better ones let less through and bash harder. Found as loot (rarer than guns)
 - **Guard bash**: Attack while the guard is up throws a block-breaking bash that parries (see Quick melee above); the Melee key does the same bash in one press, without raising the guard first. Bashing costs a light attack's stamina. Raising the guard on its own only blocks; it no longer parries
 - **Parry** (bash timing, per weapon): daggers have the longest window, hammers the tightest
 - With a melee weapon equipped the right mouse never zooms the camera
@@ -612,6 +621,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - Press Tab for the Character window: worn armor per slot (helm, torso, gloves, legs, boots, backslot), carried weapons, and what's in the pack
 - Click armor in the pack to wear it (whatever was in that slot goes back to the pack); click worn armor to take it off
 - Worn armor adds everything it rolled — armor, health, resistances — to the player, including the effect of any attachments fitted to it
+- **Offhand slot**: click a shield or a one-handed melee weapon in the pack to hold it in the offhand (the one held before goes back); click it to put it away. It only counts while the weapon in hand is one-handed — pistols, SMGs, daggers, swords and axes, or empty hands. With a two-handed weapon out it's stowed (shown as unused) and comes back when you switch. Shields found on a run go straight into a free offhand
 - Attachments: pick one from the pack, then click the armor or weapon to fit it; click a fitted attachment to take it back off. Some attachments only fit certain armor slots
 - Attachments on weapons change the weapon for real: magazine size, reload time, fire rate and damage all follow them (e.g. Extended Magazine: +25% magazine, slower reload)
 

@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 596404193d1242c5aefb51d56f03b1d7, type: 3}
+  m_Name: BucklerShield
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.ShieldDefinition
+  _displayName: Buckler
+  _description: Small and quick. Blocks less than bigger shields, but its bash parries longest.
+  _icon: {fileID: 0}
+  _reality: 0
+  _tier: 0
+  _weight: 3
+  _baseValue: 60
+  _rollProfile: {fileID: 11400000, guid: 17e540ee9242e574e855d1eef9dcb80a, type: 2}
+  _statRanges: []
+  _perkPool: {fileID: 0}
+  _guaranteedPerks: []
+  Names:
+  - Buckler
+  - Targe
+  - Round Shield
+  BlocksPassively: 0
+  BlockDamageMultiplier:
+    Min: 0.25
+    Max: 0.1
+    Bias: 0
+  StaminaPerDamage:
+    Min: 0.4
+    Max: 0.5
+    Bias: 0
+  Guard:
+    BlockDamageMultiplier: 0.25
+    StaminaPerDamage: 0.4
+    ArcDeg: 130
+    ParryWindow: 0.22
+    ParryStun: 1.4
+    WhiffExposure: 0.5
+  Bash:
+    Timeline: {fileID: 0}
+    Damage: 1
+    ArmorPenetration: 0
+    DamageType: 0
+    CriticalMultiplier: 1
+    WindupTime: 0.04
+    ActiveTime: 0.12
+    RecoveryTime: 0.32
+    CancelFrom: 1
+    HitShape: 1
+    Range: 1.6
+    Radius: 0.5
+    SweepArcDeg: 70
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 0.5, g: 0.8, b: 1, a: 1}
+  BashDamage:
+    Min: 10
+    Max: 16
+    Bias: 0
+  StaminaMeter: {fileID: 11400000, guid: e97086cb23b549a9b402e8130ab73a15, type: 2}
+  BashStaminaCost: 8
+  ParryReflect: {fileID: 0}
+  MainHandPenalty:
+  - Stat: 14
+    Op: 1
+    Value: 0.1
+  - Stat: 13
+    Op: 1
+    Value: 0.1
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 8
