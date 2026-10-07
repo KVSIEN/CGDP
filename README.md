@@ -89,8 +89,10 @@ Assets/
   from builds. Nothing in `CGD.Runtime` may reference it.
 - **Tests** live in `Assets/Project/Tests/EditMode/` (`CGD.Tests.EditMode`, editor-only, references
   `CGD.Runtime`). Run them from **Window > General > Test Runner > EditMode**. Cover plain C#
-  logic (rules, state machines, random streams); CI runs them on every push, see
-  `.github/workflows/tests.yml`.
+  logic (rules, state machines, random streams). `MapGenerationTests` also runs every
+  shipped map generation setting over 40 seeds: exit reachable, same seed = same map, time
+  per map (printed in the test output), validator issues as warnings. CI runs the suite on
+  every push, see `.github/workflows/tests.yml`.
 - **Data assets** are named `<Name><Type>` (`PistolCategory`, `HitscanFireBehavior`,
   `TargetDummyEnemyData`) and created from `Create > CGD > <Feature> > …`.
 - **Moving files:** do it inside Unity, or move each file together with its `.meta` while
