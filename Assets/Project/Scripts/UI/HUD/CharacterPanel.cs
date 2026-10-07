@@ -8,15 +8,17 @@ using CGD.Weapons;
 
 namespace CGD.UI
 {
-    // Character window (Tab): what the player wears and their weapons, with perks and fitted
-    // attachments, on the left; armor, attachments and consumables in the pack on the right.
+    // Character window (Tab): what the player wears and their loadout slots (a main weapon and
+    // an offhand each), with perks and fitted attachments, on the left; armor, weapons,
+    // attachments and consumables in the pack on the right.
     //   click worn armor        → take it off
     //   click pack armor        → wear it
     //   click an attachment     → pick it, then click a gear line on the left to fit it
     //   click a fitted one      → remove it back to the pack
     //   click a slot item       → cycle which item slot (5–8) it sits in
-    //   click the offhand item  → put it back in the pack
-    //   click a pack shield or one-handed melee weapon → hold it in the offhand
+    //   click a weapon, shield or artifact (pack, or already in a slot) → pick it, then click a
+    //     slot's main or offhand line on the left to put it there; one item can fill several slots
+    //   click a slot's offhand → empty it (it goes back to the pack unless another slot uses it)
     public class CharacterPanel : ModalPanel
     {
         [SerializeField] private PlayerInventory   _inventory;
@@ -24,12 +26,11 @@ namespace CGD.UI
         [SerializeField] private PlayerWeaponLoadout _loadout;
         [SerializeField] private PlayerItemSlots _itemSlots;
 
-        // Sits beside the inventory on the Player.
-        private PlayerOffhand _offhand;
-
         private UIButtonList _worn;
         private UIButtonList _pack;
         private AttachmentDefinition _selected;
+        // A weapon, shield or artifact picked to put in a loadout slot.
+        private ItemInstance _assigning;
 
         protected override string  Title      => "Character";
         protected override Vector2 WindowSize => new(760f, 520f);
@@ -57,21 +58,22 @@ namespace CGD.UI
 
         protected override void OnOpened()
         {
-            if (_offhand == null && _inventory != null) _inventory.TryGetComponent(out _offhand);
-            _selected = null;
+            _selected  = null;
+            _assigning = null;
             _inventory.Inventory.Changed += Refresh;
             if (_equipment != null) _equipment.Changed += Refresh;
-            if (_offhand   != null) _offhand.Changed   += Refresh;
+            if (_loadout   != null) _loadout.Changed   += Refresh;
             Refresh();
         }
 
         protected override void OnClosed()
         {
-            _selected = null;
+            _selected  = null;
+            _assigning = null;
             if (_inventory == null) return;
             _inventory.Inventory.Changed -= Refresh;
             if (_equipment != null) _equipment.Changed -= Refresh;
-            if (_offhand   != null) _offhand.Changed   -= Refresh;
+            if (_loadout   != null) _loadout.Changed   -= Refresh;
         }
 
         private void RebuildWorn()
@@ -89,25 +91,49 @@ namespace CGD.UI
                 }
             }
 
-            if (_loadout != null)
-            {
-                _worn.Heading("Weapons");
-                for (int i = 0; i < _loadout.Slots.Count; i++)
-                {
-                    WeaponItem weapon = _loadout.Slots[i];
-                    if (weapon == null) _worn.Label($"{i + 1}: —");
-                    else                GearLine($"{i + 1}: {Describe(weapon)}", weapon, null);
-                }
-            }
-
-            if (_offhand != null)
-            {
-                ItemInstance held = _offhand.Item;
-                string unused = _offhand.IsActive ? "" : "  (unused: two-handed weapon in hand)";
-                if (held == null) _worn.Label("Offhand: —");
-                else              GearLine($"Offhand: {Describe(held)}{unused}", held, () => _offhand.Release());
-            }
+            if (_loadout != null) RebuildLoadout();
             _worn.End();
+        }
+
+        // Each slot: its main and its offhand. With an item picked, the lines are where to put it.
+        private void RebuildLoadout()
+        {
+            _worn.Heading(_assigning != null ? $"Put {_assigning.DisplayName} in..." : "Loadout slots");
+            bool pickingWeapon  = _assigning is WeaponItem;
+            bool pickingOffhand = _assigning != null && PlayerOffhand.CanHold(_assigning);
+
+            for (int i = 0; i < _loadout.Slots.Count; i++)
+            {
+                int slot = i;
+                WeaponItem   main = _loadout.Slots[i];
+                ItemInstance off  = _loadout.Offhands[i];
+                string active     = _loadout.ActiveSlot == i ? "  <" : "";
+                string mainName   = main != null ? Describe(main) : "—";
+                string offName    = off  != null ? Describe(off)  : "—";
+                // A two-handed main leaves the offhand in the slot, but unused.
+                string unused     = off != null && main != null && !main.IsOneHanded ? "  (unused: two-handed main)" : "";
+
+                if (_assigning != null)
+                {
+                    _worn.Add($"{i + 1}  Main: {mainName}{active}", () => AssignTo(slot, asMain: true), pickingWeapon);
+                    _worn.Add($"      Offhand: {offName}{unused}", () => AssignTo(slot, asMain: false), pickingOffhand);
+                    continue;
+                }
+
+                if (main == null) _worn.Label($"{i + 1}  Main: —{active}");
+                else              GearLine($"{i + 1}  Main: {mainName}{active}", main, null);
+
+                if (off == null)  _worn.Label("      Offhand: —");
+                else              GearLine($"      Offhand: {offName}{unused}", off, () => _loadout.AssignOffhand(slot, null));
+            }
+        }
+
+        private void AssignTo(int slot, bool asMain)
+        {
+            if (asMain) _loadout.AssignMain(slot, (WeaponItem)_assigning);
+            else        _loadout.AssignOffhand(slot, _assigning);
+            _assigning = null;
+            Refresh();
         }
 
         // In fitting mode every gear line is a fit target; otherwise it runs its own action.
@@ -143,18 +169,21 @@ namespace CGD.UI
             }
             if (!any) _pack.Label("none");
 
-            if (_offhand != null)
+            _pack.Heading("Weapons, shields & artifacts  (click, then pick a slot)");
+            any = false;
+            foreach (ItemInstance item in inventory.Items)
             {
-                _pack.Heading("Offhand (shields, one-handed melee weapons)");
-                any = false;
-                foreach (ItemInstance item in inventory.Items)
+                if (!IsLoadoutItem(item)) continue;
+                _pack.Add($"{(item == _assigning ? "> " : "")}{DescribeWithPerks(item)}", () => PickForSlot(item), _loadout != null);
+                any = true;
+            }
+            if (_loadout != null)
+                foreach (ItemInstance item in _loadout.Equipped())
                 {
-                    if (!PlayerOffhand.CanHold(item)) continue;
-                    _pack.Add($"{DescribeWithPerks(item)}  → offhand", () => _offhand.Hold(item));
+                    _pack.Add($"{(item == _assigning ? "> " : "")}{DescribeWithPerks(item)}  [slot {SlotsText(item)}]", () => PickForSlot(item));
                     any = true;
                 }
-                if (!any) _pack.Label("none");
-            }
+            if (!any) _pack.Label("none");
 
             _pack.Heading("Attachments");
             any = false;
@@ -185,8 +214,31 @@ namespace CGD.UI
 
         private void Select(AttachmentDefinition attachment)
         {
-            _selected = _selected == attachment ? null : attachment;
+            _selected  = _selected == attachment ? null : attachment;
+            _assigning = null;
             Refresh();
+        }
+
+        private static bool IsLoadoutItem(ItemInstance item) => item is WeaponItem || PlayerOffhand.CanHold(item);
+
+        private void PickForSlot(ItemInstance item)
+        {
+            _assigning = _assigning == item ? null : item;
+            _selected  = null;
+            Refresh();
+        }
+
+        // "1, 3": the slots an item is in.
+        private string SlotsText(ItemInstance item)
+        {
+            var text = new System.Text.StringBuilder();
+            for (int i = 0; i < _loadout.Slots.Count; i++)
+            {
+                if (!ReferenceEquals(_loadout.Slots[i], item) && !ReferenceEquals(_loadout.Offhands[i], item)) continue;
+                if (text.Length > 0) text.Append(", ");
+                text.Append(i + 1);
+            }
+            return text.ToString();
         }
 
         private void Fit(ItemInstance gear)

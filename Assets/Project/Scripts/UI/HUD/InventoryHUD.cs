@@ -62,21 +62,21 @@ namespace CGD.UI
             int active = _loadout.ActiveSlot;
             for (int i = 0; i < SlotCount; i++)
             {
-                var  weapon   = _loadout.Slots[i];
                 bool isActive = active == i;
 
                 // Always update the compact bar
-                _barSlotBgs[i].color = isActive ? ActiveBg : (weapon != null ? SlotBg : EmptyBg);
+                bool filled = _loadout.IsFilled(i);
+                _barSlotBgs[i].color = isActive ? ActiveBg : (filled ? SlotBg : EmptyBg);
                 if (isActive)
-                    _activeBarText.text = weapon != null ? weapon.DisplayName : "— Empty —";
+                    _activeBarText.text = _loadout.SlotLabel(i);
 
                 if (!IsVisible) continue;
 
                 if (_input.WasPressedRaw(SlotActions[i]))
                     _loadout.EquipSlot(i);
 
-                _slotBgs[i].color  = isActive ? ActiveBg : (weapon != null ? SlotBg : EmptyBg);
-                _slotNames[i].text = weapon != null ? weapon.DisplayName : "— Empty —";
+                _slotBgs[i].color  = isActive ? ActiveBg : (filled ? SlotBg : EmptyBg);
+                _slotNames[i].text = _loadout.SlotLabel(i);
             }
         }
 

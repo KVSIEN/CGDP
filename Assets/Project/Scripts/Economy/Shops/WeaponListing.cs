@@ -28,7 +28,9 @@ namespace CGD.Economy
             foreach (WeaponItem slot in loadout.Slots)
                 if (slot == null) return null;
 
-            return loadout.Slots[System.Math.Max(0, loadout.ActiveSlot)];
+            // A weapon another slot still uses isn't given up.
+            WeaponItem active = loadout.Slots[System.Math.Max(0, loadout.ActiveSlot)];
+            return loadout.SlotsUsing(active) > 1 ? null : active;
         }
 
         public override ItemInstance Deliver(ShopCustomer customer) => customer.Loadout.AddWeapon(Weapon);

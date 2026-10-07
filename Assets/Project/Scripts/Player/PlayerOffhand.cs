@@ -11,22 +11,21 @@ using CGD.Weapons;
 
 namespace CGD.Player
 {
-    // The Player's offhand slot: a one-handed melee weapon, a shield or an artifact, taken out of
-    // the inventory while held. It only counts while the weapon in hand is one-handed (or the
-    // hands are empty). Then:
+    // What the active loadout slot's offhand does: a one-handed melee weapon, a shield or an
+    // artifact (PlayerWeaponLoadout stores them). It only counts while the main hand is one-handed
+    // (or empty); with a two-handed main the offhand stays in its slot, unused. Then:
     //   • the MeleeController uses a held weapon or shield on the Melee key (and a shield's guard);
     //   • an artifact's rolled stats and passive perks go onto CharacterStats, and its active use
     //     runs here on the aim input (right mouse): tap or hold, as its behavior says;
     //   • whatever takes the aim input (a raised shield, an active artifact) stops a gun aiming;
     //   • its main-hand penalty (spread, recoil…) goes onto CharacterStats too.
-    [RequireComponent(typeof(PlayerInventory))]
+    [RequireComponent(typeof(PlayerWeaponLoadout))]
     public class PlayerOffhand : MonoBehaviour
     {
         [SerializeField] private PlayerCamera _camera;
 
         private readonly OffhandContext _context = new();
 
-        private PlayerInventory     _inventory;
         private PlayerWeaponLoadout _loadout;
         private PlayerInputHandler  _input;
         private PlayerMovement      _movement;
@@ -40,7 +39,8 @@ namespace CGD.Player
         private OffhandUse       _use;
         private bool             _holding;
 
-        public ItemInstance Item { get; private set; }
+        // The active slot's offhand, in use or not.
+        public ItemInstance Item => _loadout.ActiveOffhand;
         // Held, and the main hand leaves room for it.
         public bool IsActive { get; private set; }
         // The active artifact's use, for the HUD (null without one).
@@ -55,9 +55,8 @@ namespace CGD.Player
 
         private void Awake()
         {
-            _inventory = GetComponent<PlayerInventory>();
-            _input     = GetComponent<PlayerInputHandler>();
-            TryGetComponent(out _loadout);
+            _input   = GetComponent<PlayerInputHandler>();
+            _loadout = GetComponent<PlayerWeaponLoadout>();
             TryGetComponent(out _movement);
             TryGetComponent(out _dodge);
             TryGetComponent(out _melee);
@@ -75,49 +74,18 @@ namespace CGD.Player
 
         private void OnEnable()
         {
-            if (_loadout != null) _loadout.ActiveChanged += OnMainHandChanged;
-            if (_actions != null) _actions.Performed     += OnCombatAction;
+            _loadout.Changed += Refresh;
+            if (_actions != null) _actions.Performed += OnCombatAction;
             if (_health  != null) _health.OnRevived      += OnRevived;
             Refresh();
         }
 
         private void OnDisable()
         {
-            if (_loadout != null) _loadout.ActiveChanged -= OnMainHandChanged;
-            if (_actions != null) _actions.Performed     -= OnCombatAction;
+            _loadout.Changed -= Refresh;
+            if (_actions != null) _actions.Performed -= OnCombatAction;
             if (_health  != null) _health.OnRevived      -= OnRevived;
             StopUse();
-        }
-
-        // Moves the item from the inventory into the offhand; the one held before goes back.
-        public bool Hold(ItemInstance item)
-        {
-            if (!CanHold(item) || !_inventory.Inventory.Remove(item)) return false;
-
-            ItemInstance previous = Item;
-            Item = item;
-            if (previous != null) _inventory.Inventory.Add(previous);
-            Refresh();
-            return true;
-        }
-
-        public bool Release()
-        {
-            if (Item == null) return false;
-
-            _inventory.Inventory.Add(Item);
-            Item = null;
-            Refresh();
-            return true;
-        }
-
-        // Takes the item away without returning it to the inventory (the run is settled with it).
-        public ItemInstance Clear()
-        {
-            ItemInstance item = Item;
-            Item = null;
-            Refresh();
-            return item;
         }
 
         private void Update()
@@ -176,8 +144,6 @@ namespace CGD.Player
 
         private void OnRevived() => _use?.Reset();
 
-        private void OnMainHandChanged(WeaponItem _) => Refresh();
-
         private void OnArtifactAttachmentsChanged()
         {
             WearerStats.Apply(_stats, _artifact);
@@ -190,9 +156,10 @@ namespace CGD.Player
             StopUse();
             ReleaseArtifact();
 
-            WeaponItem mainHand = _loadout != null ? _loadout.Active : null;
-            IsActive = Item != null && (mainHand == null || mainHand.IsOneHanded);
-            var offhand = IsActive ? (IOffhand)Item : null;
+            WeaponItem mainHand = _loadout.Active;
+            ItemInstance held   = _loadout.ActiveOffhand;
+            IsActive = held != null && (mainHand == null || mainHand.IsOneHanded);
+            var offhand = IsActive ? (IOffhand)held : null;
 
             if (offhand is ArtifactInstance artifact) TakeUpArtifact(artifact);
             ApplyMainHandPenalty(offhand);
