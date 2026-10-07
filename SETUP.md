@@ -119,7 +119,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 | **PlayerInventory** | `_startingStacks`? = item + count (e.g. `StandardMunitions` × 60) | No starting ammo unless listed. |
 | **PlayerInteraction** | `_forwardReference` = Main Camera | |
 | **PlayerLifecycle** | `_health`, `_movement`, `_abilities`, `_input` = Player · `_hud` = HUD · `_spawnPoint` = RespawnPoint · `_deathScreen`? | Tick `_gameOverOnDeath` to end the run instead of respawning. |
-| **PlayerFootsteps** | `_surfaces` = `Audio/DefaultSurfaceDatabase` | |
+| **PlayerFootsteps** | `_surfaces` = `Audio/DefaultSurfaceDatabase` | A collider can carry an optional **SurfaceTag** (`_walk` / `_sprint` / `_crouch` = `SoundBank`s) to override the database's footsteps for that surface. |
 | **PlayerAudio** | `_health` = PlayerHealth, `_hurtSound`?, `_deathSound`? | |
 | **MeterSet** | `_definitions` = meters from `Data/Meters/` (the Player prefab has `StaminaMeter`) | Needed before any stamina/mana cost can be paid; melee swings and blocks spend stamina from it. |
 | **CombatActions** | — | Counts the player's combat actions (hits, kills, parries) that fill ability Surge. Parries count when a `MeleeController` is on the same object. Without it Surge abilities never fill. |
