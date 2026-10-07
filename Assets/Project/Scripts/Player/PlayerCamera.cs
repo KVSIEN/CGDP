@@ -15,57 +15,17 @@ namespace CGD.Player
         [SerializeField] private Transform _headAnchor;
         [SerializeField] private CameraMode _startingMode = CameraMode.ThirdPerson;
 
-        [Header("Sensitivity")]
-        [SerializeField] private float _mouseSensitivity = 1.5f;
-        [SerializeField] private float _gamepadSensitivity = 120f;
-
-        [Header("Pitch Limits")]
-        [SerializeField] private float _minPitch = -80f;
-        [SerializeField] private float _maxPitch = 80f;
-
-        [Header("Rotation Smoothing")]
-        [SerializeField] private float _rotationSmoothing = 0.05f;
-
-        [Header("Third Person")]
-        [SerializeField] private float _tpDistance = 4f;
-        [SerializeField] private float _tpMinDistance = 0.5f;
-        [SerializeField] private float _shoulderOffset = 0.5f;
-        [SerializeField] private float _collisionRadius = 0.2f;
-        [SerializeField] private LayerMask _collisionMask = ~0;
-
-        [Header("Transition")]
-        [SerializeField] private float _transitionSmoothTime = 0.12f;
-
-        [Header("Body Rotation")]
-        [SerializeField] private float _fpBodySmoothTime = 0.02f;
-        [SerializeField] private float _tpBodySmoothTime = 0.12f;
-
-        [Header("Crouch")]
-        [SerializeField] private float _crouchHeadLower = 0.65f;
-        [SerializeField] private float _crouchHeadSmoothTime = 0.08f;
-
-        [Header("ADS")]
-        [Tooltip("Fallback ADS FOV used before a weapon is equipped. WeaponData.AdsFovDeg overrides at runtime via SetAdsProfile().")]
-        [SerializeField] private float _adsFOV = 45f;
-        [SerializeField] private float _adsTpDistance = 1.5f;
-        [Tooltip("Shoulder offset while ADS in third-person. Keep non-zero so the camera stays beside the player, not behind their head.")]
-        [SerializeField] private float _adsTpShoulderOffset = 0.25f;
-        [SerializeField] private float _adsSensitivityMult = 0.5f;
-        [Tooltip("Fallback ADS transition speed used before a weapon is equipped. WeaponData.AdsSpeed overrides at runtime via SetAdsProfile().")]
-        [SerializeField] private float _adsSpeed = 10f;
-
-        [Header("FOV")]
+        [SerializeField] private PlayerCameraSettings _settings;
         [SerializeField] private Camera _camera;
-        [SerializeField] private float _baseFOV = 70f;
-        [SerializeField] private float _sprintFOV = 80f;
-        [SerializeField] private float _fovSpeed = 8f;
-
-        [Header("Lock-On")]
-        [Tooltip("Degrees per second the view turns toward a locked target")]
-        [SerializeField] private float _lockOnTurnSpeed = 360f;
-
-        [Header("Mesh Visibility")]
         [SerializeField] private Renderer[] _firstPersonHideRenderers;
+
+        // Loaded from the player's saved settings; SetSensitivity changes them live.
+        private float _mouseSensitivity;
+        private float _gamepadSensitivity;
+
+        // Zero until a weapon pushes a profile; Awake then falls back to the settings.
+        private float _adsFOV;
+        private float _adsSpeed;
 
         private float _yaw;
         private float _pitch;
@@ -96,7 +56,6 @@ namespace CGD.Player
         private float _counterplayAccum;
         private Transform _lockTarget;
         private float     _lockHeight;
-        [SerializeField] private float _counterplayThreshold = 2f;
 
         public bool    IsAimObstructed  { get; private set; }
         public Vector3 ObstructionPoint { get; private set; }
@@ -148,6 +107,9 @@ namespace CGD.Player
 
         private void Awake()
         {
+            // A weapon may have equipped (SetAdsProfile) before this Awake ran.
+            if (_adsFOV   <= 0f) _adsFOV   = _settings.AdsFov;
+            if (_adsSpeed <= 0f) _adsSpeed = _settings.AdsSpeed;
             SettingsSave.LoadSensitivity(out _mouseSensitivity, out _gamepadSensitivity);
 
             _yaw = _playerBody.eulerAngles.y;
@@ -254,17 +216,17 @@ namespace CGD.Player
         private void UpdateRotation()
         {
             Vector2 look = _input.LookInput;
-            float sensScale = Mathf.Lerp(1f, _adsSensitivityMult, ZoomT);
+            float sensScale = Mathf.Lerp(1f, _settings.AdsSensitivityMult, ZoomT);
             float mult = (_input.IsGamepadLook ? _gamepadSensitivity * Time.deltaTime : _mouseSensitivity * 0.1f) * sensScale;
 
             _yaw += look.x * mult;
-            _pitch = Mathf.Clamp(_pitch - look.y * mult, _minPitch, _maxPitch);
+            _pitch = Mathf.Clamp(_pitch - look.y * mult, _settings.MinPitch, _settings.MaxPitch);
 
             // Deliberate counter-pull shifts the recovery origin so it settles where the player aimed.
             if (_recoilPitch > 0f && look.y < 0f)
             {
                 _counterplayAccum += (-look.y) * mult;
-                if (_counterplayAccum >= _counterplayThreshold)
+                if (_counterplayAccum >= _settings.CounterplayThreshold)
                     _recoilOriginPitch = _pitch;
             }
 
@@ -275,8 +237,8 @@ namespace CGD.Player
 
             SteerToLockTarget();
 
-            _currentYaw = Mathf.SmoothDampAngle(_currentYaw, _yaw, ref _yawVelocity, _rotationSmoothing);
-            _currentPitch = Mathf.SmoothDampAngle(_currentPitch, _pitch, ref _pitchVelocity, _rotationSmoothing);
+            _currentYaw = Mathf.SmoothDampAngle(_currentYaw, _yaw, ref _yawVelocity, _settings.RotationSmoothing);
+            _currentPitch = Mathf.SmoothDampAngle(_currentPitch, _pitch, ref _pitchVelocity, _settings.RotationSmoothing);
         }
 
         private void SteerToLockTarget()
@@ -288,17 +250,17 @@ namespace CGD.Player
 
             float targetYaw   = Mathf.Atan2(toTarget.x, toTarget.z) * Mathf.Rad2Deg;
             float targetPitch = -Mathf.Asin(Mathf.Clamp(toTarget.normalized.y, -1f, 1f)) * Mathf.Rad2Deg;
-            float step        = _lockOnTurnSpeed * Time.deltaTime;
+            float step        = _settings.LockOnTurnSpeed * Time.deltaTime;
 
             _yaw   = Mathf.MoveTowardsAngle(_yaw, targetYaw, step);
-            _pitch = Mathf.Clamp(Mathf.MoveTowardsAngle(_pitch, targetPitch, step), _minPitch, _maxPitch);
+            _pitch = Mathf.Clamp(Mathf.MoveTowardsAngle(_pitch, targetPitch, step), _settings.MinPitch, _settings.MaxPitch);
         }
 
         private void UpdateTransition()
         {
             float prev = _transitionT;
-            _transitionT = Mathf.SmoothDamp(_transitionT, _transitionTarget, ref _transitionVelocity, _transitionSmoothTime);
-            _shoulderCurrent = Mathf.SmoothDamp(_shoulderCurrent, _shoulderTarget, ref _shoulderVelocity, _transitionSmoothTime);
+            _transitionT = Mathf.SmoothDamp(_transitionT, _transitionTarget, ref _transitionVelocity, _settings.TransitionSmoothTime);
+            _shoulderCurrent = Mathf.SmoothDamp(_shoulderCurrent, _shoulderTarget, ref _shoulderVelocity, _settings.TransitionSmoothTime);
 
             if (Mathf.Abs(_transitionT - prev) > 0.001f)
                 RefreshMeshVisibility();
@@ -309,22 +271,22 @@ namespace CGD.Player
             Quaternion rotation = Quaternion.Euler(_currentPitch, _currentYaw, 0f);
             transform.rotation = rotation;
 
-            float targetCrouchOffset = _movement.IsCrouching ? -_crouchHeadLower : 0f;
-            _crouchHeadOffset = Mathf.SmoothDamp(_crouchHeadOffset, targetCrouchOffset, ref _crouchHeadVelocity, _crouchHeadSmoothTime);
+            float targetCrouchOffset = _movement.IsCrouching ? -_settings.CrouchHeadLower : 0f;
+            _crouchHeadOffset = Mathf.SmoothDamp(_crouchHeadOffset, targetCrouchOffset, ref _crouchHeadVelocity, _settings.CrouchHeadSmoothTime);
             Vector3 fpsPos = _headAnchor.position + Vector3.up * _crouchHeadOffset;
 
-            float activeDistance = Mathf.Lerp(_tpDistance, _adsTpDistance, _adsT);
+            float activeDistance = Mathf.Lerp(_settings.TpDistance, _settings.AdsTpDistance, _adsT);
             // In TP, keep a meaningful shoulder offset while ADS so the camera sits beside
             // the player rather than clipping through the back of their head.
-            float activeShoulder = Mathf.Lerp(_shoulderOffset, _adsTpShoulderOffset, _adsT);
+            float activeShoulder = Mathf.Lerp(_settings.ShoulderOffset, _settings.AdsTpShoulderOffset, _adsT);
 
             // Collision: cast from head along -forward to find safe TP distance
             Vector3 back = rotation * Vector3.back;
             float safeDistance = activeDistance;
-            if (Physics.SphereCast(_headAnchor.position, _collisionRadius, back,
-                out RaycastHit hit, activeDistance, _collisionMask, QueryTriggerInteraction.Ignore))
+            if (Physics.SphereCast(_headAnchor.position, _settings.CollisionRadius, back,
+                out RaycastHit hit, activeDistance, _settings.CollisionMask, QueryTriggerInteraction.Ignore))
             {
-                safeDistance = Mathf.Max(hit.distance - _collisionRadius, _tpMinDistance);
+                safeDistance = Mathf.Max(hit.distance - _settings.CollisionRadius, _settings.TpMinDistance);
             }
 
             // Shoulder offset only applies in TP (transitionT = 0 in FP, so no effect there)
@@ -337,7 +299,7 @@ namespace CGD.Player
 
         private void UpdateBodyRotation()
         {
-            float smoothTime = Mathf.Lerp(_fpBodySmoothTime, _tpBodySmoothTime, _transitionT);
+            float smoothTime = Mathf.Lerp(_settings.FpBodySmoothTime, _settings.TpBodySmoothTime, _transitionT);
             float currentY = _playerBody.eulerAngles.y;
             float newY = Mathf.SmoothDampAngle(currentY, _currentYaw, ref _bodyRotVelocity, smoothTime);
             _playerBody.rotation = Quaternion.Euler(0f, newY, 0f);
@@ -348,24 +310,24 @@ namespace CGD.Player
             if (_camera == null) return;
             // The player's FOV setting replaces the authored base; sprint keeps its authored widening.
             float baseFOV = GameSettings.Current.FieldOfView;
-            float hipFOV  = _movement.IsSprinting ? baseFOV + (_sprintFOV - _baseFOV) : baseFOV;
+            float hipFOV  = _movement.IsSprinting ? baseFOV + (_settings.SprintFov - _settings.BaseFov) : baseFOV;
             float zoomT  = ZoomT;
             float target = Mathf.Lerp(hipFOV, AdsFov(baseFOV), zoomT);
 
             // In Snap mode the zoom itself jumps; sprint widening still eases.
             bool snapped = zoomT != _lastZoomT && GameSettings.Current.AdsZoom == AdsZoomMode.Snap;
             _lastZoomT = zoomT;
-            _camera.fieldOfView = snapped ? target : Mathf.Lerp(_camera.fieldOfView, target, _fovSpeed * Time.deltaTime);
+            _camera.fieldOfView = snapped ? target : Mathf.Lerp(_camera.fieldOfView, target, _settings.FovSpeed * Time.deltaTime);
         }
 
-        // Weapon ADS FOVs are authored against the default hip FOV (_baseFOV). Independent uses
+        // Weapon ADS FOVs are authored against the default hip FOV (BaseFov). Independent uses
         // them as they are; Affected keeps the weapon's magnification — the ratio of the view
         // widths, tan(fov/2) — and applies it to the player's chosen FOV instead.
         private float AdsFov(float playerFov)
         {
             if (GameSettings.Current.AdsFov != AdsFovMode.Affected) return _adsFOV;
 
-            float magnification = Mathf.Tan(_baseFOV * 0.5f * Mathf.Deg2Rad) / Mathf.Tan(_adsFOV * 0.5f * Mathf.Deg2Rad);
+            float magnification = Mathf.Tan(_settings.BaseFov * 0.5f * Mathf.Deg2Rad) / Mathf.Tan(_adsFOV * 0.5f * Mathf.Deg2Rad);
             float halfWidth = Mathf.Tan(playerFov * 0.5f * Mathf.Deg2Rad) / magnification;
             return 2f * Mathf.Atan(halfWidth) * Mathf.Rad2Deg;
         }
@@ -389,13 +351,13 @@ namespace CGD.Player
             }
 
             Vector3 camForward = transform.forward;
-            float maxDist = _tpDistance + 100f;
-            Vector3 aimPoint = Physics.Raycast(transform.position, camForward, out RaycastHit camHit, maxDist, _collisionMask, QueryTriggerInteraction.Ignore)
+            float maxDist = _settings.TpDistance + 100f;
+            Vector3 aimPoint = Physics.Raycast(transform.position, camForward, out RaycastHit camHit, maxDist, _settings.CollisionMask, QueryTriggerInteraction.Ignore)
                 ? camHit.point
                 : transform.position + camForward * maxDist;
 
             Vector3 toAim = aimPoint - _headAnchor.position;
-            if (Physics.Raycast(_headAnchor.position, toAim.normalized, out RaycastHit headHit, toAim.magnitude - 0.05f, _collisionMask, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(_headAnchor.position, toAim.normalized, out RaycastHit headHit, toAim.magnitude - 0.05f, _settings.CollisionMask, QueryTriggerInteraction.Ignore))
             {
                 IsAimObstructed  = true;
                 ObstructionPoint = headHit.point;

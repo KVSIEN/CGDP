@@ -380,35 +380,9 @@ MonoBehaviour:
   _playerBody: {fileID: 5424563883744893195}
   _headAnchor: {fileID: 5356603441897537408}
   _startingMode: 0
-  _mouseSensitivity: 0.33
-  _gamepadSensitivity: 120
-  _minPitch: -80
-  _maxPitch: 80
-  _rotationSmoothing: 0
-  _tpDistance: 4
-  _tpMinDistance: 0.5
-  _shoulderOffset: 0.75
-  _collisionRadius: 0.2
-  _collisionMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  _transitionSmoothTime: 0.12
-  _fpBodySmoothTime: 0.02
-  _tpBodySmoothTime: 0.12
-  _crouchHeadLower: 0.65
-  _crouchHeadSmoothTime: 0.08
-  _adsFOV: 45
-  _adsTpDistance: 1.5
-  _adsTpShoulderOffset: 0.75
-  _adsSensitivityMult: 1
-  _adsSpeed: 10
+  _settings: {fileID: 11400000, guid: d81e6e53a32a4208a15b45ffe4f8c54a, type: 2}
   _camera: {fileID: 888600595092060687}
-  _baseFOV: 70
-  _sprintFOV: 80
-  _fovSpeed: 8
-  _lockOnTurnSpeed: 360
   _firstPersonHideRenderers: []
-  _counterplayThreshold: 2
 --- !u!114 &3491342562497721860
 MonoBehaviour:
   m_ObjectHideFlags: 0

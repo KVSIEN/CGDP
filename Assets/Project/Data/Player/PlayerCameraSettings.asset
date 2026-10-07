@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91f258973a409dba87c89e3cfed53e, type: 3}
+  m_Name: PlayerCameraSettings
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Player.PlayerCameraSettings
+  MinPitch: -80
+  MaxPitch: 80
+  RotationSmoothing: 0
+  TpDistance: 4
+  TpMinDistance: 0.5
+  ShoulderOffset: 0.75
+  CollisionRadius: 0.2
+  CollisionMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  TransitionSmoothTime: 0.12
+  FpBodySmoothTime: 0.02
+  TpBodySmoothTime: 0.12
+  CrouchHeadLower: 0.65
+  CrouchHeadSmoothTime: 0.08
+  AdsFov: 45
+  AdsTpDistance: 1.5
+  AdsTpShoulderOffset: 0.75
+  AdsSensitivityMult: 1
+  AdsSpeed: 10
+  BaseFov: 70
+  SprintFov: 80
+  FovSpeed: 8
+  LockOnTurnSpeed: 360
+  CounterplayThreshold: 2
