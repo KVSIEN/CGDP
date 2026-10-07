@@ -17,6 +17,8 @@ namespace CGD.Weapons
         public MeleeWeaponData OffhandData => Data;
         public bool IsShield        => false;
         public bool BlocksPassively => false;
+        public bool TakesAim        => false;
+        public Artifacts.OffhandUse Use => null;
         public IReadOnlyList<StatModifier> MainHandPenalty =>
             Definition is MeleeCategoryData category && category.OffhandPenalty != null
                 ? category.OffhandPenalty

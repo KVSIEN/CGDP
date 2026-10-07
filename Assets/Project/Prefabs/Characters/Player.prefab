@@ -1682,3 +1682,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 331720744ed94d15b547e7b5c7080423, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.Player.PlayerOffhand
+  _camera: {fileID: 725524174371652151}

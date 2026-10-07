@@ -96,9 +96,9 @@ namespace CGD.Weapons
         // Before a Reflector, so reflects work on what the guard lets through.
         public int  Order      => 0;
 
-        // What the Melee key bashes with when the offhand holds no weapon.
+        // What the Melee key bashes with when the offhand holds no weapon (an artifact leaves V to the main hand).
         private MeleeWeaponData BashData =>
-            _offhand != null    ? _offhand.OffhandData
+            _offhand != null && _offhand.OffhandData != null ? _offhand.OffhandData
             : _mainWeapon != null ? _mainWeapon.Data
             : _gunBash != null    ? _gunBash
             : _data;
@@ -179,18 +179,18 @@ namespace CGD.Weapons
             _queuedBash.Clear();
         }
 
-        // A shield always takes the guard; otherwise a melee weapon in hand guards with its own.
+        // A shield always takes the guard. Otherwise a melee weapon in hand guards with its own,
+        // unless an active artifact has taken the aim input.
         private void RebuildGuard()
         {
             bool shield = _offhand != null && _offhand.IsShield;
+            bool aimTaken = _offhand != null && _offhand.TakesAim;
             _guardData = shield ? _offhand.OffhandData
-                       : _mainWeapon != null && _mainWeapon.Data.CanGuard ? _mainWeapon.Data
+                       : _mainWeapon != null && _mainWeapon.Data.CanGuard && !aimTaken ? _mainWeapon.Data
                        : null;
 
             bool passive = shield && _offhand.BlocksPassively;
             _guard.SetBlock(_guardData != null ? _guardData.Guard : (GuardSettings?)null, passive);
-            // A raised shield uses the aim input, so a gun can't aim behind it.
-            if (_camera != null) _camera.AimTakenByGuard = _guardData != null && !passive && _inHand is WeaponInstance;
         }
 
         private void Update()

@@ -62,6 +62,9 @@ namespace CGD.Combat
             _window.Open(Time.time, profile.Duration, profile.MaxCatches, profile.ArcDeg);
         }
 
+        // Drops the reflect now (a held ward let go).
+        public void Close() => _window.Close();
+
         public float Intercept(in DamageInfo info, float amount, Vector3 point)
         {
             GameObject attacker = info.Source.Owner;

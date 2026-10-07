@@ -14,6 +14,8 @@ namespace CGD.Weapons
         public MeleeWeaponData OffhandData => Data;
         public bool IsShield        => true;
         public bool BlocksPassively => _definition.BlocksPassively;
+        public bool TakesAim        => !_definition.BlocksPassively;
+        public Artifacts.OffhandUse Use => null;
         public IReadOnlyList<StatModifier> MainHandPenalty => _definition.MainHandPenalty;
 
         public override string DisplayName => Data != null ? Data.WeaponName : "Shield";

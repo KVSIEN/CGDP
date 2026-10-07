@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Perks.PassivePerk
   _displayName: Vampiric
   _description: Heals for 3% of all damage dealt.
-  _fits: 4
+  _fits: 12
   _modifiers:
   - Stat: 7
     Op: 0

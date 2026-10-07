@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 453b0ed41ad1410bb2101f26ac99ac6f, type: 3}
+  m_Name: BoneIdolArtifact
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Artifacts.ArtifactDefinition
+  _displayName: Bone Idol
+  _description: Warm to the touch. It asks for something in return, and takes it quietly.
+  _icon: {fileID: 0}
+  _reality: 3
+  _tier: 0
+  _weight: 0.5
+  _baseValue: 150
+  _rollProfile: {fileID: 11400000, guid: 17e540ee9242e574e855d1eef9dcb80a, type: 2}
+  _statRanges:
+  - Stat: 3
+    Range: {Min: 0.08, Max: 0.22, Bias: 0}
+  - Stat: 4
+    Range: {Min: 0.2, Max: 0.6, Bias: 0}
+  - Stat: 17
+    Range: {Min: -30, Max: -10, Bias: 0}
+  _perkPool: {fileID: 11400000, guid: f71ff5ec48f343bba42af703cf20fb01, type: 2}
+  _guaranteedPerks: []
+  _behavior: {fileID: 0}
+  _potency:
+    Min: 1
+    Max: 1
+    Bias: 0
+  _mainHandPenalty: []

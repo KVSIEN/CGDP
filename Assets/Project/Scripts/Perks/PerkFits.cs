@@ -9,5 +9,6 @@ namespace CGD.Perks
         Firearm = 1,
         Melee   = 2,
         Armor   = 4,
+        Artifact = 8,
     }
 }

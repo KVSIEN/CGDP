@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Perks.PassivePerk
   _displayName: Regenerator
   _description: Regenerates 1.5 health per second.
-  _fits: 4
+  _fits: 12
   _modifiers:
   - Stat: 23
     Op: 0

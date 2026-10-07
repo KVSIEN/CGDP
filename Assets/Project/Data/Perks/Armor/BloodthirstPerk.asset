@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Perks.HealPerk
   _displayName: Bloodthirst
   _description: Kills restore 5% of maximum health.
-  _fits: 4
+  _fits: 12
   _trigger: 0
   _chance: 1
   _cooldown: 0

@@ -40,9 +40,9 @@ namespace CGD.Items
         // the same definition, tier and seed roll the same perks.
         public IReadOnlyList<GearPerk> Perks { get; private set; } = System.Array.Empty<GearPerk>();
 
-        // Armor's passive perks change the wearer (move speed, regen…) and are applied with its
-        // stats while worn; a weapon's change the weapon itself, like its attachments.
-        public bool PassivesAffectWearer => Definition is ArmorDefinition;
+        // Armor's and artifacts' passive perks change the wearer (move speed, regen…) and are applied
+        // with its stats while worn or held; a weapon's change the weapon itself, like its attachments.
+        public bool PassivesAffectWearer => Definition is ArmorDefinition || Definition is Artifacts.ArtifactDefinition;
         public int AttachmentSlots { get; }
         public bool HasFreeSlot => _attachments.Count < AttachmentSlots;
 

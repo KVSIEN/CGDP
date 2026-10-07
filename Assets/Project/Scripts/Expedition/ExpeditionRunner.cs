@@ -127,7 +127,7 @@ namespace CGD.Expedition
             // Wear and Hold take the item out of the pack, so it goes in first; if it can't be
             // worn or held it simply stays there.
             _inventory.Inventory.Add(item);
-            if (item is ShieldInstance && _offhand != null && _offhand.Item == null)
+            if (item is not WeaponItem && _offhand != null && _offhand.Item == null && PlayerOffhand.CanHold(item))
             {
                 _offhand.Hold(item);
                 return;

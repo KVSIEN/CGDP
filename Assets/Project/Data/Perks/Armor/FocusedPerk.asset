@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Perks.PassivePerk
   _displayName: Focused
   _description: Ability cooldowns 10% shorter.
-  _fits: 4
+  _fits: 12
   _modifiers:
   - Stat: 20
     Op: 0

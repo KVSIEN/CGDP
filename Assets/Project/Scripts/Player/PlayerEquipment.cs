@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using CGD.Items;
-using CGD.Perks;
 using CGD.Stats;
 
 namespace CGD.Player
@@ -36,7 +35,7 @@ namespace CGD.Player
             if (previous != null) TakeOff(previous, backToInventory: true);
 
             armor.AttachmentsChanged += OnWornAttachmentsChanged;
-            ApplyStats(armor);
+            WearerStats.Apply(_stats, armor);
             Changed?.Invoke();
             return true;
         }
@@ -74,37 +73,14 @@ namespace CGD.Player
         private void TakeOff(ItemInstance armor, bool backToInventory)
         {
             armor.AttachmentsChanged -= OnWornAttachmentsChanged;
-            if (_stats != null) _stats.RemoveFrom(armor);
+            WearerStats.Remove(_stats, armor);
             if (backToInventory) _inventory.Inventory.Add(armor);
-        }
-
-        // Each piece is the Source of its own modifiers, so re-applying one is remove + add.
-        private void ApplyStats(ItemInstance armor)
-        {
-            if (_stats == null) return;
-
-            _stats.RemoveFrom(armor);
-            for (int i = 1; i < ItemStatTraits.Count; i++)
-            {
-                var stat  = (ItemStat)i;
-                float value = armor.GetStat(stat);
-                if (!Mathf.Approximately(value, 0f))
-                    _stats.Add(stat, StatModifierOp.Additive, value, armor);
-            }
-
-            foreach (GearPerk perk in armor.Perks)
-            {
-                if (perk is not PassivePerk passive) continue;
-                foreach (StatModifier modifier in passive.Modifiers)
-                    if (modifier.Stat != ItemStat.None)
-                        _stats.Add(modifier.Stat, modifier.Op, modifier.Value, armor);
-            }
         }
 
         private void OnWornAttachmentsChanged()
         {
             foreach (ItemInstance armor in Equipment.Worn)
-                ApplyStats(armor);
+                WearerStats.Apply(_stats, armor);
         }
     }
 }

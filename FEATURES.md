@@ -622,6 +622,17 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - Click armor in the pack to wear it (whatever was in that slot goes back to the pack); click worn armor to take it off
 - Worn armor adds everything it rolled — armor, health, resistances — to the player, including the effect of any attachments fitted to it
 - **Offhand slot**: click a shield or a one-handed melee weapon in the pack to hold it in the offhand (the one held before goes back); click it to put it away. It only counts while the weapon in hand is one-handed — pistols, SMGs, daggers, swords and axes, or empty hands. With a two-handed weapon out it's stowed (shown as unused) and comes back when you switch. Shields found on a run go straight into a free offhand
+- **Artifacts** (relics, tomes, mirrors, lanterns — the Void's offhand items) also go in the offhand slot. They do two things, together or alone:
+  - **Passive**: while held they give their rolled stats to you like worn armor — and a curse is just a negative stat (the Bone Idol sharpens your crits but drains your maximum health). Their perks work too: passive ones always, triggered ones (like armor's) answer to everything while it's held
+  - **Active**: use it on the **right mouse**. An active artifact takes the right mouse, so a gun can't aim while it's held, the same trade shields make (and a melee weapon's own guard gives way to it). A passive-only artifact leaves the right mouse alone, so you keep your sights. V stays the weapon bash either way, so you can always parry
+  - Three ways to use one: **tap** casts a spell, **hold** keeps something up while draining stamina (a ward), **hold** keeps a channel running (a buff). Hold uses drop when the stamina runs out or you can't act (dodging, stunned); a cast in progress is lost the same way
+  - Artifacts roll a tier like other gear: better ones land better stats and are more **potent** (spells hit harder, channels give more). Cooldowns and charges only recharge while the artifact is held
+  - The held artifact shows in a slot left of the ability bar: its name, whether right mouse taps or holds, how close it is to ready (or the stamina left while a hold is up), and its charges
+  - **Hand Mirror**: hold to raise it; hits from in front are negated and thrown back at whoever made them. Drains stamina quickly
+  - **Whispering Tome**: right mouse rends the enemy under your crosshair (45 damage, pierces armor). Two charges, a short cast, recharging over time or faster as you hit, kill and parry. Also adds a little status strength
+  - **Bone Idol**: no active use. More crit chance and crit damage, less maximum health
+  - **Oil Lantern**: hold to light it; steadier hands (25% less spread) and status resistance while it burns, draining stamina slowly
+  - Found as loot (rare), in the Void's reality; held artifacts count as carried on a run, and one you're handed goes straight into an empty offhand
 - Attachments: pick one from the pack, then click the armor or weapon to fit it; click a fitted attachment to take it back off. Some attachments only fit certain armor slots
 - Attachments on weapons change the weapon for real: magazine size, reload time, fire rate and damage all follow them (e.g. Extended Magazine: +25% magazine, slower reload)
 

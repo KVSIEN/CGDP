@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Perks.TimedBuffPerk
   _displayName: Counterguard
   _description: Parrying grants +25 armor for 3 s.
-  _fits: 4
+  _fits: 12
   _trigger: 1
   _chance: 1
   _cooldown: 0

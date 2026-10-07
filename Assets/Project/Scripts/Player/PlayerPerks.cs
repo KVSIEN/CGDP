@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Abilities;
+using CGD.Artifacts;
 using CGD.Combat;
 using CGD.Feedback;
 using CGD.Items;
@@ -11,13 +12,14 @@ using CGD.Weapons;
 
 namespace CGD.Player
 {
-    // Sets off the triggered perks of the weapon in hand and of every worn armor piece when
-    // something happens: kills, hits and crits, parries, dodges, ability casts, taking damage,
-    // being healed, aiming, reloading, using an item, swapping weapons. A weapon's hit
-    // triggers only count hits it dealt, and its buffs end when it is swapped away.
+    // Sets off the triggered perks of the weapon in hand, of every worn armor piece and of the
+    // artifact held in the offhand when something happens: kills, hits and crits, parries,
+    // dodges, ability casts, taking damage, being healed, aiming, reloading, using an item,
+    // swapping weapons. A weapon's hit triggers only count hits it dealt, and its buffs end
+    // when it is swapped away.
     // The perks live on the gear (PerkDispatcher runs them); this only listens for the moments.
     // Passive perks need nothing here: weapons apply theirs to themselves, PlayerEquipment
-    // applies armor's.
+    // applies armor's and PlayerOffhand an artifact's.
     [RequireComponent(typeof(PlayerWeaponLoadout))]
     public class PlayerPerks : MonoBehaviour
     {
@@ -33,9 +35,11 @@ namespace CGD.Player
         private PlayerAbilities     _abilities;
         private PlayerItemSlots     _items;
         private PlayerEquipment     _equipment;
+        private PlayerOffhand       _offhand;
         private HealthManager       _health;
         private PerkDispatcher      _perks;
         private WeaponItem          _inHand;
+        private ArtifactInstance    _heldArtifact;
 
         private void Awake()
         {
@@ -46,6 +50,7 @@ namespace CGD.Player
             TryGetComponent(out _abilities);
             TryGetComponent(out _items);
             TryGetComponent(out _equipment);
+            TryGetComponent(out _offhand);
             TryGetComponent(out _health);
             TryGetComponent(out MeterSet meters);
 
@@ -65,6 +70,7 @@ namespace CGD.Player
             if (_items     != null) _items.UseEnded         += OnItemUsed;
             if (_camera    != null) _camera.AimStarted      += OnAimStarted;
             if (_equipment != null) _equipment.Changed      += RefreshWorn;
+            if (_offhand   != null) _offhand.Changed        += RefreshWorn;
             if (_health    != null) { _health.OnHealed += OnHealed; _health.OnRevived += _perks.ResetCooldowns; }
             RefreshWorn();
         }
@@ -80,14 +86,21 @@ namespace CGD.Player
             if (_items     != null) _items.UseEnded         -= OnItemUsed;
             if (_camera    != null) _camera.AimStarted      -= OnAimStarted;
             if (_equipment != null) _equipment.Changed      -= RefreshWorn;
+            if (_offhand   != null) _offhand.Changed        -= RefreshWorn;
             if (_health    != null) { _health.OnHealed -= OnHealed; _health.OnRevived -= _perks.ResetCooldowns; }
         }
 
-        // Cached so hit events don't enumerate the equipment dictionary each time.
+        // Cached so hit events don't enumerate the equipment dictionary each time. A held artifact
+        // answers like worn armor, to everything; its buffs end when it is put away.
         private void RefreshWorn()
         {
             _worn.Clear();
             if (_equipment != null) _worn.AddRange(_equipment.Equipment.Worn);
+
+            ArtifactInstance artifact = _offhand != null && _offhand.IsActive ? _offhand.Artifact : null;
+            if (_heldArtifact != null && _heldArtifact != artifact) _perks.Context.EndBuffsFrom(_heldArtifact);
+            _heldArtifact = artifact;
+            if (artifact != null) _worn.Add(artifact);
         }
 
         private void OnDamageDealt(DamageReport report)

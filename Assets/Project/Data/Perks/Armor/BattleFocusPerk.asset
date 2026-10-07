@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Perks.TimedBuffPerk
   _displayName: Battle Focus
   _description: Casting an ability grants +15% damage for 5 s.
-  _fits: 4
+  _fits: 12
   _trigger: 3
   _chance: 1
   _cooldown: 0

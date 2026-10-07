@@ -3137,6 +3137,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db8223bb65e77294d981da714584639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
+--- !u!114 &1555766500 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7429481957253513728, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
+  m_PrefabInstance: {fileID: 7657266172198037326}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 331720744ed94d15b547e7b5c7080423, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Player.PlayerOffhand
 --- !u!114 &1555766061 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8498024951424949005, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
@@ -5424,6 +5435,10 @@ PrefabInstance:
       propertyPath: _dodge
       value: 
       objectReference: {fileID: 1555766061}
+    - target: {fileID: 7041853095571230213, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
+      propertyPath: _offhand
+      value: 
+      objectReference: {fileID: 1555766500}
     - target: {fileID: 3925746759712126302, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
       propertyPath: m_Pivot.x
       value: 0

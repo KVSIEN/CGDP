@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Perks.TimedBuffPerk
   _displayName: Reactive Plating
   _description: Taking damage grants +30 armor for 4 s. 10 s cooldown.
-  _fits: 4
+  _fits: 12
   _trigger: 4
   _chance: 1
   _cooldown: 10

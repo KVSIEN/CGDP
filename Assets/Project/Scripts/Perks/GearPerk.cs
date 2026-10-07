@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Artifacts;
 using CGD.Items;
 using CGD.Weapons;
 
@@ -21,6 +22,7 @@ namespace CGD.Perks
         {
             WeaponInstance      => (_fits & PerkFits.Firearm) != 0,
             MeleeWeaponInstance => (_fits & PerkFits.Melee)   != 0,
+            ArtifactInstance    => (_fits & PerkFits.Artifact) != 0,
             _ when gear?.Definition is ArmorDefinition => (_fits & PerkFits.Armor) != 0,
             _                   => false,
         };

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc047d5f14474792a47ce5be1f181e0a, type: 3}
+  m_Name: MirrorWardBehavior
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Artifacts.WardOffhandBehavior
+  _usage: 'Hold right mouse: raise the mirror. Hits from in front are negated and thrown back at whoever made them. Drains stamina while held; you cannot aim.'
+  _profile: {fileID: 11400000, guid: 00ffc14e20da46279589cec677cfb253, type: 2}
+  _drainPerSecond:
+    Meter: {fileID: 11400000, guid: e97086cb23b549a9b402e8130ab73a15, type: 2}
+    Amount: 14
