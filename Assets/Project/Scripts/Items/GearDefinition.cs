@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CGD.Core;
 using CGD.Perks;
 using UnityEngine;
@@ -22,10 +23,13 @@ namespace CGD.Items
 
         [Tooltip("Perks this gear rolls from, on top of its stats. Empty = no perks")]
         [SerializeField] private PerkPool _perkPool;
+        [Tooltip("Perks every item of this gear has, on top of the ones it rolls (e.g. the Modular Pistol's Tactical Knife)")]
+        [SerializeField] private GearPerk[] _guaranteedPerks = System.Array.Empty<GearPerk>();
 
         public StatRollProfile RollProfile => _rollProfile;
         public StatRange[]     StatRanges  => _statRanges;
         public PerkPool        PerkPool    => _perkPool;
+        public IReadOnlyList<GearPerk> GuaranteedPerks => _guaranteedPerks;
 
         public ItemRoll Roll() => Roll(Tier, Seed.Random());
 

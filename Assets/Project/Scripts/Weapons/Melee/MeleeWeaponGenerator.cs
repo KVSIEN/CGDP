@@ -31,6 +31,7 @@ namespace CGD.Weapons
             for (int i = 0; i < cat.LightCombo.Length; i++)
                 d.LightCombo[i] = Scale(cat.LightCombo[i], damage, reach, pen);
             d.HeavyAttack        = Scale(cat.HeavyAttack, damage, reach, pen);
+            d.Bash               = Scale(cat.Bash, damage, reach, pen);
             d.HeavyHoldThreshold = cat.HeavyHoldThreshold;
             d.ComboResetTime     = cat.ComboResetTime;
             d.WeaveWindow        = cat.WeaveWindow;

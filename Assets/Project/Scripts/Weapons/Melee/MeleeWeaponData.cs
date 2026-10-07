@@ -4,8 +4,9 @@ using CGD.Meters;
 
 namespace CGD.Weapons
 {
-    // A melee weapon's stats: its combo, heavy attack, speed, stamina cost and guard.
-    // Hand-authored for quick melee (fists), or generated from a MeleeCategoryData.
+    // A melee weapon's stats: its combo, heavy attack, bash, speed, stamina cost and guard.
+    // Hand-authored for quick melee (fists, a gun's bash, an offhand knife — only the Bash and
+    // the guard's parry settings matter there), or generated from a MeleeCategoryData.
     [CreateAssetMenu(fileName = "NewMeleeWeapon", menuName = "CGD/Weapons/Melee Weapon Data")]
     public class MeleeWeaponData : ScriptableObject
     {
@@ -16,6 +17,10 @@ namespace CGD.Weapons
 
         [Tooltip("Triggered by holding the melee action at least HeavyHoldThreshold seconds before releasing.")]
         public MeleeAttackStep HeavyAttack = new();
+
+        [Tooltip("The Melee key, or Attack while the guard is up. A hit from in front landing within the guard's Parry Window of the bash starting is parried")]
+        public MeleeAttackStep Bash = new() { Damage = 15f, WindupTime = 0.04f, ActiveTime = 0.1f, RecoveryTime = 0.35f, CancelFrom = 1f,
+                                              HitShape = MeleeHitShape.Thrust, Range = 1.6f, Radius = 0.5f };
 
         [Tooltip("Hold duration before release counts as a heavy attack instead of a light tap.")]
         public float HeavyHoldThreshold = 0.35f;
@@ -37,8 +42,8 @@ namespace CGD.Weapons
         public MeterCost StaminaCost;
         [Min(0f)] public float HeavyStaminaMultiplier = 2f;
 
-        [Header("Guard (alternate action)")]
-        [Tooltip("Off for quick-melee data such as fists, which can't block")]
+        [Header("Guard (alternate action) and parry")]
+        [Tooltip("Off for quick-melee data (fists, gun bashes): they parry with their bash but can't block")]
         public bool CanGuard;
         public GuardSettings Guard = GuardSettings.Default;
         [Tooltip("Optional: what a parry does with the parried hit — send it back, fire it where you aim, a riposte slash, heal… Needs a Reflector on the player")]

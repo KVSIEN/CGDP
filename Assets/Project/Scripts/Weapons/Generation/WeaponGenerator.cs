@@ -13,6 +13,9 @@ namespace CGD.Weapons
     // tying them to quality would make high-tier weapons feel same-y rather than
     // strong.
     //
+    // A styled category (e.g. the Modular Pistol) also picks a FiringStyle and a StatStyle;
+    // their scales stretch the category's ranges before the roll samples them.
+    //
     // Everything random here comes from the roll's seed, so a weapon can be rebuilt
     // exactly from its category, tier and seed.
     public static class WeaponGenerator
@@ -29,15 +32,24 @@ namespace CGD.Weapons
             var d = ScriptableObject.CreateInstance<WeaponData>();
             RandomStream random = roll.Seed.Derive(CharacterLayer).Stream();
 
-            d.WeaponName = random.Pick(cat.Names);
-            d.FireMode    = random.Pick(cat.FireModes);
-            d.FireBehavior = cat.FireBehavior;
-            d.OnHitEffects = cat.OnHitEffects;
+            // Unstyled categories draw exactly as before, so their seeds still give the same weapons.
+            string name        = random.Pick(cat.Names);
+            FiringStyle firing = PickStyle(cat.FiringStyles, s => s.Weight, random);
+            d.FireMode         = firing != null ? firing.FireMode : random.Pick(cat.FireModes);
+            StatStyle lean     = PickStyle(cat.StatStyles, s => s.Weight, random);
+            StyleScales scales = (firing != null ? firing.Scales : StyleScales.Identity)
+                               * (lean   != null ? lean.Scales   : StyleScales.Identity);
 
-            d.RoundsPerMinute = roll.Sample(ItemStat.FireRate, cat.RPM);
+            d.WeaponName   = StyledName(name, firing, lean);
+            d.FireBehavior = firing != null && firing.FireBehavior != null ? firing.FireBehavior : cat.FireBehavior;
+            d.OnHitEffects = cat.OnHitEffects;
+            d.QuickMelee   = cat.QuickMelee;
+
+            d.RoundsPerMinute = roll.Sample(ItemStat.FireRate, StyleScales.Scale(cat.RPM, scales.FireRate));
             d.BurstCount      = cat.BurstCount.Evaluate(random);
             d.BurstInterval   = cat.BurstInterval.EvaluateClamped(random);
-            d.PelletCount     = Mathf.Max(1, cat.PelletCount.Evaluate(random));
+            IntRange pellets  = firing != null && firing.PelletCount.Max > 0 ? firing.PelletCount : cat.PelletCount;
+            d.PelletCount     = Mathf.Max(1, pellets.Evaluate(random));
 
             // A faster draw is a better bow, so charge time follows quality on the draw-speed axis.
             d.ChargeTime                 = Mathf.Max(0f, roll.Sample(ItemStat.DrawTime, cat.ChargeTime));
@@ -59,35 +71,36 @@ namespace CGD.Weapons
             d.HitMask  = cat.HitMask;
             d.NoiseRadius = cat.NoiseRadius;
 
-            d.Damage             = roll.Sample(ItemStat.Damage, cat.Damage);
+            d.Damage             = roll.Sample(ItemStat.Damage, StyleScales.Scale(cat.Damage, scales.Damage));
             d.DamageType         = cat.DamageType;
             d.ArmorPenetration   = Mathf.Clamp01(roll.Sample(ItemStat.ArmorPenetration, cat.ArmorPenetration));
             d.HeadshotMultiplier = roll.Sample(ItemStat.CritDamage, cat.HeadshotMultiplier);
-            d.RangeOptimal       = roll.Sample(ItemStat.Range, cat.RangeOptimal);
-            d.RangeFalloffEnd    = Mathf.Max(d.RangeOptimal + 10f, cat.RangeFalloffEnd.EvaluateClamped(random));
+            d.RangeOptimal       = roll.Sample(ItemStat.Range, StyleScales.Scale(cat.RangeOptimal, scales.Range));
+            d.RangeFalloffEnd    = Mathf.Max(d.RangeOptimal + 10f, StyleScales.Scale(cat.RangeFalloffEnd, scales.Range).EvaluateClamped(random));
             d.DamageFalloffMin   = cat.DamageFalloffMin.EvaluateClamped(random);
 
             d.AmmoType     = cat.AmmoType;
             bool automatic = d.FireMode == FireMode.Auto || d.FireMode == FireMode.Burst;
-            d.MagazineSize = roll.Sample(ItemStat.MagazineSize,
-                automatic && cat.AutomaticMagazineSize.Max > 0 ? cat.AutomaticMagazineSize : cat.MagazineSize);
+            IntRange magazine = automatic && cat.AutomaticMagazineSize.Max > 0 ? cat.AutomaticMagazineSize : cat.MagazineSize;
+            d.MagazineSize = roll.Sample(ItemStat.MagazineSize, StyleScales.Scale(magazine, scales.MagazineSize));
 
             d.ReloadTime         = roll.Sample(ItemStat.ReloadTime, cat.ReloadTime);
             d.TacticalReloadTime = Mathf.Max(0.5f, roll.Sample(ItemStat.ReloadTime, cat.TacticalReloadTime));
 
-            d.HipSpreadDeg        = roll.Sample(ItemStat.Spread, cat.HipSpreadDeg);
-            d.AdsSpreadDeg        = roll.Sample(ItemStat.Spread, cat.AdsSpreadDeg);
+            FloatRange adsSpread  = firing != null && firing.AdsSpreadDeg.Max > 0f ? firing.AdsSpreadDeg : cat.AdsSpreadDeg;
+            d.HipSpreadDeg        = roll.Sample(ItemStat.Spread, StyleScales.Scale(cat.HipSpreadDeg, scales.Spread));
+            d.AdsSpreadDeg        = roll.Sample(ItemStat.Spread, adsSpread);
             d.AdsSpreadMultiplier = cat.AdsSpreadMultiplier.EvaluateClamped(random);
-            d.SpreadPerShot       = cat.SpreadPerShot.EvaluateClamped(random);
-            d.MaxSpread           = roll.Sample(ItemStat.Spread, cat.MaxSpread);
+            d.SpreadPerShot       = StyleScales.Scale(cat.SpreadPerShot, scales.Spread).EvaluateClamped(random);
+            d.MaxSpread           = roll.Sample(ItemStat.Spread, StyleScales.Scale(cat.MaxSpread, scales.Spread));
             d.SpreadRecovery      = cat.SpreadRecovery.EvaluateClamped(random);
 
-            d.RecoilScale         = new Vector2(roll.Sample(ItemStat.Recoil, cat.RecoilScaleHorizontal),
-                                                roll.Sample(ItemStat.Recoil, cat.RecoilScaleVertical));
+            d.RecoilScale         = new Vector2(roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.RecoilScaleHorizontal, scales.Recoil)),
+                                                roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.RecoilScaleVertical, scales.Recoil)));
             d.RecoilJitter.y      = cat.RecoilJitterVertical.EvaluateClamped(random); // horizontal jitter keeps WeaponData's default
             d.RecoilHorizontalBias = cat.RecoilHorizontalBias.EvaluateClamped(random);
-            d.MaxAccumulatedRecoil = roll.Sample(ItemStat.Recoil, cat.MaxAccumulatedRecoil);
-            d.MaxAccumulatedHorizontalRecoil = roll.Sample(ItemStat.Recoil, cat.MaxAccumulatedHorizontalRecoil);
+            d.MaxAccumulatedRecoil = roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.MaxAccumulatedRecoil, scales.Recoil));
+            d.MaxAccumulatedHorizontalRecoil = roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.MaxAccumulatedHorizontalRecoil, scales.Recoil));
 
             d.RecoilHeatPerShot          = Mathf.Clamp01(cat.RecoilHeatPerShot.EvaluateClamped(random));
             d.RecoilHeatCooldown         = Mathf.Max(0f, cat.RecoilHeatCooldown.EvaluateClamped(random));
@@ -113,6 +126,18 @@ namespace CGD.Weapons
             d.AdsSpeed  = Mathf.Max(0.1f, cat.AdsSpeed.EvaluateClamped(random));
 
             return new WeaponInstance(cat, roll, d);
+        }
+
+        // Null when the category has no styles of this kind, without drawing from the stream.
+        private static T PickStyle<T>(T[] styles, System.Func<T, float> weight, RandomStream random) where T : class =>
+            styles != null && styles.Length > 0 ? random.PickWeighted(styles, weight) : null;
+
+        // "Marksman Burst Modular Pistol"; a style without a name adds nothing.
+        private static string StyledName(string name, FiringStyle firing, StatStyle lean)
+        {
+            if (!string.IsNullOrEmpty(firing?.Name)) name = $"{firing.Name} {name}";
+            if (!string.IsNullOrEmpty(lean?.Name))   name = $"{lean.Name} {name}";
+            return name;
         }
     }
 }

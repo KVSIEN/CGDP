@@ -139,8 +139,11 @@ namespace CGD.Expedition
             Seed seed = _level != null && _level.Graph != null ? _level.Seed.Derive("starter kit") : Seed.Random();
             RandomStream random = seed.Stream();
 
-            foreach (WeaponCategory category in _starterKit.PickWeaponCategories(random))
-                GiveItem(category.Generate(category.Tier, random.NextSeed()));
+            WeaponCategory weapon = _starterKit.StartingWeapon;
+            if (weapon != null) GiveItem(weapon.Generate(weapon.Tier, random.NextSeed()));
+
+            foreach (GearDefinition gear in _starterKit.PickGear(random))
+                GiveItem(gear.CreateInstance(gear.Roll(gear.Tier, random.NextSeed())));
 
             foreach (StarterSupply supply in _starterKit.Supplies)
             {

@@ -22,6 +22,9 @@ namespace CGD.Weapons
         public MeleeAttackStep[] LightCombo = { new() { Damage = 1f } };
         [Tooltip("Hold-to-charge heavy attack; Damage is relative to the rolled Damage")]
         public MeleeAttackStep HeavyAttack = new() { Damage = 2.5f };
+        [Tooltip("Guard bash (Melee key, or Attack while guarding) — its start parries; Damage is relative to the rolled Damage")]
+        public MeleeAttackStep Bash = new() { Damage = 0.5f, WindupTime = 0.04f, ActiveTime = 0.1f, RecoveryTime = 0.35f, CancelFrom = 1f,
+                                              HitShape = MeleeHitShape.Thrust, Range = 1.6f, Radius = 0.5f };
         public float HeavyHoldThreshold = 0.35f;
         public float ComboResetTime     = 1.2f;
         [Tooltip("Seconds the next combo step stays open after a dodge, parry, ability or weapon switch")]
@@ -46,7 +49,7 @@ namespace CGD.Weapons
         [Header("Guard")]
         [Tooltip("Share of a blocked hit that still gets through (lower = sturdier guard)")]
         public FloatRange    BlockDamageMultiplier = new(0.3f, 0.3f);
-        [Tooltip("Seconds after raising the guard in which a hit is parried")]
+        [Tooltip("Seconds from the start of a bash in which a hit is parried")]
         public FloatRange    ParryWindow           = new(0.2f, 0.2f);
         [Tooltip("Arc, stamina per blocked damage and parry stun (Block Damage and Parry Window are rolled above)")]
         public GuardSettings Guard                 = GuardSettings.Default;

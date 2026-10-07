@@ -2,33 +2,37 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Core;
+using CGD.Items;
 using CGD.Weapons;
 
 namespace CGD.Expedition
 {
-    // What the starting room hands the player each run (GDD › Starting Room): a random but
-    // viable loadout — a few freshly generated weapons from these categories, plus supplies.
+    // What the starting room hands the player each run (GDD › Starting Room): always the same
+    // kind of starting weapon, freshly rolled, plus random gear and supplies.
     // Random, not tailored to the map: every run starts blind.
     [CreateAssetMenu(fileName = "RunStarterKit", menuName = "CGD/Expedition/Run Starter Kit")]
     public class RunStarterKit : ScriptableObject
     {
-        [Tooltip("Categories (firearm or melee) the starting weapons are generated from; no category twice in one run")]
-        [SerializeField] private WeaponCategory[] _weaponCategories = Array.Empty<WeaponCategory>();
-        [SerializeField] private IntRange _weaponCount = new(1, 2);
+        [Tooltip("Handed over every run, rolled anew each time")]
+        [SerializeField] private WeaponCategory _startingWeapon;
+        [Tooltip("Gear (armor, or more weapons) the run may also start with; no piece twice in one run")]
+        [SerializeField] private GearDefinition[] _gear = Array.Empty<GearDefinition>();
+        [SerializeField] private IntRange _gearCount = new(0, 1);
         [Tooltip("Consumables, ammunition and crafting materials, each rolled within its count")]
         [SerializeField] private List<StarterSupply> _supplies = new();
 
+        public WeaponCategory StartingWeapon => _startingWeapon;
         public IReadOnlyList<StarterSupply> Supplies => _supplies;
 
-        // WeaponCount distinct categories, in random order.
-        public List<WeaponCategory> PickWeaponCategories(RandomStream random)
+        // GearCount distinct pieces of gear, in random order.
+        public List<GearDefinition> PickGear(RandomStream random)
         {
-            var pool = new List<WeaponCategory>();
-            foreach (WeaponCategory category in _weaponCategories)
-                if (category != null && !pool.Contains(category)) pool.Add(category);
+            var pool = new List<GearDefinition>();
+            foreach (GearDefinition gear in _gear)
+                if (gear != null && !pool.Contains(gear)) pool.Add(gear);
 
             random.Shuffle(pool);
-            int count = Mathf.Clamp(_weaponCount.Evaluate(random), 0, pool.Count);
+            int count = Mathf.Clamp(_gearCount.Evaluate(random), 0, pool.Count);
             return pool.GetRange(0, count);
         }
     }

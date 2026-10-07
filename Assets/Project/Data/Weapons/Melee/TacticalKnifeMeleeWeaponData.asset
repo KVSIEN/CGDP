@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 972769c7c18bee9459e105b50ca2349b, type: 3}
+  m_Name: TacticalKnifeMeleeWeaponData
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.MeleeWeaponData
+  WeaponName: Tactical Knife
+  Bash:
+    Timeline: {fileID: 0}
+    Damage: 35
+    ArmorPenetration: 0
+    DamageType: 0
+    CriticalMultiplier: 2
+    WindupTime: 0.03
+    ActiveTime: 0.08
+    RecoveryTime: 0.28
+    CancelFrom: 1
+    HitShape: 0
+    Range: 1.7
+    Radius: 0.35
+    SweepArcDeg: 90
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 8
+  AttackSpeed: 1
+  CanGuard: 0
+  Guard:
+    BlockDamageMultiplier: 0.3
+    StaminaPerDamage: 0.5
+    ArcDeg: 120
+    ParryWindow: 0.2
+    ParryStun: 1.2
+  ParryReflect: {fileID: 0}

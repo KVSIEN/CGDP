@@ -62,6 +62,7 @@ MonoBehaviour:
   AdsRecoilMultiplier: 0.5
   HipRecoilVerticalMultiplier: 0.3
   HipRecoilHorizontalMultiplier: 0.25
+  QuickMelee: {fileID: 11400000, guid: b8b8edef97fe44419568423b7b315222, type: 2}
   DrawTime: 0.35
   LookSwayAmount: 0.3
   LookSwayRecovery: 16

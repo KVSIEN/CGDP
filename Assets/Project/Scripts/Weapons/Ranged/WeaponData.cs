@@ -200,6 +200,8 @@ namespace CGD.Weapons
         public float HipRecoilHorizontalMultiplier = 0.15f;
 
         [Header("Handling")]
+        [Tooltip("What the Melee key does with this weapon in hand — a bash; its start parries. Empty = fists")]
+        public MeleeWeaponData QuickMelee;
         [Tooltip("Seconds to draw and ready the weapon after swapping to this slot")]
         public float DrawTime = 0.5f;
         [Tooltip("How heavily the weapon lags behind look input (0 = rigid, 1 = heavy). Higher = worse handling.")]

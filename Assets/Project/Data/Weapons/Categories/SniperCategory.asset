@@ -94,6 +94,7 @@ MonoBehaviour:
     Min: 0.3
     Max: 0.8
     Bias: 0
+  QuickMelee: {fileID: 11400000, guid: 8c0fb3d413164f1e8863c23c1d9ab60c, type: 2}
   DrawTime:
     Min: 0.6
     Max: 1

@@ -83,5 +83,7 @@ MonoBehaviour:
     Weight: 1
   - Perk: {fileID: 11400000, guid: 1a9f2f458d5b4e4782053ab91e0f3bd2, type: 2}
     Weight: 1
+  - Perk: {fileID: 11400000, guid: 5697c1f1aae847e3a754b018e10e678d, type: 2}
+    Weight: 0.6
   _perksPerTier: 0000000001000000010000000200000002000000
   _extraPerkChance: 0.25

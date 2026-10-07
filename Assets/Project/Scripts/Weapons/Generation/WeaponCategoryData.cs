@@ -19,6 +19,12 @@ namespace CGD.Weapons
         // e.g. { Auto, Auto, Auto, Semi } = 75% Auto, 25% Semi.
         public FireMode[] FireModes = { FireMode.Auto };
 
+        [Header("Styles")]
+        [Tooltip("Optional: weighted ways a weapon of this category can shoot (fire mode, pellets). Replaces Fire Modes when set")]
+        public FiringStyle[] FiringStyles = System.Array.Empty<FiringStyle>();
+        [Tooltip("Optional: weighted stat leans (marksman, rapid…), rolled independently of the firing style")]
+        public StatStyle[] StatStyles = System.Array.Empty<StatStyle>();
+
         [Header("Firing")]
         public WeaponFireBehavior FireBehavior;
         public FloatRange RPM          = new(600, 800);
@@ -79,6 +85,8 @@ namespace CGD.Weapons
         public FloatRange TacticalReloadBonus = new(0.3f, 0.6f);
 
         [Header("Handling")]
+        [Tooltip("What the Melee key does with this weapon in hand — a bash; its start parries. Empty = fists")]
+        public MeleeWeaponData QuickMelee;
         public FloatRange DrawTime           = new(0.5f, 0.7f);
         public LayerMask HitMask             = ~0;
         [Tooltip("How far away enemies hear it (0 = silent)")]

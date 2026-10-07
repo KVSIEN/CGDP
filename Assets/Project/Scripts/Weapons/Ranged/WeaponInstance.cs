@@ -1,5 +1,6 @@
 using UnityEngine;
 using CGD.Items;
+using CGD.Perks;
 
 namespace CGD.Weapons
 {
@@ -60,6 +61,18 @@ namespace CGD.Weapons
         public float ProjectileSpeedScale => Modify(ItemStat.ProjectileSpeed, 1f);
         public float SpreadScale          => Modify(ItemStat.Spread, 1f);
         public float RecoilScale          => Modify(ItemStat.Recoil, 1f);
+
+        // What the Melee key does with this gun in hand: its own bash, unless a perk (Tactical
+        // Knife) swaps in another. Null = fists.
+        public MeleeWeaponData QuickMelee
+        {
+            get
+            {
+                foreach (GearPerk perk in Perks)
+                    if (perk is QuickMeleePerk swap && swap.QuickMelee != null) return swap.QuickMelee;
+                return Data != null ? Data.QuickMelee : null;
+            }
+        }
 
         // Called on player revive. Refills the loaded mag only — reserve is inventory
         // state and lives outside the weapon.

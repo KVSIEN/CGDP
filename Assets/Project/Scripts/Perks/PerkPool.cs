@@ -20,14 +20,15 @@ namespace CGD.Perks
         [Tooltip("Chance of one perk more than the tier gives")]
         [SerializeField, Range(0f, 1f)] private float _extraPerkChance = 0.25f;
 
-        public IReadOnlyList<GearPerk> Roll(ItemInstance gear, ItemRoll roll)
+        // `exclude`: perks the item already has (guaranteed ones), never rolled again.
+        public IReadOnlyList<GearPerk> Roll(ItemInstance gear, ItemRoll roll, IReadOnlyCollection<GearPerk> exclude = null)
         {
             RandomStream random = roll.Seed.Derive(PerksLayer).Stream();
             int count = CountFor(roll.Tier) + (random.Chance(_extraPerkChance) ? 1 : 0);
 
             var candidates = new List<WeightedPerk>();
             foreach (WeightedPerk entry in _perks)
-                if (entry.Perk != null && entry.Weight > 0f && entry.Perk.Fits(gear))
+                if (entry.Perk != null && entry.Weight > 0f && entry.Perk.Fits(gear) && !Contains(exclude, entry.Perk))
                     candidates.Add(entry);
 
             var rolled = new List<GearPerk>(count);
@@ -38,6 +39,14 @@ namespace CGD.Perks
                 candidates.RemoveAll(e => e.Perk == pick.Perk);
             }
             return rolled;
+        }
+
+        private static bool Contains(IReadOnlyCollection<GearPerk> perks, GearPerk perk)
+        {
+            if (perks == null) return false;
+            foreach (GearPerk p in perks)
+                if (p == perk) return true;
+            return false;
         }
 
         private int CountFor(ItemTier tier)

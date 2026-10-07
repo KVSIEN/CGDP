@@ -16,7 +16,7 @@ MonoBehaviour:
   _description: Parrying grants +50% damage for 4 s while this weapon is in hand.
   _trigger: 1
   _chance: 1
-  _fits: 2
+  _fits: 3
   _cooldown: 0
   _modifiers:
   - Stat: 1

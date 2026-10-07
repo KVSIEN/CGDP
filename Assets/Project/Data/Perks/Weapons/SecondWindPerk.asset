@@ -16,7 +16,7 @@ MonoBehaviour:
   _description: Parrying restores 30 stamina.
   _trigger: 1
   _chance: 1
-  _fits: 2
+  _fits: 3
   _cooldown: 0
   _meter: {fileID: 11400000, guid: e97086cb23b549a9b402e8130ab73a15, type: 2}
   _amount: 30

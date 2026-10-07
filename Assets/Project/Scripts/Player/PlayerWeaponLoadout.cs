@@ -207,7 +207,7 @@ namespace CGD.Player
             _equippedWeapon = equipping;
             _activeSlot = index;
             _weapon.Equip(_slots[index] as WeaponInstance);
-            if (_melee != null) _melee.Equip(_slots[index] as MeleeWeaponInstance);
+            if (_melee != null) _melee.Equip(_slots[index]);
             RefreshInspectorView();
             if (changed) ActiveChanged?.Invoke(equipping);
         }

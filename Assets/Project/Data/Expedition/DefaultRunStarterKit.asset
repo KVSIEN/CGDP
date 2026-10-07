@@ -12,14 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70c67883ae194d2882695fd07299f9dd, type: 3}
   m_Name: DefaultRunStarterKit
   m_EditorClassIdentifier: CGD.Runtime::CGD.Expedition.RunStarterKit
-  _weaponCategories:
-  - {fileID: 11400000, guid: 0396f48522a2c3742b7e10cebd6e6141, type: 2}
-  - {fileID: 11400000, guid: ebd589c952325cf4888029914e9d941b, type: 2}
-  - {fileID: 11400000, guid: ef20e19e7da2caa4f873416a54a13b19, type: 2}
-  - {fileID: 11400000, guid: f3b2e8b952dc3764ca03065c900517f4, type: 2}
-  _weaponCount:
-    Min: 1
-    Max: 2
+  _startingWeapon: {fileID: 11400000, guid: 31e647e55c7e4f54a2e4017d7ab1b0e0, type: 2}
+  _gear:
+  - {fileID: 11400000, guid: 5358d22025294ac09819b7ed8c46e02c, type: 2}
+  _gearCount:
+    Min: 0
+    Max: 1
     Bias: 0
   _supplies:
   - Item: {fileID: 11400000, guid: ccd78f0d89cb6e84abb013e9c41d8f1b, type: 2}

@@ -60,7 +60,18 @@ namespace CGD.Items
             definition.RollStats(roll, BaseStats);
             // Here rather than in each generator so every rolled item gets them. Fits only
             // looks at the item's kind, which is already final during construction.
-            if (definition.PerkPool != null) Perks = definition.PerkPool.Roll(this, roll);
+            Perks = RollPerks(definition, roll);
+        }
+
+        // The definition's guaranteed perks (those that fit), then rolled ones that don't repeat them.
+        private IReadOnlyList<GearPerk> RollPerks(GearDefinition definition, ItemRoll roll)
+        {
+            var perks = new List<GearPerk>();
+            foreach (GearPerk perk in definition.GuaranteedPerks)
+                if (perk != null && perk.Fits(this) && !perks.Contains(perk)) perks.Add(perk);
+
+            if (definition.PerkPool != null) perks.AddRange(definition.PerkPool.Roll(this, roll, perks));
+            return perks;
         }
 
         // For gear built outside the roll pipeline, such as a hand-authored weapon

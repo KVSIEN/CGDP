@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 347782266d1d4b95945c533c816b58b2, type: 3}
+  m_Name: TacticalKnifePerk
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Perks.QuickMeleePerk
+  _displayName: Tactical Knife
+  _description: Quick melee is a fast offhand knife stab instead of a bash, but the gun is held one-handed - 35% more spread and 30% more recoil.
+  _fits: 1
+  _modifiers:
+  - Stat: 14
+    Op: 1
+    Value: 0.35
+  - Stat: 13
+    Op: 1
+    Value: 0.3
+  _quickMelee: {fileID: 11400000, guid: 5dbec6536af3471094c9c0141716093e, type: 2}
+  _weaponTypes: 0200000001000000

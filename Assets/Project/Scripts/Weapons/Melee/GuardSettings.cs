@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace CGD.Weapons
 {
-    // How a melee weapon's guard (the alternate action) holds up. Guarding slows the
-    // player to ADS walk speed, since it shares the aim input.
+    // How a melee weapon's guard (the alternate action) holds up, and how its bash parries.
+    // Guarding slows the player to ADS walk speed, since it shares the aim input.
     [Serializable]
     public struct GuardSettings
     {
@@ -14,7 +14,7 @@ namespace CGD.Weapons
         [Min(0f)] public float StaminaPerDamage;
         [Tooltip("Total angle in front of the player the guard covers")]
         [Range(10f, 360f)] public float ArcDeg;
-        [Tooltip("Seconds after raising the guard in which a hit is parried instead of blocked")]
+        [Tooltip("Seconds from the start of a bash in which a hit from in front is parried")]
         [Min(0f)] public float ParryWindow;
         [Tooltip("Seconds a parried attacker is stunned")]
         [Min(0f)] public float ParryStun;

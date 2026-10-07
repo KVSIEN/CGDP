@@ -10,43 +10,159 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 522962483bd84074e8d7de7a151a8cfd, type: 3}
-  m_Name: PistolCategory
-  m_EditorClassIdentifier: Assembly-CSharp::WeaponCategoryData
-  _displayName: Pistol
+  m_Name: ModularPistolCategory
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.WeaponCategoryData
+  _displayName: Modular Pistol
   _description: 
   _icon: {fileID: 0}
   _reality: 0
   _tier: 0
   _weight: 0.1
-  _baseValue: 80
+  _baseValue: 60
   _rollProfile: {fileID: 0}
   _statRanges: []
   _perkPool: {fileID: 11400000, guid: 46756d1ce4124b5c8905716c4d8a5986, type: 2}
+  _guaranteedPerks:
+  - {fileID: 11400000, guid: 5697c1f1aae847e3a754b018e10e678d, type: 2}
   Type: 2
   Names:
-  - M9
-  - Glock 17
-  - Desert Eagle
-  - USP-S
-  - P250
-  - Five-seveN
-  - M1911
-  - .44 Magnum
-  - Glock 18
-  - CZ-75
+  - Modular Pistol
   FireModes: 00000000000000000000000001000000
+  FiringStyles:
+  - Name: 
+    Weight: 40
+    FireMode: 0
+    FireBehavior: {fileID: 0}
+    PelletCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    AdsSpreadDeg:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+  - Name: Burst
+    Weight: 25
+    FireMode: 2
+    FireBehavior: {fileID: 0}
+    PelletCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    AdsSpreadDeg:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Scales:
+      Damage: 0.85
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+  - Name: Machine
+    Weight: 20
+    FireMode: 1
+    FireBehavior: {fileID: 0}
+    PelletCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    AdsSpreadDeg:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Scales:
+      Damage: 0.6
+      FireRate: 1.7
+      Recoil: 0.8
+      Spread: 1
+      Range: 1
+      MagazineSize: 1.6
+  - Name: Scatter
+    Weight: 15
+    FireMode: 0
+    FireBehavior: {fileID: 11400000, guid: e2cbfa746aa878d4aa23d60289c75ece, type: 2}
+    PelletCount:
+      Min: 5
+      Max: 7
+      Bias: 0
+    AdsSpreadDeg:
+      Min: 1.5
+      Max: 3
+      Bias: 0
+    Scales:
+      Damage: 0.3
+      FireRate: 0.6
+      Recoil: 1
+      Spread: 2.5
+      Range: 0.45
+      MagazineSize: 0.7
+  StatStyles:
+  - Name: 
+    Weight: 30
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+  - Name: Heavy
+    Weight: 15
+    Scales:
+      Damage: 1.3
+      FireRate: 0.7
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+  - Name: Marksman
+    Weight: 15
+    Scales:
+      Damage: 1.4
+      FireRate: 0.6
+      Recoil: 1.6
+      Spread: 0.7
+      Range: 1.6
+      MagazineSize: 1
+  - Name: Rapid
+    Weight: 20
+    Scales:
+      Damage: 0.75
+      FireRate: 1.4
+      Recoil: 0.85
+      Spread: 1
+      Range: 0.8
+      MagazineSize: 1
+  - Name: Carbine
+    Weight: 20
+    Scales:
+      Damage: 1.1
+      FireRate: 0.8
+      Recoil: 0.8
+      Spread: 1
+      Range: 1.3
+      MagazineSize: 1
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:
     Min: 300
-    Max: 600
+    Max: 480
     Bias: 0
   BurstCount:
-    Min: 2
-    Max: 2
+    Min: 3
+    Max: 3
     Bias: 0
   BurstInterval:
-    Min: 0.08
-    Max: 0.12
+    Min: 0.06
+    Max: 0.09
     Bias: 0
   PelletCount:
     Min: 1
@@ -54,8 +170,8 @@ MonoBehaviour:
     Bias: 0
   OnHitEffects: []
   Damage:
-    Min: 20
-    Max: 60
+    Min: 18
+    Max: 32
     Bias: 0
   DamageType: 0
   ArmorPenetration:
@@ -80,8 +196,8 @@ MonoBehaviour:
     Bias: 0
   AmmoType: 2
   MagazineSize:
-    Min: 6
-    Max: 20
+    Min: 10
+    Max: 17
     Bias: -0.2
   ReloadTime:
     Min: 1.3
