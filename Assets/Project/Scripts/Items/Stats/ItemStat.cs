@@ -36,5 +36,10 @@ namespace CGD.Items
         MovementSpeed     = 22,
         HealthRegen       = 23,
         ShieldRegenRate   = 24,
+
+        // Projectile flight speed, as a multiplier on the weapon's own (base 1).
+        ProjectileSpeed   = 25,
+        // Extra shots per trigger pull: 1 = always one more, 0.5 = one more half the time.
+        Multishot         = 26,
     }
 }

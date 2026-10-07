@@ -1,7 +1,9 @@
 using UnityEngine;
 using CGD.Combat;
 using CGD.Input;
+using CGD.Items;
 using CGD.Meters;
+using CGD.Stats;
 
 namespace CGD.Player
 {
@@ -45,6 +47,7 @@ namespace CGD.Player
         private PlayerDodge _dodge;
         private PlayerMantle _mantle;
         private Stunnable _stunnable;
+        private CharacterStats _stats;
         private MeterSet _meters;
 
         private float _coyoteTimer;
@@ -56,6 +59,9 @@ namespace CGD.Player
         private Vector3 _moveDirection;
         private Rigidbody _groundRb;
 
+        // MovementSpeed from gear and buffs, on a base of 1 (+0.08 = 8% faster).
+        private float SpeedMultiplier => _stats != null ? Mathf.Max(0.1f, _stats.Apply(ItemStat.MovementSpeed, 1f)) : 1f;
+
         private void Awake()
         {
             _rb     = GetComponent<Rigidbody>();
@@ -64,6 +70,7 @@ namespace CGD.Player
             _dodge  = GetComponent<PlayerDodge>();
             _mantle = GetComponent<PlayerMantle>();
             _stunnable = GetComponent<Stunnable>();
+            _stats     = GetComponentInParent<CharacterStats>();
             TryGetComponent(out _meters);
 
             _rb.useGravity = false;
@@ -232,7 +239,7 @@ namespace CGD.Player
                 : _settings.WalkSpeed;
             if (_input.GetAction(GameAction.AimDownSights))
                 stanceSpeed = Mathf.Min(stanceSpeed, _settings.AdsWalkSpeed);
-            float targetSpeed = stanceSpeed * _stunnable.SpeedMultiplier;
+            float targetSpeed = stanceSpeed * _stunnable.SpeedMultiplier * SpeedMultiplier;
 
             Vector3 targetDir = _moveDirection;
 

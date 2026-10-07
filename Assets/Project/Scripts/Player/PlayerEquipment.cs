@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using CGD.Items;
+using CGD.Perks;
 using CGD.Stats;
 
 namespace CGD.Player
@@ -8,7 +9,7 @@ namespace CGD.Player
     // The Player's worn armor and attachment fitting. Wearing a piece takes it out of
     // the inventory (the old piece goes back in) and adds its stats to CharacterStats
     // as flat bonuses — armor, health, resistances, whatever it rolled, with its own
-    // attachments applied. Attachments come from the inventory and fit onto worn armor
+    // attachments applied — plus its passive perks (move speed, regen…) as they are authored. Attachments come from the inventory and fit onto worn armor
     // or carried weapons.
     [RequireComponent(typeof(PlayerInventory))]
     public class PlayerEquipment : MonoBehaviour
@@ -89,6 +90,14 @@ namespace CGD.Player
                 float value = armor.GetStat(stat);
                 if (!Mathf.Approximately(value, 0f))
                     _stats.Add(stat, StatModifierOp.Additive, value, armor);
+            }
+
+            foreach (GearPerk perk in armor.Perks)
+            {
+                if (perk is not PassivePerk passive) continue;
+                foreach (StatModifier modifier in passive.Modifiers)
+                    if (modifier.Stat != ItemStat.None)
+                        _stats.Add(modifier.Stat, modifier.Op, modifier.Value, armor);
             }
         }
 

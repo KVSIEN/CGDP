@@ -66,6 +66,8 @@ namespace CGD.Combat
         public event Action<DamageInfo> OnHit;
         // Raised by Revive(), so systems on the same character can reset themselves.
         public event Action        OnRevived;
+        // Health restored by Heal() (not by regeneration), with the amount actually restored.
+        public event Action<float> OnHealed;
 
         protected virtual void Awake()
         {
@@ -75,26 +77,59 @@ namespace CGD.Combat
             System.Array.Sort(_interceptors, (a, b) => a.Order.CompareTo(b.Order));
             // The shield is a regenerating resource like any other, so it runs on Meter.
             _shield = new Meter(new MeterSettings(MaxShield, ShieldRegenRate, ShieldRegenDelay));
+            if (_stats != null) _stats.Modifiers.Changed += OnStatChanged;
             ResetHealth();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (_stats != null) _stats.Modifiers.Changed -= OnStatChanged;
+        }
+
+        // Gear and buffs that add shield capacity take effect at once, keeping what's charged.
+        private void OnStatChanged(ItemStat stat)
+        {
+            if (stat == ItemStat.Shield) _shield.SetMax(MaxShield, keepRatio: false);
         }
 
         private void Update()
         {
             if (_shield.Tick(Time.deltaTime)) OnChanged?.Invoke();
+            Regenerate(Time.deltaTime);
         }
 
-        public void TakeDamage(DamageInfo info) => ApplyDamage(info, 1f, DefaultHitPoint, false);
+        // Health regeneration per second from gear and buffs (HealthRegen stat).
+        private void Regenerate(float deltaTime)
+        {
+            if (_stats == null || IsDead || _currentHealth >= MaxHealth) return;
+
+            float regen = _stats.Apply(ItemStat.HealthRegen, 0f);
+            if (regen <= 0f) return;
+
+            _currentHealth = Mathf.Min(_currentHealth + regen * deltaTime, MaxHealth);
+            OnChanged?.Invoke();
+        }
+
+        public void TakeDamage(DamageInfo info) =>
+            ApplyDamage(info, info.Bonuses.ForceCritical ? info.CriticalMultiplier : 1f, DefaultHitPoint, info.Bonuses.ForceCritical);
 
         public void TakeHit(DamageInfo info, HitboxRegion region, Vector3 point)
         {
             float multiplier = HitboxProfile.Resolve(_hitboxProfile, region, info.CriticalMultiplier, out bool isCritical);
+            if (info.Bonuses.ForceCritical && !isCritical)
+            {
+                multiplier *= info.CriticalMultiplier;
+                isCritical  = true;
+            }
             ApplyDamage(info, multiplier, point, isCritical);
         }
 
         public void Heal(float amount)
         {
+            float before = _currentHealth;
             _currentHealth = Mathf.Clamp(_currentHealth + amount, 0f, MaxHealth);
             OnChanged?.Invoke();
+            if (_currentHealth > before) OnHealed?.Invoke(_currentHealth - before);
         }
 
         public void Revive()
@@ -176,10 +211,18 @@ namespace CGD.Combat
         {
             if (_statusEffects == null || info.OnHitEffects == null) return;
 
+            // The attacker's status chance makes effects likelier; this character's status
+            // resistance makes them less likely. Status damage strengthens what lands.
+            float resistance = Mathf.Clamp01(WithModifiers(ItemStat.StatusResistance, 0f));
+            float chanceScale = (1f + info.Bonuses.StatusChance) * (1f - resistance);
+            DamageInfo carried = info.Bonuses.StatusDamage != 0f
+                ? info.WithDamageScale(Mathf.Max(0f, 1f + info.Bonuses.StatusDamage))
+                : info;
+
             foreach (StatusEffectApplication application in info.OnHitEffects)
             {
-                if (application.Effect != null && UnityEngine.Random.value < application.Chance)
-                    _statusEffects.Apply(application.Effect, info);
+                if (application.Effect != null && UnityEngine.Random.value < application.Chance * chanceScale)
+                    _statusEffects.Apply(application.Effect, carried);
             }
         }
     }

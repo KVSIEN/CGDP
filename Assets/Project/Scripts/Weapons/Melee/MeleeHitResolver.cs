@@ -21,13 +21,16 @@ namespace CGD.Weapons
         private DamageInfo      _info;
         private LayerMask       _mask;
         private Transform       _sourceRoot;
+        private float           _range;
         private bool            _active;
 
         public bool HitAnything { get; private set; }
 
-        public void Begin(MeleeAttackStep step, DamageInfo info, LayerMask mask, Transform sourceRoot)
+        // `rangeScale` stretches the step's reach (reach perks and buffs).
+        public void Begin(MeleeAttackStep step, DamageInfo info, LayerMask mask, Transform sourceRoot, float rangeScale = 1f)
         {
             _step       = step;
+            _range      = step.Range * rangeScale;
             _info       = info;
             _mask       = mask;
             _sourceRoot = sourceRoot;
@@ -60,12 +63,12 @@ namespace CGD.Weapons
         {
             int count = Physics.SphereCastNonAlloc(
                 origin, _step.Radius, forward, CastBuffer,
-                _step.Range, _mask, QueryTriggerInteraction.Ignore);
+                _range, _mask, QueryTriggerInteraction.Ignore);
 
             ProcessCastHits(count);
 
             if (debug)
-                Debug.DrawRay(origin, forward * _step.Range, _step.DebugColor, debugDur);
+                Debug.DrawRay(origin, forward * _range, _step.DebugColor, debugDur);
         }
 
         private void TickSweep(Vector3 origin, Vector3 forward, Vector3 up,
@@ -82,18 +85,18 @@ namespace CGD.Weapons
 
                 int count = Physics.SphereCastNonAlloc(
                     origin, _step.Radius, dir, CastBuffer,
-                    _step.Range, _mask, QueryTriggerInteraction.Ignore);
+                    _range, _mask, QueryTriggerInteraction.Ignore);
 
                 ProcessCastHits(count);
 
                 if (debug)
-                    Debug.DrawRay(origin, dir * _step.Range, _step.DebugColor, debugDur);
+                    Debug.DrawRay(origin, dir * _range, _step.DebugColor, debugDur);
             }
         }
 
         private void TickSlam(Vector3 origin, Vector3 forward, bool debug, float debugDur)
         {
-            Vector3 center = origin + forward * _step.Range;
+            Vector3 center = origin + forward * _range;
 
             int count = Physics.OverlapSphereNonAlloc(
                 center, _step.Radius, OverlapBuffer,

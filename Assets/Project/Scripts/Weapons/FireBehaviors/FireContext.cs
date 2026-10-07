@@ -15,6 +15,14 @@ namespace CGD.Weapons
         // (WeaponController resolves it); fire behaviors use this instead of Data.Damage.
         public float      Damage;
         public DamageSource Source;
+        // The rest of the shot's resolved stats (weapon, its perks and attachments, the wielder's
+        // buffs), which fire behaviors use instead of the matching WeaponData fields.
+        public float      ArmorPenetration;
+        public float      CriticalMultiplier;
+        public HitBonuses Bonuses;
+        // Multipliers on the weapon's range (optimal, falloff end and max) and projectile speed.
+        public float      RangeScale;
+        public float      ProjectileSpeedScale;
         // 1 for standard fire modes; 0–1 for Charge mode, reflecting how long the trigger was held.
         // Fire behaviors that ignore charge should treat it as 1.
         public float      Charge;

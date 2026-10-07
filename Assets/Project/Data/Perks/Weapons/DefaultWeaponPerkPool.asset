@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da18f56f06414a059e7d7575a1977544, type: 3}
+  m_Name: DefaultWeaponPerkPool
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Perks.PerkPool
+  _perks:
+  - Perk: {fileID: 11400000, guid: 5b66bdd4b52a4b9b8328696b3231f6a8, type: 2}
+    Weight: 0.6
+  - Perk: {fileID: 11400000, guid: 262b712ae74c4ce9b17e87fd866c226c, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 5fe542cb9dc64083ab1d6584139f541a, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 369a295fd79f4c749a815ca1ea12ab57, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: dd3d0888884b44fe8963f9708c10d47c, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 5b58bd5498f74abaacba04702c301291, type: 2}
+    Weight: 0.8
+  - Perk: {fileID: 11400000, guid: 56bb4f11a7a94e44a71d1a5c2ee24b65, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: e7c16035b3c947c89acfab5d3a329312, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 140dc7c16403445195c66175f346adc4, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 568cdbe19eb74775921c8fec6c960527, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: b875feb1c63a4d42b3136a8cda35a9f0, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 42b56bc125794df0b5eeb23456ec346e, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 1fbe51d9d06e4c72942c3c504bb5c327, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 779ab3bfcab84744bcf8645fe95bf627, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 31763976d39a4398befc8f0dc9069d2e, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 2a2703d62b3744e185b841dee1b287db, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 14a13f0e0c314367bf388f258f23b866, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 60de0c0ece8c4af7937bfa0196a7afc7, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 208b3d86b11f46b6b358dd8a1c0566af, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 1d98de7c2c2e4f6e9c29913df5c61989, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 6335a9c5127944a29ac7fb4af40b8e7d, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 8391532f08924b20b14304e7743cc680, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: ba016a73c745408aba50f1b0be123d99, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 33b3c57b40d5494ea1e4a16814626b8f, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: f982e29999df45258e0ab07359b6507f, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 117486c8992c4fafb8695642c890a492, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 23564fd9d5ec4086b683f2379b2238bc, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 2c6f07d8f3ed4b348581c744797503c5, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 83f788191afc4834a4ad1bdd97eba452, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 9da5c4f04e6c406b9618d97b90521d1c, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 08061fd259df4e399790b606347ed1dd, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 990b28bea079478fb57c33106369b94d, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 6edb3a65d367425b997a52c160912161, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 8ce2b0432d104d428ca67c6bd97a3e27, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 1a9f2f458d5b4e4782053ab91e0f3bd2, type: 2}
+    Weight: 1
+  _perksPerTier: 0000000001000000010000000200000002000000
+  _extraPerkChance: 0.25

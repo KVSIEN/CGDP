@@ -24,4 +24,5 @@ MonoBehaviour:
     Range: {Min: 10, Max: 30, Bias: 0}
   - Stat: 17
     Range: {Min: 0, Max: 20, Bias: 0}
+  _perkPool: {fileID: 11400000, guid: 1e239de2c87346d588473435a6761ab1, type: 2}
   _slot: 1

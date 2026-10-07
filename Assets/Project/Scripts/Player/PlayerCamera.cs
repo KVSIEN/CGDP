@@ -140,6 +140,10 @@ namespace CGD.Player
         // guard (same input) doesn't zoom.
         public bool AdsAllowed { get; set; } = true;
 
+        // Aiming down sights began (the aim input went down while aiming is allowed).
+        public event System.Action AimStarted;
+        private bool _aimHeld;
+
         private void Awake()
         {
             SettingsSave.LoadSensitivity(out _mouseSensitivity, out _gamepadSensitivity);
@@ -179,7 +183,10 @@ namespace CGD.Player
 
         private void HandleADS()
         {
-            float target = AdsAllowed && _input.GetAction(GameAction.AimDownSights) ? 1f : 0f;
+            bool aiming = AdsAllowed && _input.GetAction(GameAction.AimDownSights);
+            if (aiming && !_aimHeld) AimStarted?.Invoke();
+            _aimHeld = aiming;
+            float target = aiming ? 1f : 0f;
             _adsT = Mathf.MoveTowards(_adsT, target, _adsSpeed * Time.deltaTime);
         }
 

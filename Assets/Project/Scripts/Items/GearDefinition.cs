@@ -1,4 +1,5 @@
 using CGD.Core;
+using CGD.Perks;
 using UnityEngine;
 
 namespace CGD.Items
@@ -19,8 +20,12 @@ namespace CGD.Items
         [Tooltip("Stats this gear rolls, and the range each rolls within")]
         [SerializeField] private StatRange[] _statRanges;
 
+        [Tooltip("Perks this gear rolls from, on top of its stats. Empty = no perks")]
+        [SerializeField] private PerkPool _perkPool;
+
         public StatRollProfile RollProfile => _rollProfile;
         public StatRange[]     StatRanges  => _statRanges;
+        public PerkPool        PerkPool    => _perkPool;
 
         public ItemRoll Roll() => Roll(Tier, Seed.Random());
 

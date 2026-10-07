@@ -2,13 +2,14 @@ using System;
 using UnityEngine;
 using CGD.Input;
 using CGD.Items;
+using CGD.Perks;
 using CGD.Player;
 using CGD.Weapons;
 
 namespace CGD.UI
 {
-    // Character window (Tab): what the player wears, their weapons with their perks and fitted
-    // attachments on the left; armor, attachments and consumables in the pack on the right.
+    // Character window (Tab): what the player wears and their weapons, with perks and fitted
+    // attachments, on the left; armor, attachments and consumables in the pack on the right.
     //   click worn armor        → take it off
     //   click pack armor        → wear it
     //   click an attachment     → pick it, then click a gear line on the left to fit it
@@ -104,9 +105,8 @@ namespace CGD.UI
             else
                 _worn.Label(text);
 
-            if (gear is WeaponItem weapon)
-                foreach (WeaponPerk perk in weapon.Perks)
-                    if (perk != null) _worn.Label($"    * {perk.DisplayName}: {perk.Description}");
+            foreach (GearPerk perk in gear.Perks)
+                if (perk != null) _worn.Label($"    * {perk.DisplayName}: {perk.Description}");
 
             foreach (AttachmentDefinition attachment in gear.Attachments)
                 _worn.Add($"    - {attachment.DisplayName}  (remove)", () => _equipment.Unfit(attachment, gear), _equipment != null);
@@ -122,7 +122,7 @@ namespace CGD.UI
             foreach (ItemInstance item in inventory.Items)
             {
                 if (!Equipment.CanWear(item)) continue;
-                _pack.Add($"{Describe(item)}  → wear", () => _equipment.Wear(item), _equipment != null);
+                _pack.Add($"{DescribeWithPerks(item)}  → wear", () => _equipment.Wear(item), _equipment != null);
                 any = true;
             }
             if (!any) _pack.Label("none");
@@ -187,5 +187,9 @@ namespace CGD.UI
             item.AttachmentSlots > 0
                 ? $"{item.DisplayName} ({item.Tier})  [{item.Attachments.Count}/{item.AttachmentSlots}]"
                 : $"{item.DisplayName} ({item.Tier})";
+
+        // Pack lines have no room for a perk list underneath, so the names go inline.
+        private static string DescribeWithPerks(ItemInstance item) =>
+            item.Perks.Count > 0 ? $"{Describe(item)}  ({item.PerkNames()})" : Describe(item);
     }
 }

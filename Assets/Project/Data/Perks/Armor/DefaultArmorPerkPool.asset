@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da18f56f06414a059e7d7575a1977544, type: 3}
+  m_Name: DefaultArmorPerkPool
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Perks.PerkPool
+  _perks:
+  - Perk: {fileID: 11400000, guid: 9fd3874f4f0647129384393f6ddd2d83, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: a943e60b4ced40d5b8227b0bd182177a, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 071145b1a4de4213b95aae1ea18a8cac, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: a9adcf6bb1294bb29325e2ba07599be1, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: cf52d065b08f497a94989e17ed9e17f1, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: d6e0cb538e794042b3034597e236bb18, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 0bdf6367eda142c1b3a5aa90bfa8c41a, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 6718804d75c042989532ccb9c0357ad2, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 8b4116223711455ebdf744bcda8f628b, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 3339720855d947f78b1e41d19bf27806, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 26e3569a8e054beaa30a9fd8f76b7235, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 9747d03796354654b78d4a0034058633, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 2245f4c6f1c349bfa60bce13d518035a, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: f40676245b79452f871c8b8d2014807a, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 72f326174aaf479287d38946b456ee4b, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 08bfbdd46e404da4a6da68282a2abc7a, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 0bd5b5eb79d54f33976febc97e1d3ffc, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 2ed9c300a45644d89f71beead4c73477, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 6f364705106947b8a1956b2f49deebec, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: c919a62c395f4d38a5e51c4b52953a74, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: 51f52e692921454a8e5b8ac46ed71420, type: 2}
+    Weight: 1
+  - Perk: {fileID: 11400000, guid: abf354de0adc40f3a35bd6a8319df821, type: 2}
+    Weight: 1
+  _perksPerTier: 0000000001000000010000000200000002000000
+  _extraPerkChance: 0.25

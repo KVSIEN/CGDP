@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5532252eb12462eaf34901cfb5bb1c6, type: 3}
+  m_Name: RunAndGunPerk
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Perks.TimedBuffPerk
+  _displayName: Run and Gun
+  _description: Starting a reload grants +20% move speed for 2 s.
+  _fits: 1
+  _trigger: 7
+  _chance: 1
+  _cooldown: 0
+  _modifiers:
+  - Stat: 22
+    Op: 0
+    Value: 0.2
+  _duration: 2

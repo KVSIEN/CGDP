@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using CGD.Core;
+using CGD.Perks;
 using CGD.Stats;
 
 namespace CGD.Items
 {
-    // One unique, carryable piece of gear: what it is, how well it rolled, and what
-    // is currently fitted to it.
+    // One unique, carryable piece of gear: what it is, how well it rolled, which perks it
+    // rolled, and what is currently fitted to it.
     //
-    // Attachment deltas are resolved on top of BaseStats rather than baked into
-    // them, so fitting stays reversible and the original roll is never lost. The
-    // resolved totals are cached and only rebuilt when the attachment set changes.
+    // Attachment deltas (and a weapon's passive perks) are resolved on top of BaseStats rather
+    // than baked into them, so fitting stays reversible and the original roll is never lost.
+    // The resolved totals are cached and only rebuilt when the attachment set changes.
     public class ItemInstance
     {
         private readonly List<AttachmentDefinition> _attachments = new();
@@ -34,6 +35,14 @@ namespace CGD.Items
         public StatBlock BaseStats { get; } = new();
 
         public IReadOnlyList<AttachmentDefinition> Attachments => _attachments;
+
+        // Rolled with the item and fixed for its life, unlike attachments. Part of the seed:
+        // the same definition, tier and seed roll the same perks.
+        public IReadOnlyList<GearPerk> Perks { get; private set; } = System.Array.Empty<GearPerk>();
+
+        // Armor's passive perks change the wearer (move speed, regen…) and are applied with its
+        // stats while worn; a weapon's change the weapon itself, like its attachments.
+        public bool PassivesAffectWearer => Definition is ArmorDefinition;
         public int AttachmentSlots { get; }
         public bool HasFreeSlot => _attachments.Count < AttachmentSlots;
 
@@ -49,6 +58,9 @@ namespace CGD.Items
             AttachmentSlots = definition.AttachmentSlots(roll.Tier);
 
             definition.RollStats(roll, BaseStats);
+            // Here rather than in each generator so every rolled item gets them. Fits only
+            // looks at the item's kind, which is already final during construction.
+            if (definition.PerkPool != null) Perks = definition.PerkPool.Roll(this, roll);
         }
 
         // For gear built outside the roll pipeline, such as a hand-authored weapon
@@ -79,6 +91,23 @@ namespace CGD.Items
             _modifiersDirty = true;
             AttachmentsChanged?.Invoke();
             return true;
+        }
+
+        // For tests and hand-built items; rolled gear gets its perks from its definition's pool.
+        internal void SetPerks(IReadOnlyList<GearPerk> perks)
+        {
+            Perks = perks ?? System.Array.Empty<GearPerk>();
+            _modifiersDirty = true;
+        }
+
+        // "Evasive Reload, Reap", or empty without perks. For labels and listings.
+        public string PerkNames()
+        {
+            if (Perks.Count == 0) return string.Empty;
+
+            var names = new string[Perks.Count];
+            for (int i = 0; i < names.Length; i++) names[i] = Perks[i] != null ? Perks[i].DisplayName : "?";
+            return string.Join(", ", names);
         }
 
         public bool Detach(AttachmentDefinition attachment)
@@ -115,6 +144,15 @@ namespace CGD.Items
                     if (modifier.Stat != ItemStat.None)
                         _modifiers.Add(modifier.Stat, new Modifier(modifier.Op, modifier.Value, attachment));
             }
+
+            if (!PassivesAffectWearer)
+                foreach (GearPerk perk in Perks)
+                {
+                    if (perk is not PassivePerk passive) continue;
+                    foreach (StatModifier modifier in passive.Modifiers)
+                        if (modifier.Stat != ItemStat.None)
+                            _modifiers.Add(modifier.Stat, new Modifier(modifier.Op, modifier.Value, passive));
+                }
 
             _modifiersDirty = false;
         }

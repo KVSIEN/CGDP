@@ -45,6 +45,21 @@ namespace CGD.Weapons
         public float ReloadTime         => Mathf.Max(0.1f, Modify(ItemStat.ReloadTime, Data.ReloadTime));
         public float TacticalReloadTime => Mathf.Max(0.1f, Modify(ItemStat.ReloadTime, Data.TacticalReloadTime));
         public float RoundsPerMinute    => Mathf.Max(1f, Modify(ItemStat.FireRate, Data.RoundsPerMinute));
+        public float DrawTime           => Mathf.Max(0f, Modify(ItemStat.DrawTime, Data.DrawTime));
+        public float ArmorPenetration   => Modify(ItemStat.ArmorPenetration, Data.ArmorPenetration);
+        // The headshot (critical) multiplier; CritDamage raises it.
+        public float CriticalMultiplier => Modify(ItemStat.CritDamage, Data.HeadshotMultiplier);
+
+        // Stats the weapon doesn't roll itself, so they start from a neutral base: chances and
+        // bonuses from 0, scales from 1. Perks and attachments move them.
+        public float CritChance           => Modify(ItemStat.CritChance, 0f);
+        public float StatusChance         => Modify(ItemStat.StatusChance, 0f);
+        public float StatusDamage         => Modify(ItemStat.StatusDamage, 0f);
+        public float Multishot            => Modify(ItemStat.Multishot, 0f);
+        public float RangeScale           => Modify(ItemStat.Range, 1f);
+        public float ProjectileSpeedScale => Modify(ItemStat.ProjectileSpeed, 1f);
+        public float SpreadScale          => Modify(ItemStat.Spread, 1f);
+        public float RecoilScale          => Modify(ItemStat.Recoil, 1f);
 
         // Called on player revive. Refills the loaded mag only — reserve is inventory
         // state and lives outside the weapon.

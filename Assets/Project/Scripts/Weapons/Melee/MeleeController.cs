@@ -77,15 +77,20 @@ namespace CGD.Weapons
         private ComboState      Combo => _equipped != null ? _equipped.Combo : _fistCombo;
         private bool AttackHeld => _input.IsHeld(GameAction.Melee) || (_equipped != null && _input.IsHeld(GameAction.Attack));
         // Divides wind-up, strike and recovery; a timeline-driven strike keeps its authored frames.
-        private float Speed => Mathf.Max(0.1f, Wielder(ItemStat.FireRate, Data.AttackSpeed));
+        private float Speed => Mathf.Max(0.1f, Stat(ItemStat.FireRate, Data.AttackSpeed));
 
-        // A weapon value with the wielder's buffs and debuffs (e.g. a perk's damage boost) applied.
-        private float Wielder(ItemStat stat, float value) => _stats != null ? _stats.Apply(stat, value) : value;
+        // A weapon value through the equipped weapon (its passive perks and attachments), then
+        // the wielder's buffs and debuffs. Fists have only the wielder's.
+        private float Stat(ItemStat stat, float value)
+        {
+            if (_equipped != null) value = _equipped.Modify(stat, value);
+            return _stats != null ? _stats.Apply(stat, value) : value;
+        }
 
         // A timeline strike authors its own damage per event, so buffs reach it as a multiplier,
         // measured on the step's damage so flat bonuses keep their size.
-        private float WielderDamageScale(float stepDamage) =>
-            stepDamage > 0f ? Wielder(ItemStat.Damage, stepDamage) / stepDamage : 1f;
+        private float DamageScale(float stepDamage) =>
+            stepDamage > 0f ? Stat(ItemStat.Damage, stepDamage) / stepDamage : 1f;
 
         private void Awake()
         {
@@ -354,7 +359,7 @@ namespace CGD.Weapons
                     Up            = cam.up,
                     SourceRoot    = transform.root,
                     Source        = _damageSource,
-                    DamageScale   = WielderDamageScale(_activeStep.Damage),
+                    DamageScale   = DamageScale(_activeStep.Damage),
                     HitMask       = timeline.HitMask,
                     DebugDraw     = _debugDraw,
                     DebugDuration = _debugDuration,
@@ -366,15 +371,18 @@ namespace CGD.Weapons
             {
                 _phaseTimer = _activeStep.ActiveTime / Speed;
 
+                bool crit = UnityEngine.Random.value < Stat(ItemStat.CritChance, 0f);
                 var info = new DamageInfo(
-                    Wielder(ItemStat.Damage, _activeStep.Damage),
-                    _activeStep.ArmorPenetration,
+                    Stat(ItemStat.Damage, _activeStep.Damage),
+                    Mathf.Clamp01(Stat(ItemStat.ArmorPenetration, _activeStep.ArmorPenetration)),
                     _activeStep.DamageType,
-                    _activeStep.CriticalMultiplier,
+                    Mathf.Max(1f, Stat(ItemStat.CritDamage, _activeStep.CriticalMultiplier)),
                     _damageSource,
-                    _activeStep.OnHitEffects);
+                    _activeStep.OnHitEffects,
+                    bonuses: new HitBonuses(crit, Stat(ItemStat.StatusChance, 0f), Stat(ItemStat.StatusDamage, 0f)));
 
-                _resolver.Begin(_activeStep, info, _data.HitMask, transform.root);
+                float reach = Mathf.Max(0.1f, Stat(ItemStat.Range, 1f));
+                _resolver.Begin(_activeStep, info, _data.HitMask, transform.root, reach);
             }
         }
 

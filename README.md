@@ -20,7 +20,7 @@ Assets/
     Audio/                  Music, SFX
     Data/                   ScriptableObject assets, one folder per feature
       Abilities/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Dialogue/  Economy/  Enemies/  Expedition/  Factions/  Feedback/  Flow/
-      Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
+      Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Perks/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors (keycard, terminal, puzzle), secret wall, keycard, terminal, hub workbench, encounter pieces (shutter, reward cache, loot pickups, puzzle switch, rift core, gamble station, escape pod); WallKit/ — placeholder wall art), Pickups, UI, VFX, Weapons
     Scenes/                 Sandbox.unity (+ its baked NavMesh folder), MapTest.unity (generated level)
@@ -61,6 +61,7 @@ Assets/
       Loot/                 LootTable, LootDropper, LootContainer
       Map/                  map graph data (Graph/: MapGraph, MapNode, analysis) and Generation/ (layout, content and style settings, sections, run modifiers, faction mixes, generator passes, validator, style report)
       Meters/               generic resources (stamina, mana, oxygen…): Meter, MeterSet, MeterCost, MeterZone
+      Perks/                gear perks (passive and triggered), perk pools, PerkDispatcher
       Player/               movement, camera, lock-on, health, lifecycle, player audio; Dodge/ (DodgeDefinition stages, DodgeMotion)
       Quests/               quest/objective definitions, QuestLog, QuestTracker, QuestEvents, signals
       Settings/             GameSettings (audio, video, accessibility preferences) and SettingsData
@@ -69,7 +70,7 @@ Assets/
       Targeting/            TargetQuery, TargetFilter and TargetSelector assets (Selectors/)
       Timing/               GameClock (fixed ticks, pause, time scale, scheduling) and GameTime
       UI/                   Common/ (UIFactory), HUD/, Menus/, World/ (popups, enemy bars)
-      Weapons/              WeaponItem (what a loadout slot holds), WeaponCategory (firearm or melee, rolls WeaponItems), Ranged/, FireBehaviors/, Generation/, Melee/ (controller, guard, melee categories and generator), Perks/ (weapon perks, perk pool, dispatcher), Throwables/
+      Weapons/              WeaponItem (what a loadout slot holds), WeaponCategory (firearm or melee, rolls WeaponItems), Ranged/, FireBehaviors/, Generation/, Melee/ (controller, guard, melee categories and generator), Throwables/
       WorldMap/             WorldMapArea (bounds, background, fog of war), MapMarker, MapRevealer, projection
     Settings/               URP assets, volume profiles, project-wide input actions
   ThirdParty/               imported asset packs

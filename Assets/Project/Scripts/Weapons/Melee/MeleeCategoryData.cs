@@ -57,7 +57,7 @@ namespace CGD.Weapons
         [Tooltip("How far away enemies hear a swing (0 = silent)")]
         public float NoiseRadius = 8f;
 
-        protected override WeaponItem Build(ItemRoll roll) => MeleeWeaponGenerator.Generate(this, roll);
+        public override WeaponItem Generate(ItemRoll roll) => MeleeWeaponGenerator.Generate(this, roll);
 
         [ContextMenu("Apply Type Defaults")]
         public void ApplyTypeDefaults() => MeleeCategoryDefaults.Apply(this);

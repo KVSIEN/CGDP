@@ -1665,4 +1665,5 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e6b584ef98634676887e97e10eb5791e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: CGD.Runtime::CGD.Player.PlayerWeaponPerks
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Player.PlayerPerks
+  _camera: {fileID: 725524174371652151}

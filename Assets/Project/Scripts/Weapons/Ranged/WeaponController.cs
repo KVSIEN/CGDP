@@ -75,6 +75,9 @@ namespace CGD.Weapons
         public event Action<int, int, bool> OnAmmoChanged;
         // Once per shot: every round of a burst, one per shotgun blast.
         public event Action Fired;
+        // A reload began; and its rounds went in (the commit point), whether or not it played out.
+        public event Action ReloadStarted;
+        public event Action Reloaded;
 
         public WeaponInstance Current => _current;
         public WeaponData     Data    => _current?.Data;
@@ -243,7 +246,7 @@ namespace CGD.Weapons
             _damageSource    = _ownerSource.WithWeapon(weapon);
             _chargeTimer     = 0f;
             _wasChargeHeld   = false;
-            _drawTimer       = weapon != null && Time.time > weapon.QuickDrawUntil ? weapon.Data.DrawTime : 0f;
+            _drawTimer       = weapon != null && Time.time > weapon.QuickDrawUntil ? Mathf.Max(0f, Wielder(ItemStat.DrawTime, weapon.DrawTime)) : 0f;
             if (weapon != null) weapon.QuickDrawUntil = float.NegativeInfinity;
             _fireBuffer.Clear(); // a press meant for the previous weapon doesn't carry over
 
@@ -337,7 +340,9 @@ namespace CGD.Weapons
             NotifyAmmoChanged();
 
             ApplyRecoil();
-            CastBullet(charge);
+            // Multishot: extra shots for the same round, each with its own spread and crit roll.
+            int shots = 1 + RollExtra(Wielder(ItemStat.Multishot, _current.Multishot));
+            for (int i = 0; i < shots; i++) CastBullet(charge);
             _spread.AddBloom();
 
             D.FireSound.TryPlay(SoundPos);
@@ -368,6 +373,11 @@ namespace CGD.Weapons
         {
             float adsT = _camera.AdsT;
             RecoilShot shot = _recoil.Fire(adsT);
+            float scale = Mathf.Max(0f, Wielder(ItemStat.Recoil, _current.RecoilScale));
+            shot.VertKick  *= scale;
+            shot.HorizKick *= scale;
+            shot.GunVert   *= scale;
+            shot.GunHoriz  *= scale;
             _camera.AddRecoil(shot.VertKick, shot.HorizKick, D.RecoilRecoverySpeed,
                               shot.RecoveryFraction, D.RecoilRecoveryDelay);
             if (_visuals != null) _visuals.AddKick(shot.GunVert, shot.GunHoriz, adsT, ShotInterval);
@@ -385,7 +395,8 @@ namespace CGD.Weapons
 
             float   adsT      = _camera.AdsT;
             DrawStance stance = Stance;
-            float   spreadDeg = _spread.EffectiveConeDeg(adsT, _recoil.Heat) * stance.SpreadMultiplier;
+            float   spreadDeg = SpreadDeg(adsT) * stance.SpreadMultiplier;
+            bool    crit      = UnityEngine.Random.value < Wielder(ItemStat.CritChance, _current.CritChance);
             Vector3 forward   = _camera.transform.forward;
             Vector3 volleyAxis = _current.Draw == DrawOrientation.Horizontal ? _camera.transform.right : _camera.transform.up;
 
@@ -400,6 +411,13 @@ namespace CGD.Weapons
                 Data              = D,
                 Damage            = ResolveDamage() * D.GetChargeDamageScale(charge) * stance.DamageMultiplier,
                 Source            = _damageSource,
+                ArmorPenetration  = Mathf.Clamp01(Wielder(ItemStat.ArmorPenetration, _current.ArmorPenetration)),
+                CriticalMultiplier = Mathf.Max(1f, Wielder(ItemStat.CritDamage, _current.CriticalMultiplier)),
+                Bonuses           = new HitBonuses(crit,
+                                        Wielder(ItemStat.StatusChance, _current.StatusChance),
+                                        Wielder(ItemStat.StatusDamage, _current.StatusDamage)),
+                RangeScale        = Mathf.Max(0.1f, Wielder(ItemStat.Range, _current.RangeScale)),
+                ProjectileSpeedScale = Mathf.Max(0.1f, Wielder(ItemStat.ProjectileSpeed, _current.ProjectileSpeedScale)),
                 Charge            = charge,
                 VolleyAxis        = volleyAxis,
                 DebugDraw         = _debugDrawBullets,
@@ -417,6 +435,18 @@ namespace CGD.Weapons
         // A weapon value with the wielder's buffs and debuffs (e.g. a perk's faster reloads) applied.
         private float Wielder(ItemStat stat, float value) => _stats != null ? _stats.Apply(stat, value) : value;
 
+        // The cone shots land in, with spread perks and buffs applied.
+        private float SpreadDeg(float adsT) =>
+            _spread.EffectiveConeDeg(adsT, _recoil.Heat) * Mathf.Max(0f, Wielder(ItemStat.Spread, _current.SpreadScale));
+
+        // Whole extras always happen; the fraction is a chance of one more.
+        private static int RollExtra(float extra)
+        {
+            if (extra <= 0f) return 0;
+            int whole = Mathf.FloorToInt(extra);
+            return whole + (UnityEngine.Random.value < extra - whole ? 1 : 0);
+        }
+
         private void StartReload() => _reload = StartCoroutine(Reload());
 
         // The rounds go in at the commit point; the rest is the tail of the animation, which
@@ -428,6 +458,7 @@ namespace CGD.Weapons
             NotifyAmmoChanged();
 
             D.ReloadSound.TryPlay(SoundPos);
+            ReloadStarted?.Invoke();
 
             float time   = Mathf.Max(0.1f, Wielder(ItemStat.ReloadTime,
                 _current.Magazine > 0 ? _current.TacticalReloadTime : _current.ReloadTime));
@@ -436,6 +467,7 @@ namespace CGD.Weapons
 
             LoadMagazine();
             _reloadCommitted = true;
+            Reloaded?.Invoke();
             if (time > commit) yield return new WaitForSeconds(time - commit);
 
             EndReload();
@@ -497,7 +529,7 @@ namespace CGD.Weapons
         private void UpdateCrosshair()
         {
             if (_crosshair == null) return;
-            _crosshair.SetDynamicSpread(_spread.EffectiveConeDeg(_camera.AdsT, _recoil.Heat));
+            _crosshair.SetDynamicSpread(SpreadDeg(_camera.AdsT));
         }
 
         private void NotifyAmmoChanged()

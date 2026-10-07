@@ -39,7 +39,7 @@ Completed work is described in [FEATURES.md](FEATURES.md); full task history is 
 - Minimap/world map (fog of war, markers, captured/procedural backgrounds) and feedback system (notification feed, hit markers, kill confirms, rumble, flashes, quest announcements)
 - Framework systems: deterministic seeds (map layers, weapon rolls, loot), game clock (ticks, pause, time scale), state machine (EnemyAI on it), stat modifiers (CharacterStats, presets, buffs), quests (objectives, chains, rewards, HUD), camera effects (shake, kicks, FOV, lag, blends, lock-on)
 - Core systems: object pooling (IPoolable, prewarm, VFX lifetime, pooled enemies), loot tables and drops (rarity, nesting, chests, breakables), game flow states (pause, loading, game over), targeting rules, interaction framework (locks, priority, highlights, event interactables), generic resource meters (stamina, mana, oxygen, rage; shield runs on it)
-- Weapon perks (kill / parry / dodge triggers: dodge reloads, kill feed, buffs, heals, stamina) rolled per weapon by tier
+- Gear perks on weapons and armor, rolled by tier: passive (magazine, multishot, velocity, crit, status, lifesteal, move speed, cooldowns, regen…) and triggered (kill, hit, crit, parry, dodge, ability, damage taken, healed, aim, reload, item, swap)
 - Map objectives: main (unlock the boss room) and side (rewards), steps across room tiers
 - Room tiers 1–3 (enemy tiers, loot luck, resources) replacing Elite rooms; tier 2–3 enemies with random affixes; Surge abilities
 - Reflects (vengeance, deflect, absorb, parry ripostes), combo weaving across dodges/abilities/weapon swaps, swap-dodge draw cancel, optional input buffering

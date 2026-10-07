@@ -19,7 +19,7 @@ namespace CGD.Weapons
             WeaponData d = ctx.Data;
             FireProjectileShot(ctx, ctx.Direction,
                 new ProjectileShot(_prefab,
-                                   d.GetProjectileSpeed(ctx.Charge),
+                                   ProjectileSpeedOf(ctx),
                                    d.GetProjectileGravity(ctx.Charge),
                                    d.ProjectileLifetime,
                                    d.ProjectileInstantHitTime));

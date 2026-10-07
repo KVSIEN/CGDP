@@ -5,6 +5,8 @@ using CGD.Input;
 using CGD.Meters;
 using CGD.Player;
 using CGD.Settings;
+using CGD.Items;
+using CGD.Stats;
 
 namespace CGD.Abilities
 {
@@ -38,6 +40,8 @@ namespace CGD.Abilities
         private PlayerMovement _movement;
         private MeterSet _meters;
         private CombatActions _actions;
+        private CharacterStats _stats;
+        private const float MaxCooldownReduction = 0.75f;
         private int[] _charges;
         private SurgeGauge[] _surges;
         private InputBuffer[] _buffers;
@@ -56,12 +60,20 @@ namespace CGD.Abilities
             GameAction.Ability4,
         };
 
+        // Gear and buffs shorten cooldowns by CooldownReduction (0.1 = 10%), capped at 75%.
+        private float CooldownOf(Ability ability)
+        {
+            float reduction = _stats != null ? Mathf.Clamp(_stats.Apply(ItemStat.CooldownReduction, 0f), 0f, MaxCooldownReduction) : 0f;
+            return ability.Cooldown * (1f - reduction);
+        }
+
         private void Awake()
         {
             _input     = GetComponent<PlayerInputHandler>();
             _movement  = GetComponent<PlayerMovement>();
             TryGetComponent(out _meters);
             TryGetComponent(out _actions);
+            _stats     = GetComponentInParent<CharacterStats>();
             _charges   = new int[_slots.Length];
             _recharges = new CooldownTimer[_slots.Length];
             _surges    = new SurgeGauge[_slots.Length];
@@ -221,7 +233,7 @@ namespace CGD.Abilities
 
             bool wasFull = _charges[slot] >= ability.MaxCharges;
             _charges[slot]--;
-            if (wasFull && ability.ChargeSource != ChargeSource.Surge) _recharges[slot].Start(ability.Cooldown);
+            if (wasFull && ability.ChargeSource != ChargeSource.Surge) _recharges[slot].Start(CooldownOf(ability));
         }
 
         // Pays the meter cost (mana…) and the Surge cost. A Surge-scaled ability spends all its
@@ -272,7 +284,7 @@ namespace CGD.Abilities
 
                 _charges[i]++;
                 if (_charges[i] < ability.MaxCharges)
-                    _recharges[i].Start(ability.Cooldown);
+                    _recharges[i].Start(CooldownOf(ability));
             }
         }
 

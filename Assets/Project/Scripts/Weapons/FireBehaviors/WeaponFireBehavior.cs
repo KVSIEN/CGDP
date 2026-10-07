@@ -25,18 +25,30 @@ namespace CGD.Weapons
         protected static DamageInfo BuildDamageInfo(in FireContext ctx, float damageScale = 1f)
         {
             WeaponData d = ctx.Data;
-            return new DamageInfo(ctx.Damage * damageScale, d.ArmorPenetration, d.DamageType,
-                                  d.HeadshotMultiplier, ctx.Source, d.OnHitEffects);
+            return new DamageInfo(ctx.Damage * damageScale, ctx.ArmorPenetration, d.DamageType,
+                                  ctx.CriticalMultiplier, ctx.Source, d.OnHitEffects, bonuses: ctx.Bonuses);
         }
 
         // A weapon's range stats as a curve, so a shot resolved instantly and one resolved
         // mid-flight by a projectile scale damage by distance the same way.
-        protected static DamageFalloff FalloffOf(WeaponData data) =>
-            new(data.RangeOptimal, data.RangeFalloffEnd, data.DamageFalloffMin);
+        protected static DamageFalloff FalloffOf(in FireContext ctx)
+        {
+            float scale = Scale(ctx.RangeScale);
+            return new(ctx.Data.RangeOptimal * scale, ctx.Data.RangeFalloffEnd * scale, ctx.Data.DamageFalloffMin);
+        }
+
+        protected static float MaxRangeOf(in FireContext ctx) => ctx.Data.EffectiveMaxRange * Scale(ctx.RangeScale);
+
+        // Launch speed for this shot: the weapon's (charge included) times its speed scale.
+        protected static float ProjectileSpeedOf(in FireContext ctx) =>
+            ctx.Data.GetProjectileSpeed(ctx.Charge) * Scale(ctx.ProjectileSpeedScale);
+
+        // Scales left unset (0) count as 1, so a context built without them fires as authored.
+        private static float Scale(float scale) => scale > 0f ? scale : 1f;
 
         protected static void FireHitscanRay(in FireContext ctx, Vector3 direction)
         {
-            float range  = ctx.Data.EffectiveMaxRange;
+            float range  = MaxRangeOf(ctx);
             bool  didHit = Physics.Raycast(ctx.CameraPosition, direction, out RaycastHit hit,
                 range, ctx.Data.HitMask, QueryTriggerInteraction.Ignore);
 
@@ -52,7 +64,7 @@ namespace CGD.Weapons
 
         protected static void ApplyHitDamage(RaycastHit hit, in FireContext ctx)
         {
-            float falloff = FalloffOf(ctx.Data).Evaluate(hit.distance);
+            float falloff = FalloffOf(ctx).Evaluate(hit.distance);
             Hitbox.ApplyHit(hit.collider, BuildDamageInfo(ctx, falloff), hit.point);
             ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet);
         }
@@ -66,7 +78,7 @@ namespace CGD.Weapons
         {
             if (!shot.IsValid) return;
 
-            float maxRange     = ctx.Data.EffectiveMaxRange;
+            float maxRange     = MaxRangeOf(ctx);
             float instantRange = Mathf.Min(shot.Speed * shot.InstantHitTime, maxRange);
 
             if (instantRange > 0f &&
@@ -90,7 +102,7 @@ namespace CGD.Weapons
                 Lifetime          = shot.Lifetime,
                 MaxDistance       = maxRange,
                 HitMask           = ctx.Data.HitMask,
-                Falloff           = FalloffOf(ctx.Data),
+                Falloff           = FalloffOf(ctx),
                 DistanceTravelled = instantRange,
             });
         }

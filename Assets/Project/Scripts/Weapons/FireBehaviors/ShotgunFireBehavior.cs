@@ -25,7 +25,7 @@ namespace CGD.Weapons
             // Every pellet of a shot flies identically, so the description is built once.
             ProjectileShot shot = _projectilePellets && _prefab != null
                 ? new ProjectileShot(_prefab,
-                                     ctx.Data.GetProjectileSpeed(ctx.Charge),
+                                     ProjectileSpeedOf(ctx),
                                      ctx.Data.GetProjectileGravity(ctx.Charge),
                                      ctx.Data.ProjectileLifetime,
                                      ctx.Data.ProjectileInstantHitTime)

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1b2e6a4ef6947feb1a495b2ad59c2ea, type: 3}
+  m_Name: TacticalRhythmPerk
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Perks.RestoreMeterPerk
+  _displayName: Tactical Rhythm
+  _description: Finishing a reload restores 10 stamina.
+  _fits: 4
+  _trigger: 8
+  _chance: 1
+  _cooldown: 0
+  _meter: {fileID: 11400000, guid: e97086cb23b549a9b402e8130ab73a15, type: 2}
+  _amount: 10

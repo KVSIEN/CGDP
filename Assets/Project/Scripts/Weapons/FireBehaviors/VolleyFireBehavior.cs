@@ -20,7 +20,7 @@ namespace CGD.Weapons
             WeaponData d = ctx.Data;
             int arrows = Mathf.Max(1, d.PelletCount);
             var shot = new ProjectileShot(_prefab,
-                                          d.GetProjectileSpeed(ctx.Charge),
+                                          ProjectileSpeedOf(ctx),
                                           d.GetProjectileGravity(ctx.Charge),
                                           d.ProjectileLifetime,
                                           d.ProjectileInstantHitTime);
