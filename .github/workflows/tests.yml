@@ -1,0 +1,51 @@
+name: Tests
+
+# Compiles the project and runs the EditMode tests in Assets/Project/Tests/EditMode.
+# Needs a Unity license in the repository secrets (UNITY_LICENSE, UNITY_EMAIL,
+# UNITY_PASSWORD; see https://game.ci/docs/github/activation). Without them the job
+# is skipped instead of failing.
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  editmode:
+    runs-on: ubuntu-latest
+    env:
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+    steps:
+      - name: Check for a Unity license
+        id: license
+        run: echo "present=${{ env.UNITY_LICENSE != '' }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        if: steps.license.outputs.present == 'true'
+
+      - uses: actions/cache@v4
+        if: steps.license.outputs.present == 'true'
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Packages/manifest.json', 'ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: Library-
+
+      - uses: game-ci/unity-test-runner@v4
+        if: steps.license.outputs.present == 'true'
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: 6000.3.12f1
+          testMode: editmode
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.license.outputs.present == 'true'
+        with:
+          name: editmode-results
+          path: artifacts

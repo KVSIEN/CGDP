@@ -75,6 +75,7 @@ Assets/
       Weapons/              WeaponItem (what a loadout slot holds), WeaponCategory (firearm or melee, rolls WeaponItems), Ranged/, FireBehaviors/, Generation/, Melee/ (controller, guard, melee categories and generator), Throwables/
       WorldMap/             WorldMapArea (bounds, background, fog of war), MapMarker, MapRevealer, projection
     Settings/               URP assets, volume profiles, project-wide input actions
+    Tests/EditMode/         NUnit tests for the Unity-independent logic (CGD.Tests.EditMode assembly)
   ThirdParty/               imported asset packs
   TextMesh Pro/             TMP essentials
 ```
@@ -86,6 +87,10 @@ Assets/
   Editor-only scripts live in `Scripts/Editor/` and compile into `CGD.Editor`
   (`Scripts/Editor/CGD.Editor.asmdef`), which references `CGD.Runtime` and is excluded
   from builds. Nothing in `CGD.Runtime` may reference it.
+- **Tests** live in `Assets/Project/Tests/EditMode/` (`CGD.Tests.EditMode`, editor-only, references
+  `CGD.Runtime`). Run them from **Window > General > Test Runner > EditMode**. Cover plain C#
+  logic (rules, state machines, random streams); CI runs them on every push, see
+  `.github/workflows/tests.yml`.
 - **Data assets** are named `<Name><Type>` (`PistolCategory`, `HitscanFireBehavior`,
   `TargetDummyEnemyData`) and created from `Create > CGD > <Feature> > …`.
 - **Moving files:** do it inside Unity, or move each file together with its `.meta` while

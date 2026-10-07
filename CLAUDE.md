@@ -232,7 +232,7 @@ Organize by feature. The layout is documented in README.md:
 
 - scripts: Assets/Project/Scripts/<Feature>/ (sub-folders per concern when a feature grows)
 - ScriptableObject assets: Assets/Project/Data/<Feature>/ — never inside Scripts/
-- no .cs files outside Scripts/
+- no .cs files outside Scripts/ (except tests in Assets/Project/Tests/)
 
 Namespaces follow the top-level script folder: `namespace CGD.<Feature>`.
 All runtime scripts compile into the CGD.Runtime assembly (Scripts/CGD.Runtime.asmdef);
