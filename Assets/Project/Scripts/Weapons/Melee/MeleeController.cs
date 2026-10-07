@@ -529,9 +529,6 @@ namespace CGD.Weapons
                     Weave();
                     Parried?.Invoke();
                     break;
-                case GuardOutcome.Exposed:
-                    FeedbackBus.Notify("Exposed!", NotificationStyle.Danger);
-                    break;
                 case GuardOutcome.Broken:
                     FeedbackBus.Notify("Guard broken", NotificationStyle.Danger);
                     break;

@@ -312,7 +312,7 @@
 - **Parrying is done with the bash**, with every weapon: a hit from in front landing within the parry window from the start of a bash (0.2 s for gun bashes and fists, per weapon for melee weapons) is deflected completely — no damage, no on-hit effects. Parries set off parry perks
   - **Up close** (within ~4 m) a parry **staggers** the attacker briefly, and the weapon's parry reflect answers it (a sword's riposte)
   - **A parried shot** from further away is **deflected**: fired back where you aim, with the shot's damage
-  - **Parrying too early is punished**: if the parry window closes with nothing parried, you're **exposed** for half a second — you can't guard or bash, and every hit that lands (from any side) deals 50% more damage, with an "Exposed!" warning. A bash is committed too: it can't be cancelled into another bash, so parrying is a timing gamble, not something to spam
+  - **Parrying too early is punished**: if the parry window closes with nothing parried, you're **exposed** for half a second — you can't guard or bash again, so whatever comes next lands. A bash is committed too: it can't be cancelled into another bash, so parrying is a timing gamble, not something to spam
 - A bash doesn't stop the gun from firing, and kills with a gun's bash count for that gun's perks
 - With a melee weapon: tap Attack for a light attack; hold it past a configurable threshold before releasing for a heavier finisher instead
 - Light attacks chain into a combo string — pressing again while the current attack is swinging or recovering queues the next step, which fires the instant the current one finishes; the string resets back to the first step after a short period of no input

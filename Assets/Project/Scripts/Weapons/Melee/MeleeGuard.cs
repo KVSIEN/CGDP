@@ -8,7 +8,7 @@ namespace CGD.Weapons
     // of a bash starting is parried, guard raised or not; otherwise a raised guard blocks it,
     // at a stamina cost per point of damage stopped — if that can't be paid, the guard breaks.
     // Parrying is a gamble: a bash whose window closes without parrying anything leaves the
-    // player exposed for a moment — no guard, no bash, and hits from any side land harder.
+    // player exposed for a moment: no guard and no bash, so whatever comes next lands.
     public class MeleeGuard
     {
         private readonly GuardSettings _settings;
@@ -42,12 +42,6 @@ namespace CGD.Weapons
                                     System.Func<float, bool> canPay, out float damageThrough)
         {
             damageThrough = damage;
-            if (IsExposed(time))
-            {
-                damageThrough = damage * _settings.ExposedDamageMultiplier;
-                return GuardOutcome.Exposed;
-            }
-
             bool parrying = IsParrying(time);
             if (!parrying && !IsRaised) return GuardOutcome.Open;
             if (!FacingArc.Contains(facing, toAttacker, _settings.ArcDeg)) return GuardOutcome.Open;
