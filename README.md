@@ -16,13 +16,13 @@ Open `Assets/Project/Scenes/Sandbox.unity` to play, or `MapTest.unity` for a fre
 ```
 Assets/
   Project/                  everything owned by this project
-    Art/                    Animations, Fonts, Materials, PhysicsMaterials, Shaders, Textures
+    Art/                    Animations, Fonts, Materials, Shaders, Textures
     Audio/                  Music, SFX
     Data/                   ScriptableObject assets, one folder per feature
       Abilities/  Artifacts/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Dialogue/  Economy/  Enemies/  Expedition/  Factions/  Feedback/  Flow/
       Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Perks/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
-    Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors (keycard, terminal, puzzle), secret wall, keycard, terminal, hub workbench, encounter pieces (shutter, reward cache, loot pickups, puzzle switch, rift core, gamble station, escape pod); WallKit/ — placeholder wall art), Pickups, UI, VFX, Weapons
+    Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors (keycard, terminal, puzzle), secret wall, keycard, terminal, hub workbench, encounter pieces (shutter, reward cache, loot pickups, puzzle switch, rift core, gamble station, escape pod); WallKit/ — placeholder wall art), Pickups, Systems (GameFlow, GameManager, EventSystem, Global Volume), UI, VFX, Weapons
     Scenes/                 Sandbox.unity (+ its baked NavMesh folder), MapTest.unity (generated level)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            ability assets (incl. TargetedAbility) and the player's ability slots
@@ -72,7 +72,7 @@ Assets/
       Targeting/            TargetQuery, TargetFilter and TargetSelector assets (Selectors/)
       Timing/               GameClock (fixed ticks, pause, time scale, scheduling) and GameTime
       UI/                   Common/ (UIFactory), HUD/, Menus/, World/ (popups, enemy bars)
-      Weapons/              WeaponItem (what a loadout slot holds), WeaponCategory (firearm or melee, rolls WeaponItems), Ranged/, FireBehaviors/, Generation/, Melee/ (controller, guard, melee categories and generator), Throwables/
+      Weapons/              WeaponItem (what a loadout slot holds), WeaponCategory (firearm or melee, rolls WeaponItems), IOffhand (what an offhand item implements), Ranged/, FireBehaviors/, Generation/, Melee/ (controller, guard, melee categories and generator), Shields/, Throwables/
       WorldMap/             WorldMapArea (bounds, background, fog of war), MapMarker, MapRevealer, projection
     Settings/               URP assets, volume profiles, project-wide input actions
     Tests/EditMode/         NUnit tests for the Unity-independent logic (CGD.Tests.EditMode assembly)
