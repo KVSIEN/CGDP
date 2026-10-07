@@ -10,7 +10,9 @@ namespace CGD.Weapons
     // One melee weapon type (dagger, sword…), rolled into individual weapons like a
     // WeaponCategoryData. The moveset is authored once as template steps; each roll scales
     // them: step Damage values are relative (1 = the rolled Damage), step Range is
-    // multiplied by the rolled Reach. Right-click → Apply Type Defaults fills a type's band.
+    // multiplied by the rolled Reach. Duplicate an existing category to start a new type.
+    // Light weapons trade damage for speed, reach and a long parry window; heavy ones hit
+    // hard and pierce armour but swing slowly and parry poorly.
     [CreateAssetMenu(fileName = "MeleeCategory", menuName = "CGD/Weapons/Melee Category")]
     public class MeleeCategoryData : WeaponCategory
     {
@@ -70,8 +72,5 @@ namespace CGD.Weapons
         public float NoiseRadius = 8f;
 
         public override WeaponItem Generate(ItemRoll roll) => MeleeWeaponGenerator.Generate(this, roll);
-
-        [ContextMenu("Apply Type Defaults")]
-        public void ApplyTypeDefaults() => MeleeCategoryDefaults.Apply(this);
     }
 }
