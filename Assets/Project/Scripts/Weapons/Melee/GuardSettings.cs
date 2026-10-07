@@ -18,14 +18,21 @@ namespace CGD.Weapons
         [Min(0f)] public float ParryWindow;
         [Tooltip("Seconds a parried attacker is stunned")]
         [Min(0f)] public float ParryStun;
+        [Tooltip("Seconds after a bash's parry window closes without a parry in which the player can't guard or bash again")]
+        [Min(0f)] public float WhiffExposure;
+        [Tooltip("Damage taken while exposed after a missed parry, × the hit")]
+        [Min(1f)] public float ExposedDamageMultiplier;
 
-        public GuardSettings(float blockDamage, float staminaPerDamage, float arcDeg, float parryWindow, float parryStun)
+        public GuardSettings(float blockDamage, float staminaPerDamage, float arcDeg, float parryWindow, float parryStun,
+                             float whiffExposure = 0.5f, float exposedDamageMultiplier = 1.5f)
         {
             BlockDamageMultiplier = blockDamage;
             StaminaPerDamage      = staminaPerDamage;
             ArcDeg                = arcDeg;
             ParryWindow           = parryWindow;
             ParryStun             = parryStun;
+            WhiffExposure           = whiffExposure;
+            ExposedDamageMultiplier = exposedDamageMultiplier;
         }
 
         public static GuardSettings Default => new(0.3f, 0.5f, 120f, 0.2f, 1.2f);

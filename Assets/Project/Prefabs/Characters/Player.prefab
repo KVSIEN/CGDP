@@ -1221,6 +1221,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.MeleeController
   _data: {fileID: 11400000, guid: 57537cb8d0c3e5f48a2e4128514280e2, type: 2}
   _camera: {fileID: 725524174371652151}
+  _meleeParryRange: 4
+  _rangedParryReflect: {fileID: 11400000, guid: 56ecbab319014c4a80d19313442d57cf, type: 2}
   _debugDraw: 1
   _debugDuration: 0.3
 --- !u!114 &3965442110495912272

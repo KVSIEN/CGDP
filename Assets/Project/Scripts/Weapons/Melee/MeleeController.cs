@@ -30,6 +30,12 @@ namespace CGD.Weapons
         [SerializeField] private MeleeWeaponData _data;
         [SerializeField] private PlayerCamera    _camera;
 
+        [Header("Parry")]
+        [Tooltip("A parried hit from an attacker farther than this was a shot: it is deflected (Ranged Parry Reflect) instead of staggering the attacker")]
+        [SerializeField, Min(0f)] private float _meleeParryRange = 4f;
+        [Tooltip("What a parried shot becomes, e.g. DeflectReflect (fired back where you aim). Needs a Reflector on the player")]
+        [SerializeField] private ReflectProfile _rangedParryReflect;
+
         [Header("Debug")]
         [SerializeField] private bool  _debugDraw     = true;
         [SerializeField] private float _debugDuration = 0.3f;
@@ -292,7 +298,7 @@ namespace CGD.Weapons
         private bool TryBash()
         {
             bool pressed = _input.WasPressed(GameAction.Melee) || (IsGuarding && _input.WasPressed(GameAction.Attack));
-            if (_phase != Phase.Idle && !InCancelWindow)
+            if ((_phase != Phase.Idle && !InCancelWindow) || _guard.IsExposed(Time.time))
             {
                 if (pressed && GameSettings.Current.InputBuffering) _queuedBash.Press(Time.time);
                 return false;
@@ -335,7 +341,7 @@ namespace CGD.Weapons
         {
             if (!Data.CanGuard) return false;
 
-            bool canRaise = _phase == Phase.Idle || InCancelWindow;
+            bool canRaise = (_phase == Phase.Idle || InCancelWindow) && !_guard.IsExposed(Time.time);
             if (canRaise && _input.GetAction(GameAction.AimDownSights))
             {
                 if (_phase != Phase.Idle) InterruptSwing(keepCombo: true);
@@ -518,19 +524,39 @@ namespace CGD.Weapons
             switch (outcome)
             {
                 case GuardOutcome.Parried:
-                    Stunnable stunnable = attacker.GetComponentInParent<Stunnable>();
-                    if (stunnable != null) stunnable.ApplyStun(Data.Guard.ParryStun);
-                    if (Data.ParryReflect != null && _reflector != null)
-                        _reflector.Release(Data.ParryReflect, info, amount, attacker);
+                    if (toAttacker.magnitude > _meleeParryRange) Deflect(info, amount, attacker);
+                    else                                          Stagger(info, amount, attacker);
                     Weave();
                     Parried?.Invoke();
-                    FeedbackBus.Notify("Parried!", NotificationStyle.Success);
+                    break;
+                case GuardOutcome.Exposed:
+                    FeedbackBus.Notify("Exposed!", NotificationStyle.Danger);
                     break;
                 case GuardOutcome.Broken:
                     FeedbackBus.Notify("Guard broken", NotificationStyle.Danger);
                     break;
             }
             return through;
+        }
+
+        // A parried strike up close staggers the attacker, and the weapon's own parry reflect
+        // (a sword's riposte) answers it.
+        private void Stagger(in DamageInfo info, float amount, GameObject attacker)
+        {
+            Stunnable stunnable = attacker.GetComponentInParent<Stunnable>();
+            if (stunnable != null) stunnable.ApplyStun(Data.Guard.ParryStun);
+            if (Data.ParryReflect != null && _reflector != null)
+                _reflector.Release(Data.ParryReflect, info, amount, attacker);
+            FeedbackBus.Notify("Parried!", NotificationStyle.Success);
+        }
+
+        // A parried shot is knocked away, and sent back when a ranged parry reflect is set.
+        private void Deflect(in DamageInfo info, float amount, GameObject attacker)
+        {
+            if (_rangedParryReflect != null && _reflector != null && !info.IsReflected)
+                _reflector.Release(_rangedParryReflect, info, amount, attacker);
+            else
+                FeedbackBus.Notify("Parried!", NotificationStyle.Success);
         }
     }
 }
