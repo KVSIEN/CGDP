@@ -132,6 +132,7 @@ namespace CGD.Map
             new(MapNodeType.EmergencyExit, min: 0, max: 1, weight: 0.5f, placement: MapPlacement.BranchOnly, minDepth: 0.4f, maxDepth: 0.8f, preferDeadEnds: true, intensityBonus: -0.3f),
             new(MapNodeType.Hazard,   min: 0, max: 2,  weight: 0.5f, minDepth: 0.15f, allowAdjacentSameType: false, intensityBonus: 0.1f, minSpacing: 2),
             new(MapNodeType.Quiet,    min: 0, max: 2,  weight: 0.35f, minDepth: 0.15f, allowAdjacentSameType: false, intensityBonus: -0.6f, minSpacing: 3),
+            new(MapNodeType.Junction, min: 0, max: 3,  weight: 0.6f,  minDepth: 0.1f,  allowAdjacentSameType: false, intensityBonus: -0.4f, minSpacing: 3, minConnections: 3),
         };
 
         private static List<MapGuarantee> DefaultGuarantees() => new()

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using NUnit.Framework;
 using UnityEditor;
+using UnityEngine;
 using CGD.Core;
 using CGD.Map;
 
@@ -18,7 +19,7 @@ namespace CGD.Tests
 
         private static readonly string[] SettingsNames =
         {
-            "Branching", "Hub", "Labyrinth", "Linear", "Random",
+            "Balanced", "Branching", "Hub", "Labyrinth", "Linear", "Random",
         };
 
         private static MapGenerationSettings Load(string name)
@@ -37,7 +38,7 @@ namespace CGD.Tests
                 sb.Append(n.Id).Append(':').Append(n.Type).Append(':').Append(n.Tier).Append(':').Append(n.Faction)
                   .Append('@').Append(n.Position.x.ToString("R")).Append(',').Append(n.Position.y.ToString("R")).Append(';');
             foreach (MapConnection c in graph.Connections)
-                sb.Append(c.A).Append('-').Append(c.B).Append(':').Append(c.Type).Append(';');
+                sb.Append(c.A).Append('-').Append(c.B).Append(':').Append(c.Type).Append(c.Direct ? "d" : "").Append(';');
             return sb.ToString();
         }
 
@@ -66,6 +67,37 @@ namespace CGD.Tests
                 string second = Fingerprint(new MapGenerator(settings).Generate(Seed.From(i)).Graph);
 
                 Assert.AreEqual(first, second, $"{name}, seed {i}: generation isn't reproducible");
+            }
+        }
+
+        [TestCaseSource(nameof(SettingsNames))]
+        public void JunctionsAreForksAndDirectDoorsJoinNeighbours(string name)
+        {
+            var settings  = Load(name);
+            var generator = new MapGenerator(settings);
+            Vector2 spacing = settings.NodeSpacing;
+
+            for (int i = 0; i < SeedCount; i++)
+            {
+                MapGraph graph = generator.Generate(Seed.From(i)).Graph;
+
+                foreach (MapNode node in graph.Nodes)
+                    if (node.Type == MapNodeType.Junction)
+                        Assert.GreaterOrEqual(graph.Degree(node.Id), 3, $"{name}, seed {i}: Junction #{node.Id} isn't a fork");
+
+                foreach (MapConnection connection in graph.Connections)
+                {
+                    if (!connection.Direct) continue;
+
+                    graph.TryGetNode(connection.A, out MapNode a);
+                    graph.TryGetNode(connection.B, out MapNode b);
+                    Vector2 step = b.Position - a.Position;
+                    bool oneColumn = Mathf.Approximately(Mathf.Abs(step.x), spacing.x) && Mathf.Approximately(step.y, 0f);
+                    bool oneRow    = Mathf.Approximately(Mathf.Abs(step.y), spacing.y) && Mathf.Approximately(step.x, 0f);
+                    Assert.IsTrue(oneColumn || oneRow, $"{name}, seed {i}: direct door #{a.Id}–#{b.Id} isn't between neighbouring cells");
+                    Assert.AreEqual(ConnectionType.Normal, connection.Type, $"{name}, seed {i}: direct door #{a.Id}–#{b.Id} is a gate or shortcut");
+                    Assert.IsFalse(connection.OneWay, $"{name}, seed {i}: direct door #{a.Id}–#{b.Id} is one-way");
+                }
             }
         }
 

@@ -36,6 +36,17 @@ namespace CGD.Level
             }
         }
 
+        // Shifts a room that is already placed, before any corridor is built.
+        public void MoveRoom(LevelRoom room, Vector2Int offset)
+        {
+            foreach (Vector2Int tile in room.Footprint.Tiles)
+            {
+                _walkable.Remove(tile);
+                _roomTiles.Remove(tile);
+            }
+            AddRoom(room.Translated(offset));
+        }
+
         public void AddCorridor(IReadOnlyList<Vector2Int> tiles)
         {
             foreach (Vector2Int tile in tiles)

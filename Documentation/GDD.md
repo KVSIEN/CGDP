@@ -750,6 +750,7 @@ How these scale on higher difficulties is TBD.
 | **Combat** | Enemy encounters of the room's reality |
 | **Loot** | Resources, gear, crafting materials |
 | **Hub** | The starting room |
+| **Junction** | A small crossroads where three or more routes meet. No encounter |
 | **Boss** | The locked final encounter |
 | **Other** | Puzzle, NPC and reality specific rooms are TBD in the design. See Unique Rooms for what the prototype has |
 
@@ -766,6 +767,7 @@ How these scale on higher difficulties is TBD.
 * **Room tiers**: every room is tier 1, 2 or 3, rising with its depth. Depth is a guideline: 15% of rooms land a tier above or below. Rooms next to the start are always tier 1. A room's tier sets how often its enemies are higher tier and gives slightly better loot and resource yields.
 * **Pacing rules**: at most 3 fights in a row, and guaranteed rooms (a reward behind every gate, an early loot room, a stop before the boss).
 * **Run modifiers**: **warnings** make a run harder with better loot (Lockdown, Infestation, Overrun). **Anomalies** add twists without making it harder (Scavenger, Fractured Hull). At most two warnings and one anomaly, announced at the start.
+* **Direct doors**: some neighbouring rooms touch and share a doorway instead of being joined by a hallway. Gates, shortcuts and one way passages always keep theirs.
 * **Resupply rooms**: calm stops midway with an ammo cache.
 * **Seeds**: every map, loadout and weapon follows a seed, so any of them can be reproduced and shared.
 

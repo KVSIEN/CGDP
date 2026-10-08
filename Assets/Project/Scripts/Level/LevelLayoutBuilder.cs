@@ -37,7 +37,8 @@ namespace CGD.Level
             }
 
             new RoomPlacer(_settings).Place(graph, nodeSpacing, seed.Derive("rooms"), layout, content);
-            BuildCorridors(graph, layout);
+            var directLinks = new DirectRoomAligner(_settings.CellTiles).Align(graph, layout);
+            BuildCorridors(graph, layout, directLinks);
             PlanStructures(seed.Derive("structure"), layout);
             PlanOutlines(layout);
             return layout;
@@ -71,7 +72,7 @@ namespace CGD.Level
 
         // --- Corridors -------------------------------------------------------------------
 
-        private void BuildCorridors(MapGraph graph, LevelLayout layout)
+        private void BuildCorridors(MapGraph graph, LevelLayout layout, Dictionary<MapConnection, DirectLink> directLinks)
         {
             var analysis = new MapGraphAnalysis(graph);
             var blocked  = new HashSet<Vector2Int>();   // rooms plus a one-tile ring around each
@@ -89,12 +90,26 @@ namespace CGD.Level
 
             var router = new CorridorRouter(Expand(Bounds(layout), _settings.GapTiles));
 
+            // Direct doors first: they claim their doorways before any hallway is routed past.
+            foreach (var (connection, link) in directLinks)
+            {
+                LevelRoom a = layout.Rooms[connection.A], b = layout.Rooms[connection.B];
+                usedDoors[a.Node.Id].Add(link.Tile);
+                usedDoors[b.Node.Id].Add(link.Tile);
+
+                var path = new List<Vector2Int> { link.Tile };
+                Reserve(path, reserved);
+                layout.AddCorridor(path);
+                AddDoorways(layout, analysis, connection, a, link.InsideA, link.Tile, b, link.InsideB, link.Tile);
+            }
+
             // Short connections first: they have the fewest ways around each other.
             var connections = new List<MapConnection>(graph.Connections);
             connections.Sort((x, y) => Distance(layout, x).CompareTo(Distance(layout, y)));
 
             foreach (MapConnection connection in connections)
             {
+                if (directLinks.ContainsKey(connection)) continue;
                 if (!layout.Rooms.TryGetValue(connection.A, out LevelRoom a) ||
                     !layout.Rooms.TryGetValue(connection.B, out LevelRoom b)) continue;
 
@@ -121,10 +136,17 @@ namespace CGD.Level
                 Reserve(route.Path, reserved);
                 layout.AddCorridor(route.Path);
 
-                bool gateAtA = analysis.Progress(a.Node.Id) <= analysis.Progress(b.Node.Id);
-                layout.Doorways.Add(new LevelDoorway(a, connection, route.A.Inside, route.A.Outside, gateAtA));
-                layout.Doorways.Add(new LevelDoorway(b, connection, route.B.Inside, route.B.Outside, !gateAtA));
+                AddDoorways(layout, analysis, connection, a, route.A.Inside, route.A.Outside, b, route.B.Inside, route.B.Outside);
             }
+        }
+
+        // A connection's doorways: the gate (or door) goes on the end nearer Start.
+        private static void AddDoorways(LevelLayout layout, MapGraphAnalysis analysis, MapConnection connection,
+            LevelRoom a, Vector2Int insideA, Vector2Int outsideA, LevelRoom b, Vector2Int insideB, Vector2Int outsideB)
+        {
+            bool gateAtA = analysis.Progress(a.Node.Id) <= analysis.Progress(b.Node.Id);
+            layout.Doorways.Add(new LevelDoorway(a, connection, insideA, outsideA, gateAtA));
+            layout.Doorways.Add(new LevelDoorway(b, connection, insideB, outsideB, !gateAtA));
         }
 
         private readonly struct Door

@@ -28,6 +28,7 @@ namespace CGD.Map
             MapNodeType.EmergencyExit => new Color(0.3f, 0.75f, 0.85f),
             MapNodeType.Hazard   => new Color(0.6f, 0.75f, 0.2f),
             MapNodeType.Quiet    => new Color(0.55f, 0.75f, 0.7f),
+            MapNodeType.Junction => new Color(0.6f, 0.6f, 0.65f),
             _                    => Color.gray
         };
     }

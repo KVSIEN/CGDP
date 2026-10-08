@@ -25,6 +25,8 @@ namespace CGD.Map
         [SerializeField] private bool _allowAdjacentSameType = true;
         [Tooltip("Fewest connections between two rooms of this type (0 = no limit). 3 keeps rewards spread out")]
         [SerializeField, Min(0)] private int _minSpacing;
+        [Tooltip("Fewest connections a room needs to take this type (0 = any). 3 or more keeps it to forks, where routes split")]
+        [SerializeField, Min(0)] private int _minConnections;
         [Tooltip("Prefer rooms with an empty grid cell beside them, so a room function spanning two cells (Cargo Bay, Park) has space to spread into")]
         [SerializeField] private bool _wantsSpace;
 
@@ -39,7 +41,7 @@ namespace CGD.Map
                                MapPlacement placement = MapPlacement.Anywhere,
                                float minDepth = 0f, float maxDepth = 1f,
                                bool preferDeadEnds = false, bool allowAdjacentSameType = true,
-                               float intensityBonus = 0f, int minSpacing = 0, bool wantsSpace = false)
+                               float intensityBonus = 0f, int minSpacing = 0, bool wantsSpace = false, int minConnections = 0)
         {
             _type                  = type;
             _min                   = min;
@@ -53,6 +55,7 @@ namespace CGD.Map
             _intensityBonus        = intensityBonus;
             _minSpacing            = minSpacing;
             _wantsSpace            = wantsSpace;
+            _minConnections        = minConnections;
         }
 
         public MapNodeType Type                  => _type;
@@ -65,6 +68,7 @@ namespace CGD.Map
         public float       IntensityBonus        => _intensityBonus;
         public int         MinSpacing            => _minSpacing;
         public bool        WantsSpace            => _wantsSpace;
+        public int         MinConnections        => _minConnections;
 
         public bool AllowsDepth(float progress) => progress >= _minDepth && progress <= _maxDepth;
 

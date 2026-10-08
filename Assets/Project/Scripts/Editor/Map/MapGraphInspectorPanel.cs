@@ -248,6 +248,12 @@ namespace CGD.Editor
             var type = (ConnectionType)EditorGUILayout.EnumPopup(connection.Type);
             if (EditorGUI.EndChangeCheck()) session.SetConnectionType(connection, type);
 
+            EditorGUI.BeginChangeCheck();
+            bool direct = EditorGUILayout.Toggle(
+                new GUIContent("Direct door", "The two rooms touch with a doorway between them instead of a hallway. Needs rooms in neighbouring grid cells; otherwise the level builds a hallway"),
+                connection.Direct);
+            if (EditorGUI.EndChangeCheck()) session.SetDirect(connection, direct);
+
             if (connection.IsGate) return;
             EditorGUI.BeginChangeCheck();
             bool oneWay = EditorGUILayout.Toggle(new GUIContent("One-way", "Opens only from the end further from Start"), connection.OneWay);

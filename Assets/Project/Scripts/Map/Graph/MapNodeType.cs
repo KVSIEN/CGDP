@@ -25,5 +25,6 @@ namespace CGD.Map
         EmergencyExit, // an escape pod: end the run early, keeping only part of the haul
         Hazard,     // a leak that keeps afflicting everyone inside until its vents are shut
         Quiet,      // a rare peaceful room: no enemies, always a resource, ammo cache or loot cache
+        Junction,   // a crossroads where three or more routes meet: no encounter, just a place to choose a way
     }
 }

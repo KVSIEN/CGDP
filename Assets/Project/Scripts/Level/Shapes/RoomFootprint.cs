@@ -12,6 +12,7 @@ namespace CGD.Level
         private readonly HashSet<Vector2Int> _lookup;
         private readonly List<Vector2Int> _tiles;
         private readonly List<DoorSocket> _sockets = new();
+        private readonly bool _hasFixedSockets;
 
         public RoomFootprint(IEnumerable<Vector2Int> tiles, bool curvedWalls = false)
             : this(tiles, curvedWalls, null) { }
@@ -21,6 +22,7 @@ namespace CGD.Level
         private RoomFootprint(IEnumerable<Vector2Int> tiles, bool curvedWalls, IEnumerable<DoorSocket> fixedSockets)
         {
             CurvedWalls = curvedWalls;
+            _hasFixedSockets = fixedSockets != null;
             _lookup = new HashSet<Vector2Int>(tiles);
             // Sorted so everything iterating the tiles (sockets, spawn spots) is the same for
             // the same seed.
@@ -45,6 +47,19 @@ namespace CGD.Level
             var tiles = new List<Vector2Int>(rect.width * rect.height);
             foreach (Vector2Int tile in rect.allPositionsWithin) tiles.Add(tile);
             return new RoomFootprint(tiles, false, sockets);
+        }
+
+        // The same room shifted by `offset` tiles. Doorways follow: found afresh for a generated
+        // shape, shifted as given for a hand-built one.
+        public RoomFootprint Translated(Vector2Int offset)
+        {
+            var tiles = new List<Vector2Int>(_tiles.Count);
+            foreach (Vector2Int tile in _tiles) tiles.Add(tile + offset);
+            if (!_hasFixedSockets) return new RoomFootprint(tiles, CurvedWalls);
+
+            var sockets = new List<DoorSocket>(_sockets.Count);
+            foreach (DoorSocket socket in _sockets) sockets.Add(new DoorSocket(socket.Inside + offset, socket.Outward));
+            return new RoomFootprint(tiles, CurvedWalls, sockets);
         }
 
         public IReadOnlyList<Vector2Int> Tiles   => _tiles;

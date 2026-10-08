@@ -187,6 +187,9 @@ namespace CGD.Map
                 if (!exempt && analysis.IsReachable(node.Id) && !rule.AllowsDepth(analysis.Progress(node.Id)))
                     issues.Add($"#{node.Id} {node.Type} is outside its allowed depth.");
 
+                if (graph.Degree(node.Id) < rule.MinConnections)
+                    issues.Add($"#{node.Id} {node.Type} has {graph.Degree(node.Id)} connection(s); its rule needs {rule.MinConnections}.");
+
                 if (!rule.AllowAdjacentSameType && HasNeighborOfType(graph, node, neighbors))
                     issues.Add($"#{node.Id} {node.Type} is next to another {node.Type}.");
 

@@ -19,6 +19,8 @@ namespace CGD.Map
         [SerializeField] private List<int>      _keyNodeIds = new();
         [Tooltip("Opens only from the end further from Start; a normal passage once opened")]
         [SerializeField] private bool           _oneWay;
+        [Tooltip("The two rooms touch: a door in the wall they share instead of a hallway. Needs rooms in neighbouring grid cells; otherwise the level builds a hallway")]
+        [SerializeField] private bool           _direct;
 
         public MapConnection(int a, int b, ConnectionType type)
         {
@@ -71,6 +73,12 @@ namespace CGD.Map
         {
             get => _oneWay;
             set => _oneWay = value;
+        }
+
+        public bool Direct
+        {
+            get => _direct;
+            set => _direct = value;
         }
 
         // Locked and Secret links close off what lies behind them until opened or found.

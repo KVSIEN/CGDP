@@ -193,7 +193,8 @@ namespace CGD.Editor
             foreach (MapConnection connection in Graph.Connections)
             {
                 MapConnection original = generated.GetConnection(connection.A, connection.B);
-                if (original == null || original.Type != connection.Type || original.OneWay != connection.OneWay) return true;
+                if (original == null || original.Type != connection.Type || original.OneWay != connection.OneWay
+                    || original.Direct != connection.Direct) return true;
             }
             return false;
         }
@@ -316,6 +317,13 @@ namespace CGD.Editor
         {
             Record("Change One-Way");
             connection.OneWay = oneWay;
+            Changed();
+        }
+
+        public void SetDirect(MapConnection connection, bool direct)
+        {
+            Record("Change Direct Door");
+            connection.Direct = direct;
             Changed();
         }
 

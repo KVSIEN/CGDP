@@ -31,6 +31,8 @@ namespace CGD.Map
         [SerializeField] private MapBranchSettings _branches = new();
         [SerializeField] private MapLoopSettings   _loops    = new();
         [SerializeField] private MapGateSettings   _gates    = new();
+        [Tooltip("Chance a plain link between rooms in neighbouring grid cells is a direct door: the rooms touch and share a doorway instead of a hallway")]
+        [SerializeField, Range(0f, 1f)] private float _directDoorChance;
 
         public IntRange OptionalRooms         => _optionalRooms;
         public int      MinBossDepth          => _minBossDepth;
@@ -41,6 +43,7 @@ namespace CGD.Map
         public MapBranchSettings Branches => _branches;
         public MapLoopSettings   Loops    => _loops;
         public MapGateSettings   Gates    => _gates;
+        public float DirectDoorChance     => _directDoorChance;
 
         // Rooms between Start and the Boss for a rolled path length, lengthened when
         // needed to keep the Boss MinBossDepth away.

@@ -49,6 +49,7 @@ namespace CGD.Map
             new MapLayoutBuilder(context, layout).Build();
             new MapLinkBuilder(context, layout).Build();
             new MapGatePlacer(context, layout).Place();
+            new MapDirectDoorPlacer(context, layout).Place();
             context.DeriveSlots();
 
             var types = new MapTypeAssigner(context);

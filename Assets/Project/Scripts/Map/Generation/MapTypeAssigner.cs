@@ -368,6 +368,7 @@ namespace CGD.Map
             if (!PacingAllows(type, slot)) return false;
             if (rule == null) return true;
             if (!rule.AllowsPlacement(slot.OnMainPath)) return false;
+            if (Graph.Degree(slot.NodeId) < rule.MinConnections) return false;
             if (!rule.AllowAdjacentSameType && HasAssignedNeighbor(slot.NodeId, type)) return false;
             return rule.MinSpacing <= 1 || !HasAssignedWithin(slot.NodeId, type, rule.MinSpacing - 1);
         }

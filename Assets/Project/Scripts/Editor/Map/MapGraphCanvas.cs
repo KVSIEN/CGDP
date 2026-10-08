@@ -130,7 +130,7 @@ namespace CGD.Editor
 
                 curve.Draw(color, ConnectionWidth);
 
-                if ((connection.Type != ConnectionType.Normal || connection.OneWay) && session.Zoom >= LabelMinZoom)
+                if ((connection.Type != ConnectionType.Normal || connection.OneWay || connection.Direct) && session.Zoom >= LabelMinZoom)
                     DrawConnectionLabel(curve.Midpoint, connection);
             }
         }
@@ -141,6 +141,7 @@ namespace CGD.Editor
             ConnectionType type = connection.Type;
             string text = type != ConnectionType.Locked ? type.ToString()
                         : LockLabel(connection);
+            if (connection.Direct) text = type == ConnectionType.Normal ? "Direct" : text + " · direct";
             if (connection.OneWay) text += " · one-way";
             var content = new GUIContent(text);
             Vector2 size = _linkLabelStyle.CalcSize(content);

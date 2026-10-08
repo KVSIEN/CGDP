@@ -129,6 +129,6 @@ namespace CGD.Level
             _candidates.Sort((a, b) => a.Id.CompareTo(b.Id)); // stable order, so a seed always plans the same
         }
 
-        private static bool IsEligible(MapNodeType type) => !type.IsStructural() && type != MapNodeType.Shop;
+        private static bool IsEligible(MapNodeType type) => !type.IsStructural() && type != MapNodeType.Shop && type != MapNodeType.Junction;
     }
 }

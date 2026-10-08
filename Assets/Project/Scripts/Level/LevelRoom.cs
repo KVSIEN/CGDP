@@ -22,6 +22,11 @@ namespace CGD.Level
             WallHeight = wallHeight;
         }
 
+        // The same room shifted by `offset` tiles. Only before its structure and outline are
+        // planned, which depend on where the doorways end up.
+        public LevelRoom Translated(Vector2Int offset) =>
+            new(Node, Footprint.Translated(offset), Function, WallHeight, Landmark, Faction, BreachFaction, Chamfer);
+
         public MapNode       Node       { get; }
         public RoomFootprint Footprint  { get; }
         public RoomFunction  Function   { get; }    // null for a plain room
