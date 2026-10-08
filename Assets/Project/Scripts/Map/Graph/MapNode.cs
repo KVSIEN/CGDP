@@ -25,6 +25,8 @@ namespace CGD.Map
         [SerializeField] private int         _breachFaction = NoFaction;
         [Tooltip("Index into MapContentSettings.Sections, or -1 for none")]
         [SerializeField] private int         _section = NoSection;
+        [Tooltip("What kind of ship space this room is; None lets the level builder pick any fitting function")]
+        [SerializeField] private RoomCategory _category;
 
         // For serialization: keeps the field defaults (no faction, no section) for data
         // saved before a field existed.
@@ -78,6 +80,12 @@ namespace CGD.Map
 
         public int  Section    { get => _section; set => _section = value < 0 ? NoSection : value; }
         public bool HasSection => _section != NoSection;
+
+        public RoomCategory Category
+        {
+            get => _category;
+            set => _category = value;
+        }
 
         public void SetFaction(int faction, float influence)
         {

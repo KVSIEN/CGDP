@@ -49,6 +49,7 @@ namespace CGD.Editor
             MapGraphViewMode.RequiredOptional => RequiredColor(node.Id, analysis),
             MapGraphViewMode.Branches         => BranchColor(analysis.BranchOf(node.Id)),
             MapGraphViewMode.Section          => node.HasSection ? PaletteColor(node.Section) : NoFaction,
+            MapGraphViewMode.Category         => node.Category != RoomCategory.None ? PaletteColor((int)node.Category - 1) : NoFaction,
             _                                 => TypeColor(node.Type)
         };
 
@@ -83,6 +84,12 @@ namespace CGD.Editor
                     if (content != null)
                         for (int i = 0; i < content.Sections.Count; i++)
                             legend.Add((PaletteColor(i), content.SectionName(i)));
+                    break;
+                case MapGraphViewMode.Category:
+                    legend.Add((NoFaction, "None"));
+                    foreach (RoomCategory category in System.Enum.GetValues(typeof(RoomCategory)))
+                        if (category != RoomCategory.None)
+                            legend.Add((PaletteColor((int)category - 1), category.ToString()));
                     break;
                 case MapGraphViewMode.Branches:
                     legend.Add((MainPath, "Main path"));

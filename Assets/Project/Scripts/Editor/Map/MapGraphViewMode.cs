@@ -8,6 +8,7 @@ namespace CGD.Editor
         Faction,
         RequiredOptional,
         Branches,
-        Section
+        Section,
+        Category
     }
 }

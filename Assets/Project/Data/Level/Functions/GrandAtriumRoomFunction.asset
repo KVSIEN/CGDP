@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: GrandAtriumRoomFunction
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
   _displayName: Grand Atrium
+  _category: 3
   _weight: 1
   _shapes:
   - {fileID: 11400000, guid: 3cf90817eefb42238292adbde28bfc6b, type: 2}

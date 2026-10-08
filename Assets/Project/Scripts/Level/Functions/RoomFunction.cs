@@ -13,6 +13,8 @@ namespace CGD.Level
     public class RoomFunction : ScriptableObject
     {
         [SerializeField] private string _displayName = "Room";
+        [Tooltip("The kind of ship space this is; map nodes with a category only pick functions of that category")]
+        [SerializeField] private RoomCategory _category;
         [Tooltip("How often this function is picked relative to the others a room type lists")]
         [SerializeField, Min(0f)] private float _weight = 1f;
         [Tooltip("Ship sections where this kind of room is more likely (crew quarters in Habitation, cargo bays in Engineering)")]
@@ -39,6 +41,7 @@ namespace CGD.Level
         [SerializeField] private List<RoomPropPlacement> _props = new();
 
         public string DisplayName => _displayName;
+        public RoomCategory Category => _category;
         public float  Weight      => _weight;
         public float  WallHeight  => _wallHeight;
         public Vector2Int Cells   => new(Mathf.Clamp(_cells.x, 1, 2), Mathf.Clamp(_cells.y, 1, 2));

@@ -63,6 +63,12 @@ namespace CGD.Editor
                 node.Tier, 1, 3);
             if (EditorGUI.EndChangeCheck()) session.SetTier(node, tier);
 
+            EditorGUI.BeginChangeCheck();
+            var category = (RoomCategory)EditorGUILayout.EnumPopup(
+                new GUIContent("Category", "What kind of ship space this room is. None = the level builder picks any fitting room function"),
+                node.Category);
+            if (EditorGUI.EndChangeCheck()) session.SetCategory(node, category);
+
             DrawFaction(node, session);
             DrawSection(node, session);
 

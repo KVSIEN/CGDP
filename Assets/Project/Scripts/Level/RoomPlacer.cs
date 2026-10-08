@@ -38,7 +38,8 @@ namespace CGD.Level
             {
                 RandomStream random = seed.Derive(node.Id).Stream();
                 MapSectionDefinition section = content != null && node.HasSection ? content.GetSection(node.Section) : null;
-                RoomFunction function = random.PickWeighted(_settings.FunctionsFor(node.Type), f => f != null ? f.WeightIn(section) : 0f);
+                IReadOnlyList<RoomFunction> candidates = FunctionsInCategory(node, layout);
+                RoomFunction function = random.PickWeighted(candidates, f => f != null ? f.WeightIn(section) : 0f);
                 RectInt block = ClaimBlock(cells[node.Id], function != null ? function.Cells : Vector2Int.one, claimed, random);
                 connections.TryGetValue(node.Id, out int count);
 
@@ -59,6 +60,22 @@ namespace CGD.Level
                 layout.AddRoom(new LevelRoom(node, _shapes.Build(shapeList, count, area, random), function, height, faction: faction, breachFaction: breach,
                                              chamfer: function != null ? function.ChamferOr(_settings.RoomChamfer) : _settings.RoomChamfer));
             }
+        }
+
+        // The functions its type lists that match the node's category. A node whose category
+        // none of them fits keeps the full list, so a hand-set category never leaves a room bare.
+        private IReadOnlyList<RoomFunction> FunctionsInCategory(MapNode node, LevelLayout layout)
+        {
+            IReadOnlyList<RoomFunction> functions = _settings.FunctionsFor(node.Type);
+            if (node.Category == RoomCategory.None) return functions;
+
+            var matching = new List<RoomFunction>();
+            foreach (RoomFunction function in functions)
+                if (function != null && function.Category == node.Category) matching.Add(function);
+            if (matching.Count > 0) return matching;
+
+            layout.Warnings.Add($"No {node.Category} room function for {node.Type} #{node.Id}; picked any.");
+            return functions;
         }
 
         // --- Cells ---------------------------------------------------------------------

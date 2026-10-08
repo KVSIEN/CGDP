@@ -225,6 +225,7 @@ namespace CGD.Editor
                 MapGraphViewMode.Section          => node.HasSection
                     ? session.Asset.Content?.SectionName(node.Section) ?? node.Section.ToString()
                     : "no section",
+                MapGraphViewMode.Category         => node.Category != RoomCategory.None ? node.Category.ToString() : "no category",
                 MapGraphViewMode.RequiredOptional => !analysis.IsReachable(node.Id) ? "unreachable"
                     : analysis.IsRequired(node.Id) ? "required" : "optional",
                 MapGraphViewMode.Branches         => analysis.BranchOf(node.Id) == MapGraphAnalysis.MainPathBranch

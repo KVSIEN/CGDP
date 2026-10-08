@@ -177,6 +177,7 @@ namespace CGD.Editor
                 || original.Faction != node.Faction
                 || original.BreachFaction != node.BreachFaction
                 || original.Section != node.Section
+                || original.Category != node.Category
                 || !Mathf.Approximately(original.FactionInfluence, node.FactionInfluence);
         }
 
@@ -322,6 +323,13 @@ namespace CGD.Editor
         {
             Record("Change Map Node Section");
             node.Section = section;
+            Changed();
+        }
+
+        public void SetCategory(MapNode node, RoomCategory category)
+        {
+            Record("Change Map Node Category");
+            node.Category = category;
             Changed();
         }
 
