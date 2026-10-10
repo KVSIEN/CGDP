@@ -171,6 +171,31 @@ namespace CGD.Tests
             }
         }
 
+        // Learning from a style's own maps should give back numbers in that style's range.
+        [Test]
+        public void LearningFromGeneratedMapsRecoversTheirShape()
+        {
+            MapGenerationSettings settings = Load("Balanced");
+            var generator = new MapGenerator(settings);
+            var graphs    = new System.Collections.Generic.List<MapGraph>();
+            var spacings  = new System.Collections.Generic.List<Vector2>();
+            for (int i = 0; i < 10; i++)
+            {
+                graphs.Add(generator.Generate(Seed.From(i)).Graph);
+                spacings.Add(settings.NodeSpacing);
+            }
+
+            LearnedMapStyle style = MapStyleLearner.Learn(graphs, spacings, settings.Content);
+            foreach (string note in style.Notes) TestContext.WriteLine(note);
+
+            Assert.AreEqual(10, style.MapCount);
+            MapLayoutSettings layout = settings.Layouts[0].Layout;
+            Assert.LessOrEqual(style.PathLength.Max, layout.MainPathLength(layout.MainPath.Length.Max), "learned a longer main path than the style allows");
+            Assert.GreaterOrEqual(style.MinBossDepth, layout.MinBossDepth, "learned a boss closer than the style allows");
+            Assert.AreEqual(MapPathDirection.East, style.Direction);
+            Assert.IsTrue(style.HasCategories, "Balanced maps have categories to learn from");
+        }
+
         [TestCaseSource(nameof(SettingsNames))]
         public void GenerationStaysWithinTheTimeBudget(string name)
         {
