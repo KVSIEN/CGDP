@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 782486c3ed6a422a9b324498ab198d59, type: 3}
-  m_Name: MaintenanceBayRoomFunction
+  m_Name: LifeSupportRoomFunction
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
-  _displayName: Maintenance Bay
+  _displayName: Life Support
   _category: 7
   _weight: 1
   _preferredSections:
@@ -21,12 +21,13 @@ MonoBehaviour:
   _shapes: []
   _cells: {x: 1, y: 1}
   _size:
-    Min: 9
-    Max: 11
+    Min: 10
+    Max: 12
     Bias: 0
   _wallHeight: 0
   _chamfer: -1
   _openCeiling: 0
+  _unique: 0
   _landmark: {fileID: 0}
   _structure: []
   _props: []

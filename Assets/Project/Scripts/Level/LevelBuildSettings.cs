@@ -80,7 +80,7 @@ namespace CGD.Level
         [SerializeField] private float[] _lootLuckByTier = { 0f, 0.5f, 1f };
 
         [Header("Rooms")]
-        [Tooltip("Every place a room can become (Lobby, Clinic…). A room picks one of its own category, whatever its node type")]
+        [Tooltip("Every place a room can become (Lobby, Medical Bay…). A room picks one of its own category, whatever its node type")]
         [SerializeField] private List<RoomFunction> _functions = new();
         [SerializeField] private List<RoomContentRule> _rooms = new();
         [Tooltip("Floor plans for rooms without a function, or whose function lists none. Empty = square rooms")]
