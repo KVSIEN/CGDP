@@ -6,7 +6,7 @@ namespace CGD.Map
     public enum RoomCategory
     {
         None,
-        Residential,    // quarters for every class, and the schools beside them
+        Residential,    // quarters, cabin rows and commons for every class, and the schools beside them
         Recreation,     // pool, park, gym, spa, observatory deck
         Entertainment,  // casino, theater, lounge, museum, ballroom
         Commercial,     // the promenade, restaurants, food courts and their kitchens

@@ -104,6 +104,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5556cbf53b9c480f8c606a29fbb7a356, type: 2}
   - {fileID: 11400000, guid: 5bbef9de3d274175ae4f819e760e5ba1, type: 2}
   - {fileID: 11400000, guid: d9da28219f1c48cd97825cc7a0bbd93b, type: 2}
+  - {fileID: 11400000, guid: ca8e15266d5b408993a6348ea256d48c, type: 2}
+  - {fileID: 11400000, guid: 70888b7bd5ad4c528538107f1fd5f98f, type: 2}
   _rooms:
   - Type: 0
     Enemies: []
