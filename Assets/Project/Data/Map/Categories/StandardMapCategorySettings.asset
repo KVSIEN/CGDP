@@ -41,32 +41,34 @@ MonoBehaviour:
     _preferredSections:
     - {fileID: 11400000, guid: 46c8468c134f46ef9e865631ff1a2440, type: 2}
   - _category: 5
-    _weight: 0
-    _preferredSections: []
+    _weight: 1
+    _preferredSections:
+    - {fileID: 11400000, guid: bfa3b5c82e544118bf005f0e0cc4c841, type: 2}
   - _category: 6
-    _weight: 0
+    _weight: 1
     _preferredSections: []
   - _category: 7
     _weight: 1
     _preferredSections:
     - {fileID: 11400000, guid: 127b4364c57a4639989fe8ae021843f4, type: 2}
   - _category: 8
-    _weight: 0
+    _weight: 1
     _preferredSections: []
   - _category: 9
-    _weight: 0
+    _weight: 1
     _preferredSections:
     - {fileID: 11400000, guid: 127b4364c57a4639989fe8ae021843f4, type: 2}
   - _category: 10
-    _weight: 0
+    _weight: 1
     _preferredSections: []
   - _category: 11
     _weight: 1
     _preferredSections:
     - {fileID: 11400000, guid: 127b4364c57a4639989fe8ae021843f4, type: 2}
   - _category: 12
-    _weight: 0
-    _preferredSections: []
+    _weight: 1
+    _preferredSections:
+    - {fileID: 11400000, guid: bfa3b5c82e544118bf005f0e0cc4c841, type: 2}
   _sectionPreference: 2
   _repeatDecay: 0.8
   _fixedCategories:
@@ -82,12 +84,8 @@ MonoBehaviour:
     _category: 11
   - _type: 17
     _category: 11
-  - _type: 9
-    _category: 11
   - _type: 16
     _category: 3
-  - _type: 18
-    _category: 7
   _affinities:
   - _a: 3
     _b: 4
@@ -173,6 +171,30 @@ MonoBehaviour:
   - _a: 4
     _b: 7
     _affinity: 0.6
+  - _a: 9
+    _b: 4
+    _affinity: 1.5
+  - _a: 8
+    _b: 11
+    _affinity: 1.3
+  - _a: 5
+    _b: 3
+    _affinity: 0.5
+  - _a: 10
+    _b: 1
+    _affinity: 0.7
+  - _a: 9
+    _b: 1
+    _affinity: 0.7
+  - _a: 6
+    _b: 11
+    _affinity: 1.3
+  - _a: 6
+    _b: 3
+    _affinity: 0.6
+  - _a: 8
+    _b: 1
+    _affinity: 0.8
   _sameCategoryAffinity: 1.3
   _directDoorStrength: 2
   _clashBelow: 0.25
