@@ -132,6 +132,45 @@ namespace CGD.Tests
             if (rate > 0.1f) Assert.Warn($"{name}: {rate:P0} of links join clashing categories");
         }
 
+        // Every shipped style again with its layouts' main path set to leave Start in any
+        // direction: every map must still reach its Exit.
+        [TestCaseSource(nameof(SettingsNames))]
+        public void AnyDirectionPathsReachTheirExit(string name)
+        {
+            MapGenerationSettings settings = Object.Instantiate(Load(name));
+            var copies = new System.Collections.Generic.List<Object> { settings };
+            var serialized = new SerializedObject(settings);
+            SerializedProperty layouts = serialized.FindProperty("_layouts");
+            for (int i = 0; i < layouts.arraySize; i++)
+            {
+                SerializedProperty option = layouts.GetArrayElementAtIndex(i).FindPropertyRelative("_layout");
+                if (option.objectReferenceValue == null) continue;
+
+                var layout = Object.Instantiate((MapLayoutSettings)option.objectReferenceValue);
+                var layoutSerialized = new SerializedObject(layout);
+                layoutSerialized.FindProperty("_mainPath._direction").enumValueIndex = (int)MapPathDirection.Any;
+                layoutSerialized.ApplyModifiedPropertiesWithoutUndo();
+                option.objectReferenceValue = layout;
+                copies.Add(layout);
+            }
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            try
+            {
+                var generator = new MapGenerator(settings);
+                for (int i = 0; i < SeedCount; i++)
+                {
+                    MapGraph graph = generator.Generate(Seed.From(i)).Graph;
+                    var analysis = new MapGraphAnalysis(graph);
+                    Assert.IsTrue(analysis.ExitReachable, $"{name} (any direction), seed {i}: the exit can't be reached from the start");
+                }
+            }
+            finally
+            {
+                foreach (Object copy in copies) Object.DestroyImmediate(copy);
+            }
+        }
+
         [TestCaseSource(nameof(SettingsNames))]
         public void GenerationStaysWithinTheTimeBudget(string name)
         {

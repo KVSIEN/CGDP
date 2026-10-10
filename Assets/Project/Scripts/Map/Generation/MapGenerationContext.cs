@@ -19,7 +19,7 @@ namespace CGD.Map
             NodeSpacing = nodeSpacing;
             _seed     = seed;
             _variants = variants;
-            Grid      = new MapGrid(layout.MaxSpread);
+            Grid      = new MapGrid(layout.MaxSpread, spreadAroundPath: layout.MainPath.Direction == MapPathDirection.Any);
         }
 
         public MapLayoutSettings  Layout     { get; }

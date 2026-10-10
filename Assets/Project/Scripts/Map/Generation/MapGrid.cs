@@ -14,12 +14,19 @@ namespace CGD.Map
 
         private readonly Dictionary<int, Vector2Int> _cells = new();
         private readonly Dictionary<Vector2Int, int> _rooms = new();
-        private readonly int _maxSpread;
+        private readonly List<Vector2Int> _pathCells = new();
+        private readonly int  _maxSpread;
+        private readonly bool _spreadAroundPath;
 
-        public MapGrid(int maxSpread)
+        // spreadAroundPath: maxSpread measures distance from the main path (its cells given
+        // by MarkPath) instead of rows from Start's.
+        public MapGrid(int maxSpread, bool spreadAroundPath = false)
         {
-            _maxSpread = maxSpread;
+            _maxSpread        = maxSpread;
+            _spreadAroundPath = spreadAroundPath;
         }
+
+        public void MarkPath(int nodeId) => _pathCells.Add(_cells[nodeId]);
 
         public void Place(int nodeId, Vector2Int cell)
         {
@@ -29,8 +36,18 @@ namespace CGD.Map
 
         public Vector2Int CellOf(int nodeId) => _cells[nodeId];
 
-        public bool IsOpen(Vector2Int cell) =>
-            !_rooms.ContainsKey(cell) && (_maxSpread == 0 || Mathf.Abs(cell.y) <= _maxSpread);
+        public bool IsOpen(Vector2Int cell) => !_rooms.ContainsKey(cell) && WithinSpread(cell);
+
+        private bool WithinSpread(Vector2Int cell)
+        {
+            if (_maxSpread == 0) return true;
+            if (!_spreadAroundPath) return Mathf.Abs(cell.y) <= _maxSpread;
+            if (_pathCells.Count == 0) return true;
+
+            foreach (Vector2Int pathCell in _pathCells)
+                if (Mathf.Abs(cell.x - pathCell.x) + Mathf.Abs(cell.y - pathCell.y) <= _maxSpread) return true;
+            return false;
+        }
 
         public void CollectOpenNeighbors(Vector2Int cell, List<Vector2Int> results)
         {

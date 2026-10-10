@@ -22,7 +22,7 @@ namespace CGD.Map
         [SerializeField] private IntRange _optionalRooms = new(6, 10);
         [Tooltip("Fewest connections from Start to the Boss on any route, shortcuts included. Loops and shortcuts that would cut below it are skipped, and a shorter main path is lengthened to reach it")]
         [SerializeField, Min(2)] private int _minBossDepth = 5;
-        [Tooltip("Rows of rooms allowed above and below Start's. 0 = unlimited. Low values pack rooms into tangled maps; high values let them sprawl")]
+        [Tooltip("East paths: rows of rooms allowed above and below Start's. Any-direction paths: how many cells a room may lie from the main path. 0 = unlimited. Low values pack rooms into tangled maps; high values let them sprawl")]
         [SerializeField, Min(0)] private int _maxSpread;
         [SerializeField, Min(2)] private int _maxConnectionsPerNode = 4;
 

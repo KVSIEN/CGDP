@@ -25,6 +25,9 @@ namespace CGD.Map
         private readonly List<Vector2Int>     _openCells   = new();
         private readonly List<int>            _neighbors   = new();
 
+        private static readonly Vector2Int[] Directions =
+            { Vector2Int.right, Vector2Int.up, Vector2Int.left, Vector2Int.down };
+
         public MapLayoutBuilder(MapGenerationContext context, RandomStream random)
         {
             _context = context;
@@ -46,15 +49,16 @@ namespace CGD.Map
             FillWithBranches(target, optional);
         }
 
-        // Never steps back toward Start's column, so the path can't box itself in and the
-        // boss always ends up further from Start than anything on the path.
+        // Never steps back toward Start (see RemoveBackward), so the path can't box itself
+        // in and the boss always ends up further from Start than anything on the path.
         private void BuildMainPath()
         {
             MapPathSettings path = Layout.MainPath;
             int length = Layout.MainPathLength(path.Length.Evaluate(_random));
 
-            Vector2Int heading = Vector2Int.right;
+            Vector2Int heading = path.Direction == MapPathDirection.Any ? _random.Pick(Directions) : Vector2Int.right;
             int previous = AddRoom(MapNodeType.Start, Vector2Int.zero, NoRoom);
+            Grid.MarkPath(previous);
             _pathRooms.Add(previous);
 
             for (int i = 0; i < length; i++)
@@ -69,9 +73,12 @@ namespace CGD.Map
 
         private int AddPathRoom(MapNodeType type, int previous, ref Vector2Int heading, float winding)
         {
-            // Stepping right is always open — nothing sits past the path's last column yet.
+            // A forward cell is always open: nothing lies further from Start than the path's
+            // end yet (East: nothing past its last column).
             TryStep(Grid.CellOf(previous), ref heading, winding, allowBackward: false, out Vector2Int cell);
-            return AddRoom(type, cell, previous);
+            int id = AddRoom(type, cell, previous);
+            Grid.MarkPath(id);
+            return id;
         }
 
         private void AddHubBranches(int target)
@@ -143,7 +150,7 @@ namespace CGD.Map
         private bool TryStep(Vector2Int from, ref Vector2Int heading, float winding, bool allowBackward, out Vector2Int cell)
         {
             Grid.CollectOpenNeighbors(from, _openCells);
-            if (!allowBackward) _openCells.Remove(from + Vector2Int.left);
+            if (!allowBackward) RemoveBackward(from);
 
             cell = from;
             if (_openCells.Count == 0) return false;
@@ -153,6 +160,22 @@ namespace CGD.Map
             heading = cell - from;
             return true;
         }
+
+        // East: no step toward Start's column. Any: only steps that end further from Start.
+        private void RemoveBackward(Vector2Int from)
+        {
+            if (Layout.MainPath.Direction == MapPathDirection.East)
+            {
+                _openCells.Remove(from + Vector2Int.left);
+                return;
+            }
+
+            int distance = StepsFromStart(from);
+            _openCells.RemoveAll(c => StepsFromStart(c) <= distance);
+        }
+
+        // Start sits at the origin.
+        private static int StepsFromStart(Vector2Int cell) => Mathf.Abs(cell.x) + Mathf.Abs(cell.y);
 
         private int AddRoom(MapNodeType type, Vector2Int cell, int linkFrom)
         {
