@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Map;
@@ -81,6 +80,8 @@ namespace CGD.Level
         [SerializeField] private float[] _lootLuckByTier = { 0f, 0.5f, 1f };
 
         [Header("Rooms")]
+        [Tooltip("Every place a room can become (Lobby, Clinic…). A room picks one of its own category, whatever its node type")]
+        [SerializeField] private List<RoomFunction> _functions = new();
         [SerializeField] private List<RoomContentRule> _rooms = new();
         [Tooltip("Floor plans for rooms without a function, or whose function lists none. Empty = square rooms")]
         [SerializeField] private List<RoomShape> _shapes = new();
@@ -148,17 +149,6 @@ namespace CGD.Level
 
         public IReadOnlyList<RoomShape> DefaultShapes => _shapes;
 
-        // Every function any room type lists, once each.
-        public IReadOnlyList<RoomFunction> AllFunctions()
-        {
-            var all = new List<RoomFunction>();
-            foreach (RoomContentRule rule in _rooms)
-                foreach (RoomFunction function in rule.Functions)
-                    if (function != null && !all.Contains(function)) all.Add(function);
-            return all;
-        }
-
-        public IReadOnlyList<RoomFunction> FunctionsFor(MapNodeType type) =>
-            (IReadOnlyList<RoomFunction>)RuleFor(type)?.Functions ?? Array.Empty<RoomFunction>();
+        public IReadOnlyList<RoomFunction> Functions => _functions;
     }
 }

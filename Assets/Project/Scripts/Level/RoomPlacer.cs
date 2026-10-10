@@ -9,8 +9,8 @@ namespace CGD.Level
     // Turns map nodes into rooms:
     //   1. Each node gets a grid cell from its editor position (the generator already lays
     //      nodes out on a column/lane grid; hand-moved nodes snap to the nearest free cell).
-    //   2. It picks a function (lobby, park…) for its type, favouring functions that prefer
-    //      the room's ship section. A function spanning several cells
+    //   2. It picks a function (lobby, park…) of its category, favouring functions that
+    //      prefer the room's ship section. A function spanning several cells
     //      claims free neighbouring cells; with none free it stays in one.
     //   3. The room fills its cells minus a gap for corridors — a single-cell room may be
     //      smaller and centred — and gets a hand-built landmark or a generated floor plan.
@@ -33,12 +33,13 @@ namespace CGD.Level
             Dictionary<int, Vector2Int> cells = AssignCells(graph, nodeSpacing);
             Dictionary<int, int> connections = CountConnections(graph);
             var claimed = new HashSet<Vector2Int>(cells.Values);
+            var usedLandmarks = new HashSet<LandmarkRoomDefinition>();
 
             foreach (MapNode node in graph.Nodes)
             {
                 RandomStream random = seed.Derive(node.Id).Stream();
                 MapSectionDefinition section = content != null && node.HasSection ? content.GetSection(node.Section) : null;
-                IReadOnlyList<RoomFunction> candidates = FunctionsInCategory(node, layout);
+                List<RoomFunction> candidates = FunctionsInCategory(node, layout, usedLandmarks);
                 RoomFunction function = random.PickWeighted(candidates, f => f != null ? f.WeightIn(section) : 0f);
                 RectInt block = ClaimBlock(cells[node.Id], function != null ? function.Cells : Vector2Int.one, claimed, random);
                 connections.TryGetValue(node.Id, out int count);
@@ -47,6 +48,7 @@ namespace CGD.Level
                 FactionDefinition faction = content != null && node.HasFaction ? content.GetFaction(node.Faction) : null;
                 FactionDefinition breach  = content != null && node.HasBreachFaction ? content.GetFaction(node.BreachFaction) : null;
                 LandmarkRoomDefinition landmark = function != null ? function.Landmark : null;
+                if (landmark != null) usedLandmarks.Add(landmark);
                 if (landmark != null && TryPlaceLandmark(landmark, BlockArea(block), count, out RoomFootprint landmarkFootprint))
                 {
                     layout.AddRoom(new LevelRoom(node, landmarkFootprint, function, height, landmark, faction, breach));
@@ -62,29 +64,28 @@ namespace CGD.Level
             }
         }
 
-        // The functions that match the node's category: its type's own first, else any other
-        // type's (a fight in a casino) — leaving out hand-built landmarks, which a map has one
-        // of. A category nothing fits keeps the type's full list, so a hand-set category never
-        // leaves a room bare.
-        private IReadOnlyList<RoomFunction> FunctionsInCategory(MapNode node, LevelLayout layout)
+        // The places of the room's category (any place for an uncategorised room), whatever
+        // its node type. A hand-built landmark is used once per map at most. A category with
+        // no place keeps every place, so a hand-set category never leaves a room bare.
+        private List<RoomFunction> FunctionsInCategory(MapNode node, LevelLayout layout, HashSet<LandmarkRoomDefinition> usedLandmarks)
         {
-            IReadOnlyList<RoomFunction> functions = _settings.FunctionsFor(node.Type);
-            if (node.Category == RoomCategory.None) return functions;
-
-            List<RoomFunction> matching = Matching(functions, node.Category, allowLandmarks: true);
-            if (matching.Count == 0) matching = Matching(_settings.AllFunctions(), node.Category, allowLandmarks: false);
-            if (matching.Count > 0) return matching;
+            List<RoomFunction> matching = Matching(node.Category, usedLandmarks);
+            if (matching.Count > 0 || node.Category == RoomCategory.None) return matching;
 
             layout.Warnings.Add($"No {node.Category} room function for {node.Type} #{node.Id}; picked any.");
-            return functions;
+            return Matching(RoomCategory.None, usedLandmarks);
         }
 
-        private static List<RoomFunction> Matching(IReadOnlyList<RoomFunction> functions, RoomCategory category, bool allowLandmarks)
+        // RoomCategory.None matches every place.
+        private List<RoomFunction> Matching(RoomCategory category, HashSet<LandmarkRoomDefinition> usedLandmarks)
         {
             var matching = new List<RoomFunction>();
-            foreach (RoomFunction function in functions)
-                if (function != null && function.Category == category && (allowLandmarks || function.Landmark == null))
-                    matching.Add(function);
+            foreach (RoomFunction function in _settings.Functions)
+            {
+                if (function == null || (category != RoomCategory.None && function.Category != category)) continue;
+                if (function.Landmark != null && usedLandmarks.Contains(function.Landmark)) continue;
+                matching.Add(function);
+            }
             return matching;
         }
 

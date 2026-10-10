@@ -5,14 +5,12 @@ using CGD.Map;
 
 namespace CGD.Level
 {
-    // What a room of one MapNodeType looks like and is filled with when the level is built.
+    // What a room of one MapNodeType is filled with when the level is built. Where it is
+    // (the place) comes from the room's category, not its type.
     [Serializable]
     public class RoomContentRule
     {
         public MapNodeType Type;
-
-        [Tooltip("What rooms of this type can be (Lobby, Park…), picked by weight. Empty = plain rooms from the build settings' shapes")]
-        public RoomFunction[] Functions = Array.Empty<RoomFunction>();
 
         [Tooltip("Enemy prefabs to pick from (each needs EnemyAI)")]
         public GameObject[] Enemies = Array.Empty<GameObject>();
