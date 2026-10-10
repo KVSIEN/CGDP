@@ -47,7 +47,8 @@ namespace CGD.Map
                                                    seed, variants, tuning);
 
             // Rooms, extra links, gates and keys all belong to the layout layer.
-            new MapLayoutBuilder(context, layout).Build();
+            if (context.Layout.Growth == MapGrowth.Organic) new MapOrganicLayoutBuilder(context, layout).Build();
+            else new MapLayoutBuilder(context, layout).Build();
             new MapLinkBuilder(context, layout).Build();
             new MapGatePlacer(context, layout).Place();
             new MapDirectDoorPlacer(context, layout).Place();

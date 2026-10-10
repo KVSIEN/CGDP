@@ -27,6 +27,9 @@ namespace CGD.Map
         [SerializeField, Min(2)] private int _maxConnectionsPerNode = 4;
 
         [Header("Structure")]
+        [Tooltip("Path First: a main path from Start to the Boss with branches and loops added (tight pacing). Organic: rooms spread out from Start and link wherever they meet; the Boss goes last, at the far side (a web, no visible spine). Organic uses the room counts, Min Boss Depth, Max Connections, gates and loops, not the path's direction or winding, branches or Max Spread")]
+        [SerializeField] private MapGrowth _growth = MapGrowth.PathFirst;
+        [SerializeField] private MapOrganicSettings _organic = new();
         [SerializeField] private MapPathSettings   _mainPath = new();
         [SerializeField] private MapBranchSettings _branches = new();
         [SerializeField] private MapLoopSettings   _loops    = new();
@@ -39,6 +42,8 @@ namespace CGD.Map
         public int      MaxSpread             => _maxSpread;
         public int      MaxConnectionsPerNode => _maxConnectionsPerNode;
 
+        public MapGrowth          Growth  => _growth;
+        public MapOrganicSettings Organic => _organic;
         public MapPathSettings   MainPath => _mainPath;
         public MapBranchSettings Branches => _branches;
         public MapLoopSettings   Loops    => _loops;

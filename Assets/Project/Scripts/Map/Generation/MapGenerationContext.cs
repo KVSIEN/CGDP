@@ -19,7 +19,10 @@ namespace CGD.Map
             NodeSpacing = nodeSpacing;
             _seed     = seed;
             _variants = variants;
-            Grid      = new MapGrid(layout.MaxSpread, spreadAroundPath: layout.MainPath.Direction == MapPathDirection.Any);
+            // Organic maps have no path to measure spread from; Compactness shapes them instead.
+            Grid      = layout.Growth == MapGrowth.Organic
+                ? new MapGrid(0)
+                : new MapGrid(layout.MaxSpread, spreadAroundPath: layout.MainPath.Direction == MapPathDirection.Any);
         }
 
         public MapLayoutSettings  Layout     { get; }
@@ -44,6 +47,16 @@ namespace CGD.Map
 
         public static RandomStream StreamFor(Seed seed, SeedVariants variants, string layer) =>
             (variants != null ? variants.Resolve(seed, layer) : seed.Derive(layer)).Stream();
+
+        // A new room on `cell` (positioned for the editor by NodeSpacing), linked to
+        // `linkFrom` unless that is -1. Returns its id.
+        public int AddRoom(MapNodeType type, Vector2Int cell, int linkFrom)
+        {
+            MapNode node = Graph.AddNode(type, new Vector2(cell.x * NodeSpacing.x, cell.y * NodeSpacing.y));
+            Grid.Place(node.Id, cell);
+            if (linkFrom >= 0) Graph.Connect(linkFrom, node.Id);
+            return node.Id;
+        }
 
         public bool IsFull(int nodeId) => Graph.Degree(nodeId) >= Layout.MaxConnectionsPerNode;
 

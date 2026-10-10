@@ -19,7 +19,7 @@ namespace CGD.Tests
 
         private static readonly string[] SettingsNames =
         {
-            "Balanced", "Branching", "Hub", "Labyrinth", "Linear", "Random",
+            "Balanced", "Branching", "Hub", "Labyrinth", "Linear", "Organic", "Random",
         };
 
         private static MapGenerationSettings Load(string name)

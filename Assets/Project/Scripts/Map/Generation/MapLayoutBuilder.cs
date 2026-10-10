@@ -177,15 +177,6 @@ namespace CGD.Map
         // Start sits at the origin.
         private static int StepsFromStart(Vector2Int cell) => Mathf.Abs(cell.x) + Mathf.Abs(cell.y);
 
-        private int AddRoom(MapNodeType type, Vector2Int cell, int linkFrom)
-        {
-            Vector2 spacing = _context.NodeSpacing;
-            MapNode node = Graph.AddNode(type, new Vector2(cell.x * spacing.x, cell.y * spacing.y));
-            Grid.Place(node.Id, cell);
-
-            if (linkFrom != NoRoom)
-                Graph.Connect(linkFrom, node.Id);
-            return node.Id;
-        }
+        private int AddRoom(MapNodeType type, Vector2Int cell, int linkFrom) => _context.AddRoom(type, cell, linkFrom);
     }
 }
