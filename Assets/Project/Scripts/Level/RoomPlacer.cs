@@ -62,20 +62,30 @@ namespace CGD.Level
             }
         }
 
-        // The functions its type lists that match the node's category. A node whose category
-        // none of them fits keeps the full list, so a hand-set category never leaves a room bare.
+        // The functions that match the node's category: its type's own first, else any other
+        // type's (a fight in a casino) — leaving out hand-built landmarks, which a map has one
+        // of. A category nothing fits keeps the type's full list, so a hand-set category never
+        // leaves a room bare.
         private IReadOnlyList<RoomFunction> FunctionsInCategory(MapNode node, LevelLayout layout)
         {
             IReadOnlyList<RoomFunction> functions = _settings.FunctionsFor(node.Type);
             if (node.Category == RoomCategory.None) return functions;
 
-            var matching = new List<RoomFunction>();
-            foreach (RoomFunction function in functions)
-                if (function != null && function.Category == node.Category) matching.Add(function);
+            List<RoomFunction> matching = Matching(functions, node.Category, allowLandmarks: true);
+            if (matching.Count == 0) matching = Matching(_settings.AllFunctions(), node.Category, allowLandmarks: false);
             if (matching.Count > 0) return matching;
 
             layout.Warnings.Add($"No {node.Category} room function for {node.Type} #{node.Id}; picked any.");
             return functions;
+        }
+
+        private static List<RoomFunction> Matching(IReadOnlyList<RoomFunction> functions, RoomCategory category, bool allowLandmarks)
+        {
+            var matching = new List<RoomFunction>();
+            foreach (RoomFunction function in functions)
+                if (function != null && function.Category == category && (allowLandmarks || function.Landmark == null))
+                    matching.Add(function);
+            return matching;
         }
 
         // --- Cells ---------------------------------------------------------------------

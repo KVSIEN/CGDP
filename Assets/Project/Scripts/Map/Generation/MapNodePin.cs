@@ -6,17 +6,20 @@ namespace CGD.Map
     // change with every seed.
     public readonly struct MapNodePin
     {
-        public MapNodePin(MapNodeType type, float progress, bool onMainPath, float intensity)
+        public MapNodePin(MapNodeType type, float progress, bool onMainPath, float intensity,
+                          RoomCategory category = RoomCategory.None)
         {
             Type       = type;
             Progress   = progress;
             OnMainPath = onMainPath;
             Intensity  = intensity;
+            Category   = category;
         }
 
         public MapNodeType Type       { get; }
         public float       Progress   { get; }
         public bool        OnMainPath { get; }
         public float       Intensity  { get; }
+        public RoomCategory Category  { get; }
     }
 }

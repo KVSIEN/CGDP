@@ -78,6 +78,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: f1a29d511be545d8a4c85396a4afaaa1, type: 2}
     - {fileID: 11400000, guid: 63b916f7fceb4acaa3cc3927d812e126, type: 2}
     - {fileID: 11400000, guid: 08cd1e9257174de791f3c87772ab5ce1, type: 2}
+    - {fileID: 11400000, guid: 65ddf86a0da940d897ea68371105c069, type: 2}
     Enemies: []
     EnemyCount:
       Min: 2
@@ -337,6 +338,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 78e94437fb0b468ba1e4ee209af9794e, type: 2}
     - {fileID: 11400000, guid: 08cd1e9257174de791f3c87772ab5ce1, type: 2}
     - {fileID: 11400000, guid: f1a29d511be545d8a4c85396a4afaaa1, type: 2}
+    - {fileID: 11400000, guid: 65ddf86a0da940d897ea68371105c069, type: 2}
     Enemies: []
     EnemyCount:
       Min: 1
@@ -354,6 +356,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 921ce82c13644f47a1398a4bd8c57f7c, type: 2}
     - {fileID: 11400000, guid: f1a29d511be545d8a4c85396a4afaaa1, type: 2}
     - {fileID: 11400000, guid: 08cd1e9257174de791f3c87772ab5ce1, type: 2}
+    - {fileID: 11400000, guid: 65ddf86a0da940d897ea68371105c069, type: 2}
     Enemies: []
     EnemyCount:
       Min: 0

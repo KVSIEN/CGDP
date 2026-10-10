@@ -9,6 +9,7 @@ namespace CGD.Editor
         RequiredOptional,
         Branches,
         Section,
-        Category
+        Category,
+        Zone
     }
 }

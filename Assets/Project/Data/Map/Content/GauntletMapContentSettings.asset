@@ -276,6 +276,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   _intensityJitter: 0.1
   _bossIntensity: 1
+  _categories: {fileID: 11400000, guid: 4fdf0069e0c94531a8f8a9db63bc4309, type: 2}
   _sections:
   - {fileID: 11400000, guid: bfa3b5c82e544118bf005f0e0cc4c841, type: 2}
   - {fileID: 11400000, guid: 46c8468c134f46ef9e865631ff1a2440, type: 2}

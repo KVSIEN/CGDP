@@ -43,6 +43,10 @@ namespace CGD.Map
         [Tooltip("Highest tier a room right next to Start can be, so a map always eases in")]
         [SerializeField, Range(1, 3)] private int _firstRoomsMaxTier = 1;
 
+        [Header("Room categories")]
+        [Tooltip("What kind of ship space each room is, and what may sit beside what. Empty = rooms keep no category and the level builder picks any fitting room function")]
+        [SerializeField] private MapCategorySettings _categories;
+
         [Header("Sections")]
         [Tooltip("Parts of the ship the run passes through, in order from Start to the Boss; each takes an equal share of the depth")]
         [SerializeField] private MapSectionDefinition[] _sections = Array.Empty<MapSectionDefinition>();
@@ -55,6 +59,7 @@ namespace CGD.Map
 
         public IReadOnlyList<MapNodeTypeRule> NodeRules => _nodeRules;
         public MapNodeType FillType => _fillType;
+        public MapCategorySettings Categories => _categories;
 
         public IReadOnlyList<MapGuarantee> Guarantees => _guarantees;
         public MapPacingSettings           Pacing     => _pacing;

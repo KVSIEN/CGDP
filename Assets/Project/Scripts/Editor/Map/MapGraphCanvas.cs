@@ -226,6 +226,7 @@ namespace CGD.Editor
                 MapGraphViewMode.Section          => node.HasSection
                     ? session.Asset.Content?.SectionName(node.Section) ?? node.Section.ToString()
                     : "no section",
+                MapGraphViewMode.Zone             => node.Category != RoomCategory.None ? $"{node.Category.Zone()} · {node.Category}" : "no zone",
                 MapGraphViewMode.Category         => node.Category != RoomCategory.None ? node.Category.ToString() : "no category",
                 MapGraphViewMode.RequiredOptional => !analysis.IsReachable(node.Id) ? "unreachable"
                     : analysis.IsRequired(node.Id) ? "required" : "optional",

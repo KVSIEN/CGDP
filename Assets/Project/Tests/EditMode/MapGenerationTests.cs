@@ -35,7 +35,7 @@ namespace CGD.Tests
         {
             var sb = new StringBuilder();
             foreach (MapNode n in graph.Nodes)
-                sb.Append(n.Id).Append(':').Append(n.Type).Append(':').Append(n.Tier).Append(':').Append(n.Faction)
+                sb.Append(n.Id).Append(':').Append(n.Type).Append(':').Append(n.Tier).Append(':').Append(n.Category).Append(':').Append(n.Faction)
                   .Append('@').Append(n.Position.x.ToString("R")).Append(',').Append(n.Position.y.ToString("R")).Append(';');
             foreach (MapConnection c in graph.Connections)
                 sb.Append(c.A).Append('-').Append(c.B).Append(':').Append(c.Type).Append(c.Direct ? "d" : "").Append(';');
@@ -99,6 +99,42 @@ namespace CGD.Tests
                     Assert.IsFalse(connection.OneWay, $"{name}, seed {i}: direct door #{a.Id}–#{b.Id} is one-way");
                 }
             }
+        }
+
+        [TestCaseSource(nameof(SettingsNames))]
+        public void RoomCategoriesAreAssignedAndMostlyGetAlong(string name)
+        {
+            var settings = Load(name);
+            MapCategorySettings categories = settings.Content.Categories;
+            if (categories == null) Assert.Ignore($"{name}: no category settings");
+
+            var generator = new MapGenerator(settings);
+            int links = 0, clashes = 0;
+
+            for (int i = 0; i < SeedCount; i++)
+            {
+                MapGraph graph = generator.Generate(Seed.From(i)).Graph;
+
+                foreach (MapNode node in graph.Nodes)
+                {
+                    Assert.AreNotEqual(RoomCategory.None, node.Category, $"{name}, seed {i}: #{node.Id} {node.Type} has no category");
+                    RoomCategory fixedCategory = categories.FixedFor(node.Type);
+                    if (fixedCategory != RoomCategory.None)
+                        Assert.AreEqual(fixedCategory, node.Category, $"{name}, seed {i}: #{node.Id} {node.Type} should always be {fixedCategory}");
+                }
+
+                foreach (MapConnection connection in graph.Connections)
+                {
+                    graph.TryGetNode(connection.A, out MapNode a);
+                    graph.TryGetNode(connection.B, out MapNode b);
+                    links++;
+                    if (categories.Affinity(a.Category, b.Category) < categories.ClashBelow) clashes++;
+                }
+            }
+
+            float rate = links == 0 ? 0f : (float)clashes / links;
+            TestContext.WriteLine($"{name}: {clashes} of {links} links join clashing categories ({rate:P1})");
+            if (rate > 0.1f) Assert.Warn($"{name}: {rate:P0} of links join clashing categories");
         }
 
         [TestCaseSource(nameof(SettingsNames))]

@@ -32,6 +32,7 @@ namespace CGD.Map
                 CheckNodes(graph, analysis, content, issues);
                 CheckPacing(graph, analysis, content.Pacing, issues);
                 CheckFactions(graph, content, issues);
+                CheckCategories(graph, content, issues);
                 foreach (MapGuarantee guarantee in content.Guarantees)
                 {
                     if (guarantee == null || !guarantee.IsValid) continue;
@@ -149,6 +150,23 @@ namespace CGD.Map
             foreach (MapNode node in graph.Nodes)
                 if (graph.Degree(node.Id) > layout.MaxConnectionsPerNode)
                     issues.Add($"#{node.Id} has more than {layout.MaxConnectionsPerNode} connections.");
+        }
+
+        // Neighbouring rooms whose categories clash (accommodation beside engineering) are
+        // flagged; the generator only makes them rarely, and a hand-set category can too.
+        private static void CheckCategories(MapGraph graph, MapContentSettings content, List<string> issues)
+        {
+            MapCategorySettings categories = content.Categories;
+            if (categories == null) return;
+
+            foreach (MapConnection connection in graph.Connections)
+            {
+                if (!graph.TryGetNode(connection.A, out MapNode a) || !graph.TryGetNode(connection.B, out MapNode b)) continue;
+                if (a.Category == RoomCategory.None || b.Category == RoomCategory.None) continue;
+                if (categories.Affinity(a.Category, b.Category) >= categories.ClashBelow) continue;
+
+                issues.Add($"#{a.Id}–#{b.Id}: {a.Category} beside {b.Category} clash{(connection.Direct ? " (direct door)" : "")}.");
+            }
         }
 
         private static void CheckRuleCounts(MapGraph graph, MapContentSettings content, MapRunTuning tuning, List<string> issues)

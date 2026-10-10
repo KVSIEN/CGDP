@@ -148,6 +148,16 @@ namespace CGD.Level
 
         public IReadOnlyList<RoomShape> DefaultShapes => _shapes;
 
+        // Every function any room type lists, once each.
+        public IReadOnlyList<RoomFunction> AllFunctions()
+        {
+            var all = new List<RoomFunction>();
+            foreach (RoomContentRule rule in _rooms)
+                foreach (RoomFunction function in rule.Functions)
+                    if (function != null && !all.Contains(function)) all.Add(function);
+            return all;
+        }
+
         public IReadOnlyList<RoomFunction> FunctionsFor(MapNodeType type) =>
             (IReadOnlyList<RoomFunction>)RuleFor(type)?.Functions ?? Array.Empty<RoomFunction>();
     }

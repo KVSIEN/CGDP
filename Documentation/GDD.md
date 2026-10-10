@@ -945,7 +945,7 @@ Room connections use weighted preference, not hard rules. Rooms in the same zone
 
 Services border either zone naturally. After more than a decade of reality shifts, unusual neighbors are possible, just less frequent.
 
-**In the Prototype (Built):** a first step toward this. Three ship sections (Habitation, Commerce, Engineering) and nine places stand in for the categories and zones (see Map Generation).
+**In the Prototype (Built):** the map splits into zone areas, rooms pick a category from their zone, and an affinity table decides which categories sit beside which. Unlikely neighbours stay possible but rare. Only the categories that have places built are switched on; the rest of the twelve are ready to enable. Three ship sections (Habitation, Commerce, Engineering) still run along the path (see Map Generation).
 
 ### Ship Systems
 

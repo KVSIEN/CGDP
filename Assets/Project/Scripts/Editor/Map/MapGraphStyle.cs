@@ -50,6 +50,7 @@ namespace CGD.Editor
             MapGraphViewMode.Branches         => BranchColor(analysis.BranchOf(node.Id)),
             MapGraphViewMode.Section          => node.HasSection ? PaletteColor(node.Section) : NoFaction,
             MapGraphViewMode.Category         => node.Category != RoomCategory.None ? PaletteColor((int)node.Category - 1) : NoFaction,
+            MapGraphViewMode.Zone             => node.Category != RoomCategory.None ? PaletteColor((int)node.Category.Zone() - 1) : NoFaction,
             _                                 => TypeColor(node.Type)
         };
 
@@ -90,6 +91,12 @@ namespace CGD.Editor
                     foreach (RoomCategory category in System.Enum.GetValues(typeof(RoomCategory)))
                         if (category != RoomCategory.None)
                             legend.Add((PaletteColor((int)category - 1), category.ToString()));
+                    break;
+                case MapGraphViewMode.Zone:
+                    legend.Add((NoFaction, "None"));
+                    foreach (ShipZone zone in System.Enum.GetValues(typeof(ShipZone)))
+                        if (zone != ShipZone.None)
+                            legend.Add((PaletteColor((int)zone - 1), zone.ToString()));
                     break;
                 case MapGraphViewMode.Branches:
                     legend.Add((MainPath, "Main path"));

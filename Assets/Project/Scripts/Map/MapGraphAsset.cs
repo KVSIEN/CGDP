@@ -165,7 +165,7 @@ namespace CGD.Map
             foreach (int id in _lockedNodeIds)
             {
                 if (!_graph.TryGetNode(id, out MapNode node)) continue;
-                pins.Add(new MapNodePin(node.Type, analysis.Progress(id), analysis.IsOnMainPath(id), node.Intensity));
+                pins.Add(new MapNodePin(node.Type, analysis.Progress(id), analysis.IsOnMainPath(id), node.Intensity, node.Category));
             }
             return pins;
         }

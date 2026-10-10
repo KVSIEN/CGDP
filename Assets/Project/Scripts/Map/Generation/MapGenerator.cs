@@ -7,7 +7,7 @@ namespace CGD.Map
     // Turns a MapGenerationSettings style and a seed into a MapGraph. Deterministic: the
     // same settings, seed, layer variants and pins always produce the same graph.
     //
-    // Runs as separate passes — modifiers, structure, types, intensity, factions — each with its
+    // Runs as separate passes — modifiers, structure, types, categories, intensity, factions — each with its
     // own seed layer, so a layer can be rerolled (SeedVariants.Reroll) without changing
     // the layers before it. Later layers read earlier results, so a new layout still
     // changes the types placed on it. Which of the style's layouts is used belongs to the
@@ -19,12 +19,13 @@ namespace CGD.Map
         public const string ModifiersLayer = "modifiers";
         public const string LayoutLayer    = "layout";
         public const string TypesLayer     = "types";
+        public const string CategoriesLayer = "categories";
         public const string IntensityLayer = "intensity";
         public const string FactionsLayer  = "factions";
         public const string TiersLayer     = "tiers";
 
         public static readonly IReadOnlyList<string> Layers =
-            new[] { ModifiersLayer, LayoutLayer, TypesLayer, IntensityLayer, TiersLayer, FactionsLayer };
+            new[] { ModifiersLayer, LayoutLayer, TypesLayer, CategoriesLayer, IntensityLayer, TiersLayer, FactionsLayer };
 
         private readonly MapGenerationSettings _settings;
 
@@ -54,6 +55,9 @@ namespace CGD.Map
 
             var types = new MapTypeAssigner(context);
             types.Assign(pins);
+
+            if (_settings.Content.Categories != null)
+                new MapCategoryPainter(context, _settings.Content.Categories).Paint();
 
             new MapIntensityPainter(context).Paint();
             ApplyPinnedIntensity(context.Graph, pins, types.PinnedNodeIds);
