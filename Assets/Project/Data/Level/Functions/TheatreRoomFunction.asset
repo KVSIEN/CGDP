@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
   _displayName: Theatre
   _category: 3
-  _weight: 1
+  _weight: 0.5
   _preferredSections:
   - {fileID: 11400000, guid: 46c8468c134f46ef9e865631ff1a2440, type: 2}
   _sectionPreference: 3

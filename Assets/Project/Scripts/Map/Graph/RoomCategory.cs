@@ -6,17 +6,17 @@ namespace CGD.Map
     public enum RoomCategory
     {
         None,
-        Accommodation,  // living quarters split by class, and the schools beside them
+        Residential,    // homes split by class (quarters, suites) and the schools beside them
         Recreation,     // pool, park, gym, spa, observatory deck
         Entertainment,  // casino, theater, lounge, museum, ballroom
         Commercial,     // markets, restaurants and their kitchens, boutiques
         Medical,        // hospital, clinic, pharmacy, morgue
-        Enforcement,    // police and military: stations, checkpoints, holding cells, armories, barracks
+        Security,       // police and military: security offices, armories, barracks
         Engineering,    // the ship's machinery: engine room, reactor, maintenance, and industry (chemical plant, fabrication)
-        Command,        // bridge, comms, offices, records archive
-        Agriculture,    // hydroponics, greenhouse, livestock, water treatment
+        Command,        // the bridge, control rooms, comms, offices
+        Agriculture,    // hydroponics, farms, water treatment, food processing
         Science,        // research and education: laboratories, server rooms, libraries
-        Transit,        // cargo bay, docking port, hangar, tram station
+        Transit,        // lobbies, cargo and docking bays, hangars, junctions
         Worship,        // chapel, temple, memorial shrine
     }
 }

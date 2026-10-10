@@ -763,7 +763,7 @@ How these scale on higher difficulties is TBD.
 * **Loops and shortcuts** let the player circle back. Some shortcuts are **one way** and only open from the deep end, giving a faster way home.
 * **Gates**: optional areas can sit behind a keycard lock, a terminal lock (2 or 3 terminals in different rooms) or a breakable **secret wall**. A gated area always holds a reward, and every key or terminal is reachable before its door.
 * **Ship sections**: the run passes through Habitation, then Commerce, then Engineering. Each section favors its own places.
-* **Places**: rooms are recognizable ship spaces: 41 general places across the twelve categories (Lobby, Quarters, Park, Gym, Casino, Theatre, Market, Clinic, Security Office, Engine Room, Data Center, Hangar, Chapel and so on), plus hand built **landmark rooms** such as the Reactor Core.
+* **Places**: rooms are recognizable ship spaces: 46 general places across the twelve categories (Quarters, Suite, Park, Gym, Casino, Theatre, Market, Clinic, Security Office, Engine Room, Bridge, Data Center, Lobby, Hangar, Chapel and so on), plus hand built **landmark rooms** such as the Reactor Core.
 * **Room tiers**: every room is tier 1, 2 or 3, rising with its depth. Depth is a guideline: 15% of rooms land a tier above or below. Rooms next to the start are always tier 1. A room's tier sets how often its enemies are higher tier and gives slightly better loot and resource yields.
 * **Pacing rules**: at most 3 fights in a row, and guaranteed rooms (a reward behind every gate, an early loot room, a stop before the boss).
 * **Run modifiers**: **warnings** make a run harder with better loot (Lockdown, Infestation, Overrun). **Anomalies** add twists without making it harder (Scavenger, Fractured Hull). At most two warnings and one anomaly, announced at the start.
@@ -918,12 +918,12 @@ The spaces procedural generation draws from:
 
 | Category | Purpose | Room types |
 |----------|---------|------------|
-| **Accommodations** | Living quarters, split by class | Luxury suites, standard cabins, lodges, dormitories, crew quarters, VIP penthouses |
+| **Residential** | Homes, split by class | Luxury suites, standard cabins, lodges, dormitories, crew quarters, VIP penthouses |
 | **Recreation** | Leisure and sport | Pool, park or garden, gym, sports courts, spa, observatory deck, simulation rooms |
 | **Entertainment** | Social and cultural | Casino, theater, nightclub, bar or lounge, museum, gallery, arcade, ballroom |
 | **Commercial** | Trade and dining | Market hall, convenience stores, restaurants, cafeterias, boutiques, vendor stalls |
 | **Medical** | Health | Hospital, clinic, pharmacy, psych ward, morgue, quarantine wing |
-| **Enforcement** | Security and military | Police station, armory, holding cells, security checkpoint, barracks, surveillance center |
+| **Security** | Police and military | Police station, armory, holding cells, security checkpoint, barracks, surveillance center |
 | **Engineering** | Maintenance | Engine room, reactor bay, ventilation shafts, maintenance tunnels, waste processing, power relays |
 | **Command** | Administration | Bridge, comms center, mission control, offices, council chamber, records archive |
 | **Agriculture** | Food production | Hydroponics bay, greenhouse, livestock pen, water treatment, seed vault, soil processing |
@@ -931,7 +931,7 @@ The spaces procedural generation draws from:
 | **Transit** | Movement and logistics | Cargo bay, docking port, hangar, freight elevator, tram station, warehouse |
 | **Worship** | Faith and ceremony | Chapel, temple, meditation hall, memorial shrine, ceremonial chamber |
 
-**Class** shows most in Accommodations (penthouses versus dormitories), Commercial (fine dining versus cafeterias) and Entertainment (casino and ballroom versus arcade). Engineering and Agriculture are the working guts of the ship: functional, not pretty.
+**Class** shows most in Residential (penthouses versus dormitories), Commercial (fine dining versus cafeterias) and Entertainment (casino and ballroom versus arcade). Engineering and Agriculture are the working guts of the ship: functional, not pretty.
 
 ### Ship Zones and Adjacency
 
@@ -939,13 +939,13 @@ Room connections use weighted preference, not hard rules. Rooms in the same zone
 
 | Zone | Categories |
 |------|------------|
-| **Civilian** | Accommodations, Recreation, Entertainment, Commercial, Worship |
+| **Civilian** | Residential, Recreation, Entertainment, Commercial, Worship |
 | **Operations** | Engineering, Command, Transit, Agriculture |
-| **Services** | Medical, Enforcement, Science |
+| **Services** | Medical, Security, Science |
 
 Services border either zone naturally. After more than a decade of reality shifts, unusual neighbors are possible, just less frequent.
 
-**In the Prototype (Built):** the map splits into zone areas, rooms pick a category from their zone, and an affinity table decides which categories sit beside which. Unlikely neighbours stay possible but rare. All twelve categories are switched on, each with plain placeholder places. Industry (chemical plants, fabrication) is part of Engineering, schools are part of Accommodation and libraries part of Science. Three ship sections (Habitation, Commerce, Engineering) still run along the path (see Map Generation).
+**In the Prototype (Built):** the map splits into zone areas, rooms pick a category from their zone, and an affinity table decides which categories sit beside which. Unlikely neighbours stay possible but rare. All twelve categories are switched on, each with plain placeholder places. Industry (processing plants, workshops) is part of Engineering, schools are part of Residential, lobbies part of Transit and libraries part of Science. Three ship sections (Habitation, Commerce, Engineering) still run along the path (see Map Generation).
 
 ### Ship Systems
 

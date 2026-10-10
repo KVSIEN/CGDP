@@ -33,6 +33,8 @@ namespace CGD.Level
         [SerializeField, Range(-1, RoomOutline.MaxChamfer)] private int _chamfer = -1;
         [Tooltip("No ceiling over this room even when the build settings add ceilings (parks, domes open to the stars)")]
         [SerializeField] private bool _openCeiling;
+        [Tooltip("At most one room per map is this place (the bridge, the grand atrium). Hand-built landmarks always are")]
+        [SerializeField] private bool _unique;
         [Tooltip("Optional hand-built room used instead of a generated floor plan and structure")]
         [SerializeField] private LandmarkRoomDefinition _landmark;
         [Tooltip("Applied in order once doorways are known: pillars, dividers…")]
@@ -46,6 +48,7 @@ namespace CGD.Level
         public float  WallHeight  => _wallHeight;
         public Vector2Int Cells   => new(Mathf.Clamp(_cells.x, 1, 2), Mathf.Clamp(_cells.y, 1, 2));
         public LandmarkRoomDefinition Landmark => _landmark;
+        public bool   IsUnique    => _unique || _landmark != null;
         public bool   OpenCeiling => _openCeiling;
         // Corner chamfer in tiles, or `fallback` when this function doesn't set one.
         public int    ChamferOr(int fallback) => _chamfer >= 0 ? _chamfer : fallback;

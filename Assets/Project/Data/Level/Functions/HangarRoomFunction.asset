@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
   _displayName: Hangar
   _category: 11
-  _weight: 1
+  _weight: 0.4
   _preferredSections:
   - {fileID: 11400000, guid: 127b4364c57a4639989fe8ae021843f4, type: 2}
   _sectionPreference: 3

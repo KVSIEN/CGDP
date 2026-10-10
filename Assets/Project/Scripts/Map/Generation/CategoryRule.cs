@@ -8,7 +8,7 @@ namespace CGD.Map
     [Serializable]
     public class CategoryRule
     {
-        [SerializeField] private RoomCategory _category = RoomCategory.Accommodation;
+        [SerializeField] private RoomCategory _category = RoomCategory.Residential;
         [Tooltip("Relative chance among the categories of its zone. 0 = never picked")]
         [SerializeField, Min(0f)] private float _weight = 1f;
         [Tooltip("Ship sections where this category is likelier (quarters in Habitation, engineering in Engineering)")]

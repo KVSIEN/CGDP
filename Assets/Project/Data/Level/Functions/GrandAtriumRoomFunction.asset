@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
   _displayName: Grand Atrium
   _category: 3
-  _weight: 1
+  _weight: 0.3
   _shapes:
   - {fileID: 11400000, guid: 3cf90817eefb42238292adbde28bfc6b, type: 2}
   - {fileID: 11400000, guid: b6cf0b4dec9d4419a4b96c63d8278140, type: 2}
@@ -27,6 +27,7 @@ MonoBehaviour:
   _wallHeight: 9
   _chamfer: 2
   _openCeiling: 0
+  _unique: 1
   _landmark: {fileID: 0}
   _structure:
   - {fileID: 11400000, guid: 7cf71c7a718f4fb7a542a867464e3ff8, type: 2}

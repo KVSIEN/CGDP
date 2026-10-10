@@ -33,13 +33,13 @@ namespace CGD.Level
             Dictionary<int, Vector2Int> cells = AssignCells(graph, nodeSpacing);
             Dictionary<int, int> connections = CountConnections(graph);
             var claimed = new HashSet<Vector2Int>(cells.Values);
-            var usedLandmarks = new HashSet<LandmarkRoomDefinition>();
+            var usedUnique = new HashSet<RoomFunction>();
 
             foreach (MapNode node in graph.Nodes)
             {
                 RandomStream random = seed.Derive(node.Id).Stream();
                 MapSectionDefinition section = content != null && node.HasSection ? content.GetSection(node.Section) : null;
-                List<RoomFunction> candidates = FunctionsInCategory(node, layout, usedLandmarks);
+                List<RoomFunction> candidates = FunctionsInCategory(node, layout, usedUnique);
                 RoomFunction function = random.PickWeighted(candidates, f => f != null ? f.WeightIn(section) : 0f);
                 RectInt block = ClaimBlock(cells[node.Id], function != null ? function.Cells : Vector2Int.one, claimed, random);
                 connections.TryGetValue(node.Id, out int count);
@@ -48,7 +48,7 @@ namespace CGD.Level
                 FactionDefinition faction = content != null && node.HasFaction ? content.GetFaction(node.Faction) : null;
                 FactionDefinition breach  = content != null && node.HasBreachFaction ? content.GetFaction(node.BreachFaction) : null;
                 LandmarkRoomDefinition landmark = function != null ? function.Landmark : null;
-                if (landmark != null) usedLandmarks.Add(landmark);
+                if (function != null && function.IsUnique) usedUnique.Add(function);
                 if (landmark != null && TryPlaceLandmark(landmark, BlockArea(block), count, out RoomFootprint landmarkFootprint))
                 {
                     layout.AddRoom(new LevelRoom(node, landmarkFootprint, function, height, landmark, faction, breach));
@@ -65,25 +65,25 @@ namespace CGD.Level
         }
 
         // The places of the room's category (any place for an uncategorised room), whatever
-        // its node type. A hand-built landmark is used once per map at most. A category with
+        // its node type. A unique place (any hand-built landmark) is used once per map at most. A category with
         // no place keeps every place, so a hand-set category never leaves a room bare.
-        private List<RoomFunction> FunctionsInCategory(MapNode node, LevelLayout layout, HashSet<LandmarkRoomDefinition> usedLandmarks)
+        private List<RoomFunction> FunctionsInCategory(MapNode node, LevelLayout layout, HashSet<RoomFunction> usedUnique)
         {
-            List<RoomFunction> matching = Matching(node.Category, usedLandmarks);
+            List<RoomFunction> matching = Matching(node.Category, usedUnique);
             if (matching.Count > 0 || node.Category == RoomCategory.None) return matching;
 
             layout.Warnings.Add($"No {node.Category} room function for {node.Type} #{node.Id}; picked any.");
-            return Matching(RoomCategory.None, usedLandmarks);
+            return Matching(RoomCategory.None, usedUnique);
         }
 
         // RoomCategory.None matches every place.
-        private List<RoomFunction> Matching(RoomCategory category, HashSet<LandmarkRoomDefinition> usedLandmarks)
+        private List<RoomFunction> Matching(RoomCategory category, HashSet<RoomFunction> usedUnique)
         {
             var matching = new List<RoomFunction>();
             foreach (RoomFunction function in _settings.Functions)
             {
                 if (function == null || (category != RoomCategory.None && function.Category != category)) continue;
-                if (function.Landmark != null && usedLandmarks.Contains(function.Landmark)) continue;
+                if (usedUnique.Contains(function)) continue;
                 matching.Add(function);
             }
             return matching;

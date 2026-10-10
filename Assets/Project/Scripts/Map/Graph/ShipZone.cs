@@ -6,8 +6,8 @@ namespace CGD.Map
     public enum ShipZone
     {
         None,
-        Civilian,    // accommodations, recreation, entertainment, commercial, worship
+        Civilian,    // residential, recreation, entertainment, commercial, worship
         Operations,  // engineering, command, transit, agriculture
-        Services,    // medical, enforcement, science
+        Services,    // medical, security, science
     }
 }

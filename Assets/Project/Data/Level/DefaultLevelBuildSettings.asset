@@ -99,6 +99,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 24e76ed6dbe744a9a18b11b80a4dcded, type: 2}
   - {fileID: 11400000, guid: 06347f07dead4b7a9438a1ad3943a419, type: 2}
   - {fileID: 11400000, guid: 0b9a1c4d22b54966b44e10d6f7e7071b, type: 2}
+  - {fileID: 11400000, guid: d64da13ed0b6470fa3547ffbf57e0496, type: 2}
+  - {fileID: 11400000, guid: 168b71db27f84d58858e63f7a286d13f, type: 2}
+  - {fileID: 11400000, guid: bb86c788c26f4e36a091c866d4e4aa23, type: 2}
+  - {fileID: 11400000, guid: 06967500eba54539a9566fcea5898159, type: 2}
+  - {fileID: 11400000, guid: df28b87701d1415b9c0b81c2d8c94c0d, type: 2}
   _rooms:
   - Type: 0
     Enemies: []
