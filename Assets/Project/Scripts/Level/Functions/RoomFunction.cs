@@ -17,7 +17,7 @@ namespace CGD.Level
         [SerializeField] private RoomCategory _category;
         [Tooltip("How often this function is picked relative to the others a room type lists")]
         [SerializeField, Min(0f)] private float _weight = 1f;
-        [Tooltip("Ship sections where this kind of room is more likely (crew quarters in Habitation, cargo bays in Engineering)")]
+        [Tooltip("Ship sections where this kind of room is more likely (quarters in Habitation, cargo bays in Engineering)")]
         [SerializeField] private MapSectionDefinition[] _preferredSections = Array.Empty<MapSectionDefinition>();
         [Tooltip("Weight multiplier inside a preferred section")]
         [SerializeField, Min(1f)] private float _sectionPreference = 3f;

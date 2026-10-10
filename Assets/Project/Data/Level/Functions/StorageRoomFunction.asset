@@ -10,47 +10,45 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 782486c3ed6a422a9b324498ab198d59, type: 3}
-  m_Name: CrewQuartersRoomFunction
+  m_Name: StorageRoomFunction
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
-  _displayName: Crew Quarters
-  _category: 1
+  _displayName: Storage
+  _category: 11
   _weight: 1
   _preferredSections:
-  - {fileID: 11400000, guid: bfa3b5c82e544118bf005f0e0cc4c841, type: 2}
+  - {fileID: 11400000, guid: 127b4364c57a4639989fe8ae021843f4, type: 2}
   _sectionPreference: 3
   _shapes:
   - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
   - {fileID: 11400000, guid: 54a81013066a481a856586f0fee8dd3a, type: 2}
-  - {fileID: 11400000, guid: 9d1594db951546cdb53b46fc04bb78a8, type: 2}
   _cells: {x: 1, y: 1}
   _size:
     Min: 8
     Max: 10
     Bias: 0
-  _wallHeight: 3.5
+  _wallHeight: 4
   _openCeiling: 0
   _landmark: {fileID: 0}
-  _structure:
-  - {fileID: 11400000, guid: 441755acee644d76be46572a30aa6aa8, type: 2}
+  _structure: []
   _props:
   - Prefabs:
-    - {fileID: 1196622646538182962, guid: f6160e58f484493488c2da6a83ecedc6, type: 3}
+    - {fileID: 7530473905300712717, guid: c9bf881dd67b4a0abd3f1f58135261a4, type: 3}
     Count:
-      Min: 3
-      Max: 6
+      Min: 1
+      Max: 1
       Bias: 0
     On: 1
     Avoid: 124
     Zone: 0
     Facing: 2
-    Spacing: 1
+    Spacing: 2
   - Prefabs:
     - {fileID: 3696935098255646125, guid: 6ef5f23a34b44945a100b9cfe0f7e1c0, type: 3}
     Count:
-      Min: 1
-      Max: 2
+      Min: 4
+      Max: 7
       Bias: 0
-    On: 2
+    On: 1
     Avoid: 124
     Zone: 0
     Facing: 2

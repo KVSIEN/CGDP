@@ -11,7 +11,7 @@ namespace CGD.Map
         [SerializeField] private RoomCategory _category = RoomCategory.Accommodation;
         [Tooltip("Relative chance among the categories of its zone. 0 = never picked")]
         [SerializeField, Min(0f)] private float _weight = 1f;
-        [Tooltip("Ship sections where this category is likelier (crew quarters in Habitation, engineering in Engineering)")]
+        [Tooltip("Ship sections where this category is likelier (quarters in Habitation, engineering in Engineering)")]
         [SerializeField] private MapSectionDefinition[] _preferredSections = Array.Empty<MapSectionDefinition>();
 
         public RoomCategory Category => _category;

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 782486c3ed6a422a9b324498ab198d59, type: 3}
-  m_Name: QuarantineWingRoomFunction
+  m_Name: WardRoomFunction
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
-  _displayName: Quarantine Wing
+  _displayName: Ward
   _category: 5
   _weight: 1
   _preferredSections: []

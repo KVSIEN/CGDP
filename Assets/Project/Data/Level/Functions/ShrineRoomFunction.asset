@@ -10,18 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 782486c3ed6a422a9b324498ab198d59, type: 3}
-  m_Name: PoliceStationRoomFunction
+  m_Name: ShrineRoomFunction
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
-  _displayName: Police Station
-  _category: 6
+  _displayName: Shrine
+  _category: 12
   _weight: 1
-  _preferredSections: []
+  _preferredSections:
+  - {fileID: 11400000, guid: bfa3b5c82e544118bf005f0e0cc4c841, type: 2}
   _sectionPreference: 3
   _shapes: []
   _cells: {x: 1, y: 1}
   _size:
-    Min: 10
-    Max: 12
+    Min: 6
+    Max: 8
     Bias: 0
   _wallHeight: 0
   _chamfer: -1

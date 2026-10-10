@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 782486c3ed6a422a9b324498ab198d59, type: 3}
-  m_Name: FabricationShopRoomFunction
+  m_Name: KitchenRoomFunction
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
-  _displayName: Fabrication Shop
-  _category: 7
+  _displayName: Kitchen
+  _category: 4
   _weight: 1
   _preferredSections:
-  - {fileID: 11400000, guid: 127b4364c57a4639989fe8ae021843f4, type: 2}
+  - {fileID: 11400000, guid: 46c8468c134f46ef9e865631ff1a2440, type: 2}
   _sectionPreference: 3
   _shapes: []
   _cells: {x: 1, y: 1}
   _size:
-    Min: 10
-    Max: 12
+    Min: 8
+    Max: 10
     Bias: 0
   _wallHeight: 0
   _chamfer: -1

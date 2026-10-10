@@ -763,7 +763,7 @@ How these scale on higher difficulties is TBD.
 * **Loops and shortcuts** let the player circle back. Some shortcuts are **one way** and only open from the deep end, giving a faster way home.
 * **Gates**: optional areas can sit behind a keycard lock, a terminal lock (2 or 3 terminals in different rooms) or a breakable **secret wall**. A gated area always holds a reward, and every key or terminal is reachable before its door.
 * **Ship sections**: the run passes through Habitation, then Commerce, then Engineering. Each section favors its own places.
-* **Places**: rooms are recognizable ship spaces: Lobby, Restaurant, Park, Casino, Crew Quarters, Cargo Bay, Grand Atrium (boss), Docking Bay (exit) and Supply Depot, plus hand built **landmark rooms** such as the Reactor Core.
+* **Places**: rooms are recognizable ship spaces: 32 general places across the twelve categories (Lobby, Quarters, Park, Casino, Restaurant, Clinic, Security Office, Workshop, Laboratory, Cargo Bay, Chapel and so on), plus hand built **landmark rooms** such as the Reactor Core.
 * **Room tiers**: every room is tier 1, 2 or 3, rising with its depth. Depth is a guideline: 15% of rooms land a tier above or below. Rooms next to the start are always tier 1. A room's tier sets how often its enemies are higher tier and gives slightly better loot and resource yields.
 * **Pacing rules**: at most 3 fights in a row, and guaranteed rooms (a reward behind every gate, an early loot room, a stop before the boss).
 * **Run modifiers**: **warnings** make a run harder with better loot (Lockdown, Infestation, Overrun). **Anomalies** add twists without making it harder (Scavenger, Fractured Hull). At most two warnings and one anomaly, announced at the start.

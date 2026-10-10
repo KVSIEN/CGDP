@@ -25,7 +25,7 @@ Completed work is described in [FEATURES.md](FEATURES.md); full task history is 
 - Level gate prefabs (locked door + keycard, secret wall, one-way door); saved graphs keep their run modifiers; editable sections; clickable validation issues
 - Door signs, one-way shortcuts, Breach rooms, warning/anomaly run modifiers
 - Faction mixes (Infested, Balanced, Contested, Warped) rolled per map
-- Map styles: guarantee list, pacing, same-type spacing, rooms that want space, Resupply rooms (Supply Depot), ship sections, run modifiers, Analyze report
+- Map styles: guarantee list, pacing, same-type spacing, rooms that want space, Resupply rooms (Storage), ship sections, run modifiers, Analyze report
 - Faction assets (TECH/BIO/VOID) owning generated rooms (enemy roster, floor tint), ammo caches, placeholder resource nodes
 - Input layout (dodge C, abilities QFGX, items 5–8, shoulder swap H, no extra mouse buttons), hold-for-wheel on weapon/item keys, grenades as items readied from item slots
 - Dodge styles as data (sidestep+roll, committed roll, steerable boost, long dash, air dash), i-frames, input buffer, air dodges, stun/mantle cancel
