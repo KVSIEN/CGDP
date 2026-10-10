@@ -26,11 +26,14 @@ namespace CGD.Editor
         [SerializeField] private bool             _highlightBranch;
         [SerializeField] private Vector2          _pan;
         [SerializeField] private float            _zoom = 1f;
+        [SerializeField] private bool             _snapToGrid = true;
+        [SerializeField] private bool             _showObjectives = true;
 
         [NonSerialized] private MapGraphAnalysis _analysis;
         [NonSerialized] private List<string>     _issues;
         [NonSerialized] private HashSet<int>     _highlightedPath;
         [NonSerialized] private List<int>        _highlightedPathOrder = new();
+        [NonSerialized] private MapObjectivePreview _objectives;
 
         public MapGraphAsset Asset
         {
@@ -76,6 +79,34 @@ namespace CGD.Editor
             get => _zoom;
             set => _zoom = Mathf.Clamp(value, MinZoom, MaxZoom);
         }
+
+        // Moved and added nodes land on the level's room grid.
+        public bool SnapToGrid
+        {
+            get => _snapToGrid;
+            set => _snapToGrid = value;
+        }
+
+        // The style's node spacing: the size of one grid cell (one room) in graph units.
+        public Vector2 CellSpacing
+        {
+            get
+            {
+                Vector2 spacing = HasGraph && _asset.Settings != null ? _asset.Settings.NodeSpacing : DefaultCellSpacing;
+                return new Vector2(Mathf.Max(1f, spacing.x), Mathf.Max(1f, spacing.y));
+            }
+        }
+
+        private static readonly Vector2 DefaultCellSpacing = new(220f, 110f);
+
+        public bool ShowObjectives
+        {
+            get => _showObjectives;
+            set => _showObjectives = value;
+        }
+
+        // Where a level built from this graph would put its objectives.
+        public MapObjectivePreview Objectives => _objectives ??= new MapObjectivePreview();
 
         public MapGraphAnalysis Analysis => _analysis ??= new MapGraphAnalysis(Graph);
 
@@ -234,7 +265,9 @@ namespace CGD.Editor
         public void AddNode(MapNodeType type, Vector2 position)
         {
             Record("Add Map Node");
-            SelectNode(Graph.AddNode(type, position).Id);
+            MapNode node = Graph.AddNode(type, position);
+            if (_snapToGrid) node.Position = MapGraphGrid.SnapToFreeCell(Graph, node.Id, position, CellSpacing);
+            SelectNode(node.Id);
             Changed();
         }
 
@@ -253,6 +286,24 @@ namespace CGD.Editor
         {
             node.Position = position;
             EditorUtility.SetDirty(_asset);
+        }
+
+        // Ends a drag: with snapping on, the node drops into the nearest free cell. Part of
+        // the same undo step as the move.
+        public void EndMove(MapNode node)
+        {
+            if (_snapToGrid) node.Position = MapGraphGrid.SnapToFreeCell(Graph, node.Id, node.Position, CellSpacing);
+            Changed();
+        }
+
+        // Puts every node in a cell of its own, nearest first in graph order: for graphs
+        // drawn by hand before snapping, or moved with it off.
+        public void SnapAllToGrid()
+        {
+            Record("Snap Map Nodes to Grid");
+            foreach (MapNode node in Graph.Nodes)
+                node.Position = MapGraphGrid.SnapToFreeCell(Graph, node.Id, node.Position, CellSpacing);
+            Changed();
         }
 
         public void SetType(MapNode node, MapNodeType type)

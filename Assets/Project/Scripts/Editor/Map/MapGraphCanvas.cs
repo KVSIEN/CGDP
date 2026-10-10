@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Level;
 using CGD.Map;
 using UnityEditor;
 using UnityEngine;
@@ -7,7 +8,7 @@ namespace CGD.Editor
 {
     // Draws the graph and handles direct manipulation:
     //   click            select a node or connection
-    //   drag node        move it
+    //   drag node        move it (with Snap on, it drops into the nearest free grid cell)
     //   shift-drag node  connect it to the node you release over
     //   drag empty / middle-drag / alt-drag   pan
     //   scroll           zoom
@@ -22,6 +23,8 @@ namespace CGD.Editor
 
         private enum DragMode { None, Node, Connect, Pan }
 
+        private static readonly List<PlannedObjective> NoObjectives = new();
+
         private readonly List<(Color color, string label)> _legend = new();
 
         private DragMode _drag;
@@ -33,6 +36,7 @@ namespace CGD.Editor
         private GUIStyle _titleStyle;
         private GUIStyle _detailStyle;
         private GUIStyle _linkLabelStyle;
+        private GUIStyle _badgeStyle;
 
         public void Draw(Rect rect, MapGraphEditorSession session)
         {
@@ -50,8 +54,11 @@ namespace CGD.Editor
             {
                 HandleInput(session);
                 DrawConnections(session);
+                DrawObjectiveRoutes(session);
                 DrawPendingConnection(session);
                 DrawNodes(session);
+                DrawObjectiveBadges(session);
+                DrawSnapTarget(session);
                 DrawLegend(local, session);
             }
 
@@ -91,10 +98,29 @@ namespace CGD.Editor
 
         // --- Drawing ---------------------------------------------------------------
 
+        // With Snap on, the lines are the edges of the room cells nodes snap into.
         private void DrawGrid(Rect local, MapGraphEditorSession session)
         {
+            if (session.HasGraph && session.SnapToGrid)
+            {
+                DrawCellGrid(local, session);
+                return;
+            }
             DrawGridLines(local, session, 20f, MapGraphStyle.GridMinor);
             DrawGridLines(local, session, 100f, MapGraphStyle.GridMajor);
+        }
+
+        private void DrawCellGrid(Rect local, MapGraphEditorSession session)
+        {
+            Vector2 spacing = session.CellSpacing * session.Zoom;
+            if (spacing.x < 8f || spacing.y < 8f) return;
+
+            // Cells are centred on whole multiples of the spacing, so edges sit half a cell off.
+            Vector2 origin = _center + session.Pan + spacing * 0.5f;
+            for (float x = Mathf.Repeat(origin.x, spacing.x); x < local.width; x += spacing.x)
+                EditorGUI.DrawRect(new Rect(x, 0f, 1f, local.height), MapGraphStyle.GridMajor);
+            for (float y = Mathf.Repeat(origin.y, spacing.y); y < local.height; y += spacing.y)
+                EditorGUI.DrawRect(new Rect(0f, y, local.width, 1f), MapGraphStyle.GridMajor);
         }
 
         private void DrawGridLines(Rect local, MapGraphEditorSession session, float worldSpacing, Color color)
@@ -236,6 +262,61 @@ namespace CGD.Editor
             };
         }
 
+        // --- Objectives ------------------------------------------------------------
+
+        private static IReadOnlyList<PlannedObjective> ObjectivePlan(MapGraphEditorSession session) =>
+            session.ShowObjectives ? session.Objectives.PlanFor(session) : NoObjectives;
+
+        // A dotted line from step to step of each objective, in its colour.
+        private void DrawObjectiveRoutes(MapGraphEditorSession session)
+        {
+            if (Event.current.type != EventType.Repaint) return;
+
+            IReadOnlyList<PlannedObjective> plan = ObjectivePlan(session);
+            for (int i = 0; i < plan.Count; i++)
+            {
+                Handles.color = MapObjectivePreview.ColorOf(plan, i);
+                IReadOnlyList<int> steps = plan[i].NodeIds;
+                for (int s = 1; s < steps.Count; s++)
+                    if (session.Graph.TryGetNode(steps[s - 1], out MapNode from) && session.Graph.TryGetNode(steps[s], out MapNode to))
+                        Handles.DrawDottedLine(ToScreen(from.Position, session), ToScreen(to.Position, session), 5f);
+            }
+            Handles.color = Color.white;
+        }
+
+        // "A2" on the corner of the room holding objective A's second step.
+        private void DrawObjectiveBadges(MapGraphEditorSession session)
+        {
+            if (Event.current.type != EventType.Repaint) return;
+
+            IReadOnlyList<PlannedObjective> plan = ObjectivePlan(session);
+            for (int i = 0; i < plan.Count; i++)
+            {
+                Color color = MapObjectivePreview.ColorOf(plan, i);
+                IReadOnlyList<int> steps = plan[i].NodeIds;
+                for (int s = 0; s < steps.Count; s++)
+                {
+                    if (!session.Graph.TryGetNode(steps[s], out MapNode node)) continue;
+
+                    Rect rect  = NodeRect(node, session);
+                    var  badge = new Rect(rect.x - 6f, rect.y - 9f, 26f, 16f);
+                    EditorGUI.DrawRect(badge, color);
+                    GUI.Label(badge, $"{MapObjectivePreview.Letter(i)}{s + 1}", _badgeStyle);
+                }
+            }
+        }
+
+        // Where the dragged node will land when released.
+        private void DrawSnapTarget(MapGraphEditorSession session)
+        {
+            if (Event.current.type != EventType.Repaint || _drag != DragMode.Node || !session.SnapToGrid) return;
+            if (!session.Graph.TryGetNode(_dragNodeId, out MapNode node)) return;
+
+            Vector2 target = MapGraphGrid.SnapToFreeCell(session.Graph, node.Id, node.Position, session.CellSpacing);
+            Vector2 size   = MapGraphStyle.NodeSize * session.Zoom;
+            DrawOutline(new Rect(ToScreen(target, session) - size * 0.5f, size), new Color(1f, 1f, 1f, 0.5f), 2f);
+        }
+
         private void DrawLegend(Rect local, MapGraphEditorSession session)
         {
             if (Event.current.type != EventType.Repaint) return;
@@ -355,6 +436,10 @@ namespace CGD.Editor
                 MapNode target = HitNode(e.mousePosition, session);
                 if (target != null && target.Id != _dragNodeId)
                     session.Connect(_dragNodeId, target.Id);
+            }
+            else if (_drag == DragMode.Node && session.Graph.TryGetNode(_dragNodeId, out MapNode moved))
+            {
+                session.EndMove(moved);
             }
 
             _drag       = DragMode.None;
@@ -478,6 +563,11 @@ namespace CGD.Editor
                 normal    = { textColor = new Color(1f, 1f, 1f, 0.8f) }
             };
             _linkLabelStyle = new GUIStyle(EditorStyles.miniLabel) { alignment = TextAnchor.MiddleCenter };
+            _badgeStyle = new GUIStyle(EditorStyles.miniBoldLabel)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                normal    = { textColor = Color.black }
+            };
         }
     }
 }

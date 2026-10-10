@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Level;
 using CGD.Map;
 using UnityEditor;
 using UnityEngine;
@@ -282,6 +283,8 @@ namespace CGD.Editor
             MapFactionMix factionMix = session.Asset.FactionMix;
             EditorGUILayout.LabelField("Faction mix", factionMix != null ? factionMix.DisplayName : "—");
 
+            DrawObjectives(session);
+
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Node types", EditorStyles.miniBoldLabel);
             foreach (MapNodeType type in System.Enum.GetValues(typeof(MapNodeType)))
@@ -294,6 +297,52 @@ namespace CGD.Editor
             DrawLayers(session);
             DrawIssues(session);
             DrawMessages("Last generation", session.Asset.GenerationWarnings, MessageType.Info, null);
+        }
+
+        // The objectives a level built from this graph would get, each step a link that
+        // selects and centres its room.
+        private static void DrawObjectives(MapGraphEditorSession session)
+        {
+            MapObjectivePreview preview = session.Objectives;
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Objectives", EditorStyles.miniBoldLabel);
+            preview.Settings = (MapObjectiveSettings)EditorGUILayout.ObjectField(
+                new GUIContent("Settings", "The objective settings the level would use"), preview.Settings, typeof(MapObjectiveSettings), false);
+            preview.BuildSettings = (LevelBuildSettings)EditorGUILayout.ObjectField(
+                new GUIContent("Build settings", "Tells which rooms will have enemies to clear"), preview.BuildSettings, typeof(LevelBuildSettings), false);
+            if (preview.Settings == null) return;
+
+            IReadOnlyList<PlannedObjective> plan = preview.PlanFor(session);
+            if (plan.Count == 0)
+            {
+                EditorGUILayout.LabelField("None fit this map.", EditorStyles.miniLabel);
+                return;
+            }
+
+            for (int i = 0; i < plan.Count; i++)
+            {
+                PlannedObjective objective = plan[i];
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    Rect swatch = GUILayoutUtility.GetRect(10f, 10f, GUILayout.Width(10f));
+                    EditorGUI.DrawRect(new Rect(swatch.x, swatch.y + 3f, 10f, 10f), MapObjectivePreview.ColorOf(plan, i));
+                    EditorGUILayout.LabelField($"{MapObjectivePreview.Letter(i)}  {objective.Template.Title}",
+                                               objective.IsMain ? "main" : "side");
+                }
+
+                for (int s = 0; s < objective.NodeIds.Count; s++)
+                {
+                    int id = objective.NodeIds[s];
+                    if (!session.Graph.TryGetNode(id, out MapNode node)) continue;
+
+                    ObjectiveStepTemplate step = objective.Template.Steps[s];
+                    if (GUILayout.Button($"    {s + 1}. {step.Action} in #{id} {node.Type} (tier {node.EffectiveTier})", EditorStyles.linkLabel))
+                    {
+                        session.SelectNode(id);
+                        session.Focus(node.Position);
+                    }
+                }
+            }
         }
 
         // Each generation layer can be rerolled on its own; everything else keeps its

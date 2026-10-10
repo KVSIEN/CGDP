@@ -14,6 +14,9 @@ namespace CGD.Editor
         {
             foreach (MapNodeType type in Enum.GetValues(typeof(MapNodeType)))
                 menu.AddItem(new GUIContent($"Add Node/{type}"), false, () => session.AddNode(type, worldPosition));
+
+            menu.AddSeparator("");
+            menu.AddItem(new GUIContent("Snap All Nodes to Grid"), false, session.SnapAllToGrid);
         }
 
         public static void AddNodeItems(GenericMenu menu, MapNode node, MapGraphEditorSession session)

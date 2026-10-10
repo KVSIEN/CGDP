@@ -104,6 +104,10 @@ namespace CGD.Editor
                 new GUIContent("Path", "Highlight the route from Start to the selected node"), EditorStyles.toolbarButton);
             _session.HighlightBranch = GUILayout.Toggle(_session.HighlightBranch,
                 new GUIContent("Branch", "Dim everything outside the selected node's branch"), EditorStyles.toolbarButton);
+            _session.ShowObjectives = GUILayout.Toggle(_session.ShowObjectives,
+                new GUIContent("Objectives", "Show where a level built from this graph would put its objectives"), EditorStyles.toolbarButton);
+            _session.SnapToGrid = GUILayout.Toggle(_session.SnapToGrid,
+                new GUIContent("Snap", "Drop moved and added nodes into the level's room grid, one node per cell"), EditorStyles.toolbarButton);
         }
 
         // The build settings the level would use; the project's first one until another is picked.
