@@ -8,8 +8,7 @@ namespace CGD.Map
     //   1. zones — pockets of Civilian, Operations and Services are seeded (spread apart)
     //      and every room joins the zone whose pocket is nearest, scaled by the zone's
     //      share, so the map has recognisable areas rather than a random mix
-    //   2. fixed — pinned rooms keep their category and some node types are always one
-    //      (the Exit is a docking bay)
+    //   2. pinned — locked rooms carried into the regeneration keep their category
     //   3. the rest — from the Start outwards, each room picks a category by weight: its
     //      zone's categories first, then how well each suits the rooms already beside it
     //      (direct doors count extra), the section, and a nudge toward variety
@@ -42,7 +41,7 @@ namespace CGD.Map
             if (_enabled.Count == 0) return;
 
             Dictionary<int, ShipZone> zones = PaintZones();
-            AssignFixed();
+            CountPinned();
             AssignRemaining(zones);
         }
 
@@ -139,15 +138,12 @@ namespace CGD.Map
 
         // --- Categories ----------------------------------------------------------------
 
-        private void AssignFixed()
+        // A category is never tied to a node type: only pins arrive with one already.
+        private void CountPinned()
         {
             foreach (MapNode node in Graph.Nodes)
-            {
-                if (node.Category == RoomCategory.None)
-                    node.Category = _settings.FixedFor(node.Type);
                 if (node.Category != RoomCategory.None)
                     Count(node.Category);
-            }
         }
 
         private void AssignRemaining(Dictionary<int, ShipZone> zones)

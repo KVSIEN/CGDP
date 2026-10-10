@@ -71,21 +71,6 @@ MonoBehaviour:
     - {fileID: 11400000, guid: bfa3b5c82e544118bf005f0e0cc4c841, type: 2}
   _sectionPreference: 2
   _repeatDecay: 0.8
-  _fixedCategories:
-  - _type: 0
-    _category: 1
-  - _type: 7
-    _category: 3
-  - _type: 8
-    _category: 11
-  - _type: 4
-    _category: 4
-  - _type: 20
-    _category: 11
-  - _type: 17
-    _category: 11
-  - _type: 16
-    _category: 3
   _affinities:
   - _a: 3
     _b: 4

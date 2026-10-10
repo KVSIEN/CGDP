@@ -24,10 +24,6 @@ namespace CGD.Map
         [Tooltip("Each category already used makes it this much likelier to be skipped next time (1 = no effect), so a zone doesn't become one category")]
         [SerializeField, Range(0.1f, 1f)] private float _repeatDecay = 0.8f;
 
-        [Header("Fixed by node type")]
-        [Tooltip("Node types that are always one category, whatever zone they fall in")]
-        [SerializeField] private List<TypeCategory> _fixedCategories = new();
-
         [Header("Neighbours")]
         [SerializeField] private List<CategoryAffinity> _affinities = new();
         [Tooltip("Affinity of two neighbours of the same category")]
@@ -68,14 +64,6 @@ namespace CGD.Map
                 return rule.Prefers(section) ? rule.Weight * _sectionPreference : rule.Weight;
             }
             return 0f;
-        }
-
-        // RoomCategory.None when the type isn't fixed to a category.
-        public RoomCategory FixedFor(MapNodeType type)
-        {
-            foreach (TypeCategory fixedCategory in _fixedCategories)
-                if (fixedCategory != null && fixedCategory.Type == type) return fixedCategory.Category;
-            return RoomCategory.None;
         }
 
         // How well two categories sit side by side: 1 = neutral.

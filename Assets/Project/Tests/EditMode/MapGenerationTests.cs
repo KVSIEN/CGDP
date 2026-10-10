@@ -116,12 +116,7 @@ namespace CGD.Tests
                 MapGraph graph = generator.Generate(Seed.From(i)).Graph;
 
                 foreach (MapNode node in graph.Nodes)
-                {
                     Assert.AreNotEqual(RoomCategory.None, node.Category, $"{name}, seed {i}: #{node.Id} {node.Type} has no category");
-                    RoomCategory fixedCategory = categories.FixedFor(node.Type);
-                    if (fixedCategory != RoomCategory.None)
-                        Assert.AreEqual(fixedCategory, node.Category, $"{name}, seed {i}: #{node.Id} {node.Type} should always be {fixedCategory}");
-                }
 
                 foreach (MapConnection connection in graph.Connections)
                 {
