@@ -90,6 +90,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a4542e90e5d9415ab4aff529ecd88ba4, type: 2}
   - {fileID: 11400000, guid: 43cf258f2c4e4842acf63f7cee6c2a19, type: 2}
   - {fileID: 11400000, guid: d8fec256656a4c79bce9ed3f8864e8ab, type: 2}
+  - {fileID: 11400000, guid: 43722ffee1914002a2d8a7614c7b5fad, type: 2}
+  - {fileID: 11400000, guid: f52aa74685c1424cb23b4848f7949813, type: 2}
+  - {fileID: 11400000, guid: 6059f6977ad340e6a6ff765cfa6b9a64, type: 2}
+  - {fileID: 11400000, guid: bb2c782d8f06449b98a207a9d5fcd759, type: 2}
+  - {fileID: 11400000, guid: 721563489319459ba665cd14864d31b0, type: 2}
+  - {fileID: 11400000, guid: cb1a7f705880464fbd3457249f8abfe0, type: 2}
+  - {fileID: 11400000, guid: 24e76ed6dbe744a9a18b11b80a4dcded, type: 2}
+  - {fileID: 11400000, guid: 06347f07dead4b7a9438a1ad3943a419, type: 2}
+  - {fileID: 11400000, guid: 0b9a1c4d22b54966b44e10d6f7e7071b, type: 2}
   _rooms:
   - Type: 0
     Enemies: []
