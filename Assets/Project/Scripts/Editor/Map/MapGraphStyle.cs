@@ -122,6 +122,6 @@ namespace CGD.Editor
         private static Color BranchColor(int branch) =>
             branch == MapGraphAnalysis.MainPathBranch ? MainPath : PaletteColor(branch);
 
-        private static Color PaletteColor(int index) => Palette[index % Palette.Length];
+        public static Color PaletteColor(int index) => Palette[index % Palette.Length];
     }
 }

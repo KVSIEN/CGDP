@@ -1617,6 +1617,7 @@ MonoBehaviour:
     Item: {fileID: 0}
     Count: 1
     Consume: 0
+  _condition: {fileID: 0}
 --- !u!1 &873400040
 GameObject:
   m_ObjectHideFlags: 0
@@ -3137,17 +3138,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db8223bb65e77294d981da714584639a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
---- !u!114 &1555766500 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7429481957253513728, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
-  m_PrefabInstance: {fileID: 7657266172198037326}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 331720744ed94d15b547e7b5c7080423, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CGD.Runtime::CGD.Player.PlayerOffhand
 --- !u!114 &1555766061 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8498024951424949005, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
@@ -3258,6 +3248,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fb48ec4ea684024b0bb71c1db25b3e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.SlotWheelHUD
+--- !u!114 &1555766500 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7429481957253513728, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
+  m_PrefabInstance: {fileID: 7657266172198037326}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 331720744ed94d15b547e7b5c7080423, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Player.PlayerOffhand
 --- !u!1 &1629601953
 GameObject:
   m_ObjectHideFlags: 0
@@ -5050,6 +5051,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90ab5a2deb7e77a4eb6cae207ba0deef, type: 3}
+--- !u!114 &4489305245393947351 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3965442110495912272, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
+  m_PrefabInstance: {fileID: 7657266172198037326}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89e5bc322dd34ab2a3bbc9e667fa3d1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Meters.MeterSet
 --- !u!1001 &5926653484238577723
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5251,7 +5263,7 @@ PrefabInstance:
     - target: {fileID: 8498024951424949005, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
       propertyPath: _definition
       value: 
-      objectReference: {fileID: 11400000, guid: 2eed9beee516436b8a22e623b3e706d4, type: 2}
+      objectReference: {fileID: 11400000, guid: c920c8d57cdd42c2a9a8ab26ee1ec5ec, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5379,10 +5391,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 580679351138367814, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
-      propertyPath: _meters
-      value: 
-      objectReference: {fileID: 4489305245393947351}
     - target: {fileID: 160411704699297099, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
       propertyPath: _weapon
       value: 
@@ -5391,6 +5399,10 @@ PrefabInstance:
       propertyPath: _playerCamera
       value: 
       objectReference: {fileID: 330585548}
+    - target: {fileID: 580679351138367814, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
+      propertyPath: _meters
+      value: 
+      objectReference: {fileID: 4489305245393947351}
     - target: {fileID: 1258938735759491205, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
       propertyPath: _movement
       value: 
@@ -5435,10 +5447,6 @@ PrefabInstance:
       propertyPath: _dodge
       value: 
       objectReference: {fileID: 1555766061}
-    - target: {fileID: 7041853095571230213, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
-      propertyPath: _offhand
-      value: 
-      objectReference: {fileID: 1555766500}
     - target: {fileID: 3925746759712126302, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -5539,6 +5547,10 @@ PrefabInstance:
       propertyPath: _camera
       value: 
       objectReference: {fileID: 330585548}
+    - target: {fileID: 5571001196093550780, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6044103999547055686, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
       propertyPath: _input
       value: 
@@ -5559,6 +5571,10 @@ PrefabInstance:
       propertyPath: _input
       value: 
       objectReference: {fileID: 1555766056}
+    - target: {fileID: 7041853095571230213, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
+      propertyPath: _offhand
+      value: 
+      objectReference: {fileID: 1555766500}
     - target: {fileID: 7773415959481290773, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
       propertyPath: _abilities
       value: 
@@ -5609,14 +5625,3 @@ SceneRoots:
   - {fileID: 1668775331}
   - {fileID: 366475993}
   - {fileID: 5926653484238577723}
---- !u!114 &4489305245393947351 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3965442110495912272, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
-  m_PrefabInstance: {fileID: 7657266172198037326}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89e5bc322dd34ab2a3bbc9e667fa3d1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CGD.Runtime::CGD.Meters.MeterSet

@@ -19,6 +19,10 @@ namespace CGD.Map
         [Tooltip("Rooms from Start before the first gate may appear. 0 = even off the Start room")]
         [SerializeField, Min(0)] private int _minDepth;
 
+        [Header("Progression locks")]
+        [Tooltip("Locked doors on the main path itself: the way to the Boss stays shut until each one's key or terminals are found. Loops and shortcuts never cross them, so they can't be walked around. The door into the Boss room is never one — the main objectives already lock it")]
+        [SerializeField] private IntRange _progressionLocks = new(0, 0);
+
         [Header("Keys")]
         [Tooltip("Keys sit no deeper than their gate, so the key is found before (or on the way to) its door rather than past it")]
         [SerializeField] private bool _keyBeforeGate = true;
@@ -35,6 +39,7 @@ namespace CGD.Map
         public float SecretChance   => _secretChance;
         public int   MaxGates       => _maxGates;
         public int   MinDepth       => _minDepth;
+        public IntRange ProgressionLocks => _progressionLocks;
         public bool  KeyBeforeGate  => _keyBeforeGate;
         public bool  KeyOffMainPath => _keyOffMainPath;
         public float TerminalLockChance => _terminalLockChance;

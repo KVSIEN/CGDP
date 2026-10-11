@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: LinearMapLayoutSettings
   m_EditorClassIdentifier: CGD.Runtime::CGD.Map.MapLayoutSettings
   _optionalRooms:
-    Min: 2
-    Max: 3
+    Min: 3
+    Max: 5
     Bias: 0
   _minBossDepth: 7
   _maxSpread: 1
@@ -54,10 +54,14 @@ MonoBehaviour:
     _secretChance: 0.3
     _maxGates: 1
     _minDepth: 0
+    _progressionLocks:
+      Min: 1
+      Max: 1
+      Bias: 0
     _keyBeforeGate: 1
     _keyOffMainPath: 1
-    _terminalLockChance: 0.4
+    _terminalLockChance: 0.25
     _terminalCount:
       Min: 2
-      Max: 3
+      Max: 2
       Bias: 0

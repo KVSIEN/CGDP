@@ -49,8 +49,10 @@ namespace CGD.Map
             // Rooms, extra links, gates and keys all belong to the layout layer.
             if (context.Layout.Growth == MapGrowth.Organic) new MapOrganicLayoutBuilder(context, layout).Build();
             else new MapLayoutBuilder(context, layout).Build();
+            var gates = new MapGatePlacer(context, layout);
+            gates.PlaceProgressionLocks();
             new MapLinkBuilder(context, layout).Build();
-            new MapGatePlacer(context, layout).Place();
+            gates.Place();
             new MapDirectDoorPlacer(context, layout).Place();
             context.DeriveSlots();
 

@@ -56,6 +56,7 @@ MonoBehaviour:
     _placement: 2
     _minDepth: 0
     _maxDepth: 1
+    _minRoomsFromStart: 3
     _preferDeadEnds: 1
     _allowAdjacentSameType: 1
     _minSpacing: 3

@@ -13,13 +13,7 @@ MonoBehaviour:
   m_Name: RandomMapGenerationSettings
   m_EditorClassIdentifier: CGD.Runtime::CGD.Map.MapGenerationSettings
   _layouts:
-  - _layout: {fileID: 11400000, guid: 5b4ac5c471f04e6aae475a28d8a7dbf9, type: 2}
-    _weight: 2
   - _layout: {fileID: 11400000, guid: a91c845ebbfa4848b10ae03f9b3d8e89, type: 2}
-    _weight: 2
-  - _layout: {fileID: 11400000, guid: 5d356de1e04d4954b85414c43d9c7940, type: 2}
-    _weight: 1
-  - _layout: {fileID: 11400000, guid: 849a432223644ae09ca42a1cd17ab9f7, type: 2}
     _weight: 1
   - _layout: {fileID: 11400000, guid: 451dd248d99f44eb9c0ec1db1b08dbb3, type: 2}
     _weight: 1

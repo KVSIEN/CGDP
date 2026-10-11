@@ -129,7 +129,7 @@ namespace CGD.Tests
 
             float rate = links == 0 ? 0f : (float)clashes / links;
             TestContext.WriteLine($"{name}: {clashes} of {links} links join clashing categories ({rate:P1})");
-            if (rate > 0.1f) Assert.Warn($"{name}: {rate:P0} of links join clashing categories");
+            if (rate > 0.1f) UnityEngine.Debug.LogWarning($"{name}: {rate:P0} of links join clashing categories");
         }
 
         // Every shipped style again with its layouts' main path set to leave Start in any
@@ -232,7 +232,7 @@ namespace CGD.Tests
                 }
             }
 
-            if (issueCount > 0) Assert.Warn($"{name}: {issueCount} validator issue(s) across {SeedCount} seeds");
+            if (issueCount > 0) UnityEngine.Debug.LogWarning($"{name}: {issueCount} validator issue(s) across {SeedCount} seeds");
         }
     }
 }

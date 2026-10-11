@@ -37,7 +37,13 @@ namespace CGD.Map
         // Start to Boss, in order.
         public List<int>          MainPath   { get; } = new();
         public List<MapGatedArea> GatedAreas { get; } = new();
+        // Locked main path connections the way to the Boss can't avoid, in path order.
+        public List<MapConnection> ProgressionLocks { get; } = new();
         public List<string>       Warnings   { get; } = new();
+
+        // How many progression locks lie between each room and Start. Extra links stay
+        // within one zone, so nothing ever opens a way around a progression lock.
+        private readonly Dictionary<int, int> _zones = new();
 
         public MapSlot GetSlot(int nodeId) => Slots.Find(s => s.NodeId == nodeId);
 
@@ -64,10 +70,16 @@ namespace CGD.Map
         public bool IsBossOrExit(int nodeId) =>
             Graph.TryGetNode(nodeId, out MapNode node) && (node.Type == MapNodeType.Boss || node.Type == MapNodeType.Exit);
 
-        // Adds an extra link (beyond the tree the layout grows) unless a room is full or
-        // it would bring the Boss closer to Start than MinBossDepth.
+        public void SetZone(int nodeId, int zone) => _zones[nodeId] = zone;
+
+        private int ZoneOf(int nodeId) => _zones.TryGetValue(nodeId, out int zone) ? zone : 0;
+
+        // Adds an extra link (beyond the tree the layout grows) unless a room is full, it
+        // would cross a progression lock, or it would bring the Boss closer to Start than
+        // MinBossDepth.
         public bool TryLink(int a, int b, ConnectionType type = ConnectionType.Normal)
         {
+            if (ZoneOf(a) != ZoneOf(b)) return false;
             if (IsFull(a) || IsFull(b) || !Graph.Connect(a, b, type)) return false;
             if (MapGraphSearch.BossDistance(Graph) >= Layout.MinBossDepth) return true;
 

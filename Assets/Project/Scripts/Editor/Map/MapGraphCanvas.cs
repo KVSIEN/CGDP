@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Factions;
 using CGD.Level;
 using CGD.Map;
 using UnityEditor;
@@ -26,6 +27,10 @@ namespace CGD.Editor
         private static readonly List<PlannedObjective> NoObjectives = new();
 
         private readonly List<(Color color, string label)> _legend = new();
+        // Locked connections in graph order; L1 is the first.
+        private readonly List<MapConnection> _locks = new();
+        // How far along each room's bottom edge the next key badge goes.
+        private readonly Dictionary<int, float> _keyBadgeOffsets = new();
 
         private DragMode _drag;
         private int      _dragNodeId = MapGraphEditorSession.None;
@@ -37,6 +42,8 @@ namespace CGD.Editor
         private GUIStyle _detailStyle;
         private GUIStyle _linkLabelStyle;
         private GUIStyle _badgeStyle;
+        private GUIStyle _keyBadgeStyle;
+        private GUIStyle _factionChipStyle;
 
         public void Draw(Rect rect, MapGraphEditorSession session)
         {
@@ -53,10 +60,13 @@ namespace CGD.Editor
             if (session.HasGraph)
             {
                 HandleInput(session);
+                CollectLocks(session.Graph);
                 DrawConnections(session);
                 DrawObjectiveRoutes(session);
                 DrawPendingConnection(session);
                 DrawNodes(session);
+                DrawKeyBadges(session);
+                DrawFactionChips(session);
                 DrawObjectiveBadges(session);
                 DrawSnapTarget(session);
                 DrawLegend(local, session);
@@ -157,16 +167,16 @@ namespace CGD.Editor
                 curve.Draw(color, ConnectionWidth);
 
                 if ((connection.Type != ConnectionType.Normal || connection.OneWay || connection.Direct) && session.Zoom >= LabelMinZoom)
-                    DrawConnectionLabel(curve.Midpoint, connection);
+                    DrawConnectionLabel(curve.Midpoint, connection, session.Analysis);
             }
         }
 
         // Locked links also name their key or terminal rooms, so a missing one is visible at a glance.
-        private void DrawConnectionLabel(Vector2 at, MapConnection connection)
+        private void DrawConnectionLabel(Vector2 at, MapConnection connection, MapGraphAnalysis analysis)
         {
             ConnectionType type = connection.Type;
             string text = type != ConnectionType.Locked ? type.ToString()
-                        : LockLabel(connection);
+                        : LockLabel(connection, analysis);
             if (connection.Direct) text = type == ConnectionType.Normal ? "Direct" : text + " · direct";
             if (connection.OneWay) text += " · one-way";
             var content = new GUIContent(text);
@@ -178,12 +188,58 @@ namespace CGD.Editor
             GUI.Label(rect, content, _linkLabelStyle);
         }
 
-        private static string LockLabel(MapConnection connection)
+        // "L2 Main lock · key #5": a main lock stands between Start and the Exit.
+        private string LockLabel(MapConnection connection, MapGraphAnalysis analysis)
         {
+            string name = $"{LockName(connection)} {(analysis.IsRequired(connection) ? "Main lock" : "Locked")}";
             if (connection.UsesSingleKey)
-                return connection.HasKey ? $"Locked · key #{connection.KeyNodeIds[0]}" : "Locked · no key";
-            if (!connection.HasKey) return "Locked · no terminals";
-            return "Locked · terminals #" + string.Join(" #", connection.KeyNodeIds);
+                return connection.HasKey ? $"{name} · key #{connection.KeyNodeIds[0]}" : $"{name} · no key";
+            if (!connection.HasKey) return $"{name} · no terminals";
+            return $"{name} · terminals #" + string.Join(" #", connection.KeyNodeIds);
+        }
+
+        // --- Locks -----------------------------------------------------------------
+
+        private void CollectLocks(MapGraph graph)
+        {
+            _locks.Clear();
+            foreach (MapConnection connection in graph.Connections)
+                if (connection.Type == ConnectionType.Locked)
+                    _locks.Add(connection);
+        }
+
+        private string LockName(MapConnection connection) => $"L{_locks.IndexOf(connection) + 1}";
+
+        // "L1 key" or "L2 T1" (its first terminal) along the bottom of each room holding a
+        // part, outlined in the lock colour so they read apart from objective badges.
+        private void DrawKeyBadges(MapGraphEditorSession session)
+        {
+            if (Event.current.type != EventType.Repaint) return;
+
+            _keyBadgeOffsets.Clear();
+            Color color = MapGraphStyle.ConnectionColor(ConnectionType.Locked);
+            _keyBadgeStyle.normal.textColor = color;
+
+            foreach (MapConnection connection in _locks)
+            {
+                for (int i = 0; i < connection.KeyNodeIds.Count; i++)
+                {
+                    if (!session.Graph.TryGetNode(connection.KeyNodeIds[i], out MapNode node)) continue;
+
+                    string text = connection.UsesSingleKey ? $"{LockName(connection)} key" : $"{LockName(connection)} T{i + 1}";
+                    var content = new GUIContent(text);
+                    float width = _keyBadgeStyle.CalcSize(content).x + 6f;
+
+                    Rect rect = NodeRect(node, session);
+                    _keyBadgeOffsets.TryGetValue(node.Id, out float offset);
+                    var badge = new Rect(rect.x - 6f + offset, rect.yMax - 7f, width, 16f);
+                    _keyBadgeOffsets[node.Id] = offset + width + 2f;
+
+                    DrawOutline(badge, color, 1f);
+                    EditorGUI.DrawRect(badge, MapGraphStyle.Background);
+                    GUI.Label(badge, content, _keyBadgeStyle);
+                }
+            }
         }
 
         private void DrawPendingConnection(MapGraphEditorSession session)
@@ -262,6 +318,45 @@ namespace CGD.Editor
             };
         }
 
+        // --- Factions --------------------------------------------------------------
+
+        // The faction's short name in its own colour on the room's bottom-right corner, in
+        // every view mode; a Breach room's second faction sits beside it.
+        private void DrawFactionChips(MapGraphEditorSession session)
+        {
+            if (Event.current.type != EventType.Repaint) return;
+
+            MapContentSettings content = session.Asset.Content;
+            foreach (MapNode node in session.Graph.Nodes)
+            {
+                if (!node.HasFaction) continue;
+
+                Rect  rect  = NodeRect(node, session);
+                float right = rect.xMax + 6f;
+                if (node.HasBreachFaction)
+                    right = DrawFactionChip(content, node.BreachFaction, right, rect.yMax - 7f) - 2f;
+                DrawFactionChip(content, node.Faction, right, rect.yMax - 7f);
+            }
+        }
+
+        // Draws the chip ending at `right`; returns where it starts.
+        private float DrawFactionChip(MapContentSettings content, int faction, float right, float y)
+        {
+            FactionDefinition definition = content != null ? content.GetFaction(faction) : null;
+            string name  = definition != null ? definition.DisplayName : $"F{faction}";
+            if (name.Length > 4) name = name.Substring(0, 4);
+            Color  color = definition != null ? definition.Color : MapGraphStyle.PaletteColor(faction);
+
+            var label = new GUIContent(name.ToUpperInvariant());
+            float width = _factionChipStyle.CalcSize(label).x + 6f;
+            var chip = new Rect(right - width, y, width, 16f);
+
+            EditorGUI.DrawRect(chip, color);
+            _factionChipStyle.normal.textColor = color.grayscale > 0.5f ? Color.black : Color.white;
+            GUI.Label(chip, label, _factionChipStyle);
+            return chip.x;
+        }
+
         // --- Objectives ------------------------------------------------------------
 
         private static IReadOnlyList<PlannedObjective> ObjectivePlan(MapGraphEditorSession session) =>
@@ -304,6 +399,26 @@ namespace CGD.Editor
                     GUI.Label(badge, $"{MapObjectivePreview.Letter(i)}{s + 1}", _badgeStyle);
                 }
             }
+
+            DrawBossRequirement(session, plan);
+        }
+
+        // The Boss doors stay shut until every main objective is done: "needs A B".
+        private void DrawBossRequirement(MapGraphEditorSession session, IReadOnlyList<PlannedObjective> plan)
+        {
+            MapNode boss = session.Graph.FindFirst(MapNodeType.Boss);
+            if (boss == null) return;
+
+            string letters = "";
+            for (int i = 0; i < plan.Count; i++)
+                if (plan[i].IsMain) letters += " " + MapObjectivePreview.Letter(i);
+            if (letters.Length == 0) return;
+
+            var content = new GUIContent("needs" + letters);
+            Rect rect  = NodeRect(boss, session);
+            var  badge = new Rect(rect.x - 6f, rect.y - 9f, _badgeStyle.CalcSize(content).x + 6f, 16f);
+            EditorGUI.DrawRect(badge, MapObjectivePreview.MainColor);
+            GUI.Label(badge, content, _badgeStyle);
         }
 
         // Where the dragged node will land when released.
@@ -568,6 +683,8 @@ namespace CGD.Editor
                 alignment = TextAnchor.MiddleCenter,
                 normal    = { textColor = Color.black }
             };
+            _keyBadgeStyle = new GUIStyle(EditorStyles.miniBoldLabel) { alignment = TextAnchor.MiddleCenter };
+            _factionChipStyle = new GUIStyle(EditorStyles.miniBoldLabel) { alignment = TextAnchor.MiddleCenter };
         }
     }
 }

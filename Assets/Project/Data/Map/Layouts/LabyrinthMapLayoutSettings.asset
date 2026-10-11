@@ -50,10 +50,14 @@ MonoBehaviour:
     _shortcutMinSkip: 2
     _oneWayShortcutChance: 0.5
   _gates:
-    _lockedChance: 0.15
+    _lockedChance: 0.12
     _secretChance: 0.25
     _maxGates: 3
     _minDepth: 2
+    _progressionLocks:
+      Min: 2
+      Max: 2
+      Bias: 0
     _keyBeforeGate: 1
     _keyOffMainPath: 1
     _terminalLockChance: 0.4

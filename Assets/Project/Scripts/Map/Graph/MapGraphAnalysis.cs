@@ -24,6 +24,7 @@ namespace CGD.Map
         private readonly HashSet<int>               _required = new();
         private readonly HashSet<int>               _mainPath = new();
         private readonly HashSet<int>               _behindGate = new();
+        private readonly Dictionary<MapConnection, bool> _requiredConnections = new();
         private readonly List<int>                  _mainPathOrder;
         private readonly List<int>                  _neighborBuffer = new();
 
@@ -90,6 +91,18 @@ namespace CGD.Map
 
         // Every Start → Exit route passes through this node.
         public bool IsRequired(int id) => _required.Contains(id);
+
+        // Every Start → Exit route passes through this connection: a lock on it holds up
+        // the whole run (a progression lock), not just a side area.
+        public bool IsRequired(MapConnection connection)
+        {
+            if (!ExitReachable) return false;
+            if (_requiredConnections.TryGetValue(connection, out bool required)) return required;
+
+            required = !MapGraphSearch.Distances(_graph, StartId, c => c != connection).ContainsKey(ExitId);
+            _requiredConnections[connection] = required;
+            return required;
+        }
 
         // MainPathBranch for main path nodes, otherwise a 0-based branch index.
         // A branch is a group of off-path nodes connected to each other.

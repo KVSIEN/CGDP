@@ -54,6 +54,10 @@ MonoBehaviour:
     _secretChance: 0.2
     _maxGates: 2
     _minDepth: 0
+    _progressionLocks:
+      Min: 1
+      Max: 2
+      Bias: 0
     _keyBeforeGate: 1
     _keyOffMainPath: 1
     _terminalLockChance: 0.4

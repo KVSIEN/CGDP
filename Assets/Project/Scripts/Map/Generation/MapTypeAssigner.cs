@@ -359,7 +359,7 @@ namespace CGD.Map
         // --- Limits ---------------------------------------------------------------------
 
         private bool CanPlace(MapNodeTypeRule rule, MapSlot slot) =>
-            rule.AllowsDepth(slot.Progress) && CanPlaceIgnoringDepth(rule, rule.Type, slot);
+            rule.AllowsDepth(slot.Depth, slot.Progress) && CanPlaceIgnoringDepth(rule, rule.Type, slot);
 
         // `rule` may be null for a type without one: then only the room being free and the
         // pacing matter.

@@ -20,6 +20,8 @@ namespace CGD.Map
         [Tooltip("Allowed depth, 0 = Start, 1 = Boss")]
         [SerializeField, Range(0f, 1f)] private float _minDepth;
         [SerializeField, Range(0f, 1f)] private float _maxDepth = 1f;
+        [Tooltip("Fewest connections from Start (0 = no limit). Unlike Min Depth it doesn't scale with map length")]
+        [SerializeField, Min(0)] private int _minRoomsFromStart;
         [Tooltip("Place at dead ends first and weight them heavier — rewards for exploring")]
         [SerializeField] private bool _preferDeadEnds;
         [SerializeField] private bool _allowAdjacentSameType = true;
@@ -41,7 +43,8 @@ namespace CGD.Map
                                MapPlacement placement = MapPlacement.Anywhere,
                                float minDepth = 0f, float maxDepth = 1f,
                                bool preferDeadEnds = false, bool allowAdjacentSameType = true,
-                               float intensityBonus = 0f, int minSpacing = 0, bool wantsSpace = false, int minConnections = 0)
+                               float intensityBonus = 0f, int minSpacing = 0, bool wantsSpace = false, int minConnections = 0,
+                               int minRoomsFromStart = 0)
         {
             _type                  = type;
             _min                   = min;
@@ -56,6 +59,7 @@ namespace CGD.Map
             _minSpacing            = minSpacing;
             _wantsSpace            = wantsSpace;
             _minConnections        = minConnections;
+            _minRoomsFromStart     = minRoomsFromStart;
         }
 
         public MapNodeType Type                  => _type;
@@ -69,16 +73,16 @@ namespace CGD.Map
         public int         MinSpacing            => _minSpacing;
         public bool        WantsSpace            => _wantsSpace;
         public int         MinConnections        => _minConnections;
+        public int         MinRoomsFromStart     => _minRoomsFromStart;
 
-        public bool AllowsDepth(float progress) => progress >= _minDepth && progress <= _maxDepth;
+        // `depth` counts connections from Start; `progress` is that depth as a fraction of the map.
+        public bool AllowsDepth(int depth, float progress) =>
+            depth >= _minRoomsFromStart && progress >= _minDepth && progress <= _maxDepth;
 
         public bool AllowsPlacement(bool onMainPath) => _placement switch
         {
             MapPlacement.MainPathOnly => onMainPath,
             MapPlacement.BranchOnly   => !onMainPath,
             _                         => true
-        };
-
-        public bool Allows(float progress, bool onMainPath) => AllowsDepth(progress) && AllowsPlacement(onMainPath);
-    }
+        };    }
 }

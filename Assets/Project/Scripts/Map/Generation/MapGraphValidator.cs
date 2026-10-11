@@ -202,7 +202,7 @@ namespace CGD.Map
                 if (!exempt && !rule.AllowsPlacement(onMainPath))
                     issues.Add($"#{node.Id} {node.Type} is {(onMainPath ? "on" : "off")} the main path (rule: {rule.Placement}).");
 
-                if (!exempt && analysis.IsReachable(node.Id) && !rule.AllowsDepth(analysis.Progress(node.Id)))
+                if (!exempt && analysis.IsReachable(node.Id) && !rule.AllowsDepth(analysis.Depth(node.Id), analysis.Progress(node.Id)))
                     issues.Add($"#{node.Id} {node.Type} is outside its allowed depth.");
 
                 if (graph.Degree(node.Id) < rule.MinConnections)
@@ -287,7 +287,8 @@ namespace CGD.Map
             MapNodeType type = guarantee.Type;
             foreach (MapConnection gate in graph.Connections)
             {
-                if (!gate.IsGate) continue;
+                // A progression lock closes off the way to the Exit, not a side area to reward.
+                if (!gate.IsGate || analysis.IsRequired(gate)) continue;
 
                 // The area is whatever only this gate leads to. A gate with another way
                 // around it closes nothing off, so there's no area to reward.

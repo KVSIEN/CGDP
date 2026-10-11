@@ -68,6 +68,7 @@ MonoBehaviour:
     _placement: 2
     _minDepth: 0
     _maxDepth: 1
+    _minRoomsFromStart: 3
     _preferDeadEnds: 1
     _allowAdjacentSameType: 1
     _minSpacing: 3
@@ -224,7 +225,7 @@ MonoBehaviour:
     _spot: 0
     _count: 1
     _depth:
-      Min: 2
+      Min: 3
       Max: 4
       Bias: 0
   - _type: 6

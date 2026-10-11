@@ -1,0 +1,761 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5c00cbf127d4469a357b5da37b62777, type: 3}
+  m_Name: MapGraph
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Map.MapGraphAsset
+  _settings: {fileID: 11400000, guid: 94237629bb994adb856825d2cc2a7d9c, type: 2}
+  _seed: 242390161
+  _layerVariants:
+    _entries: []
+  _variantsSeed: 242390161
+  _layout: {fileID: 11400000, guid: 451dd248d99f44eb9c0ec1db1b08dbb3, type: 2}
+  _generated:
+    _nodes:
+    - _id: 0
+      _type: 0
+      _position: {x: 0, y: 0}
+      _intensity: 0
+      _tier: 1
+      _faction: 2
+      _factionInfluence: 0.7225
+      _breachFaction: -1
+      _section: 0
+      _category: 12
+    - _id: 1
+      _type: 3
+      _position: {x: 0, y: -110}
+      _intensity: 0
+      _tier: 1
+      _faction: 2
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 0
+      _category: 12
+    - _id: 2
+      _type: 1
+      _position: {x: -220, y: -110}
+      _intensity: 0.31872252
+      _tier: 3
+      _faction: 2
+      _factionInfluence: 0.7225
+      _breachFaction: -1
+      _section: 0
+      _category: 4
+    - _id: 3
+      _type: 1
+      _position: {x: 0, y: 110}
+      _intensity: 0.18991303
+      _tier: 1
+      _faction: 1
+      _factionInfluence: 0.7225
+      _breachFaction: -1
+      _section: 0
+      _category: 11
+    - _id: 4
+      _type: 6
+      _position: {x: -220, y: 110}
+      _intensity: 0.0093108835
+      _tier: 1
+      _faction: 1
+      _factionInfluence: 0.614125
+      _breachFaction: -1
+      _section: 0
+      _category: 2
+    - _id: 5
+      _type: 1
+      _position: {x: 0, y: 220}
+      _intensity: 0.2730584
+      _tier: 1
+      _faction: 1
+      _factionInfluence: 0.614125
+      _breachFaction: -1
+      _section: 0
+      _category: 9
+    - _id: 6
+      _type: 1
+      _position: {x: 0, y: -220}
+      _intensity: 0.35448265
+      _tier: 1
+      _faction: 2
+      _factionInfluence: 1
+      _breachFaction: -1
+      _section: 0
+      _category: 12
+    - _id: 7
+      _type: 1
+      _position: {x: 220, y: -110}
+      _intensity: 0.29735807
+      _tier: 1
+      _faction: 1
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 0
+      _category: 12
+    - _id: 8
+      _type: 1
+      _position: {x: 220, y: 110}
+      _intensity: 0.3088455
+      _tier: 1
+      _faction: 1
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 0
+      _category: 7
+    - _id: 9
+      _type: 6
+      _position: {x: 0, y: -330}
+      _intensity: 0.23589748
+      _tier: 2
+      _faction: 2
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 1
+      _category: 3
+    - _id: 10
+      _type: 1
+      _position: {x: -220, y: 0}
+      _intensity: 0.49950284
+      _tier: 2
+      _faction: 2
+      _factionInfluence: 0.614125
+      _breachFaction: -1
+      _section: 1
+      _category: 1
+    - _id: 11
+      _type: 1
+      _position: {x: -440, y: 0}
+      _intensity: 0.6031972
+      _tier: 2
+      _faction: 0
+      _factionInfluence: 1
+      _breachFaction: -1
+      _section: 1
+      _category: 4
+    - _id: 12
+      _type: 5
+      _position: {x: -660, y: 0}
+      _intensity: 0.47016993
+      _tier: 3
+      _faction: 0
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 2
+      _category: 11
+    - _id: 13
+      _type: 14
+      _position: {x: -440, y: 110}
+      _intensity: 0.70818025
+      _tier: 1
+      _faction: 0
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 2
+      _category: 2
+    - _id: 14
+      _type: 1
+      _position: {x: -660, y: 110}
+      _intensity: 0.4722298
+      _tier: 3
+      _faction: 1
+      _factionInfluence: 0.5
+      _breachFaction: -1
+      _section: 2
+      _category: 8
+    - _id: 15
+      _type: 4
+      _position: {x: -440, y: 220}
+      _intensity: 0.049504723
+      _tier: 1
+      _faction: 0
+      _factionInfluence: 0.7225
+      _breachFaction: -1
+      _section: 2
+      _category: 2
+    - _id: 16
+      _type: 18
+      _position: {x: 220, y: 0}
+      _intensity: 0.6478813
+      _tier: 2
+      _faction: 1
+      _factionInfluence: 1
+      _breachFaction: -1
+      _section: 1
+      _category: 9
+    - _id: 17
+      _type: 17
+      _position: {x: 440, y: 0}
+      _intensity: 0.3496815
+      _tier: 2
+      _faction: 2
+      _factionInfluence: 0.614125
+      _breachFaction: -1
+      _section: 1
+      _category: 10
+    - _id: 18
+      _type: 5
+      _position: {x: -440, y: -110}
+      _intensity: 0.53850335
+      _tier: 3
+      _faction: 0
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 2
+      _category: 4
+    - _id: 19
+      _type: 7
+      _position: {x: -660, y: 220}
+      _intensity: 1
+      _tier: 1
+      _faction: 0
+      _factionInfluence: 0.614125
+      _breachFaction: -1
+      _section: 2
+      _category: 1
+    - _id: 20
+      _type: 8
+      _position: {x: -660, y: 330}
+      _intensity: 0
+      _tier: 1
+      _faction: 1
+      _factionInfluence: 0.7225
+      _breachFaction: -1
+      _section: 2
+      _category: 4
+    _connections:
+    - _a: 0
+      _b: 1
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 1
+      _b: 2
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 0
+      _b: 3
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 1
+    - _a: 3
+      _b: 4
+      _type: 2
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 3
+      _b: 5
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 1
+      _b: 6
+      _type: 2
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 1
+      _b: 7
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 1
+    - _a: 3
+      _b: 8
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 6
+      _b: 9
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 2
+      _b: 10
+      _type: 3
+      _lock: 0
+      _keyNodeIds: 03000000
+      _oneWay: 0
+      _direct: 0
+    - _a: 10
+      _b: 11
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 11
+      _b: 12
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 11
+      _b: 13
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 12
+      _b: 14
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 13
+      _b: 15
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 7
+      _b: 16
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 16
+      _b: 8
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 16
+      _b: 17
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 11
+      _b: 18
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 1
+    - _a: 15
+      _b: 19
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 19
+      _b: 20
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 0
+      _b: 17
+      _type: 1
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 1
+      _direct: 0
+    _nextId: 21
+  _graph:
+    _nodes:
+    - _id: 0
+      _type: 0
+      _position: {x: 0, y: 0}
+      _intensity: 0
+      _tier: 1
+      _faction: 2
+      _factionInfluence: 0.7225
+      _breachFaction: -1
+      _section: 0
+      _category: 12
+    - _id: 1
+      _type: 3
+      _position: {x: 0, y: -110}
+      _intensity: 0
+      _tier: 1
+      _faction: 2
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 0
+      _category: 12
+    - _id: 2
+      _type: 1
+      _position: {x: -220, y: -110}
+      _intensity: 0.31872252
+      _tier: 3
+      _faction: 2
+      _factionInfluence: 0.7225
+      _breachFaction: -1
+      _section: 0
+      _category: 4
+    - _id: 3
+      _type: 1
+      _position: {x: 0, y: 110}
+      _intensity: 0.18991303
+      _tier: 1
+      _faction: 1
+      _factionInfluence: 0.7225
+      _breachFaction: -1
+      _section: 0
+      _category: 11
+    - _id: 4
+      _type: 6
+      _position: {x: -220, y: 110}
+      _intensity: 0.0093108835
+      _tier: 1
+      _faction: 1
+      _factionInfluence: 0.614125
+      _breachFaction: -1
+      _section: 0
+      _category: 2
+    - _id: 5
+      _type: 1
+      _position: {x: 0, y: 220}
+      _intensity: 0.2730584
+      _tier: 1
+      _faction: 1
+      _factionInfluence: 0.614125
+      _breachFaction: -1
+      _section: 0
+      _category: 9
+    - _id: 6
+      _type: 1
+      _position: {x: 0, y: -220}
+      _intensity: 0.35448265
+      _tier: 1
+      _faction: 2
+      _factionInfluence: 1
+      _breachFaction: -1
+      _section: 0
+      _category: 12
+    - _id: 7
+      _type: 1
+      _position: {x: 220, y: -110}
+      _intensity: 0.29735807
+      _tier: 1
+      _faction: 1
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 0
+      _category: 12
+    - _id: 8
+      _type: 1
+      _position: {x: 220, y: 110}
+      _intensity: 0.3088455
+      _tier: 1
+      _faction: 1
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 0
+      _category: 7
+    - _id: 9
+      _type: 6
+      _position: {x: 0, y: -330}
+      _intensity: 0.23589748
+      _tier: 2
+      _faction: 2
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 1
+      _category: 3
+    - _id: 10
+      _type: 1
+      _position: {x: -220, y: 0}
+      _intensity: 0.49950284
+      _tier: 2
+      _faction: 2
+      _factionInfluence: 0.614125
+      _breachFaction: -1
+      _section: 1
+      _category: 1
+    - _id: 11
+      _type: 1
+      _position: {x: -440, y: 0}
+      _intensity: 0.6031972
+      _tier: 2
+      _faction: 0
+      _factionInfluence: 1
+      _breachFaction: -1
+      _section: 1
+      _category: 4
+    - _id: 12
+      _type: 5
+      _position: {x: -660, y: 0}
+      _intensity: 0.47016993
+      _tier: 3
+      _faction: 0
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 2
+      _category: 11
+    - _id: 13
+      _type: 14
+      _position: {x: -440, y: 110}
+      _intensity: 0.70818025
+      _tier: 1
+      _faction: 0
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 2
+      _category: 2
+    - _id: 14
+      _type: 1
+      _position: {x: -660, y: 110}
+      _intensity: 0.4722298
+      _tier: 3
+      _faction: 1
+      _factionInfluence: 0.5
+      _breachFaction: -1
+      _section: 2
+      _category: 8
+    - _id: 15
+      _type: 4
+      _position: {x: -440, y: 220}
+      _intensity: 0.049504723
+      _tier: 1
+      _faction: 0
+      _factionInfluence: 0.7225
+      _breachFaction: -1
+      _section: 2
+      _category: 2
+    - _id: 16
+      _type: 18
+      _position: {x: 220, y: 0}
+      _intensity: 0.6478813
+      _tier: 2
+      _faction: 1
+      _factionInfluence: 1
+      _breachFaction: -1
+      _section: 1
+      _category: 9
+    - _id: 17
+      _type: 17
+      _position: {x: 440, y: 0}
+      _intensity: 0.3496815
+      _tier: 2
+      _faction: 2
+      _factionInfluence: 0.614125
+      _breachFaction: -1
+      _section: 1
+      _category: 10
+    - _id: 18
+      _type: 5
+      _position: {x: -440, y: -110}
+      _intensity: 0.53850335
+      _tier: 3
+      _faction: 0
+      _factionInfluence: 0.85
+      _breachFaction: -1
+      _section: 2
+      _category: 4
+    - _id: 19
+      _type: 7
+      _position: {x: -660, y: 220}
+      _intensity: 1
+      _tier: 1
+      _faction: 0
+      _factionInfluence: 0.614125
+      _breachFaction: -1
+      _section: 2
+      _category: 1
+    - _id: 20
+      _type: 8
+      _position: {x: -660, y: 330}
+      _intensity: 0
+      _tier: 1
+      _faction: 1
+      _factionInfluence: 0.7225
+      _breachFaction: -1
+      _section: 2
+      _category: 4
+    _connections:
+    - _a: 0
+      _b: 1
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 1
+      _b: 2
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 0
+      _b: 3
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 1
+    - _a: 3
+      _b: 4
+      _type: 2
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 3
+      _b: 5
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 1
+      _b: 6
+      _type: 2
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 1
+      _b: 7
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 1
+    - _a: 3
+      _b: 8
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 6
+      _b: 9
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 2
+      _b: 10
+      _type: 3
+      _lock: 0
+      _keyNodeIds: 03000000
+      _oneWay: 0
+      _direct: 0
+    - _a: 10
+      _b: 11
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 11
+      _b: 12
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 11
+      _b: 13
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 12
+      _b: 14
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 13
+      _b: 15
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 7
+      _b: 16
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 16
+      _b: 8
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 16
+      _b: 17
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 11
+      _b: 18
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 1
+    - _a: 15
+      _b: 19
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 19
+      _b: 20
+      _type: 0
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 0
+      _direct: 0
+    - _a: 0
+      _b: 17
+      _type: 1
+      _lock: 0
+      _keyNodeIds: 
+      _oneWay: 1
+      _direct: 0
+    _nextId: 21
+  _lockedNodeIds: 
+  _generationWarnings: []
+  _runStored: 1
+  _modifiers: []
+  _factionMix: {fileID: 11400000, guid: 36d1e339c4954aa7aa768d108505abab, type: 2}
