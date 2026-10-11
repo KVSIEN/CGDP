@@ -34,10 +34,10 @@ MonoBehaviour:
     Bias: 0
   _bossDoorPrefab: {fileID: 0}
   _consolePrefab: {fileID: 7320000000000000004, guid: 9d6e3b2a41c74f08b5e2c7a90f1d4e65, type: 3}
-  _retrievePickupPrefab: {fileID: 7400000000000000004, guid: 28f39229b0714304a0092dc56d59ce85, type: 3}
+  _retrievePickupPrefab: {fileID: 7400000000000000004, guid: 388256a9a4738594fb070b524bfaba60, type: 3}
   _retrieveItem: {fileID: 11400000, guid: 128aacf710814a3196756bafe930ae2d, type: 2}
   _markerColor: {r: 1, g: 0.85, b: 0.2, a: 1}
-  _rewardCachePrefab: {fileID: 7400000000000000301, guid: faf0a0e336204d75988189b2bb42c58a, type: 3}
+  _rewardCachePrefab: {fileID: 7400000000000000301, guid: 75d68765a99f0b142aa042f8b2bea8e1, type: 3}
   _cacheLuckByTier:
   - 0
   - 0.75
