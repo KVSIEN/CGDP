@@ -31,12 +31,12 @@ namespace CGD.Items
         [Tooltip("Attachment slots granted per tier, indexed Common -> Legendary")]
         public int[] AttachmentSlotsPerTier = { 1, 1, 2, 3, 4 };
 
-        public ItemRoll Roll(ItemTier tier, Seed seed) =>
-            Roll(ItemTiers.RollQuality(tier, seed.Derive(ItemRoll.QualityLayer).Stream()), seed);
+        public ItemRoll Roll(ItemTier tier, Seed seed, SeedVariants variants) =>
+            Roll(ItemTiers.RollQuality(tier, SeedVariants.StreamFor(seed, variants, ItemRoll.QualityLayer)), seed, variants);
 
-        public ItemRoll Roll(int quality, Seed seed)
+        public ItemRoll Roll(int quality, Seed seed, SeedVariants variants)
         {
-            RandomStream random = seed.Derive(ItemRoll.StatsLayer).Stream();
+            RandomStream random = SeedVariants.StreamFor(seed, variants, ItemRoll.StatsLayer);
 
             float q      = ItemTiers.Normalize(quality);
             float basis  = BaseFloor + BaseGain * q;
@@ -61,7 +61,7 @@ namespace CGD.Items
                 desirability[i] = Mathf.Clamp01(basis + random.Range(-FreeStatVariance, FreeStatVariance));
             }
 
-            return new ItemRoll(quality, desirability, seed);
+            return new ItemRoll(quality, desirability, seed, variants);
         }
 
         public int AttachmentSlots(ItemTier tier)

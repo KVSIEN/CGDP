@@ -12,7 +12,7 @@ namespace CGD.Perks
     [CreateAssetMenu(fileName = "PerkPool", menuName = "CGD/Perks/Perk Pool")]
     public class PerkPool : ScriptableObject
     {
-        private const string PerksLayer = "perks";
+        public const string PerksLayer = "perks";
 
         [SerializeField] private WeightedPerk[] _perks = Array.Empty<WeightedPerk>();
         [Tooltip("Perks per item, indexed Common -> Legendary")]
@@ -23,7 +23,7 @@ namespace CGD.Perks
         // `exclude`: perks the item already has (guaranteed ones), never rolled again.
         public IReadOnlyList<GearPerk> Roll(ItemInstance gear, ItemRoll roll, IReadOnlyCollection<GearPerk> exclude = null)
         {
-            RandomStream random = roll.Seed.Derive(PerksLayer).Stream();
+            RandomStream random = roll.StreamFor(PerksLayer);
             int count = CountFor(roll.Tier) + (random.Chance(_extraPerkChance) ? 1 : 0);
 
             var candidates = new List<WeightedPerk>();

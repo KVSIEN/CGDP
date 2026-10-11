@@ -42,7 +42,7 @@ namespace CGD.Map
         public MapGenerationResult Generate(Seed seed, SeedVariants variants, IReadOnlyList<MapNodePin> pins)
         {
             MapRunTuning tuning = PickModifiers(_settings, seed, variants);
-            RandomStream layout = MapGenerationContext.StreamFor(seed, variants, LayoutLayer);
+            RandomStream layout = SeedVariants.StreamFor(seed, variants, LayoutLayer);
             var context = new MapGenerationContext(_settings.PickLayout(layout), _settings.Content, _settings.NodeSpacing,
                                                    seed, variants, tuning);
 
@@ -78,7 +78,7 @@ namespace CGD.Map
         public static MapRunTuning PickModifiers(MapGenerationSettings settings, Seed seed, SeedVariants variants)
         {
             if (settings == null || settings.Modifiers.Count == 0) return MapRunTuning.None;
-            return new MapRunTuning(settings.PickModifiers(MapGenerationContext.StreamFor(seed, variants, ModifiersLayer)));
+            return new MapRunTuning(settings.PickModifiers(SeedVariants.StreamFor(seed, variants, ModifiersLayer)));
         }
 
         // The faction mix a seed gets: a modifier's, else the content's roll. Drawn from its
@@ -89,7 +89,7 @@ namespace CGD.Map
         {
             if (tuning?.FactionMixOverride != null) return tuning.FactionMixOverride;
             if (settings == null || settings.Content == null) return null;
-            return settings.Content.PickFactionMix(MapGenerationContext.StreamFor(seed, variants, FactionsLayer).Fork("mix"));
+            return settings.Content.PickFactionMix(SeedVariants.StreamFor(seed, variants, FactionsLayer).Fork("mix"));
         }
 
         private static void PaintSections(MapGenerationContext context)

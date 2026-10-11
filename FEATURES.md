@@ -188,6 +188,7 @@
 - Generated weapons now roll a quality score and tier, which decides where each stat lands inside its category range — an SMG still rolls SMG damage, just high or low within it
 - Stats that carry a weapon's *power* (damage, fire rate, magazine, reload, recoil, spread, range, draw, sway) are driven by quality and the tradeoff axes. Stats that only give it *character* (recoil recovery, heat behaviour, burst timing) stay random, so high-tier weapons don't all start feeling the same
 - Every generated weapon has a seed: the same category, tier and seed rebuild exactly the same weapon — name, fire mode, quality and every stat. A random weapon pickup can be given a fixed seed so it always offers the same gun
+- Like a map, a weapon's seed splits into layers that can each be rerolled on their own: **quality** (where it sits within its tier — the tier itself never changes), **stats** (which way its power stats lean), **character** (its name, firing and stat style, fire mode and the stats that aren't driven by quality) and **perks**. Rerolling one layer leaves everything that comes from the others exactly as it was — reroll the perks and the gun shoots the same; reroll the character and its quality, stat leans and perks stay. A weapon remembers its rerolls, so it can still be rebuilt exactly. Melee weapons and shields work the same way. Weapons that were never rerolled are the same guns their seeds always gave
 
 ## Gear Perks
 - On top of their stat rolls and attachment slots, generated weapons (guns and melee) and armor roll **perks**: fixed traits that are part of the item for its life and part of its seed (same definition, tier and seed → same perks)
@@ -581,6 +582,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - A layer's seed depends only on its parent and its name, never on what else was generated first, so changing how one system rolls can't shift another
 - Seeds can be typed as numbers or any text ("banana" is a valid seed)
 - Things generated without a chosen seed still get a random one and remember it, so any weapon can be reproduced afterwards
+- Maps and weapons can reroll one layer at a time (see Map Graph Generation and Procedural Weapon Generation): a reroll only changes that layer, and a new seed starts every layer fresh
 
 ## Game Time
 - A central game clock counts time in fixed ticks — 60 per game-second by default (one tick = 1/60 s) — independent of frame rate, for systems that need deterministic timing
@@ -665,7 +667,8 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 ## Dev Console
 - Backquote (`) opens a console in development builds; commands start with a slash (`/help`), with history (Up/Down) and Tab completion. Escape closes it
 - While the console is open every other keybind is muted, so typing a letter never triggers a hotkey like the inventory, map or weapon slots
-- `/give <item> [count]`, `/weapon <category> [seed] [tier]` (same seed and tier = same gun), `/spawn <enemy> [count]`
+- `/give <item> [count]`, `/weapon <category> [seed] [tier] [layer:variant…]` (same seed, tier and layers = same gun), `/spawn <enemy> [count]`
+- `/reroll <layer>` rerolls one seed layer (`quality`, `stats`, `perks`, or the character layer: `weapon` for guns, `melee` for melee weapons) of the weapon in hand and keeps everything else; it prints the seed with its rerolled layers (e.g. `seed 123 stats:2`), which `/weapon` takes back to rebuild that exact gun. Attachments and the loaded magazine don't carry over
 - `/god`, `/heal`, `/buff <preset> [seconds]`, `/timescale <x>`, `/revealmap`, `/cloak [seconds]`, `/dodge [type]` (switch dodge style to try them out)
 - `/quest list`, `/quest start|complete <quest>`, `/quest step <quest> <n>` to jump straight to any objective
 - Names can be partial ("/give scrap 20")

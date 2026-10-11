@@ -49,10 +49,7 @@ namespace CGD.Map
 
         // Each pass draws from its own stream, so rerolling one layer (a new variant)
         // leaves the numbers every other layer sees untouched.
-        public RandomStream StreamFor(string layer) => StreamFor(_seed, _variants, layer);
-
-        public static RandomStream StreamFor(Seed seed, SeedVariants variants, string layer) =>
-            (variants != null ? variants.Resolve(seed, layer) : seed.Derive(layer)).Stream();
+        public RandomStream StreamFor(string layer) => SeedVariants.StreamFor(_seed, _variants, layer);
 
         // A new room on `cell` (positioned for the editor by NodeSpacing), linked to
         // `linkFrom` unless that is -1. Returns its id.

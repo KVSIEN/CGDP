@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
@@ -72,5 +73,7 @@ namespace CGD.Weapons
         public float NoiseRadius = 8f;
 
         public override WeaponItem Generate(ItemRoll roll) => MeleeWeaponGenerator.Generate(this, roll);
+
+        public override IReadOnlyList<string> SeedLayers => MeleeWeaponGenerator.Layers;
     }
 }

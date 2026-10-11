@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Core;
 using CGD.Items;
+using CGD.Perks;
 
 namespace CGD.Weapons
 {
@@ -17,10 +19,17 @@ namespace CGD.Weapons
     // their scales stretch the category's ranges before the roll samples them.
     //
     // Everything random here comes from the roll's seed, so a weapon can be rebuilt
-    // exactly from its category, tier and seed.
+    // exactly from its category, tier and seed. Like the map generator, the seed splits
+    // into layers (Layers), each rerollable on its own through its variant
+    // (GearDefinition.RerollLayer): quality, stats (where the power stats lean), character
+    // (name, styles, fire mode and the stats that aren't quality-driven) and perks.
+    // Variant 0 of every layer is the plain seed, so existing seeds keep their weapons.
     public static class WeaponGenerator
     {
-        private const string CharacterLayer = "weapon";
+        public const string CharacterLayer = "weapon";
+
+        public static readonly IReadOnlyList<string> Layers =
+            new[] { ItemRoll.QualityLayer, ItemRoll.StatsLayer, CharacterLayer, PerkPool.PerksLayer };
 
         public static WeaponInstance Generate(WeaponCategoryData cat) => Generate(cat, cat.Roll());
 
@@ -30,7 +39,7 @@ namespace CGD.Weapons
         public static WeaponInstance Generate(WeaponCategoryData cat, ItemRoll roll)
         {
             var d = ScriptableObject.CreateInstance<WeaponData>();
-            RandomStream random = roll.Seed.Derive(CharacterLayer).Stream();
+            RandomStream random = roll.StreamFor(CharacterLayer);
 
             // Unstyled categories draw exactly as before, so their seeds still give the same weapons.
             string name        = random.Pick(cat.Names);

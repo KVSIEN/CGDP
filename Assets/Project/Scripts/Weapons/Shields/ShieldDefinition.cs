@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
@@ -53,5 +54,7 @@ namespace CGD.Weapons
         public float NoiseRadius = 8f;
 
         public override ItemInstance CreateInstance(ItemRoll roll) => ShieldGenerator.Generate(this, roll);
+
+        public override IReadOnlyList<string> SeedLayers => ShieldGenerator.Layers;
     }
 }

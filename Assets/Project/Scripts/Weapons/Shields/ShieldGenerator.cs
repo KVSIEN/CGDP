@@ -1,21 +1,27 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Core;
 using CGD.Items;
 using CGD.Meters;
+using CGD.Perks;
 
 namespace CGD.Weapons
 {
     // Rolls a shield type into a concrete shield. How much it stops and its bash damage follow
     // quality (its power); stamina per blocked damage stays random (its character). Same
-    // definition, tier and seed → the same shield.
+    // definition, tier and seed → the same shield. Its seed layers reroll on their own, as a
+    // weapon's do (see WeaponGenerator).
     public static class ShieldGenerator
     {
-        private const string CharacterLayer = "shield";
+        public const string CharacterLayer = "shield";
+
+        public static readonly IReadOnlyList<string> Layers =
+            new[] { ItemRoll.QualityLayer, ItemRoll.StatsLayer, CharacterLayer, PerkPool.PerksLayer };
 
         public static ShieldInstance Generate(ShieldDefinition definition, ItemRoll roll)
         {
             var d = ScriptableObject.CreateInstance<MeleeWeaponData>();
-            RandomStream random = roll.Seed.Derive(CharacterLayer).Stream();
+            RandomStream random = roll.StreamFor(CharacterLayer);
 
             d.WeaponName = random.Pick(definition.Names);
 

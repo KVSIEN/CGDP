@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
@@ -138,5 +139,7 @@ namespace CGD.Weapons
         // a StatBlock, because the firing code reads them directly. The roll still
         // comes from the shared quality curve, so weapons and armor scale together.
         public override WeaponItem Generate(ItemRoll roll) => WeaponGenerator.Generate(this, roll);
+
+        public override IReadOnlyList<string> SeedLayers => WeaponGenerator.Layers;
     }
 }

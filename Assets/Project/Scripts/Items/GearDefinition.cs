@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using CGD.Core;
 using CGD.Perks;
 using UnityEngine;
@@ -31,13 +33,38 @@ namespace CGD.Items
         public PerkPool        PerkPool    => _perkPool;
         public IReadOnlyList<GearPerk> GuaranteedPerks => _guaranteedPerks;
 
+        // The seed layers an item of this definition rolls from, each rerollable on its own
+        // (RerollLayer). Generators that draw from a layer of their own list it too.
+        public virtual IReadOnlyList<string> SeedLayers => GearLayers;
+
+        private static readonly string[] GearLayers = { ItemRoll.QualityLayer, ItemRoll.StatsLayer, PerkPool.PerksLayer };
+
         public ItemRoll Roll() => Roll(Tier, Seed.Random());
 
         // Rolls at a specific tier instead of the definition's own — how loot tables
         // express rarity (the same rifle can drop Common or Legendary). The same tier and
         // seed always give the same roll.
-        public ItemRoll Roll(ItemTier tier, Seed seed) =>
-            _rollProfile != null ? _rollProfile.Roll(tier, seed) : ItemRoll.Unrolled(seed);
+        public ItemRoll Roll(ItemTier tier, Seed seed) => Roll(tier, seed, null);
+
+        // The same, with some layers rerolled (null = none): the same tier, seed and
+        // variants always give the same roll.
+        public ItemRoll Roll(ItemTier tier, Seed seed, SeedVariants variants) =>
+            _rollProfile != null ? _rollProfile.Roll(tier, seed, variants) : ItemRoll.Unrolled(seed, variants);
+
+        // The roll `item` was made from, with fresh numbers for one of SeedLayers only —
+        // everything drawn from the other layers comes out exactly as it was. Build the new
+        // item from it with CreateInstance (or WeaponCategory.Generate).
+        public ItemRoll RerollLayer(ItemInstance item, string layer)
+        {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (item.Definition != this) throw new ArgumentException($"{item} isn't a {name}.", nameof(item));
+            if (!SeedLayers.Contains(layer))
+                throw new ArgumentException($"{name} has no seed layer '{layer}' (layers: {string.Join(", ", SeedLayers)}).", nameof(layer));
+
+            SeedVariants variants = item.Variants;
+            variants.Reroll(layer);
+            return Roll(item.Tier, item.Seed, variants);
+        }
 
         public int AttachmentSlots(ItemTier tier) =>
             _rollProfile != null ? _rollProfile.AttachmentSlots(tier) : 0;

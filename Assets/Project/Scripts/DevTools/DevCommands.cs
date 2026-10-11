@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AI;
@@ -49,7 +50,8 @@ namespace CGD.DevTools
         private void RegisterAll()
         {
             Console.Register("give",      "<item> [count]",           "Add items to the inventory (gear is rolled)", Give);
-            Console.Register("weapon",    "<category> [seed] [tier]", "Add a generated weapon — same seed and tier give the same gun", Weapon);
+            Console.Register("weapon",    "<category> [seed] [tier] [layer:variant…]", "Add a generated weapon — same seed, tier and layers give the same gun", Weapon);
+            Console.Register("reroll",    "<layer>",                  "Reroll one seed layer of the weapon in hand; the rest stays the same", Reroll);
             Console.Register("spawn",     "<enemy> [count]",          "Spawn enemies where you're looking", Spawn);
             Console.Register("god",       "[on|off]",                 "Toggle taking no damage", God);
             Console.Register("heal",      "",                         "Restore full health", _ => Heal());
@@ -91,12 +93,43 @@ namespace CGD.DevTools
 
             Seed seed = args.Length > 1 ? Seed.Parse(args[1]) : Seed.Random();
             ItemTier tier = args.Length > 2 ? ParseTier(args[2]) : category.Tier;
-            WeaponItem weapon = category.Generate(tier, seed);
+            SeedVariants variants = args.Length > 3 ? ParseVariants(string.Join(" ", args, 3, args.Length - 3).ToLowerInvariant()) : null;
+            WeaponItem weapon = category.Generate(category.Roll(tier, seed, variants));
 
             WeaponItem replaced = _loadout.AddWeapon(weapon);
             if (replaced != null && _inventory != null) _inventory.Inventory.Add(replaced);
-            return $"{weapon.DisplayName} ({weapon.Tier}, Q{weapon.Quality}) — seed {seed}";
+            return Describe(weapon);
         }
+
+        // Swaps the weapon in hand for the same weapon with one layer rerolled. Attachments
+        // and the loaded magazine don't carry over; the old weapon is discarded.
+        private string Reroll(string[] args)
+        {
+            if (args.Length < 1) throw new UsageException();
+            if (!Need(_loadout, "PlayerWeaponLoadout", out string missing)) return missing;
+            if (!Need(_inventory, "PlayerInventory", out missing)) return missing;
+
+            WeaponItem held = _loadout.Active;
+            if (held == null || held.Definition is not WeaponCategory category) return "No generated weapon in hand.";
+
+            string layer = args[0].ToLowerInvariant();
+            if (!category.SeedLayers.Contains(layer))
+                return $"No layer '{args[0]}'. Layers: {string.Join(", ", category.SeedLayers)}.";
+
+            WeaponItem rerolled = category.Generate(category.RerollLayer(held, layer));
+            _inventory.Inventory.Add(rerolled);
+            if (!_loadout.AssignMain(_loadout.ActiveSlot, rerolled))
+            {
+                _inventory.Inventory.Remove(rerolled);
+                return "Couldn't swap the weapon in hand.";
+            }
+            _inventory.Inventory.Remove(held);
+            return Describe(rerolled);
+        }
+
+        // Ends in the seed text, so "weapon <category> <seed text's seed> <tier> <its layers>" rebuilds the gun.
+        private static string Describe(WeaponItem weapon) =>
+            $"{weapon.DisplayName} ({weapon.Tier}, Q{weapon.Quality}) — seed {weapon.SeedText}";
 
         // --- World -----------------------------------------------------------------
 
@@ -315,6 +348,9 @@ namespace CGD.DevTools
             Is(text, "on") || Is(text, "1") || Is(text, "true") ? true
             : Is(text, "off") || Is(text, "0") || Is(text, "false") ? false
             : throw new UsageException();
+
+        private static SeedVariants ParseVariants(string text) =>
+            SeedVariants.TryParse(text, out SeedVariants variants) ? variants : throw new UsageException();
 
         private static ItemTier ParseTier(string text) =>
             Enum.TryParse(text, true, out ItemTier tier) ? tier

@@ -9,40 +9,53 @@ namespace CGD.Items
     //
     // Seed is what the roll was made from. Rolling the same definition at the same tier
     // with the same seed gives the same item, and consumers draw any extra randomness
-    // (a weapon's name, its non-quality stats) from streams derived from it.
+    // (a weapon's name, its non-quality stats) from their own layer (StreamFor).
+    //
+    // Like a map's generation passes, each layer can be rerolled on its own through its
+    // variant (SeedVariants): a new stats variant re-leans the stats and leaves the
+    // quality, name and perks exactly as they were. No variants = the plain seed.
     public sealed class ItemRoll
     {
-        private readonly float[] _desirability;
+        private readonly float[]      _desirability;
+        private readonly SeedVariants _variants;
 
         public int      Quality { get; }
         public ItemTier Tier    { get; }
         public Seed     Seed    { get; }
 
-        internal ItemRoll(int quality, float[] desirability, Seed seed)
+        internal ItemRoll(int quality, float[] desirability, Seed seed, SeedVariants variants)
         {
             Quality       = quality;
             Tier          = ItemTiers.FromQuality(quality);
             _desirability = desirability;
             Seed          = seed;
+            // A copy, so the caller changing theirs later can't change what this roll was made from.
+            _variants     = new SeedVariants(variants);
         }
+
+        // A copy of the layer variants this roll was made with.
+        public SeedVariants Variants => new(_variants);
+
+        public RandomStream StreamFor(string layer) => _variants.Resolve(Seed, layer).Stream();
 
         // A roll with no quality behind it: every stat lands at a uniformly random
         // position. Used for items generated without a roll profile, which reproduces
         // the pre-quality behaviour exactly.
-        public static ItemRoll Unrolled(Seed seed)
+        public static ItemRoll Unrolled(Seed seed, SeedVariants variants)
         {
-            RandomStream random = seed.Derive(StatsLayer).Stream();
+            RandomStream random = SeedVariants.StreamFor(seed, variants, StatsLayer);
 
             var desirability = new float[ItemStatTraits.Count];
             for (int i = 0; i < desirability.Length; i++)
                 desirability[i] = random.Value;
 
-            return new ItemRoll(ItemTiers.MinQuality, desirability, seed);
+            return new ItemRoll(ItemTiers.MinQuality, desirability, seed, variants);
         }
 
         // Seed layers a roll is built from. Consumers add their own (see WeaponGenerator).
-        internal const string QualityLayer = "quality";
-        internal const string StatsLayer   = "stats";
+        // Quality only moves within the tier: the tier is the item's rarity, not a layer.
+        public const string QualityLayer = "quality";
+        public const string StatsLayer   = "stats";
 
         // How good this stat rolled, 0..1, before the range is consulted.
         public float Desirability(ItemStat stat) => _desirability[(int)stat];

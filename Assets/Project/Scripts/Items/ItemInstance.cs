@@ -15,15 +15,22 @@ namespace CGD.Items
     {
         private readonly List<AttachmentDefinition> _attachments = new();
         private readonly ModifierSet<ItemStat>      _modifiers   = new();
+        private readonly SeedVariants               _variants;
 
         private bool _modifiersDirty = true;
 
         public ItemDefinition Definition { get; }
         public int            Quality    { get; }
         public ItemTier       Tier       { get; }
-        // What the roll was made from — the gear definition's Roll(Tier, Seed) recreates it.
-        // Default for hand-authored gear that was never rolled.
+        // What the roll was made from — the gear definition's Roll(Tier, Seed, Variants)
+        // recreates it. Default for hand-authored gear that was never rolled.
         public Seed           Seed       { get; }
+
+        // A copy of the seed layers rerolled on top of Seed (see GearDefinition.RerollLayer).
+        public SeedVariants Variants => new(_variants);
+
+        // "123" or "123 stats:2" — everything besides the definition and tier that rebuilds this item.
+        public string SeedText => _variants.IsEmpty ? Seed.ToString() : $"{Seed} {_variants}";
 
         // Overridable so subclasses like WeaponInstance can present a rolled name
         // (e.g. the individual gun's WeaponName) instead of the category label.
@@ -55,6 +62,7 @@ namespace CGD.Items
             Quality         = roll.Quality;
             Tier            = roll.Tier;
             Seed            = roll.Seed;
+            _variants       = roll.Variants;
             AttachmentSlots = definition.AttachmentSlots(roll.Tier);
 
             definition.RollStats(roll, BaseStats);
@@ -81,6 +89,7 @@ namespace CGD.Items
             Definition = definition;
             Quality    = ItemTiers.MinQuality;
             Tier       = definition != null ? definition.Tier : ItemTier.Common;
+            _variants  = new SeedVariants();
         }
 
         // A free slot, and the attachment fits this kind of gear: attachments that name

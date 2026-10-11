@@ -1,17 +1,22 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Core;
 using CGD.Items;
 using CGD.Meters;
+using CGD.Perks;
 
 namespace CGD.Weapons
 {
     // Rolls a melee category into a concrete weapon. Damage, attack speed and armour
     // penetration follow the quality roll (the weapon's power); reach, stamina cost and
     // guard stay uniformly random (its character). Same category, tier and seed → the
-    // same weapon.
+    // same weapon. Its seed layers reroll on their own, as a firearm's do (see WeaponGenerator).
     public static class MeleeWeaponGenerator
     {
-        private const string CharacterLayer = "melee";
+        public const string CharacterLayer = "melee";
+
+        public static readonly IReadOnlyList<string> Layers =
+            new[] { ItemRoll.QualityLayer, ItemRoll.StatsLayer, CharacterLayer, PerkPool.PerksLayer };
 
         public static MeleeWeaponInstance Generate(MeleeCategoryData cat) => Generate(cat, cat.Roll());
 
@@ -20,7 +25,7 @@ namespace CGD.Weapons
         public static MeleeWeaponInstance Generate(MeleeCategoryData cat, ItemRoll roll)
         {
             var d = ScriptableObject.CreateInstance<MeleeWeaponData>();
-            RandomStream random = roll.Seed.Derive(CharacterLayer).Stream();
+            RandomStream random = roll.StreamFor(CharacterLayer);
 
             float damage = roll.Sample(ItemStat.Damage, cat.Damage);
             float pen    = Mathf.Clamp01(roll.Sample(ItemStat.ArmorPenetration, cat.ArmorPenetration));
