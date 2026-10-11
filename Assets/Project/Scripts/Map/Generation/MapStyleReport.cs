@@ -24,6 +24,9 @@ namespace CGD.Map
         private int _totalRooms;
 
         public int Maps { get; private set; }
+        // The seeds the maps were generated from, as typed (see SeedSequence).
+        public string FirstSeed { get; private set; }
+        public string LastSeed  { get; private set; }
         public MapReportStat Rooms      { get; } = new();
         public MapReportStat MainPath   { get; } = new();
         public MapReportStat Branches   { get; } = new();
@@ -41,12 +44,17 @@ namespace CGD.Map
         public float SpaceRate(MapNodeType type) =>
             _space.TryGetValue(type, out var s) && s.rooms > 0 ? (float)s.withSpace / s.rooms : 0f;
 
-        public static MapStyleReport Run(MapGenerationSettings settings, int seeds, int firstSeed = 1)
+        // `firstSeed` is a number or any text; the maps use the seeds counting up from it.
+        public static MapStyleReport Run(MapGenerationSettings settings, int seeds, string firstSeed = "1")
         {
             var report = new MapStyleReport();
             var generator = new MapGenerator(settings);
-            for (int seed = firstSeed; seed < firstSeed + seeds; seed++)
-                report.Add(generator.Generate(Seed.From(seed)), settings);
+            foreach (string seed in SeedSequence.CountingFrom(firstSeed, seeds))
+            {
+                report.FirstSeed ??= seed;
+                report.LastSeed    = seed;
+                report.Add(generator.Generate(Seed.Parse(seed)), settings);
+            }
             return report;
         }
 
@@ -123,7 +131,7 @@ namespace CGD.Map
         public string ToText()
         {
             var text = new StringBuilder();
-            text.AppendLine($"{Maps} maps — average (min–max)");
+            text.AppendLine(Maps > 0 ? $"{Maps} maps, seeds {FirstSeed} to {LastSeed} — average (min–max)" : "0 maps");
             text.AppendLine($"  Rooms        {Rooms}");
             text.AppendLine($"  Main path    {MainPath}");
             text.AppendLine($"  Branches     {Branches}");

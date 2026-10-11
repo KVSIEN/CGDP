@@ -10,7 +10,7 @@ namespace CGD.Editor
     {
         [SerializeField] private MapGenerationSettings _settings;
         [SerializeField] private int _seeds = 100;
-        [SerializeField] private int _firstSeed = 1;
+        [SerializeField] private string _firstSeed = "1";
 
         private string _report;
         private Vector2 _scroll;
@@ -29,7 +29,8 @@ namespace CGD.Editor
                 _settings  = (MapGenerationSettings)EditorGUILayout.ObjectField(_settings, typeof(MapGenerationSettings), false, GUILayout.Width(220f));
                 EditorGUIUtility.labelWidth = 44f;
                 _seeds     = Mathf.Clamp(EditorGUILayout.IntField("Seeds", _seeds, EditorStyles.toolbarTextField, GUILayout.Width(100f)), 1, 2000);
-                _firstSeed = EditorGUILayout.IntField("From", _firstSeed, EditorStyles.toolbarTextField, GUILayout.Width(110f));
+                _firstSeed = EditorGUILayout.TextField(new GUIContent("From", "A number or any text; the seeds count up from it (\"banana\" → banana 1, banana 2…)"),
+                                                       _firstSeed, EditorStyles.toolbarTextField, GUILayout.Width(150f));
                 EditorGUIUtility.labelWidth = 0f;
 
                 using (new EditorGUI.DisabledScope(_settings == null || !_settings.CanGenerate))

@@ -107,5 +107,15 @@ namespace CGD.Tests
 
             CollectionAssert.AreEquivalent(new[] { 1, 2, 3, 4, 5, 6 }, items);
         }
+
+        [Test]
+        public void SeedSequenceCountsUpFromNumbersAndText()
+        {
+            CollectionAssert.AreEqual(new[] { "100", "101", "102" }, SeedSequence.CountingFrom("100", 3));
+            CollectionAssert.AreEqual(new[] { "-1", "0" },           SeedSequence.CountingFrom("-1", 2));
+            CollectionAssert.AreEqual(new[] { "run 7", "run 8" },   SeedSequence.CountingFrom("run 7", 2));
+            CollectionAssert.AreEqual(new[] { "map09", "map10" },   SeedSequence.CountingFrom("map09", 2));
+            CollectionAssert.AreEqual(new[] { "banana 1", "banana 2" }, SeedSequence.CountingFrom(" banana ", 2));
+        }
     }
 }
