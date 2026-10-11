@@ -1,4 +1,3 @@
-using CGD.Core;
 using CGD.Level;
 using CGD.Map;
 using UnityEditor;
@@ -74,7 +73,7 @@ namespace CGD.Editor
             _builtAsset   = asset;
 
             Vector2 spacing = asset.Settings != null ? asset.Settings.NodeSpacing : Vector2.one;
-            _layout = new LevelLayoutBuilder(settings).Build(session.Graph, spacing, Seed.From(asset.Seed), asset.Content);
+            _layout = new LevelLayoutBuilder(settings).Build(session.Graph, spacing, asset.Seed, asset.Content);
 
             Color32[] pixels = LevelBlueprint.Render(_layout, settings, Fill, out int width, out int height, out _tileOrigin);
             if (_texture == null || _texture.width != width || _texture.height != height)
@@ -132,7 +131,7 @@ namespace CGD.Editor
 
         private void DrawFooter(Rect local)
         {
-            string text = $"Seed {_builtAsset.Seed} · {_layout.Rooms.Count} rooms · yellow = locked, purple = secret, cyan = one-way";
+            string text = $"Seed {_builtAsset.SeedText} · {_layout.Rooms.Count} rooms · yellow = locked, purple = secret, cyan = one-way";
             if (_layout.Warnings.Count > 0) text += $" · {_layout.Warnings.Count} layout warning(s): {_layout.Warnings[0]}";
             GUI.Label(new Rect(6f, local.height - 20f, local.width - 12f, 18f), text, EditorStyles.whiteMiniLabel);
         }

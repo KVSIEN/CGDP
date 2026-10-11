@@ -30,8 +30,8 @@ namespace CGD.Level
         [Tooltip("Build this graph. Leave empty to generate one from the settings below")]
         [SerializeField] private MapGraphAsset _graphAsset;
         [SerializeField] private MapGenerationSettings _generation;
-        [Tooltip("0 = a new random seed every play (with a graph asset: the asset's seed). Also drives room shapes and contents")]
-        [SerializeField] private int _seed;
+        [Tooltip("A number or any text. Empty or 0 = a new random seed every play (with a graph asset: the asset's seed). Also drives room shapes and contents")]
+        [SerializeField] private string _seed;
         [SerializeField] private LevelBuildSettings _settings;
         [Tooltip("Optional — how Lockdown, Holdout, Ambush, Stealth, Rift, Puzzle and Hazard rooms play. Empty = they play as plain rooms")]
         [SerializeField] private EncounterSettings _encounters;
@@ -68,8 +68,8 @@ namespace CGD.Level
 
             // A graph asset's own seed lays its rooms out the way the Map Graph window's
             // blueprint shows them; only generated maps roll a fresh seed for 0.
-            Seed  = _seed != 0 ? Seed.From(_seed)
-                  : _graphAsset != null ? Seed.From(_graphAsset.Seed)
+            Seed  = !RollsFreshSeed(_seed) ? Seed.Parse(_seed)
+                  : _graphAsset != null ? _graphAsset.Seed
                   : Seed.Random();
             Graph = ResolveGraph(out Vector2 nodeSpacing, out MapContentSettings content);
             if (Graph == null)
@@ -103,6 +103,9 @@ namespace CGD.Level
             PlacePlayer(populator);
             FitWorldMap();
         }
+
+        // "0" too: the field used to be a number where 0 meant a fresh seed, and scenes saved then still hold it.
+        private static bool RollsFreshSeed(string text) => string.IsNullOrWhiteSpace(text) || text.Trim() == "0";
 
         // Only when the player can track quests; the same seed always plans the same objectives.
         private List<PlannedObjective> PlanObjectives(RoomPopulator populator)

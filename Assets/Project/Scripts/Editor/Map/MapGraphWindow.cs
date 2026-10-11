@@ -1,3 +1,4 @@
+using System.Globalization;
 using CGD.Level;
 using CGD.Map;
 using UnityEditor;
@@ -136,17 +137,18 @@ namespace CGD.Editor
 
             EditorGUILayout.PropertyField(settings, GUIContent.none, GUILayout.Width(180f));
             EditorGUIUtility.labelWidth = 34f;
-            seed.intValue = EditorGUILayout.IntField("Seed", seed.intValue, EditorStyles.toolbarTextField, GUILayout.Width(110f));
+            seed.stringValue = EditorGUILayout.TextField(new GUIContent("Seed", "A number or any text"), seed.stringValue,
+                                                         EditorStyles.toolbarTextField, GUILayout.Width(150f));
             EditorGUIUtility.labelWidth = 0f;
             serialized.ApplyModifiedProperties();
 
             using (new EditorGUI.DisabledScope(!asset.CanGenerate))
             {
                 if (GUILayout.Button(new GUIContent("Generate", "Rebuild the map from this seed"), EditorStyles.toolbarButton))
-                    TryRegenerate(asset.Seed);
+                    TryRegenerate(asset.SeedText);
 
                 if (GUILayout.Button(new GUIContent("New Seed", "Pick a random seed and generate"), EditorStyles.toolbarButton))
-                    TryRegenerate(Random.Range(0, int.MaxValue));
+                    TryRegenerate(Random.Range(0, int.MaxValue).ToString(CultureInfo.InvariantCulture));
             }
 
             using (new EditorGUI.DisabledScope(!asset.CanGenerate))
@@ -162,7 +164,7 @@ namespace CGD.Editor
             }
         }
 
-        private void TryRegenerate(int seed)
+        private void TryRegenerate(string seed)
         {
             if (!_session.ConfirmDiscardEdits()) return;
 

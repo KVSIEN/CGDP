@@ -232,7 +232,7 @@ namespace CGD.Editor
 
         // --- Edits -----------------------------------------------------------------
 
-        public void Regenerate(int seed)
+        public void Regenerate(string seed)
         {
             Record("Regenerate Map");
             _asset.Regenerate(seed);

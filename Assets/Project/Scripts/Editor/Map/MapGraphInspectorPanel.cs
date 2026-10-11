@@ -271,7 +271,7 @@ namespace CGD.Editor
             MapLayoutSettings     layout   = session.Asset.Layout;
 
             EditorGUILayout.LabelField("Graph", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Seed", session.Asset.Seed.ToString());
+            EditorGUILayout.LabelField("Seed", session.Asset.SeedText);
             EditorGUILayout.LabelField("Layout", layout != null
                 ? $"{layout.name}  ({layout.MinRoomCount}–{layout.MaxRoomCount} rooms)"
                 : "—");

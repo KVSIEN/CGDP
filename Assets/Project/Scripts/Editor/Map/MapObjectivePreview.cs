@@ -30,7 +30,7 @@ namespace CGD.Editor
 
         private List<PlannedObjective> _plan;
         private int _planVersion;
-        private int _planSeed;
+        private Seed _planSeed;
 
         public MapObjectiveSettings Settings
         {
@@ -50,7 +50,7 @@ namespace CGD.Editor
             if (!session.HasGraph || Settings == null) return Empty;
             if (_plan != null && _planVersion == session.Version && _planSeed == session.Asset.Seed) return _plan;
 
-            RandomStream random = Seed.From(session.Asset.Seed).Derive("objectives").Stream();
+            RandomStream random = session.Asset.Seed.Derive("objectives").Stream();
             var planner = new MapObjectivePlanner(session.Graph, random, WillHaveEnemies);
             _plan        = planner.Plan(_settings.Templates, _settings.MainCount.Evaluate(random), _settings.SideCount.Evaluate(random));
             _planVersion = session.Version;

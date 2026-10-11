@@ -24,10 +24,13 @@ namespace CGD.Map
     public class MapGraphAsset : ScriptableObject
     {
         [SerializeField] private MapGenerationSettings _settings;
-        [SerializeField] private int                   _seed;
+        // As typed: a number is used as-is, any other text is hashed (Seed.Parse). Kept as
+        // text so a seed like "banana" shows as typed rather than as its hash.
+        [Tooltip("A number or any text")]
+        [SerializeField] private string                _seed = "0";
         [SerializeField, HideInInspector] private SeedVariants _layerVariants = new();
         // The seed the layer variants belong to; they reset when generating from another.
-        [SerializeField, HideInInspector] private int          _variantsSeed;
+        [SerializeField, HideInInspector] private string       _variantsSeed;
         [SerializeField, HideInInspector] private MapLayoutSettings _layout;
         [SerializeField, HideInInspector] private MapGraph     _generated = new();
         [SerializeField, HideInInspector] private MapGraph     _graph     = new();
@@ -39,7 +42,8 @@ namespace CGD.Map
         [SerializeField, HideInInspector] private MapFactionMix        _factionMix;
 
         public MapGenerationSettings Settings => _settings;
-        public int                   Seed     => _seed;
+        public string                SeedText => _seed;
+        public Seed                  Seed     => CGD.Core.Seed.Parse(_seed);
         public bool                  CanGenerate => _settings != null && _settings.CanGenerate;
 
         // The layout the current graph was generated on, and the style's content.
@@ -49,13 +53,13 @@ namespace CGD.Map
         // The run modifiers this map was generated with (or edited to).
         public MapRunTuning Tuning =>
             _runStored ? new MapRunTuning(_modifiers.FindAll(m => m != null))
-            : _settings != null ? MapGenerator.PickModifiers(_settings, CGD.Core.Seed.From(_seed), _layerVariants)
+            : _settings != null ? MapGenerator.PickModifiers(_settings, Seed, _layerVariants)
             : MapRunTuning.None;
 
         // How the factions were split for this map (null when the content lists no mix).
         public MapFactionMix FactionMix =>
             _runStored ? _factionMix
-            : _settings != null ? MapGenerator.PickFactionMix(_settings, CGD.Core.Seed.From(_seed), _layerVariants, Tuning)
+            : _settings != null ? MapGenerator.PickFactionMix(_settings, Seed, _layerVariants, Tuning)
             : null;
 
         public IReadOnlyList<MapRunModifier> Modifiers => Tuning.Modifiers;
@@ -108,9 +112,10 @@ namespace CGD.Map
         // Replaces both graphs. Hand edits are discarded; locked nodes are carried over.
         // A different seed starts every layer from scratch; the same seed keeps any
         // layer rerolls.
-        public bool Regenerate(int seed)
+        public bool Regenerate(string seed)
         {
             if (!CanGenerate) return false;
+            seed = seed?.Trim() ?? string.Empty;
             if (seed != _variantsSeed) _layerVariants.Clear();
 
             _seed         = seed;
@@ -134,7 +139,7 @@ namespace CGD.Map
         private void Generate()
         {
             List<MapNodePin> pins = BuildPins();
-            MapGenerationResult result = new MapGenerator(_settings).Generate(CGD.Core.Seed.From(_seed), _layerVariants, pins);
+            MapGenerationResult result = new MapGenerator(_settings).Generate(Seed, _layerVariants, pins);
 
             _generated = result.Graph;
             _graph     = result.Graph.Clone();
