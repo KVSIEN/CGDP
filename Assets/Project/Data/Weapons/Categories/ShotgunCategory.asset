@@ -49,6 +49,7 @@ MonoBehaviour:
       Jitter: 0.4
       Horizontal: 0.94
       Reach: 1
+      MuzzleFlip: 0.6
   - Name: SPAS-12
     Weight: 4
     FiringStyles: []
@@ -66,6 +67,7 @@ MonoBehaviour:
       Jitter: 0.4
       Horizontal: 1
       Reach: 1
+      MuzzleFlip: 0.55
   - Name: Benelli M3
     Weight: 4
     FiringStyles: []
@@ -83,6 +85,7 @@ MonoBehaviour:
       Jitter: 0.35
       Horizontal: 1
       Reach: 1
+      MuzzleFlip: 0.5
   - Name: Mossberg 500
     Weight: 4
     FiringStyles: []
@@ -100,6 +103,7 @@ MonoBehaviour:
       Jitter: 0.4
       Horizontal: 1
       Reach: 1
+      MuzzleFlip: 0.6
   - Name: KSG
     Weight: 4
     FiringStyles: []
@@ -117,6 +121,7 @@ MonoBehaviour:
       Jitter: 0.35
       Horizontal: 1
       Reach: 1
+      MuzzleFlip: 0.35
   - Name: AA-12
     Weight: 5
     FiringStyles: []
@@ -134,6 +139,7 @@ MonoBehaviour:
       Jitter: 0.45
       Horizontal: 1
       Reach: 1
+      MuzzleFlip: 0.2
   FireBehavior: {fileID: 11400000, guid: e2cbfa746aa878d4aa23d60289c75ece, type: 2}
   RPM:
     Min: 50

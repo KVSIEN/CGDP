@@ -103,6 +103,7 @@ MonoBehaviour:
       Jitter: 0.3
       Horizontal: 0.99
       Reach: 1
+      MuzzleFlip: 0.35
   - Name: M16
     Weight: 1
     FiringStyles:
@@ -160,6 +161,7 @@ MonoBehaviour:
       Jitter: 0.25
       Horizontal: 0.84
       Reach: 1
+      MuzzleFlip: 0.3
   - Name: M14
     Weight: 1
     FiringStyles:
@@ -217,6 +219,7 @@ MonoBehaviour:
       Jitter: 0.5
       Horizontal: 0.76
       Reach: 1
+      MuzzleFlip: 0.6
   - Name: M27
     Weight: 1
     FiringStyles:
@@ -254,6 +257,7 @@ MonoBehaviour:
       Jitter: 0.2
       Horizontal: 0.88
       Reach: 1
+      MuzzleFlip: 0.3
   - Name: AK-47
     Weight: 1
     FiringStyles:
@@ -291,6 +295,7 @@ MonoBehaviour:
       Jitter: 0.3
       Horizontal: 1.26
       Reach: 0.2
+      MuzzleFlip: 0.6
   - Name: AK-74u
     Weight: 1
     FiringStyles:
@@ -328,6 +333,7 @@ MonoBehaviour:
       Jitter: 0.55
       Horizontal: 1.44
       Reach: 0.15
+      MuzzleFlip: 0.55
   - Name: AKM
     Weight: 1
     FiringStyles:
@@ -365,6 +371,7 @@ MonoBehaviour:
       Jitter: 0.35
       Horizontal: 1.18
       Reach: 1
+      MuzzleFlip: 0.5
   - Name: AK-12
     Weight: 1
     FiringStyles:
@@ -422,6 +429,7 @@ MonoBehaviour:
       Jitter: 0.25
       Horizontal: 1.07
       Reach: 1
+      MuzzleFlip: 0.4
   - Name: FAMAS
     Weight: 1
     FiringStyles:
@@ -479,6 +487,7 @@ MonoBehaviour:
       Jitter: 0.45
       Horizontal: 1.15
       Reach: 1
+      MuzzleFlip: 0.35
   - Name: AUG
     Weight: 1
     FiringStyles:
@@ -516,6 +525,7 @@ MonoBehaviour:
       Jitter: 0.2
       Horizontal: 0.96
       Reach: 1
+      MuzzleFlip: 0.25
   - Name: TAR-21
     Weight: 1
     FiringStyles:
@@ -553,6 +563,7 @@ MonoBehaviour:
       Jitter: 0.3
       Horizontal: 1.05
       Reach: 1
+      MuzzleFlip: 0.3
   - Name: F2000
     Weight: 1
     FiringStyles:
@@ -590,6 +601,7 @@ MonoBehaviour:
       Jitter: 0.25
       Horizontal: 1.01
       Reach: 1
+      MuzzleFlip: 0.25
   - Name: FAL
     Weight: 1
     FiringStyles:
@@ -667,6 +679,7 @@ MonoBehaviour:
       Jitter: 0.5
       Horizontal: 0.8
       Reach: 1
+      MuzzleFlip: 0.65
   - Name: SCAR-H
     Weight: 1
     FiringStyles:
@@ -704,6 +717,7 @@ MonoBehaviour:
       Jitter: 0.35
       Horizontal: 0.84
       Reach: 1
+      MuzzleFlip: 0.5
   - Name: G3
     Weight: 1
     FiringStyles:
@@ -741,6 +755,7 @@ MonoBehaviour:
       Jitter: 0.4
       Horizontal: 0.9
       Reach: 1
+      MuzzleFlip: 0.6
   - Name: HK416
     Weight: 1
     FiringStyles:
@@ -778,6 +793,7 @@ MonoBehaviour:
       Jitter: 0.2
       Horizontal: 0.88
       Reach: 1
+      MuzzleFlip: 0.3
   - Name: G36C
     Weight: 1
     FiringStyles:
@@ -815,6 +831,7 @@ MonoBehaviour:
       Jitter: 0.3
       Horizontal: 1.13
       Reach: 1
+      MuzzleFlip: 0.35
   - Name: Galil
     Weight: 1
     FiringStyles:
@@ -852,6 +869,7 @@ MonoBehaviour:
       Jitter: 0.4
       Horizontal: 1.12
       Reach: 0.2
+      MuzzleFlip: 0.5
   - Name: AM-17
     Weight: 1
     FiringStyles:
@@ -889,6 +907,7 @@ MonoBehaviour:
       Jitter: 0.5
       Horizontal: 1.26
       Reach: 1
+      MuzzleFlip: 0.4
   - Name: QBZ-95
     Weight: 1
     FiringStyles:
@@ -926,6 +945,7 @@ MonoBehaviour:
       Jitter: 0.3
       Horizontal: 1.1
       Reach: 1
+      MuzzleFlip: 0.3
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:
     Min: 450

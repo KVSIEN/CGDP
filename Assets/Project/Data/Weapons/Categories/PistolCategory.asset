@@ -86,6 +86,7 @@ MonoBehaviour:
       Jitter: 0.45
       Horizontal: 0.77
       Reach: 1
+      MuzzleFlip: 0.55
   - Name: M9
     Weight: 1
     FiringStyles:
@@ -125,6 +126,7 @@ MonoBehaviour:
       Jitter: 0.3
       Horizontal: 0.85
       Reach: 1
+      MuzzleFlip: 0.2
   - Name: USP
     Weight: 1
     FiringStyles:
@@ -164,6 +166,7 @@ MonoBehaviour:
       Jitter: 0.25
       Horizontal: 0.69
       Reach: 1
+      MuzzleFlip: 0.35
   - Name: MP-443
     Weight: 1
     FiringStyles:
@@ -203,6 +206,7 @@ MonoBehaviour:
       Jitter: 0.35
       Horizontal: 0.99
       Reach: 1
+      MuzzleFlip: 0.35
   - Name: M1911
     Weight: 1
     FiringStyles:
@@ -242,6 +246,7 @@ MonoBehaviour:
       Jitter: 0.35
       Horizontal: 0.69
       Reach: 1
+      MuzzleFlip: 0.8
   - Name: Luger P08
     Weight: 1
     FiringStyles:
@@ -281,6 +286,7 @@ MonoBehaviour:
       Jitter: 0.25
       Horizontal: 0.8
       Reach: 1
+      MuzzleFlip: 0.55
   - Name: Walther PP
     Weight: 1
     FiringStyles:
@@ -320,6 +326,7 @@ MonoBehaviour:
       Jitter: 0.45
       Horizontal: 1.01
       Reach: 1
+      MuzzleFlip: 0.5
   - Name: Mauser C96
     Weight: 1
     FiringStyles:
@@ -372,6 +379,7 @@ MonoBehaviour:
         Jitter: 0.55
         Horizontal: 1.5
         Reach: 1
+        MuzzleFlip: 0.85
     Scales:
       Damage: 0.75
       FireRate: 0.84
@@ -387,6 +395,7 @@ MonoBehaviour:
       Jitter: 0.4
       Horizontal: 0.98
       Reach: 1
+      MuzzleFlip: 0.75
   - Name: Glock 18
     Weight: 1
     FiringStyles:
@@ -439,6 +448,7 @@ MonoBehaviour:
         Jitter: 0.35
         Horizontal: 0.9
         Reach: 1
+        MuzzleFlip: 0.2
     Scales:
       Damage: 0.45
       FireRate: 2.44
@@ -454,6 +464,7 @@ MonoBehaviour:
       Jitter: 0.55
       Horizontal: 2.57
       Reach: 1
+      MuzzleFlip: 0.25
   - Name: TEC-9
     Weight: 1
     FiringStyles:
@@ -493,6 +504,7 @@ MonoBehaviour:
       Jitter: 0.65
       Horizontal: 2.77
       Reach: 1
+      MuzzleFlip: 0.4
   - Name: Beretta 93R
     Weight: 1
     FiringStyles:
@@ -532,6 +544,7 @@ MonoBehaviour:
       Jitter: 0.25
       Horizontal: 1.68
       Reach: 1
+      MuzzleFlip: 0.25
   - Name: CZ 75 Auto
     Weight: 1
     FiringStyles:
@@ -571,6 +584,7 @@ MonoBehaviour:
       Jitter: 0.45
       Horizontal: 2.22
       Reach: 0.15
+      MuzzleFlip: 0.25
   - Name: Desert Eagle
     Weight: 1
     FiringStyles:
@@ -610,6 +624,7 @@ MonoBehaviour:
       Jitter: 0.45
       Horizontal: 0.62
       Reach: 1
+      MuzzleFlip: 0.85
   - Name: .44 Magnum
     Weight: 1
     FiringStyles:
@@ -670,6 +685,7 @@ MonoBehaviour:
       Jitter: 0.35
       Horizontal: 0.7
       Reach: 1
+      MuzzleFlip: 0.95
   - Name: Taurus Judge
     Weight: 1
     FiringStyles:
@@ -730,6 +746,7 @@ MonoBehaviour:
       Jitter: 0.4
       Horizontal: 0.96
       Reach: 1
+      MuzzleFlip: 0.85
   - Name: Chiappa Rhino
     Weight: 1
     FiringStyles:
@@ -790,6 +807,7 @@ MonoBehaviour:
       Jitter: 0.2
       Horizontal: 0.6
       Reach: 1
+      MuzzleFlip: 0.15
   - Name: Ruger Mark IV
     Weight: 1
     FiringStyles:
@@ -829,6 +847,7 @@ MonoBehaviour:
       Jitter: 0.15
       Horizontal: 1
       Reach: 1
+      MuzzleFlip: 0.3
   - Name: Five-seveN
     Weight: 1
     FiringStyles:
@@ -868,6 +887,7 @@ MonoBehaviour:
       Jitter: 0.25
       Horizontal: 0.96
       Reach: 1
+      MuzzleFlip: 0.3
   - Name: Tac-45
     Weight: 1
     FiringStyles:
@@ -907,6 +927,7 @@ MonoBehaviour:
       Jitter: 0.35
       Horizontal: 0.67
       Reach: 1
+      MuzzleFlip: 0.75
   - Name: P250
     Weight: 1
     FiringStyles:
@@ -946,6 +967,7 @@ MonoBehaviour:
       Jitter: 0.3
       Horizontal: 0.85
       Reach: 1
+      MuzzleFlip: 0.35
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:
     Min: 300

@@ -162,7 +162,7 @@ MonoBehaviour:
     Yaw: 0
     Roll: 1.5
     Rise: 0
-    Pushback: 0.03
+    Pushback: 0.015
   _rotationStiffness: 150
   _rotationDamping: 20
   _positionStiffness: 200
@@ -172,7 +172,7 @@ MonoBehaviour:
     Yaw: 0.2
     Roll: 0.2
     Rise: 0.0015
-    Pushback: 0.02
+    Pushback: 0.01
   _adsMaxRecoverTime: 0.15
   _lookPitchScale: 0.06
   _lookYawScale: 0.08

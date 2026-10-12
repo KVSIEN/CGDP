@@ -166,6 +166,9 @@ namespace CGD.Weapons
         public float RecoilHorizontalBias = 0.15f;
         [Tooltip("Alternating: drift ping-pongs left/right when it hits either cap (signature spray patterns). OneWay: drift only pushes in the bias direction and stops at the cap.")]
         public HorizontalDriftMode HorizontalDriftMode = HorizontalDriftMode.Alternating;
+        [Tooltip("How the held gun moves on each shot (visual only): 0 drives straight back into the hand (low bore axis: Glock, M9, Vector), 1 flips the muzzle up (high bore axis or big calibre: M1911, Desert Eagle), 0.5 balanced")]
+        [Range(0f, 1f)]
+        public float MuzzleFlip = 0.5f;
         [Tooltip("Cap on total accumulated upward recoil (degrees). At the cap each shot still kicks, then the aim settles back to the cap before the next shot.")]
         public float MaxAccumulatedRecoil = 14f;
         [Tooltip("Cap on total accumulated sideways recoil (degrees), either direction. Drift that reaches it swings back the other way.")]

@@ -194,6 +194,16 @@ Each model carries a `RecoilPattern` (on `WeaponModel`; a firing variant can car
 | Jumpy, no clear lean | jitter 0.5–0.7 | MAC-10 (0.7), TEC-9, AK-74u, AM-17, FAL, M14, SVU |
 | Nearly straight up | bias 0…±0.1, jitter ≤ 0.25 | Vector, AUG, MP5, MP7, M27, HK416, F2000 (slightly left), P90 (bouncy), Ruger Mark IV, Chiappa Rhino, PSG1, DSR-1 |
 
+**MuzzleFlip** (0–1, visual only; also on `WeaponData`): how the held gun moves on each shot.
+`WeaponVisuals` shares the vertical kick between rotation (muzzle rise and hop, × 2·flip) and
+pushback (× 2·(1 − flip)), so 0.5 looks as before. Pushback is per degree of vertical kick, so a
+hand cannon shoves back further than a .22. Low bore axis or an inline stock pushes back (Vector
+0.05, Chiappa Rhino 0.15, Glock / M9 / CZ 75 / P90 / AA-12 / DSR-1 0.2–0.25, AR platform and
+bullpups 0.25–0.35); a high bore axis, big calibre or dropped stock flips (M1911 0.8, Tac-45 0.75,
+Desert Eagle / Judge 0.85, .44 Magnum 0.95, Mauser C96 0.75 / M712 0.85, AKs and battle rifles
+0.5–0.65, classic bolt-actions 0.5–0.6). From the hip a Glock 17 now rears 1.2° and shoves back
+4.8 cm; an M1911 rears 6.2° and shoves 1.6 cm (both were ~3–4° and 3 cm before).
+
 Semi-autos, pistols and bolt-actions get small biases (0–0.3) and mostly use jitter for character:
 per-shot scatter matters more than drift when the caps reset between shots. Recoil simulated on the
 T1s (ADS, 20 rounds, averaged): Uzi ends +5° right for 10° up; AK-47 reaches +1.5° by round 8 and

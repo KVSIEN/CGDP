@@ -104,6 +104,7 @@ MonoBehaviour:
       Jitter: 0.2
       Horizontal: 1.09
       Reach: 1
+      MuzzleFlip: 0.25
   - Name: MP5K
     Weight: 1
     FiringStyles:
@@ -141,6 +142,7 @@ MonoBehaviour:
       Jitter: 0.45
       Horizontal: 1.11
       Reach: 1
+      MuzzleFlip: 0.4
   - Name: MP7
     Weight: 1
     FiringStyles:
@@ -178,6 +180,7 @@ MonoBehaviour:
       Jitter: 0.2
       Horizontal: 1.04
       Reach: 1
+      MuzzleFlip: 0.2
   - Name: MPL
     Weight: 1
     FiringStyles:
@@ -215,6 +218,7 @@ MonoBehaviour:
       Jitter: 0.35
       Horizontal: 0.88
       Reach: 1
+      MuzzleFlip: 0.35
   - Name: Thompson
     Weight: 1
     FiringStyles:
@@ -252,6 +256,7 @@ MonoBehaviour:
       Jitter: 0.35
       Horizontal: 0.85
       Reach: 1
+      MuzzleFlip: 0.55
   - Name: MP40
     Weight: 1
     FiringStyles:
@@ -289,6 +294,7 @@ MonoBehaviour:
       Jitter: 0.25
       Horizontal: 0.66
       Reach: 1
+      MuzzleFlip: 0.3
   - Name: Uzi
     Weight: 1
     FiringStyles:
@@ -326,6 +332,7 @@ MonoBehaviour:
       Jitter: 0.35
       Horizontal: 1.07
       Reach: 1
+      MuzzleFlip: 0.5
   - Name: PM12
     Weight: 1
     FiringStyles:
@@ -363,6 +370,7 @@ MonoBehaviour:
       Jitter: 0.3
       Horizontal: 0.97
       Reach: 1
+      MuzzleFlip: 0.35
   - Name: MAC-10
     Weight: 1
     FiringStyles:
@@ -400,6 +408,7 @@ MonoBehaviour:
       Jitter: 0.7
       Horizontal: 0.98
       Reach: 1
+      MuzzleFlip: 0.6
   - Name: Scorpion EVO
     Weight: 1
     FiringStyles:
@@ -457,6 +466,7 @@ MonoBehaviour:
       Jitter: 0.5
       Horizontal: 1.17
       Reach: 0.15
+      MuzzleFlip: 0.35
   - Name: MP9
     Weight: 1
     FiringStyles:
@@ -494,6 +504,7 @@ MonoBehaviour:
       Jitter: 0.4
       Horizontal: 1.09
       Reach: 1
+      MuzzleFlip: 0.4
   - Name: PP2000
     Weight: 1
     FiringStyles:
@@ -531,6 +542,7 @@ MonoBehaviour:
       Jitter: 0.45
       Horizontal: 1.16
       Reach: 0.2
+      MuzzleFlip: 0.4
   - Name: UMP-45
     Weight: 1
     FiringStyles:
@@ -588,6 +600,7 @@ MonoBehaviour:
       Jitter: 0.3
       Horizontal: 0.77
       Reach: 1
+      MuzzleFlip: 0.35
   - Name: MPX
     Weight: 1
     FiringStyles:
@@ -625,6 +638,7 @@ MonoBehaviour:
       Jitter: 0.25
       Horizontal: 0.88
       Reach: 1
+      MuzzleFlip: 0.25
   - Name: APC9
     Weight: 1
     FiringStyles:
@@ -662,6 +676,7 @@ MonoBehaviour:
       Jitter: 0.3
       Horizontal: 0.93
       Reach: 1
+      MuzzleFlip: 0.3
   - Name: PMX
     Weight: 1
     FiringStyles:
@@ -699,6 +714,7 @@ MonoBehaviour:
       Jitter: 0.3
       Horizontal: 0.91
       Reach: 1
+      MuzzleFlip: 0.3
   - Name: P90
     Weight: 1
     FiringStyles:
@@ -736,6 +752,7 @@ MonoBehaviour:
       Jitter: 0.4
       Horizontal: 0.94
       Reach: 1
+      MuzzleFlip: 0.2
   - Name: Vector
     Weight: 1
     FiringStyles:
@@ -793,6 +810,7 @@ MonoBehaviour:
       Jitter: 0.15
       Horizontal: 1.19
       Reach: 1
+      MuzzleFlip: 0.05
   - Name: QCW-05
     Weight: 1
     FiringStyles:
@@ -830,6 +848,7 @@ MonoBehaviour:
       Jitter: 0.35
       Horizontal: 0.97
       Reach: 1
+      MuzzleFlip: 0.3
   - Name: PP-19 Bizon
     Weight: 1
     FiringStyles:
@@ -867,6 +886,7 @@ MonoBehaviour:
       Jitter: 0.35
       Horizontal: 0.99
       Reach: 0.15
+      MuzzleFlip: 0.35
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:
     Min: 600

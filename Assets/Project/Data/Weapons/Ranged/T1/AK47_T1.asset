@@ -49,6 +49,7 @@ MonoBehaviour:
   RecoilJitter: {x: 0.3, y: 0.17}
   RecoilHorizontalBias: 0.5
   HorizontalDriftMode: 0
+  MuzzleFlip: 0.6
   MaxAccumulatedRecoil: 16
   MaxAccumulatedHorizontalRecoil: 1.8
   RecoilHeatPerShot: 0.06

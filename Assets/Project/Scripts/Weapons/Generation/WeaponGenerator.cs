@@ -128,6 +128,7 @@ namespace CGD.Weapons
             {
                 d.HorizontalDriftMode = pattern.Drift;
                 d.RecoilJitter.x      = pattern.Jitter;
+                d.MuzzleFlip          = pattern.MuzzleFlip;
             }
             d.MaxAccumulatedRecoil = roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.MaxAccumulatedRecoil, scales.Recoil, leans.Recoil));
             float reach           = sideways * (pattern != null ? pattern.Reach : 1f);

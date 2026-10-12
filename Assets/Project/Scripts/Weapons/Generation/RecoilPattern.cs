@@ -20,5 +20,7 @@ namespace CGD.Weapons
         [Min(0f)] public float Horizontal = 1f;
         [Tooltip("How far the drift goes sideways before it swings back (Alternating) or holds (OneWay), relative to the usual. Low = a tight zig-zag, like an AK-47's")]
         [Min(0.05f)] public float Reach = 1f;
+        [Tooltip("How the held gun moves on each shot: 0 drives straight back (a Glock, a Vector), 1 flips the muzzle up (an M1911, a Desert Eagle)")]
+        [Range(0f, 1f)] public float MuzzleFlip = 0.5f;
     }
 }

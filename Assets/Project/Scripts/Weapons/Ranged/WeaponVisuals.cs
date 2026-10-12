@@ -9,35 +9,40 @@ namespace CGD.Weapons
     /// </summary>
     public class WeaponVisuals : MonoBehaviour
     {
-        // Kick amounts are per degree of the weapon's own per-shot kick (pushback is per shot).
+        // Kick amounts are per degree of the weapon's own per-shot kick. These are the amounts
+        // for a balanced gun (MuzzleFlip 0.5); see Apply for how a gun's flip shares them out.
         [Serializable]
         private struct KickProfile
         {
-            [Tooltip("Degrees of muzzle rise")]                                  public float Pitch;
+            [Tooltip("Degrees of muzzle rise per degree of vertical kick")]       public float Pitch;
             [Tooltip("Degrees of sideways swing per degree of horizontal kick")] public float Yaw;
             [Tooltip("Degrees of roll per degree of horizontal kick")]           public float Roll;
-            [Tooltip("Metres of upward hop")]                                    public float Rise;
-            [Tooltip("Metres pushed back per shot")]                             public float Pushback;
+            [Tooltip("Metres of upward hop per degree of vertical kick")]        public float Rise;
+            [Tooltip("Metres pushed back per degree of vertical kick")]          public float Pushback;
 
-            public void Apply(float vertKick, float horizKick, float weight, ref Vector3 rot, ref Vector3 pos)
+            // `flip` moves the vertical kick between rotation and pushback: a low-bore gun (0)
+            // drives straight back into the hand, a high-bore one (1) rears its muzzle up.
+            public void Apply(float vertKick, float horizKick, float flip, float weight, ref Vector3 rot, ref Vector3 pos)
             {
-                rot.x -= vertKick  * Pitch * weight;  // negative X = muzzle rise in local space
+                float rear = 2f * flip;
+                float push = 2f * (1f - flip);
+                rot.x -= vertKick  * Pitch * rear * weight;  // negative X = muzzle rise in local space
                 rot.y += horizKick * Yaw   * weight;
                 rot.z -= horizKick * Roll  * weight;
-                pos.y += vertKick  * Rise  * weight;
-                pos.z -= Pushback * weight;
+                pos.y += vertKick  * Rise  * rear * weight;
+                pos.z -= vertKick  * Pushback * push * weight;
             }
         }
 
         [Header("Hip — spring kick")]
-        [SerializeField] private KickProfile _hip = new() { Pitch = 1.5f, Roll = 1.5f, Pushback = 0.03f };
+        [SerializeField] private KickProfile _hip = new() { Pitch = 1.5f, Roll = 1.5f, Pushback = 0.015f };
         [SerializeField] private float _rotationStiffness = 150f;
         [SerializeField] private float _rotationDamping   = 20f;
         [SerializeField] private float _positionStiffness = 200f;
         [SerializeField] private float _positionDamping   = 24f;
 
         [Header("ADS — timed kick")]
-        [SerializeField] private KickProfile _ads = new() { Pitch = 0.35f, Yaw = 0.2f, Roll = 0.2f, Rise = 0.002f, Pushback = 0.02f };
+        [SerializeField] private KickProfile _ads = new() { Pitch = 0.35f, Yaw = 0.2f, Roll = 0.2f, Rise = 0.002f, Pushback = 0.01f };
         [Tooltip("Longest an aimed kick takes to return to centre; faster weapons return within their own shot interval")]
         [SerializeField] private float _adsMaxRecoverTime = 0.15f;
 
@@ -116,13 +121,14 @@ namespace CGD.Weapons
         /// </summary>
         public void AddKick(float vertKick, float horizKick, float adsT, float shotInterval)
         {
-            _hip.Apply(vertKick, horizKick, 1f - adsT, ref _kickRot, ref _kickPos);
+            float flip = _data != null ? _data.MuzzleFlip : 0.5f;
+            _hip.Apply(vertKick, horizKick, flip, 1f - adsT, ref _kickRot, ref _kickPos);
 
             // Start the new pulse from whatever is left of the previous one so it never pops.
             float remaining = PulseRemaining();
             _pulseRot *= remaining;
             _pulsePos *= remaining;
-            _ads.Apply(vertKick, horizKick, adsT, ref _pulseRot, ref _pulsePos);
+            _ads.Apply(vertKick, horizKick, flip, adsT, ref _pulseRot, ref _pulsePos);
 
             _pulseStart    = Time.time;
             _pulseDuration = Mathf.Min(shotInterval * IntervalMargin, _adsMaxRecoverTime);
