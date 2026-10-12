@@ -83,8 +83,8 @@ namespace CGD.Weapons
         public FloatRange TacticalReloadTime  = new(1.7f, 2.2f);
         // TacticalReloadTime is stored directly for WeaponData and can still be tuned via bonus.
         public FloatRange TacticalReloadBonus = new(0.3f, 0.6f);
-        [Tooltip("Rounds loaded per reload step: 0 = the whole magazine at once; 1 = one at a time; 2, 3… = that many. Each step takes Reload Time ÷ the steps a full load needs, and an interrupted reload keeps the steps already loaded")]
-        [Min(0)] public int RoundsPerLoad;
+        [Tooltip("Optional: weighted ways a weapon of this category reloads (magazine, or rounds in steps), each with the models that load that way. Empty = the whole magazine at once, named from Names")]
+        public ReloadStyle[] ReloadStyles = System.Array.Empty<ReloadStyle>();
 
         [Header("Handling")]
         [Tooltip("What the Melee key does with this weapon in hand — a bash; its start parries. Empty = fists")]

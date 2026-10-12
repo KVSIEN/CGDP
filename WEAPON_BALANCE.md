@@ -125,7 +125,7 @@ lowering base damage.
 - **Best at**: one-shot kill at 3–8m; punishes anyone who enters.
 - **Weakness**: pellet spread makes 15m+ shots miss most damage; ShotgunShells is its own scarce pool.
 - **What a Legendary shotgun feels like**: tighter pellet pattern, faster follow-up, higher per-pellet damage roll.
-- **Reload**: one shell per step (`RoundsPerLoad` 1; 0 would make a magazine-fed shotgun); each step takes ReloadTime ÷ steps for a full load (about 0.45–0.6 s), so the Tube axis trades capacity for a slower full reload but not slower shells. Loaded shells survive any interrupt, which enables blast → one shell → bash-cancel → blast. Sniper rifles also load one round per step.
+- **Reload**: `ReloadStyles` 4 : 1 — pump/tube models one shell per step, the AA-12 magazine-fed; each step takes ReloadTime ÷ steps for a full load (about 0.45–0.6 s), so the Tube axis trades capacity for a slower full reload but not slower shells. Loaded shells survive any interrupt, which enables blast → one shell → bash-cancel → blast. Sniper rifles are the reverse, 4 : 1 magazine to one-round-per-step (only older bolt-actions: Kar98k, Mosin-Nagant). A future revolver category should weight one round per step heavily (around 9 : 1 against a speedloader-style full load).
 
 ### Pistol
 - **Best at**: always-ready backup; LightRounds abundance means it never runs dry.

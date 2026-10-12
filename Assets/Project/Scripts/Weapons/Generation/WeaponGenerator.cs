@@ -22,7 +22,8 @@ namespace CGD.Weapons
     // exactly from its category, tier and seed. Like the map generator, the seed splits
     // into layers (Layers), each rerollable on its own through its variant
     // (GearDefinition.RerollLayer): quality, stats (where the power stats lean), character
-    // (name, styles, fire mode and the stats that aren't quality-driven) and perks.
+    // (name, styles including the reload style, fire mode and the stats that aren't
+    // quality-driven) and perks.
     // Variant 0 of every layer is the plain seed, so existing seeds keep their weapons.
     public static class WeaponGenerator
     {
@@ -42,7 +43,10 @@ namespace CGD.Weapons
             RandomStream random = roll.StreamFor(CharacterLayer);
 
             // Unstyled categories draw exactly as before, so their seeds still give the same weapons.
-            string name        = random.Pick(cat.Names);
+            // The reload style comes from its own fork of the stream (no draws taken from it) and
+            // decides which models the name comes from; either way the name takes one draw.
+            ReloadStyle reload = PickStyle(cat.ReloadStyles, s => s.Weight, random.Fork("reload"));
+            string name        = random.Pick(reload != null && reload.Names.Length > 0 ? reload.Names : cat.Names);
             FiringStyle firing = PickStyle(cat.FiringStyles, s => s.Weight, random);
             d.FireMode         = firing != null ? firing.FireMode : random.Pick(cat.FireModes);
             StatStyle lean     = PickStyle(cat.StatStyles, s => s.Weight, random);
@@ -95,7 +99,7 @@ namespace CGD.Weapons
 
             d.ReloadTime         = roll.Sample(ItemStat.ReloadTime, cat.ReloadTime);
             d.TacticalReloadTime = Mathf.Max(0.5f, roll.Sample(ItemStat.ReloadTime, cat.TacticalReloadTime));
-            d.RoundsPerLoad      = cat.RoundsPerLoad;
+            d.RoundsPerLoad      = reload != null ? reload.RoundsPerLoad : 0;
 
             FloatRange adsSpread  = firing != null && firing.AdsSpreadDeg.Max > 0f ? firing.AdsSpreadDeg : cat.AdsSpreadDeg;
             d.HipSpreadDeg        = roll.Sample(ItemStat.Spread, StyleScales.Scale(cat.HipSpreadDeg, scales.Spread));

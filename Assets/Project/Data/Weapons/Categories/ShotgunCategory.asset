@@ -93,7 +93,19 @@ MonoBehaviour:
     Min: 0.3
     Max: 1
     Bias: 0
-  RoundsPerLoad: 1
+  ReloadStyles:
+  - Weight: 4
+    RoundsPerLoad: 1
+    Names:
+    - M870
+    - SPAS-12
+    - Benelli M3
+    - Mossberg 500
+    - KSG
+  - Weight: 1
+    RoundsPerLoad: 0
+    Names:
+    - AA-12
   QuickMelee: {fileID: 11400000, guid: 8c0fb3d413164f1e8863c23c1d9ab60c, type: 2}
   DrawTime:
     Min: 0.5
