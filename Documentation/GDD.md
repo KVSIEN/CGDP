@@ -1622,7 +1622,7 @@ Places where the prototype departs from the design. Each is a decision to make:
 * **Ability costs**: the design gives abilities cooldowns only. The prototype also allows meter costs and Surge.
 * **Ability source**: the design grants abilities from gear. The prototype assigns them to slots directly.
 * **Dodge cost**: the design charges stamina for dodges. The prototype uses a cooldown by default.
-* **Reality colors**: the design gives TECH warm, BIO earthy and VOID dark palettes (see Palette). The prototype's reality colors are TECH light blue, BIO green and VOID purple, the TECH wall kit uses white and blue light strips, and the Map Graph's faction view uses a generic palette.
+* **Reality colors**: the design gives TECH warm, BIO earthy and VOID dark palettes (see Palette). The prototype's faction colors are the signal colors, and the map, minimap and Map Graph use them. Still different: the TECH wall kit uses white and blue light strips, and room floors are tinted with the signal color rather than an in world palette color.
 
 ---
 

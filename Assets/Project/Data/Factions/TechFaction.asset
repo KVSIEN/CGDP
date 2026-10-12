@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TechFaction
   m_EditorClassIdentifier: CGD.Runtime::CGD.Factions.FactionDefinition
   _displayName: TECH
-  _color: {r: 0.2, g: 0.7, b: 1, a: 1}
+  _color: {r: 1, g: 0.698, b: 0.247, a: 1}
   _floorTint: 0.3
   _tier1:
   - {fileID: 4751797605688477134, guid: 54c366c401164802b7766c9304e684a7, type: 3}

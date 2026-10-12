@@ -98,7 +98,9 @@ namespace CGD.Editor
             else if (session.IsOnHighlightedPath(node.Id))
                 MapGraphStyle.DrawOutline(rect, MapGraphStyle.PathHighlight, 3f);
 
-            EditorGUI.DrawRect(rect, MapGraphStyle.NodeColor(node, session.Analysis, session.ViewMode));
+            Color fill = MapGraphStyle.NodeColor(node, session.Analysis, session.ViewMode, session.Asset.Content);
+            EditorGUI.DrawRect(rect, fill);
+            UseTextColorFor(fill);
             if (session.ShowDetails) DrawStrips(rect, node, session);
             MapGraphStyle.DrawOutline(rect, new Color(0f, 0f, 0f, 0.5f), 1f);
 
@@ -128,6 +130,16 @@ namespace CGD.Editor
 
             if (session.IsDimmed(node.Id))
                 EditorGUI.DrawRect(rect, MapGraphStyle.Dimmed);
+        }
+
+        // Whichever of dark or light text contrasts more with the fill: dark on bright fills
+        // like TECH's amber or Treasure's gold. Above 0.18 relative luminance, black wins.
+        private void UseTextColorFor(Color fill)
+        {
+            Color linear = fill.linear;
+            bool bright = 0.2126f * linear.r + 0.7152f * linear.g + 0.0722f * linear.b > 0.18f;
+            _titleStyle.normal.textColor  = bright ? new Color(0.08f, 0.08f, 0.08f) : MapGraphStyle.NodeText;
+            _detailStyle.normal.textColor = bright ? new Color(0.08f, 0.08f, 0.08f, 0.85f) : new Color(1f, 1f, 1f, 0.8f);
         }
 
         // A stripe in the room type's colour down the left edge (when colour shows something
@@ -250,8 +262,7 @@ namespace CGD.Editor
             FactionDefinition definition = content != null ? content.GetFaction(faction) : null;
             string name  = definition != null ? definition.DisplayName : $"F{faction}";
             if (name.Length > 4) name = name.Substring(0, 4);
-            Color  color = definition != null ? definition.Color : MapGraphStyle.PaletteColor(faction);
-            return DrawChip(name.ToUpperInvariant(), color, right, y);
+            return DrawChip(name.ToUpperInvariant(), MapGraphStyle.FactionColor(content, faction), right, y);
         }
 
         // "T2" on the room's top-right corner in the tier's colour, with "!3" beside it when

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: VoidFaction
   m_EditorClassIdentifier: CGD.Runtime::CGD.Factions.FactionDefinition
   _displayName: VOID
-  _color: {r: 0.6, g: 0.3, b: 0.9, a: 1}
+  _color: {r: 0.431, g: 0.384, b: 0.855, a: 1}
   _floorTint: 0.3
   _tier1:
   - {fileID: 2643170897715678307, guid: dd6d1969e3e145ed9d3851f294495994, type: 3}

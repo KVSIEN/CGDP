@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Factions;
 using CGD.Map;
 using UnityEditor;
 using UnityEngine;
@@ -56,10 +57,11 @@ namespace CGD.Editor
             _                       => new Color(0.7f, 0.7f, 0.7f)
         };
 
-        public static Color NodeColor(MapNode node, MapGraphAnalysis analysis, MapGraphViewMode mode) => mode switch
+        // `content` resolves faction indices to their assets' colours (null = the generic palette).
+        public static Color NodeColor(MapNode node, MapGraphAnalysis analysis, MapGraphViewMode mode, MapContentSettings content) => mode switch
         {
             MapGraphViewMode.Intensity        => IntensityColor(node.Intensity),
-            MapGraphViewMode.Faction          => FactionColor(node),
+            MapGraphViewMode.Faction          => InfluencedFactionColor(node, content),
             MapGraphViewMode.RequiredOptional => RequiredColor(node.Id, analysis),
             MapGraphViewMode.Branches         => BranchColor(analysis.BranchOf(node.Id)),
             MapGraphViewMode.Section          => node.HasSection ? PaletteColor(node.Section) : NoFaction,
@@ -87,7 +89,7 @@ namespace CGD.Editor
                     legend.Add((NoFaction, "None"));
                     if (content != null)
                         for (int i = 0; i < content.Factions.Count; i++)
-                            legend.Add((PaletteColor(i), content.FactionName(i)));
+                            legend.Add((FactionColor(content, i), content.FactionName(i)));
                     break;
                 case MapGraphViewMode.RequiredOptional:
                     legend.Add((Required, "Required"));
@@ -123,9 +125,17 @@ namespace CGD.Editor
                 legend.Add((ConnectionColor(type), $"{type} link"));
         }
 
+        // A faction's own colour (its FactionDefinition, the reality's signal colour in the GDD),
+        // or the generic palette for a faction index without an asset.
+        public static Color FactionColor(MapContentSettings content, int faction)
+        {
+            FactionDefinition definition = content != null ? content.GetFaction(faction) : null;
+            return definition != null ? definition.Color : PaletteColor(faction);
+        }
+
         // Influence fades the faction colour toward neutral, so borders read as contested.
-        private static Color FactionColor(MapNode node) =>
-            node.HasFaction ? Color.Lerp(NoFaction, PaletteColor(node.Faction), node.FactionInfluence) : NoFaction;
+        private static Color InfluencedFactionColor(MapNode node, MapContentSettings content) =>
+            node.HasFaction ? Color.Lerp(NoFaction, FactionColor(content, node.Faction), node.FactionInfluence) : NoFaction;
 
         private static Color RequiredColor(int id, MapGraphAnalysis analysis)
         {
