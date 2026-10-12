@@ -43,6 +43,12 @@ MonoBehaviour:
       Range: 1
       MagazineSize: 1
     RoundsPerLoad: 1
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.4
+      Horizontal: 0.94
+      Reach: 1
   - Name: SPAS-12
     Weight: 4
     FiringStyles: []
@@ -54,6 +60,12 @@ MonoBehaviour:
       Range: 1
       MagazineSize: 1
     RoundsPerLoad: 1
+    Recoil:
+      Bias: 0.15
+      Drift: 0
+      Jitter: 0.4
+      Horizontal: 1
+      Reach: 1
   - Name: Benelli M3
     Weight: 4
     FiringStyles: []
@@ -65,6 +77,12 @@ MonoBehaviour:
       Range: 1
       MagazineSize: 1
     RoundsPerLoad: 1
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 1
+      Reach: 1
   - Name: Mossberg 500
     Weight: 4
     FiringStyles: []
@@ -76,6 +94,12 @@ MonoBehaviour:
       Range: 1
       MagazineSize: 1
     RoundsPerLoad: 1
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.4
+      Horizontal: 1
+      Reach: 1
   - Name: KSG
     Weight: 4
     FiringStyles: []
@@ -87,6 +111,12 @@ MonoBehaviour:
       Range: 1
       MagazineSize: 1
     RoundsPerLoad: 1
+    Recoil:
+      Bias: -0.1
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 1
+      Reach: 1
   - Name: AA-12
     Weight: 5
     FiringStyles: []
@@ -98,6 +128,12 @@ MonoBehaviour:
       Range: 1
       MagazineSize: 1
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.3
+      Drift: 1
+      Jitter: 0.45
+      Horizontal: 1
+      Reach: 1
   FireBehavior: {fileID: 11400000, guid: e2cbfa746aa878d4aa23d60289c75ece, type: 2}
   RPM:
     Min: 50

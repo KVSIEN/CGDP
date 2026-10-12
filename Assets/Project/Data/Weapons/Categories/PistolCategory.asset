@@ -80,6 +80,12 @@ MonoBehaviour:
       MagazineSize: 0.83
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.45
+      Horizontal: 0.77
+      Reach: 1
   - Name: M9
     Weight: 1
     FiringStyles:
@@ -113,6 +119,12 @@ MonoBehaviour:
       MagazineSize: 1.55
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 0.85
+      Reach: 1
   - Name: USP
     Weight: 1
     FiringStyles:
@@ -146,6 +158,12 @@ MonoBehaviour:
       MagazineSize: 1.24
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 0.69
+      Reach: 1
   - Name: MP-443
     Weight: 1
     FiringStyles:
@@ -179,6 +197,12 @@ MonoBehaviour:
       MagazineSize: 1.86
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 0.99
+      Reach: 1
   - Name: M1911
     Weight: 1
     FiringStyles:
@@ -212,6 +236,12 @@ MonoBehaviour:
       MagazineSize: 0.72
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.25
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 0.69
+      Reach: 1
   - Name: Luger P08
     Weight: 1
     FiringStyles:
@@ -245,6 +275,12 @@ MonoBehaviour:
       MagazineSize: 0.83
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 0.8
+      Reach: 1
   - Name: Walther PP
     Weight: 1
     FiringStyles:
@@ -278,6 +314,12 @@ MonoBehaviour:
       MagazineSize: 0.83
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.45
+      Horizontal: 1.01
+      Reach: 1
   - Name: Mauser C96
     Weight: 1
     FiringStyles:
@@ -323,6 +365,13 @@ MonoBehaviour:
         Range: 1
         MagazineSize: 1
       RoundsPerLoad: 0
+      OwnRecoil: 1
+      Recoil:
+        Bias: 0.5
+        Drift: 1
+        Jitter: 0.55
+        Horizontal: 1.5
+        Reach: 1
     Scales:
       Damage: 0.75
       FireRate: 0.84
@@ -332,6 +381,12 @@ MonoBehaviour:
       MagazineSize: 1.03
     RoundsPerLoad: 10
     AmmoType: 0
+    Recoil:
+      Bias: 0.4
+      Drift: 1
+      Jitter: 0.4
+      Horizontal: 0.98
+      Reach: 1
   - Name: Glock 18
     Weight: 1
     FiringStyles:
@@ -377,6 +432,13 @@ MonoBehaviour:
         Range: 1.5
         MagazineSize: 0.85
       RoundsPerLoad: 0
+      OwnRecoil: 1
+      Recoil:
+        Bias: 0.1
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 0.9
+        Reach: 1
     Scales:
       Damage: 0.45
       FireRate: 2.44
@@ -386,6 +448,12 @@ MonoBehaviour:
       MagazineSize: 2.07
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.45
+      Drift: 1
+      Jitter: 0.55
+      Horizontal: 2.57
+      Reach: 1
   - Name: TEC-9
     Weight: 1
     FiringStyles:
@@ -419,6 +487,12 @@ MonoBehaviour:
       MagazineSize: 2.48
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.15
+      Drift: 0
+      Jitter: 0.65
+      Horizontal: 2.77
+      Reach: 1
   - Name: Beretta 93R
     Weight: 1
     FiringStyles:
@@ -452,6 +526,12 @@ MonoBehaviour:
       MagazineSize: 2.07
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 1.68
+      Reach: 1
   - Name: CZ 75 Auto
     Weight: 1
     FiringStyles:
@@ -485,6 +565,12 @@ MonoBehaviour:
       MagazineSize: 1.65
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.3
+      Drift: 0
+      Jitter: 0.45
+      Horizontal: 2.22
+      Reach: 0.15
   - Name: Desert Eagle
     Weight: 1
     FiringStyles:
@@ -518,6 +604,12 @@ MonoBehaviour:
       MagazineSize: 0.72
     RoundsPerLoad: 0
     AmmoType: 4
+    Recoil:
+      Bias: 0.3
+      Drift: 1
+      Jitter: 0.45
+      Horizontal: 0.62
+      Reach: 1
   - Name: .44 Magnum
     Weight: 1
     FiringStyles:
@@ -572,6 +664,12 @@ MonoBehaviour:
       MagazineSize: 0.62
     RoundsPerLoad: 1
     AmmoType: 4
+    Recoil:
+      Bias: 0.35
+      Drift: 1
+      Jitter: 0.35
+      Horizontal: 0.7
+      Reach: 1
   - Name: Taurus Judge
     Weight: 1
     FiringStyles:
@@ -626,6 +724,12 @@ MonoBehaviour:
       MagazineSize: 0.52
     RoundsPerLoad: 1
     AmmoType: 5
+    Recoil:
+      Bias: 0.2
+      Drift: 0
+      Jitter: 0.4
+      Horizontal: 0.96
+      Reach: 1
   - Name: Chiappa Rhino
     Weight: 1
     FiringStyles:
@@ -680,6 +784,12 @@ MonoBehaviour:
       MagazineSize: 0.62
     RoundsPerLoad: 1
     AmmoType: 4
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.2
+      Horizontal: 0.6
+      Reach: 1
   - Name: Ruger Mark IV
     Weight: 1
     FiringStyles:
@@ -713,6 +823,12 @@ MonoBehaviour:
       MagazineSize: 1.03
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.15
+      Horizontal: 1
+      Reach: 1
   - Name: Five-seveN
     Weight: 1
     FiringStyles:
@@ -746,6 +862,12 @@ MonoBehaviour:
       MagazineSize: 2.07
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 0.96
+      Reach: 1
   - Name: Tac-45
     Weight: 1
     FiringStyles:
@@ -779,6 +901,12 @@ MonoBehaviour:
       MagazineSize: 1.03
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.15
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 0.67
+      Reach: 1
   - Name: P250
     Weight: 1
     FiringStyles:
@@ -812,6 +940,12 @@ MonoBehaviour:
       MagazineSize: 1.34
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 0.85
+      Reach: 1
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:
     Min: 300

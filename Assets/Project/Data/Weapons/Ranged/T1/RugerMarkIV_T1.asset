@@ -47,8 +47,8 @@ MonoBehaviour:
   SpreadRecovery: 12
   MaxSpread: 3.8
   RecoilScale: {x: 0.25, y: 0.9}
-  RecoilJitter: {x: 0.3, y: 0.15}
-  RecoilHorizontalBias: 0.0
+  RecoilJitter: {x: 0.15, y: 0.15}
+  RecoilHorizontalBias: 0
   HorizontalDriftMode: 0
   MaxAccumulatedRecoil: 4
   MaxAccumulatedHorizontalRecoil: 2

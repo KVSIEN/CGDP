@@ -98,6 +98,12 @@ MonoBehaviour:
       Range: 0.96
       MagazineSize: 1.1
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.2
+      Horizontal: 1.09
+      Reach: 1
   - Name: MP5K
     Weight: 1
     FiringStyles:
@@ -129,6 +135,12 @@ MonoBehaviour:
       Range: 0.69
       MagazineSize: 1.1
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.15
+      Drift: 0
+      Jitter: 0.45
+      Horizontal: 1.11
+      Reach: 1
   - Name: MP7
     Weight: 1
     FiringStyles:
@@ -160,6 +172,12 @@ MonoBehaviour:
       Range: 1.08
       MagazineSize: 1.47
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.2
+      Horizontal: 1.04
+      Reach: 1
   - Name: MPL
     Weight: 1
     FiringStyles:
@@ -191,6 +209,12 @@ MonoBehaviour:
       Range: 0.96
       MagazineSize: 1.18
     RoundsPerLoad: 0
+    Recoil:
+      Bias: -0.25
+      Drift: 1
+      Jitter: 0.35
+      Horizontal: 0.88
+      Reach: 1
   - Name: Thompson
     Weight: 1
     FiringStyles:
@@ -222,6 +246,12 @@ MonoBehaviour:
       Range: 1.15
       MagazineSize: 1.84
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.35
+      Drift: 1
+      Jitter: 0.35
+      Horizontal: 0.85
+      Reach: 1
   - Name: MP40
     Weight: 1
     FiringStyles:
@@ -253,6 +283,12 @@ MonoBehaviour:
       Range: 1.08
       MagazineSize: 1.18
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 0.66
+      Reach: 1
   - Name: Uzi
     Weight: 1
     FiringStyles:
@@ -284,6 +320,12 @@ MonoBehaviour:
       Range: 0.77
       MagazineSize: 1.18
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.6
+      Drift: 1
+      Jitter: 0.35
+      Horizontal: 1.07
+      Reach: 1
   - Name: PM12
     Weight: 1
     FiringStyles:
@@ -315,6 +357,12 @@ MonoBehaviour:
       Range: 0.92
       MagazineSize: 1.47
     RoundsPerLoad: 0
+    Recoil:
+      Bias: -0.2
+      Drift: 1
+      Jitter: 0.3
+      Horizontal: 0.97
+      Reach: 1
   - Name: MAC-10
     Weight: 1
     FiringStyles:
@@ -346,6 +394,12 @@ MonoBehaviour:
       Range: 0.46
       MagazineSize: 1.1
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.2
+      Drift: 0
+      Jitter: 0.7
+      Horizontal: 0.98
+      Reach: 1
   - Name: Scorpion EVO
     Weight: 1
     FiringStyles:
@@ -397,6 +451,12 @@ MonoBehaviour:
       Range: 0.58
       MagazineSize: 1.1
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.3
+      Drift: 0
+      Jitter: 0.5
+      Horizontal: 1.17
+      Reach: 0.15
   - Name: MP9
     Weight: 1
     FiringStyles:
@@ -428,6 +488,12 @@ MonoBehaviour:
       Range: 0.62
       MagazineSize: 1.1
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.3
+      Drift: 1
+      Jitter: 0.4
+      Horizontal: 1.09
+      Reach: 1
   - Name: PP2000
     Weight: 1
     FiringStyles:
@@ -459,6 +525,12 @@ MonoBehaviour:
       Range: 0.54
       MagazineSize: 0.74
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.35
+      Drift: 0
+      Jitter: 0.45
+      Horizontal: 1.16
+      Reach: 0.2
   - Name: UMP-45
     Weight: 1
     FiringStyles:
@@ -510,6 +582,12 @@ MonoBehaviour:
       Range: 1.23
       MagazineSize: 0.92
     RoundsPerLoad: 0
+    Recoil:
+      Bias: -0.2
+      Drift: 1
+      Jitter: 0.3
+      Horizontal: 0.77
+      Reach: 1
   - Name: MPX
     Weight: 1
     FiringStyles:
@@ -541,6 +619,12 @@ MonoBehaviour:
       Range: 1.15
       MagazineSize: 1.1
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 0.88
+      Reach: 1
   - Name: APC9
     Weight: 1
     FiringStyles:
@@ -572,6 +656,12 @@ MonoBehaviour:
       Range: 1.08
       MagazineSize: 1.1
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.25
+      Drift: 1
+      Jitter: 0.3
+      Horizontal: 0.93
+      Reach: 1
   - Name: PMX
     Weight: 1
     FiringStyles:
@@ -603,6 +693,12 @@ MonoBehaviour:
       Range: 1
       MagazineSize: 1.1
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 0.91
+      Reach: 1
   - Name: P90
     Weight: 1
     FiringStyles:
@@ -634,6 +730,12 @@ MonoBehaviour:
       Range: 1
       MagazineSize: 1.84
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.4
+      Horizontal: 0.94
+      Reach: 1
   - Name: Vector
     Weight: 1
     FiringStyles:
@@ -685,6 +787,12 @@ MonoBehaviour:
       Range: 0.69
       MagazineSize: 0.92
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.15
+      Horizontal: 1.19
+      Reach: 1
   - Name: QCW-05
     Weight: 1
     FiringStyles:
@@ -716,6 +824,12 @@ MonoBehaviour:
       Range: 0.92
       MagazineSize: 1.84
     RoundsPerLoad: 0
+    Recoil:
+      Bias: -0.2
+      Drift: 1
+      Jitter: 0.35
+      Horizontal: 0.97
+      Reach: 1
   - Name: PP-19 Bizon
     Weight: 1
     FiringStyles:
@@ -747,6 +861,12 @@ MonoBehaviour:
       Range: 0.85
       MagazineSize: 2.36
     RoundsPerLoad: 0
+    Recoil:
+      Bias: 0.25
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 0.99
+      Reach: 0.15
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:
     Min: 600

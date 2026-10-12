@@ -79,6 +79,12 @@ MonoBehaviour:
       MagazineSize: 1.5
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.4
+      Horizontal: 0.95
+      Reach: 1
   - Name: AS50
     Weight: 1
     FiringStyles:
@@ -112,6 +118,12 @@ MonoBehaviour:
       MagazineSize: 0.75
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 0.97
+      Reach: 1
   - Name: Tac-50
     Weight: 1
     FiringStyles:
@@ -145,6 +157,12 @@ MonoBehaviour:
       MagazineSize: 0.75
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.2
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 0.87
+      Reach: 1
   - Name: M200 Intervention
     Weight: 1
     FiringStyles:
@@ -178,6 +196,12 @@ MonoBehaviour:
       MagazineSize: 1.05
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 0.81
+      Reach: 1
   - Name: Kar98k
     Weight: 1
     FiringStyles:
@@ -211,6 +235,12 @@ MonoBehaviour:
       MagazineSize: 0.75
     RoundsPerLoad: 1
     AmmoType: 0
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1.08
+      Reach: 1
   - Name: Mosin-Nagant
     Weight: 1
     FiringStyles:
@@ -244,6 +274,12 @@ MonoBehaviour:
       MagazineSize: 0.75
     RoundsPerLoad: 1
     AmmoType: 0
+    Recoil:
+      Bias: 0.15
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 1.08
+      Reach: 1
   - Name: Lee-Enfield
     Weight: 1
     FiringStyles:
@@ -277,6 +313,12 @@ MonoBehaviour:
       MagazineSize: 1.5
     RoundsPerLoad: 1
     AmmoType: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1.08
+      Reach: 1
   - Name: Springfield M1903
     Weight: 1
     FiringStyles:
@@ -310,6 +352,12 @@ MonoBehaviour:
       MagazineSize: 0.75
     RoundsPerLoad: 1
     AmmoType: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 0.97
+      Reach: 1
   - Name: M110
     Weight: 1
     FiringStyles:
@@ -343,6 +391,12 @@ MonoBehaviour:
       MagazineSize: 3
     RoundsPerLoad: 0
     AmmoType: 3
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1.12
+      Reach: 1
   - Name: M21 EBR
     Weight: 1
     FiringStyles:
@@ -376,6 +430,12 @@ MonoBehaviour:
       MagazineSize: 3
     RoundsPerLoad: 0
     AmmoType: 3
+    Recoil:
+      Bias: 0.25
+      Drift: 1
+      Jitter: 0.4
+      Horizontal: 1.12
+      Reach: 1
   - Name: PSG1
     Weight: 1
     FiringStyles:
@@ -409,6 +469,12 @@ MonoBehaviour:
       MagazineSize: 1.5
     RoundsPerLoad: 0
     AmmoType: 3
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.15
+      Horizontal: 0.99
+      Reach: 1
   - Name: QBU-88
     Weight: 1
     FiringStyles:
@@ -442,6 +508,12 @@ MonoBehaviour:
       MagazineSize: 1.5
     RoundsPerLoad: 0
     AmmoType: 3
+    Recoil:
+      Bias: -0.2
+      Drift: 1
+      Jitter: 0.35
+      Horizontal: 1.16
+      Reach: 1
   - Name: SVD Dragunov
     Weight: 1
     FiringStyles:
@@ -475,6 +547,12 @@ MonoBehaviour:
       MagazineSize: 1.5
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.3
+      Drift: 1
+      Jitter: 0.4
+      Horizontal: 1.15
+      Reach: 1
   - Name: SVU
     Weight: 1
     FiringStyles:
@@ -529,6 +607,12 @@ MonoBehaviour:
       MagazineSize: 1.5
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.2
+      Drift: 0
+      Jitter: 0.5
+      Horizontal: 1.17
+      Reach: 1
   - Name: VSS
     Weight: 1
     FiringStyles:
@@ -562,6 +646,12 @@ MonoBehaviour:
       MagazineSize: 3
     RoundsPerLoad: 0
     AmmoType: 3
+    Recoil:
+      Bias: 0.25
+      Drift: 1
+      Jitter: 0.35
+      Horizontal: 1.3
+      Reach: 1
   - Name: SV-98
     Weight: 1
     FiringStyles:
@@ -595,6 +685,12 @@ MonoBehaviour:
       MagazineSize: 1.5
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1.06
+      Reach: 1
   - Name: L96A1
     Weight: 1
     FiringStyles:
@@ -649,6 +745,12 @@ MonoBehaviour:
       MagazineSize: 0.75
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 0.99
+      Reach: 1
   - Name: M40
     Weight: 1
     FiringStyles:
@@ -703,6 +805,12 @@ MonoBehaviour:
       MagazineSize: 0.75
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 1.01
+      Reach: 1
   - Name: DSR-1
     Weight: 1
     FiringStyles:
@@ -757,6 +865,12 @@ MonoBehaviour:
       MagazineSize: 0.75
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.2
+      Horizontal: 0.96
+      Reach: 1
   - Name: JNG-90
     Weight: 1
     FiringStyles:
@@ -790,6 +904,12 @@ MonoBehaviour:
       MagazineSize: 1.5
     RoundsPerLoad: 0
     AmmoType: 0
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1.08
+      Reach: 1
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:
     Min: 100

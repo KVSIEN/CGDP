@@ -12,7 +12,7 @@ namespace CGD.Weapons
     {
         public string Name;
         [Min(0f)] public float Weight = 1f;
-        [Tooltip("Ways this model shoots, by weight. A variant can go by another name (the M16's auto variant is an M4A1). Empty = the category's Firing Styles or Fire Modes")]
+        [Tooltip("Ways this model shoots, by weight. A variant can go by another name (the M16's auto variant is an M16A3). Empty = the category's Firing Styles or Fire Modes")]
         public FiringStyle[] FiringStyles = Array.Empty<FiringStyle>();
         [Tooltip("Where this model sits in the category's stat ranges, e.g. an AK-47 hits harder and fires slower. Its stats also tend toward that side of each range")]
         public StyleScales Scales = StyleScales.Identity;
@@ -20,5 +20,7 @@ namespace CGD.Weapons
         [Min(0)] public int RoundsPerLoad;
         [Tooltip("Ammo this model fires, e.g. Heavy Rounds for a magnum revolver. None = the category's")]
         public AmmoType AmmoType;
+        [Tooltip("Which way its recoil drifts and how jumpy it is, e.g. an Uzi climbs up and to the right")]
+        public RecoilPattern Recoil = new();
     }
 }

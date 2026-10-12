@@ -47,8 +47,8 @@ MonoBehaviour:
   MaxSpread: 6.1
   RecoilScale: {x: 0.7, y: 0.85}
   RecoilJitter: {x: 0.4, y: 0.2}
-  RecoilHorizontalBias: 0.1
-  HorizontalDriftMode: 0
+  RecoilHorizontalBias: 0.3
+  HorizontalDriftMode: 1
   MaxAccumulatedRecoil: 10
   MaxAccumulatedHorizontalRecoil: 5
   RecoilHeatPerShot: 0.05

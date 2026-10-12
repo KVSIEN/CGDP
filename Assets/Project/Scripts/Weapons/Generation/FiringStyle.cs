@@ -24,5 +24,8 @@ namespace CGD.Weapons
         public StyleScales Scales = StyleScales.Identity;
         [Tooltip("Rounds per reload step for this variant, e.g. a revolver's speedloader loading all six at once. 0 = the model's")]
         [Min(0)] public int RoundsPerLoad;
+        [Tooltip("Use Recoil below instead of the model's pattern, for a variant that kicks unlike the model's main one (a semi Glock 17 off a full-auto Glock 18)")]
+        public bool OwnRecoil;
+        public RecoilPattern Recoil = new();
     }
 }

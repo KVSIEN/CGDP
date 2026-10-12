@@ -115,12 +115,23 @@ namespace CGD.Weapons
             d.MaxSpread           = roll.Sample(ItemStat.Spread, StyleScales.Scale(cat.MaxSpread, scales.Spread, leans.Spread));
             d.SpreadRecovery      = cat.SpreadRecovery.EvaluateClamped(random);
 
-            d.RecoilScale         = new Vector2(roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.RecoilScaleHorizontal, scales.Recoil, leans.Recoil)),
+            // A model's recoil pattern sets the sideways kick's share, lean, drift and jumpiness;
+            // the category's lean is drawn either way so the stream stays aligned.
+            RecoilPattern pattern = firing != null && firing.OwnRecoil ? firing.Recoil : model?.Recoil;
+            float sideways        = scales.Recoil * (pattern != null ? pattern.Horizontal : 1f);
+            d.RecoilScale         = new Vector2(roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.RecoilScaleHorizontal, sideways, leans.Recoil)),
                                                 roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.RecoilScaleVertical, scales.Recoil, leans.Recoil)));
-            d.RecoilJitter.y      = cat.RecoilJitterVertical.EvaluateClamped(random); // horizontal jitter keeps WeaponData's default
-            d.RecoilHorizontalBias = cat.RecoilHorizontalBias.EvaluateClamped(random);
+            d.RecoilJitter.y      = cat.RecoilJitterVertical.EvaluateClamped(random);
+            float categoryLean    = cat.RecoilHorizontalBias.EvaluateClamped(random);
+            d.RecoilHorizontalBias = pattern != null ? pattern.Bias : categoryLean;
+            if (pattern != null)
+            {
+                d.HorizontalDriftMode = pattern.Drift;
+                d.RecoilJitter.x      = pattern.Jitter;
+            }
             d.MaxAccumulatedRecoil = roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.MaxAccumulatedRecoil, scales.Recoil, leans.Recoil));
-            d.MaxAccumulatedHorizontalRecoil = roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.MaxAccumulatedHorizontalRecoil, scales.Recoil, leans.Recoil));
+            float reach           = sideways * (pattern != null ? pattern.Reach : 1f);
+            d.MaxAccumulatedHorizontalRecoil = roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.MaxAccumulatedHorizontalRecoil, reach, leans.Recoil));
 
             d.RecoilHeatPerShot          = Mathf.Clamp01(cat.RecoilHeatPerShot.EvaluateClamped(random));
             d.RecoilHeatCooldown         = Mathf.Max(0f, cat.RecoilHeatCooldown.EvaluateClamped(random));

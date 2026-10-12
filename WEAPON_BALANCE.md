@@ -170,6 +170,37 @@ lowering base damage.
 
 ---
 
+## Recoil Patterns
+
+Each model carries a `RecoilPattern` (on `WeaponModel`; a firing variant can carry its own with
+`OwnRecoil`). Generated weapons take it as is; quality and leans still scale the kick itself.
+
+- **Bias** (−1 left … +1 right): the lean of every shot, × the horizontal kick.
+- **Drift**: *Alternating* swings back when the sideways drift reaches its cap (zig-zag);
+  *OneWay* keeps pushing toward the bias and holds at the cap.
+- **Jitter**: shot-to-shot sideways randomness as a fraction of the horizontal kick — low reads as a
+  laser, high as a jumpy gun.
+- **Horizontal**: sideways kick relative to the category's usual share for this much recoil. Set from
+  the T1: (T1 horizontal ÷ category horizontal midpoint) ÷ (T1 vertical ÷ category vertical midpoint).
+- **Reach**: the sideways cap relative to the usual. The usual caps are far wider than a magazine's
+  drift (≈10° on an AR), so a zig-zag only swings when Reach is low (0.15–0.2: AK-47, AK-74u, Galil,
+  PP2000, Scorpion EVO, PP-19 Bizon, CZ 75 Auto; the M249 T1 too).
+
+| Shape | Pattern | Models |
+|---|---|---|
+| Up and right, one way | bias +0.2…+0.6, OneWay | **Uzi** (+0.6), Glock 18, Mauser C96 / M712, .44 Magnum, AKM, Thompson, G3, Desert Eagle, MP9, SVD, VSS, G36C, APC9, M21 EBR, TAR-21, M4, AA-12 |
+| Up and left, one way | bias −0.2…−0.3, OneWay | SCAR-H, QBZ-95, MPL, UMP-45, PM12, QCW-05, QBU-88 |
+| Zig-zag (right, then back left) | bias +0.25…+0.5, Alternating, low Reach | **AK-47**, Galil, AK-74u, PP2000, Scorpion EVO, PP-19 Bizon, CZ 75 Auto, M249 |
+| Jumpy, no clear lean | jitter 0.5–0.7 | MAC-10 (0.7), TEC-9, AK-74u, AM-17, FAL, M14, SVU |
+| Nearly straight up | bias 0…±0.1, jitter ≤ 0.25 | Vector, AUG, MP5, MP7, M27, HK416, F2000 (slightly left), P90 (bouncy), Ruger Mark IV, Chiappa Rhino, PSG1, DSR-1 |
+
+Semi-autos, pistols and bolt-actions get small biases (0–0.3) and mostly use jitter for character:
+per-shot scatter matters more than drift when the caps reset between shots. Recoil simulated on the
+T1s (ADS, 20 rounds, averaged): Uzi ends +5° right for 10° up; AK-47 reaches +1.5° by round 8 and
+crosses to −1.3° by round 20; SCAR-H ends −2° left for 21° up; Vector stays at 0°.
+
+---
+
 ## Deriving Damage and RPM from a TTK Target
 
 For a canonical 100 EHP enemy and a target of *N* shots to kill:
