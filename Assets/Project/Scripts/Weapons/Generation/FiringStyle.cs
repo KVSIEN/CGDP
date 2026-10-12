@@ -11,6 +11,8 @@ namespace CGD.Weapons
     {
         [Tooltip("Put in front of the weapon's name, e.g. \"Burst\". Empty = nothing")]
         public string Name;
+        [Tooltip("Optional: the model name this variant goes by instead, e.g. M4A1 for an auto M16. Empty = the model's own")]
+        public string ModelName;
         [Min(0f)] public float Weight = 1f;
         public FireMode FireMode = FireMode.Semi;
         [Tooltip("Optional: replaces the category's fire behavior, e.g. Shotgun for a pellet spread")]

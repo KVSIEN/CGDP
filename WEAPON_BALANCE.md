@@ -10,8 +10,8 @@ Two independent balance problems. This document owns both:
 1. **Inter-category balance** — an AR must not outclass an SMG in the SMG's own
    niche, and vice versa. Handled below via **TTK targets per category at optimal
    range** plus **off-range falloff expectations**.
-2. **Intra-category tier balance** — a Legendary M4A1 should feel stronger than
-   a Common M4A1 but not so much that low-tier gear is meaningless. Handled by
+2. **Intra-category tier balance** — a Legendary AK-47 should feel stronger than
+   a Common AK-47 but not so much that low-tier gear is meaningless. Handled by
    the shared `StatRollProfile` quality curve and per-family tradeoff axes.
 
 Neither problem gets solved without the other.
@@ -107,6 +107,7 @@ lowering base damage.
 - **What a Legendary DMR feels like**: near-sniper accuracy at half the cycle time.
 
 ### AR
+- **Models** (`Models` on the category, equal weight): G36C (close-range carbine), AUG (all-rounder), M16 (burst marksman; 70% burst, 15% auto as "M4A1", 15% semi as "AR-15"), AK-47 (heavy auto), FAL (battle rifle; 70% semi, 15% burst, 15% auto, highest damage ceiling of the class paid for in recoil and fire rate). Each model's stat scales place it in the class band, so generated rifles of a name play like that gun.
 - **Best at**: no other class beats it at 30–60m; the reliable choice.
 - **Weakness**: outclassed at every other range's optimum by that range's specialist.
 - **What a Legendary AR feels like**: cleaner recoil pattern, faster reload, no accuracy tax on sustained fire.
@@ -232,7 +233,7 @@ axis decides which end a weapon lands on, so the band reads as a spectrum:
 
 | Category | Fast pole (lean −) | Slow pole (lean +) | T1 anchor |
 |---|---|---|---|
-| AR      | CQB carbine — 900 RPM, 18 dmg, 30 m  | Battle rifle — 450 RPM, 34 dmg, 90 m   | `M4A1_T1` 720×22, 50 m |
+| AR      | CQB carbine — 900 RPM, 18 dmg, 30 m  | Battle rifle — 450 RPM, 34 dmg, 90 m   | `G36C_T1` 850×19 · `AUG_T1` 680×23 · `M16_T1` burst 800×25 · `AK47_T1` 600×28 · `FAL_T1` 450×34 |
 | SMG     | PDW / machine pistol — 1200 RPM, 13 dmg, 12 m | Heavy SMG — 600 RPM, 28 dmg, 40 m | `MP5_T1` 850×18, 25 m |
 | Pistol  | Glock — 600 RPM, 20 dmg, 12 m        | Hand cannon — 200 RPM, 60 dmg, 35 m    | `Glock17_T1` 400×25 / `DesertEagle_T1` 300×55 |
 | Sniper  | Semi-auto DMR — 260 RPM, 45 dmg, 50 m | Bolt / AMR — 35 RPM, 170 dmg, 220 m   | `Kar98k_T1` 45×95, 120 m |
@@ -286,7 +287,11 @@ first thing to compare a new weapon against.
 
 | Asset             | Category    | Damage × RPM        | Ammo           | STK / TTK    | Notes                                        |
 |-------------------|-------------|---------------------|----------------|--------------|----------------------------------------------|
-| `M4A1_T1`         | AR          | 22 × 720            | StandardRounds | 5 / 0.33s    | Sits mid-band; the reliable baseline         |
+| `G36C_T1`         | AR          | 19 × 850            | StandardRounds | 6 / 0.35s    | Close-range carbine: fastest RPM, draw and ADS, 30 m |
+| `AUG_T1`          | AR          | 23 × 680            | StandardRounds | 5 / 0.35s    | Balanced all-rounder: cleanest recoil, tightest ADS (optic), 55 m |
+| `M16_T1`          | AR          | 25 × 800 (3-burst)  | StandardRounds | 4 / ~0.25s   | Burst marksman: two bursts that both land, 65 m |
+| `AK47_T1`         | AR          | 28 × 600            | StandardRounds | 4 / 0.30s    | Heavy auto: fastest paper TTK, paid in climb and right drift, 45 m |
+| `FAL_T1`          | AR          | 34 × 450 (Semi)     | StandardRounds | 3 / 0.27s+   | Battle rifle: tap-paced, 20 rounds, heaviest kick, slowest handling, 90 m |
 | `MP5_T1`          | SMG         | 18 × 850            | LightRounds    | 6 / 0.35s    | Erratic horizontal recoil, snappy handling   |
 | `Glock17_T1`      | Pistol      | 25 × 400 (Semi)     | LightRounds    | 4 / 0.45s    | Snappiest ADS in the roster                  |
 | `DesertEagle_T1`  | Pistol      | 55 × 300 (Semi)     | HeavyRounds    | 2 / 0.4s     | Overrides AmmoType — hand-cannon niche       |

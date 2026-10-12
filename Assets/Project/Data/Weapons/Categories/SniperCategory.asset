@@ -30,10 +30,85 @@ MonoBehaviour:
   - M24
   - Kar98k
   - SV-98
-  - SVD Dragunov
-  - SR-25
-  - Mk 14 EBR
   FireModes: 00000000
+  Models:
+  - Name: AWP
+    Weight: 4
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+    RoundsPerLoad: 0
+  - Name: Barrett M82A1
+    Weight: 4
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+    RoundsPerLoad: 0
+  - Name: L96A1
+    Weight: 4
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+    RoundsPerLoad: 0
+  - Name: M24
+    Weight: 4
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+    RoundsPerLoad: 0
+  - Name: SV-98
+    Weight: 4
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+    RoundsPerLoad: 0
+  - Name: Kar98k
+    Weight: 2.5
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+    RoundsPerLoad: 1
+  - Name: Mosin-Nagant
+    Weight: 2.5
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+    RoundsPerLoad: 1
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:
     Min: 35
@@ -94,20 +169,6 @@ MonoBehaviour:
     Min: 0.3
     Max: 0.8
     Bias: 0
-  ReloadStyles:
-  - Weight: 4
-    RoundsPerLoad: 0
-    Names:
-    - AWP
-    - Barrett M82A1
-    - L96A1
-    - M24
-    - SV-98
-  - Weight: 1
-    RoundsPerLoad: 1
-    Names:
-    - Kar98k
-    - Mosin-Nagant
   QuickMelee: {fileID: 11400000, guid: 8c0fb3d413164f1e8863c23c1d9ab60c, type: 2}
   DrawTime:
     Min: 0.6

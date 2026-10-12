@@ -19,6 +19,10 @@ namespace CGD.Weapons
         // e.g. { Auto, Auto, Auto, Semi } = 75% Auto, 25% Semi.
         public FireMode[] FireModes = { FireMode.Auto };
 
+        [Header("Models")]
+        [Tooltip("Optional: the real-world models this category rolls, by weight, each with its own firing variants, stat lean and reload. Replaces Names, Fire Modes and Firing Styles when set")]
+        public WeaponModel[] Models = System.Array.Empty<WeaponModel>();
+
         [Header("Styles")]
         [Tooltip("Optional: weighted ways a weapon of this category can shoot (fire mode, pellets). Replaces Fire Modes when set")]
         public FiringStyle[] FiringStyles = System.Array.Empty<FiringStyle>();
@@ -83,8 +87,6 @@ namespace CGD.Weapons
         public FloatRange TacticalReloadTime  = new(1.7f, 2.2f);
         // TacticalReloadTime is stored directly for WeaponData and can still be tuned via bonus.
         public FloatRange TacticalReloadBonus = new(0.3f, 0.6f);
-        [Tooltip("Optional: weighted ways a weapon of this category reloads (magazine, or rounds in steps), each with the models that load that way. Empty = the whole magazine at once, named from Names")]
-        public ReloadStyle[] ReloadStyles = System.Array.Empty<ReloadStyle>();
 
         [Header("Handling")]
         [Tooltip("What the Melee key does with this weapon in hand — a bash; its start parries. Empty = fists")]

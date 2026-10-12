@@ -30,9 +30,74 @@ MonoBehaviour:
   - Mossberg 500
   - KSG
   - AA-12
-  - Saiga-12
-  - Winchester 1897
   FireModes: 00000000000000000000000001000000
+  Models:
+  - Name: M870
+    Weight: 4
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+    RoundsPerLoad: 1
+  - Name: SPAS-12
+    Weight: 4
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+    RoundsPerLoad: 1
+  - Name: Benelli M3
+    Weight: 4
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+    RoundsPerLoad: 1
+  - Name: Mossberg 500
+    Weight: 4
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+    RoundsPerLoad: 1
+  - Name: KSG
+    Weight: 4
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+    RoundsPerLoad: 1
+  - Name: AA-12
+    Weight: 5
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+    RoundsPerLoad: 0
   FireBehavior: {fileID: 11400000, guid: e2cbfa746aa878d4aa23d60289c75ece, type: 2}
   RPM:
     Min: 50
@@ -93,19 +158,6 @@ MonoBehaviour:
     Min: 0.3
     Max: 1
     Bias: 0
-  ReloadStyles:
-  - Weight: 4
-    RoundsPerLoad: 1
-    Names:
-    - M870
-    - SPAS-12
-    - Benelli M3
-    - Mossberg 500
-    - KSG
-  - Weight: 1
-    RoundsPerLoad: 0
-    Names:
-    - AA-12
   QuickMelee: {fileID: 11400000, guid: 8c0fb3d413164f1e8863c23c1d9ab60c, type: 2}
   DrawTime:
     Min: 0.5
