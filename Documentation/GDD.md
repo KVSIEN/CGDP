@@ -1335,9 +1335,9 @@ Three visual languages share one space. Each reality must be immediately readabl
 
 | Reality | Look | Lighting | Aesthetic |
 |---------|------|----------|-----------|
-| **TECH** | Clean geometry, industrial materials, modular architecture, signage | Fluorescent and LED: whites, blues, greens | Ship interiors: functional, lived in, institutional |
-| **BIO** | Organic forms overtaking hard surfaces, roots, nests, territorial markings | Warm and diffused: bioluminescence, filtered sunlight | Medieval wilderness reclaiming a ruin, moss on metal |
-| **VOID** | Geometry that contradicts itself, impossible angles, recursive spaces | Shadows without sources, shifting colors | Wrongness you feel before you see it |
+| **TECH** | Clean geometry, industrial materials, modular architecture, signage | Fluorescent and LED: warm whites, amber and orange, red alarms | Ship interiors: functional, lived in, institutional |
+| **BIO** | Organic forms overtaking hard surfaces, roots, nests, territorial markings | Diffused and natural: filtered sunlight, dim green bioluminescence | Medieval wilderness reclaiming a ruin, moss on metal |
+| **VOID** | Geometry that contradicts itself, impossible angles, recursive spaces | Shadows without sources, cold blue and violet, the odd candle flame | Wrongness you feel before you see it |
 
 ### Overlap Zones
 
@@ -1348,7 +1348,75 @@ Three visual languages share one space. Each reality must be immediately readabl
 
 ### Palette
 
-TBD. Each reality needs a distinct but compatible color identity that reads clearly in overlap zones.
+**Designed.** Each reality owns a color family: TECH is warm, BIO is earthy, VOID is dark. The families stay apart by value and saturation as much as by hue, so a reality still reads in greyscale and for color blind players. Hex values are starting points to tune in engine.
+
+| Reality | Family | Value | Saturation | How it carries color |
+|---------|--------|-------|------------|----------------------|
+| **TECH** | Warm: yellow, orange, red | Bright | High | Emissive: lights, screens, warning strips, alarms |
+| **BIO** | Earthy: green, brown | Middle | Muted | Matte materials: moss, bark, soil, hide |
+| **VOID** | Dark: blue, purple | Dark | Low, with rare cold glow | Shadow first, light as the exception |
+
+#### TECH: Warm
+
+| Role | Color | Hex | Use |
+|------|-------|-----|-----|
+| Primary | Signal orange | `#E8761C` | Light strips, screens, signage, interface frames |
+| Secondary | Alarm red | `#C62E22` | Alarms, hostile sensors, lockdowns. Used sparingly |
+| Accent | Warning yellow | `#F2C230` | Hazard striping, highlights, Lightning |
+| Light | Sodium white | `#FFE2B0` | Fill lighting: fluorescent and LED, warm white |
+| Base | Gunmetal | `#3A3D42` | Plating, panels, frames |
+
+#### BIO: Earthy
+
+| Role | Color | Hex | Use |
+|------|-------|-----|-----|
+| Primary | Moss | `#5E7D32` | Overgrowth, foliage, nests |
+| Secondary | Bark | `#6B4A2B` | Wood, roots, soil, hide |
+| Accent | Lichen | `#A3B84A` | Bioluminescence, spores, Poison |
+| Light | Filtered sun | `#D9C9A0` | Soft daylight through canopy and vents |
+| Base | Loam | `#2F2A1E` | Earth, mud, shadowed growth |
+
+#### VOID: Dark
+
+| Role | Color | Hex | Use |
+|------|-------|-----|-----|
+| Primary | Indigo | `#2B2A6B` | Walls, fog, the dark itself |
+| Secondary | Deep violet | `#4B2A6E` | Cracks, rifts, ritual cloth |
+| Accent | Cold glow | `#8FB4FF` | Frost, wards and glyphs, Ice |
+| Light | Candle flame | `#E0A458` | Small point lights only, never a fill. The premodern noir in steel corridors |
+| Base | Abyss | `#0E0F1A` | Near black: what the light doesn't reach |
+
+VOID's candle flame is the one warm color outside TECH. It stays a tiny, isolated point in darkness, so it never reads as TECH's bright warm fills.
+
+#### Signal Colors
+
+The in world VOID palette disappears on dark UI. Each reality also has a lifted signal color for the interface and the map: reality chips, minimap and world map fills, icons and editor tools. Each reaches at least 3:1 contrast on a dark background, and they keep the bright, middle, dark order.
+
+| Reality | Signal | Hex |
+|---------|--------|-----|
+| **TECH** | Amber | `#FFB23F` |
+| **BIO** | Fern | `#8CAA4E` |
+| **VOID** | Violet | `#6E62DA` |
+
+#### Overlap Zones
+
+Where two realities meet, their families blend.
+
+| Overlap | Blend | Example | Reads as |
+|---------|-------|---------|----------|
+| **TECH and BIO** | Rust and amber | `#A0632A` | Corroded machinery, sap in the circuitry |
+| **BIO and VOID** | Murky teal | `#2F5A5A` | Rot under cold light |
+| **TECH and VOID** | Magenta and violet red | `#A0305E` | A corrupted signal |
+| **All three** | Clashing, no blend | | Visual cacophony, rare and overwhelming |
+
+**Proposed.** White light for the Quantum Core: the one place all three realities combine, held in balance.
+
+#### Readability Rules
+
+* **Reality color is for the world.** Lighting, emissives, materials, decals and map chips. HUD status keeps its own meanings (health, damage, status effects), and a reality color never means good or bad.
+* **Never color alone.** Each reality also has a shape language and a symbol, so it reads without color. Proposed symbols: a gear or circuit for TECH, a leaf or spiral for BIO, an eye or crack for VOID.
+* **Greyscale test.** A screenshot in greyscale should still tell TECH, BIO and VOID rooms apart: bright, middle, dark.
+* **Watch the collisions.** TECH's alarm red sits close to Bleed and low health, so red stays a rare TECH accent and orange leads. BIO's lichen is near Poison, which is BIO's own affinity, but the health bar keeps a distinct green. VOID's cold glow matches Ice, its affinity.
 
 ### Camera and Perspective
 
@@ -1554,6 +1622,7 @@ Places where the prototype departs from the design. Each is a decision to make:
 * **Ability costs**: the design gives abilities cooldowns only. The prototype also allows meter costs and Surge.
 * **Ability source**: the design grants abilities from gear. The prototype assigns them to slots directly.
 * **Dodge cost**: the design charges stamina for dodges. The prototype uses a cooldown by default.
+* **Reality colors**: the design gives TECH warm, BIO earthy and VOID dark palettes (see Palette). The prototype's reality colors are TECH light blue, BIO green and VOID purple, the TECH wall kit uses white and blue light strips, and the Map Graph's faction view uses a generic palette.
 
 ---
 
