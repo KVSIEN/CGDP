@@ -1,5 +1,6 @@
 using UnityEngine;
 using CGD.Combat;
+using CGD.Core;
 using CGD.Feedback;
 using CGD.Interaction;
 using CGD.Loot;
@@ -9,9 +10,10 @@ namespace CGD.Economy
 {
     // A slot machine in a Gamble room: pay credits (or blood) for a pull at its loot. A
     // pull busts, wins a normal drop, or hits the jackpot (a drop rolled with extra luck).
-    // Each pull costs more than the last, and the machine runs dry after a few.
+    // Each pull costs more than the last, and the machine runs dry after a few. Given a seed,
+    // its pulls come out the same every time (its LootDropper is seeded alongside it).
     [RequireComponent(typeof(Collider))]
-    public class GambleMachine : MonoBehaviour, IInteractable
+    public class GambleMachine : MonoBehaviour, IInteractable, ISeedable
     {
         [SerializeField] private GamblePayment _payment = GamblePayment.Credits;
         [SerializeField] private CurrencyDefinition _currency;
@@ -26,6 +28,11 @@ namespace CGD.Economy
         [SerializeField, Min(0f)] private float _holdDuration = 0.6f;
 
         private int _pulled;
+        private RandomStream _random;
+
+        private void Awake() => _random = Seed.Random().Stream();
+
+        public void ApplySeed(Seed seed) => _random = seed.Derive("pulls").Stream();
 
         public float HoldDuration => _holdDuration;
 
@@ -45,7 +52,7 @@ namespace CGD.Economy
             }
 
             _pulled++;
-            switch (_odds.Resolve(Random.value))
+            switch (_odds.Resolve(_random.Value))
             {
                 case GambleResult.Bust:
                     FeedbackBus.Notify("Bust", NotificationStyle.Warning);

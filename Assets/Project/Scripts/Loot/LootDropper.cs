@@ -13,7 +13,11 @@ namespace CGD.Loot
     //
     // Stackables and non-weapon gear spawn as ItemPickups, weapons as WeaponPickups, and
     // prefab entries as themselves — all through PrefabPool.
-    public class LootDropper : MonoBehaviour
+    //
+    // Given a seed (a generated level hands one to everything it places or spawns), each
+    // drop rolls from it — the same seed drops the same loot in the same spots. Without
+    // one every drop is random. A pooled enemy's seed is cleared when it goes back.
+    public class LootDropper : MonoBehaviour, ISeedable, IPoolable
     {
         [SerializeField] private LootTable _table;
         [Tooltip("Drop when the HealthManager on this object dies")]
@@ -39,6 +43,8 @@ namespace CGD.Loot
 
         private readonly List<LootDrop> _drops = new();
         private HealthManager _health;
+        private Seed? _seed;
+        private int   _dropCount;
 
         private void Awake()
         {
@@ -53,22 +59,33 @@ namespace CGD.Loot
         // Run-wide bonuses (a warning's loot luck) stack on top of the authored luck.
         public void AddLuck(float amount) => _luck = Mathf.Max(0f, _luck + amount);
 
+        public void ApplySeed(Seed seed)
+        {
+            _seed      = seed;
+            _dropCount = 0;
+        }
+
+        public void OnDespawned() => _seed = null;
+
         public void Drop()
         {
             if (_table == null) return;
 
+            // Each drop its own child, so a dropper that drops twice doesn't repeat itself.
+            Seed seed = _seed?.Derive(_dropCount++) ?? Seed.Random();
             _drops.Clear();
-            _table.Roll(_drops, _luck);
+            _table.Roll(_drops, _luck, seed);
 
+            RandomStream placement = seed.Derive("placement").Stream();
             foreach (LootDrop drop in _drops)
-                Spawn(drop, DropPosition());
+                Spawn(drop, DropPosition(placement), placement);
 
             _drops.Clear();
         }
 
-        private void Spawn(in LootDrop drop, Vector3 position)
+        private void Spawn(in LootDrop drop, Vector3 position, RandomStream placement)
         {
-            Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+            Quaternion rotation = Quaternion.Euler(0f, placement.Range(0f, 360f), 0f);
 
             switch (drop.Kind)
             {
@@ -93,9 +110,9 @@ namespace CGD.Loot
             }
         }
 
-        private Vector3 DropPosition()
+        private Vector3 DropPosition(RandomStream placement)
         {
-            Vector2 scatter = Random.insideUnitCircle * _scatterRadius;
+            Vector2 scatter = placement.InsideUnitCircle() * _scatterRadius;
             Vector3 point   = transform.TransformPoint(_dropOffset) + new Vector3(scatter.x, 0f, scatter.y);
 
             return Physics.Raycast(point, Vector3.down, out RaycastHit hit, GroundProbeDistance, _groundMask, QueryTriggerInteraction.Ignore)

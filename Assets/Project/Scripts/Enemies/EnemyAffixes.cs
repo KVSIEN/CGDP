@@ -7,9 +7,10 @@ namespace CGD.Enemies
     // Rolls this enemy's random affixes each time it spawns from the pool, as many as its
     // tier allows, and runs it on a copy of its EnemyData with them applied. Back in the
     // pool it returns to its plain data, so an enemy spawned some other way never keeps
-    // a previous life's affixes.
+    // a previous life's affixes. A seed (a generated level hands one to every enemy it
+    // spawns) rerolls them from it, so the same seed gives the same affixes.
     [RequireComponent(typeof(EnemyHealth), typeof(EnemyAI))]
-    public class EnemyAffixes : MonoBehaviour, IPoolable
+    public class EnemyAffixes : MonoBehaviour, IPoolable, ISeedable
     {
         [SerializeField] private EnemyAffixPool _pool;
 
@@ -33,12 +34,17 @@ namespace CGD.Enemies
             if (_runtime != null) Destroy(_runtime);
         }
 
-        public void OnSpawned()
+        public void OnSpawned() => Roll(Seed.Random());
+
+        // Called right after spawning, before the enemy has done anything.
+        public void ApplySeed(Seed seed) => Roll(seed.Derive("affixes"));
+
+        private void Roll(Seed seed)
         {
             int count = _pool != null && _base != null ? _pool.CountFor(_base.Tier) : 0;
             if (count == 0) return;
 
-            _pool.Pick(count, _rolled);
+            _pool.Pick(count, _rolled, seed.Stream());
             if (_runtime != null) Destroy(_runtime);
             _runtime = Instantiate(_base);
             foreach (EnemyAffix affix in _rolled) affix.ApplyTo(_runtime);

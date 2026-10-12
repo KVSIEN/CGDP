@@ -12,7 +12,7 @@ namespace CGD.Level
     {
         public EncounterContext(LevelRoom room, RoomArea area, RoomArea floor, RoomSeal seal, EncounterSpawner spawner,
             EncounterSettings settings, IReadOnlyList<HealthManager> roomEnemies, Transform player, Transform level,
-            float tileSize, Vector3 center, RandomStream random, float lootLuck, WorldMapArea worldMap,
+            float tileSize, Vector3 center, RandomStream random, Seed rewardSeed, float lootLuck, WorldMapArea worldMap,
             Queue<Vector3> freeSpots, IReadOnlyList<Pose> forwardDoorways)
         {
             Room            = room;
@@ -27,6 +27,7 @@ namespace CGD.Level
             TileSize        = tileSize;
             Center          = center;
             Random          = random;
+            RewardSeed      = rewardSeed;
             LootLuck        = lootLuck;
             WorldMap        = worldMap;
             _freeSpots      = freeSpots;
@@ -50,6 +51,8 @@ namespace CGD.Level
         public float        TileSize { get; }
         public Vector3      Center   { get; }
         public RandomStream Random   { get; }
+        // What the room's rewards roll from; each reward takes the next child of it.
+        public Seed         RewardSeed { get; }
         // The run's loot luck (modifiers), added to every reward this encounter drops.
         public float        LootLuck { get; }
         public WorldMapArea WorldMap { get; }

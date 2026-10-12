@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
+using CGD.Core;
 using CGD.Feedback;
 using CGD.Loot;
 
@@ -17,6 +18,7 @@ namespace CGD.Level
 
         private bool  _entered;
         private float _nextEntryCheck;
+        private int   _rewards;
 
         protected EncounterContext Context { get; private set; }
 
@@ -81,6 +83,7 @@ namespace CGD.Level
             if (Context.Settings.RewardPrefab == null) return null;
 
             GameObject reward = Instantiate(Context.Settings.RewardPrefab, position, Quaternion.Euler(0f, Context.Random.Range(0, 360), 0f), Context.Level);
+            ISeedable.SeedAll(reward, Context.RewardSeed.Derive(_rewards++));
             float luck = Context.LootLuck + extraLuck;
             if (luck > 0f && reward.TryGetComponent(out LootDropper dropper)) dropper.AddLuck(luck);
             return reward;

@@ -735,6 +735,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - The player starts in the Start room, a safe hub with a workbench. The Exit room has the extraction pad that ends the run in victory (hold Interact to extract)
 - The MapTest scene plays a freshly generated level every time it starts or restarts, with the player in the Start room, a minimap, the world map (M) and HUD notifications. It runs the full expedition loop: the player starts with only the starting loadout (no dev ammo), death ends the run, and the ship screen between runs leads into the next one
 - A level can use a fixed, hand-checked map graph or generate a fresh one each play. The same seed always gives the same map, the same rooms (kind, shape and structure) and the same room contents
+- What a level rolls during play comes from its seed too, so a kept seed is the same run, not just the same map: what every chest, cache, crate, breakable, resource node and encounter or objective reward gives, what each enemy drops and which affixes tougher enemies roll (enemies arriving in encounter waves included), how a gamble machine's pulls come out, and what a shop sells. It doesn't matter in which order the player gets there — each room and each thing in it has its own seed. Only moment-to-moment combat (crits, recoil, status procs) stays random. A vendor or random weapon pickup with a seed of its own typed in keeps it
 - The world map and minimap resize to fit the generated level and show its floor plan: room shapes coloured by room type, walls, bevels, curves and gate markers, uncovered by fog of war as the player explores
 - A generated level announces the run's modifiers when it starts
 
@@ -752,7 +753,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 
 ## Economy & Shops
 - Money is carried like any other item. Credits are the standard currency, and more currencies can exist side by side (each shop names the one it takes). Anything that can hand out items can hand out money: loot, pickups, quest rewards, the dev console (`/give credits 500`)
-- Vendors sell from a shelf that is stocked when the level starts, and optionally restocked on a timer. The same vendor seed always gives the same shelf
+- Vendors sell from a shelf that is stocked when the level starts, and optionally restocked on a timer. The same vendor seed always gives the same shelf; a vendor without one stocks from the level's seed in a generated level, and at random elsewhere
 - Goods can be bundles of stackable items (30 rounds, 2 bandages), rolled gear, or freshly generated weapons, each vendor mixing whatever its catalog lists
 - Prices follow each item's worth: stackables per unit, rolled gear and weapons scaled by quality (a Legendary is worth several times a Common of the same kind). Vendors can charge a markup
 - Items can be limited in number (sold out until the next restock) or unlimited

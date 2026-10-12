@@ -43,15 +43,18 @@ namespace CGD.Level
         private QuestTracker _tracker;
         private IReadOnlyList<ConditionLock> _bossLocks;
         private float _runLuck;
+        private Seed  _rewardSeed;
 
         public void Begin(IReadOnlyList<PlannedObjective> plan, IReadOnlyDictionary<int, LevelRoom> rooms, MapObjectiveSettings settings,
-                          RoomPopulator populator, QuestTracker tracker, IReadOnlyList<ConditionLock> bossLocks, float runLuck)
+                          RoomPopulator populator, QuestTracker tracker, IReadOnlyList<ConditionLock> bossLocks, float runLuck,
+                          Seed rewardSeed)
         {
-            _settings  = settings;
-            _populator = populator;
-            _tracker   = tracker;
-            _bossLocks = bossLocks;
-            _runLuck   = runLuck;
+            _settings   = settings;
+            _populator  = populator;
+            _tracker    = tracker;
+            _bossLocks  = bossLocks;
+            _runLuck    = runLuck;
+            _rewardSeed = rewardSeed;
 
             _tracker.Log.ObjectiveCompleted += OnObjectiveCompleted;
             _tracker.Log.QuestCompleted     += OnQuestCompleted;
@@ -220,6 +223,8 @@ namespace CGD.Level
             LevelRoom room = running.Steps[running.Steps.Count - 1].Room;
             Vector3 spot = _populator.TryTakeSpot(room, out Vector3 free) ? free : _populator.RoomCenter(room);
             GameObject cache = Instantiate(_settings.RewardCachePrefab, spot, Quaternion.identity, transform);
+            // By the objective's place in the plan, so completing them in any order pays the same.
+            ISeedable.SeedAll(cache, _rewardSeed.Derive(_running.IndexOf(running)));
 
             float luck = _runLuck + _settings.CacheLuckFor(running.Plan.TopTier);
             foreach (LootDropper dropper in cache.GetComponentsInChildren<LootDropper>(true))

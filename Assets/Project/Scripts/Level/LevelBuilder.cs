@@ -79,7 +79,7 @@ namespace CGD.Level
             }
 
             Layout = new LevelLayoutBuilder(_settings).Build(Graph, nodeSpacing, Seed, content);
-            var populator = new RoomPopulator(_settings, Layout, transform, Seed.Derive("contents").Stream());
+            var populator = new RoomPopulator(_settings, Layout, transform, Seed.Derive("contents"));
             List<PlannedObjective> objectives = PlanObjectives(populator);
 
             var geometry = new LevelGeometryBuilder(_settings);
@@ -97,7 +97,7 @@ namespace CGD.Level
             if (_navMesh != null) _navMesh.BuildNavMesh();
             populator.SpawnEnemies();
             new RoomEncounterBuilder(_encounters, Layout, Graph, transform, populator, _player, _worldMap,
-                                     Seed.Derive("encounters").Stream(), new MapRunTuning(Modifiers).LootLuck).Build();
+                                     Seed.Derive("encounters"), new MapRunTuning(Modifiers).LootLuck).Build();
 
             StartObjectives(objectives, populator, geometry);
             PlacePlayer(populator);
@@ -151,7 +151,7 @@ namespace CGD.Level
 
             var runner = gameObject.AddComponent<MapObjectiveRunner>();
             runner.Begin(objectives, Layout.Rooms, _objectives, populator, _player.GetComponent<QuestTracker>(), bossLocks,
-                         new MapRunTuning(Modifiers).LootLuck);
+                         new MapRunTuning(Modifiers).LootLuck, Seed.Derive("objective rewards"));
         }
 
         // In Start, not Awake: the HUD subscribes to FeedbackBus in its OnEnable, after this

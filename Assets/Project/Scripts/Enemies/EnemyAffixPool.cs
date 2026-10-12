@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Core;
 
 namespace CGD.Enemies
 {
@@ -19,8 +20,8 @@ namespace CGD.Enemies
             return Mathf.Max(0, _countPerTier[index]);
         }
 
-        // `count` different affixes, picked at random.
-        public void Pick(int count, List<EnemyAffix> into)
+        // `count` different affixes, picked from `random`.
+        public void Pick(int count, List<EnemyAffix> into, RandomStream random)
         {
             into.Clear();
             var pool = new List<EnemyAffix>(_affixes.Length);
@@ -29,7 +30,7 @@ namespace CGD.Enemies
 
             for (int i = 0; i < count && pool.Count > 0; i++)
             {
-                int pick = UnityEngine.Random.Range(0, pool.Count);
+                int pick = random.Range(0, pool.Count);
                 into.Add(pool[pick]);
                 pool.RemoveAt(pick);
             }

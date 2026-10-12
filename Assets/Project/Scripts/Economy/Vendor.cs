@@ -8,11 +8,11 @@ namespace CGD.Economy
     // its own. Something else opens it: a dialogue choice (OpenShopDialogueAction), a
     // Switch or EventInteractable calling OpenFor, a script. The shop panel lives on the
     // HUD and listens for Opened, so vendors can be prefabs.
-    public class Vendor : MonoBehaviour
+    public class Vendor : MonoBehaviour, ISeedable
     {
         [SerializeField] private string _displayName = "Vendor";
         [SerializeField] private ShopCatalog _catalog;
-        [Tooltip("Same seed → same shelf every play. Empty = random")]
+        [Tooltip("Same seed → same shelf every play. Empty = random, or the level's seed when a generated level places it")]
         [SerializeField] private string _seed;
         [Tooltip("Seconds between restocks. 0 = stock once")]
         [SerializeField, Min(0f)] private float _restockInterval;
@@ -53,6 +53,17 @@ namespace CGD.Economy
         }
 
         public void Restock() => Shop?.Restock(_baseSeed.Derive(_restocks++));
+
+        // From whatever placed the vendor; a seed typed on the vendor itself wins.
+        public void ApplySeed(Seed seed)
+        {
+            if (!string.IsNullOrWhiteSpace(_seed)) return;
+
+            _baseSeed     = seed.Derive("stock");
+            _restocks     = 0;
+            _restockTimer = 0f;
+            Restock();
+        }
 
         // False when the actor can't trade (no inventory) or the vendor isn't set up.
         public bool OpenFor(GameObject actor)

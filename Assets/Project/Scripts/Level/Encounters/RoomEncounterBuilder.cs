@@ -24,11 +24,12 @@ namespace CGD.Level
         private readonly RoomPopulator     _populator;
         private readonly Transform         _player;
         private readonly WorldMapArea      _worldMap;
+        private readonly Seed              _seed;
         private readonly RandomStream      _random;
         private readonly float             _lootLuck;
 
         public RoomEncounterBuilder(EncounterSettings settings, LevelLayout layout, MapGraph graph, Transform level,
-            RoomPopulator populator, Transform player, WorldMapArea worldMap, RandomStream random, float lootLuck)
+            RoomPopulator populator, Transform player, WorldMapArea worldMap, Seed seed, float lootLuck)
         {
             _settings  = settings;
             _layout    = layout;
@@ -37,7 +38,8 @@ namespace CGD.Level
             _populator = populator;
             _player    = player;
             _worldMap  = worldMap;
-            _random    = random;
+            _seed      = seed;
+            _random    = seed.Stream();
             _lootLuck  = lootLuck;
         }
 
@@ -92,11 +94,15 @@ namespace CGD.Level
             for (int i = 0; i < ConsoleSpots && _populator.TryTakeSpot(room, out Vector3 spot); i++)
                 consoleSpots.Enqueue(spot);
 
+            // The room's own seed: what its waves and rewards roll doesn't depend on which
+            // encounters the player triggered first.
+            Seed roomSeed = _seed.Derive(room.Node.Id);
             var spawner = new EncounterSpawner(spawnSpots, _populator.RosterFor(room), _populator.SecondRosterFor(room),
-                                               _populator.PatrolRouteFor(room), _random);
+                                               _populator.PatrolRouteFor(room), roomSeed.Derive("waves"));
 
             return new EncounterContext(room, area, floor, PlaceShutters(doorways, holder), spawner, _settings,
-                _populator.EnemiesIn(room), _player, _level, _layout.TileSize, _populator.RoomCenter(room), _random, _lootLuck + _populator.LootLuckFor(room),
+                _populator.EnemiesIn(room), _player, _level, _layout.TileSize, _populator.RoomCenter(room), _random, roomSeed.Derive("rewards"),
+                _lootLuck + _populator.LootLuckFor(room),
                 _worldMap, consoleSpots, ForwardDoorways(room, doorways, analysis));
         }
 

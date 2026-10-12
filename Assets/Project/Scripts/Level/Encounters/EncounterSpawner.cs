@@ -9,7 +9,8 @@ namespace CGD.Level
 {
     // Brings enemies into a room mid-encounter: on spots set aside when the level was
     // built, from the room's faction roster at the room's tier odds (or, for a room held by
-    // two realities, the second one), patrolling the room's route.
+    // two realities, the second one), patrolling the room's route. Each enemy is seeded by
+    // its place in the room's spawn order (ISeedable: affixes, drops).
     public class EncounterSpawner
     {
         private const float NavMeshSearch = 3f;
@@ -18,15 +19,18 @@ namespace CGD.Level
         private readonly RoomRoster   _roster;
         private readonly RoomRoster   _secondRoster;
         private readonly Transform[]  _route;
+        private readonly Seed         _seed;
         private readonly RandomStream _random;
+        private int _spawned;
 
-        public EncounterSpawner(IReadOnlyList<Vector3> spots, RoomRoster roster, RoomRoster secondRoster, Transform[] route, RandomStream random)
+        public EncounterSpawner(IReadOnlyList<Vector3> spots, RoomRoster roster, RoomRoster secondRoster, Transform[] route, Seed seed)
         {
             _spots        = spots;
             _roster       = roster;
             _secondRoster = secondRoster != null && !secondRoster.IsEmpty ? secondRoster : roster;
             _route        = route;
-            _random       = random;
+            _seed         = seed;
+            _random       = seed.Stream();
         }
 
         public bool CanSpawn => _spots.Count > 0 && !_roster.IsEmpty;
@@ -46,6 +50,7 @@ namespace CGD.Level
                 GameObject prefab = roster.Pick(_random);
                 if (prefab == null) continue;
                 GameObject enemy = PrefabPool.Spawn(prefab, spot, Quaternion.Euler(0f, _random.Range(0, 360), 0f));
+                ISeedable.SeedAll(enemy, _seed.Derive("enemies").Derive(_spawned++));
                 if (enemy.TryGetComponent(out EnemyAI ai)) ai.SetWaypoints(_route);
                 if (enemy.TryGetComponent(out HealthManager health)) spawned.Add(health);
             }

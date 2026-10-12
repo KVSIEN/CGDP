@@ -17,11 +17,15 @@ namespace CGD.Level
     // routes through the room stay clear. Props and centrepieces go in
     // before the NavMesh is built (so it walks around them), enemies after (they need it).
     // Every placement comes from the level's seed, so the same seed gives the same level.
+    // What gets rolled later — a chest's loot, an enemy's affixes and drops, a shop's shelf —
+    // comes from it too: each placed thing and enemy gets its own seed by room and order
+    // (ISeedable), never drawn from the placement stream, so seeding them moved nothing.
     public class RoomPopulator
     {
         private readonly LevelBuildSettings _settings;
         private readonly LevelLayout _layout;
         private readonly Transform _parent;
+        private readonly Seed _seed;
         private readonly RandomStream _random;
 
         private const RoomTileTags NeverSpawnOn = RoomTileTags.Structure | RoomTileTags.Prop | RoomTileTags.NearDoor | RoomTileTags.Centre;
@@ -32,13 +36,16 @@ namespace CGD.Level
         // Enemies placed in each room at build time, for the room's encounter.
         private readonly Dictionary<int, List<HealthManager>> _roomEnemies = new();
         private readonly Dictionary<int, Transform[]> _routes = new();
+        // Things placed in each room so far, numbering their seeds.
+        private readonly Dictionary<int, int> _placedCount = new();
 
-        public RoomPopulator(LevelBuildSettings settings, LevelLayout layout, Transform parent, RandomStream random)
+        public RoomPopulator(LevelBuildSettings settings, LevelLayout layout, Transform parent, Seed seed)
         {
             _settings = settings;
             _layout   = layout;
             _parent   = parent;
-            _random   = random;
+            _seed     = seed;
+            _random   = seed.Stream();
         }
 
         public void PlaceProps()
@@ -73,6 +80,10 @@ namespace CGD.Level
         {
             GameObject placed = Object.Instantiate(prefab, position, rotation, _parent);
             int tier = room.Node.EffectiveTier;
+
+            _placedCount.TryGetValue(room.Node.Id, out int index);
+            _placedCount[room.Node.Id] = index + 1;
+            ISeedable.SeedAll(placed, _seed.Derive("placed").Derive(room.Node.Id).Derive(index));
 
             float luck = _settings.LootLuckFor(tier);
             if (luck > 0f)
@@ -176,6 +187,7 @@ namespace CGD.Level
                     GameObject prefab = (fromBreach ? breach : roster).Pick(_random);
                     if (prefab == null) continue;
                     GameObject enemy = PrefabPool.Spawn(prefab, OnNavMesh(position), RandomYaw());
+                    ISeedable.SeedAll(enemy, _seed.Derive("enemies").Derive(room.Node.Id).Derive(i));
                     if (enemy.TryGetComponent(out EnemyAI ai)) ai.SetWaypoints(route);
                     if (enemy.TryGetComponent(out HealthManager health)) placed.Add(health);
                 }

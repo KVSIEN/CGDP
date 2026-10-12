@@ -275,7 +275,7 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 
 | Object | Components | Assign |
 |---|---|---|
-| Weapon pickup | trigger Collider, `WeaponPickup` | `_data` = a `WeaponData`, **or** add `RandomWeaponPickup` with `_categories` — firearm or melee categories (+ `_seed`? for a fixed weapon) |
+| Weapon pickup | trigger Collider, `WeaponPickup` | `_data` = a `WeaponData`, **or** add `RandomWeaponPickup` with `_categories` — firearm or melee categories (+ `_seed`? for a fixed weapon; empty = random, or the level's seed when a generated level places it) |
 | Ammo pickup | trigger Collider, `AmmoPickup` | `_munition` = a munition asset, `_amount` |
 | Health pickup | trigger Collider, `HealthPickup` | `_amount` |
 | Item pickup | trigger Collider, `ItemPickup` | `_item`, `_count` |
@@ -336,7 +336,7 @@ HUD
 | Component | Assign | Notes |
 |---|---|---|
 | **Npc** | `_displayName`, `_dialogue` = a `DialogueDefinition`, `_faceListener` | Interact to talk. Needs a non-trigger Collider within the Player's interact range. |
-| **Vendor**? | `_displayName`, `_catalog` = a `ShopCatalog`, `_seed`? (empty = new stock each play), `_restockInterval`? (0 = once) | Opened by a dialogue choice with `OpenShopDialogueAction`, or by anything calling `OpenFor(player)`. |
+| **Vendor**? | `_displayName`, `_catalog` = a `ShopCatalog`, `_seed`? (empty = new stock each play, or the level's seed when a generated level places it), `_restockInterval`? (0 = once) | Opened by a dialogue choice with `OpenShopDialogueAction`, or by anything calling `OpenFor(player)`. |
 | **DialoguePanel** (HUD) | `_input` = Player | Choices can also be picked with the weapon-slot keys (1–4). |
 | **ShopPanel** (HUD) | `_input` = Player | |
 | **PlayerInventory** | `_startingStacks` += `Economy/CreditsCurrency` × amount | Money is an inventory item. Sandbox starts with 1,500 cr. |

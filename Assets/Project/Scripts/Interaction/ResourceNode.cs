@@ -10,8 +10,9 @@ namespace CGD.Interaction
     // A spot to gather crafting material from by holding Interact, a few times before it's
     // spent. Placeholder for now: which resource a node gives isn't decided yet, so with
     // no Resource set it can be found and harvested but yields nothing.
+    // How much each harvest gives rolls from the node's seed when it was given one.
     [RequireComponent(typeof(Collider))]
-    public class ResourceNode : MonoBehaviour, IInteractable
+    public class ResourceNode : MonoBehaviour, IInteractable, ISeedable
     {
         [Tooltip("What harvesting gives. Leave empty until the node's resource is decided")]
         [SerializeField] private ItemDefinition _resource;
@@ -29,6 +30,7 @@ namespace CGD.Interaction
 
         private int _left;
         private int _tier = 1;
+        private RandomStream _random;
 
         // The room this node stands in sets its tier when the level is built.
         public void SetTier(int tier) => _tier = Mathf.Clamp(tier, 1, 3);
@@ -46,7 +48,13 @@ namespace CGD.Interaction
 
         public float HoldDuration => _holdDuration;
 
-        private void Awake() => _left = _harvests;
+        private void Awake()
+        {
+            _left   = _harvests;
+            _random = Seed.Random().Stream();
+        }
+
+        public void ApplySeed(Seed seed) => _random = seed.Derive("harvests").Stream();
 
         public string GetInteractLabel(GameObject interactor) =>
             Resource != null ? $"Harvest  {Resource.DisplayName}" : "Harvest  Resource Node";
@@ -67,7 +75,7 @@ namespace CGD.Interaction
                 return;
             }
 
-            int rolled = Mathf.Max(1, _amount.Evaluate()) + _bonusPerTier * (_tier - 1);
+            int rolled = Mathf.Max(1, _amount.Evaluate(_random)) + _bonusPerTier * (_tier - 1);
             int amount = rolled - inventory.Inventory.Add(resource, rolled);
             if (amount <= 0) return;
             QuestEvents.Report(ObjectiveKind.Collect, resource, amount);
