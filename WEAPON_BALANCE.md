@@ -125,6 +125,13 @@ lowering base damage.
 - **What a Legendary LMG feels like**: tighter first-mag accuracy, less recoil heat buildup, faster ADS.
 
 ### SMG
+- **Models** (`Models` on the category, all equal weight, so each series is 20%):
+  - **MP-Series** (German MPs; controllable, precise): MP5 (20% "Burst MP5"), MP5K (compact, short range), MP7 (40 rds, lowest recoil of the series), MPL (slow 650 RPM, harder hits)
+  - **V-Series** (vintage; slow cyclic, heavy hits, big magazines, heavier handling): Thompson (50-round drum, heaviest kick), MP40 (slow and steady), Uzi (short range, jumpy), PM12 (40 rds)
+  - **X-Series** (machine pistols; extreme fire rate, close range): MAC-10 (1150 RPM, 12 m, wildest recoil), Scorpion EVO (1150 RPM; 20% "Burst"), MP9, PP2000 (fastest draw and ADS, 20 rds)
+  - **T-Series** (modern tactical; versatile, longest reach): UMP-45 (650 RPM, hard hits, 32 m; 20% "Burst"), MPX, APC9 (1000 RPM), PMX
+  - **P-Series** (unconventional designs): P90 (50 rds, slow top-loaded reload), Vector (1200 RPM, near-recoilless, 25 rds, 18 m; 20% "Burst"), QCW-05 (50 rds, suppressed: T1 is heard at 12 m), PP-19 Bizon (64-round helical magazine)
+  - Scales and leans are built like the AR's, against the SMG midpoints (20.5 dmg, 900 RPM, 26 m, 27 rds — the median of its low-weighted magazine window — 0.925 recoil, 2.25° hip spread). Most models land at 0.30–0.40 s; the MAC-10 (0.26 s) and Vector (0.25 s) pay with range, magazine and, for the MAC-10, recoil.
 - **Best at**: fast TTK inside 20m while moving.
 - **Weakness**: falls apart at 30m+, burns LightRounds fast (shared with pistols).
 - **What a Legendary SMG feels like**: tighter hip cone, larger mag, better range roll.
@@ -241,7 +248,7 @@ axis decides which end a weapon lands on, so the band reads as a spectrum:
 | Category | Fast pole (lean −) | Slow pole (lean +) | T1 anchor |
 |---|---|---|---|
 | AR      | CQB carbine — 900 RPM, 18 dmg, 30 m  | Battle rifle — 450 RPM, 34 dmg, 90 m   | 20 models in five series (see AR); e.g. `AUG_T1` 680×23, `G36C_T1` 850×19, `FAL_T1` 450×34 |
-| SMG     | PDW / machine pistol — 1200 RPM, 13 dmg, 12 m | Heavy SMG — 600 RPM, 28 dmg, 40 m | `MP5_T1` 850×18, 25 m |
+| SMG     | PDW / machine pistol — 1200 RPM, 13 dmg, 12 m | Heavy SMG — 600 RPM, 28 dmg, 40 m | 20 models in five series (see SMG); e.g. `MP5_T1` 850×18, `MAC10_T1` 1150×19, `Thompson_T1` 650×24 |
 | Pistol  | Glock — 600 RPM, 20 dmg, 12 m        | Hand cannon — 200 RPM, 60 dmg, 35 m    | `Glock17_T1` 400×25 / `DesertEagle_T1` 300×55 |
 | Sniper  | Semi-auto DMR — 260 RPM, 45 dmg, 50 m | Bolt / AMR — 35 RPM, 170 dmg, 220 m   | `Kar98k_T1` 45×95, 120 m |
 | LMG     | High-cyclic MG — 1200 RPM, 24 dmg    | Heavy GPMG — 500 RPM, 45 dmg           | `M249_T1` 700×30, 55 m |
@@ -314,7 +321,26 @@ first thing to compare a new weapon against.
 | `Galil_T1`        | AR · C-Series  | 24 × 700            | StandardRounds | 5 / 0.34s    | 40 m, 35 rds, draw 0.6s |
 | `AM17_T1`         | AR · C-Series  | 22 × 750            | StandardRounds | 5 / 0.32s    | 25 m, 30 rds, draw 0.45s |
 | `QBZ95_T1`        | AR · C-Series  | 21 × 800            | StandardRounds | 5 / 0.30s    | 35 m, 30 rds, draw 0.55s |
-| `MP5_T1`          | SMG         | 18 × 850            | LightRounds    | 6 / 0.35s    | Erratic horizontal recoil, snappy handling   |
+| `MP5_T1`          | SMG · MP-Series | 18 × 850            | LightRounds    | 6 / 0.35s    | 25 m, 30 rds, draw 0.45s |
+| `MP5K_T1`         | SMG · MP-Series | 17 × 900            | LightRounds    | 6 / 0.33s    | 18 m, 30 rds, draw 0.38s |
+| `MP7_T1`          | SMG · MP-Series | 17 × 950            | LightRounds    | 6 / 0.32s    | 28 m, 40 rds, draw 0.42s |
+| `MPL_T1`          | SMG · MP-Series | 22 × 650            | LightRounds    | 5 / 0.37s    | 25 m, 32 rds, draw 0.45s |
+| `Thompson_T1`     | SMG · V-Series  | 24 × 650            | LightRounds    | 5 / 0.37s    | 30 m, 50 rds, draw 0.58s |
+| `MP40_T1`         | SMG · V-Series  | 24 × 600            | LightRounds    | 5 / 0.40s    | 28 m, 32 rds, draw 0.5s |
+| `Uzi_T1`          | SMG · V-Series  | 22 × 650            | LightRounds    | 5 / 0.37s    | 20 m, 32 rds, draw 0.42s |
+| `PM12_T1`         | SMG · V-Series  | 23 × 600            | LightRounds    | 5 / 0.40s    | 24 m, 40 rds, draw 0.48s |
+| `MAC10_T1`        | SMG · X-Series  | 19 × 1150           | LightRounds    | 6 / 0.26s    | 12 m, 30 rds, draw 0.35s |
+| `ScorpionEVO_T1`  | SMG · X-Series  | 15 × 1150           | LightRounds    | 7 / 0.31s    | 15 m, 30 rds, draw 0.38s |
+| `MP9_T1`          | SMG · X-Series  | 15 × 1000           | LightRounds    | 7 / 0.36s    | 16 m, 30 rds, draw 0.36s |
+| `PP2000_T1`       | SMG · X-Series  | 17 × 900            | LightRounds    | 6 / 0.33s    | 14 m, 20 rds, draw 0.35s |
+| `UMP45_T1`        | SMG · T-Series  | 24 × 650            | LightRounds    | 5 / 0.37s    | 32 m, 25 rds, draw 0.48s |
+| `MPX_T1`          | SMG · T-Series  | 19 × 850            | LightRounds    | 6 / 0.35s    | 30 m, 30 rds, draw 0.45s |
+| `APC9_T1`         | SMG · T-Series  | 18 × 1000           | LightRounds    | 6 / 0.30s    | 28 m, 30 rds, draw 0.45s |
+| `PMX_T1`          | SMG · T-Series  | 19 × 900            | LightRounds    | 6 / 0.33s    | 26 m, 30 rds, draw 0.45s |
+| `P90_T1`          | SMG · P-Series  | 17 × 900            | LightRounds    | 6 / 0.33s    | 26 m, 50 rds, draw 0.48s |
+| `Vector_T1`       | SMG · P-Series  | 18 × 1200           | LightRounds    | 6 / 0.25s    | 18 m, 25 rds, draw 0.42s |
+| `QCW05_T1`        | SMG · P-Series  | 17 × 900            | LightRounds    | 6 / 0.33s    | 24 m, 50 rds, draw 0.45s |
+| `Bizon_T1`        | SMG · P-Series  | 20 × 700            | LightRounds    | 5 / 0.34s    | 22 m, 64 rds, draw 0.5s |
 | `Glock17_T1`      | Pistol      | 25 × 400 (Semi)     | LightRounds    | 4 / 0.45s    | Snappiest ADS in the roster                  |
 | `DesertEagle_T1`  | Pistol      | 55 × 300 (Semi)     | HeavyRounds    | 2 / 0.4s     | Overrides AmmoType — hand-cannon niche       |
 | `Kar98k_T1`       | Sniper      | 95 × 45 (bolt)      | HeavyRounds    | 1 / 1.3s     | Body-shot two-taps only if damage rolls hot  |
