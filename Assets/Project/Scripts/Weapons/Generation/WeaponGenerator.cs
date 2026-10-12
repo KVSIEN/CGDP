@@ -54,7 +54,7 @@ namespace CGD.Weapons
                                * (firing != null ? firing.Scales : StyleScales.Identity)
                                * (lean   != null ? lean.Scales   : StyleScales.Identity);
 
-            StyleLeans leans   = model != null ? model.Leans : default;
+            StyleLeans leans   = firing != null && firing.OwnLeans ? firing.Leans : model != null ? model.Leans : default;
 
             if (!string.IsNullOrEmpty(firing?.ModelName)) name = firing.ModelName;
             d.WeaponName   = StyledName(name, firing, lean);

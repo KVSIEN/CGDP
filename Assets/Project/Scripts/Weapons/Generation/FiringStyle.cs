@@ -22,6 +22,9 @@ namespace CGD.Weapons
         [Tooltip("Aimed cone. 0–0 keeps the category's — a pellet style needs one, or every pellet lands on the same point")]
         public FloatRange AdsSpreadDeg;
         public StyleScales Scales = StyleScales.Identity;
+        [Tooltip("Use Leans below instead of the model's — for a variant that plays unlike the model's main one, e.g. a semi Glock 17 off a full-auto Glock 18")]
+        public bool OwnLeans;
+        public StyleLeans Leans;
         [Tooltip("Rounds per reload step for this variant, e.g. a revolver's speedloader loading all six at once. 0 = the model's")]
         [Min(0)] public int RoundsPerLoad;
     }

@@ -70,6 +70,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.68
@@ -110,6 +118,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.65
@@ -150,6 +166,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.7
@@ -190,6 +214,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.62
@@ -230,6 +262,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.85
@@ -270,6 +310,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.68
@@ -310,6 +358,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.55
@@ -350,6 +406,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     - Name: 
       ModelName: M712
@@ -371,6 +435,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 1
+      Leans:
+        Damage: -0.54
+        FireRate: 0.6
+        Recoil: 0.41
+        Spread: 0.09
+        Range: 0.42
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.75
@@ -411,6 +483,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     - Name: 
       ModelName: Glock 17
@@ -432,6 +512,14 @@ MonoBehaviour:
         Spread: 0.83
         Range: 1.5
         MagazineSize: 0.85
+      OwnLeans: 1
+      Leans:
+        Damage: -0.56
+        FireRate: -0.18
+        Recoil: -0.17
+        Spread: -0.09
+        Range: -0.35
+        MagazineSize: 0.6
       RoundsPerLoad: 0
     Scales:
       Damage: 0.45
@@ -472,6 +560,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.45
@@ -512,6 +608,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.55
@@ -552,6 +656,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.5
@@ -592,6 +704,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 1.38
@@ -632,6 +752,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     - Name: 
       ModelName: 
@@ -653,6 +781,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 6
     Scales:
       Damage: 1.5
@@ -693,6 +829,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     - Name: 
       ModelName: 
@@ -714,6 +858,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 5
     Scales:
       Damage: 0.23
@@ -754,6 +906,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     - Name: 
       ModelName: 
@@ -775,6 +935,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 6
     Scales:
       Damage: 1.05
@@ -815,6 +983,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.5
@@ -855,6 +1031,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.62
@@ -895,6 +1079,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.85
@@ -935,6 +1127,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.65

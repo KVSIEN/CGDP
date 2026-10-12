@@ -69,6 +69,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     - Name: Burst
       ModelName: 
       Weight: 2
@@ -89,6 +97,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 1
+      Leans:
+        Damage: -0.29
+        FireRate: 0.28
+        Recoil: -0.2
+        Spread: -0.26
+        Range: -0.38
+        MagazineSize: 0
     Scales:
       Damage: 0.85
       FireRate: 1.19
@@ -127,6 +143,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     - Name: 
       ModelName: AR-15
       Weight: 2
@@ -147,6 +171,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1.1
         MagazineSize: 1
+      OwnLeans: 1
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: -0.26
+        Spread: -0.16
+        Range: 0.28
+        MagazineSize: 0
     Scales:
       Damage: 0.96
       FireRate: 1.19
@@ -185,6 +217,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     - Name: Auto
       ModelName: 
       Weight: 2
@@ -205,6 +245,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 1
+      Leans:
+        Damage: 0.31
+        FireRate: -0.6
+        Recoil: 0.6
+        Spread: 0.12
+        Range: 0.6
+        MagazineSize: -0.49
     Scales:
       Damage: 1.31
       FireRate: 0.59
@@ -243,6 +291,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 0.88
       FireRate: 1.04
@@ -281,6 +337,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 1.08
       FireRate: 0.89
@@ -319,6 +383,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 0.81
       FireRate: 1.04
@@ -357,6 +429,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 1.04
       FireRate: 0.89
@@ -395,6 +475,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     - Name: Burst
       ModelName: 
       Weight: 3
@@ -415,6 +503,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 1
+      Leans:
+        Damage: -0.19
+        FireRate: 0
+        Recoil: 0
+        Spread: -0.16
+        Range: -0.12
+        MagazineSize: 0
     Scales:
       Damage: 0.92
       FireRate: 1.04
@@ -453,6 +549,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     - Name: Auto
       ModelName: 
       Weight: 2
@@ -473,6 +577,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 1
+      Leans:
+        Damage: -0.44
+        FireRate: 0.6
+        Recoil: -0.13
+        Spread: -0.26
+        Range: -0.38
+        MagazineSize: -0.26
     Scales:
       Damage: 0.77
       FireRate: 1.48
@@ -511,6 +623,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 0.88
       FireRate: 1.01
@@ -549,6 +669,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 0.77
       FireRate: 1.33
@@ -587,6 +715,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 0.85
       FireRate: 1.19
@@ -625,6 +761,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     - Name: Burst
       ModelName: 
       Weight: 1.5
@@ -645,6 +789,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 1
+      Leans:
+        Damage: 0.37
+        FireRate: -0.49
+        Recoil: 0.6
+        Spread: 0.12
+        Range: 0.6
+        MagazineSize: -0.49
     - Name: Auto
       ModelName: 
       Weight: 1.5
@@ -665,6 +817,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 1
+      Leans:
+        Damage: 0.31
+        FireRate: -0.49
+        Recoil: 0.6
+        Spread: 0.12
+        Range: 0.6
+        MagazineSize: -0.49
     Scales:
       Damage: 1.31
       FireRate: 0.67
@@ -703,6 +863,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 1.19
       FireRate: 0.89
@@ -741,6 +909,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 1.27
       FireRate: 0.81
@@ -779,6 +955,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 0.92
       FireRate: 1.11
@@ -817,6 +1001,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 0.73
       FireRate: 1.26
@@ -855,6 +1047,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 0.92
       FireRate: 1.04
@@ -893,6 +1093,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 0.85
       FireRate: 1.11
@@ -931,6 +1139,14 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      OwnLeans: 0
+      Leans:
+        Damage: 0
+        FireRate: 0
+        Recoil: 0
+        Spread: 0
+        Range: 0
+        MagazineSize: 0
     Scales:
       Damage: 0.81
       FireRate: 1.19
