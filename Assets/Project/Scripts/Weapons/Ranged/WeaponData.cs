@@ -122,8 +122,13 @@ namespace CGD.Weapons
         public float TacticalReloadTime = 2.1f;
         [Tooltip("Share of the reload after which the rounds are in. Sprinting or swapping away after it skips the rest of the reload; before it, the reload is lost")]
         [Range(0.3f, 1f)] public float ReloadCommitPoint = 0.8f;
-        [Tooltip("Loads one round at a time (a shotgun's shells), each taking Reload Time ÷ Magazine Size and in for good once loaded: an interrupted reload keeps every round already in. Tactical Reload Time and the commit point don't apply")]
-        public bool ReloadsPerRound;
+        [Tooltip("Rounds loaded per reload step: 0 = the whole magazine at once; 1 = one at a time (a pump shotgun, a bolt-action rifle); 2, 3… = that many per step. Each step takes Reload Time ÷ the steps a full load needs and is in for good once done: an interrupted reload keeps every step already loaded. With steps, Tactical Reload Time and the commit point don't apply")]
+        [Min(0)] public int RoundsPerLoad;
+
+        public bool LoadsInSteps => RoundsPerLoad > 0;
+
+        // Steps a full load from empty needs, and so how much of the reload time each takes.
+        public int LoadSteps(int magazineSize) => Mathf.Max(1, Mathf.CeilToInt(magazineSize / (float)Mathf.Max(1, RoundsPerLoad)));
 
         [Header("Accuracy")]
         [Tooltip("Cone half-angle while hip-firing (degrees)")]

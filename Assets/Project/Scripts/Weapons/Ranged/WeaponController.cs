@@ -126,7 +126,7 @@ namespace CGD.Weapons
 
         // Using an ability or a consumable, or starting a melee attack (the gun's bash), takes
         // the hands off the reload, like a sprint or dodge: lost before the commit point, done
-        // early after it. A per-round reload keeps every round already in. So a shell loaded,
+        // early after it. A reload in steps keeps every step already loaded. So a shell loaded,
         // then a bash, cancels the rest of the reload and keeps the shell. The weapon still
         // waits for the ability or item, so these mostly just save the time.
         private void OnAbilityStarted(Ability ability) => CancelReloadByAction();
@@ -454,7 +454,7 @@ namespace CGD.Weapons
             return whole + (UnityEngine.Random.value < extra - whole ? 1 : 0);
         }
 
-        private void StartReload() => _reload = StartCoroutine(D.ReloadsPerRound ? ReloadPerRound() : Reload());
+        private void StartReload() => _reload = StartCoroutine(D.LoadsInSteps ? ReloadInSteps() : Reload());
 
         // The rounds go in at the commit point; the rest is the tail of the animation, which
         // sprinting or a swap can skip. The magazine filling up is the cue that it's safe.
@@ -475,19 +475,20 @@ namespace CGD.Weapons
             EndReload();
         }
 
-        // One round at a time, each in for good once its share of the reload time is up, until
-        // the weapon is full or the reserve runs dry. The first round in is the commit point
-        // (Reloaded fires once, as for a magazine). An interrupt keeps every round already in.
-        private IEnumerator ReloadPerRound()
+        // RoundsPerLoad rounds at a time, each step in for good once its share of the reload
+        // time is up, until the weapon is full or the reserve runs dry. The first step in is the
+        // commit point (Reloaded fires once, as for a magazine). An interrupt keeps every step
+        // already loaded, so a bash right after one cancels the rest and keeps it.
+        private IEnumerator ReloadInSteps()
         {
             BeginReload();
 
-            float perRound = Mathf.Max(0.05f, Wielder(ItemStat.ReloadTime, _current.ReloadTime) / Mathf.Max(1, _current.MagazineSize));
-            var wait = new WaitForSeconds(perRound);
+            float perStep = Mathf.Max(0.05f, Wielder(ItemStat.ReloadTime, _current.ReloadTime) / D.LoadSteps(_current.MagazineSize));
+            var wait = new WaitForSeconds(perStep);
             while (CanReload)
             {
                 yield return wait;
-                if (LoadRounds(1, free: false) == 0) break;
+                if (LoadRounds(D.RoundsPerLoad, free: false) == 0) break;
                 if (_reloadCommitted) continue;
 
                 _reloadCommitted = true;

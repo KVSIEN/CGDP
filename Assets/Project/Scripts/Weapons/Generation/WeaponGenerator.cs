@@ -95,7 +95,7 @@ namespace CGD.Weapons
 
             d.ReloadTime         = roll.Sample(ItemStat.ReloadTime, cat.ReloadTime);
             d.TacticalReloadTime = Mathf.Max(0.5f, roll.Sample(ItemStat.ReloadTime, cat.TacticalReloadTime));
-            d.ReloadsPerRound    = cat.ReloadsPerRound;
+            d.RoundsPerLoad      = cat.RoundsPerLoad;
 
             FloatRange adsSpread  = firing != null && firing.AdsSpreadDeg.Max > 0f ? firing.AdsSpreadDeg : cat.AdsSpreadDeg;
             d.HipSpreadDeg        = roll.Sample(ItemStat.Spread, StyleScales.Scale(cat.HipSpreadDeg, scales.Spread));
