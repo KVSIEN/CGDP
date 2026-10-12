@@ -20,19 +20,19 @@ namespace CGD.Weapons
         public FireMode[] FireModes = { FireMode.Auto };
 
         [Header("Models")]
-        [Tooltip("Optional: the real-world models this category rolls, by weight, each with its own firing variants, stat lean and reload. Replaces Names, Fire Modes and Firing Styles when set")]
+        [Tooltip("Optional: the real-world models this category rolls, by weight, each with its own firing variants, scales, ammo, reload and recoil pattern. Replaces Names, Fire Modes and Firing Styles when set")]
         public WeaponModel[] Models = System.Array.Empty<WeaponModel>();
 
         [Header("Styles")]
         [Tooltip("Optional: weighted ways a weapon of this category can shoot (fire mode, pellets). Replaces Fire Modes when set")]
         public FiringStyle[] FiringStyles = System.Array.Empty<FiringStyle>();
-        [Tooltip("Optional: weighted stat leans (marksman, rapid…), rolled independently of the firing style")]
+        [Tooltip("Optional: weighted stat styles (marksman, rapid…), rolled independently of the firing style")]
         public StatStyle[] StatStyles = System.Array.Empty<StatStyle>();
 
         [Header("Firing")]
         public WeaponFireBehavior FireBehavior;
         public FloatRange RPM          = new(600, 800);
-        public IntRange   BurstCount   = new(3, 3);    // only used if Burst is in FireModes
+        public IntRange   BurstCount   = new(3, 3);    // only used by Burst fire
         public FloatRange BurstInterval = new(0.07f, 0.10f);
         [Tooltip("Pellets per shot. 1 for all non-shotgun types.")]
         public IntRange   PelletCount  = new(1, 1);
@@ -108,7 +108,8 @@ namespace CGD.Weapons
         public FloatRange RecoilScaleVertical   = new(0.9f, 1.5f);
         public FloatRange RecoilJitterVertical  = new(0.083f, 0.25f);
         public FloatRange RecoilScaleHorizontal = new(0.4f, 0.7f);
-        public FloatRange RecoilHorizontalBias  = new(-0.2f, 0.2f);  // drift direction
+        [Tooltip("Sideways lean for weapons without a model; a model's Recoil pattern sets its own")]
+        public FloatRange RecoilHorizontalBias  = new(-0.2f, 0.2f);
         public FloatRange MaxAccumulatedRecoil  = new(12f,  18f);
         public FloatRange MaxAccumulatedHorizontalRecoil = new(6f, 9f);
 

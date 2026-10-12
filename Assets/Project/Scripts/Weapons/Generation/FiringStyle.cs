@@ -4,14 +4,15 @@ using CGD.Core;
 
 namespace CGD.Weapons
 {
-    // How a weapon of a styled category shoots: its fire mode and, for a pellet style, the
-    // fire behavior and pellet cone. One is picked per weapon by Weight (see WeaponCategoryData).
+    // One way a model (or a styled category, like the Modular Pistol) shoots: its fire mode and
+    // what that variant changes — a name of its own, scales, pellets, reload steps, recoil.
+    // One is picked per weapon by Weight; anything left empty keeps the model's or category's.
     [Serializable]
     public class FiringStyle
     {
         [Tooltip("Put in front of the weapon's name, e.g. \"Burst\". Empty = nothing")]
         public string Name;
-        [Tooltip("Optional: the model name this variant goes by instead, e.g. M4A1 for an auto M16. Empty = the model's own")]
+        [Tooltip("Optional: the model name this variant goes by instead, e.g. M16A3 for an auto M16. Empty = the model's own")]
         public string ModelName;
         [Min(0f)] public float Weight = 1f;
         public FireMode FireMode = FireMode.Semi;

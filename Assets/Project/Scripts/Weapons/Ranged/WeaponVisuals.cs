@@ -10,7 +10,7 @@ namespace CGD.Weapons
     public class WeaponVisuals : MonoBehaviour
     {
         // Kick amounts are per degree of the weapon's own per-shot kick. These are the amounts
-        // for a balanced gun (MuzzleFlip 0.5); see Apply for how a gun's flip shares them out.
+        // for a balanced gun (WeaponData.BalancedMuzzleFlip); Apply shares them out by its flip.
         [Serializable]
         private struct KickProfile
         {
@@ -121,7 +121,7 @@ namespace CGD.Weapons
         /// </summary>
         public void AddKick(float vertKick, float horizKick, float adsT, float shotInterval)
         {
-            float flip = _data != null ? _data.MuzzleFlip : 0.5f;
+            float flip = _data != null ? _data.MuzzleFlip : WeaponData.BalancedMuzzleFlip;
             _hip.Apply(vertKick, horizKick, flip, 1f - adsT, ref _kickRot, ref _kickPos);
 
             // Start the new pulse from whatever is left of the previous one so it never pops.
