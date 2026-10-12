@@ -600,7 +600,7 @@ MonoBehaviour:
     FiringStyles:
     - Name: 
       ModelName: 
-      Weight: 6
+      Weight: 8
       FireMode: 0
       FireBehavior: {fileID: 0}
       PelletCount:
@@ -621,27 +621,6 @@ MonoBehaviour:
       RoundsPerLoad: 0
     - Name: 
       ModelName: AWP
-      Weight: 2
-      FireMode: 0
-      FireBehavior: {fileID: 0}
-      PelletCount:
-        Min: 0
-        Max: 0
-        Bias: 0
-      AdsSpreadDeg:
-        Min: 0
-        Max: 0
-        Bias: 0
-      Scales:
-        Damage: 1.05
-        FireRate: 1
-        Recoil: 1
-        Spread: 0.9
-        Range: 1
-        MagazineSize: 1
-      RoundsPerLoad: 0
-    - Name: 
-      ModelName: L115A3
       Weight: 2
       FireMode: 0
       FireBehavior: {fileID: 0}
