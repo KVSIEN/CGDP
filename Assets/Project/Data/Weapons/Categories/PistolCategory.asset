@@ -25,29 +25,924 @@ MonoBehaviour:
   _oneHanded: 1
   Type: 2
   Names:
-  - M9
   - Glock 17
-  - Desert Eagle
-  - USP-S
-  - P250
-  - Five-seveN
+  - M9
+  - USP
+  - MP-443
   - M1911
-  - .44 Magnum
+  - Luger P08
+  - Walther PP
+  - Mauser C96
   - Glock 18
-  - CZ-75
+  - TEC-9
+  - Beretta 93R
+  - CZ 75 Auto
+  - Desert Eagle
+  - .44 Magnum
+  - Taurus Judge
+  - Chiappa Rhino
+  - Ruger Mark IV
+  - Five-seveN
+  - Tac-45
+  - P250
   FireModes: 00000000000000000000000001000000
+  Models:
+  - Name: Glock 17
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.62
+      FireRate: 0.89
+      Recoil: 0.89
+      Spread: 0.94
+      Range: 0.77
+      MagazineSize: 1.76
+    Leans:
+      Damage: -0.57
+      FireRate: -0.16
+      Recoil: -0.16
+      Spread: -0.09
+      Range: -0.34
+      MagazineSize: 0.6
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: M9
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.65
+      FireRate: 0.84
+      Recoil: 0.84
+      Spread: 0.91
+      Range: 0.85
+      MagazineSize: 1.55
+    Leans:
+      Damage: -0.52
+      FireRate: -0.24
+      Recoil: -0.24
+      Spread: -0.13
+      Range: -0.23
+      MagazineSize: 0.6
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: USP
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.7
+      FireRate: 0.8
+      Recoil: 0.93
+      Spread: 0.83
+      Range: 0.94
+      MagazineSize: 1.24
+    Leans:
+      Damage: -0.45
+      FireRate: -0.3
+      Recoil: -0.1
+      Spread: -0.26
+      Range: -0.09
+      MagazineSize: 0.36
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: MP-443
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.62
+      FireRate: 0.93
+      Recoil: 0.89
+      Spread: 0.98
+      Range: 0.72
+      MagazineSize: 1.86
+    Leans:
+      Damage: -0.57
+      FireRate: -0.1
+      Recoil: -0.16
+      Spread: 0
+      Range: -0.42
+      MagazineSize: 0.6
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: M1911
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.85
+      FireRate: 0.73
+      Recoil: 1.16
+      Spread: 0.98
+      Range: 0.94
+      MagazineSize: 0.72
+    Leans:
+      Damage: -0.23
+      FireRate: -0.41
+      Recoil: 0.24
+      Spread: 0
+      Range: -0.09
+      MagazineSize: -0.42
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: Luger P08
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.68
+      FireRate: 0.89
+      Recoil: 0.8
+      Spread: 0.83
+      Range: 0.94
+      MagazineSize: 0.83
+    Leans:
+      Damage: -0.48
+      FireRate: -0.16
+      Recoil: -0.3
+      Spread: -0.26
+      Range: -0.09
+      MagazineSize: -0.26
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: Walther PP
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.55
+      FireRate: 1
+      Recoil: 0.71
+      Spread: 0.98
+      Range: 0.6
+      MagazineSize: 0.83
+    Leans:
+      Damage: -0.6
+      FireRate: 0
+      Recoil: -0.44
+      Spread: 0
+      Range: -0.6
+      MagazineSize: -0.26
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: Mauser C96
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 8
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    - Name: 
+      ModelName: M712
+      Weight: 2
+      FireMode: 1
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 0.85
+        FireRate: 2.3
+        Recoil: 1.3
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.75
+      FireRate: 0.84
+      Recoil: 0.98
+      Spread: 1.06
+      Range: 1.28
+      MagazineSize: 1.03
+    Leans:
+      Damage: -0.38
+      FireRate: -0.24
+      Recoil: 0
+      Spread: 0.09
+      Range: 0.42
+      MagazineSize: 0
+    RoundsPerLoad: 10
+    AmmoType: 0
+  - Name: Glock 18
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 1
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.45
+      FireRate: 2.44
+      Recoil: 0.62
+      Spread: 1.13
+      Range: 0.51
+      MagazineSize: 2.07
+    Leans:
+      Damage: -0.6
+      FireRate: 0.6
+      Recoil: -0.57
+      Spread: 0.19
+      Range: -0.6
+      MagazineSize: 0.6
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: TEC-9
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 1
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.45
+      FireRate: 2.11
+      Recoil: 0.58
+      Spread: 1.21
+      Range: 0.55
+      MagazineSize: 2.48
+    Leans:
+      Damage: -0.6
+      FireRate: 0.6
+      Recoil: -0.6
+      Spread: 0.31
+      Range: -0.6
+      MagazineSize: 0.6
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: Beretta 93R
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 2
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.55
+      FireRate: 2.44
+      Recoil: 0.67
+      Spread: 0.98
+      Range: 0.77
+      MagazineSize: 2.07
+    Leans:
+      Damage: -0.6
+      FireRate: 0.6
+      Recoil: -0.49
+      Spread: 0
+      Range: -0.34
+      MagazineSize: 0.6
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: CZ 75 Auto
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 1
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.5
+      FireRate: 2.22
+      Recoil: 0.58
+      Spread: 1.06
+      Range: 0.68
+      MagazineSize: 1.65
+    Leans:
+      Damage: -0.6
+      FireRate: 0.6
+      Recoil: -0.6
+      Spread: 0.09
+      Range: -0.48
+      MagazineSize: 0.6
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: Desert Eagle
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 1.38
+      FireRate: 0.67
+      Recoil: 1.56
+      Spread: 1.13
+      Range: 1.06
+      MagazineSize: 0.72
+    Leans:
+      Damage: 0.57
+      FireRate: -0.49
+      Recoil: 0.6
+      Spread: 0.19
+      Range: 0.09
+      MagazineSize: -0.42
+    RoundsPerLoad: 0
+    AmmoType: 4
+  - Name: .44 Magnum
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 85
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    - Name: 
+      ModelName: 
+      Weight: 15
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 6
+    Scales:
+      Damage: 1.5
+      FireRate: 0.44
+      Recoil: 1.6
+      Spread: 1.21
+      Range: 1.28
+      MagazineSize: 0.62
+    Leans:
+      Damage: 0.6
+      FireRate: -0.6
+      Recoil: 0.6
+      Spread: 0.31
+      Range: 0.42
+      MagazineSize: -0.57
+    RoundsPerLoad: 1
+    AmmoType: 4
+  - Name: Taurus Judge
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 85
+      FireMode: 0
+      FireBehavior: {fileID: 11400000, guid: e2cbfa746aa878d4aa23d60289c75ece, type: 2}
+      PelletCount:
+        Min: 5
+        Max: 6
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 3
+        Max: 4
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    - Name: 
+      ModelName: 
+      Weight: 15
+      FireMode: 0
+      FireBehavior: {fileID: 11400000, guid: e2cbfa746aa878d4aa23d60289c75ece, type: 2}
+      PelletCount:
+        Min: 5
+        Max: 6
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 3
+        Max: 4
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 5
+    Scales:
+      Damage: 0.23
+      FireRate: 0.49
+      Recoil: 1.33
+      Spread: 1.32
+      Range: 0.34
+      MagazineSize: 0.52
+    Leans:
+      Damage: -0.6
+      FireRate: -0.6
+      Recoil: 0.5
+      Spread: 0.48
+      Range: -0.6
+      MagazineSize: -0.6
+    RoundsPerLoad: 1
+    AmmoType: 5
+  - Name: Chiappa Rhino
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 85
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    - Name: 
+      ModelName: 
+      Weight: 15
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 6
+    Scales:
+      Damage: 1.05
+      FireRate: 0.71
+      Recoil: 1.07
+      Spread: 0.98
+      Range: 1.02
+      MagazineSize: 0.62
+    Leans:
+      Damage: 0.08
+      FireRate: -0.44
+      Recoil: 0.11
+      Spread: 0
+      Range: 0
+      MagazineSize: -0.57
+    RoundsPerLoad: 1
+    AmmoType: 4
+  - Name: Ruger Mark IV
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.5
+      FireRate: 1.11
+      Recoil: 0.4
+      Spread: 0.6
+      Range: 0.85
+      MagazineSize: 1.03
+    Leans:
+      Damage: -0.6
+      FireRate: 0.17
+      Recoil: -0.6
+      Spread: -0.6
+      Range: -0.23
+      MagazineSize: 0
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: Five-seveN
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.62
+      FireRate: 0.89
+      Recoil: 0.67
+      Spread: 0.83
+      Range: 0.94
+      MagazineSize: 2.07
+    Leans:
+      Damage: -0.57
+      FireRate: -0.16
+      Recoil: -0.49
+      Spread: -0.26
+      Range: -0.09
+      MagazineSize: 0.6
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: Tac-45
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.85
+      FireRate: 0.8
+      Recoil: 1.07
+      Spread: 0.83
+      Range: 0.94
+      MagazineSize: 1.03
+    Leans:
+      Damage: -0.23
+      FireRate: -0.3
+      Recoil: 0.11
+      Spread: -0.26
+      Range: -0.09
+      MagazineSize: 0
+    RoundsPerLoad: 0
+    AmmoType: 0
+  - Name: P250
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+    Scales:
+      Damage: 0.65
+      FireRate: 0.93
+      Recoil: 0.84
+      Spread: 0.87
+      Range: 0.77
+      MagazineSize: 1.34
+    Leans:
+      Damage: -0.52
+      FireRate: -0.1
+      Recoil: -0.24
+      Spread: -0.2
+      Range: -0.34
+      MagazineSize: 0.51
+    RoundsPerLoad: 0
+    AmmoType: 0
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:
     Min: 300
     Max: 600
     Bias: 0
   BurstCount:
-    Min: 2
-    Max: 2
+    Min: 3
+    Max: 3
     Bias: 0
   BurstInterval:
-    Min: 0.08
-    Max: 0.12
+    Min: 0.05
+    Max: 0.07
     Bias: 0
   PelletCount:
     Min: 1

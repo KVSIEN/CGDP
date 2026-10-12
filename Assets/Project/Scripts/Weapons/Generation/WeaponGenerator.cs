@@ -96,14 +96,15 @@ namespace CGD.Weapons
             d.RangeFalloffEnd    = Mathf.Max(d.RangeOptimal + 10f, StyleScales.Scale(cat.RangeFalloffEnd, scales.Range, leans.Range).EvaluateClamped(random));
             d.DamageFalloffMin   = cat.DamageFalloffMin.EvaluateClamped(random);
 
-            d.AmmoType     = cat.AmmoType;
+            d.AmmoType     = model != null && model.AmmoType != AmmoType.None ? model.AmmoType : cat.AmmoType;
             bool automatic = d.FireMode == FireMode.Auto || d.FireMode == FireMode.Burst;
             IntRange magazine = automatic && cat.AutomaticMagazineSize.Max > 0 ? cat.AutomaticMagazineSize : cat.MagazineSize;
             d.MagazineSize = roll.Sample(ItemStat.MagazineSize, StyleScales.Scale(magazine, scales.MagazineSize, leans.MagazineSize));
 
             d.ReloadTime         = roll.Sample(ItemStat.ReloadTime, cat.ReloadTime);
             d.TacticalReloadTime = Mathf.Max(0.5f, roll.Sample(ItemStat.ReloadTime, cat.TacticalReloadTime));
-            d.RoundsPerLoad      = model != null ? model.RoundsPerLoad : 0;
+            d.RoundsPerLoad      = firing != null && firing.RoundsPerLoad > 0 ? firing.RoundsPerLoad
+                                 : model != null ? model.RoundsPerLoad : 0;
 
             FloatRange adsSpread  = firing != null && firing.AdsSpreadDeg.Max > 0f ? firing.AdsSpreadDeg : cat.AdsSpreadDeg;
             d.HipSpreadDeg        = roll.Sample(ItemStat.Spread, StyleScales.Scale(cat.HipSpreadDeg, scales.Spread, leans.Spread));

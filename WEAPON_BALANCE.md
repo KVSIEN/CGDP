@@ -140,9 +140,17 @@ lowering base damage.
 - **Best at**: one-shot kill at 3–8m; punishes anyone who enters.
 - **Weakness**: pellet spread makes 15m+ shots miss most damage; ShotgunShells is its own scarce pool.
 - **What a Legendary shotgun feels like**: tighter pellet pattern, faster follow-up, higher per-pellet damage roll.
-- **Reload**: `ReloadStyles` 4 : 1 — pump/tube models one shell per step, the AA-12 magazine-fed; each step takes ReloadTime ÷ steps for a full load (about 0.45–0.6 s), so the Tube axis trades capacity for a slower full reload but not slower shells. Loaded shells survive any interrupt, which enables blast → one shell → bash-cancel → blast. Sniper rifles are the reverse, 4 : 1 magazine to one-round-per-step (only older bolt-actions: Kar98k, Mosin-Nagant). A future revolver category should weight one round per step heavily (around 9 : 1 against a speedloader-style full load).
+- **Reload**: `ReloadStyles` 4 : 1 — pump/tube models one shell per step, the AA-12 magazine-fed; each step takes ReloadTime ÷ steps for a full load (about 0.45–0.6 s), so the Tube axis trades capacity for a slower full reload but not slower shells. Loaded shells survive any interrupt, which enables blast → one shell → bash-cancel → blast. Sniper rifles are the reverse, 4 : 1 magazine to one-round-per-step (only older bolt-actions: Kar98k, Mosin-Nagant). Revolvers (pistol H-Series) weight one round per step 85 : 15 against a speedloader full load.
 
 ### Pistol
+- **Models** (`Models` on the category, all equal weight, so each series is 20%):
+  - **S-Series** (service pistols; reliable all-rounders): Glock 17 (17 rds), M9, USP (hardest hits, 12 rds, steadiest), MP-443 (18 rds, fastest of the four)
+  - **C-Series** (classics; older designs, small magazines): M1911 (34 dmg, 3-shot kill, 7 rds), Luger P08 (low recoil, accurate), Walther PP (weakest and quickest to draw), Mauser C96 (30 m reach, reloads from 10-round stripper clips; 20% are the full-auto "M712")
+  - **A-Series** (automatics): Glock 18 (1100 RPM), TEC-9 (24 rds, loosest), Beretta 93R (3-round burst at 0.055 s — the category's burst count is 3–3, interval 0.05–0.07 s), CZ 75 Auto (fastest TTK of the series, 16 rds)
+  - **H-Series** (high power; magnums and revolvers): Desert Eagle (55 dmg, 2-shot kill), .44 Magnum (60 dmg, slowest cycle), Taurus Judge (a 6-pellet shotgun revolver on ShotgunShells; 2-shot kill inside 8 m), Chiappa Rhino (.357; the fast, low-recoil revolver — 42 × 320, 3-shot kill)
+  - **T-Series** (tactical; modern high-end): Ruger Mark IV (.22 — near-recoilless, tightest spread, quietest), Five-seveN (20 rds, 30% armor penetration on the T1), Tac-45 (34 dmg, 3-shot kill, 10 rds), P250 (fastest draw)
+  - Models set their own ammo: the H-Series fires HeavyRounds (the Judge ShotgunShells) while the category stays LightRounds. Revolvers load one round per step; 15% of them roll with a speedloader that loads the whole cylinder in one step.
+  - Scales and leans are built like the AR's, against the pistol midpoints (40 dmg, 450 RPM, 23.5 m, 9.67 rds, 2.25 recoil, 2.65° hip spread). Semi-auto service pistols land at 0.43–0.50 s, automatics at 0.24–0.32 s, and the hand cannons at 0.20–0.38 s, paid for with ammo pool, magazine and recoil.
 - **Best at**: always-ready backup; LightRounds abundance means it never runs dry.
 - **Weakness**: low damage per shot, small mag, sustained fire loses to any primary.
 - **What a Legendary pistol feels like**: faster ADS, larger mag, tighter first-shot accuracy.
@@ -249,7 +257,7 @@ axis decides which end a weapon lands on, so the band reads as a spectrum:
 |---|---|---|---|
 | AR      | CQB carbine — 900 RPM, 18 dmg, 30 m  | Battle rifle — 450 RPM, 34 dmg, 90 m   | 20 models in five series (see AR); e.g. `AUG_T1` 680×23, `G36C_T1` 850×19, `FAL_T1` 450×34 |
 | SMG     | PDW / machine pistol — 1200 RPM, 13 dmg, 12 m | Heavy SMG — 600 RPM, 28 dmg, 40 m | 20 models in five series (see SMG); e.g. `MP5_T1` 850×18, `MAC10_T1` 1150×19, `Thompson_T1` 650×24 |
-| Pistol  | Glock — 600 RPM, 20 dmg, 12 m        | Hand cannon — 200 RPM, 60 dmg, 35 m    | `Glock17_T1` 400×25 / `DesertEagle_T1` 300×55 |
+| Pistol  | Glock — 600 RPM, 20 dmg, 12 m        | Hand cannon — 200 RPM, 60 dmg, 35 m    | 20 models in five series (see Pistol); e.g. `Glock17_T1` 400×25, `Glock18_T1` 1100×18, `DesertEagle_T1` 300×55 |
 | Sniper  | Semi-auto DMR — 260 RPM, 45 dmg, 50 m | Bolt / AMR — 35 RPM, 170 dmg, 220 m   | `Kar98k_T1` 45×95, 120 m |
 | LMG     | High-cyclic MG — 1200 RPM, 24 dmg    | Heavy GPMG — 500 RPM, 45 dmg           | `M249_T1` 700×30, 55 m |
 | Shotgun | Auto — 260 RPM, 9 dmg × 6 pellets    | Pump — 60 RPM, 18 dmg × 8 pellets      | `M870_T1` 60×12×8, 10 m |
@@ -294,9 +302,9 @@ prototyping but should be filled in before shipping.
 
 ## Tier 1 Reference Weapons
 
-Seven hand-authored Common-tier (Tier 1) assets live in
-`Assets/Project/Data/Weapons/Ranged/T1/` — one per category plus a hand-cannon
-variant. They are the concrete example of what "Common feels like" and the
+Hand-authored Common-tier (Tier 1) assets live in
+`Assets/Project/Data/Weapons/Ranged/T1/` — one per model for the AR, SMG and
+pistol rosters, one per remaining category. They are the concrete example of what "Common feels like" and the
 first thing to compare a new weapon against.
 
 | Asset             | Category    | Damage × RPM        | Ammo           | STK / TTK    | Notes                                        |
@@ -341,8 +349,26 @@ first thing to compare a new weapon against.
 | `Vector_T1`       | SMG · P-Series  | 18 × 1200           | LightRounds    | 6 / 0.25s    | 18 m, 25 rds, draw 0.42s |
 | `QCW05_T1`        | SMG · P-Series  | 17 × 900            | LightRounds    | 6 / 0.33s    | 24 m, 50 rds, draw 0.45s |
 | `Bizon_T1`        | SMG · P-Series  | 20 × 700            | LightRounds    | 5 / 0.34s    | 22 m, 64 rds, draw 0.5s |
-| `Glock17_T1`      | Pistol      | 25 × 400 (Semi)     | LightRounds    | 4 / 0.45s    | Snappiest ADS in the roster                  |
-| `DesertEagle_T1`  | Pistol      | 55 × 300 (Semi)     | HeavyRounds    | 2 / 0.4s     | Overrides AmmoType — hand-cannon niche       |
+| `Glock17_T1`      | Pistol · S-Series | 25 × 400 (Semi)     | LightRounds    | 4 / 0.45s    | 18 m, 17 rds, draw 0.35s |
+| `M9_T1`           | Pistol · S-Series | 26 × 380 (Semi)     | LightRounds    | 4 / 0.47s    | 20 m, 15 rds, draw 0.38s |
+| `USP_T1`          | Pistol · S-Series | 28 × 360 (Semi)     | LightRounds    | 4 / 0.50s    | 22 m, 12 rds, draw 0.4s |
+| `MP443_T1`        | Pistol · S-Series | 25 × 420 (Semi)     | LightRounds    | 4 / 0.43s    | 17 m, 18 rds, draw 0.36s |
+| `M1911_T1`        | Pistol · C-Series | 34 × 330 (Semi)     | LightRounds    | 3 / 0.36s    | 22 m, 7 rds, draw 0.42s |
+| `LugerP08_T1`     | Pistol · C-Series | 27 × 400 (Semi)     | LightRounds    | 4 / 0.45s    | 22 m, 8 rds, draw 0.4s |
+| `WaltherPP_T1`    | Pistol · C-Series | 22 × 450 (Semi)     | LightRounds    | 5 / 0.53s    | 14 m, 8 rds, draw 0.3s |
+| `MauserC96_T1`    | Pistol · C-Series | 30 × 380 (Semi)     | LightRounds    | 4 / 0.47s    | 30 m, 10 rds, draw 0.5s, 10-round stripper clip per step |
+| `Glock18_T1`      | Pistol · A-Series | 18 × 1100           | LightRounds    | 6 / 0.27s    | 12 m, 20 rds, draw 0.35s |
+| `TEC9_T1`         | Pistol · A-Series | 18 × 950            | LightRounds    | 6 / 0.32s    | 13 m, 24 rds, draw 0.38s |
+| `Beretta93R_T1`   | Pistol · A-Series | 22 × 1100 (Burst)   | LightRounds    | 5 / two bursts | 18 m, 20 rds, draw 0.4s |
+| `CZ75Auto_T1`     | Pistol · A-Series | 20 × 1000           | LightRounds    | 5 / 0.24s    | 16 m, 16 rds, draw 0.38s |
+| `DesertEagle_T1`  | Pistol · H-Series | 55 × 300 (Semi)     | HeavyRounds    | 2 / 0.20s    | 25 m, 7 rds, draw 0.55s, 15% armor pen |
+| `Magnum44_T1`     | Pistol · H-Series | 60 × 200 (Semi)     | HeavyRounds    | 2 / 0.30s    | 30 m, 6 rds, draw 0.55s, one round per step, 15% armor pen |
+| `TaurusJudge_T1`  | Pistol · H-Series | 9 × 6 pellets × 220 (Semi) | ShotgunShells  | 2 / 0.27s    | 8 m, 5 rds, draw 0.5s, one round per step — 2-shot inside 8 m |
+| `ChiappaRhino_T1` | Pistol · H-Series | 42 × 320 (Semi)     | HeavyRounds    | 3 / 0.38s    | 24 m, 6 rds, draw 0.45s, one round per step |
+| `RugerMarkIV_T1`  | Pistol · T-Series | 20 × 500 (Semi)     | LightRounds    | 5 / 0.48s    | 20 m, 10 rds, draw 0.32s, quietest (15 m) |
+| `FiveSeveN_T1`    | Pistol · T-Series | 25 × 400 (Semi)     | LightRounds    | 4 / 0.45s    | 22 m, 20 rds, draw 0.35s, 30% armor pen |
+| `Tac45_T1`        | Pistol · T-Series | 34 × 360 (Semi)     | LightRounds    | 3 / 0.33s    | 22 m, 10 rds, draw 0.35s |
+| `P250_T1`         | Pistol · T-Series | 26 × 420 (Semi)     | LightRounds    | 4 / 0.43s    | 18 m, 13 rds, draw 0.32s |
 | `Kar98k_T1`       | Sniper      | 95 × 45 (bolt)      | HeavyRounds    | 1 / 1.3s     | Body-shot two-taps only if damage rolls hot  |
 | `M249_T1`         | LMG         | 30 × 700            | StandardRounds | 4 / 0.26s    | Best DPS, worst handling & 6.5s reload       |
 | `M870_T1`         | Shotgun     | 12 × 8 pellets × 60 | ShotgunShells  | 1 / 0.15s    | All-pellets-hit at ≤10m; drops to 2-shot past that |

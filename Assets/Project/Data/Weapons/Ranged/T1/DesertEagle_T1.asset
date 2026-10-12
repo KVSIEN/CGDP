@@ -38,6 +38,7 @@ MonoBehaviour:
   MagazineSize: 7
   ReloadTime: 2.2
   TacticalReloadTime: 1.7
+  RoundsPerLoad: 0
   HipSpreadDeg: 3
   AdsSpreadDeg: 0.05
   AdsSpreadMultiplier: 0

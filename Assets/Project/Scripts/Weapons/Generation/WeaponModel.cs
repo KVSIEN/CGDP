@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using CGD.Items;
 
 namespace CGD.Weapons
 {
@@ -19,5 +20,7 @@ namespace CGD.Weapons
         public StyleLeans Leans;
         [Tooltip("Rounds loaded per reload step: 0 = the whole magazine at once; 1 = one at a time; 2, 3… = that many")]
         [Min(0)] public int RoundsPerLoad;
+        [Tooltip("Ammo this model fires, e.g. Heavy Rounds for a magnum revolver. None = the category's")]
+        public AmmoType AmmoType;
     }
 }
