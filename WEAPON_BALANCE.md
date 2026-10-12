@@ -97,11 +97,19 @@ lowering base damage.
 ## Category Niches
 
 ### Sniper
+- **Models** (`Models` on the category, all equal weight, so each series is 20%):
+  - **B-Series** (big bore: .50 anti-materiel; one body shot at any range, 40% armor penetration on the T1s): Barrett M82A1 (semi, 10 rds), AS50 (faster, lighter semi), Tac-50 (bolt, biggest single hit in the game: 165), M200 Intervention (bolt, longest reach, deepest scope)
+  - **C-Series** (classics; older bolt-actions loaded one round per step): Kar98k, Mosin-Nagant (hardest-hitting classic, the only one-shot body kill), Lee-Enfield (fastest bolt, 10 rds — a slow full reload), Springfield M1903 (most accurate, least recoil)
+  - **D-Series** (designated marksman rifles: semi-auto, 2–3 shots, **Standard Rounds** — shared with ARs/LMGs, not the sniper pool): M110 (all-rounder, 20 rds), M21 EBR (faster, more kick), PSG1 (precision: lowest recoil, tightest cone), QBU-88 (bullpup: 260 RPM, 3-shot kill, quickest handling)
+  - **S-Series** (Soviet and Russian): SVD Dragunov (semi), SVU (bullpup SVD; 20% the full-auto "SVU-A"), VSS (integrally suppressed — heard at 12 m — short range, 20 rds, on Standard Rounds), SV-98 (the series' bolt-action)
+  - **T-Series** (tactical: modern bolt-actions, one body shot): L96A1 (20% "AWP", slightly harder and tighter; 20% "L115A3", the .338 magnum: harder, longer, slower, more kick), M40 (fastest modern bolt; 20% "M2010", .300 Win Mag), DSR-1 (bullpup: fastest draw and ADS; 20% "SRS"), JNG-90 (10-round modern bolt)
+  - Scales and leans are built like the AR's, against the sniper midpoints (107.5 dmg, 150 RPM, 135 m, 6.67 rds — the median of its low-weighted 5–12 window — 3.9 recoil, 10.5° hip spread). The category's fire rate, damage, range and magazine windows were narrowed to AR-like widths around those midpoints (RPM 100–200, damage 75–140, range 70–200 m, magazine 5–12) because a model's window is the category's times its scale: the old DMR-to-AMR spans (35–260 RPM, 45–170 dmg) gave a Kar98k 11–81 RPM. The low magazine weighting stacks with a small-magazine model's lean, so 5-round rifles mostly roll 4.
 - **Best at**: single-target elimination from >80m; Time To First Kill from ambush.
 - **Weakness**: sustained fire, close quarters, slow bolt cycle, small magazine, HeavyRounds are scarce (shared with hand cannons).
 - **What a Legendary sniper feels like**: same one-shot potential, better bolt cycle (lower RPM tax), tighter first-shot scope, faster reload.
 
 ### DMR
+- **Models**: the sniper D-Series (M110, M21 EBR, PSG1, QBU-88), plus the S-Series' SVD, SVU and VSS.
 - **Best at**: precise ranged fire with follow-up shots; picks between Sniper and AR range bands. Hard-hitting variants (low RoF, heavy recoil, damage rolled to the top of the range) drop into two-shot territory to body — one-shot to head — trading cadence for burst damage.
 - **Weakness**: outclassed at extreme range by sniper, at close quarters by AR/SMG. StandardRounds shared with AR/LMG.
 - **What a Legendary DMR feels like**: near-sniper accuracy at half the cycle time.
@@ -140,7 +148,7 @@ lowering base damage.
 - **Best at**: one-shot kill at 3–8m; punishes anyone who enters.
 - **Weakness**: pellet spread makes 15m+ shots miss most damage; ShotgunShells is its own scarce pool.
 - **What a Legendary shotgun feels like**: tighter pellet pattern, faster follow-up, higher per-pellet damage roll.
-- **Reload**: `ReloadStyles` 4 : 1 — pump/tube models one shell per step, the AA-12 magazine-fed; each step takes ReloadTime ÷ steps for a full load (about 0.45–0.6 s), so the Tube axis trades capacity for a slower full reload but not slower shells. Loaded shells survive any interrupt, which enables blast → one shell → bash-cancel → blast. Sniper rifles are the reverse, 4 : 1 magazine to one-round-per-step (only older bolt-actions: Kar98k, Mosin-Nagant). Revolvers (pistol H-Series) weight one round per step 85 : 15 against a speedloader full load.
+- **Reload**: `ReloadStyles` 4 : 1 — pump/tube models one shell per step, the AA-12 magazine-fed; each step takes ReloadTime ÷ steps for a full load (about 0.45–0.6 s), so the Tube axis trades capacity for a slower full reload but not slower shells. Loaded shells survive any interrupt, which enables blast → one shell → bash-cancel → blast. Sniper rifles are the reverse, 4 : 1 magazine to one-round-per-step: only the C-Series classics (Kar98k, Mosin-Nagant, Lee-Enfield, Springfield M1903) load a round at a time. Revolvers (pistol H-Series) weight one round per step 85 : 15 against a speedloader full load.
 
 ### Pistol
 - **Models** (`Models` on the category, all equal weight, so each series is 20%):
@@ -258,13 +266,14 @@ axis decides which end a weapon lands on, so the band reads as a spectrum:
 | AR      | CQB carbine — 900 RPM, 18 dmg, 30 m  | Battle rifle — 450 RPM, 34 dmg, 90 m   | 20 models in five series (see AR); e.g. `AUG_T1` 680×23, `G36C_T1` 850×19, `FAL_T1` 450×34 |
 | SMG     | PDW / machine pistol — 1200 RPM, 13 dmg, 12 m | Heavy SMG — 600 RPM, 28 dmg, 40 m | 20 models in five series (see SMG); e.g. `MP5_T1` 850×18, `MAC10_T1` 1150×19, `Thompson_T1` 650×24 |
 | Pistol  | Glock — 600 RPM, 20 dmg, 12 m        | Hand cannon — 200 RPM, 60 dmg, 35 m    | 20 models in five series (see Pistol); e.g. `Makarov_T1` 380×27, `Glock18_T1` 1100×18, `DesertEagle_T1` 300×55 |
-| Sniper  | Semi-auto DMR — 260 RPM, 45 dmg, 50 m | Bolt / AMR — 35 RPM, 170 dmg, 220 m   | `Kar98k_T1` 45×95, 120 m |
+| Sniper  | Semi-auto DMR — 260 RPM, 45 dmg, 50 m | Bolt / AMR — 35 RPM, 170 dmg, 220 m   | 20 models in five series (see Sniper); e.g. `Kar98k_T1` 45×95, `QBU88_T1` 260×45, `Tac50_T1` 38×165 |
 | LMG     | High-cyclic MG — 1200 RPM, 24 dmg    | Heavy GPMG — 500 RPM, 45 dmg           | `M249_T1` 700×30, 55 m |
 | Shotgun | Auto — 260 RPM, 9 dmg × 6 pellets    | Pump — 60 RPM, 18 dmg × 8 pellets      | `M870_T1` 60×12×8, 10 m |
 
 The Sniper band is where the **DMR row** in the category table above comes from.
-There is no separate DMR `WeaponType` — marksman rifles are the fast end of
-Sniper, reached by a negative Punch lean.
+There is no separate DMR `WeaponType` — marksman rifles are the sniper D-Series
+(and the S-Series semi-autos), the fast end of Sniper. The poles above are the
+band the models span; the category's own windows are narrower (see Sniper).
 
 Shotgun `PelletCount` stays ≥ 6 deliberately. It rolls uniformly rather than
 through an axis, so a 1-pellet "slug" roll could not have its damage
@@ -303,8 +312,8 @@ prototyping but should be filled in before shipping.
 ## Tier 1 Reference Weapons
 
 Hand-authored Common-tier (Tier 1) assets live in
-`Assets/Project/Data/Weapons/Ranged/T1/` — one per model for the AR, SMG and
-pistol rosters, one per remaining category. They are the concrete example of what "Common feels like" and the
+`Assets/Project/Data/Weapons/Ranged/T1/` — one per model for the AR, SMG,
+pistol and sniper rosters, one per remaining category. They are the concrete example of what "Common feels like" and the
 first thing to compare a new weapon against.
 
 | Asset             | Category    | Damage × RPM        | Ammo           | STK / TTK    | Notes                                        |
@@ -370,7 +379,26 @@ first thing to compare a new weapon against.
 | `FiveSeveN_T1`    | Pistol · T-Series | 25 × 400 (Semi)     | LightRounds    | 4 / 0.45s    | 22 m, 20 rds, draw 0.35s, 30% armor pen |
 | `Tac45_T1`        | Pistol · T-Series | 34 × 360 (Semi)     | LightRounds    | 3 / 0.33s    | 22 m, 10 rds, draw 0.35s |
 | `P250_T1`         | Pistol · T-Series | 26 × 420 (Semi)     | LightRounds    | 4 / 0.43s    | 18 m, 13 rds, draw 0.32s |
-| `Kar98k_T1`       | Sniper      | 95 × 45 (bolt)      | HeavyRounds    | 1 / 1.3s     | Body-shot two-taps only if damage rolls hot  |
+| `BarrettM82A1_T1`     | Sniper · B-Series | 130 × 120 (semi)    | HeavyRounds    | 1 / one shot | 180 m, 10 rds, draw 0.95s, 40% armor pen |
+| `AS50_T1`             | Sniper · B-Series | 115 × 160 (semi)    | HeavyRounds    | 1 / one shot | 160 m, 5 rds, draw 0.85s, 40% armor pen |
+| `Tac50_T1`            | Sniper · B-Series | 165 × 38 (bolt)     | HeavyRounds    | 1 / one shot | 220 m, 5 rds, draw 1.0s, 40% armor pen |
+| `M200_T1`             | Sniper · B-Series | 150 × 45 (bolt)     | HeavyRounds    | 1 / one shot | 220 m, 7 rds, draw 0.95s, 40% armor pen |
+| `Kar98k_T1`           | Sniper · C-Series | 95 × 45 (bolt)      | HeavyRounds    | 2 / 1.33s    | 120 m, 5 rds, draw 0.7s, one round per step |
+| `MosinNagant_T1`      | Sniper · C-Series | 100 × 40 (bolt)     | HeavyRounds    | 1 / one shot | 130 m, 5 rds, draw 0.75s, one round per step |
+| `LeeEnfield_T1`       | Sniper · C-Series | 85 × 60 (bolt)      | HeavyRounds    | 2 / 1.00s    | 110 m, 10 rds, draw 0.7s, one round per step |
+| `SpringfieldM1903_T1` | Sniper · C-Series | 95 × 45 (bolt)      | HeavyRounds    | 2 / 1.33s    | 140 m, 5 rds, draw 0.7s, one round per step |
+| `M110_T1`             | Sniper · D-Series | 55 × 170 (semi)     | StandardRounds | 2 / 0.35s    | 90 m, 20 rds, draw 0.65s |
+| `M21EBR_T1`           | Sniper · D-Series | 50 × 190 (semi)     | StandardRounds | 2 / 0.32s    | 80 m, 20 rds, draw 0.65s |
+| `PSG1_T1`             | Sniper · D-Series | 70 × 160 (semi)     | StandardRounds | 2 / 0.38s    | 110 m, 10 rds, draw 0.7s |
+| `QBU88_T1`            | Sniper · D-Series | 45 × 260 (semi)     | StandardRounds | 3 / 0.46s    | 70 m, 10 rds, draw 0.6s |
+| `SVD_T1`              | Sniper · S-Series | 75 × 160 (semi)     | HeavyRounds    | 2 / 0.38s    | 110 m, 10 rds, draw 0.75s |
+| `SVU_T1`              | Sniper · S-Series | 65 × 180 (semi)     | HeavyRounds    | 2 / 0.33s    | 80 m, 10 rds, draw 0.65s |
+| `VSS_T1`              | Sniper · S-Series | 45 × 240 (semi)     | StandardRounds | 3 / 0.50s    | 50 m, 20 rds, draw 0.55s, suppressed (heard at 12 m) |
+| `SV98_T1`             | Sniper · S-Series | 105 × 50 (bolt)     | HeavyRounds    | 1 / one shot | 150 m, 10 rds, draw 0.75s |
+| `L96A1_T1`            | Sniper · T-Series | 110 × 45 (bolt)     | HeavyRounds    | 1 / one shot | 180 m, 5 rds, draw 0.8s |
+| `M40_T1`              | Sniper · T-Series | 100 × 55 (bolt)     | HeavyRounds    | 1 / one shot | 160 m, 5 rds, draw 0.75s |
+| `DSR1_T1`             | Sniper · T-Series | 105 × 50 (bolt)     | HeavyRounds    | 1 / one shot | 150 m, 5 rds, draw 0.6s |
+| `JNG90_T1`            | Sniper · T-Series | 105 × 45 (bolt)     | HeavyRounds    | 1 / one shot | 170 m, 10 rds, draw 0.8s |
 | `M249_T1`         | LMG         | 30 × 700            | StandardRounds | 4 / 0.26s    | Best DPS, worst handling & 6.5s reload       |
 | `M870_T1`         | Shotgun     | 12 × 8 pellets × 60 | ShotgunShells  | 1 / 0.15s    | All-pellets-hit at ≤10m; drops to 2-shot past that |
 
