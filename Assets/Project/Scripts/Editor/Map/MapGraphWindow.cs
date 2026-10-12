@@ -158,6 +158,8 @@ namespace CGD.Editor
             {
                 if (GUILayout.Button(new GUIContent("Analyze", "Generate this style for many seeds and sum up what it produces"), EditorStyles.toolbarButton))
                     MapStyleReportWindow.Open(asset.Settings);
+                if (GUILayout.Button(new GUIContent("Gallery", "Browse small previews of many seeds and pick one"), EditorStyles.toolbarButton))
+                    MapSeedGalleryWindow.Open(asset);
             }
 
             using (new EditorGUI.DisabledScope(!_session.HasEdits()))
@@ -169,11 +171,27 @@ namespace CGD.Editor
 
         private void TryRegenerate(string seed)
         {
-            if (!_session.ConfirmDiscardEdits()) return;
+            if (Regenerate(seed)) GUIUtility.ExitGUI();
+        }
+
+        // Generates `asset` from `seed` here (asking first when the graph has edits) — how the
+        // seed gallery's Use button loads a seed.
+        public static void UseSeed(MapGraphAsset asset, string seed)
+        {
+            var window = GetWindow<MapGraphWindow>();
+            window._session.Asset = asset;
+            window.Regenerate(seed);
+            window.Repaint();
+        }
+
+        // False when the user kept their edits instead.
+        private bool Regenerate(string seed)
+        {
+            if (!_session.ConfirmDiscardEdits()) return false;
 
             _session.Regenerate(seed);
             _canvas.Frame(_session, new Vector2(position.width - PanelWidth, position.height));
-            GUIUtility.ExitGUI();
+            return true;
         }
 
         private void DrawEmptyState(Rect rect)

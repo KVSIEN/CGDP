@@ -162,7 +162,10 @@ namespace CGD.Map
             _lockedNodeIds.RemoveAll(id => !_graph.TryGetNode(id, out _));
         }
 
-        private List<MapNodePin> BuildPins()
+        // What the locked nodes ask of a regeneration: a node of the same type at a similar
+        // depth, keeping its intensity, category and place. Also how the seed gallery previews
+        // a seed exactly as regenerating would give it.
+        public List<MapNodePin> BuildPins()
         {
             var pins     = new List<MapNodePin>();
             var analysis = new MapGraphAnalysis(_graph);

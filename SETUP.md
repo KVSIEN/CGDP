@@ -457,6 +457,7 @@ A map **style** (`MapGenerationSettings`) is what a `MapGraphAsset` or `LevelBui
 - **Generate** stays disabled until the style has content and at least one layout.
 - **Blueprint** shows the floor plan; its toolbar picks the `LevelBuildSettings` to lay out with (defaults to the project's first one, e.g. `Level/DefaultLevelBuildSettings`) and the fill (room type / faction). It uses the graph asset's seed, as `LevelBuilder` does with `_seed` empty.
 - **Analyze** opens the style report for the asset's style (seed count and first seed in its toolbar; the first seed can be a number or any text).
+- **Gallery** opens the seed gallery for the asset (`MapSeedGalleryWindow`): previews for a page of seeds counting up from its toolbar's first seed; **Use** on one generates the asset from that seed.
 - A room function only prefers sections listed in a style's content; a style without `_sections` gives every room no section.
 - A new map style is usually just a new style asset pointing at existing layouts and content.
 
