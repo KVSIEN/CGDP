@@ -25,7 +25,7 @@ MonoBehaviour:
   _oneHanded: 1
   Type: 2
   Names:
-  - Glock 17
+  - Makarov
   - M9
   - USP
   - MP-443
@@ -47,7 +47,7 @@ MonoBehaviour:
   - P250
   FireModes: 00000000000000000000000001000000
   Models:
-  - Name: Glock 17
+  - Name: Makarov
     Weight: 1
     FiringStyles:
     - Name: 
@@ -72,19 +72,19 @@ MonoBehaviour:
         MagazineSize: 1
       RoundsPerLoad: 0
     Scales:
-      Damage: 0.62
-      FireRate: 0.89
-      Recoil: 0.89
-      Spread: 0.94
-      Range: 0.77
-      MagazineSize: 1.76
+      Damage: 0.68
+      FireRate: 0.84
+      Recoil: 0.93
+      Spread: 0.91
+      Range: 0.68
+      MagazineSize: 0.83
     Leans:
-      Damage: -0.57
-      FireRate: -0.16
-      Recoil: -0.16
-      Spread: -0.09
-      Range: -0.34
-      MagazineSize: 0.6
+      Damage: -0.48
+      FireRate: -0.24
+      Recoil: -0.1
+      Spread: -0.13
+      Range: -0.48
+      MagazineSize: -0.26
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: M9
@@ -393,7 +393,7 @@ MonoBehaviour:
     FiringStyles:
     - Name: 
       ModelName: 
-      Weight: 1
+      Weight: 4
       FireMode: 1
       FireBehavior: {fileID: 0}
       PelletCount:
@@ -411,6 +411,27 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+      RoundsPerLoad: 0
+    - Name: 
+      ModelName: Glock 17
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1.39
+        FireRate: 0.36
+        Recoil: 1.43
+        Spread: 0.83
+        Range: 1.5
+        MagazineSize: 0.85
       RoundsPerLoad: 0
     Scales:
       Damage: 0.45
