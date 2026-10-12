@@ -50,7 +50,7 @@ namespace CGD.Editor
 
             EditorGUI.BeginChangeCheck();
             bool locked = EditorGUILayout.Toggle(
-                new GUIContent("Locked", "Kept (type, depth and intensity) when the map is regenerated"),
+                new GUIContent("Locked", "Kept (type, depth, intensity, category and pinned place) when the map is regenerated"),
                 session.Asset.IsLocked(node.Id));
             if (EditorGUI.EndChangeCheck()) session.SetLocked(node, locked);
 
@@ -70,6 +70,7 @@ namespace CGD.Editor
                 node.Category);
             if (EditorGUI.EndChangeCheck()) session.SetCategory(node, category);
 
+            DrawPlace(node, session);
             DrawFaction(node, session);
             DrawSection(node, session);
 
@@ -83,6 +84,27 @@ namespace CGD.Editor
 
             DrawNodeAnalysis(node, session);
             DrawNodeConnections(node, session);
+        }
+
+        // Pins the place (a Room Function) the level builds here; "Pin current" keeps the one
+        // the level would pick now, so a place you like survives a new seed.
+        private static void DrawPlace(MapNode node, MapGraphEditorSession session)
+        {
+            using var row = new EditorGUILayout.HorizontalScope();
+
+            EditorGUI.BeginChangeCheck();
+            var place = (RoomFunction)EditorGUILayout.ObjectField(
+                new GUIContent("Place", "Pin the place the level builds here (sets the category to match). Empty = picked from the category"),
+                node.Place as RoomFunction, typeof(RoomFunction), false);
+            if (EditorGUI.EndChangeCheck()) session.SetPlace(node, place);
+
+            if (node.Place != null) return;
+            LevelBuildSettings build = session.Objectives.BuildSettings;
+            if (build == null || !session.Rooms.TryGetRoom(session, build, node.Id, out LevelRoom room) || room.Function == null) return;
+
+            if (GUILayout.Button(new GUIContent("Pin current", $"Pin {room.Function.DisplayName}, the place this room gets now"),
+                                 EditorStyles.miniButton, GUILayout.Width(76f)))
+                session.SetPlace(node, room.Function);
         }
 
         private static void DrawFaction(MapNode node, MapGraphEditorSession session)

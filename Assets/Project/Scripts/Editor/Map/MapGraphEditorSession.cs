@@ -249,6 +249,7 @@ namespace CGD.Editor
                 || original.BreachFaction != node.BreachFaction
                 || original.Section != node.Section
                 || original.Category != node.Category
+                || original.Place != node.Place
                 || !Mathf.Approximately(original.FactionInfluence, node.FactionInfluence);
         }
 
@@ -429,6 +430,16 @@ namespace CGD.Editor
         {
             Record("Change Map Node Category");
             node.Category = category;
+            Changed();
+        }
+
+        // Pins the place the level builds here (null = let it pick). A place of a category
+        // takes the room's category with it, so the two never disagree.
+        public void SetPlace(MapNode node, IRoomPlace place)
+        {
+            Record("Change Map Node Place");
+            node.Place = place;
+            if (place != null && place.Category != RoomCategory.None) node.Category = place.Category;
             Changed();
         }
 

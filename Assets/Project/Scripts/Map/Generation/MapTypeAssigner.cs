@@ -74,7 +74,11 @@ namespace CGD.Map
             }
 
             SetType(best, pin.Type);
-            if (Graph.TryGetNode(best.NodeId, out MapNode pinned)) pinned.Category = pin.Category;
+            if (Graph.TryGetNode(best.NodeId, out MapNode pinned))
+            {
+                pinned.Category = pin.Category;
+                pinned.Place    = pin.Place;
+            }
             return best.NodeId;
         }
 

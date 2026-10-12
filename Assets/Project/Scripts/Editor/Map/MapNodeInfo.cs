@@ -11,17 +11,21 @@ namespace CGD.Editor
     // settings the window previews with (none = those parts are left out).
     public static class MapNodeInfo
     {
-        // "Restaurant 2×1 · Commercial": the place the level gives it, its cells when it
-        // spans more than one, and its category.
+        // "Restaurant 2×1 · Commercial": the place the level gives it ("pinned" when the node
+        // pins it), its cells when it spans more than one, and its category.
         public static string RoomLine(MapNode node, MapGraphEditorSession session, LevelBuildSettings build)
         {
             string category = node.Category != RoomCategory.None ? node.Category.ToString() : "no category";
-            if (!TryGetRoom(node, session, build, out LevelRoom room) || room.Function == null) return category;
+            if (!TryGetRoom(node, session, build, out LevelRoom room) || room.Function == null)
+                return node.Place != null ? $"{PlaceName(node.Place.DisplayName, node)} · {category}" : category;
 
             Vector2Int cells = CellsOf(room, build);
             string size = cells.x * cells.y > 1 ? $" {cells.x}×{cells.y}" : "";
-            return node.Category != RoomCategory.None ? $"{room.Function.DisplayName}{size} · {category}" : $"{room.Function.DisplayName}{size}";
+            string place = PlaceName(room.Function.DisplayName, node);
+            return node.Category != RoomCategory.None ? $"{place}{size} · {category}" : $"{place}{size}";
         }
+
+        private static string PlaceName(string name, MapNode node) => node.Place != null ? $"{name} (pinned)" : name;
 
         // "d4 · branch 2 · dead end · gated".
         public static string RouteLine(MapNode node, MapGraphEditorSession session)
@@ -71,7 +75,8 @@ namespace CGD.Editor
             lines.Add(FactionText(node, session));
             lines.Add($"Section {(node.HasSection ? SectionName(node, session) : "none")} · zone {(node.Category != RoomCategory.None ? node.Category.Zone().ToString() : "none")} · category {(node.Category != RoomCategory.None ? node.Category.ToString() : "none")}");
 
-            if (TryGetRoom(node, session, build, out LevelRoom room)) lines.Add(RoomText(room, build));
+            if (TryGetRoom(node, session, build, out LevelRoom room)) lines.Add(RoomText(room, node, build));
+            else if (node.Place != null) lines.Add($"Room {node.Place.DisplayName} (pinned)");
 
             int foes = EnemyCount(node, build);
             if (foes > 0 || node.Type.IsEncounter())
@@ -146,12 +151,12 @@ namespace CGD.Editor
             return node.HasBreachFaction ? $"{text} + {FactionName(session, node.BreachFaction)} breaching" : text;
         }
 
-        // "Room Restaurant · 2×1 cells · 22×10 tiles · landmark · curved walls".
-        private static string RoomText(LevelRoom room, LevelBuildSettings build)
+        // "Room Restaurant (pinned) · 2×1 cells · 22×10 tiles · landmark · curved walls".
+        private static string RoomText(LevelRoom room, MapNode node, LevelBuildSettings build)
         {
             Vector2Int cells = CellsOf(room, build);
             RectInt bounds = room.Footprint.Bounds;
-            var text = new StringBuilder($"Room {(room.Function != null ? room.Function.DisplayName : "plain")}");
+            var text = new StringBuilder($"Room {(room.Function != null ? PlaceName(room.Function.DisplayName, node) : "plain")}");
             text.Append($" · {cells.x}×{cells.y} cell{(cells.x * cells.y > 1 ? "s" : "")} · {bounds.width}×{bounds.height} tiles");
             if (room.Landmark != null) text.Append(" · landmark");
             if (room.Footprint.CurvedWalls) text.Append(" · curved walls");

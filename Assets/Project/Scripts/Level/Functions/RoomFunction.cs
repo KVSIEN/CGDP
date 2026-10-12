@@ -8,9 +8,9 @@ namespace CGD.Level
 {
     // What a room is on the ship — a lobby, a restaurant, a park — and so how it's built:
     // which floor plans suit it, how big and tall it is and what structure it has. A room
-    // type (Combat, Shop…) lists the functions it can be.
+    // type (Combat, Shop…) lists the functions it can be. A map node can pin one (IRoomPlace).
     [CreateAssetMenu(fileName = "RoomFunction", menuName = "CGD/Level/Room Function")]
-    public class RoomFunction : ScriptableObject
+    public class RoomFunction : ScriptableObject, IRoomPlace
     {
         [SerializeField] private string _displayName = "Room";
         [Tooltip("The kind of ship space this is; map nodes with a category only pick functions of that category")]

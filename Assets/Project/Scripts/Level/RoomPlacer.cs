@@ -9,7 +9,8 @@ namespace CGD.Level
     // Turns map nodes into rooms:
     //   1. Each node gets a grid cell from its editor position (the generator already lays
     //      nodes out on a column/lane grid; hand-moved nodes snap to the nearest free cell).
-    //   2. It picks a function (lobby, park…) of its category, favouring functions that
+    //   2. It uses the function pinned on the node (MapNode.Place), or picks one (lobby,
+    //      park…) of its category, favouring functions that
     //      prefer the room's ship section. A function spanning several cells
     //      claims free neighbouring cells; with none free it stays in one.
     //   3. The room fills its cells minus a gap for corridors — a single-cell room may be
@@ -33,14 +34,18 @@ namespace CGD.Level
             Dictionary<int, Vector2Int> cells = AssignCells(graph, nodeSpacing);
             Dictionary<int, int> connections = CountConnections(graph);
             var claimed = new HashSet<Vector2Int>(cells.Values);
-            var usedUnique = new HashSet<RoomFunction>();
+            HashSet<RoomFunction> usedUnique = PinnedUniquePlaces(graph);
 
             foreach (MapNode node in graph.Nodes)
             {
                 RandomStream random = seed.Derive(node.Id).Stream();
                 MapSectionDefinition section = content != null && node.HasSection ? content.GetSection(node.Section) : null;
-                List<RoomFunction> candidates = FunctionsInCategory(node, layout, usedUnique);
-                RoomFunction function = random.PickWeighted(candidates, f => f != null ? f.WeightIn(section) : 0f);
+                RoomFunction function = node.Place as RoomFunction;
+                if (function == null)
+                {
+                    List<RoomFunction> candidates = FunctionsInCategory(node, layout, usedUnique);
+                    function = random.PickWeighted(candidates, f => f != null ? f.WeightIn(section) : 0f);
+                }
                 RectInt block = ClaimBlock(cells[node.Id], function != null ? function.Cells : Vector2Int.one, claimed, random);
                 connections.TryGetValue(node.Id, out int count);
 
@@ -62,6 +67,16 @@ namespace CGD.Level
                 layout.AddRoom(new LevelRoom(node, _shapes.Build(shapeList, count, area, random), function, height, faction: faction, breachFaction: breach,
                                              chamfer: function != null ? function.ChamferOr(_settings.RoomChamfer) : _settings.RoomChamfer));
             }
+        }
+
+        // One-of-a-kind places pinned anywhere are spoken for before any room picks, so a room
+        // earlier in the graph can't take the bridge a later room is pinned to.
+        private static HashSet<RoomFunction> PinnedUniquePlaces(MapGraph graph)
+        {
+            var pinned = new HashSet<RoomFunction>();
+            foreach (MapNode node in graph.Nodes)
+                if (node.Place is RoomFunction { IsUnique: true } place) pinned.Add(place);
+            return pinned;
         }
 
         // The places of the room's category (any place for an uncategorised room), whatever

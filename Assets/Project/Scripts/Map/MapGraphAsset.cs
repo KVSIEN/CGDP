@@ -11,7 +11,7 @@ namespace CGD.Map
     // never has to guess which parts were authored.
     //
     // Locked nodes survive regeneration: each becomes a pin, so the new map keeps a
-    // node of that type at a similar depth with the same intensity.
+    // node of that type at a similar depth with the same intensity, category and pinned place.
     //
     // Each generation layer (MapGenerator.Layers) has a reroll counter on top of the
     // seed, so one layer can be regenerated while the others stay exactly as they were.
@@ -170,7 +170,7 @@ namespace CGD.Map
             foreach (int id in _lockedNodeIds)
             {
                 if (!_graph.TryGetNode(id, out MapNode node)) continue;
-                pins.Add(new MapNodePin(node.Type, analysis.Progress(id), analysis.IsOnMainPath(id), node.Intensity, node.Category));
+                pins.Add(new MapNodePin(node.Type, analysis.Progress(id), analysis.IsOnMainPath(id), node.Intensity, node.Category, node.Place));
             }
             return pins;
         }

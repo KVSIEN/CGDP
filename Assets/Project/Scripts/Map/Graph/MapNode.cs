@@ -27,6 +27,8 @@ namespace CGD.Map
         [SerializeField] private int         _section = NoSection;
         [Tooltip("What kind of ship space this room is; None lets the level builder pick any fitting function")]
         [SerializeField] private RoomCategory _category;
+        [Tooltip("Optional: the place (a Room Function) a level builds here instead of picking one of the category's")]
+        [SerializeField] private ScriptableObject _place;
 
         // For serialization: keeps the field defaults (no faction, no section) for data
         // saved before a field existed.
@@ -85,6 +87,15 @@ namespace CGD.Map
         {
             get => _category;
             set => _category = value;
+        }
+
+        // The place pinned here, or null to let the level builder pick one. Stored as the
+        // asset it is (only a ScriptableObject place can be pinned) so the graph needn't
+        // know the level builder's types; a deleted place reads as none.
+        public IRoomPlace Place
+        {
+            get => _place != null ? _place as IRoomPlace : null;
+            set => _place = value as ScriptableObject;
         }
 
         public void SetFaction(int faction, float influence)

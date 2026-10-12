@@ -19,6 +19,7 @@ namespace CGD.Map
             CheckStructure(graph, analysis, issues);
             CheckLocks(graph, analysis, issues);
             CheckOneWays(graph, analysis, issues);
+            CheckPlaces(graph, issues);
 
             if (layout != null)
             {
@@ -150,6 +151,26 @@ namespace CGD.Map
             foreach (MapNode node in graph.Nodes)
                 if (graph.Degree(node.Id) > layout.MaxConnectionsPerNode)
                     issues.Add($"#{node.Id} has more than {layout.MaxConnectionsPerNode} connections.");
+        }
+
+        // A pinned place should be of the room's category, and a one-of-a-kind place pinned once.
+        private static void CheckPlaces(MapGraph graph, List<string> issues)
+        {
+            var pinnedIn = new Dictionary<IRoomPlace, int>();
+            foreach (MapNode node in graph.Nodes)
+            {
+                IRoomPlace place = node.Place;
+                if (place == null) continue;
+
+                if (node.Category != RoomCategory.None && place.Category != RoomCategory.None && place.Category != node.Category)
+                    issues.Add($"#{node.Id}: pinned place {place.DisplayName} is {place.Category}, but the room is {node.Category}.");
+
+                if (!place.IsUnique) continue;
+                if (pinnedIn.TryGetValue(place, out int first))
+                    issues.Add($"#{node.Id}: {place.DisplayName} is one of a kind and already pinned in #{first}.");
+                else
+                    pinnedIn[place] = node.Id;
+            }
         }
 
         // Neighbouring rooms whose categories clash (accommodation beside engineering) are
