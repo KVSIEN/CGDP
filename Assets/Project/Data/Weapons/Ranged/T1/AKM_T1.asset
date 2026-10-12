@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bd3583691f680f40925447c7e1e95a3, type: 3}
+  m_Name: AKM_T1
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.WeaponData
+  WeaponName: AKM
+  FireBehavior: {fileID: 11400000, guid: ca566d8dc066bdc49b9f7028754076c0, type: 2}
+  OnHitEffects: []
+  FireMode: 1
+  RoundsPerMinute: 600
+  BurstCount: 3
+  BurstInterval: 0.06
+  PelletCount: 1
+  ChargeTime: 0.8
+  MinChargeToFire: 0.15
+  Damage: 27
+  DamageType: 0
+  ArmorPenetration: 0
+  HeadshotMultiplier: 2
+  RangeOptimal: 50
+  RangeFalloffEnd: 140
+  DamageFalloffMin: 0.4
+  MaxRange: 1000
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 40
+  AmmoType: 3
+  MagazineSize: 30
+  ReloadTime: 2.6
+  TacticalReloadTime: 2.0
+  HipSpreadDeg: 3.0
+  AdsSpreadDeg: 0.03
+  AdsSpreadMultiplier: 0
+  HotAdsSpreadMultiplier: 0
+  SpreadPerShot: 1.1
+  SpreadRecovery: 14
+  MaxSpread: 6.6
+  RecoilScale: {x: 0.7, y: 1.5}
+  RecoilJitter: {x: 0.35, y: 0.17}
+  RecoilHorizontalBias: 0.25
+  HorizontalDriftMode: 0
+  MaxAccumulatedRecoil: 16
+  MaxAccumulatedHorizontalRecoil: 8
+  RecoilHeatPerShot: 0.06
+  RecoilHeatCooldown: 1.5
+  MaxHeatRecoilMultiplier: 1.5
+  RecoilHeatJitterMultiplier: 2
+  RecoilRecoverySpeed: 6
+  RecoilRecoveryFraction: 0.72
+  RecoilRecoveryDelay: 0.12
+  AdsRecoilRecoveryFraction: 1
+  AdsRecoilMultiplier: 0.45
+  HipRecoilVerticalMultiplier: 0.18
+  HipRecoilHorizontalMultiplier: 0.15
+  QuickMelee: {fileID: 11400000, guid: 8c0fb3d413164f1e8863c23c1d9ab60c, type: 2}
+  DrawTime: 0.7
+  LookSwayAmount: 0.55
+  LookSwayRecovery: 10
+  IdleSwayAmount: 0.4
+  IdleSwaySpeed: 0.7
+  MoveSwayAmount: 1
+  AdsFovDeg: 42
+  AdsSpeed: 9
+  FireSound: {fileID: 0}
+  ReloadSound: {fileID: 0}
+  EmptySound: {fileID: 0}

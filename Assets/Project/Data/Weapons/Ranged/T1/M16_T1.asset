@@ -27,7 +27,7 @@ MonoBehaviour:
   ArmorPenetration: 0
   HeadshotMultiplier: 2
   RangeOptimal: 65
-  RangeFalloffEnd: 180
+  RangeFalloffEnd: 173
   DamageFalloffMin: 0.4
   MaxRange: 1000
   HitMask:
@@ -44,13 +44,13 @@ MonoBehaviour:
   HotAdsSpreadMultiplier: 0
   SpreadPerShot: 0.7
   SpreadRecovery: 14
-  MaxSpread: 5.5
+  MaxSpread: 6.2
   RecoilScale: {x: 0.4, y: 1.2}
   RecoilJitter: {x: 0.35, y: 0.17}
   RecoilHorizontalBias: 0.05
   HorizontalDriftMode: 0
-  MaxAccumulatedRecoil: 13
-  MaxAccumulatedHorizontalRecoil: 5
+  MaxAccumulatedRecoil: 14
+  MaxAccumulatedHorizontalRecoil: 6
   RecoilHeatPerShot: 0.06
   RecoilHeatCooldown: 1.5
   MaxHeatRecoilMultiplier: 1.5

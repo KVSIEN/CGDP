@@ -107,7 +107,13 @@ lowering base damage.
 - **What a Legendary DMR feels like**: near-sniper accuracy at half the cycle time.
 
 ### AR
-- **Models** (`Models` on the category, equal weight): G36C (close-range carbine), AUG (all-rounder), M16 (burst marksman; 70% burst, 15% auto as "M4A1", 15% semi as "AR-15"), AK-47 (heavy auto), FAL (battle rifle; 70% semi, 15% burst, 15% auto, highest damage ceiling of the class paid for in recoil and fire rate). Each model's stat scales place it in the class band, so generated rifles of a name play like that gun.
+- **Models** (`Models` on the category, all equal weight, so each series is 20%):
+  - **M-Series** (AR platform; precise, low recoil): M4 (auto carbine; 20% "Burst M4"), M16 (burst marksman; 20% semi "AR-15"), M14 (battle rifle, semi; 20% "Auto M14", 20 rds), M27 (automatic rifle: lowest recoil, slow reload)
+  - **AK-Series** (hard-hitting, heavy kick): AK-47 (heaviest climb and drift), AK-74u (short carbine), AKM (tamer AK-47), AK-12 (modern, accurate; 30% "Burst AK-12")
+  - **B-Series** (bullpups: rifle range, compact handling): FAMAS (1000 RPM burst; 20% "Auto FAMAS", 25 rds), AUG (cleanest recoil, tightest optic), TAR-21 (close quarters, 900 RPM), F2000 (low recoil, mid range)
+  - **H-Series** (battle rifles, 20 rds): FAL (70% semi, 15% burst, 15% auto), SCAR-H, G3 (heaviest auto), HK416 (the series' 5.56 all-rounder, 30 rds)
+  - **C-Series** (compact: fast handling, short range): G36C (fastest fire rate), Galil (35 rds), AM-17 (fastest draw and ADS, shortest range), QBZ-95
+  - Each model's scales are its T1 row divided by the category midpoints (26 dmg, 675 RPM, 60 m, 30 rds, 1.45 recoil, 3.15° hip spread), so generated rifles of a name centre on their T1 numbers. Burst and semi models (M16, FAMAS, M14, FAL) beat the 0.35 s target on paper; landing every round of two bursts, or tapping at the cap, is their price.
 - **Best at**: no other class beats it at 30–60m; the reliable choice.
 - **Weakness**: outclassed at every other range's optimum by that range's specialist.
 - **What a Legendary AR feels like**: cleaner recoil pattern, faster reload, no accuracy tax on sustained fire.
@@ -233,7 +239,7 @@ axis decides which end a weapon lands on, so the band reads as a spectrum:
 
 | Category | Fast pole (lean −) | Slow pole (lean +) | T1 anchor |
 |---|---|---|---|
-| AR      | CQB carbine — 900 RPM, 18 dmg, 30 m  | Battle rifle — 450 RPM, 34 dmg, 90 m   | `G36C_T1` 850×19 · `AUG_T1` 680×23 · `M16_T1` burst 800×25 · `AK47_T1` 600×28 · `FAL_T1` 450×34 |
+| AR      | CQB carbine — 900 RPM, 18 dmg, 30 m  | Battle rifle — 450 RPM, 34 dmg, 90 m   | 20 models in five series (see AR); e.g. `AUG_T1` 680×23, `G36C_T1` 850×19, `FAL_T1` 450×34 |
 | SMG     | PDW / machine pistol — 1200 RPM, 13 dmg, 12 m | Heavy SMG — 600 RPM, 28 dmg, 40 m | `MP5_T1` 850×18, 25 m |
 | Pistol  | Glock — 600 RPM, 20 dmg, 12 m        | Hand cannon — 200 RPM, 60 dmg, 35 m    | `Glock17_T1` 400×25 / `DesertEagle_T1` 300×55 |
 | Sniper  | Semi-auto DMR — 260 RPM, 45 dmg, 50 m | Bolt / AMR — 35 RPM, 170 dmg, 220 m   | `Kar98k_T1` 45×95, 120 m |
@@ -287,11 +293,26 @@ first thing to compare a new weapon against.
 
 | Asset             | Category    | Damage × RPM        | Ammo           | STK / TTK    | Notes                                        |
 |-------------------|-------------|---------------------|----------------|--------------|----------------------------------------------|
-| `G36C_T1`         | AR          | 19 × 850            | StandardRounds | 6 / 0.35s    | Close-range carbine: fastest RPM, draw and ADS, 30 m |
-| `AUG_T1`          | AR          | 23 × 680            | StandardRounds | 5 / 0.35s    | Balanced all-rounder: cleanest recoil, tightest ADS (optic), 55 m |
-| `M16_T1`          | AR          | 25 × 800 (3-burst)  | StandardRounds | 4 / ~0.25s   | Burst marksman: two bursts that both land, 65 m |
-| `AK47_T1`         | AR          | 28 × 600            | StandardRounds | 4 / 0.30s    | Heavy auto: fastest paper TTK, paid in climb and right drift, 45 m |
-| `FAL_T1`          | AR          | 34 × 450 (Semi)     | StandardRounds | 3 / 0.27s+   | Battle rifle: tap-paced, 20 rounds, heaviest kick, slowest handling, 90 m |
+| `M4_T1`           | AR · M-Series  | 22 × 800            | StandardRounds | 5 / 0.30s    | 45 m, 30 rds, draw 0.55s |
+| `M16_T1`          | AR · M-Series  | 25 × 800 (Burst)    | StandardRounds | 4 / 0.23s    | 65 m, 30 rds, draw 0.65s |
+| `M14_T1`          | AR · M-Series  | 34 × 400 (Semi)     | StandardRounds | 3 / 0.30s    | 85 m, 20 rds, draw 0.8s |
+| `M27_T1`          | AR · M-Series  | 23 × 700            | StandardRounds | 5 / 0.34s    | 60 m, 30 rds, draw 0.7s |
+| `AK47_T1`         | AR · AK-Series | 28 × 600            | StandardRounds | 4 / 0.30s    | 45 m, 30 rds, draw 0.7s |
+| `AK74u_T1`        | AR · AK-Series | 21 × 700            | StandardRounds | 5 / 0.34s    | 28 m, 30 rds, draw 0.5s |
+| `AKM_T1`          | AR · AK-Series | 27 × 600            | StandardRounds | 4 / 0.30s    | 50 m, 30 rds, draw 0.7s |
+| `AK12_T1`         | AR · AK-Series | 24 × 700            | StandardRounds | 5 / 0.34s    | 55 m, 30 rds, draw 0.65s |
+| `FAMAS_T1`        | AR · B-Series  | 20 × 1000 (Burst)   | StandardRounds | 5 / 0.24s    | 45 m, 25 rds, draw 0.55s |
+| `AUG_T1`          | AR · B-Series  | 23 × 680            | StandardRounds | 5 / 0.35s    | 55 m, 30 rds, draw 0.6s |
+| `TAR21_T1`        | AR · B-Series  | 20 × 900            | StandardRounds | 5 / 0.27s    | 35 m, 30 rds, draw 0.55s |
+| `F2000_T1`        | AR · B-Series  | 22 × 800            | StandardRounds | 5 / 0.30s    | 50 m, 30 rds, draw 0.6s |
+| `FAL_T1`          | AR · H-Series  | 34 × 450 (Semi)     | StandardRounds | 3 / 0.27s    | 90 m, 20 rds, draw 0.8s |
+| `SCARH_T1`        | AR · H-Series  | 31 × 600            | StandardRounds | 4 / 0.30s    | 75 m, 20 rds, draw 0.7s |
+| `G3_T1`           | AR · H-Series  | 33 × 550            | StandardRounds | 4 / 0.33s    | 80 m, 20 rds, draw 0.8s |
+| `HK416_T1`        | AR · H-Series  | 24 × 750            | StandardRounds | 5 / 0.32s    | 60 m, 30 rds, draw 0.6s |
+| `G36C_T1`         | AR · C-Series  | 19 × 850            | StandardRounds | 6 / 0.35s    | 30 m, 30 rds, draw 0.5s |
+| `Galil_T1`        | AR · C-Series  | 24 × 700            | StandardRounds | 5 / 0.34s    | 40 m, 35 rds, draw 0.6s |
+| `AM17_T1`         | AR · C-Series  | 22 × 750            | StandardRounds | 5 / 0.32s    | 25 m, 30 rds, draw 0.45s |
+| `QBZ95_T1`        | AR · C-Series  | 21 × 800            | StandardRounds | 5 / 0.30s    | 35 m, 30 rds, draw 0.55s |
 | `MP5_T1`          | SMG         | 18 × 850            | LightRounds    | 6 / 0.35s    | Erratic horizontal recoil, snappy handling   |
 | `Glock17_T1`      | Pistol      | 25 × 400 (Semi)     | LightRounds    | 4 / 0.45s    | Snappiest ADS in the roster                  |
 | `DesertEagle_T1`  | Pistol      | 55 × 300 (Semi)     | HeavyRounds    | 2 / 0.4s     | Overrides AmmoType — hand-cannon niche       |

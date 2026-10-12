@@ -18,7 +18,7 @@ MonoBehaviour:
   FireMode: 1
   RoundsPerMinute: 600
   BurstCount: 3
-  BurstInterval: 0.075
+  BurstInterval: 0.06
   PelletCount: 1
   ChargeTime: 0.8
   MinChargeToFire: 0.15
@@ -27,7 +27,7 @@ MonoBehaviour:
   ArmorPenetration: 0
   HeadshotMultiplier: 2
   RangeOptimal: 45
-  RangeFalloffEnd: 140
+  RangeFalloffEnd: 129
   DamageFalloffMin: 0.4
   MaxRange: 1000
   HitMask:
@@ -44,12 +44,12 @@ MonoBehaviour:
   HotAdsSpreadMultiplier: 0
   SpreadPerShot: 1.2
   SpreadRecovery: 14
-  MaxSpread: 7.5
+  MaxSpread: 7.0
   RecoilScale: {x: 0.85, y: 1.7}
   RecoilJitter: {x: 0.35, y: 0.17}
   RecoilHorizontalBias: 0.35
   HorizontalDriftMode: 0
-  MaxAccumulatedRecoil: 18
+  MaxAccumulatedRecoil: 16
   MaxAccumulatedHorizontalRecoil: 9
   RecoilHeatPerShot: 0.06
   RecoilHeatCooldown: 1.5
