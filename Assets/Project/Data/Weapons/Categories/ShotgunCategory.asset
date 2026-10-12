@@ -42,6 +42,13 @@ MonoBehaviour:
       Spread: 1
       Range: 1
       MagazineSize: 1
+    Leans:
+      Damage: 0
+      FireRate: 0
+      Recoil: 0
+      Spread: 0
+      Range: 0
+      MagazineSize: 0
     RoundsPerLoad: 1
   - Name: SPAS-12
     Weight: 4
@@ -53,6 +60,13 @@ MonoBehaviour:
       Spread: 1
       Range: 1
       MagazineSize: 1
+    Leans:
+      Damage: 0
+      FireRate: 0
+      Recoil: 0
+      Spread: 0
+      Range: 0
+      MagazineSize: 0
     RoundsPerLoad: 1
   - Name: Benelli M3
     Weight: 4
@@ -64,6 +78,13 @@ MonoBehaviour:
       Spread: 1
       Range: 1
       MagazineSize: 1
+    Leans:
+      Damage: 0
+      FireRate: 0
+      Recoil: 0
+      Spread: 0
+      Range: 0
+      MagazineSize: 0
     RoundsPerLoad: 1
   - Name: Mossberg 500
     Weight: 4
@@ -75,6 +96,13 @@ MonoBehaviour:
       Spread: 1
       Range: 1
       MagazineSize: 1
+    Leans:
+      Damage: 0
+      FireRate: 0
+      Recoil: 0
+      Spread: 0
+      Range: 0
+      MagazineSize: 0
     RoundsPerLoad: 1
   - Name: KSG
     Weight: 4
@@ -86,6 +114,13 @@ MonoBehaviour:
       Spread: 1
       Range: 1
       MagazineSize: 1
+    Leans:
+      Damage: 0
+      FireRate: 0
+      Recoil: 0
+      Spread: 0
+      Range: 0
+      MagazineSize: 0
     RoundsPerLoad: 1
   - Name: AA-12
     Weight: 5
@@ -97,6 +132,13 @@ MonoBehaviour:
       Spread: 1
       Range: 1
       MagazineSize: 1
+    Leans:
+      Damage: 0
+      FireRate: 0
+      Recoil: 0
+      Spread: 0
+      Range: 0
+      MagazineSize: 0
     RoundsPerLoad: 0
   FireBehavior: {fileID: 11400000, guid: e2cbfa746aa878d4aa23d60289c75ece, type: 2}
   RPM:

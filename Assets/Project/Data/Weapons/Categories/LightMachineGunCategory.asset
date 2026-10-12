@@ -80,7 +80,7 @@ MonoBehaviour:
   MagazineSize:
     Min: 50
     Max: 200
-    Bias: -0.3
+    Bias: -0.661
   ReloadTime:
     Min: 4
     Max: 8.5

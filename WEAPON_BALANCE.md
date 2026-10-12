@@ -113,6 +113,7 @@ lowering base damage.
   - **B-Series** (bullpups: rifle range, compact handling): FAMAS (1000 RPM burst; 20% "Auto FAMAS", 25 rds), AUG (cleanest recoil, tightest optic), TAR-21 (close quarters, 900 RPM), F2000 (low recoil, mid range)
   - **H-Series** (battle rifles, 20 rds): FAL (70% semi, 15% burst, 15% auto), SCAR-H, G3 (heaviest auto), HK416 (the series' 5.56 all-rounder, 30 rds)
   - **C-Series** (compact: fast handling, short range): G36C (fastest fire rate), Galil (35 rds), AM-17 (fastest draw and ADS, shortest range), QBZ-95
+  - Each model also has `Leans` (−1…1 per stat), added to the range's bias: its window stays the same but the odds shift toward its style, so a model's signature stats land on its style's side of its T1 value about two thirds of the time instead of half (M14 damage, G36C fire rate, M27 recoil). A lean is 1.5 × (scale − 1), capped at ±0.6; stats within 5% of the midpoint stay neutral.
   - Each model's scales are its T1 row divided by the category midpoints (26 dmg, 675 RPM, 60 m, 30 rds, 1.45 recoil, 3.15° hip spread), so generated rifles of a name centre on their T1 numbers. Burst and semi models (M16, FAMAS, M14, FAL) beat the 0.35 s target on paper; landing every round of two bursts, or tapping at the cap, is their price.
 - **Best at**: no other class beats it at 30–60m; the reliable choice.
 - **Weakness**: outclassed at every other range's optimum by that range's specialist.

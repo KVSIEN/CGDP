@@ -24,11 +24,11 @@ namespace CGD.Core
         // Samples at an explicit 0..1 position instead of a random one, applying the
         // same bias curve. Lets a caller decide where in the range a value lands
         // (see ItemRoll) while keeping authored bias meaningful.
-        public float Lerp(float t)
-        {
-            float exp = Mathf.Lerp(3f, 1f / 3f, (Bias + 1f) * 0.5f);
-            return Mathf.Lerp(Min, Max, Mathf.Pow(Mathf.Clamp01(t), exp));
-        }
+        public float Lerp(float t) => Mathf.Lerp(Min, Max, Mathf.Pow(Mathf.Clamp01(t), BiasExponent(Bias)));
+
+        // The power a position is raised to: 1 (uniform) at bias 0, 3 at -1 (toward Min),
+        // 1/3 at +1 (toward Max), symmetric in between.
+        internal static float BiasExponent(float bias) => Mathf.Pow(3f, -Mathf.Clamp(bias, -1f, 1f));
 
         // Clamp the result to the range (guards against floating-point edge cases)
         public float EvaluateClamped() => Mathf.Clamp(Evaluate(), Min, Max);

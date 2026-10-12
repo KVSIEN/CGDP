@@ -96,6 +96,13 @@ MonoBehaviour:
       Spread: 0.83
       Range: 0.75
       MagazineSize: 1
+    Leans:
+      Damage: -0.23
+      FireRate: 0.28
+      Recoil: -0.31
+      Spread: -0.26
+      Range: -0.38
+      MagazineSize: 0
     RoundsPerLoad: 0
   - Name: M16
     Weight: 1
@@ -147,6 +154,13 @@ MonoBehaviour:
       Spread: 0.89
       Range: 1.08
       MagazineSize: 1
+    Leans:
+      Damage: 0
+      FireRate: 0.28
+      Recoil: -0.26
+      Spread: -0.16
+      Range: 0.12
+      MagazineSize: 0
     RoundsPerLoad: 0
   - Name: M14
     Weight: 1
@@ -198,6 +212,13 @@ MonoBehaviour:
       Spread: 1.08
       Range: 1.42
       MagazineSize: 0.67
+    Leans:
+      Damage: 0.47
+      FireRate: -0.6
+      Recoil: 0.57
+      Spread: 0.12
+      Range: 0.6
+      MagazineSize: -0.49
     RoundsPerLoad: 0
   - Name: M27
     Weight: 1
@@ -229,6 +250,13 @@ MonoBehaviour:
       Spread: 0.76
       Range: 1
       MagazineSize: 1
+    Leans:
+      Damage: -0.18
+      FireRate: 0
+      Recoil: -0.47
+      Spread: -0.36
+      Range: 0
+      MagazineSize: 0
     RoundsPerLoad: 0
   - Name: AK-47
     Weight: 1
@@ -260,6 +288,13 @@ MonoBehaviour:
       Spread: 1.02
       Range: 0.75
       MagazineSize: 1
+    Leans:
+      Damage: 0.12
+      FireRate: -0.16
+      Recoil: 0.25
+      Spread: 0
+      Range: -0.38
+      MagazineSize: 0
     RoundsPerLoad: 0
   - Name: AK-74u
     Weight: 1
@@ -291,6 +326,13 @@ MonoBehaviour:
       Spread: 1.14
       Range: 0.47
       MagazineSize: 1
+    Leans:
+      Damage: -0.28
+      FireRate: 0
+      Recoil: 0
+      Spread: 0.21
+      Range: -0.6
+      MagazineSize: 0
     RoundsPerLoad: 0
   - Name: AKM
     Weight: 1
@@ -322,6 +364,13 @@ MonoBehaviour:
       Spread: 0.95
       Range: 0.83
       MagazineSize: 1
+    Leans:
+      Damage: 0
+      FireRate: -0.16
+      Recoil: 0
+      Spread: -0.08
+      Range: -0.26
+      MagazineSize: 0
     RoundsPerLoad: 0
   - Name: AK-12
     Weight: 1
@@ -373,6 +422,13 @@ MonoBehaviour:
       Spread: 0.89
       Range: 0.92
       MagazineSize: 1
+    Leans:
+      Damage: -0.12
+      FireRate: 0
+      Recoil: -0.15
+      Spread: -0.16
+      Range: -0.12
+      MagazineSize: 0
     RoundsPerLoad: 0
   - Name: FAMAS
     Weight: 1
@@ -424,6 +480,13 @@ MonoBehaviour:
       Spread: 0.83
       Range: 0.75
       MagazineSize: 0.83
+    Leans:
+      Damage: -0.34
+      FireRate: 0.6
+      Recoil: -0.36
+      Spread: -0.26
+      Range: -0.38
+      MagazineSize: -0.26
     RoundsPerLoad: 0
   - Name: AUG
     Weight: 1
@@ -455,6 +518,13 @@ MonoBehaviour:
       Spread: 0.83
       Range: 0.92
       MagazineSize: 1
+    Leans:
+      Damage: -0.18
+      FireRate: 0
+      Recoil: -0.42
+      Spread: -0.26
+      Range: -0.12
+      MagazineSize: 0
     RoundsPerLoad: 0
   - Name: TAR-21
     Weight: 1
@@ -486,6 +556,13 @@ MonoBehaviour:
       Spread: 0.79
       Range: 0.58
       MagazineSize: 1
+    Leans:
+      Damage: -0.34
+      FireRate: 0.5
+      Recoil: -0.26
+      Spread: -0.31
+      Range: -0.6
+      MagazineSize: 0
     RoundsPerLoad: 0
   - Name: F2000
     Weight: 1
@@ -517,6 +594,13 @@ MonoBehaviour:
       Spread: 0.83
       Range: 0.83
       MagazineSize: 1
+    Leans:
+      Damage: -0.23
+      FireRate: 0.28
+      Recoil: -0.47
+      Spread: -0.26
+      Range: -0.26
+      MagazineSize: 0
     RoundsPerLoad: 0
   - Name: FAL
     Weight: 1
@@ -588,6 +672,13 @@ MonoBehaviour:
       Spread: 1.08
       Range: 1.5
       MagazineSize: 0.67
+    Leans:
+      Damage: 0.47
+      FireRate: -0.49
+      Recoil: 0.6
+      Spread: 0.12
+      Range: 0.6
+      MagazineSize: -0.49
     RoundsPerLoad: 0
   - Name: SCAR-H
     Weight: 1
@@ -619,6 +710,13 @@ MonoBehaviour:
       Spread: 0.95
       Range: 1.25
       MagazineSize: 0.67
+    Leans:
+      Damage: 0.28
+      FireRate: -0.16
+      Recoil: 0.36
+      Spread: -0.08
+      Range: 0.38
+      MagazineSize: -0.49
     RoundsPerLoad: 0
   - Name: G3
     Weight: 1
@@ -650,6 +748,13 @@ MonoBehaviour:
       Spread: 1.08
       Range: 1.33
       MagazineSize: 0.67
+    Leans:
+      Damage: 0.41
+      FireRate: -0.28
+      Recoil: 0.6
+      Spread: 0.12
+      Range: 0.5
+      MagazineSize: -0.49
     RoundsPerLoad: 0
   - Name: HK416
     Weight: 1
@@ -681,6 +786,13 @@ MonoBehaviour:
       Spread: 0.83
       Range: 1
       MagazineSize: 1
+    Leans:
+      Damage: -0.12
+      FireRate: 0.17
+      Recoil: -0.31
+      Spread: -0.26
+      Range: 0
+      MagazineSize: 0
     RoundsPerLoad: 0
   - Name: G36C
     Weight: 1
@@ -712,6 +824,13 @@ MonoBehaviour:
       Spread: 0.76
       Range: 0.5
       MagazineSize: 1
+    Leans:
+      Damage: -0.41
+      FireRate: 0.39
+      Recoil: -0.47
+      Spread: -0.36
+      Range: -0.6
+      MagazineSize: 0
     RoundsPerLoad: 0
   - Name: Galil
     Weight: 1
@@ -743,6 +862,13 @@ MonoBehaviour:
       Spread: 0.92
       Range: 0.67
       MagazineSize: 1.17
+    Leans:
+      Damage: -0.12
+      FireRate: 0
+      Recoil: -0.1
+      Spread: -0.12
+      Range: -0.49
+      MagazineSize: 0.25
     RoundsPerLoad: 0
   - Name: AM-17
     Weight: 1
@@ -774,6 +900,13 @@ MonoBehaviour:
       Spread: 1.08
       Range: 0.42
       MagazineSize: 1
+    Leans:
+      Damage: -0.23
+      FireRate: 0.17
+      Recoil: -0.15
+      Spread: 0.12
+      Range: -0.6
+      MagazineSize: 0
     RoundsPerLoad: 0
   - Name: QBZ-95
     Weight: 1
@@ -805,6 +938,13 @@ MonoBehaviour:
       Spread: 0.86
       Range: 0.58
       MagazineSize: 1
+    Leans:
+      Damage: -0.28
+      FireRate: 0.28
+      Recoil: -0.31
+      Spread: -0.21
+      Range: -0.6
+      MagazineSize: 0
     RoundsPerLoad: 0
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:

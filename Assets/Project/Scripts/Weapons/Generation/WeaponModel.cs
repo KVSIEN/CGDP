@@ -15,6 +15,8 @@ namespace CGD.Weapons
         public FiringStyle[] FiringStyles = Array.Empty<FiringStyle>();
         [Tooltip("Where this model sits in the category's stat ranges, e.g. an AK-47 hits harder and fires slower")]
         public StyleScales Scales = StyleScales.Identity;
+        [Tooltip("Which way its stats tend inside those ranges, so the model usually plays like itself (an M14 tends to hit hard and fire slowly)")]
+        public StyleLeans Leans;
         [Tooltip("Rounds loaded per reload step: 0 = the whole magazine at once; 1 = one at a time; 2, 3… = that many")]
         [Min(0)] public int RoundsPerLoad;
     }

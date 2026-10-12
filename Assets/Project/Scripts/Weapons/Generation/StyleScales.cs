@@ -35,10 +35,12 @@ namespace CGD.Weapons
             new(a.Damage * b.Damage, a.FireRate * b.FireRate, a.Recoil * b.Recoil,
                 a.Spread * b.Spread, a.Range * b.Range, a.MagazineSize * b.MagazineSize);
 
-        public static FloatRange Scale(FloatRange range, float scale) =>
-            new(range.Min * scale, range.Max * scale, range.Bias);
+        // The range stretched by `scale`, its odds shifted by `lean` (see StyleLeans).
+        public static FloatRange Scale(FloatRange range, float scale, float lean) =>
+            new(range.Min * scale, range.Max * scale, Mathf.Clamp(range.Bias + lean, -1f, 1f));
 
-        public static IntRange Scale(IntRange range, float scale) =>
-            new(Mathf.Max(1, Mathf.RoundToInt(range.Min * scale)), Mathf.Max(1, Mathf.RoundToInt(range.Max * scale)), range.Bias);
+        public static IntRange Scale(IntRange range, float scale, float lean) =>
+            new(Mathf.Max(1, Mathf.RoundToInt(range.Min * scale)), Mathf.Max(1, Mathf.RoundToInt(range.Max * scale)),
+                Mathf.Clamp(range.Bias + lean, -1f, 1f));
     }
 }

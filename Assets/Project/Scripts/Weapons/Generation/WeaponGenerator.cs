@@ -54,13 +54,15 @@ namespace CGD.Weapons
                                * (firing != null ? firing.Scales : StyleScales.Identity)
                                * (lean   != null ? lean.Scales   : StyleScales.Identity);
 
+            StyleLeans leans   = model != null ? model.Leans : default;
+
             if (!string.IsNullOrEmpty(firing?.ModelName)) name = firing.ModelName;
             d.WeaponName   = StyledName(name, firing, lean);
             d.FireBehavior = firing != null && firing.FireBehavior != null ? firing.FireBehavior : cat.FireBehavior;
             d.OnHitEffects = cat.OnHitEffects;
             d.QuickMelee   = cat.QuickMelee;
 
-            d.RoundsPerMinute = roll.Sample(ItemStat.FireRate, StyleScales.Scale(cat.RPM, scales.FireRate));
+            d.RoundsPerMinute = roll.Sample(ItemStat.FireRate, StyleScales.Scale(cat.RPM, scales.FireRate, leans.FireRate));
             d.BurstCount      = cat.BurstCount.Evaluate(random);
             d.BurstInterval   = cat.BurstInterval.EvaluateClamped(random);
             IntRange pellets  = firing != null && firing.PelletCount.Max > 0 ? firing.PelletCount : cat.PelletCount;
@@ -86,37 +88,37 @@ namespace CGD.Weapons
             d.HitMask  = cat.HitMask;
             d.NoiseRadius = cat.NoiseRadius;
 
-            d.Damage             = roll.Sample(ItemStat.Damage, StyleScales.Scale(cat.Damage, scales.Damage));
+            d.Damage             = roll.Sample(ItemStat.Damage, StyleScales.Scale(cat.Damage, scales.Damage, leans.Damage));
             d.DamageType         = cat.DamageType;
             d.ArmorPenetration   = Mathf.Clamp01(roll.Sample(ItemStat.ArmorPenetration, cat.ArmorPenetration));
             d.HeadshotMultiplier = roll.Sample(ItemStat.CritDamage, cat.HeadshotMultiplier);
-            d.RangeOptimal       = roll.Sample(ItemStat.Range, StyleScales.Scale(cat.RangeOptimal, scales.Range));
-            d.RangeFalloffEnd    = Mathf.Max(d.RangeOptimal + 10f, StyleScales.Scale(cat.RangeFalloffEnd, scales.Range).EvaluateClamped(random));
+            d.RangeOptimal       = roll.Sample(ItemStat.Range, StyleScales.Scale(cat.RangeOptimal, scales.Range, leans.Range));
+            d.RangeFalloffEnd    = Mathf.Max(d.RangeOptimal + 10f, StyleScales.Scale(cat.RangeFalloffEnd, scales.Range, leans.Range).EvaluateClamped(random));
             d.DamageFalloffMin   = cat.DamageFalloffMin.EvaluateClamped(random);
 
             d.AmmoType     = cat.AmmoType;
             bool automatic = d.FireMode == FireMode.Auto || d.FireMode == FireMode.Burst;
             IntRange magazine = automatic && cat.AutomaticMagazineSize.Max > 0 ? cat.AutomaticMagazineSize : cat.MagazineSize;
-            d.MagazineSize = roll.Sample(ItemStat.MagazineSize, StyleScales.Scale(magazine, scales.MagazineSize));
+            d.MagazineSize = roll.Sample(ItemStat.MagazineSize, StyleScales.Scale(magazine, scales.MagazineSize, leans.MagazineSize));
 
             d.ReloadTime         = roll.Sample(ItemStat.ReloadTime, cat.ReloadTime);
             d.TacticalReloadTime = Mathf.Max(0.5f, roll.Sample(ItemStat.ReloadTime, cat.TacticalReloadTime));
             d.RoundsPerLoad      = model != null ? model.RoundsPerLoad : 0;
 
             FloatRange adsSpread  = firing != null && firing.AdsSpreadDeg.Max > 0f ? firing.AdsSpreadDeg : cat.AdsSpreadDeg;
-            d.HipSpreadDeg        = roll.Sample(ItemStat.Spread, StyleScales.Scale(cat.HipSpreadDeg, scales.Spread));
+            d.HipSpreadDeg        = roll.Sample(ItemStat.Spread, StyleScales.Scale(cat.HipSpreadDeg, scales.Spread, leans.Spread));
             d.AdsSpreadDeg        = roll.Sample(ItemStat.Spread, adsSpread);
             d.AdsSpreadMultiplier = cat.AdsSpreadMultiplier.EvaluateClamped(random);
-            d.SpreadPerShot       = StyleScales.Scale(cat.SpreadPerShot, scales.Spread).EvaluateClamped(random);
-            d.MaxSpread           = roll.Sample(ItemStat.Spread, StyleScales.Scale(cat.MaxSpread, scales.Spread));
+            d.SpreadPerShot       = StyleScales.Scale(cat.SpreadPerShot, scales.Spread, leans.Spread).EvaluateClamped(random);
+            d.MaxSpread           = roll.Sample(ItemStat.Spread, StyleScales.Scale(cat.MaxSpread, scales.Spread, leans.Spread));
             d.SpreadRecovery      = cat.SpreadRecovery.EvaluateClamped(random);
 
-            d.RecoilScale         = new Vector2(roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.RecoilScaleHorizontal, scales.Recoil)),
-                                                roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.RecoilScaleVertical, scales.Recoil)));
+            d.RecoilScale         = new Vector2(roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.RecoilScaleHorizontal, scales.Recoil, leans.Recoil)),
+                                                roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.RecoilScaleVertical, scales.Recoil, leans.Recoil)));
             d.RecoilJitter.y      = cat.RecoilJitterVertical.EvaluateClamped(random); // horizontal jitter keeps WeaponData's default
             d.RecoilHorizontalBias = cat.RecoilHorizontalBias.EvaluateClamped(random);
-            d.MaxAccumulatedRecoil = roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.MaxAccumulatedRecoil, scales.Recoil));
-            d.MaxAccumulatedHorizontalRecoil = roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.MaxAccumulatedHorizontalRecoil, scales.Recoil));
+            d.MaxAccumulatedRecoil = roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.MaxAccumulatedRecoil, scales.Recoil, leans.Recoil));
+            d.MaxAccumulatedHorizontalRecoil = roll.Sample(ItemStat.Recoil, StyleScales.Scale(cat.MaxAccumulatedHorizontalRecoil, scales.Recoil, leans.Recoil));
 
             d.RecoilHeatPerShot          = Mathf.Clamp01(cat.RecoilHeatPerShot.EvaluateClamped(random));
             d.RecoilHeatCooldown         = Mathf.Max(0f, cat.RecoilHeatCooldown.EvaluateClamped(random));

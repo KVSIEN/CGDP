@@ -49,7 +49,7 @@ MonoBehaviour:
   PelletCount:
     Min: 1
     Max: 3
-    Bias: -0.6
+    Bias: -0.822
   ChargeTime:
     Min: 0.6
     Max: 1.2

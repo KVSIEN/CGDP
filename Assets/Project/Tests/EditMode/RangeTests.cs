@@ -35,6 +35,25 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void NoBiasIsUniform()
+        {
+            var range = new FloatRange(0f, 100f);
+
+            Assert.AreEqual(50f, range.Lerp(0.5f), 0.0001f);
+            Assert.AreEqual(25f, range.Lerp(0.25f), 0.0001f);
+        }
+
+        [Test]
+        public void HalfBiasesLeanEitherSideOfTheMiddle()
+        {
+            var low  = new FloatRange(0f, 100f, -0.5f);
+            var high = new FloatRange(0f, 100f, 0.5f);
+
+            Assert.Less(low.Lerp(0.5f), 50f);
+            Assert.Greater(high.Lerp(0.5f), 50f);
+        }
+
+        [Test]
         public void SeededEvaluationIsReproducible()
         {
             var range = new FloatRange(0f, 100f);

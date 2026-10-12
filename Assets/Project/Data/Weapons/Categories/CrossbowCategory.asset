@@ -129,11 +129,11 @@ MonoBehaviour:
   MagazineSize:
     Min: 1
     Max: 5
-    Bias: -0.6
+    Bias: -0.822
   AutomaticMagazineSize:
     Min: 6
     Max: 15
-    Bias: -0.3
+    Bias: -0.661
   ReloadTime:
     Min: 1.4
     Max: 3.2
