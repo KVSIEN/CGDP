@@ -70,14 +70,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.68
@@ -86,13 +78,6 @@ MonoBehaviour:
       Spread: 0.91
       Range: 0.68
       MagazineSize: 0.83
-    Leans:
-      Damage: -0.48
-      FireRate: -0.24
-      Recoil: -0.1
-      Spread: -0.13
-      Range: -0.48
-      MagazineSize: -0.26
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: M9
@@ -118,14 +103,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.65
@@ -134,13 +111,6 @@ MonoBehaviour:
       Spread: 0.91
       Range: 0.85
       MagazineSize: 1.55
-    Leans:
-      Damage: -0.52
-      FireRate: -0.24
-      Recoil: -0.24
-      Spread: -0.13
-      Range: -0.23
-      MagazineSize: 0.6
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: USP
@@ -166,14 +136,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.7
@@ -182,13 +144,6 @@ MonoBehaviour:
       Spread: 0.83
       Range: 0.94
       MagazineSize: 1.24
-    Leans:
-      Damage: -0.45
-      FireRate: -0.3
-      Recoil: -0.1
-      Spread: -0.26
-      Range: -0.09
-      MagazineSize: 0.36
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: MP-443
@@ -214,14 +169,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.62
@@ -230,13 +177,6 @@ MonoBehaviour:
       Spread: 0.98
       Range: 0.72
       MagazineSize: 1.86
-    Leans:
-      Damage: -0.57
-      FireRate: -0.1
-      Recoil: -0.16
-      Spread: 0
-      Range: -0.42
-      MagazineSize: 0.6
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: M1911
@@ -262,14 +202,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.85
@@ -278,13 +210,6 @@ MonoBehaviour:
       Spread: 0.98
       Range: 0.94
       MagazineSize: 0.72
-    Leans:
-      Damage: -0.23
-      FireRate: -0.41
-      Recoil: 0.24
-      Spread: 0
-      Range: -0.09
-      MagazineSize: -0.42
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: Luger P08
@@ -310,14 +235,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.68
@@ -326,13 +243,6 @@ MonoBehaviour:
       Spread: 0.83
       Range: 0.94
       MagazineSize: 0.83
-    Leans:
-      Damage: -0.48
-      FireRate: -0.16
-      Recoil: -0.3
-      Spread: -0.26
-      Range: -0.09
-      MagazineSize: -0.26
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: Walther PP
@@ -358,14 +268,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.55
@@ -374,13 +276,6 @@ MonoBehaviour:
       Spread: 0.98
       Range: 0.6
       MagazineSize: 0.83
-    Leans:
-      Damage: -0.6
-      FireRate: 0
-      Recoil: -0.44
-      Spread: 0
-      Range: -0.6
-      MagazineSize: -0.26
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: Mauser C96
@@ -406,14 +301,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     - Name: 
       ModelName: M712
@@ -435,14 +322,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 1
-      Leans:
-        Damage: -0.54
-        FireRate: 0.6
-        Recoil: 0.41
-        Spread: 0.09
-        Range: 0.42
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.75
@@ -451,13 +330,6 @@ MonoBehaviour:
       Spread: 1.06
       Range: 1.28
       MagazineSize: 1.03
-    Leans:
-      Damage: -0.38
-      FireRate: -0.24
-      Recoil: 0
-      Spread: 0.09
-      Range: 0.42
-      MagazineSize: 0
     RoundsPerLoad: 10
     AmmoType: 0
   - Name: Glock 18
@@ -483,14 +355,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     - Name: 
       ModelName: Glock 17
@@ -512,14 +376,6 @@ MonoBehaviour:
         Spread: 0.83
         Range: 1.5
         MagazineSize: 0.85
-      OwnLeans: 1
-      Leans:
-        Damage: -0.56
-        FireRate: -0.18
-        Recoil: -0.17
-        Spread: -0.09
-        Range: -0.35
-        MagazineSize: 0.6
       RoundsPerLoad: 0
     Scales:
       Damage: 0.45
@@ -528,13 +384,6 @@ MonoBehaviour:
       Spread: 1.13
       Range: 0.51
       MagazineSize: 2.07
-    Leans:
-      Damage: -0.6
-      FireRate: 0.6
-      Recoil: -0.57
-      Spread: 0.19
-      Range: -0.6
-      MagazineSize: 0.6
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: TEC-9
@@ -560,14 +409,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.45
@@ -576,13 +417,6 @@ MonoBehaviour:
       Spread: 1.21
       Range: 0.55
       MagazineSize: 2.48
-    Leans:
-      Damage: -0.6
-      FireRate: 0.6
-      Recoil: -0.6
-      Spread: 0.31
-      Range: -0.6
-      MagazineSize: 0.6
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: Beretta 93R
@@ -608,14 +442,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.55
@@ -624,13 +450,6 @@ MonoBehaviour:
       Spread: 0.98
       Range: 0.77
       MagazineSize: 2.07
-    Leans:
-      Damage: -0.6
-      FireRate: 0.6
-      Recoil: -0.49
-      Spread: 0
-      Range: -0.34
-      MagazineSize: 0.6
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: CZ 75 Auto
@@ -656,14 +475,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.5
@@ -672,13 +483,6 @@ MonoBehaviour:
       Spread: 1.06
       Range: 0.68
       MagazineSize: 1.65
-    Leans:
-      Damage: -0.6
-      FireRate: 0.6
-      Recoil: -0.6
-      Spread: 0.09
-      Range: -0.48
-      MagazineSize: 0.6
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: Desert Eagle
@@ -704,14 +508,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 1.38
@@ -720,13 +516,6 @@ MonoBehaviour:
       Spread: 1.13
       Range: 1.06
       MagazineSize: 0.72
-    Leans:
-      Damage: 0.57
-      FireRate: -0.49
-      Recoil: 0.6
-      Spread: 0.19
-      Range: 0.09
-      MagazineSize: -0.42
     RoundsPerLoad: 0
     AmmoType: 4
   - Name: .44 Magnum
@@ -752,14 +541,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     - Name: 
       ModelName: 
@@ -781,14 +562,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 6
     Scales:
       Damage: 1.5
@@ -797,13 +570,6 @@ MonoBehaviour:
       Spread: 1.21
       Range: 1.28
       MagazineSize: 0.62
-    Leans:
-      Damage: 0.6
-      FireRate: -0.6
-      Recoil: 0.6
-      Spread: 0.31
-      Range: 0.42
-      MagazineSize: -0.57
     RoundsPerLoad: 1
     AmmoType: 4
   - Name: Taurus Judge
@@ -829,14 +595,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     - Name: 
       ModelName: 
@@ -858,14 +616,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 5
     Scales:
       Damage: 0.23
@@ -874,13 +624,6 @@ MonoBehaviour:
       Spread: 1.32
       Range: 0.34
       MagazineSize: 0.52
-    Leans:
-      Damage: -0.6
-      FireRate: -0.6
-      Recoil: 0.5
-      Spread: 0.48
-      Range: -0.6
-      MagazineSize: -0.6
     RoundsPerLoad: 1
     AmmoType: 5
   - Name: Chiappa Rhino
@@ -906,14 +649,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     - Name: 
       ModelName: 
@@ -935,14 +670,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 6
     Scales:
       Damage: 1.05
@@ -951,13 +678,6 @@ MonoBehaviour:
       Spread: 0.98
       Range: 1.02
       MagazineSize: 0.62
-    Leans:
-      Damage: 0.08
-      FireRate: -0.44
-      Recoil: 0.11
-      Spread: 0
-      Range: 0
-      MagazineSize: -0.57
     RoundsPerLoad: 1
     AmmoType: 4
   - Name: Ruger Mark IV
@@ -983,14 +703,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.5
@@ -999,13 +711,6 @@ MonoBehaviour:
       Spread: 0.6
       Range: 0.85
       MagazineSize: 1.03
-    Leans:
-      Damage: -0.6
-      FireRate: 0.17
-      Recoil: -0.6
-      Spread: -0.6
-      Range: -0.23
-      MagazineSize: 0
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: Five-seveN
@@ -1031,14 +736,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.62
@@ -1047,13 +744,6 @@ MonoBehaviour:
       Spread: 0.83
       Range: 0.94
       MagazineSize: 2.07
-    Leans:
-      Damage: -0.57
-      FireRate: -0.16
-      Recoil: -0.49
-      Spread: -0.26
-      Range: -0.09
-      MagazineSize: 0.6
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: Tac-45
@@ -1079,14 +769,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.85
@@ -1095,13 +777,6 @@ MonoBehaviour:
       Spread: 0.83
       Range: 0.94
       MagazineSize: 1.03
-    Leans:
-      Damage: -0.23
-      FireRate: -0.3
-      Recoil: 0.11
-      Spread: -0.26
-      Range: -0.09
-      MagazineSize: 0
     RoundsPerLoad: 0
     AmmoType: 0
   - Name: P250
@@ -1127,14 +802,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
       RoundsPerLoad: 0
     Scales:
       Damage: 0.65
@@ -1143,13 +810,6 @@ MonoBehaviour:
       Spread: 0.87
       Range: 0.77
       MagazineSize: 1.34
-    Leans:
-      Damage: -0.52
-      FireRate: -0.1
-      Recoil: -0.24
-      Spread: -0.2
-      Range: -0.34
-      MagazineSize: 0.51
     RoundsPerLoad: 0
     AmmoType: 0
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}

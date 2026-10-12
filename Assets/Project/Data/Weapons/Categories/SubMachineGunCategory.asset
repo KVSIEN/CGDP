@@ -70,14 +70,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     - Name: Burst
       ModelName: 
       Weight: 2
@@ -98,14 +90,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 1
-      Leans:
-        Damage: -0.25
-        FireRate: -0.09
-        Recoil: 0
-        Spread: -0.16
-        Range: 0
-        MagazineSize: 0.15
     Scales:
       Damage: 0.88
       FireRate: 0.94
@@ -113,13 +97,6 @@ MonoBehaviour:
       Spread: 0.89
       Range: 0.96
       MagazineSize: 1.1
-    Leans:
-      Damage: -0.18
-      FireRate: -0.09
-      Recoil: -0.12
-      Spread: -0.16
-      Range: 0
-      MagazineSize: 0.15
     RoundsPerLoad: 0
   - Name: MP5K
     Weight: 1
@@ -144,14 +121,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 0.83
       FireRate: 1
@@ -159,13 +128,6 @@ MonoBehaviour:
       Spread: 0.98
       Range: 0.69
       MagazineSize: 1.1
-    Leans:
-      Damage: -0.26
-      FireRate: 0
-      Recoil: 0
-      Spread: 0
-      Range: -0.47
-      MagazineSize: 0.15
     RoundsPerLoad: 0
   - Name: MP7
     Weight: 1
@@ -190,14 +152,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 0.83
       FireRate: 1.06
@@ -205,13 +159,6 @@ MonoBehaviour:
       Spread: 0.8
       Range: 1.08
       MagazineSize: 1.47
-    Leans:
-      Damage: -0.26
-      FireRate: 0.09
-      Recoil: -0.36
-      Spread: -0.3
-      Range: 0.12
-      MagazineSize: 0.6
     RoundsPerLoad: 0
   - Name: MPL
     Weight: 1
@@ -236,14 +183,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 1.07
       FireRate: 0.72
@@ -251,13 +190,6 @@ MonoBehaviour:
       Spread: 0.98
       Range: 0.96
       MagazineSize: 1.18
-    Leans:
-      Damage: 0.11
-      FireRate: -0.42
-      Recoil: 0
-      Spread: 0
-      Range: 0
-      MagazineSize: 0.27
     RoundsPerLoad: 0
   - Name: Thompson
     Weight: 1
@@ -282,14 +214,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 1.17
       FireRate: 0.72
@@ -297,13 +221,6 @@ MonoBehaviour:
       Spread: 1.24
       Range: 1.15
       MagazineSize: 1.84
-    Leans:
-      Damage: 0.25
-      FireRate: -0.42
-      Recoil: 0.53
-      Spread: 0.36
-      Range: 0.22
-      MagazineSize: 0.6
     RoundsPerLoad: 0
   - Name: MP40
     Weight: 1
@@ -328,14 +245,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 1.17
       FireRate: 0.67
@@ -343,13 +252,6 @@ MonoBehaviour:
       Spread: 1.07
       Range: 1.08
       MagazineSize: 1.18
-    Leans:
-      Damage: 0.25
-      FireRate: -0.49
-      Recoil: 0.12
-      Spread: 0.11
-      Range: 0.12
-      MagazineSize: 0.27
     RoundsPerLoad: 0
   - Name: Uzi
     Weight: 1
@@ -374,14 +276,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 1.07
       FireRate: 0.72
@@ -389,13 +283,6 @@ MonoBehaviour:
       Spread: 1.16
       Range: 0.77
       MagazineSize: 1.18
-    Leans:
-      Damage: 0.11
-      FireRate: -0.42
-      Recoil: 0.21
-      Spread: 0.24
-      Range: -0.34
-      MagazineSize: 0.27
     RoundsPerLoad: 0
   - Name: PM12
     Weight: 1
@@ -420,14 +307,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 1.12
       FireRate: 0.67
@@ -435,13 +314,6 @@ MonoBehaviour:
       Spread: 1.07
       Range: 0.92
       MagazineSize: 1.47
-    Leans:
-      Damage: 0.18
-      FireRate: -0.49
-      Recoil: 0
-      Spread: 0.11
-      Range: -0.12
-      MagazineSize: 0.6
     RoundsPerLoad: 0
   - Name: MAC-10
     Weight: 1
@@ -466,14 +338,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 0.93
       FireRate: 1.28
@@ -481,13 +345,6 @@ MonoBehaviour:
       Spread: 1.33
       Range: 0.46
       MagazineSize: 1.1
-    Leans:
-      Damage: -0.1
-      FireRate: 0.42
-      Recoil: 0.6
-      Spread: 0.5
-      Range: -0.6
-      MagazineSize: 0.15
     RoundsPerLoad: 0
   - Name: Scorpion EVO
     Weight: 1
@@ -512,14 +369,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     - Name: Burst
       ModelName: 
       Weight: 2
@@ -540,14 +389,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 1
-      Leans:
-        Damage: -0.46
-        FireRate: 0.42
-        Recoil: 0.1
-        Spread: 0.11
-        Range: -0.6
-        MagazineSize: 0.15
     Scales:
       Damage: 0.73
       FireRate: 1.28
@@ -555,13 +396,6 @@ MonoBehaviour:
       Spread: 1.07
       Range: 0.58
       MagazineSize: 1.1
-    Leans:
-      Damage: -0.41
-      FireRate: 0.42
-      Recoil: 0
-      Spread: 0.11
-      Range: -0.6
-      MagazineSize: 0.15
     RoundsPerLoad: 0
   - Name: MP9
     Weight: 1
@@ -586,14 +420,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 0.73
       FireRate: 1.11
@@ -601,13 +427,6 @@ MonoBehaviour:
       Spread: 0.98
       Range: 0.62
       MagazineSize: 1.1
-    Leans:
-      Damage: -0.41
-      FireRate: 0.17
-      Recoil: -0.12
-      Spread: 0
-      Range: -0.57
-      MagazineSize: 0.15
     RoundsPerLoad: 0
   - Name: PP2000
     Weight: 1
@@ -632,14 +451,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 0.83
       FireRate: 1
@@ -647,13 +458,6 @@ MonoBehaviour:
       Spread: 0.89
       Range: 0.54
       MagazineSize: 0.74
-    Leans:
-      Damage: -0.26
-      FireRate: 0
-      Recoil: -0.21
-      Spread: -0.16
-      Range: -0.6
-      MagazineSize: -0.39
     RoundsPerLoad: 0
   - Name: UMP-45
     Weight: 1
@@ -678,14 +482,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     - Name: Burst
       ModelName: 
       Weight: 2
@@ -706,14 +502,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 1
-      Leans:
-        Damage: 0.17
-        FireRate: -0.42
-        Recoil: 0.2
-        Spread: -0.16
-        Range: 0.34
-        MagazineSize: -0.12
     Scales:
       Damage: 1.17
       FireRate: 0.72
@@ -721,13 +509,6 @@ MonoBehaviour:
       Spread: 0.89
       Range: 1.23
       MagazineSize: 0.92
-    Leans:
-      Damage: 0.25
-      FireRate: -0.42
-      Recoil: 0
-      Spread: -0.16
-      Range: 0.34
-      MagazineSize: -0.12
     RoundsPerLoad: 0
   - Name: MPX
     Weight: 1
@@ -752,14 +533,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 0.93
       FireRate: 0.94
@@ -767,13 +540,6 @@ MonoBehaviour:
       Spread: 0.84
       Range: 1.15
       MagazineSize: 1.1
-    Leans:
-      Damage: -0.1
-      FireRate: -0.09
-      Recoil: -0.28
-      Spread: -0.24
-      Range: 0.22
-      MagazineSize: 0.15
     RoundsPerLoad: 0
   - Name: APC9
     Weight: 1
@@ -798,14 +564,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 0.88
       FireRate: 1.11
@@ -813,13 +571,6 @@ MonoBehaviour:
       Spread: 0.89
       Range: 1.08
       MagazineSize: 1.1
-    Leans:
-      Damage: -0.18
-      FireRate: 0.17
-      Recoil: -0.12
-      Spread: -0.16
-      Range: 0.12
-      MagazineSize: 0.15
     RoundsPerLoad: 0
   - Name: PMX
     Weight: 1
@@ -844,14 +595,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 0.93
       FireRate: 1
@@ -859,13 +602,6 @@ MonoBehaviour:
       Spread: 0.84
       Range: 1
       MagazineSize: 1.1
-    Leans:
-      Damage: -0.1
-      FireRate: 0
-      Recoil: -0.21
-      Spread: -0.24
-      Range: 0
-      MagazineSize: 0.15
     RoundsPerLoad: 0
   - Name: P90
     Weight: 1
@@ -890,14 +626,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 0.83
       FireRate: 1
@@ -905,13 +633,6 @@ MonoBehaviour:
       Spread: 0.84
       Range: 1
       MagazineSize: 1.84
-    Leans:
-      Damage: -0.26
-      FireRate: 0
-      Recoil: -0.36
-      Spread: -0.24
-      Range: 0
-      MagazineSize: 0.6
     RoundsPerLoad: 0
   - Name: Vector
     Weight: 1
@@ -936,14 +657,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     - Name: Burst
       ModelName: 
       Weight: 2
@@ -964,14 +677,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 1
-      Leans:
-        Damage: -0.25
-        FireRate: 0.5
-        Recoil: -0.6
-        Spread: -0.16
-        Range: -0.47
-        MagazineSize: -0.12
     Scales:
       Damage: 0.88
       FireRate: 1.33
@@ -979,13 +684,6 @@ MonoBehaviour:
       Spread: 0.89
       Range: 0.69
       MagazineSize: 0.92
-    Leans:
-      Damage: -0.18
-      FireRate: 0.5
-      Recoil: -0.6
-      Spread: -0.16
-      Range: -0.47
-      MagazineSize: -0.12
     RoundsPerLoad: 0
   - Name: QCW-05
     Weight: 1
@@ -1010,14 +708,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 0.83
       FireRate: 1
@@ -1025,13 +715,6 @@ MonoBehaviour:
       Spread: 0.93
       Range: 0.92
       MagazineSize: 1.84
-    Leans:
-      Damage: -0.26
-      FireRate: 0
-      Recoil: -0.28
-      Spread: -0.1
-      Range: -0.12
-      MagazineSize: 0.6
     RoundsPerLoad: 0
   - Name: PP-19 Bizon
     Weight: 1
@@ -1056,14 +739,6 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
-      OwnLeans: 0
-      Leans:
-        Damage: 0
-        FireRate: 0
-        Recoil: 0
-        Spread: 0
-        Range: 0
-        MagazineSize: 0
     Scales:
       Damage: 0.98
       FireRate: 0.78
@@ -1071,13 +746,6 @@ MonoBehaviour:
       Spread: 1.02
       Range: 0.85
       MagazineSize: 2.36
-    Leans:
-      Damage: 0
-      FireRate: -0.33
-      Recoil: -0.21
-      Spread: 0
-      Range: -0.23
-      MagazineSize: 0.6
     RoundsPerLoad: 0
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:

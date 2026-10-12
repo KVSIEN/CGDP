@@ -50,11 +50,12 @@ namespace CGD.Weapons
             FiringStyle firing = PickStyle(firingStyles, s => s.Weight, random);
             d.FireMode         = firing != null ? firing.FireMode : random.Pick(cat.FireModes);
             StatStyle lean     = PickStyle(cat.StatStyles, s => s.Weight, random);
-            StyleScales scales = (model  != null ? model.Scales  : StyleScales.Identity)
-                               * (firing != null ? firing.Scales : StyleScales.Identity)
-                               * (lean   != null ? lean.Scales   : StyleScales.Identity);
-
-            StyleLeans leans   = firing != null && firing.OwnLeans ? firing.Leans : model != null ? model.Leans : default;
+            StyleScales gun    = (model  != null ? model.Scales  : StyleScales.Identity)
+                               * (firing != null ? firing.Scales : StyleScales.Identity);
+            StyleScales scales = gun * (lean != null ? lean.Scales : StyleScales.Identity);
+            // A model leans toward its own gun — this variant of it — so a semi Glock 17 off a
+            // Glock 18 rolls like a Glock 17. Model-less categories keep their plain rolls.
+            StyleLeans leans   = model != null ? StyleLeans.From(gun) : default;
 
             if (!string.IsNullOrEmpty(firing?.ModelName)) name = firing.ModelName;
             d.WeaponName   = StyledName(name, firing, lean);
