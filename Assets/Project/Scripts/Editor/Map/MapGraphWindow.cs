@@ -162,6 +162,16 @@ namespace CGD.Editor
                     MapSeedGalleryWindow.Open(asset);
             }
 
+            using (new EditorGUI.DisabledScope(!MapGraphPlayLauncher.CanPlay(asset)))
+            {
+                if (GUILayout.Button(new GUIContent("Play", "Play this graph in the MapTest scene (the scene file isn't changed). Select a room and use Play from here in the side panel to start there"),
+                                     EditorStyles.toolbarButton))
+                {
+                    MapGraphPlayLauncher.Play(asset);
+                    GUIUtility.ExitGUI();
+                }
+            }
+
             using (new EditorGUI.DisabledScope(!_session.HasEdits()))
             {
                 if (GUILayout.Button(new GUIContent("Revert Edits", "Back to the last generated graph"), EditorStyles.toolbarButton))

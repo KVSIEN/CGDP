@@ -32,6 +32,8 @@ namespace CGD.Level
         [SerializeField] private MapGenerationSettings _generation;
         [Tooltip("A number or any text. Empty or 0 = a new random seed every play (with a graph asset: the asset's seed). Also drives room shapes and contents")]
         [SerializeField] private string _seed;
+        [Tooltip("For testing one room: start (and respawn) in the room of this node id instead of the Start room. -1 = the Start room")]
+        [SerializeField] private int _startRoom = -1;
         [SerializeField] private LevelBuildSettings _settings;
         [Tooltip("Optional — how Lockdown, Holdout, Ambush, Stealth, Rift, Puzzle and Hazard rooms play. Empty = they play as plain rooms")]
         [SerializeField] private EncounterSettings _encounters;
@@ -200,7 +202,7 @@ namespace CGD.Level
 
         private void PlacePlayer(RoomPopulator populator)
         {
-            LevelRoom start = FindRoom(MapNodeType.Start);
+            LevelRoom start = _startRoom >= 0 && Layout.Rooms.TryGetValue(_startRoom, out LevelRoom chosen) ? chosen : FindRoom(MapNodeType.Start);
             if (start == null) return;
 
             // Slightly above the floor so the player's capsule doesn't start inside it.

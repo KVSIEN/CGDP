@@ -40,7 +40,19 @@ namespace CGD.Editor
 
         private void DrawNode(MapNode node, MapGraphEditorSession session)
         {
-            EditorGUILayout.LabelField($"Node #{node.Id}", EditorStyles.boldLabel);
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.LabelField($"Node #{node.Id}", EditorStyles.boldLabel);
+                using (new EditorGUI.DisabledScope(!MapGraphPlayLauncher.CanPlay(session.Asset)))
+                {
+                    if (GUILayout.Button(new GUIContent("Play from here", "Play this graph in the MapTest scene, starting in this room"),
+                                         EditorStyles.miniButton, GUILayout.Width(96f)))
+                    {
+                        MapGraphPlayLauncher.Play(session.Asset, node.Id);
+                        GUIUtility.ExitGUI();
+                    }
+                }
+            }
             if (session.IsEdited(node))
                 EditorGUILayout.LabelField("Edited since generation", EditorStyles.miniLabel);
 
