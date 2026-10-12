@@ -7,7 +7,7 @@ namespace CGD.Editor
     // Colours and legends for the Map Graph window, per view mode.
     public static class MapGraphStyle
     {
-        public static readonly Vector2 NodeSize = new(130f, 46f);
+        public static readonly Vector2 NodeSize = new(160f, 70f);
 
         public static readonly Color Background   = new(0.16f, 0.16f, 0.17f);
         public static readonly Color GridMinor    = new(1f, 1f, 1f, 0.03f);
@@ -16,6 +16,8 @@ namespace CGD.Editor
         public static readonly Color PathHighlight = new(0.3f, 0.9f, 1f);
         public static readonly Color Dimmed       = new(0f, 0f, 0f, 0.6f);
         public static readonly Color NodeText     = Color.white;
+        public static readonly Color Issue        = new(0.95f, 0.25f, 0.2f);
+        public static readonly Color BarTrack     = new(0f, 0f, 0f, 0.35f);
 
         private static readonly Color Required    = new(0.9f, 0.55f, 0.15f);
         private static readonly Color Optional    = new(0.35f, 0.5f, 0.75f);
@@ -34,6 +36,15 @@ namespace CGD.Editor
 
         public static Color TypeColor(MapNodeType type) => MapNodeColors.Of(type);
 
+        public static Color IntensityColor(float intensity) => Color.Lerp(Calm, Intense, intensity);
+
+        public static Color TierColor(int tier) => tier switch
+        {
+            1 => new Color(0.45f, 0.75f, 0.45f),
+            2 => new Color(0.95f, 0.7f, 0.25f),
+            _ => new Color(0.9f, 0.3f, 0.3f)
+        };
+
         public static Color ConnectionColor(ConnectionType type) => type switch
         {
             ConnectionType.Shortcut => new Color(0.3f, 0.8f, 0.85f),
@@ -44,7 +55,7 @@ namespace CGD.Editor
 
         public static Color NodeColor(MapNode node, MapGraphAnalysis analysis, MapGraphViewMode mode) => mode switch
         {
-            MapGraphViewMode.Intensity        => Color.Lerp(Calm, Intense, node.Intensity),
+            MapGraphViewMode.Intensity        => IntensityColor(node.Intensity),
             MapGraphViewMode.Faction          => FactionColor(node),
             MapGraphViewMode.RequiredOptional => RequiredColor(node.Id, analysis),
             MapGraphViewMode.Branches         => BranchColor(analysis.BranchOf(node.Id)),

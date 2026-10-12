@@ -29,6 +29,20 @@ namespace CGD.Level
         // `content` resolves the graph's faction indices; without it rooms have no faction.
         public LevelLayout Build(MapGraph graph, Vector2 nodeSpacing, Seed seed, MapContentSettings content = null)
         {
+            LevelLayout layout = PlaceRooms(graph, nodeSpacing, seed, content);
+            if (graph == null || graph.Nodes.Count == 0) return layout;
+
+            var directLinks = new DirectRoomAligner(_settings.CellTiles).Align(graph, layout);
+            BuildCorridors(graph, layout, directLinks);
+            PlanStructures(seed.Derive("structure"), layout);
+            PlanOutlines(layout);
+            return layout;
+        }
+
+        // Step 1 alone: the room (function, cells, floor plan) each node gets, exactly as Build
+        // gives it — cheap enough for the map editor to label nodes with after every edit.
+        public LevelLayout PlaceRooms(MapGraph graph, Vector2 nodeSpacing, Seed seed, MapContentSettings content = null)
+        {
             var layout = new LevelLayout(_settings.TileSize);
             if (graph == null || graph.Nodes.Count == 0)
             {
@@ -37,10 +51,6 @@ namespace CGD.Level
             }
 
             new RoomPlacer(_settings).Place(graph, nodeSpacing, seed.Derive("rooms"), layout, content);
-            var directLinks = new DirectRoomAligner(_settings.CellTiles).Align(graph, layout);
-            BuildCorridors(graph, layout, directLinks);
-            PlanStructures(seed.Derive("structure"), layout);
-            PlanOutlines(layout);
             return layout;
         }
 

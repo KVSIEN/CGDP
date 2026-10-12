@@ -37,6 +37,7 @@ namespace CGD.Editor
         private void OnEnable()
         {
             titleContent = new GUIContent("Map Graph");
+            wantsMouseMove = true; // hovering a node shows everything about it
             Undo.undoRedoPerformed += OnUndoRedo;
         }
 
@@ -107,6 +108,8 @@ namespace CGD.Editor
                 new GUIContent("Branch", "Dim everything outside the selected node's branch"), EditorStyles.toolbarButton);
             _session.ShowObjectives = GUILayout.Toggle(_session.ShowObjectives,
                 new GUIContent("Objectives", "Show where a level built from this graph would put its objectives"), EditorStyles.toolbarButton);
+            _session.ShowDetails = GUILayout.Toggle(_session.ShowDetails,
+                new GUIContent("Details", "Room cards show tier, intensity, place, route, links and issues; hover a room for everything"), EditorStyles.toolbarButton);
             _session.SnapToGrid = GUILayout.Toggle(_session.SnapToGrid,
                 new GUIContent("Snap", "Drop moved and added nodes into the level's room grid, one node per cell"), EditorStyles.toolbarButton);
         }

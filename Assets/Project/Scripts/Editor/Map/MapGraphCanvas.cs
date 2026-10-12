@@ -15,12 +15,19 @@ namespace CGD.Editor
     //   scroll           zoom
     //   right-click      context menu (add, type, lock, disconnect, delete)
     //   Delete           delete selection     F   frame the whole graph
+    //   hover node       everything known about it (MapNodeInfo)
+    // With Details on, each node card also shows its tier, intensity (bottom bar), the room
+    // the level gives it, its route and links, and how many validation issues name it.
     public class MapGraphCanvas
     {
         private const float ConnectionWidth     = 3f;
         private const float HighlightWidth      = 6f;
         private const float ConnectionHitRadius = 6f;
         private const float LabelMinZoom        = 0.6f;
+        private const float TitleHeight         = 16f;
+        private const float LineHeight          = 12f;
+        private const float ChipHeight          = 16f;
+        private const float HoverLineHeight     = 14f;
 
         private enum DragMode { None, Node, Connect, Pan }
 
@@ -31,9 +38,11 @@ namespace CGD.Editor
         private readonly List<MapConnection> _locks = new();
         // How far along each room's bottom edge the next key badge goes.
         private readonly Dictionary<int, float> _keyBadgeOffsets = new();
+        private readonly List<string> _hoverLines = new();
 
         private DragMode _drag;
         private int      _dragNodeId = MapGraphEditorSession.None;
+        private int      _hoverNodeId = MapGraphEditorSession.None;
         private Vector2  _mouse;
         private Vector2  _center;
         private Rect     _bounds;
@@ -44,6 +53,7 @@ namespace CGD.Editor
         private GUIStyle _badgeStyle;
         private GUIStyle _keyBadgeStyle;
         private GUIStyle _factionChipStyle;
+        private GUIStyle _hoverStyle;
 
         public void Draw(Rect rect, MapGraphEditorSession session)
         {
@@ -67,9 +77,11 @@ namespace CGD.Editor
                 DrawNodes(session);
                 DrawKeyBadges(session);
                 DrawFactionChips(session);
+                DrawTierAndIssueChips(session);
                 DrawObjectiveBadges(session);
                 DrawSnapTarget(session);
                 DrawLegend(local, session);
+                DrawHoverPanel(session);
             }
 
             GUI.EndClip();
@@ -269,26 +281,70 @@ namespace CGD.Editor
                 DrawOutline(rect, MapGraphStyle.PathHighlight, 3f);
 
             EditorGUI.DrawRect(rect, MapGraphStyle.NodeColor(node, session.Analysis, session.ViewMode));
+            if (session.ShowDetails) DrawNodeStrips(rect, node, session);
             DrawOutline(rect, new Color(0f, 0f, 0f, 0.5f), 1f);
 
             string edited = session.IsEdited(node) ? "*" : "";
-            if (session.Zoom >= LabelMinZoom)
+            if (session.Zoom < LabelMinZoom)
+            {
+                GUI.Label(rect, $"#{node.Id}{edited}", _titleStyle);
+            }
+            else if (session.ShowDetails)
+            {
+                DrawNodeLines(rect, node, session, $"{node.Type} #{node.Id}{edited}");
+            }
+            else
             {
                 var title  = new Rect(rect.x, rect.y + 4f, rect.width, rect.height * 0.5f);
                 var detail = new Rect(rect.x, rect.center.y, rect.width, rect.height * 0.5f - 2f);
                 GUI.Label(title, $"{node.Type} #{node.Id}{edited}", _titleStyle);
                 GUI.Label(detail, Detail(node, session), _detailStyle);
             }
-            else
-            {
-                GUI.Label(rect, $"#{node.Id}{edited}", _titleStyle);
-            }
 
             if (session.Asset.IsLocked(node.Id))
-                GUI.Label(new Rect(rect.xMax - 18f, rect.y, 18f, 18f), EditorGUIUtility.IconContent("IN LockButton on"));
+            {
+                // With details the top corners hold chips, so the lock moves to the right edge's middle.
+                float y = session.ShowDetails ? rect.center.y - 9f : rect.y;
+                GUI.Label(new Rect(rect.xMax - 18f, y, 18f, 18f), EditorGUIUtility.IconContent("IN LockButton on"));
+            }
 
             if (session.IsDimmed(node.Id))
                 EditorGUI.DrawRect(rect, MapGraphStyle.Dimmed);
+        }
+
+        // A stripe in the room type's colour down the left edge (when colour shows something
+        // else), and the intensity as a bar along the bottom.
+        private static void DrawNodeStrips(Rect rect, MapNode node, MapGraphEditorSession session)
+        {
+            if (session.ViewMode != MapGraphViewMode.Type)
+                EditorGUI.DrawRect(new Rect(rect.x, rect.y, Mathf.Max(2f, 5f * session.Zoom), rect.height), MapGraphStyle.TypeColor(node.Type));
+
+            float height = Mathf.Max(2f, 4f * session.Zoom);
+            var track = new Rect(rect.x, rect.yMax - height, rect.width, height);
+            EditorGUI.DrawRect(track, MapGraphStyle.BarTrack);
+            EditorGUI.DrawRect(new Rect(track.x, track.y, track.width * node.Intensity, height), MapGraphStyle.IntensityColor(node.Intensity));
+        }
+
+        // The title, then as many detail lines as the card's height allows at this zoom:
+        // room, route, then enemies / links / section.
+        private void DrawNodeLines(Rect rect, MapNode node, MapGraphEditorSession session, string title)
+        {
+            LevelBuildSettings build = session.Objectives.BuildSettings;
+            float y = rect.y + 2f;
+            GUI.Label(new Rect(rect.x + 4f, y, rect.width - 8f, TitleHeight), title, _titleStyle);
+            y += TitleHeight;
+
+            float bottom = rect.yMax - Mathf.Max(2f, 4f * session.Zoom) - 1f;
+            for (int line = 0; line < 3 && y + LineHeight <= bottom; line++, y += LineHeight)
+            {
+                string text = line switch
+                {
+                    0 => MapNodeInfo.RoomLine(node, session, build),
+                    1 => MapNodeInfo.RouteLine(node, session),
+                    _ => MapNodeInfo.StatsLine(node, session, build)
+                };
+                GUI.Label(new Rect(rect.x + 4f, y, rect.width - 8f, LineHeight), text, _detailStyle);
+            }
         }
 
         // Second line of a node: whatever the current view mode is about.
@@ -346,15 +402,77 @@ namespace CGD.Editor
             string name  = definition != null ? definition.DisplayName : $"F{faction}";
             if (name.Length > 4) name = name.Substring(0, 4);
             Color  color = definition != null ? definition.Color : MapGraphStyle.PaletteColor(faction);
+            return DrawChip(name.ToUpperInvariant(), color, right, y);
+        }
 
-            var label = new GUIContent(name.ToUpperInvariant());
+        // --- Tier, issues, hover ----------------------------------------------------
+
+        // "T2" on the room's top-right corner in the tier's colour, with "!3" beside it when
+        // validation issues name the room or one of its links.
+        private void DrawTierAndIssueChips(MapGraphEditorSession session)
+        {
+            if (Event.current.type != EventType.Repaint || !session.ShowDetails) return;
+
+            foreach (MapNode node in session.Graph.Nodes)
+            {
+                Rect  rect  = NodeRect(node, session);
+                float right = DrawChip($"T{node.EffectiveTier}", MapGraphStyle.TierColor(node.EffectiveTier), rect.xMax + 6f, rect.y - 9f) - 2f;
+
+                int issues = session.IssuesAbout(node.Id).Count;
+                if (issues > 0) DrawChip($"!{issues}", MapGraphStyle.Issue, right, rect.y - 9f);
+            }
+        }
+
+        // Draws a filled chip ending at `right`; returns where it starts.
+        private float DrawChip(string text, Color color, float right, float y)
+        {
+            var label = new GUIContent(text);
             float width = _factionChipStyle.CalcSize(label).x + 6f;
-            var chip = new Rect(right - width, y, width, 16f);
+            var chip = new Rect(right - width, y, width, ChipHeight);
 
             EditorGUI.DrawRect(chip, color);
             _factionChipStyle.normal.textColor = color.grayscale > 0.5f ? Color.black : Color.white;
             GUI.Label(chip, label, _factionChipStyle);
             return chip.x;
+        }
+
+        private void UpdateHover(Vector2 mouse, MapGraphEditorSession session)
+        {
+            MapNode node = _drag == DragMode.None && _bounds.Contains(mouse) ? HitNode(mouse, session) : null;
+            int id = node != null ? node.Id : MapGraphEditorSession.None;
+            if (id == _hoverNodeId) return;
+
+            _hoverNodeId = id;
+            GUI.changed  = true;
+        }
+
+        // Everything known about the hovered room, beside the cursor and kept inside the canvas.
+        private void DrawHoverPanel(MapGraphEditorSession session)
+        {
+            if (Event.current.type != EventType.Repaint || _drag != DragMode.None) return;
+            if (!session.Graph.TryGetNode(_hoverNodeId, out MapNode node)) return;
+
+            MapNodeInfo.Describe(node, session, session.Objectives.BuildSettings, _locks, ObjectivePlan(session), _hoverLines);
+
+            float width = 0f;
+            for (int i = 0; i < _hoverLines.Count; i++)
+            {
+                _hoverStyle.fontStyle = i == 0 ? FontStyle.Bold : FontStyle.Normal;
+                width = Mathf.Max(width, _hoverStyle.CalcSize(new GUIContent(_hoverLines[i])).x);
+            }
+            var size  = new Vector2(Mathf.Min(width, 460f) + 12f, _hoverLines.Count * HoverLineHeight + 10f);
+            var panel = new Rect(_mouse + new Vector2(16f, 16f), size);
+            if (panel.xMax > _bounds.xMax) panel.x = _mouse.x - 16f - size.x;
+            if (panel.yMax > _bounds.yMax) panel.y = Mathf.Max(_bounds.y, _bounds.yMax - size.y);
+
+            EditorGUI.DrawRect(panel, new Color(0.08f, 0.08f, 0.09f, 0.95f));
+            DrawOutline(panel, MapGraphStyle.TypeColor(node.Type), 1f);
+            for (int i = 0; i < _hoverLines.Count; i++)
+            {
+                _hoverStyle.fontStyle = i == 0 ? FontStyle.Bold : FontStyle.Normal;
+                _hoverStyle.normal.textColor = _hoverLines[i].StartsWith("  • ") ? MapGraphStyle.Issue : MapGraphStyle.NodeText;
+                GUI.Label(new Rect(panel.x + 6f, panel.y + 5f + i * HoverLineHeight, panel.width - 12f, HoverLineHeight), _hoverLines[i], _hoverStyle);
+            }
         }
 
         // --- Objectives ------------------------------------------------------------
@@ -437,6 +555,12 @@ namespace CGD.Editor
             if (Event.current.type != EventType.Repaint) return;
 
             MapGraphStyle.CollectLegend(session.ViewMode, session.Asset.Content, session.Analysis, _legend);
+            if (session.ShowDetails)
+            {
+                for (int tier = 1; tier <= 3; tier++) _legend.Add((MapGraphStyle.TierColor(tier), $"T{tier} room tier"));
+                _legend.Add((MapGraphStyle.IntensityColor(1f), "Bar: intensity"));
+                _legend.Add((MapGraphStyle.Issue, "!n issues (hover)"));
+            }
 
             const float line = 16f;
             var box = new Rect(8f, local.height - 8f - _legend.Count * line - 8f, 140f, _legend.Count * line + 8f);
@@ -464,6 +588,12 @@ namespace CGD.Editor
         {
             Event e = Event.current;
             _mouse = e.mousePosition;
+            if (e.type is EventType.MouseMove or EventType.MouseDrag or EventType.MouseUp) UpdateHover(_mouse, session);
+            if (e.type == EventType.MouseLeaveWindow && _hoverNodeId != MapGraphEditorSession.None)
+            {
+                _hoverNodeId = MapGraphEditorSession.None;
+                GUI.changed  = true;
+            }
 
             // Clicks, scrolls and keys belong to the canvas only when aimed at it; drags
             // and releases must still reach it after the cursor leaves mid-drag.
@@ -685,6 +815,9 @@ namespace CGD.Editor
             };
             _keyBadgeStyle = new GUIStyle(EditorStyles.miniBoldLabel) { alignment = TextAnchor.MiddleCenter };
             _factionChipStyle = new GUIStyle(EditorStyles.miniBoldLabel) { alignment = TextAnchor.MiddleCenter };
+            _hoverStyle = new GUIStyle(EditorStyles.miniLabel) { clipping = TextClipping.Clip };
+            _titleStyle.clipping  = TextClipping.Clip;
+            _detailStyle.clipping = TextClipping.Clip;
         }
     }
 }

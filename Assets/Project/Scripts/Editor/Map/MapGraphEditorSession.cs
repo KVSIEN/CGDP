@@ -28,12 +28,15 @@ namespace CGD.Editor
         [SerializeField] private float            _zoom = 1f;
         [SerializeField] private bool             _snapToGrid = true;
         [SerializeField] private bool             _showObjectives = true;
+        [SerializeField] private bool             _showDetails = true;
 
         [NonSerialized] private MapGraphAnalysis _analysis;
         [NonSerialized] private List<string>     _issues;
         [NonSerialized] private HashSet<int>     _highlightedPath;
         [NonSerialized] private List<int>        _highlightedPathOrder = new();
         [NonSerialized] private MapObjectivePreview _objectives;
+        [NonSerialized] private MapRoomPreview      _rooms;
+        [NonSerialized] private Dictionary<int, List<string>> _issuesByNode;
 
         public MapGraphAsset Asset
         {
@@ -108,10 +111,46 @@ namespace CGD.Editor
         // Where a level built from this graph would put its objectives.
         public MapObjectivePreview Objectives => _objectives ??= new MapObjectivePreview();
 
+        // Rich node cards: tier, intensity bar, room place, route, enemies, issues.
+        public bool ShowDetails
+        {
+            get => _showDetails;
+            set => _showDetails = value;
+        }
+
+        // Which room (place, cells) a level built from this graph would give each node.
+        public MapRoomPreview Rooms => _rooms ??= new MapRoomPreview();
+
         public MapGraphAnalysis Analysis => _analysis ??= new MapGraphAnalysis(Graph);
 
         public IReadOnlyList<string> Issues =>
             _issues ??= MapGraphValidator.Validate(Graph, Analysis, _asset.Layout, _asset.Content, _asset.Tuning);
+
+        // The issues naming this room, or a connection it's an end of.
+        public IReadOnlyList<string> IssuesAbout(int nodeId)
+        {
+            if (_issuesByNode == null)
+            {
+                _issuesByNode = new Dictionary<int, List<string>>();
+                foreach (string issue in Issues)
+                {
+                    if (!MapIssueTarget.TryFind(issue, Graph, out MapNode node, out MapConnection connection)) continue;
+                    if (node != null) AddIssue(node.Id, issue);
+                    if (connection != null)
+                    {
+                        AddIssue(connection.A, issue);
+                        AddIssue(connection.B, issue);
+                    }
+                }
+            }
+            return _issuesByNode.TryGetValue(nodeId, out List<string> issues) ? issues : (IReadOnlyList<string>)Array.Empty<string>();
+        }
+
+        private void AddIssue(int nodeId, string issue)
+        {
+            if (!_issuesByNode.TryGetValue(nodeId, out List<string> issues)) _issuesByNode[nodeId] = issues = new List<string>();
+            issues.Add(issue);
+        }
 
         // Call after anything outside this class changes the asset (undo, regenerate).
         // Bumped by every Invalidate, so views that cache what they build from the graph
@@ -123,6 +162,7 @@ namespace CGD.Editor
             Version++;
             _analysis        = null;
             _issues          = null;
+            _issuesByNode    = null;
             _highlightedPath = null;
         }
 
