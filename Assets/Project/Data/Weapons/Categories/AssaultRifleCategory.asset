@@ -102,7 +102,7 @@ MonoBehaviour:
     FiringStyles:
     - Name: 
       ModelName: 
-      Weight: 1
+      Weight: 8
       FireMode: 2
       FireBehavior: {fileID: 0}
       PelletCount:
@@ -117,6 +117,26 @@ MonoBehaviour:
         Damage: 1
         FireRate: 1
         Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+    - Name: 
+      ModelName: M16A3
+      Weight: 2
+      FireMode: 1
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 0.92
+        FireRate: 1
+        Recoil: 1.2
         Spread: 1
         Range: 1
         MagazineSize: 1
