@@ -83,6 +83,8 @@ namespace CGD.Weapons
         public FloatRange TacticalReloadTime  = new(1.7f, 2.2f);
         // TacticalReloadTime is stored directly for WeaponData and can still be tuned via bonus.
         public FloatRange TacticalReloadBonus = new(0.3f, 0.6f);
+        [Tooltip("Loads one round at a time (shotgun shells): each takes Reload Time ÷ Magazine Size, and an interrupted reload keeps the rounds already in")]
+        public bool       ReloadsPerRound;
 
         [Header("Handling")]
         [Tooltip("What the Melee key does with this weapon in hand — a bash; its start parries. Empty = fists")]

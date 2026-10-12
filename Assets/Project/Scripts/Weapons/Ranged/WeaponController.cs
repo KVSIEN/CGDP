@@ -50,6 +50,7 @@ namespace CGD.Weapons
         private PlayerDodge    _dodge;
         private PlayerAbilities _abilities;
         private PlayerItemSlots _items;
+        private MeleeController _melee;
         private DamageSource   _ownerSource;
         // The owner plus the weapon in hand, so kills are credited to that weapon's perks.
         private DamageSource   _damageSource;
@@ -102,6 +103,7 @@ namespace CGD.Weapons
             TryGetComponent(out _dodge);
             TryGetComponent(out _abilities);
             TryGetComponent(out _items);
+            TryGetComponent(out _melee);
             _ownerSource  = DamageSource.Of(gameObject);
             _damageSource = _ownerSource;
             if (_inventory == null) _inventory = GetComponentInParent<PlayerInventory>();
@@ -111,6 +113,7 @@ namespace CGD.Weapons
             if (_inventory != null) _inventory.Inventory.Changed += NotifyAmmoChanged;
             if (_abilities != null) _abilities.AbilityStarted   += OnAbilityStarted;
             if (_items     != null) _items.UseStarted           += OnItemUseStarted;
+            if (_melee     != null) _melee.AttackStarted        += OnMeleeAttackStarted;
         }
 
         private void OnDestroy()
@@ -118,13 +121,17 @@ namespace CGD.Weapons
             if (_inventory != null) _inventory.Inventory.Changed -= NotifyAmmoChanged;
             if (_abilities != null) _abilities.AbilityStarted   -= OnAbilityStarted;
             if (_items     != null) _items.UseStarted           -= OnItemUseStarted;
+            if (_melee     != null) _melee.AttackStarted        -= OnMeleeAttackStarted;
         }
 
-        // Using an ability or a consumable takes the hands off the reload, like a sprint or
-        // dodge: lost before the commit point, done early after it. The weapon still waits for
-        // the ability or item, so these mostly just save the time.
+        // Using an ability or a consumable, or starting a melee attack (the gun's bash), takes
+        // the hands off the reload, like a sprint or dodge: lost before the commit point, done
+        // early after it. A per-round reload keeps every round already in. So a shell loaded,
+        // then a bash, cancels the rest of the reload and keeps the shell. The weapon still
+        // waits for the ability or item, so these mostly just save the time.
         private void OnAbilityStarted(Ability ability) => CancelReloadByAction();
         private void OnItemUseStarted(ConsumableDefinition item) => CancelReloadByAction();
+        private void OnMeleeAttackStarted(int attack) => CancelReloadByAction();
 
         private void CancelReloadByAction()
         {
@@ -447,18 +454,13 @@ namespace CGD.Weapons
             return whole + (UnityEngine.Random.value < extra - whole ? 1 : 0);
         }
 
-        private void StartReload() => _reload = StartCoroutine(Reload());
+        private void StartReload() => _reload = StartCoroutine(D.ReloadsPerRound ? ReloadPerRound() : Reload());
 
         // The rounds go in at the commit point; the rest is the tail of the animation, which
         // sprinting or a swap can skip. The magazine filling up is the cue that it's safe.
         private IEnumerator Reload()
         {
-            _isReloading     = true;
-            _reloadCommitted = false;
-            NotifyAmmoChanged();
-
-            D.ReloadSound.TryPlay(SoundPos);
-            ReloadStarted?.Invoke();
+            BeginReload();
 
             float time   = Mathf.Max(0.1f, Wielder(ItemStat.ReloadTime,
                 _current.Magazine > 0 ? _current.TacticalReloadTime : _current.ReloadTime));
@@ -471,6 +473,38 @@ namespace CGD.Weapons
             if (time > commit) yield return new WaitForSeconds(time - commit);
 
             EndReload();
+        }
+
+        // One round at a time, each in for good once its share of the reload time is up, until
+        // the weapon is full or the reserve runs dry. The first round in is the commit point
+        // (Reloaded fires once, as for a magazine). An interrupt keeps every round already in.
+        private IEnumerator ReloadPerRound()
+        {
+            BeginReload();
+
+            float perRound = Mathf.Max(0.05f, Wielder(ItemStat.ReloadTime, _current.ReloadTime) / Mathf.Max(1, _current.MagazineSize));
+            var wait = new WaitForSeconds(perRound);
+            while (CanReload)
+            {
+                yield return wait;
+                if (LoadRounds(1, free: false) == 0) break;
+                if (_reloadCommitted) continue;
+
+                _reloadCommitted = true;
+                Reloaded?.Invoke();
+            }
+
+            EndReload();
+        }
+
+        private void BeginReload()
+        {
+            _isReloading     = true;
+            _reloadCommitted = false;
+            NotifyAmmoChanged();
+
+            D.ReloadSound.TryPlay(SoundPos);
+            ReloadStarted?.Invoke();
         }
 
         private void LoadMagazine() => LoadRounds(_current.MagazineSize - _current.Magazine, free: false);

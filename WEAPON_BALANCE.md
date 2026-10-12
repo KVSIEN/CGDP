@@ -125,6 +125,7 @@ lowering base damage.
 - **Best at**: one-shot kill at 3–8m; punishes anyone who enters.
 - **Weakness**: pellet spread makes 15m+ shots miss most damage; ShotgunShells is its own scarce pool.
 - **What a Legendary shotgun feels like**: tighter pellet pattern, faster follow-up, higher per-pellet damage roll.
+- **Reload**: shell by shell (`ReloadsPerRound`); each shell takes ReloadTime ÷ MagazineSize (about 0.45–0.6 s), so the Tube axis trades capacity for a slower full reload but not slower shells. Loaded shells survive any interrupt, which enables blast → one shell → bash-cancel → blast.
 
 ### Pistol
 - **Best at**: always-ready backup; LightRounds abundance means it never runs dry.

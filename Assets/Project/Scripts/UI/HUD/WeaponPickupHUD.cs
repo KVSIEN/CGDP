@@ -113,7 +113,9 @@ namespace CGD.UI
             SetRow(0, _leftKeys, _leftVals,  "Damage",    d.Damage.ToString("0.#"));
             SetRow(1, _leftKeys, _leftVals,  "Fire Rate", $"{d.RoundsPerMinute:0} rpm");
             SetRow(2, _leftKeys, _leftVals,  "Magazine",  d.MagazineSize.ToString());
-            SetRow(3, _leftKeys, _leftVals,  "Reload",    $"{d.ReloadTime:0.0}s");
+            SetRow(3, _leftKeys, _leftVals,  "Reload",    d.ReloadsPerRound
+                ? $"{d.ReloadTime / Mathf.Max(1, d.MagazineSize):0.00}s/shell"
+                : $"{d.ReloadTime:0.0}s");
             SetRow(4, _leftKeys, _leftVals,  "Range",     $"{d.RangeOptimal:0} m");
 
             SetRow(0, _rightKeys, _rightVals, "Fire Mode", FireModeLabel(d.FireMode, d.BurstCount));
