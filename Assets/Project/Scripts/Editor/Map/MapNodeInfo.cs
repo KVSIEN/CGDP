@@ -87,6 +87,9 @@ namespace CGD.Editor
             foreach (string issue in issues) lines.Add("  • " + issue);
         }
 
+        // Locks are numbered in graph order: the first locked connection is L1.
+        public static string LockName(int lockIndex) => $"L{lockIndex + 1}";
+
         public static int EnemyCount(MapNode node, LevelBuildSettings build)
         {
             RoomContentRule rule = build != null ? build.RuleFor(node.Type) : null;
@@ -172,9 +175,9 @@ namespace CGD.Editor
                 MapConnection connection = locks[i];
                 int part = IndexOf(connection.KeyNodeIds, node.Id);
                 if (part >= 0)
-                    lines.Add(connection.UsesSingleKey ? $"Holds L{i + 1} key" : $"Holds L{i + 1} terminal {part + 1}");
+                    lines.Add(connection.UsesSingleKey ? $"Holds {LockName(i)} key" : $"Holds {LockName(i)} terminal {part + 1}");
                 if (connection.A == node.Id || connection.B == node.Id)
-                    lines.Add($"Locked door L{i + 1} to #{(connection.A == node.Id ? connection.B : connection.A)}");
+                    lines.Add($"Locked door {LockName(i)} to #{(connection.A == node.Id ? connection.B : connection.A)}");
             }
         }
 

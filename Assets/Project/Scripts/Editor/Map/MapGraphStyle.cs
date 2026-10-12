@@ -1,13 +1,16 @@
 using System.Collections.Generic;
 using CGD.Map;
+using UnityEditor;
 using UnityEngine;
 
 namespace CGD.Editor
 {
-    // Colours and legends for the Map Graph window, per view mode.
+    // Colours, legends and the outline helper for the Map Graph window.
     public static class MapGraphStyle
     {
         public static readonly Vector2 NodeSize = new(160f, 70f);
+        // Below this zoom node and link text is left out.
+        public const float LabelMinZoom = 0.6f;
 
         public static readonly Color Background   = new(0.16f, 0.16f, 0.17f);
         public static readonly Color GridMinor    = new(1f, 1f, 1f, 0.03f);
@@ -134,5 +137,13 @@ namespace CGD.Editor
             branch == MapGraphAnalysis.MainPathBranch ? MainPath : PaletteColor(branch);
 
         public static Color PaletteColor(int index) => Palette[index % Palette.Length];
+
+        public static void DrawOutline(Rect rect, Color color, float thickness)
+        {
+            EditorGUI.DrawRect(new Rect(rect.x - thickness, rect.y - thickness, rect.width + thickness * 2f, thickness), color);
+            EditorGUI.DrawRect(new Rect(rect.x - thickness, rect.yMax, rect.width + thickness * 2f, thickness), color);
+            EditorGUI.DrawRect(new Rect(rect.x - thickness, rect.y, thickness, rect.height), color);
+            EditorGUI.DrawRect(new Rect(rect.xMax, rect.y, thickness, rect.height), color);
+        }
     }
 }
