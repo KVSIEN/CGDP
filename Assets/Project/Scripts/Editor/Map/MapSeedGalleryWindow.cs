@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using CGD.Core;
 using CGD.Map;
 using UnityEditor;
@@ -11,7 +12,8 @@ namespace CGD.Editor
     // one (SeedSequence: "100" → 100, 101…; "banana" → banana 1, banana 2…), drawn small so
     // good ones are easy to spot. Use generates the asset from that seed in the Map Graph
     // window. Each preview is generated with the asset's locked rooms pinned, so it is exactly
-    // what Use gives. Maps are generated a few per editor tick so the window stays responsive.
+    // what Use gives. Maps are generated a few per editor tick so the window stays responsive;
+    // each is captioned once, when it's generated, since cells redraw on every repaint.
     public class MapSeedGalleryWindow : EditorWindow
     {
         private const float  CellWidth     = 230f;
@@ -26,7 +28,10 @@ namespace CGD.Editor
             public string              Seed;
             public bool                Attempted;
             public MapGenerationResult Result;
-            public int                 Issues;
+            public string              Shape;      // "18 rooms · Branching"
+            public string              Modifiers;  // "Lights Out, Bounty" or "no run modifiers"
+            public string              Problems;   // "no issues" or "2 issues · 1 generator warning"
+            public bool                Clean;
         }
 
         [SerializeField] private MapGraphAsset _asset;
@@ -34,6 +39,9 @@ namespace CGD.Editor
         [SerializeField] private int    _count = 24;
 
         private readonly List<Entry> _entries = new();
+        // For the page being generated: the style's generator and the asset's locked rooms.
+        private MapGenerator     _generator;
+        private List<MapNodePin> _pins;
         private int     _next;
         private Vector2 _scroll;
         private GUIStyle _seedStyle;
@@ -59,7 +67,9 @@ namespace CGD.Editor
         private void Restart()
         {
             _entries.Clear();
-            _next = 0;
+            _next      = 0;
+            _generator = null;
+            _pins      = null;
             foreach (string seed in SeedSequence.CountingFrom(_firstSeed, _count))
                 _entries.Add(new Entry { Seed = seed });
             Repaint();
@@ -71,13 +81,13 @@ namespace CGD.Editor
             if (_next >= _entries.Count || !CanGenerate) return;
 
             MapGenerationSettings settings = _asset.Settings;
-            var generator = new MapGenerator(settings);
-            List<MapNodePin> pins = _asset.BuildPins();
+            _generator ??= new MapGenerator(settings);
+            _pins      ??= _asset.BuildPins();
 
             double stop = EditorApplication.timeSinceStartup + TickBudget;
             try
             {
-                do Generate(_entries[_next++], generator, pins, settings);
+                do Generate(_entries[_next++], _generator, _pins, settings);
                 while (_next < _entries.Count && EditorApplication.timeSinceStartup < stop);
             }
             finally
@@ -91,9 +101,30 @@ namespace CGD.Editor
             entry.Attempted = true;
             MapGenerationResult result = generator.Generate(Seed.Parse(entry.Seed), null, pins);
             var analysis = new MapGraphAnalysis(result.Graph);
-            entry.Issues = MapGraphValidator.Validate(result.Graph, analysis, result.Layout, settings.Content,
+            int issues   = MapGraphValidator.Validate(result.Graph, analysis, result.Layout, settings.Content,
                                                       new MapRunTuning(result.Modifiers)).Count;
             entry.Result = result;
+            Caption(entry, issues);
+        }
+
+        private static void Caption(Entry entry, int issues)
+        {
+            MapGenerationResult result = entry.Result;
+            string layout = result.Layout != null ? result.Layout.name.Replace("MapLayoutSettings", "") : "?";
+            entry.Shape     = $"{result.Graph.Nodes.Count} rooms · {layout}";
+            entry.Modifiers = result.Modifiers.Count == 0 ? "no run modifiers"
+                            : string.Join(", ", result.Modifiers.Where(m => m != null).Select(m => m.DisplayName));
+
+            int warnings = result.Warnings.Count;
+            entry.Clean = issues == 0 && warnings == 0;
+            if (entry.Clean)
+            {
+                entry.Problems = "no issues";
+                return;
+            }
+            var text = new StringBuilder($"{issues} issue{(issues == 1 ? "" : "s")}");
+            if (warnings > 0) text.Append($" · {warnings} generator warning{(warnings == 1 ? "" : "s")}");
+            entry.Problems = text.ToString();
         }
 
         private void OnGUI()
@@ -184,24 +215,13 @@ namespace CGD.Editor
             }
             if (entry.Result == null) return;
 
-            MapGenerationResult result = entry.Result;
-            string layout = result.Layout != null ? result.Layout.name.Replace("MapLayoutSettings", "") : "?";
-            GUI.Label(new Rect(cell.x + 6f, y + 16f, cell.width - 12f, 14f),
-                      $"{result.Graph.Nodes.Count} rooms · {layout}", EditorStyles.miniLabel);
-            GUI.Label(new Rect(cell.x + 6f, y + 29f, cell.width - 12f, 14f), ModifierText(result), EditorStyles.miniLabel);
-
-            int warnings = result.Warnings.Count;
-            string problems = entry.Issues == 0 && warnings == 0 ? "no issues"
-                            : $"{entry.Issues} issue{(entry.Issues == 1 ? "" : "s")}" + (warnings > 0 ? $" · {warnings} generator warning{(warnings == 1 ? "" : "s")}" : "");
-            _issueStyle.normal.textColor = entry.Issues == 0 && warnings == 0 ? new Color(0.6f, 0.85f, 0.6f) : MapGraphStyle.Issue;
-            GUI.Label(new Rect(cell.x + 6f, y + 42f, cell.width - 12f, 14f), problems, _issueStyle);
+            GUI.Label(new Rect(cell.x + 6f, y + 16f, cell.width - 12f, 14f), entry.Shape, EditorStyles.miniLabel);
+            GUI.Label(new Rect(cell.x + 6f, y + 29f, cell.width - 12f, 14f), entry.Modifiers, EditorStyles.miniLabel);
+            _issueStyle.normal.textColor = entry.Clean ? CleanColor : MapGraphStyle.Issue;
+            GUI.Label(new Rect(cell.x + 6f, y + 42f, cell.width - 12f, 14f), entry.Problems, _issueStyle);
         }
 
-        private static string ModifierText(MapGenerationResult result)
-        {
-            if (result.Modifiers.Count == 0) return "no run modifiers";
-            return string.Join(", ", result.Modifiers.Where(m => m != null).Select(m => m.DisplayName));
-        }
+        private static readonly Color CleanColor = new(0.6f, 0.85f, 0.6f);
 
         private void EnsureStyles()
         {

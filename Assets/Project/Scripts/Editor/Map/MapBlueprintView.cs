@@ -1,3 +1,4 @@
+using CGD.Core;
 using CGD.Level;
 using CGD.Map;
 using UnityEditor;
@@ -6,7 +7,8 @@ using UnityEngine;
 namespace CGD.Editor
 {
     // The Map Graph window's Blueprint mode: the graph run through LevelLayoutBuilder —
-    // exactly what LevelBuilder lays out, with the graph's seed — and drawn as a floor
+    // exactly what LevelBuilder lays out, with the graph's seed and the session's build
+    // settings — and drawn as a floor
     // plan (LevelBlueprint). Rebuilt whenever the graph changes. Scroll to zoom, drag to
     // pan, F to frame; clicking a room selects its node, so the side panel works as in
     // Graph mode.
@@ -18,6 +20,7 @@ namespace CGD.Editor
         private LevelBlueprint.Fill _builtFill;
         private int         _builtVersion = -1;
         private MapGraphAsset _builtAsset;
+        private Seed        _builtSeed;
         private LevelLayout _layout;
         private Texture2D   _texture;
         private Vector2Int  _tileOrigin;
@@ -28,8 +31,9 @@ namespace CGD.Editor
 
         public LevelBlueprint.Fill Fill { get; set; }
 
-        public void Draw(Rect rect, MapGraphEditorSession session, LevelBuildSettings settings)
+        public void Draw(Rect rect, MapGraphEditorSession session)
         {
+            LevelBuildSettings settings = session.BuildSettings;
             EditorGUI.DrawRect(rect, LevelBlueprint.Background);
             if (settings == null)
             {
@@ -64,16 +68,16 @@ namespace CGD.Editor
         {
             MapGraphAsset asset = session.Asset;
             if (_texture != null && _builtVersion == session.Version && _builtWith == settings
-                && _builtFill == Fill && _builtAsset == asset) return;
+                && _builtFill == Fill && _builtAsset == asset && _builtSeed == asset.Seed) return;
 
             if (_builtAsset != asset) _needsFrame = true;
             _builtVersion = session.Version;
             _builtWith    = settings;
             _builtFill    = Fill;
             _builtAsset   = asset;
+            _builtSeed    = asset.Seed;
 
-            Vector2 spacing = asset.Settings != null ? asset.Settings.NodeSpacing : Vector2.one;
-            _layout = new LevelLayoutBuilder(settings).Build(session.Graph, spacing, asset.Seed, asset.Content);
+            _layout = new LevelLayoutBuilder(settings).Build(session.Graph, asset.NodeSpacing, asset.Seed, asset.Content);
 
             Color32[] pixels = LevelBlueprint.Render(_layout, settings, Fill, out int width, out int height, out _tileOrigin);
             if (_texture == null || _texture.width != width || _texture.height != height)

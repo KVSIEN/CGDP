@@ -117,5 +117,15 @@ namespace CGD.Map
         }
 
         public MapNode Clone() => (MapNode)MemberwiseClone();
+
+        // Every authored field matches — how the Map Graph window tells a hand-edited room from
+        // the generated one. Kept beside the fields so a new field can't be left out.
+        public bool SameAs(MapNode other) =>
+            other != null
+            && _id == other._id && _type == other._type && _position == other._position
+            && _intensity == other._intensity && _tier == other._tier
+            && _faction == other._faction && _factionInfluence == other._factionInfluence
+            && _breachFaction == other._breachFaction && _section == other._section
+            && _category == other._category && _place == other._place;
     }
 }

@@ -15,7 +15,6 @@ namespace CGD.Editor
     public static class MapStyleLearnerCommand
     {
         private const string MenuPath = "Assets/CGD/Learn Map Style From Selected Graphs";
-        private static readonly Vector2 DefaultSpacing = new(220f, 110f);
 
         [MenuItem(MenuPath, true)]
         private static bool CanLearn() => SelectedGraphs().Count > 0;
@@ -36,7 +35,7 @@ namespace CGD.Editor
             foreach (MapGraphAsset example in examples)
             {
                 graphs.Add(example.Graph);
-                spacings.Add(example.Settings != null ? example.Settings.NodeSpacing : DefaultSpacing);
+                spacings.Add(example.NodeSpacing);
             }
 
             LearnedMapStyle style = MapStyleLearner.Learn(graphs, spacings, baseStyle.Content);

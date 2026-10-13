@@ -7,19 +7,20 @@ using UnityEngine;
 namespace CGD.Editor
 {
     // What the Map Graph window says about a node: the short lines on its card and the full
-    // rundown shown while hovering it. Room places and enemy counts come from the level build
-    // settings the window previews with (none = those parts are left out).
+    // rundown shown while hovering it. Room places and enemy counts come from the session's
+    // build settings (none = those parts are left out). Callers cache the results per graph
+    // change (MapNodeCards); these only format.
     public static class MapNodeInfo
     {
         // "Restaurant 2×1 · Commercial": the place the level gives it ("pinned" when the node
         // pins it), its cells when it spans more than one, and its category.
-        public static string RoomLine(MapNode node, MapGraphEditorSession session, LevelBuildSettings build)
+        public static string RoomLine(MapNode node, MapGraphEditorSession session)
         {
             string category = node.Category != RoomCategory.None ? node.Category.ToString() : "no category";
-            if (!TryGetRoom(node, session, build, out LevelRoom room) || room.Function == null)
+            if (!session.Rooms.TryGetRoom(session, node.Id, out LevelRoom room) || room.Function == null)
                 return node.Place != null ? $"{PlaceName(node.Place.DisplayName, node)} · {category}" : category;
 
-            Vector2Int cells = CellsOf(room, build);
+            Vector2Int cells = CellsOf(room, session.BuildSettings);
             string size = cells.x * cells.y > 1 ? $" {cells.x}×{cells.y}" : "";
             string place = PlaceName(room.Function.DisplayName, node);
             return node.Category != RoomCategory.None ? $"{place}{size} · {category}" : $"{place}{size}";
@@ -40,24 +41,24 @@ namespace CGD.Editor
         }
 
         // "3 foes · 3/4 links · Commerce".
-        public static string StatsLine(MapNode node, MapGraphEditorSession session, LevelBuildSettings build)
+        public static string StatsLine(MapNode node, MapGraphEditorSession session)
         {
-            var parts = new List<string>();
-            int foes = EnemyCount(node, build);
-            if (foes > 0) parts.Add($"{foes} foes");
-            parts.Add(LinksText(node, session) + " links");
-            if (node.HasSection) parts.Add(SectionName(node, session));
-            return string.Join(" · ", parts);
+            var text = new StringBuilder();
+            int foes = EnemyCount(node, session.BuildSettings);
+            if (foes > 0) text.Append(foes).Append(" foes · ");
+            text.Append(LinksText(node, session)).Append(" links");
+            if (node.HasSection) text.Append(" · ").Append(SectionName(session, node.Section));
+            return text.ToString();
         }
 
         // Everything known about the node, one fact per line, for the hover panel.
-        // `locks`: the graph's locked connections in order (L1 first); `plan`: the objective preview.
-        public static void Describe(MapNode node, MapGraphEditorSession session, LevelBuildSettings build,
-                                    IReadOnlyList<MapConnection> locks, IReadOnlyList<PlannedObjective> plan, List<string> lines)
+        // `plan`: the objective preview.
+        public static void Describe(MapNode node, MapGraphEditorSession session, IReadOnlyList<PlannedObjective> plan, List<string> lines)
         {
             lines.Clear();
-            MapGraphAnalysis analysis = session.Analysis;
-            MapGraph graph = session.Graph;
+            MapGraphAnalysis   analysis = session.Analysis;
+            MapGraph           graph    = session.Graph;
+            LevelBuildSettings build    = session.BuildSettings;
 
             string flags = (session.IsEdited(node) ? " · edited" : "") + (session.Asset.IsLocked(node.Id) ? " · locked" : "");
             lines.Add($"{node.Type} #{node.Id}{flags}");
@@ -73,9 +74,9 @@ namespace CGD.Editor
             else lines.Add("Unreachable from Start");
 
             lines.Add(FactionText(node, session));
-            lines.Add($"Section {(node.HasSection ? SectionName(node, session) : "none")} · zone {(node.Category != RoomCategory.None ? node.Category.Zone().ToString() : "none")} · category {(node.Category != RoomCategory.None ? node.Category.ToString() : "none")}");
+            lines.Add($"Section {(node.HasSection ? SectionName(session, node.Section) : "none")} · zone {(node.Category != RoomCategory.None ? node.Category.Zone().ToString() : "none")} · category {(node.Category != RoomCategory.None ? node.Category.ToString() : "none")}");
 
-            if (TryGetRoom(node, session, build, out LevelRoom room)) lines.Add(RoomText(room, node, build));
+            if (session.Rooms.TryGetRoom(session, node.Id, out LevelRoom room)) lines.Add(RoomText(room, node, build));
             else if (node.Place != null) lines.Add($"Room {node.Place.DisplayName} (pinned)");
 
             int foes = EnemyCount(node, build);
@@ -83,14 +84,17 @@ namespace CGD.Editor
                 lines.Add($"Enemies {foes} at build" + (node.Type.IsEncounter() ? " · encounter (waves when it starts)" : ""));
 
             lines.Add($"Links {LinksText(node, session)}: {Neighbours(node, graph)}");
-            AddLocks(node, locks, lines);
+            AddLocks(node, session.Locks, lines);
             AddObjectives(node, plan, lines);
 
-            IReadOnlyList<string> issues = session.IssuesAbout(node.Id);
+            IReadOnlyList<MapGraphIssue> issues = session.IssuesAbout(node.Id);
             if (issues.Count == 0) return;
             lines.Add($"Issues ({issues.Count}):");
-            foreach (string issue in issues) lines.Add("  • " + issue);
+            foreach (MapGraphIssue issue in issues) lines.Add(IssuePrefix + issue.Text);
         }
+
+        // Hover lines starting with this are issues, drawn in the issue colour.
+        public const string IssuePrefix = "  • ";
 
         // Locks are numbered in graph order: the first locked connection is L1.
         public static string LockName(int lockIndex) => $"L{lockIndex + 1}";
@@ -99,12 +103,6 @@ namespace CGD.Editor
         {
             RoomContentRule rule = build != null ? build.RuleFor(node.Type) : null;
             return rule != null ? rule.EnemyCount.Lerp(node.Intensity) : 0;
-        }
-
-        private static bool TryGetRoom(MapNode node, MapGraphEditorSession session, LevelBuildSettings build, out LevelRoom room)
-        {
-            room = null;
-            return build != null && session.Rooms.TryGetRoom(session, build, node.Id, out room);
         }
 
         // Main path rooms a loop can bypass, and side rooms every route must pass, are called out.
@@ -138,11 +136,17 @@ namespace CGD.Editor
             return ids.Count > 0 ? string.Join(", ", ids) : "none";
         }
 
-        private static string SectionName(MapNode node, MapGraphEditorSession session) =>
-            session.Asset.Content?.SectionName(node.Section) ?? node.Section.ToString();
+        public static string SectionName(MapGraphEditorSession session, int section)
+        {
+            MapContentSettings content = session.Asset.Content;
+            return content != null ? content.SectionName(section) : section.ToString();
+        }
 
-        private static string FactionName(MapGraphEditorSession session, int faction) =>
-            session.Asset.Content?.FactionName(faction) ?? faction.ToString();
+        public static string FactionName(MapGraphEditorSession session, int faction)
+        {
+            MapContentSettings content = session.Asset.Content;
+            return content != null ? content.FactionName(faction) : faction.ToString();
+        }
 
         private static string FactionText(MapNode node, MapGraphEditorSession session)
         {

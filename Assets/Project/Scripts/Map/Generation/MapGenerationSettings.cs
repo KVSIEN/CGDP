@@ -28,8 +28,12 @@ namespace CGD.Map
         [Tooltip("Most anomalies (twists) one map can get")]
         [SerializeField, Min(0)] private int _maxAnomalies = 1;
 
-        [Header("Layout (editor only)")]
-        [SerializeField] private Vector2 _nodeSpacing = new(220f, 110f);
+        [Header("Layout")]
+        [Tooltip("Size of one room cell in graph units: node positions ÷ this are the cells the level builds rooms in")]
+        [SerializeField] private Vector2 _nodeSpacing = DefaultNodeSpacing;
+
+        // For graphs without a style (drawn by hand): what a new style starts with.
+        public static readonly Vector2 DefaultNodeSpacing = new(220f, 110f);
 
         public IReadOnlyList<MapLayoutOption> Layouts => _layouts;
         public MapContentSettings Content     => _content;

@@ -90,6 +90,18 @@ namespace CGD.Map
 
         public int Other(int nodeId) => nodeId == _a ? _b : _a;
 
+        // Every authored field matches, key rooms in order — see MapNode.SameAs.
+        public bool SameAs(MapConnection other)
+        {
+            if (other == null || _a != other._a || _b != other._b || _type != other._type || _lock != other._lock
+                || _oneWay != other._oneWay || _direct != other._direct || _keyNodeIds.Count != other._keyNodeIds.Count)
+                return false;
+
+            for (int i = 0; i < _keyNodeIds.Count; i++)
+                if (_keyNodeIds[i] != other._keyNodeIds[i]) return false;
+            return true;
+        }
+
         public MapConnection Clone()
         {
             var copy = (MapConnection)MemberwiseClone();

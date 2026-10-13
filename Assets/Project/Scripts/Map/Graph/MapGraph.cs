@@ -39,13 +39,26 @@ namespace CGD.Map
             return true;
         }
 
+        // Plain loops rather than List.Find: these run constantly (generation, level layout,
+        // every repaint of the Map Graph window) and a lambda capturing the id allocates.
         public bool TryGetNode(int id, out MapNode node)
         {
-            node = _nodes.Find(n => n.Id == id);
-            return node != null;
+            foreach (MapNode candidate in _nodes)
+                if (candidate.Id == id)
+                {
+                    node = candidate;
+                    return true;
+                }
+            node = null;
+            return false;
         }
 
-        public MapNode FindFirst(MapNodeType type) => _nodes.Find(n => n.Type == type);
+        public MapNode FindFirst(MapNodeType type)
+        {
+            foreach (MapNode node in _nodes)
+                if (node.Type == type) return node;
+            return null;
+        }
 
         public int CountOf(MapNodeType type)
         {
@@ -67,7 +80,12 @@ namespace CGD.Map
 
         public bool Disconnect(int a, int b) => _connections.RemoveAll(c => c.Links(a, b)) > 0;
 
-        public MapConnection GetConnection(int a, int b) => _connections.Find(c => c.Links(a, b));
+        public MapConnection GetConnection(int a, int b)
+        {
+            foreach (MapConnection connection in _connections)
+                if (connection.Links(a, b)) return connection;
+            return null;
+        }
 
         public bool AreConnected(int a, int b) => GetConnection(a, b) != null;
 

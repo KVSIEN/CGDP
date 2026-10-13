@@ -185,13 +185,13 @@ namespace CGD.Level
         {
             if (_graphAsset != null)
             {
-                nodeSpacing = _graphAsset.Settings != null ? _graphAsset.Settings.NodeSpacing : Vector2.one;
+                nodeSpacing = _graphAsset.NodeSpacing;
                 content     = _graphAsset.Content;
                 Modifiers   = _graphAsset.Tuning.Modifiers;
                 return _graphAsset.Graph;
             }
 
-            nodeSpacing = _generation != null ? _generation.NodeSpacing : Vector2.one;
+            nodeSpacing = _generation != null ? _generation.NodeSpacing : MapGenerationSettings.DefaultNodeSpacing;
             content     = _generation != null ? _generation.Content : null;
             if (_generation == null || !_generation.CanGenerate) return null;
 

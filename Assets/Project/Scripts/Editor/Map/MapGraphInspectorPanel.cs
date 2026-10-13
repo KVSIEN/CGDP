@@ -11,8 +11,16 @@ namespace CGD.Editor
     // warnings.
     public class MapGraphInspectorPanel
     {
+        private const int NoRoom = -1;
+
+        private static readonly MapNodeType[] NodeTypes = (MapNodeType[])System.Enum.GetValues(typeof(MapNodeType));
+
         private readonly List<int> _neighbors = new();
         private Vector2 _scroll;
+
+        // "None", then "#id Type" per node: the key room popups' options, built once per graph change.
+        private string[] _roomOptions;
+        private int      _roomOptionsVersion = -1;
 
         public void Draw(Rect rect, MapGraphEditorSession session)
         {
@@ -88,11 +96,7 @@ namespace CGD.Editor
 
             EditorGUI.BeginChangeCheck();
             Vector2 position = EditorGUILayout.Vector2Field("Position", node.Position);
-            if (EditorGUI.EndChangeCheck())
-            {
-                session.BeginMove();
-                session.MoveNode(node, position);
-            }
+            if (EditorGUI.EndChangeCheck()) session.SetPosition(node, position);
 
             DrawNodeAnalysis(node, session);
             DrawNodeConnections(node, session);
@@ -111,8 +115,7 @@ namespace CGD.Editor
             if (EditorGUI.EndChangeCheck()) session.SetPlace(node, place);
 
             if (node.Place != null) return;
-            LevelBuildSettings build = session.Objectives.BuildSettings;
-            if (build == null || !session.Rooms.TryGetRoom(session, build, node.Id, out LevelRoom room) || room.Function == null) return;
+            if (!session.Rooms.TryGetRoom(session, node.Id, out LevelRoom room) || room.Function == null) return;
 
             if (GUILayout.Button(new GUIContent("Pin current", $"Pin {room.Function.DisplayName}, the place this room gets now"),
                                  EditorStyles.miniButton, GUILayout.Width(76f)))
@@ -214,7 +217,7 @@ namespace CGD.Editor
 
         // --- Connection ------------------------------------------------------------
 
-        private static void DrawConnection(MapConnection connection, MapGraphEditorSession session)
+        private void DrawConnection(MapConnection connection, MapGraphEditorSession session)
         {
             EditorGUILayout.LabelField($"Connection #{connection.A} ↔ #{connection.B}", EditorStyles.boldLabel);
             DrawConnectionTypePopup(connection, session);
@@ -229,7 +232,7 @@ namespace CGD.Editor
         }
 
         // A Keycard lock has one key room; a Terminal lock lists a room per terminal.
-        private static void DrawLock(MapConnection connection, MapGraphEditorSession session)
+        private void DrawLock(MapConnection connection, MapGraphEditorSession session)
         {
             EditorGUI.BeginChangeCheck();
             var kind = (MapLockKind)EditorGUILayout.EnumPopup(new GUIContent("Lock", "What opens this door"), connection.Lock);
@@ -247,24 +250,17 @@ namespace CGD.Editor
             DrawKeyRoomPopup(connection, session, connection.KeyNodeIds.Count, NoRoom, new GUIContent("Add terminal"));
         }
 
-        private const int NoRoom = -1;
-
         // Any node can be picked; the validator flags a key or terminal the player can't reach.
         // Picking None removes the room.
-        private static void DrawKeyRoomPopup(MapConnection connection, MapGraphEditorSession session, int index, int current, GUIContent label)
+        private void DrawKeyRoomPopup(MapConnection connection, MapGraphEditorSession session, int index, int current, GUIContent label)
         {
             IReadOnlyList<MapNode> nodes = session.Graph.Nodes;
-            var labels = new string[nodes.Count + 1];
-            labels[0] = "None";
             int selected = 0;
             for (int i = 0; i < nodes.Count; i++)
-            {
-                labels[i + 1] = $"#{nodes[i].Id} {nodes[i].Type}";
                 if (nodes[i].Id == current) selected = i + 1;
-            }
 
             EditorGUI.BeginChangeCheck();
-            int picked = EditorGUILayout.Popup(label, selected, labels);
+            int picked = EditorGUILayout.Popup(label, selected, RoomOptions(session));
             if (!EditorGUI.EndChangeCheck()) return;
 
             if (picked == 0)
@@ -275,6 +271,19 @@ namespace CGD.Editor
             {
                 session.SetKeyRoom(connection, index, nodes[picked - 1].Id);
             }
+        }
+
+        private string[] RoomOptions(MapGraphEditorSession session)
+        {
+            if (_roomOptions != null && _roomOptionsVersion == session.Version) return _roomOptions;
+
+            IReadOnlyList<MapNode> nodes = session.Graph.Nodes;
+            _roomOptions = new string[nodes.Count + 1];
+            _roomOptions[0] = "None";
+            for (int i = 0; i < nodes.Count; i++)
+                _roomOptions[i + 1] = $"#{nodes[i].Id} {nodes[i].Type}";
+            _roomOptionsVersion = session.Version;
+            return _roomOptions;
         }
 
         private static void DrawConnectionTypePopup(MapConnection connection, MapGraphEditorSession session)
@@ -305,6 +314,9 @@ namespace CGD.Editor
             MapLayoutSettings     layout   = session.Asset.Layout;
 
             EditorGUILayout.LabelField("Graph", EditorStyles.boldLabel);
+            session.BuildSettings = (LevelBuildSettings)EditorGUILayout.ObjectField(
+                new GUIContent("Preview with", "The level build settings every preview uses: room places and enemies on the cards, objectives and the blueprint"),
+                session.BuildSettings, typeof(LevelBuildSettings), false);
             EditorGUILayout.LabelField("Seed", session.Asset.SeedText);
             EditorGUILayout.LabelField("Layout", layout != null
                 ? $"{layout.name}  ({layout.MinRoomCount}–{layout.MaxRoomCount} rooms)"
@@ -312,16 +324,16 @@ namespace CGD.Editor
             EditorGUILayout.LabelField("Nodes / Connections", $"{graph.Nodes.Count} / {graph.Connections.Count}");
             EditorGUILayout.LabelField("Main path", analysis.ExitReachable ? $"{analysis.MainPath.Count} nodes" : "Exit unreachable");
             EditorGUILayout.LabelField("Branches", analysis.BranchCount.ToString());
-            MapRunTuning tuning = session.Asset.Tuning;
+            MapRunTuning tuning = session.Tuning;
             DrawModifiers(session, tuning);
-            MapFactionMix factionMix = session.Asset.FactionMix;
+            MapFactionMix factionMix = session.FactionMix;
             EditorGUILayout.LabelField("Faction mix", factionMix != null ? factionMix.DisplayName : "—");
 
             DrawObjectives(session);
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Node types", EditorStyles.miniBoldLabel);
-            foreach (MapNodeType type in System.Enum.GetValues(typeof(MapNodeType)))
+            foreach (MapNodeType type in NodeTypes)
             {
                 MapNodeTypeRule rule = content != null ? content.GetRule(type) : null;
                 string limits = rule != null ? $"  ({tuning.Min(rule)}–{tuning.Max(rule)})" : "";
@@ -342,8 +354,6 @@ namespace CGD.Editor
             EditorGUILayout.LabelField("Objectives", EditorStyles.miniBoldLabel);
             preview.Settings = (MapObjectiveSettings)EditorGUILayout.ObjectField(
                 new GUIContent("Settings", "The objective settings the level would use"), preview.Settings, typeof(MapObjectiveSettings), false);
-            preview.BuildSettings = (LevelBuildSettings)EditorGUILayout.ObjectField(
-                new GUIContent("Build settings", "Tells which rooms will have enemies to clear"), preview.BuildSettings, typeof(LevelBuildSettings), false);
             if (preview.Settings == null) return;
 
             IReadOnlyList<PlannedObjective> plan = preview.PlanFor(session);
@@ -434,7 +444,7 @@ namespace CGD.Editor
         // Each issue that names a room or connection selects and centres it when clicked.
         private static void DrawIssues(MapGraphEditorSession session)
         {
-            IReadOnlyList<string> issues = session.Issues;
+            IReadOnlyList<MapGraphIssue> issues = session.Issues;
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Validation", EditorStyles.miniBoldLabel);
             if (issues.Count == 0)
@@ -443,24 +453,24 @@ namespace CGD.Editor
                 return;
             }
 
-            foreach (string issue in issues)
+            foreach (MapGraphIssue issue in issues)
             {
-                EditorGUILayout.HelpBox(issue, MessageType.Warning);
-                Rect box = GUILayoutUtility.GetLastRect();
-                if (!MapIssueTarget.TryFind(issue, session.Graph, out MapNode node, out MapConnection connection)) continue;
+                EditorGUILayout.HelpBox(issue.Text, MessageType.Warning);
+                if (!issue.HasTarget) continue;
 
+                Rect box = GUILayoutUtility.GetLastRect();
                 EditorGUIUtility.AddCursorRect(box, MouseCursor.Link);
                 if (Event.current.type != EventType.MouseDown || !box.Contains(Event.current.mousePosition)) continue;
 
-                if (connection != null)
+                if (issue.Connection != null)
                 {
-                    session.SelectConnection(connection);
-                    session.Focus(SelectionCentre(session.Graph, connection));
+                    session.SelectConnection(issue.Connection);
+                    session.Focus(SelectionCentre(session.Graph, issue.Connection));
                 }
                 else
                 {
-                    session.SelectNode(node.Id);
-                    session.Focus(node.Position);
+                    session.SelectNode(issue.Node.Id);
+                    session.Focus(issue.Node.Position);
                 }
                 Event.current.Use();
             }

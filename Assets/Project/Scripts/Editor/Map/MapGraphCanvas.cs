@@ -27,9 +27,12 @@ namespace CGD.Editor
         private static readonly List<PlannedObjective> NoObjectives = new();
 
         private readonly List<(Color color, string label)> _legend = new();
-        // Locked connections in graph order; L1 is the first.
-        private readonly List<MapConnection> _locks = new();
+        private (int version, MapGraphViewMode mode, bool details) _legendKey = (-1, default, false);
         private readonly MapNodeCards _cards = new();
+        // Link labels, formatted once per graph change.
+        private readonly Dictionary<MapConnection, string> _linkLabels = new();
+        private int _linkLabelsVersion = -1;
+        private readonly GUIContent _content = new();
 
         private DragMode _drag;
         private int      _dragNodeId = MapGraphEditorSession.None;
@@ -55,15 +58,15 @@ namespace CGD.Editor
             if (session.HasGraph)
             {
                 HandleInput(session);
-                CollectLocks(session.Graph);
+                IReadOnlyList<PlannedObjective> plan = ObjectivePlan(session);
                 DrawConnections(session);
-                DrawObjectiveRoutes(session);
+                DrawObjectiveRoutes(session, plan);
                 DrawPendingConnection(session);
-                _cards.Draw(session, node => NodeRect(node, session), _locks, ObjectivePlan(session));
+                _cards.Draw(session, node => NodeRect(node, session), plan);
                 DrawSnapTarget(session);
                 DrawLegend(local, session);
                 if (_drag == DragMode.None && session.Graph.TryGetNode(_hoverNodeId, out MapNode hovered))
-                    _cards.DrawHoverPanel(session, hovered, _mouse, _bounds, _locks, ObjectivePlan(session));
+                    _cards.DrawHoverPanel(session, hovered, _mouse, _bounds, plan);
             }
 
             GUI.EndClip();
@@ -161,48 +164,48 @@ namespace CGD.Editor
                 curve.Draw(color, ConnectionWidth);
 
                 if ((connection.Type != ConnectionType.Normal || connection.OneWay || connection.Direct) && session.Zoom >= MapGraphStyle.LabelMinZoom)
-                    DrawConnectionLabel(curve.Midpoint, connection, session.Analysis);
+                    DrawConnectionLabel(curve.Midpoint, connection, session);
             }
         }
 
-        // Locked links also name their key or terminal rooms, so a missing one is visible at a glance.
-        private void DrawConnectionLabel(Vector2 at, MapConnection connection, MapGraphAnalysis analysis)
+        private void DrawConnectionLabel(Vector2 at, MapConnection connection, MapGraphEditorSession session)
         {
-            ConnectionType type = connection.Type;
-            string text = type != ConnectionType.Locked ? type.ToString()
-                        : LockLabel(connection, analysis);
-            if (connection.Direct) text = type == ConnectionType.Normal ? "Direct" : text + " · direct";
-            if (connection.OneWay) text += " · one-way";
-            var content = new GUIContent(text);
-            Vector2 size = _linkLabelStyle.CalcSize(content);
+            _content.text = LinkLabel(connection, session);
+            Vector2 size = _linkLabelStyle.CalcSize(_content);
             var rect = new Rect(at - size * 0.5f, size);
 
             EditorGUI.DrawRect(rect, MapGraphStyle.Background);
-            _linkLabelStyle.normal.textColor = MapGraphStyle.ConnectionColor(type);
-            GUI.Label(rect, content, _linkLabelStyle);
+            _linkLabelStyle.normal.textColor = MapGraphStyle.ConnectionColor(connection.Type);
+            GUI.Label(rect, _content, _linkLabelStyle);
+        }
+
+        // Locked links also name their key or terminal rooms, so a missing one is visible at a glance.
+        private string LinkLabel(MapConnection connection, MapGraphEditorSession session)
+        {
+            if (_linkLabelsVersion != session.Version)
+            {
+                _linkLabels.Clear();
+                _linkLabelsVersion = session.Version;
+            }
+            if (_linkLabels.TryGetValue(connection, out string text)) return text;
+
+            ConnectionType type = connection.Type;
+            text = type != ConnectionType.Locked ? type.ToString() : LockLabel(connection, session);
+            if (connection.Direct) text = type == ConnectionType.Normal ? "Direct" : text + " · direct";
+            if (connection.OneWay) text += " · one-way";
+            _linkLabels[connection] = text;
+            return text;
         }
 
         // "L2 Main lock · key #5": a main lock stands between Start and the Exit.
-        private string LockLabel(MapConnection connection, MapGraphAnalysis analysis)
+        private static string LockLabel(MapConnection connection, MapGraphEditorSession session)
         {
-            string name = $"{LockName(connection)} {(analysis.IsRequired(connection) ? "Main lock" : "Locked")}";
+            string name = $"{session.LockName(connection)} {(session.Analysis.IsRequired(connection) ? "Main lock" : "Locked")}";
             if (connection.UsesSingleKey)
                 return connection.HasKey ? $"{name} · key #{connection.KeyNodeIds[0]}" : $"{name} · no key";
             if (!connection.HasKey) return $"{name} · no terminals";
             return $"{name} · terminals #" + string.Join(" #", connection.KeyNodeIds);
         }
-
-        // --- Locks -----------------------------------------------------------------
-
-        private void CollectLocks(MapGraph graph)
-        {
-            _locks.Clear();
-            foreach (MapConnection connection in graph.Connections)
-                if (connection.Type == ConnectionType.Locked)
-                    _locks.Add(connection);
-        }
-
-        private string LockName(MapConnection connection) => MapNodeInfo.LockName(_locks.IndexOf(connection));
 
         private void DrawPendingConnection(MapGraphEditorSession session)
         {
@@ -219,11 +222,10 @@ namespace CGD.Editor
             session.ShowObjectives ? session.Objectives.PlanFor(session) : NoObjectives;
 
         // A dotted line from step to step of each objective, in its colour.
-        private void DrawObjectiveRoutes(MapGraphEditorSession session)
+        private void DrawObjectiveRoutes(MapGraphEditorSession session, IReadOnlyList<PlannedObjective> plan)
         {
             if (Event.current.type != EventType.Repaint) return;
 
-            IReadOnlyList<PlannedObjective> plan = ObjectivePlan(session);
             for (int i = 0; i < plan.Count; i++)
             {
                 Handles.color = MapObjectivePreview.ColorOf(plan, i);
@@ -250,13 +252,7 @@ namespace CGD.Editor
         {
             if (Event.current.type != EventType.Repaint) return;
 
-            MapGraphStyle.CollectLegend(session.ViewMode, session.Asset.Content, session.Analysis, _legend);
-            if (session.ShowDetails)
-            {
-                for (int tier = 1; tier <= 3; tier++) _legend.Add((MapGraphStyle.TierColor(tier), $"T{tier} room tier"));
-                _legend.Add((MapGraphStyle.IntensityColor(1f), "Bar: intensity"));
-                _legend.Add((MapGraphStyle.Issue, "!n issues (hover)"));
-            }
+            RefreshLegend(session);
 
             const float line = 16f;
             var box = new Rect(8f, local.height - 8f - _legend.Count * line - 8f, 140f, _legend.Count * line + 8f);
@@ -268,6 +264,21 @@ namespace CGD.Editor
                 EditorGUI.DrawRect(new Rect(box.x + 6f, y + 3f, 10f, 10f), _legend[i].color);
                 GUI.Label(new Rect(box.x + 22f, y, box.width - 24f, line), _legend[i].label, EditorStyles.miniLabel);
             }
+        }
+
+        // Rebuilt only when what it shows can change: the view mode, Details, or the graph
+        // (its branches; an edit also picks up renamed factions and sections).
+        private void RefreshLegend(MapGraphEditorSession session)
+        {
+            var key = (session.Version, session.ViewMode, session.ShowDetails);
+            if (key == _legendKey) return;
+            _legendKey = key;
+
+            MapGraphStyle.CollectLegend(session.ViewMode, session.Asset.Content, session.Analysis, _legend);
+            if (!session.ShowDetails) return;
+            for (int tier = 1; tier <= 3; tier++) _legend.Add((MapGraphStyle.TierColor(tier), $"T{tier} room tier"));
+            _legend.Add((MapGraphStyle.IntensityColor(1f), "Bar: intensity"));
+            _legend.Add((MapGraphStyle.Issue, "!n issues (hover)"));
         }
 
         // --- Input -----------------------------------------------------------------

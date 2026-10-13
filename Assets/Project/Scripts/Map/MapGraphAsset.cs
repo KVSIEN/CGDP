@@ -42,6 +42,9 @@ namespace CGD.Map
         [SerializeField, HideInInspector] private MapFactionMix        _factionMix;
 
         public MapGenerationSettings Settings => _settings;
+        // The size of one room cell: what the level builder divides node positions by, and the
+        // grid the Map Graph window snaps to.
+        public Vector2 NodeSpacing => _settings != null ? _settings.NodeSpacing : MapGenerationSettings.DefaultNodeSpacing;
         public string                SeedText => _seed;
         public Seed                  Seed     => CGD.Core.Seed.Parse(_seed);
         public bool                  CanGenerate => _settings != null && _settings.CanGenerate;

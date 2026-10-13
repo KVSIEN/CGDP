@@ -16,12 +16,15 @@ namespace CGD.Editor
         private const string DefaultFolder = "Assets/Project/Data/Map";
 
         [SerializeField] private MapGraphEditorSession _session = new();
-        [SerializeField] private bool               _blueprint;
-        [SerializeField] private LevelBuildSettings _blueprintSettings;
+        [SerializeField] private bool _blueprint;
 
         private readonly MapGraphCanvas         _canvas = new();
         private readonly MapGraphInspectorPanel _panel  = new();
         private readonly MapBlueprintView       _blueprintView = new();
+
+        // The toolbar edits the asset's style and seed through this; kept rather than rebuilt
+        // on every repaint, and replaced when another asset is opened.
+        private SerializedObject _serializedAsset;
 
         [MenuItem("Window/CGD/Map Graph")]
         public static void Open() => GetWindow<MapGraphWindow>();
@@ -57,7 +60,7 @@ namespace CGD.Editor
             float panelWidth = _session.HasGraph ? PanelWidth : 0f;
             var canvasRect = new Rect(0f, top, position.width - panelWidth, position.height - top);
 
-            if (_blueprint && _session.HasGraph) _blueprintView.Draw(canvasRect, _session, _blueprintSettings);
+            if (_blueprint && _session.HasGraph) _blueprintView.Draw(canvasRect, _session);
             else _canvas.Draw(canvasRect, _session);
 
             if (_session.HasGraph)
@@ -114,27 +117,22 @@ namespace CGD.Editor
                 new GUIContent("Snap", "Drop moved and added nodes into the level's room grid, one node per cell"), EditorStyles.toolbarButton);
         }
 
-        // The build settings the level would use; the project's first one until another is picked.
+        // The build settings every preview uses (the session's; also in the side panel).
         private void DrawBlueprintControls()
         {
-            if (_blueprintSettings == null) _blueprintSettings = FindBuildSettings();
-            _blueprintSettings = (LevelBuildSettings)EditorGUILayout.ObjectField(
-                _blueprintSettings, typeof(LevelBuildSettings), false, GUILayout.Width(180f));
+            _session.BuildSettings = (LevelBuildSettings)EditorGUILayout.ObjectField(
+                _session.BuildSettings, typeof(LevelBuildSettings), false, GUILayout.Width(180f));
             _blueprintView.Fill = (LevelBlueprint.Fill)EditorGUILayout.EnumPopup(
                 _blueprintView.Fill, EditorStyles.toolbarPopup, GUILayout.Width(90f));
-        }
-
-        private static LevelBuildSettings FindBuildSettings()
-        {
-            string[] guids = AssetDatabase.FindAssets("t:LevelBuildSettings");
-            return guids.Length > 0 ? AssetDatabase.LoadAssetAtPath<LevelBuildSettings>(AssetDatabase.GUIDToAssetPath(guids[0])) : null;
         }
 
         // Settings and seed are plain serialized fields on the asset, edited through
         // SerializedObject so they get undo and prefab-style dirtying for free.
         private void DrawGenerationControls(MapGraphAsset asset)
         {
-            var serialized = new SerializedObject(asset);
+            if (_serializedAsset == null || _serializedAsset.targetObject != asset) _serializedAsset = new SerializedObject(asset);
+            SerializedObject serialized = _serializedAsset;
+            serialized.Update();
             SerializedProperty settings = serialized.FindProperty("_settings");
             SerializedProperty seed     = serialized.FindProperty("_seed");
 
@@ -143,7 +141,8 @@ namespace CGD.Editor
             seed.stringValue = EditorGUILayout.TextField(new GUIContent("Seed", "A number or any text"), seed.stringValue,
                                                          EditorStyles.toolbarTextField, GUILayout.Width(150f));
             EditorGUIUtility.labelWidth = 0f;
-            serialized.ApplyModifiedProperties();
+            // A new style changes what the graph is checked and coloured against.
+            if (serialized.ApplyModifiedProperties()) _session.Invalidate();
 
             using (new EditorGUI.DisabledScope(!asset.CanGenerate))
             {
@@ -152,10 +151,7 @@ namespace CGD.Editor
 
                 if (GUILayout.Button(new GUIContent("New Seed", "Pick a random seed and generate"), EditorStyles.toolbarButton))
                     TryRegenerate(Random.Range(0, int.MaxValue).ToString(CultureInfo.InvariantCulture));
-            }
 
-            using (new EditorGUI.DisabledScope(!asset.CanGenerate))
-            {
                 if (GUILayout.Button(new GUIContent("Analyze", "Generate this style for many seeds and sum up what it produces"), EditorStyles.toolbarButton))
                     MapStyleReportWindow.Open(asset.Settings);
                 if (GUILayout.Button(new GUIContent("Gallery", "Browse small previews of many seeds and pick one"), EditorStyles.toolbarButton))
