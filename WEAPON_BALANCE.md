@@ -131,6 +131,13 @@ lowering base damage.
 - **Best at**: sustained fire against multiple enemies; holding a chokepoint.
 - **Weakness**: slow draw, slow reload, poor handling, wide first-shot spread, StandardRounds shared with AR/DMR (competition).
 - **What a Legendary LMG feels like**: tighter first-mag accuracy, less recoil heat buildup, faster ADS.
+- **Models** (`Models` on the category, all equal weight, so each series is 20%; most land at 4 STK in 0.20–0.30 s, the 3-STK guns fire at 500–550 RPM for 0.22–0.27 s; magazines scale with each model's real capacity, so the classics roll small and the heavies large):
+  - **M-Series** (modern squad automatics): M249 SAW (20% "Mk 48" — 7.62: 1.2× damage, 0.85× fire rate, more kick), Negev (900 RPM, jumpy zig-zag), Ultimax 100 (constant recoil: the softest kick in the category, barely flips), Stoner 63 (precise, controllable)
+  - **S-Series** (Soviet and Russian): RPK (AK-pattern: smallest magazine of the series, kicks up and right like the AKs), PKM (20% "PKP Pecheneg" — 0.85× recoil and spread), RPD (steady drum-fed belt), DP-27 (pan magazine: 38 × 550, accurate)
+  - **G-Series** (general-purpose 7.62 belt-feds): MG42 (1200 RPM "buzzsaw", 24 dmg, 5 STK in 0.20 s, wildest climb), M60 (42 × 550, climbs straight up, flips hardest), FN MAG (steady all-rounder), HK21 (G3-based: kicks up and right)
+  - **C-Series** (classic squad automatics, small magazines): BAR (45 × 550, 20 rds, hardest-hitting standard LMG), Lewis Gun (47-round pan), Bren (most accurate, softest classic, 30 rds), MG34 (900 RPM, the classic belt-fed)
+  - **H-Series** (heavy machine guns: slowest handling, biggest belts): Maxim and Vickers (water-cooled: near-zero climb and flip, longest range), Browning M1919, M2 Browning (.50 on **HeavyRounds**: 45 × 450, hardest kick, 30% armor penetration on the T1)
+  - Scales are built against the LMG midpoints (34.5 dmg, 850 RPM, 57.5 m, 86 rds — the median of its low-weighted 50–200 window — 1.7 recoil, 4.75° hip spread).
 
 ### SMG
 - **Models** (`Models` on the category, all equal weight, so each series is 20%):
@@ -191,13 +198,13 @@ Each model carries a `RecoilPattern` (on `WeaponModel`; a firing variant can car
   the T1: (T1 horizontal ÷ category horizontal midpoint) ÷ (T1 vertical ÷ category vertical midpoint).
 - **Reach**: the sideways cap relative to the usual. The usual caps are far wider than a magazine's
   drift (≈10° on an AR), so a zig-zag only swings when Reach is low (0.15–0.2: AK-47, AK-74u, Galil,
-  PP2000, Scorpion EVO, PP-19 Bizon, CZ 75 Auto; the M249 T1 too).
+  PP2000, Scorpion EVO, PP-19 Bizon, CZ 75 Auto, M249; MG42 0.3 and Negev 0.4 swing wider).
 
 | Shape | Pattern | Models |
 |---|---|---|
 | Up and right, one way | bias +0.2…+0.6, OneWay | **Uzi** (+0.6), Glock 18, Mauser C96 / M712, .44 Magnum, AKM, Thompson, G3, Desert Eagle, MP9, SVD, VSS, G36C, APC9, M21 EBR, TAR-21, M4, AA-12 |
 | Up and left, one way | bias −0.2…−0.3, OneWay | SCAR-H, QBZ-95, MPL, UMP-45, PM12, QCW-05, QBU-88 |
-| Zig-zag (right, then back left) | bias +0.25…+0.5, Alternating, low Reach | **AK-47**, Galil, AK-74u, PP2000, Scorpion EVO, PP-19 Bizon, CZ 75 Auto, M249 |
+| Zig-zag (right, then back left) | bias +0.25…+0.5, Alternating, low Reach | **AK-47**, Galil, AK-74u, PP2000, Scorpion EVO, PP-19 Bizon, CZ 75 Auto, M249, MG42, Negev |
 | Jumpy, no clear lean | jitter 0.5–0.7 | MAC-10 (0.7), TEC-9, AK-74u, AM-17, FAL, M14, SVU |
 | Nearly straight up | bias 0…±0.1, jitter ≤ 0.25 | Vector, AUG, MP5, MP7, M27, HK416, F2000 (slightly left), P90 (bouncy), Ruger Mark IV, Chiappa Rhino, PSG1, DSR-1 |
 
@@ -315,7 +322,7 @@ axis decides which end a weapon lands on, so the band reads as a spectrum:
 | SMG     | PDW / machine pistol — 1200 RPM, 13 dmg, 12 m | Heavy SMG — 600 RPM, 28 dmg, 40 m | 20 models in five series (see SMG); e.g. `MP5_T1` 850×18, `MAC10_T1` 1150×19, `Thompson_T1` 650×24 |
 | Pistol  | Glock — 600 RPM, 20 dmg, 12 m        | Hand cannon — 200 RPM, 60 dmg, 35 m    | 20 models in five series (see Pistol); e.g. `Makarov_T1` 380×27, `Glock18_T1` 1100×18, `DesertEagle_T1` 300×55 |
 | Sniper  | Semi-auto DMR — 260 RPM, 45 dmg, 50 m | Bolt / AMR — 35 RPM, 170 dmg, 220 m   | 20 models in five series (see Sniper); e.g. `Kar98k_T1` 45×95, `QBU88_T1` 260×45, `Tac50_T1` 38×165 |
-| LMG     | High-cyclic MG — 1200 RPM, 24 dmg    | Heavy GPMG — 500 RPM, 45 dmg           | `M249_T1` 700×30, 55 m |
+| LMG     | High-cyclic MG — 1200 RPM, 24 dmg    | Heavy GPMG — 500 RPM, 45 dmg           | 20 models in five series (see LMG); e.g. `M249_T1` 700×30, `MG42_T1` 1200×24, `BAR_T1` 550×45 |
 | Shotgun | Auto — 260 RPM, 9 dmg × 6 pellets    | Pump — 60 RPM, 18 dmg × 8 pellets      | 20 models in five series (see Shotgun); e.g. `Remington870_T1` 65×13×8, `AA12_T1` 300×9×7, `DoubleBarrel_T1` 300×16×10 (2 shells) |
 
 The Sniper band is where the **DMR row** in the category table above comes from.
@@ -361,7 +368,7 @@ prototyping but should be filled in before shipping.
 
 Hand-authored Common-tier (Tier 1) assets live in
 `Assets/Project/Data/Weapons/Ranged/T1/` — one per model for the AR, SMG,
-pistol, sniper and shotgun rosters, one for the LMG. They are the concrete example of what "Common feels like" and the
+pistol, sniper, shotgun and LMG rosters. They are the concrete example of what "Common feels like" and the
 first thing to compare a new weapon against.
 
 | Asset             | Category    | Damage × RPM        | Ammo           | STK / TTK    | Notes                                        |
@@ -447,7 +454,26 @@ first thing to compare a new weapon against.
 | `M40_T1`              | Sniper · T-Series | 100 × 55 (bolt)     | HeavyRounds    | 1 / one shot | 160 m, 5 rds, draw 0.75s |
 | `DSR1_T1`             | Sniper · T-Series | 105 × 50 (bolt)     | HeavyRounds    | 1 / one shot | 150 m, 5 rds, draw 0.6s |
 | `JNG90_T1`            | Sniper · T-Series | 105 × 45 (bolt)     | HeavyRounds    | 1 / one shot | 170 m, 10 rds, draw 0.8s |
-| `M249_T1`         | LMG         | 30 × 700            | StandardRounds | 4 / 0.26s    | Best DPS, worst handling & 6.5s reload       |
+| `M249_T1`           | LMG · M-Series | 30 × 700            | StandardRounds | 4 / 0.26s    | 55 m, 100 rds, draw 0.9s, 6.5s reload |
+| `Negev_T1`          | LMG · M-Series | 27 × 900            | StandardRounds | 4 / 0.20s    | 50 m, 150 rds, draw 0.9s |
+| `Ultimax100_T1`     | LMG · M-Series | 28 × 650            | StandardRounds | 4 / 0.28s    | 50 m, 100 rds, draw 0.8s, softest kick |
+| `Stoner63_T1`       | LMG · M-Series | 29 × 750            | StandardRounds | 4 / 0.24s    | 55 m, 75 rds, draw 0.85s |
+| `RPK_T1`            | LMG · S-Series | 32 × 600            | StandardRounds | 4 / 0.30s    | 55 m, 45 rds, draw 0.8s, 4.5s reload |
+| `PKM_T1`            | LMG · S-Series | 32 × 650            | StandardRounds | 4 / 0.28s    | 65 m, 100 rds, draw 1.0s |
+| `RPD_T1`            | LMG · S-Series | 33 × 650            | StandardRounds | 4 / 0.28s    | 60 m, 100 rds, draw 0.95s |
+| `DP27_T1`           | LMG · S-Series | 38 × 550            | StandardRounds | 3 / 0.22s    | 70 m, 47 rds, draw 1.0s |
+| `MG42_T1`           | LMG · G-Series | 24 × 1200           | StandardRounds | 5 / 0.20s    | 55 m, 120 rds, draw 1.05s, wildest climb |
+| `M60_T1`            | LMG · G-Series | 42 × 550            | StandardRounds | 3 / 0.22s    | 65 m, 100 rds, draw 1.05s, 8s reload |
+| `FNMAG_T1`          | LMG · G-Series | 33 × 700            | StandardRounds | 4 / 0.26s    | 70 m, 100 rds, draw 1.05s |
+| `HK21_T1`           | LMG · G-Series | 33 × 800            | StandardRounds | 4 / 0.23s    | 65 m, 100 rds, draw 0.9s |
+| `BAR_T1`            | LMG · C-Series | 45 × 550            | StandardRounds | 3 / 0.22s    | 70 m, 20 rds, draw 0.8s, 4s reload |
+| `LewisGun_T1`       | LMG · C-Series | 38 × 550            | StandardRounds | 3 / 0.22s    | 65 m, 47 rds, draw 1.0s |
+| `Bren_T1`           | LMG · C-Series | 40 × 520            | StandardRounds | 3 / 0.23s    | 75 m, 30 rds, draw 0.85s |
+| `MG34_T1`           | LMG · C-Series | 33 × 900            | StandardRounds | 4 / 0.20s    | 60 m, 75 rds, draw 0.95s |
+| `Maxim_T1`          | LMG · H-Series | 40 × 550            | StandardRounds | 3 / 0.22s    | 75 m, 150 rds, draw 1.15s, 8.5s reload |
+| `Vickers_T1`        | LMG · H-Series | 42 × 500            | StandardRounds | 3 / 0.24s    | 80 m, 150 rds, draw 1.15s, 8.5s reload |
+| `BrowningM1919_T1`  | LMG · H-Series | 40 × 500            | StandardRounds | 3 / 0.24s    | 70 m, 125 rds, draw 1.1s |
+| `M2Browning_T1`     | LMG · H-Series | 45 × 450            | HeavyRounds    | 3 / 0.27s    | 80 m, 100 rds, HeavyRounds, 30% armor pen, draw 1.15s |
 | `Remington870_T1`       | Shotgun · P-Series | 13 × 8 × 65 (pump)  | ShotgunShells  | 1 / one shot | 10 m, 6 shells, draw 0.6s, one shell per step |
 | `Mossberg590A1_T1`      | Shotgun · P-Series | 13 × 8 × 60 (pump)  | ShotgunShells  | 1 / one shot | 11 m, 9 shells, draw 0.7s, one shell per step |
 | `SPAS12_T1`             | Shotgun · P-Series | 14 × 8 × 60 (pump)  | ShotgunShells  | 1 / one shot | 10 m, 8 shells, draw 0.75s, one shell per step |

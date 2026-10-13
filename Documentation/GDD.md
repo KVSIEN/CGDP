@@ -402,18 +402,28 @@ Naming rules:
 
 #### Light Machine Guns
 
-No models or series yet: the LMG rolls one of these names.
-
-| Placeholder name | Game name |
-|---|---|
-| M249 SAW | TBD |
-| MG42 | TBD |
-| RPK | TBD |
-| Negev | TBD |
-| M60 | TBD |
-| PKM | TBD |
-| MG3 | TBD |
-| Stoner 63 | TBD |
+| Series | Game series name | Placeholder model | Game name | Variant | Variant game name |
+|---|---|---|---|---|---|
+| M-Series (modern squad automatics) | TBD | M249 SAW | TBD | Mk 48 | TBD |
+|  |  | Negev | TBD |  |  |
+|  |  | Ultimax 100 | TBD |  |  |
+|  |  | Stoner 63 | TBD |  |  |
+| S-Series (Soviet and Russian) | TBD | RPK | TBD |  |  |
+|  |  | PKM | TBD | PKP Pecheneg | TBD |
+|  |  | RPD | TBD |  |  |
+|  |  | DP-27 | TBD |  |  |
+| G-Series (general-purpose) | TBD | MG42 | TBD |  |  |
+|  |  | M60 | TBD |  |  |
+|  |  | FN MAG | TBD |  |  |
+|  |  | HK21 | TBD |  |  |
+| C-Series (classics) | TBD | BAR | TBD |  |  |
+|  |  | Lewis Gun | TBD |  |  |
+|  |  | Bren | TBD |  |  |
+|  |  | MG34 | TBD |  |  |
+| H-Series (heavy machine guns) | TBD | Maxim | TBD |  |  |
+|  |  | Vickers | TBD |  |  |
+|  |  | Browning M1919 | TBD |  |  |
+|  |  | M2 Browning | TBD |  |  |
 
 ### Melee
 

@@ -27,7 +27,7 @@ MonoBehaviour:
   ArmorPenetration: 0.05
   HeadshotMultiplier: 1.75
   RangeOptimal: 55
-  RangeFalloffEnd: 200
+  RangeFalloffEnd: 198
   DamageFalloffMin: 0.4
   MaxRange: 1000
   HitMask:
@@ -37,21 +37,22 @@ MonoBehaviour:
   AmmoType: 3
   MagazineSize: 100
   ReloadTime: 6.5
-  TacticalReloadTime: 5.5
-  HipSpreadDeg: 5
+  TacticalReloadTime: 5.1
+  RoundsPerLoad: 0
+  HipSpreadDeg: 5.0
   AdsSpreadDeg: 0.8
   AdsSpreadMultiplier: 0.3
   HotAdsSpreadMultiplier: 0.55
-  SpreadPerShot: 1
+  SpreadPerShot: 1.0
   SpreadRecovery: 7
-  MaxSpread: 12
+  MaxSpread: 12.0
   RecoilScale: {x: 1.1, y: 1.7}
   RecoilJitter: {x: 0.4, y: 0.25}
   RecoilHorizontalBias: 0.2
   HorizontalDriftMode: 0
   MuzzleFlip: 0.35
   MaxAccumulatedRecoil: 28
-  MaxAccumulatedHorizontalRecoil: 1.8
+  MaxAccumulatedHorizontalRecoil: 2.0
   RecoilHeatPerShot: 0.025
   RecoilHeatCooldown: 1
   MaxHeatRecoilMultiplier: 1.7
@@ -71,7 +72,7 @@ MonoBehaviour:
   IdleSwaySpeed: 0.5
   MoveSwayAmount: 1.9
   AdsFovDeg: 46
-  AdsSpeed: 6
+  AdsSpeed: 6.0
   FireSound: {fileID: 0}
   ReloadSound: {fileID: 0}
   EmptySound: {fileID: 0}
