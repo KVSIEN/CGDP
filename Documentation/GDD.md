@@ -262,6 +262,159 @@ VOID relics never compete for ammo. They fill the gaps between reloads and give 
 
 Ranged weapons can be semi auto, full auto, burst or charge. Their stats group into **Accuracy** (spread), **Control** (recoil) and **Handling** (draw and sway).
 
+### Weapon Names
+
+**TBD.** The prototype names every firearm after a real model (see Prototype Weapon Families). These are placeholders. Every name is to be replaced before release, and the list below collects the replacements as they're decided. Fill in the **Game name** columns. A variant shown as "Burst M4" is the model's name with a prefix, so it follows the model's game name; a variant with its own name (M16A3, AWP, Sawed-Off) needs one of its own. Stats, series and variants stay as they are; only the names shown to the player change.
+
+Naming rules:
+
+* No manufacturer names or logos (Remington, Mossberg, Benelli, Beretta, Glock, Heckler & Koch, Barrett, Colt, Kalashnikov…). These are trademarks, and several manufacturers have taken action against games.
+* No product names a manufacturer uses as a brand (Desert Eagle, Glock, Tommy Gun, Shockwave, Five-seveN, Vector). Treat any name that points to a single company's product as a trademark.
+* Generic words and real designations are lower risk but still need a check: common words like "Striker" are fine as a game name when the gun doesn't copy the real one's look; military designations (M4, M16, AK-47) are widely used, but some manufacturers have registered them as trademarks.
+* The weapon's look matters as much as its name. A distinctive design copied closely (trade dress) can be a problem even under a new name, so models should be inspired by real guns rather than replicate one.
+* Every final list gets a legal check before release. These rules are a starting point, not legal advice.
+
+#### Assault Rifles
+
+| Series | Game series name | Placeholder model | Game name | Variant | Variant game name |
+|---|---|---|---|---|---|
+| M-Series (AR platform) | TBD | M4 | TBD | Burst M4 | (follows the game name) |
+|  |  | M16 | TBD | M16A3 | TBD |
+|  |  | M14 | TBD | Auto M14 | (follows the game name) |
+|  |  | M27 | TBD |  |  |
+| AK-Series (Kalashnikovs) | TBD | AK-47 | TBD |  |  |
+|  |  | AK-74u | TBD |  |  |
+|  |  | AKM | TBD |  |  |
+|  |  | AK-12 | TBD | Burst AK-12 | (follows the game name) |
+| B-Series (bullpups) | TBD | FAMAS | TBD | Auto FAMAS | (follows the game name) |
+|  |  | AUG | TBD |  |  |
+|  |  | TAR-21 | TBD |  |  |
+|  |  | F2000 | TBD |  |  |
+| H-Series (battle rifles) | TBD | FAL | TBD | Burst FAL | (follows the game name) |
+| | | | | Auto FAL | (follows the game name) |
+|  |  | SCAR-H | TBD |  |  |
+|  |  | G3 | TBD |  |  |
+|  |  | HK416 | TBD |  |  |
+| C-Series (compacts) | TBD | G36C | TBD |  |  |
+|  |  | Galil | TBD |  |  |
+|  |  | AM-17 | TBD |  |  |
+|  |  | QBZ-95 | TBD |  |  |
+
+#### SMGs
+
+| Series | Game series name | Placeholder model | Game name | Variant | Variant game name |
+|---|---|---|---|---|---|
+| MP-Series (German MPs) | TBD | MP5 | TBD | Burst MP5 | (follows the game name) |
+|  |  | MP5K | TBD |  |  |
+|  |  | MP7 | TBD |  |  |
+|  |  | MPL | TBD |  |  |
+| V-Series (vintage) | TBD | Thompson | TBD |  |  |
+|  |  | MP40 | TBD |  |  |
+|  |  | Uzi | TBD |  |  |
+|  |  | PM12 | TBD |  |  |
+| X-Series (machine pistols) | TBD | MAC-10 | TBD |  |  |
+|  |  | Scorpion EVO | TBD | Burst Scorpion EVO | (follows the game name) |
+|  |  | MP9 | TBD |  |  |
+|  |  | PP2000 | TBD |  |  |
+| T-Series (modern tactical) | TBD | UMP-45 | TBD | Burst UMP-45 | (follows the game name) |
+|  |  | MPX | TBD |  |  |
+|  |  | APC9 | TBD |  |  |
+|  |  | PMX | TBD |  |  |
+| P-Series (unconventional) | TBD | P90 | TBD |  |  |
+|  |  | Vector | TBD | Burst Vector | (follows the game name) |
+|  |  | QCW-05 | TBD |  |  |
+|  |  | PP-19 Bizon | TBD |  |  |
+
+#### Pistols
+
+| Series | Game series name | Placeholder model | Game name | Variant | Variant game name |
+|---|---|---|---|---|---|
+| S-Series (service) | TBD | Makarov | TBD |  |  |
+|  |  | M9 | TBD |  |  |
+|  |  | USP | TBD |  |  |
+|  |  | MP-443 | TBD |  |  |
+| C-Series (classics) | TBD | M1911 | TBD |  |  |
+|  |  | Luger P08 | TBD |  |  |
+|  |  | Walther PP | TBD |  |  |
+|  |  | Mauser C96 | TBD | M712 | TBD |
+| A-Series (automatics) | TBD | Glock 18 | TBD | Glock 17 | TBD |
+|  |  | TEC-9 | TBD |  |  |
+|  |  | Beretta 93R | TBD |  |  |
+|  |  | CZ 75 Auto | TBD |  |  |
+| H-Series (high power) | TBD | Desert Eagle | TBD |  |  |
+|  |  | .44 Magnum | TBD |  |  |
+|  |  | Taurus Judge | TBD |  |  |
+|  |  | Chiappa Rhino | TBD |  |  |
+| T-Series (tactical) | TBD | Ruger Mark IV | TBD |  |  |
+|  |  | Five-seveN | TBD |  |  |
+|  |  | Tac-45 | TBD |  |  |
+|  |  | P250 | TBD |  |  |
+
+#### Sniper Rifles
+
+| Series | Game series name | Placeholder model | Game name | Variant | Variant game name |
+|---|---|---|---|---|---|
+| B-Series (big bore) | TBD | Barrett M82A1 | TBD |  |  |
+|  |  | AS50 | TBD |  |  |
+|  |  | Tac-50 | TBD |  |  |
+|  |  | M200 Intervention | TBD |  |  |
+| C-Series (classic bolt-actions) | TBD | Kar98k | TBD |  |  |
+|  |  | Mosin-Nagant | TBD |  |  |
+|  |  | Lee-Enfield | TBD |  |  |
+|  |  | Springfield M1903 | TBD |  |  |
+| D-Series (marksman rifles) | TBD | M110 | TBD |  |  |
+|  |  | M21 EBR | TBD |  |  |
+|  |  | PSG1 | TBD |  |  |
+|  |  | QBU-88 | TBD |  |  |
+| S-Series (Soviet and Russian) | TBD | SVD Dragunov | TBD |  |  |
+|  |  | SVU | TBD | SVU-A | TBD |
+|  |  | VSS | TBD |  |  |
+|  |  | SV-98 | TBD |  |  |
+| T-Series (modern bolt-actions) | TBD | L96A1 | TBD | AWP | TBD |
+|  |  | M40 | TBD | M2010 | TBD |
+|  |  | DSR-1 | TBD | SRS | TBD |
+|  |  | JNG-90 | TBD |  |  |
+
+#### Shotguns
+
+| Series | Game series name | Placeholder model | Game name | Variant | Variant game name |
+|---|---|---|---|---|---|
+| P-Series (pump-actions) | TBD | Remington 870 | TBD |  |  |
+|  |  | Mossberg 590A1 | TBD | Shockwave | TBD |
+|  |  | SPAS-12 | TBD | Semi SPAS-12 | (follows the game name) |
+|  |  | UTS-15 | TBD |  |  |
+| A-Series (semi-autos) | TBD | Benelli M4 | TBD |  |  |
+|  |  | Beretta 1301 | TBD |  |  |
+|  |  | Mossberg 940 | TBD |  |  |
+|  |  | Beretta Xtrema 2 | TBD |  |  |
+| M-Series (magazine-fed) | TBD | AA-12 | TBD | Drum AA-12 | (follows the game name) |
+|  |  | USAS-12 | TBD |  |  |
+|  |  | Saiga-12 | TBD |  |  |
+|  |  | STF-12 | TBD |  |  |
+| H-Series (high capacity) | TBD | KSG | TBD |  |  |
+|  |  | Tavor TS12 | TBD |  |  |
+|  |  | Striker | TBD |  |  |
+|  |  | Neostead 2000 | TBD |  |  |
+| C-Series (classics) | TBD | Double Barrel | TBD | Sawed-Off | TBD |
+|  |  | Browning Superposed | TBD |  |  |
+|  |  | Model 1887 | TBD |  |  |
+|  |  | Model 12 | TBD |  |  |
+
+#### Light Machine Guns
+
+No models or series yet: the LMG rolls one of these names.
+
+| Placeholder name | Game name |
+|---|---|
+| M249 SAW | TBD |
+| MG42 | TBD |
+| RPK | TBD |
+| Negev | TBD |
+| M60 | TBD |
+| PKM | TBD |
+| MG3 | TBD |
+| Stoner 63 | TBD |
+
 ### Melee
 
 **Built.** Not detailed in the original design.
@@ -1616,7 +1769,7 @@ Places where the prototype departs from the design. Each is a decision to make:
 
 * **Map visibility**: the design has no map and no markers. The prototype has a fog of war map, door signs that reveal room types and map markers for objective rooms. Keep, limit (for example a map only through TECH terminals) or remove?
 * **Boss and extraction**: the design caps a run with the boss. In the prototype the Exit works without fighting the boss.
-* **Weapons and ammo**: the design defines weapons and ammo per reality. The prototype uses modern weapon families and calibers as placeholders.
+* **Weapons and ammo**: the design defines weapons and ammo per reality. The prototype uses modern weapon families and calibers as placeholders, named after real models until the game names in Weapon Names are filled in.
 * **Hub stations**: the design has three stations. The prototype has one workbench.
 * **Room isolation**: the design treats a room as safe once its door closes. In the prototype doors are mostly open passages, and only unique rooms seal.
 * **Ability costs**: the design gives abilities cooldowns only. The prototype also allows meter costs and Surge.
