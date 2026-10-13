@@ -69,6 +69,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 1.21
@@ -77,6 +79,8 @@ MonoBehaviour:
       Spread: 1.33
       Range: 1.33
       MagazineSize: 1.5
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 0
     Recoil:
@@ -109,6 +113,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 1.07
@@ -117,6 +123,8 @@ MonoBehaviour:
       Spread: 1.24
       Range: 1.19
       MagazineSize: 0.75
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 0
     Recoil:
@@ -149,6 +157,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 1.53
@@ -157,6 +167,8 @@ MonoBehaviour:
       Spread: 1.43
       Range: 1.63
       MagazineSize: 0.75
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 0
     Recoil:
@@ -189,6 +201,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 1.4
@@ -197,6 +211,8 @@ MonoBehaviour:
       Spread: 1.33
       Range: 1.63
       MagazineSize: 1.05
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 0
     Recoil:
@@ -229,6 +245,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.88
@@ -237,6 +255,8 @@ MonoBehaviour:
       Spread: 1.14
       Range: 0.89
       MagazineSize: 0.75
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 1
     AmmoType: 0
     Recoil:
@@ -269,6 +289,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.93
@@ -277,6 +299,8 @@ MonoBehaviour:
       Spread: 1.19
       Range: 0.96
       MagazineSize: 0.75
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 1
     AmmoType: 0
     Recoil:
@@ -309,6 +333,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.79
@@ -317,6 +343,8 @@ MonoBehaviour:
       Spread: 1.1
       Range: 0.81
       MagazineSize: 1.5
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 1
     AmmoType: 0
     Recoil:
@@ -349,6 +377,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.88
@@ -357,6 +387,8 @@ MonoBehaviour:
       Spread: 1
       Range: 1.04
       MagazineSize: 0.75
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 1
     AmmoType: 0
     Recoil:
@@ -389,6 +421,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.51
@@ -397,6 +431,8 @@ MonoBehaviour:
       Spread: 0.76
       Range: 0.67
       MagazineSize: 3
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 3
     Recoil:
@@ -429,6 +465,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.47
@@ -437,6 +475,8 @@ MonoBehaviour:
       Spread: 0.81
       Range: 0.59
       MagazineSize: 3
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 3
     Recoil:
@@ -469,6 +509,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.65
@@ -477,6 +519,8 @@ MonoBehaviour:
       Spread: 0.67
       Range: 0.81
       MagazineSize: 1.5
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 3
     Recoil:
@@ -509,6 +553,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.42
@@ -517,6 +563,8 @@ MonoBehaviour:
       Spread: 0.76
       Range: 0.52
       MagazineSize: 1.5
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 3
     Recoil:
@@ -549,6 +597,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.7
@@ -557,6 +607,8 @@ MonoBehaviour:
       Spread: 0.9
       Range: 0.81
       MagazineSize: 1.5
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 0
     Recoil:
@@ -589,6 +641,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     - Name: 
       ModelName: SVU-A
@@ -610,6 +664,8 @@ MonoBehaviour:
         Spread: 1.2
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.6
@@ -618,6 +674,8 @@ MonoBehaviour:
       Spread: 0.86
       Range: 0.59
       MagazineSize: 1.5
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 0
     Recoil:
@@ -650,6 +708,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.42
@@ -658,6 +718,8 @@ MonoBehaviour:
       Spread: 0.71
       Range: 0.37
       MagazineSize: 3
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 3
     Recoil:
@@ -690,6 +752,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.98
@@ -698,6 +762,8 @@ MonoBehaviour:
       Spread: 1.14
       Range: 1.11
       MagazineSize: 1.5
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 0
     Recoil:
@@ -730,6 +796,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     - Name: 
       ModelName: AWP
@@ -751,6 +819,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1.2
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 1.02
@@ -759,6 +829,8 @@ MonoBehaviour:
       Spread: 1.14
       Range: 1.33
       MagazineSize: 0.75
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 0
     Recoil:
@@ -791,6 +863,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     - Name: 
       ModelName: M2010
@@ -812,6 +886,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1.15
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.93
@@ -820,6 +896,8 @@ MonoBehaviour:
       Spread: 1.1
       Range: 1.19
       MagazineSize: 0.75
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 0
     Recoil:
@@ -852,6 +930,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     - Name: 
       ModelName: SRS
@@ -873,6 +953,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1.1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.98
@@ -881,6 +963,8 @@ MonoBehaviour:
       Spread: 1.05
       Range: 1.11
       MagazineSize: 0.75
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 0
     Recoil:
@@ -913,6 +997,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
       RoundsPerLoad: 0
     Scales:
       Damage: 0.98
@@ -921,6 +1007,8 @@ MonoBehaviour:
       Spread: 1.14
       Range: 1.26
       MagazineSize: 1.5
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     AmmoType: 0
     Recoil:

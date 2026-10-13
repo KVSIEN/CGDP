@@ -111,6 +111,25 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void AModelScalesItsDrawAndArrowSpeed()
+        {
+            _category = ScriptableObject.CreateInstance<WeaponCategoryData>();
+            _category.ChargeTime      = new FloatRange(1f, 1f);
+            _category.ProjectileSpeed = new FloatRange(60f, 60f);
+            _category.Models = new[]
+            {
+                new WeaponModel { Name = "Compound", Scales = new StyleScales(1f, 1f, 1f, 1f, 1f, 1f, chargeTime: 0.5f, projectileSpeed: 1.5f) },
+            };
+
+            for (int i = 0; i < SeedCount; i++)
+            {
+                WeaponData d = Generate(_category, i);
+                Assert.AreEqual(0.5f, d.ChargeTime, 1e-4f);
+                Assert.AreEqual(90f, d.ProjectileSpeed, 1e-3f);
+            }
+        }
+
+        [Test]
         public void TheSameSeedGivesTheSameGun()
         {
             WeaponCategoryData category = CreateGlockCategory();

@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bd3583691f680f40925447c7e1e95a3, type: 3}
+  m_Name: Yumi_T1
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.WeaponData
+  WeaponName: Yumi
+  FireBehavior: {fileID: 11400000, guid: 6d2f8a1c4b9e4f70a3c5e7d9b1f3a5c7, type: 2}
+  OnHitEffects: []
+  FireMode: 3
+  RoundsPerMinute: 144
+  BurstCount: 1
+  BurstInterval: 0
+  PelletCount: 1
+  ChargeTime: 1.03
+  MinChargeToFire: 0.2
+  HasDrawStances: 1
+  VerticalDraw:
+    ChargeTimeMultiplier: 1.25
+    DamageMultiplier: 1.15
+    SpreadMultiplier: 0.6
+  HorizontalDraw:
+    ChargeTimeMultiplier: 0.65
+    DamageMultiplier: 0.8
+    SpreadMultiplier: 1.8
+  VolleySpacingDeg: 3.25
+  ProjectileSpeed: 62
+  ProjectileLifetime: 6
+  ProjectileGravity: 10.5
+  ProjectileInstantHitTime: 0
+  LowChargeSpeedMultiplier: 0.4
+  LowChargeGravityMultiplier: 3
+  LowChargeDamageMultiplier: 0.375
+  Damage: 91
+  DamageType: 0
+  ArmorPenetration: 0.15
+  HeadshotMultiplier: 2.25
+  RangeOptimal: 54
+  RangeFalloffEnd: 138
+  DamageFalloffMin: 0.7
+  MaxRange: 1000
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 8
+  AmmoType: 1
+  MagazineSize: 1
+  ReloadTime: 0.5
+  TacticalReloadTime: 0.5
+  RoundsPerLoad: 0
+  HipSpreadDeg: 0.83
+  AdsSpreadDeg: 0.01
+  AdsSpreadMultiplier: 0
+  HotAdsSpreadMultiplier: 0
+  SpreadPerShot: 0
+  SpreadRecovery: 20
+  MaxSpread: 1.2
+  RecoilScale: {x: 0.1, y: 0.35}
+  RecoilJitter: {x: 0.15, y: 0.035}
+  RecoilHorizontalBias: 0
+  HorizontalDriftMode: 0
+  MuzzleFlip: 0.45
+  MaxAccumulatedRecoil: 3
+  MaxAccumulatedHorizontalRecoil: 1.5
+  RecoilHeatPerShot: 0
+  RecoilHeatCooldown: 1
+  MaxHeatRecoilMultiplier: 1
+  RecoilHeatJitterMultiplier: 1
+  RecoilRecoverySpeed: 10
+  RecoilRecoveryFraction: 0.95
+  RecoilRecoveryDelay: 0.075
+  AdsRecoilRecoveryFraction: 1
+  AdsRecoilMultiplier: 0.7
+  HipRecoilVerticalMultiplier: 0.1
+  HipRecoilHorizontalMultiplier: 0.1
+  QuickMelee: {fileID: 11400000, guid: 8c0fb3d413164f1e8863c23c1d9ab60c, type: 2}
+  DrawTime: 0.475
+  LookSwayAmount: 0.45
+  LookSwayRecovery: 11
+  IdleSwayAmount: 0.5
+  IdleSwaySpeed: 0.75
+  MoveSwayAmount: 0.85
+  AdsFovDeg: 48
+  AdsSpeed: 10
+  FireSound: {fileID: 0}
+  ReloadSound: {fileID: 0}
+  EmptySound: {fileID: 0}

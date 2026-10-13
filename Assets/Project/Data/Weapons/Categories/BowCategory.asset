@@ -24,15 +24,592 @@ MonoBehaviour:
   _perkPool: {fileID: 11400000, guid: 46756d1ce4124b5c8905716c4d8a5986, type: 2}
   Type: 6
   Names:
-  - Recurve Bow
-  - Longbow
-  - Shortbow
-  - Compound Bow
-  - Horsebow
-  - Flatbow
+  - English Longbow
   - Warbow
   - Yumi
+  - Flatbow
+  - Olympic Recurve
+  - Takedown Recurve
+  - Scythian Bow
+  - Turkish Flight Bow
+  - Mongol Bow
+  - Magyar Bow
+  - Gakgung
+  - Manchu Bow
+  - Shortbow
+  - Hunting Bow
+  - Pyramid Bow
+  - Self Bow
+  - Hunting Compound
+  - Target Compound
+  - Speed Compound
+  - Short-Axle Compound
   FireModes: 03000000
+  Models:
+  - Name: English Longbow
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 1.15
+      FireRate: 0.9
+      Recoil: 1.1
+      Spread: 1
+      Range: 1.1
+      MagazineSize: 1
+      ChargeTime: 1.2
+      ProjectileSpeed: 0.9
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.2
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.5
+  - Name: Warbow
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 1.3
+      FireRate: 0.8
+      Recoil: 1.25
+      Spread: 1.15
+      Range: 1.15
+      MagazineSize: 1
+      ChargeTime: 1.35
+      ProjectileSpeed: 0.95
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.6
+  - Name: Yumi
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 1.1
+      FireRate: 0.9
+      Recoil: 1
+      Spread: 0.75
+      Range: 1.2
+      MagazineSize: 1
+      ChargeTime: 1.15
+      ProjectileSpeed: 0.95
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.15
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.45
+  - Name: Flatbow
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 1.05
+      FireRate: 0.95
+      Recoil: 1
+      Spread: 1
+      Range: 1
+      MagazineSize: 1
+      ChargeTime: 1.05
+      ProjectileSpeed: 0.85
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.2
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.45
+  - Name: Olympic Recurve
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 0.85
+      Spread: 0.65
+      Range: 1.15
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 1.05
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.1
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.3
+  - Name: Takedown Recurve
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 0.95
+      FireRate: 1.05
+      Recoil: 1
+      Spread: 0.9
+      Range: 1
+      MagazineSize: 1
+      ChargeTime: 0.9
+      ProjectileSpeed: 1
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.2
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.35
+  - Name: Scythian Bow
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 0.9
+      FireRate: 1.15
+      Recoil: 0.95
+      Spread: 1
+      Range: 0.9
+      MagazineSize: 1
+      ChargeTime: 0.8
+      ProjectileSpeed: 1
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.35
+  - Name: Turkish Flight Bow
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 0.8
+      FireRate: 1
+      Recoil: 0.9
+      Spread: 0.95
+      Range: 1.35
+      MagazineSize: 1
+      ChargeTime: 0.95
+      ProjectileSpeed: 1.25
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.15
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.3
+  - Name: Mongol Bow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 3
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 1
+        Max: 3
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.95
+      FireRate: 1.15
+      Recoil: 1
+      Spread: 1.1
+      Range: 0.9
+      MagazineSize: 1
+      ChargeTime: 0.75
+      ProjectileSpeed: 1
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.4
+  - Name: Magyar Bow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 3
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 1
+        Max: 3
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.85
+      FireRate: 1.2
+      Recoil: 0.95
+      Spread: 1.15
+      Range: 0.85
+      MagazineSize: 1
+      ChargeTime: 0.7
+      ProjectileSpeed: 0.95
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.4
+  - Name: Gakgung
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 3
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 1
+        Max: 3
+        Bias: -0.4
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.9
+      FireRate: 1.2
+      Recoil: 0.95
+      Spread: 1
+      Range: 1.05
+      MagazineSize: 1
+      ChargeTime: 0.7
+      ProjectileSpeed: 1.1
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.2
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.35
+  - Name: Manchu Bow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 3
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 1
+        Max: 3
+        Bias: -0.4
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 1.15
+      FireRate: 0.9
+      Recoil: 1.15
+      Spread: 1.2
+      Range: 0.8
+      MagazineSize: 1
+      ChargeTime: 0.95
+      ProjectileSpeed: 0.85
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.5
+  - Name: Shortbow
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 0.8
+      FireRate: 1.15
+      Recoil: 0.85
+      Spread: 1.1
+      Range: 0.8
+      MagazineSize: 1
+      ChargeTime: 0.8
+      ProjectileSpeed: 0.9
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.4
+  - Name: Hunting Bow
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 0.95
+      FireRate: 1
+      Recoil: 0.95
+      Spread: 0.95
+      Range: 0.9
+      MagazineSize: 1
+      ChargeTime: 0.9
+      ProjectileSpeed: 0.95
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.2
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.4
+  - Name: Pyramid Bow
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 0.85
+      FireRate: 1.1
+      Recoil: 0.75
+      Spread: 0.95
+      Range: 0.85
+      MagazineSize: 1
+      ChargeTime: 0.85
+      ProjectileSpeed: 0.9
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.15
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.3
+  - Name: Self Bow
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 1.05
+      Recoil: 1.05
+      Spread: 1.25
+      Range: 0.85
+      MagazineSize: 1
+      ChargeTime: 0.85
+      ProjectileSpeed: 0.85
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.45
+  - Name: Hunting Compound
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 1.05
+      FireRate: 1
+      Recoil: 0.9
+      Spread: 0.85
+      Range: 1.1
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 1.3
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.1
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.15
+  - Name: Target Compound
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 1
+      FireRate: 0.9
+      Recoil: 0.8
+      Spread: 0.6
+      Range: 1.25
+      MagazineSize: 1
+      ChargeTime: 1.15
+      ProjectileSpeed: 1.3
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.05
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.1
+  - Name: Speed Compound
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 1.1
+      FireRate: 1
+      Recoil: 1.2
+      Spread: 1
+      Range: 1.2
+      MagazineSize: 1
+      ChargeTime: 1.05
+      ProjectileSpeed: 1.45
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.2
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.2
+  - Name: Short-Axle Compound
+    Weight: 1
+    FiringStyles: []
+    Scales:
+      Damage: 0.95
+      FireRate: 1.15
+      Recoil: 0.95
+      Spread: 0.95
+      Range: 0.9
+      MagazineSize: 1
+      ChargeTime: 0.8
+      ProjectileSpeed: 1.2
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.15
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.15
   FireBehavior: {fileID: 11400000, guid: 6d2f8a1c4b9e4f70a3c5e7d9b1f3a5c7, type: 2}
   RPM:
     Min: 120

@@ -425,6 +425,33 @@ Naming rules:
 |  |  | Browning M1919 | TBD |  |  |
 |  |  | M2 Browning | TBD |  |  |
 
+#### Bows
+
+Bow names are traditional bow types and cultures (Longbow, Yumi, Mongol Bow, Compound), not anyone's product, so they can likely stay as game names; they still go through the legal check. Compound bows are named by role (Hunting, Target, Speed, Short-Axle) rather than after a manufacturer's model.
+
+| Series | Game series name | Placeholder model | Game name |
+|---|---|---|---|
+| L-Series (longbows) | TBD | English Longbow | TBD |
+|  |  | Warbow | TBD |
+|  |  | Yumi | TBD |
+|  |  | Flatbow | TBD |
+| R-Series (recurves) | TBD | Olympic Recurve | TBD |
+|  |  | Takedown Recurve | TBD |
+|  |  | Scythian Bow | TBD |
+|  |  | Turkish Flight Bow | TBD |
+| H-Series (horsebows) | TBD | Mongol Bow | TBD |
+|  |  | Magyar Bow | TBD |
+|  |  | Gakgung | TBD |
+|  |  | Manchu Bow | TBD |
+| S-Series (shortbows) | TBD | Shortbow | TBD |
+|  |  | Hunting Bow | TBD |
+|  |  | Pyramid Bow | TBD |
+|  |  | Self Bow | TBD |
+| C-Series (compounds) | TBD | Hunting Compound | TBD |
+|  |  | Target Compound | TBD |
+|  |  | Speed Compound | TBD |
+|  |  | Short-Axle Compound | TBD |
+
 ### Melee
 
 **Built.** Not detailed in the original design.

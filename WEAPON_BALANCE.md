@@ -184,6 +184,19 @@ lowering base damage.
 
 ---
 
+### Bow
+- **Best at**: silent picks — nearly inaudible (~8 m), one-shot headshots at every tier, no reload.
+- **Weakness**: every shot is a draw (0.6–1.2 s at the category's middle, more in the vertical stance), arrows arc and must be led, one arrow nocked at a time.
+- **What a Legendary bow feels like**: faster draw (charge time follows quality on the draw-speed axis), harder hits, tighter hip cone.
+- **Models** (`Models` on the category, all equal weight, so each series is 20%; every T1 one-shots a head, and the heavy hitters — ≥ 87 damage — one-shot a body at a full vertical draw (×1.15)):
+  - **L-Series** (longbows: slow draw, heaviest hits, arcing arrows): English Longbow (the baseline heavy bow), Warbow (107 dmg, the hardest-hitting bow; slowest draw, 1.22 s), Yumi (precise: tight cone, longest longbow reach), Flatbow (slowest arrow, the most arc)
+  - **R-Series** (recurves: balanced, accurate): Olympic Recurve (tightest traditional cone, softest kick), Takedown Recurve (the all-rounder), Scythian Bow (quick, short reflex), Turkish Flight Bow (fastest traditional arrow and longest reach in the category, lightest hits)
+  - **H-Series** (horsebows: quickest draw, short range): Mongol Bow and Magyar Bow (multishot by even odds: 1, 2 or 3 arrows ⅓ each — T1s loose 2), Gakgung (small horn bow with a fast, far-flying arrow; volleys less often), Manchu Bow (heavy arrows: big close hits, slow and arcing)
+  - **S-Series** (shortbows: light and quick): Shortbow (lightest hits, quick), Hunting Bow (steady middle), Pyramid Bow (tapered limbs: the smoothest shortbow), Self Bow (hits hardest of the series but the loosest cone)
+  - **C-Series** (compounds: fastest, flattest arrows, near-dead in the hand): Hunting Compound (all-rounder), Target Compound (tightest cone in the game's bows, slower draw), Speed Compound (fastest arrow, 94 m/s at T1, but the hardest kick), Short-Axle Compound (quick draw, shorter reach)
+  - Horsebows set their own volley odds through a firing style (`PelletCount` 1–3; bias 0 for the Mongol and Magyar, −0.4 for the Gakgung and Manchu); every other bow keeps the category's (mostly single arrows).
+  - Bows lean on two scales firearms leave at 1: `ChargeTime` (time to full draw) and `ProjectileSpeed` (arrow speed — a faster arrow drops less over the same distance). Scales are built against the bow midpoints (82.5 dmg, 160 RPM, 45 m, 1.1° hip spread, 0.9 s draw, 65 m/s).
+
 ## Recoil Patterns
 
 Each model carries a `RecoilPattern` (on `WeaponModel`; a firing variant can carry its own with
@@ -368,7 +381,7 @@ prototyping but should be filled in before shipping.
 
 Hand-authored Common-tier (Tier 1) assets live in
 `Assets/Project/Data/Weapons/Ranged/T1/` — one per model for the AR, SMG,
-pistol, sniper, shotgun and LMG rosters. They are the concrete example of what "Common feels like" and the
+pistol, sniper, shotgun, LMG and bow rosters. They are the concrete example of what "Common feels like" and the
 first thing to compare a new weapon against.
 
 | Asset             | Category    | Damage × RPM        | Ammo           | STK / TTK    | Notes                                        |
@@ -494,6 +507,26 @@ first thing to compare a new weapon against.
 | `BrowningSuperposed_T1`  | Shotgun · C-Series | 15 × 8 × 240 (semi) | ShotgunShells  | 1 / one shot | 15 m, 2 shells, tightest cone (2° ADS), draw 0.6s |
 | `Model1887_T1`          | Shotgun · C-Series | 15 × 8 × 75 (lever) | ShotgunShells  | 1 / one shot | 10 m, 5 shells, draw 0.7s, one shell per step |
 | `Model12_T1`            | Shotgun · C-Series | 13 × 8 × 90 (pump)  | ShotgunShells  | 1 / one shot | 9 m, 6 shells, draw 0.6s, one shell per step |
+| `EnglishLongbow_T1` | Bow · L-Series | 95 × 144 | Arrows | 1 vertical / 2 | draw 1.08s, 58 m/s, 50 m, hip 1.1° |
+| `Warbow_T1` | Bow · L-Series | 107 × 128 | Arrows | 1 vertical / 2 | draw 1.22s, 62 m/s, 52 m, hip 1.26° |
+| `Yumi_T1` | Bow · L-Series | 91 × 144 | Arrows | 1 vertical / 2 | draw 1.03s, 62 m/s, 54 m, hip 0.83° |
+| `Flatbow_T1` | Bow · L-Series | 87 × 152 | Arrows | 1 vertical / 2 | draw 0.95s, 55 m/s, 45 m, hip 1.1° |
+| `OlympicRecurve_T1` | Bow · R-Series | 82 × 160 | Arrows | 2 | draw 0.9s, 68 m/s, 52 m, hip 0.72° |
+| `TakedownRecurve_T1` | Bow · R-Series | 78 × 168 | Arrows | 2 | draw 0.81s, 65 m/s, 45 m, hip 0.99° |
+| `ScythianBow_T1` | Bow · R-Series | 74 × 184 | Arrows | 2 | draw 0.72s, 65 m/s, 40 m, hip 1.1° |
+| `TurkishFlightBow_T1` | Bow · R-Series | 66 × 160 | Arrows | 2 | draw 0.85s, 81 m/s, 61 m, hip 1.04° |
+| `MongolBow_T1` | Bow · H-Series | 78 × 184 | Arrows | 2 | draw 0.68s, 65 m/s, 40 m, hip 1.21°, 2-arrow volley |
+| `MagyarBow_T1` | Bow · H-Series | 70 × 192 | Arrows | 2 | draw 0.63s, 62 m/s, 38 m, hip 1.26°, 2-arrow volley |
+| `Gakgung_T1` | Bow · H-Series | 74 × 192 | Arrows | 2 | draw 0.63s, 72 m/s, 47 m, hip 1.1° |
+| `ManchuBow_T1` | Bow · H-Series | 95 × 144 | Arrows | 1 vertical / 2 | draw 0.85s, 55 m/s, 36 m, hip 1.32° |
+| `Shortbow_T1` | Bow · S-Series | 66 × 184 | Arrows | 2 | draw 0.72s, 58 m/s, 36 m, hip 1.21° |
+| `HuntingBow_T1` | Bow · S-Series | 78 × 160 | Arrows | 2 | draw 0.81s, 62 m/s, 40 m, hip 1.04° |
+| `PyramidBow_T1` | Bow · S-Series | 70 × 176 | Arrows | 2 | draw 0.77s, 58 m/s, 38 m, hip 1.04° |
+| `SelfBow_T1` | Bow · S-Series | 82 × 168 | Arrows | 2 | draw 0.77s, 55 m/s, 38 m, hip 1.38° |
+| `HuntingCompound_T1` | Bow · C-Series | 87 × 160 | Arrows | 1 vertical / 2 | draw 0.9s, 84 m/s, 50 m, hip 0.94° |
+| `TargetCompound_T1` | Bow · C-Series | 82 × 144 | Arrows | 2 | draw 1.03s, 84 m/s, 56 m, hip 0.66° |
+| `SpeedCompound_T1` | Bow · C-Series | 91 × 160 | Arrows | 1 vertical / 2 | draw 0.95s, 94 m/s, 54 m, hip 1.1° |
+| `ShortAxleCompound_T1` | Bow · C-Series | 78 × 184 | Arrows | 2 | draw 0.72s, 78 m/s, 40 m, hip 1.04° |
 
 Higher tiers (T2–T5) aren't authored yet — those variants come from the
 `WeaponGenerator` rolling `WeaponCategoryData` with a `StatRollProfile` and

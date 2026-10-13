@@ -21,15 +21,19 @@ namespace CGD.Weapons
         public readonly float Spread;
         public readonly float Range;
         public readonly float MagazineSize;
+        public readonly float ChargeTime;
+        public readonly float ProjectileSpeed;
 
         private StyleLeans(StyleScales s)
         {
-            Damage       = Lean(s.Damage);
-            FireRate     = Lean(s.FireRate);
-            Recoil       = Lean(s.Recoil);
-            Spread       = Lean(s.Spread);
-            Range        = Lean(s.Range);
-            MagazineSize = Lean(s.MagazineSize);
+            Damage          = Lean(s.Damage);
+            FireRate        = Lean(s.FireRate);
+            Recoil          = Lean(s.Recoil);
+            Spread          = Lean(s.Spread);
+            Range           = Lean(s.Range);
+            MagazineSize    = Lean(s.MagazineSize);
+            ChargeTime      = Lean(s.ChargeTime);
+            ProjectileSpeed = Lean(s.ProjectileSpeed);
         }
 
         // Scales are relative to the category's middle, so how far one sits from 1 is how

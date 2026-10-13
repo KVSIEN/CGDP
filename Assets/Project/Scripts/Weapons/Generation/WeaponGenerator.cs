@@ -49,7 +49,7 @@ namespace CGD.Weapons
 
             ApplyBuild(d, cat, build);
             RollFiring(d, cat, roll, random, build);
-            RollProjectile(d, cat, roll, random);
+            RollProjectile(d, cat, roll, random, build);
             RollDamage(d, cat, roll, random, build);
             RollAmmo(d, cat, roll, build);
             RollSpread(d, cat, roll, random, build);
@@ -88,12 +88,14 @@ namespace CGD.Weapons
         }
 
         // Charged shots, projectile flight and bow volleys.
-        private static void RollProjectile(WeaponData d, WeaponCategoryData cat, ItemRoll roll, RandomStream random)
+        private static void RollProjectile(WeaponData d, WeaponCategoryData cat, ItemRoll roll, RandomStream random, WeaponBuild build)
         {
+            StyleScales scales = build.Scales;
+            StyleLeans  leans  = build.Leans;
             // A faster draw is a better bow, so charge time follows quality on the draw-speed axis.
-            d.ChargeTime                 = Mathf.Max(0f, roll.Sample(ItemStat.DrawTime, cat.ChargeTime));
+            d.ChargeTime                 = Mathf.Max(0f, roll.Sample(ItemStat.DrawTime, StyleScales.Scale(cat.ChargeTime, scales.ChargeTime, leans.ChargeTime)));
             d.MinChargeToFire            = Mathf.Clamp01(cat.MinChargeToFire.EvaluateClamped(random));
-            d.ProjectileSpeed            = Mathf.Max(0.1f, cat.ProjectileSpeed.EvaluateClamped(random));
+            d.ProjectileSpeed            = Mathf.Max(0.1f, StyleScales.Scale(cat.ProjectileSpeed, scales.ProjectileSpeed, leans.ProjectileSpeed).EvaluateClamped(random));
             d.ProjectileGravity          = Mathf.Max(0f, cat.ProjectileGravity.EvaluateClamped(random));
             d.ProjectileLifetime         = Mathf.Max(0.1f, cat.ProjectileLifetime.EvaluateClamped(random));
             d.ProjectileInstantHitTime   = Mathf.Max(0f, cat.ProjectileInstantHitTime.EvaluateClamped(random));

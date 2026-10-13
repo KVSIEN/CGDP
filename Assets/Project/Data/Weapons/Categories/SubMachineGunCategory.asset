@@ -70,6 +70,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     - Name: Burst
       ModelName: 
       Weight: 2
@@ -90,6 +92,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.88
       FireRate: 0.94
@@ -97,6 +101,8 @@ MonoBehaviour:
       Spread: 0.89
       Range: 0.96
       MagazineSize: 1.1
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.05
@@ -128,6 +134,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.83
       FireRate: 1
@@ -135,6 +143,8 @@ MonoBehaviour:
       Spread: 0.98
       Range: 0.69
       MagazineSize: 1.1
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.15
@@ -166,6 +176,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.83
       FireRate: 1.06
@@ -173,6 +185,8 @@ MonoBehaviour:
       Spread: 0.8
       Range: 1.08
       MagazineSize: 1.47
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.05
@@ -204,6 +218,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 1.07
       FireRate: 0.72
@@ -211,6 +227,8 @@ MonoBehaviour:
       Spread: 0.98
       Range: 0.96
       MagazineSize: 1.18
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: -0.25
@@ -242,6 +260,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 1.17
       FireRate: 0.72
@@ -249,6 +269,8 @@ MonoBehaviour:
       Spread: 1.24
       Range: 1.15
       MagazineSize: 1.84
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.35
@@ -280,6 +302,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 1.17
       FireRate: 0.67
@@ -287,6 +311,8 @@ MonoBehaviour:
       Spread: 1.07
       Range: 1.08
       MagazineSize: 1.18
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.05
@@ -318,6 +344,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 1.07
       FireRate: 0.72
@@ -325,6 +353,8 @@ MonoBehaviour:
       Spread: 1.16
       Range: 0.77
       MagazineSize: 1.18
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.6
@@ -356,6 +386,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 1.12
       FireRate: 0.67
@@ -363,6 +395,8 @@ MonoBehaviour:
       Spread: 1.07
       Range: 0.92
       MagazineSize: 1.47
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: -0.2
@@ -394,6 +428,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.93
       FireRate: 1.28
@@ -401,6 +437,8 @@ MonoBehaviour:
       Spread: 1.33
       Range: 0.46
       MagazineSize: 1.1
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.2
@@ -432,6 +470,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     - Name: Burst
       ModelName: 
       Weight: 2
@@ -452,6 +492,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.73
       FireRate: 1.28
@@ -459,6 +501,8 @@ MonoBehaviour:
       Spread: 1.07
       Range: 0.58
       MagazineSize: 1.1
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.3
@@ -490,6 +534,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.73
       FireRate: 1.11
@@ -497,6 +543,8 @@ MonoBehaviour:
       Spread: 0.98
       Range: 0.62
       MagazineSize: 1.1
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.3
@@ -528,6 +576,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.83
       FireRate: 1
@@ -535,6 +585,8 @@ MonoBehaviour:
       Spread: 0.89
       Range: 0.54
       MagazineSize: 0.74
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.35
@@ -566,6 +618,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     - Name: Burst
       ModelName: 
       Weight: 2
@@ -586,6 +640,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 1.17
       FireRate: 0.72
@@ -593,6 +649,8 @@ MonoBehaviour:
       Spread: 0.89
       Range: 1.23
       MagazineSize: 0.92
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: -0.2
@@ -624,6 +682,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.93
       FireRate: 0.94
@@ -631,6 +691,8 @@ MonoBehaviour:
       Spread: 0.84
       Range: 1.15
       MagazineSize: 1.1
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.1
@@ -662,6 +724,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.88
       FireRate: 1.11
@@ -669,6 +733,8 @@ MonoBehaviour:
       Spread: 0.89
       Range: 1.08
       MagazineSize: 1.1
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.25
@@ -700,6 +766,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.93
       FireRate: 1
@@ -707,6 +775,8 @@ MonoBehaviour:
       Spread: 0.84
       Range: 1
       MagazineSize: 1.1
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.1
@@ -738,6 +808,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.83
       FireRate: 1
@@ -745,6 +817,8 @@ MonoBehaviour:
       Spread: 0.84
       Range: 1
       MagazineSize: 1.84
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0
@@ -776,6 +850,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     - Name: Burst
       ModelName: 
       Weight: 2
@@ -796,6 +872,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.88
       FireRate: 1.33
@@ -803,6 +881,8 @@ MonoBehaviour:
       Spread: 0.89
       Range: 0.69
       MagazineSize: 0.92
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0
@@ -834,6 +914,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.83
       FireRate: 1
@@ -841,6 +923,8 @@ MonoBehaviour:
       Spread: 0.93
       Range: 0.92
       MagazineSize: 1.84
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: -0.2
@@ -872,6 +956,8 @@ MonoBehaviour:
         Spread: 1
         Range: 1
         MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
     Scales:
       Damage: 0.98
       FireRate: 0.78
@@ -879,6 +965,8 @@ MonoBehaviour:
       Spread: 1.02
       Range: 0.85
       MagazineSize: 2.36
+      ChargeTime: 1
+      ProjectileSpeed: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.25
