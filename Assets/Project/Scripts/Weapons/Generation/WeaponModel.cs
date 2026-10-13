@@ -18,6 +18,8 @@ namespace CGD.Weapons
         public StyleScales Scales = StyleScales.Identity;
         [Tooltip("Rounds loaded per reload step: 0 = the whole magazine at once; 1 = one at a time; 2, 3… = that many")]
         [Min(0)] public int RoundsPerLoad;
+        [Tooltip("Always holds this many rounds, e.g. 2 for a double barrel, whatever the roll. 0 = rolled from the category's (scaled) magazine range")]
+        [Min(0)] public int FixedMagazineSize;
         [Tooltip("Ammo this model fires, e.g. Heavy Rounds for a magnum revolver. None = the category's")]
         public AmmoType AmmoType;
         [Tooltip("Which way its recoil drifts and how jumpy it is, e.g. an Uzi climbs up and to the right")]

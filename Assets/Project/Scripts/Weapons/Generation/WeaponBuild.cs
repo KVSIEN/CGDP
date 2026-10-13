@@ -22,6 +22,7 @@ namespace CGD.Weapons
         public readonly FloatRange AdsSpreadDeg;
         public readonly AmmoType   AmmoType;
         public readonly int        RoundsPerLoad;
+        public readonly int        FixedMagazineSize;   // 0 = rolled
 
         // Draws, in order: the model from its own fork (none from `random`), a name when there's
         // no model, a firing style, a fire mode when there's no firing style, a stat style. Seeds
@@ -56,6 +57,7 @@ namespace CGD.Weapons
             AmmoType      = model != null && model.AmmoType != AmmoType.None ? model.AmmoType : cat.AmmoType;
             RoundsPerLoad = firing != null && firing.RoundsPerLoad > 0 ? firing.RoundsPerLoad
                           : model != null ? model.RoundsPerLoad : 0;
+            FixedMagazineSize = model != null ? model.FixedMagazineSize : 0;
         }
 
         public bool IsAutomatic => FireMode == FireMode.Auto || FireMode == FireMode.Burst;

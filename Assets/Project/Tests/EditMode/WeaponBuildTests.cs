@@ -100,6 +100,17 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void AFixedMagazineSizeIgnoresTheRoll()
+        {
+            _category = ScriptableObject.CreateInstance<WeaponCategoryData>();
+            _category.MagazineSize = new IntRange(4, 10);
+            _category.Models = new[] { new WeaponModel { Name = "Double Barrel", FixedMagazineSize = 2 } };
+
+            for (int i = 0; i < SeedCount; i++)
+                Assert.AreEqual(2, Generate(_category, i).MagazineSize);
+        }
+
+        [Test]
         public void TheSameSeedGivesTheSameGun()
         {
             WeaponCategoryData category = CreateGlockCategory();

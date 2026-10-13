@@ -24,25 +24,70 @@ MonoBehaviour:
   _perkPool: {fileID: 11400000, guid: 46756d1ce4124b5c8905716c4d8a5986, type: 2}
   Type: 5
   Names:
-  - M870
+  - Remington 870
+  - Mossberg 590A1
   - SPAS-12
-  - Benelli M3
-  - Mossberg 500
-  - KSG
+  - UTS-15
+  - Benelli M4
+  - Beretta 1301
+  - Mossberg 940
+  - Beretta Xtrema 2
   - AA-12
-  FireModes: 00000000000000000000000001000000
+  - USAS-12
+  - Saiga-12
+  - STF-12
+  - KSG
+  - Tavor TS12
+  - Striker
+  - Neostead 2000
+  - Double Barrel
+  - Browning Superposed
+  - Model 1887
+  - Model 12
+  FireModes: 00000000
   Models:
-  - Name: M870
-    Weight: 4
-    FiringStyles: []
+  - Name: Remington 870
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
     Scales:
-      Damage: 1
-      FireRate: 1
-      Recoil: 1
-      Spread: 1
-      Range: 1
-      MagazineSize: 1
+      Damage: 0.96
+      FireRate: 0.42
+      Recoil: 1.06
+      Spread: 1.09
+      Range: 0.77
+      MagazineSize: 0.86
     RoundsPerLoad: 1
+    FixedMagazineSize: 0
+    AmmoType: 0
     Recoil:
       Bias: 0.1
       Drift: 0
@@ -50,71 +95,674 @@ MonoBehaviour:
       Horizontal: 0.94
       Reach: 1
       MuzzleFlip: 0.6
-  - Name: SPAS-12
-    Weight: 4
-    FiringStyles: []
+  - Name: Mossberg 590A1
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 8
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    - Name: 
+      ModelName: Shockwave
+      Weight: 2
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 2
+        Max: 3.5
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1.1
+        Recoil: 1.35
+        Spread: 1.3
+        Range: 0.7
+        MagazineSize: 0.6
+      RoundsPerLoad: 0
+      OwnRecoil: 1
+      Recoil:
+        Bias: 0.25
+        Drift: 0
+        Jitter: 0.6
+        Horizontal: 1.3
+        Reach: 1
+        MuzzleFlip: 0.85
     Scales:
-      Damage: 1
-      FireRate: 1
-      Recoil: 1
-      Spread: 1
-      Range: 1
-      MagazineSize: 1
+      Damage: 0.96
+      FireRate: 0.39
+      Recoil: 1.09
+      Spread: 1.05
+      Range: 0.85
+      MagazineSize: 1.29
     RoundsPerLoad: 1
-    Recoil:
-      Bias: 0.15
-      Drift: 0
-      Jitter: 0.4
-      Horizontal: 1
-      Reach: 1
-      MuzzleFlip: 0.55
-  - Name: Benelli M3
-    Weight: 4
-    FiringStyles: []
-    Scales:
-      Damage: 1
-      FireRate: 1
-      Recoil: 1
-      Spread: 1
-      Range: 1
-      MagazineSize: 1
-    RoundsPerLoad: 1
-    Recoil:
-      Bias: 0.05
-      Drift: 0
-      Jitter: 0.35
-      Horizontal: 1
-      Reach: 1
-      MuzzleFlip: 0.5
-  - Name: Mossberg 500
-    Weight: 4
-    FiringStyles: []
-    Scales:
-      Damage: 1
-      FireRate: 1
-      Recoil: 1
-      Spread: 1
-      Range: 1
-      MagazineSize: 1
-    RoundsPerLoad: 1
+    FixedMagazineSize: 0
+    AmmoType: 0
     Recoil:
       Bias: 0.1
       Drift: 0
       Jitter: 0.4
-      Horizontal: 1
+      Horizontal: 0.92
       Reach: 1
       MuzzleFlip: 0.6
-  - Name: KSG
-    Weight: 4
-    FiringStyles: []
+  - Name: SPAS-12
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 7
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    - Name: Semi
+      ModelName: 
+      Weight: 3
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 0.8
+        FireRate: 3.2
+        Recoil: 1.1
+        Spread: 1.1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
     Scales:
-      Damage: 1
-      FireRate: 1
-      Recoil: 1
+      Damage: 1.04
+      FireRate: 0.39
+      Recoil: 1.15
+      Spread: 1.09
+      Range: 0.77
+      MagazineSize: 1.14
+    RoundsPerLoad: 1
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0.15
+      Drift: 0
+      Jitter: 0.4
+      Horizontal: 0.98
+      Reach: 1
+      MuzzleFlip: 0.55
+  - Name: UTS-15
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.93
+      FireRate: 0.42
+      Recoil: 1.03
+      Spread: 1.09
+      Range: 0.69
+      MagazineSize: 2.14
+    RoundsPerLoad: 1
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: -0.1
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 1.09
+      Reach: 1
+      MuzzleFlip: 0.35
+  - Name: Benelli M4
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.74
+      FireRate: 1.29
+      Recoil: 0.85
       Spread: 1
-      Range: 1
+      Range: 0.85
       MagazineSize: 1
     RoundsPerLoad: 1
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 1.18
+      Reach: 1
+      MuzzleFlip: 0.5
+  - Name: Beretta 1301
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.7
+      FireRate: 1.55
+      Recoil: 0.88
+      Spread: 1.05
+      Range: 0.69
+      MagazineSize: 0.71
+    RoundsPerLoad: 1
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0.15
+      Drift: 0
+      Jitter: 0.4
+      Horizontal: 1.28
+      Reach: 1
+      MuzzleFlip: 0.45
+  - Name: Mossberg 940
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.74
+      FireRate: 1.42
+      Recoil: 0.82
+      Spread: 0.95
+      Range: 0.92
+      MagazineSize: 1.43
+    RoundsPerLoad: 2
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1.07
+      Reach: 1
+      MuzzleFlip: 0.4
+  - Name: Beretta Xtrema 2
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.89
+      FireRate: 1.1
+      Recoil: 0.73
+      Spread: 0.91
+      Range: 1
+      MagazineSize: 0.86
+    RoundsPerLoad: 1
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 1.03
+      Reach: 1
+      MuzzleFlip: 0.35
+  - Name: AA-12
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 8
+      FireMode: 1
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    - Name: Drum
+      ModelName: 
+      Weight: 2
+      FireMode: 1
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1.1
+        Spread: 1
+        Range: 1
+        MagazineSize: 2.5
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.67
+      FireRate: 1.94
+      Recoil: 0.61
+      Spread: 1.18
+      Range: 0.69
+      MagazineSize: 1.14
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0.15
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1.24
+      Reach: 1
+      MuzzleFlip: 0.15
+  - Name: USAS-12
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 1
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.81
+      FireRate: 1.55
+      Recoil: 0.91
+      Spread: 1.23
+      Range: 0.77
+      MagazineSize: 1.43
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0.3
+      Drift: 1
+      Jitter: 0.4
+      Horizontal: 1.37
+      Reach: 1
+      MuzzleFlip: 0.45
+  - Name: Saiga-12
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.78
+      FireRate: 1.48
+      Recoil: 0.91
+      Spread: 1.09
+      Range: 0.85
+      MagazineSize: 1.14
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0.35
+      Drift: 1
+      Jitter: 0.4
+      Horizontal: 1.37
+      Reach: 1
+      MuzzleFlip: 0.55
+  - Name: STF-12
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.7
+      FireRate: 1.61
+      Recoil: 0.7
+      Spread: 1
+      Range: 0.77
+      MagazineSize: 0.71
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1.08
+      Reach: 1
+      MuzzleFlip: 0.3
+  - Name: KSG
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.93
+      FireRate: 0.45
+      Recoil: 1
+      Spread: 1.09
+      Range: 0.77
+      MagazineSize: 2
+    RoundsPerLoad: 1
+    FixedMagazineSize: 0
+    AmmoType: 0
     Recoil:
       Bias: -0.1
       Drift: 0
@@ -122,24 +770,378 @@ MonoBehaviour:
       Horizontal: 1
       Reach: 1
       MuzzleFlip: 0.35
-  - Name: AA-12
-    Weight: 5
-    FiringStyles: []
+  - Name: Tavor TS12
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
     Scales:
-      Damage: 1
-      FireRate: 1
-      Recoil: 1
+      Damage: 0.7
+      FireRate: 1.35
+      Recoil: 0.85
+      Spread: 1.09
+      Range: 0.77
+      MagazineSize: 2.14
+    RoundsPerLoad: 1
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: -0.15
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 1.33
+      Reach: 1
+      MuzzleFlip: 0.3
+  - Name: Striker
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.74
+      FireRate: 1.29
+      Recoil: 0.94
+      Spread: 1.18
+      Range: 0.69
+      MagazineSize: 1.71
+    RoundsPerLoad: 1
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0.2
+      Drift: 0
+      Jitter: 0.45
+      Horizontal: 1.33
+      Reach: 1
+      MuzzleFlip: 0.5
+  - Name: Neostead 2000
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.93
+      FireRate: 0.48
+      Recoil: 0.97
       Spread: 1
-      Range: 1
+      Range: 0.85
+      MagazineSize: 1.71
+    RoundsPerLoad: 1
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 0.9
+      Reach: 1
+      MuzzleFlip: 0.3
+  - Name: Double Barrel
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 8
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 1.5
+        Max: 2.5
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    - Name: 
+      ModelName: Sawed-Off
+      Weight: 2
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 2.5
+        Max: 4
+        Bias: 0
+      Scales:
+        Damage: 1.05
+        FireRate: 1
+        Recoil: 1.3
+        Spread: 1.4
+        Range: 0.6
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 1
+      Recoil:
+        Bias: 0.2
+        Drift: 0
+        Jitter: 0.7
+        Horizontal: 1.4
+        Reach: 1
+        MuzzleFlip: 0.85
+    Scales:
+      Damage: 1.19
+      FireRate: 1.94
+      Recoil: 1.39
+      Spread: 1.27
+      Range: 0.62
       MagazineSize: 1
     RoundsPerLoad: 0
+    FixedMagazineSize: 2
+    AmmoType: 0
     Recoil:
-      Bias: 0.3
-      Drift: 1
-      Jitter: 0.45
-      Horizontal: 1
+      Bias: 0.1
+      Drift: 0
+      Jitter: 0.5
+      Horizontal: 1.08
       Reach: 1
-      MuzzleFlip: 0.2
+      MuzzleFlip: 0.75
+  - Name: Browning Superposed
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0.4
+        Max: 1
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 1.11
+      FireRate: 1.55
+      Recoil: 1.33
+      Spread: 0.82
+      Range: 1.15
+      MagazineSize: 1
+    RoundsPerLoad: 0
+    FixedMagazineSize: 2
+    AmmoType: 0
+    Recoil:
+      Bias: 0.05
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 0.84
+      Reach: 1
+      MuzzleFlip: 0.7
+  - Name: Model 1887
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 1.11
+      FireRate: 0.48
+      Recoil: 1.33
+      Spread: 1.14
+      Range: 0.77
+      MagazineSize: 0.71
+    RoundsPerLoad: 1
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0.2
+      Drift: 0
+      Jitter: 0.45
+      Horizontal: 0.94
+      Reach: 1
+      MuzzleFlip: 0.75
+  - Name: Model 12
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.96
+      FireRate: 0.58
+      Recoil: 1.15
+      Spread: 1.14
+      Range: 0.69
+      MagazineSize: 0.86
+    RoundsPerLoad: 1
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0.15
+      Drift: 0
+      Jitter: 0.45
+      Horizontal: 1.09
+      Reach: 1
+      MuzzleFlip: 0.65
   FireBehavior: {fileID: 11400000, guid: e2cbfa746aa878d4aa23d60289c75ece, type: 2}
   RPM:
     Min: 50

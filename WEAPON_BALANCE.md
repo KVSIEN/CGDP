@@ -148,7 +148,14 @@ lowering base damage.
 - **Best at**: one-shot kill at 3–8m; punishes anyone who enters.
 - **Weakness**: pellet spread makes 15m+ shots miss most damage; ShotgunShells is its own scarce pool.
 - **What a Legendary shotgun feels like**: tighter pellet pattern, faster follow-up, higher per-pellet damage roll.
-- **Reload**: `ReloadStyles` 4 : 1 — pump/tube models one shell per step, the AA-12 magazine-fed; each step takes ReloadTime ÷ steps for a full load (about 0.45–0.6 s), so the Tube axis trades capacity for a slower full reload but not slower shells. Loaded shells survive any interrupt, which enables blast → one shell → bash-cancel → blast. Sniper rifles are the reverse, 4 : 1 magazine to one-round-per-step: only the C-Series classics (Kar98k, Mosin-Nagant, Lee-Enfield, Springfield M1903) load a round at a time. Revolvers (pistol H-Series) weight one round per step 85 : 15 against a speedloader full load.
+- **Reload**: each model sets its own — tube-fed models (pumps, semi-autos, the H-Series, the Model 1887 and Model 12) load one shell per step (the Mossberg 940 two), the M-Series magazine-fed and the break-actions both barrels at once; each step takes ReloadTime ÷ steps for a full load (about 0.45–0.6 s), so the Tube axis trades capacity for a slower full reload but not slower shells. Loaded shells survive any interrupt, which enables blast → one shell → bash-cancel → blast. The full reload is the category's ReloadTime whatever the capacity, so a big tube (KSG, Striker) loads each shell faster rather than taking longer overall. Sniper rifles are the reverse, 4 : 1 magazine to one-round-per-step: only the C-Series classics (Kar98k, Mosin-Nagant, Lee-Enfield, Springfield M1903) load a round at a time. Revolvers (pistol H-Series) weight one round per step 85 : 15 against a speedloader full load.
+- **Models** (`Models` on the category, all equal weight, so each series is 20%; tube pumps are 1-shot kills up close at T1, semis and autos 2-shot at 0.20–0.35 s):
+  - **P-Series** (pump-actions; slow, one-shot): Remington 870 (the baseline), Mossberg 590A1 (9 shells; 20% "Shockwave" — stockless: smaller tube, shorter reach, wider cone, wild kick of its own), SPAS-12 (hardest-hitting pump; 30% roll its semi-auto mode, "Semi SPAS-12": ~190 RPM at 0.8× damage), UTS-15 (bullpup pump, 15 shells)
+  - **A-Series** (semi-autos; quick 2-shot follow-ups): Benelli M4 (all-rounder), Beretta 1301 (fastest cycle, 5 shells), Mossberg 940 (10 shells, loads two per step), Beretta Xtrema 2 (magnum semi: hardest hits and least kick of the series, slowest cycle)
+  - **M-Series** (magazine-fed; whole-magazine reloads): AA-12 (full-auto 300 RPM, near-recoilless, barely flips; 20% "Drum AA-12", 2.5× magazine), USAS-12 (slower, harder-hitting full-auto that climbs up and right), Saiga-12 (AK-pattern semi, kicks up and right), STF-12 (AR-pattern semi: lightest and most controllable)
+  - **H-Series** (high capacity; one shell per step): KSG (twin-tube bullpup pump, 14 shells), Tavor TS12 (triple-tube bullpup semi, 15 shells), Striker (12-round rotary drum semi), Neostead 2000 (front-pump twin-tube bullpup: fastest pump of the series, tightest)
+  - **C-Series** (classics and break-actions): Double Barrel (2 shells, fired as fast as you pull: 16 × 10 at 300 RPM, both reloaded at once; 20% "Sawed-Off" — shorter reach, wider cone, a harder kick of its own), Browning Superposed (over-under: tightest cone and longest reach in the category, 2 shells), Model 1887 (lever-action: hardest pump-speed hits, 5 shells), Model 12 (slam-fire trench gun: the fastest-cycling pump, 90 RPM)
+  - The break-actions use `FixedMagazineSize` 2, so the magazine roll never gives them one barrel or three.
 
 ### Pistol
 - **Models** (`Models` on the category, all equal weight, so each series is 20%):
@@ -309,7 +316,7 @@ axis decides which end a weapon lands on, so the band reads as a spectrum:
 | Pistol  | Glock — 600 RPM, 20 dmg, 12 m        | Hand cannon — 200 RPM, 60 dmg, 35 m    | 20 models in five series (see Pistol); e.g. `Makarov_T1` 380×27, `Glock18_T1` 1100×18, `DesertEagle_T1` 300×55 |
 | Sniper  | Semi-auto DMR — 260 RPM, 45 dmg, 50 m | Bolt / AMR — 35 RPM, 170 dmg, 220 m   | 20 models in five series (see Sniper); e.g. `Kar98k_T1` 45×95, `QBU88_T1` 260×45, `Tac50_T1` 38×165 |
 | LMG     | High-cyclic MG — 1200 RPM, 24 dmg    | Heavy GPMG — 500 RPM, 45 dmg           | `M249_T1` 700×30, 55 m |
-| Shotgun | Auto — 260 RPM, 9 dmg × 6 pellets    | Pump — 60 RPM, 18 dmg × 8 pellets      | `M870_T1` 60×12×8, 10 m |
+| Shotgun | Auto — 260 RPM, 9 dmg × 6 pellets    | Pump — 60 RPM, 18 dmg × 8 pellets      | 20 models in five series (see Shotgun); e.g. `Remington870_T1` 65×13×8, `AA12_T1` 300×9×7, `DoubleBarrel_T1` 300×16×10 (2 shells) |
 
 The Sniper band is where the **DMR row** in the category table above comes from.
 There is no separate DMR `WeaponType` — marksman rifles are the sniper D-Series
@@ -354,7 +361,7 @@ prototyping but should be filled in before shipping.
 
 Hand-authored Common-tier (Tier 1) assets live in
 `Assets/Project/Data/Weapons/Ranged/T1/` — one per model for the AR, SMG,
-pistol and sniper rosters, one per remaining category. They are the concrete example of what "Common feels like" and the
+pistol, sniper and shotgun rosters, one for the LMG. They are the concrete example of what "Common feels like" and the
 first thing to compare a new weapon against.
 
 | Asset             | Category    | Damage × RPM        | Ammo           | STK / TTK    | Notes                                        |
@@ -441,7 +448,26 @@ first thing to compare a new weapon against.
 | `DSR1_T1`             | Sniper · T-Series | 105 × 50 (bolt)     | HeavyRounds    | 1 / one shot | 150 m, 5 rds, draw 0.6s |
 | `JNG90_T1`            | Sniper · T-Series | 105 × 45 (bolt)     | HeavyRounds    | 1 / one shot | 170 m, 10 rds, draw 0.8s |
 | `M249_T1`         | LMG         | 30 × 700            | StandardRounds | 4 / 0.26s    | Best DPS, worst handling & 6.5s reload       |
-| `M870_T1`         | Shotgun     | 12 × 8 pellets × 60 | ShotgunShells  | 1 / 0.15s    | All-pellets-hit at ≤10m; drops to 2-shot past that |
+| `Remington870_T1`       | Shotgun · P-Series | 13 × 8 × 65 (pump)  | ShotgunShells  | 1 / one shot | 10 m, 6 shells, draw 0.6s, one shell per step |
+| `Mossberg590A1_T1`      | Shotgun · P-Series | 13 × 8 × 60 (pump)  | ShotgunShells  | 1 / one shot | 11 m, 9 shells, draw 0.7s, one shell per step |
+| `SPAS12_T1`             | Shotgun · P-Series | 14 × 8 × 60 (pump)  | ShotgunShells  | 1 / one shot | 10 m, 8 shells, draw 0.75s, one shell per step |
+| `UTS15_T1`              | Shotgun · P-Series | 12.5 × 8 × 65 (pump) | ShotgunShells  | 1 / one shot | 9 m, 15 shells, draw 0.65s, one shell per step |
+| `BenelliM4_T1`          | Shotgun · A-Series | 10 × 8 × 200 (semi) | ShotgunShells  | 2 / 0.30s    | 11 m, 7 shells, draw 0.65s, one shell per step |
+| `Beretta1301_T1`        | Shotgun · A-Series | 9.5 × 8 × 240 (semi) | ShotgunShells  | 2 / 0.25s    | 9 m, 5 shells, draw 0.55s, one shell per step |
+| `Mossberg940_T1`        | Shotgun · A-Series | 10 × 8 × 220 (semi) | ShotgunShells  | 2 / 0.27s    | 12 m, 10 shells, draw 0.7s, two shells per step |
+| `BerettaXtrema2_T1`     | Shotgun · A-Series | 12 × 8 × 170 (semi) | ShotgunShells  | 2 / 0.35s    | 13 m, 6 shells, draw 0.8s, one shell per step |
+| `AA12_T1`               | Shotgun · M-Series | 9 × 7 × 300 (auto)  | ShotgunShells  | 2 / 0.20s    | 9 m, 8 shells, draw 0.75s, magazine |
+| `USAS12_T1`             | Shotgun · M-Series | 11 × 7 × 240 (auto) | ShotgunShells  | 2 / 0.25s    | 10 m, 10 shells, draw 0.85s, magazine |
+| `Saiga12_T1`            | Shotgun · M-Series | 10.5 × 8 × 230 (semi) | ShotgunShells  | 2 / 0.26s    | 11 m, 8 shells, draw 0.7s, magazine, 2.6s reload |
+| `STF12_T1`              | Shotgun · M-Series | 9.5 × 8 × 250 (semi) | ShotgunShells  | 2 / 0.24s    | 10 m, 5 shells, draw 0.6s, magazine, 2.4s reload |
+| `KSG_T1`                | Shotgun · H-Series | 12.5 × 8 × 70 (pump) | ShotgunShells  | 1 / one shot | 10 m, 14 shells, draw 0.65s, one shell per step |
+| `TavorTS12_T1`          | Shotgun · H-Series | 9.5 × 8 × 210 (semi) | ShotgunShells  | 2 / 0.29s    | 10 m, 15 shells, draw 0.7s, one shell per step |
+| `Striker_T1`            | Shotgun · H-Series | 10 × 8 × 200 (semi) | ShotgunShells  | 2 / 0.30s    | 9 m, 12 shells, draw 0.85s, one shell per step |
+| `Neostead2000_T1`       | Shotgun · H-Series | 12.5 × 8 × 75 (pump) | ShotgunShells  | 1 / one shot | 11 m, 12 shells, draw 0.65s, one shell per step |
+| `DoubleBarrel_T1`       | Shotgun · C-Series | 16 × 10 × 300 (semi) | ShotgunShells  | 1 / one shot | 8 m, 2 shells (both barrels reload at once), draw 0.55s |
+| `BrowningSuperposed_T1`  | Shotgun · C-Series | 15 × 8 × 240 (semi) | ShotgunShells  | 1 / one shot | 15 m, 2 shells, tightest cone (2° ADS), draw 0.6s |
+| `Model1887_T1`          | Shotgun · C-Series | 15 × 8 × 75 (lever) | ShotgunShells  | 1 / one shot | 10 m, 5 shells, draw 0.7s, one shell per step |
+| `Model12_T1`            | Shotgun · C-Series | 13 × 8 × 90 (pump)  | ShotgunShells  | 1 / one shot | 9 m, 6 shells, draw 0.6s, one shell per step |
 
 Higher tiers (T2–T5) aren't authored yet — those variants come from the
 `WeaponGenerator` rolling `WeaponCategoryData` with a `StatRollProfile` and
