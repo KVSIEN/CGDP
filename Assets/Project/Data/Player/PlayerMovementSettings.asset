@@ -40,7 +40,6 @@ MonoBehaviour:
   SprintCost:
     Meter: {fileID: 0}
     Amount: 0
-  SlideSpeed: 10
   SlideBoost: 3
   SlideDeceleration: 3
   SlideMinSpeed: 1

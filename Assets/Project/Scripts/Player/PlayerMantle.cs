@@ -2,8 +2,11 @@ using UnityEngine;
 
 namespace CGD.Player
 {
+    // Pulls the player up onto a ledge when PlayerMovement asks (TryStart). Uses the
+    // movement's settings and camera, so the two can't be set up differently.
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(CapsuleCollider))]
+    [RequireComponent(typeof(PlayerMovement))]
     // Runs before PlayerMovement's default execution order so IsMantling reflects
     // this frame's transition before PlayerMovement checks it in the same FixedUpdate.
     [DefaultExecutionOrder(-100)]
@@ -15,15 +18,15 @@ namespace CGD.Player
         // Slack on top of the expected duration before a blocked mantle is abandoned.
         private const float TimeoutMultiplier = 2f;
 
-        [SerializeField] private PlayerMovementSettings _settings;
-        [SerializeField] private Transform _cameraTransform;
-
-        [SerializeField] private bool _isMantling;
+        private bool _isMantling;
 
         public bool IsMantling => _isMantling;
 
         private Rigidbody _rb;
         private CapsuleCollider _col;
+        private PlayerMovement _movement;
+
+        private PlayerMovementSettings Settings => _movement.Settings;
 
         private Vector3 _liftTarget;
         private Vector3 _target;
@@ -33,8 +36,19 @@ namespace CGD.Player
 
         private void Awake()
         {
-            _rb  = GetComponent<Rigidbody>();
-            _col = GetComponent<CapsuleCollider>();
+            _rb       = GetComponent<Rigidbody>();
+            _col      = GetComponent<CapsuleCollider>();
+            _movement = GetComponent<PlayerMovement>();
+        }
+
+        private void OnDisable() => Cancel();
+
+        // Stops a mantle where it is and gives the body back to physics.
+        public void Cancel()
+        {
+            if (!_isMantling) return;
+            _isMantling     = false;
+            _rb.isKinematic = false;
         }
 
         private void FixedUpdate()
@@ -68,16 +82,16 @@ namespace CGD.Player
         {
             if (_isMantling) return false;
 
-            Vector3 forward = Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
+            Vector3 forward = Vector3.ProjectOnPlane(_movement.CameraTransform.forward, Vector3.up).normalized;
             if (!TryFindLedge(forward, out Vector3 wallPoint, out float ledgeY)) return false;
 
             float height = ledgeY - _rb.position.y;
-            if (height < _settings.MantleMinHeight || height > _settings.MantleMaxHeight) return false;
+            if (height < Settings.MantleMinHeight || height > Settings.MantleMaxHeight) return false;
 
             Vector3 target = new Vector3(
-                wallPoint.x + forward.x * _settings.MantleStepOver,
+                wallPoint.x + forward.x * Settings.MantleStepOver,
                 ledgeY,
-                wallPoint.z + forward.z * _settings.MantleStepOver);
+                wallPoint.z + forward.z * Settings.MantleStepOver);
             if (!HasStandingRoom(target)) return false;
 
             Begin(target, height);
@@ -93,18 +107,18 @@ namespace CGD.Player
             // the player is at ground level or has already risen near the ledge top.
             Vector3 origin    = _rb.position;
             Vector3 sweepBase = origin + Vector3.up * (_col.radius + 0.05f);
-            Vector3 sweepTop  = origin + Vector3.up * _settings.MantleMaxHeight;
+            Vector3 sweepTop  = origin + Vector3.up * Settings.MantleMaxHeight;
             if (!Physics.CapsuleCast(sweepBase, sweepTop, _col.radius * 0.4f, forward,
-                    out RaycastHit wallHit, _settings.MantleReach, _settings.GroundMask, QueryTriggerInteraction.Ignore))
+                    out RaycastHit wallHit, Settings.MantleReach, Settings.GroundMask, QueryTriggerInteraction.Ignore))
                 return false;
 
             // Cast down from just above the max height, slightly past the wall face, to find the ledge top.
             Vector3 castFrom = new Vector3(
                 wallHit.point.x + forward.x * 0.05f,
-                origin.y + _settings.MantleMaxHeight + 0.2f,
+                origin.y + Settings.MantleMaxHeight + 0.2f,
                 wallHit.point.z + forward.z * 0.05f);
             if (!Physics.Raycast(castFrom, Vector3.down, out RaycastHit ledgeHit,
-                    _settings.MantleMaxHeight + 0.5f, _settings.GroundMask, QueryTriggerInteraction.Ignore))
+                    Settings.MantleMaxHeight + 0.5f, Settings.GroundMask, QueryTriggerInteraction.Ignore))
                 return false;
 
             wallPoint = wallHit.point;
@@ -117,7 +131,7 @@ namespace CGD.Player
             float radius = _col.radius * 0.95f;
             Vector3 bottom = feet + Vector3.up * (radius + 0.05f);
             Vector3 top    = feet + Vector3.up * Mathf.Max(_col.height - radius, radius + 0.05f);
-            return !Physics.CheckCapsule(bottom, top, radius, _settings.GroundMask, QueryTriggerInteraction.Ignore);
+            return !Physics.CheckCapsule(bottom, top, radius, Settings.GroundMask, QueryTriggerInteraction.Ignore);
         }
 
         // Phase 1 lifts straight up alongside the wall to ledge height, phase 2 steps forward
@@ -150,8 +164,8 @@ namespace CGD.Player
 
         private float GetSpeed(float height)
         {
-            float t = Mathf.InverseLerp(_settings.MantleMinHeight, _settings.MantleMaxHeight, height);
-            return Mathf.Max(0.01f, _settings.MantleSpeed * _settings.MantleSpeedByHeight.Evaluate(t));
+            float t = Mathf.InverseLerp(Settings.MantleMinHeight, Settings.MantleMaxHeight, height);
+            return Mathf.Max(0.01f, Settings.MantleSpeed * Settings.MantleSpeedByHeight.Evaluate(t));
         }
     }
 }

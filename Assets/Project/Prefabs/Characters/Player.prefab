@@ -1062,9 +1062,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0869236ea4ad29c409611db52cc744ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMantle
-  _settings: {fileID: 11400000, guid: e79043a5d9ffa4646a759591456b06a1, type: 2}
-  _cameraTransform: {fileID: 614517631974507758}
-  _isMantling: 0
 --- !u!114 &4721531165369670618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1134,7 +1131,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 331f0a11fada26140b82420a7152cf8a, type: 2}
   - {fileID: 11400000, guid: 358d9c68c5a3be5408a85fd86356a1f7, type: 2}
   _health: {fileID: 5598995267719665189}
-  _cameraTransform: {fileID: 614517631974507758}
 --- !u!114 &8233850651781648286
 MonoBehaviour:
   m_ObjectHideFlags: 0

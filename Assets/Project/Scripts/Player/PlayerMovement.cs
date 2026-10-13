@@ -7,10 +7,16 @@ using CGD.Stats;
 
 namespace CGD.Player
 {
+    // Owns the player's Rigidbody and movement settings: walking, sprinting, crouch and
+    // slide, jumping and gravity. The dodge (PlayerDodge) and mantle (PlayerMantle) are
+    // exclusive motions layered on top: while either drives the body this stands aside,
+    // and both are cancelled whenever movement stops (death) or the player is teleported.
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(CapsuleCollider))]
     [RequireComponent(typeof(PlayerInputHandler))]
     [RequireComponent(typeof(Stunnable))]
+    [RequireComponent(typeof(PlayerDodge))]
+    [RequireComponent(typeof(PlayerMantle))]
     public class PlayerMovement : MonoBehaviour
     {
         private const float MantleForwardInputThreshold = 0.5f;
@@ -39,7 +45,9 @@ namespace CGD.Player
         public bool IsStunned => _stunnable.IsStunned;
 
         public Vector3 MoveDirection   => _moveDirection;
+        // The view the player moves relative to; shared with the mantle and abilities.
         public Transform CameraTransform => _cameraTransform;
+        public PlayerMovementSettings Settings => _settings;
 
         private Rigidbody _rb;
         private CapsuleCollider _col;
@@ -58,6 +66,7 @@ namespace CGD.Player
         private Vector3 _slideDirection;
         private Vector3 _moveDirection;
         private Rigidbody _groundRb;
+        private PhysicsMaterial _noFriction;
 
         // MovementSpeed from gear and buffs, on a base of 1 (+0.08 = 8% faster).
         private float SpeedMultiplier => _stats != null ? Mathf.Max(0.1f, _stats.Apply(ItemStat.MovementSpeed, 1f)) : 1f;
@@ -73,13 +82,12 @@ namespace CGD.Player
             _stats     = GetComponentInParent<CharacterStats>();
             TryGetComponent(out _meters);
 
-            _rb.useGravity = false;
             _rb.freezeRotation = true;
             _rb.interpolation = RigidbodyInterpolation.Interpolate;
             _rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
             // Prevents wall contact from dampening vertical velocity.
-            _col.material = new PhysicsMaterial("PlayerNoFriction")
+            _col.material = _noFriction = new PhysicsMaterial("PlayerNoFriction")
             {
                 staticFriction  = 0f,
                 dynamicFriction = 0f,
@@ -89,6 +97,33 @@ namespace CGD.Player
             };
 
             SetColliderHeight(_settings.StandHeight);
+        }
+
+        // While this drives the body, gravity is its own (per-state scales). Disabled — the
+        // player is dead, or a cutscene has control — the dodge and mantle stop with it and
+        // the body drops under ordinary gravity rather than hanging where it was.
+        private void OnEnable() => _rb.useGravity = false;
+
+        private void OnDisable()
+        {
+            StopExclusiveMotion();
+            _rb.useGravity     = true;
+            _rb.linearVelocity = new Vector3(0f, Mathf.Min(0f, _rb.linearVelocity.y), 0f);
+            _isSprinting = false;
+            _isSliding   = false;
+        }
+
+        private void OnDestroy()
+        {
+            if (_noFriction != null) Destroy(_noFriction);
+        }
+
+        private void StopExclusiveMotion()
+        {
+            _dodge.Cancel();
+            _mantle.Cancel();
+            _mantleBufferTimer = 0f;
+            _jumpBufferTimer   = 0f;
         }
 
         private void Update()
@@ -278,11 +313,11 @@ namespace CGD.Player
         private void TryClimbStep()
         {
             Vector3 lower = transform.position + Vector3.up * 0.05f;
-            if (!Physics.Raycast(lower, _moveDirection, _settings.StepCheckDistance, _settings.GroundMask))
+            if (!Physics.Raycast(lower, _moveDirection, _settings.StepCheckDistance, _settings.GroundMask, QueryTriggerInteraction.Ignore))
                 return;
 
             Vector3 upper = transform.position + Vector3.up * (_settings.MaxStepHeight + 0.05f);
-            if (Physics.Raycast(upper, _moveDirection, _settings.StepCheckDistance, _settings.GroundMask))
+            if (Physics.Raycast(upper, _moveDirection, _settings.StepCheckDistance, _settings.GroundMask, QueryTriggerInteraction.Ignore))
                 return;
 
             _rb.position = Vector3.MoveTowards(_rb.position,
@@ -373,9 +408,11 @@ namespace CGD.Player
 
         public void AddImpulse(Vector3 force) => _rb.AddForce(force, ForceMode.Impulse);
 
-        // Moves the player instantly and clears any carried momentum (e.g. on respawn).
+        // Moves the player instantly and clears any carried momentum (e.g. on respawn). A
+        // dodge or mantle in progress ends, so neither carries on from the old position.
         public void Teleport(Vector3 position)
         {
+            StopExclusiveMotion();
             _rb.position        = position;
             transform.position  = position;
             _rb.linearVelocity  = Vector3.zero;

@@ -9,9 +9,12 @@ namespace CGD.Player
     // Performs the player's dodge as described by a DodgeDefinition (sidestep into roll,
     // committed roll, steerable boost, long dash…). DodgeMotion runs the stages; this
     // component reads input, starts dodges when allowed, applies their velocity and
-    // i-frames, and cancels them when the player is stunned or mantles.
+    // i-frames, and cancels them when the player is stunned, mantles or loses movement
+    // altogether (death). PlayerMovement owns the body; this only overrides its velocity
+    // while a stage moves the player.
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(PlayerInputHandler))]
+    [RequireComponent(typeof(PlayerMovement))]
     // Runs after PlayerMovement so the dodge velocity overrides whatever movement set this step.
     [DefaultExecutionOrder(100)]
     public class PlayerDodge : MonoBehaviour
@@ -52,7 +55,7 @@ namespace CGD.Player
             get => _definition;
             set
             {
-                _motion.Cancel();
+                Cancel();
                 _definition = value;
             }
         }
@@ -81,9 +84,13 @@ namespace CGD.Player
             };
         }
 
-        private void OnDisable()
+        private void OnDisable() => Cancel();
+
+        // Ends a dodge in progress (and its i-frames) and drops a buffered press.
+        public void Cancel()
         {
             _motion.Cancel();
+            _buffered = 0f;
             SetInvulnerable(false);
         }
 
@@ -113,17 +120,16 @@ namespace CGD.Player
         private void FixedUpdate()
         {
             float dt = Time.fixedDeltaTime;
+            // The cooldown runs on through stuns and mantles; only the dodge itself stops.
+            _cooldown.Tick(dt);
             if (_movement.IsGrounded) _airDodgesUsed = 0;
 
-            if (_movement.IsMantling || _movement.IsStunned)
+            if (!CanMove)
             {
-                _motion.Cancel();
-                _buffered = 0f;
-                SetInvulnerable(false);
+                if (_motion.IsActive || _buffered > 0f) Cancel();
                 return;
             }
 
-            _cooldown.Tick(dt);
             if (_buffered > 0f)
             {
                 _buffered = TryStartDodge() ? 0f : _buffered - dt;
@@ -160,10 +166,12 @@ namespace CGD.Player
             return true;
         }
 
+        // Movement is running and not stunned or mantling.
+        private bool CanMove => _movement.isActiveAndEnabled && !_movement.IsMantling && !_movement.IsStunned;
+
         private bool CanStart(DodgeDefinition move)
         {
-            if (move == null || move.Stages.Count == 0 || _motion.IsActive) return false;
-            if (_movement.IsMantling || _movement.IsStunned) return false;
+            if (move == null || move.Stages.Count == 0 || _motion.IsActive || !CanMove) return false;
             return _movement.IsGrounded || _airDodgesUsed < move.AirDodges;
         }
 

@@ -20,6 +20,7 @@
 - A dodge pressed just before it's ready (end of cooldown, landing) still comes out
 - Being stunned or starting a mantle cancels a dodge
 - The HUD dodge indicator names the current move (STEP, ROLL, BOOST, DASH), turns green while committed and refills during the cooldown
+- A stun or a mantle stops a dodge but not its cooldown, which keeps refilling
 - Optional stamina — sprinting can drain a stamina meter and stop when it runs out, and dodges can cost stamina; once emptied, stamina has to recover past a threshold before it can be used again (off unless a stamina cost is set)
 - Slide — press crouch while sprinting to slide; launches at a configurable speed then decelerates smoothly; exits when speed drops below a threshold, the timer runs out, crouch is released, or the player leaves the ground
 - Mantle — hold forward (W) and press Jump facing a ledge to pull up onto it, from the ground or mid-jump (a jump that rises to a ledge still catches it for a moment); only ledges between a minimum and maximum height can be mantled — lower obstacles are simply jumped over, and there must be room to stand on top; the pull-up speed scales with ledge height (low ledges are quick, tall ones slower, tunable per height); works identically in first-person and third-person
@@ -521,7 +522,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - Each SoundBank follows one of the settings menu's volume sliders (Effects, Music or Interface), on top of Master
 
 ## Death & Respawn
-- When health reaches zero the player loses control, the HUD hides, and a death screen is shown
+- When health reaches zero the player loses control, the HUD hides, and a death screen is shown. A dodge or ledge climb in progress stops (its invulnerability with it), and a player killed in mid-air falls to the ground rather than hanging there
 - Player automatically respawns after a short delay, returning to the designated spawn point
 - On respawn, health is restored and every carried weapon's magazine is refilled; reserve ammo in the shared inventory pool is not touched. Where a scene ends the run on death instead (the generated levels), everything carried is lost — see Expeditions. Ability cooldowns reset, and leftover momentum and status effects are cleared
 

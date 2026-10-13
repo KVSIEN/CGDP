@@ -45,7 +45,6 @@ namespace CGD.Player
         public MeterCost SprintCost;
 
         [Header("Slide")]
-        public float SlideSpeed = 11f;
         [Tooltip("Extra speed added on top of sprint speed when a slide starts")]
         public float SlideBoost = 3f;
         public float SlideDeceleration = 6f;

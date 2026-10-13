@@ -18,19 +18,14 @@ namespace CGD.Abilities
 
         private readonly TargetSet _targets = new();
 
-        public override bool CanExecute(AbilityContext ctx)
-        {
-            if (Timeline == null) return false;
-            var runner = ctx.PlayerTransform.GetComponent<TimelineAbilityRunner>();
-            return runner != null && !runner.IsPlaying;
-        }
+        public override bool CanExecute(AbilityContext ctx) =>
+            Timeline != null && ctx.Timeline != null && !ctx.Timeline.IsPlaying;
 
         public override void Execute(AbilityContext ctx)
         {
-            var runner = ctx.PlayerTransform.GetComponent<TimelineAbilityRunner>();
-            if (runner == null) return;
+            if (ctx.Timeline == null) return;
 
-            runner.Play(Timeline, ctx, SelectTargetPoint(ctx));
+            ctx.Timeline.Play(Timeline, ctx, SelectTargetPoint(ctx));
 
             if (NoiseRadius > 0f)
                 Noise.Emit(ctx.PlayerTransform.position, NoiseRadius, ctx.Source);

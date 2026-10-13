@@ -4,6 +4,10 @@ using UnityEngine.InputSystem;
 
 namespace CGD.Input
 {
+    // Samples every player action once per frame, before anything reads it: movement,
+    // dodge, abilities, weapons and the camera all see the same frame's input, whatever
+    // order Unity runs their Updates in.
+    [DefaultExecutionOrder(-1000)]
     public class PlayerInputHandler : MonoBehaviour
     {
         [SerializeField] private InputBindingSettings _bindings;
@@ -109,10 +113,13 @@ namespace CGD.Input
             action.AddBinding(string.IsNullOrEmpty(path) ? null : path);
         }
 
+        // Mirrors OnDisable: every action comes back, not just the axes.
         private void OnEnable()
         {
             _moveAction?.Enable();
             _lookAction?.Enable();
+            if (_actions == null) return;
+            foreach (var a in _actions) a?.Enable();
         }
 
         private void OnDisable()

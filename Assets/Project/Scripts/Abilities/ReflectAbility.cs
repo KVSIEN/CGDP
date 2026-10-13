@@ -10,13 +10,11 @@ namespace CGD.Abilities
     {
         public ReflectProfile Profile;
 
-        public override bool CanExecute(AbilityContext ctx) =>
-            Profile != null && ctx.PlayerTransform.TryGetComponent(out Reflector _);
+        public override bool CanExecute(AbilityContext ctx) => Profile != null && ctx.Reflector != null;
 
         public override void Execute(AbilityContext ctx)
         {
-            if (ctx.PlayerTransform.TryGetComponent(out Reflector reflector))
-                reflector.Open(Profile);
+            if (ctx.Reflector != null) ctx.Reflector.Open(Profile);
         }
     }
 }

@@ -88,9 +88,9 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 | Component | Assign |
 |---|---|
 | **PlayerInputHandler** | `_bindings` = `Input/InputBindingSettings` |
-| **PlayerMovement** | `_settings` = `Player/PlayerMovementSettings`, `_cameraTransform` = Main Camera, `_playerMesh` = Player Body |
+| **PlayerMovement** | `_settings` = `Player/PlayerMovementSettings`, `_cameraTransform` = Main Camera, `_playerMesh` = Player Body · owns the body and its settings: PlayerMantle and PlayerAbilities use its settings and camera, so they have none of their own to assign; needs PlayerDodge and PlayerMantle (added automatically) |
 | **PlayerDodge** | `_definition` = a dodge from `Player/Dodges/` (default `SidestepRollDodge`), `_doubleTapCrouch` (also dodge by double-tapping Crouch while moving) |
-| **PlayerMantle** | `_settings` = same `PlayerMovementSettings`, `_cameraTransform` = Main Camera |
+| **PlayerMantle** | nothing — uses PlayerMovement's settings and camera |
 | **PlayerCamera** (Main Camera) | `_input`, `_movement` = Player · `_playerBody` = Player Body · `_headAnchor` = Head Anchor · `_settings` = `Player/PlayerCameraSettings` · `_camera` = its own Camera · `_firstPersonHideRenderers` = Player Body renderers |
 
 ### Combat
@@ -104,7 +104,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 | **PlayerOffhand** (Player) | `_camera` = PlayerCamera | Runs the active slot's offhand: hands it to the MeleeController and, for an artifact, applies its stats and runs its aim-input use. Needs `PlayerWeaponLoadout` (which stores the offhands) and `PlayerInputHandler` on the same object; reads `MeleeController` (hands it the offhand), `PlayerAbilities` (a tome casts through its context and events — without it spells can't be cast), `Reflector` (a ward — without it wards can't be raised), `MeterSet` (costs and drains), `CombatActions` (Surge charging), `HealthManager` (revive resets cooldowns), `PlayerMovement`/`PlayerDodge` (can-act checks) and `CharacterStats` (main-hand penalty, artifact stats) from the same object or a parent. It sets `PlayerCamera.AimTakenByOffhand`. |
 | **MeleeController** | `_camera` = PlayerCamera, `_data` = `Weapons/Melee/DefaultMeleeWeaponData` (fists), `_meleeParryRange` (4 m: parries beyond it are deflected shots), `_rangedParryReflect` = `Combat/Reflect/DeflectReflect` (needs the Reflector) | Quick melee (the Melee key bashes with the gun's `QuickMelee`, a Tactical Knife perk's knife, the melee weapon's guard bash, or fists) and the equipped melee weapon. `PlayerWeaponLoadout` hands it every weapon put in hand, guns included. Must be on the **same object as PlayerHealth**: it parries (bash) and blocks (guard) hits as an `IDamageInterceptor`, which HealthManager only looks for on its own object. Stamina costs need a `MeterSet` with the category's stamina meter on that object too (without one, melee is free). Combo weaving reads `PlayerDodge` and `PlayerAbilities` from the same object (each optional). |
 | **ThrowableController** | `_camera` = PlayerCamera | Throws the grenade an item slot readies. Grenades are items (`Items/Throwables/`). |
-| **PlayerAbilities** | `_health` = PlayerHealth, `_cameraTransform` = Main Camera, `_slots` = up to 4 ability assets | |
+| **PlayerAbilities** | `_health` = PlayerHealth, `_slots` = up to 4 ability assets | Aims with PlayerMovement's camera. Abilities act through the player's own components, found once: Dash needs PlayerDodge, Timeline abilities a TimelineAbilityRunner, Reflect a Reflector, Stealth a Stealthable, Stat Buff CharacterStats. |
 | **TimelineAbilityRunner**? | — | Needed for `TimelineAbility` assets. |
 | **WeaponVisuals** (WeaponRig) | — | Kick and sway are tuned on the component and the `WeaponData`. |
 | **WeaponAimPose** (Weapon) | `_camera` = PlayerCamera | Scene pose = hip pose. Set `_adsPosition`/`_adsRotation` for aiming. |
@@ -585,7 +585,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | Folder | Assets | Used by |
 |---|---|---|
 | `Input/` | `InputBindingSettings` (shared) | PlayerInputHandler, SettingsMenu |
-| `Player/` | `PlayerMovementSettings` (shared) | PlayerMovement, PlayerDodge, PlayerMantle |
+| `Player/` | `PlayerMovementSettings` | PlayerMovement (PlayerMantle reads it from there) |
 | `Player/` | `PlayerCameraSettings` | PlayerCamera |
 | `Player/Dodges/` | `SidestepRoll`, `CommittedRoll`, `SteerableBoost`, `LongDash`, `AirDash`, `AbilityDash` (`…Dodge`; the last is the Dash ability's `Move`) — stages with speed, curve, steering, i-frames, commitment, follow-up press, cooldown | PlayerDodge, DevCatalog |
 | `UI/` | `CrosshairSettings` | CrosshairHUD |

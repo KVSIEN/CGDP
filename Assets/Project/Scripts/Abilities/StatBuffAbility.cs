@@ -12,13 +12,11 @@ namespace CGD.Abilities
         [Tooltip("Game seconds; pauses and slows with game time")]
         [Min(0.1f)] public float Duration = 8f;
 
-        public override bool CanExecute(AbilityContext ctx) =>
-            Buff != null && ctx.PlayerTransform.TryGetComponent(out CharacterStats _);
+        public override bool CanExecute(AbilityContext ctx) => Buff != null && ctx.Stats != null;
 
         public override void Execute(AbilityContext ctx)
         {
-            if (ctx.PlayerTransform.TryGetComponent(out CharacterStats stats))
-                stats.AddTimed(Buff, Duration);
+            if (ctx.Stats != null) ctx.Stats.AddTimed(Buff, Duration);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
@@ -7,6 +8,7 @@ using CGD.Player;
 using CGD.Settings;
 using CGD.Items;
 using CGD.Stats;
+using CGD.Stealth;
 
 namespace CGD.Abilities
 {
@@ -18,12 +20,13 @@ namespace CGD.Abilities
     // Surge abilities (uncommon) each have their own gauge, filled by the player's combat
     // actions and draining per the ability's settings: it can pay a Surge cost, be spent in
     // bulk for a stronger cast (scaling), or turn into a charge each time it fills.
+    // Aims with PlayerMovement's camera, and only acts while movement can (CanAct).
     [RequireComponent(typeof(PlayerInputHandler))]
+    [RequireComponent(typeof(PlayerMovement))]
     public class PlayerAbilities : MonoBehaviour
     {
         [SerializeField] private Ability[] _slots = new Ability[4];
         [SerializeField] private PlayerHealth _health;
-        [SerializeField] private Transform _cameraTransform;
 
         // Raised when an ability fires, e.g. so a melee combo can be held open across it.
         public event System.Action<Ability> AbilityUsed;
@@ -31,8 +34,8 @@ namespace CGD.Abilities
         // The hands are busy from here, so a reload in progress is cut off.
         public event System.Action<Ability> AbilityStarted;
 
-        // Read by AbilityHUD
-        public Ability[] Slots => _slots;
+        // Read by AbilityHUD. Read-only: each slot's charges live alongside it.
+        public IReadOnlyList<Ability> Slots => _slots;
         // What an ability executes with: the artifacts held in the offhand cast through the same one.
         public AbilityContext Context => _ctx;
         public int  CastingSlot => _castingSlot;
@@ -79,13 +82,22 @@ namespace CGD.Abilities
                 PlayerTransform  = transform,
                 PlayerRigidbody  = GetComponent<Rigidbody>(),
                 PlayerCollider   = GetComponent<Collider>(),
-                CameraTransform  = _cameraTransform,
+                CameraTransform  = _movement.CameraTransform,
                 Health           = _health,
                 Source           = DamageSource.Of(gameObject),
+                Movement         = _movement,
+                Dodge            = Optional<PlayerDodge>(),
+                Timeline         = Optional<TimelineAbilityRunner>(),
+                Stats            = _stats,
+                Reflector        = Optional<Reflector>(),
+                Stealth          = Optional<Stealthable>(),
             };
 
             if (_health != null) _health.OnRevived += RefillCharges;
         }
+
+        // A component abilities may act through; null when the player doesn't have it.
+        private T Optional<T>() where T : Component => TryGetComponent(out T component) ? component : null;
 
         private void OnDestroy()
         {

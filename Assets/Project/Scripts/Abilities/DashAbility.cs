@@ -12,13 +12,11 @@ namespace CGD.Abilities
         [Tooltip("The move performed. Its stage cooldowns and cost are ignored")]
         public DodgeDefinition Move;
 
-        public override bool CanExecute(AbilityContext ctx) =>
-            ctx.PlayerTransform.TryGetComponent(out PlayerDodge dodge) && dodge.CanPerform(Move);
+        public override bool CanExecute(AbilityContext ctx) => ctx.Dodge != null && ctx.Dodge.CanPerform(Move);
 
         public override void Execute(AbilityContext ctx)
         {
-            if (ctx.PlayerTransform.TryGetComponent(out PlayerDodge dodge))
-                dodge.TryPerform(Move);
+            if (ctx.Dodge != null) ctx.Dodge.TryPerform(Move);
         }
     }
 }

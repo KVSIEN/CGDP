@@ -1,5 +1,4 @@
 using UnityEngine;
-using CGD.Stealth;
 
 namespace CGD.Abilities
 {
@@ -12,13 +11,11 @@ namespace CGD.Abilities
         [Tooltip("Attacking or making noise ends the cloak early")]
         public bool BreaksOnAttack = true;
 
-        public override bool CanExecute(AbilityContext ctx) =>
-            ctx.PlayerTransform.TryGetComponent(out Stealthable stealth) && !stealth.IsCloaked;
+        public override bool CanExecute(AbilityContext ctx) => ctx.Stealth != null && !ctx.Stealth.IsCloaked;
 
         public override void Execute(AbilityContext ctx)
         {
-            if (ctx.PlayerTransform.TryGetComponent(out Stealthable stealth))
-                stealth.Cloak(Duration, BreaksOnAttack);
+            if (ctx.Stealth != null) ctx.Stealth.Cloak(Duration, BreaksOnAttack);
         }
     }
 }
