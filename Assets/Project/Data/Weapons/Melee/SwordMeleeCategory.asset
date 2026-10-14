@@ -25,8 +25,8 @@ MonoBehaviour:
   _oneHanded: 1
   Type: 1
   Names:
-  - Arming Sword
-  - Broadsword
+  - Shortsword
+  - Bastard Sword
   - Rapier
   - Sabre
   - Katana
@@ -38,25 +38,25 @@ MonoBehaviour:
   - Zweihänder
   - Nodachi
   Models:
-  - Name: Arming Sword
+  - Name: Shortsword
     Weight: 1
     Scales:
       Damage: 1
-      AttackSpeed: 1
-      Reach: 1
-      ArmorPenetration: 1
-      StaminaCost: 1
+      AttackSpeed: 1.05
+      Reach: 0.92
+      ArmorPenetration: 1.1
+      StaminaCost: 0.95
       BlockDamage: 1
       ParryWindow: 1
     Grip: 0
-  - Name: Broadsword
+  - Name: Bastard Sword
     Weight: 1
     Scales:
-      Damage: 1.1
-      AttackSpeed: 0.92
-      Reach: 1
-      ArmorPenetration: 0.8
-      StaminaCost: 1.1
+      Damage: 1.15
+      AttackSpeed: 0.9
+      Reach: 1.1
+      ArmorPenetration: 1.1
+      StaminaCost: 1.15
       BlockDamage: 0.85
       ParryWindow: 0.9
     Grip: 0

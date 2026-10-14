@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 972769c7c18bee9459e105b50ca2349b, type: 3}
-  m_Name: ArmingSword_T1
+  m_Name: BastardSword_T1
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.MeleeWeaponData
-  WeaponName: Arming Sword
+  WeaponName: Bastard Sword
   OneHanded: 1
   LightCombo:
   - Timeline: {fileID: 0}
-    Damage: 27
-    ArmorPenetration: 0.075
+    Damage: 31.05
+    ArmorPenetration: 0.083
     DamageType: 0
     CriticalMultiplier: 1.5
     WindupTime: 0.1
@@ -25,7 +25,7 @@ MonoBehaviour:
     RecoveryTime: 0.24
     CancelFrom: 0.4
     HitShape: 1
-    Range: 1.995
+    Range: 2.195
     Radius: 0.4
     SweepArcDeg: 100
     SweepRays: 5
@@ -34,8 +34,8 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   - Timeline: {fileID: 0}
-    Damage: 28.35
-    ArmorPenetration: 0.075
+    Damage: 32.602
+    ArmorPenetration: 0.083
     DamageType: 0
     CriticalMultiplier: 1.5
     WindupTime: 0.1
@@ -43,7 +43,7 @@ MonoBehaviour:
     RecoveryTime: 0.24
     CancelFrom: 0.4
     HitShape: 1
-    Range: 1.995
+    Range: 2.195
     Radius: 0.4
     SweepArcDeg: 100
     SweepRays: 5
@@ -52,8 +52,8 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   - Timeline: {fileID: 0}
-    Damage: 37.8
-    ArmorPenetration: 0.075
+    Damage: 43.47
+    ArmorPenetration: 0.083
     DamageType: 0
     CriticalMultiplier: 1.5
     WindupTime: 0.14
@@ -61,7 +61,7 @@ MonoBehaviour:
     RecoveryTime: 0.34
     CancelFrom: 0.75
     HitShape: 0
-    Range: 2.31
+    Range: 2.541
     Radius: 0.4
     SweepArcDeg: 90
     SweepRays: 5
@@ -71,8 +71,8 @@ MonoBehaviour:
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
     Timeline: {fileID: 0}
-    Damage: 64.8
-    ArmorPenetration: 0.075
+    Damage: 74.52
+    ArmorPenetration: 0.083
     DamageType: 0
     CriticalMultiplier: 1.5
     WindupTime: 0.3
@@ -80,7 +80,7 @@ MonoBehaviour:
     RecoveryTime: 0.45
     CancelFrom: 0.75
     HitShape: 1
-    Range: 2.205
+    Range: 2.426
     Radius: 0.45
     SweepArcDeg: 140
     SweepRays: 5
@@ -90,8 +90,8 @@ MonoBehaviour:
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   Bash:
     Timeline: {fileID: 0}
-    Damage: 13.5
-    ArmorPenetration: 0.075
+    Damage: 15.525
+    ArmorPenetration: 0.083
     DamageType: 0
     CriticalMultiplier: 1.5
     WindupTime: 0.04
@@ -99,7 +99,7 @@ MonoBehaviour:
     RecoveryTime: 0.35
     CancelFrom: 1
     HitShape: 0
-    Range: 1.68
+    Range: 1.848
     Radius: 0.5
     SweepArcDeg: 90
     SweepRays: 5
@@ -114,16 +114,16 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   NoiseRadius: 8
-  AttackSpeed: 1.1
+  AttackSpeed: 0.99
   StaminaCost:
     Meter: {fileID: 11400000, guid: e97086cb23b549a9b402e8130ab73a15, type: 2}
-    Amount: 10
+    Amount: 11.5
   HeavyStaminaMultiplier: 2
   CanGuard: 1
   Guard:
-    BlockDamageMultiplier: 0.3
+    BlockDamageMultiplier: 0.255
     StaminaPerDamage: 0.5
     ArcDeg: 120
-    ParryWindow: 0.2
+    ParryWindow: 0.18
     ParryStun: 1.2
   ParryReflect: {fileID: 11400000, guid: adda6cbf460d4c6e8d4b03b035b0b513, type: 2}

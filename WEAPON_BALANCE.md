@@ -210,12 +210,12 @@ lowering base damage.
   - Crossbows lean on `Reload` (spanning time; full and tactical reload alike) and `ProjectileSpeed`. Armour penetration stays the category's (25–50%). Scales are built against the crossbow midpoints (120 dmg, 165 RPM, 60 m, 1.75° hip spread, 100 m/s, 2.3 s reload).
 
 ### Melee: Sword
-- **Models** (`Models` on `SwordMeleeCategory`, all equal weight, three series of four, so each series is a third). Scales are built against the sword midpoints (27 dmg per 1× step, 1.1 attack speed, 1.05 reach, 7.5% armour penetration, 10 stamina per swing, 30% of a blocked hit through, 0.2 s parry window). Damage × speed stays within about ±15% of the Arming Sword; two-handers buy reach and a sturdier block with the shield slot, slower swings and more stamina.
+- **Models** (`Models` on `SwordMeleeCategory`, all equal weight, three series of four, so each series is a third). Scales are built against the sword midpoints (27 dmg per 1× step, 1.1 attack speed, 1.05 reach, 7.5% armour penetration, 10 stamina per swing, 30% of a blocked hit through, 0.2 s parry window). Damage × speed stays within about ±15% of the sword midpoints (27 × 1.1); two-handers buy reach and a sturdier block with the shield slot, slower swings and more stamina.
 
 | Model | Series | Grip | Damage | Speed | Reach | Pen | Stamina | Block (through) | Parry |
 |---|---|---|---|---|---|---|---|---|---|
-| Arming Sword | Arming | 1H | 27 | 1.10 | 1.05 | 7.5% | 10 | 30% | 0.20 s |
-| Broadsword | Arming | 1H | 29.7 | 1.01 | 1.05 | 6% | 11 | 25.5% | 0.18 s |
+| Shortsword | Arming | 1H | 27 | 1.16 | 0.97 | 8.3% | 9.5 | 30% | 0.20 s |
+| Bastard Sword | Arming | 1H | 31 | 0.99 | 1.16 | 8.3% | 11.5 | 25.5% | 0.18 s |
 | Rapier | Arming | 1H | 23.8 | 1.21 | 1.18 | 11.2% | 8.5 | 34.5% | 0.27 s |
 | Sabre | Arming | 1H | 24.3 | 1.23 | 1.05 | 6% | 9 | 31.5% | 0.25 s |
 | Katana | Curved | 1H | 27 | 1.19 | 1.07 | 5.2% | 10 | 33% | 0.24 s |
