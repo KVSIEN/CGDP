@@ -100,6 +100,15 @@ MonoBehaviour:
       Bias: 0
     Weight: 1
   - Kind: 0
+    Item: {fileID: 11400000, guid: 0f0e11a913ee49cc8e076206cd5c6d68, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 1
+  - Kind: 0
     Item: {fileID: 11400000, guid: c29bb0ebf8cb4741bc2539d0a7d123b4, type: 2}
     Table: {fileID: 0}
     Prefab: {fileID: 0}

@@ -356,7 +356,7 @@
 - When a MeleeAttackStep has an ActionTimeline assigned, the Active phase is driven by the timeline system instead of the legacy hit resolver — the timeline controls what shapes fire on which frames, while Windup and Recovery remain time-based
 
 ### Melee Weapons
-- Melee weapons roll like guns (quality, tier, seed → the same weapon every time): **Daggers**, **Axes**, **Hammers** and **Spears** as broad types, and **Swords** as twelve weapons of their own (below)
+- Melee weapons roll like guns (quality, tier, seed → the same weapon every time): **Daggers**, **Axes**, **Hammers** and **Spears** as broad types, and **Swords** as thirteen weapons of their own (below)
 - Found like guns: as (rarer) loot drops, and on the Gunsmith's shelf (arming swords, axes and daggers)
 - With a melee weapon in the active slot, **Attack** (left mouse) swings it: tap for the light combo, hold for the heavy attack. No ammo, reload or recoil
 - Each type or weapon has its own combo and feel:
@@ -364,7 +364,7 @@
   - **Axe** — slower chop into an overhead slam, bites through armour
   - **Hammer** — slow area slams that crush armour; the sturdiest block, the tightest parry
   - **Spear** — long-reach thrusts and a wide sweep; a narrow guard
-- **Swords** are twelve weapons of their own, each with its own moveset, stats and grip rather than one shared sword combo. Curved and chopping blades can make targets **bleed**; two-handed swords leave no hand free for a shield or offhand weapon
+- **Swords** are thirteen weapons of their own, each with its own moveset, stats and grip rather than one shared sword combo. Curved and chopping blades can make targets **bleed**; two-handed swords leave no hand free for a shield or offhand weapon
   - **Arming Sword** — the baseline: two wide slashes into a thrust, a broad sweeping heavy
   - **Broadsword** — heavier and slower: two broad slashes into an overhead cleave that hits everything around the point of impact, the sturdiest one-handed block
   - **Rapier** — all thrusts: quick pokes that crit hard on the head, the longest reach, armour penetration and parry of the one-handers, and a long lunge for a heavy — but light hits and a weak block
@@ -374,6 +374,7 @@
   - **Cutlass** — short, hard chops into a thrust and an overhead chop heavy; well rounded
   - **Kukri** — very short and very fast chops that often bleed, cheap on stamina, a bleeding heavy chop
   - **Khopesh** — a hooked sickle-sword: heavy hooking cuts into an overhead hack that bites armour, and a hooking heavy that bites deeper and bleeds
+  - **Cleaver** — a heavy butcher's blade: very short, hard chops into a hack, and an overhead cleave that splits armour and can make targets bleed; a poor parry
   - **Katana** (two-handed) — the quickest two-hander: wide cuts into a thrust and a lightning-fast draw-cut heavy that crits hard; a good parry
   - **Claymore** (two-handed) — huge sweeping arcs into an overhead slam that hits everything around it, and a ground-shaking slam heavy; a sturdy guard
   - **Zweihänder** (two-handed) — the longest reach and hardest hits: vast sweeps, a half-sword thrust that pierces armour, and a wide spinning heavy; the slowest swings

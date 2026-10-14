@@ -224,6 +224,7 @@ lowering base damage.
 | Cutlass | 1H | ×1.05 | ×1.0 | ×1.1 | ×0.95 | ×0.95 | ×1.0 | chop ×2, thrust → overhead chop (slam) |
 | Kukri | 1H | ×0.85 | ×1.2 | ×1.2 | ×0.75 | ×1.2 | ×1.1 | short chop ×3 (30% bleed) → chop slam (60% bleed) |
 | Khopesh | 1H | ×1.12 | ×0.92 | ×1.5 | ×1.05 | ×1.0 | ×0.9 | hook ×2, hack (slam, +10% pen) → hooking cut (+20% pen, 40% bleed) |
+| Cleaver | 1H | ×1.2 | ×0.9 | ×1.3 | ×1.0 | ×1.0 | ×0.8 | short chop ×2, hack (slam, +10% pen) → overhead cleave (slam, +20% pen, 30% bleed) |
 | Katana | 2H | ×1.2 | ×1.0 | ×1.0 | ×1.15 | ×0.9 | ×1.2 | cut ×2, thrust → fast draw-cut (crit ×2) |
 | Claymore | 2H | ×1.4 | ×0.8 | ×1.2 | ×1.35 | ×0.8 | ×0.85 | 150° sweep ×2, slam → 1.6 m radius slam |
 | Zweihänder | 2H | ×1.55 | ×0.72 | ×1.3 | ×1.5 | ×0.75 | ×0.75 | 170° sweep ×2, half-sword thrust (+15% pen) → 220° sweep |
