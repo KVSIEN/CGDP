@@ -471,7 +471,7 @@ Like the bows, these are generic crossbow types and historical designs (Arbalest
 |  |  | Repeating Crossbow | TBD |  |  |
 |  |  | Revolving Crossbow | TBD |  |  |
 | X-Series (tech) | TBD | XBow | TBD | Auto XBow | (follows the game name) |
-|  |  | Rail Crossbow | TBD |  |  |
+|  |  | Pneumatic Crossbow | TBD |  |  |
 |  |  | Bolt Caster | TBD |  |  |
 |  |  | Bolt Thrower | TBD |  |  |
 | C-Series (compounds) | TBD | Hunting Crossbow | TBD |  |  |

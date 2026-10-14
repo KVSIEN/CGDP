@@ -205,7 +205,7 @@ lowering base damage.
   - **L-Series** (light: quick span, light bolts): Pistol Crossbow (72 dmg, 1.38 s — the fastest single-shot reload), Hand Crossbow, Goat's-Foot Crossbow (lever-spanned), Sporting Crossbow (102 dmg: the first to one-shot a body)
   - **W-Series** (war: single-shot, slowest span, hardest hits): Arbalest (150 dmg, 3 s), Windlass Crossbow, Cranequin Crossbow (rack-and-pinion: the quickest war crossbow), Hand Ballista (the torsion manuballista: 174 dmg, 3.2 s, hardest kick)
   - **R-Series** (repeaters, semi-auto): Chu-ko-nu (66 dmg, 231 RPM, magazine scale 2.4 — T1 holds 10), Double Crossbow (always 2 bolts via `FixedMagazineSize`, 248 RPM back to back), Repeating Crossbow (magazine scale 1.6 — T1 holds 5), Revolving Crossbow (fixed six-bolt cylinder, loads one bolt per step)
-  - **X-Series** (tech crossbows, on the automatic 6–15 magazine): XBow (burst; 20% "Auto XBow"), Rail Crossbow (semi: 160 m/s, 81 m, tightest cone, small magazine), Bolt Caster (light full-auto: 54 × 231), Bolt Thrower (heavy full-auto, magazine scale 1.5, slow reload)
+  - **X-Series** (tech crossbows, on the automatic 6–15 magazine): XBow (burst; 20% "Auto XBow"), Pneumatic Crossbow (precise burst: 90 × 3 at 130 m/s, 78 m, the series' tightest cone and smallest magazine — T1 holds 9), Bolt Caster (light full-auto: 54 × 231), Bolt Thrower (heavy full-auto, magazine scale 1.5, slow reload)
   - **C-Series** (compounds: fast, flat bolts, quick span): Hunting Crossbow (the category's middle: 120 dmg), Reverse-Draw Crossbow (130 m/s), Tactical Crossbow (fastest compound span), Recurve Crossbow
   - Crossbows lean on `Reload` (spanning time; full and tactical reload alike) and `ProjectileSpeed`. Armour penetration stays the category's (25–50%). Scales are built against the crossbow midpoints (120 dmg, 165 RPM, 60 m, 1.75° hip spread, 100 m/s, 2.3 s reload).
 
@@ -552,7 +552,7 @@ first thing to compare a new weapon against.
 | `RepeatingCrossbow_T1` | Crossbow · R-Series | 90 × 165 | Arrows | 2 / 0.36s | 5 bolts, reload 2.3s, 85 m/s, 48 m |
 | `RevolvingCrossbow_T1` | Crossbow · R-Series | 84 × 182 | Arrows | 2 / 0.33s | 6 bolts, reload 2.76s, 85 m/s, 48 m, one bolt per step |
 | `XBow_T1` | Crossbow · X-Series | 72 × 165 (Burst) | Arrows | 2 / 0.15s (one burst) | 10 bolts, reload 2.3s, 100 m/s, 51 m |
-| `RailCrossbow_T1` | Crossbow · X-Series | 126 × 132 | Arrows | 1 / — | 2 bolts, reload 2.07s, 160 m/s, 81 m |
+| `PneumaticCrossbow_T1` | Crossbow · X-Series | 90 × 165 (Burst) | Arrows | 2 / 0.15s (one burst) | 9 bolts, reload 2.3s, 130 m/s, 78 m |
 | `BoltCaster_T1` | Crossbow · X-Series | 54 × 231 (Auto) | Arrows | 2 / 0.26s | 10 bolts, reload 2.07s, 90 m/s, 48 m |
 | `BoltThrower_T1` | Crossbow · X-Series | 78 × 165 (Auto) | Arrows | 2 / 0.36s | 15 bolts, reload 2.99s, 100 m/s, 54 m |
 | `HuntingCrossbow_T1` | Crossbow · C-Series | 120 × 165 | Arrows | 1 / — | 1 bolt, reload 1.95s, 120 m/s, 63 m |
