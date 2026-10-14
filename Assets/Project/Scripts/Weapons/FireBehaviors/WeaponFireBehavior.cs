@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
@@ -7,6 +8,12 @@ namespace CGD.Weapons
 {
     public abstract class WeaponFireBehavior : ScriptableObject
     {
+        // Shared by every Magnetized shot; shots resolve one at a time on the main thread.
+        private static readonly RaycastHit[] PierceHits = new RaycastHit[32];
+        private static readonly List<IDamageable> PiercedTargets = new();
+        private static readonly IComparer<RaycastHit> ByDistance =
+            Comparer<RaycastHit>.Create((a, b) => a.distance.CompareTo(b.distance));
+
         public abstract void Execute(FireContext ctx);
 
         public static Vector3 ComputeSpreadDirection(Vector3 forward, float spreadDeg)
@@ -48,6 +55,12 @@ namespace CGD.Weapons
 
         protected static void FireHitscanRay(in FireContext ctx, Vector3 direction)
         {
+            if (ctx.PierceDamageKept > 0f)
+            {
+                FirePiercingRay(ctx, direction);
+                return;
+            }
+
             float range  = MaxRangeOf(ctx);
             bool  didHit = Physics.Raycast(ctx.CameraPosition, direction, out RaycastHit hit,
                 range, ctx.Data.HitMask, QueryTriggerInteraction.Ignore);
@@ -60,6 +73,49 @@ namespace CGD.Weapons
             }
 
             if (didHit) ApplyHitDamage(hit, ctx);
+        }
+
+        // Magnetized: one instant ray that hits every target along it once (an enemy's head and
+        // body hitboxes count as one), each keeping less damage than the last, and stops at the
+        // first thing it can't damage.
+        private static void FirePiercingRay(in FireContext ctx, Vector3 direction)
+        {
+            float range = MaxRangeOf(ctx);
+            int   count = Physics.RaycastNonAlloc(ctx.CameraPosition, direction, PierceHits,
+                range, ctx.Data.HitMask, QueryTriggerInteraction.Ignore);
+            System.Array.Sort(PierceHits, 0, count, ByDistance);
+
+            DamageFalloff falloff = FalloffOf(ctx);
+            float kept = 1f;
+            float end  = range;
+            PiercedTargets.Clear();
+
+            for (int i = 0; i < count; i++)
+            {
+                RaycastHit  hit    = PierceHits[i];
+                IDamageable target = Hitbox.FindDamageable(hit.collider);
+                if (target != null && PiercedTargets.Contains(target)) continue;
+
+                ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet);
+                if (target == null)
+                {
+                    end = hit.distance;
+                    break;
+                }
+
+                PiercedTargets.Add(target);
+                Hitbox.ApplyHit(hit.collider, BuildDamageInfo(ctx, falloff.Evaluate(hit.distance) * kept), hit.point);
+                kept *= ctx.PierceDamageKept;
+            }
+
+            if (ctx.DebugDraw)
+            {
+                Vector3 origin = ctx.Muzzle != null ? ctx.Muzzle.position : ctx.CameraPosition;
+                bool    didHit = PiercedTargets.Count > 0 || end < range;
+                Debug.DrawLine(origin, ctx.CameraPosition + direction * end,
+                               didHit ? ctx.DebugHitColor : ctx.DebugMissColor, ctx.DebugLineDuration);
+            }
+            PiercedTargets.Clear();
         }
 
         protected static void ApplyHitDamage(RaycastHit hit, in FireContext ctx)
@@ -77,6 +133,13 @@ namespace CGD.Weapons
         protected static void FireProjectileShot(in FireContext ctx, Vector3 direction, in ProjectileShot shot)
         {
             if (!shot.IsValid) return;
+
+            // Magnetized: no flight at all — the round arrives instantly, in a straight line.
+            if (ctx.PierceDamageKept > 0f)
+            {
+                FirePiercingRay(ctx, direction);
+                return;
+            }
 
             float maxRange     = MaxRangeOf(ctx);
             float instantRange = Mathf.Min(shot.Speed * shot.InstantHitTime, maxRange);

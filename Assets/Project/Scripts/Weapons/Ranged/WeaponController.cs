@@ -426,6 +426,7 @@ namespace CGD.Weapons
                 RangeScale        = Mathf.Max(0.1f, Wielder(ItemStat.Range, _current.RangeScale)),
                 ProjectileSpeedScale = Mathf.Max(0.1f, Wielder(ItemStat.ProjectileSpeed, _current.ProjectileSpeedScale)),
                 Charge            = charge,
+                PierceDamageKept  = _current.PierceDamageKept,
                 VolleyAxis        = volleyAxis,
                 DebugDraw         = _debugDrawBullets,
                 DebugHitColor     = _debugHitColor,

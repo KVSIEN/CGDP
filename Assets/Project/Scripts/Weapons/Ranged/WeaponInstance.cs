@@ -74,6 +74,19 @@ namespace CGD.Weapons
             }
         }
 
+        // Magnetized: the share of damage a shot keeps per target it passes through; 0 = the gun
+        // fires as authored (shots stop at the first hit).
+        public float PierceDamageKept
+        {
+            get
+            {
+                // Read every shot, so indexed rather than foreach (no enumerator boxing).
+                for (int i = 0; i < Perks.Count; i++)
+                    if (Perks[i] is MagnetizedPerk magnetized) return magnetized.DamageKeptPerTarget;
+                return 0f;
+            }
+        }
+
         // Called on player revive. Refills the loaded mag only — reserve is inventory
         // state and lives outside the weapon.
         public void RefillMagazine()

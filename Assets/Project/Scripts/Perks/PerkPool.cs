@@ -8,7 +8,8 @@ namespace CGD.Perks
 {
     // The perks a kind of gear can roll, and how many by tier. Each item draws its own from its
     // seed, without repeats and only from perks that fit it (a reload perk never lands on a
-    // sword), so the same definition, tier and seed always get the same perks.
+    // sword) and that its tier allows (MinTier), so the same definition, tier and seed always
+    // get the same perks.
     [CreateAssetMenu(fileName = "PerkPool", menuName = "CGD/Perks/Perk Pool")]
     public class PerkPool : ScriptableObject
     {
@@ -28,7 +29,8 @@ namespace CGD.Perks
 
             var candidates = new List<WeightedPerk>();
             foreach (WeightedPerk entry in _perks)
-                if (entry.Perk != null && entry.Weight > 0f && entry.Perk.Fits(gear) && !Contains(exclude, entry.Perk))
+                if (entry.Perk != null && entry.Weight > 0f && roll.Tier >= entry.MinTier
+                    && entry.Perk.Fits(gear) && !Contains(exclude, entry.Perk))
                     candidates.Add(entry);
 
             var rolled = new List<GearPerk>(count);

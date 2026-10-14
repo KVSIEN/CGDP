@@ -193,7 +193,7 @@
 
 ## Gear Perks
 - On top of their stat rolls and attachment slots, generated weapons (guns and melee) and armor roll **perks**: fixed traits that are part of the item for its life and part of its seed (same definition, tier and seed → same perks)
-- **How many**: by tier — Common 0, Uncommon 1, Rare 1, Epic 2, Legendary 2 — plus a 25% chance of one more. An item never rolls the same perk twice and only rolls perks that fit it (no reload perks on a sword, armor perks only on armor). Every weapon can parry with its quick melee, so parry perks (Riposte, Second Wind) roll on guns too. Weapons and armor each have their own perk pool
+- **How many**: by tier — Common 0, Uncommon 1, Rare 1, Epic 2, Legendary 2 — plus a 25% chance of one more. An item never rolls the same perk twice and only rolls perks that fit it (no reload perks on a sword, armor perks only on armor). Some perks only roll from a minimum tier up (Magnetized: Legendary only). Every weapon can parry with its quick melee, so parry perks (Riposte, Second Wind) roll on guns too. Weapons and armor each have their own perk pool
 - Some gear always comes with a perk on top of what it rolls (the Modular Pistol's Tactical Knife)
 - **Tactical Knife** (pistols and SMGs only — one-handed guns): quick melee becomes a fast offhand knife stab that hits much harder than a pistol whip, but holding the gun one-handed costs accuracy and recoil control (35% more spread, 30% more recoil). The knife parries like any bash
 - **Passive perks** are always on:
@@ -210,6 +210,7 @@
 - **Included weapon perks** (placeholders to tune):
   - Triggered: Evasive Reload, Slip Feed (dodge reloads); Kill Feed, Quick Hands, Adrenaline, Reap (kills); Riposte, Second Wind (parries); Dancer (dodge, melee); Eagle Eye (aim → crit chance); Fresh Mag (reload done → damage); Precision Feed (crits refund a round); Arcane Loader (ability → full reload); Quick Switch (swapped to → fire rate); Leech (melee hits → stamina); Threat Response (hurt → faster reloads); Run and Gun (reload start → move speed); Stim Loader (consumable → half a magazine)
   - Passive: Extended Mag, Speed Loader, Split Shot (multishot), Hot Loads (velocity), Keen (crit chance), Deadeye (crit damage), Infectious (status chance), Virulent (status strength), Piercing, Long Barrel, Long Reach, Siphon (lifesteal), Stabilized, Choked, Quickdraw, Heavy Hitter, Rapid
+  - Legendary only: **Magnetized** (any ranged weapon) — every shot strikes instantly in a straight line, with no travel time or drop, and punches through every enemy in its path, losing 25% damage per enemy passed; walls and other solid cover still stop it. Shotgun pellets and volley arrows each punch through on their own, and a bow or crossbow with it fires like a railgun
 - **Included armor perks** (rolled by the Combat Vest):
   - Triggered: Reactive Plating (hurt → armor), Battle Focus (ability → damage), Evasion (dodge → speed), Adrenal Gland (healed → damage), Scavenger (kill → loads the held gun), Stim Rush (consumable → speed), Bloodthirst (kill → heal), Counterguard (parry → armor), Tactical Rhythm (reload done → stamina), Opportunist (crit → crit damage), Steady Breath (aim → less recoil), Quick Holster (swap → speed)
   - Passive: Fleet, Focused (cooldowns), Regenerator, Vampiric, Warded, Bulwark, Vital, Shield Emitter, Marksman, Deft Hands
