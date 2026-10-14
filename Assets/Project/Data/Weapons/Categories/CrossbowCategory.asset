@@ -24,15 +24,1160 @@ MonoBehaviour:
   _perkPool: {fileID: 11400000, guid: 46756d1ce4124b5c8905716c4d8a5986, type: 2}
   Type: 7
   Names:
-  - Hand Crossbow
-  - Hunting Crossbow
-  - Arbalest
-  - Heavy Crossbow
-  - Repeating Crossbow
   - Pistol Crossbow
-  - Siege Crossbow
-  - Autoloading Crossbow
+  - Hand Crossbow
+  - Goat's-Foot Crossbow
+  - Sporting Crossbow
+  - Arbalest
+  - Windlass Crossbow
+  - Cranequin Crossbow
+  - Hand Ballista
+  - Chu-ko-nu
+  - Double Crossbow
+  - Repeating Crossbow
+  - Revolving Crossbow
+  - XBow
+  - Rail Crossbow
+  - Bolt Caster
+  - Bolt Thrower
+  - Hunting Crossbow
+  - Reverse-Draw Crossbow
+  - Tactical Crossbow
+  - Recurve Crossbow
   FireModes: 000000000000000000000000000000000200000001000000
+  Models:
+  - Name: Pistol Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.6
+      FireRate: 1
+      Recoil: 0.7
+      Spread: 1.2
+      Range: 0.7
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 0.8
+      Reload: 0.6
+    RoundsPerLoad: 0
+    FixedMagazineSize: 1
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.35
+  - Name: Hand Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.65
+      FireRate: 1
+      Recoil: 0.75
+      Spread: 1.15
+      Range: 0.75
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 0.85
+      Reload: 0.65
+    RoundsPerLoad: 0
+    FixedMagazineSize: 1
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.35
+  - Name: Goat's-Foot Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.8
+      FireRate: 1
+      Recoil: 0.85
+      Spread: 1.1
+      Range: 0.85
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 0.9
+      Reload: 0.7
+    RoundsPerLoad: 0
+    FixedMagazineSize: 1
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.4
+  - Name: Sporting Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.85
+      FireRate: 1
+      Recoil: 0.8
+      Spread: 1
+      Range: 0.9
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 0.95
+      Reload: 0.8
+    RoundsPerLoad: 0
+    FixedMagazineSize: 1
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.2
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.35
+  - Name: Arbalest
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 1.25
+      FireRate: 1
+      Recoil: 1.35
+      Spread: 0.9
+      Range: 1.2
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 1.1
+      Reload: 1.3
+    RoundsPerLoad: 0
+    FixedMagazineSize: 1
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.55
+  - Name: Windlass Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 1.15
+      FireRate: 1
+      Recoil: 1.25
+      Spread: 0.95
+      Range: 1.15
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 1.05
+      Reload: 1.2
+    RoundsPerLoad: 0
+    FixedMagazineSize: 1
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.5
+  - Name: Cranequin Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 1.1
+      FireRate: 1
+      Recoil: 1.2
+      Spread: 0.9
+      Range: 1.1
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 1.05
+      Reload: 1.05
+    RoundsPerLoad: 0
+    FixedMagazineSize: 1
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.25
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.5
+  - Name: Hand Ballista
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 1.45
+      FireRate: 1
+      Recoil: 1.6
+      Spread: 1.1
+      Range: 1.25
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 1.15
+      Reload: 1.4
+    RoundsPerLoad: 0
+    FixedMagazineSize: 1
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.65
+  - Name: Chu-ko-nu
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.55
+      FireRate: 1.4
+      Recoil: 0.7
+      Spread: 1.4
+      Range: 0.7
+      MagazineSize: 2.4
+      ChargeTime: 1
+      ProjectileSpeed: 0.75
+      Reload: 1.1
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.4
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.3
+  - Name: Double Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.95
+      FireRate: 1.5
+      Recoil: 0.9
+      Spread: 1
+      Range: 0.9
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 0.95
+      Reload: 1
+    RoundsPerLoad: 0
+    FixedMagazineSize: 2
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.4
+  - Name: Repeating Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.75
+      FireRate: 1
+      Recoil: 0.8
+      Spread: 1.1
+      Range: 0.8
+      MagazineSize: 1.6
+      ChargeTime: 1
+      ProjectileSpeed: 0.85
+      Reload: 1
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.35
+  - Name: Revolving Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.7
+      FireRate: 1.1
+      Recoil: 0.85
+      Spread: 1.05
+      Range: 0.8
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 0.85
+      Reload: 1.2
+    RoundsPerLoad: 1
+    FixedMagazineSize: 6
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.4
+  - Name: XBow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 4
+      FireMode: 2
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    - Name: Auto
+      ModelName: 
+      Weight: 1
+      FireMode: 1
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.6
+      FireRate: 1
+      Recoil: 0.9
+      Spread: 1
+      Range: 0.85
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 1
+      Reload: 1
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.3
+  - Name: Rail Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 1.05
+      FireRate: 0.8
+      Recoil: 1.1
+      Spread: 0.6
+      Range: 1.35
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 1.6
+      Reload: 0.9
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.15
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.2
+  - Name: Bolt Caster
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 1
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.45
+      FireRate: 1.4
+      Recoil: 0.8
+      Spread: 1.2
+      Range: 0.8
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 0.9
+      Reload: 0.9
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.35
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.25
+  - Name: Bolt Thrower
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 1
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.65
+      FireRate: 1
+      Recoil: 1.3
+      Spread: 1.3
+      Range: 0.9
+      MagazineSize: 1.5
+      ChargeTime: 1
+      ProjectileSpeed: 1
+      Reload: 1.3
+    RoundsPerLoad: 0
+    FixedMagazineSize: 0
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.3
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.35
+  - Name: Hunting Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 1
+      FireRate: 1
+      Recoil: 0.85
+      Spread: 0.8
+      Range: 1.05
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 1.2
+      Reload: 0.85
+    RoundsPerLoad: 0
+    FixedMagazineSize: 1
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.15
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.2
+  - Name: Reverse-Draw Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 1.05
+      FireRate: 1
+      Recoil: 0.8
+      Spread: 0.75
+      Range: 1.15
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 1.3
+      Reload: 0.9
+    RoundsPerLoad: 0
+    FixedMagazineSize: 1
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.1
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.15
+  - Name: Tactical Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.85
+      FireRate: 1
+      Recoil: 0.8
+      Spread: 0.9
+      Range: 1
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 1.1
+      Reload: 0.7
+    RoundsPerLoad: 0
+    FixedMagazineSize: 1
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.15
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.2
+  - Name: Recurve Crossbow
+    Weight: 1
+    FiringStyles:
+    - Name: 
+      ModelName: 
+      Weight: 1
+      FireMode: 0
+      FireBehavior: {fileID: 0}
+      PelletCount:
+        Min: 0
+        Max: 0
+        Bias: 0
+      AdsSpreadDeg:
+        Min: 0
+        Max: 0
+        Bias: 0
+      Scales:
+        Damage: 1
+        FireRate: 1
+        Recoil: 1
+        Spread: 1
+        Range: 1
+        MagazineSize: 1
+        ChargeTime: 1
+        ProjectileSpeed: 1
+        Reload: 1
+      RoundsPerLoad: 0
+      OwnRecoil: 0
+      Recoil:
+        Bias: 0
+        Drift: 0
+        Jitter: 0.35
+        Horizontal: 1
+        Reach: 1
+        MuzzleFlip: 0.5
+    Scales:
+      Damage: 0.9
+      FireRate: 1
+      Recoil: 0.9
+      Spread: 0.9
+      Range: 1
+      MagazineSize: 1
+      ChargeTime: 1
+      ProjectileSpeed: 1
+      Reload: 0.8
+    RoundsPerLoad: 0
+    FixedMagazineSize: 1
+    AmmoType: 0
+    Recoil:
+      Bias: 0
+      Drift: 0
+      Jitter: 0.2
+      Horizontal: 1
+      Reach: 1
+      MuzzleFlip: 0.3
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:
     Min: 90

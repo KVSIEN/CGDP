@@ -51,6 +51,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
   - Name: Burst
     Weight: 25
     FireMode: 2
@@ -72,6 +73,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
   - Name: Machine
     Weight: 20
     FireMode: 1
@@ -93,6 +95,7 @@ MonoBehaviour:
       MagazineSize: 1.6
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
   - Name: Scatter
     Weight: 15
     FireMode: 0
@@ -114,6 +117,7 @@ MonoBehaviour:
       MagazineSize: 0.7
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
   StatStyles:
   - Name: 
     Weight: 30
@@ -126,6 +130,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
   - Name: Heavy
     Weight: 15
     Scales:
@@ -137,6 +142,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
   - Name: Marksman
     Weight: 15
     Scales:
@@ -148,6 +154,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
   - Name: Rapid
     Weight: 20
     Scales:
@@ -159,6 +166,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
   - Name: Carbine
     Weight: 20
     Scales:
@@ -170,6 +178,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:
     Min: 300

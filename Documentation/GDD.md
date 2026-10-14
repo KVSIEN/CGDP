@@ -452,6 +452,33 @@ Bow names are traditional bow types and cultures (Longbow, Yumi, Mongol Bow, Com
 |  |  | Speed Compound | TBD |
 |  |  | Short-Axle Compound | TBD |
 
+#### Crossbows
+
+Like the bows, these are generic crossbow types and historical designs (Arbalest, Chu-ko-nu, manuballista as "Hand Ballista"). "XBow" is the exception to check: the name is also used for a building in Supercell's Clash games, so it may need a game name of its own.
+
+| Series | Game series name | Placeholder model | Game name | Variant | Variant game name |
+|---|---|---|---|---|---|
+| L-Series (light) | TBD | Pistol Crossbow | TBD |  |  |
+|  |  | Hand Crossbow | TBD |  |  |
+|  |  | Goat's-Foot Crossbow | TBD |  |  |
+|  |  | Sporting Crossbow | TBD |  |  |
+| W-Series (war) | TBD | Arbalest | TBD |  |  |
+|  |  | Windlass Crossbow | TBD |  |  |
+|  |  | Cranequin Crossbow | TBD |  |  |
+|  |  | Hand Ballista | TBD |  |  |
+| R-Series (repeaters) | TBD | Chu-ko-nu | TBD |  |  |
+|  |  | Double Crossbow | TBD |  |  |
+|  |  | Repeating Crossbow | TBD |  |  |
+|  |  | Revolving Crossbow | TBD |  |  |
+| X-Series (tech) | TBD | XBow | TBD | Auto XBow | (follows the game name) |
+|  |  | Rail Crossbow | TBD |  |  |
+|  |  | Bolt Caster | TBD |  |  |
+|  |  | Bolt Thrower | TBD |  |  |
+| C-Series (compounds) | TBD | Hunting Crossbow | TBD |  |  |
+|  |  | Reverse-Draw Crossbow | TBD |  |  |
+|  |  | Tactical Crossbow | TBD |  |  |
+|  |  | Recurve Crossbow | TBD |  |  |
+
 ### Melee
 
 **Built.** Not detailed in the original design.

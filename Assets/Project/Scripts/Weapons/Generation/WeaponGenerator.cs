@@ -122,8 +122,10 @@ namespace CGD.Weapons
             IntRange magazine = build.IsAutomatic && cat.AutomaticMagazineSize.Max > 0 ? cat.AutomaticMagazineSize : cat.MagazineSize;
             d.MagazineSize       = build.FixedMagazineSize > 0 ? build.FixedMagazineSize
                                  : roll.Sample(ItemStat.MagazineSize, StyleScales.Scale(magazine, build.Scales.MagazineSize, build.Leans.MagazineSize));
-            d.ReloadTime         = roll.Sample(ItemStat.ReloadTime, cat.ReloadTime);
-            d.TacticalReloadTime = Mathf.Max(0.5f, roll.Sample(ItemStat.ReloadTime, cat.TacticalReloadTime));
+            float reload = build.Scales.Reload;
+            float lean   = build.Leans.Reload;
+            d.ReloadTime         = roll.Sample(ItemStat.ReloadTime, StyleScales.Scale(cat.ReloadTime, reload, lean));
+            d.TacticalReloadTime = Mathf.Max(0.5f, roll.Sample(ItemStat.ReloadTime, StyleScales.Scale(cat.TacticalReloadTime, reload, lean)));
         }
 
         private static void RollSpread(WeaponData d, WeaponCategoryData cat, ItemRoll roll, RandomStream random, WeaponBuild build)

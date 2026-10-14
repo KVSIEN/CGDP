@@ -22,9 +22,11 @@ namespace CGD.Weapons
         [Min(0.01f)] public float ChargeTime;
         [Tooltip("Projectile flight speed: higher flies flatter, like a compound bow's arrow")]
         [Min(0.01f)] public float ProjectileSpeed;
+        [Tooltip("Reload time, full and tactical: a crossbow's spanning, a lever's quick pull or a windlass's slow crank")]
+        [Min(0.01f)] public float Reload;
 
         public StyleScales(float damage, float fireRate, float recoil, float spread, float range, float magazineSize,
-                           float chargeTime = 1f, float projectileSpeed = 1f)
+                           float chargeTime = 1f, float projectileSpeed = 1f, float reload = 1f)
         {
             Damage          = damage;
             FireRate        = fireRate;
@@ -34,6 +36,7 @@ namespace CGD.Weapons
             MagazineSize    = magazineSize;
             ChargeTime      = chargeTime;
             ProjectileSpeed = projectileSpeed;
+            Reload          = reload;
         }
 
         public static StyleScales Identity => new(1f, 1f, 1f, 1f, 1f, 1f);
@@ -41,7 +44,7 @@ namespace CGD.Weapons
         public static StyleScales operator *(StyleScales a, StyleScales b) =>
             new(a.Damage * b.Damage, a.FireRate * b.FireRate, a.Recoil * b.Recoil,
                 a.Spread * b.Spread, a.Range * b.Range, a.MagazineSize * b.MagazineSize,
-                a.ChargeTime * b.ChargeTime, a.ProjectileSpeed * b.ProjectileSpeed);
+                a.ChargeTime * b.ChargeTime, a.ProjectileSpeed * b.ProjectileSpeed, a.Reload * b.Reload);
 
         // The range stretched by `scale`, its odds shifted by `lean` (see StyleLeans).
         public static FloatRange Scale(FloatRange range, float scale, float lean) =>

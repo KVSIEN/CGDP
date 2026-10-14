@@ -130,6 +130,25 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void AModelScalesItsReload()
+        {
+            _category = ScriptableObject.CreateInstance<WeaponCategoryData>();
+            _category.ReloadTime         = new FloatRange(2f, 2f);
+            _category.TacticalReloadTime = new FloatRange(1.6f, 1.6f);
+            _category.Models = new[]
+            {
+                new WeaponModel { Name = "Arbalest", Scales = new StyleScales(1f, 1f, 1f, 1f, 1f, 1f, reload: 1.5f) },
+            };
+
+            for (int i = 0; i < SeedCount; i++)
+            {
+                WeaponData d = Generate(_category, i);
+                Assert.AreEqual(3f, d.ReloadTime, 1e-4f);
+                Assert.AreEqual(2.4f, d.TacticalReloadTime, 1e-4f);
+            }
+        }
+
+        [Test]
         public void TheSameSeedGivesTheSameGun()
         {
             WeaponCategoryData category = CreateGlockCategory();

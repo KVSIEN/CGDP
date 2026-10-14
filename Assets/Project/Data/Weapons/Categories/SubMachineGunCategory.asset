@@ -72,6 +72,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     - Name: Burst
       ModelName: 
       Weight: 2
@@ -94,6 +95,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.88
       FireRate: 0.94
@@ -103,6 +105,7 @@ MonoBehaviour:
       MagazineSize: 1.1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.05
@@ -136,6 +139,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.83
       FireRate: 1
@@ -145,6 +149,7 @@ MonoBehaviour:
       MagazineSize: 1.1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.15
@@ -178,6 +183,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.83
       FireRate: 1.06
@@ -187,6 +193,7 @@ MonoBehaviour:
       MagazineSize: 1.47
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.05
@@ -220,6 +227,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 1.07
       FireRate: 0.72
@@ -229,6 +237,7 @@ MonoBehaviour:
       MagazineSize: 1.18
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: -0.25
@@ -262,6 +271,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 1.17
       FireRate: 0.72
@@ -271,6 +281,7 @@ MonoBehaviour:
       MagazineSize: 1.84
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.35
@@ -304,6 +315,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 1.17
       FireRate: 0.67
@@ -313,6 +325,7 @@ MonoBehaviour:
       MagazineSize: 1.18
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.05
@@ -346,6 +359,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 1.07
       FireRate: 0.72
@@ -355,6 +369,7 @@ MonoBehaviour:
       MagazineSize: 1.18
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.6
@@ -388,6 +403,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 1.12
       FireRate: 0.67
@@ -397,6 +413,7 @@ MonoBehaviour:
       MagazineSize: 1.47
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: -0.2
@@ -430,6 +447,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.93
       FireRate: 1.28
@@ -439,6 +457,7 @@ MonoBehaviour:
       MagazineSize: 1.1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.2
@@ -472,6 +491,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     - Name: Burst
       ModelName: 
       Weight: 2
@@ -494,6 +514,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.73
       FireRate: 1.28
@@ -503,6 +524,7 @@ MonoBehaviour:
       MagazineSize: 1.1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.3
@@ -536,6 +558,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.73
       FireRate: 1.11
@@ -545,6 +568,7 @@ MonoBehaviour:
       MagazineSize: 1.1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.3
@@ -578,6 +602,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.83
       FireRate: 1
@@ -587,6 +612,7 @@ MonoBehaviour:
       MagazineSize: 0.74
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.35
@@ -620,6 +646,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     - Name: Burst
       ModelName: 
       Weight: 2
@@ -642,6 +669,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 1.17
       FireRate: 0.72
@@ -651,6 +679,7 @@ MonoBehaviour:
       MagazineSize: 0.92
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: -0.2
@@ -684,6 +713,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.93
       FireRate: 0.94
@@ -693,6 +723,7 @@ MonoBehaviour:
       MagazineSize: 1.1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.1
@@ -726,6 +757,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.88
       FireRate: 1.11
@@ -735,6 +767,7 @@ MonoBehaviour:
       MagazineSize: 1.1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.25
@@ -768,6 +801,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.93
       FireRate: 1
@@ -777,6 +811,7 @@ MonoBehaviour:
       MagazineSize: 1.1
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.1
@@ -810,6 +845,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.83
       FireRate: 1
@@ -819,6 +855,7 @@ MonoBehaviour:
       MagazineSize: 1.84
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0
@@ -852,6 +889,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     - Name: Burst
       ModelName: 
       Weight: 2
@@ -874,6 +912,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.88
       FireRate: 1.33
@@ -883,6 +922,7 @@ MonoBehaviour:
       MagazineSize: 0.92
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0
@@ -916,6 +956,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.83
       FireRate: 1
@@ -925,6 +966,7 @@ MonoBehaviour:
       MagazineSize: 1.84
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: -0.2
@@ -958,6 +1000,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
     Scales:
       Damage: 0.98
       FireRate: 0.78
@@ -967,6 +1010,7 @@ MonoBehaviour:
       MagazineSize: 2.36
       ChargeTime: 1
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     Recoil:
       Bias: 0.25

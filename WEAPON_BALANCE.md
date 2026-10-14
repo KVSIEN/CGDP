@@ -197,6 +197,18 @@ lowering base damage.
   - Horsebows set their own volley odds through a firing style (`PelletCount` 1–3; bias 0 for the Mongol and Magyar, −0.4 for the Gakgung and Manchu); every other bow keeps the category's (mostly single arrows).
   - Bows lean on two scales firearms leave at 1: `ChargeTime` (time to full draw) and `ProjectileSpeed` (arrow speed — a faster arrow drops less over the same distance). Scales are built against the bow midpoints (82.5 dmg, 160 RPM, 45 m, 1.1° hip spread, 0.9 s draw, 65 m/s).
 
+### Crossbow
+- **Best at**: heavy, armour-piercing single shots that fly flat and quiet (~10 m); most T1s one-shot a body.
+- **Weakness**: spanning after every bolt (most hold one), so a miss costs 1.4–3.2 s; weak hipfire.
+- **What a Legendary crossbow feels like**: faster spanning, harder hits, tighter cone.
+- **Models** (`Models` on the category, all equal weight, so each series is 20% — autoloaders are now one in five, down from the category's old one in three; every model sets its own fire mode, so the category's Fire Modes no longer apply):
+  - **L-Series** (light: quick span, light bolts): Pistol Crossbow (72 dmg, 1.38 s — the fastest single-shot reload), Hand Crossbow, Goat's-Foot Crossbow (lever-spanned), Sporting Crossbow (102 dmg: the first to one-shot a body)
+  - **W-Series** (war: single-shot, slowest span, hardest hits): Arbalest (150 dmg, 3 s), Windlass Crossbow, Cranequin Crossbow (rack-and-pinion: the quickest war crossbow), Hand Ballista (the torsion manuballista: 174 dmg, 3.2 s, hardest kick)
+  - **R-Series** (repeaters, semi-auto): Chu-ko-nu (66 dmg, 231 RPM, magazine scale 2.4 — T1 holds 10), Double Crossbow (always 2 bolts via `FixedMagazineSize`, 248 RPM back to back), Repeating Crossbow (magazine scale 1.6 — T1 holds 5), Revolving Crossbow (fixed six-bolt cylinder, loads one bolt per step)
+  - **X-Series** (tech crossbows, on the automatic 6–15 magazine): XBow (burst; 20% "Auto XBow"), Rail Crossbow (semi: 160 m/s, 81 m, tightest cone, small magazine), Bolt Caster (light full-auto: 54 × 231), Bolt Thrower (heavy full-auto, magazine scale 1.5, slow reload)
+  - **C-Series** (compounds: fast, flat bolts, quick span): Hunting Crossbow (the category's middle: 120 dmg), Reverse-Draw Crossbow (130 m/s), Tactical Crossbow (fastest compound span), Recurve Crossbow
+  - Crossbows lean on `Reload` (spanning time; full and tactical reload alike) and `ProjectileSpeed`. Armour penetration stays the category's (25–50%). Scales are built against the crossbow midpoints (120 dmg, 165 RPM, 60 m, 1.75° hip spread, 100 m/s, 2.3 s reload).
+
 ## Recoil Patterns
 
 Each model carries a `RecoilPattern` (on `WeaponModel`; a firing variant can carry its own with
@@ -381,7 +393,7 @@ prototyping but should be filled in before shipping.
 
 Hand-authored Common-tier (Tier 1) assets live in
 `Assets/Project/Data/Weapons/Ranged/T1/` — one per model for the AR, SMG,
-pistol, sniper, shotgun, LMG and bow rosters. They are the concrete example of what "Common feels like" and the
+pistol, sniper, shotgun, LMG, bow and crossbow rosters. They are the concrete example of what "Common feels like" and the
 first thing to compare a new weapon against.
 
 | Asset             | Category    | Damage × RPM        | Ammo           | STK / TTK    | Notes                                        |
@@ -527,6 +539,26 @@ first thing to compare a new weapon against.
 | `TargetCompound_T1` | Bow · C-Series | 82 × 144 | Arrows | 2 | draw 1.03s, 84 m/s, 56 m, hip 0.66° |
 | `SpeedCompound_T1` | Bow · C-Series | 91 × 160 | Arrows | 1 vertical / 2 | draw 0.95s, 94 m/s, 54 m, hip 1.1° |
 | `ShortAxleCompound_T1` | Bow · C-Series | 78 × 184 | Arrows | 2 | draw 0.72s, 78 m/s, 40 m, hip 1.04° |
+| `PistolCrossbow_T1` | Crossbow · L-Series | 72 × 165 | Arrows | 2 / 1.38s reload | 1 bolt, reload 1.38s, 80 m/s, 42 m |
+| `HandCrossbow_T1` | Crossbow · L-Series | 78 × 165 | Arrows | 2 / 1.49s reload | 1 bolt, reload 1.49s, 85 m/s, 45 m |
+| `GoatsFootCrossbow_T1` | Crossbow · L-Series | 96 × 165 | Arrows | 2 / 1.61s reload | 1 bolt, reload 1.61s, 90 m/s, 51 m |
+| `SportingCrossbow_T1` | Crossbow · L-Series | 102 × 165 | Arrows | 1 / — | 1 bolt, reload 1.84s, 95 m/s, 54 m |
+| `Arbalest_T1` | Crossbow · W-Series | 150 × 165 | Arrows | 1 / — | 1 bolt, reload 2.99s, 110 m/s, 72 m |
+| `WindlassCrossbow_T1` | Crossbow · W-Series | 138 × 165 | Arrows | 1 / — | 1 bolt, reload 2.76s, 105 m/s, 69 m |
+| `CranequinCrossbow_T1` | Crossbow · W-Series | 132 × 165 | Arrows | 1 / — | 1 bolt, reload 2.42s, 105 m/s, 66 m |
+| `HandBallista_T1` | Crossbow · W-Series | 174 × 165 | Arrows | 1 / — | 1 bolt, reload 3.22s, 115 m/s, 75 m |
+| `ChuKoNu_T1` | Crossbow · R-Series | 66 × 231 | Arrows | 2 / 0.26s | 10 bolts, reload 2.53s, 75 m/s, 42 m |
+| `DoubleCrossbow_T1` | Crossbow · R-Series | 114 × 248 | Arrows | 1 / — | 2 bolts, reload 2.3s, 95 m/s, 54 m |
+| `RepeatingCrossbow_T1` | Crossbow · R-Series | 90 × 165 | Arrows | 2 / 0.36s | 5 bolts, reload 2.3s, 85 m/s, 48 m |
+| `RevolvingCrossbow_T1` | Crossbow · R-Series | 84 × 182 | Arrows | 2 / 0.33s | 6 bolts, reload 2.76s, 85 m/s, 48 m, one bolt per step |
+| `XBow_T1` | Crossbow · X-Series | 72 × 165 (Burst) | Arrows | 2 / 0.15s (one burst) | 10 bolts, reload 2.3s, 100 m/s, 51 m |
+| `RailCrossbow_T1` | Crossbow · X-Series | 126 × 132 | Arrows | 1 / — | 2 bolts, reload 2.07s, 160 m/s, 81 m |
+| `BoltCaster_T1` | Crossbow · X-Series | 54 × 231 (Auto) | Arrows | 2 / 0.26s | 10 bolts, reload 2.07s, 90 m/s, 48 m |
+| `BoltThrower_T1` | Crossbow · X-Series | 78 × 165 (Auto) | Arrows | 2 / 0.36s | 15 bolts, reload 2.99s, 100 m/s, 54 m |
+| `HuntingCrossbow_T1` | Crossbow · C-Series | 120 × 165 | Arrows | 1 / — | 1 bolt, reload 1.95s, 120 m/s, 63 m |
+| `ReverseDrawCrossbow_T1` | Crossbow · C-Series | 126 × 165 | Arrows | 1 / — | 1 bolt, reload 2.07s, 130 m/s, 69 m |
+| `TacticalCrossbow_T1` | Crossbow · C-Series | 102 × 165 | Arrows | 1 / — | 1 bolt, reload 1.61s, 110 m/s, 60 m |
+| `RecurveCrossbow_T1` | Crossbow · C-Series | 108 × 165 | Arrows | 1 / — | 1 bolt, reload 1.84s, 100 m/s, 60 m |
 
 Higher tiers (T2–T5) aren't authored yet — those variants come from the
 `WeaponGenerator` rolling `WeaponCategoryData` with a `StatRollProfile` and

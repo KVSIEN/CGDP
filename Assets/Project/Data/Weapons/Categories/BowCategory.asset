@@ -58,6 +58,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1.2
       ProjectileSpeed: 0.9
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -80,6 +81,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1.35
       ProjectileSpeed: 0.95
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -102,6 +104,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1.15
       ProjectileSpeed: 0.95
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -124,6 +127,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1.05
       ProjectileSpeed: 0.85
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -146,6 +150,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1
       ProjectileSpeed: 1.05
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -168,6 +173,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 0.9
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -190,6 +196,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 0.8
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -212,6 +219,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 0.95
       ProjectileSpeed: 1.25
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -247,6 +255,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
       RoundsPerLoad: 0
       OwnRecoil: 0
       Recoil:
@@ -265,6 +274,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 0.75
       ProjectileSpeed: 1
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -300,6 +310,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
       RoundsPerLoad: 0
       OwnRecoil: 0
       Recoil:
@@ -318,6 +329,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 0.7
       ProjectileSpeed: 0.95
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -353,6 +365,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
       RoundsPerLoad: 0
       OwnRecoil: 0
       Recoil:
@@ -371,6 +384,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 0.7
       ProjectileSpeed: 1.1
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -406,6 +420,7 @@ MonoBehaviour:
         MagazineSize: 1
         ChargeTime: 1
         ProjectileSpeed: 1
+        Reload: 1
       RoundsPerLoad: 0
       OwnRecoil: 0
       Recoil:
@@ -424,6 +439,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 0.95
       ProjectileSpeed: 0.85
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -446,6 +462,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 0.8
       ProjectileSpeed: 0.9
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -468,6 +485,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 0.9
       ProjectileSpeed: 0.95
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -490,6 +508,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 0.85
       ProjectileSpeed: 0.9
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -512,6 +531,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 0.85
       ProjectileSpeed: 0.85
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -534,6 +554,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1
       ProjectileSpeed: 1.3
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -556,6 +577,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1.15
       ProjectileSpeed: 1.3
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -578,6 +600,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 1.05
       ProjectileSpeed: 1.45
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0
@@ -600,6 +623,7 @@ MonoBehaviour:
       MagazineSize: 1
       ChargeTime: 0.8
       ProjectileSpeed: 1.2
+      Reload: 1
     RoundsPerLoad: 0
     FixedMagazineSize: 0
     AmmoType: 0

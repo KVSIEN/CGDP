@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bd3583691f680f40925447c7e1e95a3, type: 3}
+  m_Name: RailCrossbow_T1
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.WeaponData
+  WeaponName: Rail Crossbow
+  FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
+  OnHitEffects: []
+  FireMode: 0
+  RoundsPerMinute: 132
+  BurstCount: 3
+  BurstInterval: 0.15
+  PelletCount: 1
+  ChargeTime: 0.8
+  MinChargeToFire: 0.15
+  HasDrawStances: 0
+  VerticalDraw:
+    ChargeTimeMultiplier: 1.25
+    DamageMultiplier: 1.15
+    SpreadMultiplier: 0.6
+  HorizontalDraw:
+    ChargeTimeMultiplier: 0.65
+    DamageMultiplier: 0.8
+    SpreadMultiplier: 1.8
+  VolleySpacingDeg: 3
+  ProjectileSpeed: 160
+  ProjectileLifetime: 6
+  ProjectileGravity: 6.5
+  ProjectileInstantHitTime: 0
+  LowChargeSpeedMultiplier: 1
+  LowChargeGravityMultiplier: 1
+  LowChargeDamageMultiplier: 1
+  Damage: 126
+  DamageType: 0
+  ArmorPenetration: 0.375
+  HeadshotMultiplier: 2.25
+  RangeOptimal: 81
+  RangeFalloffEnd: 230
+  DamageFalloffMin: 0.775
+  MaxRange: 1000
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 10
+  AmmoType: 1
+  MagazineSize: 2
+  ReloadTime: 2.07
+  TacticalReloadTime: 1.8
+  RoundsPerLoad: 0
+  HipSpreadDeg: 1.05
+  AdsSpreadDeg: 0.01
+  AdsSpreadMultiplier: 0
+  HotAdsSpreadMultiplier: 0
+  SpreadPerShot: 0.33
+  SpreadRecovery: 13
+  MaxSpread: 2.4
+  RecoilScale: {x: 0.33, y: 1.1}
+  RecoilJitter: {x: 0.15, y: 0.085}
+  RecoilHorizontalBias: 0
+  HorizontalDriftMode: 0
+  MuzzleFlip: 0.2
+  MaxAccumulatedRecoil: 4.95
+  MaxAccumulatedHorizontalRecoil: 2.48
+  RecoilHeatPerShot: 0
+  RecoilHeatCooldown: 1
+  MaxHeatRecoilMultiplier: 1
+  RecoilHeatJitterMultiplier: 1
+  RecoilRecoverySpeed: 6.5
+  RecoilRecoveryFraction: 0.95
+  RecoilRecoveryDelay: 0.15
+  AdsRecoilRecoveryFraction: 1
+  AdsRecoilMultiplier: 0.6
+  HipRecoilVerticalMultiplier: 0.1
+  HipRecoilHorizontalMultiplier: 0.1
+  QuickMelee: {fileID: 11400000, guid: 8c0fb3d413164f1e8863c23c1d9ab60c, type: 2}
+  DrawTime: 0.7
+  LookSwayAmount: 0.6
+  LookSwayRecovery: 9
+  IdleSwayAmount: 0.375
+  IdleSwaySpeed: 0.65
+  MoveSwayAmount: 1.1
+  AdsFovDeg: 37.5
+  AdsSpeed: 8
+  FireSound: {fileID: 0}
+  ReloadSound: {fileID: 0}
+  EmptySound: {fileID: 0}

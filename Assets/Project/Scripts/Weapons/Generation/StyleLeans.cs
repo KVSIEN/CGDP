@@ -23,6 +23,7 @@ namespace CGD.Weapons
         public readonly float MagazineSize;
         public readonly float ChargeTime;
         public readonly float ProjectileSpeed;
+        public readonly float Reload;
 
         private StyleLeans(StyleScales s)
         {
@@ -34,6 +35,7 @@ namespace CGD.Weapons
             MagazineSize    = Lean(s.MagazineSize);
             ChargeTime      = Lean(s.ChargeTime);
             ProjectileSpeed = Lean(s.ProjectileSpeed);
+            Reload          = Lean(s.Reload);
         }
 
         // Scales are relative to the category's middle, so how far one sits from 1 is how
