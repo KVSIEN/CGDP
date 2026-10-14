@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce450f5037ef45358449e48afea096fb, type: 3}
+  m_Name: ResourcesPool
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Loot.LootTable
+  _guaranteed: []
+  _rolls:
+    Min: 1
+    Max: 1
+    Bias: 0
+  _pool:
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 38dc2ecd5c694b6d95bec2842742160a, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 3
+      Max: 8
+      Bias: 0
+    Weight: 3
+  - Kind: 0
+    Item: {fileID: 11400000, guid: ea01b7ed4b454a53a57f032c90bd2b12, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 2
+      Max: 6
+      Bias: 0
+    Weight: 2
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 128aacf710814a3196756bafe930ae2d, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.5
+  _nothingWeight: 0
+  _uniqueDraws: 0
+  _tierChecks: []

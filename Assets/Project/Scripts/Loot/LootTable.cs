@@ -15,8 +15,10 @@ namespace CGD.Loot
     //
     // Gear rolled here gets its rarity from the Tier Checks, run from the highest tier down
     // (Legendary 1%, else Epic 5%, else …, else Common 100%), which luck skews toward the
-    // higher tiers. A tier with its own pool swaps the drawn gear for a roll of that pool, all
-    // at that tier, so a 1% Legendary hit can draw from a Legendary-only table.
+    // higher tiers. The outermost table with checks decides for everything nested in it, so a
+    // shared pool ("weapons") rolls at the odds of whichever container draws from it. A tier
+    // with its own pool swaps the drawn gear for a roll of that pool, all at that tier, so a
+    // 1% Legendary hit can draw from a Legendary-only table.
     //
     // Every draw comes from one RandomStream, and each gear drop gets the stream's next
     // seed, so rolling a table from the same seed yields the same drops, rolls and all.
@@ -47,22 +49,26 @@ namespace CGD.Loot
         public void Roll(List<LootDrop> results, float luck = 0f) => Roll(results, luck, Seed.Random());
 
         public void Roll(List<LootDrop> results, float luck, Seed seed) =>
-            Roll(results, Mathf.Max(0f, luck), seed.Stream(), 0, null);
+            Roll(results, Mathf.Max(0f, luck), seed.Stream(), 0, null, null);
 
+        // `checks`: an outer table's tier checks, which win over this table's own.
         // `tier`: set when rolling a tier's pool — its gear drops at that tier, unchecked.
-        private void Roll(List<LootDrop> results, float luck, RandomStream random, int depth, ItemTier? tier)
+        private void Roll(List<LootDrop> results, float luck, RandomStream random, int depth,
+                          TierCheck[] checks, ItemTier? tier)
         {
             if (depth > MaxNesting) return;
+            if (checks == null && _tierChecks.Length > 0) checks = _tierChecks;
 
             foreach (LootEntry entry in _guaranteed)
             {
-                if (entry != null && entry.IsValid) Resolve(entry, results, luck, random, depth, tier);
+                if (entry != null && entry.IsValid) Resolve(entry, results, luck, random, depth, checks, tier);
             }
 
-            RollPool(results, luck, random, depth, tier);
+            RollPool(results, luck, random, depth, checks, tier);
         }
 
-        private void RollPool(List<LootDrop> results, float luck, RandomStream random, int depth, ItemTier? tier)
+        private void RollPool(List<LootDrop> results, float luck, RandomStream random, int depth,
+                              TierCheck[] checks, ItemTier? tier)
         {
             if (_pool.Length == 0) return;
 
@@ -77,7 +83,7 @@ namespace CGD.Loot
                 if (index < 0) continue;
 
                 if (drawn != null) drawn[index] = true;
-                Resolve(_pool[index], results, luck, random, depth, tier);
+                Resolve(_pool[index], results, luck, random, depth, checks, tier);
             }
         }
 
@@ -106,19 +112,20 @@ namespace CGD.Loot
             return entry.Weight;
         }
 
-        private void Resolve(LootEntry entry, List<LootDrop> results, float luck, RandomStream random, int depth, ItemTier? tier)
+        private static void Resolve(LootEntry entry, List<LootDrop> results, float luck, RandomStream random, int depth,
+                                    TierCheck[] checks, ItemTier? tier)
         {
             int count = entry.RollCount(random);
 
             switch (entry.Kind)
             {
                 case LootEntryKind.Item:
-                    AddItem(entry.Item, count, results, luck, random, depth, tier);
+                    AddItem(entry.Item, count, results, luck, random, depth, checks, tier);
                     break;
 
                 case LootEntryKind.Table:
                     for (int i = 0; i < count; i++)
-                        entry.Table.Roll(results, luck, random, depth + 1, tier);
+                        entry.Table.Roll(results, luck, random, depth + 1, checks, tier);
                     break;
 
                 case LootEntryKind.Prefab:
@@ -130,8 +137,8 @@ namespace CGD.Loot
 
         // Stackables drop as one counted stack; gear rolls one unique piece per count, each with
         // its own tier — or, when that tier has a pool, as a roll of the pool instead.
-        private void AddItem(ItemDefinition item, int count, List<LootDrop> results, float luck,
-                             RandomStream random, int depth, ItemTier? tier)
+        private static void AddItem(ItemDefinition item, int count, List<LootDrop> results, float luck,
+                                    RandomStream random, int depth, TierCheck[] checks, ItemTier? tier)
         {
             if (item is not GearDefinition gear)
             {
@@ -147,15 +154,15 @@ namespace CGD.Loot
                     continue;
                 }
 
-                int check = RollTierCheck(luck, random);
+                int check = RollTierCheck(checks, luck, random);
                 if (check < 0)
                 {
                     AddGear(gear, gear.Tier, results, random);
                     continue;
                 }
 
-                TierCheck hit = _tierChecks[check];
-                if (hit.Pool != null) hit.Pool.Roll(results, luck, random, depth + 1, hit.Tier);
+                TierCheck hit = checks[check];
+                if (hit.Pool != null) hit.Pool.Roll(results, luck, random, depth + 1, checks, hit.Tier);
                 else                  AddGear(gear, hit.Tier, results, random);
             }
         }
@@ -172,20 +179,20 @@ namespace CGD.Loot
         // from the tiers above times its own. Drawing once from those shares gives the same odds,
         // and lets luck lean them toward the high tiers the way it always has (×(1 + luck) per
         // tier step). Whatever the checks leave over is the chance of no hit.
-        private int RollTierCheck(float luck, RandomStream random)
+        private static int RollTierCheck(TierCheck[] checks, float luck, RandomStream random)
         {
-            if (_tierChecks.Length == 0) return -1;
+            if (checks == null || checks.Length == 0) return -1;
 
             // Loot is rolled occasionally, not per frame; a small array keeps this readable.
-            var   weights   = new float[_tierChecks.Length];
+            var   weights   = new float[checks.Length];
             float remaining = 1f;
             float total     = 0f;
             for (int tier = (int)ItemTier.Legendary; tier >= (int)ItemTier.Common; tier--)
             {
-                int check = CheckFor((ItemTier)tier);
+                int check = CheckFor(checks, (ItemTier)tier);
                 if (check < 0) continue;
 
-                float share = remaining * Mathf.Clamp01(_tierChecks[check].Chance);
+                float share = remaining * Mathf.Clamp01(checks[check].Chance);
                 remaining     -= share;
                 weights[check] = share * Mathf.Pow(1f + luck, tier);
                 total         += weights[check];
@@ -201,10 +208,10 @@ namespace CGD.Loot
         }
 
         // The first check listed for this tier, or -1.
-        private int CheckFor(ItemTier tier)
+        private static int CheckFor(TierCheck[] checks, ItemTier tier)
         {
-            for (int i = 0; i < _tierChecks.Length; i++)
-                if (_tierChecks[i].Tier == tier) return i;
+            for (int i = 0; i < checks.Length; i++)
+                if (checks[i].Tier == tier) return i;
             return -1;
         }
     }

@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce450f5037ef45358449e48afea096fb, type: 3}
+  m_Name: WeaponCrateLoot
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Loot.LootTable
+  _guaranteed:
+  - Kind: 1
+    Item: {fileID: 0}
+    Table: {fileID: 11400000, guid: 7d23692db698434badcfd328cd571222, type: 2}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 1
+  _rolls:
+    Min: 1
+    Max: 1
+    Bias: 0
+  _pool:
+  - Kind: 1
+    Item: {fileID: 0}
+    Table: {fileID: 11400000, guid: 9616b9666d84410fb8906b8d431c0385, type: 2}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 1
+  _nothingWeight: 1
+  _uniqueDraws: 0
+  _tierChecks:
+  - Tier: 4
+    Chance: 0.01
+    Pool: {fileID: 0}
+  - Tier: 3
+    Chance: 0.05
+    Pool: {fileID: 0}
+  - Tier: 2
+    Chance: 0.15
+    Pool: {fileID: 0}
+  - Tier: 1
+    Chance: 0.35
+    Pool: {fileID: 0}
+  - Tier: 0
+    Chance: 1
+    Pool: {fileID: 0}

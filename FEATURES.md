@@ -144,6 +144,14 @@
 - Generic interactables — terminals, levers, buttons, NPC conversation starters and similar can be set up entirely in the Inspector: a label, optional hold time, optional required item, single use or a cooldown, and events for what happens (and for trying without the required item)
 - Item pickups — any inventory item (resources, consumables, munitions, keycards, rolled gear) can lie in the world as a pickup showing its name and count
 - Chests and containers — open once to spill their loot; can be locked behind a key
+- **Container types**, each with its own colour and what it holds:
+  - **Weapon crate** (red) — one weapon (any firearm or melee weapon), sometimes with ammo
+  - **Equipment locker** (blue) — armor, a shield, an artifact or an attachment, sometimes two
+  - **Supply case** (green) — 2–3 handfuls of consumables: bandages, rations, stims, grenades
+  - **Resource crate** (brown) — 2–3 handfuls of crafting resources: scrap metal, cloth, the odd data core
+  - **Munitions crate** (olive) — 2–3 handfuls of ammo of any kind, arrows included
+  - **Chest** (yellow) — anything and everything: 2–3 draws across weapons, equipment, consumables, resources and ammo
+  - Weapons and equipment from any of them roll their tier the same way as every other drop (Legendary 1% → Common)
 
 ## Items
 
@@ -432,7 +440,7 @@
 - Enemies, breakable props and chests drop loot from Loot Table assets
 - **Guaranteed drops** — always dropped (a boss key, a quest item)
 - **Weighted drops** — a set number of draws (fixed or a range) from a weighted list, with a configurable chance of a draw coming up empty; draws can be made unique so the same entry isn't picked twice
-- **Nested tables** — an entry can roll another table, so shared pools like "common ammo" are authored once and reused
+- **Nested tables** — an entry can roll another table, so shared pools like "common ammo" are authored once and reused. The outermost table with rarity checks decides the tier of everything rolled inside it, so a shared pool drops at the odds of the container it was drawn from
 - **Rarity** — weapons and gear that drop get a tier (Common → Legendary) by checks from the top down: a chance at Legendary, then at Epic, and so on until Common catches the rest (the default table: Legendary 1%, then Epic 5%, Rare 15%, Uncommon 35%, Common 100% — about 1 / 5 / 14 / 28 / 52% of gear drops). Their stats roll at that tier; a luck value makes empty draws rarer and high tiers likelier
 - **Tier pools** — a tier can have its own pool, so landing that tier draws from a different list, all at that tier: a 1% Legendary hit can roll from a Legendary-only table instead of the gear that was drawn
 - Drops can be stacks of items, individually rolled weapons and gear, or any world object (health orbs, effects)

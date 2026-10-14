@@ -284,7 +284,7 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 | Terminal | Collider, `LockTerminal` | `_lock` = the door's `ConditionLock`, `_label`, `_holdDuration`, `_indicator`? (Renderer tinted Off/On). Ready-made: `Prefabs/Environment/Level/LockTerminal` |
 | Switch | Collider, `Switch` | `_label`, `_doors` |
 | Anything else | Collider, `EventInteractable` | `_label`, `_requirement`?, `_onInteract` event |
-| Chest | Collider, `LootContainer`, `LootDropper` | Untick the dropper's `_dropOnDeath` |
+| Chest | Collider, `LootContainer`, `LootDropper` | Untick the dropper's `_dropOnDeath`. Ready-made by type in `Prefabs/Environment/Loot/` (copies of `RewardCache`, each with its own `_label`, body colour and `_table` from `Data/Loot/Containers/`): `WeaponCrate`, `EquipmentLocker`, `ConsumableCase`, `ResourceCrate`, `MunitionsCrate`, `GlobalChest`. Place them as a room rule's *Centerpiece*, *Props* or *Offerings*, an encounter's reward, or by hand |
 | Breakable crate | solid Collider, `Destructible`, `LootDropper`, `DespawnOnDeath` | `_maxHealth`; `_delay` 0 |
 | Crafting station | Collider, `CraftingStation` | `_label`, `_recipes` = recipe assets (e.g. all of `Data/Crafting/`) |
 | Ammo cache | solid Collider, `AmmoCache` | `_munitions` = all four munition assets, `_uses`, `_magazines`, `_contents`? = the visible ammo. Ready-made: `Prefabs/Environment/Props/AmmoCache`. |
@@ -305,7 +305,7 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 
 ### Loot
 
-- **LootTable** (`Create › CGD › Loot › Loot Table`): guaranteed entries + weighted draws; entries can be items, other tables, or prefabs. New entries start at weight 0 — set them. *Tier Checks* set gear rarity: one row per tier with its chance when no higher tier hit (give the lowest tier 100%), checked from Legendary down whatever the row order; a row's optional *Pool* (another LootTable) is rolled instead of the drawn gear when that tier hits, with all its gear at that tier.
+- **LootTable** (`Create › CGD › Loot › Loot Table`): guaranteed entries + weighted draws; entries can be items, other tables, or prefabs. New entries start at weight 0 — set them. *Tier Checks* set gear rarity: one row per tier with its chance when no higher tier hit (give the lowest tier 100%), checked from Legendary down whatever the row order; the outermost table with checks decides for every table nested in it, so shared pools carry none; a row's optional *Pool* (another LootTable) is rolled instead of the drawn gear when that tier hits, with all its gear at that tier.
 - **LootDropper** needs two shared prefabs: an `ItemPickup` prefab and a `WeaponPickup` prefab (leave its `_data` empty).
 
 ---
@@ -620,6 +620,8 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Targeting/` | `Default…TargetSelector`, `AimedArea…`, `FriendlyArea…` | abilities, PlayerLockOn |
 | `Meters/` | Stamina, Mana, Oxygen, Rage | MeterSet, costs, MeterZone |
 | `Loot/` | `DefaultLootTable` (*Tier Checks*: Legendary 1% → Epic 5% → Rare 15% → Uncommon 35% → Common 100%, no tier pools yet) | LootDropper |
+| `Loot/Pools/` | `WeaponsPool` (every firearm category but the Modular Pistol, plus the five melee categories), `EquipmentPool` (Combat Vest, the three shields, the four artifacts, Extended Magazine), `ConsumablesPool` (bandage, ration, stim, frag and smoke grenades), `ResourcesPool` (scrap metal, cloth, data core), `MunitionsPool` (all five ammo types) — shared pools with no *Tier Checks* of their own | the container tables below |
+| `Loot/Containers/` | `WeaponCrateLoot` (a weapon + 50% a munitions draw), `EquipmentLockerLoot` (an equipment piece + 25% a second), `ConsumableCaseLoot`, `ResourceCrateLoot`, `MunitionsCrateLoot` (2–3 draws from their pool), `GlobalChestLoot` (2–3 draws across all five pools); the weapon, equipment and global tables carry the default *Tier Checks* | the container prefabs in `Prefabs/Environment/Loot/` |
 | `Stats/` | `HardDifficultyModifierPreset`, `DamageBoostModifierPreset` | CharacterStats, Stat Buff ability |
 | `Quests/` | `TargetPracticeQuest` → `ResupplyQuest`, `ShootingRangeClearedQuestSignal` | QuestTracker |
 | `Feedback/` | ten `…FeedbackPreset`s | CombatFeedback, QuestFeedback, Stealthable |

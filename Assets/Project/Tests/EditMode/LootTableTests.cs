@@ -29,8 +29,9 @@ namespace CGD.Tests
             return o;
         }
 
-        // A table that draws `item` once per roll, with these tier checks.
-        private LootTable CreateTable(ItemDefinition item, params (ItemTier tier, float chance, LootTable pool)[] checks)
+        // A table that draws `content` (an item, or another table to roll) once per roll, with
+        // these tier checks.
+        private LootTable CreateTable(Object content, params (ItemTier tier, float chance, LootTable pool)[] checks)
         {
             var table      = Create<LootTable>();
             var serialized = new SerializedObject(table);
@@ -38,8 +39,9 @@ namespace CGD.Tests
             SerializedProperty pool = serialized.FindProperty("_pool");
             pool.arraySize = 1;
             SerializedProperty entry = pool.GetArrayElementAtIndex(0);
-            entry.FindPropertyRelative("Kind").enumValueIndex      = (int)LootEntryKind.Item;
-            entry.FindPropertyRelative("Item").objectReferenceValue = item;
+            bool nested = content is LootTable;
+            entry.FindPropertyRelative("Kind").enumValueIndex = (int)(nested ? LootEntryKind.Table : LootEntryKind.Item);
+            entry.FindPropertyRelative(nested ? "Table" : "Item").objectReferenceValue = content;
             entry.FindPropertyRelative("Weight").floatValue        = 1f;
 
             SerializedProperty tiers = serialized.FindProperty("_tierChecks");
@@ -95,6 +97,22 @@ namespace CGD.Tests
                 LootDrop drop = RollOne(table, i);
                 Assert.AreSame(unique, drop.Definition, "The pool's own checks don't apply");
                 Assert.AreEqual(ItemTier.Legendary, drop.Instance.Tier);
+            }
+        }
+
+        [Test]
+        public void TheOutermostTablesChecksDecideForNestedPools()
+        {
+            var rifle = Create<WeaponCategoryData>();
+            LootTable plainPool   = CreateTable(rifle);
+            LootTable checkedPool = CreateTable(rifle, (ItemTier.Common, 1f, null));
+            LootTable container   = CreateTable(plainPool, (ItemTier.Epic, 1f, null));
+            LootTable overriding  = CreateTable(checkedPool, (ItemTier.Epic, 1f, null));
+
+            for (int i = 0; i < 20; i++)
+            {
+                Assert.AreEqual(ItemTier.Epic, RollOne(container, i).Instance.Tier, "A pool without checks rolls at its container's");
+                Assert.AreEqual(ItemTier.Epic, RollOne(overriding, i).Instance.Tier, "The container's checks win over the pool's own");
             }
         }
 
