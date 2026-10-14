@@ -11,6 +11,8 @@ namespace CGD.Weapons
     public class MeleeWeaponData : ScriptableObject
     {
         public string WeaponName = "Fists";
+        [Tooltip("Leaves the offhand free, and can itself be held in the offhand. Generated weapons take it from their model or type")]
+        public bool OneHanded;
 
         [Tooltip("Chained on repeated light-attack taps; wraps back to the first step after the last.")]
         public MeleeAttackStep[] LightCombo = { new() };

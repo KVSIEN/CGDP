@@ -328,7 +328,7 @@
 ### Tuning
 - All values tunable per weapon: RPM, damage, ranges, Accuracy (spreads, bloom, recovery, cap), Control (kick, jitter, drift, buildup, recovery), Handling (draw, sway), reload times
 - Design targets for inter-category (AR vs SMG vs Sniper etc.) and intra-tier (Common vs Legendary) balance live in `WEAPON_BALANCE.md` in the project root — TTK targets per category, off-range falloff expectations, tier feel goals, and the derivation from `WeaponCategoryData` FloatRanges
-- Hand-authored Tier 1 (Common) reference weapons live under `Data/Weapons/Ranged/T1/` — all 20 models each of the assault rifles, SMGs, pistols, sniper rifles, shotguns, LMGs, bows and crossbows (the H-Series pistols show the HeavyRounds and ShotgunShells overrides). These are the "what Common feels like" baseline for every category
+- Hand-authored Tier 1 (Common) reference weapons live under `Data/Weapons/Ranged/T1/` — all 20 models each of the assault rifles, SMGs, pistols, sniper rifles, shotguns, LMGs, bows and crossbows; melee references under `Data/Weapons/Melee/T1/` (the 12 swords so far) (the H-Series pistols show the HeavyRounds and ShotgunShells overrides). These are the "what Common feels like" baseline for every category
 
 ## Melee Combat
 - **The Melee key (V) is the other hand.** What it does depends on the offhand:
@@ -365,6 +365,11 @@
   - **Axe** — slower chop into an overhead slam, bites through armour
   - **Hammer** — slow area slams that crush armour; the sturdiest block, the tightest parry
   - **Spear** — long-reach thrusts and a wide sweep; a narrow guard
+- **Melee models**: a type can list named weapons in three series of four, each equally likely. A model keeps its type's combo but sits on its own side of the type's damage, speed, reach, armour penetration, stamina cost and guard, and leans toward it the way gun models do. A model can also be held differently from its type: two-handed models leave no hand free for a shield or offhand weapon. Swords so far:
+  - **Arming swords** (one-handed, balanced): Arming Sword (the baseline), Broadsword (sturdier block, slower), Falchion (cleaver-like: hits hardest of the one-handers, bites through armour), Sabre (quick, the best parry of the arming swords)
+  - **Curved swords** (one-handed, fast slashes, good parries, little armour penetration, a looser block): Katana, Scimitar, Dao (the steadiest), Shamshir (fastest sword, weakest block)
+  - **Two-handed swords** (no shield or offhand; reach, heavy hits and a sturdy block, but slow and stamina-hungry): Longsword (the quickest two-hander), Claymore, Zweihänder (longest reach and hardest hits, slowest swing), Nodachi (long reach, cuts rather than pierces)
+  - A run that starts with a sword in the offhand always gets a one-handed one
 - Rolled stats: damage, **attack speed** (how fast every swing winds up, strikes and recovers) and armour penetration follow quality; reach, stamina cost and guard strength vary per weapon
 - Swings cost **stamina** (heavy attacks cost double), shown as a bar above the health panel; a swing that can't be paid doesn't start. Stamina refills after a short pause. (A character without a stamina meter swings for free)
 - **Block** (Aim, right mouse, between swings or in a swing's cancel window): raising the guard slows you to aiming speed and stops most of the damage from hits in front of you; what it stops costs stamina, and running out **breaks the guard** (the hit lands in full). Hits from behind or the side, and damage over time, ignore the guard

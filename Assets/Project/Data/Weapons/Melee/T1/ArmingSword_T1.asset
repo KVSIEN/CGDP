@@ -1,0 +1,129 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 972769c7c18bee9459e105b50ca2349b, type: 3}
+  m_Name: ArmingSword_T1
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.MeleeWeaponData
+  WeaponName: Arming Sword
+  OneHanded: 1
+  LightCombo:
+  - Timeline: {fileID: 0}
+    Damage: 27
+    ArmorPenetration: 0.075
+    DamageType: 0
+    CriticalMultiplier: 1.5
+    WindupTime: 0.1
+    ActiveTime: 0.14
+    RecoveryTime: 0.24
+    CancelFrom: 0.4
+    HitShape: 1
+    Range: 1.995
+    Radius: 0.4
+    SweepArcDeg: 100
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+  - Timeline: {fileID: 0}
+    Damage: 28.35
+    ArmorPenetration: 0.075
+    DamageType: 0
+    CriticalMultiplier: 1.5
+    WindupTime: 0.1
+    ActiveTime: 0.14
+    RecoveryTime: 0.24
+    CancelFrom: 0.4
+    HitShape: 1
+    Range: 1.995
+    Radius: 0.4
+    SweepArcDeg: 100
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+  - Timeline: {fileID: 0}
+    Damage: 37.8
+    ArmorPenetration: 0.075
+    DamageType: 0
+    CriticalMultiplier: 1.5
+    WindupTime: 0.14
+    ActiveTime: 0.12
+    RecoveryTime: 0.34
+    CancelFrom: 0.75
+    HitShape: 0
+    Range: 2.31
+    Radius: 0.4
+    SweepArcDeg: 90
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+  HeavyAttack:
+    Timeline: {fileID: 0}
+    Damage: 64.8
+    ArmorPenetration: 0.075
+    DamageType: 0
+    CriticalMultiplier: 1.5
+    WindupTime: 0.3
+    ActiveTime: 0.18
+    RecoveryTime: 0.45
+    CancelFrom: 0.75
+    HitShape: 1
+    Range: 2.205
+    Radius: 0.45
+    SweepArcDeg: 140
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+  Bash:
+    Timeline: {fileID: 0}
+    Damage: 13.5
+    ArmorPenetration: 0.075
+    DamageType: 0
+    CriticalMultiplier: 1.5
+    WindupTime: 0.04
+    ActiveTime: 0.1
+    RecoveryTime: 0.35
+    CancelFrom: 1
+    HitShape: 0
+    Range: 1.68
+    Radius: 0.5
+    SweepArcDeg: 90
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+  HeavyHoldThreshold: 0.35
+  ComboResetTime: 1.2
+  WeaveWindow: 2.5
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 8
+  AttackSpeed: 1.1
+  StaminaCost:
+    Meter: {fileID: 11400000, guid: e97086cb23b549a9b402e8130ab73a15, type: 2}
+    Amount: 10
+  HeavyStaminaMultiplier: 2
+  CanGuard: 1
+  Guard:
+    BlockDamageMultiplier: 0.3
+    StaminaPerDamage: 0.5
+    ArcDeg: 120
+    ParryWindow: 0.2
+    ParryStun: 1.2
+  ParryReflect: {fileID: 11400000, guid: adda6cbf460d4c6e8d4b03b035b0b513, type: 2}

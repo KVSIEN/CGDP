@@ -21,6 +21,10 @@ namespace CGD.Weapons
         public MeleeWeaponType Type;
         public string[] Names = { "Blade" };
 
+        [Header("Models")]
+        [Tooltip("Optional: the named weapons this type rolls, by weight, each with its own scales and grip. Replaces Names when set")]
+        public MeleeModel[] Models = System.Array.Empty<MeleeModel>();
+
         [Header("Moveset (template)")]
         [Tooltip("Light combo; Damage is relative to the rolled Damage")]
         public MeleeAttackStep[] LightCombo = { new() { Damage = 1f } };

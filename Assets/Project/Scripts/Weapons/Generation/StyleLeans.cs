@@ -27,22 +27,23 @@ namespace CGD.Weapons
 
         private StyleLeans(StyleScales s)
         {
-            Damage          = Lean(s.Damage);
-            FireRate        = Lean(s.FireRate);
-            Recoil          = Lean(s.Recoil);
-            Spread          = Lean(s.Spread);
-            Range           = Lean(s.Range);
-            MagazineSize    = Lean(s.MagazineSize);
-            ChargeTime      = Lean(s.ChargeTime);
-            ProjectileSpeed = Lean(s.ProjectileSpeed);
-            Reload          = Lean(s.Reload);
+            Damage          = LeanOf(s.Damage);
+            FireRate        = LeanOf(s.FireRate);
+            Recoil          = LeanOf(s.Recoil);
+            Spread          = LeanOf(s.Spread);
+            Range           = LeanOf(s.Range);
+            MagazineSize    = LeanOf(s.MagazineSize);
+            ChargeTime      = LeanOf(s.ChargeTime);
+            ProjectileSpeed = LeanOf(s.ProjectileSpeed);
+            Reload          = LeanOf(s.Reload);
         }
 
         // Scales are relative to the category's middle, so how far one sits from 1 is how
         // strongly the style tends that way.
         public static StyleLeans From(StyleScales scales) => new(scales);
 
-        private static float Lean(float scale)
+        // The lean for one scale; melee models lean their own stats with it too.
+        public static float LeanOf(float scale)
         {
             float offset = scale - 1f;
             return Mathf.Abs(offset) < DeadZone ? 0f : Mathf.Clamp(Strength * offset, -Cap, Cap);

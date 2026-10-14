@@ -25,11 +25,151 @@ MonoBehaviour:
   _oneHanded: 1
   Type: 1
   Names:
-  - Machete
-  - Gladius
+  - Arming Sword
+  - Broadsword
+  - Falchion
   - Sabre
+  - Katana
+  - Scimitar
+  - Dao
+  - Shamshir
   - Longsword
-  - Cutlass
+  - Claymore
+  - Zweihänder
+  - Nodachi
+  Models:
+  - Name: Arming Sword
+    Weight: 1
+    Scales:
+      Damage: 1
+      AttackSpeed: 1
+      Reach: 1
+      ArmorPenetration: 1
+      StaminaCost: 1
+      BlockDamage: 1
+      ParryWindow: 1
+    Grip: 0
+  - Name: Broadsword
+    Weight: 1
+    Scales:
+      Damage: 1.1
+      AttackSpeed: 0.92
+      Reach: 1
+      ArmorPenetration: 0.8
+      StaminaCost: 1.1
+      BlockDamage: 0.85
+      ParryWindow: 0.9
+    Grip: 0
+  - Name: Falchion
+    Weight: 1
+    Scales:
+      Damage: 1.15
+      AttackSpeed: 0.95
+      Reach: 0.95
+      ArmorPenetration: 1.4
+      StaminaCost: 1.05
+      BlockDamage: 1
+      ParryWindow: 0.9
+    Grip: 0
+  - Name: Sabre
+    Weight: 1
+    Scales:
+      Damage: 0.9
+      AttackSpeed: 1.12
+      Reach: 1
+      ArmorPenetration: 0.8
+      StaminaCost: 0.9
+      BlockDamage: 1.05
+      ParryWindow: 1.25
+    Grip: 0
+  - Name: Katana
+    Weight: 1
+    Scales:
+      Damage: 1
+      AttackSpeed: 1.08
+      Reach: 1.02
+      ArmorPenetration: 0.7
+      StaminaCost: 1
+      BlockDamage: 1.1
+      ParryWindow: 1.2
+    Grip: 0
+  - Name: Scimitar
+    Weight: 1
+    Scales:
+      Damage: 0.92
+      AttackSpeed: 1.15
+      Reach: 0.95
+      ArmorPenetration: 0.6
+      StaminaCost: 0.9
+      BlockDamage: 1.15
+      ParryWindow: 1.15
+    Grip: 0
+  - Name: Dao
+    Weight: 1
+    Scales:
+      Damage: 1
+      AttackSpeed: 1.05
+      Reach: 1
+      ArmorPenetration: 0.8
+      StaminaCost: 0.95
+      BlockDamage: 1
+      ParryWindow: 1.1
+    Grip: 0
+  - Name: Shamshir
+    Weight: 1
+    Scales:
+      Damage: 0.88
+      AttackSpeed: 1.2
+      Reach: 0.98
+      ArmorPenetration: 0.5
+      StaminaCost: 0.85
+      BlockDamage: 1.2
+      ParryWindow: 1.25
+    Grip: 0
+  - Name: Longsword
+    Weight: 1
+    Scales:
+      Damage: 1.25
+      AttackSpeed: 0.9
+      Reach: 1.15
+      ArmorPenetration: 1.2
+      StaminaCost: 1.2
+      BlockDamage: 0.85
+      ParryWindow: 1
+    Grip: 2
+  - Name: Claymore
+    Weight: 1
+    Scales:
+      Damage: 1.4
+      AttackSpeed: 0.8
+      Reach: 1.2
+      ArmorPenetration: 1.2
+      StaminaCost: 1.35
+      BlockDamage: 0.8
+      ParryWindow: 0.85
+    Grip: 2
+  - Name: Zweihänder
+    Weight: 1
+    Scales:
+      Damage: 1.55
+      AttackSpeed: 0.72
+      Reach: 1.3
+      ArmorPenetration: 1.3
+      StaminaCost: 1.5
+      BlockDamage: 0.75
+      ParryWindow: 0.75
+    Grip: 2
+  - Name: Nodachi
+    Weight: 1
+    Scales:
+      Damage: 1.35
+      AttackSpeed: 0.85
+      Reach: 1.25
+      ArmorPenetration: 0.9
+      StaminaCost: 1.3
+      BlockDamage: 0.95
+      ParryWindow: 1
+    Grip: 2
   LightCombo:
   - Timeline: {fileID: 0}
     Damage: 1

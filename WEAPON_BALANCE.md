@@ -209,6 +209,26 @@ lowering base damage.
   - **C-Series** (compounds: fast, flat bolts, quick span): Hunting Crossbow (the category's middle: 120 dmg), Reverse-Draw Crossbow (130 m/s), Tactical Crossbow (fastest compound span), Recurve Crossbow
   - Crossbows lean on `Reload` (spanning time; full and tactical reload alike) and `ProjectileSpeed`. Armour penetration stays the category's (25–50%). Scales are built against the crossbow midpoints (120 dmg, 165 RPM, 60 m, 1.75° hip spread, 100 m/s, 2.3 s reload).
 
+### Melee: Sword
+- **Models** (`Models` on `SwordMeleeCategory`, all equal weight, three series of four, so each series is a third). Scales are built against the sword midpoints (27 dmg per 1× step, 1.1 attack speed, 1.05 reach, 7.5% armour penetration, 10 stamina per swing, 30% of a blocked hit through, 0.2 s parry window). Damage × speed stays within about ±15% of the Arming Sword; two-handers buy reach and a sturdier block with the shield slot, slower swings and more stamina.
+
+| Model | Series | Grip | Damage | Speed | Reach | Pen | Stamina | Block (through) | Parry |
+|---|---|---|---|---|---|---|---|---|---|
+| Arming Sword | Arming | 1H | 27 | 1.10 | 1.05 | 7.5% | 10 | 30% | 0.20 s |
+| Broadsword | Arming | 1H | 29.7 | 1.01 | 1.05 | 6% | 11 | 25.5% | 0.18 s |
+| Falchion | Arming | 1H | 31 | 1.04 | 1.00 | 10.5% | 10.5 | 30% | 0.18 s |
+| Sabre | Arming | 1H | 24.3 | 1.23 | 1.05 | 6% | 9 | 31.5% | 0.25 s |
+| Katana | Curved | 1H | 27 | 1.19 | 1.07 | 5.2% | 10 | 33% | 0.24 s |
+| Scimitar | Curved | 1H | 24.8 | 1.26 | 1.00 | 4.5% | 9 | 34.5% | 0.23 s |
+| Dao | Curved | 1H | 27 | 1.16 | 1.05 | 6% | 9.5 | 30% | 0.22 s |
+| Shamshir | Curved | 1H | 23.8 | 1.32 | 1.03 | 3.7% | 8.5 | 36% | 0.25 s |
+| Longsword | Two-handed | 2H | 33.8 | 0.99 | 1.21 | 9% | 12 | 25.5% | 0.20 s |
+| Claymore | Two-handed | 2H | 37.8 | 0.88 | 1.26 | 9% | 13.5 | 24% | 0.17 s |
+| Zweihänder | Two-handed | 2H | 41.9 | 0.79 | 1.37 | 9.8% | 15 | 22.5% | 0.15 s |
+| Nodachi | Two-handed | 2H | 36.5 | 0.94 | 1.31 | 6.8% | 13 | 28.5% | 0.20 s |
+
+- Tier 1 references (`MeleeWeaponData`) are in `Assets/Project/Data/Weapons/Melee/T1/`, one per model, with the sword moveset scaled by these numbers.
+
 ## Recoil Patterns
 
 Each model carries a `RecoilPattern` (on `WeaponModel`; a firing variant can carry its own with
