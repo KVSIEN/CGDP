@@ -366,7 +366,7 @@
   - **Hammer** — slow area slams that crush armour; the sturdiest block, the tightest parry
   - **Spear** — long-reach thrusts and a wide sweep; a narrow guard
 - **Melee models**: a type can list named weapons in three series of four, each equally likely. A model keeps its type's combo but sits on its own side of the type's damage, speed, reach, armour penetration, stamina cost and guard, and leans toward it the way gun models do. A model can also be held differently from its type: two-handed models leave no hand free for a shield or offhand weapon. Swords so far:
-  - **Arming swords** (one-handed, balanced): Arming Sword (the baseline), Broadsword (sturdier block, slower), Falchion (cleaver-like: hits hardest of the one-handers, bites through armour), Sabre (quick, the best parry of the arming swords)
+  - **Arming swords** (one-handed, balanced): Arming Sword (the baseline), Broadsword (sturdier block, slower), Rapier (a thrusting blade: the longest one-handed reach, the most armour penetration and the best parry of any sword, but light hits and a weak block), Sabre (quick, a good parry)
   - **Curved swords** (one-handed, fast slashes, good parries, little armour penetration, a looser block): Katana, Scimitar, Dao (the steadiest), Shamshir (fastest sword, weakest block)
   - **Two-handed swords** (no shield or offhand; reach, heavy hits and a sturdy block, but slow and stamina-hungry): Longsword (the quickest two-hander), Claymore, Zweihänder (longest reach and hardest hits, slowest swing), Nodachi (long reach, cuts rather than pierces)
   - A run that starts with a sword in the offhand always gets a one-handed one

@@ -27,7 +27,7 @@ MonoBehaviour:
   Names:
   - Arming Sword
   - Broadsword
-  - Falchion
+  - Rapier
   - Sabre
   - Katana
   - Scimitar
@@ -60,16 +60,16 @@ MonoBehaviour:
       BlockDamage: 0.85
       ParryWindow: 0.9
     Grip: 0
-  - Name: Falchion
+  - Name: Rapier
     Weight: 1
     Scales:
-      Damage: 1.15
-      AttackSpeed: 0.95
-      Reach: 0.95
-      ArmorPenetration: 1.4
-      StaminaCost: 1.05
-      BlockDamage: 1
-      ParryWindow: 0.9
+      Damage: 0.88
+      AttackSpeed: 1.1
+      Reach: 1.12
+      ArmorPenetration: 1.5
+      StaminaCost: 0.85
+      BlockDamage: 1.15
+      ParryWindow: 1.35
     Grip: 0
   - Name: Sabre
     Weight: 1
