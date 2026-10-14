@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 444d49eb58cd4ab1a3f8ed2c5d0851bc, type: 3}
   m_Name: DefaultEncounterSettings
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.EncounterSettings
-  _shutterPrefab: {fileID: 7400000000000000208, guid: e0deddb4b86c40debf6b40da03d3f3c4, type: 3}
-  _rewardPrefab: {fileID: 7400000000000000301, guid: 0237200ecfd543a68bbcdff245a28b41, type: 3}
+  _shutterPrefab: {fileID: 7400000000000000208, guid: bf249b00e0915a444ace831a4ebd89e7, type: 3}
+  _rewardPrefab: {fileID: 7400000000000000301, guid: baa532e693434abd8716f2d684c696b2, type: 3}
   _terminalPrefab: {fileID: 7320000000000000001, guid: 9d6e3b2a41c74f08b5e2c7a90f1d4e65, type: 3}
   _waveSize:
     Min: 2
@@ -27,7 +27,7 @@ MonoBehaviour:
   _riftWaves: 3
   _stealthBonusLuck: 2
   _alarmWaves: 1
-  _puzzleSwitchPrefab: {fileID: 7400000000000000401, guid: eaed1e82f19544fa98d2cef942d92bed, type: 3}
+  _puzzleSwitchPrefab: {fileID: 7400000000000000401, guid: b9fe96e468cc7cf4cb9427e6f39b4d47, type: 3}
   _puzzleDoorPrefab: {fileID: 7500000000000000000, guid: 29b9e8d140584c16916a679f989937d5, type: 3}
   _puzzleNodes:
     Min: 4

@@ -517,6 +517,7 @@ Each Rooms entry lists enemy prefabs (count read at the room's intensity), a cen
 - **Keys**: `_keyPrefab` is placed in the room the map graph picks for each Keycard-locked connection. Every key is reachable without opening a door, and each locked door uses one up, so one key item (`SecurityKeycard`) serves every door. For other locks, make the pickup's item match the door's `Door._key` and tick `_key.Consume`.
 - **Terminals**: for each Terminal-locked connection, `_terminalPrefab` is placed in every room the graph lists, and each one is bound to the `ConditionLock` found on that connection's door. A missing terminal prefab, or a door without a `ConditionLock`, is logged as a level warning.
 - **Exit**: when the Exit room's content has no `LevelExit`, a plain exit pad is added. Using it ("Extract") calls `GameFlow.Victory`.
+- **Treasure rooms**: the Treasure entry's centrepiece is `Prefabs/Environment/Loot/GlobalChest`, the same prefab as the encounters' `_rewardPrefab` (an Ambush poses as a Treasure room).
 - **Start room (hub)**: the Start entry's centrepiece is `Prefabs/Environment/Level/HubWorkbench` — a `CraftingStation` (`_recipes` = the four `Data/Crafting` recipes) with its bench 2.5 m from its origin, so the player doesn't spawn inside it. The Start entry keeps `EnemyCount` 0.
 
 - **Encounter rooms**: with `_encounters` set, `LevelBuilder` gives every Lockdown, Holdout, Ambush, Stealth, Rift, Puzzle and Hazard room an encounter object (`<Type>Encounter_<id>` under the Level) after the NavMesh is baked: a `RoomShutter` just inside each of the room's doorways (sunk into the floor until the room seals), spots set aside for arriving enemies and consoles, and the room type's encounter component. Nothing to place by hand. Gamble and Emergency Exit rooms are plain rooms whose rule brings a centrepiece.
@@ -524,7 +525,7 @@ Each Rooms entry lists enemy prefabs (count read at the room's intensity), a cen
   | `EncounterSettings` field | Default asset uses | Is |
   |---|---|---|
   | `_shutterPrefab` | `RoomShutter` | `RoomShutter` on the root, `_slab` = its `Slab` child (a doorway-sized box with a BoxCollider = `_blocker`), origin on the floor at the doorway, +Z out of the room |
-  | `_rewardPrefab` | `RewardCache` | `LootContainer` + `LootDropper` (`_table` = `Loot/DefaultLootTable`, `_dropOnDeath` off, pickups = `LootItemPickup` / `LootWeaponPickup`) |
+  | `_rewardPrefab` | `Loot/GlobalChest` | `LootContainer` + `LootDropper` (`_table` = `Loot/Containers/GlobalChestLoot`, `_dropOnDeath` off, pickups = `LootItemPickup` / `LootWeaponPickup`). The same chest as the Treasure centrepiece, so an Ambush looks like a Treasure room |
   | `_terminalPrefab` | `LockTerminal` | the Holdout uplink and the Hazard vent controls |
   | `_puzzleSwitchPrefab` | `PuzzleSwitch` | `PuzzleSwitch` (`_indicator` = its light) on a console with a collider |
   | `_puzzleDoorPrefab` | `PuzzleLevelDoor` (blue) | like `TerminalLevelDoor`: `Door` + `ConditionLock` (`_label` Calibration, `_required` 1) on the `Hinge` |

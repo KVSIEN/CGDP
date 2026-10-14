@@ -185,7 +185,7 @@ MonoBehaviour:
       Min: 0
       Max: 0
       Bias: 0
-    Centerpiece: {fileID: 0}
+    Centerpiece: {fileID: 7400000000000000301, guid: baa532e693434abd8716f2d684c696b2, type: 3}
     Props: []
     PropCount:
       Min: 1
@@ -305,7 +305,7 @@ MonoBehaviour:
       Min: 0
       Max: 0
       Bias: 0
-    Centerpiece: {fileID: 7400000000000000601, guid: 5e5d532de0cf43459b12bef153448d90, type: 3}
+    Centerpiece: {fileID: 7400000000000000601, guid: 4136c546d6c7e434797d2393982b063d, type: 3}
     Props: []
     PropCount:
       Min: 1
@@ -317,7 +317,7 @@ MonoBehaviour:
       Min: 0
       Max: 0
       Bias: 0
-    Centerpiece: {fileID: 7400000000000000701, guid: 57ec6e600cff44c18d48add9de97062d, type: 3}
+    Centerpiece: {fileID: 7400000000000000701, guid: 8a0ec5f28a5ed854181828cd1696c581, type: 3}
     Props: []
     PropCount:
       Min: 0
@@ -350,7 +350,7 @@ MonoBehaviour:
     Offerings:
     - {fileID: 246657195920720429, guid: 6b1f0e4c2d8a4e7b9c35a1f2d4e60b87, type: 3}
     - {fileID: 7530473905300712717, guid: c9bf881dd67b4a0abd3f1f58135261a4, type: 3}
-    - {fileID: 7400000000000000301, guid: 0237200ecfd543a68bbcdff245a28b41, type: 3}
+    - {fileID: 7400000000000000301, guid: 75d68765a99f0b142aa042f8b2bea8e1, type: 3}
   - Type: 20
     Enemies: []
     EnemyCount:
