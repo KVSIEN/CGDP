@@ -13,7 +13,7 @@ namespace CGD.Weapons
         protected WeaponItem(ItemDefinition definition) : base(definition) { }
 
         // Leaves the offhand free (see WeaponCategory.OneHanded). Hand-authored weapons are two-handed.
-        public virtual bool IsOneHanded => Definition is WeaponCategory category && category.OneHanded;
+        public bool IsOneHanded => Definition is WeaponCategory category && category.OneHanded;
 
         // Restores whatever the weapon spends (a firearm's magazine) on revive.
         public virtual void Refill() { }

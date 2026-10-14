@@ -1,0 +1,153 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18b34f39be9449f78ec5cf626bb420a5, type: 3}
+  m_Name: BroadswordMeleeCategory
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.MeleeCategoryData
+  _displayName: Broadsword
+  _description: 
+  _icon: {fileID: 0}
+  _reality: 0
+  _tier: 0
+  _weight: 0.1
+  _baseValue: 150
+  _rollProfile: {fileID: 0}
+  _statRanges: []
+  _perkPool: {fileID: 11400000, guid: 46756d1ce4124b5c8905716c4d8a5986, type: 2}
+  _oneHanded: 1
+  Type: 1
+  Names:
+  - Broadsword
+  LightCombo:
+  - Timeline: {fileID: 0}
+    Damage: 1.05
+    ArmorPenetration: 0
+    DamageType: 0
+    CriticalMultiplier: 1.5
+    WindupTime: 0.12
+    ActiveTime: 0.14
+    RecoveryTime: 0.26
+    CancelFrom: 0.45
+    HitShape: 1
+    Range: 1.9
+    Radius: 0.4
+    SweepArcDeg: 110
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+  - Timeline: {fileID: 0}
+    Damage: 1.1
+    ArmorPenetration: 0
+    DamageType: 0
+    CriticalMultiplier: 1.5
+    WindupTime: 0.12
+    ActiveTime: 0.14
+    RecoveryTime: 0.26
+    CancelFrom: 0.45
+    HitShape: 1
+    Range: 1.9
+    Radius: 0.4
+    SweepArcDeg: 110
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+  - Timeline: {fileID: 0}
+    Damage: 1.6
+    ArmorPenetration: 0
+    DamageType: 0
+    CriticalMultiplier: 1.5
+    WindupTime: 0.18
+    ActiveTime: 0.12
+    RecoveryTime: 0.38
+    CancelFrom: 0.75
+    HitShape: 2
+    Range: 1.6
+    Radius: 0.9
+    SweepArcDeg: 90
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+  HeavyAttack:
+    Timeline: {fileID: 0}
+    Damage: 2.6
+    ArmorPenetration: 0
+    DamageType: 0
+    CriticalMultiplier: 1.5
+    WindupTime: 0.34
+    ActiveTime: 0.18
+    RecoveryTime: 0.48
+    CancelFrom: 0.75
+    HitShape: 1
+    Range: 2.1
+    Radius: 0.45
+    SweepArcDeg: 160
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
+  HeavyHoldThreshold: 0.35
+  ComboResetTime: 1.2
+  WeaveWindow: 2.5
+  Damage:
+    Min: 24.64
+    Max: 35.84
+    Bias: 0
+  AttackSpeed:
+    Min: 0.92
+    Max: 1.104
+    Bias: 0
+  Reach:
+    Min: 1
+    Max: 1.1
+    Bias: 0
+  ArmorPenetration:
+    Min: 0
+    Max: 0.12
+    Bias: 0
+  StaminaMeter: {fileID: 11400000, guid: e97086cb23b549a9b402e8130ab73a15, type: 2}
+  StaminaCost:
+    Min: 8.8
+    Max: 13.2
+    Bias: 0
+  HeavyStaminaMultiplier: 2
+  BlockDamageMultiplier:
+    Min: 0.205
+    Max: 0.287
+    Bias: 0
+  ParryWindow:
+    Min: 0.162
+    Max: 0.198
+    Bias: 0
+  Guard:
+    BlockDamageMultiplier: 0.3
+    StaminaPerDamage: 0.45
+    ArcDeg: 130
+    ParryWindow: 0.2
+    ParryStun: 1.2
+  ParryReflect: {fileID: 11400000, guid: adda6cbf460d4c6e8d4b03b035b0b513, type: 2}
+  OffhandPenalty:
+  - Stat: 14
+    Op: 1
+    Value: 0.25
+  - Stat: 13
+    Op: 1
+    Value: 0.25
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 8

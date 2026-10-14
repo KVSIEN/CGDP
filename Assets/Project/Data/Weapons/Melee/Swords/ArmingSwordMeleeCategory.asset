@@ -9,15 +9,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 972769c7c18bee9459e105b50ca2349b, type: 3}
-  m_Name: Longsword_T1
-  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.MeleeWeaponData
-  WeaponName: Longsword
-  OneHanded: 0
+  m_Script: {fileID: 11500000, guid: 18b34f39be9449f78ec5cf626bb420a5, type: 3}
+  m_Name: ArmingSwordMeleeCategory
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.MeleeCategoryData
+  _displayName: Arming Sword
+  _description: 
+  _icon: {fileID: 0}
+  _reality: 0
+  _tier: 0
+  _weight: 0.1
+  _baseValue: 140
+  _rollProfile: {fileID: 0}
+  _statRanges: []
+  _perkPool: {fileID: 11400000, guid: 46756d1ce4124b5c8905716c4d8a5986, type: 2}
+  _oneHanded: 1
+  Type: 1
+  Names:
+  - Arming Sword
   LightCombo:
   - Timeline: {fileID: 0}
-    Damage: 33.75
-    ArmorPenetration: 0.09
+    Damage: 1
+    ArmorPenetration: 0
     DamageType: 0
     CriticalMultiplier: 1.5
     WindupTime: 0.1
@@ -25,7 +37,7 @@ MonoBehaviour:
     RecoveryTime: 0.24
     CancelFrom: 0.4
     HitShape: 1
-    Range: 2.294
+    Range: 1.9
     Radius: 0.4
     SweepArcDeg: 100
     SweepRays: 5
@@ -34,8 +46,8 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   - Timeline: {fileID: 0}
-    Damage: 35.438
-    ArmorPenetration: 0.09
+    Damage: 1.05
+    ArmorPenetration: 0
     DamageType: 0
     CriticalMultiplier: 1.5
     WindupTime: 0.1
@@ -43,7 +55,7 @@ MonoBehaviour:
     RecoveryTime: 0.24
     CancelFrom: 0.4
     HitShape: 1
-    Range: 2.294
+    Range: 1.9
     Radius: 0.4
     SweepArcDeg: 100
     SweepRays: 5
@@ -52,8 +64,8 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   - Timeline: {fileID: 0}
-    Damage: 47.25
-    ArmorPenetration: 0.09
+    Damage: 1.4
+    ArmorPenetration: 0
     DamageType: 0
     CriticalMultiplier: 1.5
     WindupTime: 0.14
@@ -61,7 +73,7 @@ MonoBehaviour:
     RecoveryTime: 0.34
     CancelFrom: 0.75
     HitShape: 0
-    Range: 2.657
+    Range: 2.2
     Radius: 0.4
     SweepArcDeg: 90
     SweepRays: 5
@@ -71,8 +83,8 @@ MonoBehaviour:
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
     Timeline: {fileID: 0}
-    Damage: 81
-    ArmorPenetration: 0.09
+    Damage: 2.4
+    ArmorPenetration: 0
     DamageType: 0
     CriticalMultiplier: 1.5
     WindupTime: 0.3
@@ -80,28 +92,9 @@ MonoBehaviour:
     RecoveryTime: 0.45
     CancelFrom: 0.75
     HitShape: 1
-    Range: 2.536
+    Range: 2.1
     Radius: 0.45
     SweepArcDeg: 140
-    SweepRays: 5
-    OnHitEffects: []
-    SwingSound: {fileID: 0}
-    HitSound: {fileID: 0}
-    DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  Bash:
-    Timeline: {fileID: 0}
-    Damage: 16.875
-    ArmorPenetration: 0.09
-    DamageType: 0
-    CriticalMultiplier: 1.5
-    WindupTime: 0.04
-    ActiveTime: 0.1
-    RecoveryTime: 0.35
-    CancelFrom: 1
-    HitShape: 0
-    Range: 1.932
-    Radius: 0.5
-    SweepArcDeg: 90
     SweepRays: 5
     OnHitEffects: []
     SwingSound: {fileID: 0}
@@ -110,20 +103,51 @@ MonoBehaviour:
   HeavyHoldThreshold: 0.35
   ComboResetTime: 1.2
   WeaveWindow: 2.5
-  HitMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  NoiseRadius: 8
-  AttackSpeed: 0.99
+  Damage:
+    Min: 22
+    Max: 32
+    Bias: 0
+  AttackSpeed:
+    Min: 1
+    Max: 1.2
+    Bias: 0
+  Reach:
+    Min: 1
+    Max: 1.1
+    Bias: 0
+  ArmorPenetration:
+    Min: 0
+    Max: 0.15
+    Bias: 0
+  StaminaMeter: {fileID: 11400000, guid: e97086cb23b549a9b402e8130ab73a15, type: 2}
   StaminaCost:
-    Meter: {fileID: 11400000, guid: e97086cb23b549a9b402e8130ab73a15, type: 2}
-    Amount: 12
+    Min: 8
+    Max: 12
+    Bias: 0
   HeavyStaminaMultiplier: 2
-  CanGuard: 1
+  BlockDamageMultiplier:
+    Min: 0.25
+    Max: 0.35
+    Bias: 0
+  ParryWindow:
+    Min: 0.18
+    Max: 0.22
+    Bias: 0
   Guard:
-    BlockDamageMultiplier: 0.255
+    BlockDamageMultiplier: 0.3
     StaminaPerDamage: 0.5
     ArcDeg: 120
     ParryWindow: 0.2
     ParryStun: 1.2
   ParryReflect: {fileID: 11400000, guid: adda6cbf460d4c6e8d4b03b035b0b513, type: 2}
+  OffhandPenalty:
+  - Stat: 14
+    Op: 1
+    Value: 0.25
+  - Stat: 13
+    Op: 1
+    Value: 0.25
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseRadius: 8

@@ -8,10 +8,12 @@ using CGD.Stats;
 
 namespace CGD.Weapons
 {
-    // One melee weapon type (dagger, sword…), rolled into individual weapons like a
-    // WeaponCategoryData. The moveset is authored once as template steps; each roll scales
-    // them: step Damage values are relative (1 = the rolled Damage), step Range is
-    // multiplied by the rolled Reach. Duplicate an existing category to start a new type.
+    // One melee weapon (a Rapier, a Claymore) or a broad type (dagger), rolled into individual
+    // weapons like a WeaponCategoryData. Each asset is free to be its own weapon: its moveset,
+    // ranges, grip, guard and on-hit effects are all its own, and Type only tags what kind of
+    // weapon it is (for loot filters and shops). The moveset is authored once as template
+    // steps; each roll scales them: step Damage values are relative (1 = the rolled Damage),
+    // step Range is multiplied by the rolled Reach. Duplicate a similar weapon to start a new one.
     // Light weapons trade damage for speed, reach and a long parry window; heavy ones hit
     // hard and pierce armour but swing slowly and parry poorly.
     [CreateAssetMenu(fileName = "MeleeCategory", menuName = "CGD/Weapons/Melee Category")]
@@ -20,10 +22,6 @@ namespace CGD.Weapons
         [Header("Identity")]
         public MeleeWeaponType Type;
         public string[] Names = { "Blade" };
-
-        [Header("Models")]
-        [Tooltip("Optional: the named weapons this type rolls, by weight, each with its own scales and grip. Replaces Names when set")]
-        public MeleeModel[] Models = System.Array.Empty<MeleeModel>();
 
         [Header("Moveset (template)")]
         [Tooltip("Light combo; Damage is relative to the rolled Damage")]

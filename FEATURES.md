@@ -328,7 +328,7 @@
 ### Tuning
 - All values tunable per weapon: RPM, damage, ranges, Accuracy (spreads, bloom, recovery, cap), Control (kick, jitter, drift, buildup, recovery), Handling (draw, sway), reload times
 - Design targets for inter-category (AR vs SMG vs Sniper etc.) and intra-tier (Common vs Legendary) balance live in `WEAPON_BALANCE.md` in the project root — TTK targets per category, off-range falloff expectations, tier feel goals, and the derivation from `WeaponCategoryData` FloatRanges
-- Hand-authored Tier 1 (Common) reference weapons live under `Data/Weapons/Ranged/T1/` — all 20 models each of the assault rifles, SMGs, pistols, sniper rifles, shotguns, LMGs, bows and crossbows; melee references under `Data/Weapons/Melee/T1/` (the 12 swords so far) (the H-Series pistols show the HeavyRounds and ShotgunShells overrides). These are the "what Common feels like" baseline for every category
+- Hand-authored Tier 1 (Common) reference weapons live under `Data/Weapons/Ranged/T1/` — all 20 models each of the assault rifles, SMGs, pistols, sniper rifles, shotguns, LMGs, bows and crossbows (the H-Series pistols show the HeavyRounds and ShotgunShells overrides). These are the "what Common feels like" baseline for every category
 
 ## Melee Combat
 - **The Melee key (V) is the other hand.** What it does depends on the offhand:
@@ -356,20 +356,28 @@
 - When a MeleeAttackStep has an ActionTimeline assigned, the Active phase is driven by the timeline system instead of the legacy hit resolver — the timeline controls what shapes fire on which frames, while Windup and Recovery remain time-based
 
 ### Melee Weapons
-- Five melee weapon types, rolled like guns (quality, tier, seed → the same weapon every time): **Dagger**, **Sword**, **Axe**, **Hammer** and **Spear**
-- Found like guns: as (rarer) loot drops, and on the Gunsmith's shelf (swords, axes and daggers)
+- Melee weapons roll like guns (quality, tier, seed → the same weapon every time): **Daggers**, **Axes**, **Hammers** and **Spears** as broad types, and **Swords** as twelve weapons of their own (below)
+- Found like guns: as (rarer) loot drops, and on the Gunsmith's shelf (arming swords, axes and daggers)
 - With a melee weapon in the active slot, **Attack** (left mouse) swings it: tap for the light combo, hold for the heavy attack. No ammo, reload or recoil
-- Each type has its own combo and feel:
+- Each type or weapon has its own combo and feel:
   - **Dagger** — very fast stab-slash-stab, short reach, a long parry window but a flimsy block
-  - **Sword** — two wide slashes into a thrust, a broad sweeping heavy; the all-rounder
   - **Axe** — slower chop into an overhead slam, bites through armour
   - **Hammer** — slow area slams that crush armour; the sturdiest block, the tightest parry
   - **Spear** — long-reach thrusts and a wide sweep; a narrow guard
-- **Melee models**: a type can list named weapons in three series of four, each equally likely. A model keeps its type's combo but sits on its own side of the type's damage, speed, reach, armour penetration, stamina cost and guard, and leans toward it the way gun models do. A model can also be held differently from its type: two-handed models leave no hand free for a shield or offhand weapon. Swords so far:
-  - **Arming swords** (one-handed, balanced): Shortsword (quick and stabby, but the shortest reach), Bastard Sword (hand-and-a-half: the hardest-hitting one-hander, with long reach and a sturdy block, but slower and costlier to swing), Rapier (a thrusting blade: the longest one-handed reach, the most armour penetration and the best parry of any sword, but light hits and a weak block), Sabre (quick, a good parry)
-  - **Curved swords** (one-handed, fast slashes, good parries, little armour penetration, a looser block): Katana, Scimitar, Dao (the steadiest), Shamshir (fastest sword, weakest block)
-  - **Two-handed swords** (no shield or offhand; reach, heavy hits and a sturdy block, but slow and stamina-hungry): Longsword (the quickest two-hander), Claymore, Zweihänder (longest reach and hardest hits, slowest swing), Nodachi (long reach, cuts rather than pierces)
-  - A run that starts with a sword in the offhand always gets a one-handed one
+- **Swords** are twelve weapons of their own, each with its own moveset, stats and grip rather than one shared sword combo. Curved and chopping blades can make targets **bleed**; two-handed swords leave no hand free for a shield or offhand weapon
+  - **Arming Sword** — the baseline: two wide slashes into a thrust, a broad sweeping heavy
+  - **Broadsword** — heavier and slower: two broad slashes into an overhead cleave that hits everything around the point of impact, the sturdiest one-handed block
+  - **Rapier** — all thrusts: quick pokes that crit hard on the head, the longest reach, armour penetration and parry of the one-handers, and a long lunge for a heavy — but light hits and a weak block
+  - **Sabre** — fast, wide slashes and a rising heavy cut; a great parry
+  - **Scimitar** — a four-cut flurry of light slashes that can make targets bleed; a loose block
+  - **Shamshir** — the fastest sword: a four-cut flurry that bleeds, and a spinning heavy that cuts all around you; the weakest block
+  - **Cutlass** — short, hard chops into a thrust and an overhead chop heavy; well rounded
+  - **Kukri** — very short and very fast chops that often bleed, cheap on stamina, a bleeding heavy chop
+  - **Khopesh** — a hooked sickle-sword: heavy hooking cuts into an overhead hack that bites armour, and a hooking heavy that bites deeper and bleeds
+  - **Katana** (two-handed) — the quickest two-hander: wide cuts into a thrust and a lightning-fast draw-cut heavy that crits hard; a good parry
+  - **Claymore** (two-handed) — huge sweeping arcs into an overhead slam that hits everything around it, and a ground-shaking slam heavy; a sturdy guard
+  - **Zweihänder** (two-handed) — the longest reach and hardest hits: vast sweeps, a half-sword thrust that pierces armour, and a wide spinning heavy; the slowest swings
+  - Two-handed swords are rarer drops than one-handed ones
 - Rolled stats: damage, **attack speed** (how fast every swing winds up, strikes and recovers) and armour penetration follow quality; reach, stamina cost and guard strength vary per weapon
 - Swings cost **stamina** (heavy attacks cost double), shown as a bar above the health panel; a swing that can't be paid doesn't start. Stamina refills after a short pause. (A character without a stamina meter swings for free)
 - **Block** (Aim, right mouse, between swings or in a swing's cancel window): raising the guard slows you to aiming speed and stops most of the damage from hits in front of you; what it stops costs stamina, and running out **breaks the guard** (the hit lands in full). Hits from behind or the side, and damage over time, ignore the guard

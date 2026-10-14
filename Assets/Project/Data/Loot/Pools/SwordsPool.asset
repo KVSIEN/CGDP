@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce450f5037ef45358449e48afea096fb, type: 3}
+  m_Name: SwordsPool
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Loot.LootTable
+  _guaranteed: []
+  _rolls:
+    Min: 1
+    Max: 1
+    Bias: 0
+  _pool:
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 8f02f6f39efa4587aee3af7909a42893, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 1
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 51f536d573b94fbb854a5160e4608b9e, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 1
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 1d4a6a364fe74872bec986a079af16aa, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 1
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 0719a1f33a3a4f92b20f764581571a32, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 1
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 2488662d43c249a692fe7205607a806e, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 1
+  - Kind: 0
+    Item: {fileID: 11400000, guid: c4be60f4bbed444896f5634794e2571a, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 1
+  - Kind: 0
+    Item: {fileID: 11400000, guid: a92478df5ba44a22b96f976fdfeb1834, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 1
+  - Kind: 0
+    Item: {fileID: 11400000, guid: bb4056ede5a04b5db65d48dbab445f2d, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 1
+  - Kind: 0
+    Item: {fileID: 11400000, guid: a3f54f5adea64274a093daa25582974d, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 1
+  - Kind: 0
+    Item: {fileID: 11400000, guid: c29bb0ebf8cb4741bc2539d0a7d123b4, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.6
+  - Kind: 0
+    Item: {fileID: 11400000, guid: e8fe7513823045f7ab0c17c4a97daba6, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.6
+  - Kind: 0
+    Item: {fileID: 11400000, guid: a316cd8e31eb47f197bc6c0c3e71de0b, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.5
+  _nothingWeight: 0
+  _uniqueDraws: 0
+  _tierChecks: []

@@ -142,24 +142,13 @@ namespace CGD.Expedition
             WeaponCategory category = _starterKit.PickStartingOffhand(random);
             if (category == null) return;
 
-            WeaponItem offhand = GenerateOneHanded(category, random);
+            WeaponItem offhand = category.Generate(category.Tier, random.NextSeed());
             _inventory.Inventory.Add(offhand);
             if (_weapons == null || !_weapons.AssignOffhandToFreeSlot(offhand))
             {
                 _inventory.Inventory.Remove(offhand);
                 GiveItem(offhand);
             }
-        }
-
-        // A type can hold two-handed models (a Claymore among swords), so the starting offhand
-        // rerolls until it's one the offhand can take — the first roll stands when it is, so
-        // kept seeds start with the same offhand. Gives up after a few tries.
-        private static WeaponItem GenerateOneHanded(WeaponCategory category, RandomStream random)
-        {
-            WeaponItem item = null;
-            for (int i = 0; i < 8 && (item == null || !item.IsOneHanded); i++)
-                item = category.Generate(category.Tier, random.NextSeed());
-            return item;
         }
 
         private void GiveStarterKit()

@@ -81,9 +81,9 @@ MonoBehaviour:
       Max: 1
       Bias: 0
     Weight: 0.1
-  - Kind: 0
-    Item: {fileID: 11400000, guid: 8f02f6f39efa4587aee3af7909a42893, type: 2}
-    Table: {fileID: 0}
+  - Kind: 1
+    Item: {fileID: 0}
+    Table: {fileID: 11400000, guid: afd6b39227dd4e80909a28175aeaca0d, type: 2}
     Prefab: {fileID: 0}
     Count:
       Min: 1

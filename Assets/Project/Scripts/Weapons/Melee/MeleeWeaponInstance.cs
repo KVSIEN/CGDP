@@ -26,9 +26,6 @@ namespace CGD.Weapons
 
         public override string DisplayName => Data != null ? Data.WeaponName : "Melee Weapon";
 
-        // A model can be held differently from its type (a two-handed Claymore among swords).
-        public override bool IsOneHanded => Data != null && Data.OneHanded;
-
         public MeleeWeaponInstance(MeleeWeaponData data) : base((ItemDefinition)null) => Data = data;
 
         internal MeleeWeaponInstance(MeleeCategoryData category, ItemRoll roll, MeleeWeaponData data)

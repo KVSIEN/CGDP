@@ -209,25 +209,24 @@ lowering base damage.
   - **C-Series** (compounds: fast, flat bolts, quick span): Hunting Crossbow (the category's middle: 120 dmg), Reverse-Draw Crossbow (130 m/s), Tactical Crossbow (fastest compound span), Recurve Crossbow
   - Crossbows lean on `Reload` (spanning time; full and tactical reload alike) and `ProjectileSpeed`. Armour penetration stays the category's (25–50%). Scales are built against the crossbow midpoints (120 dmg, 165 RPM, 60 m, 1.75° hip spread, 100 m/s, 2.3 s reload).
 
-### Melee: Sword
-- **Models** (`Models` on `SwordMeleeCategory`, all equal weight, three series of four, so each series is a third). Scales are built against the sword midpoints (27 dmg per 1× step, 1.1 attack speed, 1.05 reach, 7.5% armour penetration, 10 stamina per swing, 30% of a blocked hit through, 0.2 s parry window). Damage × speed stays within about ±15% of the sword midpoints (27 × 1.1); two-handers buy reach and a sturdier block with the shield slot, slower swings and more stamina.
+### Melee: Swords
+- Every sword is its own `MeleeCategoryData` in `Data/Weapons/Melee/Swords/`, with its own moveset, ranges, grip and guard (Type = Sword is only a tag). `Loot/Pools/SwordsPool` holds them (one-handers weight 1, Katana and Claymore 0.6, Zweihänder 0.5) and stands in for the single sword entry the weapon pool and default loot table used to have, so swords drop as often as before.
+- Ranges are the old sword ranges (22–32 dmg, 1.0–1.2 speed, 0–15% pen, 8–12 stamina, 25–35% block, 0.18–0.22 s parry) scaled per sword; the moveset then sets the feel (step damage is relative to the rolled damage, timings are before attack speed).
 
-| Model | Series | Grip | Damage | Speed | Reach | Pen | Stamina | Block (through) | Parry |
-|---|---|---|---|---|---|---|---|---|---|
-| Shortsword | Arming | 1H | 27 | 1.16 | 0.97 | 8.3% | 9.5 | 30% | 0.20 s |
-| Bastard Sword | Arming | 1H | 31 | 0.99 | 1.16 | 8.3% | 11.5 | 25.5% | 0.18 s |
-| Rapier | Arming | 1H | 23.8 | 1.21 | 1.18 | 11.2% | 8.5 | 34.5% | 0.27 s |
-| Sabre | Arming | 1H | 24.3 | 1.23 | 1.05 | 6% | 9 | 31.5% | 0.25 s |
-| Katana | Curved | 1H | 27 | 1.19 | 1.07 | 5.2% | 10 | 33% | 0.24 s |
-| Scimitar | Curved | 1H | 24.8 | 1.26 | 1.00 | 4.5% | 9 | 34.5% | 0.23 s |
-| Dao | Curved | 1H | 27 | 1.16 | 1.05 | 6% | 9.5 | 30% | 0.22 s |
-| Shamshir | Curved | 1H | 23.8 | 1.32 | 1.03 | 3.7% | 8.5 | 36% | 0.25 s |
-| Longsword | Two-handed | 2H | 33.8 | 0.99 | 1.21 | 9% | 12 | 25.5% | 0.20 s |
-| Claymore | Two-handed | 2H | 37.8 | 0.88 | 1.26 | 9% | 13.5 | 24% | 0.17 s |
-| Zweihänder | Two-handed | 2H | 41.9 | 0.79 | 1.37 | 9.8% | 15 | 22.5% | 0.15 s |
-| Nodachi | Two-handed | 2H | 36.5 | 0.94 | 1.31 | 6.8% | 13 | 28.5% | 0.20 s |
-
-- Tier 1 references (`MeleeWeaponData`) are in `Assets/Project/Data/Weapons/Melee/T1/`, one per model, with the sword moveset scaled by these numbers.
+| Sword | Grip | Damage | Speed | Pen | Stamina | Block | Parry | Moveset (light → heavy) |
+|---|---|---|---|---|---|---|---|---|
+| Arming Sword | 1H | 22–32 | 1.0–1.2 | 0–15% | 8–12 | 25–35% | 0.18–0.22 | slash, slash, thrust → wide sweep |
+| Broadsword | 1H | ×1.12 | ×0.92 | ×0.8 | ×1.1 | ×0.82 | ×0.9 | broad slash ×2, overhead cleave (slam) → 160° sweep |
+| Rapier | 1H | ×0.88 | ×1.1 | ×1.5 | ×0.85 | ×1.15 | ×1.35 | thrust ×3 (crit ×2) → 3.2 m lunge (crit ×2.25, +15% pen) |
+| Sabre | 1H | ×0.9 | ×1.12 | ×0.8 | ×0.9 | ×1.05 | ×1.25 | fast slash ×3 → rising 150° cut |
+| Scimitar | 1H | ×0.9 | ×1.15 | ×0.6 | ×0.9 | ×1.15 | ×1.15 | 4-cut flurry (20–30% bleed) → 160° sweep (50% bleed) |
+| Shamshir | 1H | ×0.85 | ×1.2 | ×0.5 | ×0.85 | ×1.2 | ×1.25 | 4-cut flurry (25–35% bleed) → 300° spin (50% bleed) |
+| Cutlass | 1H | ×1.05 | ×1.0 | ×1.1 | ×0.95 | ×0.95 | ×1.0 | chop ×2, thrust → overhead chop (slam) |
+| Kukri | 1H | ×0.85 | ×1.2 | ×1.2 | ×0.75 | ×1.2 | ×1.1 | short chop ×3 (30% bleed) → chop slam (60% bleed) |
+| Khopesh | 1H | ×1.12 | ×0.92 | ×1.5 | ×1.05 | ×1.0 | ×0.9 | hook ×2, hack (slam, +10% pen) → hooking cut (+20% pen, 40% bleed) |
+| Katana | 2H | ×1.2 | ×1.0 | ×1.0 | ×1.15 | ×0.9 | ×1.2 | cut ×2, thrust → fast draw-cut (crit ×2) |
+| Claymore | 2H | ×1.4 | ×0.8 | ×1.2 | ×1.35 | ×0.8 | ×0.85 | 150° sweep ×2, slam → 1.6 m radius slam |
+| Zweihänder | 2H | ×1.55 | ×0.72 | ×1.3 | ×1.5 | ×0.75 | ×0.75 | 170° sweep ×2, half-sword thrust (+15% pen) → 220° sweep |
 
 ## Recoil Patterns
 
