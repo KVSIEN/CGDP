@@ -182,14 +182,19 @@ MonoBehaviour:
     Weight: 0.1
   _nothingWeight: 2
   _uniqueDraws: 0
-  _tierWeights:
-  - Tier: 0
-    Weight: 60
-  - Tier: 1
-    Weight: 25
-  - Tier: 2
-    Weight: 10
-  - Tier: 3
-    Weight: 4
+  _tierChecks:
   - Tier: 4
-    Weight: 1
+    Chance: 0.01
+    Pool: {fileID: 0}
+  - Tier: 3
+    Chance: 0.05
+    Pool: {fileID: 0}
+  - Tier: 2
+    Chance: 0.15
+    Pool: {fileID: 0}
+  - Tier: 1
+    Chance: 0.35
+    Pool: {fileID: 0}
+  - Tier: 0
+    Chance: 1
+    Pool: {fileID: 0}

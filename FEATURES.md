@@ -433,7 +433,8 @@
 - **Guaranteed drops** — always dropped (a boss key, a quest item)
 - **Weighted drops** — a set number of draws (fixed or a range) from a weighted list, with a configurable chance of a draw coming up empty; draws can be made unique so the same entry isn't picked twice
 - **Nested tables** — an entry can roll another table, so shared pools like "common ammo" are authored once and reused
-- **Rarity** — weapons and gear that drop get a tier (Common → Legendary) from the table's rarity odds, and their stats roll at that tier; a luck value makes empty draws rarer and high tiers likelier
+- **Rarity** — weapons and gear that drop get a tier (Common → Legendary) by checks from the top down: a chance at Legendary, then at Epic, and so on until Common catches the rest (the default table: Legendary 1%, then Epic 5%, Rare 15%, Uncommon 35%, Common 100% — about 1 / 5 / 14 / 28 / 52% of gear drops). Their stats roll at that tier; a luck value makes empty draws rarer and high tiers likelier
+- **Tier pools** — a tier can have its own pool, so landing that tier draws from a different list, all at that tier: a 1% Legendary hit can roll from a Legendary-only table instead of the gear that was drawn
 - Drops can be stacks of items, individually rolled weapons and gear, or any world object (health orbs, effects)
 - Drops scatter around the source and settle onto the ground; weapons become weapon pickups, everything else an item pickup
 - Breakable props — crates and barrels can be given health so any attack breaks them, spilling their loot

@@ -305,7 +305,7 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 
 ### Loot
 
-- **LootTable** (`Create › CGD › Loot › Loot Table`): guaranteed entries + weighted draws; entries can be items, other tables, or prefabs. New entries start at weight 0 — set them.
+- **LootTable** (`Create › CGD › Loot › Loot Table`): guaranteed entries + weighted draws; entries can be items, other tables, or prefabs. New entries start at weight 0 — set them. *Tier Checks* set gear rarity: one row per tier with its chance when no higher tier hit (give the lowest tier 100%), checked from Legendary down whatever the row order; a row's optional *Pool* (another LootTable) is rolled instead of the drawn gear when that tier hits, with all its gear at that tier.
 - **LootDropper** needs two shared prefabs: an `ItemPickup` prefab and a `WeaponPickup` prefab (leave its `_data` empty).
 
 ---
@@ -619,7 +619,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Combat/Reflect/` | `VengeanceReflect`, `DeflectReflect` (projectile = `Prefabs/Weapons/Projectile`), `AbsorbReflect`, `RiposteSlashReflect` (timeline = `ActionTimelines/RiposteSlashTimeline`, whose Damage 1 = the parried hit) | reflect abilities, melee *Parry Reflect* |
 | `Targeting/` | `Default…TargetSelector`, `AimedArea…`, `FriendlyArea…` | abilities, PlayerLockOn |
 | `Meters/` | Stamina, Mana, Oxygen, Rage | MeterSet, costs, MeterZone |
-| `Loot/` | `DefaultLootTable` | LootDropper |
+| `Loot/` | `DefaultLootTable` (*Tier Checks*: Legendary 1% → Epic 5% → Rare 15% → Uncommon 35% → Common 100%, no tier pools yet) | LootDropper |
 | `Stats/` | `HardDifficultyModifierPreset`, `DamageBoostModifierPreset` | CharacterStats, Stat Buff ability |
 | `Quests/` | `TargetPracticeQuest` → `ResupplyQuest`, `ShootingRangeClearedQuestSignal` | QuestTracker |
 | `Feedback/` | ten `…FeedbackPreset`s | CombatFeedback, QuestFeedback, Stealthable |
