@@ -152,6 +152,11 @@
   - **Munitions crate** (olive) — 2–3 handfuls of ammo of any kind, arrows included
   - **Chest** (yellow) — anything and everything: 2–3 draws across weapons, equipment, consumables, resources and ammo
   - Weapons and equipment from any of them roll their tier the same way as every other drop (Legendary 1% → Common)
+- **Container subtypes** — a container can turn out to be a narrower kind of itself, shown in its prompt before you open it ("Open weapon crate (Pistols)"). The same level seed always gives the same subtypes. A subtype only narrows what can come out; tiers and amounts stay the same
+  - Weapon crate (60% have one): **Pistols**, **SMGs & ARs**, **Shotguns**, **Long guns** (sniper rifles and LMGs), **Bows & crossbows**, **Melee** — 10% each. Its bonus ammo matches: pistol crates hold light or heavy rounds, bow crates arrows, melee crates none
+  - Supply case (50%): **Healing** (bandages and rations, 30%) or **Combat** (stims and grenades, 20%)
+  - Equipment locker (45%): **Armor**, **Shields** or **Artifacts**, 15% each
+  - Munitions crate (50%): one ammo type — **Light rounds**, **Standard rounds**, **Heavy rounds**, **Shotgun shells** or **Arrows & bolts**, 10% each
 
 ## Items
 

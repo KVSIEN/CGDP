@@ -58,10 +58,49 @@ namespace CGD.Tests
             return table;
         }
 
-        private static LootDrop RollOne(LootTable table, int seed)
+        // A table that draws once from `contents` (items or tables), each equally likely.
+        private LootTable CreatePool(params Object[] contents)
+        {
+            var table      = Create<LootTable>();
+            var serialized = new SerializedObject(table);
+            SerializedProperty pool = serialized.FindProperty("_pool");
+            pool.arraySize = contents.Length;
+            for (int i = 0; i < contents.Length; i++)
+            {
+                SerializedProperty entry = pool.GetArrayElementAtIndex(i);
+                bool nested = contents[i] is LootTable;
+                entry.FindPropertyRelative("Kind").enumValueIndex = (int)(nested ? LootEntryKind.Table : LootEntryKind.Item);
+                entry.FindPropertyRelative(nested ? "Table" : "Item").objectReferenceValue = contents[i];
+                entry.FindPropertyRelative("Weight").floatValue = 1f;
+            }
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            return table;
+        }
+
+        private WeaponCategoryData CreateCategory(WeaponType type)
+        {
+            var category = Create<WeaponCategoryData>();
+            category.Type = type;
+            return category;
+        }
+
+        private LootFilter CreateFilter(LootItemKinds kinds, params WeaponType[] weaponTypes)
+        {
+            var filter     = Create<LootFilter>();
+            var serialized = new SerializedObject(filter);
+            serialized.FindProperty("_kinds").intValue = (int)kinds;
+            SerializedProperty types = serialized.FindProperty("_weaponTypes");
+            types.arraySize = weaponTypes.Length;
+            for (int i = 0; i < weaponTypes.Length; i++)
+                types.GetArrayElementAtIndex(i).enumValueIndex = (int)weaponTypes[i];
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            return filter;
+        }
+
+        private static LootDrop RollOne(LootTable table, int seed, LootFilter filter = null)
         {
             var drops = new List<LootDrop>();
-            table.Roll(drops, 0f, Seed.From(seed));
+            table.Roll(drops, 0f, Seed.From(seed), filter);
             Assert.AreEqual(1, drops.Count);
             return drops[0];
         }
@@ -114,6 +153,30 @@ namespace CGD.Tests
                 Assert.AreEqual(ItemTier.Epic, RollOne(container, i).Instance.Tier, "A pool without checks rolls at its container's");
                 Assert.AreEqual(ItemTier.Epic, RollOne(overriding, i).Instance.Tier, "The container's checks win over the pool's own");
             }
+        }
+
+        [Test]
+        public void AFilterOnlyLetsThroughWhatItAllows()
+        {
+            WeaponCategoryData rifle  = CreateCategory(WeaponType.AR);
+            WeaponCategoryData pistol = CreateCategory(WeaponType.Pistol);
+            // The rifle sits in a nested table, which is skipped when it holds nothing allowed.
+            LootTable table   = CreatePool(CreatePool(rifle), pistol);
+            LootFilter pistols = CreateFilter(LootItemKinds.Firearm, WeaponType.Pistol);
+
+            for (int i = 0; i < 20; i++)
+                Assert.AreSame(pistol, RollOne(table, i, pistols).Definition);
+        }
+
+        [Test]
+        public void AFilterThatAllowsNothingIsIgnored()
+        {
+            WeaponCategoryData rifle = CreateCategory(WeaponType.AR);
+            LootTable table = CreatePool(rifle);
+            LootFilter melee = CreateFilter(LootItemKinds.Melee);
+
+            for (int i = 0; i < 20; i++)
+                Assert.AreSame(rifle, RollOne(table, i, melee).Definition);
         }
 
         [Test]

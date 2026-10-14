@@ -93,6 +93,15 @@ MonoBehaviour:
   _table: {fileID: 11400000, guid: a36ddd1a621d47e899ccb34bcd7d493c, type: 2}
   _dropOnDeath: 0
   _luck: 0
+  _subtypes:
+  - Filter: {fileID: 0}
+    Weight: 55
+  - Filter: {fileID: 11400000, guid: 32095c49cccc44fb82df2ad7ad0a6648, type: 2}
+    Weight: 15
+  - Filter: {fileID: 11400000, guid: 9d08ec7679f54d11a45884514957b5ee, type: 2}
+    Weight: 15
+  - Filter: {fileID: 11400000, guid: 30a384af1ff74426b9581baf66f98c9c, type: 2}
+    Weight: 15
   _itemPickupPrefab: {fileID: 7400000000000000004, guid: 8388490666aa4c8b87afd39d7be008b1, type: 3}
   _weaponPickupPrefab: {fileID: 7400000000000000104, guid: 3a43c12ea9e742f6a70610074201a1ea, type: 3}
   _dropOffset: {x: 0, y: 1, z: 0}

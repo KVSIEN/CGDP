@@ -17,6 +17,10 @@ namespace CGD.Loot
     // Given a seed (a generated level hands one to everything it places or spawns), each
     // drop rolls from it — the same seed drops the same loot in the same spots. Without
     // one every drop is random. A pooled enemy's seed is cleared when it goes back.
+    //
+    // A dropper can roll a subtype (a LootFilter, e.g. a weapon crate that only holds
+    // pistols) from its Subtypes, once per seed, so a container shows what it is before
+    // it's opened and the same seed always makes the same kind of container.
     public class LootDropper : MonoBehaviour, ISeedable, IPoolable
     {
         [SerializeField] private LootTable _table;
@@ -24,6 +28,8 @@ namespace CGD.Loot
         [SerializeField] private bool _dropOnDeath = true;
         [Tooltip("Skews the table toward fuller, rarer drops (0 = authored odds)")]
         [SerializeField, Min(0f)] private float _luck;
+        [Tooltip("Optional: subtypes this dropper rolls one of, by weight. An entry without a filter is the plain table")]
+        [SerializeField] private WeightedLootFilter[] _subtypes = System.Array.Empty<WeightedLootFilter>();
 
         [Header("Pickups")]
         [SerializeField] private ItemPickup   _itemPickupPrefab;
@@ -45,6 +51,18 @@ namespace CGD.Loot
         private HealthManager _health;
         private Seed? _seed;
         private int   _dropCount;
+        private LootFilter _subtype;
+        private bool       _subtypeRolled;
+
+        // What this dropper's drops are narrowed to; null = anything its table holds.
+        public LootFilter Subtype
+        {
+            get
+            {
+                if (!_subtypeRolled) RollSubtype();
+                return _subtype;
+            }
+        }
 
         private void Awake()
         {
@@ -61,11 +79,26 @@ namespace CGD.Loot
 
         public void ApplySeed(Seed seed)
         {
-            _seed      = seed;
-            _dropCount = 0;
+            _seed          = seed;
+            _dropCount     = 0;
+            _subtypeRolled = false;
         }
 
-        public void OnDespawned() => _seed = null;
+        public void OnDespawned()
+        {
+            _seed          = null;
+            _subtypeRolled = false;
+        }
+
+        private void RollSubtype()
+        {
+            _subtypeRolled = true;
+            _subtype       = null;
+            if (_subtypes.Length == 0) return;
+
+            RandomStream random = (_seed?.Derive("subtype") ?? Seed.Random()).Stream();
+            _subtype = random.PickWeighted(_subtypes, option => option.Weight).Filter;
+        }
 
         public void Drop()
         {
@@ -74,7 +107,7 @@ namespace CGD.Loot
             // Each drop its own child, so a dropper that drops twice doesn't repeat itself.
             Seed seed = _seed?.Derive(_dropCount++) ?? Seed.Random();
             _drops.Clear();
-            _table.Roll(_drops, _luck, seed);
+            _table.Roll(_drops, _luck, seed, Subtype);
 
             RandomStream placement = seed.Derive("placement").Stream();
             foreach (LootDrop drop in _drops)

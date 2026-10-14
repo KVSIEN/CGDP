@@ -35,7 +35,17 @@ namespace CGD.Loot
         public bool CanInteract(GameObject interactor) => !_opened;
 
         public string GetInteractLabel(GameObject interactor) =>
-            _requirement.IsMetBy(interactor) ? _label : $"Locked  ({_requirement.Describe()})";
+            _requirement.IsMetBy(interactor) ? Label : $"Locked  ({_requirement.Describe()})";
+
+        // "Open weapon crate (Pistols)" when the dropper rolled a subtype.
+        private string Label
+        {
+            get
+            {
+                LootFilter subtype = _dropper.Subtype;
+                return subtype != null && !string.IsNullOrEmpty(subtype.Label) ? $"{_label} ({subtype.Label})" : _label;
+            }
+        }
 
         public void Interact(GameObject interactor)
         {

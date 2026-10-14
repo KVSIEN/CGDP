@@ -20,6 +20,10 @@ namespace CGD.Loot
     // with its own pool swaps the drawn gear for a roll of that pool, all at that tier, so a
     // 1% Legendary hit can draw from a Legendary-only table.
     //
+    // A roll can be given a LootFilter (a container's subtype, "Pistols"): entries it rejects,
+    // and nested tables with nothing it allows, are skipped and the rest share the odds. A
+    // filter that would leave the whole table empty is ignored instead.
+    //
     // Every draw comes from one RandomStream, and each gear drop gets the stream's next
     // seed, so rolling a table from the same seed yields the same drops, rolls and all.
     [CreateAssetMenu(fileName = "NewLootTable", menuName = "CGD/Loot/Loot Table")]
@@ -44,133 +48,184 @@ namespace CGD.Loot
         [Tooltip("Checked from the highest tier down; the first that hits is the gear's tier. Empty, or no check hitting, = gear drops at its definition's own tier.")]
         [SerializeField] private TierCheck[] _tierChecks = Array.Empty<TierCheck>();
 
+        // Everything one roll carries down into the tables nested in it.
+        private readonly struct RollContext
+        {
+            public readonly List<LootDrop> Results;
+            public readonly float          Luck;
+            public readonly RandomStream   Random;
+            public readonly int            Depth;
+            public readonly TierCheck[]    Checks;   // an outer table's, which win over a nested one's own
+            public readonly ItemTier?      Tier;     // set inside a tier's pool: its gear drops at that tier, unchecked
+            public readonly LootFilter     Filter;
+
+            public RollContext(List<LootDrop> results, float luck, RandomStream random, int depth,
+                               TierCheck[] checks, ItemTier? tier, LootFilter filter)
+            {
+                Results = results;
+                Luck    = luck;
+                Random  = random;
+                Depth   = depth;
+                Checks  = checks;
+                Tier    = tier;
+                Filter  = filter;
+            }
+
+            public RollContext Nested(TierCheck[] checks, ItemTier? tier) =>
+                new(Results, Luck, Random, Depth + 1, checks, tier, Filter);
+        }
+
         // Appends this table's drops to results. Luck 0 = authored odds; positive luck makes
-        // empty draws rarer and higher tiers likelier (1 = each tier step ×2).
+        // empty draws rarer and higher tiers likelier (1 = each tier step ×2). `filter`: only
+        // what it allows drops, unless it allows nothing here.
         public void Roll(List<LootDrop> results, float luck = 0f) => Roll(results, luck, Seed.Random());
 
-        public void Roll(List<LootDrop> results, float luck, Seed seed) =>
-            Roll(results, Mathf.Max(0f, luck), seed.Stream(), 0, null, null);
-
-        // `checks`: an outer table's tier checks, which win over this table's own.
-        // `tier`: set when rolling a tier's pool — its gear drops at that tier, unchecked.
-        private void Roll(List<LootDrop> results, float luck, RandomStream random, int depth,
-                          TierCheck[] checks, ItemTier? tier)
+        public void Roll(List<LootDrop> results, float luck, Seed seed, LootFilter filter = null)
         {
-            if (depth > MaxNesting) return;
-            if (checks == null && _tierChecks.Length > 0) checks = _tierChecks;
+            if (filter != null && !CanYield(filter, 0)) filter = null;
+            Roll(new RollContext(results, Mathf.Max(0f, luck), seed.Stream(), 0, null, null, filter));
+        }
+
+        private void Roll(in RollContext ctx)
+        {
+            if (ctx.Depth > MaxNesting) return;
+
+            RollContext roll = ctx.Checks == null && _tierChecks.Length > 0
+                ? new RollContext(ctx.Results, ctx.Luck, ctx.Random, ctx.Depth, _tierChecks, ctx.Tier, ctx.Filter)
+                : ctx;
 
             foreach (LootEntry entry in _guaranteed)
             {
-                if (entry != null && entry.IsValid) Resolve(entry, results, luck, random, depth, checks, tier);
+                if (Allows(entry, roll.Filter, roll.Depth)) Resolve(entry, roll);
             }
 
-            RollPool(results, luck, random, depth, checks, tier);
+            RollPool(roll);
         }
 
-        private void RollPool(List<LootDrop> results, float luck, RandomStream random, int depth,
-                              TierCheck[] checks, ItemTier? tier)
+        // Whether anything in this table, nested tables included, passes the filter.
+        private bool CanYield(LootFilter filter, int depth)
+        {
+            if (depth > MaxNesting) return false;
+
+            foreach (LootEntry entry in _guaranteed)
+                if (Allows(entry, filter, depth)) return true;
+            foreach (LootEntry entry in _pool)
+                if (Allows(entry, filter, depth)) return true;
+            return false;
+        }
+
+        private static bool Allows(LootEntry entry, LootFilter filter, int depth)
+        {
+            if (entry == null || !entry.IsValid) return false;
+            if (filter == null) return true;
+
+            return entry.Kind switch
+            {
+                LootEntryKind.Item  => filter.Allows(entry.Item),
+                LootEntryKind.Table => entry.Table.CanYield(filter, depth + 1),
+                _                   => false,
+            };
+        }
+
+        private void RollPool(in RollContext ctx)
         {
             if (_pool.Length == 0) return;
 
-            // Loot is rolled occasionally, not per frame; a small array keeps this readable.
-            bool[] drawn   = _uniqueDraws ? new bool[_pool.Length] : null;
-            float  nothing = _nothingWeight / (1f + luck);
-            int    draws   = _rolls.Evaluate(random);
+            // Loot is rolled occasionally, not per frame; small arrays keep this readable.
+            var    weights = new float[_pool.Length];
+            for (int i = 0; i < _pool.Length; i++)
+                weights[i] = Allows(_pool[i], ctx.Filter, ctx.Depth) ? _pool[i].Weight : 0f;
+
+            float nothing = _nothingWeight / (1f + ctx.Luck);
+            int   draws   = _rolls.Evaluate(ctx.Random);
 
             for (int i = 0; i < draws; i++)
             {
-                int index = Draw(drawn, nothing, random);
+                int index = Draw(weights, nothing, ctx.Random);
                 if (index < 0) continue;
 
-                if (drawn != null) drawn[index] = true;
-                Resolve(_pool[index], results, luck, random, depth, checks, tier);
+                if (_uniqueDraws) weights[index] = 0f;
+                Resolve(_pool[index], ctx);
             }
         }
 
         // Index of the drawn pool entry, or -1 for an empty draw.
-        private int Draw(bool[] drawn, float nothingWeight, RandomStream random)
+        private static int Draw(float[] weights, float nothingWeight, RandomStream random)
         {
             float total = nothingWeight;
-            for (int i = 0; i < _pool.Length; i++)
-                total += WeightOf(i, drawn);
+            foreach (float weight in weights)
+                total += weight;
 
             if (total <= 0f) return -1;
 
             float pick = random.Value * total;
-            for (int i = 0; i < _pool.Length; i++)
+            for (int i = 0; i < weights.Length; i++)
             {
-                pick -= WeightOf(i, drawn);
+                pick -= weights[i];
                 if (pick < 0f) return i;
             }
             return -1;
         }
 
-        private float WeightOf(int index, bool[] drawn)
+        private static void Resolve(LootEntry entry, in RollContext ctx)
         {
-            LootEntry entry = _pool[index];
-            if (entry == null || !entry.IsValid || (drawn != null && drawn[index])) return 0f;
-            return entry.Weight;
-        }
-
-        private static void Resolve(LootEntry entry, List<LootDrop> results, float luck, RandomStream random, int depth,
-                                    TierCheck[] checks, ItemTier? tier)
-        {
-            int count = entry.RollCount(random);
+            int count = entry.RollCount(ctx.Random);
 
             switch (entry.Kind)
             {
                 case LootEntryKind.Item:
-                    AddItem(entry.Item, count, results, luck, random, depth, checks, tier);
+                    AddItem(entry.Item, count, ctx);
                     break;
 
                 case LootEntryKind.Table:
                     for (int i = 0; i < count; i++)
-                        entry.Table.Roll(results, luck, random, depth + 1, checks, tier);
+                        entry.Table.Roll(ctx.Nested(ctx.Checks, ctx.Tier));
                     break;
 
                 case LootEntryKind.Prefab:
                     for (int i = 0; i < count; i++)
-                        results.Add(LootDrop.Spawn(entry.Prefab));
+                        ctx.Results.Add(LootDrop.Spawn(entry.Prefab));
                     break;
             }
         }
 
         // Stackables drop as one counted stack; gear rolls one unique piece per count, each with
         // its own tier — or, when that tier has a pool, as a roll of the pool instead.
-        private static void AddItem(ItemDefinition item, int count, List<LootDrop> results, float luck,
-                                    RandomStream random, int depth, TierCheck[] checks, ItemTier? tier)
+        private static void AddItem(ItemDefinition item, int count, in RollContext ctx)
         {
             if (item is not GearDefinition gear)
             {
-                results.Add(LootDrop.Stack(item, count));
+                ctx.Results.Add(LootDrop.Stack(item, count));
                 return;
             }
 
             for (int i = 0; i < count; i++)
             {
-                if (tier.HasValue)
+                if (ctx.Tier.HasValue)
                 {
-                    AddGear(gear, tier.Value, results, random);
+                    AddGear(gear, ctx.Tier.Value, ctx);
                     continue;
                 }
 
-                int check = RollTierCheck(checks, luck, random);
+                int check = RollTierCheck(ctx.Checks, ctx.Luck, ctx.Random);
                 if (check < 0)
                 {
-                    AddGear(gear, gear.Tier, results, random);
+                    AddGear(gear, gear.Tier, ctx);
                     continue;
                 }
 
-                TierCheck hit = checks[check];
-                if (hit.Pool != null) hit.Pool.Roll(results, luck, random, depth + 1, checks, hit.Tier);
-                else                  AddGear(gear, hit.Tier, results, random);
+                TierCheck hit = ctx.Checks[check];
+                if (hit.Pool != null && (ctx.Filter == null || hit.Pool.CanYield(ctx.Filter, ctx.Depth + 1)))
+                    hit.Pool.Roll(ctx.Nested(ctx.Checks, hit.Tier));
+                else
+                    AddGear(gear, hit.Tier, ctx);
             }
         }
 
-        private static void AddGear(GearDefinition gear, ItemTier tier, List<LootDrop> results, RandomStream random)
+        private static void AddGear(GearDefinition gear, ItemTier tier, in RollContext ctx)
         {
-            ItemInstance instance = gear.CreateInstance(gear.Roll(tier, random.NextSeed()));
-            if (instance != null) results.Add(LootDrop.Gear(instance));
+            ItemInstance instance = gear.CreateInstance(gear.Roll(tier, ctx.Random.NextSeed()));
+            if (instance != null) ctx.Results.Add(LootDrop.Gear(instance));
         }
 
         // Index of the tier check that hits, or -1 when none does (gear keeps its own tier).
@@ -183,7 +238,6 @@ namespace CGD.Loot
         {
             if (checks == null || checks.Length == 0) return -1;
 
-            // Loot is rolled occasionally, not per frame; a small array keeps this readable.
             var   weights   = new float[checks.Length];
             float remaining = 1f;
             float total     = 0f;

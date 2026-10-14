@@ -284,7 +284,7 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 | Terminal | Collider, `LockTerminal` | `_lock` = the door's `ConditionLock`, `_label`, `_holdDuration`, `_indicator`? (Renderer tinted Off/On). Ready-made: `Prefabs/Environment/Level/LockTerminal` |
 | Switch | Collider, `Switch` | `_label`, `_doors` |
 | Anything else | Collider, `EventInteractable` | `_label`, `_requirement`?, `_onInteract` event |
-| Chest | Collider, `LootContainer`, `LootDropper` | Untick the dropper's `_dropOnDeath`. Ready-made by type in `Prefabs/Environment/Loot/` (copies of `RewardCache`, each with its own `_label`, body colour and `_table` from `Data/Loot/Containers/`): `WeaponCrate`, `EquipmentLocker`, `ConsumableCase`, `ResourceCrate`, `MunitionsCrate`, `GlobalChest`. Place them as a room rule's *Centerpiece*, *Props* or *Offerings*, an encounter's reward, or by hand |
+| Chest | Collider, `LootContainer`, `LootDropper` | Untick the dropper's `_dropOnDeath`. Ready-made by type in `Prefabs/Environment/Loot/` (copies of `RewardCache`, each with its own `_label`, body colour and `_table` from `Data/Loot/Containers/`): `WeaponCrate`, `EquipmentLocker`, `ConsumableCase`, `ResourceCrate`, `MunitionsCrate`, `GlobalChest`; the dropper's `_subtypes` on the first four use the filters in `Data/Loot/Filters/` (none on the resource crate and chest). Place them as a room rule's *Centerpiece*, *Props* or *Offerings*, an encounter's reward, or by hand |
 | Breakable crate | solid Collider, `Destructible`, `LootDropper`, `DespawnOnDeath` | `_maxHealth`; `_delay` 0 |
 | Crafting station | Collider, `CraftingStation` | `_label`, `_recipes` = recipe assets (e.g. all of `Data/Crafting/`) |
 | Ammo cache | solid Collider, `AmmoCache` | `_munitions` = all four munition assets, `_uses`, `_magazines`, `_contents`? = the visible ammo. Ready-made: `Prefabs/Environment/Props/AmmoCache`. |
@@ -306,7 +306,8 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 ### Loot
 
 - **LootTable** (`Create › CGD › Loot › Loot Table`): guaranteed entries + weighted draws; entries can be items, other tables, or prefabs. New entries start at weight 0 — set them. *Tier Checks* set gear rarity: one row per tier with its chance when no higher tier hit (give the lowest tier 100%), checked from Legendary down whatever the row order; the outermost table with checks decides for every table nested in it, so shared pools carry none; a row's optional *Pool* (another LootTable) is rolled instead of the drawn gear when that tier hits, with all its gear at that tier.
-- **LootDropper** needs two shared prefabs: an `ItemPickup` prefab and a `WeaponPickup` prefab (leave its `_data` empty).
+- **LootDropper** needs two shared prefabs: an `ItemPickup` prefab and a `WeaponPickup` prefab (leave its `_data` empty). Optional `_subtypes`: weighted **LootFilter** assets it rolls one of per seed (an entry without a filter = the plain table); a `LootContainer` on the same object shows the rolled filter's label after its own.
+- **LootFilter** (`Create › CGD › Loot › Loot Filter`): `_label`, `_kinds` (Firearm, Melee, Armor, Shield, Artifact, Attachment, Healing, Buff, Throwable, Munition, Resource), `_weaponTypes`? and `_ammoTypes`? to narrow firearms and munitions (empty = any). Prefab entries never pass a filter; a filter that allows nothing in the table is ignored.
 
 ---
 
@@ -622,6 +623,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Loot/` | `DefaultLootTable` (*Tier Checks*: Legendary 1% → Epic 5% → Rare 15% → Uncommon 35% → Common 100%, no tier pools yet) | LootDropper |
 | `Loot/Pools/` | `WeaponsPool` (every firearm category but the Modular Pistol, plus the five melee categories), `EquipmentPool` (Combat Vest, the three shields, the four artifacts, Extended Magazine), `ConsumablesPool` (bandage, ration, stim, frag and smoke grenades), `ResourcesPool` (scrap metal, cloth, data core), `MunitionsPool` (all five ammo types) — shared pools with no *Tier Checks* of their own | the container tables below |
 | `Loot/Containers/` | `WeaponCrateLoot` (a weapon + 50% a munitions draw), `EquipmentLockerLoot` (an equipment piece + 25% a second), `ConsumableCaseLoot`, `ResourceCrateLoot`, `MunitionsCrateLoot` (2–3 draws from their pool), `GlobalChestLoot` (2–3 draws across all five pools); the weapon, equipment and global tables carry the default *Tier Checks* | the container prefabs in `Prefabs/Environment/Loot/` |
+| `Loot/Filters/` | container subtypes (`LootFilter`): weapon — `PistolsFilter`, `SmgsAndArsFilter`, `ShotgunsFilter`, `LongGunsFilter`, `BowsAndCrossbowsFilter` (each its firearm types plus their ammo), `MeleeFilter`; supply — `HealingFilter`, `CombatSuppliesFilter` (buffs + throwables); equipment — `ArmorFilter`, `ShieldsFilter`, `ArtifactsFilter`; munitions — `LightRoundsFilter`, `StandardRoundsFilter`, `HeavyRoundsFilter`, `ShotgunShellsFilter`, `ArrowsFilter` | `_subtypes` on the container prefabs' LootDropper |
 | `Stats/` | `HardDifficultyModifierPreset`, `DamageBoostModifierPreset` | CharacterStats, Stat Buff ability |
 | `Quests/` | `TargetPracticeQuest` → `ResupplyQuest`, `ShootingRangeClearedQuestSignal` | QuestTracker |
 | `Feedback/` | ten `…FeedbackPreset`s | CombatFeedback, QuestFeedback, Stealthable |
