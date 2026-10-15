@@ -6,9 +6,17 @@ namespace CGD.Level
     // The large-scale layout inside one room: tile tags, pillars, inner walls and the zones
     // they divide the room into. Filled by RoomStructurePlanner and the room function's
     // RoomStructureRules; read by the geometry and the room populator.
+    //
+    // Everything that takes floor (pillars, props) goes through TryClaim, which refuses a
+    // claim that would seal off part of the room or block an entrance: whatever the dressing
+    // does, every free tile stays reachable from every doorway.
     public class RoomStructure
     {
         private const RoomTileTags KeepClear = RoomTileTags.Walkway | RoomTileTags.NearDoor | RoomTileTags.Centre | RoomTileTags.Structure;
+        // What can't be walked through.
+        private const RoomTileTags Solid = RoomTileTags.Structure | RoomTileTags.Prop;
+        // What nothing new may be put on.
+        private const RoomTileTags Taken = Solid | RoomTileTags.Access;
 
         private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
 
@@ -17,11 +25,24 @@ namespace CGD.Level
         private readonly List<StructurePillar> _pillars = new();
         private readonly List<PartitionEdge> _partitions = new();
         private readonly HashSet<(Vector2Int, Vector2Int)> _blocked = new();
+        private readonly List<Vector2Int> _entrances = new();
+
+        // Floor tiles and the solid ones among them as flat arrays over the footprint's bounds, so the
+        // reachability check (run for every prop placed) needs no hashing.
+        private readonly RectInt _bounds;
+        private readonly bool[] _floor;
+        private readonly bool[] _solid;
+        private int _solidCount;
 
         public RoomStructure(RoomFootprint footprint, float wallHeight)
         {
             Footprint  = footprint;
             WallHeight = wallHeight;
+
+            _bounds = footprint.Bounds;
+            _floor  = new bool[_bounds.width * _bounds.height];
+            _solid  = new bool[_floor.Length];
+            foreach (Vector2Int tile in footprint.Tiles) _floor[IndexOf(tile)] = true;
         }
 
         public RoomFootprint Footprint  { get; }
@@ -29,11 +50,28 @@ namespace CGD.Level
 
         public IReadOnlyList<StructurePillar> Pillars    => _pillars;
         public IReadOnlyList<PartitionEdge>   Partitions => _partitions;
+        // The floor tile inside each doorway.
+        public IReadOnlyList<Vector2Int>      Entrances  => _entrances;
         public int ZoneCount { get; private set; } = 1;
 
         public RoomTileTags TagsAt(Vector2Int tile) => _tags.TryGetValue(tile, out RoomTileTags tags) ? tags : RoomTileTags.None;
         public bool Has(Vector2Int tile, RoomTileTags tags) => (TagsAt(tile) & tags) != 0;
-        public void Tag(Vector2Int tile, RoomTileTags tags) => _tags[tile] = TagsAt(tile) | tags;
+
+        public void Tag(Vector2Int tile, RoomTileTags tags)
+        {
+            RoomTileTags before = TagsAt(tile);
+            _tags[tile] = before | tags;
+
+            bool becameSolid = (before & Solid) == 0 && (tags & Solid) != 0;
+            if (!becameSolid || !InFloor(tile)) return;
+            _solid[IndexOf(tile)] = true;
+            _solidCount++;
+        }
+
+        public void AddEntrance(Vector2Int tile)
+        {
+            if (!_entrances.Contains(tile)) _entrances.Add(tile);
+        }
 
         // Which part of the room a tile is in, once inner walls have split it (0 when none).
         public int ZoneOf(Vector2Int tile) => _zones.TryGetValue(tile, out int zone) ? zone : 0;
@@ -43,18 +81,104 @@ namespace CGD.Level
 
         public bool IsPartitioned(Vector2Int a, Vector2Int b) => _blocked.Contains(Key(a, b));
 
-        // A free-standing pillar takes the tile it stands on, which must be open. One set
-        // into the walls (freeStanding = false) takes no floor.
+        // Floor nothing has built on or reserved: room for a new prop.
+        public bool IsFree(Vector2Int tile) => Footprint.Contains(tile) && !Has(tile, Taken);
+
+        // Whether a wall (the room's or an inner one) stands on this side of the tile.
+        public bool IsWall(Vector2Int tile, Vector2Int side) =>
+            !Footprint.Contains(tile + side) || IsPartitioned(tile, tile + side);
+
+        // Takes the tiles for `tag` (Structure or Prop) if they are all free and the room stays
+        // whole: every other free tile still reachable from every doorway, no doorway blocked.
+        public bool TryClaim(IReadOnlyList<Vector2Int> tiles, RoomTileTags tag)
+        {
+            foreach (Vector2Int tile in tiles)
+                if (!IsFree(tile)) return false;
+            if (!StaysConnected(tiles)) return false;
+
+            foreach (Vector2Int tile in tiles) Tag(tile, tag);
+            return true;
+        }
+
+        // Whether every free tile can still be walked to from the doorways if `claimed` were
+        // taken too (a room with no doorway starts from its first free tile).
+        public bool StaysConnected(IReadOnlyList<Vector2Int> claimed)
+        {
+            foreach (Vector2Int entrance in _entrances)
+                if (Contains(claimed, entrance) || Has(entrance, Solid)) return false;
+
+            // `reached` also marks the claimed tiles, so the search never walks onto them.
+            var reached = new bool[_floor.Length];
+            int free = Footprint.Count - _solidCount;
+            foreach (Vector2Int tile in claimed)
+            {
+                if (!InFloor(tile) || _solid[IndexOf(tile)] || reached[IndexOf(tile)]) continue;
+                reached[IndexOf(tile)] = true;
+                free--;
+            }
+            if (free <= 0) return true;
+
+            var open = new Stack<Vector2Int>();
+            int visited = 0;
+            void Visit(Vector2Int tile)
+            {
+                int index = IndexOf(tile);
+                if (reached[index]) return;
+                reached[index] = true;
+                visited++;
+                open.Push(tile);
+            }
+
+            if (_entrances.Count == 0) Visit(FirstFree(reached));
+            foreach (Vector2Int entrance in _entrances) Visit(entrance);
+
+            bool partitioned = _blocked.Count > 0;
+            while (open.Count > 0)
+            {
+                Vector2Int tile = open.Pop();
+                foreach (Vector2Int side in Sides)
+                {
+                    Vector2Int next = tile + side;
+                    if (!InFloor(next)) continue;
+
+                    int index = IndexOf(next);
+                    if (reached[index] || _solid[index] || (partitioned && IsPartitioned(tile, next))) continue;
+                    Visit(next);
+                }
+            }
+            return visited == free;
+        }
+
+        private Vector2Int FirstFree(bool[] taken)
+        {
+            foreach (Vector2Int tile in Footprint.Tiles)
+                if (!_solid[IndexOf(tile)] && !taken[IndexOf(tile)]) return tile;
+            return Footprint.Tiles[0];
+        }
+
+        private int IndexOf(Vector2Int tile) => (tile.y - _bounds.yMin) * _bounds.width + (tile.x - _bounds.xMin);
+
+        private bool InFloor(Vector2Int tile) =>
+            tile.x >= _bounds.xMin && tile.x < _bounds.xMax && tile.y >= _bounds.yMin && tile.y < _bounds.yMax && _floor[IndexOf(tile)];
+
+        // A free-standing pillar takes the tile it stands on, which must be open and not cut
+        // the room in two. One set into the walls (freeStanding = false) takes no floor.
         public bool TryAddPillar(Vector2 position, float width, GameObject prefab, bool freeStanding = true)
         {
             var tile = new Vector2Int(Mathf.FloorToInt(position.x), Mathf.FloorToInt(position.y));
             if (freeStanding)
             {
-                if (!IsOpen(tile)) return false;
-                Tag(tile, RoomTileTags.Structure);
+                if (!IsOpen(tile) || !TryClaim(new[] { tile }, RoomTileTags.Structure)) return false;
             }
             _pillars.Add(new StructurePillar(position, width, prefab));
             return true;
+        }
+
+        private static bool Contains(IReadOnlyList<Vector2Int> tiles, Vector2Int tile)
+        {
+            for (int i = 0; i < tiles.Count; i++)
+                if (tiles[i] == tile) return true;
+            return false;
         }
 
         // Adds the edges only if every floor tile can still reach every other.

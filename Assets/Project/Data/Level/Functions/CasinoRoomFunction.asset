@@ -41,19 +41,39 @@ MonoBehaviour:
       Min: 6
       Max: 12
       Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
     On: 1
     Avoid: 124
     Zone: 0
     Facing: 2
+    Clearance: 1
     Spacing: 0
+    Selection: 0
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0.3
+    Required: 0
   - Prefabs:
     - {fileID: 6137028835907501265, guid: 253283faa7c64eeba7822eaa48e7b6f8, type: 3}
     Count:
       Min: 2
       Max: 4
       Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
     On: 0
     Avoid: 124
     Zone: 1
     Facing: 1
+    Clearance: 0
     Spacing: 2
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0

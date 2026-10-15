@@ -11,11 +11,12 @@ using CGD.Map;
 
 namespace CGD.Level
 {
-    // Furnishes rooms from their function (RoomPropPlanner), then fills them with what their
-    // RoomContentRule asks for, on tiles the room's structure leaves free: never on pillars,
-    // furniture, in doorways or on the centre spot, and props also keep off the walkways so
-    // routes through the room stay clear. Props and centrepieces go in
-    // before the NavMesh is built (so it walks around them), enemies after (they need it).
+    // Furnishes rooms from their function and room type (RoomPropPlanner), then fills them with
+    // what their RoomContentRule asks for, on tiles the room's structure leaves free: never on
+    // pillars, furniture, in doorways or on the centre spot, and props also keep off the walkways
+    // and the floor kept in front of things to use, so routes and approaches stay clear. Props
+    // and centrepieces go in before the NavMesh is built (so it walks around them), enemies
+    // after (they need it).
     // Every placement comes from the level's seed, so the same seed gives the same level.
     // What gets rolled later — a chest's loot, an enemy's affixes and drops, a shop's shelf —
     // comes from it too: each placed thing and enemy gets its own seed by room and order
@@ -29,7 +30,7 @@ namespace CGD.Level
         private readonly RandomStream _random;
 
         private const RoomTileTags NeverSpawnOn = RoomTileTags.Structure | RoomTileTags.Prop | RoomTileTags.NearDoor | RoomTileTags.Centre;
-        private const RoomTileTags KeepPropsOff = RoomTileTags.Walkway;
+        private const RoomTileTags KeepPropsOff = RoomTileTags.Walkway | RoomTileTags.Access;
 
         // Tiles still free to spawn on, per room, in shuffled order.
         private readonly Dictionary<int, List<Vector2Int>> _freeTiles = new();
@@ -52,26 +53,36 @@ namespace CGD.Level
         {
             foreach (LevelRoom room in _layout.Rooms.Values)
             {
-                foreach (PlannedProp prop in RoomPropPlanner.Plan(room, _random))
+                RoomContentRule rule = _settings.RuleFor(room.Node.Type);
+                foreach (PlannedProp prop in PlanProps(room, rule))
                 {
+                    if (prop.Prefab == null) continue;
+
                     Vector3 local = new Vector3(prop.Position.x, 0f, prop.Position.y) * _layout.TileSize;
                     Place(room, prop.Prefab, _parent.TransformPoint(local), _parent.rotation * Quaternion.Euler(0f, prop.Yaw, 0f));
                 }
 
-                RoomContentRule rule = _settings.RuleFor(room.Node.Type);
-                if (rule == null) continue;
-
-                if (rule.Centerpiece != null)
+                if (rule != null && rule.Centerpiece != null)
                     Place(room, rule.Centerpiece, RoomCenter(room), RandomYaw());
-
-                if (rule.Offerings.Length > 0 && TryTakeTile(room, KeepPropsOff, out Vector3 spot))
-                    Place(room, _random.Pick(rule.Offerings), spot, RandomYaw());
-
-                if (rule.Props.Length == 0) continue;
-                int count = rule.PropCount.Evaluate(_random);
-                for (int i = 0; i < count && TryTakeTile(room, KeepPropsOff, out Vector3 position); i++)
-                    Place(room, _random.Pick(rule.Props), position, RandomYaw());
             }
+        }
+
+        // What a room is furnished with, most important first, as each placement takes floor the
+        // next can't have: what a player comes for (offerings), the function's furniture, then the
+        // room type's cover and clutter. A hand-built landmark keeps its own interior.
+        private IReadOnlyList<PlannedProp> PlanProps(LevelRoom room, RoomContentRule rule)
+        {
+            if (room.Structure == null) return System.Array.Empty<PlannedProp>();
+
+            // The room's own seed layer, so what one room gets doesn't depend on the others.
+            var planner = new RoomPropPlanner(room.Structure, room.Anchor, _seed.Derive("props").Derive(room.Node.Id).Stream());
+            if (rule != null && rule.Offerings.Length > 0) planner.Add(RoomPropPlacement.Nook(rule.Offerings));
+            if (room.Landmark == null)
+            {
+                if (room.Function != null) planner.Add(room.Function.Props);
+                if (rule != null && rule.Dressing != null) planner.Add(rule.Dressing.Props);
+            }
+            return planner.Planned;
         }
 
         // A room's things share its tier: containers roll with its loot luck and resource

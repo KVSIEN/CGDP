@@ -15,5 +15,6 @@ namespace CGD.Level
         Walkway   = 1 << 4,   // on the route from a doorway to the centre
         Structure = 1 << 5,   // taken by a pillar or a landmark's furniture
         Prop      = 1 << 6,   // taken by a placed prop
+        Access    = 1 << 7,   // kept free in front of something to use (a harvest node, a cache)
     }
 }

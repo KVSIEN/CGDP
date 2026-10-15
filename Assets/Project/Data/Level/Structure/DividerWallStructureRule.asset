@@ -17,4 +17,5 @@ MonoBehaviour:
     Max: 0.4
     Bias: 0
   _openingTiles: 2
+  _minZoneTiles: 8
   _height: 0

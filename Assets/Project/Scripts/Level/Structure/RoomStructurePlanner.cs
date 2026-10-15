@@ -5,8 +5,9 @@ using CGD.Core;
 namespace CGD.Level
 {
     // Lays out one room's structure once its doorways are known: tags the edge, corner,
-    // centre and doorway tiles, reserves a walkway from every doorway to the centre, runs the
-    // room function's structure rules, then works out the zones their inner walls make.
+    // centre and doorway tiles, notes where the entrances are, reserves a walkway from every
+    // doorway to the centre, runs the room function's structure rules, then works out the zones
+    // their inner walls make.
     // A landmark room brings its own interior: its furniture tiles are marked instead.
     public class RoomStructurePlanner
     {
@@ -14,18 +15,11 @@ namespace CGD.Level
 
         public RoomStructure Plan(LevelRoom room, IReadOnlyList<LevelDoorway> doorways, RandomStream random)
         {
-            var structure = new RoomStructure(room.Footprint, room.WallHeight);
-            Vector2Int centre = CentreTile(room);
-
-            TagWalls(structure);
-            TagCentre(structure, room);
+            var entrances = new List<Vector2Int>();
             foreach (LevelDoorway doorway in doorways)
-            {
-                if (doorway.Room != room) continue;
-                TagNearDoor(structure, doorway.RoomTile);
-                TagWalkway(structure, doorway.RoomTile, centre);
-            }
+                if (doorway.Room == room) entrances.Add(doorway.RoomTile);
 
+            RoomStructure structure = Prepare(room.Footprint, room.WallHeight, entrances);
             if (room.Landmark != null)
                 TagLandmark(structure, room);
             else if (room.Function != null)
@@ -36,8 +30,23 @@ namespace CGD.Level
             return structure;
         }
 
-        private static Vector2Int CentreTile(LevelRoom room) =>
-            new(Mathf.FloorToInt(room.Anchor.x), Mathf.FloorToInt(room.Anchor.y));
+        // A bare room: its walls, centre, entrances and the walkways between them tagged, before
+        // any structure rule has run. `entrances` are the floor tiles inside the doorways.
+        public RoomStructure Prepare(RoomFootprint footprint, float wallHeight, IReadOnlyList<Vector2Int> entrances)
+        {
+            var structure = new RoomStructure(footprint, wallHeight);
+            Vector2Int centre = new(Mathf.FloorToInt(footprint.Anchor.x), Mathf.FloorToInt(footprint.Anchor.y));
+
+            TagWalls(structure);
+            TagCentre(structure, footprint.Anchor);
+            foreach (Vector2Int entrance in entrances)
+            {
+                structure.AddEntrance(entrance);
+                TagNearDoor(structure, entrance);
+                TagWalkway(structure, entrance, centre);
+            }
+            return structure;
+        }
 
         private static void TagLandmark(RoomStructure structure, LevelRoom room)
         {
@@ -60,10 +69,10 @@ namespace CGD.Level
         }
 
         // Same reach as the populator always kept clear around the centrepiece.
-        private static void TagCentre(RoomStructure structure, LevelRoom room)
+        private static void TagCentre(RoomStructure structure, Vector2 anchor)
         {
             foreach (Vector2Int tile in structure.Footprint.Tiles)
-                if (Vector2.Distance(tile + Vector2.one * 0.5f, room.Anchor) < 1.5f)
+                if (Vector2.Distance(tile + Vector2.one * 0.5f, anchor) < 1.5f)
                     structure.Tag(tile, RoomTileTags.Centre);
         }
 

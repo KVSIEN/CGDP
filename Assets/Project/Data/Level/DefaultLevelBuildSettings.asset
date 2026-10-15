@@ -114,11 +114,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Centerpiece: {fileID: 6402871195536214001, guid: 3b8e51c07d2a4f9e96c4a1d25e7f0b63, type: 3}
-    Props: []
-    PropCount:
-      Min: 0
-      Max: 0
-      Bias: 0
+    Dressing: {fileID: 0}
   - Type: 1
     Enemies: []
     EnemyCount:
@@ -126,11 +122,7 @@ MonoBehaviour:
       Max: 5
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 2
-      Max: 4
-      Bias: 0
+    Dressing: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}
   - Type: 2
     Enemies: []
     EnemyCount:
@@ -138,11 +130,7 @@ MonoBehaviour:
       Max: 6
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 2
-      Max: 4
-      Bias: 0
+    Dressing: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}
   - Type: 3
     Enemies: []
     EnemyCount:
@@ -150,11 +138,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 1
-      Max: 3
-      Bias: 0
+    Dressing: {fileID: 0}
   - Type: 4
     Enemies: []
     EnemyCount:
@@ -162,11 +146,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 0
-      Max: 0
-      Bias: 0
+    Dressing: {fileID: 0}
   - Type: 5
     Enemies: []
     EnemyCount:
@@ -174,11 +154,7 @@ MonoBehaviour:
       Max: 2
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 1
-      Max: 3
-      Bias: 0
+    Dressing: {fileID: 0}
   - Type: 6
     Enemies: []
     EnemyCount:
@@ -186,11 +162,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Centerpiece: {fileID: 7400000000000000301, guid: baa532e693434abd8716f2d684c696b2, type: 3}
-    Props: []
-    PropCount:
-      Min: 1
-      Max: 3
-      Bias: 0
+    Dressing: {fileID: 11400000, guid: 6e0f3730e9fd4d41b2697f5f1ba34987, type: 2}
   - Type: 7
     Enemies: []
     EnemyCount:
@@ -198,11 +170,7 @@ MonoBehaviour:
       Max: 1
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 0
-      Max: 0
-      Bias: 0
+    Dressing: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}
   - Type: 8
     Enemies: []
     EnemyCount:
@@ -210,11 +178,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 0
-      Max: 0
-      Bias: 0
+    Dressing: {fileID: 0}
   - Type: 9
     Enemies: []
     EnemyCount:
@@ -222,11 +186,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 0
-      Max: 0
-      Bias: 0
+    Dressing: {fileID: 0}
   - Type: 10
     Enemies: []
     EnemyCount:
@@ -234,11 +194,7 @@ MonoBehaviour:
       Max: 5
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 2
-      Max: 4
-      Bias: 0
+    Dressing: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}
   - Type: 11
     Enemies: []
     EnemyCount:
@@ -246,11 +202,7 @@ MonoBehaviour:
       Max: 6
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 2
-      Max: 4
-      Bias: 0
+    Dressing: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}
   - Type: 12
     Enemies: []
     EnemyCount:
@@ -258,11 +210,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 1
-      Max: 3
-      Bias: 0
+    Dressing: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}
   - Type: 13
     Enemies: []
     EnemyCount:
@@ -270,11 +218,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 1
-      Max: 3
-      Bias: 0
+    Dressing: {fileID: 11400000, guid: 6e0f3730e9fd4d41b2697f5f1ba34987, type: 2}
   - Type: 14
     Enemies: []
     EnemyCount:
@@ -282,11 +226,7 @@ MonoBehaviour:
       Max: 4
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 3
-      Max: 5
-      Bias: 0
+    Dressing: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}
   - Type: 15
     Enemies: []
     EnemyCount:
@@ -294,11 +234,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Centerpiece: {fileID: 7400000000000000501, guid: 6c742474523846c29ff7c6f88de2a31f, type: 3}
-    Props: []
-    PropCount:
-      Min: 1
-      Max: 3
-      Bias: 0
+    Dressing: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}
   - Type: 16
     Enemies: []
     EnemyCount:
@@ -306,11 +242,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Centerpiece: {fileID: 7400000000000000601, guid: 4136c546d6c7e434797d2393982b063d, type: 3}
-    Props: []
-    PropCount:
-      Min: 1
-      Max: 3
-      Bias: 0
+    Dressing: {fileID: 0}
   - Type: 17
     Enemies: []
     EnemyCount:
@@ -318,11 +250,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Centerpiece: {fileID: 7400000000000000701, guid: 8a0ec5f28a5ed854181828cd1696c581, type: 3}
-    Props: []
-    PropCount:
-      Min: 0
-      Max: 0
-      Bias: 0
+    Dressing: {fileID: 0}
   - Type: 18
     Enemies: []
     EnemyCount:
@@ -330,11 +258,7 @@ MonoBehaviour:
       Max: 3
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 1
-      Max: 3
-      Bias: 0
+    Dressing: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}
   - Type: 19
     Enemies: []
     EnemyCount:
@@ -342,11 +266,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 1
-      Max: 3
-      Bias: 0
+    Dressing: {fileID: 0}
     Offerings:
     - {fileID: 246657195920720429, guid: 6b1f0e4c2d8a4e7b9c35a1f2d4e60b87, type: 3}
     - {fileID: 7530473905300712717, guid: c9bf881dd67b4a0abd3f1f58135261a4, type: 3}
@@ -358,11 +278,7 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Centerpiece: {fileID: 0}
-    Props: []
-    PropCount:
-      Min: 0
-      Max: 0
-      Bias: 0
+    Dressing: {fileID: 0}
   _shapes:
   - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
   - {fileID: 11400000, guid: 54a81013066a481a856586f0fee8dd3a, type: 2}

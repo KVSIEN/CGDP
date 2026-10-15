@@ -14,6 +14,8 @@ namespace CGD.Level
         [Tooltip("Where the wall crosses the longer side, as a fraction of it (mirrored at random)")]
         [SerializeField] private FloatRange _position = new(0.3f, 0.4f);
         [SerializeField, Min(1)] private int _openingTiles = 2;
+        [Tooltip("Fewest floor tiles either side of the wall may have; a wall that would cut off a sliver is skipped")]
+        [SerializeField, Min(1)] private int _minZoneTiles = 8;
         [Tooltip("Metres; 0 = full wall height, about 1.1 = a counter")]
         [SerializeField, Min(0f)] private float _height;
 
@@ -28,12 +30,25 @@ namespace CGD.Level
             int offset = Mathf.Clamp(Mathf.RoundToInt(length * _position.Evaluate(random)), 2, length - 2);
             if (random.Chance(0.5f)) offset = length - offset;
             int line = (splitAlongX ? bounds.xMin : bounds.yMin) + offset;
+            if (!BothSidesRoomy(structure, splitAlongX, line)) return;
 
             var edges = new List<PartitionEdge>();
             foreach (List<(Vector2Int a, Vector2Int b)> stretch in Stretches(structure, bounds, splitAlongX, line))
                 AddWithOpening(structure, stretch, random, edges);
 
             if (edges.Count > 0) structure.TryAddPartition(edges);
+        }
+
+        // Whether the floor on each side of the line is big enough to be a room of its own.
+        private bool BothSidesRoomy(RoomStructure structure, bool splitAlongX, int line)
+        {
+            int before = 0, after = 0;
+            foreach (Vector2Int tile in structure.Footprint.Tiles)
+            {
+                if ((splitAlongX ? tile.x : tile.y) < line) before++;
+                else after++;
+            }
+            return before >= _minZoneTiles && after >= _minZoneTiles;
         }
 
         // The wall line cut into unbroken pieces of floor on both sides.
