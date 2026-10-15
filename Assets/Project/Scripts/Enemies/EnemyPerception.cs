@@ -77,6 +77,9 @@ namespace CGD.Enemies
             Report(hit.Source.Owner.transform.position, hit.Source);
         }
 
+        // Points the enemy at a position as if it had heard `source` there.
+        public void Alert(Vector3 position, DamageSource source) => Report(position, source);
+
         private void Report(Vector3 position, DamageSource source)
         {
             LastKnownPosition = position;

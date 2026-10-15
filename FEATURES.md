@@ -488,6 +488,15 @@
 - The ship's hold lasts for the play session (it is not saved to disk yet)
 - An **Emergency Exit** room's escape pod is an early way out (hold Interact on "Emergency extract"): the run ends, your weapons and worn armour make it home, but only half of every stack in your pack fits and loose gear in the pack is left behind. The ship screen reads EMERGENCY EXTRACTION and says how much didn't fit
 
+## Director (Pacing)
+An AI director, in the spirit of Left 4 Dead's, paces each play session so fights come in waves of tension and relief instead of a constant grind.
+- The director keeps track of how stressed you are: taking damage raises it (a bigger share of your health, a bigger jump), enemies dying close to you raise it a little, and dying fills it. It only eases off once the fighting has stopped for a few seconds
+- The session runs in a cycle: **build-up** (pressure grows until you are stressed), a short **peak** held for a few seconds, a **fade** that waits until you have calmed down, then a **calm** of 30–45 seconds with nothing new coming in, before the next build-up
+- A level opens with a short calm (about 15 seconds) to look around and get ready
+- During build-up and the peak, small groups of 2–4 **reinforcements** arrive every 20–35 seconds, out of your sight and 18–30 m away, and come looking for you. At most 6 are around at once; nothing arrives during the fade or the calm
+- Respawning starts a fresh calm
+- Encounter rooms and the enemies placed in rooms are unaffected; their fights simply count toward your stress like any other
+
 ## Encounter Rooms
 Rooms with rules of their own, mixed into generated maps alongside the usual fights, shops and treasure. They are the exception: in normal rooms (Combat, Breach and the rest) the doors never lock and the enemies simply patrol. Each one says what it is on its door sign (except the Ambush), and the map's validity checks still hold for all of them.
 - Encounter rewards (Lockdown, Holdout, Ambush, Stealth vault, Rift, Puzzle) are the same chest as a Treasure room's: anything and everything, at the room's luck

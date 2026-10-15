@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cc85d396ce143a9a3744c3f59f01458, type: 3}
+  m_Name: DefaultDirectorSettings
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Director.DirectorSettings
+  _stress:
+    _damageTaken: 1.2
+    _nearbyKill: 0.08
+    _nearbyKillRadius: 10
+    _combatMemory: 5
+  _intensity:
+    _decayDelay: 3
+    _decayRate: 0.08
+  _pacing:
+    _peakThreshold: 0.75
+    _sustainDuration: 4
+    _relaxThreshold: 0.25
+    _relaxDuration:
+      Min: 30
+      Max: 45
+      Bias: 0
+    _openingRelax: 15

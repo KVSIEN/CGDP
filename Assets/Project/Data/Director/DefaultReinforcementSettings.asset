@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9e30e22ea244cccb436385396046022, type: 3}
+  m_Name: DefaultReinforcementSettings
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Director.ReinforcementSettings
+  _enemies:
+  - {fileID: 2643170897715678307, guid: dd6d1969e3e145ed9d3851f294495994, type: 3}
+  - {fileID: 6049590506595625700, guid: a91f3c7c0dcd4aed808a7ae84cb32d9b, type: 3}
+  - {fileID: 4751797605688477134, guid: 54c366c401164802b7766c9304e684a7, type: 3}
+  _interval:
+    Min: 20
+    Max: 35
+    Bias: 0
+  _groupSize:
+    Min: 2
+    Max: 4
+    Bias: 0
+  _maxAlive: 6
+  _distance:
+    Min: 18
+    Max: 30
+    Bias: 0
+  _spotAttempts: 10

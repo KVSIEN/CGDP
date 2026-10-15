@@ -119,6 +119,9 @@ namespace CGD.Enemies
         // For enemies spawned at runtime (level builder, dev console) instead of placed with a route.
         public void SetWaypoints(Transform[] waypoints) => _waypoints = waypoints;
 
+        // Sends the enemy to investigate a position, e.g. a reinforcement sent toward the player.
+        public void AlertTo(Vector3 position, DamageSource source) => Perception.Alert(position, source);
+
         // Rolled affixes run the enemy on a modified copy of its data (perception keeps the original).
         public void UseData(EnemyData data) => _data = data;
 

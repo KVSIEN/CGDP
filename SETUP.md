@@ -556,6 +556,19 @@ HUD (prefab instance)
 `Scenes/MapTest` is wired this way: `Expedition` root, `ExpeditionScreen` added under the HUD instance, and the two Player overrides above as instance overrides (the Player prefab and Sandbox are unchanged).
 - **Obstacle masks**: generated geometry goes on `_geometryLayer`. Keep that layer in enemies' `_obstacleMask` and in weapons' hit masks.
 
+### Director (pacing)
+
+```
+Director  [GameDirector, ReinforcementSpawner]   ← scene root
+```
+
+| Component | Assign | Notes |
+|---|---|---|
+| **GameDirector** | `_settings` = `Director/DefaultDirectorSettings` · `_player` = Player's PlayerHealth | Tracks the player's intensity and runs the pacing cycle. One per gameplay scene; pauses with GameFlow (any state but Playing). |
+| **ReinforcementSpawner** | `_settings` = `Director/DefaultReinforcementSettings` · `_director` = the GameDirector · `_player` = Player's Transform · `_obstacleMask` = geometry that hides a spawn (Default — the level's `_geometryLayer`) | Spawns only while the director allows it. Needs a baked NavMesh. Optional: without it the director still tracks pacing. |
+
+`Scenes/MapTest` is wired this way (Sandbox has no director). Any gameplay scene can add the same root object.
+
 ## Impact Effects
 
 ```
@@ -613,6 +626,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Crafting/` | `BandageRecipe`, `CombatStimRecipe`, `ExtendedMagazineRecipe`, `CombatVestRecipe` | CraftingStation |
 | `Level/Objectives/` | `DefaultMapObjectiveSettings` (templates, 1–2 main / 0–3 side per map, console = `Environment/Level/LockTerminal`, retrieve pickup = `LootItemPickup` with `Items/Resources/DataCoreResource`, reward cache = `RewardCache`, credits and cache luck per tier), objective templates (`…Objective`: steps of Clear / Activate / Retrieve, each with a room tier range `MinTier`–`MaxTier`; `_tierOrder` Any / Never Down / Same; in order or not; same faction or not; main / side / either) | LevelBuilder |
 | `Expedition/` | `DefaultRunStarterKit` — the starting room's loadout (Modular Pistol + a random Dagger/Sword/Axe offhand, 0–1 random gear, supplies) | ExpeditionRunner |
+| `Director/` | `DefaultDirectorSettings` (stress per damage taken / nearby kill, combat memory, intensity decay, peak 0.75 held 4 s, calm below 0.25 for 30–45 s, 15 s opening calm), `DefaultReinforcementSettings` (Husk, Scavenger, MaintenanceBot; 2–4 every 20–35 s, max 6 alive, 18–30 m away) | GameDirector, ReinforcementSpawner |
 | `DevTools/` | `DevCatalog` (all items, weapon categories, buffs; no enemy prefabs exist yet) | DevCommands |
 | `Abilities/` | Dash (needs `PlayerDodge`), Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`), Stealth (needs `Stealthable`) | PlayerAbilities |
 | `Abilities/` (instant strike) | `CrushingBlowAbility` (Targeted, `DefaultRaycastTargetSelector`) | PlayerAbilities |
