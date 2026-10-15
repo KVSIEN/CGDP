@@ -559,15 +559,19 @@ HUD (prefab instance)
 ### Director (pacing)
 
 ```
-Director  [GameDirector, ReinforcementSpawner]   ← scene root
+Director  [GameDirector, ReinforcementSpawner, SupplySpawner, DirectorMusic]   ← scene root
 ```
 
 | Component | Assign | Notes |
 |---|---|---|
-| **GameDirector** | `_settings` = `Director/DefaultDirectorSettings` · `_player` = Player's PlayerHealth | Tracks the player's intensity and runs the pacing cycle. One per gameplay scene; pauses with GameFlow (any state but Playing). |
-| **ReinforcementSpawner** | `_settings` = `Director/DefaultReinforcementSettings` · `_director` = the GameDirector · `_player` = Player's Transform · `_obstacleMask` = geometry that hides a spawn (Default — the level's `_geometryLayer`) | Spawns only while the director allows it. Needs a baked NavMesh. Optional: without it the director still tracks pacing. |
+| **GameDirector** | `_settings` = `Director/DefaultDirectorSettings` · `_player` = Player's PlayerHealth | Tracks the player's intensity and performance and runs the pacing cycle. One per gameplay scene; pauses with GameFlow (any state but Playing). The rest below need it. |
+| **ReinforcementSpawner** | `_settings` = `Director/DefaultReinforcementSettings` · `_director` = the GameDirector · `_player` = Player's Transform · `_obstacleMask` = geometry that hides a spawn (Default — the level's `_geometryLayer`) | Spawns only while the director allows it. Needs a baked NavMesh; the arrival sound needs an `AudioPool` in the scene. Optional. |
+| **SupplySpawner** | `_settings` = `Director/DefaultSupplySettings` · `_director` = the GameDirector · `_health` = Player's PlayerHealth · `_inventory` = PlayerInventory · `_weapons`? = WeaponController (without it only healing is handed out) · `_obstacleMask` = Default | Needs a baked NavMesh. Optional. |
+| **DirectorMusic** | `_settings` = `Director/DefaultMusicSettings` · `_director` = the GameDirector | Creates its own 2D AudioSources as children. Layers without a clip are skipped, so it is silent until clips are assigned. Optional. |
 
 `Scenes/MapTest` is wired this way (Sandbox has no director). Any gameplay scene can add the same root object.
+
+**Music clips:** assign the stems of one piece (same length, they loop together) to `DefaultMusicSettings` → *Layers*: 0 calm bed (always on), 1 tension (fades in from intensity 0.1–0.4), 2 combat (0.35–0.7, silent in the calm), 3 peak (only while the peak is held); plus *Peak Stinger* and *Calm Stinger*. Import music clips with *Load Type* = Streaming. The reinforcement arrival sound goes in `DefaultReinforcementSettings` → *Arrival Sound*.
 
 ## Impact Effects
 
@@ -626,7 +630,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Crafting/` | `BandageRecipe`, `CombatStimRecipe`, `ExtendedMagazineRecipe`, `CombatVestRecipe` | CraftingStation |
 | `Level/Objectives/` | `DefaultMapObjectiveSettings` (templates, 1–2 main / 0–3 side per map, console = `Environment/Level/LockTerminal`, retrieve pickup = `LootItemPickup` with `Items/Resources/DataCoreResource`, reward cache = `RewardCache`, credits and cache luck per tier), objective templates (`…Objective`: steps of Clear / Activate / Retrieve, each with a room tier range `MinTier`–`MaxTier`; `_tierOrder` Any / Never Down / Same; in order or not; same faction or not; main / side / either) | LevelBuilder |
 | `Expedition/` | `DefaultRunStarterKit` — the starting room's loadout (Modular Pistol + a random Dagger/Sword/Axe offhand, 0–1 random gear, supplies) | ExpeditionRunner |
-| `Director/` | `DefaultDirectorSettings` (stress per damage taken / nearby kill, combat memory, intensity decay, peak 0.75 held 4 s, calm below 0.25 for 30–45 s, 15 s opening calm), `DefaultReinforcementSettings` (Husk, Scavenger, MaintenanceBot; 2–4 every 20–35 s, max 6 alive, 18–30 m away) | GameDirector, ReinforcementSpawner |
+| `Director/` | `DefaultDirectorSettings` (stress per damage taken / nearby kill, combat memory, intensity decay, peak 0.75 held 4 s, calm below 0.25 for 30–45 s, 15 s opening calm; *Performance*: pressure 0.7–1.35, easy peak ≥ 60% health, hard ≤ 30%, step 0.2, death 0.5), `DefaultReinforcementSettings` (Husk, Scavenger, MaintenanceBot; 2–4 every 20–35 s at neutral pressure, max 6 alive, 18–30 m away; arrival message, no sound yet), `DefaultSupplySettings` (`LootItemPickup`; 2 `BandageConsumable` below 50% health with < 2 carried; 3 magazines of the matching munition below 2 spare; 4 s into a calm, 4–9 m away), `DefaultMusicSettings` (4 layers and 2 stingers, no clips yet) | GameDirector, ReinforcementSpawner, SupplySpawner, DirectorMusic |
 | `DevTools/` | `DevCatalog` (all items, weapon categories, buffs; no enemy prefabs exist yet) | DevCommands |
 | `Abilities/` | Dash (needs `PlayerDodge`), Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`), Stealth (needs `Stealthable`) | PlayerAbilities |
 | `Abilities/` (instant strike) | `CrushingBlowAbility` (Targeted, `DefaultRaycastTargetSelector`) | PlayerAbilities |

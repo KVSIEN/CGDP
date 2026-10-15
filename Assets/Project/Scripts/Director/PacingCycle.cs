@@ -39,6 +39,10 @@ namespace CGD.Director
         public float       TimeInPhase => _machine.TimeInState;
         public bool        IsRunning   => _machine.IsRunning;
 
+        // Multiplies every rolled calm after this is set (the director shortens calms for a
+        // player who is cruising and lengthens them for one who is struggling).
+        public float RelaxScale { get; set; } = 1f;
+
         public bool AllowsPopulation => _machine.IsRunning && Phase is PacingPhase.BuildUp or PacingPhase.SustainPeak;
 
         // (previous, next)
@@ -60,6 +64,6 @@ namespace CGD.Director
             _machine.Tick(deltaTime);
         }
 
-        private void RollRelax() => _relaxDuration = _tuning.RelaxDuration.Evaluate(_random);
+        private void RollRelax() => _relaxDuration = _tuning.RelaxDuration.Evaluate(_random) * RelaxScale;
     }
 }

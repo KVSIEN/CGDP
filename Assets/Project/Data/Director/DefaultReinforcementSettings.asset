@@ -30,3 +30,6 @@ MonoBehaviour:
     Max: 30
     Bias: 0
   _spotAttempts: 10
+  _arrivalSound: {fileID: 0}
+  _arrivalVolume: 1
+  _arrivalMessage: Movement nearby

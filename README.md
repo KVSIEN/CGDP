@@ -38,7 +38,9 @@ Assets/
       DevTools/             dev console: DevConsole (commands), DevCommands (cheats), DevCatalog
       Dialogue/             DialogueDefinition (nodes, choices), Conversation (runtime), Npc, Actions/, Conditions/
       Director/             session pacing (after Left 4 Dead's AI Director): GameDirector (stress → IntensityMeter → PacingCycle:
-                            build-up, peak, fade, relax), ReinforcementSpawner (groups out of sight while pressure may build)
+                            build-up, peak, fade, relax; SessionPerformance → Pressure), SpawnSpotFinder;
+                            Reinforcements/ (groups out of sight while pressure may build), Supplies/ (SupplyPlanner, SupplySpawner:
+                            healing or ammo during a calm), Music/ (DirectorMusic: layered stems and stingers)
       Economy/              CurrencyDefinition, Wallet, PriceTable, Vendor, GambleMachine (+ GambleOdds); Shops/ — Shop (buy/sell/trade-in),
                             ShopCatalog, stock sources (ItemStock, RolledWeaponStock), listings
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report)

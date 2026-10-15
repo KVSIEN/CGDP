@@ -1537,6 +1537,8 @@ GameObject:
   - component: {fileID: 1482240651}
   - component: {fileID: 1482240652}
   - component: {fileID: 1482240653}
+  - component: {fileID: 1482240654}
+  - component: {fileID: 1482240655}
   m_Layer: 0
   m_Name: Director
   m_TagString: Untagged
@@ -1591,6 +1593,40 @@ MonoBehaviour:
   _obstacleMask:
     serializedVersion: 2
     m_Bits: 1
+--- !u!114 &1482240654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482240650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7857e8c43f0c4aee8ae23334d1bf5b49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Director.SupplySpawner
+  _settings: {fileID: 11400000, guid: 0cf85857c00a4e1d879849ed6e0805c3, type: 2}
+  _director: {fileID: 1482240652}
+  _health: {fileID: 1555766054}
+  _inventory: {fileID: 1555766066}
+  _weapons: {fileID: 1555766062}
+  _obstacleMask:
+    serializedVersion: 2
+    m_Bits: 1
+--- !u!114 &1482240655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482240650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 561a0930ee4e4903a839e7c550f86be8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Director.DirectorMusic
+  _settings: {fileID: 11400000, guid: 05f7c72d0567488180755d9890b9aef8, type: 2}
+  _director: {fileID: 1482240652}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

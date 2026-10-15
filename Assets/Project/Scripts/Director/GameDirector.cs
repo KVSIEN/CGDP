@@ -10,23 +10,31 @@ namespace CGD.Director
     // Paces one play session, after Left 4 Dead's AI Director. It watches how stressed the
     // player is — damage taken, enemies dying around them, dying — as an intensity from 0
     // to 1, and runs the pacing cycle (PacingPhase) from it: build pressure, hold the peak,
-    // let it fade, then a calm stretch before the next build-up.
+    // let it fade, then a calm stretch before the next build-up. How each peak went (the
+    // lowest the player's health got, deaths) feeds a Pressure multiplier that rubber-bands
+    // the session's difficulty, and shortens or lengthens the calms with it.
     //
-    // The director decides *when* the world may push; systems that add threats (the
-    // ReinforcementSpawner, and later ambient events, music, item placement) ask
-    // AllowsPopulation or listen to PhaseChanged and decide *how*. One per gameplay scene.
+    // The director decides *when* the world may push and *how hard*; the systems that act on
+    // it (ReinforcementSpawner, SupplySpawner, DirectorMusic) ask AllowsPopulation, Phase,
+    // Intensity and Pressure, or listen to PhaseChanged, and decide *how*. One per gameplay scene.
     public class GameDirector : MonoBehaviour
     {
         [SerializeField] private DirectorSettings _settings;
         [SerializeField] private PlayerHealth     _player;
 
-        private IntensityMeter _intensity;
-        private PacingCycle    _pacing;
-        private float          _lastCombatTime = float.NegativeInfinity;
+        private IntensityMeter     _intensity;
+        private PacingCycle        _pacing;
+        private SessionPerformance _performance;
+        private float              _lastCombatTime = float.NegativeInfinity;
+        // The smallest share of health the player has been down to since the build-up began.
+        private float              _lowestHealth = 1f;
 
-        public float       Intensity => _intensity?.Value ?? 0f;
-        public PacingPhase Phase     => _pacing?.Phase ?? PacingPhase.Relax;
-        public bool        InCombat  => _settings != null && Time.time - _lastCombatTime < _settings.Stress.CombatMemory;
+        public float       Intensity   => _intensity?.Value ?? 0f;
+        public PacingPhase Phase       => _pacing?.Phase ?? PacingPhase.Relax;
+        public float       TimeInPhase => _pacing?.TimeInPhase ?? 0f;
+        public bool        InCombat    => _settings != null && Time.time - _lastCombatTime < _settings.Stress.CombatMemory;
+        // 1 at neutral; above 1 for a player who is cruising, below for one who is struggling.
+        public float       Pressure    => _performance?.Pressure ?? 1f;
 
         // Whether the world may add threats right now: building up or at the peak, while playing.
         public bool AllowsPopulation => _pacing != null && _pacing.AllowsPopulation && IsPlaying;
@@ -45,9 +53,10 @@ namespace CGD.Director
                 return;
             }
 
-            _intensity = new IntensityMeter(_settings.Intensity);
-            _pacing    = new PacingCycle(_settings.Pacing, Seed.Random().Stream());
-            _pacing.PhaseChanged += (previous, next) => PhaseChanged?.Invoke(previous, next);
+            _intensity   = new IntensityMeter(_settings.Intensity);
+            _pacing      = new PacingCycle(_settings.Pacing, Seed.Random().Stream());
+            _performance = new SessionPerformance(_settings.Performance);
+            _pacing.PhaseChanged += OnPhaseChanged;
         }
 
         private void Start() => _pacing.Start();
@@ -84,7 +93,9 @@ namespace CGD.Director
             if (report.Target == _player)
             {
                 _lastCombatTime = Time.time;
-                if (_player.MaxHealth > 0f) _intensity.Add(report.Amount / _player.MaxHealth * _settings.Stress.DamageTaken);
+                if (_player.MaxHealth <= 0f) return;
+                _intensity.Add(report.Amount / _player.MaxHealth * _settings.Stress.DamageTaken);
+                _lowestHealth = Mathf.Min(_lowestHealth, HealthShare);
                 return;
             }
 
@@ -101,7 +112,27 @@ namespace CGD.Director
             _intensity.Add(stress.NearbyKill * (1f - distance / stress.NearbyKillRadius));
         }
 
-        private void OnPlayerDied() => _intensity.Fill();
+        private float HealthShare => _player.MaxHealth > 0f ? _player.Health / _player.MaxHealth : 1f;
+
+        private void OnPhaseChanged(PacingPhase previous, PacingPhase next)
+        {
+            if (next == PacingPhase.BuildUp) _lowestHealth = HealthShare;
+            if (next == PacingPhase.PeakFade)
+            {
+                _performance.RecordPeak(_lowestHealth);
+                UpdateRelaxScale();
+            }
+            PhaseChanged?.Invoke(previous, next);
+        }
+
+        private void UpdateRelaxScale() => _pacing.RelaxScale = 1f / _performance.Pressure;
+
+        private void OnPlayerDied()
+        {
+            _intensity.Fill();
+            _performance.RecordDeath();
+            UpdateRelaxScale();
+        }
 
         // A respawn is a fresh start: calm, with a full relax before anything comes again.
         private void OnPlayerRevived()

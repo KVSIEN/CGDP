@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91099e11563e48179d42007b47583025, type: 3}
+  m_Name: DefaultMusicSettings
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Director.MusicSettings
+  _layers:
+  - _clip: {fileID: 0}
+    _fadeInFrom: 0
+    _fadeInTo: 0
+    _peakOnly: 0
+    _silentInCalm: 0
+    _volume: 0.6
+  - _clip: {fileID: 0}
+    _fadeInFrom: 0.1
+    _fadeInTo: 0.4
+    _peakOnly: 0
+    _silentInCalm: 0
+    _volume: 0.8
+  - _clip: {fileID: 0}
+    _fadeInFrom: 0.35
+    _fadeInTo: 0.7
+    _peakOnly: 0
+    _silentInCalm: 1
+    _volume: 1
+  - _clip: {fileID: 0}
+    _fadeInFrom: 0
+    _fadeInTo: 0
+    _peakOnly: 1
+    _silentInCalm: 1
+    _volume: 1
+  _fadeSpeed: 0.5
+  _peakStinger: {fileID: 0}
+  _calmStinger: {fileID: 0}
+  _stingerVolume: 1
