@@ -15,13 +15,24 @@ namespace CGD.Level
         [Tooltip("Optional — placed instead of a plain box (origin at the base)")]
         [SerializeField] private GameObject _pillarPrefab;
 
+        [Header("Ruin")]
+        [Tooltip("Chance a column of the grid is gone altogether")]
+        [SerializeField, Range(0f, 1f)] private float _missingChance;
+        [Tooltip("Chance a column that stands is broken off short")]
+        [SerializeField, Range(0f, 1f)] private float _brokenChance;
+        [Tooltip("Metres a broken column still stands (a plain box only)")]
+        [SerializeField] private FloatRange _brokenHeight = new(0.7f, 2.4f);
+
         public override void Apply(RoomStructure structure, RandomStream random)
         {
             foreach (Vector2Int tile in structure.Footprint.Tiles)
             {
                 if (Mod(tile.x, _spacing) != 0 || Mod(tile.y, _spacing) != 0) continue;
                 if (!structure.Footprint.IsInterior(tile, _wallMargin)) continue;
-                structure.TryAddPillar(tile + new Vector2(0.5f, 0.5f), _pillarWidth, _pillarPrefab);
+                if (_missingChance > 0f && random.Chance(_missingChance)) continue;
+
+                float height = _brokenChance > 0f && random.Chance(_brokenChance) ? _brokenHeight.Evaluate(random) : 0f;
+                structure.TryAddPillar(tile + new Vector2(0.5f, 0.5f), _pillarWidth, _pillarPrefab, height: height);
             }
         }
 

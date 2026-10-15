@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Factions;
 using CGD.Map;
 
 namespace CGD.Level
@@ -41,6 +42,8 @@ namespace CGD.Level
         [SerializeField] private WallKit _wallKit;
         [Tooltip("Kits for rooms a faction holds, instead of the one above (corridors always use it)")]
         [SerializeField] private List<FactionWallKit> _factionWallKits = new();
+        [Tooltip("How each faction builds its rooms: favoured floor plans and sizes, structure, props and how crowded they are. A faction without one is built plainly")]
+        [SerializeField] private List<FactionDesign> _factionDesigns = new();
 
         [Header("Ceilings")]
         [Tooltip("Roof every room and corridor at its wall height. Interiors then need their own lights")]
@@ -115,6 +118,11 @@ namespace CGD.Level
             FactionWallKit match = _factionWallKits.Find(k => k != null && k.Faction == room.Faction && k.Kit != null);
             return match != null ? match.Kit : _wallKit;
         }
+
+        // The design a faction builds by, or null for a faction (or no faction) without one.
+        public FactionDesign DesignFor(FactionDefinition faction) =>
+            faction == null ? null : _factionDesigns.Find(d => d != null && d.Faction == faction);
+
         public bool  BuildCeilings  => _buildCeilings;
         public Material CeilingMaterial => _ceilingMaterial != null ? _ceilingMaterial : _wallMaterial;
         public int   CeilingLayer   => _ceilingLayer;

@@ -160,9 +160,12 @@ namespace CGD.Level
             {
                 Vector3 foot = new Vector3(pillar.Position.x, 0f, pillar.Position.y) * tile;
                 if (pillar.Prefab != null)
+                {
                     Object.Instantiate(pillar.Prefab, parent.TransformPoint(foot), parent.rotation, parent);
-                else
-                    boxes.AddBox(foot + Vector3.up * (height * 0.5f), new Vector3(pillar.Width, height, pillar.Width));
+                    continue;
+                }
+                float h = pillar.Height > 0f ? Mathf.Min(pillar.Height, height) : height;
+                boxes.AddBox(foot + Vector3.up * (h * 0.5f), new Vector3(pillar.Width, h, pillar.Width));
             }
 
             // Inner walls stand centred on the edge between their two tiles.
@@ -172,6 +175,17 @@ namespace CGD.Level
                 float h = edge.Height > 0f ? Mathf.Min(edge.Height, height) : height;
                 Vector3 centre = (layout.TileToLocal(edge.Tile) + layout.TileToLocal(edge.Other)) * 0.5f + Vector3.up * (h * 0.5f);
                 Vector3 size = edge.Side.x != 0 ? new Vector3(thickness, h, tile + thickness) : new Vector3(tile + thickness, h, thickness);
+                boxes.AddBox(centre, size);
+            }
+
+            // A doorway through an inner wall: the gap is left, with a lintel over it.
+            foreach (PartitionEdge opening in room.Structure.Openings)
+            {
+                if (opening.Height <= 0f || opening.Height >= height) continue;
+
+                float lintel = height - opening.Height;
+                Vector3 centre = (layout.TileToLocal(opening.Tile) + layout.TileToLocal(opening.Other)) * 0.5f + Vector3.up * (opening.Height + lintel * 0.5f);
+                Vector3 size = opening.Side.x != 0 ? new Vector3(thickness, lintel, tile + thickness) : new Vector3(tile + thickness, lintel, thickness);
                 boxes.AddBox(centre, size);
             }
         }

@@ -34,6 +34,12 @@ namespace CGD.Level
         [Range(0f, 1f)] public float Jitter;
         [Tooltip("Always placed, at least one: when no tile suits, the rules are loosened step by step until one does")]
         public bool Required;
+        [Tooltip("Only on tiles lined up with a grid of this pitch, in tiles, counted from the room's middle: neat rows and columns, like production lines. 0 or 1 = anywhere")]
+        public Vector2Int Lattice;
+        [Tooltip("Each one placed is mirrored across the room's long axis, when its twin fits: the ordered, symmetrical look. Quarter turns only, no jitter")]
+        public bool Symmetric;
+        [Tooltip("A decoration without a collider (ground cover, litter): takes no floor, so it may lie on walkways and in doorways, but never on a pillar or prop")]
+        public bool Decor;
 
         // The spot for something to find and use (a resource node, an ammo cache): against a
         // wall, off the routes and doorways, with floor in front and away from what is placed.
@@ -57,7 +63,9 @@ namespace CGD.Level
             copy.Zone      = PropZone.Any;
             copy.Spacing   = 0;
             copy.Selection = PropSelection.Random;
-            if (copy.Facing == PropFacing.AgainstWall || copy.Facing == PropFacing.AcrossSightline) copy.Facing = PropFacing.Square;
+            copy.Lattice   = Vector2Int.zero;
+            copy.Symmetric = false;
+            if (copy.Facing is PropFacing.AgainstWall or PropFacing.AcrossSightline or PropFacing.AlongRoom) copy.Facing = PropFacing.Square;
             if (level >= 2) copy.Clearance = 0;
             return copy;
         }

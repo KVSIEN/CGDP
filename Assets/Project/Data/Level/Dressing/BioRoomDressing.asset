@@ -1,0 +1,135 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96da96f28f6c4467b72010a6a74e7aa1, type: 3}
+  m_Name: BioRoomDressing
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomDressing
+  _props:
+  - Prefabs:
+    - {fileID: 8100000000000007001, guid: f4f4699fa832499fa53e84410a91d3b6, type: 3}
+    Count:
+      Min: 1
+      Max: 3
+      Bias: 0
+    ScaleByRoomSize: 1
+    Footprint: {x: 1, y: 1}
+    On: 0
+    Avoid: 124
+    Zone: 0
+    Facing: 0
+    Clearance: 0
+    Spacing: 2
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+  - Prefabs:
+    - {fileID: 8100000000000006001, guid: 97ae7a84afd448a680fd5f5622baca66, type: 3}
+    Count:
+      Min: 6
+      Max: 12
+      Bias: 0
+    ScaleByRoomSize: 1
+    Footprint: {x: 1, y: 1}
+    On: 0
+    Avoid: 124
+    Zone: 0
+    Facing: 0
+    Clearance: 0
+    Spacing: 0
+    Selection: 3
+    Pile:
+      Min: 1
+      Max: 3
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+  - Prefabs:
+    - {fileID: 8100000000000011001, guid: 1df375c52a5d4942b3d7ef894e9236ab, type: 3}
+    Count:
+      Min: 6
+      Max: 12
+      Bias: 0
+    ScaleByRoomSize: 1
+    Footprint: {x: 1, y: 1}
+    On: 0
+    Avoid: 96
+    Zone: 0
+    Facing: 0
+    Clearance: 0
+    Spacing: 0
+    Selection: 3
+    Pile:
+      Min: 1
+      Max: 2
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 1
+  - Prefabs:
+    - {fileID: 8100000000000012001, guid: fd12bc7bbe9240f882da1c5ece0a545e, type: 3}
+    Count:
+      Min: 3
+      Max: 6
+      Bias: 0
+    ScaleByRoomSize: 1
+    Footprint: {x: 1, y: 1}
+    On: 0
+    Avoid: 96
+    Zone: 0
+    Facing: 0
+    Clearance: 0
+    Spacing: 1
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 1
+  - Prefabs:
+    - {fileID: 8100000000000013001, guid: 069c8e93058347aba4b46287ce55bfc5, type: 3}
+    Count:
+      Min: 2
+      Max: 5
+      Bias: 0
+    ScaleByRoomSize: 1
+    Footprint: {x: 1, y: 1}
+    On: 0
+    Avoid: 96
+    Zone: 0
+    Facing: 0
+    Clearance: 0
+    Spacing: 0
+    Selection: 3
+    Pile:
+      Min: 1
+      Max: 2
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 1

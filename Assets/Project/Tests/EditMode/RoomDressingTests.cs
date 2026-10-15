@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using CGD.Core;
 using CGD.Level;
+using static CGD.Tests.RoomTestKit;
 
 namespace CGD.Tests
 {
@@ -11,46 +12,6 @@ namespace CGD.Tests
     // does what it says.
     public class RoomDressingTests
     {
-        private const int Seeds = 60;
-
-        // A bare rectangular room with doorways at `entrances`, tagged the way the level builder does.
-        private static RoomStructure Room(int width, int height, params Vector2Int[] entrances)
-        {
-            var footprint = RoomFootprint.Rectangle(new RectInt(0, 0, width, height));
-            RoomStructure structure = new RoomStructurePlanner().Prepare(footprint, 4f, entrances);
-            structure.AssignZones();
-            return structure;
-        }
-
-        private static RoomPropPlanner Planner(RoomStructure structure, int seed) =>
-            new(structure, structure.Footprint.Anchor, new RandomStream(new Seed((ulong)seed)));
-
-        private static RoomPropPlacement Placement(int min, int max, PropFacing facing = PropFacing.Square, int spacing = 0) => new()
-        {
-            Prefabs = new GameObject[1],
-            Count   = new IntRange(min, max),
-            Facing  = facing,
-            Spacing = spacing,
-        };
-
-        private static Vector2Int TileOf(PlannedProp prop) =>
-            new(Mathf.FloorToInt(prop.Position.x), Mathf.FloorToInt(prop.Position.y));
-
-        // The side the prop faces, from its yaw (0 = +y, 90 = +x).
-        private static Vector2Int Forward(PlannedProp prop)
-        {
-            int turns = Mathf.RoundToInt(prop.Yaw / 90f) & 3;
-            return new[] { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left }[turns];
-        }
-
-        private static int TilesWith(RoomStructure structure, RoomTileTags tag)
-        {
-            int count = 0;
-            foreach (Vector2Int tile in structure.Footprint.Tiles)
-                if (structure.Has(tile, tag)) count++;
-            return count;
-        }
-
         // How exposed the room is to long shots: the squared length of every unbroken stretch of
         // floor along each row and column, summed. Cover that cuts long lanes lowers it most.
         private static int SightlineExposure(RoomStructure structure)
@@ -91,6 +52,24 @@ namespace CGD.Tests
             // Tile (0, 0) would now only be reachable through (1, 0).
             Assert.IsFalse(room.TryAddPillar(new Vector2(1.5f, 0.5f), 0.8f, null));
             Assert.IsFalse(room.Has(new Vector2Int(1, 0), RoomTileTags.Structure));
+        }
+
+        [Test]
+        public void AWallThatWouldSealAPocketBesideAPillarIsRefused()
+        {
+            RoomStructure room = Room(8, 8, new Vector2Int(7, 4));
+            Assert.IsTrue(room.TryAddPillar(new Vector2(2.5f, 1.5f), 0.8f, null));
+            Assert.IsTrue(room.TryAddPillar(new Vector2(1.5f, 2.5f), 0.8f, null));
+
+            // Tile (1, 1) is open to the pillars on two sides; walling the other two would leave it enclosed.
+            var walls = new[]
+            {
+                new PartitionEdge(new Vector2Int(0, 1), new Vector2Int(1, 1), 0f),
+                new PartitionEdge(new Vector2Int(1, 0), new Vector2Int(1, 1), 0f),
+            };
+            Assert.IsFalse(room.TryAddPartition(walls));
+            Assert.AreEqual(0, room.Partitions.Count);
+            Assert.IsFalse(room.IsPartitioned(new Vector2Int(0, 1), new Vector2Int(1, 1)));
         }
 
         [Test]

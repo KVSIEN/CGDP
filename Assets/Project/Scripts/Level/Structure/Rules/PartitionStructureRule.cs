@@ -84,7 +84,7 @@ namespace CGD.Level
             bool crossed = false;
             for (int i = 0; i < stretch.Count; i++)
             {
-                if (!MustStayOpen(structure, stretch[i].a, stretch[i].b)) continue;
+                if (!structure.EdgeMustStayOpen(stretch[i].a, stretch[i].b)) continue;
                 open[i] = crossed = true;
             }
 
@@ -96,14 +96,6 @@ namespace CGD.Level
 
             for (int i = 0; i < stretch.Count; i++)
                 if (!open[i]) edges.Add(new PartitionEdge(stretch[i].a, stretch[i].b, _height));
-        }
-
-        // A walkway crossing the line, or a doorway or pillar right beside it.
-        private static bool MustStayOpen(RoomStructure structure, Vector2Int a, Vector2Int b)
-        {
-            const RoomTileTags Beside = RoomTileTags.NearDoor | RoomTileTags.Structure;
-            return structure.Has(a, RoomTileTags.Walkway) && structure.Has(b, RoomTileTags.Walkway)
-                || structure.Has(a, Beside) || structure.Has(b, Beside);
         }
     }
 }

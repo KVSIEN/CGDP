@@ -75,14 +75,26 @@ namespace CGD.Level
             if (room.Structure == null) return System.Array.Empty<PlannedProp>();
 
             // The room's own seed layer, so what one room gets doesn't depend on the others.
-            var planner = new RoomPropPlanner(room.Structure, room.Anchor, _seed.Derive("props").Derive(room.Node.Id).Stream());
+            FactionDesign design = _settings.DesignFor(room.Faction);
+            var planner = new RoomPropPlanner(room.Structure, room.Anchor, _seed.Derive("props").Derive(room.Node.Id).Stream(),
+                                              design != null ? design.FillShare : RoomPropPlanner.DefaultFillShare,
+                                              design != null ? design.PropScale : 1f);
             if (rule != null && rule.Offerings.Length > 0) planner.Add(RoomPropPlacement.Nook(rule.Offerings));
             if (room.Landmark == null)
             {
                 if (room.Function != null) planner.Add(room.Function.Props);
-                if (rule != null && rule.Dressing != null) planner.Add(rule.Dressing.Props);
+                if (rule != null && rule.Dressing != null) planner.Add((design != null ? design.Dress(rule.Dressing) : rule.Dressing).Props);
+                AddFactionProps(planner, room.Faction);
+                if (room.BreachFaction != null) AddFactionProps(planner, room.BreachFaction);
             }
             return planner.Planned;
+        }
+
+        // A faction's own props: its furnishing of the room, after everything the room needs.
+        private void AddFactionProps(RoomPropPlanner planner, FactionDefinition faction)
+        {
+            FactionDesign design = _settings.DesignFor(faction);
+            if (design != null && design.Dressing != null) planner.Add(design.Dressing.Props);
         }
 
         // A room's things share its tier: containers roll with its loot luck and resource

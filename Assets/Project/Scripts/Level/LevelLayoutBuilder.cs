@@ -54,11 +54,14 @@ namespace CGD.Level
             return layout;
         }
 
-        private static void PlanStructures(Seed seed, LevelLayout layout)
+        private void PlanStructures(Seed seed, LevelLayout layout)
         {
             var planner = new RoomStructurePlanner();
             foreach (LevelRoom room in layout.Rooms.Values)
-                room.AttachStructure(planner.Plan(room, layout.Doorways, seed.Derive(room.Node.Id).Stream()));
+            {
+                FactionDesign design = _settings.DesignFor(room.Faction);
+                room.AttachStructure(planner.Plan(room, layout.Doorways, seed.Derive(room.Node.Id).Stream(), design?.Structure));
+            }
         }
 
         // Curved and chamfered rooms get their wall line now the doorways are fixed. Tiles a

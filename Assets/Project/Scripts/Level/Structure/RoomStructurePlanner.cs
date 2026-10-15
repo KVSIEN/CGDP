@@ -13,7 +13,10 @@ namespace CGD.Level
     {
         private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
 
-        public RoomStructure Plan(LevelRoom room, IReadOnlyList<LevelDoorway> doorways, RandomStream random)
+        // `factionRules`: the building style of the room's faction, applied only where the room's
+        // function brings no structure of its own, so a restaurant keeps its kitchen wall.
+        public RoomStructure Plan(LevelRoom room, IReadOnlyList<LevelDoorway> doorways, RandomStream random,
+                                  IReadOnlyList<RoomStructureRule> factionRules = null)
         {
             var entrances = new List<Vector2Int>();
             foreach (LevelDoorway doorway in doorways)
@@ -22,12 +25,23 @@ namespace CGD.Level
             RoomStructure structure = Prepare(room.Footprint, room.WallHeight, entrances);
             if (room.Landmark != null)
                 TagLandmark(structure, room);
-            else if (room.Function != null)
-                foreach (RoomStructureRule rule in room.Function.Structure)
-                    if (rule != null) rule.Apply(structure, random);
+            else
+            {
+                IReadOnlyList<RoomStructureRule> rules = room.Function != null && HasRules(room.Function.Structure) ? room.Function.Structure : factionRules;
+                if (rules != null)
+                    foreach (RoomStructureRule rule in rules)
+                        if (rule != null) rule.Apply(structure, random);
+            }
 
             structure.AssignZones();
             return structure;
+        }
+
+        private static bool HasRules(IReadOnlyList<RoomStructureRule> rules)
+        {
+            foreach (RoomStructureRule rule in rules)
+                if (rule != null) return true;
+            return false;
         }
 
         // A bare room: its walls, centre, entrances and the walkways between them tagged, before

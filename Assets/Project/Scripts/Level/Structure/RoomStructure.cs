@@ -24,6 +24,7 @@ namespace CGD.Level
         private readonly Dictionary<Vector2Int, int> _zones = new();
         private readonly List<StructurePillar> _pillars = new();
         private readonly List<PartitionEdge> _partitions = new();
+        private readonly List<PartitionEdge> _openings = new();
         private readonly HashSet<(Vector2Int, Vector2Int)> _blocked = new();
         private readonly List<Vector2Int> _entrances = new();
 
@@ -50,6 +51,8 @@ namespace CGD.Level
 
         public IReadOnlyList<StructurePillar> Pillars    => _pillars;
         public IReadOnlyList<PartitionEdge>   Partitions => _partitions;
+        // Doorways cut through inner walls, framed by a lintel (Height = the clear height).
+        public IReadOnlyList<PartitionEdge>   Openings   => _openings;
         // The floor tile inside each doorway.
         public IReadOnlyList<Vector2Int>      Entrances  => _entrances;
         public int ZoneCount { get; private set; } = 1;
@@ -162,15 +165,16 @@ namespace CGD.Level
             tile.x >= _bounds.xMin && tile.x < _bounds.xMax && tile.y >= _bounds.yMin && tile.y < _bounds.yMax && _floor[IndexOf(tile)];
 
         // A free-standing pillar takes the tile it stands on, which must be open and not cut
-        // the room in two. One set into the walls (freeStanding = false) takes no floor.
-        public bool TryAddPillar(Vector2 position, float width, GameObject prefab, bool freeStanding = true)
+        // the room in two. One set into the walls (freeStanding = false) takes no floor. A height
+        // under the room's wall height makes a broken stump.
+        public bool TryAddPillar(Vector2 position, float width, GameObject prefab, bool freeStanding = true, float height = 0f)
         {
             var tile = new Vector2Int(Mathf.FloorToInt(position.x), Mathf.FloorToInt(position.y));
             if (freeStanding)
             {
                 if (!IsOpen(tile) || !TryClaim(new[] { tile }, RoomTileTags.Structure)) return false;
             }
-            _pillars.Add(new StructurePillar(position, width, prefab));
+            _pillars.Add(new StructurePillar(position, width, prefab, height));
             return true;
         }
 
@@ -181,17 +185,28 @@ namespace CGD.Level
             return false;
         }
 
-        // Adds the edges only if every floor tile can still reach every other.
+        // Adds the edges only if the room stays whole: every free tile (pillars and props counted
+        // as in the way) still reachable from every doorway.
         public bool TryAddPartition(IReadOnlyList<PartitionEdge> edges)
         {
             foreach (PartitionEdge edge in edges) _blocked.Add(Key(edge.Tile, edge.Other));
-            if (CountZones(assign: false) == 1)
+            if (StaysConnected(System.Array.Empty<Vector2Int>()))
             {
                 _partitions.AddRange(edges);
                 return true;
             }
             foreach (PartitionEdge edge in edges) _blocked.Remove(Key(edge.Tile, edge.Other));
             return false;
+        }
+
+        public void AddOpening(PartitionEdge opening) => _openings.Add(opening);
+
+        // Whether an inner wall can't stand on the edge between two tiles: a route crosses it, or
+        // a doorway or pillar is right beside it.
+        public bool EdgeMustStayOpen(Vector2Int a, Vector2Int b)
+        {
+            const RoomTileTags Beside = RoomTileTags.NearDoor | RoomTileTags.Structure;
+            return (Has(a, RoomTileTags.Walkway) && Has(b, RoomTileTags.Walkway)) || Has(a, Beside) || Has(b, Beside);
         }
 
         // Zones are the pieces the partition lines cut the floor into, gaps counted as
@@ -236,6 +251,8 @@ namespace CGD.Level
             var lines = new HashSet<(Vector2Int, Vector2Int)>();
             foreach (PartitionEdge edge in _partitions)
             {
+                if (!edge.DividesZones) continue;
+
                 var along = new Vector2Int(edge.Side.y, edge.Side.x);
                 foreach (int step in new[] { 1, -1 })
                     for (Vector2Int a = edge.Tile; Footprint.Contains(a) && Footprint.Contains(a + edge.Side); a += along * step)

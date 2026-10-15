@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a60008b90c754e17a5cd3aecc4a45bc3, type: 3}
+  m_Name: OfficeMazeStructureRule
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.OfficeMazeStructureRule
+  _hallTiles: 1
+  _officeDepth:
+    Min: 2
+    Max: 3
+    Bias: 0
+  _officeWidth:
+    Min: 2
+    Max: 3
+    Bias: 0
+  _suiteChance: 0.25
+  _throughChance: 0.3
+  _doorHeight: 2.6

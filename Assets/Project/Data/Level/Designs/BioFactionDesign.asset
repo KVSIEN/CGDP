@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55f73b91e15e4a87b3f2346ae8b1a09d, type: 3}
+  m_Name: BioFactionDesign
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.FactionDesign
+  _faction: {fileID: 11400000, guid: 9df11072532741b0a4466eeeab99e06b, type: 2}
+  _shapes:
+  - Shape: {fileID: 11400000, guid: 3cf90817eefb42238292adbde28bfc6b, type: 2}
+    Weight: 3
+  - Shape: {fileID: 11400000, guid: ab825d68623d4d908c1f0c3cf462451d, type: 2}
+    Weight: 2
+  - Shape: {fileID: 11400000, guid: 54a81013066a481a856586f0fee8dd3a, type: 2}
+    Weight: 1.2
+  - Shape: {fileID: 11400000, guid: 9eb4483ea2cb4971b2a8c97462165979, type: 2}
+    Weight: 1
+  - Shape: {fileID: 11400000, guid: b6cf0b4dec9d4419a4b96c63d8278140, type: 2}
+    Weight: 1
+  - Shape: {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
+    Weight: 0.4
+  - Shape: {fileID: 11400000, guid: 9d1594db951546cdb53b46fc04bb78a8, type: 2}
+    Weight: 0.8
+  _roomSizeScale: 1.0
+  _structure:
+  - {fileID: 11400000, guid: 7d7409943dcc4e01a4c4ab110e66fb17, type: 2}
+  - {fileID: 11400000, guid: 379326d434a84841b2622a457747f1f5, type: 2}
+  _dressing: {fileID: 11400000, guid: 3c91c86dbd2e4ce18bbf70a9516d276a, type: 2}
+  _swaps:
+  - Original: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}
+    Replacement: {fileID: 11400000, guid: 8a46c7a36c7745a794c67aaec60012b5, type: 2}
+  - Original: {fileID: 11400000, guid: 6e0f3730e9fd4d41b2697f5f1ba34987, type: 2}
+    Replacement: {fileID: 11400000, guid: 389f6c80b52c409e93d20fad5a383614, type: 2}
+  _fillShare: 0.3
+  _propScale: 1.0

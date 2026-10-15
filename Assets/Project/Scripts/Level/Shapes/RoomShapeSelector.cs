@@ -16,16 +16,19 @@ namespace CGD.Level
 
         public RoomShapeSelector(int minWidthTiles) => _minWidthTiles = minWidthTiles;
 
-        public RoomFootprint Build(IReadOnlyList<RoomShape> shapes, int connections, RectInt area, RandomStream random)
+        // `design`: the faction building the room, whose favourite shapes come up more often.
+        public RoomFootprint Build(IReadOnlyList<RoomShape> shapes, int connections, RectInt area, RandomStream random, FactionDesign design = null)
         {
+            float WeightOf(RoomShape shape) => shape.Weight * (design != null ? design.ShapeWeight(shape) : 1f);
+
             _candidates.Clear();
             foreach (RoomShape shape in shapes)
-                if (shape != null && shape.Weight > 0f && shape.Suits(connections))
+                if (shape != null && WeightOf(shape) > 0f && shape.Suits(connections))
                     _candidates.Add(shape);
 
             for (int attempt = 0; attempt < Attempts && _candidates.Count > 0; attempt++)
             {
-                RoomShape shape = random.PickWeighted(_candidates, s => s.Weight);
+                RoomShape shape = random.PickWeighted(_candidates, WeightOf);
                 RoomFootprint footprint = RoomShapeRasterizer.Rasterize(shape, area, random);
                 if (RoomFootprintValidator.IsValid(footprint, _minWidthTiles) && footprint.Sockets.Count >= connections)
                     return footprint;

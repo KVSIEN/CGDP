@@ -33,6 +33,10 @@ MonoBehaviour:
     Kit: {fileID: 11400000, guid: e732e8cfe9734b87a528fda09d969856, type: 2}
   - Faction: {fileID: 11400000, guid: 6dfe42f935864a368a7aff83d9c78bf2, type: 2}
     Kit: {fileID: 11400000, guid: d02529b5f80c4781b91c4feae6a8cbf5, type: 2}
+  _factionDesigns:
+  - {fileID: 11400000, guid: a155692b67434b72bf00b3a61569f6e7, type: 2}
+  - {fileID: 11400000, guid: 485147287d0f44b7aff60b3211344ad1, type: 2}
+  - {fileID: 11400000, guid: afab00b8ebd34573920785418002a8af, type: 2}
   _buildCeilings: 0
   _ceilingMaterial: {fileID: 0}
   _ceilingLayer: 0

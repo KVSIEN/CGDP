@@ -7,5 +7,6 @@ namespace CGD.Level
         AgainstWall,   // pushed against a wall (or inner wall) and facing away from it
         TowardCentre,
         AcrossSightline, // front toward the longest open stretch of floor through it, so a barrier faces the lane it blocks
+        AlongRoom,       // length (Z) running down the room's longer axis, front toward the room's middle: rows of machines, lines of desks
     }
 }

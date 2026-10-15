@@ -62,9 +62,10 @@ namespace CGD.Level
                 if (landmark != null)
                     layout.Warnings.Add($"Landmark '{landmark.name}' doesn't fit {node.Type} #{node.Id} (too big, or fewer doorways than its {count} connections); generated instead.");
 
-                RectInt area = RoomArea(block, function, random);
+                FactionDesign design = _settings.DesignFor(faction);
+                RectInt area = RoomArea(block, function, random, design);
                 IReadOnlyList<RoomShape> shapeList = function != null && function.Shapes.Count > 0 ? function.Shapes : _settings.DefaultShapes;
-                layout.AddRoom(new LevelRoom(node, _shapes.Build(shapeList, count, area, random), function, height, faction: faction, breachFaction: breach,
+                layout.AddRoom(new LevelRoom(node, _shapes.Build(shapeList, count, area, random, design), function, height, faction: faction, breachFaction: breach,
                                              chamfer: function != null ? function.ChamferOr(_settings.RoomChamfer) : _settings.RoomChamfer));
             }
         }
@@ -181,12 +182,13 @@ namespace CGD.Level
         }
 
         // Multi-cell rooms fill their block; single-cell rooms may be smaller, centred.
-        private RectInt RoomArea(RectInt block, RoomFunction function, RandomStream random)
+        private RectInt RoomArea(RectInt block, RoomFunction function, RandomStream random, FactionDesign design)
         {
             RectInt area = BlockArea(block);
             if (function == null || block.width * block.height > 1) return area;
 
             int size = function.RollSize(random, MinRoomTiles, _settings.RoomTiles);
+            if (design != null) size = Mathf.Clamp(Mathf.RoundToInt(size * design.RoomSizeScale), MinRoomTiles, _settings.RoomTiles);
             int inset = (_settings.RoomTiles - size) / 2;
             return new RectInt(area.xMin + inset, area.yMin + inset, size, size);
         }
