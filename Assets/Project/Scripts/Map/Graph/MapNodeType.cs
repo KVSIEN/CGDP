@@ -26,5 +26,6 @@ namespace CGD.Map
         Hazard,     // a leak that keeps afflicting everyone inside until its vents are shut
         Quiet,      // a rare peaceful room: no enemies, always a resource, ammo cache or loot cache
         Junction,   // a crossroads where three or more routes meet: no encounter, just a place to choose a way
+        Spawner,    // a structure keeps sending enemies until it is destroyed
     }
 }

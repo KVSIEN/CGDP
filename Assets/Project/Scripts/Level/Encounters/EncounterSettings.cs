@@ -6,7 +6,7 @@ using CGD.Core;
 namespace CGD.Level
 {
     // Tuning and prefabs for the rooms that play out as encounters (Lockdown, Holdout,
-    // Ambush, Stealth, Rift, Puzzle, Hazard). Shared by every generated level.
+    // Ambush, Stealth, Rift, Puzzle, Hazard, Spawner). Shared by every generated level.
     [CreateAssetMenu(fileName = "EncounterSettings", menuName = "CGD/Level/Encounter Settings")]
     public class EncounterSettings : ScriptableObject
     {
@@ -32,6 +32,17 @@ namespace CGD.Level
         [SerializeField, Min(1)] private int _ambushWaves = 2;
         [Tooltip("Waves alternate between the room's two realities; the last brings both")]
         [SerializeField, Min(1)] private int _riftWaves = 3;
+
+        [Header("Spawner")]
+        [Tooltip("The structure in the middle of a Spawner room: an EnemySpawner with a HealthManager")]
+        [SerializeField] private EnemySpawner _spawnerPrefab;
+        [Tooltip("Seconds between batches while the spawner is below its cap")]
+        [SerializeField, Min(0.5f)] private float _spawnerInterval = 8f;
+        [SerializeField, Min(1)] private int _spawnerBatch = 2;
+        [Tooltip("The spawner stops while this many of its enemies are alive, so the player can always out-kill it")]
+        [SerializeField, Min(1)] private int _spawnerCap = 5;
+        [Tooltip("The spawner only runs while the player is this close")]
+        [SerializeField, Min(1f)] private float _spawnerActivationRange = 25f;
 
         [Header("Stealth")]
         [Tooltip("Extra loot luck on the vault while the alarm hasn't been raised")]
@@ -67,6 +78,12 @@ namespace CGD.Level
 
         public int AmbushWaves => _ambushWaves;
         public int RiftWaves   => _riftWaves;
+
+        public EnemySpawner SpawnerPrefab          => _spawnerPrefab;
+        public float        SpawnerInterval        => _spawnerInterval;
+        public int          SpawnerBatch           => _spawnerBatch;
+        public int          SpawnerCap             => _spawnerCap;
+        public float        SpawnerActivationRange => _spawnerActivationRange;
 
         public float StealthBonusLuck => _stealthBonusLuck;
         public int   AlarmWaves       => _alarmWaves;
