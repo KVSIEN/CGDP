@@ -16,7 +16,8 @@ namespace CGD.Map
         public static bool IsEncounter(this MapNodeType type) => type switch
         {
             MapNodeType.Lockdown or MapNodeType.Holdout or MapNodeType.Ambush or MapNodeType.Stealth
-                or MapNodeType.Rift or MapNodeType.Puzzle or MapNodeType.Hazard or MapNodeType.Spawner => true,
+                or MapNodeType.Rift or MapNodeType.Puzzle or MapNodeType.Hazard or MapNodeType.Spawner or MapNodeType.Shrine or MapNodeType.Siege
+                or MapNodeType.Gauntlet => true,
             _ => false,
         };
 

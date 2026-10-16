@@ -27,5 +27,9 @@ namespace CGD.Map
         Quiet,      // a rare peaceful room: no enemies, always a resource, ammo cache or loot cache
         Junction,   // a crossroads where three or more routes meet: no encounter, just a place to choose a way
         Spawner,    // a structure keeps sending enemies until it is destroyed
+        Workshop,   // a calm stop with a crafting bench
+        Shrine,     // altars offering boons; take one and the others close
+        Siege,      // defend an objective against waves until the timer runs out
+        Gauntlet,   // back-to-back waves, each bigger and with its own twist
     }
 }

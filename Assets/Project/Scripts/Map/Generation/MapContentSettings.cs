@@ -137,6 +137,10 @@ namespace CGD.Map
             new(MapNodeType.EmergencyExit, min: 0, max: 1, weight: 0.5f, placement: MapPlacement.BranchOnly, minDepth: 0.4f, maxDepth: 0.8f, preferDeadEnds: true, intensityBonus: -0.3f),
             new(MapNodeType.Hazard,   min: 0, max: 2,  weight: 0.5f, minDepth: 0.15f, allowAdjacentSameType: false, intensityBonus: 0.1f, minSpacing: 2),
             new(MapNodeType.Spawner,  min: 0, max: 2,  weight: 0.5f, minDepth: 0.3f, allowAdjacentSameType: false, intensityBonus: 0.2f, minSpacing: 3),
+            new(MapNodeType.Workshop, min: 0, max: 1,  weight: 0.4f, placement: MapPlacement.MainPathOnly, minDepth: 0.2f, maxDepth: 0.9f, allowAdjacentSameType: false, intensityBonus: -0.5f, minSpacing: 3),
+            new(MapNodeType.Shrine,   min: 0, max: 1,  weight: 0.4f, minDepth: 0.2f, allowAdjacentSameType: false, intensityBonus: -0.4f, minSpacing: 3),
+            new(MapNodeType.Siege,    min: 0, max: 1,  weight: 0.4f, minDepth: 0.4f, allowAdjacentSameType: false, intensityBonus: 0.25f, minSpacing: 3),
+            new(MapNodeType.Gauntlet, min: 0, max: 1,  weight: 0.3f, minDepth: 0.5f, allowAdjacentSameType: false, intensityBonus: 0.3f, minSpacing: 3),
             new(MapNodeType.Quiet,    min: 0, max: 2,  weight: 0.35f, minDepth: 0.15f, allowAdjacentSameType: false, intensityBonus: -0.6f, minSpacing: 3),
             new(MapNodeType.Junction, min: 0, max: 3,  weight: 0.6f,  minDepth: 0.1f,  allowAdjacentSameType: false, intensityBonus: -0.4f, minSpacing: 3, minConnections: 3),
         };

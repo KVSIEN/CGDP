@@ -283,6 +283,46 @@ MonoBehaviour:
       Bias: 0
     Centerpiece: {fileID: 0}
     Dressing: {fileID: 0}
+  - Type: 21
+    Enemies: []
+    EnemyCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Dressing: {fileID: 0}
+  - Type: 22
+    Enemies: []
+    EnemyCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Centerpiece: {fileID: 6402871195536214001, guid: 3b8e51c07d2a4f9e96c4a1d25e7f0b63, type: 3}
+    Dressing: {fileID: 0}
+  - Type: 23
+    Enemies: []
+    EnemyCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Dressing: {fileID: 0}
+  - Type: 24
+    Enemies: []
+    EnemyCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Dressing: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}
+  - Type: 25
+    Enemies: []
+    EnemyCount:
+      Min: 0
+      Max: 0
+      Bias: 0
+    Centerpiece: {fileID: 0}
+    Dressing: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}
   _shapes:
   - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
   - {fileID: 11400000, guid: 54a81013066a481a856586f0fee8dd3a, type: 2}

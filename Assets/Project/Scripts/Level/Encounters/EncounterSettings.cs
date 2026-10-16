@@ -2,11 +2,12 @@ using System;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
+using CGD.Stats;
 
 namespace CGD.Level
 {
     // Tuning and prefabs for the rooms that play out as encounters (Lockdown, Holdout,
-    // Ambush, Stealth, Rift, Puzzle, Hazard, Spawner). Shared by every generated level.
+    // Ambush, Stealth, Rift, Puzzle, Hazard, Spawner, Shrine, Siege, Gauntlet). Shared by every generated level.
     [CreateAssetMenu(fileName = "EncounterSettings", menuName = "CGD/Level/Encounter Settings")]
     public class EncounterSettings : ScriptableObject
     {
@@ -43,6 +44,28 @@ namespace CGD.Level
         [SerializeField, Min(1)] private int _spawnerCap = 5;
         [Tooltip("The spawner only runs while the player is this close")]
         [SerializeField, Min(1f)] private float _spawnerActivationRange = 25f;
+
+        [Header("Shrine")]
+        [Tooltip("An altar the player takes a boon from (ShrineAltar + a collider)")]
+        [SerializeField] private ShrineAltar _altarPrefab;
+        [Tooltip("The boons a shrine can offer; a blessing and a curse can share one (negative values)")]
+        [SerializeField] private StatBoon[] _shrineBoons = Array.Empty<StatBoon>();
+        [SerializeField, Min(1)] private int _shrineOffers = 3;
+
+        [Header("Siege")]
+        [Tooltip("The objective to defend, in the middle of the room (SiegeObjective)")]
+        [SerializeField] private SiegeObjective _siegePrefab;
+        [SerializeField, Min(5f)] private float _siegeDuration = 60f;
+        [SerializeField, Min(5f)] private float _siegeWaveInterval = 15f;
+
+        [Header("Gauntlet")]
+        [SerializeField, Min(2)] private int _gauntletWaves = 4;
+        [Tooltip("Enemies added to the wave size with every wave after the first")]
+        [SerializeField, Min(0)] private int _gauntletWaveGrowth = 1;
+        [Tooltip("Loot luck added to the reward for every wave survived")]
+        [SerializeField, Min(0f)] private float _gauntletLuckPerWave = 0.5f;
+        [Tooltip("One is laid on the player for each wave (empty = plain waves)")]
+        [SerializeField] private StatBoon[] _gauntletTwists = Array.Empty<StatBoon>();
 
         [Header("Stealth")]
         [Tooltip("Extra loot luck on the vault while the alarm hasn't been raised")]
@@ -84,6 +107,19 @@ namespace CGD.Level
         public int          SpawnerBatch           => _spawnerBatch;
         public int          SpawnerCap             => _spawnerCap;
         public float        SpawnerActivationRange => _spawnerActivationRange;
+
+        public ShrineAltar ShrineAltarPrefab => _altarPrefab;
+        public StatBoon[]  ShrineBoons       => _shrineBoons;
+        public int         ShrineOffers      => _shrineOffers;
+
+        public SiegeObjective SiegePrefab       => _siegePrefab;
+        public float          SiegeDuration     => _siegeDuration;
+        public float          SiegeWaveInterval => _siegeWaveInterval;
+
+        public int        GauntletWaves        => _gauntletWaves;
+        public int        GauntletWaveGrowth   => _gauntletWaveGrowth;
+        public float      GauntletLuckPerWave  => _gauntletLuckPerWave;
+        public StatBoon[] GauntletTwists       => _gauntletTwists;
 
         public float StealthBonusLuck => _stealthBonusLuck;
         public int   AlarmWaves       => _alarmWaves;

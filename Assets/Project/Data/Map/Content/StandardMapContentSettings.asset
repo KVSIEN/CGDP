@@ -219,6 +219,66 @@ MonoBehaviour:
     _minConnections: 3
     _wantsSpace: 0
     _intensityBonus: -0.4
+  - _type: 21
+    _min: 0
+    _max: 2
+    _weight: 0.5
+    _placement: 0
+    _minDepth: 0.3
+    _maxDepth: 1
+    _preferDeadEnds: 0
+    _allowAdjacentSameType: 0
+    _minSpacing: 3
+    _wantsSpace: 1
+    _intensityBonus: 0.2
+  - _type: 22
+    _min: 0
+    _max: 1
+    _weight: 0.4
+    _placement: 1
+    _minDepth: 0.2
+    _maxDepth: 1
+    _preferDeadEnds: 0
+    _allowAdjacentSameType: 0
+    _minSpacing: 3
+    _wantsSpace: 0
+    _intensityBonus: -0.5
+  - _type: 23
+    _min: 0
+    _max: 1
+    _weight: 0.4
+    _placement: 0
+    _minDepth: 0.2
+    _maxDepth: 1
+    _preferDeadEnds: 0
+    _allowAdjacentSameType: 0
+    _minSpacing: 3
+    _wantsSpace: 0
+    _intensityBonus: -0.4
+  - _type: 24
+    _min: 0
+    _max: 1
+    _weight: 0.4
+    _placement: 0
+    _minDepth: 0.4
+    _maxDepth: 1
+    _preferDeadEnds: 0
+    _allowAdjacentSameType: 0
+    _minSpacing: 3
+    _wantsSpace: 1
+    _intensityBonus: 0.25
+  - _type: 25
+    _min: 0
+    _max: 1
+    _weight: 0.3
+    _placement: 0
+    _minDepth: 0.5
+    _maxDepth: 1
+    _preferDeadEnds: 0
+    _allowAdjacentSameType: 0
+    _minSpacing: 3
+    _wantsSpace: 1
+    _intensityBonus: 0.3
   _fillType: 1
   _guarantees:
   - _type: 6

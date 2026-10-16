@@ -47,7 +47,8 @@ namespace CGD.Level
         // An Ambush gives nothing away: it signs as the Treasure room it pretends to be.
         private bool IsDangerous(MapNode node) => node.Type switch
         {
-            MapNodeType.Boss or MapNodeType.Lockdown or MapNodeType.Holdout or MapNodeType.Rift => true,
+            MapNodeType.Boss or MapNodeType.Lockdown or MapNodeType.Holdout or MapNodeType.Rift
+                or MapNodeType.Siege or MapNodeType.Gauntlet => true,
             MapNodeType.Ambush => false,
             _ => node.EffectiveTier >= 3 || node.Intensity >= _settings.DangerIntensity,
         };
