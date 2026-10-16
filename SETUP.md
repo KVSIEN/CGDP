@@ -150,6 +150,7 @@ HUD                [Canvas, CanvasScaler, GraphicRaycaster, HUDManager]
   Minimap          [MinimapHUD]?
   Quests           [QuestHUD]?
   Notifications    [NotificationHUD]?
+  Objective        [ObjectiveHUD]
   Interact         [InteractHUD]
   WeaponPickup     [WeaponPickupHUD, CanvasGroup]
   Inventory        [InventoryHUD, CanvasGroup]
@@ -184,6 +185,7 @@ Later children draw on top. `HUDManager` finds every element by itself.
 | **MinimapHUD** | `_area` = WorldMapArea, `_viewer` = Main Camera | See [Map](#map--minimap). |
 | **WorldMapHUD** | `_input` = Player, `_area` = WorldMapArea, `_viewer` = Main Camera | Opens with M. |
 | **NotificationHUD**, **ScreenFlashHUD** | — | Driven by `FeedbackPlayer`. |
+| **ObjectiveHUD** | — | Top-centre panel for the Siege/Gauntlet in progress (title, detail, countdown, objective health bar). Driven by `ObjectiveFeed`; already in the HUD prefab. |
 | **HitMarkerHUD** | — | Driven by `CombatFeedback`. |
 | **StealthHUD** | `_stealth` = Player's Stealthable | HIDDEN / REVEALED / SPOTTED under the crosshair. |
 

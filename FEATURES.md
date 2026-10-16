@@ -515,6 +515,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - **Shrine** — a few altars, each offering a different boon (a blessing, sometimes with a curse) that lasts for the rest of the level. Take one and the others close; no enemies
 - **Siege** — an objective stands in the middle of the room. Stepping in seals the doors and waves come for the objective (and you) until a timer runs out; hold it and the doors open with a reward. If the objective falls first, the doors open and there is no reward
 - **Gauntlet** — the doors seal and waves come one after another, each bigger than the last, each laying a random twist on you (a boon or curse that lasts for that wave). Clear them all for a reward that gets luckier with every wave survived
+- **Objective panel** — while a Siege or Gauntlet runs, a panel at the top of the screen shows it: Siege has a countdown, the wave count and the objective's health bar; Gauntlet has the wave count and the current twist
 - **Hazard** — a leak (fire, toxin, coolant or live wiring) that keeps afflicting everyone on the room's glowing floor — you and the enemies alike — until you find and switch on the vent controls somewhere in the room
 - **Emergency Exit** — an escape pod off the main path (see Expeditions)
 - **Junction** — a small crossroads where three or more routes meet: no enemies, no encounter, just a place to pick a way. A map holds at most a few, never next to each other, and only where a room already has three or more doors

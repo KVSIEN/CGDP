@@ -13,27 +13,32 @@ namespace CGD.Level
     {
         private CharacterStats _stats;
         private StatBoon       _twist;
+        private ObjectiveStatus _status;
 
         protected override void OnPlayerEntered()
         {
             if (Context.Player != null) _stats = Context.Player.GetComponentInParent<CharacterStats>();
 
             int waves = Context.Settings.GauntletWaves;
+            _status = new ObjectiveStatus("Gauntlet");
+            ObjectiveFeed.Show(_status);
             Context.Seal.Seal();
             Notify("Gauntlet — survive every wave", NotificationStyle.Danger);
-            RunWaves(waves, StartWave, () =>
+            RunWaves(waves, wave => StartWave(wave, waves), () =>
             {
                 EndTwist();
+                ObjectiveFeed.Clear(_status);
                 Context.Seal.Release();
                 Notify("Gauntlet cleared", NotificationStyle.Success);
                 SpawnReward(Context.Center, waves * Context.Settings.GauntletLuckPerWave);
             });
         }
 
-        private List<HealthManager> StartWave(int wave)
+        private List<HealthManager> StartWave(int wave, int waves)
         {
             EndTwist();
             BeginTwist();
+            _status.Detail = _twist != null ? $"Wave {wave + 1}/{waves} - {_twist.Label}" : $"Wave {wave + 1}/{waves}";
             int size = Context.WaveSize + wave * Context.Settings.GauntletWaveGrowth;
             return Context.Spawner.Spawn(size, fromSecondRoster: wave % 2 == 1);
         }
