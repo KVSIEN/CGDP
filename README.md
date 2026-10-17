@@ -64,8 +64,8 @@ Assets/
                             spread, cover, lattices, symmetry, clusters), RoomDressing (cover and clutter per room type);
                             Design/ — FactionDesign (each faction's floor plans, structure, props and crowding)
                             Objectives/ — map objectives: templates, MapObjectivePlanner, MapObjectiveRunner;
-                            Encounters/ — encounter rooms: RoomEncounter, RoomEncounterBuilder, EncounterContext/Settings,
-                            RoomShutter/RoomSeal, EncounterSpawner, rules (RoomArea, EnemyGroup, WaveSchedule); one folder per kind:
+                            Encounters/ — encounter rooms: Core/ (RoomEncounter, RoomEncounterBuilder, EncounterContext/Settings,
+                            RoomShutter/RoomSeal, EncounterSpawner, rules: RoomArea, EnemyGroup, WaveSchedule); one folder per kind:
                             Waves/ (Lockdown, Holdout, Ambush, Rift), Survival/ (Siege, Gauntlet), Spawner/, Shrine/, Stealth/,
                             Puzzle/ (+ PuzzleSwitch, LightsOutPuzzle), Hazard/
       Loot/                 LootTable, LootDropper, LootContainer
