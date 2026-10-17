@@ -1553,7 +1553,7 @@ Three visual languages share one space. Each reality must be immediately readabl
 | Reality | Look | Lighting | Aesthetic |
 |---------|------|----------|-----------|
 | **TECH** | Clean geometry, industrial materials, modular architecture, signage | Fluorescent and LED: warm whites, amber and orange, red alarms | Ship interiors: functional, lived in, institutional |
-| **BIO** | Organic forms overtaking hard surfaces, roots, nests, territorial markings | Diffused and natural: filtered sunlight, dim green bioluminescence | Medieval wilderness reclaiming a ruin, moss on metal |
+| **BIO** | Organic forms overtaking hard surfaces, roots, nests, territorial markings | Diffused and natural: filtered sunlight, dim green bioluminescence | Wilderness and flesh reclaiming a ship, moss on metal. Hunt or be hunted |
 | **VOID** | Geometry that contradicts itself, impossible angles, recursive spaces | Shadows without sources, cold blue and violet, the odd candle flame | Wrongness you feel before you see it |
 
 ### Cultural Influence
@@ -1563,11 +1563,12 @@ Three visual languages share one space. Each reality must be immediately readabl
 | Reality | Influence | Palette | What it brings |
 |---------|-----------|---------|----------------|
 | **TECH** | American industrial and mid-century space age | White and warm colors | Clean white and light gray surfaces, brushed metal, rounded consoles, hazard striping, corporate signage, orange and red warning accents |
-| **BIO** | European medieval | Earthy greens | Ruined abbeys and castles reclaimed by forest: rough stone, ribbed vaults, broken arches, rotted timber, iron-banded doors, ivy and moss |
+| **BIO** | Overgrown nature and biomutation | Earthy greens | Flora and fauna taking over: thick vegetation through bulkheads, roots and vines, fungal and spore growth, fleshy walls and sinew, nests and dens, bones and carcasses, mutated animals and plants, territorial markings, a food chain in plain sight |
 | **VOID** | Cult classic horror noir | Gloomy blues and violets | Noir lighting (hard light through slats, long shadows, smoke and fog, near black rooms, cold) with the haunted house and occult horror of classic films: poltergeists, ghosts, demons, cursed artifacts, mirrors, shrines, candles, seances and rituals |
 
 * **TECH** keeps the institutional, lived in ship interior. The retro-futurist optimism makes its failures read as something that used to work.
-* **BIO** is ruin first and medieval second. Medieval shapes sit on top of decay and overgrowth so it never reads as a generic fantasy castle, and it stays part of a colony ship.
+* **BIO** is a living ecosystem that has swallowed the ship. Plants and animals are the architecture: vegetation splits the walls, flesh and sinew bind the structure, and mutated creatures and plants have grown into it. Everything shows that something feeds and something is fed on, such as nests, kill sites, scavenged remains and scent trails. The player is prey as often as predator (hunt or be hunted). Keep it grounded in the ship, with metal visible under the growth.
+* **Medieval** (ruined stone, broken arches, rotted timber) is an optional secondary flavor for Bio's hierarchy and ruins, used sparingly so it doesn't read as a generic fantasy castle.
 * **VOID** is the haunted, occult side of the ship, lit like noir. Smoke and fog hang in the corridors, breath shows in the cold, and light is hard and directional. Its hauntings are physical and unsettling: objects that move on their own, reflections that do not match, cold spots, whispers, shrines and ritual circles, and figures at the edge of sight. Mirrors and shrines are the signature props, and artifacts (see Relics, Curses and Rituals) are the horror made tangible. Lean on the stillness before something happens, and keep gore secondary to dread.
 * **Asian horror** (paper talismans, lanterns, sliding doors, shrine offerings) is an optional secondary flavor for Void props. If used, pick one specific tradition (for example Japanese) and avoid a generic "Asia" blend.
 * **Respect over costume.** Use specific, real references (a type of ruin, a kind of shrine, a design movement) and avoid stereotype props.
