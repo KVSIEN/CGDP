@@ -39,7 +39,8 @@ namespace CGD.Weapons
 
         private readonly RecoilProcessor _recoil = new();
         private readonly SpreadProcessor _spread = new();
-        private readonly InputBuffer     _fireBuffer = new();
+        private readonly WeaponTrigger   _trigger = new();
+        private readonly PlayerInterrupts _interrupts = new();
 
         // Seconds a weapon swapped away from after its reload's commit point comes back without a draw.
         private const float QuickReturnWindow = 1f;
@@ -56,18 +57,11 @@ namespace CGD.Weapons
         private DamageSource   _damageSource;
         private CooldownTimer  _fireCooldown;
         private float _drawTimer;
-        private bool  _wasDodging;
-        private bool  _wasSprinting;
-        private bool  _couldAct = true;
         private WeaponReloader _reloader;
         private Coroutine _reload;
         private bool  _holstered;
         private bool  _burstPending;
 
-        // Charge fire mode: accumulates while the trigger is held, releases on the frame
-        // the trigger goes up. Reset on Equip so a swap can never carry someone else's charge.
-        private float _chargeTimer;
-        private bool  _wasChargeHeld;
         private WaitForSeconds _burstWait;
         private float          _burstWaitInterval;
 
@@ -87,7 +81,7 @@ namespace CGD.Weapons
         public bool IsHolstered       => _holstered;
         /// <summary>0 at rest, 1 fully charged. Always 0 for non-Charge fire modes.</summary>
         public float ChargeRatio      => Data != null && Data.FireMode == FireMode.Charge && ChargeTime > 0f
-                                          ? Mathf.Clamp01(_chargeTimer / ChargeTime) : 0f;
+                                          ? Mathf.Clamp01(_trigger.ChargeTimer / ChargeTime) : 0f;
 
         // A bow's draw orientation reshapes its draw time, damage and spread.
         private DrawStance Stance    => D.StanceFor(_current.Draw);
@@ -166,23 +160,21 @@ namespace CGD.Weapons
 
         private void Update()
         {
-            bool dodgeStarted  = DodgeStartedThisFrame();
-            bool sprintStarted = SprintStartedThisFrame();
-            bool lostControl   = ControlLostThisFrame();
+            _interrupts.Tick(_dodge, _movement);
             if (_current == null || _holstered) return;
 
             // Sway ticks through draw/reload so the weapon never freezes mid-animation.
             PushSwayInputs();
 
             if (GameSettings.Current.InputBuffering && _input.WasPressed(GameAction.Attack))
-                _fireBuffer.Press(Time.time);
+                _trigger.BufferPress(Time.time);
 
             if (_drawTimer > 0f)
             {
                 // Swap-dodge cancel: a dodge started during the draw covers the rest of it, so
                 // the weapon is ready as the dodge ends. Swapping mid-dodge draws in full —
                 // swap first, then roll.
-                if (dodgeStarted) _drawTimer = 0f;
+                if (_interrupts.DodgeStarted) _drawTimer = 0f;
                 else
                 {
                     _drawTimer -= Time.deltaTime;
@@ -195,7 +187,7 @@ namespace CGD.Weapons
             // after it, since once the rounds are in the reload is technically finished.
             if (_reloader.IsReloading)
             {
-                if (!sprintStarted && !dodgeStarted && !lostControl) return;
+                if (!_interrupts.SprintStarted && !_interrupts.DodgeStarted && !_interrupts.ControlLost) return;
                 InterruptReload();
             }
 
@@ -217,16 +209,6 @@ namespace CGD.Weapons
             }
 
             UpdateCrosshair();
-        }
-
-        // Tracked every frame, even unarmed, so a dodge already under way at the swap
-        // doesn't count as starting during the draw.
-        private bool DodgeStartedThisFrame()
-        {
-            bool dodging = _dodge != null && _dodge.IsDrivingMovement;
-            bool started = dodging && !_wasDodging;
-            _wasDodging  = dodging;
-            return started;
         }
 
         private void PushSwayInputs()
@@ -254,11 +236,9 @@ namespace CGD.Weapons
             _burstPending    = false;
             _current         = weapon;
             _damageSource    = _ownerSource.WithWeapon(weapon);
-            _chargeTimer     = 0f;
-            _wasChargeHeld   = false;
             _drawTimer       = weapon != null && Time.time > weapon.QuickDrawUntil ? Mathf.Max(0f, Wielder(ItemStat.DrawTime, weapon.DrawTime)) : 0f;
             if (weapon != null) weapon.QuickDrawUntil = float.NegativeInfinity;
-            _fireBuffer.Clear(); // a press meant for the previous weapon doesn't carry over
+            _trigger.Reset();
 
             _recoil.Configure(weapon?.Data);
             _spread.Configure(weapon?.Data);
@@ -276,31 +256,15 @@ namespace CGD.Weapons
         {
             if (!_fireCooldown.IsReady) return;
 
-            bool triggerHeld  = _input.GetAction(GameAction.Attack);
-            // With input buffering, a press made while the gun couldn't fire (drawing,
-            // dodging, reloading, between shots) counts now. Held fire modes need no buffer.
-            bool triggerPress = _input.WasPressed(GameAction.Attack) | _fireBuffer.Consume(Time.time);
-
-            if (_current.Magazine <= 0)
+            TriggerAction action = _trigger.Read(D.FireMode, D.MinChargeToFire, _current.Magazine, CanReload, _burstPending,
+                _input.GetAction(GameAction.Attack), _input.WasPressed(GameAction.Attack),
+                Time.time, Time.deltaTime, ChargeTime, out float charge);
+            switch (action)
             {
-                // Sync charge to trigger so post-reload hold doesn't instantly fire.
-                _chargeTimer   = 0f;
-                _wasChargeHeld = triggerHeld;
-                if (_burstPending || !(triggerHeld || triggerPress)) return;
-                if (CanReload) StartReload();
-                else if (triggerPress) D.EmptySound.TryPlay(SoundPos);
-                return;
-            }
-
-            switch (D.FireMode)
-            {
-                case FireMode.Auto  when triggerHeld:  TryFire(); break;
-                case FireMode.Semi  when triggerPress: TryFire(); break;
-                case FireMode.Burst when triggerPress && !_burstPending:
-                    StartCoroutine(FireBurst()); break;
-                case FireMode.Charge:
-                    HandleChargeInput(triggerHeld);
-                    break;
+                case TriggerAction.Fire:      TryFire(charge); break;
+                case TriggerAction.FireBurst: StartCoroutine(FireBurst()); break;
+                case TriggerAction.Reload:    StartReload(); break;
+                case TriggerAction.DryFire:   D.EmptySound.TryPlay(SoundPos); break;
             }
         }
 
@@ -310,27 +274,10 @@ namespace CGD.Weapons
             if (!D.HasDrawStances || !_input.GetAction(GameAction.WeaponMode)) return;
 
             _current.Draw = _current.Draw == DrawOrientation.Vertical ? DrawOrientation.Horizontal : DrawOrientation.Vertical;
-            _chargeTimer  = 0f;
+            _trigger.DropCharge();
             FeedbackBus.Notify(_current.Draw == DrawOrientation.Horizontal
                 ? "Horizontal draw: faster, wider"
                 : "Vertical draw: slower, precise");
-        }
-
-        // Hold to charge, release to fire. Releasing before MinChargeToFire cancels the
-        // shot with no ammo spent so tap-firing a bow doesn't waste arrows.
-        private void HandleChargeInput(bool triggerHeld)
-        {
-            if (triggerHeld)
-            {
-                _chargeTimer = Mathf.Min(_chargeTimer + Time.deltaTime, ChargeTime);
-            }
-            else if (_wasChargeHeld)
-            {
-                float charge = ChargeTime > 0f ? Mathf.Clamp01(_chargeTimer / ChargeTime) : 1f;
-                if (charge >= D.MinChargeToFire) TryFire(charge);
-                _chargeTimer = 0f;
-            }
-            _wasChargeHeld = triggerHeld;
         }
 
         private void HandleReloadInput()
@@ -470,24 +417,6 @@ namespace CGD.Weapons
             if (_reload != null) StopCoroutine(_reload);
             _reload = null;
             _reloader.End();
-        }
-
-        // Stunned, mantling or in a committed roll since last frame. A future knockback that
-        // takes control away cancels reloads through here too.
-        private bool ControlLostThisFrame()
-        {
-            bool canAct = _movement == null || _movement.CanAct;
-            bool lost   = _couldAct && !canAct;
-            _couldAct   = canAct;
-            return lost;
-        }
-
-        private bool SprintStartedThisFrame()
-        {
-            bool sprinting = _movement != null && _movement.IsSprinting;
-            bool started   = sprinting && !_wasSprinting;
-            _wasSprinting  = sprinting;
-            return started;
         }
 
         private void UpdateCrosshair()
