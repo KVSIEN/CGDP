@@ -219,7 +219,7 @@ The player carries up to four weapons and switches between them mid combat.
 
 | Reality | Role | Melee | Ranged | Resource model |
 |---------|------|-------|--------|----------------|
-| **BIO** | Melee dominant, the wheel's backbone | Daggers, swords, axes, hammers, spears, shields | Bows, crossbows, early black powder guns (see Cultural Weapon Styles) | Melee is free and always reliable. Arrows and bolts are crafted from common materials |
+| **BIO** | Melee dominant, the wheel's backbone | Daggers, swords, axes, hammers, spears, shields | Bows, crossbows, early black powder guns (see Cultural Weapon Styles) | Melee is free and always reliable. Arrows and bolts are crafted from common materials. Black powder guns draw on the shared bullets pool |
 | **TECH** | Ranged dominant | Combat knives, blades, batons, for when the ammo runs dry (see Cultural Weapon Styles) | Pistols, rifles, shotguns, SMGs, energy weapons | Bullets and energy cells, both scarce |
 | **VOID** | Relics and noir firearms | Ritual daggers, sacrificial blades, occult tools (see Cultural Weapon Styles) | **Relics**: sceptres, wands, books, staves. **Antique firearms**: revolvers, lever action rifles, double barrel shotguns | Relics run on cooldowns, stronger ones recharge slower. Firearms use bullets |
 
@@ -260,7 +260,7 @@ Firearms are not a TECH exclusive. Any reality can have a pistol, shotgun, rifle
 | **Relic** | None | Biological tricks: spore, venom, bone | Sceptres, wands, books, staves, mirrors, lanterns |
 
 * **TECH** firearms are clean, engineered and electronic: uniform casings, white and gray with orange or red trim, readouts and powered cells. Energy weapons and autoloaders belong here.
-* **BIO** guns are early, crude and hand made: iron, wood and leather, slow to load, and loud. They are the faction's rare, expensive answer to the bow, and the bow and crossbow remain its core.
+* **BIO** guns are early, crude and hand made: iron, wood and leather, slow to load, and loud. They are the faction's rare, expensive answer to the bow, and the bow and crossbow remain its core. They draw on the same scarce bullets pool as every other firearm, so a black powder gun competes for ammo with the rest of the loadout.
 * **VOID** firearms are worn, old and a little wrong: dark metal, cracked grips, engraved symbols. Relics are the faction's other ranged option and run on cooldowns, not ammo.
 * **Gaps are on purpose.** Heavy modern weapons (LMGs, assault rifles, grenade launchers) and automatic weapons are TECH's. BIO and VOID have few of them, so each reality keeps its own pace: Bio is slow and heavy, Void is deliberate and eerie, Tech is fast and precise.
 * **Out of scope.** Weapons tied to cultures outside these three (for example scimitars, macuahuitl or boomerangs) and overtly fantasy weapons (runic swords, magic staffs) do not fit any of the aesthetics. Add one only as a deliberate exception.
@@ -271,7 +271,7 @@ Firearms are not a TECH exclusive. Any reality can have a pistol, shotgun, rifle
 |------|--------|---------|
 | **None** | | Melee of every reality |
 | **Arrows and bolts** | Crafted from common materials | Bows, crossbows |
-| **Bullets** | Scarce | TECH ballistic weapons, VOID antique firearms |
+| **Bullets** | Scarce | Ballistic firearms of every reality: TECH ballistic weapons, VOID antique firearms, BIO black powder guns |
 | **Energy cells** | TECH resources, scarce | TECH energy weapons |
 | **Cooldown** | Recharges over time | VOID relics |
 
