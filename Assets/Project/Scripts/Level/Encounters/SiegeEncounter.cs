@@ -51,6 +51,8 @@ namespace CGD.Level
             SpawnReward(Context.Center);
         }
 
+        private void OnDestroy() => ObjectiveFeed.Clear(_status);
+
         private void Fail()
         {
             if (_over) return;

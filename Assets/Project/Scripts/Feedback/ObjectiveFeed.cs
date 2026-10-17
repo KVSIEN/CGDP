@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace CGD.Feedback
 {
@@ -7,6 +8,13 @@ namespace CGD.Feedback
     public static class ObjectiveFeed
     {
         public static ObjectiveStatus Current { get; private set; }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void Reset()
+        {
+            Current = null;
+            Changed = null;
+        }
 
         public static event Action Changed;
 

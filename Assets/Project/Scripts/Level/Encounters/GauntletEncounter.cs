@@ -43,6 +43,12 @@ namespace CGD.Level
             return Context.Spawner.Spawn(size, fromSecondRoster: wave % 2 == 1);
         }
 
+        private void OnDestroy()
+        {
+            EndTwist();
+            ObjectiveFeed.Clear(_status);
+        }
+
         private void BeginTwist()
         {
             StatBoon[] twists = Context.Settings.GauntletTwists;

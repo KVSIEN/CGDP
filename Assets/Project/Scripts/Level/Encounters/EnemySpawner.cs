@@ -22,6 +22,11 @@ namespace CGD.Level
 
         private void Reset() => _health = GetComponent<HealthManager>();
 
+        private void Awake()
+        {
+            if (_health == null) _health = GetComponent<HealthManager>();
+        }
+
         public void Initialize(EncounterSpawner spawner, Transform player, EncounterSettings settings)
         {
             _spawner            = spawner;
