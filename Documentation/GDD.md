@@ -220,8 +220,8 @@ The player carries up to four weapons and switches between them mid combat.
 | Reality | Role | Melee | Ranged | Resource model |
 |---------|------|-------|--------|----------------|
 | **BIO** | Melee dominant, the wheel's backbone | Daggers, swords, axes, hammers, spears, shields | Bows, crossbows | Melee is free and always reliable. Arrows and bolts are crafted from common materials |
-| **TECH** | Ranged dominant | Fire axes, commando knives, batons, for when the ammo runs dry | Pistols, rifles, shotguns, SMGs, energy weapons | Bullets and energy cells, both scarce |
-| **VOID** | Relics and noir firearms | Ritual daggers, sacrificial blades | **Relics**: sceptres, wands, books, staves. **Antique firearms**: revolvers, lever action rifles, double barrel shotguns, flintlocks | Relics run on cooldowns, stronger ones recharge slower. Firearms use bullets |
+| **TECH** | Ranged dominant | Combat knives, blades, batons, for when the ammo runs dry (see Cultural Weapon Styles) | Pistols, rifles, shotguns, SMGs, energy weapons | Bullets and energy cells, both scarce |
+| **VOID** | Relics and noir firearms | Ritual daggers, sacrificial blades, occult tools (see Cultural Weapon Styles) | **Relics**: sceptres, wands, books, staves. **Antique firearms**: revolvers, lever action rifles, double barrel shotguns, flintlocks | Relics run on cooldowns, stronger ones recharge slower. Firearms use bullets |
 
 VOID relics never compete for ammo. They fill the gaps between reloads and give ranged options to a melee build.
 
@@ -229,20 +229,20 @@ VOID relics never compete for ammo. They fill the gaps between reloads and give 
 
 **Proposed.** Each reality's weapons follow its cultural influence (see Art and Audio, Cultural Influence), so a weapon tells the player which reality it came from before they read the tooltip. The cultural style is the look, name and animation of a weapon. Stats, tiers and quality follow the weapon family (dagger, sword, axe, hammer, spear), so a family plays the same in every reality and only its regional form changes.
 
-| Family | TECH: American | BIO: European | VOID: Asian |
-|--------|----------------|---------------|-------------|
-| **Dagger** | Combat knife, utility blade, box cutter | Dagger, misericorde, rondel | Tanto, kunai, ritual dagger |
-| **Sword** | Machete, bowie-style blade, long survival knife | Arming sword, longsword, falchion | Katana, jian, dao |
-| **Axe** | Fire axe, hatchet, tomahawk | Battle axe, bearded axe | Kama, ono, hand axe |
-| **Hammer** | Sledgehammer, pipe wrench, baseball bat | War hammer, mace, maul | Kanabo, iron staff |
-| **Spear** | Telescoping baton, rebar, pole arm tool | Spear, halberd, pike | Naginata, yari, bo staff |
-| **Other melee** | Nightstick, crowbar, stun baton | Shield, flail | Sai, nunchaku, war fan |
+| Family | TECH: Asian | BIO: European | VOID: American |
+|--------|-------------|---------------|----------------|
+| **Dagger** | Tanto style utility knife, kunai style tool, box cutter | Dagger, misericorde, rondel | Ritual dagger, stiletto, switchblade |
+| **Sword** | Katana style blade, nodachi, jian | Arming sword, longsword, falchion | Cane sword, cavalry sabre, ceremonial blade |
+| **Axe** | Kama, hatchet, ono | Battle axe, bearded axe | Fire axe, woodsman's axe, butcher's cleaver |
+| **Hammer** | Industrial mallet, kanabo, iron staff | War hammer, mace, maul | Sledgehammer, gavel, tire iron |
+| **Spear** | Naginata, yari, bo staff | Spear, halberd, pike | Wooden stake, pitchfork, fireplace poker |
+| **Other melee** | Tonfa, sai, collapsible baton, stun baton | Shield, flail | Cane, crucifix, brass knuckles |
 
-* **TECH** melee is practical: tools and equipment repurposed under pressure. Nothing is ornamental, and it looks like it came out of a maintenance locker, a fire station or a security office.
+* **TECH** melee is practical and engineered: clean, precise tools, often with a powered edge or an electric charge, in white and gray with orange or red trim. Nothing is ornamental. It looks like it came out of a security office or a lab, and the Japanese forms (a blade with a clean line, a staff, a baton) are modern and mass produced, not ceremonial.
 * **BIO** melee is the classic medieval arsenal: forged, heavy and hand made, with wood, leather and iron. It fits the faction's melee dominant role, and its shields have no counterpart in the other two.
-* **VOID** melee is martial and ritual: blades with clean lines, wrapped hilts, paper charms and prayer beads. They are old, kept and sometimes cursed, which suits the artifacts of this reality.
-* **Ranged** follows the same split where it fits. TECH has modern firearms and energy weapons, BIO has the bow and crossbow, and VOID has relics. VOID's antique revolvers and lever action rifles come from the noir half of its identity and stay as they are. If every VOID weapon should be Asian, they could become old matchlocks (tanegashima) and hand cannons, which is the choice to make.
-* **Mixing is allowed.** A weapon found in a foreign reality keeps its own style, so a katana on a BIO ship reads as an out of place find, and the wheel can carry all three.
+* **VOID** melee is American noir and classic horror: everyday objects and old tools turned into occult weapons. A stake, a crucifix, a silver blade, a fire axe from a haunted house. They are worn, kept and sometimes cursed, which suits the artifacts of this reality.
+* **Ranged** follows the same split where it fits. TECH has modern firearms and energy weapons, BIO has the bow and crossbow, and VOID has relics. VOID's antique revolvers, lever action rifles and double barrel shotguns are its American noir firearms.
+* **Mixing is allowed.** A weapon found in a foreign reality keeps its own style, so a katana style blade on a BIO ship reads as an out of place find, and the wheel can carry all three.
 * **Respect over costume.** As with the art direction, use specific real forms rather than generic "samurai" or "knight" props, and avoid stereotype.
 
 ### Ammo
@@ -1582,16 +1582,16 @@ Three visual languages share one space. Each reality must be immediately readabl
 
 | Reality | Influence | Palette | What it brings |
 |---------|-----------|---------|----------------|
-| **TECH** | Organized, electronic, artificial, form follows function | White and warm colors | Clean white and light gray surfaces, modular and repeating panels, uniform design language across every room, labeled and color coded systems, exposed conduits and wiring, screens and terminals, drones and automation, hazard striping, orange and red warning accents |
-| **BIO** | Overgrown nature and biomutation | Earthy greens | Flora and fauna taking over: thick vegetation through bulkheads, roots and vines, fungal and spore growth, fleshy walls and sinew, nests and dens, bones and carcasses, mutated animals and plants, territorial markings, a food chain in plain sight |
-| **VOID** | Cult classic horror noir | Gloomy blues and violets | Noir lighting (hard light through slats, long shadows, smoke and fog, near black rooms, cold) with the haunted house and occult horror of classic films: poltergeists, ghosts, demons, cursed artifacts, mirrors, shrines, candles, seances and rituals |
+| **TECH** | Asian: organized, electronic, artificial, form follows function | White and warm colors | Clean white and light gray surfaces, modular and repeating panels, uniform design language across every room, labeled and color coded systems, exposed conduits and wiring, screens and terminals, drones and automation, hazard striping, orange and red warning accents |
+| **BIO** | European: overgrown nature and biomutation | Earthy greens | Flora and fauna taking over: thick vegetation through bulkheads, roots and vines, fungal and spore growth, fleshy walls and sinew, nests and dens, bones and carcasses, mutated animals and plants, territorial markings, a food chain in plain sight |
+| **VOID** | American: cult classic horror noir | Gloomy blues and violets | Noir lighting (hard light through slats, long shadows, smoke and fog, near black rooms, cold) with the haunted house and occult horror of classic films: poltergeists, ghosts, demons, cursed artifacts, mirrors, shrines, candles, seances and rituals |
 
 * **TECH** is the ship as designed: ordered, practical and unified. Every element looks like it exists for a reason, with no ornament. Rooms share one consistent kit, so signage, panels, lighting and layouts repeat and the whole faction reads as one system working together. It is electronic and artificial, all screens, circuits, drones and machines, with nothing organic in it. Keep that order visible so damage and breakdown stand out against it.
-* **American industrial and mid-century space age** (brushed metal, rounded consoles, corporate signage) is an optional secondary flavor for Tech props and branding.
+* **Asian industrial** is TECH's cultural lead, modern and Japanese in spirit: white and red/orange liveries, dense labeled signage with kanji or bilingual text, tidy cable and conduit runs, minimalist modular surfaces, mascot style warning stickers. It is the high tech, corporate or lab side of Japan, not the ceremonial or historical one. Pick one specific reference (for example Japanese industrial design) and avoid a generic "Asia" blend.
 * **BIO** is a living ecosystem that has swallowed the ship. Plants and animals are the architecture: vegetation splits the walls, flesh and sinew bind the structure, and mutated creatures and plants have grown into it. Everything shows that something feeds and something is fed on, such as nests, kill sites, scavenged remains and scent trails. The player is prey as often as predator (hunt or be hunted). Keep it grounded in the ship, with metal visible under the growth.
-* **Medieval** (ruined stone, broken arches, rotted timber) is an optional secondary flavor for Bio's hierarchy and ruins, used sparingly so it doesn't read as a generic fantasy castle.
+* **European medieval** (ruined stone, broken arches, rotted timber, forged iron) is BIO's cultural lead for its structures, weapons and hierarchy, used sparingly so it doesn't read as a generic fantasy castle.
 * **VOID** is the haunted, occult side of the ship, lit like noir. Smoke and fog hang in the corridors, breath shows in the cold, and light is hard and directional. Its hauntings are physical and unsettling: objects that move on their own, reflections that do not match, cold spots, whispers, shrines and ritual circles, and figures at the edge of sight. Mirrors and shrines are the signature props, and artifacts (see Relics, Curses and Rituals) are the horror made tangible. Lean on the stillness before something happens, and keep gore secondary to dread.
-* **Asian horror** (paper talismans, lanterns, sliding doors, shrine offerings) is an optional secondary flavor for Void props. If used, pick one specific tradition (for example Japanese) and avoid a generic "Asia" blend.
+* **American** is VOID's cultural lead: film noir (venetian blind light, trench coat silhouettes, smoke filled rooms, revolvers) and the haunted house and occult horror of classic American cult films.
 * **Respect over costume.** Use specific, real references (a type of ruin, a kind of shrine, a design movement) and avoid stereotype props.
 
 ### Overlap Zones
