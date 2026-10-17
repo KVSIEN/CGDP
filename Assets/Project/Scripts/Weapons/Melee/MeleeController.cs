@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using CGD.Abilities;
-using CGD.Audio;
 using CGD.Combat;
 using CGD.Input;
 using CGD.Items;
@@ -27,7 +26,6 @@ namespace CGD.Weapons
     [RequireComponent(typeof(PlayerInputHandler))]
     public class MeleeController : MonoBehaviour, IDamageInterceptor
     {
-        private enum Phase { Idle, Windup, Active, Recovery }
         private enum Hand  { None, Main, Off }
 
         [Tooltip("Fists: the bash while the weapon in hand has none of its own, or the hands are empty")]
@@ -47,7 +45,6 @@ namespace CGD.Weapons
         public const int HeavyAttackIndex = -1;
         public const int BashIndex        = -2;
 
-        private readonly MeleeStrike _strike    = new();
         private readonly MeleeGuard  _guard     = new();
         private readonly SwingInput  _mainInput = new();
         private readonly SwingInput  _offInput  = new();
@@ -60,8 +57,7 @@ namespace CGD.Weapons
         private PlayerItemSlots    _items;
         private Reflector          _reflector;
         private MeterSet           _meters;
-        private CharacterStats     _stats;
-        private DamageSource       _ownerSource;
+        private MeleeSwing         _swing;
         private ParryResponse      _parry;
 
         private WeaponItem          _inHand;
@@ -75,14 +71,6 @@ namespace CGD.Weapons
         // What opened the current parry window: its stun and parry reflect answer a parry.
         private MeleeWeaponData     _parryData;
 
-        // The swing under way.
-        private Phase _phase;
-        private float _phaseTimer;
-        private MeleeAttackStep     _activeStep;
-        private MeleeWeaponData     _swingData;
-        private MeleeWeaponInstance _swingWeapon;
-        private DamageSource        _swingSource;
-        private bool                _swingIsBash;
         // The next swing, asked for while this one plays.
         private Hand _bufferedHand;
         private bool _bufferedHeavy;
@@ -102,34 +90,19 @@ namespace CGD.Weapons
             : _gunBash != null    ? _gunBash
             : _data;
 
-        // Divides wind-up, strike and recovery; a timeline-driven strike keeps its authored frames.
-        private float Speed => Mathf.Max(0.1f, Stat(ItemStat.FireRate, _swingData.AttackSpeed));
-
-        // The tail of a swing's recovery (from its CancelFrom point) can be cut short.
-        private bool InCancelWindow =>
-            _phase == Phase.Recovery && _phaseTimer <= _activeStep.RecoveryTime / Speed * (1f - _activeStep.CancelFrom);
-
-        private bool CanStartAction => (_phase == Phase.Idle || InCancelWindow) && !_guard.IsExposed(Time.time);
-
-        // A value through the swinging weapon (its passive perks and attachments), then the
-        // wielder's buffs and debuffs. Bashes with fists, guns and shields have only the wielder's.
-        private float Stat(ItemStat stat, float value)
-        {
-            if (_swingWeapon != null) value = _swingWeapon.Modify(stat, value);
-            return _stats != null ? _stats.Apply(stat, value) : value;
-        }
+        private bool CanStartAction => (_swing.IsIdle || _swing.InCancelWindow) && !_guard.IsExposed(Time.time);
 
         private void Awake()
         {
             _input           = GetComponent<PlayerInputHandler>();
             _movement        = GetComponent<PlayerMovement>();
-            _ownerSource     = DamageSource.Of(gameObject);
-            _stats           = GetComponentInParent<CharacterStats>();
             TryGetComponent(out _meters);
             TryGetComponent(out _dodge);
             TryGetComponent(out _abilities);
             TryGetComponent(out _items);
             TryGetComponent(out _reflector);
+            _swing = new MeleeSwing(transform, _camera, GetComponentInParent<CharacterStats>(), DamageSource.Of(gameObject),
+                                    _debugDraw, _debugDuration);
             _parry = new ParryResponse(_guard, _reflector, _rangedParryReflect, _meleeParryRange,
                                        amount => TryPayStamina(_guardData, amount));
             RebuildGuard();
@@ -174,8 +147,8 @@ namespace CGD.Weapons
         // unless the swing is dropped before its cancel window.
         private void ChangeHands()
         {
-            if (_phase != Phase.Idle) InterruptSwing(keepCombo: InCancelWindow);
-            else                      Weave();
+            if (!_swing.IsIdle) InterruptSwing(keepCombo: _swing.InCancelWindow);
+            else                Weave();
             _queuedBash.Clear();
         }
 
@@ -210,7 +183,7 @@ namespace CGD.Weapons
             bool mainReleased = ReadSwing(_mainInput, Hand.Main, out bool mainHeavy);
             bool offReleased  = ReadSwing(_offInput,  Hand.Off,  out bool offHeavy);
 
-            if (_phase == Phase.Idle)
+            if (_swing.IsIdle)
             {
                 if      (mainReleased) StartAttack(Hand.Main, mainHeavy);
                 else if (offReleased)  StartAttack(Hand.Off,  offHeavy);
@@ -221,13 +194,12 @@ namespace CGD.Weapons
 
             if      (mainReleased) BufferNext(Hand.Main, mainHeavy);
             else if (offReleased)  BufferNext(Hand.Off,  offHeavy);
-            TickPhase(Time.deltaTime);
+            if (_swing.Tick(Time.deltaTime)) EndAttack();
         }
 
         private void FixedUpdate()
         {
-            if (_phase != Phase.Active || _activeStep == null) return;
-            if (!_strike.Tick(_camera.transform, _debugDraw, _debugDuration)) ExitActive();
+            _swing.FixedTick();
         }
 
         private MeleeWeaponInstance WeaponOf(Hand hand) => hand switch
@@ -260,7 +232,7 @@ namespace CGD.Weapons
         private bool UpdateDodge()
         {
             if (_dodge == null || !_dodge.IsDrivingMovement) return false;
-            if (_phase != Phase.Idle) InterruptSwing(keepCombo: InCancelWindow);
+            if (!_swing.IsIdle) InterruptSwing(keepCombo: _swing.InCancelWindow);
             Weave();
             return true;
         }
@@ -289,8 +261,8 @@ namespace CGD.Weapons
         // simply carries on.
         private void WeaveAction()
         {
-            if (InCancelWindow)            InterruptSwing(keepCombo: true);
-            else if (_phase == Phase.Idle) Weave();
+            if (_swing.InCancelWindow)     InterruptSwing(keepCombo: true);
+            else if (_swing.IsIdle)        Weave();
         }
 
         private void Weave()
@@ -326,7 +298,7 @@ namespace CGD.Weapons
             if (!TryPayStamina(data, data.StaminaCost.Amount)) return false;
 
             // Like raising the guard: a swing in its cancel window ends, keeping the combo.
-            if (_phase != Phase.Idle) InterruptSwing(keepCombo: true);
+            if (!_swing.IsIdle) InterruptSwing(keepCombo: true);
             _guard.Lower();
             OpenParry(data);
             // The Attack press that bashed from the guard must not also swing when released.
@@ -352,7 +324,7 @@ namespace CGD.Weapons
 
             if (CanStartAction && _input.GetAction(GameAction.AimDownSights))
             {
-                if (_phase != Phase.Idle) InterruptSwing(keepCombo: true);
+                if (!_swing.IsIdle) InterruptSwing(keepCombo: true);
                 _mainInput.ClearQueue();
                 _offInput.ClearQueue();
                 _guard.Raise();
@@ -395,19 +367,10 @@ namespace CGD.Weapons
 
         private void BeginSwing(MeleeWeaponData data, MeleeWeaponInstance weapon, MeleeAttackStep step, bool bash, int index)
         {
-            _swingData    = data;
-            _swingWeapon  = weapon;
-            _swingIsBash  = bash;
-            // Kills are credited to the swinging weapon, or for a bash to the gun in hand.
-            _swingSource  = _ownerSource.WithWeapon(weapon != null ? weapon : _inHand);
-            _activeStep   = step;
             _bufferedHand = Hand.None;
-            _phase        = Phase.Windup;
-            _phaseTimer   = step.WindupTime / Speed;
-
+            // Kills are credited to the swinging weapon, or for a bash to the gun in hand.
+            _swing.Begin(data, weapon, weapon != null ? weapon : _inHand, step, bash);
             AttackStarted?.Invoke(index);
-            step.SwingSound.TryPlay(transform.position);
-            Noise.Emit(transform.position, data.NoiseRadius, _swingSource);
         }
 
         // Stamina is optional on melee: unlike MeterCost.TryPay, a character without the
@@ -419,68 +382,6 @@ namespace CGD.Weapons
             return meter.TrySpend(amount);
         }
 
-        private void TickPhase(float dt)
-        {
-            _phaseTimer -= dt;
-            if (_phaseTimer > 0f) return;
-
-            switch (_phase)
-            {
-                case Phase.Windup:
-                    EnterActive();
-                    break;
-
-                case Phase.Active:
-                    if (!_strike.UsesTimeline) ExitActive();
-                    break;
-
-                case Phase.Recovery:
-                    EndAttack();
-                    break;
-            }
-        }
-
-        private void EnterActive()
-        {
-            _phase = Phase.Active;
-            Transform aim = _camera.transform;
-
-            if (_activeStep.Timeline != null)
-            {
-                _phaseTimer = _strike.BeginTimeline(_activeStep.Timeline, aim, transform.root, _swingSource,
-                                                    DamageScale(_activeStep.Damage), _debugDraw, _debugDuration);
-                return;
-            }
-
-            _phaseTimer = _activeStep.ActiveTime / Speed;
-
-            bool crit = UnityEngine.Random.value < Stat(ItemStat.CritChance, 0f);
-            var info = new DamageInfo(
-                Stat(ItemStat.Damage, _activeStep.Damage),
-                Mathf.Clamp01(Stat(ItemStat.ArmorPenetration, _activeStep.ArmorPenetration)),
-                _activeStep.DamageType,
-                Mathf.Max(1f, Stat(ItemStat.CritDamage, _activeStep.CriticalMultiplier)),
-                _swingSource,
-                _activeStep.OnHitEffects,
-                bonuses: new HitBonuses(crit, Stat(ItemStat.StatusChance, 0f), Stat(ItemStat.StatusDamage, 0f)));
-
-            float reach = Mathf.Max(0.1f, Stat(ItemStat.Range, 1f));
-            _strike.BeginShapes(_activeStep, info, _swingData.HitMask, transform.root, reach);
-        }
-
-        // A timeline strike authors its own damage per event, so buffs reach it as a multiplier,
-        // measured on the step's damage so flat bonuses keep their size.
-        private float DamageScale(float stepDamage) =>
-            stepDamage > 0f ? Stat(ItemStat.Damage, stepDamage) / stepDamage : 1f;
-
-        private void ExitActive()
-        {
-            if (_strike.End()) _activeStep.HitSound.TryPlay(transform.position);
-
-            _phase      = Phase.Recovery;
-            _phaseTimer = _activeStep.RecoveryTime / Speed;
-        }
-
         private void EndAttack()
         {
             if (_bufferedHand != Hand.None)
@@ -490,25 +391,16 @@ namespace CGD.Weapons
                 if (StartAttack(next, _bufferedHeavy)) return;
             }
 
-            _phase = Phase.Idle;
-            // A bash leaves the combo where it was, like raising the guard.
-            if (!_swingIsBash && _swingWeapon != null) _swingWeapon.Combo.Release(Time.time, _swingData.ComboResetTime);
+            _swing.Finish(Time.time);
         }
 
         // Ends the swing under way (a cancel, dodge or weapon swap). Hits already dealt stand.
         private void InterruptSwing(bool keepCombo)
         {
-            if (_phase == Phase.Active) _strike.End();
-
-            _phase        = Phase.Idle;
-            _activeStep   = null;
+            _swing.Interrupt(keepCombo, Time.time);
             _bufferedHand = Hand.None;
             _mainInput.Reset();
             _offInput.Reset();
-
-            if (_swingWeapon == null) return;
-            if (keepCombo) _swingWeapon.Combo.Release(Time.time, _swingData.WeaveWindow);
-            else           _swingWeapon.Combo.Reset();
         }
 
         public float Intercept(in DamageInfo info, float amount, Vector3 point)
