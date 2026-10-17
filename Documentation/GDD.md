@@ -225,6 +225,26 @@ The player carries up to four weapons and switches between them mid combat.
 
 VOID relics never compete for ammo. They fill the gaps between reloads and give ranged options to a melee build.
 
+### Cultural Weapon Styles
+
+**Proposed.** Each reality's weapons follow its cultural influence (see Art and Audio, Cultural Influence), so a weapon tells the player which reality it came from before they read the tooltip. The cultural style is the look, name and animation of a weapon. Stats, tiers and quality follow the weapon family (dagger, sword, axe, hammer, spear), so a family plays the same in every reality and only its regional form changes.
+
+| Family | TECH: American | BIO: European | VOID: Asian |
+|--------|----------------|---------------|-------------|
+| **Dagger** | Combat knife, utility blade, box cutter | Dagger, misericorde, rondel | Tanto, kunai, ritual dagger |
+| **Sword** | Machete, bowie-style blade, long survival knife | Arming sword, longsword, falchion | Katana, jian, dao |
+| **Axe** | Fire axe, hatchet, tomahawk | Battle axe, bearded axe | Kama, ono, hand axe |
+| **Hammer** | Sledgehammer, pipe wrench, baseball bat | War hammer, mace, maul | Kanabo, iron staff |
+| **Spear** | Telescoping baton, rebar, pole arm tool | Spear, halberd, pike | Naginata, yari, bo staff |
+| **Other melee** | Nightstick, crowbar, stun baton | Shield, flail | Sai, nunchaku, war fan |
+
+* **TECH** melee is practical: tools and equipment repurposed under pressure. Nothing is ornamental, and it looks like it came out of a maintenance locker, a fire station or a security office.
+* **BIO** melee is the classic medieval arsenal: forged, heavy and hand made, with wood, leather and iron. It fits the faction's melee dominant role, and its shields have no counterpart in the other two.
+* **VOID** melee is martial and ritual: blades with clean lines, wrapped hilts, paper charms and prayer beads. They are old, kept and sometimes cursed, which suits the artifacts of this reality.
+* **Ranged** follows the same split where it fits. TECH has modern firearms and energy weapons, BIO has the bow and crossbow, and VOID has relics. VOID's antique revolvers and lever action rifles come from the noir half of its identity and stay as they are. If every VOID weapon should be Asian, they could become old matchlocks (tanegashima) and hand cannons, which is the choice to make.
+* **Mixing is allowed.** A weapon found in a foreign reality keeps its own style, so a katana on a BIO ship reads as an out of place find, and the wheel can carry all three.
+* **Respect over costume.** As with the art direction, use specific real forms rather than generic "samurai" or "knight" props, and avoid stereotype.
+
 ### Ammo
 
 | Ammo | Source | Used by |
