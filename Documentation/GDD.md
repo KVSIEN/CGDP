@@ -1502,7 +1502,7 @@ The deeper into VOID, the more the player loses. The anomaly does not attack dir
 
 ### Aesthetic
 
-Asian horror noir: something old and ritualistic aboard a ship from the future. Shadows, symbols, talismans, lantern and candlelight in steel corridors, spaces that feel ancient and watched. See Art and Audio, Cultural Influence.
+Cult classic horror noir: something old, haunted and ritualistic aboard a ship from the future. Smoke, cold, shadows, mirrors, shrines, symbols and candlelight in steel corridors, with ghosts, poltergeists and demons in spaces that feel ancient and watched. See Art and Audio, Cultural Influence.
 
 ### The Breach
 
@@ -1564,11 +1564,12 @@ Three visual languages share one space. Each reality must be immediately readabl
 |---------|-----------|---------|----------------|
 | **TECH** | American industrial and mid-century space age | White and warm colors | Clean white and light gray surfaces, brushed metal, rounded consoles, hazard striping, corporate signage, orange and red warning accents |
 | **BIO** | European medieval | Earthy greens | Ruined abbeys and castles reclaimed by forest: rough stone, ribbed vaults, broken arches, rotted timber, iron-banded doors, ivy and moss |
-| **VOID** | Asian horror noir | Gloomy blues and violets | Noir lighting (hard light through slats, long shadows, near black rooms) with the uncanny of Asian ghost stories: paper talismans, lanterns, mirrors, shrines with offerings, doors that open onto nothing |
+| **VOID** | Cult classic horror noir | Gloomy blues and violets | Noir lighting (hard light through slats, long shadows, smoke and fog, near black rooms, cold) with the haunted house and occult horror of classic films: poltergeists, ghosts, demons, cursed artifacts, mirrors, shrines, candles, seances and rituals |
 
 * **TECH** keeps the institutional, lived in ship interior. The retro-futurist optimism makes its failures read as something that used to work.
 * **BIO** is ruin first and medieval second. Medieval shapes sit on top of decay and overgrowth so it never reads as a generic fantasy castle, and it stays part of a colony ship.
-* **VOID** leans on what is absent: stillness, empty rooms, slightly wrong angles. The horror is restrained, never gore. Pick one lead tradition (for example Japanese) for the horror motifs, and avoid a generic "Asia" blend of unrelated cultures.
+* **VOID** is the haunted, occult side of the ship, lit like noir. Smoke and fog hang in the corridors, breath shows in the cold, and light is hard and directional. Its hauntings are physical and unsettling: objects that move on their own, reflections that do not match, cold spots, whispers, shrines and ritual circles, and figures at the edge of sight. Mirrors and shrines are the signature props, and artifacts (see Relics, Curses and Rituals) are the horror made tangible. Lean on the stillness before something happens, and keep gore secondary to dread.
+* **Asian horror** (paper talismans, lanterns, sliding doors, shrine offerings) is an optional secondary flavor for Void props. If used, pick one specific tradition (for example Japanese) and avoid a generic "Asia" blend.
 * **Respect over costume.** Use specific, real references (a type of ruin, a kind of shrine, a design movement) and avoid stereotype props.
 
 ### Overlap Zones
