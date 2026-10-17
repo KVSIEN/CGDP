@@ -59,8 +59,7 @@ namespace CGD.Weapons
         private bool  _wasDodging;
         private bool  _wasSprinting;
         private bool  _couldAct = true;
-        private bool  _isReloading;
-        private bool  _reloadCommitted;
+        private WeaponReloader _reloader;
         private Coroutine _reload;
         private bool  _holstered;
         private bool  _burstPending;
@@ -83,8 +82,8 @@ namespace CGD.Weapons
         public WeaponInstance Current => _current;
         public WeaponData     Data    => _current?.Data;
         public int  Magazine          => _current?.Magazine ?? 0;
-        public int  Reserve           => _inventory != null && _current != null ? _inventory.Inventory.CountOf(_current.Data.AmmoType) : 0;
-        public bool IsReloading       => _isReloading;
+        public int  Reserve           => _reloader.Reserve;
+        public bool IsReloading       => _reloader.IsReloading;
         public bool IsHolstered       => _holstered;
         /// <summary>0 at rest, 1 fully charged. Always 0 for non-Charge fire modes.</summary>
         public float ChargeRatio      => Data != null && Data.FireMode == FireMode.Charge && ChargeTime > 0f
@@ -108,6 +107,10 @@ namespace CGD.Weapons
             _damageSource = _ownerSource;
             if (_inventory == null) _inventory = GetComponentInParent<PlayerInventory>();
             _stats = GetComponentInParent<CharacterStats>();
+
+            _reloader = new WeaponReloader(_inventory, _stats, _muzzle != null ? _muzzle : transform, NotifyAmmoChanged);
+            _reloader.Started   += () => ReloadStarted?.Invoke();
+            _reloader.Committed += () => Reloaded?.Invoke();
 
             // Keep HUD reserve count in sync with shared pool.
             if (_inventory != null) _inventory.Inventory.Changed += NotifyAmmoChanged;
@@ -135,7 +138,7 @@ namespace CGD.Weapons
 
         private void CancelReloadByAction()
         {
-            if (_isReloading) InterruptReload();
+            if (_reloader.IsReloading) InterruptReload();
         }
 
         private void OnDisable()
@@ -154,7 +157,7 @@ namespace CGD.Weapons
             if (holstered)
             {
                 StopAllCoroutines();
-                _isReloading  = false;
+                _reloader.Clear();
                 _burstPending = false;
                 if (_crosshair != null) _crosshair.SetDynamicSpread(0f);
             }
@@ -190,7 +193,7 @@ namespace CGD.Weapons
             // Anything that interrupts the player stops the reload — a sprint, a dodge, or losing
             // control (stun, mantle, a committed roll): lost before its commit point, done early
             // after it, since once the rounds are in the reload is technically finished.
-            if (_isReloading)
+            if (_reloader.IsReloading)
             {
                 if (!sprintStarted && !dodgeStarted && !lostControl) return;
                 InterruptReload();
@@ -241,13 +244,13 @@ namespace CGD.Weapons
         {
             // Reload swap-cancel: leaving a weapon once its rounds are in lets it come
             // straight back, so swap away and back beats waiting out the reload's tail.
-            if (_current != null && _isReloading && _reloadCommitted)
+            if (_current != null && _reloader.IsReloading && _reloader.IsCommitted)
                 _current.QuickDrawUntil = Time.time + QuickReturnWindow;
 
             StopAllCoroutines();
             _reload          = null;
-            _isReloading     = false;
-            _reloadCommitted = false;
+            _reloader.Clear();
+            _reloader.SetWeapon(weapon);
             _burstPending    = false;
             _current         = weapon;
             _damageSource    = _ownerSource.WithWeapon(weapon);
@@ -332,11 +335,11 @@ namespace CGD.Weapons
 
         private void HandleReloadInput()
         {
-            if (!_isReloading && _input.GetAction(GameAction.Reload) && CanReload)
+            if (!_reloader.IsReloading && _input.GetAction(GameAction.Reload) && CanReload)
                 StartReload();
         }
 
-        private bool CanReload => _current.Magazine < _current.MagazineSize && Reserve > 0;
+        private bool CanReload => _reloader.CanReload;
 
         private void TryFire(float charge = 1f)
         {
@@ -455,93 +458,18 @@ namespace CGD.Weapons
             return whole + (UnityEngine.Random.value < extra - whole ? 1 : 0);
         }
 
-        private void StartReload() => _reload = StartCoroutine(D.LoadsInSteps ? ReloadInSteps() : Reload());
-
-        // The rounds go in at the commit point; the rest is the tail of the animation, which
-        // sprinting or a swap can skip. The magazine filling up is the cue that it's safe.
-        private IEnumerator Reload()
-        {
-            BeginReload();
-
-            float time   = Mathf.Max(0.1f, Wielder(ItemStat.ReloadTime,
-                _current.Magazine > 0 ? _current.TacticalReloadTime : _current.ReloadTime));
-            float commit = time * D.ReloadCommitPoint;
-            yield return new WaitForSeconds(commit);
-
-            LoadMagazine();
-            _reloadCommitted = true;
-            Reloaded?.Invoke();
-            if (time > commit) yield return new WaitForSeconds(time - commit);
-
-            EndReload();
-        }
-
-        // RoundsPerLoad rounds at a time, each step in for good once its share of the reload
-        // time is up, until the weapon is full or the reserve runs dry. The first step in is the
-        // commit point (Reloaded fires once, as for a magazine). An interrupt keeps every step
-        // already loaded, so a bash right after one cancels the rest and keeps it.
-        private IEnumerator ReloadInSteps()
-        {
-            BeginReload();
-
-            float perStep = Mathf.Max(0.05f, Wielder(ItemStat.ReloadTime, _current.ReloadTime) / D.LoadSteps(_current.MagazineSize));
-            var wait = new WaitForSeconds(perStep);
-            while (CanReload)
-            {
-                yield return wait;
-                if (LoadRounds(D.RoundsPerLoad, free: false) == 0) break;
-                if (_reloadCommitted) continue;
-
-                _reloadCommitted = true;
-                Reloaded?.Invoke();
-            }
-
-            EndReload();
-        }
-
-        private void BeginReload()
-        {
-            _isReloading     = true;
-            _reloadCommitted = false;
-            NotifyAmmoChanged();
-
-            D.ReloadSound.TryPlay(SoundPos);
-            ReloadStarted?.Invoke();
-        }
-
-        private void LoadMagazine() => LoadRounds(_current.MagazineSize - _current.Magazine, free: false);
+        private void StartReload() => _reload = StartCoroutine(_reloader.Run());
 
         // Loads up to `count` rounds into the weapon in hand, outside a reload (perks use this).
         // Rounds come from the reserve unless `free`. Returns how many went in.
-        public int LoadRounds(int count, bool free)
-        {
-            if (_current == null) return 0;
-
-            int room      = _current.MagazineSize - _current.Magazine;
-            int available = free ? room : Reserve;
-            int taken     = Mathf.Min(Mathf.Min(count, room), available);
-            if (taken <= 0) return 0;
-
-            _current.Magazine += taken;
-            // Remove fires Changed, which covers both mag and reserve in one event.
-            if (!free) _inventory.Inventory.Remove(D.AmmoType, taken);
-            else       NotifyAmmoChanged();
-            return taken;
-        }
+        public int LoadRounds(int count, bool free) => _reloader.LoadRounds(count, free);
 
         // Ends the reload where it is: finished if the rounds are in, lost if not.
         private void InterruptReload()
         {
             if (_reload != null) StopCoroutine(_reload);
-            EndReload();
-        }
-
-        private void EndReload()
-        {
-            _reload          = null;
-            _isReloading     = false;
-            _reloadCommitted = false;
-            NotifyAmmoChanged();
+            _reload = null;
+            _reloader.End();
         }
 
         // Stunned, mantling or in a committed roll since last frame. A future knockback that
@@ -570,7 +498,7 @@ namespace CGD.Weapons
 
         private void NotifyAmmoChanged()
         {
-            OnAmmoChanged?.Invoke(Magazine, Reserve, _isReloading);
+            OnAmmoChanged?.Invoke(Magazine, Reserve, _reloader.IsReloading);
         }
     }
 }
