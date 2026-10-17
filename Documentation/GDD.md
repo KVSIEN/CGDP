@@ -219,9 +219,9 @@ The player carries up to four weapons and switches between them mid combat.
 
 | Reality | Role | Melee | Ranged | Resource model |
 |---------|------|-------|--------|----------------|
-| **BIO** | Melee dominant, the wheel's backbone | Daggers, swords, axes, hammers, spears, shields | Bows, crossbows | Melee is free and always reliable. Arrows and bolts are crafted from common materials |
+| **BIO** | Melee dominant, the wheel's backbone | Daggers, swords, axes, hammers, spears, shields | Bows, crossbows, early black powder guns (see Cultural Weapon Styles) | Melee is free and always reliable. Arrows and bolts are crafted from common materials |
 | **TECH** | Ranged dominant | Combat knives, blades, batons, for when the ammo runs dry (see Cultural Weapon Styles) | Pistols, rifles, shotguns, SMGs, energy weapons | Bullets and energy cells, both scarce |
-| **VOID** | Relics and noir firearms | Ritual daggers, sacrificial blades, occult tools (see Cultural Weapon Styles) | **Relics**: sceptres, wands, books, staves. **Antique firearms**: revolvers, lever action rifles, double barrel shotguns, flintlocks | Relics run on cooldowns, stronger ones recharge slower. Firearms use bullets |
+| **VOID** | Relics and noir firearms | Ritual daggers, sacrificial blades, occult tools (see Cultural Weapon Styles) | **Relics**: sceptres, wands, books, staves. **Antique firearms**: revolvers, lever action rifles, double barrel shotguns | Relics run on cooldowns, stronger ones recharge slower. Firearms use bullets |
 
 VOID relics never compete for ammo. They fill the gaps between reloads and give ranged options to a melee build.
 
@@ -241,9 +241,29 @@ VOID relics never compete for ammo. They fill the gaps between reloads and give 
 * **TECH** melee is practical and engineered: clean, precise tools, often with a powered edge or an electric charge, in white and gray with orange or red trim. Nothing is ornamental. It looks like it came out of a security office or a lab, and the Japanese forms (a blade with a clean line, a staff, a baton) are modern and mass produced, not ceremonial.
 * **BIO** melee is the classic medieval arsenal: forged, heavy and hand made, with wood, leather and iron. It fits the faction's melee dominant role, and its shields have no counterpart in the other two.
 * **VOID** melee is American noir and classic horror: everyday objects and old tools turned into occult weapons. A stake, a crucifix, a silver blade, a fire axe from a haunted house. They are worn, kept and sometimes cursed, which suits the artifacts of this reality.
-* **Ranged** follows the same split where it fits. TECH has modern firearms and energy weapons, BIO has the bow and crossbow, and VOID has relics. VOID's antique revolvers, lever action rifles and double barrel shotguns are its American noir firearms.
 * **Mixing is allowed.** A weapon found in a foreign reality keeps its own style, so a katana style blade on a BIO ship reads as an out of place find, and the wheel can carry all three.
 * **Respect over costume.** As with the art direction, use specific real forms rather than generic "samurai" or "knight" props, and avoid stereotype.
+
+#### Ranged Weapons
+
+Firearms are not a TECH exclusive. Any reality can have a pistol, shotgun, rifle or SMG, and each reality's version belongs to a different era of gun. Melee follows culture, ranged follows era. As with melee, stats follow the weapon family (pistol, shotgun, rifle, SMG, sniper, LMG, bow, crossbow), so only the look, sound and name change.
+
+| Family | TECH: modern and future | BIO: black powder and medieval | VOID: early 20th century |
+|--------|-------------------------|--------------------------------|--------------------------|
+| **Pistol** | Compact sidearm, hand cannon, energy pistol | Flintlock pistol, matchlock pistol | Revolver, break open revolver, semi auto of the 1920s |
+| **Shotgun** | Combat shotgun, energy scatter | Blunderbuss | Double barrel, pump, sawed off |
+| **Rifle** | Assault rifle, marksman rifle, energy rifle | Musket, matchlock arquebus | Lever action, bolt action |
+| **SMG** | Modern SMG, machine pistol | None. A rare find at best | Drum magazine SMG of the 1920s |
+| **Sniper** | Modern precision rifle, railgun | Long barreled fowling piece | Scoped bolt action |
+| **LMG** | Belt fed, magazine fed | None | Rare. Old drum or pan fed gun |
+| **Bow and crossbow** | Compound bow, autoloader crossbow | Longbow, recurve, crossbow, ballista | Rare. A hunting bow or old repeating crossbow as a find |
+| **Relic** | None | Biological tricks: spore, venom, bone | Sceptres, wands, books, staves, mirrors, lanterns |
+
+* **TECH** firearms are clean, engineered and electronic: uniform casings, white and gray with orange or red trim, readouts and powered cells. Energy weapons and autoloaders belong here.
+* **BIO** guns are early, crude and hand made: iron, wood and leather, slow to load, and loud. They are the faction's rare, expensive answer to the bow, and the bow and crossbow remain its core.
+* **VOID** firearms are worn, old and a little wrong: dark metal, cracked grips, engraved symbols. Relics are the faction's other ranged option and run on cooldowns, not ammo.
+* **Gaps are on purpose.** Heavy modern weapons (LMGs, assault rifles, grenade launchers) and automatic weapons are TECH's. BIO and VOID have few of them, so each reality keeps its own pace: Bio is slow and heavy, Void is deliberate and eerie, Tech is fast and precise.
+* **Out of scope.** Weapons tied to cultures outside these three (for example scimitars, macuahuitl or boomerangs) and overtly fantasy weapons (runic swords, magic staffs) do not fit any of the aesthetics. Add one only as a deliberate exception.
 
 ### Ammo
 
