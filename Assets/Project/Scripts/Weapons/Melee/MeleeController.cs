@@ -3,7 +3,6 @@ using UnityEngine;
 using CGD.Abilities;
 using CGD.Audio;
 using CGD.Combat;
-using CGD.Feedback;
 using CGD.Input;
 using CGD.Items;
 using CGD.Meters;
@@ -63,7 +62,7 @@ namespace CGD.Weapons
         private MeterSet           _meters;
         private CharacterStats     _stats;
         private DamageSource       _ownerSource;
-        private Func<float, bool>  _payGuardStamina;
+        private ParryResponse      _parry;
 
         private WeaponItem          _inHand;
         private MeleeWeaponInstance _mainWeapon;
@@ -126,12 +125,13 @@ namespace CGD.Weapons
             _movement        = GetComponent<PlayerMovement>();
             _ownerSource     = DamageSource.Of(gameObject);
             _stats           = GetComponentInParent<CharacterStats>();
-            _payGuardStamina = amount => TryPayStamina(_guardData, amount);
             TryGetComponent(out _meters);
             TryGetComponent(out _dodge);
             TryGetComponent(out _abilities);
             TryGetComponent(out _items);
             TryGetComponent(out _reflector);
+            _parry = new ParryResponse(_guard, _reflector, _rangedParryReflect, _meleeParryRange,
+                                       amount => TryPayStamina(_guardData, amount));
             RebuildGuard();
         }
 
@@ -513,46 +513,12 @@ namespace CGD.Weapons
 
         public float Intercept(in DamageInfo info, float amount, Vector3 point)
         {
-            // Only hits with an attacker can be parried or guarded; status ticks and hazards go through.
-            GameObject attacker = info.Source.Owner;
-            if (attacker == null) return amount;
+            float through = _parry.Resolve(info, amount, transform, _camera.transform.forward, _parryData, out bool parried);
+            if (!parried) return through;
 
-            Vector3 toAttacker = attacker.transform.position - transform.position;
-            GuardOutcome outcome = _guard.Resolve(Time.time, _camera.transform.forward, toAttacker, amount,
-                                                  _payGuardStamina, out float through);
-            switch (outcome)
-            {
-                case GuardOutcome.Parried:
-                    if (toAttacker.magnitude > _meleeParryRange) Deflect(info, amount, attacker);
-                    else                                          Stagger(info, amount, attacker);
-                    Weave();
-                    Parried?.Invoke();
-                    break;
-                case GuardOutcome.Broken:
-                    FeedbackBus.Notify("Guard broken", NotificationStyle.Danger);
-                    break;
-            }
+            Weave();
+            Parried?.Invoke();
             return through;
-        }
-
-        // A parried strike up close staggers the attacker, and the parrying weapon's own parry
-        // reflect (a sword's riposte) answers it.
-        private void Stagger(in DamageInfo info, float amount, GameObject attacker)
-        {
-            Stunnable stunnable = attacker.GetComponentInParent<Stunnable>();
-            if (stunnable != null) stunnable.ApplyStun(_parryData.Guard.ParryStun);
-            if (_parryData.ParryReflect != null && _reflector != null)
-                _reflector.Release(_parryData.ParryReflect, info, amount, attacker);
-            FeedbackBus.Notify("Parried!", NotificationStyle.Success);
-        }
-
-        // A parried shot is knocked away, and sent back when a ranged parry reflect is set.
-        private void Deflect(in DamageInfo info, float amount, GameObject attacker)
-        {
-            if (_rangedParryReflect != null && _reflector != null && !info.IsReflected)
-                _reflector.Release(_rangedParryReflect, info, amount, attacker);
-            else
-                FeedbackBus.Notify("Parried!", NotificationStyle.Success);
         }
     }
 }
