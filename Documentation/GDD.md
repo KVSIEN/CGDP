@@ -1502,7 +1502,7 @@ The deeper into VOID, the more the player loses. The anomaly does not attack dir
 
 ### Aesthetic
 
-Premodern noir: something old and ritualistic aboard a ship from the future. Shadows, symbols, candlelight in steel corridors, spaces that feel ancient.
+Asian horror noir: something old and ritualistic aboard a ship from the future. Shadows, symbols, talismans, lantern and candlelight in steel corridors, spaces that feel ancient and watched. See Art and Audio, Cultural Influence.
 
 ### The Breach
 
@@ -1556,6 +1556,21 @@ Three visual languages share one space. Each reality must be immediately readabl
 | **BIO** | Organic forms overtaking hard surfaces, roots, nests, territorial markings | Diffused and natural: filtered sunlight, dim green bioluminescence | Medieval wilderness reclaiming a ruin, moss on metal |
 | **VOID** | Geometry that contradicts itself, impossible angles, recursive spaces | Shadows without sources, cold blue and violet, the odd candle flame | Wrongness you feel before you see it |
 
+### Cultural Influence
+
+**Proposed.** Each reality also borrows from a different cultural tradition, so the realities differ in motif and mood as well as color. These are references to pick specifics from, not themes to stack. Choose one narrow lead per reality (a single era, region or movement) and use anything else deliberately.
+
+| Reality | Influence | Palette | What it brings |
+|---------|-----------|---------|----------------|
+| **TECH** | American industrial and mid-century space age | White and warm colors | Clean white and light gray surfaces, brushed metal, rounded consoles, hazard striping, corporate signage, orange and red warning accents |
+| **BIO** | European medieval | Earthy greens | Ruined abbeys and castles reclaimed by forest: rough stone, ribbed vaults, broken arches, rotted timber, iron-banded doors, ivy and moss |
+| **VOID** | Asian horror noir | Gloomy blues and violets | Noir lighting (hard light through slats, long shadows, near black rooms) with the uncanny of Asian ghost stories: paper talismans, lanterns, mirrors, shrines with offerings, doors that open onto nothing |
+
+* **TECH** keeps the institutional, lived in ship interior. The retro-futurist optimism makes its failures read as something that used to work.
+* **BIO** is ruin first and medieval second. Medieval shapes sit on top of decay and overgrowth so it never reads as a generic fantasy castle, and it stays part of a colony ship.
+* **VOID** leans on what is absent: stillness, empty rooms, slightly wrong angles. The horror is restrained, never gore. Pick one lead tradition (for example Japanese) for the horror motifs, and avoid a generic "Asia" blend of unrelated cultures.
+* **Respect over costume.** Use specific, real references (a type of ruin, a kind of shrine, a design movement) and avoid stereotype props.
+
 ### Overlap Zones
 
 * **TECH and BIO**: vines threading through live circuitry, screens showing ecosystem data.
@@ -1577,6 +1592,7 @@ Three visual languages share one space. Each reality must be immediately readabl
 
 | Role | Color | Hex | Use |
 |------|-------|-----|-----|
+| Surface | Clean white | `#E6E7E4` | Walls, panels, ceilings. White and light gray lead, warm colors accent them |
 | Primary | Signal orange | `#E8761C` | Light strips, screens, signage, interface frames |
 | Secondary | Alarm red | `#C62E22` | Alarms, hostile sensors, lockdowns. Used sparingly |
 | Accent | Warning yellow | `#F2C230` | Hazard striping, highlights, Lightning |
@@ -1600,7 +1616,7 @@ Three visual languages share one space. Each reality must be immediately readabl
 | Primary | Indigo | `#2B2A6B` | Walls, fog, the dark itself |
 | Secondary | Deep violet | `#4B2A6E` | Cracks, rifts, ritual cloth |
 | Accent | Cold glow | `#8FB4FF` | Frost, wards and glyphs, Ice |
-| Light | Candle flame | `#E0A458` | Small point lights only, never a fill. The premodern noir in steel corridors |
+| Light | Candle flame | `#E0A458` | Small point lights only, never a fill. Lantern and candle light in steel corridors |
 | Base | Abyss | `#0E0F1A` | Near black: what the light doesn't reach |
 
 VOID's candle flame is the one warm color outside TECH. It stays a tiny, isolated point in darkness, so it never reads as TECH's bright warm fills.
