@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using CGD.Level;
 using CGD.Map;
-using UnityEditor;
 using UnityEngine;
 
 namespace CGD.Editor
@@ -38,16 +37,14 @@ namespace CGD.Editor
 
         [NonSerialized] private bool                _searchedBuildSettings;
         [NonSerialized] private MapGraphAnalysis    _analysis;
-        [NonSerialized] private List<MapGraphIssue> _issues;
-        [NonSerialized] private Dictionary<int, List<MapGraphIssue>> _issuesByNode;
-        [NonSerialized] private HashSet<int>        _editedNodes;
-        [NonSerialized] private bool                _hasEdits;
+        [NonSerialized] private MapIssueIndex       _issueIndex;
+        [NonSerialized] private MapEditTracker      _editTracker;
+        [NonSerialized] private MapPathHighlight    _pathHighlight;
+        [NonSerialized] private MapGraphEdits       _edits;
         [NonSerialized] private List<MapConnection> _locks;
         [NonSerialized] private MapRunTuning        _tuning;
         [NonSerialized] private MapFactionMix       _factionMix;
         [NonSerialized] private bool                _factionMixRead;
-        [NonSerialized] private HashSet<int>        _highlightedPath;
-        [NonSerialized] private HashSet<(int, int)> _highlightedLinks;
         [NonSerialized] private MapObjectivePreview _objectives;
         [NonSerialized] private MapRoomPreview      _rooms;
 
@@ -169,43 +166,12 @@ namespace CGD.Editor
             }
         }
 
-        public IReadOnlyList<MapGraphIssue> Issues
-        {
-            get
-            {
-                if (_issues != null) return _issues;
+        private MapIssueIndex IssueIndex => _issueIndex ??= new MapIssueIndex(this);
 
-                _issues = new List<MapGraphIssue>();
-                foreach (string text in MapGraphValidator.Validate(Graph, Analysis, _asset.Layout, _asset.Content, Tuning))
-                    _issues.Add(new MapGraphIssue(text, Graph));
-                return _issues;
-            }
-        }
+        public IReadOnlyList<MapGraphIssue> Issues => IssueIndex.All;
 
         // The issues naming this room, or a connection it's an end of.
-        public IReadOnlyList<MapGraphIssue> IssuesAbout(int nodeId)
-        {
-            if (_issuesByNode == null)
-            {
-                _issuesByNode = new Dictionary<int, List<MapGraphIssue>>();
-                foreach (MapGraphIssue issue in Issues)
-                {
-                    if (issue.Node != null) AddIssue(issue.Node.Id, issue);
-                    if (issue.Connection == null) continue;
-                    AddIssue(issue.Connection.A, issue);
-                    AddIssue(issue.Connection.B, issue);
-                }
-            }
-            return _issuesByNode.TryGetValue(nodeId, out List<MapGraphIssue> issues) ? issues : NoIssues;
-        }
-
-        private static readonly IReadOnlyList<MapGraphIssue> NoIssues = Array.Empty<MapGraphIssue>();
-
-        private void AddIssue(int nodeId, MapGraphIssue issue)
-        {
-            if (!_issuesByNode.TryGetValue(nodeId, out List<MapGraphIssue> issues)) _issuesByNode[nodeId] = issues = new List<MapGraphIssue>();
-            issues.Add(issue);
-        }
+        public IReadOnlyList<MapGraphIssue> IssuesAbout(int nodeId) => IssueIndex.About(nodeId);
 
         // Locked connections in graph order: the first is L1 everywhere the window names locks.
         public IReadOnlyList<MapConnection> Locks
@@ -244,9 +210,8 @@ namespace CGD.Editor
         {
             Version++;
             _analysis     = null;
-            _issues       = null;
-            _issuesByNode = null;
-            _editedNodes  = null;
+            _issueIndex   = null;
+            _editTracker  = null;
             _locks        = null;
             _tuning       = null;
             _factionMix   = null;
@@ -254,11 +219,7 @@ namespace CGD.Editor
             ClearHighlightedPath();
         }
 
-        private void ClearHighlightedPath()
-        {
-            _highlightedPath  = null;
-            _highlightedLinks = null;
-        }
+        private void ClearHighlightedPath() => _pathHighlight = null;
 
         // --- Selection -------------------------------------------------------------
 
@@ -293,18 +254,12 @@ namespace CGD.Editor
 
         // --- Highlights ------------------------------------------------------------
 
-        // Nodes, and the links between them, on the shortest route from Start to the selected node.
-        public bool IsOnHighlightedPath(int id)
-        {
-            BuildHighlightedPath();
-            return _highlightedPath.Contains(id);
-        }
+        private MapPathHighlight PathHighlight => _pathHighlight ??= new MapPathHighlight(this);
 
-        public bool IsOnHighlightedPath(MapConnection connection)
-        {
-            BuildHighlightedPath();
-            return _highlightedLinks.Contains(LinkKey(connection.A, connection.B));
-        }
+        // Nodes, and the links between them, on the shortest route from Start to the selected node.
+        public bool IsOnHighlightedPath(int id) => PathHighlight.Contains(id);
+
+        public bool IsOnHighlightedPath(MapConnection connection) => PathHighlight.Contains(connection);
 
         // With branch highlighting on and a branch node selected, everything outside that
         // branch is dimmed. Main path selections dim nothing.
@@ -316,286 +271,50 @@ namespace CGD.Editor
             return branch != MapGraphAnalysis.MainPathBranch && Analysis.BranchOf(id) != branch;
         }
 
-        private void BuildHighlightedPath()
-        {
-            if (_highlightedPath != null) return;
-
-            List<int> path = _highlightPath && SelectedNode != null
-                ? Analysis.ShortestPath(Analysis.StartId, _selectedNodeId)
-                : new List<int>();
-            _highlightedPath  = new HashSet<int>(path);
-            _highlightedLinks = new HashSet<(int, int)>();
-            for (int i = 1; i < path.Count; i++)
-                _highlightedLinks.Add(LinkKey(path[i - 1], path[i]));
-        }
-
-        private static (int, int) LinkKey(int a, int b) => a < b ? (a, b) : (b, a);
-
         // --- Edit state vs. generated ---------------------------------------------
 
-        // A node differs from the generated graph's (or isn't in it). Settled when an edit is
-        // made, so a dragged node shows as edited once it's dropped.
-        public bool IsEdited(MapNode node)
-        {
-            BuildEdits();
-            return _editedNodes.Contains(node.Id);
-        }
+        private MapEditTracker EditTracker => _editTracker ??= new MapEditTracker(this);
 
-        public bool HasEdits()
-        {
-            BuildEdits();
-            return _hasEdits;
-        }
+        // A node differs from the generated graph's (or isn't in it).
+        public bool IsEdited(MapNode node) => EditTracker.IsEdited(node);
 
-        private void BuildEdits()
-        {
-            if (_editedNodes != null) return;
-
-            MapGraph generated = _asset.Generated;
-            _editedNodes = new HashSet<int>();
-            foreach (MapNode node in Graph.Nodes)
-                if (!generated.TryGetNode(node.Id, out MapNode original) || !node.SameAs(original))
-                    _editedNodes.Add(node.Id);
-
-            _hasEdits = _editedNodes.Count > 0
-                     || generated.Nodes.Count != Graph.Nodes.Count
-                     || generated.Connections.Count != Graph.Connections.Count;
-            if (_hasEdits) return;
-
-            foreach (MapConnection connection in Graph.Connections)
-                if (!connection.SameAs(generated.GetConnection(connection.A, connection.B)))
-                {
-                    _hasEdits = true;
-                    return;
-                }
-        }
+        public bool HasEdits() => EditTracker.HasEdits();
 
         // --- Edits -----------------------------------------------------------------
 
-        public void Regenerate(string seed)
-        {
-            Record("Regenerate Map");
-            _asset.Regenerate(seed);
-            ClearSelection();
-            Changed();
-        }
+        private MapGraphEdits Edits => _edits ??= new MapGraphEdits(this);
 
-        public void RerollLayer(string layer)
-        {
-            Record($"Reroll Map {layer}");
-            _asset.RerollLayer(layer);
-            ClearSelection();
-            Changed();
-        }
-
-        // True when there's nothing to lose, or the user agreed to lose it.
-        public bool ConfirmDiscardEdits() =>
-            !HasEdits() || EditorUtility.DisplayDialog(
-                "Regenerate map?",
-                "This replaces hand edits with a freshly generated graph. Locked nodes are kept.",
-                "Regenerate", "Cancel");
-
-        public void RevertEdits()
-        {
-            Record("Revert Map Edits");
-            _asset.RevertEdits();
-            Changed();
-        }
-
-        public void AddNode(MapNodeType type, Vector2 position)
-        {
-            Record("Add Map Node");
-            MapNode node = Graph.AddNode(type, position);
-            if (_snapToGrid) node.Position = MapGraphGrid.SnapToFreeCell(Graph, node.Id, position, CellSpacing);
-            SelectNode(node.Id);
-            Changed();
-        }
-
-        public void DeleteNode(int id)
-        {
-            Record("Delete Map Node");
-            _asset.RemoveNode(id);
-            if (_selectedNodeId == id) ClearSelection();
-            Changed();
-        }
-
-        // Call once when a drag starts; MoveNode then only applies the offset. Nothing derived
-        // from the graph refreshes until EndMove, so dragging stays cheap.
-        public void BeginMove() => Record("Move Map Node");
-
-        public void MoveNode(MapNode node, Vector2 position)
-        {
-            node.Position = position;
-            EditorUtility.SetDirty(_asset);
-        }
-
-        // A position typed in: where it says, unsnapped.
-        public void SetPosition(MapNode node, Vector2 position)
-        {
-            Record("Move Map Node");
-            node.Position = position;
-            Changed();
-        }
-
-        // Ends a drag: with snapping on, the node drops into the nearest free cell. Part of
-        // the same undo step as the move.
-        public void EndMove(MapNode node)
-        {
-            if (_snapToGrid) node.Position = MapGraphGrid.SnapToFreeCell(Graph, node.Id, node.Position, CellSpacing);
-            Changed();
-        }
-
-        // Puts every node in a cell of its own, nearest first in graph order: for graphs
-        // drawn by hand before snapping, or moved with it off.
-        public void SnapAllToGrid()
-        {
-            Record("Snap Map Nodes to Grid");
-            foreach (MapNode node in Graph.Nodes)
-                node.Position = MapGraphGrid.SnapToFreeCell(Graph, node.Id, node.Position, CellSpacing);
-            Changed();
-        }
-
-        public void SetType(MapNode node, MapNodeType type)
-        {
-            Record("Change Map Node Type");
-            node.Type = type;
-            Changed();
-        }
-
-        public void SetIntensity(MapNode node, float intensity)
-        {
-            Record("Change Map Node Intensity");
-            node.Intensity = intensity;
-            Changed();
-        }
-
-        public void SetTier(MapNode node, int tier)
-        {
-            Record("Change Map Node Tier");
-            node.Tier = tier;
-            Changed();
-        }
-
-        public void SetFaction(MapNode node, int faction, float influence)
-        {
-            Record("Change Map Node Faction");
-            node.SetFaction(faction, influence);
-            Changed();
-        }
-
-        public void SetLocked(MapNode node, bool locked)
-        {
-            Record(locked ? "Lock Map Node" : "Unlock Map Node");
-            _asset.SetLocked(node.Id, locked);
-            Changed();
-        }
-
-        public void Connect(int a, int b)
-        {
-            if (Graph.AreConnected(a, b)) return;
-
-            Record("Connect Map Nodes");
-            Graph.Connect(a, b);
-            Changed();
-        }
-
-        public void Disconnect(int a, int b)
-        {
-            Record("Disconnect Map Nodes");
-            Graph.Disconnect(a, b);
-            Changed();
-        }
-
-        public void SetConnectionType(MapConnection connection, ConnectionType type)
-        {
-            Record("Change Connection Type");
-            connection.Type = type;
-            Changed();
-        }
-
-        public void SetOneWay(MapConnection connection, bool oneWay)
-        {
-            Record("Change One-Way");
-            connection.OneWay = oneWay;
-            Changed();
-        }
-
-        public void SetDirect(MapConnection connection, bool direct)
-        {
-            Record("Change Direct Door");
-            connection.Direct = direct;
-            Changed();
-        }
-
-        public void SetSection(MapNode node, int section)
-        {
-            Record("Change Map Node Section");
-            node.Section = section;
-            Changed();
-        }
-
-        public void SetCategory(MapNode node, RoomCategory category)
-        {
-            Record("Change Map Node Category");
-            node.Category = category;
-            Changed();
-        }
-
-        // Pins the place the level builds here (null = let it pick). A place of a category
-        // takes the room's category with it, so the two never disagree.
-        public void SetPlace(MapNode node, IRoomPlace place)
-        {
-            Record("Change Map Node Place");
-            node.Place = place;
-            if (place != null && place.Category != RoomCategory.None) node.Category = place.Category;
-            Changed();
-        }
-
-        public void SetModifiers(IEnumerable<MapRunModifier> modifiers)
-        {
-            Record("Change Run Modifiers");
-            _asset.SetModifiers(modifiers);
-            Changed();
-        }
+        public void Regenerate(string seed) => Edits.Regenerate(seed);
+        public void RerollLayer(string layer) => Edits.RerollLayer(layer);
+        public bool ConfirmDiscardEdits() => Edits.ConfirmDiscardEdits();
+        public void RevertEdits() => Edits.RevertEdits();
+        public void AddNode(MapNodeType type, Vector2 position) => Edits.AddNode(type, position);
+        public void DeleteNode(int id) => Edits.DeleteNode(id);
+        public void BeginMove() => Edits.BeginMove();
+        public void MoveNode(MapNode node, Vector2 position) => Edits.MoveNode(node, position);
+        public void SetPosition(MapNode node, Vector2 position) => Edits.SetPosition(node, position);
+        public void EndMove(MapNode node) => Edits.EndMove(node);
+        public void SnapAllToGrid() => Edits.SnapAllToGrid();
+        public void SetType(MapNode node, MapNodeType type) => Edits.SetType(node, type);
+        public void SetIntensity(MapNode node, float intensity) => Edits.SetIntensity(node, intensity);
+        public void SetTier(MapNode node, int tier) => Edits.SetTier(node, tier);
+        public void SetFaction(MapNode node, int faction, float influence) => Edits.SetFaction(node, faction, influence);
+        public void SetLocked(MapNode node, bool locked) => Edits.SetLocked(node, locked);
+        public void Connect(int a, int b) => Edits.Connect(a, b);
+        public void Disconnect(int a, int b) => Edits.Disconnect(a, b);
+        public void SetConnectionType(MapConnection connection, ConnectionType type) => Edits.SetConnectionType(connection, type);
+        public void SetOneWay(MapConnection connection, bool oneWay) => Edits.SetOneWay(connection, oneWay);
+        public void SetDirect(MapConnection connection, bool direct) => Edits.SetDirect(connection, direct);
+        public void SetSection(MapNode node, int section) => Edits.SetSection(node, section);
+        public void SetCategory(MapNode node, RoomCategory category) => Edits.SetCategory(node, category);
+        public void SetPlace(MapNode node, IRoomPlace place) => Edits.SetPlace(node, place);
+        public void SetModifiers(IEnumerable<MapRunModifier> modifiers) => Edits.SetModifiers(modifiers);
+        public void SetBreachFaction(MapNode node, int faction) => Edits.SetBreachFaction(node, faction);
+        public void SetLockKind(MapConnection connection, MapLockKind kind) => Edits.SetLockKind(connection, kind);
+        public void SetKeyRoom(MapConnection connection, int index, int nodeId) => Edits.SetKeyRoom(connection, index, nodeId);
+        public void RemoveKeyRoom(MapConnection connection, int nodeId) => Edits.RemoveKeyRoom(connection, nodeId);
 
         // Centres the view on a point of the graph, keeping the zoom.
         public void Focus(Vector2 world) => Pan = -world * Zoom;
-
-        public void SetBreachFaction(MapNode node, int faction)
-        {
-            Record("Change Breach Faction");
-            node.BreachFaction = faction;
-            Changed();
-        }
-
-        public void SetLockKind(MapConnection connection, MapLockKind kind)
-        {
-            Record("Change Lock Kind");
-            connection.Lock = kind;
-            Changed();
-        }
-
-        // index past the end adds a room.
-        public void SetKeyRoom(MapConnection connection, int index, int nodeId)
-        {
-            Record("Change Key Room");
-            connection.SetKeyRoom(index, nodeId);
-            Changed();
-        }
-
-        public void RemoveKeyRoom(MapConnection connection, int nodeId)
-        {
-            Record("Remove Key Room");
-            connection.RemoveKeyRoom(nodeId);
-            Changed();
-        }
-
-        private void Record(string name) => Undo.RecordObject(_asset, name);
-
-        private void Changed()
-        {
-            EditorUtility.SetDirty(_asset);
-            Invalidate();
-        }
     }
 }
