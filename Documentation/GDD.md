@@ -99,7 +99,7 @@ Games this document points to as touchstones:
 | **2. Starting Room** | Receive a random starting loadout. Craft at the hub. The room is always safe |
 | **3. Explore** | Push into the generated map. Read which reality holds each room. The way to the boss is never shown |
 | **4. Gather** | Collect resources from enemies and the environment. Each reality yields its own materials |
-| **5. Craft** | Return to the hub and turn materials into gear, consumables and upgrades |
+| **5. Craft** | Return to the hub and turn materials into gear, consumables and upgrades. Higher quality resources raise the chance of higher tier gear |
 | **6. Push** | Go back in better equipped. Complete the boss unlock conditions while rooms repopulate around you |
 | **7. Boss** | Fight the map's boss. Its reality stays unknown until you reach the boss room |
 | **8. Extract** | Victory keeps everything. Death loses everything brought and found |
@@ -142,6 +142,8 @@ The player always enters through the same docking port. The port is fixed, but t
 | **Victory** | Keep all looted gear, resources and crafted items. Everything goes to the docked ship |
 | **Death** | Lose all gear brought and everything found. The player is cloned and their memory resets. Gear stored on the docked ship is never at risk |
 
+Better gear makes runs easier but raises the stakes. The starting room hub still provides a baseline loadout each run, so stored gear supplements it and is never required.
+
 ### In the Prototype
 
 **Built.**
@@ -183,6 +185,16 @@ The set is fully random: not tailored to the map, but always viable for the earl
 Stations are always available. What the player can make depends on the materials and recipes they have found.
 
 The starting room is never contested by the realities and never repopulates.
+
+### Flow
+
+The starting room creates a rhythm:
+
+1. **Spawn**: assess the starting gear and use stations if materials allow.
+2. **Push**: venture into the map, gather resources, fight and explore.
+3. **Return**: come back to the hub with the gathered materials.
+4. **Upgrade**: craft, cook and smith with what was found.
+5. **Push again**: re-enter the map better equipped.
 
 ### In the Prototype
 
@@ -971,7 +983,7 @@ In TECH territory the ship's systems answer to TECH's central AI. Override lets 
 
 How these scale on higher difficulties is TBD.
 
-**Critical path.** The only mandatory route is Starting Room → unlock conditions → Boss Room. Everything else is optional. The critical path is invisible: no marker shows which doors lead toward the boss. Finding it is a matter of exploration and door choice.
+**Critical path.** The only mandatory route is Starting Room → unlock conditions → Boss Room, and it is the shortest route from start to boss. The boss is locked, so the unlock conditions must be found and completed first. Everything else is optional. The critical path is invisible: no marker shows which doors lead toward the boss. Finding it is a matter of exploration and door choice.
 
 **Branching.** Rooms connect into a web of branches off the critical path. Branches hold loot, encounters or dead ends. Loot rooms are not guaranteed to be on the critical path, so the first one may need a detour. No room is fully isolated.
 
@@ -1135,9 +1147,9 @@ The copy fused with the Quantum Core and became Paradise. The fusion let it thin
 
 ## The Quantum Core
 
-The heart of the CSS Paradise, also called the Paradise Core. It powered every system aboard: propulsion, life support, navigation, climate, gravity and communications. The Captain was the brain that operated the ship, the Core was the heart that kept it alive.
+The heart of the CSS Paradise, also called the Paradise Core. A quantum power system that powered every system aboard: propulsion, life support, navigation, climate, gravity and communications. The Captain was the brain that operated the ship, the Core was the heart that kept it alive.
 
-After the fusion, Paradise stopped operating the Core and started inhabiting it. Stabilization is not a command. It is a posture held from inside, continuously. Through the Core Paradise holds the balance across the whole hull, while the realities hold its rooms. Removing Paradise from the Core means the realities fall.
+After the fusion, Paradise stopped operating the Core and started inhabiting it. Stabilization is not a command. It is a posture held from inside, continuously. The Core is no longer a system Paradise runs, it is where he lives. Through the Core Paradise holds the balance across the whole hull, while the realities hold its rooms. Removing Paradise from the Core means the realities fall.
 
 ## The Three Realities
 
@@ -1349,11 +1361,11 @@ Every stat and status effect has a source in each reality. The mechanics are the
 | **Health** | Nanofiber underlays, internal wiring, structural composites | Hide, skin, flesh, feathers, leaves, vines | Wrappings, robes, ritual cloth |
 | **Armor** | Plating, alloy panels, reinforced chassis | Bone, carapace, bark, shell | Chains, shackles, bones, skulls, masks |
 | **Shields** | Energy barriers, electromagnetic fields | Regenerating membranes, secreted resin, mucus barriers | Wards, glyphs, barriers |
-| **Bleed** | Serrated munitions, fragmentation | Serrated edges, thorns, barbed spines | Ritual blades, sacrificial edges, cursed knives |
+| **Bleed** | Serrated munitions, fragmentation, armor piercing rounds | Serrated edges, thorns, barbed spines | Ritual blades, sacrificial edges, cursed knives |
 | **Poison** | Corrosive chemicals, acids | Venom, toxins, secretions | Blight, corruption, curses |
-| **Fire** | Incendiary rounds, thermite, plasma | Fire breathing organisms, volatile biological reactions | Soulfire, hellfire |
-| **Lightning** | Tesla coils, tasers, magnetics, EMP | Bioelectric organs | Arcane energy, rift surges |
-| **Ice** | Cryogenics, coolant weapons | Endothermic organisms, numbing neurotoxins | Chilling dread, freezing presence |
+| **Fire** | Incendiary rounds, thermite, plasma | Fire breathing organisms, volatile biological reactions like the bombardier beetle | Soulfire, hellfire |
+| **Lightning** | Tesla coils, tasers, magnetics, EMP | Bioelectric organs, like electric eels scaled up | Arcane energy, rift surges |
+| **Ice** | Cryogenics, coolant weapons | Endothermic organisms, numbing neurotoxins | Chilling dread, shivering fear, freezing presence |
 
 ## TECH
 
@@ -1899,6 +1911,24 @@ Places where the prototype departs from the design. Each is a decision to make:
 * **Ability source**: the design grants abilities from gear. The prototype assigns them to slots directly.
 * **Dodge cost**: the design charges stamina for dodges. The prototype uses a cooldown by default.
 * **Reality colors**: the design gives TECH warm, BIO earthy and VOID dark palettes (see Palette). The prototype's faction colors are the signal colors, and the map, minimap and Map Graph use them. Still different: the TECH wall kit uses white and blue light strips, and room floors are tinted with the signal color rather than an in world palette color.
+
+### Resolved
+
+Questions that were open earlier and now have an answer in the design.
+
+* **Genre**: extraction roguelite (see Vision).
+* **Player role**: a cloned operative with a planted memory (see The Player).
+* **Combat**: weapon wheel, abilities, melee, ranged and relic weapons (see Combat System).
+* **Resource loop**: extraction loop with crafting (see Core Loop).
+* **Tools and reality instability**: gear from three realities, UI corruption in VOID (see Combat System, UI Direction).
+* **Gear across realities**: full build freedom (see Build Freedom).
+* **Weapon switching**: four slots, each weapon with its own draw time (see Weapon Wheel).
+* **Time since the Incident**: more than a decade (see The Inhabitants).
+* **Crew size**: thousands of colonists (see World at a Glance).
+* **Native creatures and entities**: yes, per reality (see Enemies, Realities).
+* **Other characters**: inhabitants adapted to each reality (see The Inhabitants).
+* **What Paradise wants**: unknown, possibly even to him (see Paradise).
+* **VOID logic**: it has a hidden internal logic (see VOID).
 
 ---
 
