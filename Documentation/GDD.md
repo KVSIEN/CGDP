@@ -253,7 +253,7 @@ VOID relics never compete for ammo. They fill the gaps between reloads and give 
 * **TECH** melee is practical and engineered: clean, precise tools, often with a powered edge or an electric charge, in white and gray with orange or red trim. Nothing is ornamental. It looks like it came out of a security office or a lab, and the Japanese forms (a blade with a clean line, a staff, a baton) are modern and mass produced, not ceremonial.
 * **BIO** melee is the classic medieval arsenal: forged, heavy and hand made, with wood, leather and iron. It fits the faction's melee dominant role, and its shields have no counterpart in the other two.
 * **VOID** melee is American noir and classic horror: everyday objects and old tools turned into occult weapons. A stake, a crucifix, a silver blade, a fire axe from a haunted house. They are worn, kept and sometimes cursed, which suits the artifacts of this reality.
-* **Mixing is allowed.** A weapon found in a foreign reality keeps its own style, so a katana style blade on a BIO ship reads as an out of place find, and the wheel can carry all three.
+* **Weapons are loose.** Weapons are portable, so they are not locked to the faction that holds the room (see Places Are Strict, Portable Things Are Loose). A weapon keeps its own style wherever it is found, so a katana style blade on a BIO ship reads as an out of place find, and the wheel can carry all three.
 * **Respect over costume.** As with the art direction, use specific real forms rather than generic "samurai" or "knight" props, and avoid stereotype.
 
 #### Ranged Weapons
@@ -276,6 +276,8 @@ Firearms are not a TECH exclusive. Any reality can have a pistol, shotgun, rifle
 * **VOID** firearms are worn, old and a little wrong: dark metal, cracked grips, engraved symbols. Relics are the faction's other ranged option and run on cooldowns, not ammo.
 * **Gaps are on purpose.** Heavy modern weapons (LMGs, assault rifles, grenade launchers) and automatic weapons are TECH's. BIO and VOID have few of them, so each reality keeps its own pace: Bio is slow and heavy, Void is deliberate and eerie, Tech is fast and precise.
 * **Out of scope.** Weapons tied to cultures outside these three (for example scimitars, macuahuitl or boomerangs) and overtly fantasy weapons (runic swords, magic staffs) do not fit any of the aesthetics. Add one only as a deliberate exception.
+
+**Scope for the prototype.** Everything in this section is the long term direction, not a near term requirement. To keep scope small, the prototype keeps one shared weapon pool that any reality can drop, and gives each reality its own look for the same families, starting with melee and bows. Locking weapons to a faction, and tagging firearm models by era, are left for a later pass.
 
 ### Ammo
 
@@ -1625,6 +1627,14 @@ Three visual languages share one space. Each reality must be immediately readabl
 * **VOID** is the haunted, occult side of the ship, lit like noir. Smoke and fog hang in the corridors, breath shows in the cold, and light is hard and directional. Its hauntings are physical and unsettling: objects that move on their own, reflections that do not match, cold spots, whispers, shrines and ritual circles, and figures at the edge of sight. Mirrors and shrines are the signature props, and artifacts (see Relics, Curses and Rituals) are the horror made tangible. Lean on the stillness before something happens, and keep gore secondary to dread.
 * **American** is VOID's cultural lead: film noir (venetian blind light, trench coat silhouettes, smoke filled rooms, revolvers) and the haunted house and occult horror of classic American cult films.
 * **Respect over costume.** Use specific, real references (a type of ruin, a kind of shrine, a design movement) and avoid stereotype props.
+
+#### Places Are Strict, Portable Things Are Loose
+
+**Proposed.** The fracture tore the ship into three realities, and the further an object is from the place it sits in, the less it obeys them.
+
+* **Strict: places and large objects.** Architecture, wall kits, large props, machines, furniture and enemies belong to one faction. They are the reality, and a room reads as TECH, BIO or VOID from these alone.
+* **Loose: portable things.** Items, gear, consumables and weapons can come from any reality. They were carried, dropped and scattered across the ship, so a loot pile or a weapon wheel can hold all three styles. A faction's look still shows in each object, but the item is not locked to the faction that holds the room.
+* **Why:** it keeps the three realities readable at a glance, because the space says who holds it, and the loot stays varied and surprising. A foreign object in a room is a reminder of the fracture and not a mistake.
 
 ### Overlap Zones
 
