@@ -19,7 +19,7 @@ MonoBehaviour:
   _tier: 0
   _weight: 0.1
   _baseValue: 150
-  _rollProfile: {fileID: 0}
+  _rollProfile: {fileID: 11400000, guid: b1b0490851164b5b976fbdcae95bc959, type: 2}
   _statRanges: []
   _perkPool: {fileID: 11400000, guid: 46756d1ce4124b5c8905716c4d8a5986, type: 2}
   Type: 7
