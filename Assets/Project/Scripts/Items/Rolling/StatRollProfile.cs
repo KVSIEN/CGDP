@@ -87,7 +87,9 @@ namespace CGD.Items
         }
 
         // No stat may appear on two axes (Assign overwrites, so the first axis' lean is lost).
-        // Every preset pins FireRate opposite Damage to prevent uncapped TTK.
+        // Every preset keeps Damage, FireRate and Recoil on one axis with Damage or FireRate
+        // on the opposite side from the rest. A lean can then favour at most one side, so a
+        // roll can't be strong in all three at once (uncapped TTK with no kick to manage).
 
         // Punch axis splits subtypes: lean negative → fast CQB, lean positive → slow long-range.
         [ContextMenu("Axes/Standard Firearm (SMG · AR · Pistol)")]
@@ -116,7 +118,7 @@ namespace CGD.Items
             };
         }
 
-        // Punch spans semi-auto DMR → bolt-action; Range costs handling weight.
+        // Punch spans semi-auto DMR → bolt-action; Reach (range and accuracy) costs handling weight.
         [ContextMenu("Axes/Precision Rifle (Sniper · DMR · Hand cannon)")]
         public void ApplyPrecisionRifleAxes()
         {
@@ -126,19 +128,13 @@ namespace CGD.Items
                 {
                     Name  = "Punch",
                     Gains = new[] { ItemStat.Damage },
-                    Costs = new[] { ItemStat.FireRate, ItemStat.ReloadTime, ItemStat.MagazineSize },
+                    Costs = new[] { ItemStat.FireRate, ItemStat.Recoil, ItemStat.ReloadTime, ItemStat.MagazineSize },
                 },
                 new TradeoffAxis
                 {
                     Name  = "Reach",
-                    Gains = new[] { ItemStat.Range },
+                    Gains = new[] { ItemStat.Range, ItemStat.Spread },
                     Costs = new[] { ItemStat.DrawTime, ItemStat.Sway },
-                },
-                new TradeoffAxis
-                {
-                    Name  = "Precision",
-                    Gains = new[] { ItemStat.Spread },
-                    Costs = new[] { ItemStat.Recoil },
                 },
             };
         }
@@ -170,7 +166,7 @@ namespace CGD.Items
             };
         }
 
-        // Cycle spans slow pump → fast auto-shotgun; Tube costs reload; Pattern costs kick.
+        // Cycle spans slow pump → fast auto-shotgun; Tube costs reload; Pattern (a tight choke) costs draw.
         [ContextMenu("Axes/Shotgun")]
         public void ApplyShotgunAxes()
         {
@@ -180,7 +176,7 @@ namespace CGD.Items
                 {
                     Name  = "Cycle",
                     Gains = new[] { ItemStat.FireRate },
-                    Costs = new[] { ItemStat.Damage, ItemStat.DrawTime },
+                    Costs = new[] { ItemStat.Damage, ItemStat.Recoil },
                 },
                 new TradeoffAxis
                 {
@@ -192,7 +188,7 @@ namespace CGD.Items
                 {
                     Name  = "Pattern",
                     Gains = new[] { ItemStat.Spread },
-                    Costs = new[] { ItemStat.Recoil },
+                    Costs = new[] { ItemStat.DrawTime },
                 },
             };
         }
