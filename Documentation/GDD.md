@@ -279,7 +279,24 @@ Firearms are not a TECH exclusive. Any reality can have a pistol, shotgun, rifle
 
 **Scope for the prototype.** Everything in this section is the long term direction, not a near term requirement. To keep scope small, the prototype keeps one shared weapon pool that any reality can drop, and gives each reality its own look for the same families, starting with melee and bows. Locking weapons to a faction, and tagging firearm models by era, are left for a later pass.
 
-### Ammo
+#### BIO: Black Powder Era Firearms
+
+**Proposed.** BIO's firearms are the black powder era as a whole, from the first hand cannons up to the arrival of smokeless powder in the 1880s, not only flintlocks and cannons. The rule is simple: if it burns black powder, it can be a BIO gun. This widens the BIO column of the ranged weapons table above, which only lists the earliest guns. The era spans hand made, European designs, so BIO has a firearm for most categories.
+
+| Category | BIO examples |
+|----------|--------------|
+| **Pistol** | Flintlock and wheellock pistols, cap and ball revolvers, pinfire revolvers |
+| **SMG** | Pepperbox, Nordenfelt style volley guns, multi barrel hand guns |
+| **Assault rifle** | Matchlock arquebus, Ferguson breech loader, Dreyse needle gun, Martini-Henry |
+| **DMR** | Sharps rifle, Whitworth rifle, Girandoni air rifle (a period repeater that runs on air, not powder) |
+| **Sniper** | Long rifle, jezail, fowling piece, Whitworth rifle |
+| **Shotgun** (later) | Blunderbuss, double barrel fowler |
+| **LMG** (later) | Hand cannon, ribauldequin, hand cranked Gatling gun |
+
+* **Slow and heavy.** Black powder guns hit hard and are loud, but they load slowly and give off smoke. They suit BIO's melee dominant role as an expensive, deliberate answer to the bow and crossbow, which remain the core of its ranged kit.
+* **Hand made look.** The guns follow BIO's art direction: iron, wood and leather, weathered and overgrown, never clean or uniform.
+* **Ammo.** They draw on the shared bullets pool like every other firearm.
+
 
 | Ammo | Source | Used by |
 |------|--------|---------|
