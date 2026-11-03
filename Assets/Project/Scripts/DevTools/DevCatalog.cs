@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using CGD.Items;
 using CGD.Player;
@@ -32,7 +33,7 @@ namespace CGD.DevTools
             error = null;
             string key = Normalize(query);
             T partial = null;
-            int partialCount = 0;
+            var partialNames = new List<string>();
 
             foreach (T option in options)
             {
@@ -43,12 +44,32 @@ namespace CGD.DevTools
                 if (!a.Contains(key) && !b.Contains(key)) continue;
 
                 partial = option;
-                partialCount++;
+                partialNames.Add(Token(option, displayName));
             }
 
-            if (partialCount == 1) return partial;
-            error = partialCount == 0 ? $"Nothing called '{query}'." : $"'{query}' matches {partialCount} entries — be more specific.";
+            if (partialNames.Count == 1) return partial;
+            error = partialNames.Count == 0
+                ? $"Nothing called '{query}'."
+                : $"'{query}' matches {partialNames.Count} entries ({string.Join(", ", partialNames.Take(6))}{(partialNames.Count > 6 ? ", …" : "")}) — be more specific.";
             return null;
+        }
+
+        // The one-word form of an option — what the console completes to and /list prints.
+        // Spaces are dropped because Find ignores them, so it never needs quoting.
+        public static string Token<T>(T option, Func<T, string> displayName) where T : UnityEngine.Object
+        {
+            string display = displayName?.Invoke(option);
+            return (string.IsNullOrEmpty(display) ? option.name : display).Replace(" ", "");
+        }
+
+        public static List<string> Tokens<T>(IReadOnlyList<T> options, Func<T, string> displayName) where T : UnityEngine.Object
+        {
+            var tokens = new List<string>();
+            if (options == null) return tokens;
+
+            foreach (T option in options)
+                if (option != null) tokens.Add(Token(option, displayName));
+            return tokens;
         }
 
         private static string Normalize(string text) =>

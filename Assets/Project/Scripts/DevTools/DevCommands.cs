@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -49,19 +50,64 @@ namespace CGD.DevTools
 
         private void RegisterAll()
         {
-            Console.Register("give",      "<item> [count]",           "Add items to the inventory (gear is rolled)", Give);
-            Console.Register("weapon",    "<category> [seed] [tier] [layer:variant…]", "Add a generated weapon — same seed, tier and layers give the same gun", Weapon);
-            Console.Register("reroll",    "<layer>",                  "Reroll one seed layer of the weapon in hand; the rest stays the same", Reroll);
-            Console.Register("spawn",     "<enemy> [count]",          "Spawn enemies where you're looking", Spawn);
-            Console.Register("god",       "[on|off]",                 "Toggle taking no damage", God);
+            Console.Register("give",      "<item> [count]",           "Add items to the inventory (gear is rolled)", Give,
+                example: "/give scrap 20",
+                complete: (_, i) => i == 0 ? DevCatalog.Tokens(_catalog != null ? _catalog.Items : null, d => d.DisplayName) : null);
+            Console.Register("weapon",    "<category> [seed] [tier] [layer:variant…]", "Add a generated weapon — same seed, tier and layers give the same gun", Weapon,
+                example: "/weapon sniper 42 legendary",
+                complete: WeaponOptions);
+            Console.Register("reroll",    "<layer>",                  "Reroll one seed layer of the weapon in hand; the rest stays the same", Reroll,
+                example: "/reroll stats",
+                complete: (_, i) => i == 0 ? HeldWeaponLayers() : null);
+            Console.Register("spawn",     "<enemy> [count]",          "Spawn enemies where you're looking", Spawn,
+                example: "/spawn husk 3",
+                complete: (_, i) => i == 0 ? DevCatalog.Tokens(_catalog != null ? _catalog.Enemies : null, null) : null);
+            Console.Register("god",       "[on|off]",                 "Toggle taking no damage", God,
+                complete: (_, i) => i == 0 ? OnOff : null);
             Console.Register("heal",      "",                         "Restore full health", _ => Heal());
-            Console.Register("cloak",     "[seconds]",                "Become hidden anywhere for a while", Cloak);
-            Console.Register("buff",      "<preset> [seconds]",       "Apply a stat modifier preset for a while", Buff);
-            Console.Register("dodge",     "[type]",                   "Show or switch the dodge type", Dodge);
-            Console.Register("timescale", "<scale>",                  "Set game speed (1 = normal)", TimeScale);
+            Console.Register("cloak",     "[seconds]",                "Become hidden anywhere for a while", Cloak,
+                example: "/cloak 60");
+            Console.Register("buff",      "<preset> [seconds]",       "Apply a stat modifier preset for a while", Buff,
+                example: "/buff damage 10",
+                complete: (_, i) => i == 0 ? DevCatalog.Tokens(_catalog != null ? _catalog.Buffs : null, null) : null);
+            Console.Register("dodge",     "[type]",                   "Show or switch the dodge type", Dodge,
+                example: "/dodge roll",
+                complete: (_, i) => i == 0 ? DevCatalog.Tokens(_catalog != null ? _catalog.Dodges : null, d => d.DisplayName) : null);
+            Console.Register("timescale", "<scale>",                  "Set game speed (1 = normal)", TimeScale,
+                example: "/timescale 0.5",
+                complete: (_, i) => i == 0 ? TimeScales : null);
             Console.Register("revealmap", "",                         "Uncover all fog of war", _ => RevealMap());
-            Console.Register("quest",     "list | start <q> | step <q> <n> | complete <q>", "Inspect or jump quest progress", Quest);
-            Console.Register("list",      "items|weapons|enemies|buffs|dodges", "Show what the catalog can hand out", List);
+            Console.Register("quest",     "list | start <q> | step <q> <n> | complete <q>", "Inspect or jump quest progress", Quest,
+                example: "/quest step main 2",
+                complete: QuestOptions);
+            Console.Register("list",      "items|weapons|enemies|buffs|dodges", "Show what the catalog can hand out — the names printed are what you type", ListCatalog,
+                example: "/list weapons",
+                complete: (_, i) => i == 0 ? ListKinds : null);
+        }
+
+        private static readonly string[] OnOff      = { "on", "off" };
+        private static readonly string[] TimeScales = { "0.25", "0.5", "1", "2", "5" };
+        private static readonly string[] ListKinds  = { "items", "weapons", "enemies", "buffs", "dodges" };
+        private static readonly string[] QuestVerbs = { "list", "start", "step", "complete" };
+
+        // --- Completion ------------------------------------------------------------
+
+        private IEnumerable<string> WeaponOptions(string[] previous, int index)
+        {
+            if (index == 0) return DevCatalog.Tokens(_catalog != null ? _catalog.Weapons : null, c => c.DisplayName);
+            if (index == 2) return Enum.GetNames(typeof(ItemTier));
+            return null;
+        }
+
+        private IEnumerable<string> HeldWeaponLayers() =>
+            _loadout != null && _loadout.Active != null && _loadout.Active.Definition is WeaponCategory category ? category.SeedLayers : null;
+
+        private IEnumerable<string> QuestOptions(string[] previous, int index)
+        {
+            if (index == 0) return QuestVerbs;
+            if (index != 1 || _quests == null || Is(previous[0], "list")) return null;
+
+            return _quests.Log.Quests.Select(q => DevCatalog.Token(q.Definition, d => d.Title));
         }
 
         // --- Items -----------------------------------------------------------------
@@ -71,7 +117,7 @@ namespace CGD.DevTools
             if (args.Length < 1) throw new UsageException();
             if (!Need(_inventory, "PlayerInventory", out string missing)) return missing;
 
-            ItemDefinition item = Find(_catalog != null ? _catalog.Items : null, args[0], i => i.DisplayName, out string error);
+            ItemDefinition item = Find(_catalog != null ? _catalog.Items : null, args[0], i => i.DisplayName, "items", out string error);
             if (item == null) return error;
 
             int count = args.Length > 1 ? ParseInt(args[1]) : 1;
@@ -88,7 +134,7 @@ namespace CGD.DevTools
             if (args.Length < 1) throw new UsageException();
             if (!Need(_loadout, "PlayerWeaponLoadout", out string missing)) return missing;
 
-            WeaponCategory category = Find(_catalog != null ? _catalog.Weapons : null, args[0], c => c.DisplayName, out string error);
+            WeaponCategory category = Find(_catalog != null ? _catalog.Weapons : null, args[0], c => c.DisplayName, "weapons", out string error);
             if (category == null) return error;
 
             Seed seed = args.Length > 1 ? Seed.Parse(args[1]) : Seed.Random();
@@ -137,7 +183,7 @@ namespace CGD.DevTools
         {
             if (args.Length < 1) throw new UsageException();
 
-            GameObject prefab = Find(_catalog != null ? _catalog.Enemies : null, args[0], null, out string error);
+            GameObject prefab = Find(_catalog != null ? _catalog.Enemies : null, args[0], null, "enemies", out string error);
             if (prefab == null) return error;
 
             int count = args.Length > 1 ? Mathf.Clamp(ParseInt(args[1]), 1, 50) : 1;
@@ -201,7 +247,7 @@ namespace CGD.DevTools
             if (args.Length < 1) throw new UsageException();
             if (!Need(_stats, "CharacterStats", out string missing)) return missing;
 
-            StatModifierPreset preset = Find(_catalog != null ? _catalog.Buffs : null, args[0], null, out string error);
+            StatModifierPreset preset = Find(_catalog != null ? _catalog.Buffs : null, args[0], null, "buffs", out string error);
             if (preset == null) return error;
 
             float seconds = args.Length > 1 ? ParseFloat(args[1]) : 30f;
@@ -215,7 +261,7 @@ namespace CGD.DevTools
             if (args.Length == 0)
                 return dodge.Definition != null ? $"Dodge: {dodge.Definition.name}. Switch with dodge <type> (see list dodges)." : "No dodge type set.";
 
-            DodgeDefinition definition = Find(_catalog != null ? _catalog.Dodges : null, args[0], d => d.DisplayName, out string error);
+            DodgeDefinition definition = Find(_catalog != null ? _catalog.Dodges : null, args[0], d => d.DisplayName, "dodges", out string error);
             if (definition == null) return error;
 
             dodge.Definition = definition;
@@ -283,25 +329,41 @@ namespace CGD.DevTools
 
         // --- Catalog ---------------------------------------------------------------
 
-        private string List(string[] args)
+        private string ListCatalog(string[] args)
         {
-            if (args.Length < 1) throw new UsageException();
+            if (args.Length < 1) return $"Pick one: {string.Join(", ", ListKinds)}. Try /list weapons.";
             if (_catalog == null) return "Assign a DevCatalog to DevCommands.";
 
-            var text = new StringBuilder();
-            if (Is(args[0], "items"))        foreach (var i in _catalog.Items)   { if (i != null) text.Append(i.name).Append("  (").Append(i.DisplayName).Append(")\n"); }
-            else if (Is(args[0], "weapons")) foreach (var w in _catalog.Weapons) { if (w != null) text.Append(w.name).Append('\n'); }
-            else if (Is(args[0], "enemies")) foreach (var e in _catalog.Enemies) { if (e != null) text.Append(e.name).Append('\n'); }
-            else if (Is(args[0], "buffs"))   foreach (var b in _catalog.Buffs)   { if (b != null) text.Append(b.name).Append('\n'); }
-            else if (Is(args[0], "dodges"))  foreach (var d in _catalog.Dodges)  { if (d != null) text.Append(d.name).Append("  (").Append(d.DisplayName).Append(")\n"); }
-            else throw new UsageException();
+            List<string> names =
+                Is(args[0], "items")   ? ListNames(_catalog.Items, i => i.DisplayName)
+                : Is(args[0], "weapons") ? ListNames(_catalog.Weapons, w => w.DisplayName)
+                : Is(args[0], "enemies") ? ListNames(_catalog.Enemies, null)
+                : Is(args[0], "buffs")   ? ListNames(_catalog.Buffs, null)
+                : Is(args[0], "dodges")  ? ListNames(_catalog.Dodges, d => d.DisplayName)
+                : throw new UsageException();
 
-            return text.Length > 0 ? text.ToString().TrimEnd() : "(empty)";
+            return names.Count > 0 ? string.Join("\n", names) : "(empty)";
+        }
+
+        // One line per entry: the word to type, and the display name when it differs.
+        private static List<string> ListNames<T>(IReadOnlyList<T> options, Func<T, string> displayName) where T : UnityEngine.Object
+        {
+            var lines = new List<string>();
+            foreach (T option in options)
+            {
+                if (option == null) continue;
+
+                string token   = DevCatalog.Token(option, displayName);
+                string display = displayName?.Invoke(option);
+                lines.Add(string.IsNullOrEmpty(display) || display == token ? token : $"{token}  ({display})");
+            }
+            return lines;
         }
 
         // --- Helpers ---------------------------------------------------------------
 
-        private T Find<T>(System.Collections.Generic.IReadOnlyList<T> options, string query, Func<T, string> displayName, out string error)
+        // On a miss, points at the matching /list so the player can see what is available.
+        private T Find<T>(IReadOnlyList<T> options, string query, Func<T, string> displayName, string listKind, out string error)
             where T : UnityEngine.Object
         {
             if (options == null)
@@ -309,7 +371,10 @@ namespace CGD.DevTools
                 error = "Assign a DevCatalog to DevCommands.";
                 return null;
             }
-            return DevCatalog.Find(options, query, displayName, out error);
+
+            T found = DevCatalog.Find(options, query, displayName, out error);
+            if (found == null) error += $" Type /list {listKind} to see them.";
+            return found;
         }
 
         private Vector3 SpawnPoint()

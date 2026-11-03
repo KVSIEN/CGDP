@@ -724,13 +724,16 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - Included recipes: Bandage ×2 (2 Cloth), Combat Stim (4 Scrap Metal, 1 Cloth), Extended Magazine (12 Scrap Metal), Combat Vest (20 Scrap Metal, 6 Cloth)
 
 ## Dev Console
-- Backquote (`) opens a console in development builds; commands start with a slash (`/help`), with history (Up/Down) and Tab completion. Escape closes it
+- Backquote (`) opens a console in development builds; commands start with a slash (`/help`), with history (Up/Down). Escape closes it
+- Auto-suggest: a hint line under the input shows the command being typed and the options for the word you're on — weapon categories, items, enemies, tiers, quest names, seed layers, `on`/`off` and so on. Tab fills in a single match or the start the matches share; pressing it again steps through them. If nothing starts with what you typed, it looks for names containing it
+- `/help` lists every command; `/help <command>` adds an example and the options for its first argument. A wrong command suggests the closest ones ("Did you mean /weapon?"), and wrong arguments print the usage with an example
+- `/list` shows exactly what you can type (`/list weapons` → `AssaultRifle`, `Sniper`, …). Names never need quotes: spaces are ignored, so `/weapon assaultrifle` works. A name that matches several entries lists them
 - While the console is open every other keybind is muted, so typing a letter never triggers a hotkey like the inventory, map or weapon slots
 - `/give <item> [count]`, `/weapon <category> [seed] [tier] [layer:variant…]` (same seed, tier and layers = same gun), `/spawn <enemy> [count]`
 - `/reroll <layer>` rerolls one seed layer (`quality`, `stats`, `perks`, or the character layer: `weapon` for guns, `melee` for melee weapons) of the weapon in hand and keeps everything else; it prints the seed with its rerolled layers (e.g. `seed 123 stats:2`), which `/weapon` takes back to rebuild that exact gun. Attachments and the loaded magazine don't carry over
 - `/god`, `/heal`, `/buff <preset> [seconds]`, `/timescale <x>`, `/revealmap`, `/cloak [seconds]`, `/dodge [type]` (switch dodge style to try them out)
 - `/quest list`, `/quest start|complete <quest>`, `/quest step <quest> <n>` to jump straight to any objective
-- Names can be partial ("/give scrap 20")
+- Names can be partial ("/give scrap 20", "/weapon sniper 42 legendary")
 
 ## Minimap & World Map
 - A round minimap in the top-right corner shows the area around the player, turning with the view so the player arrow always points up (or fixed north-up, per setting)
