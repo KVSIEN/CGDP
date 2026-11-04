@@ -335,12 +335,12 @@ Starting setup is *Mixed, tier 1*: dummy *n* plays the first faction's enemy, th
 | Condition lock | `ConditionLock` (on the door's object) | `_label` (shown as "Label 1/2"), `_required` (0 = all `_signals`), `_signals`? = `QuestSignal`s that each count once, `_onOpened`?. Other sources: a `LockTerminal`, or any UnityEvent calling `ConditionLock.Satisfy` with its own object as the argument (e.g. an `EventInteractable`'s `_onInteract`) — each distinct object counts once |
 | Terminal | Collider, `LockTerminal` | `_lock` = the door's `ConditionLock`, `_label`, `_holdDuration`, `_indicator`? (Renderer tinted Off/On). Ready-made: `Prefabs/Environment/Level/LockTerminal` |
 | Switch | Collider, `Switch` | `_label`, `_doors` |
-| Anything else | Collider, `EventInteractable` | `_label`, `_requirement`?, `_onInteract` event |
+| Anything else | Collider, `EventInteractable` | `_label`, `_requirement`?, `_onInteract` event; `_holdDuration` to hold the key, or tick `_mash` (with `_tapsRequired`, `_tapDecayPerSecond`) to tap it repeatedly instead |
 | Chest | Collider, `LootContainer`, `LootDropper` | Untick the dropper's `_dropOnDeath`. Ready-made by type in `Prefabs/Environment/Loot/` (copies of `RewardCache`, each with its own `_label`, body colour and `_table` from `Data/Loot/Containers/`): `WeaponCrate`, `EquipmentLocker`, `ConsumableCase`, `ResourceCrate`, `MunitionsCrate`, `GlobalChest`; the dropper's `_subtypes` on the first four use the filters in `Data/Loot/Filters/` (none on the resource crate and chest). Place them as a room rule's *Centerpiece*, *Dressing* or *Offerings*, an encounter's reward, or by hand |
 | Breakable crate | solid Collider, `Destructible`, `LootDropper`, `DespawnOnDeath` | `_maxHealth`; `_delay` 0 |
 | Crafting station | Collider, `CraftingStation` | `_label`, `_recipes` = recipe assets (e.g. all of `Data/Crafting/`) |
 | Ammo cache | solid Collider, `AmmoCache` | `_munitions` = all four munition assets, `_uses`, `_magazines`, `_contents`? = the visible ammo. Ready-made: `Prefabs/Environment/Props/AmmoCache`. |
-| Resource node | solid Collider, `ResourceNode` | `_resource`? (empty = placeholder, yields nothing), `_amount`, `_harvests`, `_holdDuration`, `_visual`?. Ready-made: `Prefabs/Environment/Props/ResourceNode`. |
+| Resource node | solid Collider, `ResourceNode` | `_resource`? (empty = placeholder, yields nothing), `_amount`, `_harvests`, `_holdDuration` (or tick `_mash` with `_tapsRequired`, `_tapDecayPerSecond` to hack at it by tapping), `_visual`?. Ready-made: `Prefabs/Environment/Props/ResourceNode`. |
 
 - Add **InteractionHighlight**? to any interactable to tint it while aimed at (URP Lit/Unlit).
 - Add **CullableObject** to world meshes that should be culled off-screen.

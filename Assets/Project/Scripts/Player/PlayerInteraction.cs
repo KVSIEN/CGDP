@@ -8,7 +8,7 @@ namespace CGD.Player
 {
     // Picks the interactable the player is looking at most directly within range (higher
     // InteractPriority first) and triggers it on the Interact key — instantly, or after
-    // holding the key for the target's HoldDuration. Focus listeners on the target are
+    // holding the key for the target's HoldDuration or tapping it repeatedly (mashing). Focus listeners on the target are
     // told when it gains and loses focus, for highlights and similar feedback.
     [RequireComponent(typeof(PlayerInputHandler))]
     public class PlayerInteraction : MonoBehaviour
@@ -30,10 +30,14 @@ namespace CGD.Player
         public string        TargetLabel    => _current != null ? _current.GetInteractLabel(gameObject) : string.Empty;
         public IInteractable Current        => _current;
         public Vector3       TargetPosition => _currentCollider != null ? _currentCollider.transform.position : Vector3.zero;
-        // 0..1 while holding the key on a hold interaction; 0 otherwise.
-        public float   HoldProgress   => _current != null && _current.HoldDuration > 0f
-            ? Mathf.Clamp01(_holdTimer / _current.HoldDuration)
-            : 0f;
+        // How the target is used, so the prompt can say so.
+        public InteractionStyle TargetStyle => _current != null ? _current.Style : InteractionStyle.Press;
+
+        // 0..1 while holding or mashing toward finishing the target; 0 for a plain press.
+        public float   EffortProgress => TargetStyle != InteractionStyle.Press ? _effort.Progress : 0f;
+
+        // Counts every tap made on a mash target, for feedback that reacts to each one.
+        public int     TapCount       { get; private set; }
 
         // The target changed, or the current one was used (its label may have changed,
         // e.g. a door that now opens instead of closes). Lets UI rebuild the label only then.
@@ -42,8 +46,7 @@ namespace CGD.Player
         private PlayerInputHandler _input;
         private IInteractable      _current;
         private Collider           _currentCollider;
-        private float              _holdTimer;
-        private bool               _holdCompleted;
+        private readonly EffortMeter _effort = new();
         private Camera             _camera;
         private readonly Plane[]   _frustum = new Plane[6];
 
@@ -73,33 +76,32 @@ namespace CGD.Player
 
             if (_current == null) return;
 
-            if (_current.HoldDuration <= 0f)
+            switch (_current.Style)
             {
-                if (_input.GetAction(GameAction.Interact))
-                    Use();
-                return;
-            }
+                case InteractionStyle.Hold:
+                    // One completion per press: the key must be released before holding again.
+                    if (_effort.Hold(_input.IsHeld(GameAction.Interact), _current.HoldDuration, Time.deltaTime))
+                        Use();
+                    break;
 
-            TickHold();
+                case InteractionStyle.Mash:
+                    TickMash();
+                    break;
+
+                default:
+                    if (_input.GetAction(GameAction.Interact))
+                        Use();
+                    break;
+            }
         }
 
-        private void TickHold()
+        private void TickMash()
         {
-            if (!_input.IsHeld(GameAction.Interact))
-            {
-                ResetHold();
-                return;
-            }
+            _effort.Drain(_current.TapDecayPerSecond, Time.deltaTime);
+            if (!_input.WasPressed(GameAction.Interact)) return;
 
-            // One completion per press: the key must be released before holding again.
-            if (_holdCompleted) return;
-
-            _holdTimer += Time.deltaTime;
-            if (_holdTimer < _current.HoldDuration) return;
-
-            _holdCompleted = true;
-            _holdTimer     = 0f;
-            Use();
+            TapCount++;
+            if (_effort.Tap(_current.TapsRequired)) Use();
         }
 
         private void Use()
@@ -108,11 +110,7 @@ namespace CGD.Player
             TargetChanged?.Invoke();
         }
 
-        private void ResetHold()
-        {
-            _holdTimer     = 0f;
-            _holdCompleted = false;
-        }
+        private void ResetHold() => _effort.Reset();
 
         private void FindBest()
         {

@@ -19,6 +19,16 @@ namespace CGD.Interaction
         // Seconds the Interact key must be held before Interact fires; 0 = on press.
         float HoldDuration => 0f;
 
+        // How the key is used. Unless an interactable says otherwise: a hold when it has a
+        // HoldDuration, a single press when it has none. Mash needs TapsRequired.
+        InteractionStyle Style => HoldDuration > 0f ? InteractionStyle.Hold : InteractionStyle.Press;
+
+        // Mash only: taps that complete the effort.
+        int TapsRequired => 5;
+
+        // Mash only: share of the bar lost per second once the player stops tapping (0 = never).
+        float TapDecayPerSecond => 0.3f;
+
         // Breaks ties between overlapping interactables: higher wins before look direction
         // is considered (e.g. a keycard lying in front of the door it opens).
         int InteractPriority => 0;

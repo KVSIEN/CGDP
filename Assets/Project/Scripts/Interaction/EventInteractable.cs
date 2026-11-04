@@ -13,6 +13,12 @@ namespace CGD.Interaction
         [SerializeField] private string _label = "Use";
         [Tooltip("Seconds the Interact key must be held (0 = instant)")]
         [SerializeField, Min(0f)] private float _holdDuration;
+        [Tooltip("Tap Interact repeatedly instead of holding it: breaking down a barricade, forcing a door. Overrides Hold Duration")]
+        [SerializeField] private bool _mash;
+        [Tooltip("Mash only: taps that complete it")]
+        [SerializeField, Min(1)] private int _tapsRequired = 6;
+        [Tooltip("Mash only: share of the bar lost per second once the player stops tapping (0 = never)")]
+        [SerializeField, Min(0f)] private float _tapDecayPerSecond = 0.3f;
         [Tooltip("Higher wins when several interactables overlap")]
         [SerializeField] private int _priority;
 
@@ -34,6 +40,11 @@ namespace CGD.Interaction
 
         public float HoldDuration     => _holdDuration;
         public int   InteractPriority => _priority;
+
+        public InteractionStyle Style =>
+            _mash ? InteractionStyle.Mash : _holdDuration > 0f ? InteractionStyle.Hold : InteractionStyle.Press;
+        public int   TapsRequired      => _tapsRequired;
+        public float TapDecayPerSecond => _tapDecayPerSecond;
 
         public bool CanInteract(GameObject interactor) =>
             !(_singleUse && _used) && Time.time >= _readyTime;

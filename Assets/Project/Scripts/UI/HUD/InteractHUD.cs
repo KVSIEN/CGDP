@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using CGD.Input;
+using CGD.Interaction;
 using CGD.Player;
 
 namespace CGD.UI
@@ -22,7 +23,14 @@ namespace CGD.UI
         private GameObject      _worldPrompt;
         private TextMeshProUGUI _labelText;
         private TextMeshProUGUI _keyText;
-        private RectTransform   _holdBar;
+        private RectTransform   _keyBadge;
+        private RectTransform   _effortBar;
+
+        // Each tap of a mash swells the key badge, which settles back.
+        private const float PulseSize  = 0.3f;
+        private const float PulseSpeed = 7f;
+        private float _pulse;
+        private int   _shownTaps;
 
         private void Awake()
         {
@@ -51,7 +59,11 @@ namespace CGD.UI
 
         private void RefreshKey() => _keyText.text = KeyOf(GameAction.Interact);
 
-        private void RefreshLabel() => _labelText.text = _interaction.TargetLabel;
+        private void RefreshLabel()
+        {
+            string label = _interaction.TargetLabel;
+            _labelText.text = _interaction.TargetStyle == InteractionStyle.Mash ? label + "  — mash" : label;
+        }
 
         private void BuildWorldPrompt()
         {
@@ -77,6 +89,7 @@ namespace CGD.UI
 
             // Key badge
             var keyBg = UIFactory.MakeImage("KeyBg", rt, layer);
+            _keyBadge = keyBg.rectTransform;
             keyBg.color = Theme.AccentStrong.WithAlpha(0.92f);
             keyBg.rectTransform.anchorMin        = new Vector2(0f, 0f);
             keyBg.rectTransform.anchorMax        = new Vector2(0f, 1f);
@@ -104,13 +117,13 @@ namespace CGD.UI
             _labelText.rectTransform.anchoredPosition = new Vector2(keySize + 12f, 0f);
             _labelText.rectTransform.sizeDelta        = new Vector2(-(keySize + 20f), 0f);
 
-            // Hold progress bar
-            var hold = UIFactory.MakeImage("HoldProgress", rt, layer);
-            hold.color = Theme.Accent.WithAlpha(0.95f);
-            _holdBar = hold.rectTransform;
-            _holdBar.anchorMin = Vector2.zero;
-            _holdBar.anchorMax = new Vector2(0f, 0.1f);
-            _holdBar.offsetMin = _holdBar.offsetMax = Vector2.zero;
+            // Progress bar for holding or mashing
+            var effort = UIFactory.MakeImage("EffortProgress", rt, layer);
+            effort.color = Theme.Accent.WithAlpha(0.95f);
+            _effortBar = effort.rectTransform;
+            _effortBar.anchorMin = Vector2.zero;
+            _effortBar.anchorMax = new Vector2(0f, 0.1f);
+            _effortBar.offsetMin = _effortBar.offsetMax = Vector2.zero;
         }
 
         private void LateUpdate()
@@ -127,7 +140,8 @@ namespace CGD.UI
             if (_cam == null) _cam = Camera.main;
             if (_cam == null) return;
 
-            _holdBar.anchorMax = new Vector2(_interaction.HoldProgress, 0.1f);
+            _effortBar.anchorMax = new Vector2(_interaction.EffortProgress, 0.1f);
+            PulseOnTaps();
 
             Vector3 targetPos = _interaction.TargetPosition + Vector3.up * _yOffset;
             float   dist      = Vector3.Distance(_cam.transform.position, targetPos);
@@ -136,6 +150,18 @@ namespace CGD.UI
             _worldPrompt.transform.position   = targetPos;
             _worldPrompt.transform.rotation   = _cam.transform.rotation;
             _worldPrompt.transform.localScale = Vector3.one * unitPerPx;
+        }
+
+        private void PulseOnTaps()
+        {
+            if (_interaction.TapCount != _shownTaps)
+            {
+                _shownTaps = _interaction.TapCount;
+                _pulse = 1f;
+            }
+
+            _pulse = Mathf.MoveTowards(_pulse, 0f, PulseSpeed * Time.unscaledDeltaTime);
+            _keyBadge.localScale = Vector3.one * (1f + PulseSize * _pulse);
         }
 
         public override void Hide()

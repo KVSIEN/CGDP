@@ -7,8 +7,8 @@ using CGD.Quests;
 
 namespace CGD.Interaction
 {
-    // A spot to gather crafting material from by holding Interact, a few times before it's
-    // spent. Placeholder for now: which resource a node gives isn't decided yet, so with
+    // A spot to gather crafting material from by holding Interact (or mashing it), a few times
+    // before it's spent. Placeholder for now: which resource a node gives isn't decided yet, so with
     // no Resource set it can be found and harvested but yields nothing.
     // How much each harvest gives rolls from the node's seed when it was given one.
     [RequireComponent(typeof(Collider))]
@@ -19,6 +19,12 @@ namespace CGD.Interaction
         [SerializeField] private IntRange _amount = new(2, 4);
         [SerializeField, Min(1)] private int _harvests = 3;
         [SerializeField, Min(0f)] private float _holdDuration = 1.5f;
+        [Tooltip("Tap Interact repeatedly instead of holding it (hacking at the node). Overrides Hold Duration")]
+        [SerializeField] private bool _mash;
+        [Tooltip("Mash only: taps per harvest")]
+        [SerializeField, Min(1)] private int _tapsRequired = 6;
+        [Tooltip("Mash only: share of the bar lost per second once the player stops tapping (0 = never)")]
+        [SerializeField, Min(0f)] private float _tapDecayPerSecond = 0.3f;
         [Tooltip("Optional — hidden once the node is spent")]
         [SerializeField] private GameObject _visual;
 
@@ -47,6 +53,11 @@ namespace CGD.Interaction
         }
 
         public float HoldDuration => _holdDuration;
+
+        public InteractionStyle Style =>
+            _mash ? InteractionStyle.Mash : _holdDuration > 0f ? InteractionStyle.Hold : InteractionStyle.Press;
+        public int   TapsRequired      => _tapsRequired;
+        public float TapDecayPerSecond => _tapDecayPerSecond;
 
         private void Awake()
         {
