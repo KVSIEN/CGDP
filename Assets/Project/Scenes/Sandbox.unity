@@ -6406,8 +6406,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a614837cc3f4d19a4834563272bbe30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.FiringRange.DamageReadout
+  _range: {fileID: 6100000000000000003}
   _size: {x: 300, y: 150}
-  _padding: {x: 24, y: 24}
+  _edgePadding: 24
 --- !u!1 &6500000000000000001
 GameObject:
   m_ObjectHideFlags: 0

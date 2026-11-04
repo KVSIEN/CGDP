@@ -13,8 +13,11 @@ namespace CGD.FiringRange
     {
         private static readonly Color HeadColor = new(1f, 0.45f, 0.35f);
 
-        [SerializeField] private Vector2 _size    = new(300f, 150f);
-        [SerializeField] private Vector2 _padding = new(24f, 24f);
+        [Tooltip("Clears the readout when its Reset switch is used")]
+        [SerializeField] private RangeControl _range;
+        [SerializeField] private Vector2 _size = new(300f, 150f);
+        [Tooltip("Gap from the left edge of the screen; the panel sits halfway up, clear of the corner HUD")]
+        [SerializeField] private float _edgePadding = 24f;
 
         private readonly DamageTally _tally = new();
         private TextMeshProUGUI _text;
@@ -24,10 +27,21 @@ namespace CGD.FiringRange
         private void OnEnable()
         {
             CombatEvents.DamageDealt += OnDamageDealt;
-            Show(null);
+            if (_range != null) _range.DummiesRestored += Clear;
+            Clear();
         }
 
-        private void OnDisable() => CombatEvents.DamageDealt -= OnDamageDealt;
+        private void OnDisable()
+        {
+            CombatEvents.DamageDealt -= OnDamageDealt;
+            if (_range != null) _range.DummiesRestored -= Clear;
+        }
+
+        private void Clear()
+        {
+            _tally.Clear();
+            Show(null);
+        }
 
         private void OnDamageDealt(DamageReport report)
         {
@@ -70,8 +84,10 @@ namespace CGD.FiringRange
 
             var panel = UIFactory.MakeImage("Panel", (RectTransform)canvasObject.transform);
             panel.color = new Color(0f, 0f, 0f, 0.55f);
-            UIFactory.AnchorToCorner(panel.rectTransform, new Vector2(0f, 0f), _padding);
-            panel.rectTransform.sizeDelta = _size;
+            RectTransform rect = panel.rectTransform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0f, 0.5f);
+            rect.anchoredPosition = new Vector2(_edgePadding, 0f);
+            rect.sizeDelta = _size;
 
             _text = UIFactory.MakeText("Text", panel.rectTransform);
             UIFactory.Stretch(_text.rectTransform);

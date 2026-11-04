@@ -25,6 +25,9 @@ namespace CGD.FiringRange
         [Tooltip("What the Distance switch cycles through: the share of each lane dummy's placed distance it stands at")]
         [SerializeField] private float[] _distanceScales = { 1f, 0.5f, 0.2f };
 
+        // Raised when the Reset switch stands the dummies back up, so readouts can start over.
+        public event System.Action DummiesRestored;
+
         private int  _factionChoice = MixedFactions;
         private int  _tier = MinTier;
         private DummyMovement _movement;
@@ -57,6 +60,7 @@ namespace CGD.FiringRange
                     break;
                 case RangeSetting.Reset:
                     foreach (RangeDummy dummy in _dummies) dummy.Restore();
+                    DummiesRestored?.Invoke();
                     return;
             }
             Apply();

@@ -26,7 +26,7 @@ namespace CGD.FiringRange
 
         public void Record(float time, float amount, bool headshot, bool killed)
         {
-            if (Hits > 0 && (Killed || time - _lastTime > IdleReset)) Reset();
+            if (Hits > 0 && (Killed || time - _lastTime > IdleReset)) Clear();
             if (Hits == 0) _firstTime = time;
 
             Hits++;
@@ -37,7 +37,7 @@ namespace CGD.FiringRange
             _lastAmount = amount;
         }
 
-        private void Reset()
+        public void Clear()
         {
             Hits = Headshots = 0;
             Damage = _lastAmount = 0f;

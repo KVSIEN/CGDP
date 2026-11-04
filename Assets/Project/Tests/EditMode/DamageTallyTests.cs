@@ -70,5 +70,18 @@ namespace CGD.Tests
 
             Assert.AreEqual(1, tally.Hits);
         }
+
+        [Test]
+        public void ClearForgetsTheFight()
+        {
+            var tally = new DamageTally();
+            tally.Record(0f, 20f, true, true);
+            tally.Clear();
+
+            Assert.AreEqual(0, tally.Hits);
+            Assert.AreEqual(0, tally.Headshots);
+            Assert.AreEqual(0f, tally.Damage);
+            Assert.IsFalse(tally.Killed);
+        }
     }
 }

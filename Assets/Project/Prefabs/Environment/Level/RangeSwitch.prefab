@@ -127,3 +127,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.FiringRange.RangeSwitch
   _range: {fileID: 0}
   _setting: 0
+  _color: {r: 1, g: 1, b: 1, a: 1}
