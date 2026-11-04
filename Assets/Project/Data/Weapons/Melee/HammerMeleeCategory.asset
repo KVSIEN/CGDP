@@ -30,7 +30,7 @@ MonoBehaviour:
   - Breaching Hammer
   - Mace
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 9254de50c8524b6393e0054520d4cb32, type: 2}
     Damage: 1
     ArmorPenetration: 0
     DamageType: 0
@@ -48,7 +48,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 572d81c52fea4cde860a586a075d54db, type: 2}
     Damage: 1.2
     ArmorPenetration: 0
     DamageType: 0
@@ -67,7 +67,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: c4653bb5c5734463ad83db7d9d76d424, type: 2}
     Damage: 3
     ArmorPenetration: 0
     DamageType: 0

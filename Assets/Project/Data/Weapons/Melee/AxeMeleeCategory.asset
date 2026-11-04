@@ -31,7 +31,7 @@ MonoBehaviour:
   - Tomahawk
   - Breaching Axe
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: fce418930f414c299a876160a8ba6930, type: 2}
     Damage: 1
     ArmorPenetration: 0
     DamageType: 0
@@ -49,7 +49,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 4a47e2c6c3914730b91de07d43a7eb1e, type: 2}
     Damage: 1.3
     ArmorPenetration: 0
     DamageType: 0
@@ -68,7 +68,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: f1e7e59ddc3144cb9b9028270d8b86b3, type: 2}
     Damage: 2.8
     ArmorPenetration: 0
     DamageType: 0

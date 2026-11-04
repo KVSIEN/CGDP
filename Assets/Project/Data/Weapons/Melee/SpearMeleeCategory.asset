@@ -30,7 +30,7 @@ MonoBehaviour:
   - Trident
   - Halberd
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 78d13f78f4034b37915d59317a0ed2f1, type: 2}
     Damage: 1
     ArmorPenetration: 0
     DamageType: 0
@@ -48,7 +48,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 022ffc20eb2e441a9ef05cf53cd9c3f3, type: 2}
     Damage: 1.1
     ArmorPenetration: 0
     DamageType: 0
@@ -66,7 +66,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: c6e8fbfd13f64ee68a85055d16fd09b0, type: 2}
     Damage: 0.9
     ArmorPenetration: 0
     DamageType: 0
@@ -85,7 +85,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: 125290e7fcb046608d09ed581fe74581, type: 2}
     Damage: 2.5
     ArmorPenetration: 0
     DamageType: 0

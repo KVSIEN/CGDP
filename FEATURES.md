@@ -357,6 +357,7 @@
 
 ### Melee Weapons
 - Every **sword**'s light combo and heavy attack use swing hit timelines: slashing steps alternate direction (right-to-left, then back), thrusting steps (Rapier, the third strike of Cutlass, Katana and Zweihander) stab forward, and chopping steps (the old area smashes) bring the blade down overhead — the blade visibly crosses the space it hits instead of striking everything in an arc at once. Each sword keeps its own timing, reach and arc width
+- **Daggers** and **Spears** thrust (a spear's third light strike is a wide sweep), and **Axes** and **Hammers** slash or bring only the head down overhead, so the shaft doesn't hit — all on swing hit timelines. Gun bashes, the tactical knife and shield bashes keep the simple single-cast hit: they are quick one-motion jabs and shoves where a travelling blade would play the same
 - Melee weapons roll like guns (quality, tier, seed → the same weapon every time): **Daggers**, **Axes**, **Hammers** and **Spears** as broad types, and **Swords** as thirteen weapons of their own (below)
 - Found like guns: as (rarer) loot drops, and on the Gunsmith's shelf (arming swords, axes and daggers)
 - With a melee weapon in the active slot, **Attack** (left mouse) swings it: tap for the light combo, hold for the heavy attack. No ammo, reload or recoil

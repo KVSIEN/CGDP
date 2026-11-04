@@ -31,7 +31,7 @@ MonoBehaviour:
   - Trench Knife
   - Dirk
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: f144cce271134d2db95f1916b4f9372c, type: 2}
     Damage: 1
     ArmorPenetration: 0
     DamageType: 0
@@ -49,7 +49,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: e09f473852574c33b333b7fe9a9f4f6b, type: 2}
     Damage: 1
     ArmorPenetration: 0
     DamageType: 0
@@ -67,7 +67,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 589c7e2e2f8b4c7396346e09b3bd8f8a, type: 2}
     Damage: 1.4
     ArmorPenetration: 0
     DamageType: 0
@@ -86,7 +86,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: ee6c04923a724b2aafc9b1252b92f8c6, type: 2}
     Damage: 2.5
     ArmorPenetration: 0
     DamageType: 0
