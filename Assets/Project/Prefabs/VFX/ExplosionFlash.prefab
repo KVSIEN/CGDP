@@ -105,4 +105,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.ExplosionFlash
   _duration: 0.35
   _startScale: 0.3
-  _color: {r: 1, g: 0.6, b: 0.15, a: 0.8}

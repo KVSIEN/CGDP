@@ -419,7 +419,7 @@
 - Aim, a weapon key, or the same item key again puts the grenade away without throwing
 - Each grenade type sets its own throwing speed range, charge time, throw angle, fuse (a timer, or going off on impact), blast radius, damage and how much of it is left at the edge, whether walls shield what is behind them, how hard it shoves loose objects, its noise, camera shake, colour and optional flash
 - Explosion deals damage in a radius, falling off with distance from the blast center, through the same Effective Damage pipeline as everything else. Walls and cover block it: anything not in line of sight of the blast takes nothing. A fireball flash marks the blast and loose physics objects are thrown by it
-- Included: Frag Grenade and Smoke Grenade (a smoke cloud that hides you and blocks sight lines)
+- Included: Frag Grenade, Smoke Grenade (a smoke cloud that hides you and blocks sight lines), Contact Grenade (explodes the moment it hits something; faster and flatter to throw), Incendiary Grenade (shatters on impact, sets everything nearby on fire and leaves the ground burning for several seconds) and Stun Grenade (no damage; freezes everything in the blast in place for 3 seconds). They are found in supply cases like the others. Stunned and slowed firing-range dummies stop moving too
 
 ## Enemy AI
 - AI states — Patrol, Alert, Chase, Stunned, Dead — run on the shared state machine; Patrol, Alert and Chase each decide where to go next, a stun interrupts any of them and hands back to whatever was interrupted, and death is final until the enemy respawns

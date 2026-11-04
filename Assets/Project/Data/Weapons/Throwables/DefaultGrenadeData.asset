@@ -38,8 +38,9 @@ MonoBehaviour:
     m_Bits: 1
   PushForce: 400
   NoiseRadius: 50
-  SmokeCloudPrefab: {fileID: 0}
+  LingeringZone: {fileID: 0}
   ExplosionEffect: {fileID: 7000000000000000001, guid: d3520984238c41a78a4ca49a0a007f9f, type: 3}
+  FlashColor: {r: 1, g: 0.6, b: 0.15, a: 0.8}
   CameraTrauma: 0.8
   ShakeRadius: 25
   OnHitEffects: []

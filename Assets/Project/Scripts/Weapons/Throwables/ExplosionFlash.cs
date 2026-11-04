@@ -13,10 +13,10 @@ namespace CGD.Weapons
         [SerializeField, Min(0.05f)] private float _duration = 0.35f;
         [Tooltip("Share of the blast radius the flash starts at")]
         [SerializeField, Range(0f, 1f)] private float _startScale = 0.3f;
-        [SerializeField] private Color _color = new(1f, 0.6f, 0.15f, 0.8f);
 
         private Renderer _renderer;
         private MaterialPropertyBlock _block;
+        private Color _color;
         private float _radius;
         private float _age;
 
@@ -27,9 +27,10 @@ namespace CGD.Weapons
         }
 
         // The blast's radius; the mesh is a unit sphere, so its scale is the diameter.
-        public void Play(float radius)
+        public void Play(float radius, Color color)
         {
             _radius = radius;
+            _color  = color;
             _age    = 0f;
             Apply(0f);
             PrefabPool.Release(gameObject, _duration);

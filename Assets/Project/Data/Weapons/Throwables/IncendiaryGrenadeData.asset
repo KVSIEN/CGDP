@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33a9dc639ca493e4d8654dbac89c47bc, type: 3}
+  m_Name: IncendiaryGrenadeData
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.GrenadeData
+  GrenadeName: Incendiary Grenade
+  GrenadePrefab: {fileID: 3424364988567009664, guid: 79be582424e8357498037e5240babdf2, type: 3}
+  BodyColor: {r: 0.85, g: 0.4, b: 0.1, a: 1}
+  MinThrowSpeed: 7
+  MaxThrowSpeed: 17
+  ChargeTime: 0.8
+  ThrowAngle: 6
+  InheritVelocity: 0.5
+  Fuse: 1
+  FuseTime: 4
+  ArmTime: 0.1
+  FuseBlinkColor: {r: 1, g: 0.9, b: 0.3, a: 1}
+  ExplosionRadius: 3.5
+  ExplosionDamage: 30
+  EdgeDamage: 0.4
+  ArmorPenetration: 0
+  DamageType: 0
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NeedsLineOfSight: 1
+  BlockerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  PushForce: 0
+  NoiseRadius: 40
+  LingeringZone: {fileID: 7100000000000000001, guid: cda61e22cff245f28419d5aa6ec25518, type: 3}
+  ExplosionEffect: {fileID: 7000000000000000001, guid: d3520984238c41a78a4ca49a0a007f9f, type: 3}
+  FlashColor: {r: 1, g: 0.35, b: 0.05, a: 0.85}
+  CameraTrauma: 0.4
+  ShakeRadius: 15
+  OnHitEffects:
+  - Effect: {fileID: 11400000, guid: 173514ae86ec45a4892c6100378667d1, type: 2}
+    Chance: 1
+  ThrowSound: {fileID: 0}
+  ExplosionSound: {fileID: 0}
+  TrajectorySteps: 30
+  TrajectoryStepTime: 0.1
+  PreviewColor: {r: 1, g: 0.55, b: 0.1, a: 1}

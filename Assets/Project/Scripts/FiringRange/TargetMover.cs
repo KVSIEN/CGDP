@@ -1,9 +1,11 @@
 using UnityEngine;
+using CGD.Combat;
 
 namespace CGD.FiringRange
 {
     // Moves a target back and forth around where it was placed (sideways or along its facing,
     // per DummyMovement), and eases back to that spot before changing direction or stopping.
+    // Slowed and stunned like any character, so stun and ice effects can be seen working.
     public class TargetMover : MonoBehaviour
     {
         [Tooltip("How far to either side of its spot it sways")]
@@ -16,23 +18,31 @@ namespace CGD.FiringRange
         private DummyMovement _driving;
         private float _offset;
         private float _direction = 1f;
+        private Stunnable _stunnable;
 
         public DummyMovement Movement { get; set; }
 
-        private void Awake() => _home = transform.position;
+        private void Awake()
+        {
+            _home = transform.position;
+            TryGetComponent(out _stunnable);
+        }
 
         private void Update()
         {
             if (_driving == DummyMovement.Still && Movement == DummyMovement.Still) return;
 
+            float step = Speed() * Time.deltaTime;
+            if (step <= 0f) return;
+
             if (Movement != _driving)
             {
-                _offset = Mathf.MoveTowards(_offset, 0f, _speed * Time.deltaTime);
+                _offset = Mathf.MoveTowards(_offset, 0f, step);
                 if (_offset == 0f) _driving = Movement;
             }
             else
             {
-                PingPong(_driving == DummyMovement.Advance ? _halfDepth : _halfWidth);
+                PingPong(_driving == DummyMovement.Advance ? _halfDepth : _halfWidth, step);
             }
 
             transform.position = Position();
@@ -45,9 +55,15 @@ namespace CGD.FiringRange
             transform.position = Position();
         }
 
-        private void PingPong(float limit)
+        private float Speed()
         {
-            _offset += _direction * _speed * Time.deltaTime;
+            if (_stunnable == null) return _speed;
+            return _stunnable.IsStunned ? 0f : _speed * _stunnable.SpeedMultiplier;
+        }
+
+        private void PingPong(float limit, float step)
+        {
+            _offset += _direction * step;
             if (Mathf.Abs(_offset) < limit) return;
 
             _offset = Mathf.Clamp(_offset, -limit, limit);

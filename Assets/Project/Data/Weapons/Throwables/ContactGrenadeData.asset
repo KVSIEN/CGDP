@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33a9dc639ca493e4d8654dbac89c47bc, type: 3}
+  m_Name: ContactGrenadeData
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.GrenadeData
+  GrenadeName: Contact Grenade
+  GrenadePrefab: {fileID: 3424364988567009664, guid: 79be582424e8357498037e5240babdf2, type: 3}
+  BodyColor: {r: 0.55, g: 0.2, b: 0.18, a: 1}
+  MinThrowSpeed: 9
+  MaxThrowSpeed: 22
+  ChargeTime: 0.6
+  ThrowAngle: 4
+  InheritVelocity: 0.5
+  Fuse: 1
+  FuseTime: 5
+  ArmTime: 0.12
+  FuseBlinkColor: {r: 1, g: 0.8, b: 0.1, a: 1}
+  ExplosionRadius: 3.5
+  ExplosionDamage: 60
+  EdgeDamage: 0.1
+  ArmorPenetration: 0
+  DamageType: 0
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NeedsLineOfSight: 1
+  BlockerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  PushForce: 300
+  NoiseRadius: 45
+  LingeringZone: {fileID: 0}
+  ExplosionEffect: {fileID: 7000000000000000001, guid: d3520984238c41a78a4ca49a0a007f9f, type: 3}
+  FlashColor: {r: 1, g: 0.65, b: 0.2, a: 0.8}
+  CameraTrauma: 0.6
+  ShakeRadius: 20
+  OnHitEffects: []
+  ThrowSound: {fileID: 0}
+  ExplosionSound: {fileID: 0}
+  TrajectorySteps: 30
+  TrajectoryStepTime: 0.1
+  PreviewColor: {r: 1, g: 0.45, b: 0.3, a: 1}

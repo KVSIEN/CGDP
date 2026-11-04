@@ -102,10 +102,8 @@ namespace CGD.Weapons
             _data.ExplosionSound.TryPlay(center);
             Noise.Emit(center, _data.NoiseRadius, _source);
             CameraImpulses.Emit(center, _data.ShakeRadius, _data.CameraTrauma);
-            if (_data.SmokeCloudPrefab != null)
-                PrefabPool.Spawn(_data.SmokeCloudPrefab, center, Quaternion.identity);
-            if (_data.ExplosionEffect != null)
-                SpawnFlash(center);
+            if (_data.LingeringZone != null) SpawnZone(center);
+            if (_data.ExplosionEffect != null) SpawnFlash(center);
 
             _initialized = false;
             PrefabPool.Release(gameObject);
@@ -136,12 +134,15 @@ namespace CGD.Weapons
             Physics.Linecast(center, point, out RaycastHit hit, _data.BlockerMask, QueryTriggerInteraction.Ignore)
             && Hitbox.FindDamageable(hit.collider) != target;
 
+        // A blast that deals no damage still counts when it applies a status (a stun grenade).
+        private bool HasEffects => _data.OnHitEffects != null && _data.OnHitEffects.Length > 0;
+
         private void DamageTargets()
         {
             foreach (KeyValuePair<IDamageable, float> pair in TargetFalloff)
             {
                 float damage = _data.ExplosionDamage * pair.Value;
-                if (damage <= 0f) continue;
+                if (damage <= 0f && !HasEffects) continue;
 
                 pair.Key.TakeDamage(new DamageInfo(damage, _data.ArmorPenetration, _data.DamageType,
                     source: _source, onHitEffects: _data.OnHitEffects));
@@ -161,10 +162,16 @@ namespace CGD.Weapons
             }
         }
 
+        private void SpawnZone(Vector3 center)
+        {
+            GameObject zone = PrefabPool.Spawn(_data.LingeringZone, center, Quaternion.identity);
+            if (zone.TryGetComponent(out FireZone fire)) fire.Begin(_source, _data);
+        }
+
         private void SpawnFlash(Vector3 center)
         {
             GameObject flash = PrefabPool.Spawn(_data.ExplosionEffect, center, Quaternion.identity);
-            if (flash.TryGetComponent(out ExplosionFlash fireball)) fireball.Play(_data.ExplosionRadius);
+            if (flash.TryGetComponent(out ExplosionFlash fireball)) fireball.Play(_data.ExplosionRadius, _data.FlashColor);
         }
     }
 }

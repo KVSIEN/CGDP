@@ -280,7 +280,7 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 
 Three parts, all in `Sandbox`:
 
-- **`Prefabs/Characters/TargetDummy`** — a stationary stand-in for an enemy: `EnemyHealth` (`_data`, `_hitboxProfile` = `TargetDummyHitboxProfile`, `_healthBar`), `StatusEffectController`, `EnemyHealthBar` (`_alwaysVisible` and `_showNumbers` on: the bar stays up with a shield strip and health/shield numbers), `RespawnOnDeath`, `TargetMover` (`_halfWidth` sway, `_halfDepth` advance, `_speed`), `RangeDummy` (`_body` = `Body`'s renderer, `_head` = `Head`'s renderer, `_critColor`, `_flashColor`, `_flashTime`); children `Body` (capsule mesh and collider, `Hitbox` Body) and `Head` (sphere mesh and collider, `Hitbox` Head, the critical spot). No `EnemyAI`, `NavMeshAgent` or `DespawnOnDeath`. Four instances stand at 25, 50, 75 and 100 m; none overrides `_data`, `RangeControl` sets it.
+- **`Prefabs/Characters/TargetDummy`** — a stationary stand-in for an enemy: `EnemyHealth` (`_data`, `_hitboxProfile` = `TargetDummyHitboxProfile`, `_healthBar`), `StatusEffectController`, `EnemyHealthBar` (`_alwaysVisible` and `_showNumbers` on: the bar stays up with a shield strip and health/shield numbers), `RespawnOnDeath`, `TargetMover` (`_halfWidth` sway, `_halfDepth` advance, `_speed`; it obeys `Stunnable`, so stun and ice stop or slow it), `Stunnable`, `RangeDummy` (`_body` = `Body`'s renderer, `_head` = `Head`'s renderer, `_critColor`, `_flashColor`, `_flashTime`); children `Body` (capsule mesh and collider, `Hitbox` Body) and `Head` (sphere mesh and collider, `Hitbox` Head, the critical spot). No `EnemyAI`, `NavMeshAgent` or `DespawnOnDeath`. Four instances stand at 25, 50, 75 and 100 m; none overrides `_data`, `RangeControl` sets it.
 - **Range shell** (`ShootingRange` object) — floors, a back wall with the door, side walls, an end wall and a `Roof` (shadows off, so the light still reaches the floor) close the range completely. Every wall, floor and the roof carries a `TiledSurface` (`_metersPerTile` = 1), which sets the texture repeat from the object's size so the pattern stays one repeat per metre however the object is scaled; all walls and the roof share `ShootingRangeWallShort`, the floors `ShootingRangeFloorSmall`. A new wall piece only needs a cube with the wall material and a `TiledSurface`.
 - **Map and culling** — a `WorldMap` object (`WorldMapArea`, 28 × 122 m centred on the range, fog of war on, `_captureMask` without the `Ceiling` layer) feeds a `Minimap` element added under the HUD (`_area`, `_viewer` = the Player's camera), and a `MapRevealer` added to the Player lifts the fog around it. Both roofs are on the `Ceiling` layer (new, layer 7) so the top-down capture sees the floor instead of the roof. The new wall pieces and cover carry `CullableObject` like the older walls, so the `GameManager`'s `VisibilityCullingManager` hides them out of view; roofs and floors don't.
 - **Lane cover** — four low walls (`Lane Cover 1`–`4`, 1.2 m high, wall material with `TiledSurface`) stand in the lane at 10, 12, 36 and 61 m from the firing line, clear of the dummies' paths, for testing line of sight, penetration and vaulting. They are plain scene cubes.
@@ -419,10 +419,20 @@ A grenade type is one `GrenadeData` asset (`Create › CGD › Weapons › Grena
 | Throw | `MinThrowSpeed` (tap) → `MaxThrowSpeed` (fully charged) in m/s, `ChargeTime` (seconds to full, 0 = always full), `ThrowAngle` (upward lift, degrees), `InheritVelocity` (share of the thrower's movement) |
 | Fuse | `Fuse` = Timed or OnImpact, `FuseTime` (OnImpact: the longest it may fly), `ArmTime`, `FuseBlinkColor` |
 | Explosion | `ExplosionRadius`, `ExplosionDamage`, `EdgeDamage` (share left at the edge), `ArmorPenetration`, `DamageType`, `HitMask`, `NeedsLineOfSight` + `BlockerMask`, `PushForce`, `NoiseRadius` |
-| Effects | `SmokeCloudPrefab`, `ExplosionEffect`, `CameraTrauma` + `ShakeRadius`, `OnHitEffects`, `ThrowSound`, `ExplosionSound` |
+| Aftermath and effects | `LingeringZone` (a smoke cloud or `Prefabs/VFX/FireZone`, left where it goes off), `ExplosionEffect` + `FlashColor`, `CameraTrauma` + `ShakeRadius`, `OnHitEffects` (a blast with no damage still applies them), `ThrowSound`, `ExplosionSound` |
 | Preview | `TrajectorySteps`, `TrajectoryStepTime`, `PreviewColor` |
 
 Range on flat ground is about speed² ÷ 9.8, so the Frag Grenade throws from about 6 m (a tap) to about 33 m (full charge).
+
+Included types (data in `Data/Weapons/Throwables/`, items in `Data/Items/Throwables/`, all in `ConsumablesPool` and the dev catalog):
+
+| Type | Fuse | Blast | Notes |
+|---|---|---|---|
+| Frag | Timed 2.5 s | 5 m, 80 | Falls to 10% at the edge |
+| Smoke | Timed 1.5 s | 4 m, none | Leaves a smoke cloud |
+| Contact | On impact (5 s limit) | 3.5 m, 60 | Faster, flatter throw |
+| Incendiary | On impact (4 s limit) | 3.5 m, 30 | Burn status (`IncendiaryBurnEffect`) and a 6 s `FireZone` that burns everything in it |
+| Stun | Timed 1.8 s | 6 m, none | Applies `StunEffect` (3 s) to everything in line of sight, full strength across the blast |
 
 ## Map & Minimap
 

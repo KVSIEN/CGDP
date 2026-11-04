@@ -55,13 +55,13 @@ namespace CGD.Weapons
         [Tooltip("How far away enemies hear it (0 = silent)")]
         public float NoiseRadius = 50f;
 
-        [Header("Smoke")]
-        [Tooltip("Optional — spawned where it lands (a pooled prefab with a Smoke ConcealmentZone and a PooledLifetime)")]
-        public GameObject SmokeCloudPrefab;
-
-        [Header("Flash")]
+        [Header("Aftermath")]
+        [Tooltip("Optional — a pooled prefab left where it goes off: a smoke cloud (ConcealmentZone + PooledLifetime) or a FireZone")]
+        [FormerlySerializedAs("SmokeCloudPrefab")]
+        public GameObject LingeringZone;
         [Tooltip("Optional — a pooled prefab with an ExplosionFlash, spawned at the blast")]
         public GameObject ExplosionEffect;
+        public Color FlashColor = new(1f, 0.6f, 0.15f, 0.8f);
 
         [Header("Camera")]
         [Tooltip("Shake at the blast centre (0..1), fading to nothing at Shake Radius")]
