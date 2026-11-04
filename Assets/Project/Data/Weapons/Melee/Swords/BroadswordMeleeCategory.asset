@@ -27,7 +27,7 @@ MonoBehaviour:
   Names:
   - Broadsword
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 21e4c5d052f54b9bad9e792cf9768467, type: 2}
     Damage: 1.05
     ArmorPenetration: 0
     DamageType: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 1e44a30d050e45aa9cd0ca8071bd4577, type: 2}
     Damage: 1.1
     ArmorPenetration: 0
     DamageType: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 190ea338514243b18be8c010fa2e7977, type: 2}
     Damage: 1.6
     ArmorPenetration: 0
     DamageType: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: 79b686597a334c00a4a09ed6707dd01f, type: 2}
     Damage: 2.6
     ArmorPenetration: 0
     DamageType: 0

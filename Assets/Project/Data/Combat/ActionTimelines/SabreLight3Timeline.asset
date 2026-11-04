@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56f563f68d5e46709e438cce7d12586d, type: 3}
+  m_Name: SabreLight3Timeline
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.ActionTimeline
+  TotalFrames: 7
+  Events:
+  - rid: 1000
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NoiseFrame: -1
+  NoiseRadius: 15
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: SwingHitEvent, ns: CGD.Combat, asm: CGD.Runtime}
+      data:
+        _startFrame: 0
+        _endFrame: 6
+        _nearDistance: 0.3
+        _farDistance: 2
+        _authoredReach: 2
+        _radius: 0.35
+        _pivotOffset: {x: 0, y: 0, z: 0}
+        _anchor: 0
+        _keys:
+        - Frame: 0
+          Pose:
+            Yaw: 70
+            Pitch: 0
+            Push: 0
+        - Frame: 2
+          Pose:
+            Yaw: 45.5
+            Pitch: 0
+            Push: 0
+        - Frame: 4
+          Pose:
+            Yaw: -45.5
+            Pitch: 0
+            Push: 0
+        - Frame: 6
+          Pose:
+            Yaw: -70
+            Pitch: 0
+            Push: 0
+        _damage: 1
+        _armorPenetration: 0
+        _damageType: 0
+        _criticalMultiplier: 1.5
+        _onHitEffects: []
+        _useSharedDedup: 1

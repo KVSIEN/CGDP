@@ -27,7 +27,7 @@ MonoBehaviour:
   Names:
   - Sabre
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: f83bde59bbb54caf84a482cd3b5b6787, type: 2}
     Damage: 0.95
     ArmorPenetration: 0
     DamageType: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: d71e14b6094a450ca803f7bbf8ebfe0c, type: 2}
     Damage: 0.95
     ArmorPenetration: 0
     DamageType: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: adcf79d7d4104d8cbcbd6c24e4e88144, type: 2}
     Damage: 1.25
     ArmorPenetration: 0
     DamageType: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: 574d5dec87ea415eb489b83ae444f6d8, type: 2}
     Damage: 2.2
     ArmorPenetration: 0
     DamageType: 0

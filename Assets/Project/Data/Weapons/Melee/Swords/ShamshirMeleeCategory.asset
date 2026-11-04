@@ -27,7 +27,7 @@ MonoBehaviour:
   Names:
   - Shamshir
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 3db214da3d21410c8cf37043f6eba176, type: 2}
     Damage: 0.8
     ArmorPenetration: 0
     DamageType: 0
@@ -47,7 +47,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 51853908349f4bb893ec8b4f2254c882, type: 2}
     Damage: 0.8
     ArmorPenetration: 0
     DamageType: 0
@@ -67,7 +67,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 3a5f2b16a4384a1face0bd9ce25e19ab, type: 2}
     Damage: 0.8
     ArmorPenetration: 0
     DamageType: 0
@@ -87,7 +87,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 408485aaab1a4c88a681bcf83d7d972c, type: 2}
     Damage: 1.1
     ArmorPenetration: 0
     DamageType: 0
@@ -108,7 +108,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: c10e9b6e4e144cf383c8bd215baf5c16, type: 2}
     Damage: 2
     ArmorPenetration: 0
     DamageType: 0

@@ -27,7 +27,7 @@ MonoBehaviour:
   Names:
   - Claymore
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: f5292c752679444cb0b5f6896b783b3f, type: 2}
     Damage: 1
     ArmorPenetration: 0
     DamageType: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 09b361a228ee4c31b575ea9901a213e8, type: 2}
     Damage: 1.05
     ArmorPenetration: 0
     DamageType: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 23ba6e2164034cfa8c05ce08e2c85682, type: 2}
     Damage: 1.6
     ArmorPenetration: 0
     DamageType: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: 66bdc2cdf52d454788dd7bc5dd894094, type: 2}
     Damage: 2.8
     ArmorPenetration: 0
     DamageType: 0

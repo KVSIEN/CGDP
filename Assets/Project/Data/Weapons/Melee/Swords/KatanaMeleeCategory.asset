@@ -27,7 +27,7 @@ MonoBehaviour:
   Names:
   - Katana
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 57ef596f846540dab05e7b0957af4f7e, type: 2}
     Damage: 1
     ArmorPenetration: 0
     DamageType: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 2bc3e727f4294c5fab0a919599d6e778, type: 2}
     Damage: 1.05
     ArmorPenetration: 0
     DamageType: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 6b992491c1fe4c718b08ea64b996c227, type: 2}
     Damage: 1.4
     ArmorPenetration: 0
     DamageType: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: 8dcbaf2f96bb4ad7bd33a7caa0f8250b, type: 2}
     Damage: 2.8
     ArmorPenetration: 0
     DamageType: 0

@@ -27,7 +27,7 @@ MonoBehaviour:
   Names:
   - Khopesh
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: acaa3c384cb64ba6b0a9fb9cd04a903c, type: 2}
     Damage: 1.1
     ArmorPenetration: 0
     DamageType: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 76b7a6d9a3e44d3bbbcbe805c666fe95, type: 2}
     Damage: 1.15
     ArmorPenetration: 0
     DamageType: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 8298107f158f439faf3eb4beef1d0e66, type: 2}
     Damage: 1.5
     ArmorPenetration: 0.1
     DamageType: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: 18511e71b6b4455bb6652547b0e994c6, type: 2}
     Damage: 2.6
     ArmorPenetration: 0.2
     DamageType: 0

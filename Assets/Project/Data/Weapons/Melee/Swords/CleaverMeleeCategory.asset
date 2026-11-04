@@ -27,7 +27,7 @@ MonoBehaviour:
   Names:
   - Cleaver
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 499f4cfc21cf4cbb8f58b889fdef594f, type: 2}
     Damage: 1.1
     ArmorPenetration: 0
     DamageType: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: efacf6e4f04c4544a8ff81f1e04cad28, type: 2}
     Damage: 1.15
     ArmorPenetration: 0
     DamageType: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 6e207760461c4e77bf9b96387ebc34cb, type: 2}
     Damage: 1.6
     ArmorPenetration: 0.1
     DamageType: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: 88dac1c018174a32a97e34cbdec6930c, type: 2}
     Damage: 2.8
     ArmorPenetration: 0.2
     DamageType: 0

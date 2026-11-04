@@ -27,7 +27,7 @@ MonoBehaviour:
   Names:
   - Scimitar
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 7860dd2bef27405c867836649051a086, type: 2}
     Damage: 0.85
     ArmorPenetration: 0
     DamageType: 0
@@ -47,7 +47,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: e3ecb4f457ee4a6ebeb3a4f54e277043, type: 2}
     Damage: 0.85
     ArmorPenetration: 0
     DamageType: 0
@@ -67,7 +67,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 1013ee3720da45d2a9586d51a39dea36, type: 2}
     Damage: 0.9
     ArmorPenetration: 0
     DamageType: 0
@@ -87,7 +87,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: b4f14a9e8a8543d28a31bca57a798218, type: 2}
     Damage: 1.2
     ArmorPenetration: 0
     DamageType: 0
@@ -108,7 +108,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: 3e6a672581764b87811b42861b0a3f31, type: 2}
     Damage: 2.2
     ArmorPenetration: 0
     DamageType: 0

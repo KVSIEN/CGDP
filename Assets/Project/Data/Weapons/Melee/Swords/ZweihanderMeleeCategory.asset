@@ -27,7 +27,7 @@ MonoBehaviour:
   Names:
   - Zweihänder
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 8172ea82ffb8432588884c6c4080cdfb, type: 2}
     Damage: 1
     ArmorPenetration: 0
     DamageType: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 01d94a75c82b4813af9d635657e6e270, type: 2}
     Damage: 1.05
     ArmorPenetration: 0
     DamageType: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: a63641b6cb824d358b11875fd12e5949, type: 2}
     Damage: 1.5
     ArmorPenetration: 0.15
     DamageType: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: d40677285ce4472990c8e1f0b252df61, type: 2}
     Damage: 3
     ArmorPenetration: 0
     DamageType: 0
