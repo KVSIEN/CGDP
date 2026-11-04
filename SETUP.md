@@ -134,7 +134,7 @@ A cost for a meter the Player doesn't have is **blocked**, not free.
 ## HUD
 
 ```
-HUD                [Canvas, CanvasScaler, GraphicRaycaster, HUDManager]
+HUD                [Canvas, CanvasScaler (Scale With Screen Size, 1920 × 1080, match 0.5), GraphicRaycaster, HUDManager]
   ScreenFlash      [ScreenFlashHUD]?         ← keep near the top (draws underneath)
   HitEffect        [HitEffect]
   Crosshair        [CrosshairHUD]
@@ -186,10 +186,10 @@ Later children draw on top. `HUDManager` finds every element by itself.
 | **QuestHUD** | `_tracker` = QuestTracker | See [Quests](#quests). |
 | **MinimapHUD** | `_area` = WorldMapArea, `_viewer` = Main Camera | See [Map](#map--minimap). |
 | **WorldMapHUD** | `_input` = Player, `_area` = WorldMapArea, `_viewer` = Main Camera | Opens with M. |
-| **NotificationHUD**, **ScreenFlashHUD** | — | Driven by `FeedbackPlayer`. |
+| **NotificationHUD**, **ScreenFlashHUD** | — | Driven by `FeedbackPlayer` (its `_notifications` and `_screenFlash` are set on the Player instance in each scene). Both are in the HUD prefab. |
 | **ObjectiveHUD** | — | Top-centre panel for the Siege/Gauntlet in progress (title, detail, countdown, objective health bar). Driven by `ObjectiveFeed`; already in the HUD prefab. |
-| **HitMarkerHUD** | — | Driven by `CombatFeedback`. |
-| **StealthHUD** | `_stealth` = Player's Stealthable | HIDDEN / REVEALED / SPOTTED under the crosshair. |
+| **HitMarkerHUD** | — | Driven by `CombatFeedback` through `HitMarkerFeed`; no reference to set. |
+| **StealthHUD** | `_stealth` = Player's Stealthable (set on the HUD instance in Sandbox and MapTest) | HIDDEN / REVEALED / SPOTTED under the crosshair. In the HUD prefab. |
 
 Damage numbers and enemy health bars build themselves — don't place them under the HUD. `EnemyHealthBar` also tunes its damage band: `_trailColor`, `_trailHold` (seconds before it shrinks), `_trailSpeed` and `_punch` (swell on a hit).
 
@@ -454,9 +454,9 @@ Background `_source` options:
 
 | Component | Assign | Notes |
 |---|---|---|
-| **FeedbackPlayer** (Player) | `_notifications` = NotificationHUD, `_screenFlash` = ScreenFlashHUD, `_cameraEffects` = Main Camera | Without it, no feedback shows. `_vibration` toggles rumble. |
-| **CombatFeedback** (Player) | `_hitMarker` = HitMarkerHUD + the `Hit`, `CriticalHit`, `Kill`, `DamageTaken`, `LowHealth` presets | |
-| **QuestFeedback**? | `_tracker` = QuestTracker + the four `Quest…` presets | |
+| **FeedbackPlayer** (Player prefab) | `_cameraEffects` = Main Camera; `_notifications` = NotificationHUD and `_screenFlash` = ScreenFlashHUD are set on the Player instance in each scene (they live in the HUD prefab) | Without it, no feedback shows. `_vibration` toggles rumble. |
+| **CombatFeedback** (Player prefab) | the `Hit`, `CriticalHit`, `Kill`, `DamageTaken`, `LowHealth` presets | The hit marker needs no reference (`HitMarkerFeed`). |
+| **QuestFeedback** (Player prefab) | `_tracker` = the Player's QuestTracker + the four `Quest…` presets | |
 
 All presets are in `Data/Feedback/`.
 
@@ -464,7 +464,7 @@ All presets are in `Data/Feedback/`.
 
 | Component | Assign | Notes |
 |---|---|---|
-| **Stealthable** (Player) | `_settings` = `Stealth/StealthSettings`, `_spottedFeedback`? = `Feedback/SpottedFeedbackPreset` | Without it, enemies ignore bushes and smoke. |
+| **Stealthable** (Player prefab) | `_settings` = `Stealth/StealthSettings`, `_spottedFeedback`? = `Feedback/SpottedFeedbackPreset` | Without it, enemies ignore bushes and smoke. |
 | **ConcealmentZone** (bush) | a Collider sized to the foliage · `_kind` = Bush · `_requiresCrouch`? | Collider becomes a trigger. Put the object on **Ignore Raycast** so shots pass through. |
 | **ConcealmentZone** (smoke) | on `Prefabs/VFX/SmokeCloud` — `_kind` = Smoke, `_blocksSight` ticked | Spawned by `Weapons/Throwables/SmokeGrenadeData`, thrown via the `SmokeGrenadeThrowable` item. |
 | **StealthAbility** | add `Abilities/StealthAbility` to a PlayerAbilities slot | Needs Stealthable. |

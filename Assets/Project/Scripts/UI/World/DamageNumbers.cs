@@ -137,7 +137,7 @@ namespace CGD.UI
             // One screen pixel covers this many world units per metre of depth. Scaling by the
             // depth of each number is what keeps every number the same size on screen.
             float unitsPerPixelPerMetre =
-                Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad) * 2f / Screen.height;
+                Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad) * 2f / Screen.height * UIScale.Factor;
 
             for (int i = 0; i < _active.Count; i++)
             {

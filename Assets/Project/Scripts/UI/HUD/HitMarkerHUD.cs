@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using CGD.Feedback;
 
 namespace CGD.UI
 {
@@ -49,6 +50,9 @@ namespace CGD.UI
 
             SetAlpha(0f);
         }
+
+        private void OnEnable()  => HitMarkerFeed.Raised += Show;
+        private void OnDisable() => HitMarkerFeed.Raised -= Show;
 
         public void Show(Kind kind)
         {

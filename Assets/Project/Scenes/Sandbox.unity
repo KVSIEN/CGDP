@@ -4201,6 +4201,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7100000000000000004, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
+      propertyPath: _notifications
+      value: 
+      objectReference: {fileID: 7200000000000000001}
+    - target: {fileID: 7100000000000000004, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
+      propertyPath: _screenFlash
+      value: 
+      objectReference: {fileID: 7200000000000000002}
     - target: {fileID: 3793748110567141598, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
       propertyPath: _wheel
       value: 
@@ -4403,6 +4411,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7300000000000000013, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
+      propertyPath: _stealth
+      value: 
+      objectReference: {fileID: 7200000000000000003}
     - target: {fileID: 160411704699297099, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
       propertyPath: _weapon
       value: 
@@ -7244,3 +7256,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.WorldMap.MapRevealer
   _area: {fileID: 6600000000000000012}
+--- !u!114 &7200000000000000001 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4497553829793942677, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
+  m_PrefabInstance: {fileID: 9144342176060021032}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddf2ba7bb8cc445a95545ad6e9c11e20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.UI.NotificationHUD
+--- !u!114 &7200000000000000002 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7300000000000000003, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
+  m_PrefabInstance: {fileID: 9144342176060021032}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e83be84e9cc34a04b62449c11a48ecec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ScreenFlashHUD
+--- !u!114 &7200000000000000003 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7100000000000000003, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
+  m_PrefabInstance: {fileID: 7657266172198037326}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83077ebfc28e4513bf7a7d0095a62aa8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Stealth.Stealthable

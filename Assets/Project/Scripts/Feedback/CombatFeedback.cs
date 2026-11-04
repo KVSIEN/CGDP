@@ -9,8 +9,6 @@ namespace CGD.Feedback
     // hit, and a one-off warning when health drops below a threshold.
     public class CombatFeedback : MonoBehaviour
     {
-        [SerializeField] private HitMarkerHUD _hitMarker;
-
         [Header("Dealing damage")]
         [SerializeField] private FeedbackPreset _hit;
         [SerializeField] private FeedbackPreset _criticalHit;
@@ -52,17 +50,17 @@ namespace CGD.Feedback
 
             if (report.Killed)
             {
-                ShowMarker(HitMarkerHUD.Kind.Kill);
+                HitMarkerFeed.Show(HitMarkerHUD.Kind.Kill);
                 FeedbackBus.Play(_kill, report.Target.DisplayName);
             }
             else if (report.IsCritical)
             {
-                ShowMarker(HitMarkerHUD.Kind.Critical);
+                HitMarkerFeed.Show(HitMarkerHUD.Kind.Critical);
                 FeedbackBus.Play(_criticalHit);
             }
             else
             {
-                ShowMarker(HitMarkerHUD.Kind.Hit);
+                HitMarkerFeed.Show(HitMarkerHUD.Kind.Hit);
                 FeedbackBus.Play(_hit);
             }
         }
@@ -86,10 +84,5 @@ namespace CGD.Feedback
         // Weapons, grenades and abilities all live on or under the character.
         private bool IsMine(DamageSource source) =>
             source.Owner != null && source.Owner.transform.IsChildOf(transform);
-
-        private void ShowMarker(HitMarkerHUD.Kind kind)
-        {
-            if (_hitMarker != null) _hitMarker.Show(kind);
-        }
     }
 }

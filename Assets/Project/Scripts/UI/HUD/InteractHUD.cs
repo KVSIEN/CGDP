@@ -127,7 +127,7 @@ namespace CGD.UI
 
             Vector3 targetPos = _interaction.TargetPosition + Vector3.up * _yOffset;
             float   dist      = Vector3.Distance(_cam.transform.position, targetPos);
-            float   unitPerPx = dist * Mathf.Tan(_cam.fieldOfView * 0.5f * Mathf.Deg2Rad) * 2f / Screen.height;
+            float   unitPerPx = dist * Mathf.Tan(_cam.fieldOfView * 0.5f * Mathf.Deg2Rad) * 2f / Screen.height * UIScale.Factor;
 
             _worldPrompt.transform.position   = targetPos;
             _worldPrompt.transform.rotation   = _cam.transform.rotation;
