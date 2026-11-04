@@ -243,13 +243,7 @@ namespace CGD.Player
 
             // Kept current even while the dodge drives the velocity: steerable dodge stages
             // turn toward it.
-            _moveDirection = Vector3.zero;
-            if (rawInput.magnitude > 0.01f)
-            {
-                Vector3 camForward = Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
-                Vector3 camRight = Vector3.ProjectOnPlane(_cameraTransform.right, Vector3.up).normalized;
-                _moveDirection = (camForward * rawInput.y + camRight * rawInput.x).normalized;
-            }
+            _moveDirection = rawInput.magnitude > 0.01f ? CameraRelative(rawInput) : Vector3.zero;
 
             // The dodge sets the velocity itself while it moves the player.
             if (_dodge.IsDrivingMovement) return;
@@ -259,55 +253,62 @@ namespace CGD.Player
 
             if (IsSliding)
             {
-                Vector3 slidePlatformVel = _groundRb != null
-                    ? new Vector3(_groundRb.linearVelocity.x, 0f, _groundRb.linearVelocity.z)
-                    : Vector3.zero;
-                Vector3 slideHorizontal = HorizontalVelocity - slidePlatformVel;
-                float slideT = 1f - Mathf.Exp(-_settings.SlideDeceleration * Time.fixedDeltaTime);
-                Vector3 slideNewHorizontal = Vector3.Lerp(slideHorizontal, Vector3.zero, slideT) + slidePlatformVel;
-                _rb.linearVelocity = new Vector3(slideNewHorizontal.x, _rb.linearVelocity.y, slideNewHorizontal.z);
+                ApplyHorizontalVelocity(Vector3.zero, _settings.SlideDeceleration);
                 return;
             }
 
+            ApplyHorizontalVelocity(SlopeAdjusted(_moveDirection) * TargetSpeed(), CurrentAcceleration());
+
+            if (IsGrounded && _moveDirection.magnitude > 0.1f)
+                TryClimbStep();
+        }
+
+        private Vector3 CameraRelative(Vector2 input)
+        {
+            Vector3 forward = Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
+            Vector3 right = Vector3.ProjectOnPlane(_cameraTransform.right, Vector3.up).normalized;
+            return (forward * input.y + right * input.x).normalized;
+        }
+
+        private float TargetSpeed()
+        {
             float stanceSpeed = IsCrouching ? _settings.CrouchSpeed
                 : IsSprinting ? _settings.SprintSpeed
                 : _settings.WalkSpeed;
             if (_input.GetAction(GameAction.AimDownSights))
                 stanceSpeed = Mathf.Min(stanceSpeed, _settings.AdsWalkSpeed);
-            float targetSpeed = stanceSpeed * _stunnable.SpeedMultiplier * SpeedMultiplier;
+            return stanceSpeed * _stunnable.SpeedMultiplier * SpeedMultiplier;
+        }
 
-            Vector3 targetDir = _moveDirection;
+        private float CurrentAcceleration()
+        {
+            if (!IsGrounded) return _settings.Acceleration * _settings.AirControl;
+            return _moveDirection.magnitude > 0.01f ? _settings.Acceleration : _settings.Deceleration;
+        }
 
-            if (IsGrounded && Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down,
-                out RaycastHit slopeHit, 0.4f, _settings.GroundMask, QueryTriggerInteraction.Ignore))
-            {
-                float angle = Vector3.Angle(slopeHit.normal, Vector3.up);
-                if (angle > 1f && angle < _settings.MaxSlopeAngle)
-                    targetDir = Vector3.ProjectOnPlane(_moveDirection, slopeHit.normal).normalized;
-            }
+        // Walks along gentle slopes instead of into them.
+        private Vector3 SlopeAdjusted(Vector3 direction)
+        {
+            if (!IsGrounded || !Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down,
+                    out RaycastHit slopeHit, 0.4f, _settings.GroundMask, QueryTriggerInteraction.Ignore))
+                return direction;
 
-            Vector3 platformVel = _groundRb != null
+            float angle = Vector3.Angle(slopeHit.normal, Vector3.up);
+            if (angle <= 1f || angle >= _settings.MaxSlopeAngle) return direction;
+            return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
+        }
+
+        // Eases the horizontal velocity toward a target relative to the ground the player
+        // stands on, so a moving platform carries them along.
+        private void ApplyHorizontalVelocity(Vector3 target, float rate)
+        {
+            Vector3 platformVelocity = _groundRb != null
                 ? new Vector3(_groundRb.linearVelocity.x, 0f, _groundRb.linearVelocity.z)
                 : Vector3.zero;
 
-            Vector3 currentHorizontal = HorizontalVelocity - platformVel;
-            Vector3 targetHorizontal = targetDir * targetSpeed;
-
-            float accel;
-            if (!IsGrounded)
-                accel = _settings.Acceleration * _settings.AirControl;
-            else if (_moveDirection.magnitude > 0.01f)
-                accel = _settings.Acceleration;
-            else
-                accel = _settings.Deceleration;
-
-            float t = 1f - Mathf.Exp(-accel * Time.fixedDeltaTime);
-            Vector3 newHorizontal = Vector3.Lerp(currentHorizontal, targetHorizontal, t) + platformVel;
-
-            _rb.linearVelocity = new Vector3(newHorizontal.x, _rb.linearVelocity.y, newHorizontal.z);
-
-            if (IsGrounded && _moveDirection.magnitude > 0.1f)
-                TryClimbStep();
+            float t = 1f - Mathf.Exp(-rate * Time.fixedDeltaTime);
+            Vector3 horizontal = Vector3.Lerp(HorizontalVelocity - platformVelocity, target, t) + platformVelocity;
+            _rb.linearVelocity = new Vector3(horizontal.x, _rb.linearVelocity.y, horizontal.z);
         }
 
         private void TryClimbStep()
