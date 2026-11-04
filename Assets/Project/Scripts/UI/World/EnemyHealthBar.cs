@@ -9,12 +9,25 @@ namespace CGD.UI
     // targets whose state is the thing being looked at (the firing range's dummies).
     public class EnemyHealthBar : MonoBehaviour
     {
+        private const float BarScale  = 0.005f; // world metres per canvas unit
+        private const float PunchTime = 0.15f;
+
         [SerializeField] private Vector3 _worldOffset = new Vector3(0f, 2.2f, 0f);
         [SerializeField] private float   _fadeDelay   = 2.5f;
         [SerializeField] private float   _fadeSpeed   = 2f;
         [SerializeField] private Color   _fillColor   = new Color(0.2f, 0.85f, 0.2f, 1f);
         [SerializeField] private Color   _bgColor     = new Color(0.85f, 0.15f, 0.1f, 1f);
         [SerializeField] private Color   _shieldColor = new Color(0.35f, 0.65f, 1f, 1f);
+
+        [Header("Damage trail")]
+        [Tooltip("Colour of the band that shows what a hit just took off")]
+        [SerializeField] private Color _trailColor = Color.white;
+        [Tooltip("Seconds the band waits before shrinking onto the remaining health")]
+        [SerializeField, Min(0f)] private float _trailHold = 0.35f;
+        [Tooltip("Share of the bar the band shrinks per second")]
+        [SerializeField, Min(0.1f)] private float _trailSpeed = 1.5f;
+        [Tooltip("How much the bar swells on a hit, fading back")]
+        [SerializeField, Min(0f)] private float _punch = 0.12f;
 
         [Header("Always-on display")]
         [Tooltip("Stay visible instead of fading out after a hit")]
@@ -23,13 +36,14 @@ namespace CGD.UI
         [SerializeField] private bool _showNumbers;
 
         private Canvas          _canvas;
-        private Image           _fill;
+        private TrailingFill    _health;
+        private TrailingFill    _shield;
         private RectTransform   _shieldBar;
-        private Image           _shieldFill;
         private TextMeshProUGUI _numbers;
         private CanvasGroup     _group;
         private Camera          _cam;
         private float           _fadeTimer;
+        private float           _punchTimer;
         private bool            _active;
 
         private void Awake()
@@ -52,12 +66,11 @@ namespace CGD.UI
             var rt = (RectTransform)_canvas.transform;
             rt.sizeDelta     = new Vector2(200f, 20f);
             rt.localPosition = _worldOffset;
-            rt.localScale    = Vector3.one * 0.005f;
+            rt.localScale    = Vector3.one * BarScale;
 
             _group = go.AddComponent<CanvasGroup>();
 
-            CreateStretchImage(go.transform, "BG", _bgColor);
-            _fill = CreateStretchImage(go.transform, "Fill", _fillColor);
+            _health = BuildFill(rt, _bgColor, _fillColor);
 
             BuildShieldBar(rt);
             if (_showNumbers) BuildNumbers(rt);
@@ -74,9 +87,17 @@ namespace CGD.UI
             _shieldBar.anchoredPosition = new Vector2(0f, 2f);
             _shieldBar.sizeDelta = new Vector2(0f, 8f);
 
-            CreateStretchImage(_shieldBar, "BG", new Color(0f, 0f, 0f, 0.6f));
-            _shieldFill = CreateStretchImage(_shieldBar, "Fill", _shieldColor);
+            _shield = BuildFill(_shieldBar, new Color(0f, 0f, 0f, 0.6f), _shieldColor);
             _shieldBar.gameObject.SetActive(false);
+        }
+
+        // Background, then the damage trail, then the fill on top.
+        private TrailingFill BuildFill(RectTransform parent, Color background, Color fill)
+        {
+            CreateStretchImage(parent, "BG", background);
+            Image trail = CreateStretchImage(parent, "Trail", _trailColor);
+            Image front = CreateStretchImage(parent, "Fill", fill);
+            return new TrailingFill(front.rectTransform, trail.rectTransform, _trailHold, _trailSpeed);
         }
 
         private void BuildNumbers(RectTransform parent)
@@ -105,29 +126,23 @@ namespace CGD.UI
         public void ShowDamage(float health, float maxHealth, float shield, float maxShield)
         {
             Refresh(health, maxHealth, shield, maxShield);
+            _punchTimer = PunchTime;
             Reveal();
         }
 
         // Updates the fills without bringing the bar up, e.g. as a shield regenerates.
         public void Refresh(float health, float maxHealth, float shield, float maxShield)
         {
-            if (_fill == null) return;
+            if (_health == null) return;
 
-            SetFill(_fill, health, maxHealth);
+            _health.Set(maxHealth > 0f ? health / maxHealth : 0f);
             _shieldBar.gameObject.SetActive(maxShield > 0f);
-            SetFill(_shieldFill, shield, maxShield);
+            _shield.Set(maxShield > 0f ? shield / maxShield : 0f);
 
             if (_numbers != null)
                 _numbers.text = maxShield > 0f
                     ? $"{health:0} / {maxHealth:0}   <color=#{ColorUtility.ToHtmlStringRGB(_shieldColor)}>{shield:0} / {maxShield:0}</color>"
                     : $"{health:0} / {maxHealth:0}";
-        }
-
-        private static void SetFill(Image fill, float current, float max)
-        {
-            float t = max > 0f ? Mathf.Clamp01(current / max) : 0f;
-            fill.rectTransform.anchorMax = new Vector2(t, 1f);
-            fill.rectTransform.offsetMax = Vector2.zero;
         }
 
         private void Reveal()
@@ -138,6 +153,15 @@ namespace CGD.UI
             _canvas.gameObject.SetActive(true);
         }
 
+        // The bar swells on a hit and eases back.
+        private void Punch()
+        {
+            if (_punchTimer <= 0f) return;
+
+            _punchTimer = Mathf.Max(0f, _punchTimer - Time.deltaTime);
+            _canvas.transform.localScale = Vector3.one * (BarScale * (1f + _punch * _punchTimer / PunchTime));
+        }
+
         private void LateUpdate()
         {
             if (!_active) return;
@@ -145,6 +169,10 @@ namespace CGD.UI
             if (_cam == null) _cam = Camera.main;
             if (_cam != null)
                 _canvas.transform.rotation = _cam.transform.rotation;
+
+            _health.Tick(Time.deltaTime);
+            _shield.Tick(Time.deltaTime);
+            Punch();
 
             if (_alwaysVisible) return;
 

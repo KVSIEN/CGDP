@@ -190,7 +190,7 @@ Later children draw on top. `HUDManager` finds every element by itself.
 | **HitMarkerHUD** | — | Driven by `CombatFeedback`. |
 | **StealthHUD** | `_stealth` = Player's Stealthable | HIDDEN / REVEALED / SPOTTED under the crosshair. |
 
-Damage numbers and enemy health bars build themselves — don't place them under the HUD.
+Damage numbers and enemy health bars build themselves — don't place them under the HUD. `EnemyHealthBar` also tunes its damage band: `_trailColor`, `_trailHold` (seconds before it shrinks), `_trailSpeed` and `_punch` (swell on a hit).
 
 ### Settings Menu
 

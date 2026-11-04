@@ -439,7 +439,7 @@
 - Losing the target switches the enemy to Alert for investigation; detecting it again immediately re-enters Chase
 - Stuns and slows (e.g. from Ice) stop or slow enemies the same way they affect the player
 - State color indicator: mesh tints grey (patrol), yellow (alert), red (chase), blue (stunned), dark (dead) via MaterialPropertyBlock — no material instances created
-- World-space health bar appears above the enemy on damage and fades out after a configurable delay; billboards toward the camera
+- World-space health bar appears above the enemy on damage and fades out after a configurable delay; billboards toward the camera. A hit swells the bar slightly and leaves a white band where the lost health was, which holds a moment and then shrinks onto what is left, so you can see how big the hit was. Enemies with a shield get a thin blue strip above the bar that behaves the same way
 - All parameters (health, speeds, sight, hearing, combat type, attack, ranged stats, alert duration) are tunable per enemy type via an EnemyData ScriptableObject
 - **Tier-1 enemy per reality** (placeholder capsules), each holding about 100 effective health — the raw damage it takes to kill one — spread the way its reality defends (GDD): armour cuts every hit before shields and health, so armour multiplies how long the rest lasts
   - **Maintenance Bot** (TECH, Service tier): a white service chassis with a lit waist band and antenna. Armour first — 50 armour over 37 shield and 30 health. Slow but hard to crack; its shield comes back after 4 seconds
