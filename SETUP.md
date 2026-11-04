@@ -104,7 +104,8 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 | **Reflector** | `_aim` = Main Camera (PlayerCamera's transform) | Catches hits for reflect abilities and parry reflects. Must be on the **same object as PlayerHealth** (it hooks into damage the way the melee guard does). Beam/slash reflects play their timeline from here — no `TimelineAbilityRunner` needed. |
 | **PlayerOffhand** (Player) | `_camera` = PlayerCamera | Runs the active slot's offhand: hands it to the MeleeController and, for an artifact, applies its stats and runs its aim-input use. Needs `PlayerWeaponLoadout` (which stores the offhands) and `PlayerInputHandler` on the same object; reads `MeleeController` (hands it the offhand), `PlayerAbilities` (a tome casts through its context and events — without it spells can't be cast), `Reflector` (a ward — without it wards can't be raised), `MeterSet` (costs and drains), `CombatActions` (Surge charging), `HealthManager` (revive resets cooldowns), `PlayerMovement`/`PlayerDodge` (can-act checks) and `CharacterStats` (main-hand penalty, artifact stats) from the same object or a parent. It sets `PlayerCamera.AimTakenByOffhand`. |
 | **MeleeController** | `_camera` = PlayerCamera, `_data` = `Weapons/Melee/DefaultMeleeWeaponData` (fists), `_meleeParryRange` (4 m: parries beyond it are deflected shots), `_rangedParryReflect` = `Combat/Reflect/DeflectReflect` (needs the Reflector) | Quick melee (the Melee key bashes with the gun's `QuickMelee`, a Tactical Knife perk's knife, the melee weapon's guard bash, or fists) and the equipped melee weapon. `PlayerWeaponLoadout` hands it every weapon put in hand, guns included. Must be on the **same object as PlayerHealth**: it parries (bash) and blocks (guard) hits as an `IDamageInterceptor`, which HealthManager only looks for on its own object. Stamina costs need a `MeterSet` with the category's stamina meter on that object too (without one, melee is free). Combo weaving reads `PlayerDodge` and `PlayerAbilities` from the same object (each optional). |
-| **ThrowableController** | `_camera` = PlayerCamera | Throws the grenade an item slot readies. Grenades are items (`Items/Throwables/`). |
+| **ThrowableController** | `_camera` = PlayerCamera, `_preview` = the Player's `TrajectoryPreview` | Throws the grenade an item slot readies, charging with the attack button. Grenades are items (`Items/Throwables/`). |
+| **TrajectoryPreview** (Player) | `_material` = `Materials/ThrowPreview` (unlit) | Draws the aim arc and blast ring; builds its line renderers itself. |
 | **PlayerAbilities** | `_health` = PlayerHealth, `_slots` = up to 4 ability assets | Aims with PlayerMovement's camera. Abilities act through the player's own components, found once: Dash needs PlayerDodge, Timeline abilities a TimelineAbilityRunner, Reflect a Reflector, Stealth a Stealthable, Stat Buff CharacterStats. |
 | **TimelineAbilityRunner**? | — | Needed for `TimelineAbility` assets. |
 | **WeaponVisuals** (WeaponRig) | — | Kick and sway are tuned on the component and the `WeaponData`. |
@@ -319,7 +320,8 @@ Starting setup is *Mixed, tier 1*: dummy *n* plays the first faction's enemy, th
 | Prefab | Needs |
 |---|---|
 | `Prefabs/Weapons/Projectile` | `Projectile` + a renderer. `TrailRenderer`? is reset on every launch. |
-| `Prefabs/Weapons/FragGrenade` | `Rigidbody`, solid Collider, `Grenade` |
+| `Prefabs/Weapons/FragGrenade` | Root: `Rigidbody`, solid `SphereCollider`, `Grenade` (`_body` = the Body child's renderer, which takes the grenade's colour and blinks). Children `Body`, `Cap`, `Lever` are visual only. Shared by every grenade type |
+| `Prefabs/VFX/ExplosionFlash` | A sphere with `ExplosionFlash` and the transparent `Materials/ExplosionFlash`; set as a grenade's `ExplosionEffect`. Pooled automatically |
 | Zone prefabs | `PersistentZone` — spawned by an ActionTimeline's zone event |
 | One-shot VFX | `PooledLifetime` (`_lifetime` 0 = until particles finish) |
 
@@ -406,6 +408,21 @@ The Sandbox **Gunsmith** stands at (5, 0, −3):
 - Objectives count **kills** (`EnemyData`), **pickups** (`ItemDefinition`) or **signals** (`QuestSignal`).
 - Raise a signal from any UnityEvent (e.g. `EventInteractable`) via the signal asset's `Raise()`.
 - Start a non-auto quest from a UnityEvent with `QuestTracker.StartQuest`.
+
+## Grenade data
+
+A grenade type is one `GrenadeData` asset (`Create › CGD › Weapons › Grenade Data`, in `Data/Weapons/Throwables/`), used by a `ThrowableDefinition` item. All its tuning is there; the prefab only draws it.
+
+| Group | Fields |
+|---|---|
+| Identity | `GrenadePrefab` (any prefab with `Rigidbody`, `Collider`, `Grenade`), `BodyColor` |
+| Throw | `MinThrowSpeed` (tap) → `MaxThrowSpeed` (fully charged) in m/s, `ChargeTime` (seconds to full, 0 = always full), `ThrowAngle` (upward lift, degrees), `InheritVelocity` (share of the thrower's movement) |
+| Fuse | `Fuse` = Timed or OnImpact, `FuseTime` (OnImpact: the longest it may fly), `ArmTime`, `FuseBlinkColor` |
+| Explosion | `ExplosionRadius`, `ExplosionDamage`, `EdgeDamage` (share left at the edge), `ArmorPenetration`, `DamageType`, `HitMask`, `NeedsLineOfSight` + `BlockerMask`, `PushForce`, `NoiseRadius` |
+| Effects | `SmokeCloudPrefab`, `ExplosionEffect`, `CameraTrauma` + `ShakeRadius`, `OnHitEffects`, `ThrowSound`, `ExplosionSound` |
+| Preview | `TrajectorySteps`, `TrajectoryStepTime`, `PreviewColor` |
+
+Range on flat ground is about speed² ÷ 9.8, so the Frag Grenade throws from about 6 m (a tap) to about 33 m (full charge).
 
 ## Map & Minimap
 

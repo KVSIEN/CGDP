@@ -14,19 +14,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.GrenadeData
   GrenadeName: Frag Grenade
   GrenadePrefab: {fileID: 3424364988567009664, guid: 79be582424e8357498037e5240babdf2, type: 3}
-  ThrowForce: 18
+  BodyColor: {r: 0.28, g: 0.34, b: 0.2, a: 1}
+  MinThrowSpeed: 8
+  MaxThrowSpeed: 18
+  ChargeTime: 0.8
+  ThrowAngle: 6
+  InheritVelocity: 0.5
+  Fuse: 0
   FuseTime: 2.5
+  ArmTime: 0.15
+  FuseBlinkColor: {r: 1, g: 0.15, b: 0.05, a: 1}
   ExplosionRadius: 5
   ExplosionDamage: 80
+  EdgeDamage: 0.1
   ArmorPenetration: 0
   DamageType: 0
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  NeedsLineOfSight: 1
+  BlockerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  PushForce: 400
   NoiseRadius: 50
+  SmokeCloudPrefab: {fileID: 0}
+  ExplosionEffect: {fileID: 7000000000000000001, guid: d3520984238c41a78a4ca49a0a007f9f, type: 3}
+  CameraTrauma: 0.8
+  ShakeRadius: 25
   OnHitEffects: []
   ThrowSound: {fileID: 0}
   ExplosionSound: {fileID: 0}
   TrajectorySteps: 30
   TrajectoryStepTime: 0.1
-  DebugColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  PreviewColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

@@ -414,10 +414,11 @@
 
 ## Grenades
 - Grenades are items: they're looted, bought, crafted and picked up like anything else, carried in the pack (Frag ×3, Smoke ×2 per stack) and put on an item slot (5–8)
-- Pressing a grenade's item key puts it in your hand (the gun is put away); hold the attack button to aim — a predicted trajectory arc is drawn from the throw point, accounting for gravity, and stops early at the first surface it would hit
-- Release to throw; the grenade flies with real physics (gravity, bouncing) and detonates after a fixed fuse time. Your weapon comes back afterwards
+- Pressing a grenade's item key puts it in your hand (the gun is put away); hold the attack button to aim — the longer you hold, the harder you throw, up to the grenade's charge time, so a tap lobs it a few metres and a full charge sends it as far as it goes. A glowing arc is drawn from the throw point, accounting for gravity, your own movement and the throw's upward lift, and stops at the first surface it would hit, where a ring shows the blast radius
+- Release to throw; the grenade flies with real physics (gravity, bouncing) and takes along part of your own movement. Its body blinks faster and faster as the fuse runs down. Your weapon comes back afterwards
 - Aim, a weapon key, or the same item key again puts the grenade away without throwing
-- Explosion deals damage in a radius, falling off linearly with distance from the blast center, through the same Effective Damage pipeline as everything else
+- Each grenade type sets its own throwing speed range, charge time, throw angle, fuse (a timer, or going off on impact), blast radius, damage and how much of it is left at the edge, whether walls shield what is behind them, how hard it shoves loose objects, its noise, camera shake, colour and optional flash
+- Explosion deals damage in a radius, falling off with distance from the blast center, through the same Effective Damage pipeline as everything else. Walls and cover block it: anything not in line of sight of the blast takes nothing. A fireball flash marks the blast and loose physics objects are thrown by it
 - Included: Frag Grenade and Smoke Grenade (a smoke cloud that hides you and blocks sight lines)
 
 ## Enemy AI
