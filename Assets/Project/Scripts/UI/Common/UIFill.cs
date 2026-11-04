@@ -22,6 +22,20 @@ namespace CGD.UI
             rect.anchorMax = new Vector2(amount, rect.anchorMax.y);
         }
 
+        // `amount` (0..1) of the height, from the top.
+        public static void VerticalFromTop(Image image, float amount)
+        {
+            amount = Mathf.Clamp01(amount);
+            if (image.type == Image.Type.Filled)
+            {
+                if (!Mathf.Approximately(image.fillAmount, amount)) image.fillAmount = amount;
+                return;
+            }
+
+            RectTransform rect = image.rectTransform;
+            rect.anchorMin = new Vector2(rect.anchorMin.x, 1f - amount);
+        }
+
         // `amount` (0..1) of the height, from the bottom.
         public static void Vertical(Image image, float amount)
         {

@@ -33,7 +33,6 @@ namespace CGD.UI
         private Image[] _rows;
 
         private TextMeshProUGUI[] _labels;
-        private RectTransform[]   _fills;
         private Image[]           _fillImages;
 
         private void Awake()
@@ -44,8 +43,9 @@ namespace CGD.UI
 
             _labels = new TextMeshProUGUI[PlayerItemSlots.SlotCount];
             _rows   = new Image[PlayerItemSlots.SlotCount];
-            _fills  = new RectTransform[PlayerItemSlots.SlotCount];
             _fillImages = new Image[PlayerItemSlots.SlotCount];
+
+            if (BuildSkinnedRows(self)) return;
 
             for (int i = 0; i < PlayerItemSlots.SlotCount; i++)
             {
@@ -57,10 +57,10 @@ namespace CGD.UI
                 Image fill = UIFactory.MakeImage("Fill", row.rectTransform);
                 fill.color = Theme.Positive.WithAlpha(FillAlpha);
                 _fillImages[i] = fill;
-                _fills[i] = fill.rectTransform;
-                _fills[i].anchorMin = Vector2.zero;
-                _fills[i].anchorMax = new Vector2(0f, 1f);
-                _fills[i].offsetMin = _fills[i].offsetMax = Vector2.zero;
+                RectTransform fillRt = fill.rectTransform;
+                fillRt.anchorMin = Vector2.zero;
+                fillRt.anchorMax = new Vector2(0f, 1f);
+                fillRt.offsetMin = fillRt.offsetMax = Vector2.zero;
 
                 _labels[i] = UIFactory.MakeText("Label", row.rectTransform);
                 _labels[i].fontSize  = 13f;
@@ -68,6 +68,29 @@ namespace CGD.UI
                 UIFactory.Stretch(_labels[i].rectTransform);
                 _labels[i].rectTransform.offsetMin = new Vector2(8f, 0f);
             }
+        }
+
+        // With a skin, the skin is one row: `Background` (tinted when its throwable is in hand),
+        // `Fill` (use progress and cooldown) and `Label`.
+        private bool BuildSkinnedRows(RectTransform self)
+        {
+            if (!HasSkin) return false;
+
+            Vector2 size = new(_width, _rowHeight);
+            for (int i = 0; i < PlayerItemSlots.SlotCount; i++)
+            {
+                SkinParts row = NewSkinItem(self);
+                _rows[i]       = row.GetImage("Background");
+                _fillImages[i] = row.GetImage("Fill");
+                _labels[i]     = row.GetText("Label");
+                if (!row.Accept()) return false;
+
+                size = row.SizeOr(size);
+                UIFactory.Place(row.Root, new Vector2(0f, -i * (size.y + 2f)), size);
+            }
+
+            self.sizeDelta = new Vector2(size.x, PlayerItemSlots.SlotCount * (size.y + 2f));
+            return true;
         }
 
         private void OnEnable()
@@ -97,7 +120,7 @@ namespace CGD.UI
                 bool  using_      = _slots.IsUsing && _slots.Using == item;
                 bool  coolingDown = !using_ && _slots.OnCooldown && item is ConsumableDefinition;
                 float fill        = using_ ? _slots.UseProgress : coolingDown ? 1f - _slots.CooldownRatio : 0f;
-                _fills[i].anchorMax  = new Vector2(fill, 1f);
+                UIFill.Horizontal(_fillImages[i], fill);
                 _fillImages[i].color = coolingDown ? Theme.TextSecondary.WithAlpha(CooldownAlpha) : Theme.Positive.WithAlpha(FillAlpha);
                 _rows[i].color = inHand != null && inHand == item ? Theme.Accent.WithAlpha(ReadyAlpha) : Theme.Panel;
             }

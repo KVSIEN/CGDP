@@ -31,18 +31,21 @@ namespace CGD.UI
                 _byName.TryAdd(child.name, child);
         }
 
-        // Instantiates `prefab` under `parent`, stretched to fill it.
-        public static SkinParts Create(RectTransform prefab, RectTransform parent, string owner)
+        // Instantiates `prefab` under `parent`. A skin for a whole element is stretched to fill
+        // it; one item of a repeated element (a slot, a row) is left for the element to place.
+        public static SkinParts Create(RectTransform prefab, RectTransform parent, string owner, bool stretch = true)
         {
             Vector2 designSize = prefab.sizeDelta;
             RectTransform root = Object.Instantiate(prefab, parent, false);
             root.name = prefab.name;
-            UIFactory.Stretch(root);
+            if (stretch) UIFactory.Stretch(root);
             return new SkinParts(root, designSize, owner);
         }
 
-        public Image           GetImage(string part) => Get<Image>(part);
-        public TextMeshProUGUI GetText(string part)  => Get<TextMeshProUGUI>(part);
+        // An optional part may be left out of the skin: it comes back null, and the element
+        // simply doesn't drive it.
+        public Image           GetImage(string part, bool optional = false) => Get<Image>(part, optional);
+        public TextMeshProUGUI GetText(string part, bool optional = false)  => Get<TextMeshProUGUI>(part, optional);
 
         // The skin's size for the element to adopt, or `fallback` when the root has none (a
         // root that stretches to its parent has a size of 0).
@@ -61,12 +64,12 @@ namespace CGD.UI
             return false;
         }
 
-        private T Get<T>(string part) where T : Component
+        private T Get<T>(string part, bool optional) where T : Component
         {
             if (_byName.TryGetValue(part, out Transform found) && found.TryGetComponent(out T component))
                 return component;
 
-            (_missing ??= new List<string>()).Add($"{part} ({typeof(T).Name})");
+            if (!optional) (_missing ??= new List<string>()).Add($"{part} ({typeof(T).Name})");
             return null;
         }
     }

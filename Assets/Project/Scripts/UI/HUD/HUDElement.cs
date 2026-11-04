@@ -11,9 +11,17 @@ namespace CGD.UI
         [Tooltip("Optional: a prefab that replaces this element's built-in layout. It needs the named parts listed for this element in SETUP.md; with a part missing the built-in layout is used")]
         [SerializeField] private RectTransform _skin;
 
-        // The skin instantiated under this element, or null to build the built-in layout.
+        // The skin instantiated under this element, stretched to fill it, or null to build the
+        // built-in layout.
         protected SkinParts UseSkin() =>
             _skin != null ? SkinParts.Create(_skin, (RectTransform)transform, GetType().Name) : null;
+
+        // For an element made of repeated items (slots, rows) the skin is one item. The element
+        // makes one per slot, places it, and sizes itself from the item's size.
+        protected bool HasSkin => _skin != null;
+
+        protected SkinParts NewSkinItem(RectTransform parent) =>
+            SkinParts.Create(_skin, parent, GetType().Name, stretch: false);
 
         protected HUDTheme Theme => _theme != null ? _theme : HUDTheme.Fallback;
 

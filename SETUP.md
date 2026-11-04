@@ -182,7 +182,20 @@ Later children draw on top. `HUDManager` finds every element by itself.
 | **DodgeHUD** | `Background`, `Cooldown` → Image; `Key`, `Name` → TextMeshProUGUI | `Background` is tinted by state (ready, cooling down, dodging, committed) — use a white sprite; `Cooldown` drains; `Key` shows the bound key; `Name` the dodge move |
 | **OffhandHUD** | `Background`, `Cooldown` → Image; `Key`, `Name`, `Charges` → TextMeshProUGUI | As Dodge; the whole skin shows only while an artifact is in use |
 
-Bars and overlays (`HealthFill`, `Cooldown`) are shown either way you build them: an Image with *Type = Filled* (set the fill method and origin; horizontal from the left for bars, vertical from the bottom for overlays; it needs a sprite), or a plain Image anchored to stretch its parent with zero offsets, whose right or top edge the element pulls in. The other HUD elements still have only the built-in layout.
+Bars and overlays (`HealthFill`, `Cooldown`) are shown either way you build them: an Image with *Type = Filled* (set the fill method and origin; horizontal from the left for bars, vertical from the bottom for overlays; it needs a sprite), or a plain Image anchored to stretch its parent with zero offsets, whose right or top edge the element pulls in. 
+
+**Repeated elements** — for these, the skin is **one item**, and the element makes as many as it needs, places them itself and sizes its panel from the item's size (width and height of the skin root; the layout fields next to `_skin` still set gaps and anchoring). Parts marked *optional* may be left out. A skin here has no panel behind the items, so each item brings its own background.
+
+| Element | The skin is one… | Required parts | Optional parts | Driven by the element |
+|---|---|---|---|---|
+| **AbilityHUD** | ability slot (four are made, centred, spaced by *Slot Gap*) | `Background`, `Cooldown` → Image; `Charges` → TextMeshProUGUI | `Surge`, `SurgeFill` → Image | `Background` is tinted by the ability's colour (white sprite); `Cooldown` drains/fills vertically from the bottom; `Surge` shows only for a Surge ability and `SurgeFill` fills horizontally |
+| **StatusEffectHUD** | effect tile (up to *Max Tiles*, left to right, spaced by *Tile Gap*) | `Icon` → Image | `Remaining` → Image; `Name`, `Stacks` → TextMeshProUGUI | `Icon` gets the effect's sprite (or its colour when it has none); `Remaining` covers the elapsed part from the top |
+| **ItemSlotsHUD** | item row (four, top to bottom) | `Background`, `Fill` → Image; `Label` → TextMeshProUGUI | — | `Background` is tinted while its throwable is in hand; `Fill` shows use progress or cooldown from the left |
+| **MeterHUD** | meter row (one per meter, top to bottom, spaced by *Row Spacing*) | `Fill` → Image; `Label` → TextMeshProUGUI | — | `Fill` is filled from the left and tinted by the meter's colour (grey while exhausted) — use a white sprite |
+| **NotificationHUD** | message row (*Max Visible*, newest on top) | `Text` → TextMeshProUGUI | — | `Text` takes the message and its style colour; rows are stacked by *Row Height* and *Row Gap*, so set those to the skin's height |
+| **SlotWheelHUD** | wheel option (up to 12 around the ring) | `Background` → Image; `Label` → TextMeshProUGUI | — | `Background` is tinted when highlighted; the wheel's title in the middle stays built-in |
+
+The remaining HUD elements (crosshair, quests, objective, interact prompt, hit marker, stealth tag, inventory and the other windows) still have only the built-in layout.
 
 | Element | Assign | Notes |
 |---|---|---|

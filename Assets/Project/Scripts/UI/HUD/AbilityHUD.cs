@@ -26,7 +26,7 @@ namespace CGD.UI
         private Image[]  _cooldownOverlay = new Image[SlotCount];
         private TextMeshProUGUI[] _chargeLabels = new TextMeshProUGUI[SlotCount];
         private Image[]  _surgeBg   = new Image[SlotCount];
-        private RectTransform[] _surgeFill = new RectTransform[SlotCount];
+        private Image[]  _surgeFill = new Image[SlotCount];
 
         // Cached so the per-frame charge label never allocates.
         private static readonly string[] ChargeText = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
@@ -51,6 +51,41 @@ namespace CGD.UI
         }
 
         private void BuildSlots()
+        {
+            if (!BuildSkinnedSlots()) BuildDefaultSlots();
+        }
+
+        // With a skin, the skin is one slot: the element makes four, spaces them by the slot's
+        // size and the layout gap, and sizes the bar to fit. The surge gauge is optional.
+        private bool BuildSkinnedSlots()
+        {
+            if (!HasSkin) return false;
+
+            var self = GetComponent<RectTransform>();
+            Vector2 size = Vector2.one * _slotSize;
+
+            for (int i = 0; i < SlotCount; i++)
+            {
+                SkinParts slot = NewSkinItem(self);
+                _slotBg[i]          = slot.GetImage("Background");
+                _cooldownOverlay[i] = slot.GetImage("Cooldown");
+                _chargeLabels[i]    = slot.GetText("Charges");
+                _surgeBg[i]         = slot.GetImage("Surge", optional: true);
+                _surgeFill[i]       = slot.GetImage("SurgeFill", optional: true);
+                if (!slot.Accept()) return false;
+
+                size = slot.SizeOr(size);
+                RectTransform rt = slot.Root;
+                rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
+                rt.sizeDelta = size;
+                rt.anchoredPosition = new Vector2((i - (SlotCount - 1) * 0.5f) * (size.x + _slotGap), 0f);
+            }
+
+            self.sizeDelta = new Vector2(SlotCount * size.x + (SlotCount - 1) * _slotGap, size.y);
+            return true;
+        }
+
+        private void BuildDefaultSlots()
         {
             var self = GetComponent<RectTransform>();
 
@@ -90,10 +125,11 @@ namespace CGD.UI
 
                 var surgeFill = UIFactory.MakeImage("Fill", surgeRt);
                 surgeFill.color = Theme.Reward;
-                _surgeFill[i] = surgeFill.rectTransform;
-                _surgeFill[i].anchorMin = Vector2.zero;
-                _surgeFill[i].anchorMax = new Vector2(0f, 1f);
-                _surgeFill[i].offsetMin = _surgeFill[i].offsetMax = Vector2.zero;
+                _surgeFill[i] = surgeFill;
+                RectTransform fillRt = surgeFill.rectTransform;
+                fillRt.anchorMin = Vector2.zero;
+                fillRt.anchorMax = new Vector2(0f, 1f);
+                fillRt.offsetMin = fillRt.offsetMax = Vector2.zero;
             }
         }
 
@@ -116,11 +152,14 @@ namespace CGD.UI
                 float overlay = _abilities.CastingSlot == i
                     ? _abilities.CastProgress
                     : 1f - (ability != null ? _abilities.GetReadyRatio(i) : 1f);
-                _cooldownOverlay[i].rectTransform.anchorMax = new Vector2(1f, overlay);
+                UIFill.Vertical(_cooldownOverlay[i], overlay);
 
-                bool hasSurge = ability != null && ability.Surge.IsActive;
-                if (_surgeBg[i].gameObject.activeSelf != hasSurge) _surgeBg[i].gameObject.SetActive(hasSurge);
-                if (hasSurge) _surgeFill[i].anchorMax = new Vector2(_abilities.GetSurge(i), 1f);
+                if (_surgeBg[i] != null)
+                {
+                    bool hasSurge = ability != null && ability.Surge.IsActive;
+                    if (_surgeBg[i].gameObject.activeSelf != hasSurge) _surgeBg[i].gameObject.SetActive(hasSurge);
+                    if (hasSurge && _surgeFill[i] != null) UIFill.Horizontal(_surgeFill[i], _abilities.GetSurge(i));
+                }
 
                 _chargeLabels[i].text = ability != null && ability.MaxCharges > 1
                     ? ChargeLabel(_abilities.GetCharges(i))

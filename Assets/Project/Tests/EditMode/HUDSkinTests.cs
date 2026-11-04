@@ -103,6 +103,43 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void AnOptionalPartMayBeMissing()
+        {
+            RectTransform host = NewRect("Host");
+            SkinParts skin = SkinParts.Create(NewSkin(new Vector2(200f, 40f)), host, "AbilityHUD");
+
+            Assert.IsNull(skin.GetImage("SurgeFill", optional: true));
+            Assert.IsNotNull(skin.GetImage("HealthFill"));
+            Assert.IsTrue(skin.Accept());
+        }
+
+        [Test]
+        public void AnItemSkinIsLeftForTheElementToPlace()
+        {
+            RectTransform host = NewRect("Host");
+            RectTransform prefab = NewSkin(new Vector2(56f, 56f));
+            prefab.anchorMin = prefab.anchorMax = new Vector2(0.3f, 0.7f);
+
+            SkinParts item = SkinParts.Create(prefab, host, "AbilityHUD", stretch: false);
+
+            Assert.AreEqual(new Vector2(0.3f, 0.7f), item.Root.anchorMin);
+            Assert.AreEqual(new Vector2(56f, 56f), item.SizeOr(Vector2.zero));
+        }
+
+        [Test]
+        public void FillFromTheTopMovesTheNearAnchorOfAPlainImage()
+        {
+            Image overlay = NewImage("Overlay", NewRect("Host"));
+            overlay.rectTransform.anchorMin = Vector2.zero;
+            overlay.rectTransform.anchorMax = Vector2.one;
+
+            UIFill.VerticalFromTop(overlay, 0.25f);
+
+            Assert.AreEqual(0.75f, overlay.rectTransform.anchorMin.y, 0.0001f);
+            Assert.AreEqual(1f, overlay.rectTransform.anchorMax.y);
+        }
+
+        [Test]
         public void FillMovesTheFarAnchorOfAPlainImage()
         {
             Image bar = NewImage("Bar", NewRect("Host"));

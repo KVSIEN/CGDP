@@ -23,6 +23,7 @@ namespace CGD.UI
 
         private readonly List<ActiveStatus> _active = new();
         private readonly Dictionary<StatusEffect, string> _shortNames = new();
+        private GameObject[]      _roots;
         private Image[]           _tiles;
         private Image[]           _overlays;
         private TextMeshProUGUI[] _names;
@@ -37,13 +38,45 @@ namespace CGD.UI
             rt.anchoredPosition = new Vector2(0f, _screenPaddingBottom);
             rt.sizeDelta        = new Vector2(_maxTiles * (_tileSize + _tileGap) - _tileGap, _tileSize);
 
+            _roots    = new GameObject[_maxTiles];
             _tiles    = new Image[_maxTiles];
             _overlays = new Image[_maxTiles];
             _names    = new TextMeshProUGUI[_maxTiles];
             _stacks   = new TextMeshProUGUI[_maxTiles];
 
+            // A skin that turns out unusable is dropped once, for every tile.
+            bool skinned = true;
             for (int i = 0; i < _maxTiles; i++)
-                BuildTile(rt, i);
+            {
+                skinned = skinned && BuildSkinnedTile(rt, i);
+                if (!skinned) BuildTile(rt, i);
+            }
+        }
+
+        // With a skin, the skin is one tile: `Icon` shows the effect's art (or a coloured tile
+        // for an effect without any); `Remaining`, `Name` and `Stacks` are optional.
+        private bool BuildSkinnedTile(RectTransform parent, int index)
+        {
+            if (!HasSkin) return false;
+
+            SkinParts tile = NewSkinItem(parent);
+            Image icon = tile.GetImage("Icon");
+            if (!tile.Accept()) return false;
+
+            Vector2 size = tile.SizeOr(Vector2.one * _tileSize);
+            RectTransform rt = tile.Root;
+            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0f, 0.5f);
+            rt.sizeDelta = size;
+            rt.anchoredPosition = new Vector2(index * (size.x + _tileGap), 0f);
+            parent.sizeDelta = new Vector2(_maxTiles * (size.x + _tileGap) - _tileGap, size.y);
+
+            _roots[index]    = rt.gameObject;
+            _tiles[index]    = icon;
+            _overlays[index] = tile.GetImage("Remaining", optional: true);
+            _names[index]    = tile.GetText("Name", optional: true);
+            _stacks[index]   = tile.GetText("Stacks", optional: true);
+            rt.gameObject.SetActive(false);
+            return true;
         }
 
         private void BuildTile(RectTransform parent, int index)
@@ -70,6 +103,7 @@ namespace CGD.UI
             stackText.rectTransform.offsetMax = new Vector2(-2f, 0f);
 
             tile.gameObject.SetActive(false);
+            _roots[index]    = tile.gameObject;
             _tiles[index]    = tile;
             _overlays[index] = overlay;
             _names[index]    = nameText;
@@ -84,8 +118,8 @@ namespace CGD.UI
             for (int i = 0; i < _maxTiles; i++)
             {
                 bool used = i < _active.Count;
-                if (_tiles[i].gameObject.activeSelf != used)
-                    _tiles[i].gameObject.SetActive(used);
+                if (_roots[i].activeSelf != used)
+                    _roots[i].SetActive(used);
                 if (used) Draw(i, _active[i]);
             }
         }
@@ -98,11 +132,11 @@ namespace CGD.UI
             tile.sprite = effect.Icon;
             tile.color  = effect.Icon != null ? Color.white : effect.Color;
 
-            _names[index].text = effect.Icon != null ? string.Empty : ShortName(effect);
-            _stacks[index].text = status.Stacks > 1 ? StackLabel(status.Stacks) : string.Empty;
+            if (_names[index] != null)  _names[index].text  = effect.Icon != null ? string.Empty : ShortName(effect);
+            if (_stacks[index] != null) _stacks[index].text = status.Stacks > 1 ? StackLabel(status.Stacks) : string.Empty;
 
             // Overlay covers the elapsed part, growing downward from the top.
-            _overlays[index].rectTransform.anchorMin = new Vector2(0f, status.RemainingRatio);
+            if (_overlays[index] != null) UIFill.VerticalFromTop(_overlays[index], 1f - status.RemainingRatio);
         }
 
         private string ShortName(StatusEffect effect)

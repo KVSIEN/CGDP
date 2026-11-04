@@ -51,7 +51,7 @@
 ## HUD / UI
 - Modular HUD system — elements (crosshair, stats) are independent and can be shown or hidden individually
 - Key hints in the HUD show the keys you have bound, not fixed letters: the interact prompt, the dodge and offhand slots, the item slots and the weapon slots in the inventory. They update the moment you rebind a key or reset the bindings, and long names are shortened (LMB, RMB, Shift, Ctrl, Esc, Wheel Up/Down); an unbound action shows —
-- Five HUD elements (health, speed, ammo, dodge and artifact slot) can have their built-in look replaced by a designer-made prefab: the element drives the named parts it needs (fills, labels) and the prefab owns everything else about how they look; a skin that is missing a part is ignored and the built-in layout is used
+- Eleven HUD elements can have their built-in look replaced by a designer-made prefab: health, speed, ammo, dodge and artifact slot (a whole layout), and the ability bar, status effects, item slots, meters, notification feed and selection wheel (one slot, tile or row that the element repeats). The element drives the named parts it needs (fills, labels) and the prefab owns everything else about how they look; a skin that is missing a part is ignored and the built-in layout is used
 - Every HUD colour comes from one theme asset (surfaces, text, status, accent), so restyling the HUD is editing that asset
 - The HUD scales with the screen: it is laid out for 1920 × 1080 and grows or shrinks with the window, and the world-space prompt and damage numbers scale with it
 - Crosshair drawn entirely in code — no texture needed; updates instantly when settings change

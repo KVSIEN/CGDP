@@ -63,7 +63,7 @@ namespace CGD.UI
         private void RefreshRow(Row row)
         {
             Meter meter = row.Meter;
-            row.Fill.rectTransform.anchorMax = new Vector2(meter.Ratio, 1f);
+            UIFill.Horizontal(row.Fill, meter.Ratio);
             row.Fill.color = meter.IsExhausted ? Theme.Disabled : meter.Definition.Color;
             row.Label.text = $"{meter.Definition.DisplayName}  {Mathf.CeilToInt(meter.Current)} / {Mathf.CeilToInt(meter.Max)}";
         }
@@ -72,6 +72,43 @@ namespace CGD.UI
         {
             var self = GetComponent<RectTransform>();
             UIFactory.AnchorToCorner(self, new Vector2(0f, 0f), _screenPadding);
+
+            if (!BuildSkinnedRows(self)) BuildDefaultRows(self);
+        }
+
+        // With a skin, the skin is one meter's row: `Label` and `Fill`. Rows stack downward with
+        // the layout's row spacing; there is no panel behind them, so a row brings its own.
+        // The fill is tinted by the meter's colour, or the theme's grey while exhausted.
+        private bool BuildSkinnedRows(RectTransform self)
+        {
+            if (!HasSkin) return false;
+
+            float y = 0f;
+            float width = 0f;
+            foreach (Meter meter in _meters.Meters)
+            {
+                SkinParts item = NewSkinItem(self);
+                Image fill = item.GetImage("Fill");
+                TextMeshProUGUI label = item.GetText("Label");
+                if (!item.Accept()) return false;
+
+                Vector2 size = item.SizeOr(new Vector2(_panelWidth - _innerPadding.x * 2f, LabelHeight + _barHeight));
+                UIFactory.Place(item.Root, new Vector2(0f, y), size);
+                y -= size.y + _rowSpacing;
+                width = Mathf.Max(width, size.x);
+
+                var row = new Row { Meter = meter, Fill = fill, Label = label };
+                row.OnChanged = () => RefreshRow(row);
+                meter.Changed += row.OnChanged;
+                _rows.Add(row);
+            }
+
+            self.sizeDelta = new Vector2(width, -y - _rowSpacing);
+            return true;
+        }
+
+        private void BuildDefaultRows(RectTransform self)
+        {
 
             var bg = UIFactory.MakeImage("Background", self);
             bg.color = Theme.Panel;

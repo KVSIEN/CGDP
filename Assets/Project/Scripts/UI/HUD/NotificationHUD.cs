@@ -34,9 +34,21 @@ namespace CGD.UI
             self.anchoredPosition = new Vector2(0f, -_topPadding);
             self.sizeDelta = new Vector2(_rowWidth, 0f);
 
+            // With a skin, the skin is one row: `Text` (coloured by the message's style); a row
+            // brings its own background. Rows are stacked by Row Height and Row Gap, so set
+            // those to the skin's height. A skin that turns out unusable is dropped once.
             _rows = new Row[_maxVisible];
+            bool skinned = HasSkin;
             for (int i = 0; i < _rows.Length; i++)
-                _rows[i] = new Row(self, i, _rowWidth, _rowHeight, Theme.Scrim);
+            {
+                Row row = skinned ? Row.FromSkin(NewSkinItem(self), _rowWidth, _rowHeight) : null;
+                if (row == null)
+                {
+                    skinned = false;
+                    row = new Row(self, i, _rowWidth, _rowHeight, Theme.Scrim);
+                }
+                _rows[i] = row;
+            }
         }
 
         public void Show(string message, NotificationStyle style)
@@ -85,20 +97,43 @@ namespace CGD.UI
 
         private sealed class Row
         {
-            private readonly Image           _background;
+            private readonly RectTransform   _rect;
             private readonly TextMeshProUGUI _text;
             private readonly CanvasGroup     _group;
             private float _remaining;
             private int   _count;
 
+            private Row(RectTransform rect, TextMeshProUGUI text)
+            {
+                _rect = rect;
+                _text = text;
+                _group = rect.gameObject.TryGetComponent(out CanvasGroup existing)
+                    ? existing
+                    : rect.gameObject.AddComponent<CanvasGroup>();
+                _group.alpha = 0f;
+            }
+
+            // Null when the skin lacks a `Text`; the skin is discarded then.
+            public static Row FromSkin(SkinParts skin, float width, float height)
+            {
+                TextMeshProUGUI text = skin.GetText("Text");
+                if (!skin.Accept()) return null;
+
+                RectTransform rt = skin.Root;
+                rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 1f);
+                rt.sizeDelta = skin.SizeOr(new Vector2(width, height));
+                return new Row(rt, text);
+            }
+
             public Row(RectTransform parent, int index, float width, float height, Color background)
             {
-                _background = UIFactory.MakeImage($"Notification{index}", parent);
-                _background.color = background;
-                _group = _background.gameObject.AddComponent<CanvasGroup>();
+                Image image = UIFactory.MakeImage($"Notification{index}", parent);
+                image.color = background;
+                _rect = image.rectTransform;
+                _group = image.gameObject.AddComponent<CanvasGroup>();
                 _group.alpha = 0f;
 
-                RectTransform rt = _background.rectTransform;
+                RectTransform rt = _rect;
                 rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 1f);
                 rt.sizeDelta = new Vector2(width, height);
 
@@ -130,7 +165,7 @@ namespace CGD.UI
             }
 
             public void SetSlot(int slot, float height, float gap) =>
-                _background.rectTransform.anchoredPosition = new Vector2(0f, -slot * (height + gap));
+                _rect.anchoredPosition = new Vector2(0f, -slot * (height + gap));
 
             public void Tick(float deltaTime, float fadeTime)
             {

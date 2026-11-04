@@ -17,6 +17,7 @@ namespace CGD.UI
         [SerializeField] private Vector2 _tileSize = new(150f, 40f);
 
 
+        private readonly List<RectTransform> _tileRoots = new();
         private readonly List<Image> _tiles = new();
         private readonly List<TextMeshProUGUI> _labels = new();
         private TextMeshProUGUI _title;
@@ -33,12 +34,12 @@ namespace CGD.UI
             for (int i = 0; i < _tiles.Count; i++)
             {
                 bool used = i < count;
-                _tiles[i].gameObject.SetActive(used);
+                _tileRoots[i].gameObject.SetActive(used);
                 if (!used) continue;
 
                 _labels[i].text = options[i];
                 float angle = i * Mathf.PI * 2f / count;   // 0 = top, clockwise
-                _tiles[i].rectTransform.anchoredPosition = new Vector2(Mathf.Sin(angle), Mathf.Cos(angle)) * _radius;
+                _tileRoots[i].anchoredPosition = new Vector2(Mathf.Sin(angle), Mathf.Cos(angle)) * _radius;
             }
 
             _highlighted = -1;
@@ -71,8 +72,15 @@ namespace CGD.UI
             UIFactory.Place(_title.rectTransform, Vector2.zero, new Vector2(_tileSize.x, 30f));
             CentreAnchor(_title.rectTransform);
 
+            // With a skin, the skin is one option: `Background` (tinted when highlighted) and
+            // `Label`. The wheel's title stays built-in. A skin that turns out unusable is
+            // dropped once.
+            bool skinned = HasSkin;
             for (int i = 0; i < MaxOptions; i++)
             {
+                if (skinned && TryAddSkinnedOption(self)) continue;
+                skinned = false;
+
                 Image tile = UIFactory.MakeImage($"Option{i}", self);
                 CentreAnchor(tile.rectTransform);
                 tile.rectTransform.sizeDelta = _tileSize;
@@ -82,9 +90,27 @@ namespace CGD.UI
                 label.alignment = TextAlignmentOptions.Center;
                 UIFactory.Stretch(label.rectTransform);
 
+                _tileRoots.Add(tile.rectTransform);
                 _tiles.Add(tile);
                 _labels.Add(label);
             }
+        }
+
+        private bool TryAddSkinnedOption(RectTransform parent)
+        {
+            SkinParts option = NewSkinItem(parent);
+            Image background = option.GetImage("Background");
+            TextMeshProUGUI label = option.GetText("Label");
+            if (!option.Accept()) return false;
+
+            RectTransform rt = option.Root;
+            CentreAnchor(rt);
+            rt.sizeDelta = option.SizeOr(_tileSize);
+
+            _tileRoots.Add(rt);
+            _tiles.Add(background);
+            _labels.Add(label);
+            return true;
         }
 
         private static void CentreAnchor(RectTransform rt)
