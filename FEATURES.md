@@ -677,7 +677,8 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - Time limits in game seconds; a failed quest can be allowed to retry
 - Rewards (items or freshly rolled gear) go straight into the inventory on completion
 - A quest panel on the HUD lists active quests with their objectives, progress counts, finished objectives struck through and a countdown for timed quests
-- Included: a two-quest chain for the sandbox — Target Practice (destroy 3 target dummies, pays 60 rounds) unlocks Resupply (pick up 30 rounds)
+- Firing range: the sandbox dummies stand in for the tier-1 enemies (Maintenance Bot, Scavenger, Husk) with their health, shield and armour; a destroyed dummy disappears and stands back up at full health after a few seconds
+- Included: a two-quest chain for the sandbox — Target Practice (drop one firing-range dummy of each tier-1 enemy type — Maintenance Bot, Scavenger, Husk — pays 60 rounds) unlocks Resupply (pick up 30 rounds)
 
 ## Camera Effects
 - Screen shake from "trauma": hits and explosions add trauma, which fades over time; many small hits blend into one shake instead of fighting each other
@@ -747,7 +748,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - One place for how the game responds to events: messages, screen flashes, controller vibration, camera shake and sounds are bundled into reusable feedback presets, so each reaction is tuned in one asset
 - Message feed at the top of the screen for pickups ("+30 Standard Rounds", "Picked up …"), kills, quest updates and warnings, coloured by kind (info, success, reward, warning, danger); repeated messages stack into "×3" instead of flooding the feed, and old messages fade out
 - Hit markers around the crosshair confirm every hit you land: white for hits, orange for critical hits, a bigger red marker for kills — also for grenade and ability damage
-- Kill confirmation: "Eliminated Target Dummy"
+- Kill confirmation: "Eliminated Husk" (the enemy's name; the firing-range dummies carry the tier-1 enemies' names)
 - Controller vibration for dealing and taking damage — bigger hits rumble harder, overlapping hits build up, and vibration stops while paused or when the game loses focus; can be turned off
 - A low-health warning (message, red pulse, rumble) the moment health drops below 30%, re-armed once you heal back above it
 - Quest announcements: new quest, objective complete, quest complete (with a golden flash), quest failed

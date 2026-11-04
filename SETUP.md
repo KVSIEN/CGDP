@@ -26,7 +26,7 @@ Build a new playable scene in this order:
 
 **Missing from Sandbox** (add when needed): `TimelineAbilityRunner`, animation and
 ragdoll components (no rigged models yet), `FeedbackPlayer`, the world map, stealth,
-crafting stations, `GameDirector` and `LevelBuilder`. The target dummies have no
+crafting stations, `GameDirector` and `LevelBuilder`. The firing-range dummies have no
 `EnemyAI` (they stand still). `MapTest` adds the map, feedback, director, expedition and
 generated-level systems on top of the Sandbox set.
 
@@ -233,6 +233,7 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 | **EnemyAudio**? | `_hurtSound`, `_deathSound` | |
 | **LootDropper**? | `_table`, `_itemPickupPrefab`, `_weaponPickupPrefab` | Tick `_dropOnDeath`. |
 | **DespawnOnDeath**? | `_delay` | Returns pooled enemies to the pool. |
+| **RespawnOnDeath**? | `_delay` (4 s) | Alternative to DespawnOnDeath for things that must keep being shot at: hides the body (all child objects) while dead, then revives in place. Used by the firing-range dummies. |
 | **CharacterStats**? | `_presets` = e.g. `Stats/HardDifficultyModifierPreset` | Tougher enemy. |
 | **StatusEffectController** | `_immunities`? | Without it, status effects are ignored. |
 
@@ -273,6 +274,19 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 - No hitboxes? A collider on the character itself takes Body hits.
 
 ---
+
+### Firing range dummies (Sandbox)
+
+`Prefabs/Characters/TargetDummy` is a stationary stand-in for a tier-1 enemy: `EnemyHealth` (`_data` = the enemy it plays, `_hitboxProfile` = `TargetDummyHitboxProfile`, `_healthBar`), `StatusEffectController`, `EnemyHealthBar`, `RespawnOnDeath`; children `Cube` (body, `Hitbox` Body) and `Cylinder` (head, `Hitbox` Head). It has no `EnemyAI`, `NavMeshAgent` or `DespawnOnDeath`. Sandbox places four instances along the range, each overriding `_data`:
+
+| Instance | Distance | `_data` |
+|---|---|---|
+| `TargetDummy25m` | 25 m | `MaintenanceBotEnemyData` |
+| `TargetDummy50m` | 50 m | `ScavengerEnemyData` |
+| `TargetDummy75m` | 75 m | `HuskEnemyData` |
+| `TargetDummy100m` | 100 m | `MaintenanceBotEnemyData` |
+
+Health, shield, armour, name and kill credit (`QuestEvents` Kill by `EnemyData`) all come from that asset, so tuning an enemy retunes its dummy. The Target Practice quest asks for one kill of each of the three.
 
 ## Pickups & Interactables
 
@@ -618,7 +632,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `UI/` | `CrosshairSettings` | CrosshairHUD |
 | `Flow/` | `GameFlowSettings` | GameFlow |
 | `Timing/` | `GameTimeSettings` | GameTime |
-| `Enemies/` | `MaintenanceBot`/`Scavenger`/`Husk` `…EnemyData` (tier 1, ≈100 effective health each), `Tech`/`Bio`/`Void` `Tier2`/`Tier3` `…EnemyData` (placeholders, ≈2.5× / ≈5×; *Tier* set on each), `DefaultEnemyData`, `TargetDummyEnemyData` | EnemyAI, EnemyHealth |
+| `Enemies/` | `MaintenanceBot`/`Scavenger`/`Husk` `…EnemyData` (tier 1, ≈100 effective health each; the firing-range dummies run on them), `Tech`/`Bio`/`Void` `Tier2`/`Tier3` `…EnemyData` (placeholders, ≈2.5× / ≈5×; *Tier* set on each), `DefaultEnemyData` | EnemyAI, EnemyHealth |
 | `Enemies/`, `Enemies/Affixes/` | `DefaultEnemyAffixPool` (affixes per tier: 0 / 1 / 2), `Armored`/`Warded`/`Vital`/`Brutal`/`Swift` `…Affix` | EnemyAffixes |
 | `Combat/HitboxProfiles/` | `DefaultHitboxProfile`, `TargetDummyHitboxProfile` | EnemyHealth, PlayerHealth |
 | `Combat/StatusEffects/` | Bleed, Fire, Ice, Lightning, Poison | on-hit effect lists |

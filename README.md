@@ -103,6 +103,6 @@ Assets/
   per map (printed in the test output), validator issues as warnings. CI runs the suite on
   every push, see `.github/workflows/tests.yml`.
 - **Data assets** are named `<Name><Type>` (`PistolCategory`, `HitscanFireBehavior`,
-  `TargetDummyEnemyData`) and created from `Create > CGD > <Feature> > …`.
+  `HuskEnemyData`) and created from `Create > CGD > <Feature> > …`.
 - **Moving files:** do it inside Unity, or move each file together with its `.meta` while
   the editor is closed — otherwise scene and prefab references break.

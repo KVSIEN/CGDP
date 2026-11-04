@@ -13,12 +13,22 @@ MonoBehaviour:
   m_Name: TargetPracticeQuest
   m_EditorClassIdentifier: CGD.Runtime::CGD.Quests.QuestDefinition
   _title: Target Practice
-  _description: Get a feel for your weapon on the target dummies.
+  _description: Get a feel for your weapon on the range - one dummy of each enemy type. They stand back up after a few seconds.
   _objectives:
-  - _description: Destroy target dummies
+  - _description: Destroy a Maintenance Bot dummy
     _kind: 0
-    _target: {fileID: 11400000, guid: 60630196f2e16e54e8469074a07ef660, type: 2}
-    _requiredCount: 3
+    _target: {fileID: 11400000, guid: 78888251441a448da8c9bd516ce7e0ee, type: 2}
+    _requiredCount: 1
+    _optional: 0
+  - _description: Destroy a Scavenger dummy
+    _kind: 0
+    _target: {fileID: 11400000, guid: 53e201bcb1494024a7c4da29efdc2e20, type: 2}
+    _requiredCount: 1
+    _optional: 0
+  - _description: Destroy a Husk dummy
+    _kind: 0
+    _target: {fileID: 11400000, guid: af485e541eb24393b21a5366aed1fc91, type: 2}
+    _requiredCount: 1
     _optional: 0
   _sequential: 0
   _prerequisites: []
