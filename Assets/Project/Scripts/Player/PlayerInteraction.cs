@@ -44,6 +44,7 @@ namespace CGD.Player
         public event Action TargetChanged;
 
         private PlayerInputHandler _input;
+        private PlayerRestraint    _restraint;
         private IInteractable      _current;
         private Collider           _currentCollider;
         private readonly EffortMeter _effort = new();
@@ -57,6 +58,7 @@ namespace CGD.Player
         private void Awake()
         {
             _input = GetComponent<PlayerInputHandler>();
+            TryGetComponent(out _restraint);
             if (_forwardReference == null || !_forwardReference.TryGetComponent(out _camera))
                 _camera = GetComponentInChildren<Camera>(true);
         }
@@ -65,7 +67,10 @@ namespace CGD.Player
         {
             IInteractable previous         = _current;
             Collider      previousCollider = _currentCollider;
-            FindBest();
+
+            // Held in place: nothing to interact with, and Interact is for breaking free.
+            if (_restraint != null && _restraint.IsRestrained) ClearTarget();
+            else FindBest();
             if (_current != previous)
             {
                 ResetHold();
@@ -156,6 +161,12 @@ namespace CGD.Player
 
             _current         = best;
             _currentCollider = bestCollider;
+        }
+
+        private void ClearTarget()
+        {
+            _current         = null;
+            _currentCollider = null;
         }
 
         private void OnDisable()

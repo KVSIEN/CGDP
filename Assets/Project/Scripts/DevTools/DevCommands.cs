@@ -65,6 +65,9 @@ namespace CGD.DevTools
             Console.Register("god",       "[on|off]",                 "Toggle taking no damage", God,
                 complete: (_, i) => i == 0 ? OnOff : null);
             Console.Register("heal",      "",                         "Restore full health", _ => Heal());
+            Console.Register("restrain",  "[taps]",                   "Hold the player in place until they mash Interact (placeholder grab)", Restrain,
+                example: "/restrain 10");
+            Console.Register("free",      "",                         "Let go of the player", _ => Free());
             Console.Register("cloak",     "[seconds]",                "Become hidden anywhere for a while", Cloak,
                 example: "/cloak 60");
             Console.Register("buff",      "<preset> [seconds]",       "Apply a stat modifier preset for a while", Buff,
@@ -231,6 +234,23 @@ namespace CGD.DevTools
 
             _health.Heal(_health.MaxHealth);
             return "Healed.";
+        }
+
+        private string Restrain(string[] args)
+        {
+            if (!TryGetComponent(out PlayerRestraint restraint)) return "Needs a PlayerRestraint on the Player.";
+
+            int taps = args.Length > 0 ? Mathf.RoundToInt(ParseFloat(args[0])) : 0;
+            restraint.Restrain("Break free", taps);
+            return "Restrained. Mash Interact to break free.";
+        }
+
+        private string Free()
+        {
+            if (!TryGetComponent(out PlayerRestraint restraint)) return "Needs a PlayerRestraint on the Player.";
+
+            restraint.Release();
+            return "Released.";
         }
 
         private string Cloak(string[] args)

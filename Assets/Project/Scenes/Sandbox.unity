@@ -4411,6 +4411,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7400000000000000013, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
+      propertyPath: _restraint
+      value: 
+      objectReference: {fileID: 7200000000000000009}
     - target: {fileID: 7400000000000000003, guid: adb93b844b57d9a44966f451cff9db9c, type: 3}
       propertyPath: _playerHealth
       value: 
@@ -7297,3 +7301,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83077ebfc28e4513bf7a7d0095a62aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.Stealth.Stealthable
+--- !u!114 &7200000000000000009 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7100000000000000005, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
+  m_PrefabInstance: {fileID: 7657266172198037326}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8d2e937530546709012ffc8177ac9c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Player.PlayerRestraint

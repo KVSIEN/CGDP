@@ -106,6 +106,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 | **MeleeController** | `_camera` = PlayerCamera, `_data` = `Weapons/Melee/DefaultMeleeWeaponData` (fists), `_weaponSocket`? = the weapon's transform (hand or weapon bone; only Swing Hit events set to *Anchor* Socket use it, others follow the aim), `_meleeParryRange` (4 m: parries beyond it are deflected shots), `_rangedParryReflect` = `Combat/Reflect/DeflectReflect` (needs the Reflector) | Quick melee (the Melee key bashes with the gun's `QuickMelee`, a Tactical Knife perk's knife, the melee weapon's guard bash, or fists) and the equipped melee weapon. `PlayerWeaponLoadout` hands it every weapon put in hand, guns included. Must be on the **same object as PlayerHealth**: it parries (bash) and blocks (guard) hits as an `IDamageInterceptor`, which HealthManager only looks for on its own object. Stamina costs need a `MeterSet` with the category's stamina meter on that object too (without one, melee is free). Combo weaving reads `PlayerDodge` and `PlayerAbilities` from the same object (each optional). |
 | **ThrowableController** | `_camera` = PlayerCamera, `_preview` = the Player's `TrajectoryPreview` | Throws the grenade an item slot readies, charging with the attack button. Grenades are items (`Items/Throwables/`). |
 | **TrajectoryPreview** (Player) | `_material` = `Materials/ThrowPreview` (unlit) | Draws the aim arc and blast ring; builds its line renderers itself. |
+| **PlayerRestraint** (Player prefab) | `_tapsRequired`, `_decayPerSecond`, `_maxSeconds` = the defaults for `Restrain()` | Placeholder for being held in place: a trap or grab calls `Restrain()`; until the player breaks free (tap Interact) or it times out, movement and dodging are blocked and interacting is off. Needs `PlayerInputHandler` and `Stunnable` on the same object. Dev console: `/restrain [taps]` and `/free`. |
 | **PlayerAbilities** | `_health` = PlayerHealth, `_slots` = up to 4 ability assets | Aims with PlayerMovement's camera. Abilities act through the player's own components, found once: Dash needs PlayerDodge, Timeline abilities a TimelineAbilityRunner, Reflect a Reflector, Stealth a Stealthable, Stat Buff CharacterStats. |
 | **TimelineAbilityRunner**? | — | Needed for `TimelineAbility` assets. |
 | **WeaponVisuals** (WeaponRig) | — | Kick and sway are tuned on the component and the `WeaponData`. |
@@ -138,6 +139,7 @@ HUD                [Canvas, CanvasScaler (Scale With Screen Size, 1920 × 1080, 
   ScreenFlash      [ScreenFlashHUD]?         ← keep near the top (draws underneath)
   HitEffect        [HitEffect]
   DamageIndicator  [DamageIndicatorHUD]?
+  Struggle         [StruggleHUD]?
   Crosshair        [CrosshairHUD]
   Stealth          [StealthHUD]?
   HitMarker        [HitMarkerHUD]?
@@ -202,6 +204,7 @@ The remaining HUD elements (crosshair, quests, objective, interact prompt, hit m
 |---|---|---|
 | **CrosshairHUD** | `_playerCamera` = PlayerCamera | Draws the player's crosshair style from `GameSettings` (edited on the Settings menu's Crosshair tab). No asset to assign. |
 | **DamageIndicatorHUD** | `_playerHealth` = PlayerHealth, `_playerCamera` = PlayerCamera (set on the HUD instance in Sandbox and MapTest) | Arrows toward whoever hurt the player. Listens to `CombatEvents`; stretch-anchored, builds its own arrows. Optional `_sprite` = your own arrow art (pointing up); `_radius`, `_size`, `_duration`, `_maxIndicators` tune it. Off switch: Settings › Accessibility. |
+| **StruggleHUD** | `_restraint` = PlayerRestraint (set on the HUD instance in Sandbox and MapTest) | Placeholder prompt below the crosshair while the player is held: the label, "MASH <Interact key>", and a bar that fills per tap. Shows only while restrained. |
 | **StatsHUD**, **HitEffect** | `_playerHealth` = PlayerHealth | HitEffect = damage flash + low-health vignette. |
 | **WeaponHUD** | `_weapon` = WeaponController | |
 | **AbilityHUD** | `_abilities` = PlayerAbilities | |

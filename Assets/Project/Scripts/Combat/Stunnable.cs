@@ -11,6 +11,7 @@ namespace CGD.Combat
     public class Stunnable : MonoBehaviour
     {
         private readonly Dictionary<object, float> _slows = new();
+        private readonly HashSet<object> _holds = new();
         private float _speedMultiplier = 1f;
         private CooldownTimer _stunTimer;
         private HealthManager _health;
@@ -18,7 +19,13 @@ namespace CGD.Combat
         // 1 = full speed; the strongest active slow otherwise.
         public float SpeedMultiplier => _speedMultiplier;
 
-        public bool IsStunned => !_stunTimer.IsReady;
+        // Stunned by a timer, or for as long as something holds the character in place (a grab
+        // that lasts until the player breaks free).
+        public bool IsStunned => !_stunTimer.IsReady || _holds.Count > 0;
+
+        public void AddHold(object source) => _holds.Add(source);
+
+        public void RemoveHold(object source) => _holds.Remove(source);
 
         public void ApplyStun(float duration)
         {
@@ -40,6 +47,7 @@ namespace CGD.Combat
         public void Clear()
         {
             _slows.Clear();
+            _holds.Clear();
             _speedMultiplier = 1f;
             _stunTimer.Reset();
         }
