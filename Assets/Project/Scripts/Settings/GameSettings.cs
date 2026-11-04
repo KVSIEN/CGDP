@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using CGD.Audio;
 
@@ -15,8 +16,16 @@ namespace CGD.Settings
 
         public static SettingsData Current => _current ??= Load();
 
+        // Raised after Apply, for things that draw from the settings and must redraw (the
+        // crosshair). Listeners unsubscribe in OnDisable.
+        public static event Action Changed;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics() => _current = null;
+        private static void ResetStatics()
+        {
+            _current = null;
+            Changed  = null;
+        }
 
         // Before the first scene so the window, quality level and volume are right from frame one.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -28,6 +37,7 @@ namespace CGD.Settings
         {
             _current = data.Clone();
             ApplyToEngine(_current);
+            Changed?.Invoke();
         }
 
         public static void Save()

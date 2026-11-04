@@ -174,7 +174,7 @@ Later children draw on top. `HUDManager` finds every element by itself.
 
 | Element | Assign | Notes |
 |---|---|---|
-| **CrosshairHUD** | `_settings` = `UI/CrosshairSettings`, `_playerCamera` = PlayerCamera | |
+| **CrosshairHUD** | `_playerCamera` = PlayerCamera | Draws the player's crosshair style from `GameSettings` (edited on the Settings menu's Crosshair tab). No asset to assign. |
 | **StatsHUD**, **HitEffect** | `_playerHealth` = PlayerHealth | HitEffect = damage flash + low-health vignette. |
 | **WeaponHUD** | `_weapon` = WeaponController | |
 | **AbilityHUD** | `_abilities` = PlayerAbilities | |
@@ -203,7 +203,7 @@ Damage numbers and enemy health bars build themselves — don't place them under
 |---|---|
 | `_camera` = PlayerCamera, `_input` = Player, `_bindings` = `InputBindingSettings`, `_hud` = HUD | Stretch its RectTransform to fill the screen. Escape opens it; it doubles as the pause menu when a `GameFlow` exists. |
 
-The Audio, Video and Accessibility tabs need no wiring. They apply to every scene:
+The Audio, Video, Crosshair and Accessibility tabs need no wiring. They apply to every scene:
 - Volume works through `AudioPool` (Master scales everything). Set each `SoundBank`'s `_category` (Effects / Music / Interface) to pick which slider it follows.
 - Field of view replaces `PlayerCamera._baseFOV`. `_sprintFOV` keeps its authored widening on top.
 - Camera shake scales everything `CameraEffectsController` adds. Screen flashes scale `ScreenFlashHUD` and `HitEffect`.
@@ -663,7 +663,6 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Player/` | `PlayerMovementSettings` | PlayerMovement (PlayerMantle reads it from there) |
 | `Player/` | `PlayerCameraSettings` | PlayerCamera |
 | `Player/Dodges/` | `SidestepRoll`, `CommittedRoll`, `SteerableBoost`, `LongDash`, `AirDash`, `AbilityDash` (`…Dodge`; the last is the Dash ability's `Move`) — stages with speed, curve, steering, i-frames, commitment, follow-up press, cooldown | PlayerDodge, DevCatalog |
-| `UI/` | `CrosshairSettings` | CrosshairHUD |
 | `Flow/` | `GameFlowSettings` | GameFlow |
 | `Timing/` | `GameTimeSettings` | GameTime |
 | `Enemies/` | `MaintenanceBot`/`Scavenger`/`Husk` `…EnemyData` (tier 1, ≈100 effective health each; the firing-range dummies run on them), `Tech`/`Bio`/`Void` `Tier2`/`Tier3` `…EnemyData` (placeholders, ≈2.5× / ≈5×; *Tier* set on each), `DefaultEnemyData` | EnemyAI, EnemyHealth |

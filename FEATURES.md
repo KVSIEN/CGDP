@@ -54,11 +54,10 @@
 - Every HUD colour comes from one theme asset (surfaces, text, status, accent), so restyling the HUD is editing that asset
 - The HUD scales with the screen: it is laid out for 1920 × 1080 and grows or shrinks with the window, and the world-space prompt and damage numbers scale with it
 - Crosshair drawn entirely in code — no texture needed; updates instantly when settings change
-- Crosshair is fully configurable: line length, thickness, center gap, opacity, color, center dot, and outline (color + thickness)
+- The crosshair is the player's to customise on the Settings menu's **Crosshair** tab, with a live preview (half dark, half light so the outline can be judged against both): which arms show (all, no top, no bottom, horizontal only, vertical only, or none for a dot-only crosshair); the length and thickness of the horizontal and vertical arms and the gap from the centre on each axis (X and Y are set separately, so it can be wider than tall); an optional centre dot with its own width and height; opacity and red/green/blue colour; an outline with its own thickness; and how strongly it spreads with the weapon (0% keeps it fixed, 200% exaggerates it). Changes apply to the HUD as you make them, are saved with the other settings, and Reset Defaults restores the standard look
 - Health bar that changes color from green to red as health drops, with a numeric readout
 - Ammo counter displaying magazine and reserve rounds
 - Stats HUD updates automatically whenever health or ammo changes — no polling needed
-- All crosshair options live in a ScriptableObject so they can be tweaked in the Inspector and shared across scenes
 - Dodge cooldown indicator — a single slot to the right of the ability bar that drains and refills, matching the ability HUD style
 - Floating damage numbers — every hit gets its own number at the point it landed, so a shotgun blast shows one per pellet. Numbers are white with a heavy black outline; critical hits are a deep orange, bold, drawn larger and held a moment longer, and bigger hits are drawn bigger than chip damage. Each number is thrown up out of the impact and arcs as it slows, popping in past full size before settling
 - Damage grouping — hits landing close together form one group, scattered across a small patch around the impact rather than lined up, and the patch widens slightly as a burst continues. Each number is thrown at its own angle and speed, so no two take the same path and the group breaks up as it rises while staying on the target it came from. Numbers overlap freely where they cross — nothing pushes them apart. Numbers already in a group flinch when a new hit lands, so a sustained burst reads as damage piling up. Spacing and size hold the same on screen at any range, and the oldest numbers fade out early once the screen is carrying too many
@@ -272,7 +271,7 @@
 - While a slot is listening, tapping Escape cancels and leaves the binding as it was; holding Escape clears the slot so it is unbound
 - Duplicate binding warning — the same key, mouse button or gamepad button can be bound to several actions; when that happens a brief orange notice names the other actions, and every slot sharing a control stays highlighted orange in the keybinding list until one of them is changed
 - Reset to Defaults button restores all keybindings to their original values
-- The menu has four tabs: Controls (sensitivity and keybindings), Audio, Video and Accessibility. Reset Defaults resets only the tab you're on
+- The menu has five tabs: Controls (sensitivity and keybindings), Audio, Video, Crosshair and Accessibility. Reset Defaults resets only the tab you're on
 - **Audio** — Master, Effects, Music and Interface volume sliders, heard straight away
 - **Video** — resolution, window mode (fullscreen, borderless, windowed), quality level, VSync, frame rate limit (when VSync is off), field of view (60–110°), ADS zoom (gradual or snap) and ADS field of view (independent or affected). Sprinting still widens the view on top of the chosen FOV. Resolution and window mode apply in builds, not in the editor's Game view
 - **Accessibility** — camera shake & kicks strength (0% turns off shake, weapon kicks and FOV punches), screen flash strength (hit flash and feedback flashes), and the low-health red vignette on or off. Hold vs. toggle is set per action on the Controls tab

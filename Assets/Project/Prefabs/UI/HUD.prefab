@@ -1309,7 +1309,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CrosshairHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
-  _settings: {fileID: 11400000, guid: 877f8d15f8602ed4e8148eb435c15e72, type: 2}
   _playerCamera: {fileID: 0}
   _spreadScale: 1
   _obstructionDotSize: 6

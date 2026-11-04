@@ -15,8 +15,8 @@ namespace CGD.UI
     /// is in a non-gameplay state such as GameOver.
     /// Builds its own UGUI panel at runtime (same convention as the rest of the HUD via
     /// UIFactory) — requires a RectTransform under a Canvas, see SETUP.md.
-    /// Tabs: Controls (sensitivity, keybindings), Audio, Video and Accessibility. Audio, video
-    /// and accessibility changes preview live and are saved when the menu closes.
+    /// Tabs: Controls (sensitivity, keybindings), Audio, Video, Crosshair and Accessibility. Audio,
+    /// video, crosshair and accessibility changes preview live and are saved when the menu closes.
     /// </summary>
     [RequireComponent(typeof(RectTransform))]
     public class SettingsMenu : MonoBehaviour
@@ -30,11 +30,11 @@ namespace CGD.UI
         private const float H = 580f;
         private const float TabBarHeight = 40f;
 
-        private static readonly string[] TabNames = { "Controls", "Audio", "Video", "Accessibility" };
+        private static readonly string[] TabNames = { "Controls", "Audio", "Video", "Crosshair", "Accessibility" };
         private static readonly Color TabSelectedColor   = new Color(0.3f, 0.55f, 1f, 0.95f);
         private static readonly Color TabUnselectedColor = new Color(0.16f, 0.16f, 0.22f, 0.95f);
 
-        private enum Tab { Controls, Audio, Video, Accessibility }
+        private enum Tab { Controls, Audio, Video, Crosshair, Accessibility }
 
         private bool _isOpen;
         private GameObject _panel;
@@ -42,6 +42,7 @@ namespace CGD.UI
         private KeybindingSection    _keybindings;
         private AudioSection         _audio;
         private VideoSection         _video;
+        private CrosshairSection     _crosshair;
         private AccessibilitySection _accessibility;
 
         private GameObject[] _pages;
@@ -96,6 +97,7 @@ namespace CGD.UI
             _draft = GameSettings.Current.Clone();
             _audio.Load(_draft);
             _video.Load(_draft);
+            _crosshair.Load(_draft);
             _accessibility.Load(_draft);
             ShowTab(_activeTab);
         }
@@ -138,6 +140,7 @@ namespace CGD.UI
             _keybindings  = new KeybindingSection(controls, panelRt, _input, _bindings, W);
             _audio         = new AudioSection(Page(Tab.Audio), ApplyDraft);
             _video         = new VideoSection(Page(Tab.Video), ApplyDraft);
+            _crosshair     = new CrosshairSection(Page(Tab.Crosshair), ApplyDraft);
             _accessibility = new AccessibilitySection(Page(Tab.Accessibility), ApplyDraft);
             BuildBottomButtons(windowRt);
             ShowTab(Tab.Controls);
@@ -189,6 +192,7 @@ namespace CGD.UI
                 case Tab.Controls:      _keybindings.ResetToDefaults();   break;
                 case Tab.Audio:         _audio.ResetToDefaults();         break;
                 case Tab.Video:         _video.ResetToDefaults();         break;
+                case Tab.Crosshair:     _crosshair.ResetToDefaults();     break;
                 case Tab.Accessibility: _accessibility.ResetToDefaults(); break;
             }
         }

@@ -33,6 +33,9 @@ namespace CGD.Settings
         public float FlashIntensity = 1f;
         public bool  DamageVignette = true;
 
+        // The crosshair's look; see CrosshairStyle.
+        public CrosshairStyle Crosshair = new();
+
         // Input assist: presses made while busy (drawing, dodging, between shots) happen as
         // soon as possible instead of being dropped. Off by default, like most shooters.
         public bool InputBuffering;
@@ -43,6 +46,12 @@ namespace CGD.Settings
         public const float MinFieldOfView = 60f;
         public const float MaxFieldOfView = 110f;
 
-        public SettingsData Clone() => (SettingsData)MemberwiseClone();
+        // A copy the settings menu can edit without touching the live settings.
+        public SettingsData Clone()
+        {
+            var copy = (SettingsData)MemberwiseClone();
+            copy.Crosshair = Crosshair.Clone();
+            return copy;
+        }
     }
 }

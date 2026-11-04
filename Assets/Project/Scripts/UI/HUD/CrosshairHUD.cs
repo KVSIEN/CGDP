@@ -1,13 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 using CGD.Player;
+using CGD.Settings;
 
 namespace CGD.UI
 {
+    // The crosshair on the HUD, drawn from the player's style in GameSettings. Spread comes
+    // from the weapon every frame; the obstruction dot marks where an obstructed aim lands.
     [RequireComponent(typeof(RectTransform))]
     public class CrosshairHUD : HUDElement
     {
-        [SerializeField] private CrosshairSettings _settings;
         [SerializeField] private PlayerCamera _playerCamera;
 
         [Header("Spread")]
@@ -19,36 +21,29 @@ namespace CGD.UI
         [Header("Obstruction Dot")]
         [SerializeField] private float _obstructionDotSize = 6f;
 
-        private readonly Image[] _lines = new Image[4];
-        private readonly Image[] _lineOutlines = new Image[4];
-        private Image _dot;
-        private Image _dotOutline;
+        private CrosshairView _view;
         private Image _obstructionDot;
-        private float _dynamicSpreadPixels;
 
         private void Awake()
         {
-            for (int i = 0; i < 4; i++)
-            {
-                _lineOutlines[i] = CreateImage("LineOutline_" + i);
-                _lines[i] = CreateImage("Line_" + i);
-            }
-            _dotOutline = CreateImage("DotOutline");
-            _dot = CreateImage("Dot");
-            _obstructionDot = CreateImage("ObstructionDot");
+            var rt = (RectTransform)transform;
+            _view = new CrosshairView(rt);
+
+            _obstructionDot = UIFactory.MakeImage("ObstructionDot", rt);
+            _obstructionDot.rectTransform.anchorMin = _obstructionDot.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            _obstructionDot.rectTransform.pivot     = new Vector2(0.5f, 0.5f);
             _obstructionDot.color = Color.clear;
 
             Refresh();
         }
 
-        private Image CreateImage(string elementName)
+        private void OnEnable()
         {
-            var img = UIFactory.MakeImage(elementName, (RectTransform)transform);
-            var rt = img.rectTransform;
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            return img;
+            GameSettings.Changed += Refresh;
+            Refresh();
         }
+
+        private void OnDisable() => GameSettings.Changed -= Refresh;
 
         private void Update()
         {
@@ -78,84 +73,16 @@ namespace CGD.UI
         {
             // Derive px/deg from the live camera FOV so the crosshair scales correctly
             // at all FOVs (hip, ADS, sprint) instead of using a hardcoded constant.
-            if (_playerCamera == null || _playerCamera.Camera == null) return;
+            if (_playerCamera == null || _playerCamera.Camera == null || _view == null) return;
             float canvasHeight = ((RectTransform)transform.root).rect.height;
             float pixPerDeg    = canvasHeight / _playerCamera.Camera.fieldOfView;
-            _dynamicSpreadPixels = spreadDegrees * pixPerDeg * _spreadScale;
-            ApplyLinePositions();
+            float response     = GameSettings.Current.Crosshair.SpreadResponse;
+            _view.SetSpread(spreadDegrees * pixPerDeg * _spreadScale * response);
         }
 
         public override void Refresh()
         {
-            if (_settings == null) return;
-            ApplyColors();
-            ApplyLinePositions();
-            ApplyDot();
-        }
-
-        private void ApplyColors()
-        {
-            float outlineSize  = _settings.showOutline ? _settings.outlineThickness : 0f;
-            Color fill         = new Color(_settings.color.r, _settings.color.g, _settings.color.b, _settings.opacity);
-            Color outlineColor = new Color(_settings.outlineColor.r, _settings.outlineColor.g, _settings.outlineColor.b, _settings.opacity);
-            Color outlineFill  = outlineSize > 0f ? outlineColor : Color.clear;
-
-            Vector2[] sizes =
-            {
-                new Vector2(_settings.lineThickness, _settings.lineLength),
-                new Vector2(_settings.lineThickness, _settings.lineLength),
-                new Vector2(_settings.lineLength,    _settings.lineThickness),
-                new Vector2(_settings.lineLength,    _settings.lineThickness)
-            };
-
-            for (int i = 0; i < 4; i++)
-            {
-                _lineOutlines[i].color = outlineFill;
-                _lineOutlines[i].rectTransform.sizeDelta = sizes[i] + Vector2.one * (outlineSize * 2f);
-                _lines[i].color = fill;
-                _lines[i].rectTransform.sizeDelta = sizes[i];
-            }
-        }
-
-        private void ApplyLinePositions()
-        {
-            if (_settings == null || _lines[0] == null) return;
-
-            float outlineSize = _settings.showOutline ? _settings.outlineThickness : 0f;
-            float halfGapLen  = _settings.centerGap + _settings.lineLength * 0.5f + _dynamicSpreadPixels;
-
-            Vector2[] positions =
-            {
-                new Vector2(0f,           halfGapLen),
-                new Vector2(0f,          -halfGapLen),
-                new Vector2(-halfGapLen,  0f),
-                new Vector2( halfGapLen,  0f)
-            };
-
-            for (int i = 0; i < 4; i++)
-            {
-                _lines[i].rectTransform.anchoredPosition        = positions[i];
-                _lineOutlines[i].rectTransform.anchoredPosition = positions[i];
-            }
-        }
-
-        private void ApplyDot()
-        {
-            if (_settings == null) return;
-            float outlineSize = _settings.showOutline ? _settings.outlineThickness : 0f;
-            Color fill        = new Color(_settings.color.r, _settings.color.g, _settings.color.b, _settings.opacity);
-            Color outlineColor = new Color(_settings.outlineColor.r, _settings.outlineColor.g, _settings.outlineColor.b, _settings.opacity);
-            bool dotVisible = _settings.showCenterDot;
-            Set(_dot, Vector2.zero, Vector2.one * _settings.centerDotSize, dotVisible ? fill : Color.clear);
-            Set(_dotOutline, Vector2.zero, Vector2.one * (_settings.centerDotSize + outlineSize * 2f),
-                dotVisible && outlineSize > 0f ? outlineColor : Color.clear);
-        }
-
-        private static void Set(Image img, Vector2 pos, Vector2 size, Color color)
-        {
-            img.color = color;
-            img.rectTransform.anchoredPosition = pos;
-            img.rectTransform.sizeDelta = size;
+            if (_view != null) _view.Apply(GameSettings.Current.Crosshair);
         }
     }
 }
