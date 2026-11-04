@@ -365,8 +365,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 761626469870432291c6e3c1751d5e3d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: CGD.Runtime::CGD.FiringRange.StrafeMover
+  m_EditorClassIdentifier: CGD.Runtime::CGD.FiringRange.TargetMover
   _halfWidth: 2.5
+  _halfDepth: 3
   _speed: 2
 --- !u!114 &4300000000000000003
 MonoBehaviour:

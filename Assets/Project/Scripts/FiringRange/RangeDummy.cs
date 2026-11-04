@@ -6,9 +6,9 @@ namespace CGD.FiringRange
 {
     // One firing-range dummy: stands in for an enemy (its stats, from EnemyHealth), shows
     // which faction that enemy belongs to by tinting its body, and keeps the head marked in
-    // a fixed colour as the critical spot. Swaying is StrafeMover's job; RangeControl
+    // a fixed colour as the critical spot. Moving is TargetMover's job; RangeControl
     // drives all three through this component.
-    [RequireComponent(typeof(EnemyHealth), typeof(StrafeMover))]
+    [RequireComponent(typeof(EnemyHealth), typeof(TargetMover))]
     public class RangeDummy : MonoBehaviour
     {
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
@@ -21,12 +21,12 @@ namespace CGD.FiringRange
         private EnemyHealth _health;
         private RespawnOnDeath _respawn;
         private StatusEffectController _statusEffects;
-        private StrafeMover _mover;
+        private TargetMover _mover;
         private MaterialPropertyBlock _block;
 
-        public bool Strafing
+        public DummyMovement Movement
         {
-            set => _mover.Strafing = value;
+            set => _mover.Movement = value;
         }
 
         // Back to full health with no status effects, even mid-respawn.
@@ -42,7 +42,7 @@ namespace CGD.FiringRange
         private void Awake()
         {
             _health = GetComponent<EnemyHealth>();
-            _mover  = GetComponent<StrafeMover>();
+            _mover  = GetComponent<TargetMover>();
             TryGetComponent(out _respawn);
             TryGetComponent(out _statusEffects);
             _block  = new MaterialPropertyBlock();

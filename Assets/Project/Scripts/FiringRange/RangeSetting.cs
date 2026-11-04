@@ -7,7 +7,7 @@ namespace CGD.FiringRange
         Faction,
         // How tough: the faction's tier 1, 2 or 3 enemy.
         Tier,
-        // Dummies sway from side to side, or stand still.
+        // Dummies stand still, sway from side to side, or advance and retreat.
         Movement,
         // How far down the lane the lane dummies stand: the full range, or pulled in closer.
         Distance,

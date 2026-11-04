@@ -5,7 +5,7 @@ using CGD.Factions;
 namespace CGD.FiringRange
 {
     // The firing range's settings, changed by RangeSwitches: which faction's enemies the
-    // dummies stand in for, at which tier, whether they sway side to side and how far down
+    // dummies stand in for, at which tier, how they move (still, swaying or advancing) and how far down
     // the lane they stand. Every dummy gets the first three; only the lane dummies move. A dummy takes on the stats of
     // the chosen enemy, so health, shield, armour and name all follow the enemy assets, and
     // is tinted in the faction's colour. Placeholder tier 2 and 3 affixes are not rolled: a
@@ -27,7 +27,7 @@ namespace CGD.FiringRange
 
         private int  _factionChoice = MixedFactions;
         private int  _tier = MinTier;
-        private bool _strafing;
+        private DummyMovement _movement;
         private int  _distanceChoice;
         private Vector3[] _laneHomes;
 
@@ -50,7 +50,7 @@ namespace CGD.FiringRange
                     _tier = _tier >= MaxTier ? MinTier : _tier + 1;
                     break;
                 case RangeSetting.Movement:
-                    _strafing = !_strafing;
+                    _movement = (DummyMovement)(((int)_movement + 1) % System.Enum.GetValues(typeof(DummyMovement)).Length);
                     break;
                 case RangeSetting.Distance:
                     _distanceChoice = (_distanceChoice + 1) % _distanceScales.Length;
@@ -67,7 +67,7 @@ namespace CGD.FiringRange
         {
             RangeSetting.Faction  => $"Change faction  ({(_factionChoice == MixedFactions ? "Mixed" : _factions[_factionChoice].DisplayName)})",
             RangeSetting.Tier     => $"Change tier  ({_tier})",
-            RangeSetting.Movement => $"Toggle movement  ({(_strafing ? "Swaying" : "Still")})",
+            RangeSetting.Movement => $"Change movement  ({_movement})",
             RangeSetting.Distance => $"Change distance  ({DistanceSpan()})",
             RangeSetting.Reset => "Reset dummies",
             _ => string.Empty,
@@ -80,7 +80,7 @@ namespace CGD.FiringRange
                 FactionDefinition faction = FactionOf(i);
                 EnemyData enemy = EnemyFor(faction, _tier);
                 if (enemy != null) _dummies[i].Play(enemy, faction.Color);
-                _dummies[i].Strafing = _strafing;
+                _dummies[i].Movement = _movement;
             }
             PlaceLaneDummies();
         }
