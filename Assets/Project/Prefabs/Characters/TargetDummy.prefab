@@ -51,11 +51,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 387bd41db008d5e4d859c8fce20e8a66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthBar
-  _worldOffset: {x: 0, y: 3, z: 0}
+  _worldOffset: {x: 0, y: 2.7, z: 0}
   _fadeDelay: 2.5
   _fadeSpeed: 2
   _fillColor: {r: 0.2, g: 0.85, b: 0.2, a: 1}
   _bgColor: {r: 0.85, g: 0.15, b: 0.1, a: 1}
+  _shieldColor: {r: 0.35, g: 0.65, b: 1, a: 1}
+  _alwaysVisible: 1
+  _showNumbers: 1
 --- !u!114 &6886968393000955627
 MonoBehaviour:
   m_ObjectHideFlags: 0

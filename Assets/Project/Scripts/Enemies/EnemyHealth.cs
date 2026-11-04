@@ -31,6 +31,12 @@ namespace CGD.Enemies
         {
             base.Awake();
             OnDeath += ReportKill;
+            OnChanged += RefreshHealthBar;
+        }
+
+        private void RefreshHealthBar()
+        {
+            if (_healthBar != null) _healthBar.Refresh(Health, MaxHealth, Shield, MaxShield);
         }
 
         // Kill objectives count enemies by their EnemyData.
@@ -39,7 +45,7 @@ namespace CGD.Enemies
         protected override void OnDamageTaken(float amount, Vector3 point, bool isCritical)
         {
             DamageNumbers.Spawn(amount, point + _popupOffset, isCritical);
-            if (_healthBar != null) _healthBar.ShowDamage(Health, MaxHealth);
+            if (_healthBar != null) _healthBar.ShowDamage(Health, MaxHealth, Shield, MaxShield);
         }
 
         // Swaps the stats this enemy runs on (its rolled affixes) and fills it up to the new maxima.
