@@ -5,10 +5,11 @@ using CGD.Factions;
 namespace CGD.FiringRange
 {
     // The firing range's settings, changed by RangeSwitches: which faction's enemies the
-    // dummies stand in for, at which tier, and whether they sway side to side. A dummy
-    // takes on the stats of the chosen enemy (EnemyHealth.UseData), so health, shield,
-    // armour and name all follow the enemy assets. Placeholder tier 2 and 3 affixes are
-    // not rolled: a dummy shows the enemy's plain stats.
+    // dummies stand in for, at which tier, and whether they sway side to side. Every dummy
+    // on the range gets the setting, whatever its distance. A dummy takes on the stats of
+    // the chosen enemy, so health, shield, armour and name all follow the enemy assets, and
+    // is tinted in the faction's colour. Placeholder tier 2 and 3 affixes are not rolled: a
+    // dummy shows the enemy's plain stats.
     public class RangeControl : MonoBehaviour
     {
         private const int MinTier = 1;
@@ -18,19 +19,11 @@ namespace CGD.FiringRange
         [Tooltip("Factions the Faction switch cycles through. Their tier rosters decide which enemy a dummy plays")]
         [SerializeField] private FactionDefinition[] _factions;
         [Tooltip("Dummy 1 plays the first faction, dummy 2 the second … in the Mixed setting")]
-        [SerializeField] private EnemyHealth[] _dummies;
+        [SerializeField] private RangeDummy[] _dummies;
 
-        private StrafeMover[] _movers;
         private int  _factionChoice = MixedFactions;
         private int  _tier = MinTier;
         private bool _strafing;
-
-        private void Awake()
-        {
-            _movers = new StrafeMover[_dummies.Length];
-            for (int i = 0; i < _dummies.Length; i++)
-                _dummies[i].TryGetComponent(out _movers[i]);
-        }
 
         private void Start() => Apply();
 
@@ -65,9 +58,10 @@ namespace CGD.FiringRange
         {
             for (int i = 0; i < _dummies.Length; i++)
             {
-                EnemyData data = EnemyFor(FactionOf(i), _tier);
-                if (data != null) _dummies[i].UseData(data);
-                if (_movers[i] != null) _movers[i].Strafing = _strafing;
+                FactionDefinition faction = FactionOf(i);
+                EnemyData enemy = EnemyFor(faction, _tier);
+                if (enemy != null) _dummies[i].Play(enemy, faction.Color);
+                _dummies[i].Strafing = _strafing;
             }
         }
 

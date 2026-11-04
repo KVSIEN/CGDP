@@ -4820,48 +4820,48 @@ MonoBehaviour:
   - {fileID: 6200000000000000004}
 --- !u!114 &6200000000000000001 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6886968393000955627, guid: 5af1f2b7a411dbd45a53ae6b076ab8b6, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300000000000000003, guid: 5af1f2b7a411dbd45a53ae6b076ab8b6, type: 3}
   m_PrefabInstance: {fileID: 1518525293528471056}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9086ce9d772b81b4f9148d793d2babaf, type: 3}
+  m_Script: {fileID: 11500000, guid: 2a276aaac28d474ca420a4ec3e9937ad, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  m_EditorClassIdentifier: CGD.Runtime::CGD.FiringRange.RangeDummy
 --- !u!114 &6200000000000000002 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6886968393000955627, guid: 5af1f2b7a411dbd45a53ae6b076ab8b6, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300000000000000003, guid: 5af1f2b7a411dbd45a53ae6b076ab8b6, type: 3}
   m_PrefabInstance: {fileID: 5000000000000000002}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9086ce9d772b81b4f9148d793d2babaf, type: 3}
+  m_Script: {fileID: 11500000, guid: 2a276aaac28d474ca420a4ec3e9937ad, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  m_EditorClassIdentifier: CGD.Runtime::CGD.FiringRange.RangeDummy
 --- !u!114 &6200000000000000003 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6886968393000955627, guid: 5af1f2b7a411dbd45a53ae6b076ab8b6, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300000000000000003, guid: 5af1f2b7a411dbd45a53ae6b076ab8b6, type: 3}
   m_PrefabInstance: {fileID: 5000000000000000003}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9086ce9d772b81b4f9148d793d2babaf, type: 3}
+  m_Script: {fileID: 11500000, guid: 2a276aaac28d474ca420a4ec3e9937ad, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  m_EditorClassIdentifier: CGD.Runtime::CGD.FiringRange.RangeDummy
 --- !u!114 &6200000000000000004 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6886968393000955627, guid: 5af1f2b7a411dbd45a53ae6b076ab8b6, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4300000000000000003, guid: 5af1f2b7a411dbd45a53ae6b076ab8b6, type: 3}
   m_PrefabInstance: {fileID: 5000000000000000001}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9086ce9d772b81b4f9148d793d2babaf, type: 3}
+  m_Script: {fileID: 11500000, guid: 2a276aaac28d474ca420a4ec3e9937ad, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  m_EditorClassIdentifier: CGD.Runtime::CGD.FiringRange.RangeDummy
 --- !u!1001 &6300000000000000001
 PrefabInstance:
   m_ObjectHideFlags: 0

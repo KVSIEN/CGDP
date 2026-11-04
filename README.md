@@ -50,7 +50,7 @@ Assets/
                             ExpeditionSession (keeps it across loads), ExpeditionRunner (a run in a level), RunStarterKit
       Factions/             FactionDefinition (name, colour, enemy roster) — used by the map graph and generated levels
       Feedback/             FeedbackBus, FeedbackPreset, FeedbackPlayer (feed, flash, rumble, shake), combat/quest feedback
-      FiringRange/          the sandbox firing range: RangeControl (faction, tier, sway), RangeSwitch (the buttons), StrafeMover
+      FiringRange/          the sandbox firing range: RangeControl (faction, tier, sway), RangeDummy (stats, colour), RangeSwitch (the buttons), StrafeMover
       Flow/                 GameFlow, GameState/GameStateMachine, settings and UI commands
       Impacts/              ImpactEvents (hit broadcast), ImpactDatabase (effects per surface), ImpactSpawner, DecalPool
       Input/                PlayerInputHandler and binding settings
