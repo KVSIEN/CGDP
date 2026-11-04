@@ -19,6 +19,7 @@ namespace CGD.Weapons
         private readonly PlayerCamera   _camera;
         private readonly CharacterStats _stats;
         private readonly DamageSource   _ownerSource;
+        private readonly Transform      _socket;
         private readonly bool           _debugDraw;
         private readonly float          _debugDuration;
 
@@ -31,12 +32,13 @@ namespace CGD.Weapons
         private bool                _isBash;
 
         public MeleeSwing(Transform self, PlayerCamera camera, CharacterStats stats, DamageSource ownerSource,
-                          bool debugDraw, float debugDuration)
+                          Transform socket, bool debugDraw, float debugDuration)
         {
             _self          = self;
             _camera        = camera;
             _stats         = stats;
             _ownerSource   = ownerSource;
+            _socket        = socket;
             _debugDraw     = debugDraw;
             _debugDuration = debugDuration;
         }
@@ -132,7 +134,7 @@ namespace CGD.Weapons
 
             if (_activeStep.Timeline != null)
             {
-                _phaseTimer = _strike.BeginTimeline(_activeStep.Timeline, aim, _self.root, _source,
+                _phaseTimer = _strike.BeginTimeline(_activeStep.Timeline, aim, _self.root, _socket, _source,
                                                     DamageScale(_activeStep.Damage), _debugDraw, _debugDuration);
                 return;
             }

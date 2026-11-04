@@ -5,15 +5,17 @@ using CGD.Impacts;
 
 namespace CGD.Combat
 {
-    // A blade (capsule) that swings from a start pose to an end pose across the event's frames.
-    // Each tick it checks the capsule where it is now and, when it moved far, at a few poses
-    // in between — so a fast slash can't skip over a target and a slow one costs a single
-    // overlap query. Hits resolve hitbox regions, so headshots and limb hits still apply.
+    // A blade (capsule) that swings along keyed poses across the event's frames. Each tick it
+    // checks the capsule where it is now and, when it moved far, at a few poses in between —
+    // so a fast slash can't skip over a target and a slow one costs a single overlap query.
+    // Hits resolve hitbox regions, so headshots and limb hits still apply.
     //
-    //   Slash:  Start Yaw 60  → End Yaw -60      Thrust: both poses Yaw 0, Push 0 → 1.2
-    //   Chop:   Start Pitch 70 → End Pitch -10   Stab upward: Pitch 45, Push 0 → 1
-    //
-    // Turn on the weapon's debug draw to see the capsule's trail in the scene view.
+    // Add a key per pose the blade should pass through (frames count from the event's start):
+    //   Slash:  frame 0 Yaw 60,  frame 5 Yaw -60
+    //   Chop:   frame 0 Pitch 70, frame 2 Pitch 70 (hold), frame 5 Pitch -10
+    //   Thrust: frame 0 Push 0,   frame 4 Push 1.2
+    // Anchor = Socket makes the swing follow the weapon's socket instead of the aim, so the
+    // animation can carry the hitbox. Turn on the weapon's debug draw to see the capsule's trail.
     [Serializable]
     public class SwingHitEvent : IActionEvent
     {
@@ -27,7 +29,7 @@ namespace CGD.Combat
 
         [Header("Frames")]
         [SerializeField] private int _startFrame;
-        [Tooltip("Last frame of the swing; the blade reaches its end pose here.")]
+        [Tooltip("Last frame the blade is active.")]
         [SerializeField] private int _endFrame = 5;
 
         [Header("Blade")]
@@ -37,15 +39,18 @@ namespace CGD.Combat
         [Tooltip("Thickness of the hit volume. Wider = more forgiving.")]
         [Min(0.01f)]
         [SerializeField] private float _radius = 0.25f;
-        [Tooltip("Shifts the swing's pivot from the aim origin: x right, y up, z forward.")]
+        [Tooltip("Shifts the swing's pivot from its anchor: x right, y up, z forward.")]
         [SerializeField] private Vector3 _pivotOffset;
 
         [Header("Motion")]
-        [Tooltip("Yaw: + right / − left. Pitch: + up / − down. Push: slides the blade forward (thrusts).")]
-        [SerializeField] private SwingPose _start = new(60f);
-        [SerializeField] private SwingPose _end = new(-60f);
-        [Tooltip("Pace of the swing: time along the bottom, progress between poses up the side. Ease-in makes a wind-up whip.")]
-        [SerializeField] private AnimationCurve _pace = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+        [Tooltip("Aim: swing measured from where the wielder looks. Socket: from the weapon socket (its forward is the blade's direction), so an animated weapon carries the hitbox.")]
+        [SerializeField] private SwingAnchor _anchor = SwingAnchor.Aim;
+        [Tooltip("Poses the blade passes through, in frame order (frames count from the event's start). Yaw: + right / − left. Pitch: + up / − down. Push: slides the blade forward (thrusts). Blends in straight lines — put keys closer together for a faster move.")]
+        [SerializeField] private SwingKey[] _keys =
+        {
+            new(0, new SwingPose(60f)),
+            new(5, new SwingPose(-60f)),
+        };
 
         [Header("Damage")]
         [SerializeField] private float _damage = 20f;
@@ -67,15 +72,12 @@ namespace CGD.Combat
 
         public void OnTick(ActionContext ctx)
         {
-            float span = EndFrame - _startFrame;
-            float t     = Mathf.Clamp01((ctx.Frame - _startFrame) / span);
-            float prevT = Mathf.Clamp01((ctx.Frame - 1 - _startFrame) / span);
+            PoseTrail trail = _anchor == SwingAnchor.Socket && ctx.Socket != null ? ctx.SocketTrail : ctx.AimTrail;
+            float frame     = ctx.Frame - _startFrame;
+            float prevFrame = Mathf.Max(frame - 1f, 0f);
 
-            Quaternion aim = Quaternion.LookRotation(ctx.Forward, ctx.Up);
-            Vector3 pivot = ctx.Origin + aim * _pivotOffset;
-
-            SwingBlade from = BladeAt(pivot, aim, prevT);
-            SwingBlade to   = BladeAt(pivot, aim, t);
+            SwingBlade from = BladeAt(trail.Previous, prevFrame);
+            SwingBlade to   = BladeAt(trail.Current, frame);
             int steps = SwingBlade.StepsBetween(from, to, _radius * SubStepSpacing, MaxSubSteps);
 
             HashSet<IDamageable> dedup = _useSharedDedup ? ctx.SharedHits : ctx.EventHits[ctx.CurrentEventIndex];
@@ -84,7 +86,8 @@ namespace CGD.Combat
 
             for (int i = 1; i <= steps; i++)
             {
-                SwingBlade blade = BladeAt(pivot, aim, Mathf.Lerp(prevT, t, i / (float)steps));
+                float progress = i / (float)steps;
+                SwingBlade blade = BladeAt(trail.Blend(progress), Mathf.Lerp(prevFrame, frame, progress));
                 int count = Physics.OverlapCapsuleNonAlloc(
                     blade.Near, blade.Far, _radius, OverlapBuffer,
                     ctx.HitMask, QueryTriggerInteraction.Ignore);
@@ -102,10 +105,10 @@ namespace CGD.Combat
             }
         }
 
-        private SwingBlade BladeAt(Vector3 pivot, Quaternion aim, float time)
+        private SwingBlade BladeAt(Pose anchor, float frame)
         {
-            float progress = _pace.Evaluate(time);
-            return SwingBlade.At(pivot, aim, SwingPose.Lerp(_start, _end, progress), _nearDistance, _farDistance);
+            Vector3 pivot = anchor.position + anchor.rotation * _pivotOffset;
+            return SwingBlade.At(pivot, anchor.rotation, SwingPath.Sample(_keys, frame), _nearDistance, _farDistance);
         }
 
         private DamageInfo BuildDamageInfo(ActionContext ctx) =>

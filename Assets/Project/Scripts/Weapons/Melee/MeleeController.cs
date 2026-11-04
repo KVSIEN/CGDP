@@ -31,6 +31,8 @@ namespace CGD.Weapons
         [Tooltip("Fists: the bash while the weapon in hand has none of its own, or the hands are empty")]
         [SerializeField] private MeleeWeaponData _data;
         [SerializeField] private PlayerCamera    _camera;
+        [Tooltip("Optional: the weapon's transform (a hand or weapon bone). Swing hit events set to Socket anchor follow it; without one they follow the aim.")]
+        [SerializeField] private Transform       _weaponSocket;
 
         [Header("Parry")]
         [Tooltip("A parried hit from an attacker farther than this was a shot: it is deflected (Ranged Parry Reflect) instead of staggering the attacker")]
@@ -102,7 +104,7 @@ namespace CGD.Weapons
             TryGetComponent(out _items);
             TryGetComponent(out _reflector);
             _swing = new MeleeSwing(transform, _camera, GetComponentInParent<CharacterStats>(), DamageSource.Of(gameObject),
-                                    _debugDraw, _debugDuration);
+                                    _weaponSocket, _debugDraw, _debugDuration);
             _parry = new ParryResponse(_guard, _reflector, _rangedParryReflect, _meleeParryRange,
                                        amount => TryPayStamina(_guardData, amount));
             RebuildGuard();

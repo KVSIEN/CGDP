@@ -16,8 +16,8 @@ namespace CGD.Weapons
 
         // A timeline strike authors its own damage per event, so the wielder's buffs reach it as
         // `damageScale`. Returns how long the timeline runs.
-        public float BeginTimeline(ActionTimeline timeline, Transform aim, Transform sourceRoot, DamageSource source,
-                                   float damageScale, bool debugDraw, float debugDuration)
+        public float BeginTimeline(ActionTimeline timeline, Transform aim, Transform sourceRoot, Transform socket,
+                                   DamageSource source, float damageScale, bool debugDraw, float debugDuration)
         {
             _usingTimeline = true;
             _context = new ActionContext
@@ -26,6 +26,7 @@ namespace CGD.Weapons
                 Forward       = aim.forward,
                 Up            = aim.up,
                 SourceRoot    = sourceRoot,
+                Socket        = socket,
                 Source        = source,
                 DamageScale   = damageScale,
                 HitMask       = timeline.HitMask,

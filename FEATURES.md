@@ -403,7 +403,7 @@
 - Events are polymorphic ([SerializeReference]) and stateless — all runtime state lives on the runner's ActionContext
 - Available event types:
   - **ShapeHitEvent** — physics queries (SphereCast, Arc, Sphere, Box) with configurable damage, dedup, and region resolution; covers melee thrusts, sweeps, slams, AOE circles, and cones
-  - **SwingHitEvent** — a blade-shaped hit volume that swings from a start pose to an end pose over its frames (slashes, chops, thrusts); sweeps through the space it crosses so fast swings can't skip a target, resolves hitbox regions, and hits each target once; angles, reach, thickness and swing pace are all set on the event
+  - **SwingHitEvent** — a blade-shaped hit volume that swings through a list of keyed poses over its frames (slashes, chops, thrusts, wind-ups); sweeps through the space it crosses so fast swings can't skip a target, resolves hitbox regions, and hits each target once; angles, reach and thickness are set on the event, and it can follow the aim or an animated weapon's socket
   - **SpawnProjectileEvent** — spawns a projectile prefab via PrefabPool
   - **BeamEvent** — continuous raycast or SphereCast forward each tick (no dedup, intentional per-tick damage)
   - **SpawnZoneEvent** — spawns a persistent zone prefab (trap or lingering AOE) at a resolved position

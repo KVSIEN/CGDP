@@ -34,6 +34,7 @@ namespace CGD.Combat
 
             _frame++;
             _ctx.Frame = _frame;
+            _ctx.TrackPoses();
 
             if (_frame >= _timeline.TotalFrames)
             {

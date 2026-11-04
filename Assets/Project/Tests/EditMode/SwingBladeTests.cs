@@ -61,5 +61,46 @@ namespace CGD.Tests
             Assert.Greater(SwingBlade.StepsBetween(a, wide, 0.4f, 6), 1);
             Assert.AreEqual(6, SwingBlade.StepsBetween(a, huge, 0.4f, 6));
         }
+            private static readonly SwingKey[] Keys =
+        {
+            new(2, new SwingPose(40f)),
+            new(6, new SwingPose(-40f, 20f, 1f)),
+            new(8, new SwingPose(-40f, 20f, 1f)),
+        };
+
+        [Test]
+        public void PathHoldsTheFirstAndLastKeyOutsideTheirFrames()
+        {
+            Assert.AreEqual(40f, SwingPath.Sample(Keys, 0f).Yaw, 0.001f);
+            Assert.AreEqual(-40f, SwingPath.Sample(Keys, 20f).Yaw, 0.001f);
+        }
+
+        [Test]
+        public void PathBlendsStraightBetweenKeys()
+        {
+            SwingPose mid = SwingPath.Sample(Keys, 4f);
+            Assert.AreEqual(0f, mid.Yaw, 0.001f);
+            Assert.AreEqual(10f, mid.Pitch, 0.001f);
+            Assert.AreEqual(0.5f, mid.Push, 0.001f);
+        }
+
+        [Test]
+        public void PathWithNoKeysIsNeutral()
+        {
+            Assert.AreEqual(0f, SwingPath.Sample(null, 3f).Yaw);
+            Assert.AreEqual(0f, SwingPath.Sample(new SwingKey[0], 3f).Yaw);
+        }
+
+        [Test]
+        public void TrailStartsWithoutHistoryThenRemembersLastPose()
+        {
+            var trail = new PoseTrail();
+            trail.Update(new Pose(Vector3.zero, Quaternion.identity));
+            Assert.AreEqual(trail.Current.position, trail.Previous.position);
+
+            trail.Update(new Pose(Vector3.right * 2f, Quaternion.identity));
+            AssertNear(Vector3.zero, trail.Previous.position);
+            AssertNear(Vector3.right, trail.Blend(0.5f).position);
+        }
     }
 }

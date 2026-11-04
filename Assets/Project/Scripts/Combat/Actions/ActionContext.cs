@@ -30,6 +30,11 @@ namespace CGD.Combat
 
         public bool HitAnything;
 
+        // Optional: the wielder's weapon socket, for events anchored to an animated weapon.
+        public Transform Socket;
+        public PoseTrail AimTrail;
+        public PoseTrail SocketTrail;
+
         // The timeline frame being ticked, for events that animate over their frames.
         public int Frame;
 
@@ -40,8 +45,17 @@ namespace CGD.Combat
             return Reflected ? info.AsReflected() : info;
         }
 
+        // Records where the aim and socket are this tick; the runner calls it once per tick.
+        public void TrackPoses()
+        {
+            AimTrail.Update(new Pose(Origin, Quaternion.LookRotation(Forward, Up)));
+            if (Socket != null) SocketTrail.Update(new Pose(Socket.position, Socket.rotation));
+        }
+
         public void Clear(int eventCount)
         {
+            AimTrail.Reset();
+            SocketTrail.Reset();
             SharedHits.Clear();
             HitAnything = false;
 
