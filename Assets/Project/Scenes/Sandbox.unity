@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 148735880}
   - component: {fileID: 148735879}
   - component: {fileID: 148735878}
+  - component: {fileID: 8800000104}
   m_Layer: 0
   m_Name: Wall 4
   m_TagString: Untagged
@@ -243,7 +244,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ff8c8a0b8dedf1b4e94594a07f2205ab, type: 2}
+  - {fileID: 2100000, guid: 49da2af2e6a1ee7479f1d80106fc6860, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -507,6 +508,7 @@ GameObject:
   - component: {fileID: 538248552}
   - component: {fileID: 538248551}
   - component: {fileID: 538248550}
+  - component: {fileID: 8800000103}
   m_Layer: 0
   m_Name: Wall (1)
   m_TagString: Untagged
@@ -869,6 +871,7 @@ GameObject:
   - component: {fileID: 764462089}
   - component: {fileID: 764462088}
   - component: {fileID: 764462087}
+  - component: {fileID: 8800000101}
   m_Layer: 0
   m_Name: Ground (1)
   m_TagString: Untagged
@@ -953,7 +956,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8fcbae7378f0c6d47a6463b622d356e7, type: 2}
+  - {fileID: 2100000, guid: 72ccc59e3a08abf439f707246221ccab, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1163,6 +1166,7 @@ GameObject:
   - component: {fileID: 873400016}
   - component: {fileID: 873400014}
   - component: {fileID: 873400015}
+  - component: {fileID: 8800000109}
   m_Layer: 0
   m_Name: Wall Back Right
   m_TagString: Untagged
@@ -1319,6 +1323,7 @@ GameObject:
   - component: {fileID: 873400026}
   - component: {fileID: 873400024}
   - component: {fileID: 873400025}
+  - component: {fileID: 8800000110}
   m_Layer: 0
   m_Name: Wall Back Lintel
   m_TagString: Untagged
@@ -1640,6 +1645,7 @@ GameObject:
   - component: {fileID: 901040745}
   - component: {fileID: 901040744}
   - component: {fileID: 901040743}
+  - component: {fileID: 8800000106}
   m_Layer: 0
   m_Name: Wall 2 (1)
   m_TagString: Untagged
@@ -1750,7 +1756,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d2bcfb8fa2340f449a6244b47981e231, type: 2}
+  - {fileID: 2100000, guid: 49da2af2e6a1ee7479f1d80106fc6860, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1960,6 +1966,7 @@ GameObject:
   - component: {fileID: 1011782622}
   - component: {fileID: 1011782618}
   - component: {fileID: 1011782617}
+  - component: {fileID: 8800000102}
   m_Layer: 0
   m_Name: Wall Back Left
   m_TagString: Untagged
@@ -2794,6 +2801,7 @@ GameObject:
   - component: {fileID: 1682356393}
   - component: {fileID: 1682356392}
   - component: {fileID: 1682356391}
+  - component: {fileID: 8800000105}
   m_Layer: 0
   m_Name: Wall 2
   m_TagString: Untagged
@@ -2904,7 +2912,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d2bcfb8fa2340f449a6244b47981e231, type: 2}
+  - {fileID: 2100000, guid: 49da2af2e6a1ee7479f1d80106fc6860, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2977,6 +2985,7 @@ Transform:
   - {fileID: 873400011}
   - {fileID: 873400021}
   - {fileID: 873400031}
+  - {fileID: 8800000002}
   m_Father: {fileID: 682983114}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1718815687
@@ -3157,6 +3166,7 @@ GameObject:
   - component: {fileID: 1748494547}
   - component: {fileID: 1748494546}
   - component: {fileID: 1748494545}
+  - component: {fileID: 8800000107}
   m_Layer: 0
   m_Name: Wall 3
   m_TagString: Untagged
@@ -3487,6 +3497,7 @@ GameObject:
   - component: {fileID: 2070597239}
   - component: {fileID: 2070597242}
   - component: {fileID: 2070597238}
+  - component: {fileID: 8800000100}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -3617,6 +3628,7 @@ GameObject:
   - component: {fileID: 2094077163}
   - component: {fileID: 2094077162}
   - component: {fileID: 2094077161}
+  - component: {fileID: 8800000108}
   m_Layer: 0
   m_Name: Wall 3 (1)
   m_TagString: Untagged
@@ -4966,3 +4978,272 @@ SceneRoots:
   - {fileID: 6300000000000000001}
   - {fileID: 6300000000000000002}
   - {fileID: 6300000000000000003}
+--- !u!114 &8800000100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2070597237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1e8d3a7b9f4a62b0d4e1f87a3c9d25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
+  _metersPerTile: 1
+--- !u!114 &8800000101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 764462085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1e8d3a7b9f4a62b0d4e1f87a3c9d25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
+  _metersPerTile: 1
+--- !u!114 &8800000102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1011782616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1e8d3a7b9f4a62b0d4e1f87a3c9d25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
+  _metersPerTile: 1
+--- !u!114 &8800000103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 538248548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1e8d3a7b9f4a62b0d4e1f87a3c9d25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
+  _metersPerTile: 1
+--- !u!114 &8800000104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 148735876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1e8d3a7b9f4a62b0d4e1f87a3c9d25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
+  _metersPerTile: 1
+--- !u!114 &8800000105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682356389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1e8d3a7b9f4a62b0d4e1f87a3c9d25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
+  _metersPerTile: 1
+--- !u!114 &8800000106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 901040741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1e8d3a7b9f4a62b0d4e1f87a3c9d25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
+  _metersPerTile: 1
+--- !u!114 &8800000107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748494543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1e8d3a7b9f4a62b0d4e1f87a3c9d25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
+  _metersPerTile: 1
+--- !u!114 &8800000108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2094077159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1e8d3a7b9f4a62b0d4e1f87a3c9d25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
+  _metersPerTile: 1
+--- !u!114 &8800000109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 873400010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1e8d3a7b9f4a62b0d4e1f87a3c9d25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
+  _metersPerTile: 1
+--- !u!114 &8800000110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 873400020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1e8d3a7b9f4a62b0d4e1f87a3c9d25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
+  _metersPerTile: 1
+--- !u!1 &8800000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8800000002}
+  - component: {fileID: 8800000003}
+  - component: {fileID: 8800000004}
+  - component: {fileID: 8800000005}
+  - component: {fileID: 8800000006}
+  m_Layer: 0
+  m_Name: Roof
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8800000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8800000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 5.25, z: 55}
+  m_LocalScale: {x: 16, y: 0.5, z: 122}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1716879155}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &8800000003
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8800000001}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &8800000004
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8800000001}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 49da2af2e6a1ee7479f1d80106fc6860, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8800000005
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8800000001}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8800000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8800000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1e8d3a7b9f4a62b0d4e1f87a3c9d25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
+  _metersPerTile: 1
