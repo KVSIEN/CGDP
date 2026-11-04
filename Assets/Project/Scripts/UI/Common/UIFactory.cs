@@ -40,6 +40,16 @@ namespace CGD.UI
             return image;
         }
 
+        // Shrinks the text to fit its box instead of overflowing it, down to `minSize`; it
+        // never grows past the size it already has. For labels whose length depends on a
+        // setting, such as a rebindable key name.
+        public static void ShrinkToFit(TMP_Text text, float minSize)
+        {
+            text.enableAutoSizing = true;
+            text.fontSizeMax      = text.fontSize;
+            text.fontSizeMin      = minSize;
+        }
+
         public static void Stretch(RectTransform rt)
         {
             rt.anchorMin = Vector2.zero;

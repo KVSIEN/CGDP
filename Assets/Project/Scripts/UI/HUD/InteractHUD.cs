@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using CGD.Input;
 using CGD.Player;
 
 namespace CGD.UI
@@ -20,6 +21,7 @@ namespace CGD.UI
         private Canvas          _canvas;
         private GameObject      _worldPrompt;
         private TextMeshProUGUI _labelText;
+        private TextMeshProUGUI _keyText;
         private RectTransform   _holdBar;
 
         private void Awake()
@@ -32,6 +34,9 @@ namespace CGD.UI
         // is used rather than every frame.
         private void OnEnable()
         {
+            if (Bindings != null) Bindings.Changed += RefreshKey;
+            RefreshKey();
+
             if (_interaction == null) return;
 
             _interaction.TargetChanged += RefreshLabel;
@@ -40,8 +45,11 @@ namespace CGD.UI
 
         private void OnDisable()
         {
+            if (Bindings != null) Bindings.Changed -= RefreshKey;
             if (_interaction != null) _interaction.TargetChanged -= RefreshLabel;
         }
+
+        private void RefreshKey() => _keyText.text = KeyOf(GameAction.Interact);
 
         private void RefreshLabel() => _labelText.text = _interaction.TargetLabel;
 
@@ -77,11 +85,12 @@ namespace CGD.UI
             keyBg.rectTransform.sizeDelta        = new Vector2(keySize, 0f);
 
             var keyText = UIFactory.MakeText("KeyLabel", keyBg.rectTransform, layer);
-            keyText.text      = "E";
+            _keyText          = keyText;
             keyText.fontSize  = 18f;
             keyText.fontStyle = FontStyles.Bold;
             keyText.color     = Color.white;
             keyText.alignment = TextAlignmentOptions.Midline;
+            UIFactory.ShrinkToFit(keyText, 9f);
             UIFactory.Stretch(keyText.rectTransform);
 
             // Action label

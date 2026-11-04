@@ -66,6 +66,7 @@ namespace CGD.Input
             BuildAxisActions();
             SettingsSave.LoadBindings(_bindings);
             BuildActions();
+            _bindings.NotifyChanged();
         }
 
         private void BuildAxisActions()
@@ -233,6 +234,7 @@ namespace CGD.Input
                 _actions[i] = null;
             }
             BuildActions();
+            _bindings.NotifyChanged();
         }
     }
 }

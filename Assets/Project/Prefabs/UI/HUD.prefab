@@ -62,6 +62,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.CraftingPanel
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _input: {fileID: 0}
 --- !u!1 &243405567713586819
 GameObject:
@@ -177,6 +178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.DevConsolePanel
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _input: {fileID: 0}
   _commands: {fileID: 0}
 --- !u!1 &3089393918057191465
@@ -383,6 +385,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.CharacterPanel
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _input: {fileID: 0}
   _inventory: {fileID: 0}
   _equipment: {fileID: 0}
@@ -437,6 +440,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.HitMarkerHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _gap: 8
   _length: 9
   _thickness: 2
@@ -490,6 +494,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.StatusEffectHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _target: {fileID: 0}
   _maxTiles: 8
   _tileSize: 36
@@ -557,6 +562,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.DialoguePanel
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _input: {fileID: 0}
 --- !u!1 &3921892684325407703
 GameObject:
@@ -620,6 +626,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.WeaponPickupHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _interaction: {fileID: 0}
   _panelWidth: 320
   _padding: 14
@@ -687,6 +694,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ItemInventoryHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _input: {fileID: 0}
   _inventory: {fileID: 0}
   _panelWidth: 320
@@ -743,6 +751,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.QuestHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _tracker: {fileID: 0}
   _screenPadding: {x: 20, y: 120}
   _width: 320
@@ -795,14 +804,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ItemSlotsHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _slots: {fileID: 0}
   _inventory: {fileID: 0}
   _throwing: {fileID: 0}
-  _keyLabels:
-  - 5
-  - 6
-  - 7
-  - 8
   _screenPadding: {x: 20, y: 160}
   _width: 180
   _rowHeight: 24
@@ -855,8 +860,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DodgeHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _dodge: {fileID: 0}
-  _keyLabel: C
   _slotSize: 56
   _screenPaddingBottom: 24
   _offsetFromCenter: 160
@@ -909,6 +914,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _weapon: {fileID: 0}
   _screenPadding: {x: 20, y: 20}
   _innerPadding: {x: 12, y: 10}
@@ -962,6 +968,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.SlotWheelHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _radius: 150
   _tileSize: {x: 150, y: 40}
 --- !u!1 &5629651521174192597
@@ -1026,6 +1033,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ShopPanel
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _input: {fileID: 0}
 --- !u!1 &6539219953554687304
 GameObject:
@@ -1076,6 +1084,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StatsHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _playerHealth: {fileID: 0}
   _screenPadding: {x: 20, y: 64}
   _innerPadding: {x: 12, y: 12}
@@ -1130,6 +1139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.NotificationHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _topPadding: 90
   _rowWidth: 420
   _rowHeight: 28
@@ -1191,6 +1201,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitEffect
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _playerHealth: {fileID: 0}
   _flashColor: {r: 1, g: 0.1, b: 0.1, a: 0.35}
   _flashFadeSpeed: 6
@@ -1245,6 +1256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _interaction: {fileID: 0}
   _yOffset: 0
 --- !u!1 &7489009289272825176
@@ -1296,6 +1308,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrosshairHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _settings: {fileID: 11400000, guid: 877f8d15f8602ed4e8148eb435c15e72, type: 2}
   _playerCamera: {fileID: 0}
   _spreadScale: 1
@@ -1350,6 +1363,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _input: {fileID: 0}
   _loadout: {fileID: 0}
   _panelWidth: 300
@@ -1417,6 +1431,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbilityHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _abilities: {fileID: 0}
   _slotSize: 56
   _slotGap: 8
@@ -1470,6 +1485,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VelocityHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _movement: {fileID: 0}
   _screenPadding: {x: 20, y: 20}
   _panelWidth: 120
@@ -1523,6 +1539,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.MeterHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _meters: {fileID: 0}
 --- !u!1 &7041853095571230211
 GameObject:
@@ -1573,6 +1590,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.OffhandHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _offhand: {fileID: 0}
   _slotSize: 56
   _screenPaddingBottom: 24
@@ -1626,6 +1644,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ObjectiveHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _topPadding: 30
   _width: 360
   _barHeight: 12
@@ -1680,6 +1699,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ScreenFlashHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
 --- !u!1 &7300000000000000011
 GameObject:
   m_ObjectHideFlags: 0
@@ -1729,4 +1749,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.StealthHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
+  _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _stealth: {fileID: 0}

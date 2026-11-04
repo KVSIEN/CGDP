@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using CGD.Input;
 using CGD.Player;
 
 namespace CGD.UI
@@ -9,7 +10,6 @@ namespace CGD.UI
     public class DodgeHUD : HUDElement
     {
         [SerializeField] private PlayerDodge _dodge;
-        [SerializeField] private string _keyLabel = "C";
 
         [Header("Layout")]
         [SerializeField] private float _slotSize            = 56f;
@@ -22,6 +22,20 @@ namespace CGD.UI
         private Image          _bg;
         private Image          _overlay;
         private TextMeshProUGUI _nameLabel;
+        private TextMeshProUGUI _keyText;
+
+        private void OnEnable()
+        {
+            if (Bindings != null) Bindings.Changed += RefreshKey;
+            RefreshKey();
+        }
+
+        private void OnDisable()
+        {
+            if (Bindings != null) Bindings.Changed -= RefreshKey;
+        }
+
+        private void RefreshKey() => _keyText.text = KeyOf(GameAction.Dodge);
 
         private void Awake()
         {
@@ -41,7 +55,7 @@ namespace CGD.UI
             UIFactory.Stretch(_overlay.rectTransform);
 
             var keyLabel         = UIFactory.MakeText("DodgeKey", _bg.rectTransform);
-            keyLabel.text        = _keyLabel;
+            _keyText             = keyLabel;
             keyLabel.fontSize    = 11f;
             keyLabel.color       = Theme.TextSecondary;
             keyLabel.alignment   = TextAlignmentOptions.TopLeft;

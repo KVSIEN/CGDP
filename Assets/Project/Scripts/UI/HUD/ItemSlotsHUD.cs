@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CGD.Items;
+using CGD.Input;
 using CGD.Player;
 using CGD.Weapons;
 
@@ -18,7 +19,6 @@ namespace CGD.UI
         [SerializeField] private PlayerInventory     _inventory;
         [Tooltip("Optional — lights the row of the throwable in hand")]
         [SerializeField] private ThrowableController _throwing;
-        [SerializeField] private string[] _keyLabels = { "5", "6", "7", "8" };
 
         private const float FillAlpha     = 0.6f;
         private const float CooldownAlpha = 0.4f;
@@ -74,6 +74,7 @@ namespace CGD.UI
         {
             if (_inventory != null) _inventory.Inventory.Changed += Refresh;
             if (_slots != null)     _slots.SlotsChanged += Refresh;
+            if (Bindings != null)   Bindings.Changed += Refresh;
             Refresh();
         }
 
@@ -81,6 +82,7 @@ namespace CGD.UI
         {
             if (_inventory != null) _inventory.Inventory.Changed -= Refresh;
             if (_slots != null)     _slots.SlotsChanged -= Refresh;
+            if (Bindings != null)   Bindings.Changed -= Refresh;
         }
 
         // Labels update on inventory/slot events; only the use bar and the lit row change every frame.
@@ -108,7 +110,7 @@ namespace CGD.UI
             for (int i = 0; i < PlayerItemSlots.SlotCount; i++)
             {
                 ItemDefinition item = _slots.Slots[i];
-                string key = i < _keyLabels.Length ? _keyLabels[i] : (i + 1).ToString();
+                string key = KeyOf(PlayerItemSlots.ActionOf(i));
                 string text = item != null ? $"[{key}] {item.DisplayName} ×{_slots.CountOf(i)}" : $"[{key}] —";
                 if (_labels[i].text != text) _labels[i].text = text;
             }

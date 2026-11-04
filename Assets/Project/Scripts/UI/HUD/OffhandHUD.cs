@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CGD.Artifacts;
+using CGD.Input;
 using CGD.Player;
 
 namespace CGD.UI
@@ -29,9 +30,29 @@ namespace CGD.UI
         private Image           _bg;
         private Image           _overlay;
         private TextMeshProUGUI _keyLabel;
+        private string _useKey  = string.Empty;
+        private string _holdKey = string.Empty;
         private TextMeshProUGUI _nameLabel;
         private TextMeshProUGUI _chargeLabel;
         private string          _shownName;
+
+        private void OnEnable()
+        {
+            if (Bindings != null) Bindings.Changed += RefreshKeys;
+            RefreshKeys();
+        }
+
+        private void OnDisable()
+        {
+            if (Bindings != null) Bindings.Changed -= RefreshKeys;
+        }
+
+        // The artifact is used with the aim button; the held text is built here, not every frame.
+        private void RefreshKeys()
+        {
+            _useKey  = KeyOf(GameAction.AimDownSights);
+            _holdKey = _useKey + " hold";
+        }
 
         private void Awake()
         {
@@ -94,7 +115,7 @@ namespace CGD.UI
                 return;
             }
 
-            string key = use.Mode == OffhandUseMode.Hold ? "RMB hold" : "RMB";
+            string key = use.Mode == OffhandUseMode.Hold ? _holdKey : _useKey;
             int charges = use.Charges;
             Show(use.IsRunning ? Theme.Warning.WithAlpha(SlotAlpha) : ReadyColor, use.Ratio, key,
                  charges >= 0 && charges < ChargeText.Length ? ChargeText[charges] : string.Empty);

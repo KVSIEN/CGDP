@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Input;
 
 namespace CGD.UI
 {
@@ -8,6 +9,15 @@ namespace CGD.UI
         [SerializeField] private HUDTheme _theme;
 
         protected HUDTheme Theme => _theme != null ? _theme : HUDTheme.Fallback;
+
+        [Tooltip("The key bindings, for elements that show which key does what. Leave empty and key hints show as unbound")]
+        [SerializeField] private InputBindingSettings _bindings;
+
+        // Subscribe in OnEnable and redraw hints on Changed: bindings can be rebound while playing.
+        protected InputBindingSettings Bindings => _bindings;
+
+        protected string KeyOf(GameAction action) =>
+            _bindings != null ? _bindings.PromptFor(action) : InputPromptLabels.Unbound;
 
         public bool IsVisible { get; protected set; } = true;
 

@@ -32,6 +32,8 @@ namespace CGD.Player
         private static readonly GameAction[] SlotActions = { GameAction.Item1, GameAction.Item2, GameAction.Item3, GameAction.Item4 };
         private const string EmptyOption = "(empty)";
 
+        public static GameAction ActionOf(int slot) => SlotActions[slot];
+
         [Tooltip("Consumables or throwables on each slot at start")]
         [SerializeField] private ItemDefinition[] _slots = new ItemDefinition[SlotCount];
         [Tooltip("Optional — the wheel shown while holding a slot key")]

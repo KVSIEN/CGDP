@@ -50,6 +50,7 @@
 
 ## HUD / UI
 - Modular HUD system — elements (crosshair, stats) are independent and can be shown or hidden individually
+- Key hints in the HUD show the keys you have bound, not fixed letters: the interact prompt, the dodge and offhand slots, the item slots and the weapon slots in the inventory. They update the moment you rebind a key or reset the bindings, and long names are shortened (LMB, RMB, Shift, Ctrl, Esc, Wheel Up/Down); an unbound action shows —
 - Every HUD colour comes from one theme asset (surfaces, text, status, accent), so restyling the HUD is editing that asset
 - The HUD scales with the screen: it is laid out for 1920 × 1080 and grows or shrinks with the window, and the world-space prompt and damage numbers scale with it
 - Crosshair drawn entirely in code — no texture needed; updates instantly when settings change
@@ -128,7 +129,7 @@
 - Press E to trigger the interaction; prompts only appear when something is actually in range
 - Hold interactions: doors and switches can require holding E for a set time; the prompt shows a progress bar and releasing early cancels
 - Interactables behind walls or other solid objects are ignored (line-of-sight check, can be turned off)
-- HUD prompt appears bottom-center of the screen showing a blue "E" key badge and the action label (e.g. "Pick Up  Assault Rifle"); disappears instantly when out of range
+- HUD prompt appears bottom-center of the screen showing a blue key badge (the Interact key, "E" by default) and the action label (e.g. "Pick Up  Assault Rifle"); disappears instantly when out of range
 - Hovering a weapon pickup opens a top-right stat panel with the weapon's name, tier (colored — grey/green/blue/purple/gold for Common through Legendary), quality score, category, and a two-column readout of damage, fire rate, magazine, reload, range, fire mode, ammo type, recoil, spread and draw time; contextual footer adds headshot multiplier, pellet count (shotguns), burst pattern (burst mode), charge time (charge mode) and armor penetration when relevant
 - Weapon pickups: place a `WeaponPickup` component on any world object, assign a `WeaponData` asset; picking it up fills the first empty loadout slot and equips it; if all four slots are full, your active weapon is swapped out and left behind in the pickup's place, keeping its remaining ammo
 - Random weapon pickups: add `RandomWeaponPickup` alongside `WeaponPickup` and assign a `WeaponCategoryData` asset; each time the object spawns a unique weapon is generated with randomised stats drawn from the category's thresholds
@@ -718,7 +719,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - Attachments on weapons change the weapon for real: magazine size, reload time, fire rate and damage all follow them (e.g. Extended Magazine: +25% magazine, slower reload)
 
 ## Consumables
-- Four item slots (keys 5–8) for consumables and throwables, shown bottom-right with how many of each are left; the row of a grenade in hand lights up
+- Four item slots (keys 5–8 by default) for consumables and throwables, shown bottom-right with how many of each are left; the row of a grenade in hand lights up
 - **Channelled items** take their use time, shown as a filling bar, and start when the key is tapped; they're only spent once the use finishes. Taking damage interrupts items that need concentration (the Bandage), as do being stunned, mantling or rolling; tapping a channelled item again cancels
 - **Instant items** go off the moment the key goes down, so they can be woven into combos (eat between hits, or in the same moment as an ability). Each one puts **every** consumable on a short shared cooldown (shown as a grey bar draining over the consumable rows). Channelled items set no cooldown, so an instant item can follow straight after one finishes; pressing an instant item while channelling doesn't cancel the channel
 - Using a consumable mid-combo holds the melee combo open, like an ability

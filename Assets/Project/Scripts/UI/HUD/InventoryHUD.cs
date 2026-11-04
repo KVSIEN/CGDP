@@ -21,7 +21,6 @@ namespace CGD.UI
         [SerializeField] private float _padding    = 16f;
 
         private const int SlotCount = 4;
-        private static readonly string[]     SlotKeys    = { "1", "2", "3", "4" };
         private static readonly GameAction[] SlotActions =
         {
             GameAction.Weapon1,
@@ -33,10 +32,33 @@ namespace CGD.UI
         private const float ActiveAlpha = 0.92f;
 
         private Image[]           _slotBgs     = new Image[SlotCount];
+        private TextMeshProUGUI[] _slotKeys    = new TextMeshProUGUI[SlotCount];
+        private TextMeshProUGUI[] _barKeys     = new TextMeshProUGUI[SlotCount];
         private TextMeshProUGUI[] _slotNames   = new TextMeshProUGUI[SlotCount];
         private Image[]           _barSlotBgs  = new Image[SlotCount];
         private TextMeshProUGUI   _activeBarText;
         private CanvasGroup       _cg;
+
+        private void OnEnable()
+        {
+            if (Bindings != null) Bindings.Changed += RefreshKeys;
+            RefreshKeys();
+        }
+
+        private void OnDisable()
+        {
+            if (Bindings != null) Bindings.Changed -= RefreshKeys;
+        }
+
+        private void RefreshKeys()
+        {
+            for (int i = 0; i < SlotCount; i++)
+            {
+                string key = KeyOf(SlotActions[i]);
+                _slotKeys[i].text = key;
+                _barKeys[i].text  = key;
+            }
+        }
 
         private void Awake()
         {
@@ -161,7 +183,7 @@ namespace CGD.UI
                 _slotBgs[i] = bg;
 
                 var key = UIFactory.MakeText("Key_" + i, bg.rectTransform);
-                key.text      = SlotKeys[i];
+                _slotKeys[i]  = key;
                 key.fontSize  = 12f;
                 key.color     = Theme.TextMuted;
                 key.alignment = TextAlignmentOptions.Midline;
@@ -170,6 +192,7 @@ namespace CGD.UI
                 key.rectTransform.pivot            = new Vector2(0f, 0.5f);
                 key.rectTransform.anchoredPosition = new Vector2(10f, 0f);
                 key.rectTransform.sizeDelta        = new Vector2(22f, 0f);
+                UIFactory.ShrinkToFit(key, 7f);
 
                 var name = UIFactory.MakeText("Name_" + i, bg.rectTransform);
                 name.text      = "— Empty —";
@@ -214,11 +237,12 @@ namespace CGD.UI
                 _barSlotBgs[i] = box;
 
                 var key = UIFactory.MakeText("Key_" + i, box.rectTransform);
-                key.text      = SlotKeys[i];
+                _barKeys[i]   = key;
                 key.fontSize  = 10f;
                 key.color     = Theme.TextPrimary;
                 key.alignment = TextAlignmentOptions.Center;
                 UIFactory.Stretch(key.rectTransform);
+                UIFactory.ShrinkToFit(key, 6f);
             }
 
             float nameX = 6f + SlotCount * (boxSize + boxGap) + 6f;

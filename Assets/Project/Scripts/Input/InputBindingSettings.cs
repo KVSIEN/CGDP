@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +8,22 @@ namespace CGD.Input
     public class InputBindingSettings : ScriptableObject
     {
         public List<ActionBinding> Bindings = new();
+
+        // Raised after the bindings were loaded, rebound or reset, so key hints can redraw.
+        // Listeners unsubscribe in OnDisable.
+        public event Action Changed;
+
+        public void NotifyChanged() => Changed?.Invoke();
+
+        // The short name of the control shown for an action: its primary binding, else the
+        // secondary one.
+        public string PromptFor(GameAction action)
+        {
+            if (!TryGet(action, out ActionBinding binding)) return InputPromptLabels.Unbound;
+
+            string path = string.IsNullOrEmpty(binding.PrimaryPath) ? binding.SecondaryPath : binding.PrimaryPath;
+            return InputPromptLabels.Short(path);
+        }
 
         public bool TryGet(GameAction action, out ActionBinding binding)
         {
