@@ -353,9 +353,10 @@
 - Each target is damaged at most once per swing regardless of how many ticks or rays touch it
 - Per-step critical multiplier — applied when a Thrust or Sweep hits a critical region (head by default); tunable per combo step so a heavy finisher can crit harder than a quick jab
 - Debug drawing shows the cast rays (Thrust/Sweep) or overlap sphere (Slam) each physics tick during the Active window
-- When a MeleeAttackStep has an ActionTimeline assigned, the Active phase is driven by the timeline system instead of the legacy hit resolver — the timeline controls what shapes fire on which frames, while Windup and Recovery remain time-based; a timeline's swing hit event makes the attack's hit volume travel along the swing instead of firing from a fixed spot
+- When a MeleeAttackStep has an ActionTimeline assigned, the Active phase is driven by the timeline system instead of the legacy hit resolver — the timeline controls what shapes fire on which frames, while Windup and Recovery remain time-based; a timeline's swing hit event makes the attack's hit volume travel along the swing instead of firing from a fixed spot, and deals the step's own rolled damage, crits and effects at the weapon's reach
 
 ### Melee Weapons
+- The **Arming Sword**'s light combo and heavy attack use swing hit timelines: the first two light attacks slash in opposite directions (right-to-left, then back), the third thrusts, and the heavy attack is a wide fast sweep — the blade visibly crosses the space it hits instead of striking everything in an arc at once
 - Melee weapons roll like guns (quality, tier, seed → the same weapon every time): **Daggers**, **Axes**, **Hammers** and **Spears** as broad types, and **Swords** as thirteen weapons of their own (below)
 - Found like guns: as (rarer) loot drops, and on the Gunsmith's shelf (arming swords, axes and daggers)
 - With a melee weapon in the active slot, **Attack** (left mouse) swings it: tap for the light combo, hold for the heavy attack. No ammo, reload or recoil

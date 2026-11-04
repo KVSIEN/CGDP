@@ -14,10 +14,11 @@ namespace CGD.Weapons
 
         public bool UsesTimeline => _usingTimeline;
 
-        // A timeline strike authors its own damage per event, so the wielder's buffs reach it as
-        // `damageScale`. Returns how long the timeline runs.
+        // Swing hit events deal `strike` (the step's rolled hit) scaled by their own Damage and
+        // stretch to `reach`; other events author their own damage, so the wielder's buffs reach
+        // them as `damageScale`. Returns how long the timeline runs.
         public float BeginTimeline(ActionTimeline timeline, Transform aim, Transform sourceRoot, Transform socket,
-                                   DamageSource source, float damageScale, bool debugDraw, float debugDuration)
+                                   DamageInfo strike, float reach, float damageScale, bool debugDraw, float debugDuration)
         {
             _usingTimeline = true;
             _context = new ActionContext
@@ -27,7 +28,10 @@ namespace CGD.Weapons
                 Up            = aim.up,
                 SourceRoot    = sourceRoot,
                 Socket        = socket,
-                Source        = source,
+                Source        = strike.Source,
+                HasStrike     = true,
+                Strike        = strike,
+                Reach         = reach,
                 DamageScale   = damageScale,
                 HitMask       = timeline.HitMask,
                 DebugDraw     = debugDraw,

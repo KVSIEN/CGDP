@@ -38,6 +38,15 @@ namespace CGD.Combat
         // The timeline frame being ticked, for events that animate over their frames.
         public int Frame;
 
+        // Set when the timeline plays as a weapon's attack: the strike's own hit (rolled damage,
+        // crit, armor penetration, effects). Swing hit events deal their authored Damage as a
+        // multiple of it, so a weapon's stats reach a timeline-driven attack.
+        public bool HasStrike;
+        public DamageInfo Strike;
+
+        // The strike's reach in metres (0 = not a weapon attack); swing hit events scale to it.
+        public float Reach;
+
         // Applies DamageScale and Reflected to a hit an event built from its own fields.
         public DamageInfo Prepare(DamageInfo info)
         {

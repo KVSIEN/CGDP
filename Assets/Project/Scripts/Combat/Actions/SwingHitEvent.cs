@@ -36,6 +36,9 @@ namespace CGD.Combat
         [Tooltip("Where the blade begins and ends along its direction (metres from the aim origin). A sword is roughly 0.3 → 1.8.")]
         [SerializeField] private float _nearDistance = 0.3f;
         [SerializeField] private float _farDistance = 1.8f;
+        [Tooltip("The weapon reach this swing is drawn for (metres). When a weapon's real reach differs (reach rolls, perks) the whole swing scales to match. 0 = never scale.")]
+        [Min(0f)]
+        [SerializeField] private float _authoredReach = 1.8f;
         [Tooltip("Thickness of the hit volume. Wider = more forgiving.")]
         [Min(0.01f)]
         [SerializeField] private float _radius = 0.25f;
@@ -53,6 +56,7 @@ namespace CGD.Combat
         };
 
         [Header("Damage")]
+        [Tooltip("As a weapon's attack: a multiple of the attack step's damage (1 = the weapon's full rolled damage), and the step's own armor penetration, crits, type and effects replace the ones below.")]
         [SerializeField] private float _damage = 20f;
         [Range(0f, 1f)]
         [SerializeField] private float _armorPenetration;
@@ -73,11 +77,12 @@ namespace CGD.Combat
         public void OnTick(ActionContext ctx)
         {
             PoseTrail trail = _anchor == SwingAnchor.Socket && ctx.Socket != null ? ctx.SocketTrail : ctx.AimTrail;
+            float scale     = ctx.Reach > 0f && _authoredReach > 0f ? ctx.Reach / _authoredReach : 1f;
             float frame     = ctx.Frame - _startFrame;
             float prevFrame = Mathf.Max(frame - 1f, 0f);
 
-            SwingBlade from = BladeAt(trail.Previous, prevFrame);
-            SwingBlade to   = BladeAt(trail.Current, frame);
+            SwingBlade from = BladeAt(trail.Previous, prevFrame, scale);
+            SwingBlade to   = BladeAt(trail.Current, frame, scale);
             int steps = SwingBlade.StepsBetween(from, to, _radius * SubStepSpacing, MaxSubSteps);
 
             HashSet<IDamageable> dedup = _useSharedDedup ? ctx.SharedHits : ctx.EventHits[ctx.CurrentEventIndex];
@@ -87,7 +92,7 @@ namespace CGD.Combat
             for (int i = 1; i <= steps; i++)
             {
                 float progress = i / (float)steps;
-                SwingBlade blade = BladeAt(trail.Blend(progress), Mathf.Lerp(prevFrame, frame, progress));
+                SwingBlade blade = BladeAt(trail.Blend(progress), Mathf.Lerp(prevFrame, frame, progress), scale);
                 int count = Physics.OverlapCapsuleNonAlloc(
                     blade.Near, blade.Far, _radius, OverlapBuffer,
                     ctx.HitMask, QueryTriggerInteraction.Ignore);
@@ -105,14 +110,16 @@ namespace CGD.Combat
             }
         }
 
-        private SwingBlade BladeAt(Pose anchor, float frame)
+        private SwingBlade BladeAt(Pose anchor, float frame, float scale)
         {
             Vector3 pivot = anchor.position + anchor.rotation * _pivotOffset;
-            return SwingBlade.At(pivot, anchor.rotation, SwingPath.Sample(_keys, frame), _nearDistance, _farDistance);
+            SwingPose pose = SwingPath.Sample(_keys, frame);
+            pose.Push *= scale;
+            return SwingBlade.At(pivot, anchor.rotation, pose, _nearDistance * scale, _farDistance * scale);
         }
 
         private DamageInfo BuildDamageInfo(ActionContext ctx) =>
-            ctx.Prepare(new DamageInfo(
+            ctx.HasStrike ? ctx.Strike.WithDamageScale(_damage) : ctx.Prepare(new DamageInfo(
                 _damage, _armorPenetration, _damageType,
                 _criticalMultiplier, ctx.Source, _onHitEffects));
 

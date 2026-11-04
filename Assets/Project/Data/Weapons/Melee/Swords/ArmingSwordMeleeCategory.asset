@@ -27,7 +27,7 @@ MonoBehaviour:
   Names:
   - Arming Sword
   LightCombo:
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 3e77e2d921064e2ebfcbc1e81fc3cca2, type: 2}
     Damage: 1
     ArmorPenetration: 0
     DamageType: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 596f855a96374b89b7d7369dddbf863a, type: 2}
     Damage: 1.05
     ArmorPenetration: 0
     DamageType: 0
@@ -63,7 +63,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 0}
+  - Timeline: {fileID: 11400000, guid: 78a0ffd3993c460abd0b621308dd4745, type: 2}
     Damage: 1.4
     ArmorPenetration: 0
     DamageType: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyAttack:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: f4b668d3be514e759774a5dd997dcf81, type: 2}
     Damage: 2.4
     ArmorPenetration: 0
     DamageType: 0

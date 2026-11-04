@@ -130,16 +130,6 @@ namespace CGD.Weapons
         private void EnterActive()
         {
             _phase = Phase.Active;
-            Transform aim = _camera.transform;
-
-            if (_activeStep.Timeline != null)
-            {
-                _phaseTimer = _strike.BeginTimeline(_activeStep.Timeline, aim, _self.root, _socket, _source,
-                                                    DamageScale(_activeStep.Damage), _debugDraw, _debugDuration);
-                return;
-            }
-
-            _phaseTimer = _activeStep.ActiveTime / Speed;
 
             bool crit = Random.value < Stat(ItemStat.CritChance, 0f);
             var info = new DamageInfo(
@@ -152,6 +142,16 @@ namespace CGD.Weapons
                 bonuses: new HitBonuses(crit, Stat(ItemStat.StatusChance, 0f), Stat(ItemStat.StatusDamage, 0f)));
 
             float reach = Mathf.Max(0.1f, Stat(ItemStat.Range, 1f));
+
+            if (_activeStep.Timeline != null)
+            {
+                _phaseTimer = _strike.BeginTimeline(_activeStep.Timeline, _camera.transform, _self.root, _socket,
+                                                    info, _activeStep.Range * reach,
+                                                    DamageScale(_activeStep.Damage), _debugDraw, _debugDuration);
+                return;
+            }
+
+            _phaseTimer = _activeStep.ActiveTime / Speed;
             _strike.BeginShapes(_activeStep, info, _data.HitMask, _self.root, reach);
         }
 

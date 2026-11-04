@@ -9,7 +9,7 @@ namespace CGD.Weapons
     public class MeleeAttackStep
     {
         [Header("Timeline")]
-        [Tooltip("When set, the Active phase uses this timeline instead of the legacy hit resolver. Damage, hit detection and sound are defined by the timeline's events.")]
+        [Tooltip("When set, the Active phase uses this timeline instead of the legacy hit resolver: its events define the hit volumes and frames. Swing Hit events deal this step's rolled damage (crits, penetration, effects) scaled by their own Damage, and stretch to this step's Range; the Hit Shape / Radius / Sweep fields below are then unused.")]
         public ActionTimeline Timeline;
 
         [Header("Damage")]
