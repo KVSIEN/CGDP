@@ -3,9 +3,6 @@ using CGD.Input;
 
 namespace CGD.Weapons
 {
-    // What pulling the trigger asks the weapon to do this frame.
-    public enum TriggerAction { None, Fire, FireBurst, Reload, DryFire }
-
     // Reads the attack button for the weapon in hand: which fire mode fires when, the buffered
     // press, the charge of a bow, and the click (or reload) of an empty magazine. It decides;
     // WeaponController does what it decides.
