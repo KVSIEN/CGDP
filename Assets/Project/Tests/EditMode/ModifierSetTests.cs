@@ -105,5 +105,20 @@ namespace CGD.Tests
             Assert.AreEqual(10f, set.Apply(TestStat.Damage, 10f), 0.0001f);
             Assert.IsEmpty(set.ModifiersOf(TestStat.Damage));
         }
+
+        [Test]
+        public void ListenerMayAddModifiersWhileChangedFires()
+        {
+            var source = new object();
+            var set = new ModifierSet<TestStat>();
+            set.Add(TestStat.Damage, Mod(StatModifierOp.Additive, 1f, source));
+            set.Changed += stat =>
+            {
+                if (stat == TestStat.Damage) set.Add(TestStat.Speed, Mod(StatModifierOp.Additive, 2f));
+            };
+
+            Assert.DoesNotThrow(() => set.RemoveFrom(source));
+            Assert.DoesNotThrow(() => set.Clear());
+        }
     }
 }

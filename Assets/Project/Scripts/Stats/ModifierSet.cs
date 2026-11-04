@@ -29,26 +29,37 @@ namespace CGD.Stats
         public int RemoveFrom(object source)
         {
             int removed = 0;
+            // Listeners may add modifiers from Changed, which would change the dictionary
+            // mid-loop, so they are told after the loop.
+            var changed = new List<TKey>();
             foreach (KeyValuePair<TKey, ModifierStack> entry in _stacks)
             {
                 int count = entry.Value.RemoveFrom(source);
                 if (count == 0) continue;
 
                 removed += count;
-                Changed?.Invoke(entry.Key);
+                changed.Add(entry.Key);
             }
+            NotifyChanged(changed);
             return removed;
         }
 
         public void Clear()
         {
+            var changed = new List<TKey>();
             foreach (KeyValuePair<TKey, ModifierStack> entry in _stacks)
             {
                 if (entry.Value.Count == 0) continue;
 
                 entry.Value.Clear();
-                Changed?.Invoke(entry.Key);
+                changed.Add(entry.Key);
             }
+            NotifyChanged(changed);
+        }
+
+        private void NotifyChanged(List<TKey> changed)
+        {
+            foreach (TKey stat in changed) Changed?.Invoke(stat);
         }
 
         public IReadOnlyList<Modifier> ModifiersOf(TKey stat) =>
