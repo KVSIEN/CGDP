@@ -14,9 +14,10 @@ namespace CGD.UI
         [Tooltip("Scale multiplier on top of the FOV-derived px/deg conversion. 1 = physically accurate.")]
         [SerializeField] private float _spreadScale = 1f;
 
+        private const float ObstructionDotAlpha = 0.9f;
+
         [Header("Obstruction Dot")]
         [SerializeField] private float _obstructionDotSize = 6f;
-        [SerializeField] private Color _obstructionDotColor = new Color(1f, 0.15f, 0.15f, 0.9f);
 
         private readonly Image[] _lines = new Image[4];
         private readonly Image[] _lineOutlines = new Image[4];
@@ -61,7 +62,7 @@ namespace CGD.UI
                     (RectTransform)transform, screenPoint, null, out Vector2 localPos);
                 _obstructionDot.rectTransform.anchoredPosition = localPos;
                 _obstructionDot.rectTransform.sizeDelta = Vector2.one * _obstructionDotSize;
-                _obstructionDot.color = _obstructionDotColor;
+                _obstructionDot.color = Theme.Danger.WithAlpha(ObstructionDotAlpha);
             }
             else
             {

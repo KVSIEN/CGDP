@@ -23,14 +23,7 @@ namespace CGD.UI
         [SerializeField, Min(0.1f)] private float _lifetime = 3f;
         [SerializeField, Min(0f)]   private float _fadeTime = 0.5f;
 
-        [Header("Colors")]
-        [SerializeField] private Color _info    = new(0.92f, 0.92f, 0.92f);
-        [SerializeField] private Color _success = new(0.55f, 0.95f, 0.55f);
-        [SerializeField] private Color _reward  = new(1f, 0.85f, 0.4f);
-        [SerializeField] private Color _warning = new(1f, 0.65f, 0.25f);
-        [SerializeField] private Color _danger  = new(1f, 0.35f, 0.35f);
 
-        private static readonly Color RowBg = new(0f, 0f, 0f, 0.55f);
 
         private Row[] _rows;
 
@@ -43,7 +36,7 @@ namespace CGD.UI
 
             _rows = new Row[_maxVisible];
             for (int i = 0; i < _rows.Length; i++)
-                _rows[i] = new Row(self, i, _rowWidth, _rowHeight);
+                _rows[i] = new Row(self, i, _rowWidth, _rowHeight, Theme.Scrim);
         }
 
         public void Show(string message, NotificationStyle style)
@@ -83,11 +76,11 @@ namespace CGD.UI
 
         private Color ColorOf(NotificationStyle style) => style switch
         {
-            NotificationStyle.Success => _success,
-            NotificationStyle.Reward  => _reward,
-            NotificationStyle.Warning => _warning,
-            NotificationStyle.Danger  => _danger,
-            _                         => _info,
+            NotificationStyle.Success => Theme.Positive,
+            NotificationStyle.Reward  => Theme.Reward,
+            NotificationStyle.Warning => Theme.Warning,
+            NotificationStyle.Danger  => Theme.Danger,
+            _                         => Theme.TextPrimary,
         };
 
         private sealed class Row
@@ -98,10 +91,10 @@ namespace CGD.UI
             private float _remaining;
             private int   _count;
 
-            public Row(RectTransform parent, int index, float width, float height)
+            public Row(RectTransform parent, int index, float width, float height, Color background)
             {
                 _background = UIFactory.MakeImage($"Notification{index}", parent);
-                _background.color = RowBg;
+                _background.color = background;
                 _group = _background.gameObject.AddComponent<CanvasGroup>();
                 _group.alpha = 0f;
 

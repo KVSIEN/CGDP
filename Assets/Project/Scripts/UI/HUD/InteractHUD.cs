@@ -12,11 +12,6 @@ namespace CGD.UI
         [SerializeField] private PlayerInteraction _interaction;
         [SerializeField] private float _yOffset = 1.0f;  // world units above object
 
-        private static readonly Color PanelBg    = new Color(0.04f, 0.04f, 0.06f, 0.88f);
-        private static readonly Color KeyBg      = new Color(0.22f, 0.42f, 0.82f, 0.92f);
-        private static readonly Color LabelColor = new Color(0.95f, 0.95f, 0.95f, 0.90f);
-        private static readonly Color KeyColor   = new Color(1f, 1f, 1f, 1f);
-        private static readonly Color HoldColor  = new Color(0.35f, 0.65f, 1f, 0.95f);
 
         private const float PromptWidth  = 340f;
         private const float PromptHeight = 42f;
@@ -67,14 +62,14 @@ namespace CGD.UI
 
             // Background
             var bg = UIFactory.MakeImage("Bg", rt, layer);
-            bg.color = PanelBg;
+            bg.color = Theme.Window;
             UIFactory.Stretch(bg.rectTransform);
 
             float keySize = PromptHeight;
 
             // Key badge
             var keyBg = UIFactory.MakeImage("KeyBg", rt, layer);
-            keyBg.color = KeyBg;
+            keyBg.color = Theme.AccentStrong.WithAlpha(0.92f);
             keyBg.rectTransform.anchorMin        = new Vector2(0f, 0f);
             keyBg.rectTransform.anchorMax        = new Vector2(0f, 1f);
             keyBg.rectTransform.pivot            = new Vector2(0f, 0.5f);
@@ -85,14 +80,14 @@ namespace CGD.UI
             keyText.text      = "E";
             keyText.fontSize  = 18f;
             keyText.fontStyle = FontStyles.Bold;
-            keyText.color     = KeyColor;
+            keyText.color     = Color.white;
             keyText.alignment = TextAlignmentOptions.Midline;
             UIFactory.Stretch(keyText.rectTransform);
 
             // Action label
             _labelText = UIFactory.MakeText("ActionLabel", rt, layer);
             _labelText.fontSize  = 13f;
-            _labelText.color     = LabelColor;
+            _labelText.color     = Theme.TextPrimary;
             _labelText.alignment = TextAlignmentOptions.MidlineLeft;
             _labelText.rectTransform.anchorMin        = new Vector2(0f, 0f);
             _labelText.rectTransform.anchorMax        = new Vector2(1f, 1f);
@@ -102,7 +97,7 @@ namespace CGD.UI
 
             // Hold progress bar
             var hold = UIFactory.MakeImage("HoldProgress", rt, layer);
-            hold.color = HoldColor;
+            hold.color = Theme.Accent.WithAlpha(0.95f);
             _holdBar = hold.rectTransform;
             _holdBar.anchorMin = Vector2.zero;
             _holdBar.anchorMax = new Vector2(0f, 0.1f);

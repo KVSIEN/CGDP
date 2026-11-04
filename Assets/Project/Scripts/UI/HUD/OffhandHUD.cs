@@ -22,8 +22,7 @@ namespace CGD.UI
 
         private static readonly Color ReadyColor   = new Color(0.45f, 0.25f, 0.65f, 0.85f);
         private static readonly Color PassiveColor = new Color(0.25f, 0.2f,  0.3f,  0.85f);
-        private static readonly Color RunningColor = new Color(1f,    0.75f, 0.1f,  0.85f);
-        private static readonly Color OverlayColor = new Color(0f,    0f,    0f,    0.65f);
+        private const float SlotAlpha = 0.85f;
         private static readonly string[] ChargeText = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
         private GameObject      _slot;
@@ -49,7 +48,7 @@ namespace CGD.UI
             _slot = _bg.gameObject;
 
             _overlay       = UIFactory.MakeImage("OffhandOverlay", _bg.rectTransform);
-            _overlay.color = OverlayColor;
+            _overlay.color = Theme.Overlay;
             UIFactory.Stretch(_overlay.rectTransform);
 
             _keyLabel           = Label("OffhandKey", 11f, TextAlignmentOptions.TopLeft, 0.7f);
@@ -97,7 +96,7 @@ namespace CGD.UI
 
             string key = use.Mode == OffhandUseMode.Hold ? "RMB hold" : "RMB";
             int charges = use.Charges;
-            Show(use.IsRunning ? RunningColor : ReadyColor, use.Ratio, key,
+            Show(use.IsRunning ? Theme.Warning.WithAlpha(SlotAlpha) : ReadyColor, use.Ratio, key,
                  charges >= 0 && charges < ChargeText.Length ? ChargeText[charges] : string.Empty);
         }
 

@@ -16,10 +16,6 @@ namespace CGD.UI
         [SerializeField] private float _thickness = 2f;
         [SerializeField, Min(0.01f)] private float _duration = 0.25f;
 
-        [Header("Colors")]
-        [SerializeField] private Color _hitColor      = Color.white;
-        [SerializeField] private Color _criticalColor = new(1f, 0.55f, 0.1f);
-        [SerializeField] private Color _killColor     = new(1f, 0.2f, 0.2f);
 
         private readonly Image[] _lines = new Image[4];
         private RectTransform _root;
@@ -60,9 +56,9 @@ namespace CGD.UI
 
             Color color = kind switch
             {
-                Kind.Critical => _criticalColor,
-                Kind.Kill     => _killColor,
-                _             => _hitColor,
+                Kind.Critical => Theme.Critical,
+                Kind.Kill     => Theme.Danger,
+                _             => Color.white,
             };
             foreach (Image line in _lines) line.color = color;
 

@@ -50,6 +50,7 @@
 
 ## HUD / UI
 - Modular HUD system — elements (crosshair, stats) are independent and can be shown or hidden individually
+- Every HUD colour comes from one theme asset (surfaces, text, status, accent), so restyling the HUD is editing that asset
 - The HUD scales with the screen: it is laid out for 1920 × 1080 and grows or shrinks with the window, and the world-space prompt and damage numbers scale with it
 - Crosshair drawn entirely in code — no texture needed; updates instantly when settings change
 - Crosshair is fully configurable: line length, thickness, center gap, opacity, color, center dot, and outline (color + thickness)

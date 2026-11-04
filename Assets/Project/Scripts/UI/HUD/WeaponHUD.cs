@@ -9,13 +9,6 @@ namespace CGD.UI
     {
         [SerializeField] private WeaponController _weapon;
 
-        [Header("Colors")]
-        [SerializeField] private Color _backgroundColor = new Color(0f, 0f, 0f, 0.45f);
-        [SerializeField] private Color _textColor = new Color(0.92f, 0.92f, 0.92f, 1f);
-        [SerializeField] private Color _dimColor = new Color(0.55f, 0.55f, 0.55f, 1f);
-        [SerializeField] private Color _reloadColor = new Color(1f, 0.75f, 0.1f, 1f);
-        [SerializeField] private Color _emptyColor = new Color(0.68f, 0.68f, 0.68f, 1f);
-        [SerializeField] private Color _noWeaponColor = new Color(0.68f, 0.68f, 0.68f, 1f);
 
         [Header("Layout")]
         [SerializeField] private Vector2 _screenPadding = new Vector2(20f, 20f);
@@ -67,25 +60,25 @@ namespace CGD.UI
             bool hasWeapon = _weapon != null && _weapon.Data != null;
 
             _weaponNameText.text  = hasWeapon ? _weapon.Data.WeaponName : string.Empty;
-            _weaponNameText.color = _dimColor;
+            _weaponNameText.color = Theme.TextMuted;
 
             if (!hasWeapon)
             {
                 _reloadText.gameObject.SetActive(false);
                 _magText.text = "-";
-                _magText.color = _noWeaponColor;
+                _magText.color = Theme.TextSecondary;
                 _reserveText.text = "|";
-                _reserveText.color = _noWeaponColor;
+                _reserveText.color = Theme.TextSecondary;
                 return;
             }
 
             if (_isReloading)
             {
                 _magText.text = "-";
-                _magText.color = _reloadColor;
+                _magText.color = Theme.Warning;
                 _reloadText.gameObject.SetActive(true);
                 _reserveText.text = _reserve.ToString();
-                _reserveText.color = _dimColor;
+                _reserveText.color = Theme.TextMuted;
                 return;
             }
 
@@ -93,10 +86,10 @@ namespace CGD.UI
 
             bool empty = _magazine == 0;
             _magText.text = _magazine.ToString();
-            _magText.color = empty ? _emptyColor : _textColor;
+            _magText.color = empty ? Theme.Danger : Theme.TextPrimary;
 
             _reserveText.text = _reserve.ToString();
-            _reserveText.color = _reserve == 0 ? _emptyColor : _dimColor;
+            _reserveText.color = _reserve == 0 ? Theme.Danger : Theme.TextMuted;
         }
 
         private void Build()
@@ -111,18 +104,18 @@ namespace CGD.UI
             float y = -_innerPadding.y;
 
             var bg = UIFactory.MakeImage("Background", self);
-            bg.color = _backgroundColor;
+            bg.color = Theme.Panel;
             UIFactory.Stretch(bg.rectTransform);
 
             _weaponNameText = UIFactory.MakeText("WeaponName", self);
-            _weaponNameText.color = _dimColor;
+            _weaponNameText.color = Theme.TextMuted;
             _weaponNameText.fontSize = 12f;
             _weaponNameText.alignment = TextAlignmentOptions.Right;
             UIFactory.Place(_weaponNameText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 18f));
             y -= 18f;
 
             _magText = UIFactory.MakeText("MagCount", self);
-            _magText.color = _textColor;
+            _magText.color = Theme.TextPrimary;
             _magText.fontSize = 36f;
             _magText.fontStyle = FontStyles.Bold;
             _magText.alignment = TextAlignmentOptions.Right;
@@ -130,14 +123,14 @@ namespace CGD.UI
             y -= 44f;
 
             _reserveText = UIFactory.MakeText("Reserve", self);
-            _reserveText.color = _dimColor;
+            _reserveText.color = Theme.TextMuted;
             _reserveText.fontSize = 16f;
             _reserveText.alignment = TextAlignmentOptions.Right;
             UIFactory.Place(_reserveText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 20f));
             y -= 20f;
 
             _reloadText = UIFactory.MakeText("ReloadLabel", self);
-            _reloadText.color = _reloadColor;
+            _reloadText.color = Theme.Warning;
             _reloadText.fontSize = 13f;
             _reloadText.fontStyle = FontStyles.Bold;
             _reloadText.alignment = TextAlignmentOptions.Right;

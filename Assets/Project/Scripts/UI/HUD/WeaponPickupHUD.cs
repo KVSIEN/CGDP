@@ -28,12 +28,6 @@ namespace CGD.UI
         [SerializeField] private float   _rowHeight   = 18f;
         [SerializeField] private Vector2 _edgeOffset  = new(40f, 40f);
 
-        private static readonly Color PanelBg = new(0.05f, 0.05f, 0.08f, 0.93f);
-        private static readonly Color RuleBg  = new(1f,    1f,    1f,    0.10f);
-        private static readonly Color Header  = new(1f,    1f,    1f,    0.92f);
-        private static readonly Color KeyText = new(1f,    1f,    1f,    0.55f);
-        private static readonly Color ValText = new(1f,    1f,    1f,    0.90f);
-        private static readonly Color Footer  = new(1f,    1f,    1f,    0.70f);
 
         // Standard loot-tier palette — reusable later for inventory tooltips.
 
@@ -228,7 +222,7 @@ namespace CGD.UI
             _rectTransform.sizeDelta = new Vector2(_panelWidth, totalHeight);
 
             var bg = UIFactory.MakeImage("PanelBg", _rectTransform);
-            bg.color = PanelBg;
+            bg.color = Theme.Window;
             UIFactory.Stretch(bg.rectTransform);
 
             float y = -_padding;
@@ -236,7 +230,7 @@ namespace CGD.UI
             _nameText = UIFactory.MakeText("Name", _rectTransform);
             _nameText.fontSize  = 16f;
             _nameText.fontStyle = FontStyles.Bold;
-            _nameText.color     = Header;
+            _nameText.color     = Theme.TextPrimary;
             _nameText.alignment = TextAlignmentOptions.MidlineLeft;
             PlaceRow(_nameText.rectTransform, y, headerHeight);
             y -= headerHeight;
@@ -250,7 +244,7 @@ namespace CGD.UI
             y -= subtitleHeight + ruleGap;
 
             var rule1 = UIFactory.MakeImage("RuleTop", _rectTransform);
-            rule1.color = RuleBg;
+            rule1.color = Theme.Rule;
             PlaceRow(rule1.rectTransform, y, ruleHeight);
             y -= ruleHeight + ruleGap;
 
@@ -260,13 +254,13 @@ namespace CGD.UI
             y -= statsHeight + ruleGap;
 
             var rule2 = UIFactory.MakeImage("RuleBottom", _rectTransform);
-            rule2.color = RuleBg;
+            rule2.color = Theme.Rule;
             PlaceRow(rule2.rectTransform, y, ruleHeight);
             y -= ruleHeight + footerGap;
 
             _footerText = UIFactory.MakeText("Footer", _rectTransform);
             _footerText.fontSize  = 11f;
-            _footerText.color     = Footer;
+            _footerText.color     = Theme.TextSecondary;
             _footerText.alignment = TextAlignmentOptions.MidlineLeft;
             PlaceRow(_footerText.rectTransform, y, footerHeight);
         }
@@ -282,7 +276,7 @@ namespace CGD.UI
 
                 var key = UIFactory.MakeText($"Key_{xOffset}_{i}", _rectTransform);
                 key.fontSize  = 12f;
-                key.color     = KeyText;
+                key.color     = Theme.TextMuted;
                 key.alignment = TextAlignmentOptions.MidlineLeft;
                 key.rectTransform.anchorMin        = new Vector2(0f, 1f);
                 key.rectTransform.anchorMax        = new Vector2(0f, 1f);
@@ -293,7 +287,7 @@ namespace CGD.UI
 
                 var val = UIFactory.MakeText($"Val_{xOffset}_{i}", _rectTransform);
                 val.fontSize  = 12f;
-                val.color     = ValText;
+                val.color     = Theme.TextPrimary;
                 val.alignment = TextAlignmentOptions.MidlineRight;
                 val.rectTransform.anchorMin        = new Vector2(0f, 1f);
                 val.rectTransform.anchorMax        = new Vector2(0f, 1f);

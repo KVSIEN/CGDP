@@ -20,15 +20,15 @@ namespace CGD.UI
         [SerializeField] private ThrowableController _throwing;
         [SerializeField] private string[] _keyLabels = { "5", "6", "7", "8" };
 
+        private const float FillAlpha     = 0.6f;
+        private const float CooldownAlpha = 0.4f;
+        private const float ReadyAlpha    = 0.6f;
+
         [Header("Layout")]
         [SerializeField] private Vector2 _screenPadding = new(20f, 160f);
         [SerializeField] private float   _width     = 180f;
         [SerializeField] private float   _rowHeight = 24f;
 
-        private static readonly Color RowBg         = new(0f, 0f, 0f, 0.45f);
-        private static readonly Color FillColor     = new(0.35f, 0.75f, 0.45f, 0.6f);
-        private static readonly Color CooldownColor = new(0.6f, 0.6f, 0.6f, 0.4f);
-        private static readonly Color ReadyBg       = new(0.25f, 0.55f, 1f, 0.6f);
 
         private Image[] _rows;
 
@@ -50,12 +50,12 @@ namespace CGD.UI
             for (int i = 0; i < PlayerItemSlots.SlotCount; i++)
             {
                 Image row = UIFactory.MakeImage($"Slot{i}", self);
-                row.color = RowBg;
+                row.color = Theme.Panel;
                 _rows[i] = row;
                 UIFactory.Place(row.rectTransform, new Vector2(0f, -i * (_rowHeight + 2f)), new Vector2(_width, _rowHeight));
 
                 Image fill = UIFactory.MakeImage("Fill", row.rectTransform);
-                fill.color = FillColor;
+                fill.color = Theme.Positive.WithAlpha(FillAlpha);
                 _fillImages[i] = fill;
                 _fills[i] = fill.rectTransform;
                 _fills[i].anchorMin = Vector2.zero;
@@ -96,8 +96,8 @@ namespace CGD.UI
                 bool  coolingDown = !using_ && _slots.OnCooldown && item is ConsumableDefinition;
                 float fill        = using_ ? _slots.UseProgress : coolingDown ? 1f - _slots.CooldownRatio : 0f;
                 _fills[i].anchorMax  = new Vector2(fill, 1f);
-                _fillImages[i].color = coolingDown ? CooldownColor : FillColor;
-                _rows[i].color = inHand != null && inHand == item ? ReadyBg : RowBg;
+                _fillImages[i].color = coolingDown ? Theme.TextSecondary.WithAlpha(CooldownAlpha) : Theme.Positive.WithAlpha(FillAlpha);
+                _rows[i].color = inHand != null && inHand == item ? Theme.Accent.WithAlpha(ReadyAlpha) : Theme.Panel;
             }
         }
 

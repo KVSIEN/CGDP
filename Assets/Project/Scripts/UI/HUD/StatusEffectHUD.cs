@@ -20,7 +20,6 @@ namespace CGD.UI
         [SerializeField] private float _tileGap             = 6f;
         [SerializeField] private float _screenPaddingBottom = 92f;
 
-        private static readonly Color OverlayColor = new Color(0f, 0f, 0f, 0.55f);
 
         private readonly List<ActiveStatus> _active = new();
         private readonly Dictionary<StatusEffect, string> _shortNames = new();
@@ -56,7 +55,7 @@ namespace CGD.UI
             tileRt.sizeDelta = Vector2.one * _tileSize;
 
             var overlay = UIFactory.MakeImage("Remaining", tileRt);
-            overlay.color = OverlayColor;
+            overlay.color = Theme.Overlay;
             UIFactory.Stretch(overlay.rectTransform);
 
             var nameText = UIFactory.MakeText("Name", tileRt);

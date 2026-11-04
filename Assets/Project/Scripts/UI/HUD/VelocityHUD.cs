@@ -9,9 +9,6 @@ namespace CGD.UI
     {
         [SerializeField] private PlayerMovement _movement;
 
-        [Header("Colors")]
-        [SerializeField] private Color _backgroundColor = new Color(0f, 0f, 0f, 0.45f);
-        [SerializeField] private Color _textColor        = new Color(0.92f, 0.92f, 0.92f, 1f);
 
         [Header("Layout")]
         [SerializeField] private Vector2 _screenPadding = new Vector2(20f, 20f);
@@ -28,11 +25,11 @@ namespace CGD.UI
             self.sizeDelta = new Vector2(_panelWidth, _panelHeight);
 
             var background = UIFactory.MakeImage("Background", self);
-            background.color = _backgroundColor;
+            background.color = Theme.Panel;
             UIFactory.Stretch(background.rectTransform);
 
             _text           = UIFactory.MakeText("SpeedText", self);
-            _text.color     = _textColor;
+            _text.color     = Theme.TextPrimary;
             _text.fontSize  = 12f;
             _text.alignment = TextAlignmentOptions.Center;
             UIFactory.Stretch(_text.rectTransform);

@@ -16,8 +16,6 @@ namespace CGD.UI
         [SerializeField] private float   _radius   = 150f;
         [SerializeField] private Vector2 _tileSize = new(150f, 40f);
 
-        private static readonly Color TileColor      = new(0f, 0f, 0f, 0.6f);
-        private static readonly Color HighlightColor = new(0.25f, 0.55f, 1f, 0.85f);
 
         private readonly List<Image> _tiles = new();
         private readonly List<TextMeshProUGUI> _labels = new();
@@ -53,7 +51,7 @@ namespace CGD.UI
             if (index == _highlighted && _tiles.Count > 0) return;
             _highlighted = index;
             for (int i = 0; i < _tiles.Count; i++)
-                _tiles[i].color = i == index ? HighlightColor : TileColor;
+                _tiles[i].color = i == index ? Theme.Accent.WithAlpha(0.85f) : Theme.Scrim;
         }
 
         public override void Refresh() { }

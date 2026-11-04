@@ -168,6 +168,8 @@ HUD                [Canvas, CanvasScaler (Scale With Screen Size, 1920 × 1080, 
 
 Later children draw on top. `HUDManager` finds every element by itself.
 
+**Theme:** every element in the HUD prefab has `_theme` = `Data/UI/HUDTheme` (`Create › CGD › UI › HUD Theme`). It holds every colour the HUD draws with, named by meaning (Panel, Window, TextPrimary, Health, Warning, Danger, Accent…) — restyle the HUD there. An element with no theme assigned uses the built-in defaults, which are the asset's starting values. Elements added in a scene instead of the prefab (Minimap, WorldMap, ExpeditionScreen) set their own colours and don't follow the theme yet. Fonts are not part of it: set the default font asset in TMP Settings.
+
 | Element | Assign | Notes |
 |---|---|---|
 | **CrosshairHUD** | `_settings` = `UI/CrosshairSettings`, `_playerCamera` = PlayerCamera | |

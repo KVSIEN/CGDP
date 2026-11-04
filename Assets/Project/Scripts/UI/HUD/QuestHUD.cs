@@ -18,7 +18,6 @@ namespace CGD.UI
         [SerializeField] private Vector2 _screenPadding = new(20f, 120f);
         [SerializeField] private float   _width         = 320f;
 
-        private static readonly Color PanelBg = new(0f, 0f, 0f, 0.45f);
 
         private readonly StringBuilder _text = new();
         private TextMeshProUGUI _label;
@@ -32,7 +31,7 @@ namespace CGD.UI
             rt.sizeDelta = new Vector2(_width, 0f);
 
             _background = UIFactory.MakeImage("Background", rt);
-            _background.color = PanelBg;
+            _background.color = Theme.Panel;
             UIFactory.Stretch(_background.rectTransform);
 
             _label = UIFactory.MakeText("Quests", rt);
@@ -88,7 +87,7 @@ namespace CGD.UI
             _text.Append("<b>").Append(quest.Definition.Title).Append("</b>");
 
             if (quest.Definition.HasTimeLimit)
-                _text.Append("  <color=#FFB347>").Append(Mathf.CeilToInt(Mathf.Max(0f, quest.TimeRemaining))).Append("s</color>");
+                _text.Append("  <color=#").Append(ColorUtility.ToHtmlStringRGB(Theme.Warning)).Append('>').Append(Mathf.CeilToInt(Mathf.Max(0f, quest.TimeRemaining))).Append("s</color>");
 
             foreach (ObjectiveProgress objective in quest.Objectives)
             {
@@ -96,7 +95,7 @@ namespace CGD.UI
                 if (!objective.IsComplete && !quest.IsListening(objective)) continue;
 
                 // Plain ASCII markers: the default TMP font has no check-mark glyph.
-                _text.Append('\n').Append(objective.IsComplete ? "  <color=#8A8A8A><s>" : "  - ");
+                _text.Append('\n').Append(objective.IsComplete ? "  <color=#" + ColorUtility.ToHtmlStringRGB(Theme.TextMuted) + "><s>" : "  - ");
                 _text.Append(objective.Definition.Description);
                 if (objective.IsComplete) _text.Append("</s></color>");
                 if (objective.Definition.IsOptional) _text.Append(" <i>(optional)</i>");

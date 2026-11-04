@@ -15,13 +15,6 @@ namespace CGD.UI
     {
         [SerializeField] private MeterSet _meters;
 
-        [Header("Colors")]
-        [SerializeField] private Color _backgroundColor = new Color(0f, 0f, 0f, 0.45f);
-        [SerializeField] private Color _barBgColor      = new Color(0.08f, 0.08f, 0.08f, 0.9f);
-        [SerializeField] private Color _textColor       = new Color(0.92f, 0.92f, 0.92f, 1f);
-        [Tooltip("Bar tint while a meter is exhausted and locked out")]
-        [SerializeField] private Color _exhaustedColor  = new Color(0.45f, 0.45f, 0.45f, 1f);
-
         [Header("Layout")]
         [Tooltip("Bottom-left corner; leave room for the health panel below")]
         [SerializeField] private Vector2 _screenPadding = new Vector2(20f, 126f);
@@ -71,7 +64,7 @@ namespace CGD.UI
         {
             Meter meter = row.Meter;
             row.Fill.rectTransform.anchorMax = new Vector2(meter.Ratio, 1f);
-            row.Fill.color = meter.IsExhausted ? _exhaustedColor : meter.Definition.Color;
+            row.Fill.color = meter.IsExhausted ? Theme.Disabled : meter.Definition.Color;
             row.Label.text = $"{meter.Definition.DisplayName}  {Mathf.CeilToInt(meter.Current)} / {Mathf.CeilToInt(meter.Max)}";
         }
 
@@ -81,7 +74,7 @@ namespace CGD.UI
             UIFactory.AnchorToCorner(self, new Vector2(0f, 0f), _screenPadding);
 
             var bg = UIFactory.MakeImage("Background", self);
-            bg.color = _backgroundColor;
+            bg.color = Theme.Panel;
             UIFactory.Stretch(bg.rectTransform);
 
             float contentWidth = _panelWidth - _innerPadding.x * 2f;
@@ -103,14 +96,14 @@ namespace CGD.UI
             string id = meter.Definition.DisplayName;
 
             var label = UIFactory.MakeText(id + "Label", parent);
-            label.color     = _textColor;
+            label.color     = Theme.TextPrimary;
             label.fontSize  = 11f;
             label.alignment = TextAlignmentOptions.Left;
             UIFactory.Place(label.rectTransform, new Vector2(_innerPadding.x, y), new Vector2(width, LabelHeight));
             y -= LabelHeight;
 
             var barBg = UIFactory.MakeImage(id + "BarBg", parent);
-            barBg.color = _barBgColor;
+            barBg.color = Theme.BarBackground;
             UIFactory.Place(barBg.rectTransform, new Vector2(_innerPadding.x, y), new Vector2(width, _barHeight));
             y -= _barHeight + _rowSpacing;
 

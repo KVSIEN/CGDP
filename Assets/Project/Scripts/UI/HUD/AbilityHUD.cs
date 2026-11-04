@@ -31,11 +31,7 @@ namespace CGD.UI
         // Cached so the per-frame charge label never allocates.
         private static readonly string[] ChargeText = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
-        private static readonly Color EmptySlotColor = new Color(0.1f, 0.1f, 0.1f, 0.85f);
         private const float UnaffordableAlpha = 0.25f;
-        private static readonly Color    CooldownOverlayColor = new Color(0f, 0f, 0f, 0.65f);
-        private static readonly Color    SurgeBgColor   = new Color(0f, 0f, 0f, 0.6f);
-        private static readonly Color    SurgeFillColor = new Color(1f, 0.85f, 0.3f, 1f);
         private const float SurgeBarHeight = 5f;
 
         private void Awake()
@@ -65,13 +61,13 @@ namespace CGD.UI
 
                 // Grey background
                 var bg = UIFactory.MakeImage("Slot_" + i, self);
-                bg.color = EmptySlotColor;
+                bg.color = Theme.SlotEmpty;
                 PlaceSquare(bg.rectTransform, x, _slotSize);
                 _slotBg[i] = bg;
 
                 // Dark overlay that covers the slot while on cooldown (child of the slot)
                 var overlay = UIFactory.MakeImage("Overlay_" + i, bg.rectTransform);
-                overlay.color = CooldownOverlayColor;
+                overlay.color = Theme.Overlay;
                 UIFactory.Stretch(overlay.rectTransform);
                 _cooldownOverlay[i] = overlay;
 
@@ -83,7 +79,7 @@ namespace CGD.UI
                 _chargeLabels[i] = charges;
 
                 var surgeBg = UIFactory.MakeImage("Surge_" + i, bg.rectTransform);
-                surgeBg.color = SurgeBgColor;
+                surgeBg.color = Theme.Scrim;
                 RectTransform surgeRt = surgeBg.rectTransform;
                 surgeRt.anchorMin = Vector2.zero;
                 surgeRt.anchorMax = new Vector2(1f, 0f);
@@ -93,7 +89,7 @@ namespace CGD.UI
                 _surgeBg[i] = surgeBg;
 
                 var surgeFill = UIFactory.MakeImage("Fill", surgeRt);
-                surgeFill.color = SurgeFillColor;
+                surgeFill.color = Theme.Reward;
                 _surgeFill[i] = surgeFill.rectTransform;
                 _surgeFill[i].anchorMin = Vector2.zero;
                 _surgeFill[i].anchorMax = new Vector2(0f, 1f);
@@ -112,7 +108,7 @@ namespace CGD.UI
                 // Tint the background with the ability's colour, or grey when empty
                 _slotBg[i].color = ability != null
                     ? new Color(ability.SlotColor.r, ability.SlotColor.g, ability.SlotColor.b, _abilities.CanAfford(i) ? 0.85f : UnaffordableAlpha)
-                    : EmptySlotColor;
+                    : Theme.SlotEmpty;
 
                 // Shrink the overlay from top to bottom as the cooldown recovers.
                 // anchorMax.y = 1 → overlay fills the slot (just used).

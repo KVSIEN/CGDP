@@ -29,11 +29,6 @@ namespace CGD.UI
         [SerializeField] private float   _rowHeight    = 20f;
         [SerializeField] private Vector2 _edgeOffset   = new(40f, 0f);
 
-        private static readonly Color PanelBg = new(0.05f, 0.05f, 0.08f, 0.93f);
-        private static readonly Color RuleBg  = new(1f,    1f,    1f,    0.10f);
-        private static readonly Color Text    = new(1f,    1f,    1f,    0.90f);
-        private static readonly Color Muted   = new(1f,    1f,    1f,    0.55f);
-        private static readonly Color Header  = new(1f,    1f,    1f,    0.85f);
 
         private CanvasGroup     _cg;
         private TextMeshProUGUI _slotsText;
@@ -102,8 +97,8 @@ namespace CGD.UI
             Inventory inv = _inventory.Inventory;
             _slotsText.text  = $"Slots   {inv.SlotCount} / {_inventory.MaxSlots}";
             _weightText.text = $"Weight  {inv.TotalWeight:0.0} / {_inventory.MaxWeight:0.0} kg";
-            _slotsText.color  = inv.SlotCount   > _inventory.MaxSlots  ? Warning() : Muted;
-            _weightText.color = inv.TotalWeight > _inventory.MaxWeight ? Warning() : Muted;
+            _slotsText.color  = inv.SlotCount   > _inventory.MaxSlots  ? Theme.Warning : Theme.TextMuted;
+            _weightText.color = inv.TotalWeight > _inventory.MaxWeight ? Theme.Warning : Theme.TextMuted;
 
             RebuildRows(inv);
         }
@@ -163,7 +158,7 @@ namespace CGD.UI
             float topY = -index * _rowHeight;
 
             var nameLabel = UIFactory.MakeText("Name_" + index, _listRoot);
-            nameLabel.color     = Text;
+            nameLabel.color     = Theme.TextPrimary;
             nameLabel.fontSize  = 12f;
             nameLabel.alignment = TextAlignmentOptions.MidlineLeft;
             nameLabel.rectTransform.anchorMin = new Vector2(0f, 1f);
@@ -173,7 +168,7 @@ namespace CGD.UI
             nameLabel.rectTransform.sizeDelta        = new Vector2(-56f, _rowHeight);
 
             var countLabel = UIFactory.MakeText("Count_" + index, _listRoot);
-            countLabel.color     = Muted;
+            countLabel.color     = Theme.TextMuted;
             countLabel.fontSize  = 12f;
             countLabel.alignment = TextAlignmentOptions.MidlineRight;
             countLabel.rectTransform.anchorMin = new Vector2(1f, 1f);
@@ -196,7 +191,7 @@ namespace CGD.UI
             rt.sizeDelta        = new Vector2(_panelWidth, _panelHeight);
 
             var bg = UIFactory.MakeImage("PanelBg", rt);
-            bg.color = PanelBg;
+            bg.color = Theme.Window;
             UIFactory.Stretch(bg.rectTransform);
 
             float y = -_padding;
@@ -205,27 +200,27 @@ namespace CGD.UI
             title.text      = "INVENTORY";
             title.fontSize  = 13f;
             title.fontStyle = FontStyles.Bold;
-            title.color     = Header;
+            title.color     = Theme.TextPrimary;
             title.alignment = TextAlignmentOptions.MidlineLeft;
             PlaceRow(title.rectTransform, y, 20f);
             y -= 24f;
 
             _slotsText = UIFactory.MakeText("SlotsText", rt);
             _slotsText.fontSize  = 12f;
-            _slotsText.color     = Muted;
+            _slotsText.color     = Theme.TextMuted;
             _slotsText.alignment = TextAlignmentOptions.MidlineLeft;
             PlaceRow(_slotsText.rectTransform, y, 18f);
             y -= 18f;
 
             _weightText = UIFactory.MakeText("WeightText", rt);
             _weightText.fontSize  = 12f;
-            _weightText.color     = Muted;
+            _weightText.color     = Theme.TextMuted;
             _weightText.alignment = TextAlignmentOptions.MidlineLeft;
             PlaceRow(_weightText.rectTransform, y, 18f);
             y -= 22f;
 
             var rule = UIFactory.MakeImage("Rule", rt);
-            rule.color = RuleBg;
+            rule.color = Theme.Rule;
             rule.rectTransform.anchorMin = new Vector2(0f, 1f);
             rule.rectTransform.anchorMax = new Vector2(1f, 1f);
             rule.rectTransform.pivot     = new Vector2(0.5f, 1f);
@@ -260,6 +255,5 @@ namespace CGD.UI
             _cg.interactable   = visible;
         }
 
-        private static Color Warning() => new(1f, 0.55f, 0.35f, 1f);
     }
 }

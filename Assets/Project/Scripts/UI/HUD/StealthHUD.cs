@@ -13,10 +13,6 @@ namespace CGD.UI
         [SerializeField] private Stealthable _stealth;
         [SerializeField] private float _offsetBelowCentre = 60f;
 
-        [Header("Colors")]
-        [SerializeField] private Color _hiddenColor   = new(0.45f, 0.9f, 0.55f);
-        [SerializeField] private Color _revealedColor = new(1f, 0.75f, 0.3f);
-        [SerializeField] private Color _spottedColor  = new(1f, 0.3f, 0.3f);
 
         private TextMeshProUGUI _label;
         private string _shown;
@@ -44,10 +40,10 @@ namespace CGD.UI
             if (_stealth == null) return;
 
             string text; Color color;
-            if (_stealth.IsSpotted && _stealth.IsConcealed) { text = "SPOTTED";  color = _spottedColor; }
-            else if (_stealth.State == StealthState.Hidden)  { text = "HIDDEN";   color = _hiddenColor; }
-            else if (_stealth.State == StealthState.Revealed){ text = "REVEALED"; color = _revealedColor; }
-            else                                             { text = string.Empty; color = _hiddenColor; }
+            if (_stealth.IsSpotted && _stealth.IsConcealed) { text = "SPOTTED";  color = Theme.Danger; }
+            else if (_stealth.State == StealthState.Hidden)  { text = "HIDDEN";   color = Theme.Positive; }
+            else if (_stealth.State == StealthState.Revealed){ text = "REVEALED"; color = Theme.Warning; }
+            else                                             { text = string.Empty; color = Theme.Positive; }
 
             if (text == _shown) return;
             _shown = text;

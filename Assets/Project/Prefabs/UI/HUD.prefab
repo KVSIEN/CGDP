@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05f0a2ec6d4f4784b23b8ee261436ad6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.CraftingPanel
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _input: {fileID: 0}
 --- !u!1 &243405567713586819
 GameObject:
@@ -175,6 +176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c18ef97f54849f9a2248704710e17be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.DevConsolePanel
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _input: {fileID: 0}
   _commands: {fileID: 0}
 --- !u!1 &3089393918057191465
@@ -380,6 +382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6df29e04ff64f63bba416fc6aef940f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.CharacterPanel
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _input: {fileID: 0}
   _inventory: {fileID: 0}
   _equipment: {fileID: 0}
@@ -433,13 +436,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 736524e06925400a927a755390aa37ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.HitMarkerHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _gap: 8
   _length: 9
   _thickness: 2
   _duration: 0.25
-  _hitColor: {r: 1, g: 1, b: 1, a: 1}
-  _criticalColor: {r: 1, g: 0.55, b: 0.1, a: 1}
-  _killColor: {r: 1, g: 0.2, b: 0.2, a: 1}
 --- !u!1 &3782306570817458811
 GameObject:
   m_ObjectHideFlags: 0
@@ -488,6 +489,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15f1665b29ac40acbda5194d631f946b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.StatusEffectHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _target: {fileID: 0}
   _maxTiles: 8
   _tileSize: 36
@@ -554,6 +556,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c54655e0b70148a597f4d4391f3310a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.DialoguePanel
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _input: {fileID: 0}
 --- !u!1 &3921892684325407703
 GameObject:
@@ -616,6 +619,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff06b03f67a6b774bba5034572a2b4c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.WeaponPickupHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _interaction: {fileID: 0}
   _panelWidth: 320
   _padding: 14
@@ -682,6 +686,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d93cb4726024444b2b54791fd2208c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ItemInventoryHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _input: {fileID: 0}
   _inventory: {fileID: 0}
   _panelWidth: 320
@@ -737,6 +742,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03f874a1a3c74678b13451ffececfd47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.QuestHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _tracker: {fileID: 0}
   _screenPadding: {x: 20, y: 120}
   _width: 320
@@ -788,6 +794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb3231d3ace74e8bbb8f291727774ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ItemSlotsHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _slots: {fileID: 0}
   _inventory: {fileID: 0}
   _throwing: {fileID: 0}
@@ -847,6 +854,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 248c6eab8ca8a8e4d9e0e8595a4b4d8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DodgeHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _dodge: {fileID: 0}
   _keyLabel: C
   _slotSize: 56
@@ -900,13 +908,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 935e093f1e0c048479037d5c5a694f5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _weapon: {fileID: 0}
-  _backgroundColor: {r: 0, g: 0, b: 0, a: 0.45}
-  _textColor: {r: 0.92, g: 0.92, b: 0.92, a: 1}
-  _dimColor: {r: 0.55, g: 0.55, b: 0.55, a: 1}
-  _reloadColor: {r: 1, g: 0.75, b: 0.1, a: 1}
-  _emptyColor: {r: 1, g: 0, b: 0, a: 1}
-  _noWeaponColor: {r: 0.68, g: 0.68, b: 0.68, a: 1}
   _screenPadding: {x: 20, y: 20}
   _innerPadding: {x: 12, y: 10}
   _panelWidth: 180
@@ -958,6 +961,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fb48ec4ea684024b0bb71c1db25b3e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.SlotWheelHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _radius: 150
   _tileSize: {x: 150, y: 40}
 --- !u!1 &5629651521174192597
@@ -1021,6 +1025,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fa8855674bd4a979d6da6e29c6714b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ShopPanel
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _input: {fileID: 0}
 --- !u!1 &6539219953554687304
 GameObject:
@@ -1070,12 +1075,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 749b05f622ecee34ca0808068a5dff08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StatsHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _playerHealth: {fileID: 0}
-  _backgroundColor: {r: 0, g: 0, b: 0, a: 0.45}
-  _barBgColor: {r: 0.08, g: 0.08, b: 0.08, a: 0.9}
-  _healthColor: {r: 0.22, g: 0.85, b: 0.22, a: 1}
-  _healthLowColor: {r: 0.9, g: 0.15, b: 0.1, a: 1}
-  _textColor: {r: 0.92, g: 0.92, b: 0.92, a: 1}
   _screenPadding: {x: 20, y: 64}
   _innerPadding: {x: 12, y: 12}
   _panelWidth: 200
@@ -1128,6 +1129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddf2ba7bb8cc445a95545ad6e9c11e20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.NotificationHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _topPadding: 90
   _rowWidth: 420
   _rowHeight: 28
@@ -1188,6 +1190,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e77e55ee1659e724db5b4af003e96efd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitEffect
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _playerHealth: {fileID: 0}
   _flashColor: {r: 1, g: 0.1, b: 0.1, a: 0.35}
   _flashFadeSpeed: 6
@@ -1241,6 +1244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b9d73615d7e3794a9ec32aef9019155, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _interaction: {fileID: 0}
   _yOffset: 0
 --- !u!1 &7489009289272825176
@@ -1291,11 +1295,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bbee39157d57f244b8c4102d0f5ee05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrosshairHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _settings: {fileID: 11400000, guid: 877f8d15f8602ed4e8148eb435c15e72, type: 2}
   _playerCamera: {fileID: 0}
   _spreadScale: 1
   _obstructionDotSize: 6
-  _obstructionDotColor: {r: 1, g: 0.15, b: 0.15, a: 0.9}
 --- !u!1 &8015128028562855794
 GameObject:
   m_ObjectHideFlags: 0
@@ -1345,6 +1349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4495492099fa75a4a8c069d84594479c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _input: {fileID: 0}
   _loadout: {fileID: 0}
   _panelWidth: 300
@@ -1411,6 +1416,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9e40a393a8dc45478c2994b71d572d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbilityHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _abilities: {fileID: 0}
   _slotSize: 56
   _slotGap: 8
@@ -1463,9 +1469,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd60397c59f44aa4f91676342cc608ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VelocityHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _movement: {fileID: 0}
-  _backgroundColor: {r: 0, g: 0, b: 0, a: 0.45}
-  _textColor: {r: 0.92, g: 0.92, b: 0.92, a: 1}
   _screenPadding: {x: 20, y: 20}
   _panelWidth: 120
   _panelHeight: 28
@@ -1517,6 +1522,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66721f1c5a204ad3a0acc585bb095f7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.MeterHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _meters: {fileID: 0}
 --- !u!1 &7041853095571230211
 GameObject:
@@ -1566,6 +1572,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a13cee029743318c6c9b09bb953471, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.OffhandHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _offhand: {fileID: 0}
   _slotSize: 56
   _screenPaddingBottom: 24
@@ -1618,11 +1625,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afb78b3f0a7045febbadcff3e13a3087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ObjectiveHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _topPadding: 30
   _width: 360
   _barHeight: 12
   _panel: {r: 0, g: 0, b: 0, a: 0.5}
-  _barBg: {r: 0, g: 0, b: 0, a: 0.6}
   _barFill: {r: 0.4, g: 0.85, b: 0.5, a: 1}
 --- !u!1 &7300000000000000001
 GameObject:
@@ -1672,6 +1679,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83be84e9cc34a04b62449c11a48ecec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ScreenFlashHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
 --- !u!1 &7300000000000000011
 GameObject:
   m_ObjectHideFlags: 0
@@ -1720,4 +1728,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c65e953a1454b4c848483b3cbcbf673, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.StealthHUD
+  _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _stealth: {fileID: 0}

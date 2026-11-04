@@ -10,12 +10,6 @@ namespace CGD.UI
     {
         [SerializeField] private PlayerHealth _playerHealth;
 
-        [Header("Colors")]
-        [SerializeField] private Color _backgroundColor = new Color(0f, 0f, 0f, 0.45f);
-        [SerializeField] private Color _barBgColor = new Color(0.08f, 0.08f, 0.08f, 0.9f);
-        [SerializeField] private Color _healthColor = new Color(0.22f, 0.85f, 0.22f, 1f);
-        [SerializeField] private Color _healthLowColor = new Color(0.9f, 0.15f, 0.1f, 1f);
-        [SerializeField] private Color _textColor = new Color(0.92f, 0.92f, 0.92f, 1f);
 
         [Header("Layout")]
         [SerializeField] private Vector2 _screenPadding = new Vector2(20f, 64f);
@@ -53,17 +47,17 @@ namespace CGD.UI
 
             // Background panel (added first so it renders behind everything)
             var bg = UIFactory.MakeImage("Background", self);
-            bg.color = _backgroundColor;
+            bg.color = Theme.Panel;
             UIFactory.Stretch(bg.rectTransform);
 
             // Health bar background
             var barBg = UIFactory.MakeImage("HealthBarBg", self);
-            barBg.color = _barBgColor;
+            barBg.color = Theme.BarBackground;
             UIFactory.Place(barBg.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, _barHeight));
 
             // Health fill (child of bar background, width driven by anchor)
             _healthFill = UIFactory.MakeImage("HealthFill", barBg.rectTransform);
-            _healthFill.color = _healthColor;
+            _healthFill.color = Theme.Health;
             var fillRt = _healthFill.rectTransform;
             fillRt.anchorMin = Vector2.zero;
             fillRt.anchorMax = Vector2.one;
@@ -73,7 +67,7 @@ namespace CGD.UI
 
             // Health text
             _healthText = UIFactory.MakeText("HealthText", self);
-            _healthText.color = _textColor;
+            _healthText.color = Theme.TextPrimary;
             _healthText.fontSize = 12f;
             _healthText.alignment = TextAlignmentOptions.Left;
             UIFactory.Place(_healthText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 16f));
@@ -90,7 +84,7 @@ namespace CGD.UI
 
             float ratio = _playerHealth.MaxHealth > 0f ? _playerHealth.Health / _playerHealth.MaxHealth : 0f;
             _healthFill.rectTransform.anchorMax = new Vector2(ratio, 1f);
-            _healthFill.color = Color.Lerp(_healthLowColor, _healthColor, ratio);
+            _healthFill.color = Color.Lerp(Theme.HealthLow, Theme.Health, ratio);
             _healthText.text = $"HP  {Mathf.CeilToInt(_playerHealth.Health)} / {Mathf.CeilToInt(_playerHealth.MaxHealth)}";
         }
     }

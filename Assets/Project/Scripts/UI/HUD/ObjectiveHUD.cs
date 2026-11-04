@@ -17,10 +17,6 @@ namespace CGD.UI
         [SerializeField] private float _width      = 360f;
         [SerializeField] private float _barHeight  = 12f;
 
-        [Header("Colors")]
-        [SerializeField] private Color _panel  = new(0f, 0f, 0f, 0.5f);
-        [SerializeField] private Color _barBg  = new(0f, 0f, 0f, 0.6f);
-        [SerializeField] private Color _barFill = new(0.4f, 0.85f, 0.5f);
 
         private GameObject      _root;
         private TextMeshProUGUI _title;
@@ -41,7 +37,7 @@ namespace CGD.UI
             // The panel's content hides on its own; this object stays active so the HUD can
             // still show and hide it with the rest.
             var rootImage = UIFactory.MakeImage("Panel", self);
-            rootImage.color = _panel;
+            rootImage.color = Theme.Panel;
             _root = rootImage.gameObject;
             var rootRect = rootImage.rectTransform;
             rootRect.anchorMin = rootRect.anchorMax = rootRect.pivot = new Vector2(0.5f, 1f);
@@ -54,7 +50,7 @@ namespace CGD.UI
             _detail = MakeLabel("Detail", rootRect, 14f, TextAlignmentOptions.TopLeft, new Vector2(10f, -32f), new Vector2(-10f, -52f));
 
             Image barBg = UIFactory.MakeImage("HealthBar", rootRect);
-            barBg.color = _barBg;
+            barBg.color = Theme.Scrim;
             _bar = barBg.rectTransform;
             _bar.anchorMin = new Vector2(0f, 0f);
             _bar.anchorMax = new Vector2(1f, 0f);
@@ -63,7 +59,7 @@ namespace CGD.UI
             _bar.offsetMax = new Vector2(-10f, 8f + _barHeight);
 
             Image fill = UIFactory.MakeImage("Fill", _bar);
-            fill.color = _barFill;
+            fill.color = Theme.Positive;
             _barFillRect = fill.rectTransform;
             UIFactory.Stretch(_barFillRect);
 

@@ -16,12 +16,8 @@ namespace CGD.UI
         [SerializeField] private float _screenPaddingBottom = 24f;
         [SerializeField] private float _offsetFromCenter    = 160f;
 
-        private static readonly Color ReadyColor    = new Color(0.25f, 0.55f, 1f,  0.85f);
-        private static readonly Color CooldownColor = new Color(0.1f,  0.1f,  0.1f, 0.85f);
-        // While dodging: amber when you can still act, green while committed (roll, dash).
-        private static readonly Color FreeColor      = new Color(1f,    0.75f, 0.1f, 0.85f);
-        private static readonly Color CommittedColor = new Color(0.15f, 0.9f,  0.4f, 0.85f);
-        private static readonly Color OverlayColor  = new Color(0f,    0f,    0f,   0.65f);
+        // Opacity of the slot background in every state.
+        private const float SlotAlpha = 0.85f;
 
         private Image          _bg;
         private Image          _overlay;
@@ -37,17 +33,17 @@ namespace CGD.UI
             rt.sizeDelta        = Vector2.one * _slotSize;
 
             _bg          = UIFactory.MakeImage("DodgeBg", rt);
-            _bg.color    = ReadyColor;
+            _bg.color    = Theme.Accent.WithAlpha(SlotAlpha);
             UIFactory.Stretch(_bg.rectTransform);
 
             _overlay       = UIFactory.MakeImage("DodgeOverlay", _bg.rectTransform);
-            _overlay.color = OverlayColor;
+            _overlay.color = Theme.Overlay;
             UIFactory.Stretch(_overlay.rectTransform);
 
             var keyLabel         = UIFactory.MakeText("DodgeKey", _bg.rectTransform);
             keyLabel.text        = _keyLabel;
             keyLabel.fontSize    = 11f;
-            keyLabel.color       = new Color(1f, 1f, 1f, 0.7f);
+            keyLabel.color       = Theme.TextSecondary;
             keyLabel.alignment   = TextAlignmentOptions.TopLeft;
             UIFactory.Stretch(keyLabel.rectTransform);
             keyLabel.rectTransform.offsetMin = new Vector2(4f, 0f);
@@ -56,7 +52,7 @@ namespace CGD.UI
             _nameLabel           = UIFactory.MakeText("DodgeName", _bg.rectTransform);
             _nameLabel.text      = "DODGE";
             _nameLabel.fontSize  = 9f;
-            _nameLabel.color     = new Color(1f, 1f, 1f, 0.85f);
+            _nameLabel.color     = Theme.TextPrimary;
             _nameLabel.alignment = TextAlignmentOptions.Center;
             UIFactory.Stretch(_nameLabel.rectTransform);
         }
@@ -67,13 +63,13 @@ namespace CGD.UI
 
             if (_dodge.IsDodging)
             {
-                _bg.color = _dodge.IsCommitted ? CommittedColor : FreeColor;
+                _bg.color = _dodge.IsCommitted ? Theme.Positive.WithAlpha(SlotAlpha) : Theme.Warning.WithAlpha(SlotAlpha);
                 _overlay.rectTransform.anchorMax = new Vector2(1f, 0f);
             }
             else
             {
                 float ratio = _dodge.Cooldown.Ratio;
-                _bg.color = Color.Lerp(CooldownColor, ReadyColor, ratio);
+                _bg.color = Color.Lerp(Theme.SlotEmpty, Theme.Accent.WithAlpha(SlotAlpha), ratio);
                 _overlay.rectTransform.anchorMax = new Vector2(1f, 1f - ratio);
             }
 

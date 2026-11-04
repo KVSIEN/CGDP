@@ -30,10 +30,7 @@ namespace CGD.UI
             GameAction.Weapon4,
         };
 
-        private static readonly Color PanelBg  = new Color(0.05f, 0.05f, 0.08f, 0.93f);
-        private static readonly Color SlotBg   = new Color(0.12f, 0.12f, 0.18f, 0.88f);
-        private static readonly Color ActiveBg = new Color(0.22f, 0.42f, 0.82f, 0.92f);
-        private static readonly Color EmptyBg  = new Color(0.08f, 0.08f, 0.10f, 0.72f);
+        private const float ActiveAlpha = 0.92f;
 
         private Image[]           _slotBgs     = new Image[SlotCount];
         private TextMeshProUGUI[] _slotNames   = new TextMeshProUGUI[SlotCount];
@@ -66,7 +63,7 @@ namespace CGD.UI
 
                 // Always update the compact bar
                 bool filled = _loadout.IsFilled(i);
-                _barSlotBgs[i].color = isActive ? ActiveBg : (filled ? SlotBg : EmptyBg);
+                _barSlotBgs[i].color = isActive ? Theme.AccentStrong.WithAlpha(ActiveAlpha) : (filled ? Theme.Slot : Theme.SlotEmpty);
                 if (isActive)
                     _activeBarText.text = _loadout.SlotLabel(i);
 
@@ -75,7 +72,7 @@ namespace CGD.UI
                 if (_input.WasPressedRaw(SlotActions[i]))
                     _loadout.EquipSlot(i);
 
-                _slotBgs[i].color  = isActive ? ActiveBg : (filled ? SlotBg : EmptyBg);
+                _slotBgs[i].color  = isActive ? Theme.AccentStrong.WithAlpha(ActiveAlpha) : (filled ? Theme.Slot : Theme.SlotEmpty);
                 _slotNames[i].text = _loadout.SlotLabel(i);
             }
         }
@@ -133,14 +130,14 @@ namespace CGD.UI
             rt.sizeDelta        = new Vector2(_panelWidth, totalHeight);
 
             var panelBg = UIFactory.MakeImage("PanelBg", rt);
-            panelBg.color = PanelBg;
+            panelBg.color = Theme.Window;
             UIFactory.Stretch(panelBg.rectTransform);
 
             var title = UIFactory.MakeText("Title", rt);
             title.text      = "LOADOUT";
             title.fontSize  = 13f;
             title.fontStyle = FontStyles.Bold;
-            title.color     = new Color(1f, 1f, 1f, 0.85f);
+            title.color     = Theme.TextPrimary;
             title.alignment = TextAlignmentOptions.MidlineLeft;
             title.rectTransform.anchorMin        = new Vector2(0f, 1f);
             title.rectTransform.anchorMax        = new Vector2(1f, 1f);
@@ -155,7 +152,7 @@ namespace CGD.UI
                 float topY = slotStartY - i * (_rowHeight + _rowGap);
 
                 var bg = UIFactory.MakeImage("Slot_" + i, rt);
-                bg.color = EmptyBg;
+                bg.color = Theme.SlotEmpty;
                 bg.rectTransform.anchorMin        = new Vector2(0f, 1f);
                 bg.rectTransform.anchorMax        = new Vector2(1f, 1f);
                 bg.rectTransform.pivot            = new Vector2(0.5f, 1f);
@@ -166,7 +163,7 @@ namespace CGD.UI
                 var key = UIFactory.MakeText("Key_" + i, bg.rectTransform);
                 key.text      = SlotKeys[i];
                 key.fontSize  = 12f;
-                key.color     = new Color(1f, 1f, 1f, 0.5f);
+                key.color     = Theme.TextMuted;
                 key.alignment = TextAlignmentOptions.Midline;
                 key.rectTransform.anchorMin        = new Vector2(0f, 0f);
                 key.rectTransform.anchorMax        = new Vector2(0f, 1f);
@@ -177,7 +174,7 @@ namespace CGD.UI
                 var name = UIFactory.MakeText("Name_" + i, bg.rectTransform);
                 name.text      = "— Empty —";
                 name.fontSize  = 13f;
-                name.color     = new Color(1f, 1f, 1f, 0.80f);
+                name.color     = Theme.TextPrimary;
                 name.alignment = TextAlignmentOptions.MidlineLeft;
                 name.rectTransform.anchorMin        = new Vector2(0f, 0f);
                 name.rectTransform.anchorMax        = new Vector2(1f, 1f);
@@ -200,7 +197,7 @@ namespace CGD.UI
             barRt.sizeDelta = new Vector2(240f, 36f);
 
             var bg = UIFactory.MakeImage("Bg", barRt);
-            bg.color = new Color(0.05f, 0.05f, 0.08f, 0.82f);
+            bg.color = Theme.Window;
             UIFactory.Stretch(bg.rectTransform);
 
             const float boxSize = 24f;
@@ -213,13 +210,13 @@ namespace CGD.UI
                 box.rectTransform.pivot     = new Vector2(0f, 0.5f);
                 box.rectTransform.anchoredPosition = new Vector2(6f + i * (boxSize + boxGap), 0f);
                 box.rectTransform.sizeDelta        = new Vector2(boxSize, boxSize);
-                box.color = EmptyBg;
+                box.color = Theme.SlotEmpty;
                 _barSlotBgs[i] = box;
 
                 var key = UIFactory.MakeText("Key_" + i, box.rectTransform);
                 key.text      = SlotKeys[i];
                 key.fontSize  = 10f;
-                key.color     = new Color(1f, 1f, 1f, 0.85f);
+                key.color     = Theme.TextPrimary;
                 key.alignment = TextAlignmentOptions.Center;
                 UIFactory.Stretch(key.rectTransform);
             }
@@ -227,7 +224,7 @@ namespace CGD.UI
             float nameX = 6f + SlotCount * (boxSize + boxGap) + 6f;
             _activeBarText = UIFactory.MakeText("WeaponName", barRt);
             _activeBarText.fontSize  = 12f;
-            _activeBarText.color     = new Color(1f, 1f, 1f, 0.85f);
+            _activeBarText.color     = Theme.TextPrimary;
             _activeBarText.alignment = TextAlignmentOptions.MidlineLeft;
             _activeBarText.rectTransform.anchorMin = Vector2.zero;
             _activeBarText.rectTransform.anchorMax = Vector2.one;
