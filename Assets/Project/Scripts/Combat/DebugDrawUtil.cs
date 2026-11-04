@@ -25,6 +25,22 @@ namespace CGD.Combat
             }
         }
 
+        public static void Capsule(Vector3 near, Vector3 far, float radius, Color color, float duration)
+        {
+            Vector3 axis = far - near;
+            Vector3 side = Vector3.Cross(axis, Vector3.up);
+            if (side.sqrMagnitude < 0.0001f) side = Vector3.Cross(axis, Vector3.right);
+            side.Normalize();
+            Vector3 lift = Vector3.Cross(axis.normalized, side);
+
+            Circle(near, side, lift, radius, color, duration, 12);
+            Circle(far, side, lift, radius, color, duration, 12);
+            Debug.DrawLine(near + side * radius, far + side * radius, color, duration);
+            Debug.DrawLine(near - side * radius, far - side * radius, color, duration);
+            Debug.DrawLine(near + lift * radius, far + lift * radius, color, duration);
+            Debug.DrawLine(near - lift * radius, far - lift * radius, color, duration);
+        }
+
         public static void Box(Vector3 center, Vector3 half, Quaternion rot,
             Color color, float duration)
         {

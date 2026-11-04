@@ -30,6 +30,9 @@ namespace CGD.Combat
 
         public bool HitAnything;
 
+        // The timeline frame being ticked, for events that animate over their frames.
+        public int Frame;
+
         // Applies DamageScale and Reflected to a hit an event built from its own fields.
         public DamageInfo Prepare(DamageInfo info)
         {

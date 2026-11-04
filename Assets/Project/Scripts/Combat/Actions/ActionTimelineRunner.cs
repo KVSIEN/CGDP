@@ -33,6 +33,7 @@ namespace CGD.Combat
             if (!_running) return;
 
             _frame++;
+            _ctx.Frame = _frame;
 
             if (_frame >= _timeline.TotalFrames)
             {

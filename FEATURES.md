@@ -353,7 +353,7 @@
 - Each target is damaged at most once per swing regardless of how many ticks or rays touch it
 - Per-step critical multiplier — applied when a Thrust or Sweep hits a critical region (head by default); tunable per combo step so a heavy finisher can crit harder than a quick jab
 - Debug drawing shows the cast rays (Thrust/Sweep) or overlap sphere (Slam) each physics tick during the Active window
-- When a MeleeAttackStep has an ActionTimeline assigned, the Active phase is driven by the timeline system instead of the legacy hit resolver — the timeline controls what shapes fire on which frames, while Windup and Recovery remain time-based
+- When a MeleeAttackStep has an ActionTimeline assigned, the Active phase is driven by the timeline system instead of the legacy hit resolver — the timeline controls what shapes fire on which frames, while Windup and Recovery remain time-based; a timeline's swing hit event makes the attack's hit volume travel along the swing instead of firing from a fixed spot
 
 ### Melee Weapons
 - Melee weapons roll like guns (quality, tier, seed → the same weapon every time): **Daggers**, **Axes**, **Hammers** and **Spears** as broad types, and **Swords** as thirteen weapons of their own (below)
@@ -403,6 +403,7 @@
 - Events are polymorphic ([SerializeReference]) and stateless — all runtime state lives on the runner's ActionContext
 - Available event types:
   - **ShapeHitEvent** — physics queries (SphereCast, Arc, Sphere, Box) with configurable damage, dedup, and region resolution; covers melee thrusts, sweeps, slams, AOE circles, and cones
+  - **SwingHitEvent** — a blade-shaped hit volume that swings from a start pose to an end pose over its frames (slashes, chops, thrusts); sweeps through the space it crosses so fast swings can't skip a target, resolves hitbox regions, and hits each target once; angles, reach, thickness and swing pace are all set on the event
   - **SpawnProjectileEvent** — spawns a projectile prefab via PrefabPool
   - **BeamEvent** — continuous raycast or SphereCast forward each tick (no dedup, intentional per-tick damage)
   - **SpawnZoneEvent** — spawns a persistent zone prefab (trap or lingering AOE) at a resolved position
