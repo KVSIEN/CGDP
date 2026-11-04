@@ -24,10 +24,11 @@ Build a new playable scene in this order:
 5. **Enemies, pickups, interactables.**
 6. **Optional systems** — map, quests, feedback, stealth, camera effects.
 
-**Missing from Sandbox** (add when needed): `GameFlow`, `AudioPool`, `MeleeController`,
-`PlayerFootsteps`, `PlayerAudio`, `TimelineAbilityRunner`, animation and
-ragdoll components (no rigged models yet), and every
-system from [Stats](#stats--buffs) onwards. The target dummies have no `EnemyAI` (they stand still).
+**Missing from Sandbox** (add when needed): `TimelineAbilityRunner`, animation and
+ragdoll components (no rigged models yet), `FeedbackPlayer`, the world map, stealth,
+crafting stations, `GameDirector` and `LevelBuilder`. The target dummies have no
+`EnemyAI` (they stand still). `MapTest` adds the map, feedback, director, expedition and
+generated-level systems on top of the Sandbox set.
 
 ---
 

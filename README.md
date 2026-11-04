@@ -5,6 +5,7 @@ generation, melee, grenades, abilities, status effects, hitboxes, enemy AI, audi
 runtime-built HUD.
 
 - [FEATURES.md](FEATURES.md) — what the game does
+- [ARCHITECTURE.md](ARCHITECTURE.md) — how the systems fit together (event buses, start-up order, key flows)
 - [SETUP.md](SETUP.md) — how every system is wired into a scene
 - [TASKS.md](TASKS.md) — open work
 - [CLAUDE.md](CLAUDE.md) — coding guidelines
