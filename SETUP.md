@@ -275,18 +275,15 @@ Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Au
 
 ---
 
-### Firing range dummies (Sandbox)
+### Firing range (Sandbox)
 
-`Prefabs/Characters/TargetDummy` is a stationary stand-in for a tier-1 enemy: `EnemyHealth` (`_data` = the enemy it plays, `_hitboxProfile` = `TargetDummyHitboxProfile`, `_healthBar`), `StatusEffectController`, `EnemyHealthBar`, `RespawnOnDeath`; children `Cube` (body, `Hitbox` Body) and `Cylinder` (head, `Hitbox` Head). It has no `EnemyAI`, `NavMeshAgent` or `DespawnOnDeath`. Sandbox places four instances along the range, each overriding `_data`:
+Three parts, all in `Sandbox`:
 
-| Instance | Distance | `_data` |
-|---|---|---|
-| `TargetDummy25m` | 25 m | `MaintenanceBotEnemyData` |
-| `TargetDummy50m` | 50 m | `ScavengerEnemyData` |
-| `TargetDummy75m` | 75 m | `HuskEnemyData` |
-| `TargetDummy100m` | 100 m | `MaintenanceBotEnemyData` |
+- **`Prefabs/Characters/TargetDummy`** — a stationary stand-in for an enemy: `EnemyHealth` (`_data`, `_hitboxProfile` = `TargetDummyHitboxProfile`, `_healthBar`), `StatusEffectController`, `EnemyHealthBar`, `RespawnOnDeath`, `StrafeMover` (`_halfWidth`, `_speed`); children `Cube` (body, `Hitbox` Body) and `Cylinder` (head, `Hitbox` Head). No `EnemyAI`, `NavMeshAgent` or `DespawnOnDeath`. Four instances stand at 25, 50, 75 and 100 m; none overrides `_data`, `RangeControl` sets it.
+- **`RangeControl`** (object `RangeControl`, scene root) — `_factions` = `Factions/TechFaction`, `BioFaction`, `VoidFaction` (order matters for Mixed), `_dummies` = the four dummies' `EnemyHealth`, nearest first. Holds the range's settings (faction or Mixed, tier 1–3, swaying on/off) and applies them to the dummies at start and on every change.
+- **`Prefabs/Environment/Level/RangeSwitch`** — a pillar with a `Collider` and `RangeSwitch` (`_range` = the `RangeControl`, `_setting`). Three instances stand on the firing line (z 3.8): `Faction`, `Tier`, `Movement`.
 
-Health, shield, armour, name and kill credit (`QuestEvents` Kill by `EnemyData`) all come from that asset, so tuning an enemy retunes its dummy. The Target Practice quest asks for one kill of each of the three.
+Starting setup is *Mixed, tier 1*: dummy *n* plays the first faction's enemy, the next dummy the second faction's … (Tech, Bio, Void, Tech). Choosing a faction makes every dummy play that faction's enemy of the chosen tier, taken from the first prefab on the faction's roster for that tier (`FactionDefinition` tier lists), so retuning an enemy retunes its dummy. Placeholder tier 2–3 affixes are not rolled. The Target Practice quest asks for one kill each of the three tier-1 enemies, which Mixed provides.
 
 ## Pickups & Interactables
 

@@ -677,7 +677,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - Time limits in game seconds; a failed quest can be allowed to retry
 - Rewards (items or freshly rolled gear) go straight into the inventory on completion
 - A quest panel on the HUD lists active quests with their objectives, progress counts, finished objectives struck through and a countdown for timed quests
-- Firing range: the sandbox dummies stand in for the tier-1 enemies (Maintenance Bot, Scavenger, Husk) with their health, shield and armour; a destroyed dummy disappears and stands back up at full health after a few seconds
+- Firing range: the sandbox dummies stand in for faction enemies with their health, shield and armour; a destroyed dummy disappears and stands back up at full health after a few seconds. Three switches on the firing line change the setup: faction (mixed, then TECH, BIO, VOID), tier (1–3) and whether the dummies sway side to side. The prompt on each switch shows its current value
 - Included: a two-quest chain for the sandbox — Target Practice (drop one firing-range dummy of each tier-1 enemy type — Maintenance Bot, Scavenger, Husk — pays 60 rounds) unlocks Resupply (pick up 30 rounds)
 
 ## Camera Effects
