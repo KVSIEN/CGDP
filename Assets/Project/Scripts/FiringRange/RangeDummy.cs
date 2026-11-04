@@ -26,6 +26,8 @@ namespace CGD.FiringRange
             set => _mover.Strafing = value;
         }
 
+        public void MoveTo(Vector3 position) => _mover.MoveHome(position);
+
         private void Awake()
         {
             _health = GetComponent<EnemyHealth>();

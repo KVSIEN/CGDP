@@ -9,5 +9,7 @@ namespace CGD.FiringRange
         Tier,
         // Dummies sway from side to side, or stand still.
         Movement,
+        // How far down the lane the lane dummies stand: the full range, or pulled in closer.
+        Distance,
     }
 }

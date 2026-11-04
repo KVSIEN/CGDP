@@ -16,6 +16,13 @@ namespace CGD.FiringRange
 
         public bool Strafing { get; set; }
 
+        // Moves the spot it sways around, taking the target with it.
+        public void MoveHome(Vector3 home)
+        {
+            _home = home;
+            transform.position = home + transform.right * _offset;
+        }
+
         private void Awake() => _home = transform.position;
 
         private void Update()
