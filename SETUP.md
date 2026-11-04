@@ -137,6 +137,7 @@ A cost for a meter the Player doesn't have is **blocked**, not free.
 HUD                [Canvas, CanvasScaler (Scale With Screen Size, 1920 × 1080, match 0.5), GraphicRaycaster, HUDManager]
   ScreenFlash      [ScreenFlashHUD]?         ← keep near the top (draws underneath)
   HitEffect        [HitEffect]
+  DamageIndicator  [DamageIndicatorHUD]?
   Crosshair        [CrosshairHUD]
   Stealth          [StealthHUD]?
   HitMarker        [HitMarkerHUD]?
@@ -200,6 +201,7 @@ The remaining HUD elements (crosshair, quests, objective, interact prompt, hit m
 | Element | Assign | Notes |
 |---|---|---|
 | **CrosshairHUD** | `_playerCamera` = PlayerCamera | Draws the player's crosshair style from `GameSettings` (edited on the Settings menu's Crosshair tab). No asset to assign. |
+| **DamageIndicatorHUD** | `_playerHealth` = PlayerHealth, `_playerCamera` = PlayerCamera (set on the HUD instance in Sandbox and MapTest) | Arrows toward whoever hurt the player. Listens to `CombatEvents`; stretch-anchored, builds its own arrows. Optional `_sprite` = your own arrow art (pointing up); `_radius`, `_size`, `_duration`, `_maxIndicators` tune it. Off switch: Settings › Accessibility. |
 | **StatsHUD**, **HitEffect** | `_playerHealth` = PlayerHealth | HitEffect = damage flash + low-health vignette. |
 | **WeaponHUD** | `_weapon` = WeaponController | |
 | **AbilityHUD** | `_abilities` = PlayerAbilities | |

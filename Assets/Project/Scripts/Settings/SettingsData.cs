@@ -32,6 +32,8 @@ namespace CGD.Settings
         public float CameraShake    = 1f;
         public float FlashIntensity = 1f;
         public bool  DamageVignette = true;
+        // Arrows on screen pointing at whoever hurt the player.
+        public bool  DamageIndicators = true;
 
         // The crosshair's look; see CrosshairStyle.
         public CrosshairStyle Crosshair = new();

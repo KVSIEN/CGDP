@@ -14,6 +14,7 @@ namespace CGD.UI
         private readonly LabeledSlider _shake;
         private readonly LabeledSlider _flash;
         private readonly OptionCycler  _vignette;
+        private readonly OptionCycler  _damageIndicators;
         private readonly OptionCycler  _buffering;
         private readonly OptionCycler  _instantItemWheel;
 
@@ -28,6 +29,7 @@ namespace CGD.UI
             _shake    = layout.Slider("Camera Shake & Kicks", 0f, 1f, SettingsPageLayout.Percent, v => Set(d => d.CameraShake    = v));
             _flash    = layout.Slider("Screen Flashes",       0f, 1f, SettingsPageLayout.Percent, v => Set(d => d.FlashIntensity = v));
             _vignette = layout.Toggle("Low Health Vignette", on => Set(d => d.DamageVignette = on));
+            _damageIndicators = layout.Toggle("Damage Direction Arrows", on => Set(d => d.DamageIndicators = on));
 
             layout.Header("Input");
             _buffering        = layout.Toggle("Input Buffering", on => Set(d => d.InputBuffering = on));
@@ -40,6 +42,7 @@ namespace CGD.UI
             _shake.SetValueWithoutNotify(draft.CameraShake);
             _flash.SetValueWithoutNotify(draft.FlashIntensity);
             _vignette.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(draft.DamageVignette));
+            _damageIndicators.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(draft.DamageIndicators));
             _buffering.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(draft.InputBuffering));
             _instantItemWheel.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(draft.InstantItemWheel));
         }
@@ -50,6 +53,7 @@ namespace CGD.UI
             _draft.CameraShake    = defaults.CameraShake;
             _draft.FlashIntensity = defaults.FlashIntensity;
             _draft.DamageVignette = defaults.DamageVignette;
+            _draft.DamageIndicators = defaults.DamageIndicators;
             _draft.InputBuffering   = defaults.InputBuffering;
             _draft.InstantItemWheel = defaults.InstantItemWheel;
             Load(_draft);
