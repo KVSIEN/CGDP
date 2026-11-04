@@ -24,6 +24,14 @@ namespace CGD.Combat
 
         private void HandleDeath() => StartCoroutine(RespawnAfterDelay());
 
+        // Stands it back up now, whether it is dead and waiting or just damaged.
+        public void RespawnNow()
+        {
+            StopAllCoroutines();
+            SetBodyActive(true);
+            _health.Revive();
+        }
+
         private IEnumerator RespawnAfterDelay()
         {
             SetBodyActive(false);

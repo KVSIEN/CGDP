@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Combat;
 using CGD.Enemies;
 
 namespace CGD.FiringRange
@@ -18,6 +19,8 @@ namespace CGD.FiringRange
         [SerializeField] private Color _critColor = new(0.9f, 0.15f, 0.15f);
 
         private EnemyHealth _health;
+        private RespawnOnDeath _respawn;
+        private StatusEffectController _statusEffects;
         private StrafeMover _mover;
         private MaterialPropertyBlock _block;
 
@@ -26,12 +29,22 @@ namespace CGD.FiringRange
             set => _mover.Strafing = value;
         }
 
+        // Back to full health with no status effects, even mid-respawn.
+        public void Restore()
+        {
+            if (_statusEffects != null) _statusEffects.Clear();
+            if (_respawn != null) _respawn.RespawnNow();
+            else _health.Revive();
+        }
+
         public void MoveTo(Vector3 position) => _mover.MoveHome(position);
 
         private void Awake()
         {
             _health = GetComponent<EnemyHealth>();
             _mover  = GetComponent<StrafeMover>();
+            TryGetComponent(out _respawn);
+            TryGetComponent(out _statusEffects);
             _block  = new MaterialPropertyBlock();
             Paint(_head, _critColor);
         }

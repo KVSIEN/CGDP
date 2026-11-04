@@ -11,5 +11,7 @@ namespace CGD.FiringRange
         Movement,
         // How far down the lane the lane dummies stand: the full range, or pulled in closer.
         Distance,
+        // Not a setting: stands every dummy back up at full health and clears its effects.
+        Reset,
     }
 }

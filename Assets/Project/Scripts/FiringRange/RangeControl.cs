@@ -55,6 +55,9 @@ namespace CGD.FiringRange
                 case RangeSetting.Distance:
                     _distanceChoice = (_distanceChoice + 1) % _distanceScales.Length;
                     break;
+                case RangeSetting.Reset:
+                    foreach (RangeDummy dummy in _dummies) dummy.Restore();
+                    return;
             }
             Apply();
         }
@@ -66,6 +69,7 @@ namespace CGD.FiringRange
             RangeSetting.Tier     => $"Change tier  ({_tier})",
             RangeSetting.Movement => $"Toggle movement  ({(_strafing ? "Swaying" : "Still")})",
             RangeSetting.Distance => $"Change distance  ({DistanceSpan()})",
+            RangeSetting.Reset => "Reset dummies",
             _ => string.Empty,
         };
 
