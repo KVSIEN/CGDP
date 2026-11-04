@@ -20,6 +20,12 @@ namespace CGD.UI
         private TextMeshProUGUI _reserveText;
         private TextMeshProUGUI _reloadText;
 
+        // The colours the texts have when nothing needs flagging: the theme's in the built-in
+        // layout, the skin's own with a skin. Reloading, empty and out-of-ammo still use the theme.
+        private Color _nameColor;
+        private Color _magColor;
+        private Color _reserveColor;
+
         private int _magazine;
         private int _reserve;
         private bool _isReloading;
@@ -60,7 +66,7 @@ namespace CGD.UI
             bool hasWeapon = _weapon != null && _weapon.Data != null;
 
             _weaponNameText.text  = hasWeapon ? _weapon.Data.WeaponName : string.Empty;
-            _weaponNameText.color = Theme.TextMuted;
+            _weaponNameText.color = _nameColor;
 
             if (!hasWeapon)
             {
@@ -78,7 +84,7 @@ namespace CGD.UI
                 _magText.color = Theme.Warning;
                 _reloadText.gameObject.SetActive(true);
                 _reserveText.text = _reserve.ToString();
-                _reserveText.color = Theme.TextMuted;
+                _reserveText.color = _reserveColor;
                 return;
             }
 
@@ -86,14 +92,40 @@ namespace CGD.UI
 
             bool empty = _magazine == 0;
             _magText.text = _magazine.ToString();
-            _magText.color = empty ? Theme.Danger : Theme.TextPrimary;
+            _magText.color = empty ? Theme.Danger : _magColor;
 
             _reserveText.text = _reserve.ToString();
-            _reserveText.color = _reserve == 0 ? Theme.Danger : Theme.TextMuted;
+            _reserveText.color = _reserve == 0 ? Theme.Danger : _reserveColor;
         }
 
         private void Build()
         {
+            SkinParts skin = UseSkin();
+            if (skin != null)
+            {
+                _weaponNameText = skin.GetText("WeaponName");
+                _magText        = skin.GetText("MagCount");
+                _reserveText    = skin.GetText("Reserve");
+                _reloadText     = skin.GetText("ReloadLabel");
+                if (skin.Accept())
+                {
+                    _nameColor    = _weaponNameText.color;
+                    _magColor     = _magText.color;
+                    _reserveColor = _reserveText.color;
+                    GetComponent<RectTransform>().sizeDelta = skin.SizeOr(new Vector2(_panelWidth, 120f));
+                    return;
+                }
+            }
+
+            BuildDefault();
+        }
+
+        private void BuildDefault()
+        {
+            _nameColor    = Theme.TextMuted;
+            _magColor     = Theme.TextPrimary;
+            _reserveColor = Theme.TextMuted;
+
             var self = GetComponent<RectTransform>();
             float ip = _innerPadding.x;
             float contentWidth = _panelWidth - ip * 2f;
@@ -108,7 +140,7 @@ namespace CGD.UI
             UIFactory.Stretch(bg.rectTransform);
 
             _weaponNameText = UIFactory.MakeText("WeaponName", self);
-            _weaponNameText.color = Theme.TextMuted;
+            _weaponNameText.color = _nameColor;
             _weaponNameText.fontSize = 12f;
             _weaponNameText.alignment = TextAlignmentOptions.Right;
             UIFactory.Place(_weaponNameText.rectTransform, new Vector2(ip, y), new Vector2(contentWidth, 18f));

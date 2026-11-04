@@ -63,6 +63,23 @@ namespace CGD.UI
             rt.anchoredPosition = new Vector2(-_offsetFromCenter, _screenPaddingBottom);
             rt.sizeDelta        = Vector2.one * _slotSize;
 
+            SkinParts skin = UseSkin();
+            if (skin != null)
+            {
+                _bg          = skin.GetImage("Background");
+                _overlay     = skin.GetImage("Cooldown");
+                _keyLabel    = skin.GetText("Key");
+                _nameLabel   = skin.GetText("Name");
+                _chargeLabel = skin.GetText("Charges");
+                if (skin.Accept())
+                {
+                    rt.sizeDelta = skin.SizeOr(rt.sizeDelta);
+                    _slot = skin.Root.gameObject;
+                    _slot.SetActive(false);
+                    return;
+                }
+            }
+
             _bg       = UIFactory.MakeImage("OffhandBg", rt);
             _bg.color = ReadyColor;
             UIFactory.Stretch(_bg.rectTransform);
@@ -124,7 +141,7 @@ namespace CGD.UI
         private void Show(Color color, float ratio, string key, string charges)
         {
             _bg.color = color;
-            _overlay.rectTransform.anchorMax = new Vector2(1f, 1f - Mathf.Clamp01(ratio));
+            UIFill.Vertical(_overlay, 1f - Mathf.Clamp01(ratio));
             if (_keyLabel.text    != key)     _keyLabel.text    = key;
             if (_chargeLabel.text != charges) _chargeLabel.text = charges;
         }

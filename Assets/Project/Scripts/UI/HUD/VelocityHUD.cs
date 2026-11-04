@@ -22,6 +22,18 @@ namespace CGD.UI
         {
             var self = GetComponent<RectTransform>();
             UIFactory.AnchorToCorner(self, new Vector2(1f, 1f), _screenPadding);
+
+            SkinParts skin = UseSkin();
+            if (skin != null)
+            {
+                _text = skin.GetText("SpeedText");
+                if (skin.Accept())
+                {
+                    self.sizeDelta = skin.SizeOr(new Vector2(_panelWidth, _panelHeight));
+                    return;
+                }
+            }
+
             self.sizeDelta = new Vector2(_panelWidth, _panelHeight);
 
             var background = UIFactory.MakeImage("Background", self);

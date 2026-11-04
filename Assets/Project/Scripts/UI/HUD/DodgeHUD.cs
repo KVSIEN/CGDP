@@ -46,6 +46,20 @@ namespace CGD.UI
             rt.anchoredPosition = new Vector2(_offsetFromCenter, _screenPaddingBottom);
             rt.sizeDelta        = Vector2.one * _slotSize;
 
+            SkinParts skin = UseSkin();
+            if (skin != null)
+            {
+                _bg        = skin.GetImage("Background");
+                _overlay   = skin.GetImage("Cooldown");
+                _keyText   = skin.GetText("Key");
+                _nameLabel = skin.GetText("Name");
+                if (skin.Accept())
+                {
+                    rt.sizeDelta = skin.SizeOr(rt.sizeDelta);
+                    return;
+                }
+            }
+
             _bg          = UIFactory.MakeImage("DodgeBg", rt);
             _bg.color    = Theme.Accent.WithAlpha(SlotAlpha);
             UIFactory.Stretch(_bg.rectTransform);
@@ -78,13 +92,13 @@ namespace CGD.UI
             if (_dodge.IsDodging)
             {
                 _bg.color = _dodge.IsCommitted ? Theme.Positive.WithAlpha(SlotAlpha) : Theme.Warning.WithAlpha(SlotAlpha);
-                _overlay.rectTransform.anchorMax = new Vector2(1f, 0f);
+                UIFill.Vertical(_overlay, 0f);
             }
             else
             {
                 float ratio = _dodge.Cooldown.Ratio;
                 _bg.color = Color.Lerp(Theme.SlotEmpty, Theme.Accent.WithAlpha(SlotAlpha), ratio);
-                _overlay.rectTransform.anchorMax = new Vector2(1f, 1f - ratio);
+                UIFill.Vertical(_overlay, 1f - ratio);
             }
 
             string label = _dodge.Label.ToUpperInvariant();

@@ -18,6 +18,7 @@ namespace CGD.UI
         [SerializeField] private float _barHeight = 8f;
 
         private Image _healthFill;
+        private Color _fullHealthColor;
         private TextMeshProUGUI _healthText;
 
         private void Awake()
@@ -37,7 +38,27 @@ namespace CGD.UI
                 _playerHealth.OnChanged -= Refresh;
         }
 
+        // A skin brings its own bar and text; the bar's colour as drawn is the colour at full
+        // health, and it blends towards the theme's low-health colour as health drops.
         private void Build()
+        {
+            SkinParts skin = UseSkin();
+            if (skin != null)
+            {
+                _healthFill = skin.GetImage("HealthFill");
+                _healthText = skin.GetText("HealthText");
+                if (skin.Accept())
+                {
+                    _fullHealthColor = _healthFill.color;
+                    GetComponent<RectTransform>().sizeDelta = skin.SizeOr(new Vector2(_panelWidth, 40f));
+                    return;
+                }
+            }
+
+            BuildDefault();
+        }
+
+        private void BuildDefault()
         {
             var self = GetComponent<RectTransform>();
 
@@ -58,6 +79,7 @@ namespace CGD.UI
             // Health fill (child of bar background, width driven by anchor)
             _healthFill = UIFactory.MakeImage("HealthFill", barBg.rectTransform);
             _healthFill.color = Theme.Health;
+            _fullHealthColor  = Theme.Health;
             var fillRt = _healthFill.rectTransform;
             fillRt.anchorMin = Vector2.zero;
             fillRt.anchorMax = Vector2.one;
@@ -83,8 +105,8 @@ namespace CGD.UI
             if (_playerHealth == null) return;
 
             float ratio = _playerHealth.MaxHealth > 0f ? _playerHealth.Health / _playerHealth.MaxHealth : 0f;
-            _healthFill.rectTransform.anchorMax = new Vector2(ratio, 1f);
-            _healthFill.color = Color.Lerp(Theme.HealthLow, Theme.Health, ratio);
+            UIFill.Horizontal(_healthFill, ratio);
+            _healthFill.color = Color.Lerp(Theme.HealthLow, _fullHealthColor, ratio);
             _healthText.text = $"HP  {Mathf.CeilToInt(_playerHealth.Health)} / {Mathf.CeilToInt(_playerHealth.MaxHealth)}";
         }
     }

@@ -3,6 +3,8 @@
     "rootNamespace": "CGD.Tests",
     "references": [
         "CGD.Runtime",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

@@ -172,6 +172,18 @@ Later children draw on top. `HUDManager` finds every element by itself.
 
 **Theme:** every element in the HUD prefab has `_theme` = `Data/UI/HUDTheme` (`Create › CGD › UI › HUD Theme`). It holds every colour the HUD draws with, named by meaning (Panel, Window, TextPrimary, Health, Warning, Danger, Accent…) — restyle the HUD there. An element with no theme assigned uses the built-in defaults, which are the asset's starting values. Elements added in a scene instead of the prefab (Minimap, WorldMap, ExpeditionScreen) set their own colours and don't follow the theme yet. Fonts are not part of it: set the default font asset in TMP Settings.
 
+**Skins:** any element listed below can swap its built-in layout for your own prefab: drag a prefab (its root must be a `RectTransform`) into that element's `_skin` in the HUD prefab. The element instantiates it stretched to fill itself, adopts the prefab root's width and height as its size (a root that stretches to its parent falls back to the built-in size), and then only drives the parts it finds **by name** — anywhere in the hierarchy, first match wins. Everything else about the parts (size, sprite, font, anchors, extra decoration) is yours. If a required part is missing, or has the wrong component, the element logs a warning, discards the skin and builds its built-in layout. Leave `_skin` empty to keep the built-in look.
+
+| Element | Required parts (name → component) | Driven by the element |
+|---|---|---|
+| **StatsHUD** | `HealthFill` → Image, `HealthText` → TextMeshProUGUI | Fill amount; the fill's colour blends from its own colour (full health) to the theme's *HealthLow*; text |
+| **VelocityHUD** | `SpeedText` → TextMeshProUGUI | Text |
+| **WeaponHUD** | `WeaponName`, `MagCount`, `Reserve`, `ReloadLabel` → TextMeshProUGUI | Texts; the reload label shows only while reloading; `MagCount` and `Reserve` turn the theme's *Danger* when empty and `MagCount` *Warning* while reloading — otherwise they keep your colours |
+| **DodgeHUD** | `Background`, `Cooldown` → Image; `Key`, `Name` → TextMeshProUGUI | `Background` is tinted by state (ready, cooling down, dodging, committed) — use a white sprite; `Cooldown` drains; `Key` shows the bound key; `Name` the dodge move |
+| **OffhandHUD** | `Background`, `Cooldown` → Image; `Key`, `Name`, `Charges` → TextMeshProUGUI | As Dodge; the whole skin shows only while an artifact is in use |
+
+Bars and overlays (`HealthFill`, `Cooldown`) are shown either way you build them: an Image with *Type = Filled* (set the fill method and origin; horizontal from the left for bars, vertical from the bottom for overlays; it needs a sprite), or a plain Image anchored to stretch its parent with zero offsets, whose right or top edge the element pulls in. The other HUD elements still have only the built-in layout.
+
 | Element | Assign | Notes |
 |---|---|---|
 | **CrosshairHUD** | `_playerCamera` = PlayerCamera | Draws the player's crosshair style from `GameSettings` (edited on the Settings menu's Crosshair tab). No asset to assign. |

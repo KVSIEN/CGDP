@@ -8,6 +8,13 @@ namespace CGD.UI
         [Tooltip("The HUD palette. Leave empty to use the built-in defaults")]
         [SerializeField] private HUDTheme _theme;
 
+        [Tooltip("Optional: a prefab that replaces this element's built-in layout. It needs the named parts listed for this element in SETUP.md; with a part missing the built-in layout is used")]
+        [SerializeField] private RectTransform _skin;
+
+        // The skin instantiated under this element, or null to build the built-in layout.
+        protected SkinParts UseSkin() =>
+            _skin != null ? SkinParts.Create(_skin, (RectTransform)transform, GetType().Name) : null;
+
         protected HUDTheme Theme => _theme != null ? _theme : HUDTheme.Fallback;
 
         [Tooltip("The key bindings, for elements that show which key does what. Leave empty and key hints show as unbound")]
