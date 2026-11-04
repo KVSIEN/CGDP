@@ -79,6 +79,25 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 0, b: 0, a: 1}
+  Bash:
+    Timeline: {fileID: 11400000, guid: 8dffb9357aa843c69de636915fb3af30, type: 2}
+    Damage: 15
+    ArmorPenetration: 0
+    DamageType: 0
+    CriticalMultiplier: 1.5
+    WindupTime: 0.04
+    ActiveTime: 0.1
+    RecoveryTime: 0.35
+    CancelFrom: 1
+    HitShape: 0
+    Range: 1.6
+    Radius: 0.5
+    SweepArcDeg: 90
+    SweepRays: 5
+    OnHitEffects: []
+    SwingSound: {fileID: 0}
+    HitSound: {fileID: 0}
+    DebugColor: {r: 1, g: 1, b: 1, a: 1}
   HeavyHoldThreshold: 0.35
   ComboResetTime: 1
   HitMask:

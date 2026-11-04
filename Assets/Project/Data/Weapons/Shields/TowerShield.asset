@@ -44,7 +44,7 @@ MonoBehaviour:
     ParryStun: 1.8
     WhiffExposure: 0.5
   Bash:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: cd764d724329422e923de14c3fe08fa5, type: 2}
     Damage: 1
     ArmorPenetration: 0
     DamageType: 0

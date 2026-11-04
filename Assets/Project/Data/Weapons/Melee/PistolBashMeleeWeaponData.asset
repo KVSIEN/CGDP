@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.MeleeWeaponData
   WeaponName: Pistol Whip
   Bash:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: cebff08e359f453881df8378ac059513, type: 2}
     Damage: 18
     ArmorPenetration: 0
     DamageType: 0

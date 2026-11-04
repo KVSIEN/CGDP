@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.MeleeWeaponData
   WeaponName: Rifle Butt
   Bash:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: f26b6f7962594af1a6b48d70e4d18bfc, type: 2}
     Damage: 25
     ArmorPenetration: 0
     DamageType: 0

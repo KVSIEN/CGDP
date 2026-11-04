@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.MeleeWeaponData
   WeaponName: Tactical Knife
   Bash:
-    Timeline: {fileID: 0}
+    Timeline: {fileID: 11400000, guid: ba970fb42c0b4f6a9da3e6848a811fb5, type: 2}
     Damage: 35
     ArmorPenetration: 0
     DamageType: 0
