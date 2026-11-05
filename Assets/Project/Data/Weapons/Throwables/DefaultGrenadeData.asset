@@ -15,11 +15,14 @@ MonoBehaviour:
   GrenadeName: Frag Grenade
   GrenadePrefab: {fileID: 3424364988567009664, guid: 79be582424e8357498037e5240babdf2, type: 3}
   BodyColor: {r: 0.28, g: 0.34, b: 0.2, a: 1}
+  RangeMode: 1
   MinThrowSpeed: 8
   MaxThrowSpeed: 18
   ChargeTime: 0.8
   ThrowAngle: 6
   InheritVelocity: 0.5
+  ImpactSpeedKept: 0.5
+  GroundDrag: 8
   Fuse: 0
   FuseTime: 2.5
   ArmTime: 0.15

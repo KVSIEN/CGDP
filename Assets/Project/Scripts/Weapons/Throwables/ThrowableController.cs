@@ -9,8 +9,9 @@ using CGD.Player;
 namespace CGD.Weapons
 {
     // Holds a throwable in the player's hand. An item slot readies it (the gun is put
-    // away); holding Attack aims along the predicted arc, the longer the further it goes
-    // (up to the grenade's charge time), and releasing throws one from the inventory. Aim Down Sights, a weapon key or readying it again puts it away;
+    // away); holding Attack aims along the predicted arc — for a Charged grenade the longer the
+    // further it goes (up to its charge time), for a Fixed one always the same distance — and
+    // releasing throws one from the inventory. Aim Down Sights, a weapon key or readying it again puts it away;
     // after a throw the weapon comes back unless Keep Ready After Throw is set.
     [RequireComponent(typeof(PlayerInputHandler), typeof(PlayerInventory))]
     public class ThrowableController : MonoBehaviour

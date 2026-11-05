@@ -34,6 +34,7 @@ namespace CGD.UI
 
         private TextMeshProUGUI[] _labels;
         private Image[]           _fillImages;
+        private bool              _started;
 
         private void Awake()
         {
@@ -98,6 +99,13 @@ namespace CGD.UI
             if (_inventory != null) _inventory.Inventory.Changed += Refresh;
             if (_slots != null)     _slots.SlotsChanged += Refresh;
             if (Bindings != null)   Bindings.Changed += Refresh;
+            // The first OnEnable can run before PlayerItemSlots.Awake, so the first fill waits for Start.
+            if (_started) Refresh();
+        }
+
+        private void Start()
+        {
+            _started = true;
             Refresh();
         }
 

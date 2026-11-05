@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using CGD.Audio;
 using CGD.Items;
 using CGD.Player;
 using CGD.Stats;

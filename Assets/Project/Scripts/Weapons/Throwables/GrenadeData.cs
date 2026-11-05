@@ -18,17 +18,25 @@ namespace CGD.Weapons
         public Color BodyColor = new(0.28f, 0.34f, 0.2f);
 
         [Header("Throw")]
-        [Tooltip("Launch speed of a quick tap (m/s). Range is about speed² ÷ 9.8 on flat ground")]
+        [Tooltip("Charged: holding longer throws further. Fixed: every throw goes at Max Throw Speed, however long it's held")]
+        public ThrowRangeMode RangeMode = ThrowRangeMode.Charged;
+        [Tooltip("Charged only: launch speed of a quick tap (m/s). Range is about speed² ÷ 9.8 on flat ground")]
         [Min(0f)] public float MinThrowSpeed = 8f;
-        [Tooltip("Launch speed once fully charged (m/s)")]
+        [Tooltip("Launch speed once fully charged, and of every Fixed throw (m/s)")]
         [FormerlySerializedAs("ThrowForce")]
         [Min(0f)] public float MaxThrowSpeed = 18f;
-        [Tooltip("Seconds of holding the throw button to reach full speed (0 = always full speed)")]
+        [Tooltip("Charged only: seconds of holding the throw button to reach full speed (0 = always full speed)")]
         [Min(0f)] public float ChargeTime = 0.8f;
         [Tooltip("Degrees the throw is lifted above where you look, so a throw at a target lands near it")]
         [Range(0f, 45f)] public float ThrowAngle = 6f;
         [Tooltip("How much of the thrower's own velocity the grenade takes along")]
         [Range(0f, 1f)] public float InheritVelocity = 0.5f;
+
+        [Header("Landing")]
+        [Tooltip("Share of its speed along a surface the grenade keeps each time it hits one (0 = stops dead, 1 = slides on)")]
+        [Range(0f, 1f)] public float ImpactSpeedKept = 0.5f;
+        [Tooltip("How quickly it slows while resting on the ground (m/s per second)")]
+        [Min(0f)] public float GroundDrag = 8f;
 
         [Header("Fuse")]
         public FuseMode Fuse = FuseMode.Timed;
@@ -82,9 +90,9 @@ namespace CGD.Weapons
         [FormerlySerializedAs("DebugColor")]
         public Color PreviewColor = Color.yellow;
 
-        // 0..1 for how long the throw button has been held.
+        // 0..1 for how long the throw button has been held; always full for a fixed-range throw.
         public float Charge(float heldSeconds) =>
-            ChargeTime <= 0f ? 1f : Mathf.Clamp01(heldSeconds / ChargeTime);
+            RangeMode == ThrowRangeMode.Fixed || ChargeTime <= 0f ? 1f : Mathf.Clamp01(heldSeconds / ChargeTime);
 
         // Where a throw at this charge sends the grenade: along the aim, lifted by the throw
         // angle, plus a share of the thrower's own velocity.

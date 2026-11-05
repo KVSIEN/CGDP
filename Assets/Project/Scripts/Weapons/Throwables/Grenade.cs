@@ -18,6 +18,8 @@ namespace CGD.Weapons
     {
         private const float SlowestBlink = 0.5f;   // seconds per blink at the start of the fuse
         private const float FastestBlink = 0.07f;  // … and just before it goes off
+        private const float GroundNormalY = 0.6f;  // contacts flatter than ~53° count as ground
+        private const float StopSpeed     = 0.3f;  // below this on the ground it comes to rest
 
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly Collider[] HitBuffer = new Collider[64];
@@ -69,9 +71,49 @@ namespace CGD.Weapons
             Tint(blink ? _data.FuseBlinkColor : _data.BodyColor);
         }
 
-        private void OnCollisionEnter()
+        private void OnCollisionEnter(Collision collision)
         {
-            if (_initialized && _data.Fuse == FuseMode.OnImpact && _age >= _data.ArmTime) Explode();
+            if (!_initialized) return;
+            if (_data.Fuse == FuseMode.OnImpact && _age >= _data.ArmTime)
+            {
+                Explode();
+                return;
+            }
+            if (collision.contactCount > 0) DampImpact(collision.GetContact(0).normal);
+        }
+
+        private void OnCollisionStay(Collision collision)
+        {
+            if (!_initialized || collision.contactCount == 0) return;
+            if (collision.GetContact(0).normal.y >= GroundNormalY) ApplyGroundDrag();
+        }
+
+        // Physics friction barely holds back a sphere, so each hit takes speed along the surface
+        // away directly; the bounce off it is left to the physics material.
+        private void DampImpact(Vector3 normal)
+        {
+            Vector3 velocity = _rb.linearVelocity;
+            Vector3 along = Vector3.ProjectOnPlane(velocity, normal);
+            _rb.linearVelocity = velocity - along * (1f - _data.ImpactSpeedKept);
+            _rb.angularVelocity *= _data.ImpactSpeedKept;
+        }
+
+        // Rolling or sliding on the ground slows it to a stop instead of gliding on.
+        private void ApplyGroundDrag()
+        {
+            Vector3 velocity = _rb.linearVelocity;
+            float speed = velocity.magnitude;
+            float slowed = speed - _data.GroundDrag * Time.fixedDeltaTime;
+            if (slowed <= StopSpeed)
+            {
+                _rb.linearVelocity  = Vector3.zero;
+                _rb.angularVelocity = Vector3.zero;
+                return;
+            }
+
+            float kept = slowed / speed;
+            _rb.linearVelocity  = velocity * kept;
+            _rb.angularVelocity *= kept;
         }
 
         // Blinks faster the closer the fuse is to running out.

@@ -155,6 +155,7 @@ namespace CGD.Combat
             OnChanged?.Invoke();
         }
 
+        // Every hit that lands, shield and health together; called after health and shield are updated.
         protected virtual void OnDamageTaken(float amount, Vector3 point, bool isCritical) { }
 
         // A base value with this character's stat modifiers (buffs, difficulty) applied,
@@ -193,10 +194,11 @@ namespace CGD.Combat
             {
                 _currentHealth = Mathf.Max(_currentHealth - amount, 0f);
                 OnDamaged?.Invoke(amount);
-                OnDamageTaken(amount, point, isCritical);
             }
 
             OnChanged?.Invoke();
+            // Damage the shield soaked up counts too, so hits on a shielded enemy still show a number.
+            if (dealt > 0f) OnDamageTaken(dealt, point, isCritical);
             CombatEvents.Report(new DamageReport(this, info.Source, dealt, point, isCritical, IsDead));
             if (IsDead)
             {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CGD.Map;
 
 namespace CGD.Editor
 {
