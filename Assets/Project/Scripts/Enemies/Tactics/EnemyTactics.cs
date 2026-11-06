@@ -88,6 +88,8 @@ namespace CGD.Enemies
         // Whether it may step in and strike: only a few enemies (EnemyData.MaxMeleeAttackers,
         // scaled by the director's pacing) are in melee with one target at a time, and it gives
         // way after a couple of strikes.
+        public bool HasMeleeTurn => _hasMeleeTurn;
+
         public bool TryTakeMeleeTurn(HealthManager target)
         {
             if (_hasMeleeTurn) return true;

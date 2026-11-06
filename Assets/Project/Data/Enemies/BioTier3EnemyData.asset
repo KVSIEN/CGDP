@@ -27,6 +27,7 @@ MonoBehaviour:
   HearingRadius: 14
   Senses: {fileID: 11400000, guid: b4dbcf2c7fae4eebb839c7454d0c4a00, type: 2}
   BehaviorTree: {fileID: 11400000, guid: e7612450fa2d4d9084473b8b50dd87ce, type: 2}
+  Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
   CombatType: 0
   AttackRange: 1.4
   AttackDamage: 18

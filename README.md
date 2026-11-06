@@ -46,7 +46,8 @@ Assets/
                             build-up, peak, fade, relax; SessionPerformance → Pressure), SpawnSpotFinder;
                             Reinforcements/ (groups out of sight while pressure may build), Supplies/ (SupplyPlanner, SupplySpawner:
                             healing or ammo during a calm), Music/ (DirectorMusic: layered stems and stingers), Probes/ (PatrolProbes:
-                            calm enemies sent to check near the player); EnemyPacingTuning + PhaseConduct (how boldly enemies fight per phase)
+                            calm enemies sent to check near the player), Narration/ (DirectorNarration: phase beats, enemy shouts),
+                            NearbyEnemies (shared non-allocating query); EnemyPacingTuning + PhaseConduct (how boldly enemies fight per phase)
       Economy/              CurrencyDefinition, Wallet, PriceTable, Vendor, GambleMachine (+ GambleOdds); Shops/ — Shop (buy/sell/trade-in),
                             ShopCatalog, stock sources (ItemStock, RolledWeaponStock), listings
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report),
@@ -55,12 +56,13 @@ Assets/
                             live view, breakpoints)
       Enemies/              enemy components, EnemyRangedCombat, EnemySearch, EnemyPost (guarding, return point), shared steps (Return/Retreat/RaiseAlarmStep),
                             Abilities/ (EnemyAbilities: casting Ability assets; GrenadeThrower, ThrowArc),
-                            BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/, Squad/, Pacing/; EnemyBlackboard keys),
+                            BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/, Squad/, Pacing/, Voice/; EnemyBlackboard keys, EnemyStatusReport),
                             Perception/ (EnemyPerception: sight, hearing, touch, memory; AwarenessMeter, PerceptionProfile, callouts),
                             Tactics/ (CoverMap: cover spots from the NavMesh; CoverKnowledge, EnemyTactics: cover, flanking, hiding spots, melee turns;
                             AttackTokens, EnemyMorale, AlarmPanel),
                             Squads/ (EnemySquad: roles, radio relay, leader; SquadRoles rules, SquadRole),
-                            Pacing/ (EnemyPacing: the director's word to enemies; EnemyPacingState, BoldMovePermits)
+                            Pacing/ (EnemyPacing: the director's word to enemies; EnemyPacingState, BoldMovePermits),
+                            Voice/ (EnemyVoice: barks from EnemyBarkSet per type; BarkRules spacing, EnemyBarks bus)
       Expedition/           the extraction loop: ExpeditionLedger (ship hold, packed kit, extract/die rules),
                             ExpeditionSession (keeps it across loads), ExpeditionRunner (a run in a level), RunStarterKit
       Factions/             FactionDefinition (name, colour, enemy roster) — used by the map graph and generated levels

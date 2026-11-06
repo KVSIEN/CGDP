@@ -21,8 +21,7 @@ namespace CGD.Director
         [Tooltip("Layers enemies' colliders are on")]
         [SerializeField] private LayerMask    _enemyMask = ~0;
 
-        private static readonly Collider[] Nearby = new Collider[64];
-        private readonly HashSet<EnemyAI> _seen = new();
+        private readonly NearbyEnemies _nearby = new();
         private RandomStream  _random;
         private CooldownTimer _nextProbe;
         private int           _sentThisBuildUp;
@@ -77,20 +76,18 @@ namespace CGD.Director
             return enemy != null && TryPickArea(out Vector3 area) && enemy.CheckArea(area);
         }
 
-        // A random calm enemy within the distance band (each one counted once, however many colliders it has).
+        // A random calm enemy within the distance band.
         private EnemyAI PickCalmEnemy()
         {
             Vector3 player = _player.position;
             FloatRange band = _settings.EnemyDistance;
-            int count = Physics.OverlapSphereNonAlloc(player, band.Max, Nearby, _enemyMask, QueryTriggerInteraction.Ignore);
 
-            _seen.Clear();
             EnemyAI picked = null;
             int candidates = 0;
-            for (int i = 0; i < count; i++)
+            IReadOnlyList<EnemyAI> nearby = _nearby.Around(player, band.Max, _enemyMask);
+            for (int i = 0; i < nearby.Count; i++)
             {
-                EnemyAI enemy = Nearby[i].GetComponentInParent<EnemyAI>();
-                if (enemy == null || !_seen.Add(enemy) || !enemy.isActiveAndEnabled) continue;
+                EnemyAI enemy = nearby[i];
                 if (enemy.Awareness != AwarenessLevel.Unaware) continue;
                 if ((enemy.transform.position - player).sqrMagnitude < band.Min * band.Min) continue;
 

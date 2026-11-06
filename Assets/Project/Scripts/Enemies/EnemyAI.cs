@@ -19,7 +19,7 @@ namespace CGD.Enemies
     [RequireComponent(typeof(NavMeshAgent))]
     [RequireComponent(typeof(EnemyHealth))]
     [RequireComponent(typeof(Stunnable))]
-    public class EnemyAI : MonoBehaviour, IPoolable, IBehaviorTreeOwner
+    public class EnemyAI : MonoBehaviour, IPoolable, IBehaviorTreeOwner, IBtAgentStatus
     {
         // Investigate: curious, checking something out. Hunt: knows a hostile is about and is
         // searching for it. Return: heading back to its post after giving up (or a kill).
@@ -101,6 +101,7 @@ namespace CGD.Enemies
         internal EnemySquad        Squad        { get; private set; }
         internal SquadRole         SquadRole    => Squad != null ? Squad.RoleOf(this) : SquadRole.None;
         internal EnemyMorale       Morale       { get; private set; }
+        internal EnemyVoice        Voice        { get; private set; }
 
         // Set when it gave up a search or won its fight: it should head back to its post.
         // Shaken and not cornered: time to fall back. Cornered, it fights instead.
@@ -139,6 +140,7 @@ namespace CGD.Enemies
             Abilities     = new EnemyAbilities(this, _damageSource);
             Grenades      = new GrenadeThrower(this, _damageSource);
             Morale        = new EnemyMorale(this);
+            Voice         = new EnemyVoice(this);
             _health.OnDeath += OnDeath;
         }
 
@@ -236,15 +238,21 @@ namespace CGD.Enemies
 
         // Every frame once anything has its attention; the moment its senses pick something
         // up the interval drops to zero, so a calm enemy reacts no later than a busy one.
-        private float TreeTickInterval()
+        internal float TreeTickInterval()
         {
             bool engaged = Perception.Level != AwarenessLevel.Unaware || Perception.HasLead ||
                            Perception.IsUnderFire || IsAttacking || RangedCombat.IsBursting;
             return TreeTickRate.IntervalFor(engaged, Perception.SensesHostiles);
         }
 
+        void IBtAgentStatus.DescribeStatus(List<(string Label, string Value)> rows) => EnemyStatusReport.Describe(this, rows);
+
         // For enemies spawned at runtime (level builder, dev console) instead of placed with a route.
         public void SetWaypoints(Transform[] waypoints) => _waypoints = waypoints;
+
+        // Says something from its type's bark set, if the level isn't too noisy (the director's
+        // narration, scripted moments). False when nothing was said.
+        public bool Bark(BarkKind kind) => Voice.Say(kind);
 
         // Sends a calm enemy to have a look round an area (the director's patrol probes). False if
         // it already has something on its mind.
@@ -458,6 +466,7 @@ namespace CGD.Enemies
             Tactics.Reset();
             Perception.Reset();
             Morale.Reset();
+            Voice.Reset();
             Post.Remember();
             FallenAllies.Remove(this);
             ReturnPending  = false;

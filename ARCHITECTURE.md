@@ -146,6 +146,16 @@ budget, attacker / search / fall-back scales), cleared to `Undirected` when it g
 It only shapes *how boldly* enemies act — attack token limits, search time, morale break
 point, the level-wide `BoldMovePermits` that `Director Permit` nodes take — never what they
 know, so honest senses stay honest. Trees read it as blackboard keys and `Pacing Is`.
+`DirectorNarration` turns phase changes into a HUD line and a shout from a nearby enemy
+that is already engaged.
+
+**Enemies speak.** `EnemyVoice` (a plain class `EnemyAI` owns) maps the enemy's own events —
+state and engage-step changes, throws — to a `BarkKind`, looks the line up in its type's
+`EnemyBarkSet` and asks the level-wide `BarkRules` (in `EnemyBarks`) whether it may speak
+now. Trees and the director ask for extra barks through the same path, so spacing holds
+for everything; `EnemyBarks.Spoken` lets captions or HUD hints follow without touching
+enemies. The tree editor stays generic: agents that implement `IBtAgentStatus` add their
+own rows to the live view (`EnemyStatusReport` for enemies).
 
 ## Conventions that keep this working
 

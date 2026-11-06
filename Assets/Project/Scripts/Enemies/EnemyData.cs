@@ -47,6 +47,8 @@ namespace CGD.Enemies
         [Tooltip("Decides what the enemy does: patrolling, searching, fighting (edit it in CGD › AI › Behavior Tree Editor). " +
                  "Without one the enemy just stands there")]
         public BehaviorTreeAsset BehaviorTree;
+        [Tooltip("What it says out loud (spotted you, flanking, falling back…). Empty = silent")]
+        public EnemyBarkSet Voice;
 
         [Header("Combat")]
         public EnemyCombatType CombatType = EnemyCombatType.Melee;

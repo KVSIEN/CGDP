@@ -10,7 +10,7 @@ namespace CGD.Editor
     // The side panel. With a node selected: its description, settings (edited with Undo like
     // any inspector), breakpoints, the validator's findings on it and — while an agent is
     // watched — its live "why" view. With nothing selected: every issue in the tree. While
-    // watching, the agent's blackboard and decision trace follow.
+    // watching, the agent's own status (IBtAgentStatus), blackboard and decision trace follow.
     internal sealed class BtInspectorPanel : VisualElement
     {
         private const string Help =
@@ -26,6 +26,7 @@ namespace CGD.Editor
         private string            _nodeGuid;
         private BehaviorTree      _watched;
         private IReadOnlyList<BtIssue> _issues = Array.Empty<BtIssue>();
+        private readonly List<(string Label, string Value)> _statusRows = new();
         private Vector2           _scroll;
 
         public BtInspectorPanel()
@@ -150,6 +151,8 @@ namespace CGD.Editor
 
         private void DrawWatched()
         {
+            DrawAgentStatus();
+
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Blackboard (live)", EditorStyles.boldLabel);
             if (_watched.Blackboard.Values.Count == 0) EditorGUILayout.LabelField("Empty", EditorStyles.miniLabel);
@@ -158,6 +161,20 @@ namespace CGD.Editor
 
             if (_watched.Trace != null)
                 BtTraceSection.Draw(_watched.Trace, node => _asset.FindNode(node.Guid) != null, guid => SelectRequested?.Invoke(guid));
+        }
+
+        private void DrawAgentStatus()
+        {
+            if (_watched.Context.Agent is not IBtAgentStatus agent) return;
+
+            _statusRows.Clear();
+            agent.DescribeStatus(_statusRows);
+            if (_statusRows.Count == 0) return;
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Agent (live)", EditorStyles.boldLabel);
+            foreach ((string label, string value) in _statusRows)
+                EditorGUILayout.LabelField(label, value, EditorStyles.wordWrappedLabel);
         }
 
         private string NodeName(string guid)
