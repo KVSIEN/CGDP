@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: RoutineSubtree
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7bc26c0aca83411ea858acf5bde1b98d
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - edf8778a3b104d69b0e8fc27bbebdae9
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: edf8778a3b104d69b0e8fc27bbebdae9
+        _position: {x: 0, y: 150}
+        _comment: 'What it does when not fighting'
+        _children:
+        - 05139236171c4bf49d6564fc8e199f71
+        - 43c14f2a133d489e9c27934ede6f843e
+        - f70c24ffd7404714b559b3bed262af6d
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 05139236171c4bf49d6564fc8e199f71
+        _position: {x: -275, y: 300}
+        _comment: 'Check out noises, hits and the target''s last known position'
+        _children:
+        - e97e5ce3c0724676ba0f7668c3ebd9b1
+        - 38bc45c8f3904b6f871c3dc717e77641
+        _abort: 2
+    - rid: 1003
+      type: {class: IsSuspicious, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e97e5ce3c0724676ba0f7668c3ebd9b1
+        _position: {x: -385, y: 450}
+        _comment: 
+    - rid: 1004
+      type: {class: Investigate, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 38bc45c8f3904b6f871c3dc717e77641
+        _position: {x: -165, y: 450}
+        _comment: 
+    - rid: 1005
+      type: {class: ReturnToPost, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 43c14f2a133d489e9c27934ede6f843e
+        _position: {x: 55, y: 300}
+        _comment: 
+    - rid: 1006
+      type: {class: Patrol, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f70c24ffd7404714b559b3bed262af6d
+        _position: {x: 275, y: 300}
+        _comment: 

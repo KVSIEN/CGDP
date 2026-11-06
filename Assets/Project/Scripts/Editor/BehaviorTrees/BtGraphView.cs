@@ -54,6 +54,9 @@ namespace CGD.Editor
 
         public IEnumerable<BtNodeView> NodeViews => _views.Values;
 
+        // A Subtree node asked to open the tree it runs.
+        public event Action<BehaviorTreeAsset> OpenRequested;
+
         public void Dispose() => UnityEngine.Object.DestroyImmediate(_search);
 
         // --- Building the view -----------------------------------------------------
@@ -92,6 +95,7 @@ namespace CGD.Editor
         {
             var view = new BtNodeView(node);
             view.Selected += OnViewSelected;
+            view.OpenRequested += asset => OpenRequested?.Invoke(asset);
             _views[node.Guid] = view;
             AddElement(view);
             return view;

@@ -6,7 +6,7 @@ namespace CGD.Enemies
     // Stops, turns to the target and strikes as soon as the attack is off cooldown; the hit
     // lands after EnemyData's wind-up. Succeeds once the strike is done; fails if it's not its
     // turn (others are already in melee with the target). Pair it with
-    // Target In Range in a reactive Sequence so it stops when the target steps away.
+    // Target In Range in a Sequence that aborts Self so it stops when the target steps away.
     [Serializable]
     [BtNodeInfo("Enemy/Combat/Melee Attack", "Stops, faces the target and strikes when ready. Succeeds after the strike.")]
     public sealed class MeleeAttack : EnemyAction

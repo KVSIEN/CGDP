@@ -42,6 +42,12 @@ namespace CGD.Editor
             extensionContainer.Add(_comment);
             extensionContainer.style.backgroundColor = new Color(0.22f, 0.22f, 0.22f, 0.95f);
 
+            if (node is Subtree)
+                RegisterCallback<MouseDownEvent>(evt =>
+                {
+                    if (evt.clickCount == 2 && ((Subtree)Data).Tree != null) OpenRequested?.Invoke(((Subtree)Data).Tree);
+                });
+
             SetPosition(new Rect(node.Position, Vector2.zero));
             Refresh();
             RefreshExpandedState();
@@ -53,6 +59,8 @@ namespace CGD.Editor
         public Port   Output { get; private set; }
 
         public event Action<BtNodeView> Selected;
+        // Double-clicked a Subtree node: open the tree it runs.
+        public event Action<BehaviorTreeAsset> OpenRequested;
 
         // Re-reads the summary and comment after the node's settings change.
         public void Refresh()

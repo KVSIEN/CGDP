@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: RegroupSubtree
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f1785c8b34ba49feb588ee3b93d95338
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - e2e5aaf0071f4f35b0c1c8b4087a360d
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e2e5aaf0071f4f35b0c1c8b4087a360d
+        _position: {x: 0, y: 150}
+        _comment: 'Morale broken (allies down, badly hurt): fall back and regroup until steady'
+        _children:
+        - d8dbeaf19a87466f98e5e57d474a8a8e
+        - f30eba2b183149378091867617704f2b
+        - 9407d33e2ab84ac685e8a3363374aa1d
+        _abort: 2
+    - rid: 1002
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d8dbeaf19a87466f98e5e57d474a8a8e
+        _position: {x: -220, y: 300}
+        _comment: 
+        _memory: 6
+    - rid: 1003
+      type: {class: IsShaken, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f30eba2b183149378091867617704f2b
+        _position: {x: 0, y: 300}
+        _comment: 
+    - rid: 1004
+      type: {class: Regroup, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9407d33e2ab84ac685e8a3363374aa1d
+        _position: {x: 220, y: 300}
+        _comment: 

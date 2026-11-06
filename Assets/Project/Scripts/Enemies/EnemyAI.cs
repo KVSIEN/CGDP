@@ -229,6 +229,7 @@ namespace CGD.Enemies
                 Agent.isStopped = false;
                 ReportState(_stateBeforeStun);
             }
+            EnemyBlackboard.Publish(this, _tree.Blackboard);
             _tree.Tick(dt);
         }
 

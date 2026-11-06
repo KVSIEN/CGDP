@@ -10,7 +10,10 @@ namespace CGD.BehaviorTrees
     {
         internal override int MaxChildren => 1;
 
+        // The branch under the root — what a Subtree node stands in for.
+        internal BtNode Branch => Children != null && Children.Count > 0 ? Children[0] : null;
+
         protected override BtStatus OnTick(BtContext context) =>
-            Children.Count > 0 ? Children[0].Tick(context) : BtStatus.Failure;
+            Branch != null ? Branch.Tick(context) : BtStatus.Failure;
     }
 }

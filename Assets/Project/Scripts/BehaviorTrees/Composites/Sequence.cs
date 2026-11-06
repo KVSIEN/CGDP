@@ -4,36 +4,51 @@ using UnityEngine;
 namespace CGD.BehaviorTrees
 {
     // Runs its children in order until one fails ("do all of these"). Succeeds once every
-    // child has succeeded.
-    // Reactive: every tick it re-checks the children before the running one, and if one of
-    // them now fails the running child is aborted. Put the conditions first:
-    // [Target In Range] → [Melee Attack] stops attacking the moment the target steps away.
+    // child has succeeded. Start it with conditions so it only runs when they hold:
+    // [Has Target → Fight]. Abort Self keeps re-checking those conditions while a later
+    // child runs; Lower Priority lets them interrupt a sibling to its right (see AbortMode).
     [Serializable]
-    [BtNodeInfo("Composites/Sequence", "Runs children left to right until one fails. Reactive: re-checks earlier children every tick.")]
+    [BtNodeInfo("Composites/Sequence", "Runs children left to right until one fails. Abort modes re-check its leading conditions.")]
     public sealed class Sequence : BtComposite
     {
-        [Tooltip("Re-check the children before the running one every tick, aborting it if one now fails")]
-        [SerializeField] private bool _reactive;
+        [Tooltip("Self: stop when an earlier condition no longer holds. Lower Priority: interrupt siblings to the right once its leading conditions hold")]
+        [SerializeField] private AbortMode _abort;
 
         [NonSerialized] private int _current;
 
-        public override string Summary => _reactive ? "Reactive" : null;
+        public override string Summary => AbortSummary(_abort);
+
+        internal override bool AbortsLowerPriority => _abort is AbortMode.LowerPriority or AbortMode.Both;
+        internal override bool PreconditionsPass(BtContext context) => LeadingConditionsPass(context, requireAll: true);
+
+        private bool AbortsSelf => _abort is AbortMode.Self or AbortMode.Both;
 
         protected override void OnEnter(BtContext context) => _current = 0;
 
         protected override BtStatus OnTick(BtContext context)
         {
-            for (int i = _reactive ? 0 : _current; i < Children.Count; i++)
+            if (AbortsSelf && ConditionBrokeBefore(_current, context))
+            {
+                Children[_current].Abort(context);
+                return BtStatus.Failure;
+            }
+
+            for (int i = _current; i < Children.Count; i++)
             {
                 BtStatus status = Children[i].Tick(context);
                 if (status == BtStatus.Success) continue;
 
-                // An earlier child took over (or failed): stop the one that was running.
-                if (i < _current) Children[_current].Abort(context);
                 _current = i;
                 return status;
             }
             return BtStatus.Success;
+        }
+
+        private bool ConditionBrokeBefore(int index, BtContext context)
+        {
+            for (int i = 0; i < index; i++)
+                if (Children[i].IsConditional && !Children[i].CheckCondition(context)) return true;
+            return false;
         }
     }
 }

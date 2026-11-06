@@ -32,7 +32,8 @@ Assets/
       Animation/            Animator parameter bridge (AnimatorBridge, AnimatorParams), PlayerAnimator, EnemyAnimator, ViewmodelAnimator (per-weapon override controllers), Ragdoll;
                             animation cues: AnimationCue, AnimationEventRelay, AnimationCueSoundSet, AnimationCueAudio
       BehaviorTrees/        generic behavior trees: Core/ (BtNode, BtParentNode, BtComposite, BtDecorator, BtAction, BtCondition, BtRoot,
-                            BehaviorTreeAsset, BehaviorTree (per-agent copy), BtContext, Blackboard), Composites/, Decorators/, Leaves/
+                            AbortMode, Subtree, BehaviorTreeAsset, BehaviorTree (per-agent copy), BtContext, Blackboard),
+                            Composites/, Decorators/, Actions/, Blackboard/ (flag, number and key nodes)
       Audio/                audio pool, sound banks, surface lookup; mixer: AudioMixerController, AudioMixerSettings, MixState (+ request), GameplayMixStates
       CameraEffects/        shake, kicks, FOV punches, lag, view blends (CameraEffectsController), CameraImpulses
       Combat/               Damage/, Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/, Reflect/ (Reflector, ReflectProfile), Projectile, Stunnable, Noise
@@ -50,7 +51,8 @@ Assets/
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report),
                             BehaviorTrees/ (Behavior Tree Editor: GraphView canvas, node views, inspector, layout)
       Enemies/              enemy components, EnemyRangedCombat, EnemySearch, EnemyPost (guarding, return point), shared steps (Return/Retreat/RaiseAlarmStep),
-                            AI/ (state classes: Patrol, Search (Investigate/Hunt), Return, Chase, RangedChase, Retreat, RaiseAlarm, Stunned), BehaviorTree/ (enemy tree nodes),
+                            AI/ (state classes: Patrol, Search (Investigate/Hunt), Return, Chase, RangedChase, Retreat, RaiseAlarm, Stunned),
+                            BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/; EnemyBlackboard keys),
                             Perception/ (EnemyPerception: sight, hearing, touch, memory; AwarenessMeter, PerceptionProfile, callouts),
                             Tactics/ (CoverMap: cover spots from the NavMesh; CoverKnowledge, EnemyTactics: cover, flanking, hiding spots, melee turns;
                             AttackTokens, EnemyMorale, AlarmPanel)

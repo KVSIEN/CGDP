@@ -321,19 +321,24 @@ No scene wiring: set `EnemyData` › **Behavior** › `BehaviorTree` to a `Behav
 
 | Asset | Notes |
 |---|---|
-| `Enemies/BehaviorTrees/MeleeEnemyBehaviorTree` | Fight while it knows where you are (strike in range; further than 6 m, flank half the time, every 8 s at most; else chase) → investigate → patrol. |
-| `Enemies/BehaviorTrees/RangedEnemyBehaviorTree` | Below 30% health: hide behind cover or flee (8 s cooldown) → fight: new cover every 7 s, shoot from cover while it holds, else hold range + shoot → investigate → patrol. The `EnemyData` should be `CombatType` Ranged for its preferred range, burst and spread values. |
-| `Enemies/AITest/MeleeTestEnemyData`, `RangedTestEnemyData` | Scavenger and Maintenance Bot copies that use the trees above (the ranged one fires 3-round bursts). |
+| `Enemies/BehaviorTrees/MeleeEnemyBehaviorTree` | Regroup → Raise Alarm → fight while it knows where you are (strike in range when it's its turn; further than 6 m, flank half the time at most every 8 s; else close in) → Routine. |
+| `Enemies/BehaviorTrees/RangedEnemyBehaviorTree` | Below 30% health: hide behind cover or flee (8 s cooldown) → Regroup → Raise Alarm → fight: a Utility Selector weighs *from cover* (fixed 0.6: run to fresh cover, shoot 6–9 s) against *in the open* (TargetDistance 6–25 m: hold range and shoot for 3 s) → Routine. The `EnemyData` should be `CombatType` Ranged for its preferred range, burst and spread values. |
+| `Enemies/BehaviorTrees/Shared/RegroupSubtree` | Knows Target → Is Shaken → Regroup; aborts lower priority. |
+| `Enemies/BehaviorTrees/Shared/RaiseAlarmSubtree` | Has Target → Can Raise Alarm → Raise Alarm; aborts lower priority. Does nothing for enemies that don't raise alarms. |
+| `Enemies/BehaviorTrees/Shared/RoutineSubtree` | Investigate leads (aborts lower priority) → Return To Post → Patrol. |
+| `Enemies/AITest/MeleeTestEnemyData`, `RangedTestEnemyData` | Scavenger and Maintenance Bot copies that use the trees above (the ranged one fires 3-round bursts and raises alarms). |
 
-**Editing:** *CGD › AI › Behavior Tree Editor*, or double-click a tree asset (`Create › CGD › AI › Behavior Tree` makes a new one with its Root). Space or right-click on the canvas to add nodes; drag from a node's bottom port to another's top port to connect. In Play mode select an enemy to watch its tree.
+**Editing:** *CGD › AI › Behavior Tree Editor*, or double-click a tree asset (`Create › CGD › AI › Behavior Tree` makes a new one with its Root). Space or right-click on the canvas to add nodes; drag from a node's bottom port to another's top port to connect. Double-click a **Subtree** node to open its tree. In Play mode select an enemy to watch its tree (and the subtrees it runs).
+
+**Enemy blackboard** — refreshed every tick for generic nodes (Compare Number, Score): `Health`, `Morale`, `Awareness` (0–1), `TargetDistance` (metres to the believed target position; unset without a target), `Cautious` (flag).
 
 **Tree rules of thumb:**
-- Put a **reactive Selector** at the top with the most urgent branch on the left; it re-checks the branches to the left of the running one every frame.
-- Start a fighting branch with a **reactive Sequence** whose first child is a condition (`Has Target`), so losing the target ends the fight.
-- **Patrol** and **Hold Range** never finish on their own — keep them where something above can interrupt them.
-- End the top Selector with **Return To Post** then **Patrol**: Return To Post fails unless the enemy just gave up a search or won a fight.
-- **Is Shaken → Regroup** and **Has Target → Raise Alarm** go before the fight branch; Raise Alarm fails at once for enemies that don't raise alarms.
-- Put **Take Cover** and **Flank** under a **Cooldown**: each run picks a new spot, so without one they reposition every frame they're allowed to. They need a CoverMap in the scene (Flank only needs the NavMesh).
+- The top **Selector** lists branches most urgent first. Give each branch that should interrupt the ones to its right **Abort: Lower Priority**, and start it with its conditions (`Has Target`, `Is Shaken`…) — only those leading conditions are re-checked.
+- Give a branch **Abort: Self** (or **Both**) when it should stop the moment its own conditions break: `[Target In Range → Takes Melee Turn → Melee Attack]`.
+- Gates (**Cooldown**, **Limit**) count as conditions: a branch behind one doesn't interrupt until it's ready. **Chance** isn't a gate — put it under the Cooldown, not before it.
+- **Patrol**, **Hold Range** and **Repeat** (forever) never finish on their own — end them with a **Parallel** (Require One) next to a **Wait**, or keep them where something above can interrupt.
+- Share branches between enemy types as **Subtree** assets; a subtree's abort mode works from where it's placed.
+- **Take Cover** and **Flank** pick a new spot each run: put them under a Cooldown or a timed Parallel so they don't reposition every frame. They need a CoverMap in the scene (Flank only needs the NavMesh).
 - Use **Knows Target** instead of **Has Target** above moves that break line of sight (flanking), so losing sight for a moment doesn't end the fight.
 - Trees with `Enemy/…` nodes must run on an `EnemyAI`.
 
@@ -810,7 +815,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Timing/` | `GameTimeSettings` | GameTime |
 | `Enemies/` | `MaintenanceBot`/`Scavenger`/`Husk` `…EnemyData` (tier 1, ≈100 effective health each; the firing-range dummies run on them), `Tech`/`Bio`/`Void` `Tier2`/`Tier3` `…EnemyData` (placeholders, ≈2.5× / ≈5×; *Tier* set on each), `DefaultEnemyData` | EnemyAI, EnemyHealth |
 | `Enemies/Perception/` | `DefaultPerceptionProfile`, `WaryPerceptionProfile`, `SkittishPerceptionProfile` | EnemyData › Senses |
-| `Enemies/BehaviorTrees/`, `Enemies/AITest/` | `MeleeEnemyBehaviorTree`, `RangedEnemyBehaviorTree`; `MeleeTestEnemyData`, `RangedTestEnemyData` (use the trees; AITest scene) | EnemyData › BehaviorTree |
+| `Enemies/BehaviorTrees/`, `Enemies/AITest/` | `MeleeEnemyBehaviorTree`, `RangedEnemyBehaviorTree`, `Shared/` (`RegroupSubtree`, `RaiseAlarmSubtree`, `RoutineSubtree`); `MeleeTestEnemyData`, `RangedTestEnemyData` (use the trees; AITest scene) | EnemyData › BehaviorTree |
 | `Enemies/`, `Enemies/Affixes/` | `DefaultEnemyAffixPool` (affixes per tier: 0 / 1 / 2), `Armored`/`Warded`/`Vital`/`Brutal`/`Swift` `…Affix` | EnemyAffixes |
 | `Combat/HitboxProfiles/` | `DefaultHitboxProfile`, `TargetDummyHitboxProfile` | EnemyHealth, PlayerHealth |
 | `Combat/StatusEffects/` | Bleed, Fire, Ice, Lightning, Poison | on-hit effect lists |

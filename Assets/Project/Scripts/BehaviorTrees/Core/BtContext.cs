@@ -12,6 +12,9 @@ namespace CGD.BehaviorTrees
             Agent = agent;
         }
 
+        // The tree this context belongs to — subtrees instantiate into it.
+        internal BehaviorTree Tree { get; set; }
+
         public GameObject Owner      { get; }
         // The component the tree drives (e.g. EnemyAI). Nodes cast it to what they need.
         public object     Agent      { get; }

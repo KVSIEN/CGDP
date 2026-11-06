@@ -5,7 +5,7 @@ namespace CGD.Enemies
 {
     // Walks the enemy's waypoint loop, or without waypoints guards its post, looking around
     // now and then. Faster (and more watchful) while on edge after a search. Never finishes:
-    // put it last under a reactive Selector so anything more urgent interrupts it.
+    // put it last, after branches that abort lower priority, so anything more urgent interrupts it.
     [Serializable]
     [BtNodeInfo("Enemy/Movement/Patrol", "Walks the waypoint loop, or guards its post looking around. Keeps running until interrupted.")]
     public sealed class Patrol : EnemyAction

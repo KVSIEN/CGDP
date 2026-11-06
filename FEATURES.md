@@ -498,15 +498,19 @@
 - Trees are built visually in the **Behavior Tree Editor** (CGD › AI › Behavior Tree Editor, or double-click a tree asset): drag nodes onto a canvas, connect them, and edit each node's settings in the side panel. Children run left to right and are numbered, nodes are coloured by kind (composite, decorator, condition, action), and each shows a one-line summary of its settings plus optional designer notes
 - Editing works like the rest of Unity: undo/redo, copy/paste/duplicate, delete, a searchable create-node menu (Space or right-click), automatic tidy layout, pan and zoom
 - **Live view**: while playing, select an enemy and its tree lights up — running nodes yellow, successes green, failures red, faded when they weren't checked this frame — next to the enemy's blackboard (its working memory)
+- **Interruptions that read clearly**: Sequences and Selectors have an *abort mode*. A branch that aborts *lower priority* interrupts whatever is running to its right as soon as its opening conditions hold (spotting the player stops a patrol); one that aborts *self* stops as soon as its own conditions break (a target stepping out of reach stops an attack). Only quick checks are re-asked, never actions, and a branch behind a cooldown or limit doesn't interrupt only to give up
+- **Subtrees**: a tree can run another tree in one node, sharing the same enemy and memory, so common behaviour (regrouping, raising the alarm, the idle routine) is built once and used by every enemy type. Double-click a subtree node to open it; the live view works inside it too
+- **Variety**: a Chance decorator, a Weighted Random Selector (flank 1 : charge 3) and a Utility Selector, which picks whichever option scores best right now from the enemy's state — health, morale, awareness, distance to where it thinks you are — and switches when another clearly wins
+- **Memory without code**: every enemy's blackboard shows its Health, Morale, Awareness, TargetDistance and whether it's on edge, live; trees can also count things, remember positions and walk back to them
 - Building blocks:
-  - **Composites**: Sequence (do these in order), Selector (do the first that works), Parallel (do these at once), Random Selector. Sequences and Selectors can be *reactive*, re-checking higher-priority branches every moment, so spotting the player interrupts a patrol and a target stepping out of reach stops an attack
-  - **Decorators**: Inverter, Repeat (a number of times or forever), Cooldown, Time Limit, Force Result
-  - **General**: Wait (fixed or random time), Set Flag / Check Flag (blackboard memory)
-  - **Enemy senses**: Has Target, Is Suspicious (heard a noise, was hit or lost sight of its target), Target In Range, Target In Sight, Health Below
-  - **Enemy actions**: Patrol, Investigate, Chase Target, Melee Attack, Hold Range (a ranged enemy's spacing and strafing), Shoot Burst, Flee, Stop Moving
-  - **Enemy tactics**: Take Cover (to fight from, or to hide), In Cover, Flank, Knows Target (still counts moments after losing sight), Is Shaken, Regroup, Raise Alarm, Return To Post
-- Two ready-made trees: a **melee** enemy (strike, sometimes flank, otherwise charge → investigate → patrol) and a **ranged** enemy that fights from cover and repositions, keeps its distance in the open, and hides or breaks away when badly hurt (at most every 8 seconds)
-- **AI Test scene** (`Scenes/AITest`): a walled arena with walls, pillars and low crates for cover, an alarm panel on the north wall (the ranged enemy runs for it) and a Husk guarding the south-east corner on the built-in state machine where two melee enemies patrol and a ranged one paces the far wall, all running behavior trees. The player starts with a rifle and respawns on death
+  - **Composites**: Sequence, Selector, Parallel, Random Selector, Weighted Random Selector, Utility Selector
+  - **Decorators**: Inverter, Repeat, Repeat Until (retry), Cooldown, Time Limit, Delay, Chance, Limit (at most N times per life), Force Result, Score (for the Utility Selector)
+  - **General**: Wait, Subtree; blackboard: Set / Check Flag, Set / Compare Number, Has Key, Clear Key
+  - **Enemy senses**: Has Target, Knows Target (still counts moments after losing sight), Is Suspicious, Is Cautious, Is Shaken, Target In Range, Target In Sight, Health Below
+  - **Enemy movement**: Patrol (or guard), Investigate, Chase Target, Hold Range, Flee, Return To Post, Move To, Remember Position, Stop Moving
+  - **Enemy combat & tactics**: Melee Attack, Takes Melee Turn, Shoot Burst, Take Cover, In Cover, Flank, Regroup, Can Raise Alarm, Raise Alarm
+- Ready-made trees built from three shared subtrees (Regroup, Raise Alarm, Routine): a **melee** enemy (strike when it's its turn; further off, sometimes flank; otherwise close in) and a **ranged** enemy that weighs cover against shooting on the move by how far you are, repositions every few seconds, and hides or breaks away when badly hurt
+- **AI Test scene** (`Scenes/AITest`): a walled arena with walls, pillars and low crates for cover and an alarm panel on the north wall. Two melee enemies patrol and a ranged one paces the far wall, all running behavior trees (the ranged one runs for the alarm); a Husk guards the south-east corner on the built-in state machine. The player starts with a rifle and respawns on death
 
 ## Object Pooling
 - Frequently spawned objects — projectiles, grenades, zones, pickups, particle effects and enemies — are reused instead of created and destroyed, avoiding hitches and garbage collection

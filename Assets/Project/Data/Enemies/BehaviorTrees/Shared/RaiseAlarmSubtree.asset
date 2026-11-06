@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: RaiseAlarmSubtree
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 71615a4facec4e989822950d497d716c
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - b45467673ccc4de78085baa58aba6b4e
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b45467673ccc4de78085baa58aba6b4e
+        _position: {x: 0, y: 150}
+        _comment: 'Alarm-raisers run for a panel near their post first (once per fight)'
+        _children:
+        - 7efbb69c719440faa81a9a387fd4a18d
+        - 30d814c9d44b4fc69e7175e8a22ab728
+        - 3fffdc6477ea4986b1b7865377396be6
+        _abort: 2
+    - rid: 1002
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7efbb69c719440faa81a9a387fd4a18d
+        _position: {x: -220, y: 300}
+        _comment: 
+    - rid: 1003
+      type: {class: CanRaiseAlarm, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 30d814c9d44b4fc69e7175e8a22ab728
+        _position: {x: 0, y: 300}
+        _comment: 
+    - rid: 1004
+      type: {class: RaiseAlarm, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3fffdc6477ea4986b1b7865377396be6
+        _position: {x: 220, y: 300}
+        _comment: 

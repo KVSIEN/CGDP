@@ -105,7 +105,10 @@ at once). States and tree nodes stay thin wrappers that decide *when*; they repo
 **An enemy decides with a behavior tree.** When its `EnemyData` has a `BehaviorTreeAsset`,
 `EnemyAI` skips its state machine and ticks a `BehaviorTree` — the agent's own copy of the
 asset's nodes (the asset is shared and never changes at runtime; per-agent state lives on
-the copies, made with `CreateInstance`). Nodes call the same `EnemyAI` capabilities the
+the copies, made with `CreateInstance`). A `Subtree` node instantiates its asset into the same copy, so
+shared branches cost nothing extra and keep one blackboard. Interruptions use abort modes
+(`AbortMode` on Sequence/Selector): composites re-check only *conditional* nodes —
+conditions, and gates like Cooldown that answer "may this run now?" — never actions. Nodes call the same `EnemyAI` capabilities the
 states use (movement, `EnemyPerception`, `EnemyRangedCombat`, melee) and report the
 `AiState` the visuals show. Stuns pause the tree; death aborts it. The editor
 (`Editor/BehaviorTrees/`) is a GraphView over the asset, editing it through an
@@ -139,7 +142,9 @@ pressure and decide for themselves what to do. The director never spawns anythin
   new artifact kind → `OffhandBehavior` + `OffhandUse`; new encounter → `RoomEncounter`;
   new room look → `FactionDesign` / `RoomFunction`; new dialogue effect → a dialogue
   action or condition; new AI behavior → a `BtAction` / `BtCondition` (enemy ones derive
-  `EnemyAction` / `EnemyCondition`) tagged `[BtNodeInfo]`, which the tree editor lists itself.
+  `EnemyAction` / `EnemyCondition`, in the folder matching their menu path) tagged
+  `[BtNodeInfo]`, which the tree editor lists itself; a decorator that gates its child
+  overrides `IsConditional` / `CheckCondition` so abort modes respect it.
 - **Pool what spawns often** (`PrefabPool`, `IPoolable`) — projectiles, grenades, popups.
 - **Tests** cover the plain-C# rules (`Tests/EditMode`); a new rule class should come with one.
 - **Docs move with the code:** gameplay change → FEATURES.md, scene wiring change → SETUP.md.

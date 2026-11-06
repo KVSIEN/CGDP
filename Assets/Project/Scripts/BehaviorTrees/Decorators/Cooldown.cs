@@ -17,6 +17,14 @@ namespace CGD.BehaviorTrees
 
         public override string Summary => $"{_seconds:0.##} s";
 
+        // A gate: "may this run yet?" — so a branch behind a cooldown doesn't interrupt
+        // others (abort modes) only to fail straight away.
+        internal override bool IsConditional => true;
+        internal override bool CheckCondition(BtContext context) =>
+            context.Time >= _readyAt && (Child == null || !Child.IsConditional || Child.CheckCondition(context));
+
+        protected override void OnReset() => _readyAt = 0f;
+
         protected override BtStatus OnTick(BtContext context)
         {
             if (Child == null || context.Time < _readyAt) return BtStatus.Failure;

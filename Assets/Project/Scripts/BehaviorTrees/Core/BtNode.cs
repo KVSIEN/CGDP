@@ -66,6 +66,22 @@ namespace CGD.BehaviorTrees
             OnExit(context);
         }
 
+        // --- Conditional aborts (see AbortMode) ----------------------------------------
+        // Composites re-check quick conditions every tick without running anything else.
+
+        // True for nodes that answer a question instantly — conditions, and gate decorators
+        // (Cooldown, Limit…) whose answer is "may this run now?". Only these are re-checked.
+        internal virtual bool IsConditional => false;
+
+        // The answer, when IsConditional. Conditions tick themselves so the editor sees it.
+        internal virtual bool CheckCondition(BtContext context) => false;
+
+        // A branch that interrupts lower-priority siblings once its preconditions hold.
+        internal virtual bool AbortsLowerPriority => false;
+
+        // Whether the branch's leading conditions hold right now.
+        internal virtual bool PreconditionsPass(BtContext context) => false;
+
         protected virtual void OnInitialize(BtContext context) { }
         protected virtual void OnEnter(BtContext context) { }
         protected abstract BtStatus OnTick(BtContext context);
@@ -74,6 +90,12 @@ namespace CGD.BehaviorTrees
         protected virtual void OnAbort(BtContext context) { }
 
         internal void Initialize(BtContext context) => OnInitialize(context);
+
+        // The tree is starting over (a pooled agent reused): clear state kept between runs.
+        internal void ResetState() => OnReset();
+
+        // State that outlives a single run (a cooldown's timer, a limit's count) is cleared here.
+        protected virtual void OnReset() { }
 
         // A per-agent copy with the authored settings and fresh runtime state.
         internal BtNode CreateRuntimeCopy()

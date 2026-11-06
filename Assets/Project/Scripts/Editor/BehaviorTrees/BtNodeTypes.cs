@@ -32,6 +32,7 @@ namespace CGD.Editor
             BtRoot      => BtNodeCategory.Root,
             BtComposite => BtNodeCategory.Composite,
             BtDecorator => BtNodeCategory.Decorator,
+            Subtree     => BtNodeCategory.Subtree,
             BtCondition => BtNodeCategory.Condition,
             _           => BtNodeCategory.Action,
         };
@@ -41,6 +42,7 @@ namespace CGD.Editor
             BtNodeCategory.Root      => new Color(0.30f, 0.30f, 0.32f),
             BtNodeCategory.Composite => new Color(0.20f, 0.38f, 0.62f),
             BtNodeCategory.Decorator => new Color(0.45f, 0.30f, 0.60f),
+            BtNodeCategory.Subtree   => new Color(0.15f, 0.50f, 0.55f),
             BtNodeCategory.Condition => new Color(0.66f, 0.50f, 0.16f),
             _                        => new Color(0.22f, 0.50f, 0.30f),
         };

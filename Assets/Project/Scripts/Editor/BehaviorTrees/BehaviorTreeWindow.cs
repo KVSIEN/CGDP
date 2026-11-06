@@ -10,7 +10,8 @@ namespace CGD.Editor
     // Behavior tree editor (CGD › AI › Behavior Tree Editor, or double-click a tree asset):
     // the canvas, the selected node's settings, and in Play mode a live view of the tree
     // running on the selected agent — each node's border shows what it last reported
-    // (yellow running, green success, red failure; faded when not ticked this frame).
+    // (yellow running, green success, red failure; faded when not ticked this frame) — also
+    // inside a subtree it uses (double-click a Subtree node to open it).
     public sealed class BehaviorTreeWindow : EditorWindow
     {
         private const long DebugRefreshMs = 100;
@@ -64,6 +65,7 @@ namespace CGD.Editor
             rootVisualElement.Add(split);
 
             _graph.NodeSelected    += _inspector.SetNode;
+            _graph.OpenRequested   += Load;
             _inspector.NodeChanged += _graph.RefreshNode;
 
             rootVisualElement.schedule.Execute(UpdateLiveView).Every(DebugRefreshMs);
@@ -89,6 +91,7 @@ namespace CGD.Editor
 
             AddLegend(toolbar, "Composite", BtNodeCategory.Composite);
             AddLegend(toolbar, "Decorator", BtNodeCategory.Decorator);
+            AddLegend(toolbar, "Subtree",   BtNodeCategory.Subtree);
             AddLegend(toolbar, "Condition", BtNodeCategory.Condition);
             AddLegend(toolbar, "Action",    BtNodeCategory.Action);
             return toolbar;
@@ -160,7 +163,7 @@ namespace CGD.Editor
 
             _watchedOwner = owner;
             BehaviorTree tree = ((IBehaviorTreeOwner)owner).Tree;
-            if (tree != null && tree.Asset != _asset) Load(tree.Asset);
+            if (tree != null && !tree.Uses(_asset)) Load(tree.Asset);
         }
 
         private void UpdateLiveView()
@@ -181,7 +184,7 @@ namespace CGD.Editor
             int tick = tree.Context.TickCount;
             foreach (BtNodeView view in _graph.NodeViews)
             {
-                if (tree.TryGetNode(view.Data.Guid, out BtNode node) && node.LastTick >= 0)
+                if (tree.TryGetNode(_asset, view.Data.Guid, out BtNode node) && node.LastTick >= 0)
                     view.ShowStatus(node.LastStatus, node.IsRunning || node.LastTick == tick);
                 else
                     view.ClearStatus();
@@ -193,7 +196,7 @@ namespace CGD.Editor
         {
             if (!Application.isPlaying || _watchedOwner == null) return null;
             BehaviorTree tree = ((IBehaviorTreeOwner)_watchedOwner).Tree;
-            return tree != null && tree.Asset == _asset ? tree : null;
+            return tree != null && tree.Uses(_asset) ? tree : null;
         }
 
         private void ClearStatuses()

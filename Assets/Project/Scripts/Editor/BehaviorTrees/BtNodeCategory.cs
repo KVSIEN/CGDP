@@ -6,6 +6,7 @@ namespace CGD.Editor
         Root,
         Composite,
         Decorator,
+        Subtree,
         Condition,
         Action,
     }
