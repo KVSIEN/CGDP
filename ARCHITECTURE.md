@@ -85,8 +85,14 @@ raycasts/spawns a `Projectile` (pooled) → `Hitbox.TakeDamage` forwards to its
 `CharacterStats` (base data → equipment → presets → timed buffs).
 
 **An enemy notices you.** `EnemyAI` runs a `StateMachine` of state classes under
-`Enemies/AI/`; `EnemyPerception` combines sight, `Noise` and aggro-on-hit; attacks go
-through the same `IDamageable` path as the player's.
+`Enemies/AI/`; attacks go through the same `IDamageable` path as the player's.
+`EnemyPerception` is the only place an enemy learns anything: it samples sight and
+footsteps on a staggered timer, takes `Noise`, hits and `EnemyCallouts` as they happen,
+and turns them into an `AwarenessMeter` value, an `AwarenessLevel` and a belief
+(`LastKnownPosition`, a guess once the target is out of sight). Brains read
+`TargetPosition` — the real position only while the target is sensed — so no state or
+tree node can know more than the enemy saw. `EnemySearch` is the shared notice →
+approach → look-around routine both brains use to act on a lead.
 
 **An enemy decides with a behavior tree.** When its `EnemyData` has a `BehaviorTreeAsset`,
 `EnemyAI` skips its state machine and ticks a `BehaviorTree` — the agent's own copy of the

@@ -61,9 +61,14 @@ namespace CGD.Enemies
         // The running tree (null when the state machine decides), for the tree editor's live view.
         public BehaviorTree Tree => _tree;
 
+        // What it believes is going on (for the awareness indicator and stealth feedback).
+        public AwarenessLevel Awareness      => Perception.Level;
+        public float          AwarenessValue => Perception.Awareness;
+
         internal NavMeshAgent      Agent        { get; private set; }
         internal EnemyPerception   Perception   { get; private set; }
         internal EnemyRangedCombat RangedCombat { get; private set; }
+        internal EnemySearch       Search       { get; private set; }
         internal EnemyHealth       Health       => _health;
         internal EnemyData         Data         => _data;
         internal Transform[]       Waypoints    => _waypoints ?? Array.Empty<Transform>();
@@ -79,8 +84,9 @@ namespace CGD.Enemies
             _stunnable    = GetComponent<Stunnable>();
             _damageSource = DamageSource.Of(gameObject);
             TryGetComponent(out _stats);
-            Perception    = new EnemyPerception(transform, _data, _targetMask, _obstacleMask, _health.Team);
+            Perception    = new EnemyPerception(this, _data, _targetMask, _obstacleMask, _health.Team);
             RangedCombat  = new EnemyRangedCombat(this, _damageSource, _obstacleMask);
+            Search        = new EnemySearch(this);
 
             EnemyState chaseState = _data.CombatType == EnemyCombatType.Ranged
                 ? new RangedChaseState(this)
@@ -118,14 +124,16 @@ namespace CGD.Enemies
 
         private void OnEnable()
         {
-            Noise.Emitted += Perception.OnNoise;
-            _health.OnHit += Perception.OnHit;
+            Noise.Emitted         += Perception.OnNoise;
+            EnemyCallouts.Raised  += Perception.OnCallout;
+            _health.OnHit         += Perception.OnHit;
         }
 
         private void OnDisable()
         {
-            Noise.Emitted -= Perception.OnNoise;
-            _health.OnHit -= Perception.OnHit;
+            Noise.Emitted         -= Perception.OnNoise;
+            EnemyCallouts.Raised  -= Perception.OnCallout;
+            _health.OnHit         -= Perception.OnHit;
         }
 
         private void OnDestroy() => _health.OnDeath -= OnDeath;
@@ -140,7 +148,7 @@ namespace CGD.Enemies
                 _attackCooldown.Tick(dt);
                 TickAttack(dt);
                 RangedCombat.Tick(dt);
-                Perception.Tick();
+                Perception.Tick(dt);
             }
 
             if (_tree != null) TickTree(dt);
@@ -245,6 +253,7 @@ namespace CGD.Enemies
         private void OnDeath()
         {
             RangedCombat.CancelBurst();
+            Search.Cancel();
             if (_tree != null)
             {
                 _tree.Abort();
@@ -270,6 +279,7 @@ namespace CGD.Enemies
             IsAttacking  = false;
             _attackCooldown.Reset();
             RangedCombat.Reset();
+            Search.Cancel();
             Perception.LoseTarget();
 
             if (_tree != null)

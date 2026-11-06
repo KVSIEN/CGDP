@@ -9,8 +9,8 @@ namespace CGD.Enemies
     {
         protected override bool Check(BtContext context)
         {
-            var target = Ai.Perception.Target;
-            return target != null && Ai.RangedCombat.HasLineOfSight(target.transform.position);
+            var perception = Ai.Perception;
+            return perception.Target != null && Ai.RangedCombat.HasLineOfSight(perception.TargetPosition);
         }
     }
 }

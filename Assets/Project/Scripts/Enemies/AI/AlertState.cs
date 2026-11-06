@@ -1,47 +1,30 @@
 namespace CGD.Enemies
 {
-    // Investigates the last known position (lost target, noise, hit) for AlertDuration,
-    // then gives up and returns to patrol.
+    // Looks into a lead — something seen, heard or felt — with EnemySearch: stops to stare,
+    // goes to where it believes the thing is and searches around it. Spotting a hostile on the
+    // way starts the chase; a search that turns up nothing calms it down back into patrol.
     public class AlertState : EnemyState
     {
-        private const float ArrivalDistance = 0.5f;
-
-        private float _timer;
-
         public AlertState(EnemyAI ai) : base(ai) { }
 
         public override EnemyAI.AiState Id => EnemyAI.AiState.Alert;
 
-        public override void Enter() => Investigate();
+        public override void Enter() => Ai.Search.Begin();
 
         public override void Tick(float deltaTime)
         {
-            var perception = Ai.Perception;
-
-            if (perception.IsTargetDetected)
+            if (Ai.Perception.IsTargetDetected)
             {
                 Ai.ChangeState(EnemyAI.AiState.Chase);
                 return;
             }
 
-            if (perception.ConsumeLead()) Investigate();
+            if (!Ai.Search.Tick(deltaTime)) return;
 
-            Ai.SetSpeed(Ai.Data.PatrolSpeed);
-            _timer -= deltaTime;
-
-            var agent = Ai.Agent;
-            bool arrived = !agent.pathPending && agent.hasPath && agent.remainingDistance < ArrivalDistance;
-            if (_timer > 0f && !arrived) return;
-
-            perception.LoseTarget();
+            Ai.Perception.LoseTarget();
             Ai.ChangeState(EnemyAI.AiState.Patrol);
         }
 
-        private void Investigate()
-        {
-            _timer = Ai.Data.AlertDuration;
-            Ai.Agent.isStopped = false;
-            Ai.Agent.SetDestination(Ai.Perception.LastKnownPosition);
-        }
+        public override void Exit() => Ai.Search.Cancel();
     }
 }

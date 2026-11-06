@@ -49,7 +49,8 @@ Assets/
                             ShopCatalog, stock sources (ItemStock, RolledWeaponStock), listings
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report),
                             BehaviorTrees/ (Behavior Tree Editor: GraphView canvas, node views, inspector, layout)
-      Enemies/              enemy components, perception, EnemyRangedCombat, AI/ (state classes), BehaviorTree/ (enemy tree nodes)
+      Enemies/              enemy components, EnemyRangedCombat, EnemySearch, AI/ (state classes), BehaviorTree/ (enemy tree nodes),
+                            Perception/ (EnemyPerception: sight, hearing, touch, memory; AwarenessMeter, PerceptionProfile, callouts)
       Expedition/           the extraction loop: ExpeditionLedger (ship hold, packed kit, extract/die rules),
                             ExpeditionSession (keeps it across loads), ExpeditionRunner (a run in a level), RunStarterKit
       Factions/             FactionDefinition (name, colour, enemy roster) — used by the map graph and generated levels

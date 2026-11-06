@@ -25,6 +25,7 @@ MonoBehaviour:
   SightRange: 14
   SightAngle: 140
   HearingRadius: 14
+  Senses: {fileID: 11400000, guid: b4dbcf2c7fae4eebb839c7454d0c4a00, type: 2}
   CombatType: 0
   AttackRange: 1.4
   AttackDamage: 12

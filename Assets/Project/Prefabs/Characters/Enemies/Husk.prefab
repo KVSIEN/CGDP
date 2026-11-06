@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 4820916476519752665}
   - component: {fileID: 6006815126440942793}
   - component: {fileID: 2455031638633802269}
+  - component: {fileID: 2947200992152911872}
   m_Layer: 0
   m_Name: Husk
   m_TagString: Untagged
@@ -823,3 +824,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyAffixes
   _pool: {fileID: 11400000, guid: 62955a7047154edaad77760d059e7271, type: 2}
+
+--- !u!114 &2947200992152911872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2643170897715678307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 891f0455a5ec4f5eac7c832fdafa220d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.UI.EnemyAwarenessIndicator
+  _worldOffset: {x: 0, y: 2.6, z: 0}
+  _suspiciousColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  _searchingColor: {r: 1, g: 0.5, b: 0.1, a: 1}
+  _engagedColor: {r: 1, g: 0.15, b: 0.1, a: 1}
+  _engagedShowTime: 1.5
+  _fadeSpeed: 4

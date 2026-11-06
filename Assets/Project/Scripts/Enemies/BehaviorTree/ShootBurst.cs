@@ -20,7 +20,7 @@ namespace CGD.Enemies
             if (target == null) return BtStatus.Failure;
 
             var combat = Ai.RangedCombat;
-            if (!_fired && combat.HasLineOfSight(target.transform.position))
+            if (!_fired && combat.HasLineOfSight(Ai.Perception.TargetPosition))
                 _fired = combat.TryStartBurst();
 
             return _fired && !combat.IsBursting ? BtStatus.Success : BtStatus.Running;

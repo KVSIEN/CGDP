@@ -16,6 +16,8 @@ namespace CGD.Stealth
         // Noise further away than this (a grenade landing across the room) doesn't give the
         // thrower away; gunfire and swings at the character's position do.
         private const float OwnNoiseRadius = 4f;
+        // Slower than this (m/s) counts as standing still for sight and footsteps.
+        private const float MovingSpeed = 0.5f;
 
         private static readonly Dictionary<HealthManager, Stealthable> _byHealth = new();
 
@@ -124,7 +126,33 @@ namespace CGD.Stealth
             _status.OnNoise(_settings.RevealAfterNoise);
         }
 
+        // How much of the character an observer's eye picks up (1 = plainly visible): crouching
+        // and standing still make it slower to notice. Sight still needs a clear line.
+        public float SightVisibility =>
+            (IsCrouching ? _settings.CrouchVisibility : 1f) * (IsMoving ? 1f : _settings.StillVisibility);
+
+        // How far its footsteps carry, as a multiple of a listener's hearing range: silent while
+        // standing still or in the air, quiet crouched, loud sprinting.
+        public float FootstepLoudness
+        {
+            get
+            {
+                if (_movement == null || !_movement.IsGrounded || !IsMoving) return 0f;
+                if (IsCrouching) return _settings.CrouchFootsteps;
+                return IsSprinting ? _settings.SprintFootsteps : 1f;
+            }
+        }
+
         private bool IsCrouching => _movement != null && _movement.IsCrouching;
         private bool IsSprinting => _movement != null && _movement.IsSprinting;
+        private bool IsMoving
+        {
+            get
+            {
+                if (_movement == null) return false;
+                Vector3 velocity = _movement.Velocity;
+                return velocity.x * velocity.x + velocity.z * velocity.z > MovingSpeed * MovingSpeed;
+            }
+        }
     }
 }

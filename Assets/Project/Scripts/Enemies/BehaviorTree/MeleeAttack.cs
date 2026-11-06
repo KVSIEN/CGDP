@@ -21,7 +21,7 @@ namespace CGD.Enemies
 
             Ai.ReportState(EnemyAI.AiState.Chase);
             Ai.Agent.isStopped = true;
-            Ai.FaceTowards(target.transform.position, context.DeltaTime);
+            Ai.FaceTowards(Ai.Perception.TargetPosition, context.DeltaTime);
 
             if (!_struck && Ai.CanAttack)
             {

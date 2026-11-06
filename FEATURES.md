@@ -442,15 +442,10 @@
 - How often higher tiers turn up depends on the room's tier (see Map Graph Generation): tier-1 rooms are almost all tier 1 enemies (10% tier 2), tier-2 rooms mix in tier 2s (45%) and a few tier 3s (10%), and tier-3 rooms are mostly tier 2 and 3 (45% each). Encounter waves (Holdout, Rift, Lockdown) follow the same odds
 - **Random affixes**: tier 2 enemies roll one random affix and tier 3 two (tier 1 none), named in front of them ("Brutal Warded Void Tier 3"): **Armored** (+40 armour), **Warded** (+40 shield, even on factions that normally have none), **Vital** (+60% health), **Brutal** (+40% damage) and **Swift** (+30% speed). Each spawn rolls afresh
 - Patrol follows an ordered list of waypoints, looping continuously; idles in place if no waypoints are assigned
-- Alert sends the enemy to the last known position and returns to patrol after a configurable duration or on arrival
+- Alert: the enemy looks into what it noticed — see *Enemy Senses & Memory* — and returns to patrol once the search turns up nothing
 - Two combat types per enemy: Melee or Ranged, selectable on the EnemyData asset
 - **Melee** enemies close the gap and attack at melee range: stop, turn to face the target, wind up, then strike everything hostile in front; configurable wind-up and cooldown
 - **Ranged** enemies maintain a preferred engagement distance — advance when too far, retreat when too close, and strafe sideways while at range; fire hitscan shots at the target when they have line of sight, with configurable spread; burst fire is supported (multiple shots per trigger pull with a configurable interval between them); shots resolve through the full damage pipeline (armor, shield, hitbox regions all apply)
-- Line-of-sight detection: raycast cone with tunable range and full-angle FOV; blocked by any geometry on the obstacle mask
-- Proximity detection: hostiles within a tunable radius are noticed regardless of facing direction
-- Hearing: gunfire, melee swings and explosions make noise with their own range; enemies within range go to investigate the source
-- Getting hit alerts an enemy to the attacker, even from behind
-- Losing the target switches the enemy to Alert for investigation; detecting it again immediately re-enters Chase
 - Stuns and slows (e.g. from Ice) stop or slow enemies the same way they affect the player
 - State color indicator: mesh tints grey (patrol), yellow (alert), red (chase), blue (stunned), dark (dead) via MaterialPropertyBlock — no material instances created
 - World-space health bar appears above the enemy on damage and fades out after a configurable delay; billboards toward the camera. A hit swells the bar slightly and leaves a white band where the lost health was, which holds a moment and then shrinks onto what is left, so you can see how big the hit was. Enemies with a shield get a thin blue strip above the bar that behaves the same way
@@ -460,6 +455,21 @@
   - **Scavenger** (BIO, Prey tier): a low, hunched creature with a mossy back and glowing pods. Health first — 80 health under 25 natural armour, no shield. Fast and quick to strike but light-hitting, with wide vision and keen hearing
   - **Husk** (VOID, Affected tier): a near-black hollow figure with frost at its feet and a shard hanging over it. Wards first — 55 shield over 45 health, no armour; its ward recovers after 3 seconds. Slow, short-sighted, hits hard
   - Each faction's rooms in a generated level are fought over by its enemy; Breach rooms mix two. Headshots land on a separate head hitbox, a coloured visor shows the AI state, and enemies show on the minimap and map once their area is explored
+
+## Enemy Senses & Memory
+- Enemies only know what they have actually seen, heard or felt. Where you really are is used only while they sense you; the rest of the time they act on what they believe, which can be wrong
+- **Sight takes time**: a glimpse makes an enemy suspicious and its certainty builds while it keeps watching — fast up close, slow at the edge of its sight range, slower in the corner of its eye and when you're crouched or standing still, faster once it's already looking for something. Anything in view right in front of it is noticed at once
+- Sight needs a clear line to your chest or head: low cover hides you only while crouched, and smoke and stealth still apply. Ducking out of view for an instant doesn't lose an enemy, but staying out of view does
+- **Hearing**: footsteps carry by how you move — sprinting is loud, walking carries the enemy's hearing range, crouching is quiet and standing still is silent. Gunfire, swings and explosions are heard from their own range. Walls muffle sound to half its range, and a heard position is only roughly right
+- **Touch**: bumping into an enemy gives you away, seen or not. Being hit tells an enemy roughly where the attacker is, not exactly
+- Hearing alone never makes an enemy certain — it comes to look, and has to see you to start fighting
+- **Memory**: when you slip out of sight, an enemy guesses where you went from the way it saw you moving and searches there. Double back, change direction or stay still to fool it. Without anything new to go on it slowly calms down and goes back to its routine
+- **Reactions**: an enemy that notices something first stops and stares, then goes to look, then scans and checks a few spots nearby — most of them the way you seemed to be heading. Something new on the way (another noise, a glimpse) makes it glance over and change course. Pauses, routes and the number of spots vary every time
+- **Curious vs hunting**: an enemy that only noticed something wanders over at patrol speed and checks one spot; one that knows someone is about (it lost you, was hit, or heard an alarm) hurries, searches more spots and keeps at it longer
+- **Allies**: an enemy that spots you calls out, and allies who could hear the shout (half as far through walls) come to where it saw you. Allies' gunfire draws nearby enemies in too
+- **Temperaments**: Tech bots are wary — slow to notice, but they remember long and search thoroughly. Bio creatures are skittish — quick to notice and quick to give up, darting about. Void enemies sit in between
+- **Read-out**: a mark over each enemy shows what it believes — a yellow "?" that grows as it makes up its mind, an orange "?" while it hunts, and a red "!" the moment it has you
+- Cheap to run: each enemy looks and listens a few times a second, staggered so they don't all check on the same frame, with a handful of raycasts per check
 
 ## Enemy Behavior Trees
 - An enemy type can be driven by a behavior tree instead of the built-in patrol / alert / chase states. The tree decides what it does each moment; senses, attacks, stuns and death work the same either way

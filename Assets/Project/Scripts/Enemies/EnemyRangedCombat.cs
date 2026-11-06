@@ -158,7 +158,8 @@ namespace CGD.Enemies
             if (target == null) return;
 
             Vector3 eyePos       = _ai.transform.position + Vector3.up * EyeHeight;
-            Vector3 targetCenter = target.transform.position + Vector3.up;
+            // Aims where it believes the target is: dead on while it sees it, a guess when not.
+            Vector3 targetCenter = _ai.Perception.TargetPosition + Vector3.up;
             Vector3 dir          = (targetCenter - eyePos).normalized;
 
             if (data.SpreadAngle > 0f)

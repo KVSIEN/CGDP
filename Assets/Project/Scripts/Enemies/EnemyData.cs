@@ -37,8 +37,11 @@ namespace CGD.Enemies
         public float SightRange = 15f;
         [Tooltip("Full cone angle in degrees — e.g. 90 means 45° either side of forward.")]
         public float SightAngle = 90f;
-        [Tooltip("Radius within which the enemy notices a hostile even without line of sight. Gunfire and other noises are heard from their own radius.")]
+        [Tooltip("How far it hears a walking hostile's footsteps (crouching quieter, sprinting further, standing still silent; walls halve it). Gunfire and other noises carry their own radius.")]
         public float HearingRadius = 8f;
+
+        [Tooltip("How its senses, memory and reactions are tuned. Empty = built-in defaults")]
+        public PerceptionProfile Senses;
 
         [Header("Behavior")]
         [Tooltip("Optional. Decides what the enemy does instead of the built-in patrol / alert / chase states " +
@@ -68,7 +71,7 @@ namespace CGD.Enemies
         public float StrafeDistance  = 4f;
 
         [Header("Alert")]
-        [Tooltip("How long the enemy investigates the last known position before returning to patrol.")]
+        [Tooltip("Longest it spends investigating something before it gives up and goes back to patrol (2.5× when hunting a hostile it knows is about).")]
         public float AlertDuration = 5f;
 
         [Header("Audio")]

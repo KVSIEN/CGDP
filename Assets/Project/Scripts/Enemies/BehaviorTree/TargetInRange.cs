@@ -15,11 +15,11 @@ namespace CGD.Enemies
 
         protected override bool Check(BtContext context)
         {
-            var target = Ai.Perception.Target;
-            if (target == null) return false;
+            if (Ai.Perception.Target == null) return false;
 
+            // Measured to where it believes the target is: it can't know about a move it didn't see.
             float range = _range > 0f ? _range : Ai.Data.AttackRange;
-            return (target.transform.position - Ai.transform.position).sqrMagnitude <= range * range;
+            return (Ai.Perception.TargetPosition - Ai.transform.position).sqrMagnitude <= range * range;
         }
     }
 }

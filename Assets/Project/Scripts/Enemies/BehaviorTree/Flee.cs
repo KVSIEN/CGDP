@@ -25,7 +25,7 @@ namespace CGD.Enemies
             var target = Ai.Perception.Target;
             if (target == null) return;
 
-            Vector3 away = Ai.transform.position - target.transform.position;
+            Vector3 away = Ai.transform.position - Ai.Perception.TargetPosition;
             away.y = 0f;
             Vector3 direction = away.sqrMagnitude > 0.01f ? away.normalized : -Ai.transform.forward;
             Vector3 goal      = Ai.transform.position + direction * _distance;

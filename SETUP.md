@@ -287,8 +287,8 @@ Expose a parameter by right-clicking the group's *Volume* in the Inspector › *
 
 ```
 Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnable,
-                    StatusEffectController, EnemyStateVisuals?, EnemyAudio?,
-                    LootDropper?, DespawnOnDeath?, CharacterStats?, MapMarker?]
+                    StatusEffectController, EnemyAwarenessIndicator, EnemyStateVisuals?,
+                    EnemyAudio?, LootDropper?, DespawnOnDeath?, CharacterStats?, MapMarker?]
   Head / Body / Limbs   [Collider, Hitbox]?
 ```
 
@@ -296,6 +296,7 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 |---|---|---|
 | **EnemyAI** | `_data` = an `EnemyData`, `_waypoints`?, `_targetMask`, `_obstacleMask` | Needs a NavMesh (baked, or `RuntimeNavMesh`). Finds targets by team. Runs the data's behavior tree if it has one. |
 | **EnemyHealth** | `_data` = same `EnemyData`, `_healthBar` = its EnemyHealthBar, `_hitboxProfile`? | |
+| **EnemyAwarenessIndicator** | — | The ?/! over the enemy (on every enemy prefab). Builds its own world-space canvas; colours, height and how long the ! shows are on the component. |
 | **EnemyStateVisuals**? | `_renderers` | Tints by AI state. |
 | **EnemyAudio**? | `_hurtSound`, `_deathSound` | |
 | **LootDropper**? | `_table`, `_itemPickupPrefab`, `_weaponPickupPrefab` | Tick `_dropOnDeath`. |
@@ -304,7 +305,9 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 | **CharacterStats**? | `_presets` = e.g. `Stats/HardDifficultyModifierPreset` | Tougher enemy. |
 | **StatusEffectController** | `_immunities`? | Without it, status effects are ignored. |
 
-**Enemy type** is all in its `EnemyData`: team, health, speeds, senses, melee or ranged, display name (used in kill messages), and optionally its behavior tree.
+**Enemy type** is all in its `EnemyData`: team, health, speeds, sight range and angle, hearing range (how far a walking hostile's footsteps carry), melee or ranged, display name (used in kill messages), its **Senses** (a `PerceptionProfile`) and optionally its behavior tree.
+
+**Senses** — `Enemies/Perception/`: `DefaultPerceptionProfile` (Void and the default enemy), `WaryPerceptionProfile` (Tech: slow to notice, long memory, thorough searches), `SkittishPerceptionProfile` (Bio: quick to notice and to give up). Create more with `Create › CGD › Enemies › Perception Profile`; an empty slot uses built-in defaults. A profile tunes how fast sight and sound turn into awareness, memory and guessing, callout range, and the notice / search / look-around timings. Footstep loudness and how much crouching or standing still hides you are the player's side, on `StealthSettings` (*Noticeability*). Enemies only hear footsteps of characters with a `Stealthable`; others count as moderately loud.
 
 ### Behavior trees (Enemy)
 
@@ -595,7 +598,7 @@ All presets are in `Data/Feedback/`.
 
 | Component | Assign | Notes |
 |---|---|---|
-| **Stealthable** (Player prefab) | `_settings` = `Stealth/StealthSettings`, `_spottedFeedback`? = `Feedback/SpottedFeedbackPreset` | Without it, enemies ignore bushes and smoke. |
+| **Stealthable** (Player prefab) | `_settings` = `Stealth/StealthSettings`, `_spottedFeedback`? = `Feedback/SpottedFeedbackPreset` | Without it, enemies ignore bushes and smoke, and the player's footsteps can't be told apart from standing still (both count as moderately loud). Its settings asset also holds *Noticeability*: crouch and still visibility, crouch and sprint footstep loudness. |
 | **ConcealmentZone** (bush) | a Collider sized to the foliage · `_kind` = Bush · `_requiresCrouch`? | Collider becomes a trigger. Put the object on **Ignore Raycast** so shots pass through. |
 | **ConcealmentZone** (smoke) | on `Prefabs/VFX/SmokeCloud` — `_kind` = Smoke, `_blocksSight` ticked | Spawned by `Weapons/Throwables/SmokeGrenadeData`, thrown via the `SmokeGrenadeThrowable` item. |
 | **StealthAbility** | add `Abilities/StealthAbility` to a PlayerAbilities slot | Needs Stealthable. |
@@ -793,6 +796,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Flow/` | `GameFlowSettings` | GameFlow |
 | `Timing/` | `GameTimeSettings` | GameTime |
 | `Enemies/` | `MaintenanceBot`/`Scavenger`/`Husk` `…EnemyData` (tier 1, ≈100 effective health each; the firing-range dummies run on them), `Tech`/`Bio`/`Void` `Tier2`/`Tier3` `…EnemyData` (placeholders, ≈2.5× / ≈5×; *Tier* set on each), `DefaultEnemyData` | EnemyAI, EnemyHealth |
+| `Enemies/Perception/` | `DefaultPerceptionProfile`, `WaryPerceptionProfile`, `SkittishPerceptionProfile` | EnemyData › Senses |
 | `Enemies/BehaviorTrees/`, `Enemies/AITest/` | `MeleeEnemyBehaviorTree`, `RangedEnemyBehaviorTree`; `MeleeTestEnemyData`, `RangedTestEnemyData` (use the trees; AITest scene) | EnemyData › BehaviorTree |
 | `Enemies/`, `Enemies/Affixes/` | `DefaultEnemyAffixPool` (affixes per tier: 0 / 1 / 2), `Armored`/`Warded`/`Vital`/`Brutal`/`Swift` `…Affix` | EnemyAffixes |
 | `Combat/HitboxProfiles/` | `DefaultHitboxProfile`, `TargetDummyHitboxProfile` | EnemyHealth, PlayerHealth |

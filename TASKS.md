@@ -1,6 +1,7 @@
 # Unity Project – To-Do List
 
 ## Open
+- Enemy senses, in the editor (written without compiling or playing): tune the three `PerceptionProfile`s in `AITest` — sneak behind enemies crouched, sprint past them, break line of sight and double back, shoot near a group. Next: light levels affecting sight, enemies remembering several hostiles at once, a "heard you" sound/bark for each reaction
 - Behavior trees, in the editor (written without compiling or playing): open `AITest`, check the trees in the Behavior Tree Editor and that the three enemies patrol, investigate, fight and flee. Next: group tactics (attack tokens), more enemy archetypes as trees, enemies casting `Ability` assets from a tree node, moving the built-in Patrol/Alert/Chase enemies onto trees
 - Audio mixer and animation cues, in the editor (code is done, nothing was compiled): create the `GameMixer` AudioMixer, its snapshots, `DefaultAudioMixerSettings` and the three mix states, then add `AudioMixerController` to GameManager and `GameplayMixStates` to the Player (SETUP.md › Audio Mixer); build the shared viewmodel Animator Controller and add `ViewmodelAnimator` to WeaponRig (SETUP.md › Weapon viewmodel). Next: voice limiting and priority stealing in `AudioPool`, ambience profiles per room function, UI sounds
 - Encounter rooms, next steps: real art and sounds for shutters, consoles and the rift; a failsafe if a lockdown's last enemy gets stuck out of reach; enemies reacting to the Holdout uplink by heading for it
