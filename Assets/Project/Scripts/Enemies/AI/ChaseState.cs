@@ -107,8 +107,11 @@ namespace CGD.Enemies
             if (Time.time < _nextFlankCheck || distance < FlankMinDistance) return false;
             _nextFlankCheck = Time.time + Random.Range(FlankCheckEvery.x, FlankCheckEvery.y);
 
-            if (Random.value >= FlankChance) return false;
-            if (!Ai.Tactics.TryPlanFlank(targetPos, Ai.Data.AttackRange + 2f, out Vector3 destination)) return false;
+            // A squad's flankers always go round, from the side the squad gives them.
+            bool squadFlanker = Ai.SquadRole == SquadRole.Flank;
+            if (!squadFlanker && Random.value >= FlankChance) return false;
+            int side = squadFlanker ? Ai.Squad.NextFlankSide() : 0;
+            if (!Ai.Tactics.TryPlanFlank(targetPos, Ai.Data.AttackRange + 2f, out Vector3 destination, side)) return false;
 
             _flanking = Ai.Agent.SetDestination(destination);
             return _flanking;

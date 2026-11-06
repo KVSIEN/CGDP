@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
+using CGD.Impacts;
 using CGD.Stealth;
 using CGD.Targeting;
 
@@ -33,6 +34,9 @@ namespace CGD.Enemies
         private const float TrackingGap     = 0.5f;   // seconds between sightings that still give a velocity
         private const float DeathHearingRange = 10f;  // an ally going down is heard this far
         private const int   MaxBodyChecks   = 2;      // raycasts per sample spent looking for bodies
+        private const float NearMissRadius  = 2.5f;   // a hostile bullet landing this close is felt
+        private const float UnderFireMemory = 1.5f;   // seconds "under fire" lasts after the last shot
+        private const float AimedAtAngle    = 5f;     // degrees: a target facing it this squarely is aiming at it
 
         private static PerceptionProfile _fallbackProfile;
         private static readonly Dictionary<HealthManager, Collider> Bodies = new();
@@ -56,6 +60,7 @@ namespace CGD.Enemies
         private bool    _hasLead;
         private bool    _hunting;   // it knows a hostile is about, not just that something seemed off
         private float   _cautiousUntil = float.NegativeInfinity;
+        private float   _underFireAt   = float.NegativeInfinity;
         private readonly HashSet<EnemyAI> _bodiesSeen = new();
 
         // What a look at one candidate turned up.
@@ -116,6 +121,11 @@ namespace CGD.Enemies
 
         // On edge after a search that found nothing: quicker to notice, slower to settle.
         public bool IsCautious => _clock < _cautiousUntil;
+
+        // Shot at moments ago — hit, a bullet cracking past, or a target it sees aiming at it.
+        public bool    IsUnderFire     => _clock - _underFireAt <= UnderFireMemory;
+        // Roughly where the fire came from (where to dodge away from).
+        public Vector3 ThreatDirection { get; private set; }
 
         private static PerceptionProfile FallbackProfile =>
             _fallbackProfile != null ? _fallbackProfile : _fallbackProfile = ScriptableObject.CreateInstance<PerceptionProfile>();
@@ -194,16 +204,43 @@ namespace CGD.Enemies
 
         public void OnHit(DamageInfo hit)
         {
-            if (!IsHostile(hit.Source) || hit.Source.Owner == null || IsTargetDetected) return;
+            if (!IsHostile(hit.Source) || hit.Source.Owner == null) return;
 
             Vector3 attacker = hit.Source.Owner.transform.position;
             float   distance = Vector3.Distance(attacker, _self.position);
+            FeelFire(attacker + Error(distance, _profile.HitError));
+            if (IsTargetDetected) return;
 
             _meter.Raise(_profile.HitAwareness, 0.95f);
             _hunting = true;
             if (Target == null) Target = hit.Source.Owner.GetComponentInParent<HealthManager>();
             Lead(attacker + Error(distance, _profile.HitError));
             UpdateLevel();
+        }
+
+        // A hostile bullet landing close by: it knows it's being shot at, and roughly from where.
+        public void OnImpact(Impact impact)
+        {
+            if (impact.Kind != ImpactKind.Bullet || !IsHostile(impact.Source) || impact.Source.Owner == null) return;
+            if ((impact.Point - _self.position).sqrMagnitude > NearMissRadius * NearMissRadius) return;
+
+            Vector3 shooter  = impact.Source.Owner.transform.position;
+            float   distance = Vector3.Distance(shooter, _self.position);
+            FeelFire(shooter + Error(distance, _profile.HitError));
+            if (IsTargetDetected) return;
+
+            _meter.Raise(_profile.NoiseAwareness, _profile.HearingCeiling);
+            _hunting = true;
+            if (_meter.IsSuspicious) Lead(shooter + Error(distance, _profile.HitError));
+            UpdateLevel();
+        }
+
+        private void FeelFire(Vector3 from)
+        {
+            _underFireAt = _clock;
+            Vector3 direction = from - _self.position;
+            direction.y = 0f;
+            if (direction.sqrMagnitude > 0.01f) ThreatDirection = direction.normalized;
         }
 
         public void OnCallout(EnemyCallout callout)
@@ -306,6 +343,14 @@ namespace CGD.Enemies
 
             _lastSeenPosition = position;
             _lastSensedAt     = _clock;
+
+            // Seeing it face this way squarely reads as being aimed at.
+            Vector3 toSelf = _self.position - position;
+            toSelf.y = 0f;
+            Vector3 facing = target.transform.forward;
+            facing.y = 0f;
+            if (toSelf.sqrMagnitude > 0.01f && Vector3.Angle(facing, toSelf) <= AimedAtAngle && _meter.IsSuspicious)
+                FeelFire(position);
             LastKnownPosition = position;
             LookPosition      = position;
 

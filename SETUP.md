@@ -313,6 +313,10 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 
 **Cover** — add a **CoverMap** (one per scene, any object; it's on its own `CoverMap` object in AITest and MapTest): `_spacing` (1.25 m between spots), `_lowHeight` / `_highHeight` (0.8 / 1.6 m: how tall an obstacle must be for low / full cover), `_obstacleMask` = what counts as an obstacle (Default). It scans the NavMesh the first time an enemy asks, so baked and runtime NavMeshes both work; call `Rebuild()` if the NavMesh changes later. Without a CoverMap enemies simply never use cover. Enemies learn cover around their spawn point and `_waypoints`, so give patrols routes through the area they should defend.
 
+**Squads** — put an **EnemySquad** on a parent object; every `EnemyAI` under it joins in `Awake` (spawners call `Join(enemy)` for ones spawned later, `Leave` to remove). `_radioRange` (40 m: callouts reach members through walls; 0 = shouting only), `_suppressors` (1 ranged member pins the target down; other ranged members flank), `_assaulters` (2 melee members go straight in; other melee members flank), `_reassignEvery` (2 s), `_leaderLossMorale` (0.25). The first member is the leader. Enemies outside a squad behave as before.
+
+**Grenades & abilities** — no extra components: tree nodes **Throw Grenade** (assign a `GrenadeData`, e.g. `Weapons/Throwables/DefaultGrenadeData`; its prefab must be set) and **Use Ability** (assign an `Ability` asset) run on any `EnemyAI`. Abilities aim from an `AbilityAim` child the enemy creates itself at 1.5 m; player-only abilities (that need weapons, stamina, etc.) just fail. The enemy's Animator gets a `Throw` trigger when it throws (add it to the controller to animate it).
+
 **Senses** — `Enemies/Perception/`: `DefaultPerceptionProfile` (Void and the default enemy), `WaryPerceptionProfile` (Tech: slow to notice, long memory, thorough searches), `SkittishPerceptionProfile` (Bio: quick to notice and to give up). Create more with `Create › CGD › Enemies › Perception Profile`; an empty slot uses built-in defaults. A profile tunes how fast sight and sound turn into awareness, memory and guessing, callout range, and the notice / search / look-around timings. Footstep loudness and how much crouching or standing still hides you are the player's side, on `StealthSettings` (*Noticeability*). Enemies only hear footsteps of characters with a `Stealthable`; others count as moderately loud.
 
 ### Behavior trees (Enemy)
@@ -321,8 +325,8 @@ No scene wiring: set `EnemyData` › **Behavior** › `BehaviorTree` to a `Behav
 
 | Asset | Notes |
 |---|---|
-| `Enemies/BehaviorTrees/MeleeEnemyBehaviorTree` | Regroup → Raise Alarm → fight while it knows where you are (strike in range when it's its turn; further than 6 m, flank half the time at most every 8 s; else close in) → Routine. |
-| `Enemies/BehaviorTrees/RangedEnemyBehaviorTree` | Below 30% health: hide behind cover or flee (8 s cooldown) → Regroup → Raise Alarm → fight: a Utility Selector weighs *from cover* (fixed 0.6: run to fresh cover, shoot 6–9 s) against *in the open* (TargetDistance 6–25 m: hold range and shoot for 3 s) → Routine. The `EnemyData` should be `CombatType` Ranged for its preferred range, burst and spread values. |
+| `Enemies/BehaviorTrees/MeleeEnemyBehaviorTree` | Regroup → Raise Alarm → fight while it knows where you are (under fire: dodge half the time, at most every 3 s; strike in range when it's its turn; squad Flank role and further than 6 m: flank; further than 6 m: flank half the time at most every 8 s; else close in) → Routine. |
+| `Enemies/BehaviorTrees/RangedEnemyBehaviorTree` | Below 30% health: hide behind cover or flee (8 s cooldown) → Regroup → Raise Alarm → squad Suppress role: dodge, else take cover and Suppress (or Suppress where it stands) → fight: dodge, else a Utility Selector weighs *from cover* (fixed 0.6: run to fresh cover, shoot 6–9 s) against *in the open* (TargetDistance 6–25 m: hold range and shoot for 3 s) → just lost sight (Knows Target 3 s, not Has Target): Throw Grenade `DefaultGrenadeData`, at most every 12 s, 3 per life → Routine. The `EnemyData` should be `CombatType` Ranged for its preferred range, burst and spread values. |
 | `Enemies/BehaviorTrees/Shared/RegroupSubtree` | Knows Target → Is Shaken → Regroup; aborts lower priority. |
 | `Enemies/BehaviorTrees/Shared/RaiseAlarmSubtree` | Has Target → Can Raise Alarm → Raise Alarm; aborts lower priority. Does nothing for enemies that don't raise alarms. |
 | `Enemies/BehaviorTrees/Shared/RoutineSubtree` | Investigate leads (aborts lower priority) → Return To Post → Patrol. |
@@ -357,7 +361,7 @@ Arena              [NavMeshSurface, RuntimeNavMesh]      ← NavMesh built from 
   Floor, Wall North/South/East/West, Cover Center/Left/Right, Pillar NW/NE, Crate Low A–D   [MeshFilter, MeshRenderer, BoxCollider]
 CoverMap           [CoverMap]                            ← cover spots found from the NavMesh
 Alarm Panel        [MeshFilter, MeshRenderer, BoxCollider, AlarmPanel]   ← on the north wall; `_screen` = its renderer
-Enemies
+Enemies            [EnemySquad]                          ← all four enemies are one squad
   Waypoints        Melee A 1–4, Melee B 1–4, Ranged 1–2
   Melee Enemy A, Melee Enemy B   (Scavenger prefab, _data = MeleeTestEnemyData, patrol Melee A / Melee B)
   Ranged Enemy                   (Maintenance Bot prefab, _data = RangedTestEnemyData, patrol Ranged; RaisesAlarm on)

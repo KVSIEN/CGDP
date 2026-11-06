@@ -63,7 +63,7 @@ in `OnDisable`** (static events outlive scenes).
 |---|---|---|
 | `CombatEvents.DamageDealt` | `HealthManager` once a hit is resolved | `CombatFeedback` (hit markers, kills), `PlayerHealth`, `PlayerPerks`, `CombatActions`, `GameDirector` (stress) |
 | `Noise.Emitted` | weapons, melee swings, grenades, abilities, enemies | `EnemyAI` perception (hearing), `Stealthable` (reveal) |
-| `ImpactEvents.Occurred` | projectiles, hitscan, melee hits | `ImpactSpawner` (decals, sparks, sounds per surface) |
+| `ImpactEvents.Occurred` | projectiles, hitscan, melee hits (each carries its shooter's `DamageSource`) | `ImpactSpawner` (decals, sparks, sounds per surface), `EnemyPerception` (near misses → under fire) |
 | `FeedbackBus.Requested` | pickups, shop, crafting, encounters, quests, director, perks … | `FeedbackPlayer` (feed, flash, rumble, shake) |
 | `QuestEvents.Reported` | enemy deaths, pickups, resource nodes, `QuestSignal` | `QuestTracker` (objectives), `ConditionLock` (door locks) |
 | `CameraImpulses.Emitted` | grenades and other explosions | `CameraEffectsController` |
@@ -101,6 +101,13 @@ either brain: `EnemySearch`, `ReturnStep`, `RetreatStep`, `RaiseAlarmStep`, `Ene
 (guarding), `EnemyMorale`, `AttackTokens` (how many enemies may melee or shoot one target
 at once). States and tree nodes stay thin wrappers that decide *when*; they report
 `AiState` and `EngageStep` so visuals, animation and audio follow either brain.
+
+Enemies use the player's ability system as-is: `AbilityContext` describes any caster
+(`CasterTransform`, `CasterRigidbody`, `AimTransform`, `Health`), and `EnemyAbilities` /
+`GrenadeThrower` are plain classes owned by `EnemyAI`. An **`EnemySquad`** coordinates
+without taking control: it hands out a `SquadRole` per member (rules in the pure
+`SquadRoles`), relays members' callouts as through-wall callouts, and shakes morale when
+its leader falls; states and tree nodes read `EnemyAI.SquadRole` and decide for themselves.
 
 **An enemy decides with a behavior tree.** When its `EnemyData` has a `BehaviorTreeAsset`,
 `EnemyAI` skips its state machine and ticks a `BehaviorTree` — the agent's own copy of the

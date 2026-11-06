@@ -186,7 +186,8 @@ namespace CGD.Enemies
         }
 
         // A spot at standOff metres off to the threat's side, by the least visible route.
-        public bool TryPlanFlank(Vector3 threat, float standOff, out Vector3 destination)
+        // preferSide: −1 / +1 to go round a given side first (squads split their flankers), 0 = either.
+        public bool TryPlanFlank(Vector3 threat, float standOff, out Vector3 destination, int preferSide = 0)
         {
             destination = default;
             Vector3 self = _ai.transform.position;
@@ -197,7 +198,7 @@ namespace CGD.Enemies
 
             float straight  = Vector3.Distance(self, threat);
             float bestScore = float.MinValue;
-            int   firstSide = Random.value < 0.5f ? -1 : 1;
+            int   firstSide = preferSide != 0 ? preferSide : Random.value < 0.5f ? -1 : 1;
 
             for (int s = 0; s < 2; s++)
             foreach (float angle in FlankAngles)

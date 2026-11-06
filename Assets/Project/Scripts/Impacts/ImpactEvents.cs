@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using CGD.Combat;
 
 namespace CGD.Impacts
 {
@@ -11,9 +12,10 @@ namespace CGD.Impacts
     {
         public static event Action<Impact> Occurred;
 
-        public static void Report(Vector3 point, Vector3 normal, Collider collider, ImpactKind kind)
+        // source: who fired, if known (bullets pass it so enemies can feel near misses).
+        public static void Report(Vector3 point, Vector3 normal, Collider collider, ImpactKind kind, DamageSource source = default)
         {
-            if (collider != null) Occurred?.Invoke(new Impact(point, normal, collider, kind));
+            if (collider != null) Occurred?.Invoke(new Impact(point, normal, collider, kind, source));
         }
     }
 }

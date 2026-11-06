@@ -6,18 +6,20 @@ using CGD.Stealth;
 
 namespace CGD.Abilities
 {
-    // Data bundle passed to an ability when the player activates it.
-    // PlayerAbilities fills this once in Awake and updates MoveInput each frame. The
-    // player's components that abilities act through are resolved here once, so abilities
-    // (shared ScriptableObjects, checked every frame a press waits) never look them up.
-    // A component the player doesn't have is null; abilities needing it can't execute.
+    // Data bundle passed to an ability when its caster uses it — the player (PlayerAbilities
+    // fills this once in Awake and updates MoveInput each frame) or an enemy (EnemyAbilities,
+    // for the behavior tree's Use Ability node). The caster's components that abilities act
+    // through are resolved here once, so abilities (shared ScriptableObjects, checked every
+    // frame a press waits) never look them up. A component the caster doesn't have is null;
+    // abilities needing it can't execute (an enemy has no dodge, reflector or stealth).
     public class AbilityContext
     {
-        public Transform PlayerTransform;
-        public Rigidbody PlayerRigidbody;
-        public Collider  PlayerCollider;
-        public Transform CameraTransform;
-        public PlayerHealth Health;
+        public Transform CasterTransform;
+        public Rigidbody CasterRigidbody;
+        public Collider  CasterCollider;
+        // Where the ability comes from and points: the player's camera, an enemy's eyes.
+        public Transform AimTransform;
+        public HealthManager Health;
         public DamageSource Source;
         public Vector2 MoveInput;
 

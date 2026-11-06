@@ -96,7 +96,7 @@ namespace CGD.Weapons
                 IDamageable target = Hitbox.FindDamageable(hit.collider);
                 if (target != null && PiercedTargets.Contains(target)) continue;
 
-                ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet);
+                ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet, ctx.Source);
                 if (target == null)
                 {
                     end = hit.distance;
@@ -122,7 +122,7 @@ namespace CGD.Weapons
         {
             float falloff = FalloffOf(ctx).Evaluate(hit.distance);
             Hitbox.ApplyHit(hit.collider, BuildDamageInfo(ctx, falloff), hit.point);
-            ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet);
+            ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet, ctx.Source);
         }
 
         // Resolves one round in two stages. The stretch it would cross within a frame or two

@@ -193,7 +193,7 @@ namespace CGD.Enemies
             {
                 var info = new DamageInfo(data.AttackDamage, source: _source);
                 Hitbox.ApplyHit(hit.collider, info, hit.point);
-                ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet);
+                ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet, _source);
             }
         }
     }

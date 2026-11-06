@@ -35,6 +35,7 @@ namespace CGD.Animation
         {
             _ai.AttackStarted += OnAttackStarted;
             _ai.Fired         += OnFired;
+            _ai.Threw         += OnThrew;
             if (_health != null) _health.OnHit += OnHit;
         }
 
@@ -42,6 +43,7 @@ namespace CGD.Animation
         {
             _ai.AttackStarted -= OnAttackStarted;
             _ai.Fired         -= OnFired;
+            _ai.Threw         -= OnThrew;
             if (_health != null) _health.OnHit -= OnHit;
         }
 
@@ -70,6 +72,8 @@ namespace CGD.Animation
         private void OnAttackStarted() => _bridge.SetTrigger(AnimatorParams.Attack);
 
         private void OnFired() => _bridge.SetTrigger(AnimatorParams.Fire);
+
+        private void OnThrew() => _bridge.SetTrigger(AnimatorParams.Throw);
 
         private void OnHit(DamageInfo _) => _bridge.SetTrigger(AnimatorParams.Hit);
 

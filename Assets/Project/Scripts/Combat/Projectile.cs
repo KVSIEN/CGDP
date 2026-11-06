@@ -72,7 +72,7 @@ namespace CGD.Combat
             {
                 float scale = _launch.Falloff.Evaluate(_distance + hit.distance);
                 Hitbox.ApplyHit(hit.collider, _launch.Damage.WithDamageScale(scale), hit.point);
-                ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet);
+                ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet, _launch.Damage.Source);
                 Despawn();
                 return;
             }

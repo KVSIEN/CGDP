@@ -27,8 +27,8 @@ namespace CGD.Abilities
 
         public override void Execute(AbilityContext ctx)
         {
-            Vector3 spawnPos = ctx.CameraTransform.position + ctx.CameraTransform.forward * SpawnOffset;
-            var go = PrefabPool.Spawn(ProjectilePrefab, spawnPos, ctx.CameraTransform.rotation);
+            Vector3 spawnPos = ctx.AimTransform.position + ctx.AimTransform.forward * SpawnOffset;
+            var go = PrefabPool.Spawn(ProjectilePrefab, spawnPos, ctx.AimTransform.rotation);
 
             // The projectile ignores its source's colliders, so it can't hit the caster.
             // Abilities carry no range stats, so the shot neither falls off nor expires by
@@ -37,7 +37,7 @@ namespace CGD.Abilities
             go.GetComponent<Projectile>().Launch(new ProjectileLaunch
             {
                 Damage      = hit,
-                Velocity    = ctx.CameraTransform.forward * Speed,
+                Velocity    = ctx.AimTransform.forward * Speed,
                 Gravity     = Gravity,
                 Lifetime    = Lifetime,
                 MaxDistance = Mathf.Infinity,

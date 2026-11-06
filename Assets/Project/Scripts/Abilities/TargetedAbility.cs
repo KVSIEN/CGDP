@@ -52,7 +52,7 @@ namespace CGD.Abilities
         {
             if (Targeting == null) return 0;
 
-            Transform aim = ctx.CameraTransform != null ? ctx.CameraTransform : ctx.PlayerTransform;
+            Transform aim = ctx.AimTransform != null ? ctx.AimTransform : ctx.CasterTransform;
             Targeting.Select(new TargetingRequest(aim.position, aim.forward, ctx.Health), _targets);
 
             for (int i = _targets.Count - 1; i >= 0; i--)

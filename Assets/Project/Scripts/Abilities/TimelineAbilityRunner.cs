@@ -18,14 +18,14 @@ namespace CGD.Abilities
         // targetPoint anchors WorldOffset events (ground-targeted abilities); null = none.
         public void Play(ActionTimeline timeline, AbilityContext abilityCtx, Vector3? targetPoint = null)
         {
-            _cameraTransform = abilityCtx.CameraTransform;
+            _cameraTransform = abilityCtx.AimTransform;
 
             _ctx = new ActionContext
             {
                 Origin        = _cameraTransform.position,
                 Forward       = _cameraTransform.forward,
                 Up            = _cameraTransform.up,
-                SourceRoot    = abilityCtx.PlayerTransform.root,
+                SourceRoot    = abilityCtx.CasterTransform.root,
                 Source        = abilityCtx.Source,
                 HitMask       = timeline.HitMask,
                 HasTarget     = targetPoint.HasValue,

@@ -13,5 +13,8 @@ namespace CGD.Enemies
         MoveToCover,    // running to cover
         FireFromCover,  // shooting from behind cover
         KeepDistance,   // in the open, keeping its preferred range and strafing
+        Dodge,          // sidestepping incoming fire
+        Cast,           // winding up an ability or a grenade throw
+        Suppress,       // firing at where the target hides, to pin it down
     }
 }

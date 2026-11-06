@@ -32,6 +32,13 @@ namespace CGD.Enemies
             UpdateShaken();
         }
 
+        // Something outside the fight rattled it (the squad leader went down).
+        public void Shake(float amount)
+        {
+            Value = Mathf.Max(0f, Value - amount);
+            UpdateShaken();
+        }
+
         public void OnDamaged()
         {
             var health = _ai.Health;

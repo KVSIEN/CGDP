@@ -54,10 +54,12 @@ Assets/
                             live view, breakpoints)
       Enemies/              enemy components, EnemyRangedCombat, EnemySearch, EnemyPost (guarding, return point), shared steps (Return/Retreat/RaiseAlarmStep),
                             AI/ (state classes: Patrol, Search (Investigate/Hunt), Return, Chase, RangedChase, Retreat, RaiseAlarm, Stunned),
-                            BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/; EnemyBlackboard keys),
+                            Abilities/ (EnemyAbilities: casting Ability assets; GrenadeThrower, ThrowArc),
+                            BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/, Squad/; EnemyBlackboard keys),
                             Perception/ (EnemyPerception: sight, hearing, touch, memory; AwarenessMeter, PerceptionProfile, callouts),
                             Tactics/ (CoverMap: cover spots from the NavMesh; CoverKnowledge, EnemyTactics: cover, flanking, hiding spots, melee turns;
-                            AttackTokens, EnemyMorale, AlarmPanel)
+                            AttackTokens, EnemyMorale, AlarmPanel),
+                            Squads/ (EnemySquad: roles, radio relay, leader; SquadRoles rules, SquadRole)
       Expedition/           the extraction loop: ExpeditionLedger (ship hold, packed kit, extract/die rules),
                             ExpeditionSession (keeps it across loads), ExpeditionRunner (a run in a level), RunStarterKit
       Factions/             FactionDefinition (name, colour, enemy roster) — used by the map graph and generated levels

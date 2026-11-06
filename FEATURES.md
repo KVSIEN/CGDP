@@ -462,6 +462,7 @@
 - Sight needs a clear line to your chest or head: low cover hides you only while crouched, and smoke and stealth still apply. Ducking out of view for an instant doesn't lose an enemy, but staying out of view does
 - **Hearing**: footsteps carry by how you move — sprinting is loud, walking carries the enemy's hearing range, crouching is quiet and standing still is silent. Gunfire, swings and explosions are heard from their own range. Walls muffle sound to half its range, and a heard position is only roughly right
 - **Touch**: bumping into an enemy gives you away, seen or not. Being hit tells an enemy roughly where the attacker is, not exactly
+- **Under fire**: bullets that hit or whiz past within a couple of metres tell an enemy it's being shot at and roughly from where — even if it never saw the shooter. An enemy that is already suspicious also notices when you aim straight at it
 - Hearing alone never makes an enemy certain — it comes to look, and has to see you to start fighting
 - **Memory**: when you slip out of sight, an enemy guesses where you went from the way it saw you moving and searches there. Double back, change direction or stay still to fool it. Without anything new to go on it slowly calms down and goes back to its routine
 - **Reactions**: an enemy that notices something first stops and stares, then goes to look, then scans and checks a few spots nearby — most of them the way you seemed to be heading. Something new on the way (another noise, a glimpse) makes it glance over and change course. Pauses, routes and the number of spots vary every time
@@ -493,6 +494,19 @@
 - **Searching cover**: an enemy hunting you checks the cover near where it lost you that would hide someone from it, before sweeping the rest of the area
 - Cover follows whatever is built: the scan runs on the NavMesh, so generated levels get cover too
 
+## Enemy Abilities & Reactions
+- **Dodging**: an enemy under fire sometimes sidesteps out of the line of fire — a quick dash to whichever side is open — instead of standing in it. Not every time, and not more than every few seconds, so holding steady aim still pays
+- **Grenades**: a ranged enemy that has just lost sight of you lobs a grenade onto where it thinks you are hiding, to flush you out — after a short wind-up you can see (and hear) coming. It won't throw at its own feet, needs a reachable arc, carries three, and waits between throws. Its grenades never hurt its own side
+- **Abilities**: enemies can use the same ability assets as the player (shockwaves, projectiles, targeted effects) with a cast time and cooldown of their own; abilities only the player can use simply aren't available to them
+- Barks and animation cues can be played from a tree at any moment (a shout before a charge, a taunt animation)
+- **Wandering**: instead of a fixed route, an enemy can drift between random spots around its post or wherever it stands
+
+## Enemy Squads
+- Enemies placed under a squad fight together. While fighting, the squad hands out roles every couple of seconds from who is closest: the nearest ranged member **pins you down** — firing at where it thinks you are from cover, whether it can see you or not — and the nearest melee members **go straight in**, while everyone else **flanks**. Flankers take turns going left and right, so two of them close in from both sides
+- **Radio**: squad members hear each other's callouts across the whole area (about 40 m), walls or not — spot one and the rest know where you were seen
+- **Leader**: the first member leads. When the leader goes down, everyone else's morale takes a hit — sometimes enough to make them fall back — and the next member takes over
+- Works with both the built-in states and behavior trees: in the built-in states flankers always flank on their side, and suppressors keep firing from cover without needing a clear shot
+
 ## Enemy Behavior Trees
 - An enemy type can be driven by a behavior tree instead of the built-in patrol / alert / chase states. The tree decides what it does each moment; senses, attacks, stuns and death work the same either way
 - Trees are built visually in the **Behavior Tree Editor** (CGD › AI › Behavior Tree Editor, or double-click a tree asset): drag nodes onto a canvas, connect them, and edit each node's settings in the side panel. Children run left to right and are numbered, nodes are coloured by kind (composite, decorator, condition, action), and each shows a one-line summary of its settings plus optional designer notes
@@ -509,12 +523,13 @@
 - Building blocks:
   - **Composites**: Sequence, Selector, Parallel, Random Selector, Weighted Random Selector, Utility Selector
   - **Decorators**: Inverter, Repeat, Repeat Until (retry), Cooldown, Time Limit, Delay, Chance, Limit (at most N times per life), Force Result, Score (for the Utility Selector)
-  - **General**: Wait, Subtree; blackboard: Set / Check Flag, Set / Compare Number, Has Key, Clear Key
-  - **Enemy senses**: Has Target, Knows Target (still counts moments after losing sight), Is Suspicious, Is Cautious, Is Shaken, Target In Range, Target In Sight, Health Below
-  - **Enemy movement**: Patrol (or guard), Investigate, Chase Target, Hold Range, Flee, Return To Post, Move To, Remember Position, Stop Moving
-  - **Enemy combat & tactics**: Melee Attack, Takes Melee Turn, Shoot Burst, Take Cover, In Cover, Flank, Regroup, Can Raise Alarm, Raise Alarm
-- Ready-made trees built from three shared subtrees (Regroup, Raise Alarm, Routine): a **melee** enemy (strike when it's its turn; further off, sometimes flank; otherwise close in) and a **ranged** enemy that weighs cover against shooting on the move by how far you are, repositions every few seconds, and hides or breaks away when badly hurt
-- **AI Test scene** (`Scenes/AITest`): a walled arena with walls, pillars and low crates for cover and an alarm panel on the north wall. Two melee enemies patrol and a ranged one paces the far wall, all running behavior trees (the ranged one runs for the alarm); a Husk guards the south-east corner on the built-in state machine. The player starts with a rifle and respawns on death
+  - **General**: Wait, Subtree, Play Sound, Trigger Animation; blackboard: Set / Check Flag, Set / Compare Number, Has Key, Clear Key
+  - **Enemy senses**: Has Target, Knows Target (still counts moments after losing sight), Is Suspicious, Is Cautious, Is Shaken, Under Fire, Target In Range, Target In Sight, Health Below
+  - **Enemy movement**: Patrol (or guard), Wander, Investigate, Chase Target, Hold Range, Flee, Dodge, Return To Post, Move To, Remember Position, Stop Moving
+  - **Enemy combat & tactics**: Melee Attack, Takes Melee Turn, Shoot Burst, Use Ability, Ability Ready, Throw Grenade, Take Cover, In Cover, Flank, Regroup, Can Raise Alarm, Raise Alarm
+  - **Enemy squad**: Has Squad Role, Suppress, Follow Leader
+- Ready-made trees built from three shared subtrees (Regroup, Raise Alarm, Routine): a **melee** enemy (dodge when shot at; strike when it's its turn; further off, flank when its squad says so or now and then anyway; otherwise close in) and a **ranged** enemy that dodges when shot at, pins you down from cover when it's its squad's suppressor, otherwise weighs cover against shooting on the move by how far you are, repositions every few seconds, hides or breaks away when badly hurt, and throws a grenade after losing sight of you
+- **AI Test scene** (`Scenes/AITest`): a walled arena with walls, pillars and low crates for cover and an alarm panel on the north wall. Two melee enemies patrol and a ranged one paces the far wall, all running behavior trees (the ranged one runs for the alarm); a Husk guards the south-east corner on the built-in state machine. All four fight as one squad The player starts with a rifle and respawns on death
 
 ## Object Pooling
 - Frequently spawned objects — projectiles, grenades, zones, pickups, particle effects and enemies — are reused instead of created and destroyed, avoiding hitches and garbage collection

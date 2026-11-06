@@ -6,6 +6,7 @@ using CGD.Audio;
 using CGD.BehaviorTrees;
 using CGD.Combat;
 using CGD.Core;
+using CGD.Impacts;
 using CGD.Items;
 using CGD.Stats;
 
@@ -67,6 +68,8 @@ namespace CGD.Enemies
         public event Action<EngageStep> StepChanged;
         // A heavy hit staggered it.
         public event Action Staggered;
+        // A grenade left its hand.
+        public event Action Threw;
 
         public AiState State => _tree != null ? _treeState
                               : _machine.IsRunning ? _machine.Current : AiState.Patrol;
@@ -87,6 +90,10 @@ namespace CGD.Enemies
         internal EnemySearch       Search       { get; private set; }
         internal EnemyTactics      Tactics      { get; private set; }
         internal EnemyPost         Post         { get; private set; }
+        internal EnemyAbilities    Abilities    { get; private set; }
+        internal GrenadeThrower    Grenades     { get; private set; }
+        internal EnemySquad        Squad        { get; private set; }
+        internal SquadRole         SquadRole    => Squad != null ? Squad.RoleOf(this) : SquadRole.None;
         internal EnemyMorale       Morale       { get; private set; }
 
         // Set when it gave up a search or won its fight: it should head back to its post.
@@ -124,6 +131,8 @@ namespace CGD.Enemies
             Search        = new EnemySearch(this);
             Tactics       = new EnemyTactics(this, _obstacleMask);
             Post          = new EnemyPost(this);
+            Abilities     = new EnemyAbilities(this, _damageSource);
+            Grenades      = new GrenadeThrower(this, _damageSource);
             Morale        = new EnemyMorale(this);
 
             EnemyState chaseState = _data.CombatType == EnemyCombatType.Ranged
@@ -170,6 +179,7 @@ namespace CGD.Enemies
             Noise.Emitted         += Perception.OnNoise;
             EnemyCallouts.Raised  += Perception.OnCallout;
             FallenAllies.Fell     += Perception.OnAllyFell;
+            ImpactEvents.Occurred += Perception.OnImpact;
             _health.OnHit         += Perception.OnHit;
             _health.OnDamaged     += OnDamaged;
         }
@@ -179,6 +189,7 @@ namespace CGD.Enemies
             Noise.Emitted         -= Perception.OnNoise;
             EnemyCallouts.Raised  -= Perception.OnCallout;
             FallenAllies.Fell     -= Perception.OnAllyFell;
+            ImpactEvents.Occurred -= Perception.OnImpact;
             _health.OnHit         -= Perception.OnHit;
             _health.OnDamaged     -= OnDamaged;
 
@@ -324,6 +335,10 @@ namespace CGD.Enemies
 
         internal void NotifyFired() => Fired?.Invoke();
 
+        internal void NotifyThrew() => Threw?.Invoke();
+
+        internal void JoinSquad(EnemySquad squad) => Squad = squad;
+
         private void TickAttack(float dt)
         {
             if (!IsAttacking) return;
@@ -405,6 +420,8 @@ namespace CGD.Enemies
             _nextStaggerAt = Time.time + _data.StaggerCooldown;
             IsAttacking = false;
             RangedCombat.CancelBurst();
+            Abilities.Cancel();
+            Grenades.Cancel();
             _stunnable.ApplyStun(_data.StaggerDuration);
             Staggered?.Invoke();
         }

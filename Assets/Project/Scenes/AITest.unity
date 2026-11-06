@@ -2848,6 +2848,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2100000056}
+  - component: {fileID: 2100000970}
   m_Layer: 0
   m_Name: Enemies
   m_TagString: Untagged
@@ -3669,3 +3670,20 @@ SceneRoots:
   - {fileID: 2100000056}
   - {fileID: 2100000902}
   - {fileID: 2100001001}
+--- !u!114 &2100000970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100000055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3d70f2d1341405a87e74856d52408b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemySquad
+  _radioRange: 40
+  _suppressors: 1
+  _assaulters: 2
+  _reassignEvery: 2
+  _leaderLossMorale: 0.25

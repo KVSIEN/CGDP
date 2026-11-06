@@ -60,7 +60,8 @@ namespace CGD.Enemies
             {
                 Ai.ReportStep(EngageStep.FireFromCover);
                 Ai.Agent.isStopped = true;
-                if (combat.HasLineOfSight(targetPos)) combat.TryStartBurst();
+                // A squad's suppressor keeps firing at where the target hides, seen or not.
+                if (combat.HasLineOfSight(targetPos) || Ai.SquadRole == SquadRole.Suppress) combat.TryStartBurst();
                 return;
             }
 

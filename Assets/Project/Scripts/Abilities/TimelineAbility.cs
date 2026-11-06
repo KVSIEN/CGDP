@@ -28,14 +28,14 @@ namespace CGD.Abilities
             ctx.Timeline.Play(Timeline, ctx, SelectTargetPoint(ctx));
 
             if (NoiseRadius > 0f)
-                Noise.Emit(ctx.PlayerTransform.position, NoiseRadius, ctx.Source);
+                Noise.Emit(ctx.CasterTransform.position, NoiseRadius, ctx.Source);
         }
 
         private Vector3? SelectTargetPoint(AbilityContext ctx)
         {
-            if (Targeting == null || ctx.CameraTransform == null) return null;
+            if (Targeting == null || ctx.AimTransform == null) return null;
 
-            Targeting.Select(new TargetingRequest(ctx.CameraTransform.position, ctx.CameraTransform.forward, ctx.Health), _targets);
+            Targeting.Select(new TargetingRequest(ctx.AimTransform.position, ctx.AimTransform.forward, ctx.Health), _targets);
             return _targets.HasPoint ? _targets.Point : (Vector3?)null;
         }
     }

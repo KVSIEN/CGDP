@@ -28,7 +28,7 @@ namespace CGD.Enemies
         {
             _givesUpAt = context.Time + _giveUpAfter;
             _moving = Ai.Perception.Target != null &&
-                      Ai.Tactics.TryPlanFlank(Ai.Perception.TargetPosition, StandOff(), out Vector3 destination) &&
+                      Ai.Tactics.TryPlanFlank(Ai.Perception.TargetPosition, StandOff(), out Vector3 destination, SquadSide()) &&
                       Ai.Agent.SetDestination(destination);
             if (_moving) Ai.Agent.isStopped = false;
         }
@@ -42,6 +42,9 @@ namespace CGD.Enemies
             Ai.SetSpeed(Ai.Data.ChaseSpeed);
             return HasArrived(Ai.Agent, ArrivalDistance) ? BtStatus.Success : BtStatus.Running;
         }
+
+        // Squad flankers split left and right; anyone else picks a side at random.
+        private int SquadSide() => Ai.SquadRole == SquadRole.Flank ? Ai.Squad.NextFlankSide() : 0;
 
         private float StandOff()
         {

@@ -24,7 +24,7 @@ namespace CGD.Abilities
 
         public override void Execute(AbilityContext ctx)
         {
-            Vector3 origin = ctx.PlayerTransform.position;
+            Vector3 origin = ctx.CasterTransform.position;
             int count = Physics.OverlapSphereNonAlloc(origin, Radius, _hitBuffer, HitMask, QueryTriggerInteraction.Ignore);
 
             var hit = new DamageInfo(Scaled(Damage, ctx), ArmorPenetration, DamageType, source: ctx.Source,
@@ -41,7 +41,7 @@ namespace CGD.Abilities
                     target.TakeDamage(hit);
 
                 var rb = col.attachedRigidbody;
-                if (rb == null || rb.isKinematic || rb == ctx.PlayerRigidbody) continue;
+                if (rb == null || rb.isKinematic || rb == ctx.CasterRigidbody) continue;
 
                 Vector3 dir = (col.transform.position - origin).normalized;
                 rb.AddForce(dir * Force, ForceMode.VelocityChange);

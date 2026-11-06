@@ -79,10 +79,10 @@ namespace CGD.Abilities
 
             _ctx = new AbilityContext
             {
-                PlayerTransform  = transform,
-                PlayerRigidbody  = GetComponent<Rigidbody>(),
-                PlayerCollider   = GetComponent<Collider>(),
-                CameraTransform  = _movement.CameraTransform,
+                CasterTransform  = transform,
+                CasterRigidbody  = GetComponent<Rigidbody>(),
+                CasterCollider   = GetComponent<Collider>(),
+                AimTransform     = _movement.CameraTransform,
                 Health           = _health,
                 Source           = DamageSource.Of(gameObject),
                 Movement         = _movement,
