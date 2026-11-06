@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Animation;
 using CGD.Audio;
 using CGD.Combat;
 using CGD.Items;
@@ -240,5 +241,11 @@ namespace CGD.Weapons
         public SoundBank ReloadSound;
         [Tooltip("Played when the player tries to fire with an empty magazine")]
         public SoundBank EmptySound;
+
+        [Header("Animation")]
+        [Tooltip("This weapon's first-person clips, as an Animator Override Controller made from the shared viewmodel controller. Empty = the controller's own clips")]
+        public AnimatorOverrideController ViewmodelAnimations;
+        [Tooltip("Sounds for the cues this weapon's clips raise (magazine out/in, chamber…)")]
+        public AnimationCueSoundSet CueSounds;
     }
 }

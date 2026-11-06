@@ -582,6 +582,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - Surface-aware footsteps: PlayerFootsteps raycasts downward each step to identify the ground surface; a SurfaceDatabase ScriptableObject maps PhysicMaterials to separate walk, sprint, and crouch SoundBanks; individual surfaces can override via a SurfaceTag component; step interval scales with movement speed
 - All sound fields are optional — systems work silently when no SoundBank is assigned, same as before
 - Each SoundBank follows one of the settings menu's volume sliders (Effects, Music or Interface), on top of Master
+- Mixer support (optional): the volume sliders drive an Audio Mixer, so sounds can be shaped as a whole. The sound dips and muffles while the game is paused, when health is low and when the player is stunned, fading in and out smoothly; the strongest situation wins when several overlap. Without a mixer the sliders work exactly as before
 
 ## Death & Respawn
 - When health reaches zero the player loses control, the HUD hides, and a death screen is shown. A dodge or ledge climb in progress stops (its invulnerability with it), and a player killed in mid-air falls to the ground rather than hanging there
@@ -836,6 +837,8 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - Enemies switch to an alert stance once they notice a target, and play their attack as the wind-up starts
 - Animations are cosmetic: attacks land on the same timing with or without a rigged model, and characters without one play exactly as before
 - Respawned players and reused enemies start from a clean pose instead of the end of their death animation
+- Sounds can be tied to moments inside an animation (a footfall, a magazine leaving the gun) instead of a timer, so they stay in step with the clips; the player's footsteps can follow the walking animation this way and still match the surface underfoot. Characters without such animation keep the timed footsteps
+- First-person weapon animation: every weapon shares one set of states (draw, fire, dry fire, reload, aim, sprint) and brings its own clips, and each weapon can have its own magazine and chamber sounds. The weapon is drawn again whenever it is swapped in or taken out of holster
 
 ## Impacts & Ragdolls
 - Bullets, projectiles, enemy shots and melee hits leave per-surface impact effects: a decal (bullet hole), a burst of particles and an impact sound, each chosen by what was hit (concrete, metal, wood… by physics material). Characters use a separate "flesh" set

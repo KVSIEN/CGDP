@@ -1,6 +1,5 @@
 using UnityEngine;
 using CGD.Audio;
-using CGD.Settings;
 
 namespace CGD.Director
 {
@@ -59,7 +58,7 @@ namespace CGD.Director
         private void Update()
         {
             MusicLayer[] layers = _settings.Layers;
-            float volume = GameSettings.Volume(AudioCategory.Music);
+            float volume = AudioMixerController.GainFor(AudioCategory.Music);
             float step   = _settings.FadeSpeed * Time.unscaledDeltaTime;
 
             for (int i = 0; i < _layers.Length; i++)
@@ -78,7 +77,7 @@ namespace CGD.Director
             if (previous == next) return;
 
             AudioClip stinger = _settings.StingerFor(next);
-            if (stinger != null) _stingers.PlayOneShot(stinger, _settings.StingerVolume * GameSettings.Volume(AudioCategory.Music));
+            if (stinger != null) _stingers.PlayOneShot(stinger, _settings.StingerVolume * AudioMixerController.GainFor(AudioCategory.Music));
         }
 
         private AudioSource CreateSource(string sourceName, AudioClip clip, bool loop, float volume)
@@ -93,6 +92,7 @@ namespace CGD.Director
             source.spatialBlend        = 0f;
             source.volume              = volume;
             source.ignoreListenerPause = true;
+            source.outputAudioMixerGroup = AudioMixerController.GroupFor(AudioCategory.Music);
             return source;
         }
     }

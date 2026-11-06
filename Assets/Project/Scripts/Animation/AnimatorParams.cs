@@ -33,6 +33,8 @@ namespace CGD.Animation
         public static readonly int Attack = Animator.StringToHash("Attack");
         public static readonly int Fire   = Animator.StringToHash("Fire");
         public static readonly int Throw  = Animator.StringToHash("Throw");
+        public static readonly int Equip   = Animator.StringToHash("Equip");     // weapon drawn or swapped in
+        public static readonly int DryFire = Animator.StringToHash("DryFire");   // trigger pulled on an empty magazine
         public static readonly int Hit    = Animator.StringToHash("Hit");
     }
 }

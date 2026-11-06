@@ -1,6 +1,7 @@
 # Unity Project – To-Do List
 
 ## Open
+- Audio mixer and animation cues, in the editor (code is done, nothing was compiled): create the `GameMixer` AudioMixer, its snapshots, `DefaultAudioMixerSettings` and the three mix states, then add `AudioMixerController` to GameManager and `GameplayMixStates` to the Player (SETUP.md › Audio Mixer); build the shared viewmodel Animator Controller and add `ViewmodelAnimator` to WeaponRig (SETUP.md › Weapon viewmodel). Next: voice limiting and priority stealing in `AudioPool`, ambience profiles per room function, UI sounds
 - Encounter rooms, next steps: real art and sounds for shutters, consoles and the rift; a failsafe if a lockdown's last enemy gets stuck out of reach; enemies reacting to the Holdout uplink by heading for it
 - Expedition loop, next steps: save the ship hold to disk (needs an item catalog for gear), a real docked-ship scene, extraction only after the boss (or a timed early extraction)
 - Room generation, next steps (starship rooms):

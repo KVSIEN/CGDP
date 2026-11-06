@@ -35,7 +35,7 @@ generated-level systems on top of the Sandbox set.
 ## Scene Root
 
 ```
-GameManager        [VisibilityCullingManager, AudioPool, PoolPrewarmer?]
+GameManager        [VisibilityCullingManager, AudioPool, AudioMixerController?, PoolPrewarmer?]
 GameFlow           [GameFlow, GameTime?]        ← own root object, nothing else on it
 RespawnPoint       (empty Transform)
 WorldMap           [WorldMapArea]?              ← see Map & Minimap
@@ -48,6 +48,7 @@ Global Volume
 |---|---|---|
 | **VisibilityCullingManager** | `_camera` = Main Camera | Other fields: defaults are fine. |
 | **AudioPool** | — | Raise `_initialSize` (16) if sounds cut out. |
+| **AudioMixerController**? | `_settings` = `Audio/DefaultAudioMixerSettings` | Drives the AudioMixer and its snapshots — see [Audio Mixer](#audio-mixer). Without it sounds scale their own volume and mix states do nothing. |
 | **PoolPrewarmer**? | `_entries` = prefab + count | Pre-spawns pooled objects. Pools grow anyway. |
 | **GameFlow** | `_settings`? = `Flow/GameFlowSettings` | See [Game Flow](#game-flow--time). |
 | **GameTime**? | `_settings`? = `Timing/GameTimeSettings` | Created automatically at 60 ticks/s if absent. |
@@ -71,7 +72,8 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
                    + optional: MeterSet, TimelineAbilityRunner, CharacterStats,
                      QuestTracker, PlayerLockOn, MapRevealer, FeedbackPlayer,
                      CombatFeedback, QuestFeedback, PlayerEquipment,
-                     PlayerItemSlots, DevCommands, Stealthable
+                     PlayerItemSlots, DevCommands, Stealthable,
+                     GameplayMixStates
   CameraRig
     Main Camera    [Camera, PlayerCamera, CameraEffectsController?]
       WeaponRig    [WeaponVisuals]
@@ -122,7 +124,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 | **PlayerInventory** | `_startingStacks`? = item + count (e.g. `StandardMunitions` × 60) | No starting ammo unless listed. |
 | **PlayerInteraction** | `_forwardReference` = Main Camera | |
 | **PlayerLifecycle** | `_health`, `_movement`, `_abilities`, `_input` = Player · `_hud` = HUD · `_spawnPoint` = RespawnPoint · `_deathScreen`? | Tick `_gameOverOnDeath` to end the run instead of respawning. |
-| **PlayerFootsteps** | `_surfaces` = `Audio/DefaultSurfaceDatabase` | A collider can carry an optional **SurfaceTag** (`_walk` / `_sprint` / `_crouch` = `SoundBank`s) to override the database's footsteps for that surface. |
+| **PlayerFootsteps** | `_surfaces` = `Audio/DefaultSurfaceDatabase`, `_animationCues`? = the body's AnimationEventRelay (steps then follow the clips' `Footstep` cues instead of the timed intervals) | A collider can carry an optional **SurfaceTag** (`_walk` / `_sprint` / `_crouch` = `SoundBank`s) to override the database's footsteps for that surface. |
 | **PlayerAudio** | `_health` = PlayerHealth, `_hurtSound`?, `_deathSound`? | |
 | **MeterSet** | `_definitions` = meters from `Data/Meters/` (the Player prefab has `StaminaMeter`) | Needed before any stamina/mana cost can be paid; melee swings and blocks spend stamina from it. |
 | **CombatActions** | — | Counts the player's combat actions (hits, kills, parries) that fill ability Surge. Parries count when a `MeleeController` is on the same object. Without it Surge abilities never fill. |
@@ -234,9 +236,39 @@ Damage numbers and enemy health bars build themselves — don't place them under
 | `_camera` = PlayerCamera, `_input` = Player, `_bindings` = `InputBindingSettings`, `_hud` = HUD | Stretch its RectTransform to fill the screen. Escape opens it; it doubles as the pause menu when a `GameFlow` exists. |
 
 The Audio, Video, Crosshair and Accessibility tabs need no wiring. They apply to every scene:
-- Volume works through `AudioPool` (Master scales everything). Set each `SoundBank`'s `_category` (Effects / Music / Interface) to pick which slider it follows.
+- Volume works through `AudioPool` (Master scales everything). Set each `SoundBank`'s `_category` (Effects / Music / Interface) to pick which slider it follows. With an `AudioMixerController` in the scene, the sliders drive the mixer instead — see [Audio Mixer](#audio-mixer).
 - Field of view replaces `PlayerCamera._baseFOV`. `_sprintFOV` keeps its authored widening on top.
 - Camera shake scales everything `CameraEffectsController` adds. Screen flashes scale `ScreenFlashHUD` and `HitEffect`.
+
+---
+
+## Audio Mixer
+
+Optional. Without it every sound scales its own volume by the settings sliders and plays unrouted, which is how the game works today. With it the sliders drive the mixer, and snapshots can muffle or duck the mix for pause, low health and stun.
+
+**1. Create the mixer** (`Create › Audio Mixer`, e.g. `Audio/GameMixer`):
+
+```
+Master
+  Effects     ← Attenuation exposed as  EffectsVolume
+  Music       ← Attenuation exposed as  MusicVolume
+  Interface   ← Attenuation exposed as  InterfaceVolume
+```
+
+Expose a parameter by right-clicking the group's *Volume* in the Inspector › *Expose*, then rename it in the mixer's *Exposed Parameters* list. Sub-groups (Footsteps, Weapons, Voice…) can sit under a category group; a `SoundBank` with its own `_mixerGroup` plays through it and still follows its category's slider.
+
+**2. Create snapshots** in the mixer: keep the default (`Snapshot`) as the resting mix, then add one per situation, e.g. `Paused` (low-pass on Effects, Music dipped), `LowHealth` (low-pass + Music ducked), `Stunned` (heavy low-pass, ringing). Snapshots must **not** change the three exposed volumes — the settings menu owns those; shape the mix with other effects or sub-groups.
+
+**3. Create the assets:**
+
+| Asset | Fields |
+|---|---|
+| `Audio/DefaultAudioMixerSettings` (`CGD › Audio › Mixer Settings`) | `_mixer`, `_defaultSnapshot`, `_effectsGroup` / `_musicGroup` / `_interfaceGroup` and their parameter names (defaults match the layout above) |
+| `Audio/PausedMixState`, `LowHealthMixState`, `StunnedMixState` (`CGD › Audio › Mix State`) | `_snapshot`, `_priority` (suggested 100 / 10 / 20 — the highest active one wins), `_fadeTime` |
+
+**4. Wire the scene:** `AudioMixerController` on GameManager (`_settings` as above), and **GameplayMixStates** on the Player (`_paused`, `_lowHealth`, `_stunned`, `_lowHealthThreshold`). It reads the Player's `HealthManager` and `PlayerMovement`, and `GameFlow` for pausing; any state left empty is ignored. Other systems can request a state from code with `AudioMixerController.Push(state)` and `Release()` the returned request.
+
+`DirectorMusic` and `AudioPool` pick their group from the sound's category automatically.
 
 ---
 
@@ -297,9 +329,34 @@ Enemy / Player     [EnemyAnimator or PlayerAnimator, Ragdoll?]
 | Float | `Speed`, `ForwardSpeed`, `StrafeSpeed`, `VerticalSpeed`, `Aim` |
 | Bool | `Grounded`, `Crouching`, `Sprinting`, `Sliding`, `Mantling`, `Rolling`, `Dashing`, `Stunned`, `Reloading`, `Alerted`, `Dead` |
 | Int | `AttackIndex` (combo step, −1 = heavy) |
-| Trigger | `Attack`, `Fire`, `Throw`, `Hit` |
+| Trigger | `Attack`, `Fire`, `Throw`, `Hit`, `Equip`, `DryFire` |
 
 Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Author the clips to match.
+
+#### Animation cues (sound and effects in step with the clips)
+
+```
+Model              [Animator, AnimationEventRelay, AnimationCueAudio?]
+```
+
+- Put **AnimationEventRelay** on the same object as the Animator — Unity delivers Animation Events to that object.
+- In a clip, add an Animation Event: **Function** `OnAnimationCue`, **String** the cue name (`Footstep`, `Land`, `Draw`, `MagazineOut`, `MagazineIn`, `Chamber`, `Swing`, `Impact`; case doesn't matter). A misspelled name logs a warning in the editor.
+- Events from a clip weighing under `_minClipWeight` (0.5) are ignored, so a blend tree or crossfade doesn't fire each footstep twice.
+- **AnimationCueAudio**? (same object) `_sounds` = an `AnimationCueSoundSet` (`Create › CGD › Animation › Cue Sound Set`: a list of cue → `SoundBank`), `_origin`? = where sounds play from. Use it for enemies' footsteps and landings. The player's footsteps stay on `PlayerFootsteps` (surface-aware) — assign its `_animationCues` and leave `Footstep` out of the player's set.
+
+#### Weapon viewmodel (first person)
+
+```
+WeaponRig          [WeaponVisuals, ViewmodelAnimator]
+  Weapon           [WeaponAimPose]
+    WeaponModel    [Animator, AnimationEventRelay, AnimationCueAudio?]   ← rigged gun and arms
+```
+
+| Component | Assign | Notes |
+|---|---|---|
+| **ViewmodelAnimator** (WeaponRig) | `_animator` = the model's Animator (its controller is the shared base), `_weapons` = WeaponController, `_camera`? = PlayerCamera, `_movement`? = Player's PlayerMovement, `_cueAudio`? = the model's AnimationCueAudio | Sets `Aim`, `Sprinting`, `Reloading`, and the `Fire`, `DryFire` and `Equip` triggers (`Equip` also on un-holstering). |
+
+Per weapon, on its `WeaponData` **Animation** section: `ViewmodelAnimations`? = an Animator Override Controller made from the shared viewmodel controller (right-click the controller › *Create › Animator Override Controller*, then swap in that weapon's clips); `CueSounds`? = an `AnimationCueSoundSet` for its magazine/chamber cues. A weapon with neither plays the base controller's clips.
 
 ### Hitboxes (Player or Enemy)
 

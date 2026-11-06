@@ -69,6 +69,10 @@ namespace CGD.Weapons
         public event Action<int, int, bool> OnAmmoChanged;
         // Once per shot: every round of a burst, one per shotgun blast.
         public event Action Fired;
+        // The trigger was pulled on an empty magazine.
+        public event Action DryFired;
+        // The weapon in hand changed (including to none); Data and Current are already the new one.
+        public event Action Equipped;
         // A reload began; and its rounds went in (the commit point), whether or not it played out.
         public event Action ReloadStarted;
         public event Action Reloaded;
@@ -249,6 +253,7 @@ namespace CGD.Weapons
             if (_camera != null && weapon != null)
                 _camera.SetAdsProfile(weapon.Data.AdsFovDeg, weapon.Data.AdsSpeed);
             NotifyAmmoChanged();
+            Equipped?.Invoke();
         }
 
 
@@ -264,7 +269,7 @@ namespace CGD.Weapons
                 case TriggerAction.Fire:      TryFire(charge); break;
                 case TriggerAction.FireBurst: StartCoroutine(FireBurst()); break;
                 case TriggerAction.Reload:    StartReload(); break;
-                case TriggerAction.DryFire:   D.EmptySound.TryPlay(SoundPos); break;
+                case TriggerAction.DryFire:   D.EmptySound.TryPlay(SoundPos); DryFired?.Invoke(); break;
             }
         }
 

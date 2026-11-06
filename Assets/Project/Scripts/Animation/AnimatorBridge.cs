@@ -15,10 +15,7 @@ namespace CGD.Animation
         public AnimatorBridge(Animator animator)
         {
             _animator = animator;
-            if (animator == null || animator.runtimeAnimatorController == null) return;
-
-            foreach (var parameter in animator.parameters)
-                _parameters.Add(parameter.nameHash);
+            Rebuild();
         }
 
         public bool IsActive => _animator != null && _animator.isActiveAndEnabled && _parameters.Count > 0;
@@ -52,6 +49,16 @@ namespace CGD.Animation
         public void ResetTrigger(int id)
         {
             if (Has(id)) _animator.ResetTrigger(id);
+        }
+
+        // Re-reads the controller's parameters; call after swapping the Animator's controller.
+        public void Rebuild()
+        {
+            _parameters.Clear();
+            if (_animator == null || _animator.runtimeAnimatorController == null) return;
+
+            foreach (var parameter in _animator.parameters)
+                _parameters.Add(parameter.nameHash);
         }
 
         // Back to the entry state with fresh parameters — used when a pooled or dead character

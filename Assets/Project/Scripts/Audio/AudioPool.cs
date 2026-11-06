@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
-using CGD.Settings;
 
 namespace CGD.Audio
 {
@@ -54,10 +53,11 @@ namespace CGD.Audio
             var source = _available.Count > 0 ? _available.Pop() : CreateSource();
             source.transform.position     = position;
             source.clip                   = clip;
-            source.volume                 = volume * GameSettings.Volume(category);
+            source.volume                 = volume * AudioMixerController.GainFor(category);
             source.pitch                  = pitch;
             source.spatialBlend           = spatialBlend;
-            source.outputAudioMixerGroup  = mixerGroup;
+            // A bank's own group (a Footsteps sub-group) wins; otherwise the category's slider group.
+            source.outputAudioMixerGroup  = mixerGroup != null ? mixerGroup : AudioMixerController.GroupFor(category);
             source.Play();
             _playing.Add(source);
         }

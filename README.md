@@ -29,8 +29,9 @@ Assets/
       Abilities/            ability assets (incl. TargetedAbility) and the player's ability slots
       Artifacts/            offhand artifacts: ArtifactDefinition/Instance (rolled stats, passives, perks), OffhandBehavior (+ OffhandUse state) with
                             Cast, Ward and Channel behaviors; add a new artifact kind by subclassing OffhandBehavior and OffhandUse
-      Animation/            Animator parameter bridge (AnimatorBridge, AnimatorParams), PlayerAnimator, EnemyAnimator, Ragdoll
-      Audio/                audio pool, sound banks, surface lookup
+      Animation/            Animator parameter bridge (AnimatorBridge, AnimatorParams), PlayerAnimator, EnemyAnimator, ViewmodelAnimator (per-weapon override controllers), Ragdoll;
+                            animation cues: AnimationCue, AnimationEventRelay, AnimationCueSoundSet, AnimationCueAudio
+      Audio/                audio pool, sound banks, surface lookup; mixer: AudioMixerController, AudioMixerSettings, MixState (+ request), GameplayMixStates
       CameraEffects/        shake, kicks, FOV punches, lag, view blends (CameraEffectsController), CameraImpulses
       Combat/               Damage/, Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/, Reflect/ (Reflector, ReflectProfile), Projectile, Stunnable, Noise
       Core/                 shared utilities (cooldowns, ranges, Culling/, Pooling/ — PrefabPool, IPoolable,

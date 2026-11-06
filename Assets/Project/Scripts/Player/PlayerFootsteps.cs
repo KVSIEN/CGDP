@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Animation;
 using CGD.Audio;
 
 namespace CGD.Player
@@ -13,6 +14,11 @@ namespace CGD.Player
         [SerializeField] private float _sprintInterval = 0.35f;
         [SerializeField] private float _crouchInterval = 0.7f;
 
+        [Header("Animation Cues")]
+        [Tooltip("Optional. With the body's AnimationEventRelay assigned, steps land on the Footstep cues in its clips " +
+                 "and the intervals above are ignored")]
+        [SerializeField] private AnimationEventRelay _animationCues;
+
         [Header("Ground Detection")]
         [SerializeField] private LayerMask _groundMask = ~0;
         [SerializeField] private float _rayDistance = 0.5f;
@@ -25,8 +31,25 @@ namespace CGD.Player
             _movement = GetComponent<PlayerMovement>();
         }
 
+        private void OnEnable()
+        {
+            if (_animationCues != null) _animationCues.CueRaised += OnCueRaised;
+        }
+
+        private void OnDisable()
+        {
+            if (_animationCues != null) _animationCues.CueRaised -= OnCueRaised;
+        }
+
+        private void OnCueRaised(AnimationCue cue)
+        {
+            if (cue == AnimationCue.Footstep && _movement.IsGrounded) PlayFootstep();
+        }
+
         private void Update()
         {
+            if (_animationCues != null) return;
+
             if (!_movement.IsGrounded || _movement.IsSliding || _movement.IsMantling)
             {
                 _stepTimer = 0f;
