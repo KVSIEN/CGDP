@@ -1,0 +1,172 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: RangedEnemyBehaviorTree
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a00193761f9a40c38ba665bf55bc7e20
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - a2ecf8d918d24a48ac5a25f4bbc97abe
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a2ecf8d918d24a48ac5a25f4bbc97abe
+        _position: {x: 0, y: 150}
+        _comment: 'Most urgent first: anything to the left interrupts what is to its right'
+        _children:
+        - b1bfe6a132b34fe69718c8015895ace1
+        - 99021544476c45988e1b4d21c275b5b0
+        - e78a6e55d6a14464974ea1d2af047c2e
+        - f6e27ac31f7e48d4967346202552ad21
+        _reactive: 1
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b1bfe6a132b34fe69718c8015895ace1
+        _position: {x: -770, y: 300}
+        _comment: 'Badly hurt: break away, at most every 8 seconds'
+        _children:
+        - 86840e74081a490fb16d76db1debada3
+        - ffb77ed6d0694cbbb62a81272bbd48a1
+        - 319f0aed62bc4332a964fc315df7b5ea
+        _reactive: 1
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 86840e74081a490fb16d76db1debada3
+        _position: {x: -990, y: 450}
+        _comment: 
+    - rid: 1004
+      type: {class: HealthBelow, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ffb77ed6d0694cbbb62a81272bbd48a1
+        _position: {x: -770, y: 450}
+        _comment: 
+        _fraction: 0.3
+    - rid: 1005
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 319f0aed62bc4332a964fc315df7b5ea
+        _position: {x: -550, y: 450}
+        _comment: 
+        _children:
+        - 7272eb8c403144a1bc3b5e859955de9c
+        _seconds: 8
+        _onlyAfterSuccess: 0
+    - rid: 1006
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7272eb8c403144a1bc3b5e859955de9c
+        _position: {x: -550, y: 600}
+        _comment: 
+        _distance: 8
+    - rid: 1007
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 99021544476c45988e1b4d21c275b5b0
+        _position: {x: -165, y: 300}
+        _comment: 'Fight while the target is detected'
+        _children:
+        - 9ea0de34240f4f569350c53398e4ab9a
+        - 5eb7f8eef99a4193a7ff324c3d3259d4
+        _reactive: 1
+    - rid: 1008
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9ea0de34240f4f569350c53398e4ab9a
+        _position: {x: -330, y: 450}
+        _comment: 
+    - rid: 1009
+      type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5eb7f8eef99a4193a7ff324c3d3259d4
+        _position: {x: 0, y: 450}
+        _comment: 'Move and shoot at the same time'
+        _children:
+        - 9795f25bd3294d9fa43efb68c7064afe
+        - aa558bbb55f5437690979175ff93180a
+        _policy: 0
+    - rid: 1010
+      type: {class: HoldRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9795f25bd3294d9fa43efb68c7064afe
+        _position: {x: -110, y: 600}
+        _comment: 
+    - rid: 1011
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: aa558bbb55f5437690979175ff93180a
+        _position: {x: 110, y: 600}
+        _comment: 
+        _children:
+        - 8dd0a4e609dc4ee084486464745a4d47
+        _count: 0
+        _stopOnFailure: 1
+    - rid: 1012
+      type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8dd0a4e609dc4ee084486464745a4d47
+        _position: {x: 110, y: 750}
+        _comment: 
+    - rid: 1013
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e78a6e55d6a14464974ea1d2af047c2e
+        _position: {x: 440, y: 300}
+        _comment: 'Check out noises, hits and the target''s last known position'
+        _children:
+        - c1f981b62d2d4525a5781908b337763e
+        - 41db76be6b924364af9e1f1a6d5a9fd9
+        _reactive: 0
+    - rid: 1014
+      type: {class: IsSuspicious, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c1f981b62d2d4525a5781908b337763e
+        _position: {x: 330, y: 450}
+        _comment: 
+    - rid: 1015
+      type: {class: Investigate, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 41db76be6b924364af9e1f1a6d5a9fd9
+        _position: {x: 550, y: 450}
+        _comment: 
+    - rid: 1016
+      type: {class: Patrol, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f6e27ac31f7e48d4967346202552ad21
+        _position: {x: 770, y: 300}
+        _comment: 

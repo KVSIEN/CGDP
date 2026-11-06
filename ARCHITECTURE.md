@@ -88,6 +88,16 @@ raycasts/spawns a `Projectile` (pooled) → `Hitbox.TakeDamage` forwards to its
 `Enemies/AI/`; `EnemyPerception` combines sight, `Noise` and aggro-on-hit; attacks go
 through the same `IDamageable` path as the player's.
 
+**An enemy decides with a behavior tree.** When its `EnemyData` has a `BehaviorTreeAsset`,
+`EnemyAI` skips its state machine and ticks a `BehaviorTree` — the agent's own copy of the
+asset's nodes (the asset is shared and never changes at runtime; per-agent state lives on
+the copies, made with `CreateInstance`). Nodes call the same `EnemyAI` capabilities the
+states use (movement, `EnemyPerception`, `EnemyRangedCombat`, melee) and report the
+`AiState` the visuals show. Stuns pause the tree; death aborts it. The editor
+(`Editor/BehaviorTrees/`) is a GraphView over the asset, editing it through an
+`internal` authoring API (`InternalsVisibleTo CGD.Editor`) so gameplay code can't rewire a
+shared tree. In Play mode it reads the selected `IBehaviorTreeOwner`'s copy for the live view.
+
 **A run.** `GameFlow` (state: Playing / Paused / Victory / GameOver…) is the only thing that
 pauses time or loads scenes. `ExpeditionSession` keeps the ship's hold between scenes;
 `ExpeditionRunner` hands the packed kit to the player at the start and, when `GameFlow`
@@ -114,7 +124,8 @@ pressure and decide for themselves what to do. The director never spawns anythin
 - **Extension points are subclasses of an asset.** New fire behavior → `WeaponFireBehavior`;
   new artifact kind → `OffhandBehavior` + `OffhandUse`; new encounter → `RoomEncounter`;
   new room look → `FactionDesign` / `RoomFunction`; new dialogue effect → a dialogue
-  action or condition.
+  action or condition; new AI behavior → a `BtAction` / `BtCondition` (enemy ones derive
+  `EnemyAction` / `EnemyCondition`) tagged `[BtNodeInfo]`, which the tree editor lists itself.
 - **Pool what spawns often** (`PrefabPool`, `IPoolable`) — projectiles, grenades, popups.
 - **Tests** cover the plain-C# rules (`Tests/EditMode`); a new rule class should come with one.
 - **Docs move with the code:** gameplay change → FEATURES.md, scene wiring change → SETUP.md.

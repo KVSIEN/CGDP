@@ -28,7 +28,7 @@ Build a new playable scene in this order:
 ragdoll components (no rigged models yet), `FeedbackPlayer`, the world map, stealth,
 crafting stations, `GameDirector` and `LevelBuilder`. The firing-range dummies have no
 `EnemyAI` (they stand still). `MapTest` adds the map, feedback, director, expedition and
-generated-level systems on top of the Sandbox set.
+generated-level systems on top of the Sandbox set. `AITest` is the behavior tree arena (see [AI Test Scene](#ai-test-scene)).
 
 ---
 
@@ -294,7 +294,7 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 
 | Component | Assign | Notes |
 |---|---|---|
-| **EnemyAI** | `_data` = an `EnemyData`, `_waypoints`?, `_targetMask`, `_obstacleMask` | Needs a baked NavMesh. Finds targets by team. |
+| **EnemyAI** | `_data` = an `EnemyData`, `_waypoints`?, `_targetMask`, `_obstacleMask` | Needs a NavMesh (baked, or `RuntimeNavMesh`). Finds targets by team. Runs the data's behavior tree if it has one. |
 | **EnemyHealth** | `_data` = same `EnemyData`, `_healthBar` = its EnemyHealthBar, `_hitboxProfile`? | |
 | **EnemyStateVisuals**? | `_renderers` | Tints by AI state. |
 | **EnemyAudio**? | `_hurtSound`, `_deathSound` | |
@@ -304,7 +304,47 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 | **CharacterStats**? | `_presets` = e.g. `Stats/HardDifficultyModifierPreset` | Tougher enemy. |
 | **StatusEffectController** | `_immunities`? | Without it, status effects are ignored. |
 
-**Enemy type** is all in its `EnemyData`: team, health, speeds, senses, melee or ranged, display name (used in kill messages).
+**Enemy type** is all in its `EnemyData`: team, health, speeds, senses, melee or ranged, display name (used in kill messages), and optionally its behavior tree.
+
+### Behavior trees (Enemy)
+
+No scene wiring: set `EnemyData` › **Behavior** › `BehaviorTree` to a `BehaviorTreeAsset` and every enemy using that data runs the tree instead of the built-in Patrol / Alert / Chase states. Leave it empty to keep the built-in states. `_waypoints` on `EnemyAI` still feed the tree's **Patrol** node.
+
+| Asset | Notes |
+|---|---|
+| `Enemies/BehaviorTrees/MeleeEnemyBehaviorTree` | Fight (chase, strike in range) → investigate → patrol. |
+| `Enemies/BehaviorTrees/RangedEnemyBehaviorTree` | Flee when below 30% health (8 s cooldown) → hold range + shoot bursts → investigate → patrol. The `EnemyData` should be `CombatType` Ranged for its preferred range, burst and spread values. |
+| `Enemies/AITest/MeleeTestEnemyData`, `RangedTestEnemyData` | Scavenger and Maintenance Bot copies that use the trees above (the ranged one fires 3-round bursts). |
+
+**Editing:** *CGD › AI › Behavior Tree Editor*, or double-click a tree asset (`Create › CGD › AI › Behavior Tree` makes a new one with its Root). Space or right-click on the canvas to add nodes; drag from a node's bottom port to another's top port to connect. In Play mode select an enemy to watch its tree.
+
+**Tree rules of thumb:**
+- Put a **reactive Selector** at the top with the most urgent branch on the left; it re-checks the branches to the left of the running one every frame.
+- Start a fighting branch with a **reactive Sequence** whose first child is a condition (`Has Target`), so losing the target ends the fight.
+- **Patrol** and **Hold Range** never finish on their own — keep them where something above can interrupt them.
+- Trees with `Enemy/…` nodes must run on an `EnemyAI`.
+
+---
+
+## AI Test Scene
+
+`Scenes/AITest` — the MapTest scene root, Player and HUD without the map, director and expedition systems, plus:
+
+```
+Arena              [NavMeshSurface, RuntimeNavMesh]      ← NavMesh built from its children at load
+  Floor, Wall North/South/East/West, Cover Center/Left/Right, Pillar NW/NE   [MeshFilter, MeshRenderer, BoxCollider]
+Enemies
+  Waypoints        Melee A 1–4, Melee B 1–4, Ranged 1–2
+  Melee Enemy A, Melee Enemy B   (Scavenger prefab, _data = MeleeTestEnemyData, patrol Melee A / Melee B)
+  Ranged Enemy                   (Maintenance Bot prefab, _data = RangedTestEnemyData, patrol Ranged)
+```
+
+| Component | Assign | Notes |
+|---|---|---|
+| **NavMeshSurface** (Arena) | Collect Objects = *Children*, Use Geometry = *Physics Colliders* | Not baked in the project. |
+| **RuntimeNavMesh** (Arena) | `_agents` = Enemies | Builds the surface on load, then snaps the agents under `_agents` onto it. Any scene can use it the same way. |
+
+The Player overrides: `PlayerWeaponLoadout._startingWeapons[0]` = `Weapons/Ranged/T1/AK47_T1`, spawn and RespawnPoint at (0, 1, −16), respawns on death. Add an enemy by dropping an enemy prefab under **Enemies** and setting both `EnemyAI._data` and `EnemyHealth._data` to a data asset with a tree.
 
 ### Animation & Ragdoll (Player or Enemy)
 
@@ -753,6 +793,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Flow/` | `GameFlowSettings` | GameFlow |
 | `Timing/` | `GameTimeSettings` | GameTime |
 | `Enemies/` | `MaintenanceBot`/`Scavenger`/`Husk` `…EnemyData` (tier 1, ≈100 effective health each; the firing-range dummies run on them), `Tech`/`Bio`/`Void` `Tier2`/`Tier3` `…EnemyData` (placeholders, ≈2.5× / ≈5×; *Tier* set on each), `DefaultEnemyData` | EnemyAI, EnemyHealth |
+| `Enemies/BehaviorTrees/`, `Enemies/AITest/` | `MeleeEnemyBehaviorTree`, `RangedEnemyBehaviorTree`; `MeleeTestEnemyData`, `RangedTestEnemyData` (use the trees; AITest scene) | EnemyData › BehaviorTree |
 | `Enemies/`, `Enemies/Affixes/` | `DefaultEnemyAffixPool` (affixes per tier: 0 / 1 / 2), `Armored`/`Warded`/`Vital`/`Brutal`/`Swift` `…Affix` | EnemyAffixes |
 | `Combat/HitboxProfiles/` | `DefaultHitboxProfile`, `TargetDummyHitboxProfile` | EnemyHealth, PlayerHealth |
 | `Combat/StatusEffects/` | Bleed, Fire, Ice, Lightning, Poison | on-hit effect lists |

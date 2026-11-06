@@ -1,0 +1,134 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: MeleeEnemyBehaviorTree
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ea2dfd77c74f4add9573a219d1ecc29b
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - fd7d84be838b49e4a76b65d64f34fc1c
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: fd7d84be838b49e4a76b65d64f34fc1c
+        _position: {x: 0, y: 150}
+        _comment: 'Most urgent first: anything to the left interrupts what is to its right'
+        _children:
+        - 68b12d4c7637482ba98bda5c845c2a7a
+        - ee6bf140c5344e41a3cf9c7d75adb81e
+        - 6bb0b793ea934c2099e08e5d5f7af77f
+        _reactive: 1
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 68b12d4c7637482ba98bda5c845c2a7a
+        _position: {x: -536.25, y: 300}
+        _comment: 'Fight while the target is detected'
+        _children:
+        - fa8e32855a25422f947c85518882ffce
+        - 84c0769b2a884983b5ac3231cc6165a5
+        _reactive: 1
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: fa8e32855a25422f947c85518882ffce
+        _position: {x: -783.75, y: 450}
+        _comment: 
+    - rid: 1004
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 84c0769b2a884983b5ac3231cc6165a5
+        _position: {x: -288.75, y: 450}
+        _comment: 
+        _children:
+        - e270bb182e9c476f9aad845565a0b099
+        - 15d1144c529f4337aaccac384df9a68c
+        _reactive: 1
+    - rid: 1005
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e270bb182e9c476f9aad845565a0b099
+        _position: {x: -453.75, y: 600}
+        _comment: 'Strike when close; stops if the target steps away'
+        _children:
+        - a81b4fe75fbd4894a25ce3fd4cb10c45
+        - 8785f2bee0bb4853a57b24ea5e60c99a
+        _reactive: 1
+    - rid: 1006
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a81b4fe75fbd4894a25ce3fd4cb10c45
+        _position: {x: -563.75, y: 750}
+        _comment: 
+        _range: 0
+    - rid: 1007
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8785f2bee0bb4853a57b24ea5e60c99a
+        _position: {x: -343.75, y: 750}
+        _comment: 
+    - rid: 1008
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 15d1144c529f4337aaccac384df9a68c
+        _position: {x: -123.75, y: 600}
+        _comment: 
+        _stopDistance: 0
+    - rid: 1009
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ee6bf140c5344e41a3cf9c7d75adb81e
+        _position: {x: 206.25, y: 300}
+        _comment: 'Check out noises, hits and the target''s last known position'
+        _children:
+        - 22f25b5da1664b8b985120ea0c745461
+        - a3ae95bf394f403ebc3901dfe54603d0
+        _reactive: 0
+    - rid: 1010
+      type: {class: IsSuspicious, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 22f25b5da1664b8b985120ea0c745461
+        _position: {x: 96.25, y: 450}
+        _comment: 
+    - rid: 1011
+      type: {class: Investigate, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a3ae95bf394f403ebc3901dfe54603d0
+        _position: {x: 316.25, y: 450}
+        _comment: 
+    - rid: 1012
+      type: {class: Patrol, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6bb0b793ea934c2099e08e5d5f7af77f
+        _position: {x: 536.25, y: 300}
+        _comment: 

@@ -28,6 +28,8 @@ namespace CGD.Enemies
         public HealthManager Target            { get; private set; }
         public bool          IsTargetDetected  { get; private set; }
         public Vector3       LastKnownPosition { get; private set; }
+        // A lead (noise heard, hit taken) not yet consumed — read without consuming it.
+        public bool          HasLead           => _hasLead;
 
         public EnemyPerception(Transform self, EnemyData data, LayerMask targetMask, LayerMask obstacleMask, Team team)
         {

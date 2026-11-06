@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Project/Scenes/MapTest.unity
     guid: 8bdf8dce72cc4955872abb08e0bc4829
+  - enabled: 1
+    path: Assets/Project/Scenes/AITest.unity
+    guid: b3e9052d17d74053a1824fc944995f3b
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

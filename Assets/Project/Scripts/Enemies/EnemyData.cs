@@ -1,5 +1,6 @@
 using UnityEngine;
 using CGD.Audio;
+using CGD.BehaviorTrees;
 using CGD.Combat;
 
 namespace CGD.Enemies
@@ -38,6 +39,11 @@ namespace CGD.Enemies
         public float SightAngle = 90f;
         [Tooltip("Radius within which the enemy notices a hostile even without line of sight. Gunfire and other noises are heard from their own radius.")]
         public float HearingRadius = 8f;
+
+        [Header("Behavior")]
+        [Tooltip("Optional. Decides what the enemy does instead of the built-in patrol / alert / chase states " +
+                 "(edit it in CGD › AI › Behavior Tree Editor)")]
+        public BehaviorTreeAsset BehaviorTree;
 
         [Header("Combat")]
         public EnemyCombatType CombatType = EnemyCombatType.Melee;

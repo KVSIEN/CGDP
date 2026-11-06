@@ -10,7 +10,7 @@ runtime-built HUD.
 - [TASKS.md](TASKS.md) — open work
 - [CLAUDE.md](CLAUDE.md) — coding guidelines
 
-Open `Assets/Project/Scenes/Sandbox.unity` to play, or `MapTest.unity` for a freshly generated level.
+Open `Assets/Project/Scenes/Sandbox.unity` to play, `MapTest.unity` for a freshly generated level, or `AITest.unity` to try enemies driven by behavior trees.
 
 ## Project layout
 
@@ -24,13 +24,15 @@ Assets/
       Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Perks/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors (keycard, terminal, puzzle), secret wall, keycard, terminal, hub workbench, encounter pieces (shutter, reward cache, loot pickups, puzzle switch, rift core, gamble station, escape pod); WallKit/ — placeholder wall art), Pickups, Systems (GameFlow, GameManager, EventSystem, Global Volume), UI, VFX, Weapons
-    Scenes/                 Sandbox.unity (+ its baked NavMesh folder), MapTest.unity (generated level)
+    Scenes/                 Sandbox.unity (+ its baked NavMesh folder), MapTest.unity (generated level), AITest.unity (behavior tree arena)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            ability assets (incl. TargetedAbility) and the player's ability slots
       Artifacts/            offhand artifacts: ArtifactDefinition/Instance (rolled stats, passives, perks), OffhandBehavior (+ OffhandUse state) with
                             Cast, Ward and Channel behaviors; add a new artifact kind by subclassing OffhandBehavior and OffhandUse
       Animation/            Animator parameter bridge (AnimatorBridge, AnimatorParams), PlayerAnimator, EnemyAnimator, ViewmodelAnimator (per-weapon override controllers), Ragdoll;
                             animation cues: AnimationCue, AnimationEventRelay, AnimationCueSoundSet, AnimationCueAudio
+      BehaviorTrees/        generic behavior trees: Core/ (BtNode, BtParentNode, BtComposite, BtDecorator, BtAction, BtCondition, BtRoot,
+                            BehaviorTreeAsset, BehaviorTree (per-agent copy), BtContext, Blackboard), Composites/, Decorators/, Leaves/
       Audio/                audio pool, sound banks, surface lookup; mixer: AudioMixerController, AudioMixerSettings, MixState (+ request), GameplayMixStates
       CameraEffects/        shake, kicks, FOV punches, lag, view blends (CameraEffectsController), CameraImpulses
       Combat/               Damage/, Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/, Reflect/ (Reflector, ReflectProfile), Projectile, Stunnable, Noise
@@ -45,8 +47,9 @@ Assets/
                             healing or ammo during a calm), Music/ (DirectorMusic: layered stems and stingers)
       Economy/              CurrencyDefinition, Wallet, PriceTable, Vendor, GambleMachine (+ GambleOdds); Shops/ — Shop (buy/sell/trade-in),
                             ShopCatalog, stock sources (ItemStock, RolledWeaponStock), listings
-      Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report)
-      Enemies/              enemy components, perception, and AI/ (state classes)
+      Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report),
+                            BehaviorTrees/ (Behavior Tree Editor: GraphView canvas, node views, inspector, layout)
+      Enemies/              enemy components, perception, EnemyRangedCombat, AI/ (state classes), BehaviorTree/ (enemy tree nodes)
       Expedition/           the extraction loop: ExpeditionLedger (ship hold, packed kit, extract/die rules),
                             ExpeditionSession (keeps it across loads), ExpeditionRunner (a run in a level), RunStarterKit
       Factions/             FactionDefinition (name, colour, enemy roster) — used by the map graph and generated levels

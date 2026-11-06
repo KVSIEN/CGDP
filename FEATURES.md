@@ -461,6 +461,20 @@
   - **Husk** (VOID, Affected tier): a near-black hollow figure with frost at its feet and a shard hanging over it. Wards first — 55 shield over 45 health, no armour; its ward recovers after 3 seconds. Slow, short-sighted, hits hard
   - Each faction's rooms in a generated level are fought over by its enemy; Breach rooms mix two. Headshots land on a separate head hitbox, a coloured visor shows the AI state, and enemies show on the minimap and map once their area is explored
 
+## Enemy Behavior Trees
+- An enemy type can be driven by a behavior tree instead of the built-in patrol / alert / chase states. The tree decides what it does each moment; senses, attacks, stuns and death work the same either way
+- Trees are built visually in the **Behavior Tree Editor** (CGD › AI › Behavior Tree Editor, or double-click a tree asset): drag nodes onto a canvas, connect them, and edit each node's settings in the side panel. Children run left to right and are numbered, nodes are coloured by kind (composite, decorator, condition, action), and each shows a one-line summary of its settings plus optional designer notes
+- Editing works like the rest of Unity: undo/redo, copy/paste/duplicate, delete, a searchable create-node menu (Space or right-click), automatic tidy layout, pan and zoom
+- **Live view**: while playing, select an enemy and its tree lights up — running nodes yellow, successes green, failures red, faded when they weren't checked this frame — next to the enemy's blackboard (its working memory)
+- Building blocks:
+  - **Composites**: Sequence (do these in order), Selector (do the first that works), Parallel (do these at once), Random Selector. Sequences and Selectors can be *reactive*, re-checking higher-priority branches every moment, so spotting the player interrupts a patrol and a target stepping out of reach stops an attack
+  - **Decorators**: Inverter, Repeat (a number of times or forever), Cooldown, Time Limit, Force Result
+  - **General**: Wait (fixed or random time), Set Flag / Check Flag (blackboard memory)
+  - **Enemy senses**: Has Target, Is Suspicious (heard a noise, was hit or lost sight of its target), Target In Range, Target In Sight, Health Below
+  - **Enemy actions**: Patrol, Investigate, Chase Target, Melee Attack, Hold Range (a ranged enemy's spacing and strafing), Shoot Burst, Flee, Stop Moving
+- Two ready-made trees: a **melee** enemy (fight → investigate → patrol) and a **ranged** enemy that keeps its distance and shoots while moving, and breaks away when badly hurt (at most every 8 seconds)
+- **AI Test scene** (`Scenes/AITest`): a walled arena with cover and pillars where two melee enemies patrol and a ranged one paces the far wall, all running behavior trees. The player starts with a rifle and respawns on death
+
 ## Object Pooling
 - Frequently spawned objects — projectiles, grenades, zones, pickups, particle effects and enemies — are reused instead of created and destroyed, avoiding hitches and garbage collection
 - Pools grow on demand; they can also be pre-filled when a scene starts so the first burst of gunfire or the first enemy wave doesn't stutter
