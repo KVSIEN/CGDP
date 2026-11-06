@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace CGD.BehaviorTrees
@@ -14,6 +16,8 @@ namespace CGD.BehaviorTrees
         [SerializeField] private List<BtGroup> _groups = new();
         [SerializeField] private List<BtNote>  _notes  = new();
 
+        [NonSerialized] private ProfilerMarker? _marker;
+
         public IReadOnlyList<BtNode> Nodes => _nodes;
 
         public BtRoot Root
@@ -28,6 +32,9 @@ namespace CGD.BehaviorTrees
 
         // A runnable copy for one agent; null if the tree has no root.
         public BehaviorTree CreateInstance(GameObject owner, object agent) => BehaviorTree.Create(this, owner, agent);
+
+        // "BehaviorTree.<name>" in the Profiler: the cost of every agent running this tree.
+        internal ProfilerMarker Marker => _marker ??= new ProfilerMarker("BehaviorTree." + name);
 
         // --- Authoring (editor) ----------------------------------------------------
 

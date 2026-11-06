@@ -9,8 +9,8 @@ using CGD.Weapons;
 namespace CGD.Enemies
 {
     // How a ranged enemy fights: holding its preferred distance (approach, back off, strafe
-    // while in the band) and firing hitscan bursts. Shared by the built-in state machine
-    // (RangedChaseState) and the behavior tree nodes, so both fight the same way.
+    // while in the band) and firing hitscan bursts. Used by the ranged behavior tree nodes
+    // (Hold Range, Shoot Burst, Suppress).
     internal sealed class EnemyRangedCombat
     {
         private const float EyeHeight = 1.5f;

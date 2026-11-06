@@ -14,7 +14,7 @@ namespace CGD.Enemies
     //              likely to see (fewest path corners in its view)
     //   hiding     known cover near a position where someone could be hiding from it — what
     //              a search should check
-    // Shared by the state machine and the behavior tree nodes.
+    // Asked by the behavior tree nodes (Take Cover, Flank, Chase Target, the search).
     internal sealed class EnemyTactics
     {
         private const float CoverSearchRadius = 14f;

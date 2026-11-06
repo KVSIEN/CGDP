@@ -24,6 +24,7 @@ MonoBehaviour:
   SightRange: 15
   SightAngle: 90
   HearingRadius: 8
+  BehaviorTree: {fileID: 11400000, guid: e7612450fa2d4d9084473b8b50dd87ce, type: 2}
   AttackRange: 1.5
   AttackDamage: 15
   AttackCooldown: 1

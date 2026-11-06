@@ -84,33 +84,33 @@ raycasts/spawns a `Projectile` (pooled) → `Hitbox.TakeDamage` forwards to its
 `ImpactEvents` (surface effects) and `Noise` (enemies hear it). Stats flow in through
 `CharacterStats` (base data → equipment → presets → timed buffs).
 
-**An enemy notices you.** `EnemyAI` runs a `StateMachine` of state classes under
-`Enemies/AI/`; attacks go through the same `IDamageable` path as the player's.
+**An enemy notices you.** `EnemyAI` owns the body (movement, melee, `EnemyRangedCombat`)
+and ticks its behavior tree; attacks go through the same `IDamageable` path as the player's.
 `EnemyPerception` is the only place an enemy learns anything: it samples sight and
 footsteps on a staggered timer, takes `Noise`, hits and `EnemyCallouts` as they happen,
 and turns them into an `AwarenessMeter` value, an `AwarenessLevel` and a belief
-(`LastKnownPosition`, a guess once the target is out of sight). Brains read
-`TargetPosition` — the real position only while the target is sensed — so no state or
-tree node can know more than the enemy saw. `EnemySearch` is the shared notice →
-approach → look-around routine both brains use to act on a lead. Space works the same
+(`LastKnownPosition`, a guess once the target is out of sight). Tree nodes read
+`TargetPosition` — the real position only while the target is sensed — so no node can
+know more than the enemy saw. `EnemySearch` is the notice → approach → look-around
+routine behind Investigate. Space works the same
 way: a scene's `CoverMap` lists every cover spot (scanned from the NavMesh), but each
 enemy's `CoverKnowledge` holds only the spots it has learned (home turf, then what it
 sees), and `EnemyTactics` answers cover / flank / hiding-spot questions from that and the
-believed threat position. Each fight-level routine that both brains need lives once, outside
-either brain: `EnemySearch`, `ReturnStep`, `RetreatStep`, `RaiseAlarmStep`, `EnemyPost`
-(guarding), `EnemyMorale`, `AttackTokens` (how many enemies may melee or shoot one target
-at once). States and tree nodes stay thin wrappers that decide *when*; they report
-`AiState` and `EngageStep` so visuals, animation and audio follow either brain.
+believed threat position. Longer routines live in plain classes the nodes call:
+`EnemySearch`, `ReturnStep`, `RetreatStep`, `RaiseAlarmStep`, `EnemyPost` (guarding),
+`EnemyMorale`, `AttackTokens` (how many enemies may melee or shoot one target at once).
+Nodes stay thin wrappers that decide *when*; they report `AiState` and `EngageStep` so
+visuals, animation and audio follow.
 
 Enemies use the player's ability system as-is: `AbilityContext` describes any caster
 (`CasterTransform`, `CasterRigidbody`, `AimTransform`, `Health`), and `EnemyAbilities` /
 `GrenadeThrower` are plain classes owned by `EnemyAI`. An **`EnemySquad`** coordinates
 without taking control: it hands out a `SquadRole` per member (rules in the pure
 `SquadRoles`), relays members' callouts as through-wall callouts, and shakes morale when
-its leader falls; states and tree nodes read `EnemyAI.SquadRole` and decide for themselves.
+its leader falls; tree nodes read `EnemyAI.SquadRole` and decide for themselves.
 
-**An enemy decides with a behavior tree.** When its `EnemyData` has a `BehaviorTreeAsset`,
-`EnemyAI` skips its state machine and ticks a `BehaviorTree` — the agent's own copy of the
+**An enemy decides with a behavior tree.** Every enemy runs the `BehaviorTreeAsset` named by
+its `EnemyData` (there is no other brain): `EnemyAI` ticks a `BehaviorTree` — the agent's own copy of the
 asset's nodes (the asset is shared and never changes at runtime; per-agent state lives on
 the copies, made with `CreateInstance`). A `Subtree` node instantiates its asset into the same copy, so
 shared branches cost nothing extra and keep one blackboard. Interruptions use abort modes

@@ -30,7 +30,7 @@ namespace CGD.BehaviorTrees
             Context.DeltaTime  = deltaTime;
             Context.Time      += deltaTime;
             Context.TickCount++;
-            _root.Tick(Context);
+            using (Asset.Marker.Auto()) _root.Tick(Context);
         }
 
         // Stops whatever is running; the next Tick starts from the top.

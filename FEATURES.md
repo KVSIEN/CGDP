@@ -435,7 +435,8 @@
 - Included: Frag Grenade, Smoke Grenade (a smoke cloud that hides you and blocks sight lines), Contact Grenade (explodes the moment it hits something; faster and flatter to throw), Incendiary Grenade (shatters on impact, sets everything nearby on fire and leaves the ground burning for several seconds) and Stun Grenade (no damage; freezes everything in the blast in place for 3 seconds). They are found in supply cases like the others. Stunned and slowed firing-range dummies stop moving too
 
 ## Enemy AI
-- AI states — Patrol (or guard), Investigate, Hunt, Return, Chase, Retreat, Raise Alarm, Stunned, Dead — run on the shared state machine; each decides what comes next, a stun interrupts any of them and hands back to whatever was interrupted, and death is final until the enemy respawns (see *Enemy Behaviour States* below)
+- Every enemy thinks with a behavior tree (see *Enemy Behavior Trees* below): it patrols (or guards), investigates, hunts, returns to its post, fights, regroups and raises alarms. A stun pauses whatever it was doing and it carries on afterwards; death is final until the enemy respawns (see *Enemy Behaviour States* below). The regular enemy types and tiers all use the ready-made melee tree
+- Idle enemies are cheap: one with nothing on its mind makes a few decisions a second instead of one every frame (fewer still with nobody near), and is back to full speed the instant it notices anything, so it never reacts later
 - Enemies find targets by team: any character on an opposing team can be detected, so no player reference needs wiring; teamless props such as breakable crates are ignored
 - Enemies can be spawned from the object pool and reused: a reused enemy comes back at full health and starts patrolling again
 - **Enemy tiers**: every faction has three tiers of regular enemies. Tier 1 is the everyday roster (~100 effective health); tiers 2 and 3 are tougher (about 2.5× and 5× the effective health, harder hits) and a little bigger. For now tiers 2–3 are stat-only placeholders built on their faction's tier 1; their own looks and behaviour come later
@@ -505,10 +506,10 @@
 - Enemies placed under a squad fight together. While fighting, the squad hands out roles every couple of seconds from who is closest: the nearest ranged member **pins you down** — firing at where it thinks you are from cover, whether it can see you or not — and the nearest melee members **go straight in**, while everyone else **flanks**. Flankers take turns going left and right, so two of them close in from both sides
 - **Radio**: squad members hear each other's callouts across the whole area (about 40 m), walls or not — spot one and the rest know where you were seen
 - **Leader**: the first member leads. When the leader goes down, everyone else's morale takes a hit — sometimes enough to make them fall back — and the next member takes over
-- Works with both the built-in states and behavior trees: in the built-in states flankers always flank on their side, and suppressors keep firing from cover without needing a clear shot
+- The ready-made trees follow the roles: melee flankers always flank on their side, and a ranged suppressor keeps firing from cover without needing a clear shot
 
 ## Enemy Behavior Trees
-- An enemy type can be driven by a behavior tree instead of the built-in patrol / alert / chase states. The tree decides what it does each moment; senses, attacks, stuns and death work the same either way
+- Each enemy type's behavior tree decides what it does each moment; senses, attacks, stuns and death are handled for every tree the same way. One tree per type means one asset to read, tune and watch live
 - Trees are built visually in the **Behavior Tree Editor** (CGD › AI › Behavior Tree Editor, or double-click a tree asset): drag nodes onto a canvas, connect them, and edit each node's settings in the side panel. Children run left to right and are numbered, nodes are coloured by kind (composite, decorator, condition, action), and each shows a one-line summary of its settings plus optional designer notes
 - Editing works like the rest of Unity: undo/redo, copy/paste/duplicate, delete, a searchable create-node menu (Space or right-click), automatic tidy layout, pan and zoom
 - **Live view**: while playing, select an enemy and its tree lights up — running nodes yellow, successes green, failures red, faded when they weren't checked this frame — next to the enemy's blackboard (its working memory)
@@ -529,7 +530,7 @@
   - **Enemy combat & tactics**: Melee Attack, Takes Melee Turn, Shoot Burst, Use Ability, Ability Ready, Throw Grenade, Take Cover, In Cover, Flank, Regroup, Can Raise Alarm, Raise Alarm
   - **Enemy squad**: Has Squad Role, Suppress, Follow Leader
 - Ready-made trees built from three shared subtrees (Regroup, Raise Alarm, Routine): a **melee** enemy (dodge when shot at; strike when it's its turn; further off, flank when its squad says so or now and then anyway; otherwise close in) and a **ranged** enemy that dodges when shot at, pins you down from cover when it's its squad's suppressor, otherwise weighs cover against shooting on the move by how far you are, repositions every few seconds, hides or breaks away when badly hurt, and throws a grenade after losing sight of you
-- **AI Test scene** (`Scenes/AITest`): a walled arena with walls, pillars and low crates for cover and an alarm panel on the north wall. Two melee enemies patrol and a ranged one paces the far wall, all running behavior trees (the ranged one runs for the alarm); a Husk guards the south-east corner on the built-in state machine. All four fight as one squad The player starts with a rifle and respawns on death
+- **AI Test scene** (`Scenes/AITest`): a walled arena with walls, pillars and low crates for cover and an alarm panel on the north wall. Two melee enemies patrol and a ranged one paces the far wall, all running behavior trees (the ranged one runs for the alarm); a Husk guards the south-east corner (the regular Husk data, on the melee tree). All four fight as one squad. The player starts with a rifle and respawns on death
 
 ## Object Pooling
 - Frequently spawned objects — projectiles, grenades, zones, pickups, particle effects and enemies — are reused instead of created and destroyed, avoiding hitches and garbage collection
@@ -739,7 +740,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - Quest time limits and temporary buffs run on game time, so they pause with the game and slow down in slow motion
 
 ## State Machines
-- One reusable state machine for anything with states — characters, enemies, weapons, bosses, doors, machines, quests
+- One reusable state machine for anything with states — the director's pacing, quests, bosses, doors, machines (enemies think with behavior trees instead)
 - States switch when a condition becomes true, when a state or event asks, or forcibly (respawn/reset)
 - "From any state" transitions cover interrupts like Stunned or Dead in one line instead of in every state
 - A rule can forbid moves outright (nothing leaves Dead, a finished quest can't fail)

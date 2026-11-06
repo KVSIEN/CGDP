@@ -44,8 +44,8 @@ namespace CGD.Enemies
         public PerceptionProfile Senses;
 
         [Header("Behavior")]
-        [Tooltip("Optional. Decides what the enemy does instead of the built-in patrol / alert / chase states " +
-                 "(edit it in CGD › AI › Behavior Tree Editor)")]
+        [Tooltip("Decides what the enemy does: patrolling, searching, fighting (edit it in CGD › AI › Behavior Tree Editor). " +
+                 "Without one the enemy just stands there")]
         public BehaviorTreeAsset BehaviorTree;
 
         [Header("Combat")]

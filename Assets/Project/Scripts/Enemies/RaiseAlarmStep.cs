@@ -2,8 +2,7 @@ using UnityEngine;
 
 namespace CGD.Enemies
 {
-    // Running to an alarm panel and using it, shared by RaiseAlarmState and the Raise Alarm
-    // node. It reports where it last saw the target. A target that closes in, or a panel
+    // Running to an alarm panel and using it, behind the Raise Alarm node. It reports where it last saw the target. A target that closes in, or a panel
     // disabled before it gets there, ends the attempt; either way it only tries once per fight.
     internal sealed class RaiseAlarmStep
     {

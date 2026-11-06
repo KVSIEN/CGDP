@@ -4,8 +4,7 @@ using UnityEngine.AI;
 
 namespace CGD.Enemies
 {
-    // How an enemy looks into something it noticed, shared by the state machine (AlertState)
-    // and behavior trees (Investigate):
+    // How an enemy looks into something it noticed (the Investigate node runs it):
     //   notice      stop and stare at what caught its attention (briefly when already hunting)
     //   approach    go to where it believes the thing is — the guess, not the truth
     //   look around stand and scan, then check a few spots nearby, leaning the way a lost
@@ -39,8 +38,6 @@ namespace CGD.Enemies
         private Vector3 _lookAt;
 
         public EnemySearch(EnemyAI ai) => _ai = ai;
-
-        public bool IsActive => _phase != Phase.Done;
 
         // Starts looking into the current lead. timeLimit 0 = EnemyData's alert duration (longer when hunting).
         public void Begin(float timeLimit = 0f)

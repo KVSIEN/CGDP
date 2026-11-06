@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.AI;
 using CGD.Audio;
@@ -13,9 +14,8 @@ using CGD.Stats;
 namespace CGD.Enemies
 {
     // An enemy's body and senses — movement, perception, melee and ranged attacks — plus
-    // the "brain" that decides what to do with them. The brain is either the built-in state
-    // machine (Patrol, Alert, Chase) or, when EnemyData has one, a behavior tree. Stuns and
-    // death are handled here for both.
+    // the behavior tree (EnemyData.BehaviorTree) that decides what to do with them. Stuns
+    // and death are handled here, outside the tree.
     [RequireComponent(typeof(NavMeshAgent))]
     [RequireComponent(typeof(EnemyHealth))]
     [RequireComponent(typeof(Stunnable))]
@@ -23,6 +23,7 @@ namespace CGD.Enemies
     {
         // Investigate: curious, checking something out. Hunt: knows a hostile is about and is
         // searching for it. Return: heading back to its post after giving up (or a kill).
+        // Tree nodes report which of these they are doing, for visuals, animation and audio.
         public enum AiState { Patrol, Investigate, Hunt, Return, Chase, Retreat, RaiseAlarm, Stunned, Dead }
 
         private const float TurnSpeed = 540f;
@@ -38,19 +39,25 @@ namespace CGD.Enemies
         [SerializeField] private LayerMask   _obstacleMask;
 
         private static readonly Collider[] _attackBuffer = new Collider[16];
+        private static readonly ProfilerMarker SensesMarker = new("EnemyAI.Senses");
         private readonly HashSet<HealthManager> _attackHits = new();
 
         private EnemyHealth  _health;
         private Stunnable    _stunnable;
         private DamageSource _damageSource;
         private CharacterStats _stats;
-        private readonly StateMachine<AiState> _machine = new();
 
-        // Behavior tree brain: the tree, and the state its nodes last reported (for visuals).
+        // The brain: the tree, the state its nodes last reported (for visuals), and time
+        // gathered since its last tick (calm enemies think less often, see TreeTickRate).
         private BehaviorTree _tree;
-        private AiState      _treeState = AiState.Patrol;
+        private AiState      _state = AiState.Patrol;
         private AiState      _stateBeforeStun;
+        private float        _sinceTreeTick;
         private bool         _started;
+
+        // Turning toward a point, spread over the frames until the tree's next tick.
+        private Vector3 _facePoint;
+        private float   _faceTimeLeft;
 
         private CooldownTimer _attackCooldown;
         private float _windupTimer;
@@ -71,10 +78,9 @@ namespace CGD.Enemies
         // A grenade left its hand.
         public event Action Threw;
 
-        public AiState State => _tree != null ? _treeState
-                              : _machine.IsRunning ? _machine.Current : AiState.Patrol;
+        public AiState State => _state;
 
-        // The running tree (null when the state machine decides), for the tree editor's live view.
+        // The running tree (null when its EnemyData has none), for the tree editor's live view.
         public BehaviorTree Tree => _tree;
 
         // What it believes is going on (for the awareness indicator and stealth feedback).
@@ -117,7 +123,6 @@ namespace CGD.Enemies
         internal bool              IsAttacking  { get; private set; }
         internal bool              CanAttack    => !IsAttacking && _attackCooldown.IsReady;
         internal bool              IsStunned    => _stunnable.IsStunned;
-        internal AiState           PreviousState => _machine.Previous;
 
         private void Awake()
         {
@@ -134,44 +139,20 @@ namespace CGD.Enemies
             Abilities     = new EnemyAbilities(this, _damageSource);
             Grenades      = new GrenadeThrower(this, _damageSource);
             Morale        = new EnemyMorale(this);
-
-            EnemyState chaseState = _data.CombatType == EnemyCombatType.Ranged
-                ? new RangedChaseState(this)
-                : new ChaseState(this);
-
-            // The states pick their own next state. Stun can interrupt any of them and hands
-            // back to whatever was interrupted; Dead is final until respawn.
-            _machine.Add(AiState.Patrol,      new PatrolState(this))
-                    .Add(AiState.Investigate, new SearchState(this, AiState.Investigate))
-                    .Add(AiState.Hunt,        new SearchState(this, AiState.Hunt))
-                    .Add(AiState.Return,      new ReturnState(this))
-                    .Add(AiState.Chase,       chaseState)
-                    .Add(AiState.Retreat,     new RetreatState(this))
-                    .Add(AiState.RaiseAlarm,  new RaiseAlarmState(this))
-                    .Add(AiState.Stunned,     new StunnedState(this))
-                    .Add(AiState.Dead)
-                    .AddAnyTransition(AiState.Stunned, () => _stunnable.IsStunned)
-                    .SetRule((from, to) => from != AiState.Dead);
-            _machine.Changed += OnStateChanged;
             _health.OnDeath += OnDeath;
         }
 
-        // The brain is chosen here rather than in Awake: rolled affixes swap in their data
-        // (UseData) after Awake. Killed before its first frame, the enemy stays dead.
+        // The tree is built here rather than in Awake: rolled affixes swap in their data
+        // (UseData) after Awake. Killed before its first frame, the enemy stays dead. Without
+        // a tree it stands where it is (only its senses run).
         private void Start()
         {
             _started = true;
             Post.Remember();
             if (_data.BehaviorTree != null) _tree = _data.BehaviorTree.CreateInstance(gameObject, this);
-
-            if (_tree != null)
-            {
-                if (_health.IsDead) ReportState(AiState.Dead);
-            }
-            else if (!_machine.IsRunning)
-            {
-                _machine.Start(AiState.Patrol);
-            }
+            // Spread first ticks so a level's worth of calm enemies don't all think on one frame.
+            _sinceTreeTick = UnityEngine.Random.value * TreeTickRate.Remote;
+            if (_health.IsDead) ReportState(AiState.Dead);
         }
 
         private void OnEnable()
@@ -211,37 +192,54 @@ namespace CGD.Enemies
             // A stun freezes attacks and senses as well as movement.
             if (!_stunnable.IsStunned)
             {
-                _attackCooldown.Tick(dt);
-                TickAttack(dt);
-                RangedCombat.Tick(dt);
-                Perception.Tick(dt);
-                Tactics.Tick(Time.time);
-                Morale.Tick(dt);
-                TrackEngagement();
+                using (SensesMarker.Auto())
+                {
+                    _attackCooldown.Tick(dt);
+                    TickAttack(dt);
+                    RangedCombat.Tick(dt);
+                    Perception.Tick(dt);
+                    Tactics.Tick(Time.time);
+                    Morale.Tick(dt);
+                    TrackEngagement();
+                }
             }
 
             if (_tree != null) TickTree(dt);
-            else               _machine.Tick(dt);
+            TickFacing(dt);
         }
 
-        // A stun pauses the tree where it is (like StunnedState), so the enemy resumes what it was doing.
+        // A stun pauses the tree where it is, so the enemy resumes what it was doing.
         private void TickTree(float dt)
         {
             if (_stunnable.IsStunned)
             {
-                if (_treeState != AiState.Stunned) _stateBeforeStun = _treeState;
+                if (_state != AiState.Stunned) _stateBeforeStun = _state;
                 Agent.isStopped = true;
                 ReportState(AiState.Stunned);
                 return;
             }
 
-            if (_treeState == AiState.Stunned)
+            if (_state == AiState.Stunned)
             {
                 Agent.isStopped = false;
                 ReportState(_stateBeforeStun);
             }
+
+            _sinceTreeTick += dt;
+            if (_sinceTreeTick < TreeTickInterval()) return;
+
             EnemyBlackboard.Publish(this, _tree.Blackboard);
-            _tree.Tick(dt);
+            _tree.Tick(_sinceTreeTick);
+            _sinceTreeTick = 0f;
+        }
+
+        // Every frame once anything has its attention; the moment its senses pick something
+        // up the interval drops to zero, so a calm enemy reacts no later than a busy one.
+        private float TreeTickInterval()
+        {
+            bool engaged = Perception.Level != AwarenessLevel.Unaware || Perception.HasLead ||
+                           Perception.IsUnderFire || IsAttacking || RangedCombat.IsBursting;
+            return TreeTickRate.IntervalFor(engaged, Perception.SensesHostiles);
         }
 
         // For enemies spawned at runtime (level builder, dev console) instead of placed with a route.
@@ -252,12 +250,6 @@ namespace CGD.Enemies
 
         // Rolled affixes run the enemy on a modified copy of its data (perception keeps the original).
         public void UseData(EnemyData data) => _data = data;
-
-        internal void ChangeState(AiState state) => _machine.TryChangeTo(state);
-
-        // Investigate when merely curious, Hunt when it knows someone is about.
-        internal void ChangeToSearch() =>
-            ChangeState(Perception.Level == AwarenessLevel.Searching ? AiState.Hunt : AiState.Investigate);
 
         // A search found nothing: stay on edge and head back to its post.
         internal void GiveUpSearch()
@@ -306,21 +298,36 @@ namespace CGD.Enemies
         internal void ReportState(AiState state)
         {
             if (state != AiState.Chase) ReportStep(EngageStep.None);
-            if (_treeState == state) return;
-            _treeState = state;
+            if (_state == state) return;
+
+            // Out of the fight: give the melee turn to an ally (a stun keeps it).
+            if (_state == AiState.Chase && state != AiState.Stunned) Tactics.EndMeleeTurn();
+            _state = state;
             StateChanged?.Invoke(state);
         }
 
         internal void SetSpeed(float speed) => Agent.speed = speed * _stunnable.SpeedMultiplier;
 
+        // Turns as far as deltaTime allows. The turn itself is applied frame by frame (TickFacing),
+        // so it stays smooth when a calm enemy's tree ticks only a few times a second.
         internal void FaceTowards(Vector3 position, float deltaTime)
         {
-            Vector3 flat = position - transform.position;
+            _facePoint    = position;
+            _faceTimeLeft = deltaTime;
+        }
+
+        private void TickFacing(float dt)
+        {
+            if (_faceTimeLeft <= 0f) return;
+            float step = Mathf.Min(dt, _faceTimeLeft);
+            _faceTimeLeft -= step;
+
+            Vector3 flat = _facePoint - transform.position;
             flat.y = 0f;
             if (flat.sqrMagnitude < 0.0001f) return;
 
             transform.rotation = Quaternion.RotateTowards(
-                transform.rotation, Quaternion.LookRotation(flat), TurnSpeed * deltaTime);
+                transform.rotation, Quaternion.LookRotation(flat), TurnSpeed * step);
         }
 
         internal void TryStartAttack()
@@ -372,17 +379,6 @@ namespace CGD.Enemies
             }
         }
 
-        private void OnStateChanged(AiState previous, AiState next)
-        {
-            if (next != AiState.Investigate && next != AiState.Hunt) Search.Cancel();
-            if (next != AiState.Chase)
-            {
-                ReportStep(EngageStep.None);
-                Tactics.EndMeleeTurn();
-            }
-            StateChanged?.Invoke(next);
-        }
-
         // Remembers who it is fighting so it notices when that fight is won.
         private void TrackEngagement()
         {
@@ -407,7 +403,6 @@ namespace CGD.Enemies
             ReturnIsVictory = victory;
             ReturnLookAt    = lookAt;
             _alarmTried     = false;
-            if (_tree == null) ChangeState(AiState.Return);
         }
 
         // A heavy hit knocks it off balance: a short stun that also spoils a wind-up.
@@ -434,21 +429,15 @@ namespace CGD.Enemies
             Tactics.EndMeleeTurn();
             AttackTokens.ReleaseAll(this);
             FallenAllies.Add(new FallenAlly(this, transform.position, _health.Team));
-            if (_tree != null)
-            {
-                _tree.Abort();
-                ReportState(AiState.Dead);
-            }
-            else
-            {
-                _machine.ForceChangeTo(AiState.Dead);
-            }
+            _tree?.Abort();
+            ReportState(AiState.Dead);
+            _faceTimeLeft = 0f;
             Agent.enabled = false;
             enabled = false;
         }
 
-        // Reused from PrefabPool: wake the agent back up at the spawn position and start
-        // over from Patrol. The first spawn is handled by Start.
+        // Reused from PrefabPool: wake the agent back up at the spawn position and start its
+        // tree over. The first spawn is handled by Start.
         public void OnSpawned()
         {
             if (!_started) return;
@@ -468,16 +457,10 @@ namespace CGD.Enemies
             ReturnPending  = false;
             _alarmTried    = false;
             _engagedTarget = null;
+            _sinceTreeTick = 0f;
 
-            if (_tree != null)
-            {
-                _tree.Reset();
-                ReportState(AiState.Patrol);
-            }
-            else
-            {
-                _machine.ForceChangeTo(AiState.Patrol);
-            }
+            _tree?.Reset();
+            ReportState(AiState.Patrol);
         }
     }
 }

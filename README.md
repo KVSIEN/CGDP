@@ -53,7 +53,6 @@ Assets/
                             layout, search; Blackboard/ — key catalog and picker; Validation/ — tree checks; Debugging/ — trace,
                             live view, breakpoints)
       Enemies/              enemy components, EnemyRangedCombat, EnemySearch, EnemyPost (guarding, return point), shared steps (Return/Retreat/RaiseAlarmStep),
-                            AI/ (state classes: Patrol, Search (Investigate/Hunt), Return, Chase, RangedChase, Retreat, RaiseAlarm, Stunned),
                             Abilities/ (EnemyAbilities: casting Ability assets; GrenadeThrower, ThrowArc),
                             BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/, Squad/; EnemyBlackboard keys),
                             Perception/ (EnemyPerception: sight, hearing, touch, memory; AwarenessMeter, PerceptionProfile, callouts),

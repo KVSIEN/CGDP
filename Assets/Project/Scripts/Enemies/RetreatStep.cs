@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace CGD.Enemies
 {
-    // Falling back to regroup, shared by RetreatState and the Regroup node: run to high cover
+    // Falling back to regroup, behind the Regroup node: run to high cover
     // from the (believed) threat, or home to its post, then hold there facing the threat.
     internal static class RetreatStep
     {

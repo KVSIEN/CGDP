@@ -119,6 +119,10 @@ namespace CGD.Enemies
         // A lead (something new to look into) not yet consumed — read without consuming it.
         public bool HasLead => _hasLead;
 
+        // Whether any hostile was within sensing range at the last sample, noticed or not.
+        // Only for deciding how often the enemy thinks — never for what it knows.
+        public bool SensesHostiles => _candidates.Count > 0;
+
         // On edge after a search that found nothing: quicker to notice, slower to settle.
         public bool IsCautious => _clock < _cautiousUntil;
 
@@ -163,6 +167,7 @@ namespace CGD.Enemies
             LoseTarget();
             _cautiousUntil = float.NegativeInfinity;
             _bodiesSeen.Clear();
+            _candidates.Clear();
         }
 
         // Calms down completely and forgets its target.

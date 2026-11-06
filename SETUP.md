@@ -321,7 +321,9 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 
 ### Behavior trees (Enemy)
 
-No scene wiring: set `EnemyData` › **Behavior** › `BehaviorTree` to a `BehaviorTreeAsset` and every enemy using that data runs the tree instead of the built-in Patrol / Alert / Chase states. Leave it empty to keep the built-in states. `_waypoints` on `EnemyAI` still feed the tree's **Patrol** node.
+No scene wiring: every `EnemyData` › **Behavior** › `BehaviorTree` names the `BehaviorTreeAsset` its enemies think with — there is no other brain, so an empty slot leaves the enemy standing still (`EnemyBrainAssetTests` fails for shipped data without one). All the regular types and tiers (and `DefaultEnemyData`) use `MeleeEnemyBehaviorTree`. `_waypoints` on `EnemyAI` feed the tree's **Patrol** node.
+
+**Cost:** an enemy whose senses have nothing (unaware, no lead, not under fire, not attacking) ticks its tree every 0.1 s with a hostile in sensing range and every 0.25 s without (`TreeTickRate`), staggered between enemies; anything noticed brings it back to every frame. In the Profiler, each tree shows as `BehaviorTree.<asset name>` and the senses as `EnemyAI.Senses`.
 
 | Asset | Notes |
 |---|---|
@@ -365,7 +367,7 @@ Enemies            [EnemySquad]                          ← all four enemies ar
   Waypoints        Melee A 1–4, Melee B 1–4, Ranged 1–2
   Melee Enemy A, Melee Enemy B   (Scavenger prefab, _data = MeleeTestEnemyData, patrol Melee A / Melee B)
   Ranged Enemy                   (Maintenance Bot prefab, _data = RangedTestEnemyData, patrol Ranged; RaisesAlarm on)
-  Guard Enemy                    (Husk prefab, its own HuskEnemyData — built-in state machine, no route: guards facing west)
+  Guard Enemy                    (Husk prefab, its own HuskEnemyData — melee tree, no route: guards facing west)
 ```
 
 | Component | Assign | Notes |

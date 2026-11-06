@@ -1,6 +1,6 @@
 namespace CGD.Enemies
 {
-    // The pause-then-walk-home routine shared by ReturnState and the Return To Post node.
+    // The pause-then-walk-home routine behind the Return To Post node.
     internal static class ReturnStep
     {
         // True once it is back at its post (or the nearest point of its route).
