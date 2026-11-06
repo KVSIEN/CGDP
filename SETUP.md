@@ -307,6 +307,8 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 
 **Enemy type** is all in its `EnemyData`: team, health, speeds, sight range and angle, hearing range (how far a walking hostile's footsteps carry), melee or ranged, display name (used in kill messages), its **Senses** (a `PerceptionProfile`) and optionally its behavior tree.
 
+**Cover** — add a **CoverMap** (one per scene, any object; it's on its own `CoverMap` object in AITest and MapTest): `_spacing` (1.25 m between spots), `_lowHeight` / `_highHeight` (0.8 / 1.6 m: how tall an obstacle must be for low / full cover), `_obstacleMask` = what counts as an obstacle (Default). It scans the NavMesh the first time an enemy asks, so baked and runtime NavMeshes both work; call `Rebuild()` if the NavMesh changes later. Without a CoverMap enemies simply never use cover. Enemies learn cover around their spawn point and `_waypoints`, so give patrols routes through the area they should defend.
+
 **Senses** — `Enemies/Perception/`: `DefaultPerceptionProfile` (Void and the default enemy), `WaryPerceptionProfile` (Tech: slow to notice, long memory, thorough searches), `SkittishPerceptionProfile` (Bio: quick to notice and to give up). Create more with `Create › CGD › Enemies › Perception Profile`; an empty slot uses built-in defaults. A profile tunes how fast sight and sound turn into awareness, memory and guessing, callout range, and the notice / search / look-around timings. Footstep loudness and how much crouching or standing still hides you are the player's side, on `StealthSettings` (*Noticeability*). Enemies only hear footsteps of characters with a `Stealthable`; others count as moderately loud.
 
 ### Behavior trees (Enemy)
@@ -315,8 +317,8 @@ No scene wiring: set `EnemyData` › **Behavior** › `BehaviorTree` to a `Behav
 
 | Asset | Notes |
 |---|---|
-| `Enemies/BehaviorTrees/MeleeEnemyBehaviorTree` | Fight (chase, strike in range) → investigate → patrol. |
-| `Enemies/BehaviorTrees/RangedEnemyBehaviorTree` | Flee when below 30% health (8 s cooldown) → hold range + shoot bursts → investigate → patrol. The `EnemyData` should be `CombatType` Ranged for its preferred range, burst and spread values. |
+| `Enemies/BehaviorTrees/MeleeEnemyBehaviorTree` | Fight while it knows where you are (strike in range; further than 6 m, flank half the time, every 8 s at most; else chase) → investigate → patrol. |
+| `Enemies/BehaviorTrees/RangedEnemyBehaviorTree` | Below 30% health: hide behind cover or flee (8 s cooldown) → fight: new cover every 7 s, shoot from cover while it holds, else hold range + shoot → investigate → patrol. The `EnemyData` should be `CombatType` Ranged for its preferred range, burst and spread values. |
 | `Enemies/AITest/MeleeTestEnemyData`, `RangedTestEnemyData` | Scavenger and Maintenance Bot copies that use the trees above (the ranged one fires 3-round bursts). |
 
 **Editing:** *CGD › AI › Behavior Tree Editor*, or double-click a tree asset (`Create › CGD › AI › Behavior Tree` makes a new one with its Root). Space or right-click on the canvas to add nodes; drag from a node's bottom port to another's top port to connect. In Play mode select an enemy to watch its tree.
@@ -325,6 +327,8 @@ No scene wiring: set `EnemyData` › **Behavior** › `BehaviorTree` to a `Behav
 - Put a **reactive Selector** at the top with the most urgent branch on the left; it re-checks the branches to the left of the running one every frame.
 - Start a fighting branch with a **reactive Sequence** whose first child is a condition (`Has Target`), so losing the target ends the fight.
 - **Patrol** and **Hold Range** never finish on their own — keep them where something above can interrupt them.
+- Put **Take Cover** and **Flank** under a **Cooldown**: each run picks a new spot, so without one they reposition every frame they're allowed to. They need a CoverMap in the scene (Flank only needs the NavMesh).
+- Use **Knows Target** instead of **Has Target** above moves that break line of sight (flanking), so losing sight for a moment doesn't end the fight.
 - Trees with `Enemy/…` nodes must run on an `EnemyAI`.
 
 ---
@@ -335,7 +339,8 @@ No scene wiring: set `EnemyData` › **Behavior** › `BehaviorTree` to a `Behav
 
 ```
 Arena              [NavMeshSurface, RuntimeNavMesh]      ← NavMesh built from its children at load
-  Floor, Wall North/South/East/West, Cover Center/Left/Right, Pillar NW/NE   [MeshFilter, MeshRenderer, BoxCollider]
+  Floor, Wall North/South/East/West, Cover Center/Left/Right, Pillar NW/NE, Crate Low A–D   [MeshFilter, MeshRenderer, BoxCollider]
+CoverMap           [CoverMap]                            ← cover spots found from the NavMesh
 Enemies
   Waypoints        Melee A 1–4, Melee B 1–4, Ranged 1–2
   Melee Enemy A, Melee Enemy B   (Scavenger prefab, _data = MeleeTestEnemyData, patrol Melee A / Melee B)

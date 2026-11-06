@@ -69,6 +69,7 @@ namespace CGD.Enemies
         internal EnemyPerception   Perception   { get; private set; }
         internal EnemyRangedCombat RangedCombat { get; private set; }
         internal EnemySearch       Search       { get; private set; }
+        internal EnemyTactics      Tactics      { get; private set; }
         internal EnemyHealth       Health       => _health;
         internal EnemyData         Data         => _data;
         internal Transform[]       Waypoints    => _waypoints ?? Array.Empty<Transform>();
@@ -87,6 +88,7 @@ namespace CGD.Enemies
             Perception    = new EnemyPerception(this, _data, _targetMask, _obstacleMask, _health.Team);
             RangedCombat  = new EnemyRangedCombat(this, _damageSource, _obstacleMask);
             Search        = new EnemySearch(this);
+            Tactics       = new EnemyTactics(this, _obstacleMask);
 
             EnemyState chaseState = _data.CombatType == EnemyCombatType.Ranged
                 ? new RangedChaseState(this)
@@ -149,6 +151,7 @@ namespace CGD.Enemies
                 TickAttack(dt);
                 RangedCombat.Tick(dt);
                 Perception.Tick(dt);
+                Tactics.Tick(Time.time);
             }
 
             if (_tree != null) TickTree(dt);
@@ -254,6 +257,7 @@ namespace CGD.Enemies
         {
             RangedCombat.CancelBurst();
             Search.Cancel();
+            Tactics.ReleaseCover();
             if (_tree != null)
             {
                 _tree.Abort();
@@ -280,6 +284,7 @@ namespace CGD.Enemies
             _attackCooldown.Reset();
             RangedCombat.Reset();
             Search.Cancel();
+            Tactics.Reset();
             Perception.LoseTarget();
 
             if (_tree != null)

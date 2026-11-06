@@ -22,6 +22,8 @@ namespace CGD.Enemies
         private const float LeanChance      = 0.65f;
         // An enemy that knows someone is about keeps at it longer than one that's merely curious.
         private const float HuntTimeFactor  = 2.5f;
+        // Share of a hunting search spent checking cover someone could be hiding behind.
+        private const float HidingShare     = 0.5f;
 
         private enum Phase { Notice, Approach, LookAround, Done }
 
@@ -152,18 +154,37 @@ namespace CGD.Enemies
             _ai.Agent.SetDestination(destination);
         }
 
-        // A few reachable spots around the belief, most of them the way the target was going.
+        // A few reachable spots around the belief: when hunting, first the known cover nearby
+        // that is screened from it (where someone would hide), then spots the way the target
+        // was going.
         private void PlanSpots()
         {
             int count = Profile.SearchPoints.Evaluate();
             if (!IsHunting) count = Mathf.Min(count, 1);
 
             Vector3 center = _ai.Perception.LastKnownPosition;
-            for (int i = 0; i < count; i++)
+            if (IsHunting)
+            {
+                _ai.Tactics.HidingSpots(center, Profile.SearchRadius, _spots, count * 2);
+                Shuffle(_spots);
+                int keep = Mathf.Min(_spots.Count, Mathf.CeilToInt(count * HidingShare));
+                _spots.RemoveRange(keep, _spots.Count - keep);
+            }
+
+            for (int i = _spots.Count; i < count; i++)
             {
                 Vector3 direction = SpotDirection();
                 Vector3 candidate = center + direction * (Profile.SearchRadius * Random.Range(0.4f, 1f));
                 if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, 2f, NavMesh.AllAreas)) _spots.Add(hit.position);
+            }
+        }
+
+        private static void Shuffle(List<Vector3> spots)
+        {
+            for (int i = spots.Count - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                (spots[i], spots[j]) = (spots[j], spots[i]);
             }
         }
 

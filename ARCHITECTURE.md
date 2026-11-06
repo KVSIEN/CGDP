@@ -92,7 +92,11 @@ and turns them into an `AwarenessMeter` value, an `AwarenessLevel` and a belief
 (`LastKnownPosition`, a guess once the target is out of sight). Brains read
 `TargetPosition` — the real position only while the target is sensed — so no state or
 tree node can know more than the enemy saw. `EnemySearch` is the shared notice →
-approach → look-around routine both brains use to act on a lead.
+approach → look-around routine both brains use to act on a lead. Space works the same
+way: a scene's `CoverMap` lists every cover spot (scanned from the NavMesh), but each
+enemy's `CoverKnowledge` holds only the spots it has learned (home turf, then what it
+sees), and `EnemyTactics` answers cover / flank / hiding-spot questions from that and the
+believed threat position.
 
 **An enemy decides with a behavior tree.** When its `EnemyData` has a `BehaviorTreeAsset`,
 `EnemyAI` skips its state machine and ticks a `BehaviorTree` — the agent's own copy of the

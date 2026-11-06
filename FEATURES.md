@@ -471,6 +471,15 @@
 - **Read-out**: a mark over each enemy shows what it believes — a yellow "?" that grows as it makes up its mind, an orange "?" while it hunts, and a red "!" the moment it has you
 - Cheap to run: each enemy looks and listens a few times a second, staggered so they don't all check on the same frame, with a handful of raycasts per check
 
+## Enemy Tactics: Cover & Flanking
+- Levels are scanned for cover when they load: every spot along a wall, crate or pillar an enemy could stand behind, marked low (waist-high — it can shoot over) or high (hides it completely)
+- An enemy only uses cover it knows: the area around where it spawned and along its patrol route, plus spots it has seen since. In unfamiliar rooms it has to look around first
+- **Cover against you**: an enemy picks cover whose obstacle stands between it and where it *believes* you are, near the range it likes to fight at, and checks the line from you before committing. Two enemies don't crowd behind the same spot
+- **Ranged enemies** run to cover and shoot from it while it still screens them, and move to new cover every 6–10 seconds or as soon as you've worked round it. With no cover around they keep their distance and strafe as before. Badly hurt, they duck behind high cover rather than just running
+- **Flanking**: now and then an enemy circles round to your side instead of charging straight at you, taking the route you're least likely to see. It heads for where it believes you are, so moving while it's out of sight can leave it flanking an empty spot
+- **Searching cover**: an enemy hunting you checks the cover near where it lost you that would hide someone from it, before sweeping the rest of the area
+- Cover follows whatever is built: the scan runs on the NavMesh, so generated levels get cover too
+
 ## Enemy Behavior Trees
 - An enemy type can be driven by a behavior tree instead of the built-in patrol / alert / chase states. The tree decides what it does each moment; senses, attacks, stuns and death work the same either way
 - Trees are built visually in the **Behavior Tree Editor** (CGD › AI › Behavior Tree Editor, or double-click a tree asset): drag nodes onto a canvas, connect them, and edit each node's settings in the side panel. Children run left to right and are numbered, nodes are coloured by kind (composite, decorator, condition, action), and each shows a one-line summary of its settings plus optional designer notes
@@ -482,8 +491,9 @@
   - **General**: Wait (fixed or random time), Set Flag / Check Flag (blackboard memory)
   - **Enemy senses**: Has Target, Is Suspicious (heard a noise, was hit or lost sight of its target), Target In Range, Target In Sight, Health Below
   - **Enemy actions**: Patrol, Investigate, Chase Target, Melee Attack, Hold Range (a ranged enemy's spacing and strafing), Shoot Burst, Flee, Stop Moving
-- Two ready-made trees: a **melee** enemy (fight → investigate → patrol) and a **ranged** enemy that keeps its distance and shoots while moving, and breaks away when badly hurt (at most every 8 seconds)
-- **AI Test scene** (`Scenes/AITest`): a walled arena with cover and pillars where two melee enemies patrol and a ranged one paces the far wall, all running behavior trees. The player starts with a rifle and respawns on death
+  - **Enemy tactics**: Take Cover (to fight from, or to hide), In Cover, Flank, Knows Target (still counts moments after losing sight)
+- Two ready-made trees: a **melee** enemy (strike, sometimes flank, otherwise charge → investigate → patrol) and a **ranged** enemy that fights from cover and repositions, keeps its distance in the open, and hides or breaks away when badly hurt (at most every 8 seconds)
+- **AI Test scene** (`Scenes/AITest`): a walled arena with walls, pillars and low crates for cover where two melee enemies patrol and a ranged one paces the far wall, all running behavior trees. The player starts with a rifle and respawns on death
 
 ## Object Pooling
 - Frequently spawned objects — projectiles, grenades, zones, pickups, particle effects and enemies — are reused instead of created and destroyed, avoiding hitches and garbage collection

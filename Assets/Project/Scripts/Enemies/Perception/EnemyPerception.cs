@@ -95,6 +95,8 @@ namespace CGD.Enemies
         // Engaged: certain of a hostile and sensing it right now.
         public bool IsTargetDetected => Level == AwarenessLevel.Engaged;
         public bool IsSensing        => Target != null && _clock - _lastSensedAt <= _profile.SightLossGrace;
+        // Seconds since it last actually sensed its target (infinity if never).
+        public float TimeSinceSensed => _clock - _lastSensedAt;
 
         // Where it believes the hostile (or the disturbance) is: what it last sensed, or its guess.
         public Vector3 LastKnownPosition { get; private set; }

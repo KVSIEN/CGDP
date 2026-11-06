@@ -26,109 +26,185 @@ MonoBehaviour:
   - rid: 1010
   - rid: 1011
   - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  - rid: 1020
   references:
     version: 2
     RefIds:
     - rid: 1000
       type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: ea2dfd77c74f4add9573a219d1ecc29b
+        _guid: 99fe4ab68f134241ae9c5e5a8bdabcb1
         _position: {x: 0, y: 0}
         _comment: 
         _children:
-        - fd7d84be838b49e4a76b65d64f34fc1c
+        - 0781dc949ea7467ba086247f8daac33f
     - rid: 1001
       type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: fd7d84be838b49e4a76b65d64f34fc1c
+        _guid: 0781dc949ea7467ba086247f8daac33f
         _position: {x: 0, y: 150}
         _comment: 'Most urgent first: anything to the left interrupts what is to its right'
         _children:
-        - 68b12d4c7637482ba98bda5c845c2a7a
-        - ee6bf140c5344e41a3cf9c7d75adb81e
-        - 6bb0b793ea934c2099e08e5d5f7af77f
+        - 9eda7e4b52524faf933334a27f5354a9
+        - 365e2f89f779443fb32a18d674add89e
+        - 5f4e11e170584f8b866027abe0b81331
         _reactive: 1
     - rid: 1002
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 68b12d4c7637482ba98bda5c845c2a7a
-        _position: {x: -536.25, y: 300}
-        _comment: 'Fight while the target is detected'
+        _guid: 9eda7e4b52524faf933334a27f5354a9
+        _position: {x: -866.25, y: 300}
+        _comment: 'Fight while it knows where the target is (moments after losing sight count)'
         _children:
-        - fa8e32855a25422f947c85518882ffce
-        - 84c0769b2a884983b5ac3231cc6165a5
+        - 29cd935bcd1f48adb936cb9c237dd7db
+        - 1a8d1e52129b4d9c82c0d259a9a2cb68
         _reactive: 1
     - rid: 1003
-      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: fa8e32855a25422f947c85518882ffce
-        _position: {x: -783.75, y: 450}
+        _guid: 29cd935bcd1f48adb936cb9c237dd7db
+        _position: {x: -1333.75, y: 450}
         _comment: 
+        _memory: 4
     - rid: 1004
       type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 84c0769b2a884983b5ac3231cc6165a5
-        _position: {x: -288.75, y: 450}
+        _guid: 1a8d1e52129b4d9c82c0d259a9a2cb68
+        _position: {x: -398.75, y: 450}
         _comment: 
         _children:
-        - e270bb182e9c476f9aad845565a0b099
-        - 15d1144c529f4337aaccac384df9a68c
+        - 17622f53d39d48c3bc9a0c507ddac5fb
+        - f099b6a3badf4df2b32d2de96769f27e
+        - 070df9fdf9c7418caee5094acc09a097
         _reactive: 1
     - rid: 1005
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: e270bb182e9c476f9aad845565a0b099
-        _position: {x: -453.75, y: 600}
+        _guid: 17622f53d39d48c3bc9a0c507ddac5fb
+        _position: {x: -893.75, y: 600}
         _comment: 'Strike when close; stops if the target steps away'
         _children:
-        - a81b4fe75fbd4894a25ce3fd4cb10c45
-        - 8785f2bee0bb4853a57b24ea5e60c99a
+        - f3a5ae05e37348ffab979e3c70c30972
+        - 63bca0dae0a542689ce0d0986b1eb189
+        - fccf070c6f2d4d4f89146ef9560e8ec9
         _reactive: 1
     - rid: 1006
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f3a5ae05e37348ffab979e3c70c30972
+        _position: {x: -1113.75, y: 750}
+        _comment: 
+    - rid: 1007
       type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: a81b4fe75fbd4894a25ce3fd4cb10c45
-        _position: {x: -563.75, y: 750}
+        _guid: 63bca0dae0a542689ce0d0986b1eb189
+        _position: {x: -893.75, y: 750}
         _comment: 
         _range: 0
-    - rid: 1007
+    - rid: 1008
       type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 8785f2bee0bb4853a57b24ea5e60c99a
-        _position: {x: -343.75, y: 750}
+        _guid: fccf070c6f2d4d4f89146ef9560e8ec9
+        _position: {x: -673.75, y: 750}
         _comment: 
-    - rid: 1008
-      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 15d1144c529f4337aaccac384df9a68c
-        _position: {x: -123.75, y: 600}
-        _comment: 
-        _stopDistance: 0
     - rid: 1009
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: ee6bf140c5344e41a3cf9c7d75adb81e
-        _position: {x: 206.25, y: 300}
+        _guid: f099b6a3badf4df2b32d2de96769f27e
+        _position: {x: -343.75, y: 600}
+        _comment: 'Still some way off: now and then circle round instead of charging'
+        _children:
+        - a7914c1a427a4d83b229955ed2c66dca
+        - adc669bf6eb44b068c97bb2bda163492
+    - rid: 1010
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a7914c1a427a4d83b229955ed2c66dca
+        _position: {x: -453.75, y: 750}
+        _comment: 
+        _children:
+        - 5868e0047dfd4f98ae9b36a1f8a4ade3
+    - rid: 1011
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5868e0047dfd4f98ae9b36a1f8a4ade3
+        _position: {x: -453.75, y: 900}
+        _comment: 
+        _range: 6
+    - rid: 1012
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: adc669bf6eb44b068c97bb2bda163492
+        _position: {x: -233.75, y: 750}
+        _comment: 
+        _children:
+        - 3d47972876f94cb6b765bf29b5a4f901
+        _seconds: 8
+        _onlyAfterSuccess: 0
+    - rid: 1013
+      type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3d47972876f94cb6b765bf29b5a4f901
+        _position: {x: -233.75, y: 900}
+        _comment: 
+        _standOff: 0
+        _chance: 0.5
+        _giveUpAfter: 8
+    - rid: 1014
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 070df9fdf9c7418caee5094acc09a097
+        _position: {x: 96.25, y: 600}
+        _comment: 
+        _children:
+        - f6438e12db64432c84f50ba41cad186a
+        - eb6f390453df4202b90d5bd3443a5a8e
+        _reactive: 1
+    - rid: 1015
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f6438e12db64432c84f50ba41cad186a
+        _position: {x: -13.75, y: 750}
+        _comment: 
+    - rid: 1016
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: eb6f390453df4202b90d5bd3443a5a8e
+        _position: {x: 206.25, y: 750}
+        _comment: 
+        _stopDistance: 0
+    - rid: 1017
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 365e2f89f779443fb32a18d674add89e
+        _position: {x: 536.25, y: 300}
         _comment: 'Check out noises, hits and the target''s last known position'
         _children:
-        - 22f25b5da1664b8b985120ea0c745461
-        - a3ae95bf394f403ebc3901dfe54603d0
+        - e4059cebf34b483da8627a212727a6e5
+        - 5e9029652d0946588726e8b3f715da71
         _reactive: 0
-    - rid: 1010
+    - rid: 1018
       type: {class: IsSuspicious, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 22f25b5da1664b8b985120ea0c745461
-        _position: {x: 96.25, y: 450}
+        _guid: e4059cebf34b483da8627a212727a6e5
+        _position: {x: 426.25, y: 450}
         _comment: 
-    - rid: 1011
+    - rid: 1019
       type: {class: Investigate, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: a3ae95bf394f403ebc3901dfe54603d0
-        _position: {x: 316.25, y: 450}
+        _guid: 5e9029652d0946588726e8b3f715da71
+        _position: {x: 646.25, y: 450}
         _comment: 
-    - rid: 1012
+    - rid: 1020
       type: {class: Patrol, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 6bb0b793ea934c2099e08e5d5f7af77f
-        _position: {x: 536.25, y: 300}
+        _guid: 5f4e11e170584f8b866027abe0b81331
+        _position: {x: 866.25, y: 300}
         _comment: 
