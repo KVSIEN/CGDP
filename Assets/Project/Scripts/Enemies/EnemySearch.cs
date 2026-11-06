@@ -39,11 +39,13 @@ namespace CGD.Enemies
 
         public EnemySearch(EnemyAI ai) => _ai = ai;
 
-        // Starts looking into the current lead. timeLimit 0 = EnemyData's alert duration (longer when hunting).
+        // Starts looking into the current lead. timeLimit 0 = EnemyData's alert duration (longer when
+        // hunting). The director's pacing stretches it at the peak and cuts it short in the calm.
         public void Begin(float timeLimit = 0f)
         {
             _elapsed   = 0f;
-            _timeLimit = (timeLimit > 0f ? timeLimit : _ai.Data.AlertDuration) * (IsHunting ? HuntTimeFactor : 1f);
+            _timeLimit = (timeLimit > 0f ? timeLimit : _ai.Data.AlertDuration) * (IsHunting ? HuntTimeFactor : 1f)
+                       * EnemyPacing.Current.SearchScale;
             _ai.Perception.ConsumeLead();
             StartNotice(fresh: true);
         }

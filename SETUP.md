@@ -327,8 +327,8 @@ No scene wiring: every `EnemyData` › **Behavior** › `BehaviorTree` names the
 
 | Asset | Notes |
 |---|---|
-| `Enemies/BehaviorTrees/MeleeEnemyBehaviorTree` | Regroup → Raise Alarm → fight while it knows where you are (under fire: dodge half the time, at most every 3 s; strike in range when it's its turn; squad Flank role and further than 6 m: flank; further than 6 m: flank half the time at most every 8 s; else close in) → Routine. |
-| `Enemies/BehaviorTrees/RangedEnemyBehaviorTree` | Below 30% health: hide behind cover or flee (8 s cooldown) → Regroup → Raise Alarm → squad Suppress role: dodge, else take cover and Suppress (or Suppress where it stands) → fight: dodge, else a Utility Selector weighs *from cover* (fixed 0.6: run to fresh cover, shoot 6–9 s) against *in the open* (TargetDistance 6–25 m: hold range and shoot for 3 s) → just lost sight (Knows Target 3 s, not Has Target): Throw Grenade `DefaultGrenadeData`, at most every 12 s, 3 per life → Routine. The `EnemyData` should be `CombatType` Ranged for its preferred range, burst and spread values. |
+| `Enemies/BehaviorTrees/MeleeEnemyBehaviorTree` | Regroup → Raise Alarm → fight while it knows where you are (under fire: dodge half the time, at most every 3 s; strike in range when it's its turn; squad Flank role and further than 6 m: Director Permit → flank; Pacing Is build-up/peak and further than 6 m: flank half the time at most every 8 s, behind a Director Permit; else close in) → Routine. |
+| `Enemies/BehaviorTrees/RangedEnemyBehaviorTree` | Below 30% health: hide behind cover or flee (8 s cooldown) → Regroup → Raise Alarm → squad Suppress role, behind a Director Permit: dodge, else take cover and Suppress (or Suppress where it stands) → fight: dodge, else a Utility Selector weighs *from cover* (fixed 0.6: run to fresh cover, shoot 6–9 s) against *in the open* (TargetDistance 6–25 m: hold range and shoot for 3 s) → just lost sight (Knows Target 3 s, not Has Target): Throw Grenade `DefaultGrenadeData` behind a Director Permit, at most every 12 s, 3 per life → Routine. The `EnemyData` should be `CombatType` Ranged for its preferred range, burst and spread values. |
 | `Enemies/BehaviorTrees/Shared/RegroupSubtree` | Knows Target → Is Shaken → Regroup; aborts lower priority. |
 | `Enemies/BehaviorTrees/Shared/RaiseAlarmSubtree` | Has Target → Can Raise Alarm → Raise Alarm; aborts lower priority. Does nothing for enemies that don't raise alarms. |
 | `Enemies/BehaviorTrees/Shared/RoutineSubtree` | Investigate leads (aborts lower priority) → Return To Post → Patrol. |
@@ -340,7 +340,9 @@ No scene wiring: every `EnemyData` › **Behavior** › `BehaviorTree` names the
 
 **New key-reading nodes:** mark the string field `[BlackboardKey(BlackboardKeyAccess.Read, BlackboardValueType.Float)]` (or `Write`) to get the picker and the "nothing writes this" check. Keys an agent writes itself are `const string` fields marked `[AgentBlackboardKey]` (see `EnemyBlackboard`).
 
-**Enemy blackboard** — refreshed every tick for generic nodes (Compare Number, Score): `Health`, `Morale`, `Awareness` (0–1), `TargetDistance` (metres to the believed target position; unset without a target), `Cautious` (flag).
+**Enemy blackboard** — refreshed every tick for generic nodes (Compare Number, Score): `Health`, `Morale`, `Awareness` (0–1), `TargetDistance` (metres to the believed target position; unset without a target), `Cautious` (flag); from the director: `Pacing` (0 build-up, 1 peak, 2 fade, 3 calm; 0 without a director), `Pressure` (1 neutral), `PlayerStress` (0–1).
+
+**Pacing nodes:** **Pacing Is** (a set of phases; no director counts as build-up) and **Director Permit** (decorator: runs its child only if a level-wide bold-move permit is free, holds it until the child ends). Put a Director Permit directly above each bold move (Flank, Throw Grenade, a Suppress branch) — under any Cooldown/Chance, so the chance isn't spent while waiting for a permit.
 
 **Tree rules of thumb:**
 - The top **Selector** lists branches most urgent first. Give each branch that should interrupt the ones to its right **Abort: Lower Priority**, and start it with its conditions (`Has Target`, `Is Shaken`…) — only those leading conditions are re-checked.
@@ -773,7 +775,7 @@ HUD (prefab instance)
 ### Director (pacing)
 
 ```
-Director  [GameDirector, ReinforcementSpawner, SupplySpawner, DirectorMusic]   ← scene root
+Director  [GameDirector, ReinforcementSpawner, SupplySpawner, DirectorMusic, PatrolProbes]   ← scene root
 ```
 
 | Component | Assign | Notes |
@@ -782,6 +784,9 @@ Director  [GameDirector, ReinforcementSpawner, SupplySpawner, DirectorMusic]   �
 | **ReinforcementSpawner** | `_settings` = `Director/DefaultReinforcementSettings` · `_director` = the GameDirector · `_player` = Player's Transform · `_obstacleMask` = geometry that hides a spawn (Default — the level's `_geometryLayer`) | Spawns only while the director allows it. Needs a baked NavMesh; the arrival sound needs an `AudioPool` in the scene. Optional. |
 | **SupplySpawner** | `_settings` = `Director/DefaultSupplySettings` · `_director` = the GameDirector · `_health` = Player's PlayerHealth · `_inventory` = PlayerInventory · `_weapons`? = WeaponController (without it only healing is handed out) · `_obstacleMask` = Default | Needs a baked NavMesh. Optional. |
 | **DirectorMusic** | `_settings` = `Director/DefaultMusicSettings` · `_director` = the GameDirector | Creates its own 2D AudioSources as children. Layers without a clip are skipped, so it is silent until clips are assigned. Optional. |
+| **PatrolProbes** | `_settings` = `Director/DefaultPatrolProbeSettings` · `_director` = the GameDirector · `_player` = Player's Transform · `_enemyMask` = layers enemy colliders are on (Everything) | During a build-up, sends a calm enemy 15–45 m away to check a spot 5–10 m from the player, every 12–20 s (at neutral pressure), at most 2 per build-up. Needs a NavMesh. Optional. |
+
+**Enemies and pacing** need no extra wiring: the GameDirector publishes its phase to every enemy (`EnemyPacing`), using `DefaultDirectorSettings` › *Enemies* — one row per phase: *Bold Moves* (level-wide Director Permits at neutral pressure; build-up 2, peak 4, fade 1, calm 1), *Attackers* (× EnemyData's MaxMeleeAttackers / MaxShooters; 1, 1.5, 0.75, 0.5), *Search Time* (× search duration; 1, 1.25, 0.6, 0.4), *Fall Back* (× the PerceptionProfile's retreat threshold; 1, 0.75, 1.25, 1.5). Pressure scales Bold Moves. Scenes without a GameDirector run enemies unscaled and with unlimited permits.
 
 `Scenes/MapTest` is wired this way (Sandbox has no director). Any gameplay scene can add the same root object.
 
@@ -846,7 +851,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Crafting/` | `BandageRecipe`, `CombatStimRecipe`, `ExtendedMagazineRecipe`, `CombatVestRecipe` | CraftingStation |
 | `Level/Objectives/` | `DefaultMapObjectiveSettings` (templates, 1–2 main / 0–3 side per map, console = `Environment/Level/LockTerminal`, retrieve pickup = `LootItemPickup` with `Items/Resources/DataCoreResource`, reward cache = `RewardCache`, credits and cache luck per tier), objective templates (`…Objective`: steps of Clear / Activate / Retrieve, each with a room tier range `MinTier`–`MaxTier`; `_tierOrder` Any / Never Down / Same; in order or not; same faction or not; main / side / either) | LevelBuilder |
 | `Expedition/` | `DefaultRunStarterKit` — the starting room's loadout (Modular Pistol + a random Dagger/Sword/Axe offhand, 0–1 random gear, supplies) | ExpeditionRunner |
-| `Director/` | `DefaultDirectorSettings` (stress per damage taken / nearby kill, combat memory, intensity decay, peak 0.75 held 4 s, calm below 0.25 for 30–45 s, 15 s opening calm; *Performance*: pressure 0.7–1.35, easy peak ≥ 60% health, hard ≤ 30%, step 0.2, death 0.5), `DefaultReinforcementSettings` (Husk, Scavenger, MaintenanceBot; 2–4 every 20–35 s at neutral pressure, max 6 alive, 18–30 m away; arrival message, no sound yet), `DefaultSupplySettings` (`LootItemPickup`; 2 `BandageConsumable` below 50% health with < 2 carried; 3 magazines of the matching munition below 2 spare; 4 s into a calm, 4–9 m away), `DefaultMusicSettings` (4 layers and 2 stingers, no clips yet) | GameDirector, ReinforcementSpawner, SupplySpawner, DirectorMusic |
+| `Director/` | `DefaultDirectorSettings` (stress per damage taken / nearby kill, combat memory, intensity decay, peak 0.75 held 4 s, calm below 0.25 for 30–45 s, 15 s opening calm; *Performance*: pressure 0.7–1.35, easy peak ≥ 60% health, hard ≤ 30%, step 0.2, death 0.5), `DefaultReinforcementSettings` (Husk, Scavenger, MaintenanceBot; 2–4 every 20–35 s at neutral pressure, max 6 alive, 18–30 m away; arrival message, no sound yet), `DefaultSupplySettings` (`LootItemPickup`; 2 `BandageConsumable` below 50% health with < 2 carried; 3 magazines of the matching munition below 2 spare; 4 s into a calm, 4–9 m away), `DefaultMusicSettings` (4 layers and 2 stingers, no clips yet), `DefaultPatrolProbeSettings` (every 12–20 s in a build-up, 2 per build-up, enemies 15–45 m away, spot 5–10 m from the player) | GameDirector, ReinforcementSpawner, SupplySpawner, DirectorMusic, PatrolProbes |
 | `DevTools/` | `DevCatalog` (all items, weapon categories, buffs; no enemy prefabs exist yet) | DevCommands |
 | `Abilities/` | Dash (needs `PlayerDodge`), Heal, Projectile, Shockwave, DamageBoost, ConeBlast (Targeted), GroundSlam (Timeline — needs `TimelineAbilityRunner`), Stealth (needs `Stealthable`) | PlayerAbilities |
 | `Abilities/` (instant strike) | `CrushingBlowAbility` (Targeted, `DefaultRaycastTargetSelector`) | PlayerAbilities |

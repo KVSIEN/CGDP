@@ -273,6 +273,18 @@ namespace CGD.Enemies
             DiscoverBody(fallen);
         }
 
+        // A vague reason to go and look (the director's patrol probes): mildly curious, not
+        // hunting, and only when it has nothing else on its mind.
+        public bool Nudge(Vector3 position)
+        {
+            if (IsTargetDetected || _hasLead || Level != AwarenessLevel.Unaware) return false;
+
+            _meter.RaiseToSuspicious(0.05f);
+            Lead(position);
+            UpdateLevel();
+            return true;
+        }
+
         // Told where to look by the game (reinforcements sent toward the player).
         public void Alert(Vector3 position, DamageSource source)
         {

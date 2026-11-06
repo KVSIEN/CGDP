@@ -71,78 +71,80 @@ MonoBehaviour:
   - rid: 1055
   - rid: 1056
   - rid: 1057
+  - rid: 1058
+  - rid: 1059
   references:
     version: 2
     RefIds:
     - rid: 1000
       type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 0c3d5eb128bc46ee8488830edbf8f5ee
+        _guid: 846d0e0ecb9049438fcee6bc012a883a
         _position: {x: 0, y: 0}
         _comment: 
         _children:
-        - be901cd3348145f6bcaecb86c40bcc07
+        - 64c2f4685dac46d6b07230fa0c78e10b
     - rid: 1001
       type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: be901cd3348145f6bcaecb86c40bcc07
+        _guid: 64c2f4685dac46d6b07230fa0c78e10b
         _position: {x: 0, y: 150}
         _comment: 'Most urgent first: branches that abort lower priority interrupt whatever runs to their right'
         _children:
-        - 12402bec41c0432fb1e2a53a8afa857c
-        - 5a49ab059acb4dcb87ca218094879fc4
-        - 02395861e6da4b8f9deeb768f7ca52c5
-        - 23c0f44ab6974d39b1714ba2164d20e1
-        - 89575b90b5d64be19abd10527e3236b2
-        - 90045392fb62417395fb6e0587d6ad21
-        - 21b7838c2db94843883c511355f84452
+        - 73e36391e7264ffa865a0b57136dfdc7
+        - 8d23f420121e4118b91d530f3466029a
+        - 99f4ec755d904661a42346ab9929c008
+        - de65767f5c1f44d6aa60aa46c02e0571
+        - ca4bb6225a0a4d11a734503eab1d9ebd
+        - 62e40ea8547d43ff83520af9b3e26d52
+        - d85e29a3c84e4bc9967031b7d8ed052c
     - rid: 1002
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 12402bec41c0432fb1e2a53a8afa857c
+        _guid: 73e36391e7264ffa865a0b57136dfdc7
         _position: {x: -2722.5, y: 300}
         _comment: 'Badly hurt: get out of the line of fire, at most every 8 seconds'
         _children:
-        - a10202c8a5cf45fd9253d44beade1005
-        - 588f431cac2b48cfb54230e64d6feec5
-        - 8f118d3518a045509bd24a45ae801945
+        - b036cbf6c2ae4899985848ff407d997b
+        - 5629a3c6040649a38267a5e7007e2e05
+        - 88bbef148fc741d38f46813bf4974b24
         _abort: 2
     - rid: 1003
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: a10202c8a5cf45fd9253d44beade1005
+        _guid: b036cbf6c2ae4899985848ff407d997b
         _position: {x: -2997.5, y: 450}
         _comment: 
     - rid: 1004
       type: {class: HealthBelow, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 588f431cac2b48cfb54230e64d6feec5
+        _guid: 5629a3c6040649a38267a5e7007e2e05
         _position: {x: -2777.5, y: 450}
         _comment: 
         _fraction: 0.3
     - rid: 1005
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 8f118d3518a045509bd24a45ae801945
+        _guid: 88bbef148fc741d38f46813bf4974b24
         _position: {x: -2447.5, y: 450}
         _comment: 
         _children:
-        - 0f43f7c76e94420395de679edbe0dffc
+        - e1c3c64386ac4f9f81a37446dd8a24bc
         _seconds: 8
         _onlyAfterSuccess: 0
     - rid: 1006
       type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 0f43f7c76e94420395de679edbe0dffc
+        _guid: e1c3c64386ac4f9f81a37446dd8a24bc
         _position: {x: -2447.5, y: 600}
         _comment: 'Hide behind known cover, or just run'
         _children:
-        - e17ad37b55044d9baa735e8daa0e05a6
-        - c094e84d6b92477a8dd95b0d443cd5bb
+        - 924d619fd6604bdd9e363df89caac225
+        - 4e7bb2bacd674de29c6b28f9c78f64e6
     - rid: 1007
       type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: e17ad37b55044d9baa735e8daa0e05a6
+        _guid: 924d619fd6604bdd9e363df89caac225
         _position: {x: -2557.5, y: 750}
         _comment: 
         _use: 1
@@ -150,241 +152,249 @@ MonoBehaviour:
     - rid: 1008
       type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: c094e84d6b92477a8dd95b0d443cd5bb
+        _guid: 4e7bb2bacd674de29c6b28f9c78f64e6
         _position: {x: -2337.5, y: 750}
         _comment: 
         _distance: 8
     - rid: 1009
       type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 5a49ab059acb4dcb87ca218094879fc4
+        _guid: 8d23f420121e4118b91d530f3466029a
         _position: {x: -2117.5, y: 300}
         _comment: 
         _tree: {fileID: 11400000, guid: c151eafdbc6045c197de5b66618945af, type: 2}
     - rid: 1010
       type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 02395861e6da4b8f9deeb768f7ca52c5
+        _guid: 99f4ec755d904661a42346ab9929c008
         _position: {x: -1897.5, y: 300}
         _comment: 
         _tree: {fileID: 11400000, guid: 7ab5900d0c634e3682dad12bcbb34b95, type: 2}
     - rid: 1011
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 23c0f44ab6974d39b1714ba2164d20e1
+        _guid: de65767f5c1f44d6aa60aa46c02e0571
         _position: {x: -1210, y: 300}
         _comment: 'Squad suppressor: from cover, keep the target pinned (seen or not) while the flankers move'
         _children:
-        - 3ed92473357f47da945b07556138af96
-        - c2351472ec99451383320659d60b1293
-        - b382a2c8792a49ee82b3bfeaea7fd0e5
+        - 8e69a2794c894432a5ef2510bef8fcb2
+        - 9837b78bc83b405e8ca1059957974f0a
+        - 449b760cf0804473b87d7968eb4123f3
         _abort: 3
     - rid: 1012
       type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 3ed92473357f47da945b07556138af96
+        _guid: 8e69a2794c894432a5ef2510bef8fcb2
         _position: {x: -1677.5, y: 450}
         _comment: 
         _memory: 4
     - rid: 1013
       type: {class: HasSquadRole, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: c2351472ec99451383320659d60b1293
+        _guid: 9837b78bc83b405e8ca1059957974f0a
         _position: {x: -1457.5, y: 450}
         _comment: 
         _role: 3
     - rid: 1014
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 449b760cf0804473b87d7968eb4123f3
+        _position: {x: -742.5, y: 450}
+        _comment: 'Suppressing fire is a bold move: only while the director allows one'
+        _children:
+        - b6fe96526abb47e082b4652b459c7532
+    - rid: 1015
       type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: b382a2c8792a49ee82b3bfeaea7fd0e5
-        _position: {x: -742.5, y: 450}
+        _guid: b6fe96526abb47e082b4652b459c7532
+        _position: {x: -742.5, y: 600}
         _comment: 
         _children:
-        - 9cd0f1595a924a0b9840081653aecc47
-        - b2821b104e1c4c859ca82a4fbcb980bb
-        - b41ee418251848c08863849f27e734bf
-    - rid: 1015
+        - 418cad5643814e039d307c1129cba071
+        - 1874d02268cb4b93b955433505c47257
+        - 417d8886a5614d318c13b3252329fc28
+    - rid: 1016
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 9cd0f1595a924a0b9840081653aecc47
-        _position: {x: -1127.5, y: 600}
+        _guid: 418cad5643814e039d307c1129cba071
+        _position: {x: -1127.5, y: 750}
         _comment: 'Shot at (hit or near miss): sometimes sidestep out of the line of fire'
         _children:
-        - 1236fa4fbe2b4d0bbb2032cd9fc94976
-        - 73211f241ad8496f899922b7017ee2a2
+        - 504aaf2d245c468b979d60bf7dac8fd5
+        - 6fa447342da44a438828a23b5dccfec2
         _abort: 2
-    - rid: 1016
+    - rid: 1017
       type: {class: UnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 1236fa4fbe2b4d0bbb2032cd9fc94976
-        _position: {x: -1237.5, y: 750}
+        _guid: 504aaf2d245c468b979d60bf7dac8fd5
+        _position: {x: -1237.5, y: 900}
         _comment: 
-    - rid: 1017
+    - rid: 1018
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 73211f241ad8496f899922b7017ee2a2
-        _position: {x: -1017.5, y: 750}
-        _comment: 
-        _children:
-        - c20c2e52e102427c8920027247d74e30
-        _seconds: 3
-        _onlyAfterSuccess: 0
-    - rid: 1018
-      type: {class: Chance, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: c20c2e52e102427c8920027247d74e30
+        _guid: 6fa447342da44a438828a23b5dccfec2
         _position: {x: -1017.5, y: 900}
         _comment: 
         _children:
-        - 68d0b322dc19465db26eb94b46476815
-        _probability: 0.5
+        - 68857a06f3044827ace9224f40d5bb87
+        _seconds: 3
+        _onlyAfterSuccess: 0
     - rid: 1019
+      type: {class: Chance, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 68857a06f3044827ace9224f40d5bb87
+        _position: {x: -1017.5, y: 1050}
+        _comment: 
+        _children:
+        - 2cc14c40625e42f7acf0e4d774b5c514
+        _probability: 0.5
+    - rid: 1020
       type: {class: Dodge, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 68d0b322dc19465db26eb94b46476815
-        _position: {x: -1017.5, y: 1050}
+        _guid: 2cc14c40625e42f7acf0e4d774b5c514
+        _position: {x: -1017.5, y: 1200}
         _comment: 
         _distance: 3
         _speed: 2.2
         _maxTime: 0.8
-    - rid: 1020
+    - rid: 1021
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: b2821b104e1c4c859ca82a4fbcb980bb
-        _position: {x: -687.5, y: 600}
+        _guid: 1874d02268cb4b93b955433505c47257
+        _position: {x: -687.5, y: 750}
         _comment: 
         _children:
-        - d17e05f70f394ad0ab3e7c877cc9b715
-        - 6152c045bcc24852a6caebe15bd4f610
-    - rid: 1021
+        - 4fe2c5a1962045ac885d22df9c2efcb8
+        - 4389cf35827343089d8c09e7e1b96c8f
+    - rid: 1022
       type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: d17e05f70f394ad0ab3e7c877cc9b715
-        _position: {x: -797.5, y: 750}
+        _guid: 4fe2c5a1962045ac885d22df9c2efcb8
+        _position: {x: -797.5, y: 900}
         _comment: 
         _use: 0
         _giveUpAfter: 6
-    - rid: 1022
+    - rid: 1023
       type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 6152c045bcc24852a6caebe15bd4f610
-        _position: {x: -577.5, y: 750}
-        _comment: 
-        _children:
-        - 0070be8d6e664d14898be43c837e1fa1
-        _count: 0
-        _stopOnFailure: 1
-    - rid: 1023
-      type: {class: Suppress, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 0070be8d6e664d14898be43c837e1fa1
+        _guid: 4389cf35827343089d8c09e7e1b96c8f
         _position: {x: -577.5, y: 900}
         _comment: 
-    - rid: 1024
-      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: b41ee418251848c08863849f27e734bf
-        _position: {x: -357.5, y: 600}
-        _comment: 'No cover to be had: suppress from where it stands'
         _children:
-        - 2a83c9d84ea747738a9ece3798732426
+        - e75459539c8a4fe482904e0e1737552f
         _count: 0
         _stopOnFailure: 1
-    - rid: 1025
+    - rid: 1024
       type: {class: Suppress, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 2a83c9d84ea747738a9ece3798732426
-        _position: {x: -357.5, y: 750}
+        _guid: e75459539c8a4fe482904e0e1737552f
+        _position: {x: -577.5, y: 1050}
         _comment: 
+    - rid: 1025
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 417d8886a5614d318c13b3252329fc28
+        _position: {x: -357.5, y: 750}
+        _comment: 'No cover to be had: suppress from where it stands'
+        _children:
+        - 5690ac6a0ad146c9a889f14f51d50d37
+        _count: 0
+        _stopOnFailure: 1
     - rid: 1026
+      type: {class: Suppress, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5690ac6a0ad146c9a889f14f51d50d37
+        _position: {x: -357.5, y: 900}
+        _comment: 
+    - rid: 1027
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 89575b90b5d64be19abd10527e3236b2
+        _guid: ca4bb6225a0a4d11a734503eab1d9ebd
         _position: {x: 271.562, y: 300}
         _comment: 'Fight while the target is detected'
         _children:
-        - 122048e733d746609769baf166d19f1f
-        - 6d3e36a4e77c4b7c93e585562064b16b
+        - 611a92435d604ded8ca310019aadc675
+        - 2672bfacade941a29f2c4a380afb11bd
         _abort: 3
-    - rid: 1027
+    - rid: 1028
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 122048e733d746609769baf166d19f1f
+        _guid: 611a92435d604ded8ca310019aadc675
         _position: {x: -137.5, y: 450}
         _comment: 
-    - rid: 1028
+    - rid: 1029
       type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 6d3e36a4e77c4b7c93e585562064b16b
+        _guid: 2672bfacade941a29f2c4a380afb11bd
         _position: {x: 680.625, y: 450}
         _comment: 
         _children:
-        - ad4d8986e50d44bfabb803691fa5d85c
-        - c00cab84afbe44fcb7d7de0cef399771
-    - rid: 1029
+        - 5fc9f5deb46b48dc8741ccc55abae1ba
+        - 7de8df4c03b244f4868a775b2f48942c
+    - rid: 1030
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: ad4d8986e50d44bfabb803691fa5d85c
+        _guid: 5fc9f5deb46b48dc8741ccc55abae1ba
         _position: {x: 192.5, y: 600}
         _comment: 'Shot at (hit or near miss): sometimes sidestep out of the line of fire'
         _children:
-        - 8ee35d0d05e448eab82d9c4f23700c8e
-        - 83b6133138d04d358b83ff78bc3c8eb0
+        - 774f6eb8c6544d7bbc762eaf4a3fc7f9
+        - 6ddbd36b375c48bd83fdca60f1287c1d
         _abort: 2
-    - rid: 1030
+    - rid: 1031
       type: {class: UnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 8ee35d0d05e448eab82d9c4f23700c8e
+        _guid: 774f6eb8c6544d7bbc762eaf4a3fc7f9
         _position: {x: 82.5, y: 750}
         _comment: 
-    - rid: 1031
+    - rid: 1032
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 83b6133138d04d358b83ff78bc3c8eb0
+        _guid: 6ddbd36b375c48bd83fdca60f1287c1d
         _position: {x: 302.5, y: 750}
         _comment: 
         _children:
-        - 2a21c18a9ec24bd58b86ccb8590f8ad6
+        - 19738f7c998143bdb5c9dfbf4defdcac
         _seconds: 3
         _onlyAfterSuccess: 0
-    - rid: 1032
+    - rid: 1033
       type: {class: Chance, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 2a21c18a9ec24bd58b86ccb8590f8ad6
+        _guid: 19738f7c998143bdb5c9dfbf4defdcac
         _position: {x: 302.5, y: 900}
         _comment: 
         _children:
-        - 9b9fe9dd3b41499dba705ac0c1d2bb12
+        - dec4ec14a6bb452bb797bef8d0739421
         _probability: 0.5
-    - rid: 1033
+    - rid: 1034
       type: {class: Dodge, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 9b9fe9dd3b41499dba705ac0c1d2bb12
+        _guid: dec4ec14a6bb452bb797bef8d0739421
         _position: {x: 302.5, y: 1050}
         _comment: 
         _distance: 3
         _speed: 2.2
         _maxTime: 0.8
-    - rid: 1034
+    - rid: 1035
       type: {class: UtilitySelector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: c00cab84afbe44fcb7d7de0cef399771
+        _guid: 7de8df4c03b244f4868a775b2f48942c
         _position: {x: 1168.75, y: 600}
         _comment: 'Close: fight from cover. Far: shoot on the move'
         _children:
-        - 851511b08dc24aaa85ae27f633ba65e2
-        - 206b3e32860448ac810602fc7aa57224
+        - 49c171a49bf54157ab886136a7496123
+        - a89e0998f61a47f69c972ff3ba757271
         _reconsiderEvery: 1
         _switchMargin: 0.15
         _randomness: 0.05
-    - rid: 1035
+    - rid: 1036
       type: {class: Score, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 851511b08dc24aaa85ae27f633ba65e2
+        _guid: 49c171a49bf54157ab886136a7496123
         _position: {x: 715, y: 750}
         _comment: 'Cover is worth 0.6'
         _children:
-        - 2900871e4e3f4ed4a409ad4eea1744a1
+        - d669d7e0fa39490fa5ee1607e6fe29c3
         _key: 
         _min: 0
         _max: 1
@@ -413,80 +423,80 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         _weight: 0.6
-    - rid: 1036
+    - rid: 1037
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 2900871e4e3f4ed4a409ad4eea1744a1
+        _guid: d669d7e0fa39490fa5ee1607e6fe29c3
         _position: {x: 715, y: 900}
         _comment: 'From cover: run to fresh cover, shoot from it for a while, then move on'
         _children:
-        - 49bbfd638b75451499a32973744685b8
-        - b1a57a10552b400290b19eee82157768
-    - rid: 1037
+        - a82580fc214d4b80ad16ac9293a820f4
+        - 5d73dfff6a4045a882d5afb1e64bc71e
+    - rid: 1038
       type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 49bbfd638b75451499a32973744685b8
+        _guid: a82580fc214d4b80ad16ac9293a820f4
         _position: {x: 522.5, y: 1050}
         _comment: 
         _use: 0
         _giveUpAfter: 6
-    - rid: 1038
+    - rid: 1039
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: b1a57a10552b400290b19eee82157768
+        _guid: 5d73dfff6a4045a882d5afb1e64bc71e
         _position: {x: 907.5, y: 1050}
         _comment: 
         _children:
-        - 876c6a8c5aee42e980affdeb9b156dce
-        - 60842c7ece9c4e8199aa3a3a74598c96
+        - c4249d424b9a4001bf009f148a747c01
+        - c5893f4357c1495c8d335daf03fb7537
         _abort: 1
-    - rid: 1039
+    - rid: 1040
       type: {class: InCover, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 876c6a8c5aee42e980affdeb9b156dce
+        _guid: c4249d424b9a4001bf009f148a747c01
         _position: {x: 742.5, y: 1200}
         _comment: 
-    - rid: 1040
+    - rid: 1041
       type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 60842c7ece9c4e8199aa3a3a74598c96
+        _guid: c5893f4357c1495c8d335daf03fb7537
         _position: {x: 1072.5, y: 1200}
         _comment: 
         _children:
-        - 081fcf9a70a74d4a870b9613f830dd7c
-        - 8883a88f9431417c9b9b4285de14872d
+        - 012e32cce4134709a6ff02215221f088
+        - b9a5c43980a24c9daeb8604bb0e507e0
         _policy: 1
-    - rid: 1041
+    - rid: 1042
       type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 081fcf9a70a74d4a870b9613f830dd7c
+        _guid: 012e32cce4134709a6ff02215221f088
         _position: {x: 962.5, y: 1350}
         _comment: 
         _children:
-        - 017f1cef8f8a46568bb25b5e28df3fcc
+        - 4eab32550b324387896ac18b39ef7c4d
         _count: 0
         _stopOnFailure: 1
-    - rid: 1042
+    - rid: 1043
       type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 017f1cef8f8a46568bb25b5e28df3fcc
+        _guid: 4eab32550b324387896ac18b39ef7c4d
         _position: {x: 962.5, y: 1500}
         _comment: 
-    - rid: 1043
+    - rid: 1044
       type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 8883a88f9431417c9b9b4285de14872d
+        _guid: b9a5c43980a24c9daeb8604bb0e507e0
         _position: {x: 1182.5, y: 1350}
         _comment: 
         _seconds: {Min: 6, Max: 9, Bias: 0}
-    - rid: 1044
+    - rid: 1045
       type: {class: Score, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 206b3e32860448ac810602fc7aa57224
+        _guid: a89e0998f61a47f69c972ff3ba757271
         _position: {x: 1622.5, y: 750}
         _comment: 'Worth more the further away the target is'
         _children:
-        - 37a1ce1f474748b8bc92373621f82339
+        - 3cb089fc9d6c4c6087a756ffdf06906c
         _key: TargetDistance
         _min: 6
         _max: 25
@@ -515,108 +525,116 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         _weight: 1
-    - rid: 1045
+    - rid: 1046
       type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 37a1ce1f474748b8bc92373621f82339
+        _guid: 3cb089fc9d6c4c6087a756ffdf06906c
         _position: {x: 1622.5, y: 900}
         _comment: 'In the open: keep the distance and shoot on the move for a few seconds'
         _children:
-        - 39264c2c5902446f97c4754815520969
-        - 09989c35cb66490bacddfcb8981a45d0
-        - 9006d8645afc48b788a8b79688b1d3af
+        - ea62a8d110cd419c93e401fc37c05a46
+        - ca9543b1a7b2492abf6c2a992adf12a5
+        - f3bc4386a0564be9b64292fa79eadfd7
         _policy: 1
-    - rid: 1046
+    - rid: 1047
       type: {class: HoldRange, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 39264c2c5902446f97c4754815520969
+        _guid: ea62a8d110cd419c93e401fc37c05a46
         _position: {x: 1402.5, y: 1050}
         _comment: 
-    - rid: 1047
+    - rid: 1048
       type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 09989c35cb66490bacddfcb8981a45d0
+        _guid: ca9543b1a7b2492abf6c2a992adf12a5
         _position: {x: 1622.5, y: 1050}
         _comment: 
         _children:
-        - 4afaa5d016724e938cf8739a13c3561b
+        - 9722ef464a9446abace96f6336778f03
         _count: 0
         _stopOnFailure: 1
-    - rid: 1048
+    - rid: 1049
       type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 4afaa5d016724e938cf8739a13c3561b
+        _guid: 9722ef464a9446abace96f6336778f03
         _position: {x: 1622.5, y: 1200}
         _comment: 
-    - rid: 1049
+    - rid: 1050
       type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 9006d8645afc48b788a8b79688b1d3af
+        _guid: f3bc4386a0564be9b64292fa79eadfd7
         _position: {x: 1842.5, y: 1050}
         _comment: 
         _seconds: {Min: 3, Max: 3, Bias: 0}
-    - rid: 1050
+    - rid: 1051
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 90045392fb62417395fb6e0587d6ad21
+        _guid: 62e40ea8547d43ff83520af9b3e26d52
         _position: {x: 2282.5, y: 300}
         _comment: 'Just lost sight of the target: flush it out of hiding with a grenade (3 per enemy)'
         _children:
-        - 88dd4f6a9d4d4d9996711458a7ea7447
-        - 060f0719c6094b5ba5ae028663f3ad5c
-        - 4287d3b6094a4cdf9f51e23a0bd569d7
-    - rid: 1051
+        - a2cab7b63dc04ce980c9fa64a60cdcae
+        - 07012f6a1991454b971f3c4931f117c7
+        - 58ad6cedfd1e4e4eac50d26843ed5b29
+    - rid: 1052
       type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 88dd4f6a9d4d4d9996711458a7ea7447
+        _guid: a2cab7b63dc04ce980c9fa64a60cdcae
         _position: {x: 2062.5, y: 450}
         _comment: 
         _memory: 3
-    - rid: 1052
+    - rid: 1053
       type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 060f0719c6094b5ba5ae028663f3ad5c
+        _guid: 07012f6a1991454b971f3c4931f117c7
         _position: {x: 2282.5, y: 450}
         _comment: 
         _children:
-        - 15750d6a79b54c1488a97a4f56791508
-    - rid: 1053
+        - 97eaefd3807a4b298d9e0a6f7705f18c
+    - rid: 1054
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 15750d6a79b54c1488a97a4f56791508
+        _guid: 97eaefd3807a4b298d9e0a6f7705f18c
         _position: {x: 2282.5, y: 600}
         _comment: 
-    - rid: 1054
+    - rid: 1055
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 4287d3b6094a4cdf9f51e23a0bd569d7
+        _guid: 58ad6cedfd1e4e4eac50d26843ed5b29
         _position: {x: 2502.5, y: 450}
         _comment: 
         _children:
-        - 44f51f3f81e44e1abaff9cb22a7b5503
+        - f57e58fc5be04e9893d7c32b0a6d0041
         _seconds: 12
         _onlyAfterSuccess: 0
-    - rid: 1055
+    - rid: 1056
       type: {class: Limit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 44f51f3f81e44e1abaff9cb22a7b5503
+        _guid: f57e58fc5be04e9893d7c32b0a6d0041
         _position: {x: 2502.5, y: 600}
         _comment: 
         _children:
-        - 33e7cf1425fc42fd913f69832678c276
+        - 49d3deb1a0fd4feaad368132e56f8bc2
         _maxRuns: 3
-    - rid: 1056
+    - rid: 1057
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 49d3deb1a0fd4feaad368132e56f8bc2
+        _position: {x: 2502.5, y: 750}
+        _comment: 
+        _children:
+        - e93cb615813041efb252f0a76e75d767
+    - rid: 1058
       type: {class: ThrowGrenade, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 33e7cf1425fc42fd913f69832678c276
-        _position: {x: 2502.5, y: 750}
+        _guid: e93cb615813041efb252f0a76e75d767
+        _position: {x: 2502.5, y: 900}
         _comment: 
         _grenade: {fileID: 11400000, guid: 0475cb0cf06a68342a3521ec726cbbfa, type: 2}
         _minDistance: 6
-    - rid: 1057
+    - rid: 1059
       type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 21b7838c2db94843883c511355f84452
+        _guid: d85e29a3c84e4bc9967031b7d8ed052c
         _position: {x: 2722.5, y: 300}
         _comment: 
         _tree: {fileID: 11400000, guid: cba441f48fd34dec9c15d7d0c6903346, type: 2}

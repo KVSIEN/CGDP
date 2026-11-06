@@ -91,10 +91,11 @@ namespace CGD.Enemies
         {
             if (!CanFire) return false;
 
-            // Only a few enemies fire at one target at once (EnemyData.MaxShooters).
+            // Only a few enemies fire at one target at once (EnemyData.MaxShooters, scaled by pacing).
             var target = _ai.Perception.Target;
             if (target == null) return false;
-            _hasShooterToken = AttackTokens.TryAcquire(AttackTokenKind.Ranged, target, _ai, _ai.Data.MaxShooters);
+            _hasShooterToken = AttackTokens.TryAcquire(AttackTokenKind.Ranged, target, _ai,
+                EnemyPacing.Current.ScaleAttackers(_ai.Data.MaxShooters));
             if (!_hasShooterToken) return false;
 
             EnemyData data = _ai.Data;

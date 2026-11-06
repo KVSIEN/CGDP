@@ -183,6 +183,7 @@ namespace CGD.Enemies
             _health.OnDeath -= OnDeath;
             FallenAllies.Remove(this);
             AttackTokens.ReleaseAll(this);
+            BoldMovePermits.Release(this);
         }
 
         private void Update()
@@ -244,6 +245,10 @@ namespace CGD.Enemies
 
         // For enemies spawned at runtime (level builder, dev console) instead of placed with a route.
         public void SetWaypoints(Transform[] waypoints) => _waypoints = waypoints;
+
+        // Sends a calm enemy to have a look round an area (the director's patrol probes). False if
+        // it already has something on its mind.
+        public bool CheckArea(Vector3 area) => Perception.Nudge(area);
 
         // Sends the enemy to investigate a position, e.g. a reinforcement sent toward the player.
         public void AlertTo(Vector3 position, DamageSource source) => Perception.Alert(position, source);
@@ -428,6 +433,7 @@ namespace CGD.Enemies
             Tactics.ReleaseCover();
             Tactics.EndMeleeTurn();
             AttackTokens.ReleaseAll(this);
+            BoldMovePermits.Release(this);
             FallenAllies.Add(new FallenAlly(this, transform.position, _health.Team));
             _tree?.Abort();
             ReportState(AiState.Dead);

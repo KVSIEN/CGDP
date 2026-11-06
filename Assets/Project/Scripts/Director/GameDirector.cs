@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
+using CGD.Enemies;
 using CGD.Flow;
 using CGD.Player;
 
@@ -15,8 +16,10 @@ namespace CGD.Director
     // the session's difficulty, and shortens or lengthens the calms with it.
     //
     // The director decides *when* the world may push and *how hard*; the systems that act on
-    // it (ReinforcementSpawner, SupplySpawner, DirectorMusic) ask AllowsPopulation, Phase,
-    // Intensity and Pressure, or listen to PhaseChanged, and decide *how*. One per gameplay scene.
+    // it (ReinforcementSpawner, SupplySpawner, DirectorMusic, PatrolProbes) ask AllowsPopulation,
+    // Phase, Intensity and Pressure, or listen to PhaseChanged, and decide *how*. Enemies already
+    // in the level hear it through EnemyPacing: how boldly to fight in this phase. One per
+    // gameplay scene.
     public class GameDirector : MonoBehaviour
     {
         [SerializeField] private DirectorSettings _settings;
@@ -77,6 +80,7 @@ namespace CGD.Director
             CombatEvents.DamageDealt -= OnDamageDealt;
             _player.OnDeath   -= OnPlayerDied;
             _player.OnRevived -= OnPlayerRevived;
+            EnemyPacing.Clear();
         }
 
         private void Update()
@@ -86,6 +90,7 @@ namespace CGD.Director
             float deltaTime = Time.deltaTime;
             _intensity.Tick(deltaTime, InCombat);
             _pacing.Tick(deltaTime, _intensity.Value);
+            EnemyPacing.Publish(_settings.Enemies.StateFor(Phase, Pressure, Intensity));
         }
 
         private void OnDamageDealt(DamageReport report)

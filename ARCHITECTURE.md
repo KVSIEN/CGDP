@@ -138,8 +138,14 @@ enemies, loot, encounters per room function and faction) → NavMesh bake → pl
 Start room, `LevelExit` in the Exit room. Same seed ⇒ same level (`Core/Random`).
 
 **Pacing.** `GameDirector` turns damage taken and kills into an intensity and a pacing
-phase; `ReinforcementSpawner`, `SupplySpawner` and `DirectorMusic` read its phase and
-pressure and decide for themselves what to do. The director never spawns anything.
+phase; `ReinforcementSpawner`, `SupplySpawner`, `DirectorMusic` and `PatrolProbes` read its
+phase and pressure and decide for themselves what to do. The director never spawns anything.
+Enemies hear it without a reference: each frame it publishes an `EnemyPacingState` to the
+static `EnemyPacing` (phase, pressure, stress and that phase's `PhaseConduct` — bold-move
+budget, attacker / search / fall-back scales), cleared to `Undirected` when it goes away.
+It only shapes *how boldly* enemies act — attack token limits, search time, morale break
+point, the level-wide `BoldMovePermits` that `Director Permit` nodes take — never what they
+know, so honest senses stay honest. Trees read it as blackboard keys and `Pacing Is`.
 
 ## Conventions that keep this working
 

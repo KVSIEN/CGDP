@@ -5,6 +5,8 @@ namespace CGD.Enemies
     // What every enemy's tree finds on its blackboard, refreshed each tick before the tree
     // runs — so generic nodes (Compare Number, Score) can read an enemy's state without
     // enemy-specific code. Only what the enemy itself knows: target values are its belief.
+    // The pacing keys come from the director (EnemyPacing): how boldly to fight, never where
+    // anyone is.
     public static class EnemyBlackboard
     {
         [AgentBlackboardKey(BlackboardValueType.Float, "0–1 of max health")]
@@ -17,6 +19,12 @@ namespace CGD.Enemies
         public const string TargetDistance = "TargetDistance";
         [AgentBlackboardKey(BlackboardValueType.Bool, "True while on edge after a search that found nothing")]
         public const string Cautious = "Cautious";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Director's phase: 0 build-up, 1 peak, 2 fade, 3 calm (no director = 0)")]
+        public const string Pacing = "Pacing";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Director's pressure: 1 neutral, higher when the player is cruising")]
+        public const string Pressure = "Pressure";
+        [AgentBlackboardKey(BlackboardValueType.Float, "How stressed the player is, 0–1 (director's intensity; 0 without one)")]
+        public const string PlayerStress = "PlayerStress";
 
         internal static void Publish(EnemyAI ai, Blackboard blackboard)
         {
@@ -25,6 +33,11 @@ namespace CGD.Enemies
             blackboard.SetFloat(Morale, ai.Morale.Value);
             blackboard.SetFloat(Awareness, ai.Perception.Awareness);
             blackboard.SetBool(Cautious, ai.Perception.IsCautious);
+
+            EnemyPacingState pacing = EnemyPacing.Current;
+            blackboard.SetFloat(Pacing, (int)pacing.Phase);
+            blackboard.SetFloat(Pressure, pacing.Pressure);
+            blackboard.SetFloat(PlayerStress, pacing.Intensity);
 
             var perception = ai.Perception;
             if (perception.Target != null)

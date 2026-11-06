@@ -85,14 +85,16 @@ namespace CGD.Enemies
 
         // --- Melee turns ------------------------------------------------------------
 
-        // Whether it may step in and strike: only a few enemies (EnemyData.MaxMeleeAttackers)
-        // are in melee with one target at a time, and it gives way after a couple of strikes.
+        // Whether it may step in and strike: only a few enemies (EnemyData.MaxMeleeAttackers,
+        // scaled by the director's pacing) are in melee with one target at a time, and it gives
+        // way after a couple of strikes.
         public bool TryTakeMeleeTurn(HealthManager target)
         {
             if (_hasMeleeTurn) return true;
             if (Time.time < _turnRestUntil) return false;
 
-            _hasMeleeTurn = AttackTokens.TryAcquire(AttackTokenKind.Melee, target, _ai, _ai.Data.MaxMeleeAttackers);
+            _hasMeleeTurn = AttackTokens.TryAcquire(AttackTokenKind.Melee, target, _ai,
+                EnemyPacing.Current.ScaleAttackers(_ai.Data.MaxMeleeAttackers));
             return _hasMeleeTurn;
         }
 

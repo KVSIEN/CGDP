@@ -56,9 +56,12 @@ namespace CGD.Enemies
             _hurtCounted = false;
         }
 
+        // The director's pacing moves the break point: harder to shake at the peak, quicker to
+        // fall back in the calm. Rallying stays where it is (kept above the break point).
         private void UpdateShaken()
         {
-            if (!IsShaken && Value < Profile.RetreatBelow) IsShaken = true;
+            float retreatBelow = Mathf.Min(Profile.RetreatBelow * EnemyPacing.Current.FallBackScale, Profile.RallyAbove - 0.05f);
+            if (!IsShaken && Value < retreatBelow) IsShaken = true;
             else if (IsShaken && Value >= Profile.RallyAbove) IsShaken = false;
         }
     }

@@ -1494,6 +1494,7 @@ GameObject:
   - component: {fileID: 1482240653}
   - component: {fileID: 1482240654}
   - component: {fileID: 1482240655}
+  - component: {fileID: 1482240656}
   m_Layer: 0
   m_Name: Director
   m_TagString: Untagged
@@ -1693,3 +1694,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d2e937530546709012ffc8177ac9c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.Player.PlayerRestraint
+--- !u!114 &1482240656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482240650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab3c1d6820dc45d3a5874e6d220e155c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Director.PatrolProbes
+  _settings: {fileID: 11400000, guid: f4e577a5656245a29a95b362733fa81b, type: 2}
+  _director: {fileID: 1482240652}
+  _player: {fileID: 1258227947}
+  _enemyMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
