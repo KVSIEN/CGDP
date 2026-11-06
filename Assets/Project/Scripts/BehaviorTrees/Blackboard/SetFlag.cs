@@ -8,7 +8,7 @@ namespace CGD.BehaviorTrees
     [BtNodeInfo("Blackboard/Set Flag", "Writes a true/false value to the blackboard, then succeeds.")]
     public sealed class SetFlag : BtAction
     {
-        [SerializeField] private string _key = "Flag";
+        [SerializeField, BlackboardKey(BlackboardKeyAccess.Write, BlackboardValueType.Bool)] private string _key = "Flag";
         [SerializeField] private bool   _value = true;
 
         public override string Summary => $"{_key} = {_value}";

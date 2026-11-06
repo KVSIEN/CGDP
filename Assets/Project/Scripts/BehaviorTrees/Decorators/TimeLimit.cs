@@ -23,6 +23,7 @@ namespace CGD.BehaviorTrees
 
             if (context.Time >= _endsAt)
             {
+                if (Child.IsRunning) context.Trace?.Interrupted(Child, this);
                 Child.Abort(context);
                 return BtStatus.Failure;
             }

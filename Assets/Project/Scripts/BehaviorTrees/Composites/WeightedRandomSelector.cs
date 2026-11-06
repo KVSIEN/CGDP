@@ -20,6 +20,8 @@ namespace CGD.BehaviorTrees
 
         public override string Summary => _weights.Length > 0 ? string.Join(" : ", _weights) : "Equal weights";
 
+        internal int WeightCount => _weights.Length;
+
         protected override void OnInitialize(BtContext context)
         {
             _order     = new int[Children.Count];

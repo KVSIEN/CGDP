@@ -328,7 +328,11 @@ No scene wiring: set `EnemyData` › **Behavior** › `BehaviorTree` to a `Behav
 | `Enemies/BehaviorTrees/Shared/RoutineSubtree` | Investigate leads (aborts lower priority) → Return To Post → Patrol. |
 | `Enemies/AITest/MeleeTestEnemyData`, `RangedTestEnemyData` | Scavenger and Maintenance Bot copies that use the trees above (the ranged one fires 3-round bursts and raises alarms). |
 
-**Editing:** *CGD › AI › Behavior Tree Editor*, or double-click a tree asset (`Create › CGD › AI › Behavior Tree` makes a new one with its Root). Space or right-click on the canvas to add nodes; drag from a node's bottom port to another's top port to connect. Double-click a **Subtree** node to open its tree. In Play mode select an enemy to watch its tree (and the subtrees it runs).
+**Editing:** *CGD › AI › Behavior Tree Editor*, or double-click a tree asset (`Create › CGD › AI › Behavior Tree` makes a new one with its Root). Space or right-click on the canvas to add nodes, group the selected nodes or add a sticky note; drag from a node's bottom port to another's top port to connect. Double-click a **Subtree** node to open its tree. Key fields have a ▾ picker. Badges on nodes and the toolbar's issue button show what the validator found.
+
+**Debugging:** in Play mode select an enemy to watch its tree (and the subtrees it runs). The side panel then shows its live blackboard, its decision trace, and for the selected node what it and its children last reported. *Break when it starts / fails* on a node pauses the game for the watched enemy (breakpoints last for the editor session). Recording only runs for the watched enemy.
+
+**New key-reading nodes:** mark the string field `[BlackboardKey(BlackboardKeyAccess.Read, BlackboardValueType.Float)]` (or `Write`) to get the picker and the "nothing writes this" check. Keys an agent writes itself are `const string` fields marked `[AgentBlackboardKey]` (see `EnemyBlackboard`).
 
 **Enemy blackboard** — refreshed every tick for generic nodes (Compare Number, Score): `Health`, `Morale`, `Awareness` (0–1), `TargetDistance` (metres to the believed target position; unset without a target), `Cautious` (flag).
 

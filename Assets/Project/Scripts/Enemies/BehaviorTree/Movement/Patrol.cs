@@ -14,6 +14,8 @@ namespace CGD.Enemies
 
         [NonSerialized] private int _waypointIndex;
 
+        internal override bool NeverFinishes => true;
+
         protected override void OnExit(BtContext context) => Ai.Agent.isStopped = false;
 
         protected override void OnEnter(BtContext context)

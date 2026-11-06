@@ -7,7 +7,7 @@ namespace CGD.BehaviorTrees
     [BtNodeInfo("Blackboard/Has Key", "Succeeds while the blackboard holds a value under the key (of any kind).")]
     public sealed class HasKey : BtCondition
     {
-        [SerializeField] private string _key = "Key";
+        [SerializeField, BlackboardKey(BlackboardKeyAccess.Read)] private string _key = "Key";
 
         public override string Summary => _key;
 

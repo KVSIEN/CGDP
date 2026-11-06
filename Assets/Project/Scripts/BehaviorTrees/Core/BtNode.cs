@@ -41,6 +41,7 @@ namespace CGD.BehaviorTrees
             {
                 _started = true;
                 OnEnter(context);
+                context.Trace?.Started(this);
             }
 
             BtStatus status = OnTick(context);
@@ -51,6 +52,7 @@ namespace CGD.BehaviorTrees
             {
                 _started = false;
                 OnExit(context);
+                context.Trace?.Finished(this, status);
             }
             return status;
         }
@@ -60,11 +62,17 @@ namespace CGD.BehaviorTrees
         {
             if (!_started) return;
 
+            context.Trace?.BeginAbort(this);
             OnAbort(context);
             _started   = false;
             LastStatus = BtStatus.Failure;
             OnExit(context);
+            context.Trace?.EndAbort();
         }
+
+        // Keeps running until something above interrupts it (Patrol, Repeat forever) — the
+        // validator warns when nothing above can.
+        internal virtual bool NeverFinishes => false;
 
         // --- Conditional aborts (see AbortMode) ----------------------------------------
         // Composites re-check quick conditions every tick without running anything else.

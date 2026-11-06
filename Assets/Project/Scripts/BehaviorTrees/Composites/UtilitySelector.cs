@@ -65,6 +65,7 @@ namespace CGD.BehaviorTrees
                 _rank = Array.IndexOf(_order, running);
                 return;
             }
+            context.Trace?.Interrupted(Children[running], Children[_order[0]]);
             Children[running].Abort(context);
         }
 

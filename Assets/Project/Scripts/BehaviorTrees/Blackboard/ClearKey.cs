@@ -7,7 +7,7 @@ namespace CGD.BehaviorTrees
     [BtNodeInfo("Blackboard/Clear Key", "Removes a value from the blackboard, then succeeds.")]
     public sealed class ClearKey : BtAction
     {
-        [SerializeField] private string _key = "Key";
+        [SerializeField, BlackboardKey(BlackboardKeyAccess.Write)] private string _key = "Key";
 
         public override string Summary => _key;
 

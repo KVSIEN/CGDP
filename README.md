@@ -33,7 +33,7 @@ Assets/
                             animation cues: AnimationCue, AnimationEventRelay, AnimationCueSoundSet, AnimationCueAudio
       BehaviorTrees/        generic behavior trees: Core/ (BtNode, BtParentNode, BtComposite, BtDecorator, BtAction, BtCondition, BtRoot,
                             AbortMode, Subtree, BehaviorTreeAsset, BehaviorTree (per-agent copy), BtContext, Blackboard),
-                            Composites/, Decorators/, Actions/, Blackboard/ (flag, number and key nodes)
+                            Composites/, Decorators/, Actions/, Blackboard/ (flag, number and key nodes), Debugging/ (BtTrace)
       Audio/                audio pool, sound banks, surface lookup; mixer: AudioMixerController, AudioMixerSettings, MixState (+ request), GameplayMixStates
       CameraEffects/        shake, kicks, FOV punches, lag, view blends (CameraEffectsController), CameraImpulses
       Combat/               Damage/, Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/, Reflect/ (Reflector, ReflectProfile), Projectile, Stunnable, Noise
@@ -49,7 +49,9 @@ Assets/
       Economy/              CurrencyDefinition, Wallet, PriceTable, Vendor, GambleMachine (+ GambleOdds); Shops/ — Shop (buy/sell/trade-in),
                             ShopCatalog, stock sources (ItemStock, RolledWeaponStock), listings
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report),
-                            BehaviorTrees/ (Behavior Tree Editor: GraphView canvas, node views, inspector, layout)
+                            BehaviorTrees/ (Behavior Tree Editor: window, side panel; Canvas/ — GraphView, node, group and note views,
+                            layout, search; Blackboard/ — key catalog and picker; Validation/ — tree checks; Debugging/ — trace,
+                            live view, breakpoints)
       Enemies/              enemy components, EnemyRangedCombat, EnemySearch, EnemyPost (guarding, return point), shared steps (Return/Retreat/RaiseAlarmStep),
                             AI/ (state classes: Patrol, Search (Investigate/Hunt), Return, Chase, RangedChase, Retreat, RaiseAlarm, Stunned),
                             BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/; EnemyBlackboard keys),

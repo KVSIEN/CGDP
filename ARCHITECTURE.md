@@ -108,7 +108,10 @@ asset's nodes (the asset is shared and never changes at runtime; per-agent state
 the copies, made with `CreateInstance`). A `Subtree` node instantiates its asset into the same copy, so
 shared branches cost nothing extra and keep one blackboard. Interruptions use abort modes
 (`AbortMode` on Sequence/Selector): composites re-check only *conditional* nodes —
-conditions, and gates like Cooldown that answer "may this run now?" — never actions. Nodes call the same `EnemyAI` capabilities the
+conditions, and gates like Cooldown that answer "may this run now?" — never actions.
+Debugging hooks stay out of the hot path: nodes only report to a `BtTrace` when the
+editor has started one for the agent it watches, and the editor's `BtTreeValidator`
+checks authored assets, not running ones. Nodes call the same `EnemyAI` capabilities the
 states use (movement, `EnemyPerception`, `EnemyRangedCombat`, melee) and report the
 `AiState` the visuals show. Stuns pause the tree; death aborts it. The editor
 (`Editor/BehaviorTrees/`) is a GraphView over the asset, editing it through an

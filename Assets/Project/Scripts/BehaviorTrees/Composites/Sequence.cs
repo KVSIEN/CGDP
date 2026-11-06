@@ -18,6 +18,8 @@ namespace CGD.BehaviorTrees
 
         public override string Summary => AbortSummary(_abort);
 
+        internal AbortMode AbortSetting => _abort;
+
         internal override bool AbortsLowerPriority => _abort is AbortMode.LowerPriority or AbortMode.Both;
         internal override bool PreconditionsPass(BtContext context) => LeadingConditionsPass(context, requireAll: true);
 
@@ -27,8 +29,10 @@ namespace CGD.BehaviorTrees
 
         protected override BtStatus OnTick(BtContext context)
         {
-            if (AbortsSelf && ConditionBrokeBefore(_current, context))
+            int broken = AbortsSelf ? BrokenConditionBefore(_current, context) : -1;
+            if (broken >= 0)
             {
+                context.Trace?.Interrupted(Children[_current], Children[broken]);
                 Children[_current].Abort(context);
                 return BtStatus.Failure;
             }
@@ -44,11 +48,12 @@ namespace CGD.BehaviorTrees
             return BtStatus.Success;
         }
 
-        private bool ConditionBrokeBefore(int index, BtContext context)
+        // The first conditional child before index that no longer holds, or -1.
+        private int BrokenConditionBefore(int index, BtContext context)
         {
             for (int i = 0; i < index; i++)
-                if (Children[i].IsConditional && !Children[i].CheckCondition(context)) return true;
-            return false;
+                if (Children[i].IsConditional && !Children[i].CheckCondition(context)) return i;
+            return -1;
         }
     }
 }

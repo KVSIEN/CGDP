@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CGD.BehaviorTrees;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -16,6 +17,8 @@ namespace CGD.Editor
         private readonly Label _summary;
         private readonly Label _comment;
         private readonly Label _order;
+        private readonly Label _issueBadge;
+        private readonly Label _breakpoint;
 
         public BtNodeView(BtNode node)
         {
@@ -32,6 +35,10 @@ namespace CGD.Editor
 
             _order = new Label { style = { unityFontStyleAndWeight = FontStyle.Bold, marginRight = 6f, color = new Color(1f, 1f, 1f, 0.7f) } };
             titleContainer.Insert(0, _order);
+            _breakpoint = new Label("●") { tooltip = "Breakpoint", style = { color = new Color(0.95f, 0.25f, 0.25f), marginRight = 4f, display = DisplayStyle.None } };
+            titleContainer.Insert(0, _breakpoint);
+            _issueBadge = new Label { style = { marginLeft = 4f, marginRight = 4f, display = DisplayStyle.None } };
+            titleContainer.Add(_issueBadge);
 
             CreatePorts(node);
 
@@ -67,6 +74,41 @@ namespace CGD.Editor
         {
             SetLabel(_summary, Data.Summary);
             SetLabel(_comment, Data.Comment);
+        }
+
+        // The worst of the validator's findings on this node, with all of them in the tooltip.
+        public void ShowIssues(List<BtIssue> issues)
+        {
+            if (issues == null || issues.Count == 0)
+            {
+                _issueBadge.style.display = DisplayStyle.None;
+                return;
+            }
+
+            BtIssue worst = issues[0];
+            var messages = new System.Text.StringBuilder();
+            foreach (BtIssue issue in issues)
+            {
+                if (issue.Severity > worst.Severity) worst = issue;
+                if (messages.Length > 0) messages.Append('\n');
+                messages.Append(issue.Icon).Append(' ').Append(issue.Message);
+            }
+
+            _issueBadge.text    = worst.Icon;
+            _issueBadge.tooltip = messages.ToString();
+            _issueBadge.style.color = worst.Severity switch
+            {
+                BtIssueSeverity.Error   => new Color(1f, 0.35f, 0.3f),
+                BtIssueSeverity.Warning => new Color(1f, 0.8f, 0.25f),
+                _                       => new Color(0.7f, 0.85f, 1f),
+            };
+            _issueBadge.style.display = DisplayStyle.Flex;
+        }
+
+        public void ShowBreakpoint(BtBreakOn on)
+        {
+            _breakpoint.style.display = on == BtBreakOn.None ? DisplayStyle.None : DisplayStyle.Flex;
+            _breakpoint.tooltip = $"Breaks on: {on}";
         }
 
         // Child number under its parent ("1", "2"…), so execution order is readable at a glance.

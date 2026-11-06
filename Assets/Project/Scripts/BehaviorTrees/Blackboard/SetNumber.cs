@@ -9,7 +9,7 @@ namespace CGD.BehaviorTrees
     [BtNodeInfo("Blackboard/Set Number", "Sets a blackboard number, or adds to it (missing = 0), then succeeds.")]
     public sealed class SetNumber : BtAction
     {
-        [SerializeField] private string          _key = "Count";
+        [SerializeField, BlackboardKey(BlackboardKeyAccess.Write, BlackboardValueType.Float)] private string _key = "Count";
         [SerializeField] private NumberOperation _operation = NumberOperation.Set;
         [SerializeField] private float           _value = 1f;
 

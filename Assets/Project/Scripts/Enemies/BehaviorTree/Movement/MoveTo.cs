@@ -11,7 +11,7 @@ namespace CGD.Enemies
     [BtNodeInfo("Enemy/Movement/Move To", "Walks or runs to a blackboard position. Fails if it's missing or unreachable.")]
     public sealed class MoveTo : EnemyAction
     {
-        [SerializeField] private string _key = "Spot";
+        [SerializeField, BlackboardKey(BlackboardKeyAccess.Read, BlackboardValueType.Vector)] private string _key = "Spot";
         [Tooltip("Chase speed instead of patrol speed")]
         [SerializeField] private bool _run;
         [SerializeField, Min(0.1f)] private float _arrivalDistance = 0.8f;

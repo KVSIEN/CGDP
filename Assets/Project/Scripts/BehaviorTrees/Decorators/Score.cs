@@ -12,7 +12,7 @@ namespace CGD.BehaviorTrees
     public sealed class Score : BtDecorator
     {
         [Tooltip("Blackboard number to read (e.g. Health, Morale, Awareness, TargetDistance). Empty = a fixed score")]
-        [SerializeField] private string _key = "Health";
+        [SerializeField, BlackboardKey(BlackboardKeyAccess.Read, BlackboardValueType.Float, AllowEmpty = true)] private string _key = "Health";
         [Tooltip("Value that counts as 0")]
         [SerializeField] private float _min;
         [Tooltip("Value that counts as 1")]

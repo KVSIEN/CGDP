@@ -19,6 +19,8 @@ namespace CGD.BehaviorTrees
 
         public override string Summary => AbortSummary(_abort);
 
+        internal AbortMode AbortSetting => _abort;
+
         internal override bool AbortsLowerPriority => _abort is AbortMode.LowerPriority or AbortMode.Both;
         internal override bool PreconditionsPass(BtContext context) => LeadingConditionsPass(context, requireAll: false);
 
@@ -31,6 +33,7 @@ namespace CGD.BehaviorTrees
             int takeOver = HigherChildTakingOver(context);
             if (takeOver < _current)
             {
+                if (Children[_current].IsRunning) context.Trace?.Interrupted(Children[_current], Children[takeOver]);
                 Children[_current].Abort(context);
                 _current = takeOver;
             }

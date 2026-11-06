@@ -13,6 +13,7 @@ namespace CGD.Editor
     //   Space / right-click › Create Node   searchable node menu (Space is GraphView's own shortcut)
     //   drag from a node's bottom port      connect a child (children run left to right)
     //   Delete, Ctrl+C / Ctrl+V / Ctrl+D    the usual
+    //   right-click › Group Selection / Add Sticky Note   frames and notes for readers
     //   middle-drag / alt-drag, scroll      pan, zoom      A  frame all
     internal sealed class BtGraphView : GraphView
     {
@@ -22,6 +23,8 @@ namespace CGD.Editor
         private readonly BtNodeSearchProvider _search;
         private readonly Dictionary<string, BtNodeView> _views = new();
         private BehaviorTreeAsset _asset;
+        // Set while views are being built, so GraphView's group callbacks don't write back.
+        private bool _building;
 
         public BtGraphView(EditorWindow window)
         {
@@ -47,6 +50,9 @@ namespace CGD.Editor
             serializeGraphElements = SerializeSelection;
             canPasteSerializedData = data => _asset != null && !string.IsNullOrEmpty(data);
             unserializeAndPaste    = (_, data) => Paste(data);
+            elementsAddedToGroup     = OnAddedToGroup;
+            elementsRemovedFromGroup = OnRemovedFromGroup;
+            groupTitleChanged        = OnGroupTitleChanged;
         }
 
         // The node selected on its own (null for none or several), for the inspector.
@@ -56,6 +62,8 @@ namespace CGD.Editor
 
         // A Subtree node asked to open the tree it runs.
         public event Action<BehaviorTreeAsset> OpenRequested;
+        // The asset changed through the canvas (add, delete, connect, move, group, note).
+        public event Action Edited;
 
         public void Dispose() => UnityEngine.Object.DestroyImmediate(_search);
 
@@ -76,10 +84,47 @@ namespace CGD.Editor
 
             if (_asset == null) return;
 
+            _building = true;
             foreach (BtNode node in _asset.Nodes)
                 if (node != null) AddView(node);
             RebuildEdges();
+            foreach (BtGroup group in _asset.Groups) AddGroupView(group);
+            foreach (BtNote note in _asset.Notes) AddNoteView(note);
+            RefreshBreakpoints();
+            _building = false;
             NodeSelected?.Invoke(null);
+        }
+
+        public void ShowIssues(List<BtIssue> issues)
+        {
+            var byNode = new Dictionary<string, List<BtIssue>>();
+            foreach (BtIssue issue in issues)
+            {
+                if (issue.NodeGuid == null) continue;
+                if (!byNode.TryGetValue(issue.NodeGuid, out var list)) byNode[issue.NodeGuid] = list = new List<BtIssue>();
+                list.Add(issue);
+            }
+            foreach (var pair in _views)
+                pair.Value.ShowIssues(byNode.TryGetValue(pair.Key, out var list) ? list : null);
+        }
+
+        public void RefreshBreakpoints()
+        {
+            foreach (var pair in _views) pair.Value.ShowBreakpoint(BtBreakpoints.Get(pair.Key));
+        }
+
+        public void RefreshAllNodes()
+        {
+            foreach (BtNodeView view in _views.Values) view.Refresh();
+        }
+
+        // Selects and frames a node (from the issue list, the trace or a breakpoint).
+        public void SelectNode(string guid)
+        {
+            if (guid == null || !_views.TryGetValue(guid, out BtNodeView view)) return;
+            ClearSelection();
+            AddToSelection(view);
+            FrameSelection();
         }
 
         public void RefreshNode(BtNode node)
@@ -89,6 +134,21 @@ namespace CGD.Editor
             // If applying the edit replaced the node object, the views are stale: start over.
             if (!ReferenceEquals(view.Data, node)) Rebuild();
             else view.Refresh();
+        }
+
+        private void AddGroupView(BtGroup data)
+        {
+            var view = new BtGroupView(data);
+            AddElement(view);
+            foreach (string guid in data.Nodes)
+                if (_views.TryGetValue(guid, out BtNodeView member)) view.AddElement(member);
+        }
+
+        private void AddNoteView(BtNote data)
+        {
+            var view = new BtNoteView(data);
+            view.RegisterCallback<StickyNoteChangeEvent>(_ => SaveNote(view));
+            AddElement(view);
         }
 
         private BtNodeView AddView(BtNode node)
@@ -147,9 +207,31 @@ namespace CGD.Editor
             Record("Auto Layout");
             BtTreeLayout.Apply(_asset);
             Commit();
-            foreach (BtNodeView view in _views.Values)
-                view.SetPosition(new Rect(view.Data.Position, Vector2.zero));
+            Rebuild();
             schedule.Execute(() => FrameAll());
+        }
+
+        // A frame around the selected nodes.
+        public void GroupSelection(string title = "Group")
+        {
+            var members = selection.OfType<BtNodeView>().Select(v => v.Data.Guid).ToList();
+            if (_asset == null || members.Count == 0) return;
+
+            Record("Group");
+            foreach (BtGroup other in _asset.Groups) other.Nodes.RemoveAll(members.Contains);
+            _asset.Groups.Add(new BtGroup { Title = title, Nodes = members });
+            Commit();
+            Rebuild();
+        }
+
+        public void AddNote(Vector2 position)
+        {
+            if (_asset == null) return;
+
+            Record("Add Note");
+            _asset.Notes.Add(new BtNote { Text = "", Position = new Rect(position, new Vector2(200f, 120f)) });
+            Commit();
+            Rebuild();
         }
 
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
@@ -177,8 +259,13 @@ namespace CGD.Editor
                 Record("Delete");
                 foreach (GraphElement element in change.elementsToRemove)
                 {
-                    if (element is Edge edge) Unlink(edge);
-                    else if (element is BtNodeView view) RemoveNode(view);
+                    switch (element)
+                    {
+                        case Edge edge:           Unlink(edge); break;
+                        case BtNodeView view:     RemoveNode(view); break;
+                        case BtGroupView group:   _asset.Groups.Remove(group.Data); break;
+                        case BtNoteView note:     _asset.Notes.Remove(note.Data); break;
+                    }
                 }
                 linksChanged = true;
             }
@@ -194,7 +281,12 @@ namespace CGD.Editor
             {
                 Record("Move");
                 foreach (GraphElement element in change.movedElements)
-                    if (element is BtNodeView view) view.Data.Position = view.GetPosition().position;
+                {
+                    if (element is BtNoteView note) note.Data.Position = note.GetPosition();
+                    if (element is BtGroupView group) group.Data.Position = group.GetPosition();
+                }
+                // Moving a group moves its nodes too, so read every node back.
+                foreach (BtNodeView view in _views.Values) view.Data.Position = view.GetPosition().position;
                 SortAllChildren();
                 linksChanged = true;
             }
@@ -228,6 +320,51 @@ namespace CGD.Editor
         {
             _asset.RemoveNode(view.Data);
             _views.Remove(view.Data.Guid);
+            foreach (BtGroup group in _asset.Groups) group.Nodes.Remove(view.Data.Guid);
+        }
+
+        // --- Groups and notes ----------------------------------------------------------
+
+        private void OnAddedToGroup(Group group, IEnumerable<GraphElement> elements)
+        {
+            if (_building || group is not BtGroupView view) return;
+
+            Record("Add To Group");
+            foreach (BtNodeView node in elements.OfType<BtNodeView>())
+            {
+                foreach (BtGroup other in _asset.Groups) other.Nodes.Remove(node.Data.Guid);
+                view.Data.Nodes.Add(node.Data.Guid);
+            }
+            Commit();
+        }
+
+        private void OnRemovedFromGroup(Group group, IEnumerable<GraphElement> elements)
+        {
+            if (_building || group is not BtGroupView view) return;
+
+            Record("Remove From Group");
+            foreach (BtNodeView node in elements.OfType<BtNodeView>()) view.Data.Nodes.Remove(node.Data.Guid);
+            Commit();
+        }
+
+        private void OnGroupTitleChanged(Group group, string title)
+        {
+            if (_building || group is not BtGroupView view) return;
+
+            Record("Rename Group");
+            view.Data.Title = title;
+            Commit();
+        }
+
+        private void SaveNote(BtNoteView view)
+        {
+            if (_building) return;
+
+            Record("Edit Note");
+            view.Data.Title    = view.title;
+            view.Data.Text     = view.contents;
+            view.Data.Position = view.GetPosition();
+            Commit();
         }
 
         // Children run in left-to-right order on the canvas, as in most behavior tree editors.
@@ -313,6 +450,10 @@ namespace CGD.Editor
                 Vector2 screen = _window.position.position + evt.mousePosition;
                 evt.menu.AppendAction("Create Node", _ =>
                     SearchWindow.Open(new SearchWindowContext(screen), _search));
+                Vector2 notePosition = contentViewContainer.WorldToLocal(evt.mousePosition);
+                evt.menu.AppendAction("Group Selection", _ => GroupSelection(),
+                    _ => selection.OfType<BtNodeView>().Any() ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
+                evt.menu.AppendAction("Add Sticky Note", _ => AddNote(notePosition));
                 evt.menu.AppendAction("Auto Layout", _ => AutoLayout());
                 evt.menu.AppendAction("Frame All", _ => FrameAll());
                 evt.menu.AppendSeparator();
@@ -329,6 +470,10 @@ namespace CGD.Editor
 
         private void Record(string action) => Undo.RecordObject(_asset, $"Behavior Tree: {action}");
 
-        private void Commit() => EditorUtility.SetDirty(_asset);
+        private void Commit()
+        {
+            EditorUtility.SetDirty(_asset);
+            Edited?.Invoke();
+        }
     }
 }

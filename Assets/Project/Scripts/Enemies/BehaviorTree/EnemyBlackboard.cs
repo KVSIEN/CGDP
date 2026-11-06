@@ -7,11 +7,16 @@ namespace CGD.Enemies
     // enemy-specific code. Only what the enemy itself knows: target values are its belief.
     public static class EnemyBlackboard
     {
-        public const string Health         = "Health";          // 0..1 of max health
-        public const string Morale         = "Morale";          // 0..1, 1 = steady
-        public const string Awareness      = "Awareness";       // 0..1, 1 = certain of a hostile
-        public const string TargetDistance = "TargetDistance";  // metres to where it believes its target is; unset with none
-        public const string Cautious       = "Cautious";        // true while on edge after a search
+        [AgentBlackboardKey(BlackboardValueType.Float, "0–1 of max health")]
+        public const string Health = "Health";
+        [AgentBlackboardKey(BlackboardValueType.Float, "0–1, 1 = steady; low = shaken")]
+        public const string Morale = "Morale";
+        [AgentBlackboardKey(BlackboardValueType.Float, "0–1, 1 = certain of a hostile")]
+        public const string Awareness = "Awareness";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Metres to where it believes its target is; unset with none")]
+        public const string TargetDistance = "TargetDistance";
+        [AgentBlackboardKey(BlackboardValueType.Bool, "True while on edge after a search that found nothing")]
+        public const string Cautious = "Cautious";
 
         internal static void Publish(EnemyAI ai, Blackboard blackboard)
         {

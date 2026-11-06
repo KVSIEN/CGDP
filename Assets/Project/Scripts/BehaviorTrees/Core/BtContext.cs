@@ -15,6 +15,9 @@ namespace CGD.BehaviorTrees
         // The tree this context belongs to — subtrees instantiate into it.
         internal BehaviorTree Tree { get; set; }
 
+        // Set while the editor watches this agent (see BehaviorTree.StartTrace).
+        internal BtTrace Trace { get; set; }
+
         public GameObject Owner      { get; }
         // The component the tree drives (e.g. EnemyAI). Nodes cast it to what they need.
         public object     Agent      { get; }

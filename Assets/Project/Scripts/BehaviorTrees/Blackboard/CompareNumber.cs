@@ -9,7 +9,7 @@ namespace CGD.BehaviorTrees
     [BtNodeInfo("Blackboard/Compare Number", "Succeeds when a blackboard number compares as asked (e.g. TargetDistance < 6).")]
     public sealed class CompareNumber : BtCondition
     {
-        [SerializeField] private string           _key = "TargetDistance";
+        [SerializeField, BlackboardKey(BlackboardKeyAccess.Read, BlackboardValueType.Float)] private string _key = "TargetDistance";
         [SerializeField] private NumberComparison _comparison = NumberComparison.Less;
         [SerializeField] private float            _value = 5f;
         [Tooltip("Answer when the key isn't on the blackboard")]

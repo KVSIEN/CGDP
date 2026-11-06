@@ -45,6 +45,14 @@ namespace CGD.BehaviorTrees
                 foreach (BtNode node in nodes.Values) node.ResetState();
         }
 
+        // The decision log, while one is being recorded (the editor starts it when it watches
+        // this agent).
+        public BtTrace Trace => Context.Trace;
+
+        public BtTrace StartTrace(int capacity = 256) => Context.Trace ??= new BtTrace(Context, capacity);
+
+        public void StopTrace() => Context.Trace = null;
+
         // Whether this tree runs the asset, as itself or as a subtree.
         public bool Uses(BehaviorTreeAsset asset) => _copies.ContainsKey(asset);
 

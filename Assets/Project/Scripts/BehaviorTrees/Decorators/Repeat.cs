@@ -18,6 +18,8 @@ namespace CGD.BehaviorTrees
 
         public override string Summary => _count > 0 ? $"× {_count}" : "Forever";
 
+        internal override bool NeverFinishes => _count == 0 && !_stopOnFailure;
+
         protected override void OnEnter(BtContext context) => _runs = 0;
 
         protected override BtStatus OnTick(BtContext context)

@@ -10,6 +10,9 @@ namespace CGD.BehaviorTrees
     public class BehaviorTreeAsset : ScriptableObject
     {
         [SerializeReference] private List<BtNode> _nodes = new();
+        // Editor canvas only: frames and notes for readers, not used at runtime.
+        [SerializeField] private List<BtGroup> _groups = new();
+        [SerializeField] private List<BtNote>  _notes  = new();
 
         public IReadOnlyList<BtNode> Nodes => _nodes;
 
@@ -27,6 +30,9 @@ namespace CGD.BehaviorTrees
         public BehaviorTree CreateInstance(GameObject owner, object agent) => BehaviorTree.Create(this, owner, agent);
 
         // --- Authoring (editor) ----------------------------------------------------
+
+        internal List<BtGroup> Groups => _groups;
+        internal List<BtNote>  Notes  => _notes;
 
         internal void EnsureRoot()
         {

@@ -11,7 +11,7 @@ namespace CGD.Enemies
     [BtNodeInfo("Enemy/Movement/Remember Position", "Stores a position (itself, post, target, disturbance) on the blackboard, then succeeds.")]
     public sealed class RememberPosition : EnemyAction
     {
-        [SerializeField] private string             _key = "Spot";
+        [SerializeField, BlackboardKey(BlackboardKeyAccess.Write, BlackboardValueType.Vector)] private string _key = "Spot";
         [SerializeField] private RememberedPosition _what = RememberedPosition.Self;
 
         public override string Summary => $"{_what} → {_key}";
