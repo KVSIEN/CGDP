@@ -25,9 +25,11 @@ namespace CGD.Animation
         public static readonly int Reloading = Animator.StringToHash("Reloading");
         public static readonly int Alerted   = Animator.StringToHash("Alerted");
         public static readonly int Dead      = Animator.StringToHash("Dead");
+        public static readonly int Cautious  = Animator.StringToHash("Cautious");     // enemies: on edge after a search
 
         // Ints
-        public static readonly int AttackIndex = Animator.StringToHash("AttackIndex");      // combo step, -1 = heavy
+        public static readonly int AttackIndex = Animator.StringToHash("AttackIndex");
+        public static readonly int EngageStep  = Animator.StringToHash("EngageStep");       // enemies: CGD.Enemies.EngageStep      // combo step, -1 = heavy
 
         // Triggers
         public static readonly int Attack = Animator.StringToHash("Attack");

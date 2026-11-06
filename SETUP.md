@@ -294,7 +294,7 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 
 | Component | Assign | Notes |
 |---|---|---|
-| **EnemyAI** | `_data` = an `EnemyData`, `_waypoints`?, `_targetMask`, `_obstacleMask` | Needs a NavMesh (baked, or `RuntimeNavMesh`). Finds targets by team. Runs the data's behavior tree if it has one. |
+| **EnemyAI** | `_data` = an `EnemyData`, `_waypoints`?, `_targetMask`, `_obstacleMask` | Needs a NavMesh (baked, or `RuntimeNavMesh`). Finds targets by team. Runs the data's behavior tree if it has one. Where it starts is its **post**: without `_waypoints` it guards there, and it returns there after searches. |
 | **EnemyHealth** | `_data` = same `EnemyData`, `_healthBar` = its EnemyHealthBar, `_hitboxProfile`? | |
 | **EnemyAwarenessIndicator** | — | The ?/! over the enemy (on every enemy prefab). Builds its own world-space canvas; colours, height and how long the ! shows are on the component. |
 | **EnemyStateVisuals**? | `_renderers` | Tints by AI state. |
@@ -306,6 +306,10 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 | **StatusEffectController** | `_immunities`? | Without it, status effects are ignored. |
 
 **Enemy type** is all in its `EnemyData`: team, health, speeds, sight range and angle, hearing range (how far a walking hostile's footsteps carry), melee or ranged, display name (used in kill messages), its **Senses** (a `PerceptionProfile`) and optionally its behavior tree.
+
+**Group & Reactions** (on `EnemyData`): `MaxMeleeAttackers` (2 — melee enemies of this type that may fight one target at once), `MaxShooters` (3), `StaggerThreshold` / `StaggerDuration` / `StaggerCooldown` (a hit of 25% of max health staggers for 0.4 s, at most every 2.5 s), `RaisesAlarm` (runs for an `AlarmPanel` within 25 m of its post on first spotting a hostile). Caution, guarding, lost-interest / victory pauses and morale are tuned on the `PerceptionProfile`.
+
+**Alarm panels** — any object with a collider and an **AlarmPanel** (`_radius` 60 m, `_useTime`, `_rearmTime`, `_disableTime` for the player's hold-Interact, `_team`, `_screen`? = a renderer it tints green / red / dark). Enemies only use panels within 25 m of their post. PlayerInteraction finds it like any interactable.
 
 **Cover** — add a **CoverMap** (one per scene, any object; it's on its own `CoverMap` object in AITest and MapTest): `_spacing` (1.25 m between spots), `_lowHeight` / `_highHeight` (0.8 / 1.6 m: how tall an obstacle must be for low / full cover), `_obstacleMask` = what counts as an obstacle (Default). It scans the NavMesh the first time an enemy asks, so baked and runtime NavMeshes both work; call `Rebuild()` if the NavMesh changes later. Without a CoverMap enemies simply never use cover. Enemies learn cover around their spawn point and `_waypoints`, so give patrols routes through the area they should defend.
 
@@ -327,6 +331,8 @@ No scene wiring: set `EnemyData` › **Behavior** › `BehaviorTree` to a `Behav
 - Put a **reactive Selector** at the top with the most urgent branch on the left; it re-checks the branches to the left of the running one every frame.
 - Start a fighting branch with a **reactive Sequence** whose first child is a condition (`Has Target`), so losing the target ends the fight.
 - **Patrol** and **Hold Range** never finish on their own — keep them where something above can interrupt them.
+- End the top Selector with **Return To Post** then **Patrol**: Return To Post fails unless the enemy just gave up a search or won a fight.
+- **Is Shaken → Regroup** and **Has Target → Raise Alarm** go before the fight branch; Raise Alarm fails at once for enemies that don't raise alarms.
 - Put **Take Cover** and **Flank** under a **Cooldown**: each run picks a new spot, so without one they reposition every frame they're allowed to. They need a CoverMap in the scene (Flank only needs the NavMesh).
 - Use **Knows Target** instead of **Has Target** above moves that break line of sight (flanking), so losing sight for a moment doesn't end the fight.
 - Trees with `Enemy/…` nodes must run on an `EnemyAI`.
@@ -341,10 +347,12 @@ No scene wiring: set `EnemyData` › **Behavior** › `BehaviorTree` to a `Behav
 Arena              [NavMeshSurface, RuntimeNavMesh]      ← NavMesh built from its children at load
   Floor, Wall North/South/East/West, Cover Center/Left/Right, Pillar NW/NE, Crate Low A–D   [MeshFilter, MeshRenderer, BoxCollider]
 CoverMap           [CoverMap]                            ← cover spots found from the NavMesh
+Alarm Panel        [MeshFilter, MeshRenderer, BoxCollider, AlarmPanel]   ← on the north wall; `_screen` = its renderer
 Enemies
   Waypoints        Melee A 1–4, Melee B 1–4, Ranged 1–2
   Melee Enemy A, Melee Enemy B   (Scavenger prefab, _data = MeleeTestEnemyData, patrol Melee A / Melee B)
-  Ranged Enemy                   (Maintenance Bot prefab, _data = RangedTestEnemyData, patrol Ranged)
+  Ranged Enemy                   (Maintenance Bot prefab, _data = RangedTestEnemyData, patrol Ranged; RaisesAlarm on)
+  Guard Enemy                    (Husk prefab, its own HuskEnemyData — built-in state machine, no route: guards facing west)
 ```
 
 | Component | Assign | Notes |
@@ -375,8 +383,8 @@ Enemy / Player     [EnemyAnimator or PlayerAnimator, Ragdoll?]
 | Type | Names |
 |---|---|
 | Float | `Speed`, `ForwardSpeed`, `StrafeSpeed`, `VerticalSpeed`, `Aim` |
-| Bool | `Grounded`, `Crouching`, `Sprinting`, `Sliding`, `Mantling`, `Rolling`, `Dashing`, `Stunned`, `Reloading`, `Alerted`, `Dead` |
-| Int | `AttackIndex` (combo step, −1 = heavy) |
+| Bool | `Grounded`, `Crouching`, `Sprinting`, `Sliding`, `Mantling`, `Rolling`, `Dashing`, `Stunned`, `Reloading`, `Alerted` (enemies: any state but patrol, return, stunned and dead), `Cautious` (enemies: on edge after a search), `Dead` |
+| Int | `AttackIndex` (combo step, −1 = heavy), `EngageStep` (enemies: `EngageStep` — approach, strike, circle, flank, hold, move to cover, fire from cover, keep distance) |
 | Trigger | `Attack`, `Fire`, `Throw`, `Hit`, `Equip`, `DryFire` |
 
 Attack timing comes from `EnemyData` / `MeleeAttackStep`, not from the clips. Author the clips to match.

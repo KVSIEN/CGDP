@@ -1,7 +1,10 @@
+using UnityEngine;
+
 namespace CGD.Enemies
 {
-    // Walks the waypoint loop (or idles without waypoints) until a hostile is detected
-    // or a lead (noise, hit) comes in.
+    // Walks the waypoint loop until a hostile is detected or a lead comes in. Without a
+    // route it guards its post instead, looking around now and then. On edge after a
+    // fruitless search it walks faster and, guarding, looks around twice as often.
     public class PatrolState : EnemyState
     {
         private const float ArrivalDistance = 0.4f;
@@ -16,32 +19,43 @@ namespace CGD.Enemies
         {
             Ai.Agent.isStopped = false;
             if (Ai.Waypoints.Length > 0)
-                Ai.Agent.SetDestination(Ai.Waypoints[_waypointIndex].position);
+                Ai.Agent.SetDestination(Ai.Waypoints[_waypointIndex % Ai.Waypoints.Length].position);
         }
 
         public override void Tick(float deltaTime)
         {
-            if (Ai.Perception.IsTargetDetected)
+            var perception = Ai.Perception;
+            if (perception.IsTargetDetected)
             {
                 Ai.ChangeState(EnemyAI.AiState.Chase);
                 return;
             }
 
-            if (Ai.Perception.ConsumeLead())
+            if (perception.ConsumeLead())
             {
-                Ai.ChangeState(EnemyAI.AiState.Alert);
+                Ai.ChangeToSearch();
                 return;
             }
 
-            Ai.SetSpeed(Ai.Data.PatrolSpeed);
-            if (Ai.Waypoints.Length == 0) return;
+            float speed = Ai.Data.PatrolSpeed;
+            if (perception.IsCautious) speed *= perception.Profile.CautionPatrolSpeed;
+            Ai.SetSpeed(speed);
+
+            var waypoints = Ai.Waypoints;
+            if (waypoints.Length == 0)
+            {
+                Ai.Post.TickGuard(deltaTime, Time.time);
+                return;
+            }
 
             var agent = Ai.Agent;
             if (!agent.pathPending && agent.hasPath && agent.remainingDistance < ArrivalDistance)
             {
-                _waypointIndex = (_waypointIndex + 1) % Ai.Waypoints.Length;
-                agent.SetDestination(Ai.Waypoints[_waypointIndex].position);
+                _waypointIndex = (_waypointIndex + 1) % waypoints.Length;
+                agent.SetDestination(waypoints[_waypointIndex].position);
             }
         }
+
+        public override void Exit() => Ai.Agent.isStopped = false;
     }
 }

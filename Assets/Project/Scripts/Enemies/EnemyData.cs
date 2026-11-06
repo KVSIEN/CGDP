@@ -70,6 +70,20 @@ namespace CGD.Enemies
         [Tooltip("How far sideways the enemy strafes at preferred range")]
         public float StrafeDistance  = 4f;
 
+        [Header("Group & Reactions")]
+        [Tooltip("It won't step in to strike while this many allies (itself included) are already in melee with the same target — it circles instead")]
+        [Min(1)] public int MaxMeleeAttackers = 2;
+        [Tooltip("It holds fire while this many allies are already firing bursts at the same target")]
+        [Min(1)] public int MaxShooters = 3;
+        [Tooltip("A single hit taking at least this share of max health staggers it (interrupting a wind-up)")]
+        [Range(0.01f, 1f)] public float StaggerThreshold = 0.25f;
+        [Tooltip("Seconds a stagger lasts")]
+        [Min(0f)] public float StaggerDuration = 0.4f;
+        [Tooltip("Seconds before it can be staggered again")]
+        [Min(0f)] public float StaggerCooldown = 2.5f;
+        [Tooltip("On first spotting a hostile, runs to an alarm panel near its post to raise the alarm, if it knows one")]
+        public bool RaisesAlarm;
+
         [Header("Alert")]
         [Tooltip("Longest it spends investigating something before it gives up and goes back to patrol (2.5× when hunting a hostile it knows is about).")]
         public float AlertDuration = 5f;

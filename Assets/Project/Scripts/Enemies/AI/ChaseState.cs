@@ -2,15 +2,21 @@ using UnityEngine;
 
 namespace CGD.Enemies
 {
-    // Closes in on the detected target and attacks at range; drops to Alert when the target
-    // is no longer detected (unless an attack is already winding up). Now and then, when the
-    // target is still some way off, it circles round by the route the target is least likely
-    // to see instead of charging straight in (EnemyTactics).
+    // A melee enemy's fight. Each tick it picks one engage step:
+    //   strike     in range and it's its turn (only a few allies melee one target at once)
+    //   circle     close, but others are already on the target: wait its turn at a distance
+    //   flank      still some way off: now and then circle round by the least visible route
+    //   hold       the target is somewhere it can't walk to: stand at the end of the path, facing it
+    //   approach   otherwise, close in
+    // Shaken morale sends it to Retreat; losing the target sends it searching; if it raises
+    // alarms and knows a panel nearby, it runs to that first.
     public class ChaseState : EnemyState
     {
         private const float FlankMinDistance = 7f;
         private const float FlankChance      = 0.4f;
         private const float ArrivalDistance  = 0.8f;
+        private const float TurnRing         = 3f;     // metres beyond attack range where it needs its turn
+        private const float CircleRadius     = 2.5f;   // metres beyond attack range it waits at
         private static readonly Vector2 FlankCheckEvery = new(5f, 9f);
 
         private float _nextFlankCheck;
@@ -34,19 +40,28 @@ namespace CGD.Enemies
             if (Ai.IsAttacking)
             {
                 if (perception.Target != null) Ai.FaceTowards(perception.TargetPosition, deltaTime);
+                Ai.ReportStep(EngageStep.Strike);
                 return;
             }
 
-            if (!perception.IsTargetDetected)
-            {
-                Ai.ChangeState(EnemyAI.AiState.Alert);
-                return;
-            }
+            if (Ai.ShouldRetreat)                   { Ai.ChangeState(EnemyAI.AiState.Retreat);    return; }
+            if (!perception.IsTargetDetected)       { Ai.ChangeToSearch();                       return; }
+            if (Ai.TryFindAlarm(out _))             { Ai.ChangeState(EnemyAI.AiState.RaiseAlarm); return; }
 
             Ai.SetSpeed(Ai.Data.ChaseSpeed);
+            var   target    = perception.Target;
             var   targetPos = perception.TargetPosition;
             float range     = Ai.Data.AttackRange;
             float distance  = Vector3.Distance(Ai.transform.position, targetPos);
+
+            if (distance <= range + TurnRing && !Ai.Tactics.TryTakeMeleeTurn(target))
+            {
+                _flanking = false;
+                Ai.Tactics.CircleTarget(targetPos, range + CircleRadius);
+                Ai.FaceTowards(targetPos, deltaTime);
+                Ai.ReportStep(EngageStep.Circle);
+                return;
+            }
 
             if (distance <= range)
             {
@@ -54,12 +69,26 @@ namespace CGD.Enemies
                 agent.isStopped = true;
                 Ai.FaceTowards(targetPos, deltaTime);
                 Ai.TryStartAttack();
+                Ai.ReportStep(EngageStep.Strike);
                 return;
             }
 
             agent.isStopped = false;
-            if (TickFlank(targetPos, distance)) return;
+            if (TickFlank(targetPos, distance))
+            {
+                Ai.ReportStep(EngageStep.Flank);
+                return;
+            }
+
             agent.SetDestination(targetPos);
+            if (Ai.IsPathBlocked)
+            {
+                agent.isStopped = true;
+                Ai.FaceTowards(targetPos, deltaTime);
+                Ai.ReportStep(EngageStep.Hold);
+                return;
+            }
+            Ai.ReportStep(EngageStep.Approach);
         }
 
         public override void Exit() => Ai.Agent.isStopped = false;

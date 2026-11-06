@@ -7,7 +7,7 @@ namespace CGD.Enemies
     // Looks into a lead with EnemySearch: stops to stare at what it noticed, goes to where it
     // believes it is (its guess, not the truth) and searches a few spots around it, leaning
     // the way a lost target seemed to go. New leads on the way re-route it. Succeeds when the
-    // search turns up nothing (the enemy calms down and forgets); interrupt it from above when
+    // search turns up nothing (the enemy forgets, stays on edge and is due back at its post); interrupt it from above when
     // the target is found.
     [Serializable]
     [BtNodeInfo("Enemy/Movement/Investigate", "Stops to look, goes to the believed position and searches around it. Succeeds when nothing turns up.")]
@@ -22,10 +22,12 @@ namespace CGD.Enemies
 
         protected override BtStatus OnTick(BtContext context)
         {
-            Ai.ReportState(EnemyAI.AiState.Alert);
+            bool hunting = Ai.Perception.Level == AwarenessLevel.Searching;
+            Ai.ReportState(hunting ? EnemyAI.AiState.Hunt : EnemyAI.AiState.Investigate);
             if (!Ai.Search.Tick(context.DeltaTime)) return BtStatus.Running;
 
-            Ai.Perception.LoseTarget();
+            // Nothing found: on edge, and due back at its post (Return To Post).
+            Ai.GiveUpSearch();
             return BtStatus.Success;
         }
 

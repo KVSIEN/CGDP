@@ -59,7 +59,10 @@ namespace CGD.Animation
             _bridge.SetBool(AnimatorParams.Grounded, true);
 
             var state = _ai.State;
-            _bridge.SetBool(AnimatorParams.Alerted, state == EnemyAI.AiState.Alert || state == EnemyAI.AiState.Chase);
+            _bridge.SetBool(AnimatorParams.Alerted, state is not (EnemyAI.AiState.Patrol or EnemyAI.AiState.Return
+                                                                  or EnemyAI.AiState.Stunned or EnemyAI.AiState.Dead));
+            _bridge.SetInteger(AnimatorParams.EngageStep, (int)_ai.Step);
+            _bridge.SetBool(AnimatorParams.Cautious, _ai.IsCautious);
             _bridge.SetBool(AnimatorParams.Stunned, state == EnemyAI.AiState.Stunned);
             _bridge.SetBool(AnimatorParams.Dead,    _health != null && _health.IsDead);
         }

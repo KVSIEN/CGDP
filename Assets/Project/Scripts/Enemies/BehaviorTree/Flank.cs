@@ -40,6 +40,7 @@ namespace CGD.Enemies
             if (!_moving || context.Time >= _givesUpAt) return BtStatus.Failure;
 
             Ai.ReportState(EnemyAI.AiState.Chase);
+            Ai.ReportStep(EngageStep.Flank);
             Ai.SetSpeed(Ai.Data.ChaseSpeed);
             return HasArrived(Ai.Agent, ArrivalDistance) ? BtStatus.Success : BtStatus.Running;
         }

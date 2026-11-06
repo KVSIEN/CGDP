@@ -37,6 +37,7 @@ MonoBehaviour:
   BurstInterval: 0.12
   StrafeInterval: 2
   StrafeDistance: 4
+  RaisesAlarm: 1
   AlertDuration: 6
   AttackSound: {fileID: 0}
   RangedAttackSound: {fileID: 0}

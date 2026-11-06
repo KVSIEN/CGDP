@@ -6,7 +6,8 @@ namespace CGD.Enemies
     // screens it from the target, shoots from there while the cover holds, and moves to new
     // cover every so often or once the target has worked round it. With no cover it holds
     // its preferred distance and strafes (EnemyRangedCombat). Falls back to Alert when the
-    // target is lost.
+    // target is lost; shaken morale sends it to Retreat; if it raises alarms and knows a
+    // panel nearby, it runs to that first.
     public class RangedChaseState : EnemyState
     {
         private const float ArrivalDistance = 0.6f;
@@ -30,11 +31,9 @@ namespace CGD.Enemies
         public override void Tick(float deltaTime)
         {
             var perception = Ai.Perception;
-            if (!perception.IsTargetDetected)
-            {
-                Ai.ChangeState(EnemyAI.AiState.Alert);
-                return;
-            }
+            if (Ai.ShouldRetreat)            { Ai.ChangeState(EnemyAI.AiState.Retreat);    return; }
+            if (!perception.IsTargetDetected) { Ai.ChangeToSearch();                       return; }
+            if (Ai.TryFindAlarm(out _))       { Ai.ChangeState(EnemyAI.AiState.RaiseAlarm); return; }
 
             var combat    = Ai.RangedCombat;
             var tactics   = Ai.Tactics;
@@ -52,12 +51,14 @@ namespace CGD.Enemies
             if (Time.time >= _repositionAt) TryMoveToCover(targetPos);
             if (_movingToCover)
             {
+                Ai.ReportStep(EngageStep.MoveToCover);
                 if (!HasArrived()) return;
                 _movingToCover = false;
             }
 
             if (tactics.IsInCover(targetPos))
             {
+                Ai.ReportStep(EngageStep.FireFromCover);
                 Ai.Agent.isStopped = true;
                 if (combat.HasLineOfSight(targetPos)) combat.TryStartBurst();
                 return;
@@ -65,6 +66,7 @@ namespace CGD.Enemies
 
             // Out in the open (no cover known, or the target got round it): look for new cover soon.
             _repositionAt = Mathf.Min(_repositionAt, Time.time + ExposedRetry);
+            Ai.ReportStep(EngageStep.KeepDistance);
             if (combat.HoldPreferredRange(targetPos, deltaTime) && combat.HasLineOfSight(targetPos))
                 combat.TryStartBurst();
         }

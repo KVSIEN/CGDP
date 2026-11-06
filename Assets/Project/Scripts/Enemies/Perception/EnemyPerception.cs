@@ -31,6 +31,8 @@ namespace CGD.Enemies
         private const float MaxGuessSpeed   = 8f;
         private const float DefaultLoudness = 0.6f;   // footsteps of a hostile without Stealthable
         private const float TrackingGap     = 0.5f;   // seconds between sightings that still give a velocity
+        private const float DeathHearingRange = 10f;  // an ally going down is heard this far
+        private const int   MaxBodyChecks   = 2;      // raycasts per sample spent looking for bodies
 
         private static PerceptionProfile _fallbackProfile;
         private static readonly Dictionary<HealthManager, Collider> Bodies = new();
@@ -53,6 +55,8 @@ namespace CGD.Enemies
         private Vector3 _lastSeenVelocity;
         private bool    _hasLead;
         private bool    _hunting;   // it knows a hostile is about, not just that something seemed off
+        private float   _cautiousUntil = float.NegativeInfinity;
+        private readonly HashSet<EnemyAI> _bodiesSeen = new();
 
         // What a look at one candidate turned up.
         private struct Stimulus
@@ -110,6 +114,9 @@ namespace CGD.Enemies
         // A lead (something new to look into) not yet consumed — read without consuming it.
         public bool HasLead => _hasLead;
 
+        // On edge after a search that found nothing: quicker to notice, slower to settle.
+        public bool IsCautious => _clock < _cautiousUntil;
+
         private static PerceptionProfile FallbackProfile =>
             _fallbackProfile != null ? _fallbackProfile : _fallbackProfile = ScriptableObject.CreateInstance<PerceptionProfile>();
 
@@ -133,7 +140,22 @@ namespace CGD.Enemies
             return had;
         }
 
-        // Calms down completely and forgets: after a fruitless search, or on respawn.
+        // A search turned up nothing: it forgets the target but stays on edge for a while.
+        public void GiveUp()
+        {
+            LoseTarget();
+            _cautiousUntil = _clock + _profile.CautionDuration;
+        }
+
+        // Back to how it was spawned: calm, knowing nothing (respawn, pooling).
+        public void Reset()
+        {
+            LoseTarget();
+            _cautiousUntil = float.NegativeInfinity;
+            _bodiesSeen.Clear();
+        }
+
+        // Calms down completely and forgets its target.
         public void LoseTarget()
         {
             Target   = null;
@@ -189,13 +211,24 @@ namespace CGD.Enemies
             if (callout.Caller == _owner || callout.Team != _team || IsTargetDetected) return;
 
             float distance = Vector3.Distance(callout.From, _self.position);
-            if (!CanHear(callout.From, distance, callout.Radius)) return;
+            bool heard = callout.ThroughWalls ? distance <= callout.Radius : CanHear(callout.From, distance, callout.Radius);
+            if (!heard) return;
 
             _meter.RaiseToSuspicious(0.1f);
             _hunting = true;
             float reportedDistance = Vector3.Distance(callout.From, callout.Reported);
             Lead(callout.Reported + Error(reportedDistance, _profile.HearingError));
             UpdateLevel();
+        }
+
+        // An ally died; heard only if close — anything further it has to find (see NoticeFallen).
+        public void OnAllyFell(FallenAlly fallen)
+        {
+            if (fallen.Body == _owner || fallen.Team != _team || _bodiesSeen.Contains(fallen.Body)) return;
+
+            float distance = Vector3.Distance(fallen.Position, _self.position);
+            if (!CanHear(fallen.Position, distance, DeathHearingRange)) return;
+            DiscoverBody(fallen);
         }
 
         // Told where to look by the game (reinforcements sent toward the player).
@@ -234,6 +267,8 @@ namespace CGD.Enemies
                 bestStimulus = stimulus;
                 bestScore = score;
             }
+
+            NoticeFallen();
 
             // Calms down only once there's nothing at all — not while a target is just behind a pillar.
             if (best == null)            { if (!IsSensing) _meter.Decay(_profile.DecayRate * elapsed); }
@@ -275,10 +310,53 @@ namespace CGD.Enemies
             LookPosition      = position;
 
             if (stimulus.Instant) _meter.Fill();
-            else _meter.Raise(stimulus.Gain * elapsed * (_meter.IsSuspicious ? _profile.SearchingSightBonus : 1f));
+            else _meter.Raise(stimulus.Gain * elapsed * SightBonus());
 
             // A glimpse it isn't sure of yet: it wants a closer look.
             if (!_meter.IsFull && _meter.IsSuspicious) _hasLead = true;
+        }
+
+        private float SightBonus()
+        {
+            float bonus = _meter.IsSuspicious ? _profile.SearchingSightBonus : 1f;
+            return IsCautious ? bonus * _profile.CautionSightBonus : bonus;
+        }
+
+        // Bodies of allies it hasn't found yet, in view with a clear line: something is badly wrong.
+        private void NoticeFallen()
+        {
+            IReadOnlyList<FallenAlly> bodies = FallenAllies.All;
+            if (bodies.Count == 0) return;
+
+            Vector3 eye       = _self.position + Vector3.up * EyeHeight;
+            float   halfAngle = _data.SightAngle * 0.5f;
+            int     checks    = 0;
+
+            for (int i = 0; i < bodies.Count && checks < MaxBodyChecks; i++)
+            {
+                FallenAlly fallen = bodies[i];
+                if (fallen.Body == null || fallen.Body == _owner || fallen.Team != _team || _bodiesSeen.Contains(fallen.Body)) continue;
+
+                Vector3 body = fallen.Position + Vector3.up * 0.3f;
+                Vector3 toBody = body - eye;
+                if (toBody.sqrMagnitude > _data.SightRange * _data.SightRange) continue;
+                if (Vector3.Angle(_self.forward, toBody) > halfAngle) continue;
+
+                checks++;
+                if (IsClear(eye, body)) DiscoverBody(fallen);
+            }
+        }
+
+        private void DiscoverBody(FallenAlly fallen)
+        {
+            _bodiesSeen.Add(fallen.Body);
+            _owner.Morale.OnAllyDown();
+            if (IsTargetDetected) return;
+
+            _meter.RaiseToSuspicious(0.15f);
+            _hunting = true;
+            Lead(fallen.Position);
+            UpdateLevel();
         }
 
         private void HearFootsteps(HealthManager target, Stimulus stimulus, float elapsed)

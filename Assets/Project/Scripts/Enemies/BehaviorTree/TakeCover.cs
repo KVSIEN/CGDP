@@ -36,7 +36,8 @@ namespace CGD.Enemies
         {
             if (!_moving || context.Time >= _givesUpAt) return BtStatus.Failure;
 
-            Ai.ReportState(EnemyAI.AiState.Chase);
+            Ai.ReportState(_use == CoverUse.Hide ? EnemyAI.AiState.Retreat : EnemyAI.AiState.Chase);
+            Ai.ReportStep(EngageStep.MoveToCover);
             Ai.SetSpeed(Ai.Data.ChaseSpeed);
             return HasArrived(Ai.Agent, ArrivalDistance) ? BtStatus.Success : BtStatus.Running;
         }

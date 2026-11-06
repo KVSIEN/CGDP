@@ -435,14 +435,14 @@
 - Included: Frag Grenade, Smoke Grenade (a smoke cloud that hides you and blocks sight lines), Contact Grenade (explodes the moment it hits something; faster and flatter to throw), Incendiary Grenade (shatters on impact, sets everything nearby on fire and leaves the ground burning for several seconds) and Stun Grenade (no damage; freezes everything in the blast in place for 3 seconds). They are found in supply cases like the others. Stunned and slowed firing-range dummies stop moving too
 
 ## Enemy AI
-- AI states — Patrol, Alert, Chase, Stunned, Dead — run on the shared state machine; Patrol, Alert and Chase each decide where to go next, a stun interrupts any of them and hands back to whatever was interrupted, and death is final until the enemy respawns
+- AI states — Patrol (or guard), Investigate, Hunt, Return, Chase, Retreat, Raise Alarm, Stunned, Dead — run on the shared state machine; each decides what comes next, a stun interrupts any of them and hands back to whatever was interrupted, and death is final until the enemy respawns (see *Enemy Behaviour States* below)
 - Enemies find targets by team: any character on an opposing team can be detected, so no player reference needs wiring; teamless props such as breakable crates are ignored
 - Enemies can be spawned from the object pool and reused: a reused enemy comes back at full health and starts patrolling again
 - **Enemy tiers**: every faction has three tiers of regular enemies. Tier 1 is the everyday roster (~100 effective health); tiers 2 and 3 are tougher (about 2.5× and 5× the effective health, harder hits) and a little bigger. For now tiers 2–3 are stat-only placeholders built on their faction's tier 1; their own looks and behaviour come later
 - How often higher tiers turn up depends on the room's tier (see Map Graph Generation): tier-1 rooms are almost all tier 1 enemies (10% tier 2), tier-2 rooms mix in tier 2s (45%) and a few tier 3s (10%), and tier-3 rooms are mostly tier 2 and 3 (45% each). Encounter waves (Holdout, Rift, Lockdown) follow the same odds
 - **Random affixes**: tier 2 enemies roll one random affix and tier 3 two (tier 1 none), named in front of them ("Brutal Warded Void Tier 3"): **Armored** (+40 armour), **Warded** (+40 shield, even on factions that normally have none), **Vital** (+60% health), **Brutal** (+40% damage) and **Swift** (+30% speed). Each spawn rolls afresh
 - Patrol follows an ordered list of waypoints, looping continuously; idles in place if no waypoints are assigned
-- Alert: the enemy looks into what it noticed — see *Enemy Senses & Memory* — and returns to patrol once the search turns up nothing
+- Investigate / Hunt: the enemy looks into what it noticed — see *Enemy Senses & Memory* — and heads back to its post once the search turns up nothing
 - Two combat types per enemy: Melee or Ranged, selectable on the EnemyData asset
 - **Melee** enemies close the gap and attack at melee range: stop, turn to face the target, wind up, then strike everything hostile in front; configurable wind-up and cooldown
 - **Ranged** enemies maintain a preferred engagement distance — advance when too far, retreat when too close, and strafe sideways while at range; fire hitscan shots at the target when they have line of sight, with configurable spread; burst fire is supported (multiple shots per trigger pull with a configurable interval between them); shots resolve through the full damage pipeline (armor, shield, hitbox regions all apply)
@@ -471,6 +471,19 @@
 - **Read-out**: a mark over each enemy shows what it believes — a yellow "?" that grows as it makes up its mind, an orange "?" while it hunts, and a red "!" the moment it has you
 - Cheap to run: each enemy looks and listens a few times a second, staggered so they don't all check on the same frame, with a handful of raycasts per check
 
+## Enemy Behaviour States
+- **Guarding**: an enemy without a patrol route stands at its post and looks around now and then, so there's no fixed blind side to sneak past
+- **Investigate vs Hunt**: an enemy that merely noticed something investigates (patrol speed, one spot); one that knows someone is about hunts (faster, more spots, longer, checking cover you could hide behind). An investigation turns into a hunt if it learns more on the way
+- **On edge**: after a search that found nothing, an enemy stays on edge for about 45 seconds — it notices you faster, walks its patrol quicker and, guarding, looks around twice as often. The same trick rarely works twice in a row
+- **Return to post**: after giving up ("must've been nothing" — a moment standing there looking round) or after killing you (a moment over the body), it walks back to its post or the nearest point of its route before patrolling again
+- **Taking turns in melee**: only a couple of enemies (per enemy type) fight one target up close at once; the rest circle at a distance, waiting their turn, and an enemy steps back after a couple of strikes to let another in. Likewise only a few fire bursts at one target at once
+- **Stagger**: a single heavy hit (a quarter of its health by default) knocks an enemy off balance for a moment, spoiling an attack it was winding up. It can't be staggered again for a couple of seconds
+- **Out of reach**: if you're somewhere it can't walk to, a melee enemy holds at the closest point facing you instead of pressing into a wall
+- **Morale**: seeing an ally go down and getting badly hurt shake an enemy. Shaken, it falls back to cover or its post and holds there until it has steadied, then rejoins the fight. Cornered, it fights. Skittish Bio creatures break sooner than wary Tech bots
+- **Bodies**: enemies react to allies' bodies only when they actually see one (or hear the death nearby): morale drops and they start hunting from the body. Fighting out of sight keeps the others calm
+- **Alarms**: some enemies run for an alarm panel near their post the moment they spot you. Raised, every ally within about 60 m hears it (walls don't stop it) and comes looking where you were last seen. Stop the runner or disable the panel first (hold Interact); it re-arms 30 seconds after sounding
+- The enemy's colour shows its state: grey patrolling, yellow investigating or heading home, orange hunting, red fighting, purple regrouping, blue stunned
+
 ## Enemy Tactics: Cover & Flanking
 - Levels are scanned for cover when they load: every spot along a wall, crate or pillar an enemy could stand behind, marked low (waist-high — it can shoot over) or high (hides it completely)
 - An enemy only uses cover it knows: the area around where it spawned and along its patrol route, plus spots it has seen since. In unfamiliar rooms it has to look around first
@@ -491,9 +504,9 @@
   - **General**: Wait (fixed or random time), Set Flag / Check Flag (blackboard memory)
   - **Enemy senses**: Has Target, Is Suspicious (heard a noise, was hit or lost sight of its target), Target In Range, Target In Sight, Health Below
   - **Enemy actions**: Patrol, Investigate, Chase Target, Melee Attack, Hold Range (a ranged enemy's spacing and strafing), Shoot Burst, Flee, Stop Moving
-  - **Enemy tactics**: Take Cover (to fight from, or to hide), In Cover, Flank, Knows Target (still counts moments after losing sight)
+  - **Enemy tactics**: Take Cover (to fight from, or to hide), In Cover, Flank, Knows Target (still counts moments after losing sight), Is Shaken, Regroup, Raise Alarm, Return To Post
 - Two ready-made trees: a **melee** enemy (strike, sometimes flank, otherwise charge → investigate → patrol) and a **ranged** enemy that fights from cover and repositions, keeps its distance in the open, and hides or breaks away when badly hurt (at most every 8 seconds)
-- **AI Test scene** (`Scenes/AITest`): a walled arena with walls, pillars and low crates for cover where two melee enemies patrol and a ranged one paces the far wall, all running behavior trees. The player starts with a rifle and respawns on death
+- **AI Test scene** (`Scenes/AITest`): a walled arena with walls, pillars and low crates for cover, an alarm panel on the north wall (the ranged enemy runs for it) and a Husk guarding the south-east corner on the built-in state machine where two melee enemies patrol and a ranged one paces the far wall, all running behavior trees. The player starts with a rifle and respawns on death
 
 ## Object Pooling
 - Frequently spawned objects — projectiles, grenades, zones, pickups, particle effects and enemies — are reused instead of created and destroyed, avoiding hitches and garbage collection

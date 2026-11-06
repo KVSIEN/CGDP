@@ -72,6 +72,36 @@ namespace CGD.Enemies
         [SerializeField] private FloatRange _lookAroundPause = new(0.8f, 1.8f);
         [Tooltip("Share of chase speed used while hunting (versus patrol speed when merely curious)")]
         [SerializeField, Range(0.3f, 1f)] private float _huntSpeed = 0.75f;
+        [Tooltip("Seconds it stands there after giving up a search before heading back to its post")]
+        [SerializeField] private FloatRange _lostInterestPause = new(1f, 2.5f);
+        [Tooltip("Seconds it stands over a target it killed before heading back")]
+        [SerializeField] private FloatRange _victoryPause = new(2f, 3.5f);
+
+        [Header("Caution (after a search that found nothing)")]
+        [Tooltip("Seconds it stays on edge after giving up a search")]
+        [SerializeField, Min(0f)] private float _cautionDuration = 45f;
+        [Tooltip("Sight speed while on edge")]
+        [SerializeField, Min(1f)] private float _cautionSightBonus = 1.4f;
+        [Tooltip("Patrol speed while on edge, as a multiple of normal")]
+        [SerializeField, Min(1f)] private float _cautionPatrolSpeed = 1.25f;
+
+        [Header("Guarding (no patrol route)")]
+        [Tooltip("Seconds between turns to look somewhere else (halved while on edge)")]
+        [SerializeField] private FloatRange _guardLookInterval = new(3f, 7f);
+        [Tooltip("Degrees either side of its post's facing it looks")]
+        [SerializeField, Range(0f, 180f)] private float _guardLookAngle = 70f;
+
+        [Header("Morale")]
+        [Tooltip("Morale lost when it sees (or hears, close by) an ally go down; 1 = full morale")]
+        [SerializeField, Range(0f, 1f)] private float _moraleLossAllyDown = 0.3f;
+        [Tooltip("Morale lost once when its health first drops low")]
+        [SerializeField, Range(0f, 1f)] private float _moraleLossHurt = 0.35f;
+        [Tooltip("Morale regained per second")]
+        [SerializeField, Min(0f)] private float _moraleRecovery = 0.04f;
+        [Tooltip("Below this it retreats and regroups")]
+        [SerializeField, Range(0f, 1f)] private float _retreatBelow = 0.35f;
+        [Tooltip("Above this it is ready to fight again")]
+        [SerializeField, Range(0f, 1f)] private float _rallyAbove = 0.6f;
 
         public float SenseInterval        => _senseInterval;
         public float NearSightGain        => _nearSightGain;
@@ -98,5 +128,17 @@ namespace CGD.Enemies
         public float SearchRadius         => _searchRadius;
         public FloatRange LookAroundPause => _lookAroundPause;
         public float HuntSpeed            => _huntSpeed;
+        public FloatRange LostInterestPause => _lostInterestPause;
+        public FloatRange VictoryPause    => _victoryPause;
+        public float CautionDuration      => _cautionDuration;
+        public float CautionSightBonus    => _cautionSightBonus;
+        public float CautionPatrolSpeed   => _cautionPatrolSpeed;
+        public FloatRange GuardLookInterval => _guardLookInterval;
+        public float GuardLookAngle       => _guardLookAngle;
+        public float MoraleLossAllyDown   => _moraleLossAllyDown;
+        public float MoraleLossHurt       => _moraleLossHurt;
+        public float MoraleRecovery       => _moraleRecovery;
+        public float RetreatBelow         => _retreatBelow;
+        public float RallyAbove           => _rallyAbove;
     }
 }

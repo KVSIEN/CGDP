@@ -26,6 +26,7 @@ namespace CGD.Enemies
         private float _burstTimer;
         private float _strafeTimer;
         private int   _strafeDir = 1;
+        private bool  _hasShooterToken;
 
         public EnemyRangedCombat(EnemyAI ai, DamageSource source, LayerMask obstacleMask)
         {
@@ -42,6 +43,9 @@ namespace CGD.Enemies
         {
             _fireCooldown.Tick(deltaTime);
             TickBurst(deltaTime);
+
+            // Ready to fire again: let a waiting ally have the turn if it wants it.
+            if (_hasShooterToken && !IsBursting && _fireCooldown.IsReady) ReleaseToken();
         }
 
         public void ResetSpacing() => _strafeTimer = _ai.Data.StrafeInterval;
@@ -87,6 +91,12 @@ namespace CGD.Enemies
         {
             if (!CanFire) return false;
 
+            // Only a few enemies fire at one target at once (EnemyData.MaxShooters).
+            var target = _ai.Perception.Target;
+            if (target == null) return false;
+            _hasShooterToken = AttackTokens.TryAcquire(AttackTokenKind.Ranged, target, _ai, _ai.Data.MaxShooters);
+            if (!_hasShooterToken) return false;
+
             EnemyData data = _ai.Data;
             _fireCooldown.Start(data.AttackCooldown);
             _burstRemaining = Mathf.Max(1, data.BurstCount);
@@ -96,12 +106,22 @@ namespace CGD.Enemies
             return true;
         }
 
-        public void CancelBurst() => _burstRemaining = 0;
+        public void CancelBurst()
+        {
+            _burstRemaining = 0;
+            ReleaseToken();
+        }
 
         public void Reset()
         {
             CancelBurst();
             _fireCooldown.Reset();
+        }
+
+        private void ReleaseToken()
+        {
+            if (_hasShooterToken) AttackTokens.Release(AttackTokenKind.Ranged, _ai);
+            _hasShooterToken = false;
         }
 
         private void TickBurst(float deltaTime)

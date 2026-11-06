@@ -18,6 +18,7 @@ namespace CGD.Enemies
             if (!perception.IsTargetDetected) return BtStatus.Failure;
 
             Ai.ReportState(EnemyAI.AiState.Chase);
+            Ai.ReportStep(EngageStep.KeepDistance);
             var targetPos = perception.Target.transform.position;
             Ai.SetSpeed(Ai.Data.ChaseSpeed);
             Ai.FaceTowards(targetPos, context.DeltaTime);

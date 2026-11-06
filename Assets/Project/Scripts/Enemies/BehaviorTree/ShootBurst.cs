@@ -20,6 +20,7 @@ namespace CGD.Enemies
             if (target == null) return BtStatus.Failure;
 
             var combat = Ai.RangedCombat;
+            if (Ai.Tactics.IsInCover(Ai.Perception.TargetPosition)) Ai.ReportStep(EngageStep.FireFromCover);
             if (!_fired && combat.HasLineOfSight(Ai.Perception.TargetPosition))
                 _fired = combat.TryStartBurst();
 

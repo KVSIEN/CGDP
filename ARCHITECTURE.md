@@ -96,7 +96,11 @@ approach → look-around routine both brains use to act on a lead. Space works t
 way: a scene's `CoverMap` lists every cover spot (scanned from the NavMesh), but each
 enemy's `CoverKnowledge` holds only the spots it has learned (home turf, then what it
 sees), and `EnemyTactics` answers cover / flank / hiding-spot questions from that and the
-believed threat position.
+believed threat position. Each fight-level routine that both brains need lives once, outside
+either brain: `EnemySearch`, `ReturnStep`, `RetreatStep`, `RaiseAlarmStep`, `EnemyPost`
+(guarding), `EnemyMorale`, `AttackTokens` (how many enemies may melee or shoot one target
+at once). States and tree nodes stay thin wrappers that decide *when*; they report
+`AiState` and `EngageStep` so visuals, animation and audio follow either brain.
 
 **An enemy decides with a behavior tree.** When its `EnemyData` has a `BehaviorTreeAsset`,
 `EnemyAI` skips its state machine and ticks a `BehaviorTree` — the agent's own copy of the

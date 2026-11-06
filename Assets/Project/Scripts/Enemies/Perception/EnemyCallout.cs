@@ -11,10 +11,12 @@ namespace CGD.Enemies
         public readonly Vector3 Reported;
         public readonly Team    Team;
         public readonly float   Radius;
+        // A siren rather than a shout: walls don't muffle it.
+        public readonly bool    ThroughWalls;
 
-        public EnemyCallout(EnemyAI caller, Vector3 from, Vector3 reported, Team team, float radius)
+        public EnemyCallout(EnemyAI caller, Vector3 from, Vector3 reported, Team team, float radius, bool throughWalls = false)
         {
-            Caller = caller; From = from; Reported = reported; Team = team; Radius = radius;
+            Caller = caller; From = from; Reported = reported; Team = team; Radius = radius; ThroughWalls = throughWalls;
         }
     }
 }

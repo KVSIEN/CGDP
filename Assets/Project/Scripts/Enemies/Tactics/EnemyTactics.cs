@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using CGD.Combat;
 
 namespace CGD.Enemies
 {
@@ -27,6 +28,13 @@ namespace CGD.Enemies
 
         private static readonly float[] FlankAngles = { 70f, 100f };
 
+        // Melee turns: strikes before it steps back to let a waiting ally in, and how long it waits.
+        private const int   StrikesPerTurn = 2;
+        private const float TurnRest       = 0.8f;
+        private const float CircleStep     = 35f;    // degrees round the target per new circling point
+        private const float CircleRepath   = 0.4f;
+        private static readonly Vector2 CircleFlipEvery = new(2.5f, 5f);
+
         private readonly EnemyAI        _ai;
         private readonly LayerMask      _obstacleMask;
         private readonly CoverKnowledge _knowledge;
@@ -34,7 +42,13 @@ namespace CGD.Enemies
         private readonly (int index, float score)[] _best = new (int, float)[VerifiedCandidates];
         private readonly NavMeshPath    _path = new();
 
-        private int _claimed = -1;
+        private int   _claimed = -1;
+        private bool  _hasMeleeTurn;
+        private int   _strikes;
+        private float _turnRestUntil;
+        private int   _circleDirection = 1;
+        private float _nextCircleFlip;
+        private float _nextCirclePath;
 
         public EnemyTactics(EnemyAI ai, LayerMask obstacleMask)
         {
@@ -59,6 +73,7 @@ namespace CGD.Enemies
         public void Reset()
         {
             ReleaseCover();
+            EndMeleeTurn();
             _knowledge.Forget();
         }
 
@@ -67,6 +82,63 @@ namespace CGD.Enemies
             if (_claimed >= 0 && _knowledge.Map != null) _knowledge.Map.Release(_claimed, _ai);
             _claimed = -1;
         }
+
+        // --- Melee turns ------------------------------------------------------------
+
+        // Whether it may step in and strike: only a few enemies (EnemyData.MaxMeleeAttackers)
+        // are in melee with one target at a time, and it gives way after a couple of strikes.
+        public bool TryTakeMeleeTurn(HealthManager target)
+        {
+            if (_hasMeleeTurn) return true;
+            if (Time.time < _turnRestUntil) return false;
+
+            _hasMeleeTurn = AttackTokens.TryAcquire(AttackTokenKind.Melee, target, _ai, _ai.Data.MaxMeleeAttackers);
+            return _hasMeleeTurn;
+        }
+
+        public void OnStrike()
+        {
+            if (!_hasMeleeTurn || ++_strikes < StrikesPerTurn) return;
+            EndMeleeTurn();
+            _turnRestUntil = Time.time + TurnRest;
+        }
+
+        public void EndMeleeTurn()
+        {
+            if (_hasMeleeTurn) AttackTokens.Release(AttackTokenKind.Melee, _ai);
+            _hasMeleeTurn = false;
+            _strikes      = 0;
+        }
+
+        // Waiting its turn: circles the target at a distance, now and then changing direction.
+        public void CircleTarget(Vector3 target, float radius)
+        {
+            float time = Time.time;
+            if (time >= _nextCircleFlip)
+            {
+                _nextCircleFlip  = time + Random.Range(CircleFlipEvery.x, CircleFlipEvery.y);
+                _circleDirection = Random.value < 0.5f ? -1 : 1;
+            }
+            if (time < _nextCirclePath) return;
+            _nextCirclePath = time + CircleRepath;
+
+            Vector3 away = _ai.transform.position - target;
+            away.y = 0f;
+            if (away.sqrMagnitude < 0.01f) away = -_ai.transform.forward;
+
+            Vector3 point = target + Quaternion.Euler(0f, CircleStep * _circleDirection, 0f) * away.normalized * radius;
+            if (NavMesh.SamplePosition(point, out NavMeshHit hit, 1.5f, NavMesh.AllAreas))
+            {
+                _ai.Agent.isStopped = false;
+                _ai.Agent.SetDestination(hit.position);
+            }
+            else
+            {
+                _circleDirection = -_circleDirection;
+            }
+        }
+
+        // --- Cover ------------------------------------------------------------------
 
         // At its spot, and the spot still stands between it and the threat.
         public bool IsInCover(Vector3 threat)
