@@ -23,6 +23,17 @@ namespace CGD.Items
 
         private Dictionary<string, ItemDefinition> _byId;
         private Dictionary<ItemDefinition, string> _byDefinition;
+        private List<ItemDefinition>               _definitions;
+
+        // Every listed definition, in the catalog's order (by asset path).
+        public IReadOnlyList<ItemDefinition> Definitions
+        {
+            get
+            {
+                EnsureLookup();
+                return _definitions;
+            }
+        }
 
         public bool TryGet(string id, out ItemDefinition definition)
         {
@@ -58,11 +69,12 @@ namespace CGD.Items
 
             _byId         = new Dictionary<string, ItemDefinition>(_entries.Count);
             _byDefinition = new Dictionary<ItemDefinition, string>(_entries.Count);
+            _definitions  = new List<ItemDefinition>(_entries.Count);
             foreach (Entry entry in _entries)
             {
                 if (string.IsNullOrEmpty(entry.Id) || entry.Definition == null) continue;
                 _byId[entry.Id] = entry.Definition;
-                _byDefinition[entry.Definition] = entry.Id;
+                if (_byDefinition.TryAdd(entry.Definition, entry.Id)) _definitions.Add(entry.Definition);
             }
         }
     }

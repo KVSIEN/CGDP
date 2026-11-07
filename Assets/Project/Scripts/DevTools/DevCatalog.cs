@@ -10,22 +10,35 @@ using CGD.Weapons;
 namespace CGD.DevTools
 {
     // What the dev console can hand out by name: items, weapon categories, enemy prefabs,
-    // buffs and dodge types. Names match the asset name or display name, ignoring case and spaces;
+    // buffs and dodge types. Items and weapon categories come from the ItemCatalog, so every
+    // item in the project can be handed out without listing it here. Names match the asset name or display name, ignoring case and spaces;
     // a unique partial match works too ("scrap" → Scrap Metal).
     [CreateAssetMenu(fileName = "DevCatalog", menuName = "CGD/Dev Tools/Dev Catalog")]
     public class DevCatalog : ScriptableObject
     {
-        [SerializeField] private ItemDefinition[]     _items      = Array.Empty<ItemDefinition>();
-        [SerializeField] private WeaponCategory[]     _weapons    = Array.Empty<WeaponCategory>();
+        [SerializeField] private ItemCatalog          _itemCatalog;
         [SerializeField] private GameObject[]         _enemies    = Array.Empty<GameObject>();
         [SerializeField] private StatModifierPreset[] _buffs      = Array.Empty<StatModifierPreset>();
         [SerializeField] private DodgeDefinition[]    _dodges     = Array.Empty<DodgeDefinition>();
 
-        public IReadOnlyList<ItemDefinition>     Items   => _items;
-        public IReadOnlyList<WeaponCategory>     Weapons => _weapons;
+        // Everything but weapon categories, which /weapon rolls instead (see Weapons).
+        public IReadOnlyList<ItemDefinition>     Items   => FromItemCatalog<ItemDefinition>(d => d is not WeaponCategory);
+        public IReadOnlyList<WeaponCategory>     Weapons => FromItemCatalog<WeaponCategory>(_ => true);
         public IReadOnlyList<GameObject>         Enemies => _enemies;
         public IReadOnlyList<StatModifierPreset> Buffs   => _buffs;
         public IReadOnlyList<DodgeDefinition>    Dodges  => _dodges;
+
+        // Built on each call rather than cached: it's only read while typing in the console, and
+        // the catalog can change under a cache in the editor.
+        private List<T> FromItemCatalog<T>(Func<T, bool> include) where T : ItemDefinition
+        {
+            var found = new List<T>();
+            if (_itemCatalog == null) return found;
+
+            foreach (ItemDefinition definition in _itemCatalog.Definitions)
+                if (definition is T match && include(match)) found.Add(match);
+            return found;
+        }
 
         // Exact match first, then a single partial match. Null (with a reason) otherwise.
         public static T Find<T>(IReadOnlyList<T> options, string query, Func<T, string> displayName, out string error) where T : UnityEngine.Object
