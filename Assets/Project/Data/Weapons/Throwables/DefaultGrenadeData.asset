@@ -16,13 +16,15 @@ MonoBehaviour:
   GrenadePrefab: {fileID: 3424364988567009664, guid: 79be582424e8357498037e5240babdf2, type: 3}
   BodyColor: {r: 0.28, g: 0.34, b: 0.2, a: 1}
   RangeMode: 1
-  MinThrowSpeed: 8
-  MaxThrowSpeed: 18
+  MinThrowSpeed: 10
+  MaxThrowSpeed: 24
   ChargeTime: 0.8
-  ThrowAngle: 6
+  ThrowAngle: 8
   InheritVelocity: 0.5
-  ImpactSpeedKept: 0.5
-  GroundDrag: 8
+  GravityScale: 2
+  Bounciness: 0.3
+  ImpactSpeedKept: 0.45
+  GroundDrag: 12
   Fuse: 0
   FuseTime: 2.5
   ArmTime: 0.15
@@ -49,6 +51,6 @@ MonoBehaviour:
   OnHitEffects: []
   ThrowSound: {fileID: 0}
   ExplosionSound: {fileID: 0}
-  TrajectorySteps: 30
-  TrajectoryStepTime: 0.1
+  TrajectorySteps: 60
+  TrajectoryStepTime: 0.05
   PreviewColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

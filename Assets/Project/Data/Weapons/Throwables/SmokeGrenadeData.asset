@@ -15,8 +15,8 @@ MonoBehaviour:
   GrenadeName: Smoke Grenade
   GrenadePrefab: {fileID: 3424364988567009664, guid: 79be582424e8357498037e5240babdf2, type: 3}
   BodyColor: {r: 0.55, g: 0.58, b: 0.6, a: 1}
-  MinThrowSpeed: 7
-  MaxThrowSpeed: 16
+  MinThrowSpeed: 9
+  MaxThrowSpeed: 21
   ChargeTime: 0.8
   ThrowAngle: 6
   InheritVelocity: 0.5
@@ -46,6 +46,6 @@ MonoBehaviour:
   OnHitEffects: []
   ThrowSound: {fileID: 0}
   ExplosionSound: {fileID: 0}
-  TrajectorySteps: 30
-  TrajectoryStepTime: 0.1
+  TrajectorySteps: 60
+  TrajectoryStepTime: 0.05
   PreviewColor: {r: 0.7, g: 0.7, b: 0.7, a: 1}

@@ -488,7 +488,7 @@ Starting setup is *Mixed, tier 1*: dummy *n* plays the first faction's enemy, th
 | Prefab | Needs |
 |---|---|
 | `Prefabs/Weapons/Projectile` | `Projectile` + a renderer. `TrailRenderer`? is reset on every launch. |
-| `Prefabs/Weapons/FragGrenade` | Root: `Rigidbody` (mass 0.4, no linear drag so the trajectory preview stays true, angular damping 2 so it settles instead of rolling on, *Interpolate* on, *Continuous Dynamic* so a thrown grenade can't pass through enemies), solid `SphereCollider` with `Physics Materials/Grenade` (bounciness 0.4 with *Maximum* combine, so it bounces the same off any surface; friction 0.6), `Grenade` (`_body` = the Body child's renderer, which takes the grenade's colour and blinks). One child, `Body` — a plain sphere (scale 0.15, matching the collider) with `Materials/Environment/Props/GrenadeBody`, a URP Lit material; the grenade's tint is set on its `_BaseColor`. Shared by every grenade type |
+| `Prefabs/Weapons/FragGrenade` | Root: `Rigidbody` (mass 0.4, no linear drag so the trajectory preview stays true, *Use Gravity* on, rotation frozen on all axes so spin can't change a bounce, *Interpolate* on, *Continuous Dynamic* so a thrown grenade can't pass through enemies), solid `SphereCollider` with `Physics Materials/Grenade` (bounciness 0 and friction 0, both *Minimum* combine, so the physics engine neither bounces nor grips it — the bounce comes from the `GrenadeData`), `Grenade` (`_body` = the Body child's renderer, which takes the grenade's colour and blinks). One child, `Body` — a plain sphere (scale 0.15, matching the collider) with `Materials/Environment/Props/GrenadeBody`, a URP Lit material; the grenade's tint is set on its `_BaseColor`. Shared by every grenade type |
 | `Prefabs/VFX/ExplosionFlash` | A sphere with `ExplosionFlash` and the transparent `Materials/ExplosionFlash`; set as a grenade's `ExplosionEffect`. Pooled automatically |
 | Zone prefabs | `PersistentZone` — spawned by an ActionTimeline's zone event |
 | One-shot VFX | `PooledLifetime` (`_lifetime` 0 = until particles finish) |
@@ -584,13 +584,14 @@ A grenade type is one `GrenadeData` asset (`Create › CGD › Weapons › Grena
 | Group | Fields |
 |---|---|
 | Identity | `GrenadePrefab` (any prefab with `Rigidbody`, `Collider`, `Grenade`), `BodyColor` |
-| Throw | `MinThrowSpeed` (tap) → `MaxThrowSpeed` (fully charged) in m/s, `ChargeTime` (seconds to full, 0 = always full), `ThrowAngle` (upward lift, degrees), `InheritVelocity` (share of the thrower's movement) |
+| Throw | `MinThrowSpeed` (tap) → `MaxThrowSpeed` (fully charged) in m/s, `ChargeTime` (seconds to full, 0 = always full), `ThrowAngle` (upward lift, degrees), `InheritVelocity` (share of the thrower's movement), `GravityScale` (× world gravity in flight; also used by the preview and enemy aim) |
+| Landing | `Bounciness` (share of the speed into a surface it rebounds with; weak rebounds settle), `ImpactSpeedKept` (share of speed along the surface kept per hit), `GroundDrag` (slowing on the ground, m/s²) |
 | Fuse | `Fuse` = Timed or OnImpact, `FuseTime` (OnImpact: the longest it may fly), `ArmTime`, `FuseBlinkColor` |
 | Explosion | `ExplosionRadius`, `ExplosionDamage`, `EdgeDamage` (share left at the edge), `ArmorPenetration`, `DamageType`, `HitMask`, `NeedsLineOfSight` + `BlockerMask`, `PushForce`, `NoiseRadius` |
 | Aftermath and effects | `LingeringZone` (a smoke cloud or `Prefabs/VFX/FireZone`, left where it goes off), `ExplosionEffect` + `FlashColor`, `CameraTrauma` + `ShakeRadius`, `OnHitEffects` (a blast with no damage still applies them), `ThrowSound`, `ExplosionSound` |
 | Preview | `TrajectorySteps`, `TrajectoryStepTime`, `PreviewColor` |
 
-Range on flat ground is about speed² ÷ 9.8, so the Frag Grenade throws from about 6 m (a tap) to about 33 m (full charge).
+Range on flat ground is at most about speed² ÷ (9.8 × `GravityScale`). Every included grenade uses `GravityScale` 2, so the Frag Grenade (fixed, 24 m/s) reaches about 29 m thrown at 45° and about 13 m thrown straight ahead from eye height.
 
 Included types (data in `Data/Weapons/Throwables/`, items in `Data/Items/Throwables/`, all in `ConsumablesPool` and the dev catalog):
 

@@ -67,5 +67,46 @@ namespace CGD.Tests
 
             Assert.AreEqual(2f, velocity.x, 0.001f);
         }
+
+        [Test]
+        public void GravityScalesTheWorldsGravity()
+        {
+            _data.GravityScale = 2f;
+
+            Assert.AreEqual(Physics.gravity.y * 2f, _data.Gravity.y, 0.001f);
+        }
+
+        [Test]
+        public void BounceReboundsAndKeepsAShareOfSpeedAlongTheSurface()
+        {
+            _data.Bounciness = 0.5f;
+            _data.ImpactSpeedKept = 0.5f;
+
+            Vector3 bounced = _data.BounceVelocity(new Vector3(10f, -10f, 0f), Vector3.up);
+
+            Assert.AreEqual(5f, bounced.x, 0.001f);
+            Assert.AreEqual(5f, bounced.y, 0.001f);
+        }
+
+        [Test]
+        public void WeakBounceSettlesOnTheSurface()
+        {
+            _data.Bounciness = 0.3f;
+            Vector3 gentle = new(4f, -2f, 0f);
+
+            Vector3 bounced = _data.BounceVelocity(gentle, Vector3.up);
+
+            Assert.IsTrue(_data.Settles(gentle, Vector3.up));
+            Assert.AreEqual(0f, bounced.y, 0.001f);
+            Assert.Greater(bounced.x, 0f);
+        }
+
+        [Test]
+        public void MovingAwayFromTheSurfaceIsLeftAlone()
+        {
+            Vector3 leaving = new(3f, 2f, 0f);
+
+            Assert.AreEqual(leaving, _data.BounceVelocity(leaving, Vector3.up));
+        }
     }
 }

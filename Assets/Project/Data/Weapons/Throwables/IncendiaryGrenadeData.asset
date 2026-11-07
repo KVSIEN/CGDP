@@ -15,8 +15,8 @@ MonoBehaviour:
   GrenadeName: Incendiary Grenade
   GrenadePrefab: {fileID: 3424364988567009664, guid: 79be582424e8357498037e5240babdf2, type: 3}
   BodyColor: {r: 0.85, g: 0.4, b: 0.1, a: 1}
-  MinThrowSpeed: 7
-  MaxThrowSpeed: 17
+  MinThrowSpeed: 9
+  MaxThrowSpeed: 22
   ChargeTime: 0.8
   ThrowAngle: 6
   InheritVelocity: 0.5
@@ -48,6 +48,6 @@ MonoBehaviour:
     Chance: 1
   ThrowSound: {fileID: 0}
   ExplosionSound: {fileID: 0}
-  TrajectorySteps: 30
-  TrajectoryStepTime: 0.1
+  TrajectorySteps: 60
+  TrajectoryStepTime: 0.05
   PreviewColor: {r: 1, g: 0.55, b: 0.1, a: 1}

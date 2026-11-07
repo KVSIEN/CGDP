@@ -2,12 +2,13 @@ using UnityEngine;
 
 namespace CGD.Weapons
 {
-    // Draws where a throw would go while it is being aimed: the arc up to the first surface it
-    // would hit, and a ring on that surface the size of the blast. Two line renderers, built
+    // Draws where a throw would go while it is being aimed: the arc and its bounces up to where
+    // it comes to rest, and a ring there the size of the blast. Two line renderers, built
     // once; shown only while Show is called each frame.
     public class TrajectoryPreview : MonoBehaviour
     {
         private const int RingSegments = 48;
+        private const float SurfaceOffset = 0.02f; // lifts a bounce off the surface so the next step doesn't re-hit it
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
         [Tooltip("Unlit material for the arc and the ring; the colour comes from the grenade")]
@@ -29,7 +30,9 @@ namespace CGD.Weapons
 
         private void OnDisable() => Hide();
 
-        // Steps the throw forward under gravity, stopping at the first thing it would hit.
+        // Steps the throw forward under the grenade's gravity, bouncing it the way the grenade
+        // will bounce, until it settles (or, for an impact fuse, hits anything). The ring goes
+        // where it last touched down.
         public void Show(Vector3 origin, Vector3 velocity, GrenadeData data)
         {
             if (_points == null || _points.Length != data.TrajectorySteps + 1)
@@ -38,24 +41,32 @@ namespace CGD.Weapons
             int count = 0;
             bool landed = false;
             RaycastHit hit = default;
+            Vector3 gravity = data.Gravity;
             Vector3 position = origin;
             _points[count++] = position;
 
             for (int i = 0; i < data.TrajectorySteps; i++)
             {
                 float dt = data.TrajectoryStepTime;
-                Vector3 next = position + velocity * dt + 0.5f * Physics.gravity * (dt * dt);
+                Vector3 next = position + velocity * dt + 0.5f * gravity * (dt * dt);
 
-                landed = Physics.Linecast(position, next, out hit, data.HitMask, QueryTriggerInteraction.Ignore);
-                if (landed)
+                if (!Physics.Linecast(position, next, out RaycastHit stepHit, data.HitMask, QueryTriggerInteraction.Ignore))
                 {
-                    _points[count++] = hit.point;
-                    break;
+                    _points[count++] = next;
+                    velocity += gravity * dt;
+                    position = next;
+                    continue;
                 }
 
-                _points[count++] = next;
-                velocity += Physics.gravity * dt;
-                position = next;
+                landed = true;
+                hit = stepHit;
+                _points[count++] = hit.point;
+
+                Vector3 atHit = velocity + gravity * (dt * hit.distance / Vector3.Distance(position, next));
+                if (data.Fuse == FuseMode.OnImpact || data.Settles(atHit, hit.normal)) break;
+
+                velocity = data.BounceVelocity(atHit, hit.normal);
+                position = hit.point + hit.normal * SurfaceOffset;
             }
 
             DrawArc(count, data.PreviewColor);

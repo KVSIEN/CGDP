@@ -11,6 +11,8 @@ namespace CGD.Weapons
     [CreateAssetMenu(fileName = "NewGrenade", menuName = "CGD/Weapons/Grenade Data")]
     public class GrenadeData : ScriptableObject
     {
+        private const float MinBounceSpeed = 1.5f; // m/s; slower rebounds read as a dead stop
+
         [Header("Identity")]
         public string GrenadeName = "Frag Grenade";
         public GameObject GrenadePrefab;
@@ -32,11 +34,18 @@ namespace CGD.Weapons
         [Tooltip("How much of the thrower's own velocity the grenade takes along")]
         [Range(0f, 1f)] public float InheritVelocity = 0.5f;
 
+        [Tooltip("Multiplies world gravity while it flies. Above 1 the throw is quicker and lands with more weight than " +
+                 "real physics; pair it with a higher throw speed for the same range. The preview and enemy aim use it too")]
+        [Min(0.1f)] public float GravityScale = 2f;
+
         [Header("Landing")]
+        [Tooltip("Share of its speed into a surface the grenade bounces back with (0 = no bounce). " +
+                 "The same on every surface, so bounces can be read and planned")]
+        [Range(0f, 1f)] public float Bounciness = 0.3f;
         [Tooltip("Share of its speed along a surface the grenade keeps each time it hits one (0 = stops dead, 1 = slides on)")]
-        [Range(0f, 1f)] public float ImpactSpeedKept = 0.5f;
+        [Range(0f, 1f)] public float ImpactSpeedKept = 0.45f;
         [Tooltip("How quickly it slows while resting on the ground (m/s per second)")]
-        [Min(0f)] public float GroundDrag = 8f;
+        [Min(0f)] public float GroundDrag = 12f;
 
         [Header("Fuse")]
         public FuseMode Fuse = FuseMode.Timed;
@@ -85,8 +94,8 @@ namespace CGD.Weapons
         public SoundBank ExplosionSound;
 
         [Header("Trajectory Preview")]
-        public int   TrajectorySteps    = 30;
-        public float TrajectoryStepTime = 0.1f;
+        public int   TrajectorySteps    = 60;
+        public float TrajectoryStepTime = 0.05f;
         [FormerlySerializedAs("DebugColor")]
         public Color PreviewColor = Color.yellow;
 
@@ -102,5 +111,27 @@ namespace CGD.Weapons
             Vector3 direction = Quaternion.AngleAxis(-ThrowAngle, aimRight) * aimForward;
             return direction * speed + throwerVelocity * InheritVelocity;
         }
+
+        // The pull on the grenade in flight.
+        public Vector3 Gravity => Physics.gravity * GravityScale;
+
+        // What hitting a surface does to the grenade, decided here rather than by the physics
+        // engine so it is the same everywhere and the preview can draw it: it rebounds with a share
+        // of the speed it hit with and keeps a share of its speed along the surface. A rebound too
+        // weak to see is dropped so it settles at once instead of buzzing on the ground.
+        public Vector3 BounceVelocity(Vector3 incoming, Vector3 normal)
+        {
+            float into = Vector3.Dot(incoming, normal);
+            if (into >= 0f) return incoming;
+
+            Vector3 along = incoming - normal * into;
+            float rebound = -into * Bounciness;
+            if (rebound < MinBounceSpeed) rebound = 0f;
+            return along * ImpactSpeedKept + normal * rebound;
+        }
+
+        // A bounce whose rebound is dropped: the grenade has come to rest on that surface.
+        public bool Settles(Vector3 incoming, Vector3 normal) =>
+            -Vector3.Dot(incoming, normal) * Bounciness < MinBounceSpeed;
     }
 }

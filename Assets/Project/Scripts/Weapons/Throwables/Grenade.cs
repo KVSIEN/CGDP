@@ -7,9 +7,10 @@ using CGD.Core;
 
 namespace CGD.Weapons
 {
-    // Required prefab setup: Rigidbody (isKinematic = false, useGravity = true),
-    // Collider (isTrigger = false) — needs real physics to arc and bounce — and, optionally,
-    // the renderers to tint and blink as the fuse burns down.
+    // Required prefab setup: Rigidbody (isKinematic = false, useGravity = true, rotation frozen),
+    // Collider (isTrigger = false) with a physics material that neither bounces nor grips — the
+    // grenade bounces and slows itself from its GrenadeData — and, optionally, the renderers to
+    // tint and blink as the fuse burns down.
     // ThrowableController.Throw() calls Init() right after spawning; the thrower's team is
     // immune to the explosion. Everything about the grenade comes from its GrenadeData.
     [RequireComponent(typeof(Rigidbody))]
@@ -33,6 +34,7 @@ namespace CGD.Weapons
         private MaterialPropertyBlock _block;
         private GrenadeData _data;
         private DamageSource _source;
+        private Vector3 _incoming; // velocity going into this physics step, before any contact changes it
         private float _age;
         private bool _initialized;
         private bool _blinking;
@@ -50,7 +52,16 @@ namespace CGD.Weapons
             _age = 0f;
             _initialized = true;
             _blinking = false;
+            _incoming = _rb.linearVelocity;
             Tint(_data.BodyColor);
+        }
+
+        // The Rigidbody's own gravity covers 1×; the rest of the grenade's gravity is added here.
+        private void FixedUpdate()
+        {
+            if (!_initialized) return;
+            _rb.AddForce(Physics.gravity * (_data.GravityScale - 1f), ForceMode.Acceleration);
+            _incoming = _rb.linearVelocity;
         }
 
         private void Update()
@@ -79,7 +90,7 @@ namespace CGD.Weapons
                 Explode();
                 return;
             }
-            if (collision.contactCount > 0) DampImpact(collision.GetContact(0).normal);
+            if (collision.contactCount > 0) Bounce(collision.GetContact(0).normal);
         }
 
         private void OnCollisionStay(Collision collision)
@@ -88,14 +99,13 @@ namespace CGD.Weapons
             if (collision.GetContact(0).normal.y >= GroundNormalY) ApplyGroundDrag();
         }
 
-        // Physics friction barely holds back a sphere, so each hit takes speed along the surface
-        // away directly; the bounce off it is left to the physics material.
-        private void DampImpact(Vector3 normal)
+        // The physics material neither bounces nor grips, so the rebound comes only from the
+        // grenade's data and matches what the preview drew. Bouncing from the pre-contact velocity
+        // also means a second contact in the same step (a corner) bounces off the first result.
+        private void Bounce(Vector3 normal)
         {
-            Vector3 velocity = _rb.linearVelocity;
-            Vector3 along = Vector3.ProjectOnPlane(velocity, normal);
-            _rb.linearVelocity = velocity - along * (1f - _data.ImpactSpeedKept);
-            _rb.angularVelocity *= _data.ImpactSpeedKept;
+            _incoming = _data.BounceVelocity(_incoming, normal);
+            _rb.linearVelocity = _incoming;
         }
 
         // Rolling or sliding on the ground slows it to a stop instead of gliding on.
@@ -104,16 +114,7 @@ namespace CGD.Weapons
             Vector3 velocity = _rb.linearVelocity;
             float speed = velocity.magnitude;
             float slowed = speed - _data.GroundDrag * Time.fixedDeltaTime;
-            if (slowed <= StopSpeed)
-            {
-                _rb.linearVelocity  = Vector3.zero;
-                _rb.angularVelocity = Vector3.zero;
-                return;
-            }
-
-            float kept = slowed / speed;
-            _rb.linearVelocity  = velocity * kept;
-            _rb.angularVelocity *= kept;
+            _rb.linearVelocity = slowed <= StopSpeed ? Vector3.zero : velocity * (slowed / speed);
         }
 
         // Blinks faster the closer the fuse is to running out.

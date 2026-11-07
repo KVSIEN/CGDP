@@ -79,7 +79,7 @@ namespace CGD.Enemies
         }
 
         private bool Solve(GrenadeData data, Vector3 target, out Vector3 velocity) =>
-            ThrowArc.TrySolve(HandPosition, target, ArcAngle, data.MinThrowSpeed, data.MaxThrowSpeed, -Physics.gravity.y, out velocity);
+            ThrowArc.TrySolve(HandPosition, target, ArcAngle, data.MinThrowSpeed, data.MaxThrowSpeed, -data.Gravity.y, out velocity);
 
         private Vector3 HandPosition => _ai.transform.position + Vector3.up * HandHeight + _ai.transform.forward * 0.4f;
     }
