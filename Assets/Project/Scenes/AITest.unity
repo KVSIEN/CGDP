@@ -1987,7 +1987,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1000000000000000001, guid: 75ff1fd9d4ba476ba0050ba25edc0f3b, type: 3}
       propertyPath: m_Name
-      value: Bio Melee
+      value: Bio Agent
       objectReference: {fileID: 0}
     - target: {fileID: 1000000000000000002, guid: 75ff1fd9d4ba476ba0050ba25edc0f3b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2057,7 +2057,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1000000000000000001, guid: 7e7e2db0155b42e0a04c013d4ea42691, type: 3}
       propertyPath: m_Name
-      value: Tech Ranged
+      value: Tech Agent
       objectReference: {fileID: 0}
     - target: {fileID: 1000000000000000002, guid: 7e7e2db0155b42e0a04c013d4ea42691, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2751,7 +2751,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1000000000000000001, guid: 3490f43dcd7c4caca28414efcacda7cf, type: 3}
       propertyPath: m_Name
-      value: Void Caster
+      value: Void Agent
       objectReference: {fileID: 0}
     - target: {fileID: 1000000000000000002, guid: 3490f43dcd7c4caca28414efcacda7cf, type: 3}
       propertyPath: m_LocalPosition.x

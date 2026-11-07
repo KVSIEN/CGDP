@@ -334,8 +334,10 @@ No scene wiring: every `EnemyData` › **Behavior** › `BehaviorTree` names the
 | `Enemies/BehaviorTrees/Shared/RegroupSubtree` | Knows Target → Is Shaken → Regroup; aborts lower priority. |
 | `Enemies/BehaviorTrees/Shared/RaiseAlarmSubtree` | Has Target → Can Raise Alarm → Raise Alarm; aborts lower priority. Does nothing for enemies that don't raise alarms. |
 | `Enemies/BehaviorTrees/Shared/RoutineSubtree` | Investigate leads (aborts lower priority) → Return To Post → Patrol. |
-| `Enemies/BehaviorTrees/VoidCasterBehaviorTree` | The melee tree plus one branch after the dodge: Has Target → Target In Sight → Ability Ready → Use Ability `Abilities/VoidSlowBoltAbility` (max 25 m); aborts lower priority, so it interrupts closing in whenever the bolt is ready. |
-| `Enemies/AITest/MeleeTestEnemyData`, `RangedTestEnemyData`, `VoidTestEnemyData` | Scavenger, Maintenance Bot and Husk copies, each on its faction's team (`Bio` / `Tech` / `Void`) with a 60 m sight range. Melee and Void use the melee and Void caster trees; the ranged one uses the ranged tree, fires 3-round bursts of `Prefabs/Weapons/TechBolt` projectiles (12 m/s, 0.3 m glowing spheres, 2° spread) and doesn't raise alarms (alone on its team, there is nobody to call). |
+| `Enemies/BehaviorTrees/BioBehaviorTree` | AITest Bio (close range). Regroup → Raise Alarm → fight while it knows where the target is: shot at further than 4 m: dodge (70%, at most every 1.5 s) → strike in range on its melee turn → within 8 m: chase (aborts lower priority) → target in sight: Take Cover *Advance* (next cover at least 3 m closer), pause 0.3–0.7 s → Flank behind a Director Permit (at most every 3 s) → chase → Routine. |
+| `Enemies/BehaviorTrees/TechBehaviorTree` | AITest Tech (long range). Health below 70% (shield gone): Take Cover *Hide*, or Flee 10 m, then wait 2.5–3.5 s (at most every 8 s) → Regroup → Raise Alarm → fight: target within 9 m: Take Cover *Fight* (cover near its 20 m preferred range), or Flee (at most every 4 s) → dodge → in sight: Take Cover *Fight* and shoot 4–6 s, else Hold Range and shoot 3 s → just lost sight: Throw Grenade behind a Director Permit (every 12 s, 3 per life) → Routine. |
+| `Enemies/BehaviorTrees/VoidBehaviorTree` | AITest Void (medium range). Health below 90% (shield gone): hide as Tech does → Regroup → Raise Alarm → fight: dodge → in sight with the bolt ready: Use Ability `Abilities/VoidSlowBoltAbility` (max 25 m), then half the time Take Cover *Hide* → within 5 m: Flank to its side (Director Permit), or Flee (every 3 s) → every 6 s: Flank to a new angle (Director Permit) → Hold Range and shoot 3–4 s → lost sight: Flank toward the last known position (Director Permit, every 4 s) → Routine. Flank's stand-off is the 11 m preferred range because the data is Ranged. |
+| `Enemies/AITest/BioTestEnemyData`, `TechTestEnemyData`, `VoidTestEnemyData` | The AITest agents, named *Bio Agent*, *Tech Agent* and *Void Agent*. Each is on its faction's team (`Bio` / `Tech` / `Void`), has a 60 m sight range and uses its faction tree above. Bio: melee, 6.5 m/s chase. Tech: ranged, 20 m preferred range, 3-round bursts of `Prefabs/Weapons/TechBolt` (12 m/s, 1.5° spread); it doesn't raise alarms (alone on its team, there is nobody to call). Void: ranged, 11 m preferred range, 2-round bursts of `Prefabs/Weapons/VoidShard` (16 m/s, 7 damage), 110° sight cone. |
 | `Abilities/VoidSlowBoltAbility` | `ProjectileAbility`: 0.6 s cast, 3.5 s cooldown, fires `Prefabs/Weapons/VoidBolt` (14 m/s, 12 damage) applying `Combat/StatusEffects/VoidSlowEffect` (an Ice effect: 15% slower per stack, 4 stacks, 3 s, no stun or armour loss). |
 
 **Editing:** *CGD › AI › Behavior Tree Editor*, or double-click a tree asset (`Create › CGD › AI › Behavior Tree` makes a new one with its Root). Space or right-click on the canvas to add nodes, group the selected nodes or add a sticky note; drag from a node's bottom port to another's top port to connect. Double-click a **Subtree** node to open its tree. Key fields have a ▾ picker. Badges on nodes and the toolbar's issue button show what the validator found.
@@ -356,6 +358,7 @@ No scene wiring: every `EnemyData` › **Behavior** › `BehaviorTree` names the
 - Gates (**Cooldown**, **Limit**) count as conditions: a branch behind one doesn't interrupt until it's ready. **Chance** isn't a gate — put it under the Cooldown, not before it.
 - **Patrol**, **Hold Range** and **Repeat** (forever) never finish on their own — end them with a **Parallel** (Require One) next to a **Wait**, or keep them where something above can interrupt.
 - Share branches between enemy types as **Subtree** assets; a subtree's abort mode works from where it's placed.
+- **Take Cover** *Use*: *Fight* = cover to shoot from near the preferred range, *Hide* = full-height cover only (enemies don't crouch, so low cover doesn't hide them), *Advance* = cover at least 3 m closer to the target, for closing in.
 - **Take Cover** and **Flank** pick a new spot each run: put them under a Cooldown or a timed Parallel so they don't reposition every frame. They need a CoverMap in the scene (Flank only needs the NavMesh).
 - Use **Knows Target** instead of **Has Target** above moves that break line of sight (flanking), so losing sight for a moment doesn't end the fight.
 - Trees with `Enemy/…` nodes must run on an `EnemyAI`.
@@ -373,9 +376,9 @@ CoverMap           [CoverMap]                            ← cover spots found f
 Alarm Panel        [MeshFilter, MeshRenderer, BoxCollider, AlarmPanel]   ← on the north wall; `_screen` = its renderer
 Enemies            [EnemyRespawner]                      ← _delay 3: revives any enemy under it at a random reachable NavMesh spot
   Waypoints        Melee A 1–4, Ranged 1–2, Void 1–4
-  Bio Melee                      (BioTestAgent, patrol Melee A)
-  Tech Ranged                    (TechTestAgent, patrol Ranged)
-  Void Caster                    (VoidTestAgent, patrol Void — the southern half)
+  Bio Agent                      (BioTestAgent, patrol Melee A)
+  Tech Agent                     (TechTestAgent, patrol Ranged — the north wall)
+  Void Agent                     (VoidTestAgent, patrol Void — the southern half)
 ```
 
 The agents are `Prefabs/Characters/Enemies/AITest/BioTestAgent`, `TechTestAgent` and `VoidTestAgent`:
@@ -385,10 +388,10 @@ The agents are `Prefabs/Characters/Enemies/AITest/BioTestAgent`, `TechTestAgent`
            EnemyStateVisuals (_renderers = Visor), EnemyAwarenessIndicator,
            EnemyPlaceholderAnimation (_model = Model, _arm = Arm)]
   Model             ← pivot at the feet; tipped over on death, stood back up on revive
-    Body            [MeshFilter capsule, MeshRenderer (faction wall-kit material), CapsuleCollider, Hitbox → EnemyHealth]
+    Body            [MeshFilter capsule, MeshRenderer (<Faction>AgentBody), CapsuleCollider, Hitbox → EnemyHealth]
     Visor           [MeshFilter cube, MeshRenderer]   ← tinted per AI state
-    Arm             [MeshFilter cube, MeshRenderer]   ← hidden until a melee swing or a cast
-``` Each prefab sets its data on both `EnemyHealth` and `EnemyAI` (`Enemies/AITest/MeleeTestEnemyData` / `RangedTestEnemyData` / `VoidTestEnemyData`), so scene instances only override position and waypoints. They have no `DespawnOnDeath` (it would destroy the body before `EnemyRespawner` revives it), no affixes and no map marker.
+    Arm             [MeshFilter cube, MeshRenderer (<Faction>AgentGlow)]   ← hidden until a melee swing or a cast
+``` Each prefab sets its data on both `EnemyHealth` and `EnemyAI` (`Enemies/AITest/BioTestEnemyData` / `TechTestEnemyData` / `VoidTestEnemyData`), so scene instances only override position and waypoints. Faction colours come from `Art/Materials/Characters/AITest/`: `BioAgentBody` / `BioAgentGlow` (green), `TechAgentBody` / `TechAgentGlow` (yellow), `VoidAgentBody` / `VoidAgentGlow` (purple). The glow materials also colour the shots: `TechBolt` uses `TechAgentGlow`, and `VoidBolt` and `VoidShard` use `VoidAgentGlow`. They have no `DespawnOnDeath` (it would destroy the body before `EnemyRespawner` revives it), no affixes and no map marker.
 
 Each test data asset puts its agent on its faction's team (`Bio` / `Tech` / `Void`) with a 60 m sight range, so the factions hunt each other across the arena. The `Alarm Panel`'s `_team` is `Tech`: only enemies of the panel's team use it, and only data with *Raises Alarm* on — currently none of the test agents, so it sits idle until one is turned back on. To watch the factions on their own, deactivate the `Player` and follow along in the Scene view.
 
@@ -852,7 +855,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Timing/` | `GameTimeSettings` | GameTime |
 | `Enemies/` | `MaintenanceBot`/`Scavenger`/`Husk` `…EnemyData` (tier 1, ≈100 effective health each; the firing-range dummies run on them), `Tech`/`Bio`/`Void` `Tier2`/`Tier3` `…EnemyData` (placeholders, ≈2.5× / ≈5×; *Tier* set on each), `DefaultEnemyData` | EnemyAI, EnemyHealth |
 | `Enemies/Perception/` | `DefaultPerceptionProfile`, `WaryPerceptionProfile`, `SkittishPerceptionProfile` | EnemyData › Senses |
-| `Enemies/BehaviorTrees/`, `Enemies/AITest/` | `MeleeEnemyBehaviorTree`, `RangedEnemyBehaviorTree`, `VoidCasterBehaviorTree`, `Shared/` (`RegroupSubtree`, `RaiseAlarmSubtree`, `RoutineSubtree`); `MeleeTestEnemyData`, `RangedTestEnemyData`, `VoidTestEnemyData` (use the trees; AITest scene) | EnemyData › BehaviorTree |
+| `Enemies/BehaviorTrees/`, `Enemies/AITest/` | `MeleeEnemyBehaviorTree`, `RangedEnemyBehaviorTree`, `BioBehaviorTree`, `TechBehaviorTree`, `VoidBehaviorTree`, `Shared/` (`RegroupSubtree`, `RaiseAlarmSubtree`, `RoutineSubtree`); `BioTestEnemyData`, `TechTestEnemyData`, `VoidTestEnemyData` (use the faction trees; AITest scene) | EnemyData › BehaviorTree |
 | `Enemies/`, `Enemies/Affixes/` | `DefaultEnemyAffixPool` (affixes per tier: 0 / 1 / 2), `Armored`/`Warded`/`Vital`/`Brutal`/`Swift` `…Affix` | EnemyAffixes |
 | `Combat/HitboxProfiles/` | `DefaultHitboxProfile`, `TargetDummyHitboxProfile` | EnemyHealth, PlayerHealth |
 | `Combat/StatusEffects/` | Bleed, Fire, Ice, Lightning, Poison | on-hit effect lists |

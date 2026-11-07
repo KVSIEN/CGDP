@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fa9dd37a1333c94ba199e2bd61bbee3, type: 3}
   m_Name: VoidTestEnemyData
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
-  DisplayName: Husk
+  DisplayName: Void Agent
   Team: 5
   MaxHealth: 45
   Armor: 0
@@ -20,24 +20,26 @@ MonoBehaviour:
   ShieldRegenDelay: 3
   ShieldRegenRate: 15
   PatrolSpeed: 1.2
-  ChaseSpeed: 4.0
+  ChaseSpeed: 4.5
   SightRange: 60
-  SightAngle: 70
+  SightAngle: 110
   HearingRadius: 12
   Senses: {fileID: 11400000, guid: 68d72b2fee444c769b2a6753111afb2e, type: 2}
   BehaviorTree: {fileID: 11400000, guid: 68a35ba375dc4e338a9e54d8c61ddf63, type: 2}
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
-  CombatType: 0
+  CombatType: 1
   AttackRange: 1.6
-  AttackDamage: 18
+  AttackDamage: 7
   AttackCooldown: 1.4
   AttackWindup: 0.6
-  PreferredRange: 12
+  PreferredRange: 11
   SpreadAngle: 3
-  BurstCount: 1
-  BurstInterval: 0.1
-  StrafeInterval: 2
+  BurstCount: 2
+  BurstInterval: 0.2
+  StrafeInterval: 1.5
   StrafeDistance: 4
+  ShotProjectile: {fileID: 2000000000000000001, guid: 9820a47afd7d4a7ab32d837b5842376b, type: 3}
+  ShotSpeed: 16
   AlertDuration: 8
   AttackSound: {fileID: 0}
   RangedAttackSound: {fileID: 0}

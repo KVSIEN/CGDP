@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9fa9dd37a1333c94ba199e2bd61bbee3, type: 3}
-  m_Name: MeleeTestEnemyData
+  m_Name: BioTestEnemyData
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
-  DisplayName: Scavenger
+  DisplayName: Bio Agent
   Team: 3
   MaxHealth: 80
   Armor: 25
@@ -20,12 +20,12 @@ MonoBehaviour:
   ShieldRegenDelay: 5
   ShieldRegenRate: 0
   PatrolSpeed: 2.5
-  ChaseSpeed: 6.0
+  ChaseSpeed: 6.5
   SightRange: 60
   SightAngle: 140
   HearingRadius: 14
   Senses: {fileID: 11400000, guid: b4dbcf2c7fae4eebb839c7454d0c4a00, type: 2}
-  BehaviorTree: {fileID: 11400000, guid: e7612450fa2d4d9084473b8b50dd87ce, type: 2}
+  BehaviorTree: {fileID: 11400000, guid: a7f09d1ad88843648a047e87a5125de1, type: 2}
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
   CombatType: 0
   AttackRange: 1.4

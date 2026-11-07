@@ -7,9 +7,9 @@ namespace CGD.Enemies
 {
     // An enemy's use of the space around it, from the cover it knows (CoverKnowledge) and
     // where it believes its threat is (never the threat's real position unless it sees it):
-    //   cover      a known spot whose obstacle stands between it and the threat, near where
-    //              it wants to fight from, not taken by an ally — checked with a ray from the
-    //              threat before it commits
+    //   cover      a known spot whose obstacle stands between it and the threat — near where
+    //              it wants to fight from, out of sight, or further in (CoverUse) — not taken
+    //              by an ally, checked with a ray from the threat before it commits
     //   flank      a spot off to the threat's side, reached by the route the threat is least
     //              likely to see (fewest path corners in its view)
     //   hiding     known cover near a position where someone could be hiding from it — what
@@ -25,6 +25,7 @@ namespace CGD.Enemies
         private const int   VerifiedCandidates = 3;
         private const float EyeHeight          = 1.5f;
         private const float FlankDetourLimit   = 3f;
+        private const float AdvanceMinGain     = 3f;
 
         private static readonly float[] FlankAngles = { 70f, 100f };
 
@@ -255,19 +256,30 @@ namespace CGD.Enemies
             float travel = Vector3.Distance(cover.Position, _ai.transform.position);
             score = -1.5f * travel / CoverSearchRadius + Random.value * 0.3f;
 
-            if (use == CoverUse.Fight)
+            switch (use)
             {
-                // Somewhere it can still shoot from, near the range it likes to fight at.
-                if (threatDistance > _ai.Data.SightRange) return false;
-                float preferred = Mathf.Max(1f, _ai.Data.PreferredRange);
-                score -= Mathf.Abs(threatDistance - preferred) / preferred;
-                if (cover.IsHigh) score -= 0.5f;
+                case CoverUse.Fight:
+                    // Somewhere it can still shoot from, near the range it likes to fight at.
+                    if (threatDistance > _ai.Data.SightRange) return false;
+                    float preferred = Mathf.Max(1f, _ai.Data.PreferredRange);
+                    score -= Mathf.Abs(threatDistance - preferred) / preferred;
+                    if (cover.IsHigh) score -= 0.5f;
+                    return true;
+
+                case CoverUse.Hide:
+                    // Enemies don't crouch, so only full-height cover takes them out of sight.
+                    if (!cover.IsHigh) return false;
+                    score += threatDistance / 20f;
+                    return true;
+
+                case CoverUse.Advance:
+                    // Ground gained toward the threat, worth more than the run there costs.
+                    float gained = Vector3.Distance(_ai.transform.position, threat) - threatDistance;
+                    if (gained < AdvanceMinGain) return false;
+                    score += 2f * gained / CoverSearchRadius + (cover.IsHigh ? 0.5f : 0f);
+                    return true;
             }
-            else
-            {
-                score += threatDistance / 20f + (cover.IsHigh ? 1f : 0f);
-            }
-            return true;
+            return false;
         }
 
         private void Keep(int index, float score)
