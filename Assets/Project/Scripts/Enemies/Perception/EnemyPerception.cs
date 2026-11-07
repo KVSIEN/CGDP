@@ -115,6 +115,9 @@ namespace CGD.Enemies
         public Vector3 SearchDirection   { get; private set; }
         // Where to aim or measure from: the target itself while sensed, otherwise the belief.
         public Vector3 TargetPosition    => IsSensing ? Target.transform.position : LastKnownPosition;
+        // Which way and how fast (flat, m/s) it saw its target moving — zero unless sensed right
+        // now. Lets slow projectiles be aimed where the target is going.
+        public Vector3 TargetVelocity    => IsSensing ? _lastSeenVelocity : Vector3.zero;
 
         // A lead (something new to look into) not yet consumed — read without consuming it.
         public bool HasLead => _hasLead;

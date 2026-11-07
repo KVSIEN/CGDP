@@ -335,7 +335,7 @@ No scene wiring: every `EnemyData` › **Behavior** › `BehaviorTree` names the
 | `Enemies/BehaviorTrees/Shared/RaiseAlarmSubtree` | Has Target → Can Raise Alarm → Raise Alarm; aborts lower priority. Does nothing for enemies that don't raise alarms. |
 | `Enemies/BehaviorTrees/Shared/RoutineSubtree` | Investigate leads (aborts lower priority) → Return To Post → Patrol. |
 | `Enemies/BehaviorTrees/VoidCasterBehaviorTree` | The melee tree plus one branch after the dodge: Has Target → Target In Sight → Ability Ready → Use Ability `Abilities/VoidSlowBoltAbility` (max 25 m); aborts lower priority, so it interrupts closing in whenever the bolt is ready. |
-| `Enemies/AITest/MeleeTestEnemyData`, `RangedTestEnemyData`, `VoidTestEnemyData` | Scavenger, Maintenance Bot and Husk copies, each on its faction's team (`Bio` / `Tech` / `Void`) with a 60 m sight range. Melee and Void use the melee and Void caster trees; the ranged one uses the ranged tree, fires 3-round bursts of `Prefabs/Weapons/TechBolt` projectiles (28 m/s) and raises alarms. |
+| `Enemies/AITest/MeleeTestEnemyData`, `RangedTestEnemyData`, `VoidTestEnemyData` | Scavenger, Maintenance Bot and Husk copies, each on its faction's team (`Bio` / `Tech` / `Void`) with a 60 m sight range. Melee and Void use the melee and Void caster trees; the ranged one uses the ranged tree, fires 3-round bursts of `Prefabs/Weapons/TechBolt` projectiles (12 m/s, 0.3 m glowing spheres, 2° spread) and doesn't raise alarms (alone on its team, there is nobody to call). |
 | `Abilities/VoidSlowBoltAbility` | `ProjectileAbility`: 0.6 s cast, 3.5 s cooldown, fires `Prefabs/Weapons/VoidBolt` (14 m/s, 12 damage) applying `Combat/StatusEffects/VoidSlowEffect` (an Ice effect: 15% slower per stack, 4 stacks, 3 s, no stun or armour loss). |
 
 **Editing:** *CGD › AI › Behavior Tree Editor*, or double-click a tree asset (`Create › CGD › AI › Behavior Tree` makes a new one with its Root). Space or right-click on the canvas to add nodes, group the selected nodes or add a sticky note; drag from a node's bottom port to another's top port to connect. Double-click a **Subtree** node to open its tree. Key fields have a ▾ picker. Badges on nodes and the toolbar's issue button show what the validator found.
@@ -372,10 +372,9 @@ Arena              [NavMeshSurface, RuntimeNavMesh]      ← NavMesh built from 
 CoverMap           [CoverMap]                            ← cover spots found from the NavMesh
 Alarm Panel        [MeshFilter, MeshRenderer, BoxCollider, AlarmPanel]   ← on the north wall; `_screen` = its renderer
 Enemies            [EnemyRespawner]                      ← _delay 3: revives any enemy under it at a random reachable NavMesh spot
-  Waypoints        Melee A 1–4, Melee B 1–4, Ranged 1–2, Void 1–4
-  Bio Squad        [EnemySquad]                          ← one squad per faction; never mix teams in a squad
-    Bio Melee A, Bio Melee B     (BioTestAgent, patrol Melee A / Melee B)
-  Tech Ranged                    (TechTestAgent, patrol Ranged; raises the alarm)
+  Waypoints        Melee A 1–4, Ranged 1–2, Void 1–4
+  Bio Melee                      (BioTestAgent, patrol Melee A)
+  Tech Ranged                    (TechTestAgent, patrol Ranged)
   Void Caster                    (VoidTestAgent, patrol Void — the southern half)
 ```
 
@@ -391,7 +390,7 @@ The agents are `Prefabs/Characters/Enemies/AITest/BioTestAgent`, `TechTestAgent`
     Arm             [MeshFilter cube, MeshRenderer]   ← hidden until a melee swing or a cast
 ``` Each prefab sets its data on both `EnemyHealth` and `EnemyAI` (`Enemies/AITest/MeleeTestEnemyData` / `RangedTestEnemyData` / `VoidTestEnemyData`), so scene instances only override position and waypoints. They have no `DespawnOnDeath` (it would destroy the body before `EnemyRespawner` revives it), no affixes and no map marker.
 
-Each test data asset puts its agent on its faction's team (`Bio` / `Tech` / `Void`) with a 60 m sight range, so the factions hunt each other across the arena. The `Alarm Panel`'s `_team` is `Tech`: only enemies of the panel's team use it. To watch the factions on their own, deactivate the `Player` and follow along in the Scene view.
+Each test data asset puts its agent on its faction's team (`Bio` / `Tech` / `Void`) with a 60 m sight range, so the factions hunt each other across the arena. The `Alarm Panel`'s `_team` is `Tech`: only enemies of the panel's team use it, and only data with *Raises Alarm* on — currently none of the test agents, so it sits idle until one is turned back on. To watch the factions on their own, deactivate the `Player` and follow along in the Scene view.
 
 | Component | Assign | Notes |
 |---|---|---|

@@ -183,8 +183,15 @@ namespace CGD.Enemies
 
             Vector3 eyePos       = _ai.transform.position + Vector3.up * EyeHeight;
             // Aims where it believes the target is: dead on while it sees it, a guess when not.
+            // A projectile takes time to arrive, so it aims ahead of a target it sees moving.
             Vector3 targetCenter = _ai.Perception.TargetPosition + Vector3.up;
-            Vector3 dir          = (targetCenter - eyePos).normalized;
+            bool    projectile   = data.ShotProjectile != null && data.ShotProjectile.TryGetComponent(out Projectile _);
+            if (projectile)
+            {
+                float flightTime = Vector3.Distance(eyePos, targetCenter) / data.ShotSpeed;
+                targetCenter += _ai.Perception.TargetVelocity * flightTime;
+            }
+            Vector3 dir = (targetCenter - eyePos).normalized;
 
             if (data.SpreadAngle > 0f)
                 dir = WeaponFireBehavior.ComputeSpreadDirection(dir, data.SpreadAngle);
@@ -194,7 +201,7 @@ namespace CGD.Enemies
             _ai.NotifyFired();
 
             var info = new DamageInfo(data.AttackDamage, source: _source);
-            if (data.ShotProjectile != null && data.ShotProjectile.TryGetComponent(out Projectile _))
+            if (projectile)
             {
                 LaunchProjectile(data, eyePos, dir, info);
                 return;

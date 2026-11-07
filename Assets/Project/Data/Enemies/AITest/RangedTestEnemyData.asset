@@ -33,14 +33,14 @@ MonoBehaviour:
   AttackCooldown: 1.5
   AttackWindup: 0.45
   PreferredRange: 12
-  SpreadAngle: 4
+  SpreadAngle: 2
   BurstCount: 3
   BurstInterval: 0.12
   StrafeInterval: 2
   StrafeDistance: 4
   ShotProjectile: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
-  ShotSpeed: 28
-  RaisesAlarm: 1
+  ShotSpeed: 12
+  RaisesAlarm: 0
   AlertDuration: 6
   AttackSound: {fileID: 0}
   RangedAttackSound: {fileID: 0}
