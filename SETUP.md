@@ -371,14 +371,18 @@ No scene wiring: every `EnemyData` › **Behavior** › `BehaviorTree` names the
 
 ```
 Arena              [NavMeshSurface, RuntimeNavMesh]      ← NavMesh built from its children at load
-  Floor, Wall North/South/East/West, Cover Center/Left/Right, Pillar NW/NE, Crate Low A–D   [MeshFilter, MeshRenderer, BoxCollider]
+  Floor, Wall North/South/East/West      [MeshFilter, MeshRenderer, BoxCollider]   ← 60 × 44 m, walls 3 m high
+  Gallery Crate 1–4, Bunker W/E, Pillar W/E   ← north: low firing line at z 13, full-height bunkers behind (Tech)
+  Stone 1–8                                   ← middle: full-height stones about 6 m apart (Bio)
+  Lane Wall W/E South/North, Lane Crate/Pillar W/E   ← side lanes behind long walls at x ±20, gap at z −4…0 (flanking)
+  Yard Wall W/E (+ Side), Yard Crate (W/E)    ← south: L-shaped walls and low crates (Void, player start)
 CoverMap           [CoverMap]                            ← cover spots found from the NavMesh
-Alarm Panel        [MeshFilter, MeshRenderer, BoxCollider, AlarmPanel]   ← on the north wall; `_screen` = its renderer
+Alarm Panel        [MeshFilter, MeshRenderer, BoxCollider, AlarmPanel]   ← on the north wall between the bunkers; `_screen` = its renderer
 Enemies            [EnemyRespawner]                      ← _delay 3: revives any enemy under it at a random reachable NavMesh spot
-  Waypoints        Melee A 1–4, Ranged 1–2, Void 1–4
-  Bio Agent                      (BioTestAgent, patrol Melee A)
-  Tech Agent                     (TechTestAgent, patrol Ranged — the north wall)
-  Void Agent                     (VoidTestAgent, patrol Void — the southern half)
+  Waypoints        Bio 1–4, Tech 1–2, Void 1–4
+  Bio Agent                      (BioTestAgent, patrol Bio — west lane and stones)
+  Tech Agent                     (TechTestAgent, patrol Tech — along the gallery)
+  Void Agent                     (VoidTestAgent, patrol Void — the south yard)
 ```
 
 The agents are `Prefabs/Characters/Enemies/AITest/BioTestAgent`, `TechTestAgent` and `VoidTestAgent`:
@@ -393,14 +397,14 @@ The agents are `Prefabs/Characters/Enemies/AITest/BioTestAgent`, `TechTestAgent`
     Arm             [MeshFilter cube, MeshRenderer (<Faction>AgentGlow)]   ← hidden until a melee swing or a cast
 ``` Each prefab sets its data on both `EnemyHealth` and `EnemyAI` (`Enemies/AITest/BioTestEnemyData` / `TechTestEnemyData` / `VoidTestEnemyData`), so scene instances only override position and waypoints. Faction colours come from `Art/Materials/Characters/AITest/`: `BioAgentBody` / `BioAgentGlow` (green), `TechAgentBody` / `TechAgentGlow` (yellow), `VoidAgentBody` / `VoidAgentGlow` (purple). The glow materials also colour the shots: `TechBolt` uses `TechAgentGlow`, and `VoidBolt` and `VoidShard` use `VoidAgentGlow`. They have no `DespawnOnDeath` (it would destroy the body before `EnemyRespawner` revives it), no affixes and no map marker.
 
-Each test data asset puts its agent on its faction's team (`Bio` / `Tech` / `Void`) with a 60 m sight range, so the factions hunt each other across the arena. The `Alarm Panel`'s `_team` is `Tech`: only enemies of the panel's team use it, and only data with *Raises Alarm* on — currently none of the test agents, so it sits idle until one is turned back on. To watch the factions on their own, deactivate the `Player` and follow along in the Scene view.
+Full-height pieces (white, 2.2 m or more) count as high cover that hides a standing agent. Low pieces (grey, 1 m) can be shot over and don't hide anyone. Keep gaps of 1.5 m or more between pieces so agents can pass. Each test data asset puts its agent on its faction's team (`Bio` / `Tech` / `Void`) with a 60 m sight range, so the factions hunt each other across the arena. The `Alarm Panel`'s `_team` is `Tech`: only enemies of the panel's team use it, and only data with *Raises Alarm* on — currently none of the test agents, so it sits idle until one is turned back on. To watch the factions on their own, deactivate the `Player` and follow along in the Scene view.
 
 | Component | Assign | Notes |
 |---|---|---|
 | **NavMeshSurface** (Arena) | Collect Objects = *Children*, Use Geometry = *Physics Colliders* | Not baked in the project. |
 | **RuntimeNavMesh** (Arena) | `_agents` = Enemies | Builds the surface on load, then snaps the agents under `_agents` onto it. Any scene can use it the same way. |
 
-The Player overrides: `PlayerWeaponLoadout._startingWeapons[0]` = `Weapons/Ranged/T1/AK47_T1`, spawn and RespawnPoint at (0, 1, −16), respawns on death. Add an enemy by dropping an enemy prefab under **Enemies** and setting both `EnemyAI._data` and `EnemyHealth._data` to a data asset with a tree.
+The Player overrides: `PlayerWeaponLoadout._startingWeapons[0]` = `Weapons/Ranged/T1/AK47_T1`, spawn and RespawnPoint at (0, 1, −19), respawns on death. Add an enemy by dropping an enemy prefab under **Enemies** and setting both `EnemyAI._data` and `EnemyHealth._data` to a data asset with a tree.
 
 ### Animation & Ragdoll (Player or Enemy)
 
