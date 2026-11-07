@@ -72,3 +72,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 991a5510cae7457ba1b2399dfa441c8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.Expedition.ExpeditionSession
+  _catalog: {fileID: 11400000, guid: b0f612084e0d438586f14a612b5bbd8f, type: 2}
+  _saveInEditor: 0
+  _fileName: ship.json

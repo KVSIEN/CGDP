@@ -64,7 +64,8 @@ Assets/
                             Pacing/ (EnemyPacing: the director's word to enemies; EnemyPacingState, BoldMovePermits),
                             Voice/ (EnemyVoice: barks from EnemyBarkSet per type; BarkRules spacing, EnemyBarks bus)
       Expedition/           the extraction loop: ExpeditionLedger (ship hold, packed kit, extract/die rules),
-                            ExpeditionSession (keeps it across loads), ExpeditionRunner (a run in a level), RunStarterKit
+                            ExpeditionSession (keeps it across loads), ExpeditionRunner (a run in a level), RunStarterKit,
+                            ShipPersistence + ShipSave (the hold and kit on disk)
       Factions/             FactionDefinition (name, colour, enemy roster) — used by the map graph and generated levels
       Feedback/             FeedbackBus, FeedbackPreset, FeedbackPlayer (feed, flash, rumble, shake), combat/quest feedback
       FiringRange/          the sandbox firing range: RangeControl (faction, tier, movement, distance), RangeDummy (stats, colour), RangeSwitch (the buttons), TargetMover
@@ -73,7 +74,8 @@ Assets/
       Input/                PlayerInputHandler and binding settings
       Interaction/          IInteractable, doors, switches, EventInteractable, highlights, Pickups/,
                             Locks/ — ConditionLock (multi-condition door locks), LockProgress (rule), LockTerminal
-      Items/                item definitions, inventory, equipment, quality rolls, stats
+      Items/                item definitions, inventory, equipment, quality rolls, stats;
+                            Catalog/ — ItemCatalog (stable item ids); Saving/ — InventoryRecord, GearRecord, StackRecord
       Level/                map graph → level: LevelLayoutBuilder (rooms, CorridorRouter), LevelGeometryBuilder,
                             RoomPopulator, LevelBuilder (scene entry point), LevelExit, LevelBuildSettings;
                             Shapes/ — RoomShape assets, RoomShapeRasterizer, RoomFootprint (tiles + door sockets)
@@ -93,6 +95,7 @@ Assets/
       Perks/                gear perks (passive and triggered), perk pools, PerkDispatcher
       Player/               movement, camera, lock-on, health, lifecycle, player audio; Dodge/ (DodgeDefinition stages, DodgeMotion)
       Quests/               quest/objective definitions, QuestLog, QuestTracker, QuestEvents, signals
+      Saving/               SaveFile (one JSON save on disk, safe writes)
       Settings/             GameSettings (audio, video, accessibility preferences) and SettingsData
       Stats/                generic stat modifiers (ModifierSet, Stat, TimedModifiers), CharacterStats, presets
       Stealth/              Stealthable (hide state), StealthStatus (rules), ConcealmentZone (bushes, smoke), StealthSettings

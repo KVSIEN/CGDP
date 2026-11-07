@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AI;
 using CGD.Core;
+using CGD.Expedition;
 using CGD.Items;
 using CGD.Player;
 using CGD.Quests;
@@ -83,6 +84,9 @@ namespace CGD.DevTools
             Console.Register("quest",     "list | start <q> | step <q> <n> | complete <q>", "Inspect or jump quest progress", Quest,
                 example: "/quest step main 2",
                 complete: QuestOptions);
+            Console.Register("save",      "[info|write|wipe]",        "Show the ship save, write it now, or wipe it for a fresh start", Save,
+                example: "/save wipe",
+                complete: (_, i) => i == 0 ? SaveVerbs : null);
             Console.Register("list",      "items|weapons|enemies|buffs|dodges", "Show what the catalog can hand out — the names printed are what you type", ListCatalog,
                 example: "/list weapons",
                 complete: (_, i) => i == 0 ? ListKinds : null);
@@ -92,6 +96,7 @@ namespace CGD.DevTools
         private static readonly string[] TimeScales = { "0.25", "0.5", "1", "2", "5" };
         private static readonly string[] ListKinds  = { "items", "weapons", "enemies", "buffs", "dodges" };
         private static readonly string[] QuestVerbs = { "list", "start", "step", "complete" };
+        private static readonly string[] SaveVerbs  = { "info", "write", "wipe" };
 
         // --- Completion ------------------------------------------------------------
 
@@ -346,6 +351,37 @@ namespace CGD.DevTools
             QuestDefinition found = DevCatalog.Find(definitions, query, d => d.Title, out error);
             return found != null ? log.Get(found) : null;
         }
+
+        // --- Save ------------------------------------------------------------------
+
+        private string Save(string[] args)
+        {
+            ExpeditionSession session = ExpeditionSession.Instance;
+            if (session == null) return "No ExpeditionSession — the scene needs the GameFlow prefab.";
+
+            ShipPersistence save = session.Persistence;
+            if (save == null) return "Saving is off: assign an ItemCatalog on ExpeditionSession (and tick Save In Editor to save in the editor).";
+
+            string verb = args.Length > 0 ? args[0] : "info";
+            if (Is(verb, "write"))
+                return save.Save() ? $"Saved to {save.Path}{SkippedNote(save.SkippedOnSave, "left out")}" : $"Couldn't write {save.Path}.";
+            if (Is(verb, "wipe"))
+            {
+                save.Wipe();
+                return "Ship hold and kit emptied, save deleted.";
+            }
+            if (!Is(verb, "info")) throw new UsageException();
+
+            string loaded = save.LastLoad switch
+            {
+                ShipLoadResult.Loaded   => $"loaded at start{SkippedNote(save.SkippedOnLoad, "couldn't be restored")}",
+                ShipLoadResult.SetAside => "unreadable at start, moved aside (*.unreadable)",
+                _                       => "none at start",
+            };
+            return $"{save.Path}\nSave: {loaded}. {(save.IsDirty ? "Unsaved changes." : "Up to date.")}";
+        }
+
+        private static string SkippedNote(int skipped, string what) => skipped > 0 ? $" ({skipped} entries {what})" : string.Empty;
 
         // --- Catalog ---------------------------------------------------------------
 

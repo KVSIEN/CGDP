@@ -577,7 +577,9 @@
 - **Dying loses everything** you carried: what you brought from the ship and what you found. The ship's hold itself is never at risk
 - After every run the ship screen shows how it went (EXTRACTED, or KILLED IN ACTION with what was lost), the ship's hold, and the kit for the next run: click an entry to pack it or put it back. **Deploy** starts a fresh run with the packed kit on top of the new starting loadout — armour is worn straight away when its slot is free, weapons fill free slots
 - Leaving a level mid-run (restart or main menu) counts as not making it out
-- The ship's hold lasts for the play session (it is not saved to disk yet)
+- **Saving:** the ship's hold and the kit packed for the next run are saved to disk whenever they change, and are there again the next time the game starts. A run in progress is never saved: quitting mid-run loses what you took in, like leaving the level does. Rolled gear comes back exactly as it was (same stats, name and perks) with its attachments; a loaded magazine doesn't carry over
+- A save that can't be read is set aside (kept next to it as `ship.json.unreadable`) and the ship starts empty; items that no longer exist in the game are skipped and the rest loads
+- In the editor nothing is saved by default, so every test starts with an empty ship; tick *Save In Editor* on ExpeditionSession to test saving (the editor keeps its own save, apart from a build's)
 - An **Emergency Exit** room's escape pod is an early way out (hold Interact on "Emergency extract"): the run ends, your weapons and worn armour make it home, but only half of every stack in your pack fits and loose gear in the pack is left behind. The ship screen reads EMERGENCY EXTRACTION and says how much didn't fit
 
 ## Director (Pacing)
@@ -833,6 +835,7 @@ Rooms with rules of their own, mixed into generated maps alongside the usual fig
 - `/god`, `/heal`, `/buff <preset> [seconds]`, `/timescale <x>`, `/revealmap`, `/cloak [seconds]`, `/dodge [type]` (switch dodge style to try them out)
 - `/quest list`, `/quest start|complete <quest>`, `/quest step <quest> <n>` to jump straight to any objective
 - Names can be partial ("/give scrap 20", "/weapon sniper 42 legendary")
+- `/save` shows where the ship save is and whether it loaded; `/save write` writes it now, `/save wipe` empties the hold and kit and deletes the save for a fresh start
 
 ## Minimap & World Map
 - A round minimap in the top-right corner shows the area around the player, turning with the view so the player arrow always points up (or fixed north-up, per setting)

@@ -279,7 +279,9 @@ Expose a parameter by right-clicking the group's *Volume* in the Inspector › *
 - UI buttons call a **GameFlowCommands** component (Resume, RestartLevel, LoadMainMenu, StartGame, Quit…) — never `GameFlow` directly.
 - **GameStateView** shows a panel only in chosen states: `_target` = the panel, `_visibleIn` = e.g. `Paused`. Put it on an always-active object, not on the panel.
 - **Time:** `GameTime` owns `Time.timeScale`. Pause or slow time through `GameTime.Instance.Clock`, never by setting `Time.timeScale`.
-- **Expeditions:** the `GameFlow` prefab also carries **ExpeditionSession** (no fields), which keeps the ship's hold and the packed kit across scene loads. A scene without it still plays; its runs just don't carry over.
+- **Expeditions:** the `GameFlow` prefab also carries **ExpeditionSession**, which keeps the ship's hold and the packed kit across scene loads and saves them to disk. A scene without it still plays; its runs just don't carry over.
+  - `_catalog` = `Items/DefaultItemCatalog` (without one nothing is saved) · `_saveInEditor` = off (on: the editor saves too, to its own `ship-editor.json`) · `_fileName` = `ship.json` (in `Application.persistentDataPath`).
+  - `DefaultItemCatalog` lists every item definition in the project and is kept up to date by the editor on every asset change — never edit it by hand. If it ever looks stale, run **CGD › Items › Sync Item Catalog**. Only one catalog asset is needed.
 
 ---
 
