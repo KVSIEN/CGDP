@@ -16,13 +16,13 @@ MonoBehaviour:
   FireBehavior: {fileID: 11400000, guid: ca566d8dc066bdc49b9f7028754076c0, type: 2}
   OnHitEffects: []
   FireMode: 0
-  RoundsPerMinute: 360
+  RoundsPerMinute: 440
   BurstCount: 3
   BurstInterval: 0.055
   PelletCount: 1
   ChargeTime: 0.8
   MinChargeToFire: 0.15
-  Damage: 34
+  Damage: 30.8
   DamageType: 0
   ArmorPenetration: 0
   HeadshotMultiplier: 2.2

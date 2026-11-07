@@ -30,6 +30,10 @@ namespace CGD.Core
         // 1/3 at +1 (toward Max), symmetric in between.
         internal static float BiasExponent(float bias) => Mathf.Pow(3f, -Mathf.Clamp(bias, -1f, 1f));
 
+        // The same range with both ends raised to at least `floor`; a range wholly below it
+        // collapses onto the floor. Bias is kept.
+        public FloatRange AtLeast(float floor) => new(Mathf.Max(Min, floor), Mathf.Max(Max, floor), Bias);
+
         // Clamp the result to the range (guards against floating-point edge cases)
         public float EvaluateClamped() => Mathf.Clamp(Evaluate(), Min, Max);
 

@@ -81,7 +81,8 @@ namespace CGD.Weapons
 
         private static void RollFiring(WeaponData d, WeaponCategoryData cat, ItemRoll roll, RandomStream random, WeaponBuild build)
         {
-            d.RoundsPerMinute = roll.Sample(ItemStat.FireRate, StyleScales.Scale(cat.RPM, build.Scales.FireRate, build.Leans.FireRate));
+            d.RoundsPerMinute = roll.Sample(ItemStat.FireRate,
+                StyleScales.Scale(cat.RPM, build.Scales.FireRate, build.Leans.FireRate).AtLeast(cat.MinRPM));
             d.BurstCount      = cat.BurstCount.Evaluate(random);
             d.BurstInterval   = cat.BurstInterval.EvaluateClamped(random);
             d.PelletCount     = Mathf.Max(1, build.PelletCount.Evaluate(random));

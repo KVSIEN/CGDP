@@ -32,6 +32,9 @@ namespace CGD.Weapons
         [Header("Firing")]
         public WeaponFireBehavior FireBehavior;
         public FloatRange RPM          = new(600, 800);
+        [Tooltip("No roll fires slower than this (rounds per minute), however far a model or style stretches RPM down. " +
+                 "Keeps rapid tapping from outrunning the gun. 0 = no floor")]
+        [Min(0f)] public float MinRPM = 0f;
         public IntRange   BurstCount   = new(3, 3);    // only used by Burst fire
         public FloatRange BurstInterval = new(0.07f, 0.10f);
         [Tooltip("Pellets per shot. 1 for all non-shotgun types.")]

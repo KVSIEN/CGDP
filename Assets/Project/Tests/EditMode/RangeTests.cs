@@ -78,6 +78,25 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void AtLeastRaisesEndsBelowTheFloor()
+        {
+            var range = new FloatRange(200f, 500f, 0.5f).AtLeast(360f);
+
+            Assert.AreEqual(360f, range.Min);
+            Assert.AreEqual(500f, range.Max);
+            Assert.AreEqual(0.5f, range.Bias);
+        }
+
+        [Test]
+        public void AtLeastCollapsesARangeWhollyBelowTheFloor()
+        {
+            var range = new FloatRange(100f, 300f).AtLeast(360f);
+
+            Assert.AreEqual(360f, range.Lerp(0f));
+            Assert.AreEqual(360f, range.Lerp(1f));
+        }
+
+        [Test]
         public void IntRangeRoundsAndHitsBothEnds()
         {
             var range = new IntRange(3, 9);

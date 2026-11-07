@@ -87,8 +87,8 @@ MonoBehaviour:
       Max: 0
       Bias: 0
     Scales:
-      Damage: 0.6
-      FireRate: 1.7
+      Damage: 0.67
+      FireRate: 1.45
       Recoil: 0.8
       Spread: 1
       Range: 1
@@ -109,7 +109,7 @@ MonoBehaviour:
       Max: 3
       Bias: 0
     Scales:
-      Damage: 0.3
+      Damage: 0.27
       FireRate: 0.6
       Recoil: 1
       Spread: 2.5
@@ -134,8 +134,8 @@ MonoBehaviour:
   - Name: Heavy
     Weight: 15
     Scales:
-      Damage: 1.3
-      FireRate: 0.7
+      Damage: 1.19
+      FireRate: 0.8
       Recoil: 1
       Spread: 1
       Range: 1
@@ -146,8 +146,8 @@ MonoBehaviour:
   - Name: Marksman
     Weight: 15
     Scales:
-      Damage: 1.4
-      FireRate: 0.6
+      Damage: 1.2
+      FireRate: 0.75
       Recoil: 1.6
       Spread: 0.7
       Range: 1.6
@@ -158,8 +158,8 @@ MonoBehaviour:
   - Name: Rapid
     Weight: 20
     Scales:
-      Damage: 0.75
-      FireRate: 1.4
+      Damage: 0.8
+      FireRate: 1.25
       Recoil: 0.85
       Spread: 1
       Range: 0.8
@@ -170,8 +170,8 @@ MonoBehaviour:
   - Name: Carbine
     Weight: 20
     Scales:
-      Damage: 1.1
-      FireRate: 0.8
+      Damage: 1.03
+      FireRate: 0.9
       Recoil: 0.8
       Spread: 1
       Range: 1.3
@@ -181,9 +181,10 @@ MonoBehaviour:
       Reload: 1
   FireBehavior: {fileID: 11400000, guid: 53344976f8ff1f849b07c82ca760152c, type: 2}
   RPM:
-    Min: 300
-    Max: 480
+    Min: 400
+    Max: 560
     Bias: 0
+  MinRPM: 360
   BurstCount:
     Min: 3
     Max: 3
@@ -198,8 +199,8 @@ MonoBehaviour:
     Bias: 0
   OnHitEffects: []
   Damage:
-    Min: 18
-    Max: 32
+    Min: 16
+    Max: 29
     Bias: 0
   DamageType: 0
   ArmorPenetration:
