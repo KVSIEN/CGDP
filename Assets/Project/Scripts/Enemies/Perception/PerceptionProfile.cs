@@ -56,6 +56,10 @@ namespace CGD.Enemies
         [SerializeField, Min(0.01f)] private float _decayRate = 0.08f;
         [Tooltip("Seconds ahead it guesses a lost target kept moving the way it was seen going")]
         [SerializeField] private FloatRange _prediction = new(0.4f, 1.4f);
+        [Tooltip("Share of that guess for a target seen strafing: it tends to stop or reverse rather than keep going")]
+        [SerializeField, Range(0f, 1f)] private float _strafePrediction = 0.6f;
+        [Tooltip("Share of that guess for a target seen backing away while facing it: usually a short step back to cover")]
+        [SerializeField, Range(0f, 1f)] private float _backpedalPrediction = 0.4f;
 
         [Header("Callouts")]
         [Tooltip("Metres: allies this close hear it call out a target it spots (half through walls)")]
@@ -122,6 +126,8 @@ namespace CGD.Enemies
         public float SuspiciousThreshold  => _suspiciousThreshold;
         public float DecayRate            => _decayRate;
         public FloatRange Prediction      => _prediction;
+        public float StrafePrediction     => _strafePrediction;
+        public float BackpedalPrediction  => _backpedalPrediction;
         public float CalloutRadius        => _calloutRadius;
         public FloatRange NoticePause     => _noticePause;
         public IntRange SearchPoints      => _searchPoints;

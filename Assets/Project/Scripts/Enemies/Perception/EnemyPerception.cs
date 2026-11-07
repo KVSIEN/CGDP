@@ -16,8 +16,10 @@ namespace CGD.Enemies
     //            noises (gunfire, swings, explosions); walls muffle them, and a heard position
     //            is only roughly right. Hearing alone never makes it certain.
     //   touch    a hostile close enough to bump into; being hit gives the attacker's rough spot.
-    //   memory   where it last saw its target and which way it was going. When the target
-    //            slips out of sight it guesses a little ahead along that path — the player can
+    //   memory   where it last saw its target, which way it faced and how it moved (still,
+    //            running, strafing, backing away — SightingMemory). When the target slips out
+    //            of sight it guesses a little ahead along that path, less far for a strafing or
+    //            backpedalling target and not at all for one standing still — the player can
     //            double back to fool it — and slowly calms down if nothing new turns up.
     //   allies   spotting a hostile shouts a callout nearby allies can hear; allies' gunfire
     //            draws them in too.
@@ -29,9 +31,7 @@ namespace CGD.Enemies
     {
         private const float EyeHeight       = 1.5f;
         private const int   MaxCandidates   = 3;
-        private const float MaxGuessSpeed   = 8f;
         private const float DefaultLoudness = 0.6f;   // footsteps of a hostile without Stealthable
-        private const float TrackingGap     = 0.5f;   // seconds between sightings that still give a velocity
         private const float DeathHearingRange = 10f;  // an ally going down is heard this far
         private const int   MaxBodyChecks   = 2;      // raycasts per sample spent looking for bodies
         private const float NearMissRadius  = 2.5f;   // a hostile bullet landing this close is felt
@@ -50,13 +50,12 @@ namespace CGD.Enemies
         private readonly TargetFilter        _hostiles;
         private readonly List<HealthManager> _candidates = new();
         private readonly AwarenessMeter      _meter;
+        private readonly SightingMemory      _sighting = new();
 
         private float   _clock;
         private float   _nextSample;
         private float   _lastSample;
         private float   _lastSensedAt = float.NegativeInfinity;
-        private Vector3 _lastSeenPosition;
-        private Vector3 _lastSeenVelocity;
         private bool    _hasLead;
         private bool    _hunting;   // it knows a hostile is about, not just that something seemed off
         private float   _cautiousUntil = float.NegativeInfinity;
@@ -117,7 +116,12 @@ namespace CGD.Enemies
         public Vector3 TargetPosition    => IsSensing ? Target.transform.position : LastKnownPosition;
         // Which way and how fast (flat, m/s) it saw its target moving — zero unless sensed right
         // now. Lets slow projectiles be aimed where the target is going.
-        public Vector3 TargetVelocity    => IsSensing ? _lastSeenVelocity : Vector3.zero;
+        public Vector3 TargetVelocity    => IsSensing ? _sighting.Velocity : Vector3.zero;
+        // Which way it last saw its target facing (flat unit vector; zero if never seen) — what
+        // the target was watching, so what to stay out of when flanking.
+        public Vector3 TargetFacing      => Target != null ? _sighting.Facing : Vector3.zero;
+        // How it last saw its target moving relative to that facing.
+        public TargetMotion TargetMotion => Target != null ? _sighting.Motion : TargetMotion.Unknown;
 
         // A lead (something new to look into) not yet consumed — read without consuming it.
         public bool HasLead => _hasLead;
@@ -181,6 +185,7 @@ namespace CGD.Enemies
             _hasLead = false;
             _lastSensedAt = float.NegativeInfinity;
             SearchDirection = Vector3.zero;
+            _sighting.Forget();
             _meter.Clear();
             Level = AwarenessLevel.Unaware;
         }
@@ -352,24 +357,16 @@ namespace CGD.Enemies
             if (target != Target)
             {
                 Target = target;
-                _lastSeenVelocity = Vector3.zero;
-            }
-            else if (_clock - _lastSensedAt <= TrackingGap)
-            {
-                Vector3 velocity = (position - _lastSeenPosition) / Mathf.Max(0.01f, _clock - _lastSensedAt);
-                velocity.y = 0f;
-                _lastSeenVelocity = Vector3.ClampMagnitude(Vector3.Lerp(_lastSeenVelocity, velocity, 0.5f), MaxGuessSpeed);
+                _sighting.Forget();
             }
 
-            _lastSeenPosition = position;
-            _lastSensedAt     = _clock;
+            _sighting.Record(position, target.transform.forward, _clock);
+            _lastSensedAt = _clock;
 
             // Seeing it face this way squarely reads as being aimed at.
             Vector3 toSelf = _self.position - position;
             toSelf.y = 0f;
-            Vector3 facing = target.transform.forward;
-            facing.y = 0f;
-            if (toSelf.sqrMagnitude > 0.01f && Vector3.Angle(facing, toSelf) <= AimedAtAngle && _meter.IsSuspicious)
+            if (toSelf.sqrMagnitude > 0.01f && Vector3.Angle(_sighting.Facing, toSelf) <= AimedAtAngle && _meter.IsSuspicious)
                 FeelFire(position);
             LastKnownPosition = position;
             LookPosition      = position;
@@ -457,13 +454,13 @@ namespace CGD.Enemies
             if (Level == AwarenessLevel.Unaware && _meter.Value <= 0f && Target != null) LoseTarget();
         }
 
-        // Out of sight: guess a little ahead along the way it was going, and go looking.
+        // Out of sight: guess where it went from how it was moving, and go looking.
         private void OnTargetLost()
         {
-            Vector3 guess = _lastSeenPosition + _lastSeenVelocity * _profile.Prediction.EvaluateClamped();
-            SearchDirection   = _lastSeenVelocity.sqrMagnitude > 0.25f ? _lastSeenVelocity.normalized : Vector3.zero;
-            LastKnownPosition = guess;
-            LookPosition      = _lastSeenPosition;
+            LastKnownPosition = _sighting.Predict(_profile.Prediction.EvaluateClamped(),
+                                                  _profile.StrafePrediction, _profile.BackpedalPrediction);
+            SearchDirection   = _sighting.Heading;
+            LookPosition      = _sighting.Position;
             _hasLead          = true;
         }
 

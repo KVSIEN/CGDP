@@ -10,8 +10,9 @@ namespace CGD.Enemies
     //   cover      a known spot whose obstacle stands between it and the threat — near where
     //              it wants to fight from, out of sight, or further in (CoverUse) — not taken
     //              by an ally, checked with a ray from the threat before it commits
-    //   flank      a spot off to the threat's side, reached by the route the threat is least
-    //              likely to see (fewest path corners in its view)
+    //   flank      a spot off to the threat's side — away from where it was last seen facing —
+    //              reached by the route the threat is least likely to see (fewest path
+    //              corners in its view)
     //   hiding     known cover near a position where someone could be hiding from it — what
     //              a search should check
     // Asked by the behavior tree nodes (Take Cover, Flank, Chase Target, the search).
@@ -26,6 +27,7 @@ namespace CGD.Enemies
         private const float EyeHeight          = 1.5f;
         private const float FlankDetourLimit   = 3f;
         private const float AdvanceMinGain     = 3f;
+        private const float WatchedSidePenalty = 1.5f;
 
         private static readonly float[] FlankAngles = { 70f, 100f };
 
@@ -201,8 +203,9 @@ namespace CGD.Enemies
             if (axis.sqrMagnitude < 0.01f) return false;
             axis.Normalize();
 
-            float straight  = Vector3.Distance(self, threat);
-            float bestScore = float.MinValue;
+            float   straight  = Vector3.Distance(self, threat);
+            float   bestScore = float.MinValue;
+            Vector3 watching  = _ai.Perception.TargetFacing;
             int   firstSide = preferSide != 0 ? preferSide : Random.value < 0.5f ? -1 : 1;
 
             for (int s = 0; s < 2; s++)
@@ -217,7 +220,8 @@ namespace CGD.Enemies
                 float length = PathLength(_path);
                 if (length > straight * FlankDetourLimit + standOff) continue;
 
-                float score = -2f * Exposure(_path, threat) - 0.3f * length / Mathf.Max(1f, straight) + Random.value * 0.3f;
+                float score = -2f * Exposure(_path, threat) - 0.3f * length / Mathf.Max(1f, straight) + Random.value * 0.3f
+                              - WatchedSidePenalty * Watched(watching, threat, hit.position);
                 if (score <= bestScore) continue;
 
                 bestScore   = score;
@@ -288,6 +292,16 @@ namespace CGD.Enemies
             for (int i = 1; i < _best.Length; i++)
                 if (_best[i].score < _best[worst].score) worst = i;
             if (score > _best[worst].score) _best[worst] = (index, score);
+        }
+
+        // How squarely a spot lies in the direction the threat was facing: 1 dead ahead of it,
+        // 0 at its side or behind it (or when its facing is unknown).
+        private static float Watched(Vector3 facing, Vector3 threat, Vector3 spot)
+        {
+            Vector3 toSpot = spot - threat;
+            toSpot.y = 0f;
+            if (facing == Vector3.zero || toSpot.sqrMagnitude < 0.01f) return 0f;
+            return Mathf.Max(0f, Vector3.Dot(facing, toSpot.normalized));
         }
 
         // Share of the route's corners the threat could see.

@@ -11,6 +11,8 @@ namespace CGD.Enemies
         {
             rows.Add(("State", ai.Step == EngageStep.None ? ai.State.ToString() : $"{ai.State} · {ai.Step}"));
             rows.Add(("Awareness", $"{ai.Awareness} ({ai.AwarenessValue:0.00}){(ai.IsCautious ? " · on edge" : "")}"));
+            if (ai.Perception.Target != null)
+                rows.Add(("Target", $"{ai.Perception.Target.name} · last seen {ai.Perception.TargetMotion}"));
             rows.Add(("Morale", $"{ai.MoraleValue:0.00}{(ai.Morale.IsShaken ? " · shaken" : "")}"));
             if (ai.Squad != null)
                 rows.Add(("Squad", $"{ai.SquadRole}{(ai.Squad.Leader == ai ? " · leader" : "")} ({ai.Squad.Members.Count} members)"));
