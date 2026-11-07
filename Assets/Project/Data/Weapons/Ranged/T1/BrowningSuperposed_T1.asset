@@ -32,9 +32,9 @@ MonoBehaviour:
   DamageType: 0
   ArmorPenetration: 0
   HeadshotMultiplier: 1.75
-  RangeOptimal: 15
-  RangeFalloffEnd: 45
-  DamageFalloffMin: 0.15
+  RangeOptimal: 24
+  RangeFalloffEnd: 72
+  DamageFalloffMin: 0.3
   MaxRange: 100
   HitMask:
     serializedVersion: 2
@@ -45,8 +45,8 @@ MonoBehaviour:
   ReloadTime: 2.6
   TacticalReloadTime: 2.0
   RoundsPerLoad: 0
-  HipSpreadDeg: 9.0
-  AdsSpreadDeg: 2
+  HipSpreadDeg: 3.8
+  AdsSpreadDeg: 0.6
   AdsSpreadMultiplier: 0.45
   HotAdsSpreadMultiplier: 0.6
   SpreadPerShot: 1.2

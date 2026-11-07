@@ -192,7 +192,7 @@
   - **Pistol** — 300–600 RPM semi/auto, 7–20 round mags (weighted low), high per-shot kick, 15–25 m range; wide damage spread (20–55) representing everything from Glock to Desert Eagle
   - **Sniper** — from 40 RPM bolt-actions to 260 RPM marksman rifles (see weapon models), mostly 5–10 rounds, terrible hipfire, near-zero ADS spread
   - **LMG** — from 450–550 RPM heavy hitters to the 1200 RPM MG42, 20-round classics to 150-round belts (see weapon models), slow reload (4–8.5 s), wide hipfire, high sustained recoil cap
-  - **Shotgun** — from 60–90 RPM pumps that kill in one blast up close to 170–300 RPM semi-autos and full-autos that need two, 2–15 shells (see weapon models), 6–12 pellets per shot, very short optimal range with steep falloff, wide pellet cone, heavy per-shot recoil
+  - **Shotgun** — from 60–90 RPM pumps that kill in one blast up close to 170–300 RPM semi-autos and full-autos that need two, 2–15 shells (see weapon models), 6–12 pellets per shot, heavy per-shot recoil. Shotguns reach further than the usual run-and-gun shotgun: hip fire is for corners (a pump kills in one blast inside about 4 m), while aiming tightens the pellets enough to stay a threat at mid range — a typical pump still kills in one aimed blast out to about 12 m, two to about 20 m, and three or four at 25–30 m. Pellet damage falls off gradually from about 15 m to under a third by about 50 m, and the pellets spread wide enough by then that it is no match for a rifle
   - **Bow** — hold to draw, release to loose an arrow that flies and drops with real physics. A short draw shoots slower, drops faster and hits softer; tapping without drawing wastes nothing. One arrow is nocked at a time (keep holding attack to nock the next), barely any recoil, and nearly silent — enemies hear it from only ~8 m. From quick, light shortbows and horsebows to slow-drawing warbows that hit hardest, and compounds whose arrows fly fastest and flattest (see weapon models)
     - **Multishot**: some bows loose 2–3 arrows at once (single-arrow bows are the most common). A volley costs one arrow; each arrow deals less than a single shot, so landing several pays off
     - **Vertical / horizontal draw** (Weapon Mode key, B): every bow has two draws. **Vertical** draws slower but hits harder (+15%) with a much tighter aim, and stacks a volley's arrows in a vertical line. **Horizontal** draws about a third faster but hits softer (−20%) and looser, and fans a volley sideways. Switching drops the current draw; each bow remembers its own
@@ -306,7 +306,7 @@
 ### Accuracy (where bullets land)
 - Hip-fire cone opens wide; ADS tightens it dramatically (each cone is a per-weapon degree value)
 - Aiming down sights is pinpoint accurate (0.01° cone) and removes bloom entirely on every weapon type except shotguns; shotguns keep some bloom while aimed, which grows as the weapon heats up
-- Aiming a shotgun tightens its pellet cone to roughly a quarter of the hip-fire cone
+- Aiming a shotgun tightens its pellet cone to roughly a quarter of the hip-fire cone, so aiming is what makes a shotgun reach mid range
 - **Bloom** — each shot adds to the spread cone up to a per-weapon cap; spread starts recovering a moment after each shot, so slow-firing weapons like shotguns and snipers tighten back up between rounds while sprays from automatic weapons still build up
 - At maximum spread the crosshair still pops open with each shot and settles back, instead of sitting still at full size (accuracy itself stays at the maximum)
 

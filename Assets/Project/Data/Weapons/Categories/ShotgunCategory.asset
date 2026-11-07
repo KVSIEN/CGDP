@@ -146,8 +146,8 @@ MonoBehaviour:
         Max: 0
         Bias: 0
       AdsSpreadDeg:
-        Min: 2
-        Max: 3.5
+        Min: 1.6
+        Max: 2.4
         Bias: 0
       Scales:
         Damage: 1
@@ -1035,8 +1035,8 @@ MonoBehaviour:
         Max: 0
         Bias: 0
       AdsSpreadDeg:
-        Min: 1.5
-        Max: 2.5
+        Min: 1.1
+        Max: 1.6
         Bias: 0
       Scales:
         Damage: 1
@@ -1067,8 +1067,8 @@ MonoBehaviour:
         Max: 0
         Bias: 0
       AdsSpreadDeg:
-        Min: 2.5
-        Max: 4
+        Min: 1.8
+        Max: 2.8
         Bias: 0
       Scales:
         Damage: 1.05
@@ -1306,16 +1306,16 @@ MonoBehaviour:
     Max: 2
     Bias: 0
   RangeOptimal:
-    Min: 6
-    Max: 20
+    Min: 10
+    Max: 32
     Bias: 0
   RangeFalloffEnd:
-    Min: 22
-    Max: 55
+    Min: 35
+    Max: 88
     Bias: 0
   DamageFalloffMin:
-    Min: 0.1
-    Max: 0.25
+    Min: 0.25
+    Max: 0.35
     Bias: 0
   AmmoType: 5
   MagazineSize:
@@ -1344,12 +1344,12 @@ MonoBehaviour:
     m_Bits: 4294967295
   NoiseRadius: 40
   HipSpreadDeg:
-    Min: 6
-    Max: 16
+    Min: 3.5
+    Max: 7
     Bias: 0
   AdsSpreadDeg:
-    Min: 0.5
-    Max: 2
+    Min: 0.8
+    Max: 1.4
     Bias: 0
   AdsSpreadMultiplier:
     Min: 0.3
