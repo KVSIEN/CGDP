@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f943203b2c551d849960846b86bd150e, type: 3}
+  m_Name: VoidSlowEffect
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.IceEffect
+  DisplayName: Void Slow
+  Icon: {fileID: 0}
+  Color: {r: 0.43, g: 0.38, b: 0.85, a: 1}
+  Duration: 3
+  TickInterval: 0.25
+  Stacking: 1
+  MaxStacks: 4
+  DecayOneStackAtATime: 1
+  SlowPerStack: 0.15
+  ArmorReductionPerStack: 0
+  StunDuration: 0
+  StunArmorReductionBonus: 0

@@ -189,7 +189,7 @@ namespace CGD.Enemies
             if (noise.Source.Owner == _self.gameObject || IsTargetDetected) return;
 
             float distance = Vector3.Distance(noise.Position, _self.position);
-            if (!CanHear(noise.Position, distance, noise.Radius)) return;
+            if (!CanHear(noise.Position, distance, noise.Radius, noise.Source.Owner != null ? noise.Source.Owner.transform : null)) return;
 
             if (noise.Source.Team == _team)
             {
@@ -253,7 +253,7 @@ namespace CGD.Enemies
             if (callout.Caller == _owner || callout.Team != _team || IsTargetDetected) return;
 
             float distance = Vector3.Distance(callout.From, _self.position);
-            bool heard = callout.ThroughWalls ? distance <= callout.Radius : CanHear(callout.From, distance, callout.Radius);
+            bool heard = callout.ThroughWalls ? distance <= callout.Radius : CanHear(callout.From, distance, callout.Radius, callout.Caller != null ? callout.Caller.transform : null);
             if (!heard) return;
 
             _meter.RaiseToSuspicious(0.1f);
@@ -269,7 +269,7 @@ namespace CGD.Enemies
             if (fallen.Body == _owner || fallen.Team != _team || _bodiesSeen.Contains(fallen.Body)) return;
 
             float distance = Vector3.Distance(fallen.Position, _self.position);
-            if (!CanHear(fallen.Position, distance, DeathHearingRange)) return;
+            if (!CanHear(fallen.Position, distance, DeathHearingRange, fallen.Body.transform)) return;
             DiscoverBody(fallen);
         }
 
@@ -405,7 +405,7 @@ namespace CGD.Enemies
                 if (Vector3.Angle(_self.forward, toBody) > halfAngle) continue;
 
                 checks++;
-                if (IsClear(eye, body)) DiscoverBody(fallen);
+                if (IsClear(eye, body, fallen.Body.transform)) DiscoverBody(fallen);
             }
         }
 
@@ -497,7 +497,7 @@ namespace CGD.Enemies
             bool hasStealth = Stealthable.TryGet(target, out Stealthable stealth);
             if (hasStealth && !stealth.IsExposedTo(_self.position)) return false;
 
-            if (!IsClear(eye, chest) && !IsClear(eye, head)) return false;
+            if (!IsClear(eye, chest, target.transform) && !IsClear(eye, head, target.transform)) return false;
 
             instant = distance <= _profile.InstantSightDistance;
             gain    = Mathf.Lerp(_profile.NearSightGain, _profile.FarSightGain, distance / _data.SightRange);
@@ -512,24 +512,25 @@ namespace CGD.Enemies
             if (loudness <= 0f) return 0f;
 
             float range = _data.HearingRadius * loudness;
-            if (distance > range || !CanHear(target.transform.position, distance, range)) return 0f;
+            if (distance > range || !CanHear(target.transform.position, distance, range, target.transform)) return 0f;
 
             return _profile.FootstepGain * (1f - 0.5f * distance / range);
         }
 
-        // Within range, and still within it once a wall in between has muffled it.
-        private bool CanHear(Vector3 source, float distance, float range)
+        // Within range, and still within it once a wall in between has muffled it. `emitter` is
+        // the character making the sound, if any — its own body doesn't muffle it.
+        private bool CanHear(Vector3 source, float distance, float range, Transform emitter = null)
         {
             if (distance > range) return false;
             if (distance <= range * _profile.OccludedHearing) return true;
 
             Vector3 ears = _self.position + Vector3.up * EyeHeight;
-            return IsClear(ears, source + Vector3.up * 0.5f);
+            return IsClear(ears, source + Vector3.up * 0.5f, emitter);
         }
 
-        private bool IsClear(Vector3 from, Vector3 to) =>
-            !ConcealmentZone.BlocksLine(from, to) &&
-            !Physics.Linecast(from, to, _obstacleMask, QueryTriggerInteraction.Ignore);
+        // `subject` is the character (or body) the line ends on, which never blocks its own view.
+        private bool IsClear(Vector3 from, Vector3 to, Transform subject) =>
+            !ConcealmentZone.BlocksLine(from, to) && SightLines.IsClear(from, to, _obstacleMask, subject);
 
         // Chest and head of the target's body (its collider), so cover at chest height but
         // below the head doesn't hide a standing target — and does hide a crouching one.

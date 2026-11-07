@@ -9,13 +9,15 @@ using CGD.Weapons;
 namespace CGD.Enemies
 {
     // How a ranged enemy fights: holding its preferred distance (approach, back off, strafe
-    // while in the band) and firing hitscan bursts. Used by the ranged behavior tree nodes
+    // while in the band) and firing bursts — hitscan, or visible projectiles when its data has
+    // a ShotProjectile. Used by the ranged behavior tree nodes
     // (Hold Range, Shoot Burst, Suppress).
     internal sealed class EnemyRangedCombat
     {
         private const float EyeHeight = 1.5f;
         // The band around the preferred range that counts as "in position".
         private const float RangeTolerance = 0.15f;
+        private const float MuzzleOffset   = 0.6f;
 
         private readonly EnemyAI      _ai;
         private readonly DamageSource _source;
@@ -79,11 +81,12 @@ namespace CGD.Enemies
 
         public bool HasLineOfSight(Vector3 targetPos)
         {
-            Vector3 eyePos   = _ai.transform.position + Vector3.up * EyeHeight;
-            Vector3 toTarget = targetPos + Vector3.up - eyePos;
-            float   dist     = toTarget.magnitude;
+            Vector3 eyePos = _ai.transform.position + Vector3.up * EyeHeight;
+            Vector3 aimAt  = targetPos + Vector3.up;
+            if ((aimAt - eyePos).sqrMagnitude < 0.000001f) return true;
 
-            return dist < 0.001f || !Physics.Raycast(eyePos, toTarget / dist, dist, _obstacleMask, QueryTriggerInteraction.Ignore);
+            HealthManager target = _ai.Perception.Target;
+            return SightLines.IsClear(eyePos, aimAt, _obstacleMask, target != null ? target.transform : null);
         }
 
         // Fires the first shot of a burst now; the rest follow every BurstInterval.
@@ -190,12 +193,34 @@ namespace CGD.Enemies
             fireSound.TryPlay(_ai.transform.position);
             _ai.NotifyFired();
 
+            var info = new DamageInfo(data.AttackDamage, source: _source);
+            if (data.ShotProjectile != null && data.ShotProjectile.TryGetComponent(out Projectile _))
+            {
+                LaunchProjectile(data, eyePos, dir, info);
+                return;
+            }
+
             if (Physics.Raycast(eyePos, dir, out var hit, data.SightRange, ~0, QueryTriggerInteraction.Ignore))
             {
-                var info = new DamageInfo(data.AttackDamage, source: _source);
                 Hitbox.ApplyHit(hit.collider, info, hit.point);
                 ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet, _source);
             }
+        }
+
+        // Starts just outside its own body (the projectile ignores the shooter anyway) and
+        // flies as far as the enemy can see.
+        private static void LaunchProjectile(EnemyData data, Vector3 eyePos, Vector3 dir, DamageInfo info)
+        {
+            var go = PrefabPool.Spawn(data.ShotProjectile, eyePos + dir * MuzzleOffset, Quaternion.LookRotation(dir));
+            go.GetComponent<Projectile>().Launch(new ProjectileLaunch
+            {
+                Damage      = info,
+                Velocity    = dir * data.ShotSpeed,
+                Lifetime    = data.SightRange / data.ShotSpeed + 0.5f,
+                MaxDistance = data.SightRange,
+                HitMask     = ~0,
+                Falloff     = DamageFalloff.None,
+            });
         }
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RangedTestEnemyData
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
   DisplayName: Maintenance Bot
-  Team: 2
+  Team: 4
   MaxHealth: 30
   Armor: 50
   MaxShield: 37
@@ -21,7 +21,7 @@ MonoBehaviour:
   ShieldRegenRate: 12
   PatrolSpeed: 1.5
   ChaseSpeed: 3.5
-  SightRange: 18
+  SightRange: 60
   SightAngle: 120
   HearingRadius: 10
   Senses: {fileID: 11400000, guid: 251b916bd85e47ba8781cb4c02764333, type: 2}
@@ -38,6 +38,8 @@ MonoBehaviour:
   BurstInterval: 0.12
   StrafeInterval: 2
   StrafeDistance: 4
+  ShotProjectile: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+  ShotSpeed: 28
   RaisesAlarm: 1
   AlertDuration: 6
   AttackSound: {fileID: 0}

@@ -71,6 +71,10 @@ namespace CGD.Enemies
         public float StrafeInterval = 2f;
         [Tooltip("How far sideways the enemy strafes at preferred range")]
         public float StrafeDistance  = 4f;
+        [Tooltip("Prefab with a Projectile component: shots fly as visible, dodgeable rounds. Empty = instant hitscan")]
+        public GameObject ShotProjectile;
+        [Tooltip("Metres per second a projectile shot flies at")]
+        [Min(1f)] public float ShotSpeed = 30f;
 
         [Header("Group & Reactions")]
         [Tooltip("It won't step in to strike while this many allies (itself included) are already in melee with the same target — it circles instead")]

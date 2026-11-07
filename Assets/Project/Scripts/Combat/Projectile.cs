@@ -16,7 +16,7 @@ namespace CGD.Combat
         private Vector3       _velocity;
         private float         _age;
         private float         _distance;
-        private Transform     _ownerRoot;
+        private Transform     _owner;
         private TrailRenderer _trail;
 
         private void Awake()
@@ -34,9 +34,7 @@ namespace CGD.Combat
             _velocity  = launch.Velocity;
             _age       = 0f;
             _distance  = launch.DistanceTravelled;
-            _ownerRoot = launch.Damage.Source.Owner != null
-                       ? launch.Damage.Source.Owner.transform.root
-                       : null;
+            _owner     = OwnerBody(launch.Damage.Source.Owner);
 
             // A pooled instance still holds the trail of its last flight, which would
             // otherwise streak across the map from wherever that round died.
@@ -86,6 +84,17 @@ namespace CGD.Combat
 
         private void Despawn() => PrefabPool.Release(gameObject);
 
+        // The shooter's whole character (its HealthManager and everything under it), so a
+        // round fired from a weapon or hand never hits its own body. Not the hierarchy root:
+        // characters grouped under a shared parent (a scene's Enemies object) must still be
+        // able to hit each other.
+        private static Transform OwnerBody(GameObject owner)
+        {
+            if (owner == null) return null;
+            var health = owner.GetComponentInParent<HealthManager>();
+            return health != null ? health.transform : owner.transform;
+        }
+
         private void FaceVelocity()
         {
             if (_velocity.sqrMagnitude > 0.0001f)
@@ -108,7 +117,7 @@ namespace CGD.Combat
 
             for (int i = 0; i < count; i++)
             {
-                if (_ownerRoot != null && _hitBuffer[i].collider.transform.root == _ownerRoot)
+                if (_owner != null && _hitBuffer[i].collider.transform.IsChildOf(_owner))
                     continue;
                 hit = _hitBuffer[i];
                 return true;
