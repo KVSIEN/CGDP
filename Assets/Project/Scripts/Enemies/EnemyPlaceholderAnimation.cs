@@ -4,8 +4,9 @@ namespace CGD.Enemies
 {
     // Stand-in for animation on enemies without a rig (the capsule test agents), so what they
     // do reads at a glance: an arm that pulls back through a melee wind-up and thrusts out as
-    // the hit lands, held up while an ability is being cast; and the whole model toppling over
-    // on death, standing straight back up when the enemy is revived.
+    // the hit lands, held up while an ability is being cast; the whole model toppling over
+    // on death, standing straight back up when the enemy is revived; and growing back in
+    // from nothing where it reappears after a Phase Shift.
     [RequireComponent(typeof(EnemyAI))]
     public class EnemyPlaceholderAnimation : MonoBehaviour
     {
@@ -13,6 +14,7 @@ namespace CGD.Enemies
         private const float RecoverTime = 0.2f;
         private const float FallTime    = 0.35f;
         private const float CastPulse   = 10f;   // radians per second the casting arm pulses at
+        private const float ReappearTime = 0.35f;
 
         private static readonly Quaternion Fallen = Quaternion.Euler(90f, 0f, 0f);
 
@@ -34,6 +36,8 @@ namespace CGD.Enemies
         private Vector3     _armRest;
         private Vector3     _armScale;
         private Vector3     _modelRest;
+        private Vector3     _modelScale = Vector3.one;
+        private float       _reappearClock = -1f;   // seconds since it reappeared; < 0 = not reappearing
         private float       _attackClock = -1f;   // seconds since the melee attack began; < 0 = none
         private float       _fallClock   = -1f;   // seconds since death; < 0 = standing
 
@@ -41,7 +45,11 @@ namespace CGD.Enemies
         {
             _ai     = GetComponent<EnemyAI>();
             _health = GetComponent<EnemyHealth>();
-            if (_model != null) _modelRest = _model.localPosition;
+            if (_model != null)
+            {
+                _modelRest  = _model.localPosition;
+                _modelScale = _model.localScale;
+            }
             if (_arm == null) return;
 
             _armRest  = _arm.localPosition;
@@ -52,6 +60,7 @@ namespace CGD.Enemies
         private void OnEnable()
         {
             _ai.AttackStarted += OnAttackStarted;
+            _ai.Relocated     += OnRelocated;
             _health.OnDeath   += OnDeath;
             _health.OnRevived += StandUp;
         }
@@ -59,6 +68,7 @@ namespace CGD.Enemies
         private void OnDisable()
         {
             _ai.AttackStarted -= OnAttackStarted;
+            _ai.Relocated     -= OnRelocated;
             _health.OnDeath   -= OnDeath;
             _health.OnRevived -= StandUp;
         }
@@ -66,11 +76,23 @@ namespace CGD.Enemies
         private void Update()
         {
             float dt = Time.deltaTime;
+            if (_reappearClock >= 0f) TickReappear(dt);
             if (_fallClock >= 0f) TickFall(dt);
             else if (_arm != null) TickArm(dt);
         }
 
         private void OnAttackStarted() => _attackClock = 0f;
+
+        private void OnRelocated() => _reappearClock = 0f;
+
+        private void TickReappear(float dt)
+        {
+            if (_model == null) return;
+            _reappearClock += dt;
+            float t = Mathf.Clamp01(_reappearClock / ReappearTime);
+            _model.localScale = _modelScale * Mathf.Max(0.05f, t * (2f - t));   // eases out; never a zero-size hitbox
+            if (t >= 1f) _reappearClock = -1f;
+        }
 
         private void OnDeath()
         {
@@ -81,8 +103,10 @@ namespace CGD.Enemies
 
         private void StandUp()
         {
-            _fallClock = -1f;
+            _fallClock     = -1f;
+            _reappearClock = -1f;
             if (_model == null) return;
+            _model.localScale    = _modelScale;
             _model.localPosition = _modelRest;
             _model.localRotation = Quaternion.identity;
         }

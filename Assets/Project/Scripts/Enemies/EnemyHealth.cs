@@ -3,6 +3,7 @@ using CGD.Combat;
 using CGD.Core;
 using CGD.Items;
 using CGD.Quests;
+using CGD.Stats;
 using CGD.UI;
 
 namespace CGD.Enemies
@@ -12,6 +13,8 @@ namespace CGD.Enemies
         [SerializeField] private EnemyData      _data;
         [SerializeField] private EnemyHealthBar _healthBar;
         [SerializeField] private Vector3        _popupOffset = new Vector3(0f, 0.3f, 0f);
+
+        private bool _hasStats;
 
         public EnemyData Data => _data;
 
@@ -32,6 +35,28 @@ namespace CGD.Enemies
             base.Awake();
             OnDeath += ReportKill;
             OnChanged += RefreshHealthBar;
+            _hasStats = TryGetComponent<CharacterStats>(out _);
+        }
+
+        // Lifesteal (from buffs on this enemy, e.g. Bio's Surge): a share of the damage it deals
+        // comes back as health, as PlayerHealth does for the player. Only enemies with a
+        // CharacterStats can have any, so only they listen.
+        private void OnEnable()
+        {
+            if (_hasStats) CombatEvents.DamageDealt += OnDamageDealt;
+        }
+
+        private void OnDisable()
+        {
+            if (_hasStats) CombatEvents.DamageDealt -= OnDamageDealt;
+        }
+
+        private void OnDamageDealt(DamageReport report)
+        {
+            if (report.Source.Owner != gameObject || report.Amount <= 0f || report.Target == this || IsDead) return;
+
+            float share = WithModifiers(ItemStat.Lifesteal, 0f);
+            if (share > 0f) Heal(report.Amount * share);
         }
 
         private void RefreshHealthBar()

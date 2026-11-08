@@ -15,6 +15,8 @@ namespace CGD.Enemies
     //              corners in its view)
     //   hiding     known cover near a position where someone could be hiding from it — what
     //              a search should check
+    //   unseen     known full-height cover nobody around can see right now, for vanishing
+    //              to (Phase Shift)
     // Asked by the behavior tree nodes (Take Cover, Flank, Chase Target, the search).
     internal sealed class EnemyTactics
     {
@@ -28,6 +30,9 @@ namespace CGD.Enemies
         private const float FlankDetourLimit   = 3f;
         private const float AdvanceMinGain     = 3f;
         private const float WatchedSidePenalty = 1.5f;
+        // Phase Shift: reappear at least this far away, checking at most this many spots.
+        private const float UnseenMinJump = 5f;
+        private const int   UnseenChecks  = 12;
 
         private static readonly float[] FlankAngles = { 70f, 100f };
 
@@ -44,6 +49,7 @@ namespace CGD.Enemies
         private readonly List<int>      _nearby = new();
         private readonly (int index, float score)[] _best = new (int, float)[VerifiedCandidates];
         private readonly NavMeshPath    _path = new();
+        private readonly List<(int index, float score)> _unseen = new();
 
         private int   _claimed = -1;
         private bool  _hasMeleeTurn;
@@ -230,6 +236,56 @@ namespace CGD.Enemies
             return bestScore > float.MinValue;
         }
 
+        // The known full-height cover within maxDistance that none of the watchers can see,
+        // preferring spots far from the nearest of them — somewhere to vanish to (claim it with
+        // TryClaimCover). Checks the watchers' actual positions: it is meant to come out of
+        // everyone's sight.
+        public bool TryFindUnseenCover(float maxDistance, IReadOnlyList<HealthManager> watchers, out int index)
+        {
+            index = -1;
+            CoverMap map = _knowledge.Map;
+            if (map == null) return false;
+
+            Vector3 self = _ai.transform.position;
+            _knowledge.Known(self, maxDistance, _nearby);
+            _unseen.Clear();
+            foreach (int candidate in _nearby)
+            {
+                CoverPoint cover = map[candidate];
+                if (!cover.IsHigh || candidate == _claimed || map.IsTakenByOther(candidate, _ai)) continue;
+                if ((cover.Position - self).sqrMagnitude < UnseenMinJump * UnseenMinJump) continue;
+                _unseen.Add((candidate, DistanceToNearest(cover.Position, watchers) + Random.value * 2f));
+            }
+            _unseen.Sort((a, b) => b.score.CompareTo(a.score));
+
+            for (int i = 0; i < _unseen.Count && i < UnseenChecks; i++)
+            {
+                CoverPoint cover = map[_unseen[i].index];
+                if (IsSeenByAny(cover.Position, watchers)) continue;
+                // Same walkable area: never onto a crate top or an island it can't leave.
+                if (!NavMesh.CalculatePath(self, cover.Position, NavMesh.AllAreas, _path) ||
+                    _path.status != NavMeshPathStatus.PathComplete) continue;
+
+                index = _unseen[i].index;
+                return true;
+            }
+            return false;
+        }
+
+        // Swaps whatever cover it holds for this spot. False if an ally took it meanwhile.
+        public bool TryClaimCover(int index, out Vector3 position)
+        {
+            position = default;
+            CoverMap map = _knowledge.Map;
+            if (map == null || index < 0 || index >= map.Count || map.IsTakenByOther(index, _ai)) return false;
+
+            ReleaseCover();
+            if (!map.TryClaim(index, _ai)) return false;
+            _claimed = index;
+            position = map[index].Position;
+            return true;
+        }
+
         // Known spots near a position that are screened from where this enemy stands —
         // where someone hiding from it would be.
         public void HidingSpots(Vector3 around, float radius, List<Vector3> results, int max)
@@ -248,6 +304,28 @@ namespace CGD.Enemies
         }
 
         // --- Scoring ----------------------------------------------------------------
+
+        private static float DistanceToNearest(Vector3 spot, IReadOnlyList<HealthManager> watchers)
+        {
+            float nearest = float.MaxValue;
+            for (int i = 0; i < watchers.Count; i++)
+                if (watchers[i] != null && !watchers[i].IsDead)
+                    nearest = Mathf.Min(nearest, Vector3.Distance(spot, watchers[i].transform.position));
+            return nearest == float.MaxValue ? 0f : nearest;
+        }
+
+        private bool IsSeenByAny(Vector3 spot, IReadOnlyList<HealthManager> watchers)
+        {
+            Vector3 body = spot + Vector3.up * 1.3f;
+            for (int i = 0; i < watchers.Count; i++)
+            {
+                HealthManager watcher = watchers[i];
+                if (watcher == null || watcher.IsDead) continue;
+                Vector3 eye = watcher.transform.position + Vector3.up * EyeHeight;
+                if (SightLines.IsClear(eye, body, _obstacleMask, watcher.transform)) return true;
+            }
+            return false;
+        }
 
         private bool TryScore(CoverPoint cover, Vector3 threat, CoverUse use, out float score)
         {

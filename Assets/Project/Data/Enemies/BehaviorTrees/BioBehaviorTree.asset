@@ -61,6 +61,29 @@ MonoBehaviour:
   - rid: 1045
   - rid: 1046
   - rid: 1047
+  - rid: 1048
+  - rid: 1049
+  - rid: 1050
+  - rid: 1051
+  - rid: 1052
+  - rid: 1053
+  - rid: 1054
+  - rid: 1055
+  - rid: 1056
+  - rid: 1057
+  - rid: 1058
+  - rid: 1059
+  - rid: 1060
+  - rid: 1061
+  - rid: 1062
+  - rid: 1063
+  - rid: 1064
+  - rid: 1065
+  - rid: 1066
+  - rid: 1067
+  - rid: 1068
+  - rid: 1069
+  - rid: 1070
   references:
     version: 2
     RefIds:
@@ -122,10 +145,13 @@ MonoBehaviour:
         _position: {x: 275, y: 450}
         _comment: 
         _children:
+        - ff1af1ccaa2d4168b1284aeb6d7329d8
+        - 5c56e3877ae3406faba62433bc7851c4
         - 54b29e8d5ce840e6a9b4fe8b992a76fe
         - dfc2d59965ab4c20b4e02b569892bea5
         - ee06be27f963487eb2f4bfaa9ecd6f6a
         - fe8565c356ca47df9eca06231399a424
+        - 6ecca6c2956e4fe5b7cb48e6189d8e5e
         - bf3cbb7b5f8d4159a1262f14c11122b5
         - 9c9e3ace3e0e4d39ac285f2c391b3cb9
         - 3bd710ab35704c39aa83f1e9a97f47fa
@@ -464,3 +490,201 @@ MonoBehaviour:
         - fdbc7f259b904fe0ab3869ad5dea908d
         - 0284c39309c74f8a98dd8ee96d51d9c3
         _abort: 0
+    - rid: 1048
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2b85daef7cd44b949b7d4ccce732b489
+        _position: {x: -3850, y: 1350}
+        _comment: 
+    - rid: 1049
+      type: {class: HealthBelow, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 97c2670e36b24808ae37c9f929c87d48
+        _position: {x: -3630, y: 1350}
+        _comment: 
+        _fraction: 0.35
+    - rid: 1050
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5bcf555fb7074753934dab44045230d3
+        _position: {x: -3410, y: 1350}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6b563373d2e941f7b293da35d1e5d87a, type: 2}
+    - rid: 1051
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d0a1cdfdcd7041beb4ab58f8c9527ba4
+        _position: {x: -3190, y: 1350}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6b563373d2e941f7b293da35d1e5d87a, type: 2}
+        _aim: 0
+        _maxRange: 0
+    - rid: 1052
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9002a71289cc4bef92a4ccfc05af7ecb
+        _position: {x: -3080, y: 1650}
+        _comment: 
+        _use: 1
+        _giveUpAfter: 4
+    - rid: 1053
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 0c680bb2ad5445d8b02a74d7b9811655
+        _position: {x: -2860, y: 1650}
+        _comment: 
+        _distance: 12
+    - rid: 1054
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ba039ce9e4a743178c1af6cdc7ec6b5e
+        _position: {x: -2970, y: 1500}
+        _comment: 
+        _children:
+        - 9002a71289cc4bef92a4ccfc05af7ecb
+        - 0c680bb2ad5445d8b02a74d7b9811655
+        _abort: 0
+    - rid: 1055
+      type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 65946abc19704d938f0e269e91c66339
+        _position: {x: -2750, y: 1350}
+        _comment: 
+        _seconds: {Min: 1.5, Max: 2.5, Bias: 0}
+    - rid: 1056
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ff1af1ccaa2d4168b1284aeb6d7329d8
+        _position: {x: -3300, y: 1200}
+        _comment: 'Badly hurt: Surge (faster, regenerating, lifesteal) and break away to full cover to heal, then come back'
+        _children:
+        - 2b85daef7cd44b949b7d4ccce732b489
+        - 97c2670e36b24808ae37c9f929c87d48
+        - 5bcf555fb7074753934dab44045230d3
+        - d0a1cdfdcd7041beb4ab58f8c9527ba4
+        - ba039ce9e4a743178c1af6cdc7ec6b5e
+        - 65946abc19704d938f0e269e91c66339
+        _abort: 2
+    - rid: 1057
+      type: {class: UnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: cf864cae1ff24449a0fcbfd71ec906d2
+        _position: {x: -2640, y: 1350}
+        _comment: 
+    - rid: 1058
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: bc928e169cc3483492d26720fe0cce50
+        _position: {x: -2420, y: 1350}
+        _comment: 
+    - rid: 1059
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6d782ea1167945459cfd0996cf0d6dab
+        _position: {x: -2200, y: 1350}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6b563373d2e941f7b293da35d1e5d87a, type: 2}
+    - rid: 1060
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f1637dfc2b88403ba20ef89442ed7958
+        _position: {x: -1980, y: 1350}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6b563373d2e941f7b293da35d1e5d87a, type: 2}
+        _aim: 0
+        _maxRange: 0
+    - rid: 1061
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 921ae89a67ba4e068416a6f689eccbc9
+        _position: {x: -1760, y: 1350}
+        _comment: 
+        _use: 2
+        _giveUpAfter: 4
+    - rid: 1062
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5c56e3877ae3406faba62433bc7851c4
+        _position: {x: -2200, y: 1200}
+        _comment: 'Shot at on the way in: Surge and dash out of the line of fire to the next cover closer'
+        _children:
+        - cf864cae1ff24449a0fcbfd71ec906d2
+        - bc928e169cc3483492d26720fe0cce50
+        - 6d782ea1167945459cfd0996cf0d6dab
+        - f1637dfc2b88403ba20ef89442ed7958
+        - 921ae89a67ba4e068416a6f689eccbc9
+        _abort: 2
+    - rid: 1063
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ac9e8f23c9354d2e84bf3766705976f5
+        _position: {x: 550, y: 1350}
+        _comment: 
+    - rid: 1064
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 0953a97a560e4fbfb4669a0adc5b5f83
+        _position: {x: 770, y: 1350}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6b563373d2e941f7b293da35d1e5d87a, type: 2}
+    - rid: 1065
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: dd5cc2962f0841aa8d129bbbf5888f3a
+        _position: {x: 990, y: 1350}
+        _comment: 
+        _key: TargetDistance
+        _comparison: 4
+        _value: 10
+        _ifMissing: 0
+    - rid: 1066
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5613a071991e49ba9b03a3c290d55adf
+        _position: {x: 1210, y: 1350}
+        _comment: 
+        _key: TargetDistance
+        _comparison: 1
+        _value: 25
+        _ifMissing: 0
+    - rid: 1067
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: fee850cba14e4bd9ae474c6d5718b3b2
+        _position: {x: 1430, y: 1350}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6b563373d2e941f7b293da35d1e5d87a, type: 2}
+        _aim: 0
+        _maxRange: 0
+    - rid: 1068
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a75f17b0734a42f5ae190881453e4582
+        _position: {x: 1650, y: 1350}
+        _comment: 
+        _stopDistance: 0
+    - rid: 1069
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6ecca6c2956e4fe5b7cb48e6189d8e5e
+        _position: {x: 1100, y: 1200}
+        _comment: 'Healthy and the target 10-25 m off: Surge and sprint the gap; lifesteal keeps it going once it is in (hurt, it saves Surge to get away)'
+        _children:
+        - ac9e8f23c9354d2e84bf3766705976f5
+        - 5cc8e3b08c5043f79a0d6b2647638d76
+        - 0953a97a560e4fbfb4669a0adc5b5f83
+        - dd5cc2962f0841aa8d129bbbf5888f3a
+        - 5613a071991e49ba9b03a3c290d55adf
+        - fee850cba14e4bd9ae474c6d5718b3b2
+        - a75f17b0734a42f5ae190881453e4582
+        _abort: 2
+    - rid: 1070
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5cc8e3b08c5043f79a0d6b2647638d76
+        _position: {x: 330, y: 1500}
+        _comment: 
+        _key: Health
+        _comparison: 4
+        _value: 0.5
+        _ifMissing: 0

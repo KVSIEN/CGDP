@@ -75,6 +75,8 @@ MonoBehaviour:
   - rid: 1059
   - rid: 1060
   - rid: 1061
+  - rid: 1062
+  - rid: 1063
   references:
     version: 2
     RefIds:
@@ -104,7 +106,7 @@ MonoBehaviour:
       data:
         _guid: 453649334941488ab9b15273342b2611
         _position: {x: -2681, y: 300}
-        _comment: 'Shield broken: fade out of sight behind high cover while it recharges'
+        _comment: 'Shield broken: Phase Shift out of everyone''s sight (shield recharges three times as fast), or run to high cover, and wait while it recharges'
         _children:
         - 6eb3c3124bea45aebb251c3144a6710b
         - 1533e98ace6d4677b445b33c74ee0988
@@ -150,6 +152,7 @@ MonoBehaviour:
         _position: {x: -2488, y: 750}
         _comment: 
         _children:
+        - 1dc08dc91e5a4272ac695f66b96b4984
         - cd50881722294eed98ea7284f2ce01a3
         - c25abb3952e349f6a9493d890be0dba6
         _abort: 0
@@ -329,7 +332,7 @@ MonoBehaviour:
       data:
         _guid: f7008344489d46409d8635bce84652be
         _position: {x: 537, y: 600}
-        _comment: 'Too close: slip round to its side at medium range (or back off)'
+        _comment: 'Too close: Phase Shift away, or slip round to its side at medium range, or back off'
         _children:
         - fa70b73e47e446ad98854269b7039add
         - b2a0c29059c6463ebe01caa4e0d51afd
@@ -365,6 +368,7 @@ MonoBehaviour:
         _position: {x: 812, y: 900}
         _comment: 
         _children:
+        - da968508ff1d4fa3bbb332c3e5dae02c
         - a8f4b6a777f4416994ebc7cbf6470852
         - adf3baa31c1b49728f5478ed81d4a13f
         _abort: 0
@@ -602,3 +606,21 @@ MonoBehaviour:
         - 03b13f3096454e24b91f6dfd50439eed
         - 482900fcd5df48219b556dd600e94812
         _abort: 0
+    - rid: 1062
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1dc08dc91e5a4272ac695f66b96b4984
+        _position: {x: -2818, y: 900}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6b185f0aede34efba5d90e883f4efcb6, type: 2}
+        _aim: 0
+        _maxRange: 0
+    - rid: 1063
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: da968508ff1d4fa3bbb332c3e5dae02c
+        _position: {x: 482, y: 1050}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6b185f0aede34efba5d90e883f4efcb6, type: 2}
+        _aim: 0
+        _maxRange: 0

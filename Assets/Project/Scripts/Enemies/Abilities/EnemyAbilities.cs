@@ -9,7 +9,8 @@ namespace CGD.Enemies
     // Lets an enemy cast the project's Ability assets (projectiles, shockwaves, timeline
     // attacks, buffs, heals) the way the player does: an AbilityContext with its body, its
     // health, its damage source and an aim point at its eyes that turns toward whatever it
-    // aims at. Abilities that need a player-only part (dash, reflect, stealth) can't run.
+    // aims at. Abilities that need a player-only part (dash, reflect, stealth) can't run;
+    // Phase Shift, which needs to find hidden cover, only runs on enemies.
     // Each ability keeps its own cooldown per enemy; meter costs and charges don't apply.
     internal sealed class EnemyAbilities
     {
@@ -43,6 +44,7 @@ namespace CGD.Enemies
                 Source          = source,
                 Stats           = stats,
                 Timeline        = timeline,
+                Relocator       = new EnemyPhaseShift(ai),
             };
         }
 

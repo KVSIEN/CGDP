@@ -29,6 +29,8 @@ namespace CGD.Abilities
         public CharacterStats        Stats;
         public Reflector             Reflector;
         public Stealthable           Stealth;
+        // Enemies only: slips the caster somewhere its hostiles can't see (Phase Shift).
+        public IUnseenRelocator      Relocator;
 
         // Set per cast by resource scaling: damage multiplier and extra on-hit effects.
         public float Power = 1f;

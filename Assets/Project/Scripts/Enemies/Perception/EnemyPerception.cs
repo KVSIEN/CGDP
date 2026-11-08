@@ -149,6 +149,10 @@ namespace CGD.Enemies
         // Only for deciding how often the enemy thinks — never for what it knows.
         public bool SensesHostiles => _candidates.Count > 0;
 
+        // Every hostile within sensing range at the last sample, noticed or not, nearest first.
+        // Only for staying out of everyone's sight (Phase Shift) — never for what it knows.
+        public IReadOnlyList<HealthManager> HostilesAround => _candidates;
+
         // On edge after a search that found nothing: quicker to notice, slower to settle.
         public bool IsCautious => _clock < _cautiousUntil;
 

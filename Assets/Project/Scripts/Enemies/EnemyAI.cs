@@ -77,6 +77,8 @@ namespace CGD.Enemies
         public event Action Staggered;
         // A grenade left its hand.
         public event Action Threw;
+        // Vanished and reappeared somewhere else (Phase Shift).
+        public event Action Relocated;
 
         public AiState State => _state;
 
@@ -319,7 +321,10 @@ namespace CGD.Enemies
             StateChanged?.Invoke(state);
         }
 
-        internal void SetSpeed(float speed) => Agent.speed = speed * _stunnable.SpeedMultiplier;
+        // Slowed by status effects, and sped up or slowed by buffs (MovementSpeed stat, base 1).
+        internal void SetSpeed(float speed) => Agent.speed = speed * _stunnable.SpeedMultiplier * SpeedFromStats;
+
+        private float SpeedFromStats => _stats != null ? Mathf.Max(0.1f, _stats.Apply(ItemStat.MovementSpeed, 1f)) : 1f;
 
         // Turns as far as deltaTime allows. The turn itself is applied frame by frame (TickFacing),
         // so it stays smooth when a calm enemy's tree ticks only a few times a second.
@@ -356,6 +361,8 @@ namespace CGD.Enemies
         internal void NotifyFired() => Fired?.Invoke();
 
         internal void NotifyThrew() => Threw?.Invoke();
+
+        internal void NotifyRelocated() => Relocated?.Invoke();
 
         internal void JoinSquad(EnemySquad squad) => Squad = squad;
 

@@ -94,8 +94,19 @@ namespace CGD.Combat
 
         private void Update()
         {
-            if (_shield.Tick(Time.deltaTime)) OnChanged?.Invoke();
+            if (TickShield(Time.deltaTime)) OnChanged?.Invoke();
             Regenerate(Time.deltaTime);
+        }
+
+        // The shield's own regen, plus what gear and buffs add to its rate (ShieldRegenRate
+        // stat) while it is recharging — the delay after a hit stays as it is.
+        private bool TickShield(float deltaTime)
+        {
+            if (!_shield.Tick(deltaTime)) return false;
+
+            float bonus = WithModifiers(ItemStat.ShieldRegenRate, ShieldRegenRate) - ShieldRegenRate;
+            if (bonus > 0f) _shield.Restore(bonus * deltaTime);
+            return true;
         }
 
         // Health regeneration per second from gear and buffs (HealthRegen stat).

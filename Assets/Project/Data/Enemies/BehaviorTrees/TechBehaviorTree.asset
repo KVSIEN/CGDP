@@ -71,6 +71,18 @@ MonoBehaviour:
   - rid: 1055
   - rid: 1056
   - rid: 1057
+  - rid: 1058
+  - rid: 1059
+  - rid: 1060
+  - rid: 1061
+  - rid: 1062
+  - rid: 1063
+  - rid: 1064
+  - rid: 1065
+  - rid: 1066
+  - rid: 1067
+  - rid: 1068
+  - rid: 1069
   references:
     version: 2
     RefIds:
@@ -210,6 +222,7 @@ MonoBehaviour:
         _comment: 
         _children:
         - 005f4c77603840d4ab6a10fa5550053b
+        - 223bb24576d84dd29211ebc63a235095
         - f1212c88528d4fa9bbf28e96e9acc1c7
         - 9b4f8aa4e67d4a628908272ba7c56088
         - 1280971f72074b778a3eda977d66b5f8
@@ -566,3 +579,106 @@ MonoBehaviour:
         - 119b49983eb3453f9e08d184c887956d
         - bba8a5ccc7e54bed8b0b32238e5634eb
         _abort: 0
+    - rid: 1058
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 196b55c680584fd4840b379c967368b3
+        _position: {x: -975, y: 750}
+        _comment: 
+    - rid: 1059
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4cbfbd75988a4f46a36a3ec85daa0093
+        _position: {x: -755, y: 750}
+        _comment: 
+        _ability: {fileID: 11400000, guid: a5f1c95821024a6a955fd89337201a09, type: 2}
+    - rid: 1060
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 0e10f67050ff4c3eb675d01d552aaf14
+        _position: {x: -535, y: 750}
+        _comment: 
+        _ability: {fileID: 11400000, guid: a5f1c95821024a6a955fd89337201a09, type: 2}
+        _aim: 0
+        _maxRange: 0
+    - rid: 1061
+      type: {class: ThrowGrenade, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c9e96b10e3c04735bdbf46b09074cc65
+        _position: {x: -425, y: 1800}
+        _comment: 
+        _grenade: {fileID: 11400000, guid: 0475cb0cf06a68342a3521ec726cbbfa, type: 2}
+        _minDistance: 6
+    - rid: 1062
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: eb29e1ec76a3498f9a29c703aed7d316
+        _position: {x: -425, y: 1650}
+        _comment: 
+        _children:
+        - c9e96b10e3c04735bdbf46b09074cc65
+    - rid: 1063
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 899b48c1534e4b41b4cd418d4bf93596
+        _position: {x: -425, y: 1500}
+        _comment: 
+        _children:
+        - eb29e1ec76a3498f9a29c703aed7d316
+        _seconds: 4
+        _onlyAfterSuccess: 0
+    - rid: 1064
+      type: {class: Suppress, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 634a2dede6004618b77cf53e4b5bcd83
+        _position: {x: -205, y: 1500}
+        _comment: 
+    - rid: 1065
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b7b63f3b8d444fdf897842e38481cc8f
+        _position: {x: -315, y: 1350}
+        _comment: 'A grenade every 4 s, a suppressive burst otherwise'
+        _children:
+        - 899b48c1534e4b41b4cd418d4bf93596
+        - 634a2dede6004618b77cf53e4b5bcd83
+        _abort: 0
+    - rid: 1066
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 3b0b71b81f2147eeaf29409245f999d8
+        _position: {x: -315, y: 1050}
+        _comment: 
+        _children:
+        - b7b63f3b8d444fdf897842e38481cc8f
+        _count: 0
+        _stopOnFailure: 1
+    - rid: 1067
+      type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a72549f4a0e0431ab9066509feec8478
+        _position: {x: -95, y: 1050}
+        _comment: 
+        _seconds: {Min: 8, Max: 8, Bias: 0}
+    - rid: 1068
+      type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c0f27fb799824fa492062f5724c63187
+        _position: {x: -205, y: 900}
+        _comment: 'For as long as Fortify lasts (8 s)'
+        _children:
+        - 3b0b71b81f2147eeaf29409245f999d8
+        - a72549f4a0e0431ab9066509feec8478
+        _policy: 1
+    - rid: 1069
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 223bb24576d84dd29211ebc63a235095
+        _position: {x: -315, y: 600}
+        _comment: 'Fortify ready and the target in view: dig in (+60 armour, half speed) and pin it down where it stands or hides, shooting and throwing grenades, without stopping to dodge'
+        _children:
+        - 196b55c680584fd4840b379c967368b3
+        - 4cbfbd75988a4f46a36a3ec85daa0093
+        - 0e10f67050ff4c3eb675d01d552aaf14
+        - c0f27fb799824fa492062f5724c63187
+        _abort: 2
