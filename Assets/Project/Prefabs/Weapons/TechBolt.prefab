@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2000000000000000003}
   - component: {fileID: 2000000000000000004}
   - component: {fileID: 2000000000000000005}
+  - component: {fileID: 2000000000000000099}
   m_Layer: 2
   m_Name: TechBolt
   m_TagString: Untagged
@@ -103,3 +104,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de43f7395d23bac4a8abba816461fec4, type: 3}
   m_Name:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.Projectile
+--- !u!114 &2000000000000000099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98033968a0ad46e2a9202726d142efd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.FlightEffects
+  _material: {fileID: 2100000, guid: 02fa666fd24349c89c44682a27da8621, type: 2}
+  _sparkMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  _trailColor: {r: 1, g: 0.82, b: 0.2, a: 0.65}
+  _trailWidth: 0.22
+  _trailTime: 0.3
+  _sparkColor: {r: 1, g: 0.95, b: 0.5, a: 0.9}
+  _sparksPerMetre: 5
+  _sparkSize: 0.07
+  _sparkLifetime: 0.35
+  _sparkScatter: 0.6
+  _sparkGravity: 0.4
+  _impactFlash: {fileID: 7000000000000000001, guid: d3520984238c41a78a4ca49a0a007f9f, type: 3}
+  _impactColor: {r: 1, g: 0.85, b: 0.3, a: 0.85}
+  _impactRadius: 0.6

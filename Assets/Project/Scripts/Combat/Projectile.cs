@@ -19,6 +19,10 @@ namespace CGD.Combat
         private Transform     _owner;
         private TrailRenderer _trail;
 
+        // It struck something, at this point with this surface normal — for effects on the shot
+        // itself (a burst where it lands). Raised just before it returns to the pool.
+        public event System.Action<Vector3, Vector3> Impacted;
+
         private void Awake()
         {
             if (TryGetComponent<Rigidbody>(out var rb))     rb.isKinematic = true;
@@ -71,6 +75,7 @@ namespace CGD.Combat
                 float scale = _launch.Falloff.Evaluate(_distance + hit.distance);
                 Hitbox.ApplyHit(hit.collider, _launch.Damage.WithDamageScale(scale), hit.point);
                 ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet, _launch.Damage.Source);
+                Impacted?.Invoke(hit.point, hit.normal);
                 Despawn();
                 return;
             }

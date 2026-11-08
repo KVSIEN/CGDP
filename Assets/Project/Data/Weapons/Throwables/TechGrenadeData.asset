@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33a9dc639ca493e4d8654dbac89c47bc, type: 3}
+  m_Name: TechGrenadeData
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.GrenadeData
+  GrenadeName: Tech Grenade
+  GrenadePrefab: {fileID: 3424364988567009664, guid: c8e0536b0a0b4b25a700caada6e78853, type: 3}
+  BodyColor: {r: 0.85, g: 0.72, b: 0.25, a: 1}
+  RangeMode: 1
+  MinThrowSpeed: 10
+  MaxThrowSpeed: 24
+  ChargeTime: 0.8
+  ThrowAngle: 8
+  InheritVelocity: 0.5
+  GravityScale: 2
+  Bounciness: 0.3
+  ImpactSpeedKept: 0.45
+  GroundDrag: 12
+  Fuse: 0
+  FuseTime: 2.5
+  ArmTime: 0.15
+  FuseBlinkColor: {r: 1, g: 0.95, b: 0.4, a: 1}
+  ExplosionRadius: 5
+  ExplosionDamage: 80
+  EdgeDamage: 0.1
+  ArmorPenetration: 0
+  DamageType: 0
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  NeedsLineOfSight: 1
+  BlockerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  PushForce: 400
+  NoiseRadius: 50
+  LingeringZone: {fileID: 0}
+  ExplosionEffect: {fileID: 7000000000000000001, guid: d3520984238c41a78a4ca49a0a007f9f, type: 3}
+  FlashColor: {r: 1, g: 0.85, b: 0.25, a: 0.85}
+  CameraTrauma: 0.8
+  ShakeRadius: 25
+  OnHitEffects: []
+  ThrowSound: {fileID: 0}
+  ExplosionSound: {fileID: 0}
+  TrajectorySteps: 60
+  TrajectoryStepTime: 0.05
+  PreviewColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

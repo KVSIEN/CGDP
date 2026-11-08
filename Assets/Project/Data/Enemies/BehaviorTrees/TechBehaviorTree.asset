@@ -505,7 +505,7 @@ MonoBehaviour:
         _guid: a291d2891709489aa3aa3c4b65738881
         _position: {x: 2132, y: 1200}
         _comment: 
-        _grenade: {fileID: 11400000, guid: 0475cb0cf06a68342a3521ec726cbbfa, type: 2}
+        _grenade: {fileID: 11400000, guid: 18271d81f56c4cd78f9b87c2b6ff2141, type: 2}
         _minDistance: 6
     - rid: 1049
       type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
@@ -607,7 +607,7 @@ MonoBehaviour:
         _guid: c9e96b10e3c04735bdbf46b09074cc65
         _position: {x: -425, y: 1800}
         _comment: 
-        _grenade: {fileID: 11400000, guid: 0475cb0cf06a68342a3521ec726cbbfa, type: 2}
+        _grenade: {fileID: 11400000, guid: 18271d81f56c4cd78f9b87c2b6ff2141, type: 2}
         _minDistance: 6
     - rid: 1062
       type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
