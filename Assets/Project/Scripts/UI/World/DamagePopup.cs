@@ -52,7 +52,7 @@ namespace CGD.UI
 
         // stackDepth is how many numbers were already clustered here, which widens the patch
         // this one can land in.
-        public void Show(float damage, Vector3 anchor, bool crit, int stackDepth, int sortingOrder)
+        public void Show(float damage, Vector3 anchor, bool crit, Color tint, int stackDepth, int sortingOrder)
         {
             int   rounded = Mathf.Max(1, Mathf.RoundToInt(damage));
             float weight  = Mathf.Clamp01(damage / DamageNumberStyle.SizeRefDamage);
@@ -71,7 +71,7 @@ namespace CGD.UI
             _text.text      = rounded.ToString();
             _text.fontSize  = FontSize;
             _text.fontStyle = crit ? FontStyles.Bold : FontStyles.Normal;
-            _text.color     = crit ? CritColor : NormalColor;
+            _text.color     = tint.a > 0f ? tint : crit ? CritColor : NormalColor;
 
             // Re-fetched on every show: a pooled number can outlive the camera it last rendered
             // through, and a scene load builds a new one.

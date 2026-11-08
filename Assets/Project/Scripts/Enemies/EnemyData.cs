@@ -59,6 +59,8 @@ namespace CGD.Enemies
         public float AttackCooldown = 1f;
         [Tooltip("Seconds between starting an attack and the hit landing (melee only)")]
         public float AttackWindup   = 0.35f;
+        [Tooltip("Colour of the damage numbers on whatever this enemy hurts, to tell attackers apart (rival factions). Clear = the usual white")]
+        public Color DamageNumberColor = Color.clear;
 
         [Header("Ranged Combat")]
         [Tooltip("Distance the enemy tries to maintain from its target")]

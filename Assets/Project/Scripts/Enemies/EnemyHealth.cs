@@ -69,9 +69,13 @@ namespace CGD.Enemies
 
         protected override void OnDamageTaken(float amount, Vector3 point, bool isCritical)
         {
-            DamageNumbers.Spawn(amount, point + _popupOffset, isCritical);
+            DamageNumbers.Spawn(amount, point + _popupOffset, isCritical, DealerColor(LastHitSource));
             if (_healthBar != null) _healthBar.ShowDamage(Health, MaxHealth, Shield, MaxShield);
         }
+
+        // Damage numbers take the colour of the enemy that dealt the hit, if its data gives one.
+        private static Color DealerColor(DamageSource source) =>
+            source.Owner != null && source.Owner.TryGetComponent(out EnemyHealth dealer) ? dealer.Data.DamageNumberColor : Color.clear;
 
         // Swaps the stats this enemy runs on (its rolled affixes) and fills it up to the new maxima.
         public void UseData(EnemyData data)

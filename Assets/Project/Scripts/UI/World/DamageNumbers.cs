@@ -21,12 +21,13 @@ namespace CGD.UI
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics() => _instance = null;
 
-        public static void Spawn(float damage, Vector3 worldPosition, bool critical)
+        // tint: the colour of whoever dealt it (crits stay bold and larger); clear = the usual colours.
+        public static void Spawn(float damage, Vector3 worldPosition, bool critical, Color tint = default)
         {
             if (damage <= 0f) return;
 
             DamageNumbers numbers = GetOrCreate();
-            if (numbers != null) numbers.Add(damage, worldPosition, critical);
+            if (numbers != null) numbers.Add(damage, worldPosition, critical, tint);
         }
 
         private static DamageNumbers GetOrCreate()
@@ -42,7 +43,7 @@ namespace CGD.UI
 
         private void Awake() => _uiLayer = LayerMask.NameToLayer("UI");
 
-        private void Add(float damage, Vector3 worldPosition, bool critical)
+        private void Add(float damage, Vector3 worldPosition, bool critical, Color tint)
         {
             int stackDepth = CountCluster(worldPosition);
             MakeRoom();
@@ -50,7 +51,7 @@ namespace CGD.UI
             DamagePopup popup = Rent();
 
             if (++_sortingOrder > 10000) _sortingOrder = 1;
-            popup.Show(damage, worldPosition, critical, stackDepth, _sortingOrder);
+            popup.Show(damage, worldPosition, critical, tint, stackDepth, _sortingOrder);
             _active.Add(popup);
         }
 
@@ -103,7 +104,8 @@ namespace CGD.UI
         {
             if (_active.Count == 0) return;
 
-            if (_cachedCamera == null) _cachedCamera = Camera.main;
+            // Re-read once it is switched off: the scene may have handed over to another camera.
+            if (_cachedCamera == null || !_cachedCamera.isActiveAndEnabled) _cachedCamera = Camera.main;
             var camera = _cachedCamera;
             if (camera == null)
             {

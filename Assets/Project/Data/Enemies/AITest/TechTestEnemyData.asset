@@ -33,6 +33,7 @@ MonoBehaviour:
   AttackDamage: 6
   AttackCooldown: 1.5
   AttackWindup: 0.45
+  DamageNumberColor: {r: 1, g: 0.85, b: 0.25, a: 1}
   PreferredRange: 20
   SpreadAngle: 1.5
   BurstCount: 3
