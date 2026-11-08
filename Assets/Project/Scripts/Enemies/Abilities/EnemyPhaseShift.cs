@@ -38,9 +38,10 @@ namespace CGD.Enemies
             if (!_ai.Tactics.TryFindUnseenCover(maxDistance, _ai.Perception.HostilesAround, out int cover)) return false;
             if (!_ai.Tactics.TryClaimCover(cover, out Vector3 spot)) return false;
 
+            Vector3 from = _ai.transform.position;
             _ai.Agent.Warp(spot);
             _ai.Agent.ResetPath();
-            _ai.NotifyRelocated();
+            _ai.NotifyRelocated(from);
             return true;
         }
     }

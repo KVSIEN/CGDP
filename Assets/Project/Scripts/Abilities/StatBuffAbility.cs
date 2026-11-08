@@ -14,6 +14,8 @@ namespace CGD.Abilities
 
         public override bool CanExecute(AbilityContext ctx) => Buff != null && ctx.Stats != null;
 
+        public override float EffectDuration => Duration;
+
         public override void Execute(AbilityContext ctx)
         {
             if (ctx.Stats != null) ctx.Stats.AddTimed(Buff, Duration);

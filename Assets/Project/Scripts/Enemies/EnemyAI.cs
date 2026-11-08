@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.AI;
+using CGD.Abilities;
 using CGD.Audio;
 using CGD.BehaviorTrees;
 using CGD.Combat;
@@ -77,8 +78,10 @@ namespace CGD.Enemies
         public event Action Staggered;
         // A grenade left its hand.
         public event Action Threw;
-        // Vanished and reappeared somewhere else (Phase Shift).
-        public event Action Relocated;
+        // Vanished from this position and reappeared where it now stands (Phase Shift).
+        public event Action<Vector3> Relocated;
+        // An ability it cast went off (after its wind-up).
+        public event Action<Ability> AbilityUsed;
 
         public AiState State => _state;
 
@@ -362,7 +365,9 @@ namespace CGD.Enemies
 
         internal void NotifyThrew() => Threw?.Invoke();
 
-        internal void NotifyRelocated() => Relocated?.Invoke();
+        internal void NotifyRelocated(Vector3 from) => Relocated?.Invoke(from);
+
+        internal void NotifyAbilityUsed(Ability ability) => AbilityUsed?.Invoke(ability);
 
         internal void JoinSquad(EnemySquad squad) => Squad = squad;
 

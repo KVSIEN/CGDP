@@ -74,9 +74,11 @@ namespace CGD.Enemies
             if (Time.time < _castEndsAt) return false;
 
             AimAt(_castAimAt);
-            _casting.Execute(_context);
-            _readyAt[_casting] = Time.time + _casting.Cooldown;
+            Ability ability = _casting;
             _casting = null;
+            ability.Execute(_context);
+            _readyAt[ability] = Time.time + ability.Cooldown;
+            _ai.NotifyAbilityUsed(ability);
             return true;
         }
 

@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 1000000000000000010}
   - component: {fileID: 1000000000000000027}
   - component: {fileID: 1000000000000000028}
+  - component: {fileID: 1000000000000000029}
   m_Layer: 0
   m_Name: TechTestAgent
   m_TagString: Untagged
@@ -548,3 +549,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.Stats.CharacterStats
   _presets: []
+--- !u!114 &1000000000000000029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5069facfb13b494c9b45ed16e49647ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyAbilityVisuals
+  _material: {fileID: 2100000, guid: 02fa666fd24349c89c44682a27da8621, type: 2}
+  _shellMesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+  _ringMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+  _model: {fileID: 1000000000000000022}
+  _flash: {fileID: 7000000000000000001, guid: d3520984238c41a78a4ca49a0a007f9f, type: 3}
+  _looks:
+  - Ability: {fileID: 11400000, guid: a5f1c95821024a6a955fd89337201a09, type: 2}
+    Color: {r: 1, g: 0.8, b: 0.2, a: 0.3}
+    CastFlash: 1.6
+    GroundRing: 1
+    Trail: 0
+  _relocateColor: {r: 0.7, g: 0.4, b: 1, a: 0.8}
+  _relocateFlash: 1.4
+  _healColor: {r: 0.3, g: 1, b: 0.4, a: 0.6}
+  _healFlash: 0.7

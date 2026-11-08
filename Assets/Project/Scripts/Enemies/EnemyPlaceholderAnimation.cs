@@ -83,7 +83,7 @@ namespace CGD.Enemies
 
         private void OnAttackStarted() => _attackClock = 0f;
 
-        private void OnRelocated() => _reappearClock = 0f;
+        private void OnRelocated(Vector3 from) => _reappearClock = 0f;
 
         private void TickReappear(float dt)
         {

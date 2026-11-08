@@ -43,6 +43,9 @@ namespace CGD.Abilities
 
         public abstract void Execute(AbilityContext ctx);
 
+        // Seconds what it leaves on the caster lasts (a buff), for effects that show it; 0 = nothing lasting.
+        public virtual float EffectDuration => 0f;
+
         // Damage and on-hit effects after resource scaling (ctx.Power and ctx.BonusEffects).
         protected static float Scaled(float damage, AbilityContext ctx) => damage * ctx.Power;
 

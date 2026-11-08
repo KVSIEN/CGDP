@@ -16,6 +16,8 @@ namespace CGD.Abilities
         [Tooltip("Game seconds the buff lasts")]
         [Min(0.1f)] public float Duration = 6f;
 
+        public override float EffectDuration => Buff != null ? Duration : 0f;
+
         // Only with somewhere hidden to go, so a tree falls through to its next option
         // (running for cover) instead of casting for nothing.
         public override bool CanExecute(AbilityContext ctx) =>
