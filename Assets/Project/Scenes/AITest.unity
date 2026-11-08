@@ -6171,6 +6171,8 @@ MonoBehaviour:
   _listener: {fileID: 2100009004}
   _gameplayCamera: {fileID: 330585545}
   _agents: {fileID: 2100000056}
+  _inputSettings: {fileID: 11400000, guid: b3052e3d42934a0095e9ec6202ec3e23, type: 2}
+  _panLimit: 30
   _labelHeight: 3
   _labelSize: {x: 250, y: 66}
   _fontSize: 15

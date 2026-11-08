@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a335a26c8bec47e880cd017c6b30794a, type: 3}
+  m_Name: SpectatorInputSettings
+  m_EditorClassIdentifier: CGD.Runtime::CGD.DevTools.SpectatorInputSettings
+  Bindings:
+  - Action: 0
+    PrimaryPath: <Keyboard>/w
+    SecondaryPath: 
+  - Action: 1
+    PrimaryPath: <Keyboard>/s
+    SecondaryPath: 
+  - Action: 2
+    PrimaryPath: <Keyboard>/a
+    SecondaryPath: 
+  - Action: 3
+    PrimaryPath: <Keyboard>/d
+    SecondaryPath: 
+  - Action: 4
+    PrimaryPath: <Keyboard>/e
+    SecondaryPath: 
+  - Action: 5
+    PrimaryPath: <Keyboard>/q
+    SecondaryPath: 
+  - Action: 6
+    PrimaryPath: <Keyboard>/leftShift
+    SecondaryPath: <Gamepad>/leftStickPress
+  - Action: 7
+    PrimaryPath: <Mouse>/rightButton
+    SecondaryPath: 
+  - Action: 8
+    PrimaryPath: <Mouse>/scroll/up
+    SecondaryPath: <Gamepad>/dpad/up
+  - Action: 9
+    PrimaryPath: <Mouse>/scroll/down
+    SecondaryPath: <Gamepad>/dpad/down
+  - Action: 10
+    PrimaryPath: <Keyboard>/tab
+    SecondaryPath: <Gamepad>/rightShoulder
+  - Action: 11
+    PrimaryPath: 
+    SecondaryPath: <Gamepad>/leftShoulder
+  - Action: 12
+    PrimaryPath: <Mouse>/leftButton
+    SecondaryPath: 
+  - Action: 13
+    PrimaryPath: <Keyboard>/1
+    SecondaryPath: 
+  - Action: 14
+    PrimaryPath: <Keyboard>/2
+    SecondaryPath: 
+  - Action: 15
+    PrimaryPath: <Keyboard>/3
+    SecondaryPath: 
+  - Action: 16
+    PrimaryPath: <Keyboard>/4
+    SecondaryPath: 
+  - Action: 17
+    PrimaryPath: <Keyboard>/0
+    SecondaryPath: <Gamepad>/buttonNorth
+  - Action: 18
+    PrimaryPath: <Keyboard>/f
+    SecondaryPath: <Gamepad>/buttonWest
+  - Action: 19
+    PrimaryPath: <Keyboard>/p
+    SecondaryPath: <Gamepad>/start
+  - Action: 20
+    PrimaryPath: <Keyboard>/minus
+    SecondaryPath: <Gamepad>/dpad/left
+  - Action: 21
+    PrimaryPath: <Keyboard>/equals
+    SecondaryPath: <Gamepad>/dpad/right
+  - Action: 22
+    PrimaryPath: <Keyboard>/period
+    SecondaryPath: <Gamepad>/buttonEast
+  - Action: 23
+    PrimaryPath: <Keyboard>/l
+    SecondaryPath: <Gamepad>/select
+  - Action: 24
+    PrimaryPath: <Keyboard>/h
+    SecondaryPath: <Keyboard>/f1
+  - Action: 25
+    PrimaryPath: <Keyboard>/escape
+    SecondaryPath: 
+  LookSensitivity: 0.15
+  InvertLook: 0
+  MoveSpeed: 12
+  Smoothing: 0.35
+  LabelScale: 1
+  StickLookSpeed: 140

@@ -174,6 +174,10 @@ All gameplay input goes through PlayerInputHandler, which builds its InputAction
 runtime from InputBindingSettings (GameAction enum). Add new actions there — don't
 generate a C# wrapper from InputSystem_Actions.inputactions.
 
+Exception: the AI test scenes' spectator mode (DevTools/Spectator) runs with the Player switched
+off and has its own binding table, SpectatorInputSettings (SpectatorAction enum), built and saved
+the same way. Spectator controls go there, not into GameAction.
+
 Do not introduce the legacy Input API unless already required.
 
 ---
