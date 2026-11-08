@@ -91,6 +91,7 @@ namespace CGD.Enemies
             ReleaseCover();
             EndMeleeTurn();
             _knowledge.Forget();
+            Log.Clear();
         }
 
         public void ReleaseCover()

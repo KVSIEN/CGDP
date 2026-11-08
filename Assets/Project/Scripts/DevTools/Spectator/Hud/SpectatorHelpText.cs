@@ -29,6 +29,11 @@ namespace CGD.DevTools
                 Line("Senses", P(SpectatorAction.ToggleSenses)) +
                 Line("Cover", P(SpectatorAction.ToggleCover)) +
                 Line("Paths & plans", P(SpectatorAction.TogglePlans)) +
+                Section("Match") +
+                Line("Match stats", P(SpectatorAction.ToggleStats)) +
+                Line("Reset stats", P(SpectatorAction.ResetStats)) +
+                Line("Scenarios", P(SpectatorAction.Scenarios)) +
+                Line("Restart scenario", P(SpectatorAction.RestartScenario)) +
                 Section("Time") +
                 Line("Pause / step", $"{P(SpectatorAction.Pause)}   /   {P(SpectatorAction.StepFrame)}") +
                 Line("Slower / faster", $"{P(SpectatorAction.SlowDown)}   /   {P(SpectatorAction.SpeedUp)}") +
@@ -44,7 +49,8 @@ namespace CGD.DevTools
             return $"<b>{P(SpectatorAction.ToggleHelp)}</b> controls     <b>{P(SpectatorAction.Settings)}</b> settings     " +
                    $"<b>{P(SpectatorAction.WatchAgent1)}–{P(SpectatorAction.WatchAgent4)}</b> watch an agent     " +
                    $"<b>{P(SpectatorAction.InspectorPage)}</b> inspector page     " +
-                   $"<b>{P(SpectatorAction.ToggleSenses)} {P(SpectatorAction.ToggleCover)} {P(SpectatorAction.TogglePlans)}</b> overlays";
+                   $"<b>{P(SpectatorAction.ToggleSenses)} {P(SpectatorAction.ToggleCover)} {P(SpectatorAction.TogglePlans)}</b> overlays     " +
+                   $"<b>{P(SpectatorAction.Scenarios)}</b> scenarios";
         }
 
         private static string Section(string title) => $"<color=#FFD24A>{title}</color>\n";

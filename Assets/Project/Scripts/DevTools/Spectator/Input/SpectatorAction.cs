@@ -34,5 +34,9 @@ namespace CGD.DevTools
         ToggleSenses,   // world overlay: sight cones, hearing, who it targets and why
         ToggleCover,    // world overlay: cover spots, who holds them, what it knows
         TogglePlans,    // world overlay: paths and the latest cover / flank / vanish searches
+        ToggleStats,    // the match stats panel
+        ResetStats,     // start the match stats over
+        Scenarios,      // the scenario list (AIScenario presets)
+        RestartScenario, // load the last scenario again, as it started
     }
 }

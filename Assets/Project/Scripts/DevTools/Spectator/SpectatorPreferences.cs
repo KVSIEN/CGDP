@@ -22,6 +22,7 @@ namespace CGD.DevTools
         public bool  ShowSenses = true;
         public bool  ShowCover;
         public bool  ShowPlans;
+        public bool  ShowStats  = true;
 
         public static SpectatorPreferences DefaultsFrom(SpectatorInputSettings settings) => new()
         {

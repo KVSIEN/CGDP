@@ -25,6 +25,13 @@ namespace CGD.Enemies
 
         public bool HasRun => Time >= 0f;
 
+        internal void Clear()
+        {
+            Time      = -1f;
+            Succeeded = false;
+            _candidates.Clear();
+        }
+
         internal void Begin(Vector3 threat)
         {
             Time      = UnityEngine.Time.time;

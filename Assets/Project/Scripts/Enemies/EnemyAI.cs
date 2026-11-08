@@ -181,8 +181,14 @@ namespace CGD.Enemies
             _health.OnHit         -= Perception.OnHit;
             _health.OnDamaged     -= OnDamaged;
 
-            // Switched off on death too (the body stays a body); a despawned one is gone.
-            if (!gameObject.activeInHierarchy) FallenAllies.Remove(this);
+            // Switched off on death too (the body stays a body). A despawned or switched-off one
+            // is gone: it lets go of its cover and anything it held in the fight.
+            if (gameObject.activeInHierarchy) return;
+            FallenAllies.Remove(this);
+            Tactics.ReleaseCover();
+            Tactics.EndMeleeTurn();
+            AttackTokens.ReleaseAll(this);
+            BoldMovePermits.Release(this);
         }
 
         private void OnDestroy()

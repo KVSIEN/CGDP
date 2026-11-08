@@ -105,6 +105,10 @@ namespace CGD.DevTools
             Bind(SpectatorAction.ToggleSenses,  "<Keyboard>/v"),
             Bind(SpectatorAction.ToggleCover,   "<Keyboard>/c"),
             Bind(SpectatorAction.TogglePlans,   "<Keyboard>/n"),
+            Bind(SpectatorAction.ToggleStats,   "<Keyboard>/m"),
+            Bind(SpectatorAction.ResetStats,    "<Keyboard>/backspace"),
+            Bind(SpectatorAction.Scenarios,     "<Keyboard>/b"),
+            Bind(SpectatorAction.RestartScenario, "<Keyboard>/r"),
         };
 
         private static SpectatorBinding Bind(SpectatorAction action, string primary, string secondary = "") =>

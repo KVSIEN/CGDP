@@ -6175,6 +6175,13 @@ MonoBehaviour:
   _inputSettings: {fileID: 11400000, guid: b3052e3d42934a0095e9ec6202ec3e23, type: 2}
   _panLimit: 30
   _overlayMaterial: {fileID: 0}
+  _scenarios:
+  - {fileID: 11400000, guid: c9ee5970263149c39945ad1e6e91ccc5, type: 2}
+  - {fileID: 11400000, guid: 42fb67d4a32c4ed1a7f81bff709817d3, type: 2}
+  - {fileID: 11400000, guid: 628b8f731ef54e2a87fd0334eb4e5ba2, type: 2}
+  - {fileID: 11400000, guid: 842cd4ce23aa4c1aa3f4cb45dccbc27a, type: 2}
+  - {fileID: 11400000, guid: 4989fd715f67405bbd9151a1a70980f8, type: 2}
+  - {fileID: 11400000, guid: 98afa91edd69451dbbf633c88db43e03, type: 2}
   _labelHeight: 3
   _labelSize: {x: 250, y: 66}
   _fontSize: 15

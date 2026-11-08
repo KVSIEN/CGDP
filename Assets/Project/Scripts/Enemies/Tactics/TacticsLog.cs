@@ -8,6 +8,14 @@ namespace CGD.Enemies
         public TacticalDecision Flank  { get; } = new(TacticalPlan.Flank);
         public TacticalDecision Vanish { get; } = new(TacticalPlan.Vanish);
 
+        // A fresh life remembers no searches.
+        public void Clear()
+        {
+            Cover.Clear();
+            Flank.Clear();
+            Vanish.Clear();
+        }
+
         public TacticalDecision For(TacticalPlan plan) => plan switch
         {
             TacticalPlan.Flank  => Flank,

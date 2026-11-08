@@ -10,6 +10,7 @@ namespace CGD.DevTools
     //   overlays     which world overlays are on (senses, cover, paths & plans)
     //   controls     the controls, from the live bindings (H to hide)
     //   inspector    the inspected agent's panel (AgentInspector), as tall as its page
+    //   match        the match stats (bottom left, M to hide)
     //   toast        a short confirmation when something changes (speed, labels…)
     //   hint         the two keys to remember (help, settings)
     // Built at runtime on its own overlay canvas, which the settings panel also uses.
@@ -19,9 +20,8 @@ namespace CGD.DevTools
         private const float ToastFade    = 0.4f;
         private static readonly Vector2 ReferenceResolution = new(1920f, 1080f);
         private static readonly Color PanelColor = new(0.05f, 0.06f, 0.09f, 0.78f);
-        private const float InspectorWidth   = 460f;
-        private const float InspectorPadding = 12f;
-        private const float InspectorMaxHeight = 900f;
+        private const float InspectorWidth = 460f;
+        private const float StatsWidth     = 640f;
 
         private readonly GameObject      _root;
         private readonly TextMeshProUGUI _mode;
@@ -29,8 +29,8 @@ namespace CGD.DevTools
         private readonly GameObject      _helpPanel;
         private readonly TextMeshProUGUI _help;
         private readonly TextMeshProUGUI _overlays;
-        private readonly RectTransform   _inspectorPanel;
-        private readonly TextMeshProUGUI _inspector;
+        private readonly HudTextPanel    _inspector;
+        private readonly HudTextPanel    _stats;
         private readonly CanvasGroup     _toastGroup;
         private readonly TextMeshProUGUI _toast;
         private readonly TextMeshProUGUI _hint;
@@ -69,10 +69,13 @@ namespace CGD.DevTools
 
             // Inspected agent (right)
             Image inspector = Panel("Inspector", new Vector2(1f, 1f), new Vector2(16f, 16f), new Vector2(InspectorWidth, 380f));
-            _inspectorPanel = inspector.rectTransform;
-            _inspector = MakeLabel("Text", _inspectorPanel, 14f, TextAlignmentOptions.TopLeft);
-            Inset(_inspector.rectTransform, 16f, InspectorPadding);
-            _inspectorPanel.gameObject.SetActive(false);
+            _inspector = new HudTextPanel(inspector, MakeLabel("Text", inspector.rectTransform, 14f, TextAlignmentOptions.TopLeft),
+                                          InspectorWidth, 900f);
+
+            // Match stats (bottom left, above the hint)
+            Image stats = Panel("Match Stats", new Vector2(0f, 0f), new Vector2(16f, 52f), new Vector2(StatsWidth, 120f));
+            _stats = new HudTextPanel(stats, MakeLabel("Text", stats.rectTransform, 14f, TextAlignmentOptions.TopLeft),
+                                      StatsWidth, 420f);
 
             // Toast
             Image toast = Panel("Toast", new Vector2(0.5f, 0f), new Vector2(0f, 120f), new Vector2(460f, 44f));
@@ -106,17 +109,10 @@ namespace CGD.DevTools
             if (visible) _help.text = text;
         }
 
-        // Grows and shrinks with the page, so a short page doesn't leave an empty box.
-        public void ShowInspector(string text)
-        {
-            _inspectorPanel.gameObject.SetActive(true);
-            _inspector.text = text;
-            float textWidth = InspectorWidth - 32f;
-            float height = _inspector.GetPreferredValues(text, textWidth, 0f).y + InspectorPadding * 2f + 4f;
-            _inspectorPanel.sizeDelta = new Vector2(InspectorWidth, Mathf.Clamp(height, 80f, InspectorMaxHeight));
-        }
-
-        public void HideInspector() => _inspectorPanel.gameObject.SetActive(false);
+        public void ShowInspector(string text) => _inspector.Show(text);
+        public void HideInspector()            => _inspector.Hide();
+        public void ShowStats(string text)     => _stats.Show(text);
+        public void HideStats()                => _stats.Hide();
 
         public void Toast(string message, float now)
         {

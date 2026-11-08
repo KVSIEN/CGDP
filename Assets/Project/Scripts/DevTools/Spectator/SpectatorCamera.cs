@@ -18,11 +18,13 @@ namespace CGD.DevTools
     //   inspect   the watched agent stays inspected when the camera leaves it; I pages
     //             through its overview, blackboard and decisions; click empty ground to stop
     //   overlays  V senses, C cover, N paths & plans, drawn in the Game view
+    //   match     M shows the match stats, Backspace resets them; B lists the scenario
+    //             presets (_scenarios), R restarts the last one
     //
     // The camera works on real time, so it moves freely while the game is paused. This
     // component wires Unity to the plain classes that do the work: SpectatorInput,
     // SpectatorCameraController, SpectatorTime, SpectatorHud, SpectatorSettingsPanel,
-    // AgentLabels, AgentInspector and SpectatorOverlays.
+    // AgentLabels, AgentInspector, SpectatorOverlays and SpectatorMatch.
     public class SpectatorCamera : MonoBehaviour
     {
         private const float FocusHeight = 1.2f;   // metres above an agent's feet the camera orbits
@@ -42,6 +44,8 @@ namespace CGD.DevTools
         [SerializeField, Min(0f)] private float _panLimit = 30f;
         [Tooltip("Transparent material with vertex colours for the world overlays (Sprites-Default). Empty = made from the Sprites/Default shader")]
         [SerializeField] private Material _overlayMaterial;
+        [Tooltip("Starting situations to pick from (B), e.g. Data/DevTools/Scenarios")]
+        [SerializeField] private AIScenario[] _scenarios;
 
         [Header("Labels")]
         [Tooltip("Metres above an agent's feet the label sits at")]
@@ -61,6 +65,7 @@ namespace CGD.DevTools
         private SpectatorSettingsPanel    _settingsPanel;
         private AgentLabels               _labels;
         private SpectatorOverlays         _overlays;
+        private SpectatorMatch            _match;
 
         private int    _followed  = -1;
         private int    _inspected = -1;
@@ -88,6 +93,7 @@ namespace CGD.DevTools
             _hud           = new SpectatorHud(transform);
             _settingsPanel = new SpectatorSettingsPanel(_hud.Root, _inputSettings, _input, _preferences, ApplyPreferences);
             _overlays      = new SpectatorOverlays(OverlayMaterial(), _watchable);
+            _match         = new SpectatorMatch(_watchable, _scenarios, _hud.Root, _inputSettings, _time, Toast, Watch);
 
             _inputSettings.Changed += OnBindingsChanged;
             OnBindingsChanged();
@@ -105,6 +111,7 @@ namespace CGD.DevTools
             if (_inputSettings != null) _inputSettings.Changed -= OnBindingsChanged;
             _input?.Dispose();
             _overlays?.Dispose();
+            _match?.Dispose();
             _inspector.Clear();
             _time.Release();
         }
@@ -148,6 +155,7 @@ namespace CGD.DevTools
                 return;
             }
             _settingsPanel.Close();
+            _match.CloseMenu();
             _time.Release();
             _inspector.Clear();   // stops recording its trace
             _inspected = -1;
@@ -160,6 +168,11 @@ namespace CGD.DevTools
         {
             // Escape belongs to the rebind prompt while one is listening.
             if (_settingsPanel.IsRebinding) return;
+            if (_match.IsMenuOpen && (Pressed(SpectatorAction.Settings) || Pressed(SpectatorAction.Scenarios)))
+            {
+                _match.CloseMenu();
+                return;
+            }
             if (Pressed(SpectatorAction.Settings))
             {
                 _settingsPanel.Toggle();
@@ -167,7 +180,7 @@ namespace CGD.DevTools
                 _nextHud = 0f;
                 return;
             }
-            if (_settingsPanel.IsOpen) return;
+            if (_settingsPanel.IsOpen || _match.IsMenuOpen) return;
 
             if (Pressed(SpectatorAction.Overview))   ShowOverview();
             if (Pressed(SpectatorAction.FreeCamera)) FlyFree("Free camera");
@@ -206,6 +219,15 @@ namespace CGD.DevTools
             if (Pressed(SpectatorAction.ToggleSenses)) ToggleOverlay(ref _preferences.ShowSenses, "Senses");
             if (Pressed(SpectatorAction.ToggleCover))  ToggleOverlay(ref _preferences.ShowCover, "Cover");
             if (Pressed(SpectatorAction.TogglePlans))  ToggleOverlay(ref _preferences.ShowPlans, "Paths & plans");
+            if (Pressed(SpectatorAction.ToggleStats))
+            {
+                _preferences.ShowStats = !_preferences.ShowStats;
+                SpectatorSave.SavePreferences(_preferences);
+                _nextHud = 0f;
+            }
+            if (Pressed(SpectatorAction.ResetStats))      _match.ResetStats();
+            if (Pressed(SpectatorAction.Scenarios))       _match.ToggleMenu();
+            if (Pressed(SpectatorAction.RestartScenario)) _match.Restart();
         }
 
         private void NextInspectorPage()
@@ -251,6 +273,11 @@ namespace CGD.DevTools
                 Toast($"There is no agent {index + 1}");
                 return;
             }
+            if (!_watchable[index].gameObject.activeInHierarchy)
+            {
+                Toast($"{AgentName(index)} is sitting this scenario out");
+                return;
+            }
 
             _followed = index;
             Inspect(index);
@@ -263,8 +290,14 @@ namespace CGD.DevTools
         {
             int count = _watchable.Length;
             if (count == 0) return;
-            int from = _followed >= 0 ? _followed : direction > 0 ? -1 : 0;
-            Watch(((from + direction) % count + count) % count);
+            int at = _followed >= 0 ? _followed : direction > 0 ? -1 : 0;
+            // Skips agents sitting a scenario out.
+            for (int step = 0; step < count; step++)
+            {
+                at = ((at + direction) % count + count) % count;
+                if (_watchable[at] != null && _watchable[at].gameObject.activeInHierarchy) break;
+            }
+            Watch(at);
         }
 
         // Stays on through overview and free flight, so overlays and the panel can be watched
@@ -288,7 +321,7 @@ namespace CGD.DevTools
             int     picked  = -1;
             for (int i = 0; i < _watchable.Length; i++)
             {
-                if (_watchable[i] == null) continue;
+                if (_watchable[i] == null || !_watchable[i].gameObject.activeInHierarchy) continue;
                 Vector3 feet = _watchable[i].transform.position;
                 float distance = Mathf.Min(ScreenDistanceSq(feet + Vector3.up * FocusHeight, pointer),
                                            ScreenDistanceSq(feet + Vector3.up * _labelHeight, pointer));
@@ -314,7 +347,7 @@ namespace CGD.DevTools
 
         private void Steer(float dt)
         {
-            bool blocked = _settingsPanel.IsOpen;
+            bool blocked = _settingsPanel.IsOpen || _match.IsMenuOpen;
             bool looking = !blocked && _input.IsHeld(SpectatorAction.Look);
             CaptureCursor(looking);
 
@@ -375,6 +408,9 @@ namespace CGD.DevTools
             string page = _inspected >= 0 && !_settingsPanel.IsOpen ? _inspector.Describe(_inspected + 1, _preferences.InspectorPage) : null;
             if (page != null) _hud.ShowInspector(page);
             else _hud.HideInspector();
+
+            if (_preferences.ShowStats && !_settingsPanel.IsOpen) _hud.ShowStats(_match.StatsText(Prompt(SpectatorAction.ResetStats)));
+            else _hud.HideStats();
         }
 
         private string ModeText() => _controller.Mode switch

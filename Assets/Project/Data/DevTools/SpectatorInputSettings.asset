@@ -103,6 +103,18 @@ MonoBehaviour:
   - Action: 29
     PrimaryPath: <Keyboard>/n
     SecondaryPath: 
+  - Action: 30
+    PrimaryPath: <Keyboard>/m
+    SecondaryPath: 
+  - Action: 31
+    PrimaryPath: <Keyboard>/backspace
+    SecondaryPath: 
+  - Action: 32
+    PrimaryPath: <Keyboard>/b
+    SecondaryPath: 
+  - Action: 33
+    PrimaryPath: <Keyboard>/r
+    SecondaryPath: 
   LookSensitivity: 0.15
   InvertLook: 0
   MoveSpeed: 12

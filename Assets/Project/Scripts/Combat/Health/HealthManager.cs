@@ -143,6 +143,24 @@ namespace CGD.Combat
             if (_currentHealth > before) OnHealed?.Invoke(_currentHealth - before);
         }
 
+        // Sets health and shield straight to these shares of their maxima, without a hit (test
+        // scenarios: "start wounded", "start with the shield broken"). Health stays above 0;
+        // a lowered shield waits out its regen delay, as after a hit.
+        public void SetShares(float health, float shield)
+        {
+            if (IsDead) return;
+
+            _currentHealth = Mathf.Clamp(MaxHealth * Mathf.Clamp01(health), Mathf.Min(1f, MaxHealth), MaxHealth);
+            float target = MaxShield * Mathf.Clamp01(shield);
+            if (target < _shield.Current)
+            {
+                _shield.Drain(_shield.Current - target);
+                _shield.SuppressRegen();
+            }
+            else _shield.Restore(target - _shield.Current);
+            OnChanged?.Invoke();
+        }
+
         public void Revive()
         {
             ResetHealth();

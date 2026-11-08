@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd74bf8cf5a348608f7381aed0be386c, type: 3}
+  m_Name: BioWoundedAIScenario
+  m_EditorClassIdentifier: CGD.Runtime::CGD.DevTools.AIScenario
+  DisplayName: 'Bio wounded in Tech''s sight'
+  Description: 'Bio at 30% health 14 m from Tech, both aware: Bio should Surge away to cover and heal while Tech presses. Starts paused.'
+  Agents:
+  - Agent: Bio Agent
+    Placement: 1
+    Position: {x: -15, y: 0, z: 2}
+    Facing: 0
+    Health: 0.3
+    Shield: 1
+    Invulnerable: 0
+    AwareOf: Tech Agent
+  - Agent: Tech Agent
+    Placement: 1
+    Position: {x: -16, y: 0, z: 16}
+    Facing: 180
+    Health: 1
+    Shield: 1
+    Invulnerable: 0
+    AwareOf: Bio Agent
+  OthersSitOut: 1
+  ResetStats: 1
+  StartPaused: 1
+  Watch: Bio Agent

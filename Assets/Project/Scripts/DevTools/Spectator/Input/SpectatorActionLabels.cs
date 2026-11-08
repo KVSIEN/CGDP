@@ -35,6 +35,10 @@ namespace CGD.DevTools
             SpectatorAction.ToggleSenses  => "Senses overlay",
             SpectatorAction.ToggleCover   => "Cover overlay",
             SpectatorAction.TogglePlans   => "Paths & plans overlay",
+            SpectatorAction.ToggleStats   => "Match stats",
+            SpectatorAction.ResetStats    => "Reset match stats",
+            SpectatorAction.Scenarios     => "Scenarios",
+            SpectatorAction.RestartScenario => "Restart scenario",
             _                             => action.ToString(),
         };
     }

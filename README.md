@@ -42,7 +42,8 @@ Assets/
       Crafting/             RecipeDefinition, Crafter (rules), CraftingStation
       DevTools/             dev console: DevConsole (commands), DevCommands (cheats), DevCatalog;
                             Spectator/ (AI test spectator mode: SpectatorCamera; Input/, Camera/, Hud/,
-                            Inspector/ — AgentInspector pages, Overlays/ — senses, cover, paths & plans)
+                            Inspector/ — AgentInspector pages, Overlays/ — senses, cover, paths & plans,
+                            Stats/ — MatchStats, Scenarios/ — AIScenario presets, ScenarioRunner, ScenarioMenu; SpectatorMatch)
       Dialogue/             DialogueDefinition (nodes, choices), Conversation (runtime), Npc, Actions/, Conditions/
       Director/             session pacing (after Left 4 Dead's AI Director): GameDirector (stress → IntensityMeter → PacingCycle:
                             build-up, peak, fade, relax; SessionPerformance → Pressure), SpawnSpotFinder;

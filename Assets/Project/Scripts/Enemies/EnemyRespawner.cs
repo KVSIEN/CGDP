@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
-using CGD.Core;
 
 namespace CGD.Enemies
 {
@@ -58,13 +57,10 @@ namespace CGD.Enemies
         private IEnumerator Respawn(EnemyHealth enemy, TerritorySpawn territory)
         {
             yield return new WaitForSeconds(_delay);
-            if (enemy == null || !enemy.IsDead) yield break;
+            // Brought back meanwhile (a test scenario), or switched off: not ours to revive.
+            if (enemy == null || !enemy.IsDead || !enemy.gameObject.activeInHierarchy) yield break;
 
-            enemy.transform.SetPositionAndRotation(territory.Pick(_everyone), Quaternion.Euler(0f, Random.Range(0f, 360f), 0f));
-
-            // Coming back is the same reset a pooled enemy gets when it's reused.
-            foreach (IPoolable poolable in enemy.GetComponentsInChildren<IPoolable>(true))
-                poolable.OnSpawned();
+            EnemyRestart.At(enemy.gameObject, territory.Pick(_everyone), Quaternion.Euler(0f, Random.Range(0f, 360f), 0f));
         }
     }
 }
