@@ -42,6 +42,8 @@ namespace CGD.Enemies
 
         [Tooltip("How its senses, memory and reactions are tuned. Empty = built-in defaults")]
         public PerceptionProfile Senses;
+        [Tooltip("Whom it would rather fight when it senses several hostiles (rival factions): the weakest, whoever hurt it, whoever is busy elsewhere. Empty = it just sticks with its current target")]
+        public TargetPriorities TargetPriorities;
 
         [Header("Behavior")]
         [Tooltip("Decides what the enemy does: patrolling, searching, fighting (edit it in CGD › AI › Behavior Tree Editor). " +

@@ -1842,6 +1842,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyRespawner
   _delay: 3
+  _territoryRadius: 6
+  _alsoAvoid:
+  - {fileID: 1555766054}
+  _obstacleMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!1 &2100001110
 GameObject:
   m_ObjectHideFlags: 0

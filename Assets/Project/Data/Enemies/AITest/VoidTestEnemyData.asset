@@ -25,6 +25,7 @@ MonoBehaviour:
   SightAngle: 110
   HearingRadius: 12
   Senses: {fileID: 11400000, guid: 68d72b2fee444c769b2a6753111afb2e, type: 2}
+  TargetPriorities: {fileID: 11400000, guid: 792f742e9d8d46afb0dde3fc7260fdaf, type: 2}
   BehaviorTree: {fileID: 11400000, guid: 68a35ba375dc4e338a9e54d8c61ddf63, type: 2}
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
   CombatType: 1

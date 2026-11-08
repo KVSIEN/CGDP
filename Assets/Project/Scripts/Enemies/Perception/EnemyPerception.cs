@@ -23,6 +23,10 @@ namespace CGD.Enemies
     //            double back to fool it — and slowly calms down if nothing new turns up.
     //   allies   spotting a hostile shouts a callout nearby allies can hear; allies' gunfire
     //            draws them in too.
+    //   choice   with several hostiles in its senses it fights the one it senses most strongly,
+    //            weighed by its TargetPriorities: sticking with its current target, whoever
+    //            just hurt it (even mid-fight with someone else), the weakest, and whoever is
+    //            busy fighting someone else.
     // The real position of a target is read only while it is actually sensed.
     //
     // Cost: senses are sampled every PerceptionProfile.SenseInterval (staggered per enemy)
@@ -40,6 +44,9 @@ namespace CGD.Enemies
 
         private static PerceptionProfile _fallbackProfile;
         private static readonly Dictionary<HealthManager, Collider> Bodies = new();
+        // Which hostiles are enemies with minds of their own (null for the player), to tell
+        // whether one is busy fighting someone else.
+        private static readonly Dictionary<HealthManager, EnemyAI> Brains = new();
 
         private readonly EnemyAI           _owner;
         private readonly Transform         _self;
@@ -51,6 +58,8 @@ namespace CGD.Enemies
         private readonly List<HealthManager> _candidates = new();
         private readonly AwarenessMeter      _meter;
         private readonly SightingMemory      _sighting = new();
+        private readonly TargetWeights       _weights;
+        private readonly float               _retaliationMemory;
 
         private float   _clock;
         private float   _nextSample;
@@ -60,6 +69,8 @@ namespace CGD.Enemies
         private bool    _hunting;   // it knows a hostile is about, not just that something seemed off
         private float   _cautiousUntil = float.NegativeInfinity;
         private float   _underFireAt   = float.NegativeInfinity;
+        private HealthManager _lastAttacker;
+        private float   _lastAttackedAt = float.NegativeInfinity;
         private readonly HashSet<EnemyAI> _bodiesSeen = new();
 
         // What a look at one candidate turned up.
@@ -68,12 +79,14 @@ namespace CGD.Enemies
             public bool  Seen;
             public bool  Instant;
             public float Gain;
+            public TargetTraits Traits;
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics()
         {
             Bodies.Clear();
+            Brains.Clear();
             _fallbackProfile = null;
         }
 
@@ -87,6 +100,8 @@ namespace CGD.Enemies
             _team         = team;
             _hostiles     = new TargetFilter(TargetAffiliation.Enemies, team, null, targetMask);
             _meter        = new AwarenessMeter(_profile.SuspiciousThreshold);
+            _weights           = data.TargetPriorities != null ? data.TargetPriorities.Weights : TargetWeights.Default;
+            _retaliationMemory = data.TargetPriorities != null ? data.TargetPriorities.RetaliationMemory : 0f;
             LastKnownPosition = _self.position;
             LookPosition      = _self.position;
             // Spread enemies over the sampling interval so they don't all raycast on one frame.
@@ -122,6 +137,10 @@ namespace CGD.Enemies
         public Vector3 TargetFacing      => Target != null ? _sighting.Facing : Vector3.zero;
         // How it last saw its target moving relative to that facing.
         public TargetMotion TargetMotion => Target != null ? _sighting.Motion : TargetMotion.Unknown;
+        // Its target's health and shield left (0–1) when it last saw it — 1 if never seen.
+        public float TargetHealthShare { get; private set; } = 1f;
+        // Whether its target was fighting someone else when it last saw it.
+        public bool  IsTargetDistracted { get; private set; }
 
         // A lead (something new to look into) not yet consumed — read without consuming it.
         public bool HasLead => _hasLead;
@@ -175,6 +194,8 @@ namespace CGD.Enemies
             _cautiousUntil = float.NegativeInfinity;
             _bodiesSeen.Clear();
             _candidates.Clear();
+            _lastAttacker   = null;
+            _lastAttackedAt = float.NegativeInfinity;
         }
 
         // Calms down completely and forgets its target.
@@ -186,6 +207,8 @@ namespace CGD.Enemies
             _lastSensedAt = float.NegativeInfinity;
             SearchDirection = Vector3.zero;
             _sighting.Forget();
+            TargetHealthShare  = 1f;
+            IsTargetDistracted = false;
             _meter.Clear();
             Level = AwarenessLevel.Unaware;
         }
@@ -222,11 +245,14 @@ namespace CGD.Enemies
             Vector3 attacker = hit.Source.Owner.transform.position;
             float   distance = Vector3.Distance(attacker, _self.position);
             FeelFire(attacker + Error(distance, _profile.HitError));
+            // Remembered even mid-fight with someone else: whom to shoot back at (see Sample).
+            _lastAttacker   = hit.Source.Owner.GetComponentInParent<HealthManager>();
+            _lastAttackedAt = _clock;
             if (IsTargetDetected) return;
 
             _meter.Raise(_profile.HitAwareness, 0.95f);
             _hunting = true;
-            if (Target == null) Target = hit.Source.Owner.GetComponentInParent<HealthManager>();
+            if (Target == null) Target = _lastAttacker;
             Lead(attacker + Error(distance, _profile.HitError));
             UpdateLevel();
         }
@@ -320,9 +346,9 @@ namespace CGD.Enemies
             {
                 HealthManager candidate = _candidates[i];
                 Stimulus stimulus = Sense(candidate);
+                stimulus.Traits = TraitsOf(candidate);
 
-                float score = stimulus.Instant ? float.MaxValue : stimulus.Gain * (stimulus.Seen ? 2f : 1f);
-                if (candidate == Target) score *= 1.25f;   // keep focus on whoever it was already tracking
+                float score = stimulus.Instant ? float.MaxValue : stimulus.Gain * (stimulus.Seen ? 2f : 1f) * _weights.Weigh(stimulus.Traits);
                 if (score <= bestScore) continue;
 
                 best = candidate;
@@ -351,6 +377,33 @@ namespace CGD.Enemies
             return new Stimulus { Gain = FootstepGain(candidate, distance) };
         }
 
+        private TargetTraits TraitsOf(HealthManager candidate) => new(
+            isCurrent:      candidate == Target,
+            hurtItRecently: candidate == _lastAttacker && _clock - _lastAttackedAt <= _retaliationMemory,
+            isDistracted:   IsFightingSomeoneElse(candidate),
+            healthShare:    StrengthLeft(candidate));
+
+        // An enemy engaged with a target other than this one — its attention is elsewhere.
+        // The player's attention can't be read, so the player never counts as distracted.
+        private bool IsFightingSomeoneElse(HealthManager candidate)
+        {
+            if (!Brains.TryGetValue(candidate, out EnemyAI brain))
+            {
+                candidate.TryGetComponent(out brain);
+                Brains[candidate] = brain;
+            }
+            if (brain == null || brain.Perception == null) return false;
+
+            EnemyPerception other = brain.Perception;
+            return other.IsTargetDetected && other.Target != null && other.Target != _owner.Health;
+        }
+
+        private static float StrengthLeft(HealthManager candidate)
+        {
+            float full = candidate.MaxHealth + candidate.MaxShield;
+            return full > 0f ? Mathf.Clamp01((candidate.Health + candidate.Shield) / full) : 1f;
+        }
+
         private void Observe(HealthManager target, Stimulus stimulus, float elapsed)
         {
             Vector3 position = target.transform.position;
@@ -361,7 +414,9 @@ namespace CGD.Enemies
             }
 
             _sighting.Record(position, target.transform.forward, _clock);
-            _lastSensedAt = _clock;
+            _lastSensedAt      = _clock;
+            TargetHealthShare  = stimulus.Traits.HealthShare;
+            IsTargetDistracted = stimulus.Traits.IsDistracted;
 
             // Seeing it face this way squarely reads as being aimed at.
             Vector3 toSelf = _self.position - position;

@@ -63,6 +63,14 @@ MonoBehaviour:
   - rid: 1047
   - rid: 1048
   - rid: 1049
+  - rid: 1050
+  - rid: 1051
+  - rid: 1052
+  - rid: 1053
+  - rid: 1054
+  - rid: 1055
+  - rid: 1056
+  - rid: 1057
   references:
     version: 2
     RefIds:
@@ -193,7 +201,7 @@ MonoBehaviour:
         _guid: 547cddabcff744bbba995322a82184f0
         _position: {x: -1168, y: 450}
         _comment: 
-        _memory: 4
+        _memory: 12
     - rid: 1015
       type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -205,6 +213,7 @@ MonoBehaviour:
         - f1212c88528d4fa9bbf28e96e9acc1c7
         - 9b4f8aa4e67d4a628908272ba7c56088
         - 1280971f72074b778a3eda977d66b5f8
+        - 6bf2b656b18d4bf7a4c01701eb09e0eb
         _abort: 0
     - rid: 1016
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
@@ -489,6 +498,71 @@ MonoBehaviour:
       type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: 14383440b1974f3a8390906a545a0478
-        _position: {x: 2352, y: 300}
+        _position: {x: 3100, y: 300}
         _comment: 
         _tree: {fileID: 11400000, guid: cba441f48fd34dec9c15d7d0c6903346, type: 2}
+    - rid: 1050
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8b6209c333d24dcca78cc7e085309901
+        _position: {x: 2260, y: 900}
+        _comment: 
+    - rid: 1051
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 60eae63f561048ee8dfc5b5eaeb992da
+        _position: {x: 2260, y: 750}
+        _comment: 
+        _children:
+        - 8b6209c333d24dcca78cc7e085309901
+    - rid: 1052
+      type: {class: InCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4e0f4613ebb74b29a4f960b275524be3
+        _position: {x: 2370, y: 1050}
+        _comment: 
+    - rid: 1053
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: bc0c5847276a43f19d1cb71afc5258ec
+        _position: {x: 2590, y: 1050}
+        _comment: 
+        _use: 0
+        _giveUpAfter: 4
+    - rid: 1054
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ffe4ddbf9944481eaf4e0b4d611831b0
+        _position: {x: 2480, y: 900}
+        _comment: 
+        _children:
+        - 4e0f4613ebb74b29a4f960b275524be3
+        - bc0c5847276a43f19d1cb71afc5258ec
+        _abort: 0
+    - rid: 1055
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 119b49983eb3453f9e08d184c887956d
+        _position: {x: 2480, y: 750}
+        _comment: 
+        _children:
+        - ffe4ddbf9944481eaf4e0b4d611831b0
+        _succeed: 1
+    - rid: 1056
+      type: {class: Overwatch, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: bba8a5ccc7e54bed8b0b32238e5634eb
+        _position: {x: 2700, y: 750}
+        _comment: 
+        _seconds: {Min: 4, Max: 6, Bias: 0}
+    - rid: 1057
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6bf2b656b18d4bf7a4c01701eb09e0eb
+        _position: {x: 2480, y: 600}
+        _comment: 'Lost sight: stay in cover (or take some) and watch the angle it vanished at instead of walking into its sights, until the Knows Target memory runs out'
+        _children:
+        - 60eae63f561048ee8dfc5b5eaeb992da
+        - 119b49983eb3453f9e08d184c887956d
+        - bba8a5ccc7e54bed8b0b32238e5634eb
+        _abort: 0

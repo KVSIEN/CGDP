@@ -65,6 +65,16 @@ MonoBehaviour:
   - rid: 1049
   - rid: 1050
   - rid: 1051
+  - rid: 1052
+  - rid: 1053
+  - rid: 1054
+  - rid: 1055
+  - rid: 1056
+  - rid: 1057
+  - rid: 1058
+  - rid: 1059
+  - rid: 1060
+  - rid: 1061
   references:
     version: 2
     RefIds:
@@ -206,9 +216,11 @@ MonoBehaviour:
         - d4099671484a45ea81d33d45ebb4332d
         - 279e267b49594a7ebc5a39bc5e2c42c5
         - f7008344489d46409d8635bce84652be
+        - f9499f0e9aac46d883a898c8f92589f2
         - 71598e06f3c24e7e87880fd410af2cc8
         - 5ec74dc1c24c4700ae091fdb30f74c46
         - d6dfe96b4ee54521aa270c17ef26fd2e
+        - 1919301eaec6418794d0f0cea17a5494
         _abort: 0
     - rid: 1016
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
@@ -383,7 +395,7 @@ MonoBehaviour:
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: 71598e06f3c24e7e87880fd410af2cc8
-        _position: {x: 1252, y: 600}
+        _position: {x: 1912, y: 600}
         _comment: 'Every few seconds: shift to a new angle on the target, by the least visible route'
         _children:
         - 1c2f704b8e6741bda55fae0b8fb99234
@@ -393,13 +405,13 @@ MonoBehaviour:
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: 1c2f704b8e6741bda55fae0b8fb99234
-        _position: {x: 1142, y: 750}
+        _position: {x: 1802, y: 750}
         _comment: 
     - rid: 1038
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: 2f42d69319e94c34ad15f13814598ebe
-        _position: {x: 1362, y: 750}
+        _position: {x: 2022, y: 750}
         _comment: 
         _children:
         - 10c1820f6e57471b876cc674f325ae35
@@ -409,7 +421,7 @@ MonoBehaviour:
       type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: 10c1820f6e57471b876cc674f325ae35
-        _position: {x: 1362, y: 900}
+        _position: {x: 2022, y: 900}
         _comment: 
         _children:
         - cb5ae4016d314b35b6a24d67d32050f7
@@ -417,7 +429,7 @@ MonoBehaviour:
       type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: cb5ae4016d314b35b6a24d67d32050f7
-        _position: {x: 1362, y: 1050}
+        _position: {x: 2022, y: 1050}
         _comment: 
         _standOff: 0
         _giveUpAfter: 6
@@ -425,7 +437,7 @@ MonoBehaviour:
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: 5ec74dc1c24c4700ae091fdb30f74c46
-        _position: {x: 1802, y: 600}
+        _position: {x: 2462, y: 600}
         _comment: 'Skirmish: hold medium range, strafing, and fire shards'
         _children:
         - 25c0f01b358c4db8b31bba4a11517a20
@@ -435,13 +447,13 @@ MonoBehaviour:
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: 25c0f01b358c4db8b31bba4a11517a20
-        _position: {x: 1582, y: 750}
+        _position: {x: 2242, y: 750}
         _comment: 
     - rid: 1043
       type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: 936e41cbaa734db7859b7ed60d0c7fb3
-        _position: {x: 2022, y: 750}
+        _position: {x: 2682, y: 750}
         _comment: 
         _children:
         - 4f939834ddc64fb69830e75d2c5f63e9
@@ -452,13 +464,13 @@ MonoBehaviour:
       type: {class: HoldRange, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: 4f939834ddc64fb69830e75d2c5f63e9
-        _position: {x: 1802, y: 900}
+        _position: {x: 2462, y: 900}
         _comment: 
     - rid: 1045
       type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: a21f337e29f34649a5096d6381bca2f8
-        _position: {x: 2022, y: 900}
+        _position: {x: 2682, y: 900}
         _comment: 
         _children:
         - 8a5dbbbf67664917ae8c1bc39d4f38e6
@@ -468,20 +480,20 @@ MonoBehaviour:
       type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: 8a5dbbbf67664917ae8c1bc39d4f38e6
-        _position: {x: 2022, y: 1050}
+        _position: {x: 2682, y: 1050}
         _comment: 
     - rid: 1047
       type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: b9d1b3a6fa0141949e7d74d271e30a24
-        _position: {x: 2242, y: 900}
+        _position: {x: 2902, y: 900}
         _comment: 
         _seconds: {Min: 3, Max: 4, Bias: 0}
     - rid: 1048
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: d6dfe96b4ee54521aa270c17ef26fd2e
-        _position: {x: 2462, y: 600}
+        _position: {x: 3122, y: 600}
         _comment: 'Lost sight: come at the last known position from the side'
         _children:
         - 49898d685d5f46e5bb2095e66aee1c45
@@ -491,7 +503,7 @@ MonoBehaviour:
       type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: 49898d685d5f46e5bb2095e66aee1c45
-        _position: {x: 2462, y: 750}
+        _position: {x: 3122, y: 750}
         _comment: 
         _children:
         - b5f6365af1f34bd9a69c9f830d6f8e23
@@ -499,7 +511,7 @@ MonoBehaviour:
       type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: b5f6365af1f34bd9a69c9f830d6f8e23
-        _position: {x: 2462, y: 900}
+        _position: {x: 3122, y: 900}
         _comment: 
         _standOff: 0
         _giveUpAfter: 7
@@ -507,6 +519,86 @@ MonoBehaviour:
       type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: 2420e13ecef54098819bd2fb503ee662
-        _position: {x: 2682, y: 300}
+        _position: {x: 4000, y: 300}
         _comment: 
         _tree: {fileID: 11400000, guid: cba441f48fd34dec9c15d7d0c6903346, type: 2}
+    - rid: 1052
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9260e93d01b94854acc60d647b43e701
+        _position: {x: 1142, y: 750}
+        _comment: 
+    - rid: 1053
+      type: {class: TargetDistracted, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b9b5a2cf81174a389ebd1c01a8c76289
+        _position: {x: 1362, y: 750}
+        _comment: 
+    - rid: 1054
+      type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1a9b611682144f29845aadbeaad50436
+        _position: {x: 1582, y: 1050}
+        _comment: 
+        _standOff: 0
+        _giveUpAfter: 6
+    - rid: 1055
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4018699ac5a849a893f1889d6e9cd065
+        _position: {x: 1582, y: 900}
+        _comment: 
+        _children:
+        - 1a9b611682144f29845aadbeaad50436
+    - rid: 1056
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b53794047e1640289fb57eacf22c0946
+        _position: {x: 1582, y: 750}
+        _comment: 
+        _children:
+        - 4018699ac5a849a893f1889d6e9cd065
+        _seconds: 4
+        _onlyAfterSuccess: 0
+    - rid: 1057
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f9499f0e9aac46d883a898c8f92589f2
+        _position: {x: 1362, y: 600}
+        _comment: 'Target busy fighting someone else: slip round behind it while its back is turned (Flank keeps off the side it faces)'
+        _children:
+        - 9260e93d01b94854acc60d647b43e701
+        - b9b5a2cf81174a389ebd1c01a8c76289
+        - b53794047e1640289fb57eacf22c0946
+        _abort: 2
+    - rid: 1058
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 41be48ef59d24035bb09347f97b6c043
+        _position: {x: 3560, y: 900}
+        _comment: 
+    - rid: 1059
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 03b13f3096454e24b91f6dfd50439eed
+        _position: {x: 3560, y: 750}
+        _comment: 
+        _children:
+        - 41be48ef59d24035bb09347f97b6c043
+    - rid: 1060
+      type: {class: Overwatch, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 482900fcd5df48219b556dd600e94812
+        _position: {x: 3780, y: 750}
+        _comment: 
+        _seconds: {Min: 1, Max: 1.5, Bias: 0}
+    - rid: 1061
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 1919301eaec6418794d0f0cea17a5494
+        _position: {x: 3670, y: 600}
+        _comment: 'Out of sight between flanks: hold still and watch for it rather than drop out of the fight'
+        _children:
+        - 03b13f3096454e24b91f6dfd50439eed
+        - 482900fcd5df48219b556dd600e94812
+        _abort: 0

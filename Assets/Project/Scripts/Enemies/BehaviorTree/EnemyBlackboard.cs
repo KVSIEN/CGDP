@@ -17,6 +17,8 @@ namespace CGD.Enemies
         public const string Awareness = "Awareness";
         [AgentBlackboardKey(BlackboardValueType.Float, "Metres to where it believes its target is; unset with none")]
         public const string TargetDistance = "TargetDistance";
+        [AgentBlackboardKey(BlackboardValueType.Float, "0–1 of its target's health and shield when last seen; unset with no target")]
+        public const string TargetHealth = "TargetHealth";
         [AgentBlackboardKey(BlackboardValueType.Bool, "True while on edge after a search that found nothing")]
         public const string Cautious = "Cautious";
         [AgentBlackboardKey(BlackboardValueType.Float, "Director's phase: 0 build-up, 1 peak, 2 fade, 3 calm (no director = 0)")]
@@ -41,9 +43,15 @@ namespace CGD.Enemies
 
             var perception = ai.Perception;
             if (perception.Target != null)
+            {
                 blackboard.SetFloat(TargetDistance, UnityEngine.Vector3.Distance(ai.transform.position, perception.TargetPosition));
+                blackboard.SetFloat(TargetHealth, perception.TargetHealthShare);
+            }
             else
+            {
                 blackboard.Remove(TargetDistance);
+                blackboard.Remove(TargetHealth);
+            }
         }
     }
 }

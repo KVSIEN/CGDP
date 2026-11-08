@@ -89,7 +89,10 @@ and ticks its behavior tree; attacks go through the same `IDamageable` path as t
 `EnemyPerception` is the only place an enemy learns anything: it samples sight and
 footsteps on a staggered timer, takes `Noise`, hits and `EnemyCallouts` as they happen,
 and turns them into an `AwarenessMeter` value, an `AwarenessLevel` and a belief
-(`LastKnownPosition`, a guess once the target is out of sight). Tree nodes read
+(`LastKnownPosition`, a guess once the target is out of sight). With several hostiles in
+its senses it picks its target by how strongly it senses each, multiplied by the
+`TargetWeights` of its data's `TargetPriorities` (focus, retaliation, wounded, distracted) —
+how a faction's temperament shows in a crowded fight. Tree nodes read
 `TargetPosition` — the real position only while the target is sensed — so no node can
 know more than the enemy saw. `EnemySearch` is the notice → approach → look-around
 routine behind Investigate. Space works the same
