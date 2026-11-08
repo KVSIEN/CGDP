@@ -385,6 +385,7 @@ Arena              [NavMeshSurface, RuntimeNavMesh]      ← NavMesh built from 
   Lane Wall W/E South/North, Lane Crate/Pillar W/E   ← side lanes behind long walls at x ±20, gap at z −4…0 (flanking)
   Yard Wall W/E (+ Side), Yard Crate (W/E)    ← south: L-shaped walls and low crates (Void, player start)
 CoverMap           [CoverMap]                            ← cover spots found from the NavMesh
+Spectator Camera   [Camera (off), AudioListener (off), SpectatorCamera]   ← tag MainCamera; (0, 50, −30), 62° down, FOV 46: the whole arena
 Alarm Panel        [MeshFilter, MeshRenderer, BoxCollider, AlarmPanel]   ← on the north wall between the bunkers; `_screen` = its renderer
 Enemies            [EnemyRespawner]                      ← _delay 3, _territoryRadius 6, _alsoAvoid = Player (its PlayerHealth): revives any enemy under it in its own territory, at the safest spot
   Waypoints        Bio 1–4, Tech 1–2, Void 1–4
@@ -412,6 +413,7 @@ Full-height pieces (white, 2.2 m or more) count as high cover that hides a stand
 |---|---|---|
 | **NavMeshSurface** (Arena) | Collect Objects = *Children*, Use Geometry = *Physics Colliders* | Not baked in the project. |
 | **EnemyRespawner** (Enemies) | `_alsoAvoid` = the Player's `PlayerHealth` | Revives an enemy within `_territoryRadius` of where it was placed or of one of its `_waypoints` (so its patrol route is its territory), at the candidate spot furthest from living hostiles and out of their line of sight (`_obstacleMask`, Default). Rivals under the same object always count; `_alsoAvoid` adds characters outside it. Its post becomes the new spot. |
+| **SpectatorCamera** (Spectator Camera) | `_camera` / `_listener` = its own, `_gameplayCamera` = the Player's Main Camera, `_agents` = Enemies | Turns its camera and listener on only while `_gameplayCamera` is off (deactivate the Player), and then labels every `EnemyAI` under `_agents` on screen (name, health + shield, state · step, awareness → target; `_labelHeight`, `_labelSize`, `_fontSize`). Save the scene with its Camera and AudioListener disabled. Health bars cache the camera they face at first use, so toggle the Player before pressing Play rather than during it. Any test scene can use it the same way. |
 | **RuntimeNavMesh** (Arena) | `_agents` = Enemies | Builds the surface on load, then snaps the agents under `_agents` onto it. Any scene can use it the same way. |
 
 The Player overrides: `PlayerWeaponLoadout._startingWeapons[0]` = `Weapons/Ranged/T1/AK47_T1`, spawn and RespawnPoint at (0, 1, −19), respawns on death. Add an enemy by dropping an enemy prefab under **Enemies** and setting both `EnemyAI._data` and `EnemyHealth._data` to a data asset with a tree.
