@@ -18,12 +18,7 @@ namespace CGD.Editor
         public static string Path(Type type) =>
             Info(type)?.Path ?? $"Other/{ObjectNames.NicifyVariableName(type.Name)}";
 
-        public static string DisplayName(Type type)
-        {
-            string path  = Path(type);
-            int    slash = path.LastIndexOf('/');
-            return slash >= 0 ? path[(slash + 1)..] : path;
-        }
+        public static string DisplayName(Type type) => BtNodeNames.Of(type);
 
         public static string Description(Type type) => Info(type)?.Description ?? string.Empty;
 

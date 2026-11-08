@@ -7,8 +7,9 @@ namespace CGD.DevTools
 {
     // The spectator's own HUD (the game HUD is usually switched off while spectating):
     //   top bar      the camera mode and whom it follows, and the game speed / pause
+    //   overlays     which world overlays are on (senses, cover, paths & plans)
     //   controls     the controls, from the live bindings (H to hide)
-    //   agent panel  the followed agent's full status, as the Behavior Tree Editor shows it
+    //   inspector    the inspected agent's panel (AgentInspector), as tall as its page
     //   toast        a short confirmation when something changes (speed, labels…)
     //   hint         the two keys to remember (help, settings)
     // Built at runtime on its own overlay canvas, which the settings panel also uses.
@@ -18,14 +19,18 @@ namespace CGD.DevTools
         private const float ToastFade    = 0.4f;
         private static readonly Vector2 ReferenceResolution = new(1920f, 1080f);
         private static readonly Color PanelColor = new(0.05f, 0.06f, 0.09f, 0.78f);
+        private const float InspectorWidth   = 460f;
+        private const float InspectorPadding = 12f;
+        private const float InspectorMaxHeight = 900f;
 
         private readonly GameObject      _root;
         private readonly TextMeshProUGUI _mode;
         private readonly TextMeshProUGUI _time;
         private readonly GameObject      _helpPanel;
         private readonly TextMeshProUGUI _help;
-        private readonly GameObject      _focusPanel;
-        private readonly TextMeshProUGUI _focus;
+        private readonly TextMeshProUGUI _overlays;
+        private readonly RectTransform   _inspectorPanel;
+        private readonly TextMeshProUGUI _inspector;
         private readonly CanvasGroup     _toastGroup;
         private readonly TextMeshProUGUI _toast;
         private readonly TextMeshProUGUI _hint;
@@ -51,18 +56,23 @@ namespace CGD.DevTools
             _time = MakeLabel("Time", bar.rectTransform, 20f, TextAlignmentOptions.MidlineRight);
             Inset(_time.rectTransform, 18f, 6f);
 
+            // Overlays (under the top bar)
+            Image overlays = Panel("Overlays", new Vector2(0.5f, 1f), new Vector2(0f, 64f), new Vector2(760f, 28f));
+            _overlays = MakeLabel("Text", overlays.rectTransform, 14f, TextAlignmentOptions.Center);
+            Inset(_overlays.rectTransform, 12f, 2f);
+
             // Controls (left)
-            Image help = Panel("Controls", new Vector2(0f, 1f), new Vector2(16f, 16f), new Vector2(400f, 470f));
+            Image help = Panel("Controls", new Vector2(0f, 1f), new Vector2(16f, 16f), new Vector2(400f, 600f));
             _helpPanel = help.gameObject;
             _help = MakeLabel("Text", help.rectTransform, 15f, TextAlignmentOptions.TopLeft);
             Inset(_help.rectTransform, 16f, 12f);
 
-            // Followed agent (right)
-            Image focus = Panel("Agent", new Vector2(1f, 1f), new Vector2(16f, 16f), new Vector2(400f, 380f));
-            _focusPanel = focus.gameObject;
-            _focus = MakeLabel("Text", focus.rectTransform, 15f, TextAlignmentOptions.TopLeft);
-            Inset(_focus.rectTransform, 16f, 12f);
-            _focusPanel.SetActive(false);
+            // Inspected agent (right)
+            Image inspector = Panel("Inspector", new Vector2(1f, 1f), new Vector2(16f, 16f), new Vector2(InspectorWidth, 380f));
+            _inspectorPanel = inspector.rectTransform;
+            _inspector = MakeLabel("Text", _inspectorPanel, 14f, TextAlignmentOptions.TopLeft);
+            Inset(_inspector.rectTransform, 16f, InspectorPadding);
+            _inspectorPanel.gameObject.SetActive(false);
 
             // Toast
             Image toast = Panel("Toast", new Vector2(0.5f, 0f), new Vector2(0f, 120f), new Vector2(460f, 44f));
@@ -88,6 +98,7 @@ namespace CGD.DevTools
         public void SetMode(string text) => _mode.text = text;
         public void SetTime(string text) => _time.text = text;
         public void SetHint(string text) => _hint.text = text;
+        public void SetOverlays(string text) => _overlays.text = text;
 
         public void SetHelp(string text, bool visible)
         {
@@ -95,13 +106,17 @@ namespace CGD.DevTools
             if (visible) _help.text = text;
         }
 
-        public void ShowFocus(string text)
+        // Grows and shrinks with the page, so a short page doesn't leave an empty box.
+        public void ShowInspector(string text)
         {
-            _focusPanel.SetActive(true);
-            _focus.text = text;
+            _inspectorPanel.gameObject.SetActive(true);
+            _inspector.text = text;
+            float textWidth = InspectorWidth - 32f;
+            float height = _inspector.GetPreferredValues(text, textWidth, 0f).y + InspectorPadding * 2f + 4f;
+            _inspectorPanel.sizeDelta = new Vector2(InspectorWidth, Mathf.Clamp(height, 80f, InspectorMaxHeight));
         }
 
-        public void HideFocus() => _focusPanel.SetActive(false);
+        public void HideInspector() => _inspectorPanel.gameObject.SetActive(false);
 
         public void Toast(string message, float now)
         {
@@ -120,6 +135,7 @@ namespace CGD.DevTools
         {
             Image panel = UIFactory.MakeImage(name, Root);
             panel.color = PanelColor;
+            panel.raycastTarget = true;   // a click on a panel isn't a click on the arena behind it
             UIFactory.AnchorToCorner(panel.rectTransform, corner, padding);
             panel.rectTransform.sizeDelta = size;
             return panel;

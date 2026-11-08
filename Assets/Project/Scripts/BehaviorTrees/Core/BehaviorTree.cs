@@ -13,6 +13,7 @@ namespace CGD.BehaviorTrees
         // Assets being instantiated right now, so a subtree that contains itself is refused.
         private readonly HashSet<BehaviorTreeAsset> _building = new();
         private BtRoot _root;
+        private int    _traceWatchers;
 
         private BehaviorTree(BehaviorTreeAsset asset, BtContext context)
         {
@@ -49,9 +50,45 @@ namespace CGD.BehaviorTrees
         // this agent).
         public BtTrace Trace => Context.Trace;
 
-        public BtTrace StartTrace(int capacity = 256) => Context.Trace ??= new BtTrace(Context, capacity);
+        // Recording is shared: the tree editor and the spectator's inspector may watch the
+        // same agent, so each StartTrace is paired with a StopTrace and recording only stops
+        // once nobody is left watching.
+        public BtTrace StartTrace(int capacity = 256)
+        {
+            _traceWatchers++;
+            return Context.Trace ??= new BtTrace(Context, capacity);
+        }
 
-        public void StopTrace() => Context.Trace = null;
+        public void StopTrace()
+        {
+            if (_traceWatchers == 0) return;
+            if (--_traceWatchers == 0) Context.Trace = null;
+        }
+
+        // Debugging: the nodes running right now, depth first, each with how deep it sits
+        // (the root itself is left out; a subtree's nodes continue under its Subtree node,
+        // and every running branch of a Parallel appears). Answers "what is it doing?".
+        public void CollectRunning(List<(BtNode Node, int Depth)> results)
+        {
+            results.Clear();
+            if (_root != null) CollectRunning(_root.Branch, 0, results);
+        }
+
+        private static void CollectRunning(BtNode node, int depth, List<(BtNode Node, int Depth)> results)
+        {
+            if (node == null || !node.IsRunning) return;
+            results.Add((node, depth));
+
+            switch (node)
+            {
+                case Subtree subtree:
+                    CollectRunning(subtree.Branch, depth + 1, results);
+                    break;
+                case BtParentNode parent when parent.Children != null:
+                    foreach (BtNode child in parent.Children) CollectRunning(child, depth + 1, results);
+                    break;
+            }
+        }
 
         // Whether this tree runs the asset, as itself or as a subtree.
         public bool Uses(BehaviorTreeAsset asset) => _copies.ContainsKey(asset);

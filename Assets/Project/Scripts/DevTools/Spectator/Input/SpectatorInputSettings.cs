@@ -101,6 +101,10 @@ namespace CGD.DevTools
             Bind(SpectatorAction.ToggleLabels,  "<Keyboard>/l",          "<Gamepad>/select"),
             Bind(SpectatorAction.ToggleHelp,    "<Keyboard>/h",          "<Keyboard>/f1"),
             Bind(SpectatorAction.Settings,      "<Keyboard>/escape"),
+            Bind(SpectatorAction.InspectorPage, "<Keyboard>/i",          "<Gamepad>/rightStickPress"),
+            Bind(SpectatorAction.ToggleSenses,  "<Keyboard>/v"),
+            Bind(SpectatorAction.ToggleCover,   "<Keyboard>/c"),
+            Bind(SpectatorAction.TogglePlans,   "<Keyboard>/n"),
         };
 
         private static SpectatorBinding Bind(SpectatorAction action, string primary, string secondary = "") =>

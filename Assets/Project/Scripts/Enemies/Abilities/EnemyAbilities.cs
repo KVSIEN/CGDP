@@ -20,6 +20,10 @@ namespace CGD.Enemies
         private readonly Transform _aim;
         private readonly AbilityContext _context;
         private readonly Dictionary<Ability, float> _readyAt = new();
+        private readonly Dictionary<Ability, float> _effectEndsAt = new();
+        // Every ability its tree has asked about so far, in the order it first did (for the
+        // spectator's inspector: cooldowns of abilities it hasn't cast yet show as ready).
+        private readonly List<Ability> _known = new();
 
         private Ability _casting;
         private float   _castEndsAt;
@@ -49,9 +53,21 @@ namespace CGD.Enemies
         }
 
         public bool IsCasting => _casting != null;
+        public Ability Casting => _casting;
+        public IReadOnlyList<Ability> Known => _known;
 
-        public bool IsReady(Ability ability) =>
-            ability != null && !IsCasting && Time.time >= ReadyAt(ability) && ability.CanExecute(_context);
+        public bool IsReady(Ability ability)
+        {
+            if (ability == null) return false;
+            Remember(ability);
+            return !IsCasting && Time.time >= ReadyAt(ability) && ability.CanExecute(_context);
+        }
+
+        public float CooldownLeft(Ability ability) => Mathf.Max(0f, ReadyAt(ability) - Time.time);
+
+        // Seconds left of what its last cast left on it (a buff); 0 when nothing lasts.
+        public float EffectLeft(Ability ability) =>
+            _effectEndsAt.TryGetValue(ability, out float endsAt) ? Mathf.Max(0f, endsAt - Time.time) : 0f;
 
         // Starts the cast (its CastTime is a wind-up spent facing the aim point). False if not ready.
         public bool TryBegin(Ability ability, Vector3 aimAt)
@@ -78,16 +94,31 @@ namespace CGD.Enemies
             _casting = null;
             ability.Execute(_context);
             _readyAt[ability] = Time.time + ability.Cooldown;
+            if (ability.EffectDuration > 0f) _effectEndsAt[ability] = Time.time + ability.EffectDuration;
             _ai.NotifyAbilityUsed(ability);
             return true;
         }
 
         public void Cancel() => _casting = null;
 
+        // Back from the dead: buffs ended with it (CharacterStats clears them on revive).
+        public void Reset()
+        {
+            _casting = null;
+            _effectEndsAt.Clear();
+        }
+
         private void AimAt(Vector3 point)
         {
             Vector3 direction = point - _aim.position;
             if (direction.sqrMagnitude > 0.0001f) _aim.rotation = Quaternion.LookRotation(direction);
+        }
+
+        private void Remember(Ability ability)
+        {
+            if (_readyAt.ContainsKey(ability)) return;
+            _readyAt[ability] = 0f;
+            _known.Add(ability);
         }
 
         private float ReadyAt(Ability ability) => _readyAt.TryGetValue(ability, out float at) ? at : 0f;

@@ -56,6 +56,7 @@ namespace CGD.Enemies
         private readonly Team              _team;
         private readonly TargetFilter        _hostiles;
         private readonly List<HealthManager> _candidates = new();
+        private readonly List<WeighedHostile> _weighed = new();
         private readonly AwarenessMeter      _meter;
         private readonly SightingMemory      _sighting = new();
         private readonly TargetWeights       _weights;
@@ -109,6 +110,10 @@ namespace CGD.Enemies
         }
 
         public PerceptionProfile Profile => _profile;
+        // The senses it actually uses (its original data: rolled affixes don't change them).
+        public float SightRange    => _data.SightRange;
+        public float SightAngle    => _data.SightAngle;
+        public float HearingRadius => _data.HearingRadius;
 
         // The hostile it is focused on. Known by identity; where it is, only while sensed.
         public HealthManager  Target { get; private set; }
@@ -152,6 +157,8 @@ namespace CGD.Enemies
         // Every hostile within sensing range at the last sample, noticed or not, nearest first.
         // Only for staying out of everyone's sight (Phase Shift) — never for what it knows.
         public IReadOnlyList<HealthManager> HostilesAround => _candidates;
+        // How it weighed the nearest of them on its last update (debug views).
+        public IReadOnlyList<WeighedHostile> Weighed => _weighed;
 
         // On edge after a search that found nothing: quicker to notice, slower to settle.
         public bool IsCautious => _clock < _cautiousUntil;
@@ -198,6 +205,7 @@ namespace CGD.Enemies
             _cautiousUntil = float.NegativeInfinity;
             _bodiesSeen.Clear();
             _candidates.Clear();
+            _weighed.Clear();
             _lastAttacker   = null;
             _lastAttackedAt = float.NegativeInfinity;
         }
@@ -345,6 +353,7 @@ namespace CGD.Enemies
             float searchRange = Mathf.Max(_data.SightRange, _data.HearingRadius * 2f);
             TargetQuery.Sphere(_self.position, searchRange, _hostiles, _candidates);
             TargetQuery.SortByDistance(_candidates, _self.position);
+            _weighed.Clear();
 
             for (int i = 0; i < _candidates.Count && i < MaxCandidates; i++)
             {
@@ -352,7 +361,9 @@ namespace CGD.Enemies
                 Stimulus stimulus = Sense(candidate);
                 stimulus.Traits = TraitsOf(candidate);
 
-                float score = stimulus.Instant ? float.MaxValue : stimulus.Gain * (stimulus.Seen ? 2f : 1f) * _weights.Weigh(stimulus.Traits);
+                float weight = _weights.Weigh(stimulus.Traits);
+                float score  = stimulus.Instant ? float.MaxValue : stimulus.Gain * (stimulus.Seen ? 2f : 1f) * weight;
+                _weighed.Add(new WeighedHostile(candidate, weight, stimulus.Seen, stimulus.Instant || stimulus.Gain > 0f));
                 if (score <= bestScore) continue;
 
                 best = candidate;

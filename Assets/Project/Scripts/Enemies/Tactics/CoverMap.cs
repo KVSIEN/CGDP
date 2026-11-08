@@ -64,6 +64,14 @@ namespace CGD.Enemies
 
         // --- Claims -----------------------------------------------------------------
 
+        // Who is using the spot (null when free or its holder died) — for the spectator's cover view.
+        public EnemyAI ClaimedBy(int index)
+        {
+            EnsureBuilt();
+            EnemyAI holder = index >= 0 && index < _claims.Count ? _claims[index] : null;
+            return holder != null && holder.State != EnemyAI.AiState.Dead ? holder : null;
+        }
+
         public bool IsTakenByOther(int index, EnemyAI who)
         {
             EnemyAI holder = _claims[index];

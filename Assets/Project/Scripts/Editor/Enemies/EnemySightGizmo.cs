@@ -4,7 +4,7 @@ using CGD.Enemies;
 
 namespace CGD.Editor
 {
-    // Draws every enemy's view cone (EnemyData sight range and angle) on the ground in the
+    // Draws every enemy's view cone (EnemyData sight range and angle, AwarenessColors) on the ground in the
     // Scene view. In play mode it takes the colour of the enemy's awareness and draws a line
     // to the target it is currently sensing. Hide it with the Scene view's Gizmos menu.
     internal static class EnemySightGizmo
@@ -13,11 +13,6 @@ namespace CGD.Editor
         private const float TargetHeight = 1f;
         private const float FillAlpha    = 0.06f;
         private const float EdgeAlpha    = 0.6f;
-
-        private static readonly Color IdleColor       = new(0.3f, 0.8f, 1f);
-        private static readonly Color SuspiciousColor = new(1f, 0.85f, 0.2f);
-        private static readonly Color SearchingColor  = new(1f, 0.5f, 0.1f);
-        private static readonly Color EngagedColor    = new(1f, 0.15f, 0.1f);
 
         [DrawGizmo(GizmoType.NonSelected | GizmoType.Selected)]
         private static void Draw(EnemyAI enemy, GizmoType gizmoType)
@@ -28,7 +23,7 @@ namespace CGD.Editor
             bool live = Application.isPlaying && enemy.Perception != null;
             if (live && enemy.State == EnemyAI.AiState.Dead) return;
 
-            Color   color  = live ? ColorFor(enemy.Awareness) : IdleColor;
+            Color   color  = live ? AwarenessColors.Of(enemy.Awareness) : AwarenessColors.Unaware;
             Vector3 origin = enemy.transform.position + Vector3.up * GroundOffset;
             DrawCone(origin, enemy.transform.forward, data.SightRange, data.SightAngle, color,
                      (gizmoType & GizmoType.Selected) != 0);
@@ -58,13 +53,5 @@ namespace CGD.Editor
             Handles.DrawLine(origin, origin + from * range);
             Handles.DrawLine(origin, origin + to * range);
         }
-
-        private static Color ColorFor(AwarenessLevel level) => level switch
-        {
-            AwarenessLevel.Suspicious => SuspiciousColor,
-            AwarenessLevel.Searching  => SearchingColor,
-            AwarenessLevel.Engaged    => EngagedColor,
-            _                         => IdleColor,
-        };
     }
 }

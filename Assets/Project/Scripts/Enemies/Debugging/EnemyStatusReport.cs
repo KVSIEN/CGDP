@@ -2,9 +2,10 @@ using System.Collections.Generic;
 
 namespace CGD.Enemies
 {
-    // An enemy's live status for the Behavior Tree Editor (IBtAgentStatus): what it is doing,
-    // what it believes, its squad job, what the director currently allows it and how often it
-    // thinks — the answers to "why is it hanging back?". Editor-only reading; never in a frame.
+    // An enemy's live status for the Behavior Tree Editor (IBtAgentStatus) and the spectator's
+    // inspector (EnemyInsight): what it is doing, what it believes, its squad job, what the
+    // director currently allows it and how often it thinks — the answers to "why is it hanging
+    // back?". Read a few times a second by debug views; nothing in a frame depends on it.
     internal static class EnemyStatusReport
     {
         public static void Describe(EnemyAI ai, List<(string Label, string Value)> rows)

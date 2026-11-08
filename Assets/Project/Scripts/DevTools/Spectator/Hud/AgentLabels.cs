@@ -9,7 +9,7 @@ namespace CGD.DevTools
 {
     // On-screen labels that follow enemies around: its number (the key that watches it),
     // name and health (+ shield), what it is doing (state · step) and what it believes
-    // (awareness → target). The followed agent's label is highlighted. Text is rebuilt a few
+    // (awareness → target). The inspected agent's label is highlighted. Text is rebuilt a few
     // times a second; positions follow every frame. A screen-space overlay of its own, so it
     // shows with the game HUD switched off.
     internal sealed class AgentLabels

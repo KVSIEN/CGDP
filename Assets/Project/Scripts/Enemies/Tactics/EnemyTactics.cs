@@ -66,8 +66,15 @@ namespace CGD.Enemies
             _knowledge    = new CoverKnowledge(ai, obstacleMask);
         }
 
+        // Its latest cover, flank and vanish searches, for the spectator's overlays.
+        public TacticsLog Log { get; } = new();
+
         public bool HasCover => _claimed >= 0 && _knowledge.Map != null;
         public Vector3 CoverPosition => HasCover ? _knowledge.Map[_claimed].Position : _ai.transform.position;
+        // The claimed spot's index in the CoverMap, −1 for none.
+        public int ClaimedCover => HasCover ? _claimed : -1;
+
+        public bool KnowsCover(int index) => _knowledge.Knows(index);
 
         public void Tick(float time)
         {
@@ -181,18 +188,30 @@ namespace CGD.Enemies
 
             // Only the best few get a ray from the threat: cheap, and it catches cover that
             // faces the right way but is too short or has a gap.
+            TacticalDecision log = Log.Cover;
+            log.Begin(threat);
             Vector3 threatEye = threat + Vector3.up * EyeHeight;
-            foreach (var (index, _) in _best)
+            foreach (var (index, score) in _best)
             {
                 if (index < 0) continue;
                 CoverPoint cover = map[index];
                 Vector3 body = cover.Position + Vector3.up * (cover.IsHigh ? 1.3f : 0.6f);
-                if (!Physics.Linecast(threatEye, body, _obstacleMask, QueryTriggerInteraction.Ignore)) continue;
+                if (!Physics.Linecast(threatEye, body, _obstacleMask, QueryTriggerInteraction.Ignore))
+                {
+                    log.Add(cover.Position, score, CandidateVerdict.Exposed);
+                    continue;
+                }
 
                 ReleaseCover();
-                if (!map.TryClaim(index, _ai)) continue;
+                if (!map.TryClaim(index, _ai))
+                {
+                    log.Add(cover.Position, score, CandidateVerdict.Taken);
+                    continue;
+                }
                 _claimed    = index;
                 destination = cover.Position;
+                log.Add(destination, score, CandidateVerdict.Picked);
+                log.Pick(destination);
                 return true;
             }
             return false;
@@ -211,6 +230,9 @@ namespace CGD.Enemies
 
             float   straight  = Vector3.Distance(self, threat);
             float   bestScore = float.MinValue;
+            int     bestEntry = -1;
+            TacticalDecision log = Log.Flank;
+            log.Begin(threat);
             Vector3 watching  = _ai.Perception.TargetFacing;
             int   firstSide = preferSide != 0 ? preferSide : Random.value < 0.5f ? -1 : 1;
 
@@ -219,21 +241,39 @@ namespace CGD.Enemies
             {
                 int     side      = s == 0 ? firstSide : -firstSide;
                 Vector3 candidate = threat + Quaternion.Euler(0f, angle * side, 0f) * axis * standOff;
-                if (!NavMesh.SamplePosition(candidate, out NavMeshHit hit, 2f, NavMesh.AllAreas)) continue;
+                if (!NavMesh.SamplePosition(candidate, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+                {
+                    log.Add(candidate, 0f, CandidateVerdict.Unreachable);
+                    continue;
+                }
                 if (!NavMesh.CalculatePath(self, hit.position, NavMesh.AllAreas, _path) ||
-                    _path.status != NavMeshPathStatus.PathComplete) continue;
+                    _path.status != NavMeshPathStatus.PathComplete)
+                {
+                    log.Add(hit.position, 0f, CandidateVerdict.Unreachable);
+                    continue;
+                }
 
                 float length = PathLength(_path);
-                if (length > straight * FlankDetourLimit + standOff) continue;
+                if (length > straight * FlankDetourLimit + standOff)
+                {
+                    log.Add(hit.position, 0f, CandidateVerdict.TooFar);
+                    continue;
+                }
 
                 float score = -2f * Exposure(_path, threat) - 0.3f * length / Mathf.Max(1f, straight) + Random.value * 0.3f
                               - WatchedSidePenalty * Watched(watching, threat, hit.position);
+                int entry = log.Add(hit.position, score, CandidateVerdict.Passed);
                 if (score <= bestScore) continue;
 
                 bestScore   = score;
+                bestEntry   = entry;
                 destination = hit.position;
             }
-            return bestScore > float.MinValue;
+
+            if (bestScore <= float.MinValue) return false;
+            log.Mark(bestEntry, CandidateVerdict.Picked);
+            log.Pick(destination);
+            return true;
         }
 
         // The known full-height cover within maxDistance that none of the watchers can see,
@@ -247,6 +287,8 @@ namespace CGD.Enemies
             if (map == null) return false;
 
             Vector3 self = _ai.transform.position;
+            TacticalDecision log = Log.Vanish;
+            log.Begin(watchers.Count > 0 ? watchers[0].transform.position : self);
             _knowledge.Known(self, maxDistance, _nearby);
             _unseen.Clear();
             foreach (int candidate in _nearby)
@@ -261,12 +303,23 @@ namespace CGD.Enemies
             for (int i = 0; i < _unseen.Count && i < UnseenChecks; i++)
             {
                 CoverPoint cover = map[_unseen[i].index];
-                if (IsSeenByAny(cover.Position, watchers)) continue;
+                float      score = _unseen[i].score;
+                if (IsSeenByAny(cover.Position, watchers))
+                {
+                    log.Add(cover.Position, score, CandidateVerdict.Seen);
+                    continue;
+                }
                 // Same walkable area: never onto a crate top or an island it can't leave.
                 if (!NavMesh.CalculatePath(self, cover.Position, NavMesh.AllAreas, _path) ||
-                    _path.status != NavMeshPathStatus.PathComplete) continue;
+                    _path.status != NavMeshPathStatus.PathComplete)
+                {
+                    log.Add(cover.Position, score, CandidateVerdict.Unreachable);
+                    continue;
+                }
 
                 index = _unseen[i].index;
+                log.Add(cover.Position, score, CandidateVerdict.Picked);
+                log.Pick(cover.Position);
                 return true;
             }
             return false;

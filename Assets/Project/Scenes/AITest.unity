@@ -6174,6 +6174,7 @@ MonoBehaviour:
   _agents: {fileID: 2100000056}
   _inputSettings: {fileID: 11400000, guid: b3052e3d42934a0095e9ec6202ec3e23, type: 2}
   _panLimit: 30
+  _overlayMaterial: {fileID: 0}
   _labelHeight: 3
   _labelSize: {x: 250, y: 66}
   _fontSize: 15

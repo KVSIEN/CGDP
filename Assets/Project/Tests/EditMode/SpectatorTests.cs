@@ -57,6 +57,21 @@ namespace CGD.Tests
             UnityEngine.Object.DestroyImmediate(asset);
         }
 
+        [Test]
+        public void EveryActionHasAReadableLabel()
+        {
+            foreach (SpectatorAction action in Enum.GetValues(typeof(SpectatorAction)))
+                Assert.AreNotEqual(action.ToString(), SpectatorActionLabels.Of(action), action.ToString());
+        }
+
+        [Test]
+        public void AnUnknownSavedInspectorPageFallsBackToTheOverview()
+        {
+            var preferences = new SpectatorPreferences { InspectorPage = (InspectorPage)99 };
+            preferences.Clamp();
+            Assert.AreEqual(InspectorPage.Overview, preferences.InspectorPage);
+        }
+
         // --- Camera ---------------------------------------------------------------------
 
         [Test]

@@ -40,7 +40,9 @@ Assets/
       Core/                 shared utilities (cooldowns, ranges, Culling/, Pooling/ — PrefabPool, IPoolable,
                             Random/ — Seed, RandomStream, SeedVariants; StateMachine/ — StateMachine<T>, IState)
       Crafting/             RecipeDefinition, Crafter (rules), CraftingStation
-      DevTools/             dev console: DevConsole (commands), DevCommands (cheats), DevCatalog
+      DevTools/             dev console: DevConsole (commands), DevCommands (cheats), DevCatalog;
+                            Spectator/ (AI test spectator mode: SpectatorCamera; Input/, Camera/, Hud/,
+                            Inspector/ — AgentInspector pages, Overlays/ — senses, cover, paths & plans)
       Dialogue/             DialogueDefinition (nodes, choices), Conversation (runtime), Npc, Actions/, Conditions/
       Director/             session pacing (after Left 4 Dead's AI Director): GameDirector (stress → IntensityMeter → PacingCycle:
                             build-up, peak, fade, relax; SessionPerformance → Pressure), SpawnSpotFinder;
@@ -56,10 +58,11 @@ Assets/
                             live view, breakpoints)
       Enemies/              enemy components, EnemyRangedCombat, EnemySearch, EnemyPost (guarding, return point), shared steps (Return/Retreat/RaiseAlarmStep),
                             Abilities/ (EnemyAbilities: casting Ability assets; GrenadeThrower, ThrowArc),
-                            BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/, Squad/, Pacing/, Voice/; EnemyBlackboard keys, EnemyStatusReport),
+                            BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/, Squad/, Pacing/, Voice/; EnemyBlackboard keys),
                             Perception/ (EnemyPerception: sight, hearing, touch, memory; AwarenessMeter, PerceptionProfile, callouts),
                             Tactics/ (CoverMap: cover spots from the NavMesh; CoverKnowledge, EnemyTactics: cover, flanking, hiding spots, melee turns;
-                            AttackTokens, EnemyMorale, AlarmPanel),
+                            AttackTokens, EnemyMorale, AlarmPanel; TacticsLog: its latest cover / flank / vanish searches),
+                            Debugging/ (EnemyInsight: the read-only view debug tools get; EnemyStatusReport, AwarenessColors),
                             Squads/ (EnemySquad: roles, radio relay, leader; SquadRoles rules, SquadRole),
                             Pacing/ (EnemyPacing: the director's word to enemies; EnemyPacingState, BoldMovePermits),
                             Voice/ (EnemyVoice: barks from EnemyBarkSet per type; BarkRules spacing, EnemyBarks bus)

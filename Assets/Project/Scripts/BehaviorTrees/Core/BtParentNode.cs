@@ -18,7 +18,8 @@ namespace CGD.BehaviorTrees
 
         internal IReadOnlyList<string> ChildGuids => _children;
 
-        protected IReadOnlyList<BtNode> Children => _childNodes;
+        // The linked child copies (runtime only); also read by BehaviorTree.CollectRunning.
+        protected internal IReadOnlyList<BtNode> Children => _childNodes;
 
         protected override void OnAbort(BtContext context)
         {

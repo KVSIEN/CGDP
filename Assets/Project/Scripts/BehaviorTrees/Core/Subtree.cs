@@ -21,7 +21,8 @@ namespace CGD.BehaviorTrees
 
         public override string Summary => _tree != null ? _tree.name : "(no tree)";
 
-        private BtNode Branch => _root?.Branch;
+        // The subtree's own branch (what runs in this node's place).
+        internal BtNode Branch => _root?.Branch;
 
         internal override bool IsConditional => Branch != null && Branch.IsConditional;
         internal override bool CheckCondition(BtContext context) => Branch.CheckCondition(context);

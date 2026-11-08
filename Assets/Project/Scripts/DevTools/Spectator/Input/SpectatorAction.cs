@@ -30,5 +30,9 @@ namespace CGD.DevTools
         ToggleLabels,
         ToggleHelp,
         Settings,       // always Escape too, so the settings can't be locked away
+        InspectorPage,  // the inspected agent's panel: overview → blackboard → decisions → hidden
+        ToggleSenses,   // world overlay: sight cones, hearing, who it targets and why
+        ToggleCover,    // world overlay: cover spots, who holds them, what it knows
+        TogglePlans,    // world overlay: paths and the latest cover / flank / vanish searches
     }
 }

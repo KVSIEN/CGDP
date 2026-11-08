@@ -479,6 +479,7 @@ namespace CGD.Enemies
             Perception.Reset();
             Morale.Reset();
             Voice.Reset();
+            Abilities.Reset();
             Post.Remember();
             FallenAllies.Remove(this);
             ReturnPending  = false;

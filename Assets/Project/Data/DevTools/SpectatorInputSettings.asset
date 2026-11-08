@@ -91,6 +91,18 @@ MonoBehaviour:
   - Action: 25
     PrimaryPath: <Keyboard>/escape
     SecondaryPath: 
+  - Action: 26
+    PrimaryPath: <Keyboard>/i
+    SecondaryPath: <Gamepad>/rightStickPress
+  - Action: 27
+    PrimaryPath: <Keyboard>/v
+    SecondaryPath: 
+  - Action: 28
+    PrimaryPath: <Keyboard>/c
+    SecondaryPath: 
+  - Action: 29
+    PrimaryPath: <Keyboard>/n
+    SecondaryPath: 
   LookSensitivity: 0.15
   InvertLook: 0
   MoveSpeed: 12

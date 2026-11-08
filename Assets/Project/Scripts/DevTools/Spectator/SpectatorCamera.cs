@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using CGD.BehaviorTrees;
 using CGD.Core;
 using CGD.Enemies;
 
@@ -14,14 +11,18 @@ namespace CGD.DevTools
     // audio listener, its own controls (SpectatorInputSettings, rebindable in its settings
     // panel), its own HUD, labels over every agent under _agents, and pause / slow motion.
     //
-    //   watch     1–4, Tab / Shift+Tab, or click an agent: the camera orbits it and the HUD
-    //             shows its full status; hold the right mouse to orbit, scroll to get closer
+    //   watch     1–4, Tab / Shift+Tab, or click an agent: the camera orbits it and the
+    //             inspector shows it; hold the right mouse to orbit, scroll to get closer
     //   arena     0: back to the placed overview; WASD pans it, scroll zooms
     //   free      F, or just steer away (move while watching, look while in the overview)
+    //   inspect   the watched agent stays inspected when the camera leaves it; I pages
+    //             through its overview, blackboard and decisions; click empty ground to stop
+    //   overlays  V senses, C cover, N paths & plans, drawn in the Game view
     //
     // The camera works on real time, so it moves freely while the game is paused. This
     // component wires Unity to the plain classes that do the work: SpectatorInput,
-    // SpectatorCameraController, SpectatorTime, SpectatorHud, SpectatorSettingsPanel, AgentLabels.
+    // SpectatorCameraController, SpectatorTime, SpectatorHud, SpectatorSettingsPanel,
+    // AgentLabels, AgentInspector and SpectatorOverlays.
     public class SpectatorCamera : MonoBehaviour
     {
         private const float FocusHeight = 1.2f;   // metres above an agent's feet the camera orbits
@@ -39,6 +40,8 @@ namespace CGD.DevTools
         [SerializeField] private SpectatorInputSettings _inputSettings;
         [Tooltip("Metres the overview may pan away from where it looks at first")]
         [SerializeField, Min(0f)] private float _panLimit = 30f;
+        [Tooltip("Transparent material with vertex colours for the world overlays (Sprites-Default). Empty = made from the Sprites/Default shader")]
+        [SerializeField] private Material _overlayMaterial;
 
         [Header("Labels")]
         [Tooltip("Metres above an agent's feet the label sits at")]
@@ -47,9 +50,8 @@ namespace CGD.DevTools
         [SerializeField] private Vector2 _labelSize = new(250f, 66f);
         [SerializeField, Min(6f)] private float   _fontSize = 15f;
 
-        private readonly SpectatorTime _time = new();
-        private readonly List<(string Label, string Value)> _rows = new();
-        private readonly StringBuilder _text = new();
+        private readonly SpectatorTime  _time      = new();
+        private readonly AgentInspector _inspector = new();
 
         private EnemyAI[]                 _watchable;
         private SpectatorInput            _input;
@@ -58,13 +60,16 @@ namespace CGD.DevTools
         private SpectatorHud              _hud;
         private SpectatorSettingsPanel    _settingsPanel;
         private AgentLabels               _labels;
+        private SpectatorOverlays         _overlays;
 
-        private int    _followed = -1;
+        private int    _followed  = -1;
+        private int    _inspected = -1;
         private bool   _spectating;
         private bool   _cursorCaptured;
         private float  _nextHud;
         private string _helpText;
         private string _hintText;
+        private string _overlayText;
 
         private void Awake()
         {
@@ -82,6 +87,7 @@ namespace CGD.DevTools
             _labels        = new AgentLabels(transform, _watchable, _labelSize, _fontSize);
             _hud           = new SpectatorHud(transform);
             _settingsPanel = new SpectatorSettingsPanel(_hud.Root, _inputSettings, _input, _preferences, ApplyPreferences);
+            _overlays      = new SpectatorOverlays(OverlayMaterial(), _watchable);
 
             _inputSettings.Changed += OnBindingsChanged;
             OnBindingsChanged();
@@ -98,6 +104,8 @@ namespace CGD.DevTools
         {
             if (_inputSettings != null) _inputSettings.Changed -= OnBindingsChanged;
             _input?.Dispose();
+            _overlays?.Dispose();
+            _inspector.Clear();
             _time.Release();
         }
 
@@ -115,8 +123,9 @@ namespace CGD.DevTools
             HandleCommands();
             Steer(dt);
 
-            _labels.Highlight(_followed);
+            _labels.Highlight(_inspected);
             _labels.Tick(_camera, _labelHeight, now);
+            _overlays.Tick(_camera, _preferences, _inspector.Agent, now);
             _hud.Tick(now);
             if (now >= _nextHud) RefreshHud(now);
         }
@@ -140,6 +149,8 @@ namespace CGD.DevTools
             }
             _settingsPanel.Close();
             _time.Release();
+            _inspector.Clear();   // stops recording its trace
+            _inspected = -1;
             CaptureCursor(false);
         }
 
@@ -191,6 +202,28 @@ namespace CGD.DevTools
                 SpectatorSave.SavePreferences(_preferences);
                 _nextHud = 0f;
             }
+            if (Pressed(SpectatorAction.InspectorPage)) NextInspectorPage();
+            if (Pressed(SpectatorAction.ToggleSenses)) ToggleOverlay(ref _preferences.ShowSenses, "Senses");
+            if (Pressed(SpectatorAction.ToggleCover))  ToggleOverlay(ref _preferences.ShowCover, "Cover");
+            if (Pressed(SpectatorAction.TogglePlans))  ToggleOverlay(ref _preferences.ShowPlans, "Paths & plans");
+        }
+
+        private void NextInspectorPage()
+        {
+            _preferences.InspectorPage = _preferences.InspectorPage == InspectorPage.Hidden
+                ? InspectorPage.Overview
+                : _preferences.InspectorPage + 1;
+            SpectatorSave.SavePreferences(_preferences);
+            if (_inspected < 0) Toast($"Inspector: {_preferences.InspectorPage}  ·  watch or click an agent to inspect it");
+            _nextHud = 0f;
+        }
+
+        private void ToggleOverlay(ref bool shown, string name)
+        {
+            shown = !shown;
+            SpectatorSave.SavePreferences(_preferences);
+            Toast($"{name} overlay {(shown ? "on" : "off")}");
+            RefreshOverlayText();
         }
 
         private bool Pressed(SpectatorAction action) => _input.WasPressed(action);
@@ -220,6 +253,7 @@ namespace CGD.DevTools
             }
 
             _followed = index;
+            Inspect(index);
             _controller.Follow();
             Toast($"Watching {AgentName(index)}");
             _nextHud = 0f;
@@ -233,7 +267,17 @@ namespace CGD.DevTools
             Watch(((from + direction) % count + count) % count);
         }
 
-        // An agent, or its label, close to where the pointer clicked. Clicks on the HUD don't count.
+        // Stays on through overview and free flight, so overlays and the panel can be watched
+        // from anywhere. −1 = nobody.
+        private void Inspect(int index)
+        {
+            _inspected = index;
+            _inspector.Inspect(index >= 0 ? _watchable[index] : null);
+            _nextHud = 0f;
+        }
+
+        // An agent, or its label, close to where the pointer clicked; clicking empty ground
+        // stops inspecting. Clicks on the HUD don't count.
         private void TryPick()
         {
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
@@ -253,6 +297,11 @@ namespace CGD.DevTools
                 picked = i;
             }
             if (picked >= 0) Watch(picked);
+            else if (_inspected >= 0)
+            {
+                Toast("Stopped inspecting");
+                Inspect(-1);
+            }
         }
 
         private float ScreenDistanceSq(Vector3 world, Vector2 pointer)
@@ -320,10 +369,12 @@ namespace CGD.DevTools
             _hud.SetMode(ModeText());
             _hud.SetTime(_time.IsPaused ? "<color=#FFB347><b>PAUSED</b></color>" : $"Game speed <b>{SpeedText()}</b>");
             _hud.SetHint(_hintText);
+            _hud.SetOverlays(_overlayText);
             _hud.SetHelp(_helpText, _preferences.ShowHelp && !_settingsPanel.IsOpen);
 
-            if (_followed >= 0 && !_settingsPanel.IsOpen) _hud.ShowFocus(FocusText(_followed));
-            else _hud.HideFocus();
+            string page = _inspected >= 0 && !_settingsPanel.IsOpen ? _inspector.Describe(_inspected + 1, _preferences.InspectorPage) : null;
+            if (page != null) _hud.ShowInspector(page);
+            else _hud.HideInspector();
         }
 
         private string ModeText() => _controller.Mode switch
@@ -331,34 +382,15 @@ namespace CGD.DevTools
             SpectatorCameraMode.Follow => _followed >= 0
                 ? $"<b>WATCHING</b>   <color=#FFD24A>{_followed + 1}</color>  {AgentName(_followed)}"
                 : "<b>WATCHING</b>",
-            SpectatorCameraMode.Free => $"<b>FREE CAMERA</b>   <color=#9AA0B0>fly speed ×{_controller.FreeSpeed:0.##}</color>",
-            _ => $"<b>WHOLE ARENA</b>   <color=#9AA0B0>{_watchable.Length} agents</color>",
+            SpectatorCameraMode.Free => $"<b>FREE CAMERA</b>   <color=#9AA0B0>fly speed ×{_controller.FreeSpeed:0.##}</color>{InspectingText()}",
+            _ => $"<b>WHOLE ARENA</b>   <color=#9AA0B0>{_watchable.Length} agents</color>{InspectingText()}",
         };
 
+        private string InspectingText() => _inspected >= 0
+            ? $"   <color=#9AA0B0>inspecting</color> <color=#FFD24A>{_inspected + 1}</color>"
+            : "";
+
         private string SpeedText() => _time.Speed >= 1f ? $"{_time.Speed:0}×" : $"{_time.Speed:0.##}×";
-
-        // The followed agent's status, the same rows the Behavior Tree Editor shows for it.
-        private string FocusText(int index)
-        {
-            EnemyAI     ai     = _watchable[index];
-            EnemyHealth health = ai.Health;
-
-            _text.Clear();
-            _text.Append("<size=120%><b><color=#FFD24A>").Append(index + 1).Append("</color>  ")
-                 .Append(AgentName(index)).Append("</b></size>\n");
-            _text.Append("<color=#9AA0B0>Health</color><pos=34%>").Append(health.Health.ToString("0")).Append(" / ")
-                 .Append(health.MaxHealth.ToString("0"));
-            if (health.MaxShield > 0f)
-                _text.Append("   <color=#7fc8ff>shield ").Append(health.Shield.ToString("0")).Append(" / ")
-                     .Append(health.MaxShield.ToString("0")).Append("</color>");
-            _text.Append('\n');
-
-            _rows.Clear();
-            ((IBtAgentStatus)ai).DescribeStatus(_rows);
-            foreach ((string label, string value) in _rows)
-                _text.Append("<color=#9AA0B0>").Append(label).Append("</color><pos=34%>").Append(value).Append('\n');
-            return _text.ToString();
-        }
 
         private string AgentName(int index)
         {
@@ -368,40 +400,25 @@ namespace CGD.DevTools
 
         private string Prompt(SpectatorAction action) => _inputSettings.PromptFor(action);
 
-        // Help and hint text come from the live bindings, so they follow any rebinding.
+        // Help, hint and overlay text come from the live bindings, so they follow any rebinding.
         private void OnBindingsChanged()
         {
-            string move = $"{Prompt(SpectatorAction.MoveForward)} {Prompt(SpectatorAction.MoveLeft)} " +
-                          $"{Prompt(SpectatorAction.MoveBack)} {Prompt(SpectatorAction.MoveRight)}";
-            string watch = $"{Prompt(SpectatorAction.WatchAgent1)} {Prompt(SpectatorAction.WatchAgent2)} " +
-                           $"{Prompt(SpectatorAction.WatchAgent3)} {Prompt(SpectatorAction.WatchAgent4)}";
+            _helpText = SpectatorHelpText.Controls(_inputSettings);
+            _hintText = SpectatorHelpText.Hint(_inputSettings);
+            RefreshOverlayText();
+        }
 
-            _helpText =
-                "<b>SPECTATOR CONTROLS</b>\n" +
-                "<color=#FFD24A>Camera</color>\n" +
-                Line("Move / pan", $"{move}   ({Prompt(SpectatorAction.MoveDown)} {Prompt(SpectatorAction.MoveUp)} down / up)") +
-                Line("Faster", $"hold {Prompt(SpectatorAction.Fast)}") +
-                Line("Look / orbit", $"hold {Prompt(SpectatorAction.Look)}") +
-                Line("Zoom", $"{Prompt(SpectatorAction.ZoomIn)} / {Prompt(SpectatorAction.ZoomOut)}   (free: fly speed)") +
-                "<color=#FFD24A>Watching</color>\n" +
-                Line("Watch an agent", $"{watch}   or click it") +
-                Line("Next / previous", $"{Prompt(SpectatorAction.NextAgent)}   ({Prompt(SpectatorAction.Fast)}+{Prompt(SpectatorAction.NextAgent)} back)") +
-                Line("Whole arena", Prompt(SpectatorAction.Overview)) +
-                Line("Free camera", $"{Prompt(SpectatorAction.FreeCamera)}   or just steer away") +
-                "<color=#FFD24A>Time</color>\n" +
-                Line("Pause / step", $"{Prompt(SpectatorAction.Pause)}   /   {Prompt(SpectatorAction.StepFrame)}") +
-                Line("Slower / faster", $"{Prompt(SpectatorAction.SlowDown)}   /   {Prompt(SpectatorAction.SpeedUp)}") +
-                "<color=#FFD24A>Display</color>\n" +
-                Line("Labels", Prompt(SpectatorAction.ToggleLabels)) +
-                Line("Hide this help", Prompt(SpectatorAction.ToggleHelp)) +
-                Line("Settings, rebinding", Prompt(SpectatorAction.Settings));
-
-            _hintText = $"<b>{Prompt(SpectatorAction.ToggleHelp)}</b> controls     <b>{Prompt(SpectatorAction.Settings)}</b> settings     " +
-                        $"<b>{Prompt(SpectatorAction.WatchAgent1)}–{Prompt(SpectatorAction.WatchAgent4)}</b> watch an agent     " +
-                        $"<b>{Prompt(SpectatorAction.Overview)}</b> whole arena";
+        private void RefreshOverlayText()
+        {
+            _overlayText = SpectatorOverlays.Status(_preferences, _inputSettings);
             _nextHud = 0f;
         }
 
-        private static string Line(string label, string keys) => $"{label}<pos=44%><b>{keys}</b>\n";
+        private Material OverlayMaterial()
+        {
+            if (_overlayMaterial != null) return _overlayMaterial;
+            Shader shader = Shader.Find("Sprites/Default");
+            return shader != null ? new Material(shader) { name = "Spectator Overlays" } : null;
+        }
     }
 }

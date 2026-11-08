@@ -30,7 +30,11 @@ namespace CGD.DevTools
             SpectatorAction.StepFrame     => "Step one frame",
             SpectatorAction.ToggleLabels  => "Show / hide labels",
             SpectatorAction.ToggleHelp    => "Show / hide help",
-            SpectatorAction.Settings      => "Settings",
+            SpectatorAction.Settings      => "Open settings",
+            SpectatorAction.InspectorPage => "Inspector page",
+            SpectatorAction.ToggleSenses  => "Senses overlay",
+            SpectatorAction.ToggleCover   => "Cover overlay",
+            SpectatorAction.TogglePlans   => "Paths & plans overlay",
             _                             => action.ToString(),
         };
     }
