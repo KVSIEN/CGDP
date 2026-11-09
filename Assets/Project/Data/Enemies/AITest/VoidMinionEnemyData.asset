@@ -19,8 +19,8 @@ MonoBehaviour:
   MaxShield: 0
   ShieldRegenDelay: 2.5
   ShieldRegenRate: 0
-  PatrolSpeed: 3
-  ChaseSpeed: 6.5
+  PatrolSpeed: 4.5
+  ChaseSpeed: 9
   SightRange: 60
   SightAngle: 360
   HearingRadius: 12
@@ -32,8 +32,8 @@ MonoBehaviour:
   AttackRange: 1.3
   AttackDamage: 5
   AttackCooldown: 0.7
-  RangedAttackCooldown: 2.2
-  RangedAttackDamage: 28
+  RangedAttackCooldown: 0
+  RangedAttackDamage: 0
   AttackWindup: 0.25
   DamageNumberColor: {r: 0.78, g: 0.55, b: 1, a: 1}
   PreferredRange: 13
@@ -42,10 +42,10 @@ MonoBehaviour:
   BurstInterval: 0.2
   StrafeInterval: 1.5
   StrafeDistance: 4
-  ShotProjectile: {fileID: 2000000000000000001, guid: 9820a47afd7d4a7ab32d837b5842376b, type: 3}
-  ShotSpeed: 13
-  ShotRadius: 0.4
-  ShotBlastRadius: 2
+  ShotProjectile: {fileID: 0}
+  ShotSpeed: 30
+  ShotRadius: 0
+  ShotBlastRadius: 0
   AlertDuration: 8
   AttackSound: {fileID: 0}
   RangedAttackSound: {fileID: 0}
