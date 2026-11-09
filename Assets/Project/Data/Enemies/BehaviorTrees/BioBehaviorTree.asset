@@ -36,11 +36,6 @@ MonoBehaviour:
   - rid: 1020
   - rid: 1021
   - rid: 1022
-  - rid: 1023
-  - rid: 1024
-  - rid: 1025
-  - rid: 1026
-  - rid: 1027
   - rid: 1028
   - rid: 1029
   - rid: 1030
@@ -70,10 +65,6 @@ MonoBehaviour:
   - rid: 1054
   - rid: 1055
   - rid: 1056
-  - rid: 1057
-  - rid: 1058
-  - rid: 1061
-  - rid: 1062
   - rid: 1079
   - rid: 1080
   - rid: 1081
@@ -141,13 +132,11 @@ MonoBehaviour:
         _comment: 
         _children:
         - ff1af1ccaa2d4168b1284aeb6d7329d8
-        - 5c56e3877ae3406faba62433bc7851c4
         - 54b29e8d5ce840e6a9b4fe8b992a76fe
         - 8525a0dd07764968836142bf0a1aa5a3
         - dfc2d59965ab4c20b4e02b569892bea5
         - ee06be27f963487eb2f4bfaa9ecd6f6a
         - fe8565c356ca47df9eca06231399a424
-        - bf3cbb7b5f8d4159a1262f14c11122b5
         - 9c9e3ace3e0e4d39ac285f2c391b3cb9
         - 3bd710ab35704c39aa83f1e9a97f47fa
         - 5517d53b78384b379a344a759b74eb1c
@@ -254,7 +243,7 @@ MonoBehaviour:
       data:
         _guid: ee06be27f963487eb2f4bfaa9ecd6f6a
         _position: {x: 220, y: 600}
-        _comment: 'Close enough: pounce (interrupts stalking and flanking)'
+        _comment: 'Within 14 m: pounce (interrupts flanking)'
         _children:
         - 22637cc959c441a7851db3763cc09408
         - 3a03dd21c1294ced87252244b4a7dc92
@@ -272,7 +261,7 @@ MonoBehaviour:
         _guid: 3a03dd21c1294ced87252244b4a7dc92
         _position: {x: 220, y: 750}
         _comment: 
-        _range: 8
+        _range: 14
     - rid: 1022
       type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
@@ -280,51 +269,12 @@ MonoBehaviour:
         _position: {x: 440, y: 750}
         _comment: 
         _stopDistance: 0
-    - rid: 1023
-      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: bf3cbb7b5f8d4159a1262f14c11122b5
-        _position: {x: 1870, y: 600}
-        _comment: 'Far off and in the open: dash to the next cover closer to the target, pause, repeat'
-        _children:
-        - 037286a51dc849ed90591342ed0101e0
-        - 35ede6a6e14a47e8be28b5d63a0695e6
-        - 2f3fd0d7e9e548e4801629b2ee308763
-        - 63480189ed294b3ba4ff921860803dbb
-        _abort: 0
-    - rid: 1024
-      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 037286a51dc849ed90591342ed0101e0
-        _position: {x: 1540, y: 750}
-        _comment: 
-    - rid: 1025
-      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 35ede6a6e14a47e8be28b5d63a0695e6
-        _position: {x: 1760, y: 750}
-        _comment: 
-    - rid: 1026
-      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 2f3fd0d7e9e548e4801629b2ee308763
-        _position: {x: 1980, y: 750}
-        _comment: 
-        _use: 2
-        _giveUpAfter: 5
-    - rid: 1027
-      type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: 63480189ed294b3ba4ff921860803dbb
-        _position: {x: 2200, y: 750}
-        _comment: 
-        _seconds: {Min: 0.3, Max: 0.7, Bias: 0}
     - rid: 1028
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: 9c9e3ace3e0e4d39ac285f2c391b3cb9
         _position: {x: 2420, y: 600}
-        _comment: 'No cover to advance through, or it lost sight: circle round by the least visible route'
+        _comment: 'Not yet committed, or it lost sight: circle round by the least visible route, then charge'
         _children:
         - 160be720d636425583b828f6542aade8
         _seconds: 3
@@ -389,7 +339,7 @@ MonoBehaviour:
         _comment: 
         _key: TargetHealth
         _comparison: 1
-        _value: 0.35
+        _value: 0.5
         _ifMissing: 0
     - rid: 1037
       type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
@@ -399,7 +349,7 @@ MonoBehaviour:
         _comment: 
         _key: TargetDistance
         _comparison: 1
-        _value: 20
+        _value: 35
         _ifMissing: 0
     - rid: 1038
       type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
@@ -413,7 +363,7 @@ MonoBehaviour:
       data:
         _guid: fe8565c356ca47df9eca06231399a424
         _position: {x: 990, y: 600}
-        _comment: 'Blood in the water: a badly hurt target within 20 m is run down at once, no cover-to-cover dashes'
+        _comment: 'Blood in the water: a target at half health or less within 35 m is run down at once'
         _children:
         - 7c9f7bb4eb524aa0a8b5e97b2836e9db
         - 91dbdc4f922044a4be618db4ffac981d
@@ -559,37 +509,6 @@ MonoBehaviour:
         - d0a1cdfdcd7041beb4ab58f8c9527ba4
         - ba039ce9e4a743178c1af6cdc7ec6b5e
         - 65946abc19704d938f0e269e91c66339
-        _abort: 2
-    - rid: 1057
-      type: {class: UnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: cf864cae1ff24449a0fcbfd71ec906d2
-        _position: {x: -2640, y: 1350}
-        _comment: 
-    - rid: 1058
-      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: bc928e169cc3483492d26720fe0cce50
-        _position: {x: -2420, y: 1350}
-        _comment: 
-    - rid: 1061
-      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 921ae89a67ba4e068416a6f689eccbc9
-        _position: {x: -1760, y: 1350}
-        _comment: 
-        _use: 2
-        _giveUpAfter: 4
-    - rid: 1062
-      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: 5c56e3877ae3406faba62433bc7851c4
-        _position: {x: -2200, y: 1200}
-        _comment: 'Shot at on the way in: dash out of the line of fire to the next cover closer'
-        _children:
-        - cf864cae1ff24449a0fcbfd71ec906d2
-        - bc928e169cc3483492d26720fe0cce50
-        - 921ae89a67ba4e068416a6f689eccbc9
         _abort: 2
     - rid: 1079
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}

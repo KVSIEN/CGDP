@@ -36,11 +36,6 @@ MonoBehaviour:
   - rid: 1020
   - rid: 1021
   - rid: 1022
-  - rid: 1023
-  - rid: 1024
-  - rid: 1025
-  - rid: 1026
-  - rid: 1027
   - rid: 1028
   - rid: 1029
   - rid: 1030
@@ -232,7 +227,6 @@ MonoBehaviour:
         - e2a1b2c3d4e5f60718293a4b5c6d701
         - 005f4c77603840d4ab6a10fa5550053b
         - 223bb24576d84dd29211ebc63a235095
-        - f1212c88528d4fa9bbf28e96e9acc1c7
         - 9b4f8aa4e67d4a628908272ba7c56088
         - 1280971f72074b778a3eda977d66b5f8
         - 6bf2b656b18d4bf7a4c01701eb09e0eb
@@ -296,50 +290,6 @@ MonoBehaviour:
         _position: {x: -288, y: 1050}
         _comment: 
         _distance: 10
-    - rid: 1023
-      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: f1212c88528d4fa9bbf28e96e9acc1c7
-        _position: {x: 42, y: 600}
-        _comment: 'Shot at (hit or near miss): sometimes sidestep out of the line of fire'
-        _children:
-        - e4aa7d96aeb44b3faf79e39652e36dfe
-        - b8edb6bc4d9d4fa88391ffd8c0dc2ab8
-        _abort: 2
-    - rid: 1024
-      type: {class: UnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: e4aa7d96aeb44b3faf79e39652e36dfe
-        _position: {x: -68, y: 750}
-        _comment: 
-    - rid: 1025
-      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: b8edb6bc4d9d4fa88391ffd8c0dc2ab8
-        _position: {x: 152, y: 750}
-        _comment: 
-        _children:
-        - b0b10927564f4df4965b47ef7c9ddce4
-        _seconds: 2.5
-        _onlyAfterSuccess: 0
-    - rid: 1026
-      type: {class: Chance, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: b0b10927564f4df4965b47ef7c9ddce4
-        _position: {x: 152, y: 900}
-        _comment: 
-        _children:
-        - 2fafe2eb2334456c86d42e4e4af81ea7
-        _probability: 0.6
-    - rid: 1027
-      type: {class: Dodge, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 2fafe2eb2334456c86d42e4e4af81ea7
-        _position: {x: 152, y: 1050}
-        _comment: 
-        _distance: 3.5
-        _speed: 2.2
-        _maxTime: 0.8
     - rid: 1028
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:

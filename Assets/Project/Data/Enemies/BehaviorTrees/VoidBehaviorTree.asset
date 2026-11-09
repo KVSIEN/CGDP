@@ -263,7 +263,7 @@ MonoBehaviour:
         _comment: 
         _children:
         - 456e173ca3094e43bc9d02b2ed4ab90d
-        _seconds: 2
+        _seconds: 1
         _onlyAfterSuccess: 0
     - rid: 1019
       type: {class: Chance, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
@@ -273,7 +273,7 @@ MonoBehaviour:
         _comment: 
         _children:
         - 26355c9feff746879832db18ff32e65a
-        _probability: 0.6
+        _probability: 0.85
     - rid: 1020
       type: {class: Dodge, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
@@ -434,7 +434,7 @@ MonoBehaviour:
         _comment: 
         _children:
         - 10c1820f6e57471b876cc674f325ae35
-        _seconds: 14
+        _seconds: 6
         _onlyAfterSuccess: 0
     - rid: 1039
       type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
