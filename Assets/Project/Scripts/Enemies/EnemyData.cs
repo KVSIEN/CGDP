@@ -87,6 +87,8 @@ namespace CGD.Enemies
         [Min(0f)] public float ShotRadius = 0f;
         [Tooltip("Metres: a projectile shot also hurts everyone this close to where it lands. 0 = none")]
         [Min(0f)] public float ShotBlastRadius = 0f;
+        [Tooltip("Status effects every ranged hit applies (Void's slow)")]
+        public StatusEffectApplication[] ShotEffects;
 
         [Header("Group & Reactions")]
         [Tooltip("It won't step in to strike while this many allies (itself included) are already in melee with the same target — it circles instead")]

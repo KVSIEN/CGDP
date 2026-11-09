@@ -223,7 +223,8 @@ namespace CGD.Enemies
             fireSound.TryPlay(_ai.transform.position);
             _ai.NotifyFired();
 
-            var info = new DamageInfo(data.RangedAttackDamage > 0f ? data.RangedAttackDamage : data.AttackDamage, source: _source);
+            var info = new DamageInfo(data.RangedAttackDamage > 0f ? data.RangedAttackDamage : data.AttackDamage, source: _source,
+                                  onHitEffects: data.ShotEffects);
             if (projectile)
             {
                 LaunchProjectile(data, eyePos, dir, info);

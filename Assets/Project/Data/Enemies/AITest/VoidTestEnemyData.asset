@@ -42,10 +42,13 @@ MonoBehaviour:
   BurstInterval: 0.2
   StrafeInterval: 1.5
   StrafeDistance: 4
-  ShotProjectile: {fileID: 2000000000000000001, guid: 9820a47afd7d4a7ab32d837b5842376b, type: 3}
-  ShotSpeed: 13
+  ShotProjectile: {fileID: 2000000000000000001, guid: 3c5eb489a8194290a25b01c4d17cb91c, type: 3}
+  ShotSpeed: 14
   ShotRadius: 0.4
-  ShotBlastRadius: 2
+  ShotBlastRadius: 1.6
+  ShotEffects:
+  - Effect: {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
+    Chance: 1
   AlertDuration: 8
   AttackSound: {fileID: 0}
   RangedAttackSound: {fileID: 0}
