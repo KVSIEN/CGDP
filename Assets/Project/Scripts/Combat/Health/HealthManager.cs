@@ -142,6 +142,19 @@ namespace CGD.Combat
             OnChanged?.Invoke();
             if (_currentHealth > before) OnHealed?.Invoke(_currentHealth - before);
         }
+        // Gives up up to this much shield on purpose (a discharge) and returns how much it was.
+        // The shield then waits out its regen delay, as after a hit.
+        public float DrainShield(float amount)
+        {
+            float drained = Mathf.Min(Mathf.Max(0f, amount), _shield.Current);
+            if (IsDead || drained <= 0f) return 0f;
+
+            _shield.Drain(drained);
+            _shield.SuppressRegen();
+            OnChanged?.Invoke();
+            return drained;
+        }
+
 
         // Sets health and shield straight to these shares of their maxima, without a hit (test
         // scenarios: "start wounded", "start with the shield broken"). Health stays above 0;

@@ -17,6 +17,10 @@ namespace CGD.Abilities
         [Tooltip("Downward acceleration in m/s² applied to the projectile in flight. 0 = perfectly straight.")]
         [Min(0f)]
         public float Gravity  = 0f;
+        [Tooltip("Metres: thickness of the projectile, so near misses still hit. 0 = a thin ray")]
+        [Min(0f)] public float HitRadius = 0f;
+        [Tooltip("Metres: everyone this close to where it lands is hurt (and affected) too. 0 = none")]
+        [Min(0f)] public float BlastRadius = 0f;
         public StatusEffectApplication[] OnHitEffects;
 
         // Distance in front of the camera to spawn — prevents clipping through geometry directly ahead
@@ -43,6 +47,8 @@ namespace CGD.Abilities
                 MaxDistance = Mathf.Infinity,
                 HitMask     = ~0,
                 Falloff     = DamageFalloff.None,
+                HitRadius   = HitRadius,
+                BlastRadius = BlastRadius,
             });
         }
     }

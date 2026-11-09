@@ -57,6 +57,8 @@ namespace CGD.Enemies
         public float AttackRange    = 1.5f;
         public float AttackDamage   = 15f;
         public float AttackCooldown = 1f;
+        [Tooltip("Seconds between ranged bursts. 0 = the attack cooldown (a hybrid keeps its melee quick and its shooting slow)")]
+        [Min(0f)] public float RangedAttackCooldown = 0f;
         [Tooltip("Seconds between starting an attack and the hit landing (melee only)")]
         public float AttackWindup   = 0.35f;
         [Tooltip("Colour of the damage numbers on whatever this enemy hurts, to tell attackers apart (rival factions). Clear = the usual white")]
@@ -79,6 +81,10 @@ namespace CGD.Enemies
         public GameObject ShotProjectile;
         [Tooltip("Metres per second a projectile shot flies at")]
         [Min(1f)] public float ShotSpeed = 30f;
+        [Tooltip("Metres: thickness of a projectile shot, so near misses still hit. 0 = a thin ray")]
+        [Min(0f)] public float ShotRadius = 0f;
+        [Tooltip("Metres: a projectile shot also hurts everyone this close to where it lands. 0 = none")]
+        [Min(0f)] public float ShotBlastRadius = 0f;
 
         [Header("Group & Reactions")]
         [Tooltip("It won't step in to strike while this many allies (itself included) are already in melee with the same target — it circles instead")]

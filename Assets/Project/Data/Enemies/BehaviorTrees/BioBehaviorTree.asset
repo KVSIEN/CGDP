@@ -84,6 +84,14 @@ MonoBehaviour:
   - rid: 1068
   - rid: 1069
   - rid: 1070
+  - rid: 1071
+  - rid: 1072
+  - rid: 1073
+  - rid: 1074
+  - rid: 1075
+  - rid: 1076
+  - rid: 1077
+  - rid: 1078
   references:
     version: 2
     RefIds:
@@ -151,6 +159,7 @@ MonoBehaviour:
         - dfc2d59965ab4c20b4e02b569892bea5
         - ee06be27f963487eb2f4bfaa9ecd6f6a
         - fe8565c356ca47df9eca06231399a424
+        - e1a1b2c3d4e5f60718293a4b5c6d701
         - 6ecca6c2956e4fe5b7cb48e6189d8e5e
         - bf3cbb7b5f8d4159a1262f14c11122b5
         - 9c9e3ace3e0e4d39ac285f2c391b3cb9
@@ -688,3 +697,78 @@ MonoBehaviour:
         _comparison: 4
         _value: 0.5
         _ifMissing: 0
+    - rid: 1071
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e1a1b2c3d4e5f60718293a4b5c6d701
+        _position: {x: 1500, y: 1200}
+        _comment: 'Healthy and the target 9-25 m off: slip out of sight (Ambush: regen, next strike hits hard and unstealths) and stalk it in'
+        _children:
+        - e1a1b2c3d4e5f60718293a4b5c6d702
+        - e1a1b2c3d4e5f60718293a4b5c6d703
+        - e1a1b2c3d4e5f60718293a4b5c6d704
+        - e1a1b2c3d4e5f60718293a4b5c6d705
+        - e1a1b2c3d4e5f60718293a4b5c6d706
+        - e1a1b2c3d4e5f60718293a4b5c6d707
+        - e1a1b2c3d4e5f60718293a4b5c6d708
+        _abort: 2
+    - rid: 1072
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e1a1b2c3d4e5f60718293a4b5c6d702
+        _position: {x: 1300, y: 1350}
+        _comment: 
+    - rid: 1073
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e1a1b2c3d4e5f60718293a4b5c6d703
+        _position: {x: 1500, y: 1350}
+        _comment: 
+        _ability: {fileID: 11400000, guid: d0a1b2c3d4e5f60718293a4b5c6d7e02, type: 2}
+    - rid: 1074
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e1a1b2c3d4e5f60718293a4b5c6d704
+        _position: {x: 1700, y: 1350}
+        _comment: 
+        _key: TargetDistance
+        _comparison: 4
+        _value: 9
+        _ifMissing: 0
+    - rid: 1075
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e1a1b2c3d4e5f60718293a4b5c6d705
+        _position: {x: 1900, y: 1350}
+        _comment: 
+        _key: TargetDistance
+        _comparison: 1
+        _value: 25
+        _ifMissing: 0
+    - rid: 1076
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e1a1b2c3d4e5f60718293a4b5c6d706
+        _position: {x: 2100, y: 1350}
+        _comment: 
+        _key: Health
+        _comparison: 4
+        _value: 0.5
+        _ifMissing: 0
+    - rid: 1077
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e1a1b2c3d4e5f60718293a4b5c6d707
+        _position: {x: 2300, y: 1350}
+        _comment: 
+        _ability: {fileID: 11400000, guid: d0a1b2c3d4e5f60718293a4b5c6d7e02, type: 2}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0
+    - rid: 1078
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e1a1b2c3d4e5f60718293a4b5c6d708
+        _position: {x: 2500, y: 1350}
+        _comment: 
+        _stopDistance: 0

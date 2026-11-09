@@ -10,6 +10,7 @@ using CGD.Combat;
 using CGD.Core;
 using CGD.Impacts;
 using CGD.Items;
+using CGD.Stealth;
 using CGD.Stats;
 
 namespace CGD.Enemies
@@ -102,6 +103,7 @@ namespace CGD.Enemies
         internal EnemyTactics      Tactics      { get; private set; }
         internal EnemyPost         Post         { get; private set; }
         internal EnemyAbilities    Abilities    { get; private set; }
+        internal EnemyAmbush       Ambush       { get; private set; }
         internal GrenadeThrower    Grenades     { get; private set; }
         internal EnemySquad        Squad        { get; private set; }
         internal SquadRole         SquadRole    => Squad != null ? Squad.RoleOf(this) : SquadRole.None;
@@ -142,8 +144,10 @@ namespace CGD.Enemies
             Search        = new EnemySearch(this);
             Tactics       = new EnemyTactics(this, _obstacleMask);
             Post          = new EnemyPost(this);
-            Abilities     = new EnemyAbilities(this, _damageSource);
-            Grenades      = new GrenadeThrower(this, _damageSource);
+            TryGetComponent(out Stealthable stealth);
+            Ambush        = new EnemyAmbush(stealth);
+            Abilities     = new EnemyAbilities(this, _damageSource, stealth);
+            Grenades      = new GrenadeThrower(this, _damageSource, _obstacleMask);
             Morale        = new EnemyMorale(this);
             Voice         = new EnemyVoice(this);
             _health.OnDeath += OnDeath;
@@ -330,6 +334,9 @@ namespace CGD.Enemies
             StateChanged?.Invoke(state);
         }
 
+        // What blocks sight and shots, for nodes that need to know whether a view is open.
+        internal LayerMask ObstacleMask => _obstacleMask;
+
         // Slowed by status effects, and sped up or slowed by buffs (MovementSpeed stat, base 1).
         internal void SetSpeed(float speed) => Agent.speed = speed * _stunnable.SpeedMultiplier * SpeedFromStats;
 
@@ -400,6 +407,7 @@ namespace CGD.Enemies
 
             _attackHits.Clear();
             float damage = _stats != null ? _stats.Apply(ItemStat.Damage, _data.AttackDamage) : _data.AttackDamage;
+            damage *= Ambush.Consume();
             var info = new DamageInfo(damage, source: _damageSource);
 
             for (int i = 0; i < count; i++)
@@ -480,6 +488,7 @@ namespace CGD.Enemies
             IsAttacking  = false;
             _attackCooldown.Reset();
             RangedCombat.Reset();
+            Ambush.Disarm();
             Search.Cancel();
             Tactics.Reset();
             Perception.Reset();

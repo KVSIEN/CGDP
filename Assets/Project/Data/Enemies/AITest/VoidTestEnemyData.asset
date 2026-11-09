@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
   DisplayName: Void Agent
   Team: 5
-  MaxHealth: 45
+  MaxHealth: 40
   Armor: 0
-  MaxShield: 55
-  ShieldRegenDelay: 3
-  ShieldRegenRate: 15
+  MaxShield: 60
+  ShieldRegenDelay: 2.5
+  ShieldRegenRate: 20
   PatrolSpeed: 1.2
   ChaseSpeed: 4.5
   SightRange: 60
@@ -30,18 +30,21 @@ MonoBehaviour:
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
   CombatType: 1
   AttackRange: 1.6
-  AttackDamage: 7
-  AttackCooldown: 1.4
+  AttackDamage: 12
+  AttackCooldown: 1
+  RangedAttackCooldown: 2.4
   AttackWindup: 0.6
   DamageNumberColor: {r: 0.78, g: 0.55, b: 1, a: 1}
-  PreferredRange: 11
+  PreferredRange: 13
   SpreadAngle: 3
-  BurstCount: 2
+  BurstCount: 3
   BurstInterval: 0.2
   StrafeInterval: 1.5
   StrafeDistance: 4
   ShotProjectile: {fileID: 2000000000000000001, guid: 9820a47afd7d4a7ab32d837b5842376b, type: 3}
   ShotSpeed: 16
+  ShotRadius: 0.25
+  ShotBlastRadius: 1
   AlertDuration: 8
   AttackSound: {fileID: 0}
   RangedAttackSound: {fileID: 0}

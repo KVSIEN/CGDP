@@ -31,6 +31,8 @@ namespace CGD.Abilities
         public Stealthable           Stealth;
         // Enemies only: slips the caster somewhere its hostiles can't see (Phase Shift).
         public IUnseenRelocator      Relocator;
+        // Enemies only: arms the next attack for extra damage (Ambush).
+        public IAmbushStrike         Ambush;
 
         // Set per cast by resource scaling: damage multiplier and extra on-hit effects.
         public float Power = 1f;

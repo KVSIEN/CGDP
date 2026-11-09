@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
   DisplayName: Tech Agent
   Team: 4
-  MaxHealth: 30
-  Armor: 50
-  MaxShield: 37
+  MaxHealth: 20
+  Armor: 100
+  MaxShield: 30
   ShieldRegenDelay: 4
   ShieldRegenRate: 12
   PatrolSpeed: 1.5
@@ -30,7 +30,7 @@ MonoBehaviour:
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
   CombatType: 1
   AttackRange: 1.6
-  AttackDamage: 6
+  AttackDamage: 9
   AttackCooldown: 1.5
   AttackWindup: 0.45
   DamageNumberColor: {r: 1, g: 0.85, b: 0.25, a: 1}
@@ -41,7 +41,7 @@ MonoBehaviour:
   StrafeInterval: 2
   StrafeDistance: 3
   ShotProjectile: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
-  ShotSpeed: 12
+  ShotSpeed: 26
   RaisesAlarm: 0
   AlertDuration: 6
   AttackSound: {fileID: 0}

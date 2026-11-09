@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.StatBuffAbility
   DisplayName: Surge
   SlotColor: {r: 0.4, g: 0.9, b: 0.3, a: 1}
-  Cooldown: 12
+  Cooldown: 20
   MaxCharges: 1
   CastTime: 0.15
   Buff: {fileID: 11400000, guid: 0e0e5593fab042dcb6fd8ef985d6344f, type: 2}
-  Duration: 5
+  Duration: 4

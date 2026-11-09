@@ -18,7 +18,7 @@ MonoBehaviour:
     Value: 0.6
   - Stat: 23
     Op: 0
-    Value: 6
+    Value: 4
   - Stat: 7
     Op: 0
-    Value: 0.6
+    Value: 0.3

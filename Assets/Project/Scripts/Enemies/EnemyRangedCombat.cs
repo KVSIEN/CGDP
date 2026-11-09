@@ -18,6 +18,9 @@ namespace CGD.Enemies
         // The band around the preferred range that counts as "in position".
         private const float RangeTolerance = 0.15f;
         private const float MuzzleOffset   = 0.6f;
+        // A shot that stops this close to where it was aimed counts as reaching it (cover the
+        // target crouches behind); any earlier and it is a shot into a wall.
+        private const float ClearShotSlack = 2.5f;
 
         private readonly EnemyAI      _ai;
         private readonly DamageSource _source;
@@ -102,9 +105,14 @@ namespace CGD.Enemies
             if (!_hasShooterToken) return false;
 
             EnemyData data = _ai.Data;
-            _fireCooldown.Start(data.AttackCooldown);
             _burstRemaining = Mathf.Max(1, data.BurstCount);
-            FireOneShot();
+            // A blocked first shot isn't taken at all: no cooldown spent, no token held.
+            if (!FireOneShot())
+            {
+                CancelBurst();
+                return false;
+            }
+            _fireCooldown.Start(data.RangedAttackCooldown > 0f ? data.RangedAttackCooldown : data.AttackCooldown);
             _burstRemaining--;
             _burstTimer = data.BurstInterval;
             return true;
@@ -135,7 +143,12 @@ namespace CGD.Enemies
             _burstTimer -= deltaTime;
             if (_burstTimer > 0f) return;
 
-            FireOneShot();
+            // The target may have stepped behind scenery since the first shot: drop the rest.
+            if (!FireOneShot())
+            {
+                CancelBurst();
+                return;
+            }
             _burstRemaining--;
             _burstTimer = _ai.Data.BurstInterval;
         }
@@ -175,11 +188,17 @@ namespace CGD.Enemies
             }
         }
 
-        private void FireOneShot()
+        // Whether a shot at this point would reach it rather than hit scenery on the way —
+        // a wall in front of the shooter, a corner the target is round.
+        public bool HasClearShot(Vector3 aimPoint) =>
+            SightLines.ReachesWithin(_ai.transform.position + Vector3.up * EyeHeight, aimPoint, ClearShotSlack, _obstacleMask);
+
+        // False when the shot isn't taken because scenery blocks it.
+        private bool FireOneShot()
         {
             EnemyData data   = _ai.Data;
             var       target = _ai.Perception.Target;
-            if (target == null) return;
+            if (target == null) return false;
 
             Vector3 eyePos       = _ai.transform.position + Vector3.up * EyeHeight;
             // Aims where it believes the target is: dead on while it sees it, a guess when not.
@@ -196,6 +215,10 @@ namespace CGD.Enemies
             if (data.SpreadAngle > 0f)
                 dir = WeaponFireBehavior.ComputeSpreadDirection(dir, data.SpreadAngle);
 
+            // Checks the shot as it will really fly (lead and spread included), not just the line to the target.
+            float reach = Vector3.Distance(eyePos, targetCenter);
+            if (!SightLines.ReachesWithin(eyePos, eyePos + dir * reach, ClearShotSlack, _obstacleMask)) return false;
+
             SoundBank fireSound = data.RangedAttackSound != null ? data.RangedAttackSound : data.AttackSound;
             fireSound.TryPlay(_ai.transform.position);
             _ai.NotifyFired();
@@ -204,7 +227,7 @@ namespace CGD.Enemies
             if (projectile)
             {
                 LaunchProjectile(data, eyePos, dir, info);
-                return;
+                return true;
             }
 
             if (Physics.Raycast(eyePos, dir, out var hit, data.SightRange, ~0, QueryTriggerInteraction.Ignore))
@@ -212,6 +235,7 @@ namespace CGD.Enemies
                 Hitbox.ApplyHit(hit.collider, info, hit.point);
                 ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet, _source);
             }
+            return true;
         }
 
         // Starts just outside its own body (the projectile ignores the shooter anyway) and
@@ -227,6 +251,8 @@ namespace CGD.Enemies
                 MaxDistance = data.SightRange,
                 HitMask     = ~0,
                 Falloff     = DamageFalloff.None,
+                HitRadius   = data.ShotRadius,
+                BlastRadius = data.ShotBlastRadius,
             });
         }
     }

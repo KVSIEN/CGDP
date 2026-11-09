@@ -10,6 +10,8 @@ namespace CGD.Combat
     public class Projectile : MonoBehaviour
     {
         private static readonly RaycastHit[] _hitBuffer = new RaycastHit[16];
+        private static readonly Collider[] _blastBuffer = new Collider[16];
+        private static readonly HashSet<IDamageable> _splashed = new();
         private static readonly HitDistanceComparer _distanceComparer = new();
 
         private ProjectileLaunch _launch;
@@ -75,6 +77,7 @@ namespace CGD.Combat
                 float scale = _launch.Falloff.Evaluate(_distance + hit.distance);
                 Hitbox.ApplyHit(hit.collider, _launch.Damage.WithDamageScale(scale), hit.point);
                 ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet, _launch.Damage.Source);
+                if (_launch.BlastRadius > 0f) Splash(hit);
                 Impacted?.Invoke(hit.point, hit.normal);
                 Despawn();
                 return;
@@ -85,6 +88,32 @@ namespace CGD.Combat
             FaceVelocity();
 
             if (spent) Despawn();
+        }
+
+        // Hurts everyone else within the blast radius of the impact, unless scenery shields them:
+        // a round that lands beside its target still counts.
+        private void Splash(RaycastHit hit)
+        {
+            Vector3 center = hit.point + hit.normal * 0.1f;
+            int count = Physics.OverlapSphereNonAlloc(center, _launch.BlastRadius, _blastBuffer,
+                _launch.HitMask, QueryTriggerInteraction.Ignore);
+
+            _splashed.Clear();
+            IDamageable direct = Hitbox.FindDamageable(hit.collider);
+            if (direct != null) _splashed.Add(direct);
+
+            for (int i = 0; i < count; i++)
+            {
+                Collider col = _blastBuffer[i];
+                if (_owner != null && col.transform.IsChildOf(_owner)) continue;
+
+                IDamageable target = Hitbox.FindDamageable(col);
+                if (target == null || !_splashed.Add(target)) continue;
+                if (Physics.Linecast(center, col.ClosestPoint(center), out RaycastHit block, _launch.HitMask, QueryTriggerInteraction.Ignore)
+                    && Hitbox.FindDamageable(block.collider) != target) continue;
+
+                target.TakeDamage(_launch.Damage);
+            }
         }
 
         private void Despawn() => PrefabPool.Release(gameObject);
@@ -114,7 +143,9 @@ namespace CGD.Combat
             float distance = step.magnitude;
             if (distance <= 0f) return false;
 
-            int count = Physics.RaycastNonAlloc(start, step / distance, _hitBuffer,
+            int count = _launch.HitRadius > 0f
+                ? Physics.SphereCastNonAlloc(start, _launch.HitRadius, step / distance, _hitBuffer, distance, _launch.HitMask, QueryTriggerInteraction.Ignore)
+                : Physics.RaycastNonAlloc(start, step / distance, _hitBuffer,
                 distance, _launch.HitMask, QueryTriggerInteraction.Ignore);
             if (count == 0) return false;
 
@@ -125,6 +156,12 @@ namespace CGD.Combat
                 if (_owner != null && _hitBuffer[i].collider.transform.IsChildOf(_owner))
                     continue;
                 hit = _hitBuffer[i];
+                // A sphere that starts inside something reports no point: use where it was.
+                if (hit.distance <= 0f)
+                {
+                    hit.point  = start;
+                    hit.normal = -step / distance;
+                }
                 return true;
             }
             return false;

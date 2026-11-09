@@ -68,6 +68,8 @@ namespace CGD.DevTools
                  .Append(health.Health.ToString("0")).Append(" / ").Append(health.MaxHealth.ToString("0"));
             if (health.MaxShield > 0f)
                 _text.Append("   ").Coloured(InspectorText.Shield, $"shield {health.Shield:0} / {health.MaxShield:0}");
+            if (health.Armor > 0f)
+                _text.Append("   ").Coloured(InspectorText.Armor, $"armor {health.Armor:0}");
             _text.Append('\n');
         }
 

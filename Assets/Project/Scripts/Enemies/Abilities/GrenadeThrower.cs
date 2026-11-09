@@ -15,24 +15,31 @@ namespace CGD.Enemies
         private const float WindUp      = 0.5f;
         private const float HandHeight  = 1.6f;
         private const float ArcAngle    = 40f;
+        // Flight simulation for the clear-arc check.
+        private const float ArcStep      = 0.04f;
+        private const int   ArcMaxSteps  = 150;
+        // A grenade stopping this close to the target counts as landing on it.
+        private const float LandingSlack = 3f;
 
         private readonly EnemyAI      _ai;
         private readonly DamageSource _source;
+        private readonly LayerMask    _obstacleMask;
 
         private GrenadeData _pending;
         private Vector3     _aimAt;
         private float       _throwAt;
 
-        public GrenadeThrower(EnemyAI ai, DamageSource source)
+        public GrenadeThrower(EnemyAI ai, DamageSource source, LayerMask obstacleMask)
         {
             _ai     = ai;
             _source = source;
+            _obstacleMask = obstacleMask;
         }
 
         public bool IsThrowing => _pending != null;
 
         public bool CanReach(GrenadeData grenade, Vector3 target) =>
-            grenade != null && grenade.GrenadePrefab != null && Solve(grenade, target, out _);
+            grenade != null && grenade.GrenadePrefab != null && TrySolveClear(grenade, target, out _);
 
         public bool TryBegin(GrenadeData grenade, Vector3 target)
         {
@@ -62,7 +69,7 @@ namespace CGD.Enemies
 
         private void Throw(GrenadeData data, Vector3 target)
         {
-            if (!Solve(data, target, out Vector3 velocity)) return;
+            if (!TrySolveClear(data, target, out Vector3 velocity)) return;
 
             GameObject grenade = PrefabPool.Spawn(data.GrenadePrefab, HandPosition, Quaternion.identity);
             if (grenade.TryGetComponent(out Rigidbody body))
@@ -76,6 +83,33 @@ namespace CGD.Enemies
 
             data.ThrowSound.TryPlay(_ai.transform.position);
             _ai.NotifyThrew();
+        }
+
+        // A throw that lands on the target and doesn't hit a wall, ceiling or corner on the way:
+        // a lob at a wall in front of the thrower would drop the grenade at its own feet.
+        private bool TrySolveClear(GrenadeData data, Vector3 target, out Vector3 velocity) =>
+            Solve(data, target, out velocity) && IsHandClear() && IsArcClear(data, target, velocity);
+
+        private bool IsHandClear() =>
+            !Physics.Linecast(_ai.transform.position + Vector3.up, HandPosition, _obstacleMask, QueryTriggerInteraction.Ignore);
+
+        private bool IsArcClear(GrenadeData data, Vector3 target, Vector3 velocity)
+        {
+            Vector3 position = HandPosition;
+            Vector3 gravity  = data.Gravity;
+            for (int i = 0; i < ArcMaxSteps; i++)
+            {
+                Vector3 next = position + velocity * ArcStep + 0.5f * ArcStep * ArcStep * gravity;
+                velocity += gravity * ArcStep;
+
+                if (Physics.Linecast(position, next, out RaycastHit hit, _obstacleMask, QueryTriggerInteraction.Ignore) &&
+                    Hitbox.FindDamageable(hit.collider) == null)
+                    return (hit.point - target).sqrMagnitude <= LandingSlack * LandingSlack;
+
+                if (next.y < target.y && velocity.y < 0f) return true;
+                position = next;
+            }
+            return true;
         }
 
         private bool Solve(GrenadeData data, Vector3 target, out Vector3 velocity) =>

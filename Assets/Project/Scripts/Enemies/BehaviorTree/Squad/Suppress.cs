@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using CGD.BehaviorTrees;
 
 namespace CGD.Enemies
@@ -23,6 +24,8 @@ namespace CGD.Enemies
             Ai.FaceTowards(Ai.Perception.TargetPosition, context.DeltaTime);
 
             var combat = Ai.RangedCombat;
+            // Pinning a target down means hitting its cover, not the wall in front of the shooter.
+            if (!_fired && !combat.HasClearShot(Ai.Perception.TargetPosition + Vector3.up)) return BtStatus.Failure;
             if (!_fired) _fired = combat.TryStartBurst();
             return _fired && !combat.IsBursting ? BtStatus.Success : BtStatus.Running;
         }

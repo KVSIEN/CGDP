@@ -3,6 +3,7 @@ using UnityEngine;
 using CGD.Abilities;
 using CGD.Combat;
 using CGD.Stats;
+using CGD.Stealth;
 
 namespace CGD.Enemies
 {
@@ -29,7 +30,7 @@ namespace CGD.Enemies
         private float   _castEndsAt;
         private Vector3 _castAimAt;
 
-        public EnemyAbilities(EnemyAI ai, DamageSource source)
+        public EnemyAbilities(EnemyAI ai, DamageSource source, Stealthable stealth)
         {
             _ai = ai;
             _aim = new GameObject("AbilityAim").transform;
@@ -49,6 +50,8 @@ namespace CGD.Enemies
                 Stats           = stats,
                 Timeline        = timeline,
                 Relocator       = new EnemyPhaseShift(ai),
+                Stealth         = stealth,
+                Ambush          = ai.Ambush,
             };
         }
 

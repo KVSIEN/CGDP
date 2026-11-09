@@ -20,7 +20,7 @@ MonoBehaviour:
   ShieldRegenDelay: 5
   ShieldRegenRate: 0
   PatrolSpeed: 2.5
-  ChaseSpeed: 6.5
+  ChaseSpeed: 6
   SightRange: 60
   SightAngle: 140
   HearingRadius: 14

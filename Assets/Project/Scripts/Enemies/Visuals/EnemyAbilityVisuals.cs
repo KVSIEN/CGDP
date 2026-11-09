@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using CGD.Abilities;
 using CGD.Core;
+using CGD.Stealth;
 using CGD.Weapons;
 
 namespace CGD.Enemies
@@ -31,6 +32,10 @@ namespace CGD.Enemies
         [SerializeField] private GameObject _flash;
         [SerializeField] private AbilityLook[] _looks = System.Array.Empty<AbilityLook>();
 
+        [Header("Cloak")]
+        [Tooltip("How visible the body stays while the agent is cloaked (0 = invisible)")]
+        [SerializeField, Range(0.05f, 1f)] private float _cloakedOpacity = 0.25f;
+
         [Header("Phase Shift")]
         [SerializeField] private Color _relocateColor = new(0.7f, 0.4f, 1f, 0.8f);
         [Tooltip("Metres: the bursts where it vanished and reappeared. 0 = none")]
@@ -44,12 +49,17 @@ namespace CGD.Enemies
         private EnemyAI     _ai;
         private EnemyHealth _health;
         private BuffAura    _aura;
+        private CloakFade   _cloakFade;
+        private Stealthable _stealth;
         private float       _nextHealPulse;
 
         private void Awake()
         {
             _ai     = GetComponent<EnemyAI>();
             _health = GetComponent<EnemyHealth>();
+
+            TryGetComponent(out _stealth);
+            if (_stealth != null) _cloakFade = new CloakFade(GetComponentsInChildren<Renderer>(), _cloakedOpacity);
 
             Transform parent = _model != null ? _model : transform;
             Renderer shell = CreatePart("Ability Shell", _shellMesh, parent, Vector3.up, new Vector3(1.2f, 1.1f, 1.2f));
@@ -78,7 +88,11 @@ namespace CGD.Enemies
             _health.OnRevived -= _aura.Hide;
         }
 
-        private void Update() => _aura.Tick(Time.time);
+        private void Update()
+        {
+            _aura.Tick(Time.time);
+            _cloakFade?.Tick(_stealth.IsCloaked, Time.deltaTime);
+        }
 
         private void OnAbilityUsed(Ability ability)
         {

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.ProjectileAbility
   DisplayName: Void Slow Bolt
   SlotColor: {r: 0.43, g: 0.38, b: 0.85, a: 1}
-  Cooldown: 3.5
+  Cooldown: 7
   MaxCharges: 1
   CastTime: 0.6
   ProjectilePrefab: {fileID: 2000000000000000001, guid: 3c5eb489a8194290a25b01c4d17cb91c, type: 3}
@@ -26,3 +26,5 @@ MonoBehaviour:
   - Effect: {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
     Chance: 1
   SpawnOffset: 0.7
+  HitRadius: 0.4
+  BlastRadius: 1.6

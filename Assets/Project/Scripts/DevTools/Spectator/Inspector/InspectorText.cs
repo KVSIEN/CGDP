@@ -12,6 +12,7 @@ namespace CGD.DevTools
         public const string Bad   = "#FF6B5E";
         public const string Warn  = "#FFB347";
         public const string Shield = "#7FC8FF";
+        public const string Armor  = "#C9B27A";
 
         public static StringBuilder Heading(this StringBuilder text, string title) =>
             text.Append("<color=").Append(Gold).Append('>').Append(title).Append("</color>\n");

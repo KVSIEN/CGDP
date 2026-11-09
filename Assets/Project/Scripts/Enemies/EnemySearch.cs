@@ -23,6 +23,9 @@ namespace CGD.Enemies
         private const float HuntTimeFactor  = 2.5f;
         // Share of a hunting search spent checking cover someone could be hiding behind.
         private const float HidingShare     = 0.5f;
+        // Glances prefer directions that stay open this far.
+        private const float OpenLookDistance = 4f;
+        private const int   LookTries        = 5;
 
         private enum Phase { Notice, Approach, LookAround, Done }
 
@@ -197,11 +200,24 @@ namespace CGD.Enemies
             return new Vector3(random.x, 0f, random.y);
         }
 
+        // A direction to glance in: a turn of 50–120° either way, preferring one with open
+        // space ahead so it scans the room, not the wall it happens to stand against.
         private Vector3 PickLookPoint()
         {
-            Vector3 forward = _ai.transform.forward;
-            float   turn    = Random.Range(50f, 120f) * (Random.value < 0.5f ? -1f : 1f);
-            return _ai.transform.position + Quaternion.Euler(0f, turn, 0f) * forward * 5f;
+            Vector3 position = _ai.transform.position;
+            Vector3 eye      = position + Vector3.up * 1.5f;
+            Vector3 forward  = _ai.transform.forward;
+            Vector3 fallback = position + forward * 5f;
+
+            for (int i = 0; i < LookTries; i++)
+            {
+                float   turn      = Random.Range(50f, 120f) * (Random.value < 0.5f ? -1f : 1f);
+                Vector3 direction = Quaternion.Euler(0f, turn, 0f) * forward;
+                if (i == 0) fallback = position + direction * 5f;
+                if (!Physics.Raycast(eye, direction, OpenLookDistance, _ai.ObstacleMask, QueryTriggerInteraction.Ignore))
+                    return position + direction * 5f;
+            }
+            return fallback;
         }
     }
 }

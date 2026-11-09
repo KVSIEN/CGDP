@@ -573,6 +573,11 @@ MonoBehaviour:
     CastFlash: 1.6
     GroundRing: 1
     Trail: 0
+  - Ability: {fileID: 11400000, guid: d0a1b2c3d4e5f60718293a4b5c6d7e04, type: 2}
+    Color: {r: 1, g: 0.85, b: 0.25, a: 0.45}
+    CastFlash: 6
+    GroundRing: 0
+    Trail: 0
   _relocateColor: {r: 0.7, g: 0.4, b: 1, a: 0.8}
   _relocateFlash: 1.4
   _healColor: {r: 0.3, g: 1, b: 0.4, a: 0.6}
