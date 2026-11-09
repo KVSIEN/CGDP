@@ -59,6 +59,8 @@ namespace CGD.Enemies
         public float AttackCooldown = 1f;
         [Tooltip("Seconds between ranged bursts. 0 = the attack cooldown (a hybrid keeps its melee quick and its shooting slow)")]
         [Min(0f)] public float RangedAttackCooldown = 0f;
+        [Tooltip("Damage of each ranged shot. 0 = the attack damage (a hybrid can shoot harder or softer than it stabs)")]
+        [Min(0f)] public float RangedAttackDamage = 0f;
         [Tooltip("Seconds between starting an attack and the hit landing (melee only)")]
         public float AttackWindup   = 0.35f;
         [Tooltip("Colour of the damage numbers on whatever this enemy hurts, to tell attackers apart (rival factions). Clear = the usual white")]

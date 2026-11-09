@@ -121,7 +121,7 @@ MonoBehaviour:
       data:
         _guid: 453649334941488ab9b15273342b2611
         _position: {x: -2681, y: 300}
-        _comment: 'Shield broken: Phase Shift out of everyone''s sight (shield recharges three times as fast), or run to high cover, and wait while it recharges'
+        _comment: 'Health below half (shield long gone): Phase Shift out of everyone''s sight (shield recharges three times as fast), or run to high cover, and wait while it recharges'
         _children:
         - 6eb3c3124bea45aebb251c3144a6710b
         - 1533e98ace6d4677b445b33c74ee0988
@@ -139,7 +139,7 @@ MonoBehaviour:
         _guid: 1533e98ace6d4677b445b33c74ee0988
         _position: {x: -2818, y: 450}
         _comment: 
-        _fraction: 0.9
+        _fraction: 0.5
     - rid: 1005
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -148,7 +148,7 @@ MonoBehaviour:
         _comment: 
         _children:
         - 23af1120f1e5403a98e2723be7777ae5
-        _seconds: 8
+        _seconds: 15
         _onlyAfterSuccess: 0
     - rid: 1006
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
