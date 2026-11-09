@@ -92,6 +92,12 @@ MonoBehaviour:
   - rid: 1076
   - rid: 1077
   - rid: 1078
+  - rid: 1079
+  - rid: 1080
+  - rid: 1081
+  - rid: 1082
+  - rid: 1083
+  - rid: 1084
   references:
     version: 2
     RefIds:
@@ -114,6 +120,7 @@ MonoBehaviour:
         - 3ff8a757f4bc405b84b40b2ef0a17d5f
         - 5ffaf5dbe05343eaa7f0e1bee6050e62
         - 49f5f34150784cb38b70e28d3737a911
+        - 41f25c18d7d04d0dbd0edf6592ca0dee
         - 2420e13ecef54098819bd2fb503ee662
         _abort: 0
     - rid: 1002
@@ -236,6 +243,7 @@ MonoBehaviour:
         - f9499f0e9aac46d883a898c8f92589f2
         - 71598e06f3c24e7e87880fd410af2cc8
         - a1c0de01b2d34e5f8a9b0c1d2e3f4a51
+        - 039c8196783b4c3b98b4b9a7a3c3d94b
         - d6dfe96b4ee54521aa270c17ef26fd2e
         - 1919301eaec6418794d0f0cea17a5494
         _abort: 0
@@ -907,3 +915,53 @@ MonoBehaviour:
         _position: {x: 372, y: 950}
         _comment: 
         _fraction: 0.5
+    - rid: 1079
+      type: {class: HasBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a3d6b9d267e74708876e8a7c6d6e3606
+        _position: {x: 3000, y: 1500}
+        _comment: 
+    - rid: 1080
+      type: {class: PursueBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a4e8a2e6254240e0b9bf7d7091f79c6c
+        _position: {x: 3220, y: 1500}
+        _comment: 
+        _style: 2
+        _look: 1.2
+        _giveUpAfter: 8
+    - rid: 1081
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 039c8196783b4c3b98b4b9a7a3c3d94b
+        _position: {x: 3440, y: 1400}
+        _comment: 'Lost sight: follow up on where it most likely went (Haunt: a place picked at random in proportion to how likely it is) instead of reverting to a search'
+        _children:
+        - a3d6b9d267e74708876e8a7c6d6e3606
+        - a4e8a2e6254240e0b9bf7d7091f79c6c
+        _abort: 0
+    - rid: 1082
+      type: {class: HasBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 615487df5d87454ba413a4afb87263a0
+        _position: {x: 3660, y: 1500}
+        _comment: 
+    - rid: 1083
+      type: {class: PursueBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 30a3d2c131674ad4a912010449bf073a
+        _position: {x: 3880, y: 1500}
+        _comment: 
+        _style: 2
+        _look: 1.2
+        _giveUpAfter: 8
+    - rid: 1084
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 41f25c18d7d04d0dbd0edf6592ca0dee
+        _position: {x: 4100, y: 1400}
+        _comment: 'Memory has run out but the belief has not: keep working through the likely places before falling back to the routine'
+        _children:
+        - 615487df5d87454ba413a4afb87263a0
+        - 30a3d2c131674ad4a912010449bf073a
+        _abort: 2

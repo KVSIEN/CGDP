@@ -544,6 +544,7 @@ namespace CGD.Enemies
             LastKnownPosition = position;
             LookPosition      = position;
             _hasLead          = true;
+            _owner.Belief?.Hint(position);
         }
 
         // --- Senses ---------------------------------------------------------------

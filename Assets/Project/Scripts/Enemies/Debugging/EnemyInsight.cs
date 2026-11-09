@@ -51,6 +51,15 @@ namespace CGD.Enemies
         // --- Space ------------------------------------------------------------------
 
         public TacticsLog Tactics      => _ai.Tactics.Log;
+
+        // --- Belief about an unseen target ------------------------------------------
+
+        public bool    BeliefActive     => _ai.Belief.IsActive;
+        public float   BeliefConfidence => _ai.Belief.Confidence;
+        public Vector3 BeliefLastSeen   => _ai.Belief.LastSeen;
+        public Vector3 BeliefHeading    => _ai.Belief.Heading;
+        public IReadOnlyList<BeliefSpot> BeliefSpots => _ai.Belief.Spots;
+
         // Index in CoverMap.Active of the spot it holds, −1 for none.
         public int        ClaimedCover => _ai.Tactics.ClaimedCover;
         public bool       KnowsCover(int index) => _ai.Tactics.KnowsCover(index);

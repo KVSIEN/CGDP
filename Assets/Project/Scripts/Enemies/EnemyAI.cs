@@ -105,6 +105,7 @@ namespace CGD.Enemies
         internal EnemyAbilities    Abilities    { get; private set; }
         internal EnemyAmbush       Ambush       { get; private set; }
         internal EnemyMinions      Minions      { get; private set; }
+        internal EnemyBelief       Belief       { get; private set; }
         internal GrenadeThrower    Grenades     { get; private set; }
         internal EnemySquad        Squad        { get; private set; }
         internal SquadRole         SquadRole    => Squad != null ? Squad.RoleOf(this) : SquadRole.None;
@@ -148,6 +149,7 @@ namespace CGD.Enemies
             TryGetComponent(out Stealthable stealth);
             Ambush        = new EnemyAmbush(stealth);
             Minions       = new EnemyMinions(this);
+            Belief        = new EnemyBelief(this, _obstacleMask);
             Abilities     = new EnemyAbilities(this, _damageSource, stealth, Minions);
             Grenades      = new GrenadeThrower(this, _damageSource, _obstacleMask);
             Morale        = new EnemyMorale(this);
@@ -219,6 +221,7 @@ namespace CGD.Enemies
                     TickAttack(dt);
                     RangedCombat.Tick(dt);
                     Perception.Tick(dt);
+                    Belief.Tick(Time.time);
                     Tactics.Tick(Time.time);
                     Morale.Tick(dt);
                     TrackEngagement();
@@ -470,6 +473,7 @@ namespace CGD.Enemies
         private void OnDeath()
         {
             Minions.DismissAll();
+            Belief.Clear();
             RangedCombat.CancelBurst();
             Search.Cancel();
             Tactics.ReleaseCover();
@@ -501,6 +505,7 @@ namespace CGD.Enemies
             Search.Cancel();
             Tactics.Reset();
             Perception.Reset();
+            Belief.Clear();
             Morale.Reset();
             Voice.Reset();
             Abilities.Reset();
