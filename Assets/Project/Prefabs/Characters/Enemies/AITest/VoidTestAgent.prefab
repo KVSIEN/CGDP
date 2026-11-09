@@ -573,7 +573,7 @@ MonoBehaviour:
     CastFlash: 0
     GroundRing: 0
     Trail: 0
-  - Ability: {fileID: 11400000, guid: ce22bc0fe9a7406b931c1946353311c7, type: 2}
+  - Ability: {fileID: 11400000, guid: 7a1a948ba1764738b81386388a5aa1e3, type: 2}
     Color: {r: 0.6, g: 0.3, b: 1, a: 0.5}
     CastFlash: 0.8
     GroundRing: 0

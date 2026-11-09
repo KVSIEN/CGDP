@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b51695d0e0964d0094e7ce097f927b52, type: 3}
+  m_Name: VoidRiftAbility
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.RiftAbility
+  DisplayName: Void Rift
+  SlotColor: {r: 0.43, g: 0.38, b: 0.85, a: 1}
+  Cooldown: 14
+  MaxCharges: 1
+  CastTime: 0.6
+  ZonePrefab: {fileID: 7200000000000000001, guid: 2a9d23ae06094289a923e99d532ff926, type: 3}
+  Radius: 4
+  Duration: 6
+  TickInterval: 0.5
+  Color: {r: 0.55, g: 0.25, b: 1, a: 0.5}
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  DamagePerTick: 4
+  DamageType: 1
+  ArmorPenetration: 0
+  OnHitEffects:
+  - Effect: {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
+    Chance: 1
+  ShieldSiphon: 0.75

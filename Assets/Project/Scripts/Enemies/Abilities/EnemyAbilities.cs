@@ -11,7 +11,7 @@ namespace CGD.Enemies
     // attacks, buffs, heals) the way the player does: an AbilityContext with its body, its
     // health, its damage source and an aim point at its eyes that turns toward whatever it
     // aims at. Abilities that need a player-only part (dash, reflect, stealth) can't run;
-    // Phase Shift, which needs to find hidden cover, only runs on enemies.
+    // Phase Shift (finds hidden cover and calls up minions) and Rift (lands on the aim point) only run on enemies.
     // Each ability keeps its own cooldown per enemy; meter costs and charges don't apply.
     internal sealed class EnemyAbilities
     {
@@ -30,7 +30,7 @@ namespace CGD.Enemies
         private float   _castEndsAt;
         private Vector3 _castAimAt;
 
-        public EnemyAbilities(EnemyAI ai, DamageSource source, Stealthable stealth)
+        public EnemyAbilities(EnemyAI ai, DamageSource source, Stealthable stealth, IMinionSummoner summoner)
         {
             _ai = ai;
             _aim = new GameObject("AbilityAim").transform;
@@ -52,6 +52,7 @@ namespace CGD.Enemies
                 Relocator       = new EnemyPhaseShift(ai),
                 Stealth         = stealth,
                 Ambush          = ai.Ambush,
+                Summoner        = summoner,
             };
         }
 
@@ -113,6 +114,8 @@ namespace CGD.Enemies
 
         private void AimAt(Vector3 point)
         {
+            _context.HasAimPoint = true;
+            _context.AimPoint    = point;
             Vector3 direction = point - _aim.position;
             if (direction.sqrMagnitude > 0.0001f) _aim.rotation = Quaternion.LookRotation(direction);
         }

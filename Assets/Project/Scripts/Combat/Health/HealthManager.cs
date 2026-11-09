@@ -155,6 +155,16 @@ namespace CGD.Combat
             return drained;
         }
 
+        // Puts shield back (a siphon). Doesn't touch the regen delay: what was taken from someone
+        // else shouldn't keep this shield from recharging as well.
+        public void RestoreShield(float amount)
+        {
+            if (IsDead || amount <= 0f) return;
+
+            _shield.Restore(amount);
+            OnChanged?.Invoke();
+        }
+
 
         // Sets health and shield straight to these shares of their maxima, without a hit (test
         // scenarios: "start wounded", "start with the shield broken"). Health stays above 0;

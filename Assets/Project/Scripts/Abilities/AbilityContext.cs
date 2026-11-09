@@ -33,6 +33,13 @@ namespace CGD.Abilities
         public IUnseenRelocator      Relocator;
         // Enemies only: arms the next attack for extra damage (Ambush).
         public IAmbushStrike         Ambush;
+        // Enemies only: calls up minions where it stands (Phase Shift).
+        public IMinionSummoner       Summoner;
+
+        // Enemies only: the point the caster is aiming at (its target), for abilities that land
+        // there (Rift). The player aims along AimTransform instead.
+        public bool    HasAimPoint;
+        public Vector3 AimPoint;
 
         // Set per cast by resource scaling: damage multiplier and extra on-hit effects.
         public float Power = 1f;

@@ -4,8 +4,9 @@ using CGD.Stats;
 namespace CGD.Abilities
 {
     // Vanishes and reappears a short way off behind full cover, out of sight of every hostile
-    // around, then gets a buff for a while (Void: its shield recharges much faster). Needs a
-    // caster that can relocate unseen (enemies) and, for the buff, a CharacterStats.
+    // around, then gets a buff for a while (Void: its shield recharges much faster). Where it
+    // vanished it leaves minions that go after its hostiles, so the way it came is busy while it
+    // recovers. Needs a caster that can relocate unseen (enemies) and, for the buff, a CharacterStats.
     [CreateAssetMenu(fileName = "PhaseShiftAbility", menuName = "CGD/Abilities/Phase Shift")]
     public class PhaseShiftAbility : Ability
     {
@@ -15,6 +16,13 @@ namespace CGD.Abilities
         public StatModifierPreset Buff;
         [Tooltip("Game seconds the buff lasts")]
         [Min(0.1f)] public float Duration = 6f;
+
+        [Header("Minions left behind")]
+        [Tooltip("Enemy prefab called up where it vanished. Empty = none")]
+        public GameObject MinionPrefab;
+        [Min(0)] public int MinionCount = 2;
+        [Tooltip("Game seconds before they dissolve")]
+        [Min(1f)] public float MinionLifetime = 15f;
 
         public override float EffectDuration => Buff != null ? Duration : 0f;
 
@@ -27,7 +35,13 @@ namespace CGD.Abilities
         // gone by then nothing happens and the cooldown is still spent.
         public override void Execute(AbilityContext ctx)
         {
-            if (ctx.Relocator == null || !ctx.Relocator.TryRelocateUnseen(MaxDistance)) return;
+            if (ctx.Relocator == null) return;
+
+            Vector3 vanishedFrom = ctx.CasterTransform.position;
+            if (!ctx.Relocator.TryRelocateUnseen(MaxDistance)) return;
+
+            if (MinionPrefab != null && ctx.Summoner != null)
+                ctx.Summoner.Summon(MinionPrefab, MinionCount, vanishedFrom, MinionLifetime);
             if (Buff != null && ctx.Stats != null) ctx.Stats.AddTimed(Buff, Duration);
         }
     }

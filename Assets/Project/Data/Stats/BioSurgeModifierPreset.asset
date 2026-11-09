@@ -13,12 +13,9 @@ MonoBehaviour:
   m_Name: BioSurgeModifierPreset
   m_EditorClassIdentifier: CGD.Runtime::CGD.Stats.StatModifierPreset
   _modifiers:
-  - Stat: 22
+  - Stat: 2
     Op: 1
     Value: 0.6
-  - Stat: 23
-    Op: 0
-    Value: 4
   - Stat: 7
     Op: 0
-    Value: 0.3
+    Value: 0.4

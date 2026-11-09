@@ -88,6 +88,9 @@ MonoBehaviour:
   - rid: 1072
   - rid: 1073
   - rid: 1074
+  - rid: 1075
+  - rid: 1076
+  - rid: 1077
   references:
     version: 2
     RefIds:
@@ -693,12 +696,13 @@ MonoBehaviour:
       data:
         _guid: e2a1b2c3d4e5f60718293a4b5c6d701
         _position: {x: -900, y: 600}
-        _comment: 'Someone right on top of it with its shield up: discharge the shield in a slowing burst, then fall back as usual'
+        _comment: 'Someone right on top of it with its shield up: discharge the shield in a slowing burst, then back out to long-range cover'
         _children:
         - e2a1b2c3d4e5f60718293a4b5c6d702
         - e2a1b2c3d4e5f60718293a4b5c6d703
         - e2a1b2c3d4e5f60718293a4b5c6d704
         - e2a1b2c3d4e5f60718293a4b5c6d705
+        - 5c502daf1ea14baba9dc6effcd00e012
         _abort: 0
     - rid: 1071
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
@@ -730,3 +734,28 @@ MonoBehaviour:
         _aim: 0
         _maxRange: 6
         _requireClearShot: 0
+    - rid: 1075
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8364c6d28c8e4a1b9edc7b1172bfdd76
+        _position: {x: 3000, y: 900}
+        _comment: 
+        _use: 0
+        _giveUpAfter: 6
+    - rid: 1076
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7f8a8fa2889b42a5978e31b502daea3f
+        _position: {x: 3220, y: 900}
+        _comment: 
+        _distance: 10
+    - rid: 1077
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5c502daf1ea14baba9dc6effcd00e012
+        _position: {x: 3440, y: 800}
+        _comment: 'Reposition: back out to long-range cover (or just away) while the slow holds'
+        _children:
+        - 8364c6d28c8e4a1b9edc7b1172bfdd76
+        - 7f8a8fa2889b42a5978e31b502daea3f
+        _abort: 0

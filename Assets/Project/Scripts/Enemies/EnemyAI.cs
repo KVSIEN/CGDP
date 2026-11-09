@@ -104,6 +104,7 @@ namespace CGD.Enemies
         internal EnemyPost         Post         { get; private set; }
         internal EnemyAbilities    Abilities    { get; private set; }
         internal EnemyAmbush       Ambush       { get; private set; }
+        internal EnemyMinions      Minions      { get; private set; }
         internal GrenadeThrower    Grenades     { get; private set; }
         internal EnemySquad        Squad        { get; private set; }
         internal SquadRole         SquadRole    => Squad != null ? Squad.RoleOf(this) : SquadRole.None;
@@ -146,7 +147,8 @@ namespace CGD.Enemies
             Post          = new EnemyPost(this);
             TryGetComponent(out Stealthable stealth);
             Ambush        = new EnemyAmbush(stealth);
-            Abilities     = new EnemyAbilities(this, _damageSource, stealth);
+            Minions       = new EnemyMinions(this);
+            Abilities     = new EnemyAbilities(this, _damageSource, stealth, Minions);
             Grenades      = new GrenadeThrower(this, _damageSource, _obstacleMask);
             Morale        = new EnemyMorale(this);
             Voice         = new EnemyVoice(this);
@@ -206,6 +208,7 @@ namespace CGD.Enemies
         private void Update()
         {
             float dt = Time.deltaTime;
+            Minions.Tick(Time.time);
 
             // A stun freezes attacks and senses as well as movement.
             if (!_stunnable.IsStunned)
@@ -340,6 +343,9 @@ namespace CGD.Enemies
         // Slowed by status effects, and sped up or slowed by buffs (MovementSpeed stat, base 1).
         internal void SetSpeed(float speed) => Agent.speed = speed * _stunnable.SpeedMultiplier * SpeedFromStats;
 
+        // Buffs speed up the melee swing (FireRate stat, base 1): wind-up and recovery both shrink.
+        private float AttackSpeedFromStats => _stats != null ? Mathf.Max(0.1f, _stats.Apply(ItemStat.FireRate, 1f)) : 1f;
+
         private float SpeedFromStats => _stats != null ? Mathf.Max(0.1f, _stats.Apply(ItemStat.MovementSpeed, 1f)) : 1f;
 
         // Turns as far as deltaTime allows. The turn itself is applied frame by frame (TickFacing),
@@ -369,8 +375,9 @@ namespace CGD.Enemies
             if (!CanAttack) return;
 
             IsAttacking  = true;
-            _windupTimer = _data.AttackWindup;
-            _attackCooldown.Start(_data.AttackWindup + _data.AttackCooldown);
+            float swing = 1f / AttackSpeedFromStats;
+            _windupTimer = _data.AttackWindup * swing;
+            _attackCooldown.Start((_data.AttackWindup + _data.AttackCooldown) * swing);
             AttackStarted?.Invoke();
         }
 
@@ -462,6 +469,7 @@ namespace CGD.Enemies
 
         private void OnDeath()
         {
+            Minions.DismissAll();
             RangedCombat.CancelBurst();
             Search.Cancel();
             Tactics.ReleaseCover();
@@ -489,6 +497,7 @@ namespace CGD.Enemies
             _attackCooldown.Reset();
             RangedCombat.Reset();
             Ambush.Disarm();
+            Minions.DismissAll();
             Search.Cancel();
             Tactics.Reset();
             Perception.Reset();

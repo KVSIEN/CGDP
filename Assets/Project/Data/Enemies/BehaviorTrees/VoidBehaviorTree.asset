@@ -288,7 +288,7 @@ MonoBehaviour:
       data:
         _guid: 279e267b49594a7ebc5a39bc5e2c42c5
         _position: {x: -398, y: 600}
-        _comment: 'Bolt ready and target in view: cast the slowing bolt, then half the time fade out of sight behind cover'
+        _comment: 'Rift ready and target in view: drop a Void Rift on it (slow damage, shield siphoned back to the caster), then half the time slip into cover'
         _children:
         - 73871abbded244d1a1e1a436d6cde704
         - 7319b1e7cc1446199b16c0b9bfc87082
@@ -314,17 +314,17 @@ MonoBehaviour:
         _guid: 9dc7c5bc46774f269108f3eec5e47bf8
         _position: {x: -398, y: 750}
         _comment: 
-        _ability: {fileID: 11400000, guid: ce22bc0fe9a7406b931c1946353311c7, type: 2}
+        _ability: {fileID: 11400000, guid: 7a1a948ba1764738b81386388a5aa1e3, type: 2}
     - rid: 1025
       type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: 0cc861b217b64051b93df49e1a467a83
         _position: {x: -178, y: 750}
         _comment: 
-        _ability: {fileID: 11400000, guid: ce22bc0fe9a7406b931c1946353311c7, type: 2}
+        _ability: {fileID: 11400000, guid: 7a1a948ba1764738b81386388a5aa1e3, type: 2}
         _aim: 0
-        _maxRange: 25
-        _requireClearShot: 1
+        _maxRange: 20
+        _requireClearShot: 0
     - rid: 1026
       type: {class: Chance, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:

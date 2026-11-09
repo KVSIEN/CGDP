@@ -20,3 +20,6 @@ MonoBehaviour:
   MaxDistance: 15
   Buff: {fileID: 11400000, guid: 25e2d9ef69e84cc5afa023acf9fcb56b, type: 2}
   Duration: 5
+  MinionPrefab: {fileID: 100100000, guid: d1a3325ba9d340c28cc481bf0e332d37, type: 3}
+  MinionCount: 2
+  MinionLifetime: 15
