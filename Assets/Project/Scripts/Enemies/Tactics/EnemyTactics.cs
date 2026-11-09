@@ -17,6 +17,8 @@ namespace CGD.Enemies
     //              a search should check
     //   unseen     known full-height cover nobody around can see right now, for vanishing
     //              to (Phase Shift)
+    //   fallback   a planned withdrawal (FallbackPlanner): screened cover far from every hostile
+    //              it knows of, by a route that doesn't pass them
     // Asked by the behavior tree nodes (Take Cover, Flank, Chase Target, the search).
     internal sealed class EnemyTactics
     {
@@ -49,6 +51,7 @@ namespace CGD.Enemies
         private readonly List<int>      _nearby = new();
         private readonly (int index, float score)[] _best = new (int, float)[VerifiedCandidates];
         private readonly NavMeshPath    _path = new();
+        private readonly FallbackPlanner _fallback;
         private readonly List<(int index, float score)> _unseen = new();
 
         private int   _claimed = -1;
@@ -64,6 +67,7 @@ namespace CGD.Enemies
             _ai           = ai;
             _obstacleMask = obstacleMask;
             _knowledge    = new CoverKnowledge(ai, obstacleMask);
+            _fallback     = new FallbackPlanner(ai, _knowledge, obstacleMask);
         }
 
         // Its latest cover, flank and vanish searches, for the spectator's overlays.
@@ -91,6 +95,7 @@ namespace CGD.Enemies
             ReleaseCover();
             EndMeleeTurn();
             _knowledge.Forget();
+            _fallback.Clear();
             Log.Clear();
         }
 
@@ -216,6 +221,25 @@ namespace CGD.Enemies
                 return true;
             }
             return false;
+        }
+
+        // The planned fallback against the threat (planned again when the situation has changed),
+        // claimed. False if it knows of no safe, screened spot it can reach without passing a hostile.
+        public bool TryFallBack(Vector3 threat, out Vector3 destination)
+        {
+            destination = default;
+            IReadOnlyList<HealthManager> hostiles = _ai.Perception.HostilesAround;
+
+            if (_fallback.StillHolds(threat, hostiles) && _fallback.Planned == _claimed && HasCover)
+            {
+                destination = CoverPosition;
+                return true;
+            }
+
+            CoverMap map = _knowledge.Map;
+            if (map == null || !_fallback.TryPlan(threat, hostiles, spot => map.IsTakenByOther(spot, _ai), out int planned))
+                return false;
+            return TryClaimCover(planned, out destination);
         }
 
         // A spot at standOff metres off to the threat's side, by the least visible route.
