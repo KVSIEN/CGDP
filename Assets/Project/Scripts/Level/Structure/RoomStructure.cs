@@ -34,6 +34,9 @@ namespace CGD.Level
         private readonly bool[] _floor;
         private readonly bool[] _solid;
         private int _solidCount;
+        // The reachability search's scratch space, kept between calls: it runs for every prop tried.
+        private readonly bool[] _reached;
+        private readonly Stack<Vector2Int> _open = new();
 
         public RoomStructure(RoomFootprint footprint, float wallHeight)
         {
@@ -43,6 +46,7 @@ namespace CGD.Level
             _bounds = footprint.Bounds;
             _floor  = new bool[_bounds.width * _bounds.height];
             _solid  = new bool[_floor.Length];
+            _reached = new bool[_floor.Length];
             foreach (Vector2Int tile in footprint.Tiles) _floor[IndexOf(tile)] = true;
         }
 
@@ -111,7 +115,8 @@ namespace CGD.Level
                 if (Contains(claimed, entrance) || Has(entrance, Solid)) return false;
 
             // `reached` also marks the claimed tiles, so the search never walks onto them.
-            var reached = new bool[_floor.Length];
+            bool[] reached = _reached;
+            System.Array.Clear(reached, 0, reached.Length);
             int free = Footprint.Count - _solidCount;
             foreach (Vector2Int tile in claimed)
             {
@@ -121,7 +126,8 @@ namespace CGD.Level
             }
             if (free <= 0) return true;
 
-            var open = new Stack<Vector2Int>();
+            Stack<Vector2Int> open = _open;
+            open.Clear();
             int visited = 0;
             void Visit(Vector2Int tile)
             {

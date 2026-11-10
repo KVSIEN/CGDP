@@ -50,7 +50,6 @@ namespace CGD.Level
 
         public string DisplayName => Function != null ? Function.DisplayName : Node.Type.ToString();
 
-        // Set once by LevelLayoutBuilder after the corridors fix the doorways.
         // Set once by LevelLayoutBuilder once the doorways are known (no chamfer cuts a doorway).
         public void AttachOutline(RoomOutlinePlan outline) => Outline = outline;
 

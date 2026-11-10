@@ -18,7 +18,7 @@ namespace CGD.Level
         [SerializeField] private IntRange _count = new(3, 6);
         [Tooltip("Tiles long")]
         [SerializeField] private IntRange _length = new(1, 3);
-        [Tooltip("Metres tall, rolled again for every piece of wall so the top is ragged")]
+        [Tooltip("Metres tall, rolled again for every piece of wall so the top is ragged; pulled into low (0.9–1.2) or high (2.2+) cover")]
         [SerializeField] private FloatRange _height = new(0.9f, 2.8f);
 
         public override void Apply(RoomStructure structure, RandomStream random)
@@ -51,7 +51,7 @@ namespace CGD.Level
                 Vector2Int a = start + along * step;
                 Vector2Int b = a + across;
                 if (!structure.IsOpen(a) || !structure.IsOpen(b) || structure.IsPartitioned(a, b) || structure.EdgeMustStayOpen(a, b)) break;
-                edges.Add(new PartitionEdge(a, b, _height.Evaluate(random), dividesZones: false));
+                edges.Add(new PartitionEdge(a, b, CoverHeights.Readable(_height.Evaluate(random)), dividesZones: false));
             }
             return edges.Count > 0 && structure.TryAddPartition(edges);
         }

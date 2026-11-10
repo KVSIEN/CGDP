@@ -81,10 +81,11 @@ Assets/
       Items/                item definitions, inventory, equipment, quality rolls, stats;
                             Catalog/ — ItemCatalog (stable item ids); Saving/ — InventoryRecord, GearRecord, StackRecord
       Level/                map graph → level: LevelLayoutBuilder (rooms, CorridorRouter), LevelGeometryBuilder,
-                            RoomPopulator, LevelBuilder (scene entry point), LevelExit, LevelBuildSettings;
+                            RoomPopulator, LevelBuilder (scene entry point), LevelExit, LevelBuildSettings,
+                            DoorwaySignBuilder + RoomLabel (signs, room names), RoomArrivalAnnouncer, GeneratedAssets;
                             Shapes/ — RoomShape assets, RoomShapeRasterizer, RoomFootprint (tiles + door sockets)
                             RoomOutline (curved walls), LevelWallBuilder; Functions/ — RoomFunction;
-                            Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), Rules/
+                            Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), CoverHeights (low / high cover bands), Rules/
                             RoomPlacer (cells, multi-cell rooms); Landmarks/ — hand-built rooms; Props/ — RoomPropPlanner (footprints, clearance,
                             spread, cover, lattices, symmetry, clusters), RoomDressing (cover and clutter per room type);
                             Design/ — FactionDesign (each faction's floor plans, structure, props and crowding)

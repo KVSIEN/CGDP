@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.AI.Navigation;
 
 namespace CGD.Stealth
 {
@@ -33,6 +34,11 @@ namespace CGD.Stealth
         {
             _collider = GetComponent<Collider>();
             _collider.isTrigger = true;
+
+            // Walked through, never around: keep it out of any NavMesh built after it appears
+            // (a generated level bakes once its props are placed).
+            if (!TryGetComponent(out NavMeshModifier _))
+                gameObject.AddComponent<NavMeshModifier>().ignoreFromBuild = true;
         }
 
         private void OnEnable()  => _active.Add(this);

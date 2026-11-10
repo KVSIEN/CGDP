@@ -137,9 +137,12 @@ reaches Victory (extract) or GameOver (death), settles it through `ExpeditionLed
 **A generated level.** `Map/Generation` passes build a `MapGraph` (rooms, connections,
 factions, gates, objectives) from a `MapGenerationSettings` style and a seed →
 `LevelBuilder` turns it into geometry: `LevelLayoutBuilder` (grid placement, corridors) →
-`LevelGeometryBuilder` / `LevelWallBuilder` (floors, walls) → `RoomPopulator` (props,
-enemies, loot, encounters per room function and faction) → NavMesh bake → player to the
-Start room, `LevelExit` in the Exit room. Same seed ⇒ same level (`Core/Random`).
+`LevelGeometryBuilder` / `LevelWallBuilder` (floors, walls, structure split into full-height
+and low cover by `CoverHeights`) → `DoorwaySignBuilder` (signs and room labels) →
+`RoomPopulator` (props, enemies, loot, encounters per room function and faction) → NavMesh
+bake → `CoverMap` scan → player to the Start room, `LevelExit` in the Exit room. Meshes,
+materials and the map texture made on the way are tracked in `GeneratedAssets` and freed
+with the `LevelBuilder`. Same seed ⇒ same level (`Core/Random`).
 
 **Pacing.** `GameDirector` turns damage taken and kills into an intensity and a pacing
 phase; `ReinforcementSpawner`, `SupplySpawner`, `DirectorMusic` and `PatrolProbes` read its

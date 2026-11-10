@@ -19,8 +19,14 @@ namespace CGD.Level
         };
 
         private readonly LevelBuildSettings _settings;
+        private readonly GeneratedAssets _assets;
 
-        public LevelGeometryBuilder(LevelBuildSettings settings) => _settings = settings;
+        // `assets` collects the meshes and materials made here, for the level's owner to free.
+        public LevelGeometryBuilder(LevelBuildSettings settings, GeneratedAssets assets)
+        {
+            _settings = settings;
+            _assets   = assets;
+        }
 
         // The gate placed on each Locked or Secret connection, so the populator can wire
         // up what opens it (a terminal lock's terminals).
@@ -39,13 +45,14 @@ namespace CGD.Level
             var corridorFloors = new BoxMeshBuilder();
             var walls          = new BoxMeshBuilder();
             var structure      = new BoxMeshBuilder();
+            var lowCover       = new BoxMeshBuilder();
 
             Dictionary<Vector2Int, LevelRoom> outerRing = AddFloors(layout, roomFloors, factionFloors, corridorFloors);
             LevelWallPlan wallPlan = LevelWallPlan.Create(layout, _settings);
             new LevelWallBuilder(_settings, layout, walls).Build(wallPlan);
             foreach (LevelRoom room in layout.Rooms.Values)
             {
-                if (room.Structure != null) AddStructure(layout, room, structure, parent);
+                if (room.Structure != null) AddStructure(layout, room, structure, lowCover, parent);
                 if (room.Landmark != null) PlaceLandmark(layout, room, parent);
             }
 
@@ -60,6 +67,7 @@ namespace CGD.Level
                 PlaceWallKit(layout, wallPlan, parent);
             }
             CreatePart("Structure",      structure,      _settings.WallMaterial,          parent);
+            CreatePart("LowCover",       lowCover,       _settings.LowCoverMaterial,      parent);
             if (_settings.BuildCeilings) BuildCeilings(layout, outerRing, parent);
             PlaceDoors(layout, parent);
         }
@@ -96,7 +104,7 @@ namespace CGD.Level
         private Material TintedFloor(FactionDefinition faction)
         {
             if (_settings.FloorMaterial == null) return null;
-            var material = new Material(_settings.FloorMaterial) { name = $"{_settings.FloorMaterial.name} ({faction.DisplayName})" };
+            var material = _assets.Track(new Material(_settings.FloorMaterial) { name = $"{_settings.FloorMaterial.name} ({faction.DisplayName})" });
             material.color = Color.Lerp(material.color, faction.Color, faction.FloorTint);
             return material;
         }
@@ -151,7 +159,9 @@ namespace CGD.Level
             Object.Instantiate(room.Landmark.Prefab, parent.TransformPoint(corner), parent.rotation, parent);
         }
 
-        private void AddStructure(LevelLayout layout, LevelRoom room, BoxMeshBuilder boxes, Transform parent)
+        // Pieces short enough to shoot over go into `lowCover`, drawn in their own material, so
+        // low and full-height cover read apart at a glance.
+        private void AddStructure(LevelLayout layout, LevelRoom room, BoxMeshBuilder boxes, BoxMeshBuilder lowCover, Transform parent)
         {
             float tile = layout.TileSize;
             float height = room.WallHeight;
@@ -165,7 +175,7 @@ namespace CGD.Level
                     continue;
                 }
                 float h = pillar.Height > 0f ? Mathf.Min(pillar.Height, height) : height;
-                boxes.AddBox(foot + Vector3.up * (h * 0.5f), new Vector3(pillar.Width, h, pillar.Width));
+                (CoverHeights.IsLow(h) ? lowCover : boxes).AddBox(foot + Vector3.up * (h * 0.5f), new Vector3(pillar.Width, h, pillar.Width));
             }
 
             // Inner walls stand centred on the edge between their two tiles.
@@ -175,7 +185,7 @@ namespace CGD.Level
                 float h = edge.Height > 0f ? Mathf.Min(edge.Height, height) : height;
                 Vector3 centre = (layout.TileToLocal(edge.Tile) + layout.TileToLocal(edge.Other)) * 0.5f + Vector3.up * (h * 0.5f);
                 Vector3 size = edge.Side.x != 0 ? new Vector3(thickness, h, tile + thickness) : new Vector3(tile + thickness, h, thickness);
-                boxes.AddBox(centre, size);
+                (CoverHeights.IsLow(h) ? lowCover : boxes).AddBox(centre, size);
             }
 
             // A doorway through an inner wall: the gap is left, with a lintel over it.
@@ -253,7 +263,7 @@ namespace CGD.Level
             go.isStatic = true;
             go.transform.SetParent(parent, false);
 
-            Mesh mesh = builder.ToMesh(name);
+            Mesh mesh = _assets.Track(builder.ToMesh(name));
             go.GetComponent<MeshFilter>().sharedMesh     = mesh;
             go.GetComponent<MeshCollider>().sharedMesh   = mesh;
             if (material != null) go.GetComponent<MeshRenderer>().sharedMaterial = material;

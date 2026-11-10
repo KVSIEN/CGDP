@@ -21,6 +21,7 @@ MonoBehaviour:
   _floorMaterial: {fileID: 2100000, guid: 981abf7a53e6a964fba6bc48555ec31a, type: 2}
   _corridorFloorMaterial: {fileID: 2100000, guid: dfc08c90188302847afb04f628582097, type: 2}
   _wallMaterial: {fileID: 2100000, guid: 2ab8149ec4775284bada96c1b85b4a09, type: 2}
+  _lowCoverMaterial: {fileID: 2100000, guid: 9fe0a856a63e8634ebc7077bc570ea68, type: 2}
   _geometryLayer: 0
   _roomChamfer: 1
   _curveSmoothing: 2
@@ -49,6 +50,7 @@ MonoBehaviour:
   _terminalPrefab: {fileID: 7320000000000000001, guid: 9d6e3b2a41c74f08b5e2c7a90f1d4e65, type: 3}
   _buildDoorSigns: 1
   _doorSignMaterial: {fileID: 0}
+  _doorSignLabels: 1
   _dangerIntensity: 0.75
   _enemyTierOdds:
   - Tier2: 0.1
@@ -231,6 +233,7 @@ MonoBehaviour:
       Bias: 0
     Centerpiece: {fileID: 0}
     Dressing: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}
+    ExtraDressing: {fileID: 11400000, guid: f1ea622bc13a4692ab41ee3cd8d0cd9d, type: 2}
   - Type: 15
     Enemies: []
     EnemyCount:

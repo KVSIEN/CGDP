@@ -133,3 +133,27 @@ MonoBehaviour:
     Lattice: {x: 0, y: 0}
     Symmetric: 0
     Decor: 1
+  - Prefabs:
+    - {fileID: 8100000000000031001, guid: d86900c5c09544228b46c60103a437d3, type: 3}
+    Count:
+      Min: 0
+      Max: 1
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 2, y: 2}
+    On: 0
+    Avoid: 108
+    Zone: 0
+    Facing: 1
+    Clearance: 0
+    Spacing: 2
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 1

@@ -21,6 +21,8 @@ namespace CGD.Level
         public GameObject Centerpiece;
         [Tooltip("Cover, crates and clutter placed around the room by rules (against walls, in corners, breaking sightlines…). Shared by the room types that list it")]
         public RoomDressing Dressing;
+        [Tooltip("Placed after the Dressing and never swapped for a faction's own pieces: what the room type needs whoever holds it (e.g. concealment patches to sneak through in Stealth rooms)")]
+        public RoomDressing ExtraDressing;
 
         [Tooltip("One of these is always placed in every room of this type, picked at random (a Quiet room's resource, ammo cache or loot), in a nook against a wall with floor in front")]
         public GameObject[] Offerings = Array.Empty<GameObject>();

@@ -26,6 +26,8 @@ namespace CGD.Level
         [SerializeField] private Material _floorMaterial;
         [SerializeField] private Material _corridorFloorMaterial;
         [SerializeField] private Material _wallMaterial;
+        [Tooltip("Structure short enough to shoot over (broken columns, wall stubs, counters), so low cover reads apart from full-height pieces. Empty = the wall material")]
+        [SerializeField] private Material _lowCoverMaterial;
         [Tooltip("Layer the generated floors and walls go on (should be in enemies' obstacle mask)")]
         [SerializeField] private int _geometryLayer;
 
@@ -73,6 +75,8 @@ namespace CGD.Level
         [SerializeField] private bool _buildDoorSigns = true;
         [Tooltip("Copied and tinted per room type (emission is turned on). Empty = the floor material")]
         [SerializeField] private Material _doorSignMaterial;
+        [Tooltip("Write the name of the room beyond under each sign, with its faction and tier")]
+        [SerializeField] private bool _doorSignLabels = true;
         [Tooltip("Rooms at or above this intensity get a danger marker on their door signs (tier-3 rooms and the Boss always do)")]
         [SerializeField, Range(0f, 1f)] private float _dangerIntensity = 0.75f;
 
@@ -103,6 +107,7 @@ namespace CGD.Level
         public Material FloorMaterial         => _floorMaterial;
         public Material CorridorFloorMaterial => _corridorFloorMaterial != null ? _corridorFloorMaterial : _floorMaterial;
         public Material WallMaterial          => _wallMaterial;
+        public Material LowCoverMaterial      => _lowCoverMaterial != null ? _lowCoverMaterial : _wallMaterial;
         public int   GeometryLayer  => _geometryLayer;
         public int   RoomChamfer    => _roomChamfer;
         public bool  ChamferCorridorBends => _chamferCorridorBends;
@@ -145,6 +150,7 @@ namespace CGD.Level
 
         public bool     BuildDoorSigns   => _buildDoorSigns;
         public Material DoorSignMaterial => _doorSignMaterial != null ? _doorSignMaterial : _floorMaterial;
+        public bool     DoorSignLabels   => _doorSignLabels;
         public float    DangerIntensity  => _dangerIntensity;
 
         public RoomContentRule RuleFor(MapNodeType type) => _rooms.Find(r => r.Type == type);

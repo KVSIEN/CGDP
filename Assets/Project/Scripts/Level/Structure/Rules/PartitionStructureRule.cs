@@ -16,7 +16,7 @@ namespace CGD.Level
         [SerializeField, Min(1)] private int _openingTiles = 2;
         [Tooltip("Fewest floor tiles either side of the wall may have; a wall that would cut off a sliver is skipped")]
         [SerializeField, Min(1)] private int _minZoneTiles = 8;
-        [Tooltip("Metres; 0 = full wall height, about 1.1 = a counter")]
+        [Tooltip("Metres; 0 = full wall height, about 1.1 = a counter. Pulled into low (0.9–1.2) or high (2.2+) cover")]
         [SerializeField, Min(0f)] private float _height;
 
         public override void Apply(RoomStructure structure, RandomStream random)
@@ -95,7 +95,7 @@ namespace CGD.Level
             }
 
             for (int i = 0; i < stretch.Count; i++)
-                if (!open[i]) edges.Add(new PartitionEdge(stretch[i].a, stretch[i].b, _height));
+                if (!open[i]) edges.Add(new PartitionEdge(stretch[i].a, stretch[i].b, CoverHeights.Readable(_height)));
         }
     }
 }

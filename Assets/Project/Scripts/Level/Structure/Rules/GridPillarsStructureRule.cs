@@ -20,7 +20,7 @@ namespace CGD.Level
         [SerializeField, Range(0f, 1f)] private float _missingChance;
         [Tooltip("Chance a column that stands is broken off short")]
         [SerializeField, Range(0f, 1f)] private float _brokenChance;
-        [Tooltip("Metres a broken column still stands (a plain box only)")]
+        [Tooltip("Metres a broken column still stands (a plain box only); pulled into low (0.9–1.2) or high (2.2+) cover")]
         [SerializeField] private FloatRange _brokenHeight = new(0.7f, 2.4f);
 
         public override void Apply(RoomStructure structure, RandomStream random)
@@ -31,7 +31,7 @@ namespace CGD.Level
                 if (!structure.Footprint.IsInterior(tile, _wallMargin)) continue;
                 if (_missingChance > 0f && random.Chance(_missingChance)) continue;
 
-                float height = _brokenChance > 0f && random.Chance(_brokenChance) ? _brokenHeight.Evaluate(random) : 0f;
+                float height = _brokenChance > 0f && random.Chance(_brokenChance) ? CoverHeights.Readable(_brokenHeight.Evaluate(random)) : 0f;
                 structure.TryAddPillar(tile + new Vector2(0.5f, 0.5f), _pillarWidth, _pillarPrefab, height: height);
             }
         }

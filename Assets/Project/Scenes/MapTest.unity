@@ -1127,6 +1127,8 @@ MonoBehaviour:
   _spawnPoint: {fileID: 1629601954}
   _worldMap: {fileID: 1384696003}
   _blueprintMap: 1
+  _coverMap: {fileID: 2100000903}
+  _announceRooms: 1
 --- !u!114 &1211864641
 MonoBehaviour:
   m_ObjectHideFlags: 0

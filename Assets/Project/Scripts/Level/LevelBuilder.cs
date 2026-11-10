@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.AI.Navigation;
 using CGD.Core;
+using CGD.Enemies;
 using CGD.Feedback;
 using CGD.Interaction;
 using CGD.Loot;
@@ -51,12 +52,17 @@ namespace CGD.Level
         [SerializeField] private WorldMapArea _worldMap;
         [Tooltip("Draw the world map and minimap from the level's floor plan (rooms coloured by type, walls, gates) instead of the area's own background")]
         [SerializeField] private bool _blueprintMap = true;
+        [Tooltip("Optional — the scene's cover spots, found as soon as the NavMesh is built instead of when the first enemy looks for cover mid-fight")]
+        [SerializeField] private CoverMap _coverMap;
+        [Tooltip("Name each room in the HUD feed (place, faction, tier) the first time the player walks in. Needs a FeedbackPlayer in the scene")]
+        [SerializeField] private bool _announceRooms = true;
 
         public Seed        Seed   { get; private set; }
         public MapGraph    Graph  { get; private set; }
         public LevelLayout Layout { get; private set; }
 
-        private Texture2D _mapTexture;
+        // Meshes, materials and the map texture made for this level, freed with it.
+        private readonly GeneratedAssets _assets = new();
         // The run modifiers the map was generated with (a MapGraphAsset's are recovered from its seed).
         public IReadOnlyList<MapRunModifier> Modifiers { get; private set; } = Array.Empty<MapRunModifier>();
 
@@ -84,10 +90,10 @@ namespace CGD.Level
             var populator = new RoomPopulator(_settings, Layout, transform, Seed.Derive("contents"));
             List<PlannedObjective> objectives = PlanObjectives(populator);
 
-            var geometry = new LevelGeometryBuilder(_settings);
+            var geometry = new LevelGeometryBuilder(_settings, _assets);
             LockBossRoom(geometry, objectives);
             geometry.Build(Layout, transform);
-            new DoorwaySignBuilder(_settings).Build(Layout, transform);
+            new DoorwaySignBuilder(_settings, _assets).Build(Layout, transform);
 
             populator.PlaceProps();
             populator.PlaceKeys(Graph, geometry.Gates);
@@ -97,6 +103,9 @@ namespace CGD.Level
             ApplyLootLuck();
 
             if (_navMesh != null) _navMesh.BuildNavMesh();
+            // Hundreds of probes on a big level: done here, during the load, not on the frame an
+            // enemy first wants cover.
+            if (_coverMap != null) _coverMap.Rebuild();
             populator.SpawnEnemies();
             new RoomEncounterBuilder(_encounters, Layout, Graph, transform, populator, _player, _worldMap,
                                      Seed.Derive("encounters"), new MapRunTuning(Modifiers).LootLuck).Build();
@@ -104,6 +113,8 @@ namespace CGD.Level
             StartObjectives(objectives, populator, geometry);
             PlacePlayer(populator);
             FitWorldMap();
+            if (_announceRooms && _player != null)
+                gameObject.AddComponent<RoomArrivalAnnouncer>().Begin(Layout, transform, _player);
         }
 
         // "0" too: the field used to be a number where 0 meant a fresh seed, and scenes saved then still hold it.
@@ -249,22 +260,19 @@ namespace CGD.Level
                 bounds.size + Vector2.one * Margin * 2f);
         }
 
-        private void OnDestroy()
-        {
-            if (_mapTexture != null) Destroy(_mapTexture);
-        }
+        private void OnDestroy() => _assets.DestroyAll();
 
         // The map covers exactly what the blueprint image does, so the image needs no scaling.
         private void FitBlueprintMap()
         {
             Color32[] pixels = LevelBlueprint.Render(Layout, _settings, LevelBlueprint.Fill.RoomType,
                                                      out int width, out int height, out Vector2Int tileOrigin);
-            var texture = _mapTexture = new Texture2D(width, height, TextureFormat.RGBA32, false)
+            var texture = _assets.Track(new Texture2D(width, height, TextureFormat.RGBA32, false)
             {
                 name       = "LevelBlueprint",
                 filterMode = FilterMode.Bilinear,
                 wrapMode   = TextureWrapMode.Clamp,
-            };
+            });
             texture.SetPixels32(pixels);
             texture.Apply(false);
 

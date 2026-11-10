@@ -20,7 +20,6 @@ namespace CGD.Level
         // corridors still have a wall between them.
         private const int DoorSpacing = 2;
 
-
         private readonly LevelBuildSettings _settings;
 
         public LevelLayoutBuilder(LevelBuildSettings settings) => _settings = settings;
