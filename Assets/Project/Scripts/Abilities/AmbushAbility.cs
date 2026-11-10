@@ -17,6 +17,8 @@ namespace CGD.Abilities
 
         public override float EffectDuration => Duration;
 
+        public override bool GivesAway => false;
+
         public override bool CanExecute(AbilityContext ctx) =>
             ctx.Stealth != null && ctx.Ambush != null && !ctx.Stealth.IsCloaked;
 

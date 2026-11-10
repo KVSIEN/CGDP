@@ -97,6 +97,7 @@ namespace CGD.Enemies
             Ability ability = _casting;
             _casting = null;
             ability.Execute(_context);
+            if (ability.GivesAway) _ai.Reveal();
             _readyAt[ability] = Time.time + ability.Cooldown;
             if (ability.EffectDuration > 0f) _effectEndsAt[ability] = Time.time + ability.EffectDuration;
             _ai.NotifyAbilityUsed(ability);

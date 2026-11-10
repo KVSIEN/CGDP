@@ -91,7 +91,7 @@ namespace CGD.Enemies
         private void Update()
         {
             _aura.Tick(Time.time);
-            _cloakFade?.Tick(_stealth.IsCloaked, Time.deltaTime);
+            _cloakFade?.Tick(_stealth.IsHidden, Time.deltaTime);
         }
 
         private void OnAbilityUsed(Ability ability)

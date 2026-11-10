@@ -11,6 +11,8 @@ namespace CGD.Abilities
         [Tooltip("Attacking or making noise ends the cloak early")]
         public bool BreaksOnAttack = true;
 
+        public override bool GivesAway => false;
+
         public override bool CanExecute(AbilityContext ctx) => ctx.Stealth != null && !ctx.Stealth.IsCloaked;
 
         public override void Execute(AbilityContext ctx)

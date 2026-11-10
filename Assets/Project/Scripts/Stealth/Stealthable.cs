@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using CGD.Combat;
 using CGD.Feedback;
 using CGD.Player;
@@ -28,6 +29,8 @@ namespace CGD.Stealth
         private readonly StealthStatus _status = new();
         private HealthManager  _health;
         private PlayerMovement _movement;
+        // Stands in for the player's movement on an AI character.
+        private NavMeshAgent   _agent;
 
         public StealthState State       => _status.State;
         public bool         IsHidden    => _status.IsHidden;
@@ -62,6 +65,7 @@ namespace CGD.Stealth
             if (_settings == null) _settings = ScriptableObject.CreateInstance<StealthSettings>();
             TryGetComponent(out _health);
             TryGetComponent(out _movement);
+            TryGetComponent(out _agent);
         }
 
         private void OnEnable()
@@ -94,6 +98,10 @@ namespace CGD.Stealth
         public void Cloak(float seconds, bool breaksOnAttack = true) => _status.Cloak(seconds, breaksOnAttack);
 
         public void EndCloak() => _status.EndCloak();
+
+        // The character did something that gives it away (attacked, cast): cover and breakable
+        // cloaks stop hiding it for a moment.
+        public void Reveal() => _status.OnNoise(_settings.RevealAfterNoise);
 
         // Whether an observer at this position can detect the character right now. While
         // not Hidden this is always true — normal sight and hearing rules then decide.
@@ -137,20 +145,23 @@ namespace CGD.Stealth
         {
             get
             {
-                if (_movement == null || !_movement.IsGrounded || !IsMoving) return 0f;
+                if (!IsGrounded || !IsMoving) return 0f;
                 if (IsCrouching) return _settings.CrouchFootsteps;
                 return IsSprinting ? _settings.SprintFootsteps : 1f;
             }
         }
 
+        private bool IsGrounded => _movement != null ? _movement.IsGrounded : _agent != null && _agent.isOnNavMesh;
         private bool IsCrouching => _movement != null && _movement.IsCrouching;
         private bool IsSprinting => _movement != null && _movement.IsSprinting;
         private bool IsMoving
         {
             get
             {
-                if (_movement == null) return false;
-                Vector3 velocity = _movement.Velocity;
+                Vector3 velocity;
+                if (_movement != null)   velocity = _movement.Velocity;
+                else if (_agent != null) velocity = _agent.velocity;
+                else                     return false;
                 return velocity.x * velocity.x + velocity.z * velocity.z > MovingSpeed * MovingSpeed;
             }
         }

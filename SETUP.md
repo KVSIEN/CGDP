@@ -393,6 +393,9 @@ Arena              [NavMeshSurface, RuntimeNavMesh]      ← NavMesh built from 
   Stone 1–8                                   ← middle: full-height stones about 6 m apart (Bio)
   Lane Wall W/E South/North, Lane Crate/Pillar W/E   ← side lanes behind long walls at x ±20, gap at z −4…0 (flanking)
   Yard Wall W/E (+ Side), Yard Crate (W/E)    ← south: L-shaped walls and low crates (Void, player start)
+Bushes             (empty root)                          ← 8 hiding places, no colliders besides triggers, so agents walk through and the NavMesh ignores them
+  Bush <name>      [BoxCollider (trigger, 2.2 m high), ConcealmentZone (Bush)]   ← layer Ignore Raycast; Center (0, 0), West/East Doorway (±16, −2), Gallery West/East (±8, 9.5), Yard (0, −9.5), Corner NW/NE (±26, 13)
+    Foliage 1–3    [MeshFilter (Sphere), MeshRenderer]   ← `Art/Materials/Environment/Props/BushFoliage` (transparent green), no collider
 CoverMap           [CoverMap]                            ← cover spots found from the NavMesh
 Spectator Camera   [Camera (off), UniversalAdditionalCameraData, AudioListener (off), SpectatorCamera]   ← tag MainCamera; (0, 50, −30), 62° down, FOV 46: the overview it starts on
 Alarm Panel        [MeshFilter, MeshRenderer, BoxCollider, AlarmPanel]   ← on the north wall between the bunkers; `_screen` = its renderer
@@ -689,7 +692,7 @@ All presets are in `Data/Feedback/`.
 | **ConcealmentZone** (smoke) | on `Prefabs/VFX/SmokeCloud` — `_kind` = Smoke, `_blocksSight` ticked | Spawned by `Weapons/Throwables/SmokeGrenadeData`, thrown via the `SmokeGrenadeThrowable` item. |
 | **StealthAbility** | add `Abilities/StealthAbility` to a PlayerAbilities slot | Needs Stealthable. |
 
-- Enemies need **no** changes — `EnemyPerception` checks stealth automatically.
+- Enemies need **no** changes — `EnemyPerception` checks stealth automatically. An enemy only hides if its prefab has a **Stealthable** (the three AITest agent prefabs and the minion variant do; `_settings` can stay empty for the defaults). It reads its NavMeshAgent where the player would use PlayerMovement (for footsteps and standing still), and its attacks, grenades and abilities call `Reveal()` (abilities whose `GivesAway` is false — Stealth, Ambush — don't).
 - `SmokeCloud` has no visual yet: add a Particle System (and a matching collider radius, default 4 m).
 
 ## Camera Effects & Lock-On

@@ -48,6 +48,7 @@ namespace CGD.Enemies
         private Stunnable    _stunnable;
         private DamageSource _damageSource;
         private CharacterStats _stats;
+        private Stealthable  _stealth;
 
         // The brain: the tree, the state its nodes last reported (for visuals), and time
         // gathered since its last tick (calm enemies think less often, see TreeTickRate).
@@ -146,11 +147,11 @@ namespace CGD.Enemies
             Search        = new EnemySearch(this);
             Tactics       = new EnemyTactics(this, _obstacleMask);
             Post          = new EnemyPost(this);
-            TryGetComponent(out Stealthable stealth);
-            Ambush        = new EnemyAmbush(stealth);
+            TryGetComponent(out _stealth);
+            Ambush        = new EnemyAmbush(_stealth);
             Minions       = new EnemyMinions(this);
             Belief        = new EnemyBelief(this, _obstacleMask);
-            Abilities     = new EnemyAbilities(this, _damageSource, stealth, Minions);
+            Abilities     = new EnemyAbilities(this, _damageSource, _stealth, Minions);
             Grenades      = new GrenadeThrower(this, _damageSource, _obstacleMask);
             Morale        = new EnemyMorale(this);
             Voice         = new EnemyVoice(this);
@@ -386,9 +387,20 @@ namespace CGD.Enemies
             AttackStarted?.Invoke();
         }
 
-        internal void NotifyFired() => Fired?.Invoke();
+        internal void NotifyFired()
+        {
+            Reveal();
+            Fired?.Invoke();
+        }
 
-        internal void NotifyThrew() => Threw?.Invoke();
+        internal void NotifyThrew()
+        {
+            Reveal();
+            Threw?.Invoke();
+        }
+
+        // Attacking and casting give away an enemy hiding in cover (or cloaked).
+        internal void Reveal() => _stealth?.Reveal();
 
         internal void NotifyRelocated(Vector3 from) => Relocated?.Invoke(from);
 
@@ -420,6 +432,7 @@ namespace CGD.Enemies
             _attackHits.Clear();
             float damage = _stats != null ? _stats.Apply(ItemStat.Damage, _data.AttackDamage) : _data.AttackDamage;
             damage *= Ambush.Consume();
+            Reveal();
             var info = new DamageInfo(damage, source: _damageSource);
 
             for (int i = 0; i < count; i++)

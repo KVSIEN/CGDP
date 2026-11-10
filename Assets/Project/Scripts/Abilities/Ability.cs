@@ -46,6 +46,10 @@ namespace CGD.Abilities
         // Seconds what it leaves on the caster lasts (a buff), for effects that show it; 0 = nothing lasting.
         public virtual float EffectDuration => 0f;
 
+        // Whether casting it gives the caster away while hiding (in a bush, say). Abilities
+        // that are themselves about hiding say no.
+        public virtual bool GivesAway => true;
+
         // Damage and on-hit effects after resource scaling (ctx.Power and ctx.BonusEffects).
         protected static float Scaled(float damage, AbilityContext ctx) => damage * ctx.Power;
 
