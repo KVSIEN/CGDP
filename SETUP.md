@@ -393,8 +393,8 @@ Arena              [NavMeshSurface, RuntimeNavMesh]      ← NavMesh built from 
   Stone 1–8                                   ← middle: full-height stones about 6 m apart (Bio)
   Lane Wall W/E South/North, Lane Crate/Pillar W/E   ← side lanes behind long walls at x ±20, gap at z −4…0 (flanking)
   Yard Wall W/E (+ Side), Yard Crate (W/E)    ← south: L-shaped walls and low crates (Void, player start)
-Bushes             (empty root)                          ← 8 hiding places, no colliders besides triggers, so agents walk through and the NavMesh ignores them
-  Bush <name>      [BoxCollider (trigger, 2.2 m high), ConcealmentZone (Bush)]   ← layer Ignore Raycast; Center (0, 0), West/East Doorway (±16, −2), Gallery West/East (±8, 9.5), Yard (0, −9.5), Corner NW/NE (±26, 13)
+Concealment Zones  (empty root)                          ← 8 hiding places, no colliders besides triggers, so agents walk through and the NavMesh ignores them
+  Zone <name>      [BoxCollider (trigger, 2.2 m high), ConcealmentZone (Bush)]   ← layer Ignore Raycast; Center (0, 0), West/East Doorway (±16, −2), Gallery West/East (±8, 9.5), Yard (0, −9.5), Corner NW/NE (±26, 13)
     Foliage 1–3    [MeshFilter (Sphere), MeshRenderer]   ← `Art/Materials/Environment/Props/BushFoliage` (transparent green), no collider
 CoverMap           [CoverMap]                            ← cover spots found from the NavMesh
 Spectator Camera   [Camera (off), UniversalAdditionalCameraData, AudioListener (off), SpectatorCamera]   ← tag MainCamera; (0, 50, −30), 62° down, FOV 46: the overview it starts on

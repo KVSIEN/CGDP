@@ -6564,7 +6564,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2100010001}
   m_Layer: 0
-  m_Name: Bushes
+  m_Name: Concealment Zones
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6605,7 +6605,7 @@ GameObject:
   - component: {fileID: 2100010012}
   - component: {fileID: 2100010013}
   m_Layer: 2
-  m_Name: Bush Center
+  m_Name: Zone Center
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6947,7 +6947,7 @@ GameObject:
   - component: {fileID: 2100010052}
   - component: {fileID: 2100010053}
   m_Layer: 2
-  m_Name: Bush West Doorway
+  m_Name: Zone West Doorway
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7289,7 +7289,7 @@ GameObject:
   - component: {fileID: 2100010092}
   - component: {fileID: 2100010093}
   m_Layer: 2
-  m_Name: Bush East Doorway
+  m_Name: Zone East Doorway
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7631,7 +7631,7 @@ GameObject:
   - component: {fileID: 2100010132}
   - component: {fileID: 2100010133}
   m_Layer: 2
-  m_Name: Bush Gallery West
+  m_Name: Zone Gallery West
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7973,7 +7973,7 @@ GameObject:
   - component: {fileID: 2100010172}
   - component: {fileID: 2100010173}
   m_Layer: 2
-  m_Name: Bush Gallery East
+  m_Name: Zone Gallery East
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8315,7 +8315,7 @@ GameObject:
   - component: {fileID: 2100010212}
   - component: {fileID: 2100010213}
   m_Layer: 2
-  m_Name: Bush Yard
+  m_Name: Zone Yard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8657,7 +8657,7 @@ GameObject:
   - component: {fileID: 2100010252}
   - component: {fileID: 2100010253}
   m_Layer: 2
-  m_Name: Bush Corner NW
+  m_Name: Zone Corner NW
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8999,7 +8999,7 @@ GameObject:
   - component: {fileID: 2100010292}
   - component: {fileID: 2100010293}
   m_Layer: 2
-  m_Name: Bush Corner NE
+  m_Name: Zone Corner NE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
