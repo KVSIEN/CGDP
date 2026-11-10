@@ -12,6 +12,11 @@ namespace CGD.Feedback
     {
         public static event Action<FeedbackRequest> Requested;
 
+        // Cleared at the start of every play session, so it stays empty even when Enter Play Mode
+        // skips the domain reload (subscribers from the last session are gone).
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => Requested = null;
+
         public static void Play(FeedbackPreset preset, string detail = null, float intensity = 1f)
         {
             if (preset == null) return;

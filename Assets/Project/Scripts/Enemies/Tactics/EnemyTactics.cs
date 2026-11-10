@@ -28,7 +28,6 @@ namespace CGD.Enemies
         private const float InCoverDistance   = 1.2f;
         private const float AbandonDistance   = 4f;
         private const int   VerifiedCandidates = 3;
-        private const float EyeHeight          = 1.5f;
         private const float FlankDetourLimit   = 3f;
         private const float AdvanceMinGain     = 3f;
         private const float WatchedSidePenalty = 1.5f;
@@ -201,7 +200,7 @@ namespace CGD.Enemies
             SortBestFirst(_best);
             TacticalDecision log = Log.Cover;
             log.Begin(threat);
-            Vector3 threatEye = threat + Vector3.up * EyeHeight;
+            Vector3 threatEye = threat + Vector3.up * EnemyEyes.Height;
             foreach (var (index, score) in _best)
             {
                 if (index < 0) continue;
@@ -290,7 +289,7 @@ namespace CGD.Enemies
                     continue;
                 }
 
-                float exposure = RouteMetrics.Exposure(_path, threat + Vector3.up * EyeHeight, _obstacleMask);
+                float exposure = RouteMetrics.Exposure(_path, threat + Vector3.up * EnemyEyes.Height, _obstacleMask);
                 float score = -2f * exposure - 0.3f * length / Mathf.Max(1f, straight) + Random.value * 0.3f
                               - WatchedSidePenalty * Watched(watching, threat, hit.position);
                 int entry = log.Add(hit.position, score, CandidateVerdict.Passed);
@@ -405,7 +404,7 @@ namespace CGD.Enemies
             {
                 HealthManager watcher = watchers[i];
                 if (watcher == null || watcher.IsDead) continue;
-                Vector3 eye = watcher.transform.position + Vector3.up * EyeHeight;
+                Vector3 eye = watcher.transform.position + Vector3.up * EnemyEyes.Height;
                 if (SightLines.IsClear(eye, body, _obstacleMask, watcher.transform)) return true;
             }
             return false;

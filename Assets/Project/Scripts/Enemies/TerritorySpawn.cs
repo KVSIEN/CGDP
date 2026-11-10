@@ -16,7 +16,6 @@ namespace CGD.Enemies
         private const float SampleReach  = 2f;
         private const float SafeDistance = 30f;   // this far from every hostile is as safe as it gets
         private const float SeenPenalty  = 25f;   // a hostile's line of sight costs as much as being this much closer
-        private const float EyeHeight    = 1.5f;
         private const float ChestHeight  = 1.2f;
 
         private readonly EnemyHealth _enemy;
@@ -72,7 +71,7 @@ namespace CGD.Enemies
 
                 Vector3 position = other.transform.position;
                 nearest = Mathf.Min(nearest, Vector3.Distance(position, spot));
-                if (!seen) seen = SightLines.IsClear(position + Vector3.up * EyeHeight, chest, _obstacleMask, other.transform);
+                if (!seen) seen = SightLines.IsClear(position + Vector3.up * EnemyEyes.Height, chest, _obstacleMask, other.transform);
             }
             return nearest - (seen ? SeenPenalty : 0f) + Random.value;
         }

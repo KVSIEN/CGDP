@@ -18,6 +18,11 @@ namespace CGD.Dialogue
 
         public static event Action<Conversation> ConversationStarted;
 
+        // Cleared at the start of every play session, so it stays empty even when Enter Play Mode
+        // skips the domain reload (subscribers from the last session are gone).
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => ConversationStarted = null;
+
         public string DisplayName => _displayName;
 
         public string GetInteractLabel(GameObject interactor) => $"Talk  {_displayName}";

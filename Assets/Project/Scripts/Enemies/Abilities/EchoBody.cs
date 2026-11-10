@@ -112,9 +112,7 @@ namespace CGD.Enemies
             _broken = true;
 
             if (_breakSound != null) _breakSound.Play(transform.position);
-            if (_breakFlash == null) return;
-            GameObject flash = PrefabPool.Spawn(_breakFlash, transform.position + Vector3.up, Quaternion.identity);
-            if (flash.TryGetComponent(out ExplosionFlash burst)) burst.Play(1.2f, _breakColor);
+            ExplosionFlash.Spawn(_breakFlash, transform.position + Vector3.up, 1.2f, _breakColor);
         }
 
         private bool TargetWithin(float distance)

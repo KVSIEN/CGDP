@@ -24,6 +24,11 @@ namespace CGD.Economy
         // (vendor, the customer)
         public static event Action<Vendor, ShopCustomer> Opened;
 
+        // Cleared at the start of every play session, so it stays empty even when Enter Play Mode
+        // skips the domain reload (subscribers from the last session are gone).
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => Opened = null;
+
         public string DisplayName => _displayName;
         public Shop   Shop        { get; private set; }
 

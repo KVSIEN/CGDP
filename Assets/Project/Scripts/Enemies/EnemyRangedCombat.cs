@@ -14,7 +14,6 @@ namespace CGD.Enemies
     // (Hold Range, Shoot Burst, Suppress).
     internal sealed class EnemyRangedCombat
     {
-        private const float EyeHeight = 1.5f;
         // The band around the preferred range that counts as "in position".
         private const float RangeTolerance = 0.15f;
         private const float MuzzleOffset   = 0.6f;
@@ -84,7 +83,7 @@ namespace CGD.Enemies
 
         public bool HasLineOfSight(Vector3 targetPos)
         {
-            Vector3 eyePos = _ai.transform.position + Vector3.up * EyeHeight;
+            Vector3 eyePos = _ai.transform.position + Vector3.up * EnemyEyes.Height;
             Vector3 aimAt  = targetPos + Vector3.up;
             if ((aimAt - eyePos).sqrMagnitude < 0.000001f) return true;
 
@@ -191,7 +190,7 @@ namespace CGD.Enemies
         // Whether a shot at this point would reach it rather than hit scenery on the way —
         // a wall in front of the shooter, a corner the target is round.
         public bool HasClearShot(Vector3 aimPoint) =>
-            SightLines.ReachesWithin(_ai.transform.position + Vector3.up * EyeHeight, aimPoint, ClearShotSlack, _obstacleMask);
+            SightLines.ReachesWithin(_ai.transform.position + Vector3.up * EnemyEyes.Height, aimPoint, ClearShotSlack, _obstacleMask);
 
         // False when the shot isn't taken because scenery blocks it.
         private bool FireOneShot()
@@ -200,7 +199,7 @@ namespace CGD.Enemies
             var       target = _ai.Perception.Target;
             if (target == null) return false;
 
-            Vector3 eyePos       = _ai.transform.position + Vector3.up * EyeHeight;
+            Vector3 eyePos       = _ai.transform.position + Vector3.up * EnemyEyes.Height;
             // Aims where it believes the target is: dead on while it sees it, a guess when not.
             // A projectile takes time to arrive, so it aims ahead of a target it sees moving.
             Vector3 targetCenter = _ai.Perception.TargetPosition + Vector3.up;

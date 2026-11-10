@@ -24,9 +24,10 @@ Assets/
       Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Perks/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors (keycard, terminal, puzzle), secret wall, keycard, terminal, hub workbench, encounter pieces (shutter, reward cache, loot pickups, puzzle switch, rift core, gamble station, escape pod); WallKit/ — placeholder wall art), Pickups, Systems (GameFlow, GameManager, EventSystem, Global Volume), UI, VFX, Weapons
-    Scenes/                 Sandbox.unity (+ its baked NavMesh folder), MapTest.unity (generated level), AITest.unity (behavior tree arena)
+    Scenes/                 Sandbox.unity, MapTest.unity (generated level), AITest.unity (behavior tree arena)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
-      Abilities/            ability assets (incl. TargetedAbility) and the player's ability slots
+      Abilities/            Core/ (Ability base, AbilityContext, cooldowns and charges, Surge, resource costs, PlayerAbilities — the player's slots,
+                            TimelineAbilityRunner, caster interfaces), Types/ (one class per kind of ability, incl. TargetedAbility), Zones/ (Rift, Snare)
       Artifacts/            offhand artifacts: ArtifactDefinition/Instance (rolled stats, passives, perks), OffhandBehavior (+ OffhandUse state) with
                             Cast, Ward and Channel behaviors; add a new artifact kind by subclassing OffhandBehavior and OffhandUse
       Animation/            Animator parameter bridge (AnimatorBridge, AnimatorParams), PlayerAnimator, EnemyAnimator, ViewmodelAnimator (per-weapon override controllers), Ragdoll;
@@ -57,7 +58,7 @@ Assets/
                             BehaviorTrees/ (Behavior Tree Editor: window, side panel; Canvas/ — GraphView, node, group and note views,
                             layout, search; Blackboard/ — key catalog and picker; Validation/ — tree checks; Debugging/ — trace,
                             live view, breakpoints)
-      Enemies/              enemy components, EnemyRangedCombat, EnemySearch, EnemyPost (guarding, return point), shared steps (Return/Retreat/RaiseAlarmStep),
+      Enemies/              enemy components, EnemyMelee, EnemyRangedCombat, EnemyEyes (the one eye height every enemy system uses), EnemySearch, EnemyPost (guarding, return point), shared steps (Return/Retreat/RaiseAlarmStep),
                             Abilities/ (EnemyAbilities: casting Ability assets; GrenadeThrower, ThrowArc),
                             BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/, Squad/, Pacing/, Voice/; EnemyBlackboard keys),
                             Perception/ (EnemyPerception: awareness, targets, memory; EnemySenses: sight and hearing checks; AwarenessMeter, PerceptionProfile, callouts),
@@ -98,7 +99,7 @@ Assets/
                             Waves/ (Lockdown, Holdout, Ambush, Rift), Survival/ (Siege, Gauntlet), Spawner/, Shrine/, Stealth/,
                             Puzzle/ (+ PuzzleSwitch, LightsOutPuzzle), Hazard/
       Loot/                 LootTable, LootDropper, LootContainer
-      Map/                  map graph data (Graph/: MapGraph, MapNode, analysis) and Generation/ (layout, content and style settings, sections, run modifiers, faction mixes, generator passes, validator, style report)
+      Map/                  map graph data (Graph/: MapGraph, MapNode, analysis) and Generation/ (MapGenerator and its settings at the root; Layout/ — layout settings, grid, path, branches, loops, organic growth and the builders; Content/ — content settings, node type rules, guarantees, pacing, sections, type/intensity/tier passes; Categories/ — ship-space categories and their painter; Gates/ — locks and secrets; Factions/ — faction mixes and painter; RunModifiers/ — run modifiers and tuning; Analysis/ — validator, style report, style learner)
       Meters/               generic resources (stamina, mana, oxygen…): Meter, MeterSet, MeterCost, MeterZone
       Perks/                gear perks (passive and triggered), perk pools, PerkDispatcher
       Player/               movement, camera, lock-on, health, lifecycle, player audio; Dodge/ (DodgeDefinition stages, DodgeMotion)
@@ -109,11 +110,13 @@ Assets/
       Stealth/              Stealthable (hide state), StealthStatus (rules), ConcealmentZone (bushes, smoke), StealthSettings
       Targeting/            TargetQuery, TargetFilter and TargetSelector assets (Selectors/)
       Timing/               GameClock (fixed ticks, pause, time scale, scheduling) and GameTime
-      UI/                   Common/ (UIFactory), HUD/, Menus/, World/ (popups, enemy bars)
+      UI/                   Common/ (UIFactory), HUD/ (HUDManager, HUDElement; Combat/ — crosshair, hit and damage feedback, status, stealth;
+                            Loadout/ — weapons, abilities, items, inventory; Player/ — meters, stats, dodge, speed, interact prompt;
+                            Map/ — minimap, world map; Objectives/ — objectives, quests, notifications; Panels/ — modal panels), Menus/, World/ (popups, enemy bars)
       Weapons/              WeaponItem (what a loadout slot holds), WeaponCategory (firearm or melee, rolls WeaponItems), IOffhand (what an offhand item implements), Ranged/, FireBehaviors/, Generation/, Melee/ (controller, guard, melee categories and generator), Shields/, Throwables/
       WorldMap/             WorldMapArea (bounds, background, fog of war), MapMarker, MapRevealer, projection
     Settings/               URP assets, volume profiles, project-wide input actions
-    Tests/EditMode/         NUnit tests for the Unity-independent logic (CGD.Tests.EditMode assembly), one folder per feature as in Scripts/
+    Tests/EditMode/         NUnit tests for the Unity-independent logic (CGD.Tests.EditMode assembly), one folder per feature as in Scripts/; ProjectHealth/ checks the assets themselves (no missing scripts, no component twice on one object, no empty folders)
   ThirdParty/               imported asset packs
   TextMesh Pro/             TMP essentials
 ```
@@ -135,3 +138,19 @@ Assets/
   `HuskEnemyData`) and created from `Create > CGD > <Feature> > …`.
 - **Moving files:** do it inside Unity, or move each file together with its `.meta` while
   the editor is closed — otherwise scene and prefab references break.
+- **Settings assets in Play mode:** assets the game itself edits while playing (`InputBindingSettings`,
+  `SpectatorInputSettings`: loaded and rebound bindings, sensitivity) implement `IRestoredAfterPlayMode`;
+  the editor puts them back as authored when Play ends, so nobody's personal setup is saved into
+  the project. Give any new asset of that kind the interface.
+- **Line endings and merging:** `.gitattributes` stores every text file with LF and marks binaries.
+  For conflict-free scene and prefab merges, enable Unity's Smart Merge once per machine:
+  `git config merge.unityyamlmerge.name "Unity SmartMerge"` and
+  `git config merge.unityyamlmerge.driver "'<Unity>/Editor/Data/Tools/UnityYAMLMerge.exe' merge -p %O %B %A %A"`
+  (replace `<Unity>` with the editor's install folder). Without it, git merges them as text.
+- **Folders:** an empty folder is either removed or holds a `.gitkeep` because it is a planned slot
+  (the `Art/` and `Audio/` layout); `ProjectHealthTests` fails on any other empty folder.
+- **One per character:** components that others find with `GetComponent` (health, status
+  effects, stun, stats, stealth, enemy AI, reflector, player movement) are
+  `[DisallowMultipleComponent]`. A second copy would silently split their state (one HUD
+  watching a controller that never gets the effects), so give new components of that kind
+  the attribute too.

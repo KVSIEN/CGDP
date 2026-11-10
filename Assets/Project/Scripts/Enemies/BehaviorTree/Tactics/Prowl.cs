@@ -26,7 +26,6 @@ namespace CGD.Enemies
         private const float PathSlack       = 2f;    // a walk this many times the straight line isn't a step round
         private const float ArrivalDistance = 0.6f;
         private const float MoveGiveUp      = 3f;
-        private const float EyeHeight       = 1.5f;
         private const float ChestHeight     = 1.1f;
         private const float Unseen          = 3f;    // score for each hostile that can't see the spot
         private const float KeepCircling    = 1f;    // score for carrying on round the same way
@@ -165,7 +164,7 @@ namespace CGD.Enemies
                 HealthManager hostile = hostiles[i];
                 if (hostile == null || hostile.IsDead) continue;
 
-                Vector3 eye = hostile.transform.position + Vector3.up * EyeHeight;
+                Vector3 eye = hostile.transform.position + Vector3.up * EnemyEyes.Height;
                 if (!CanSee(eye, spot + Vector3.up * ChestHeight, hostile.transform)) score += Unseen;
             }
             return score;

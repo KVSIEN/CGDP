@@ -12,6 +12,11 @@ namespace CGD.UI
     {
         private static HUDTheme _fallback;
 
+        // Forgotten at the start of every play session, even when Enter Play Mode
+        // skips the domain reload (the last session's fallback was destroyed with it).
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => _fallback = null;
+
         // The defaults, for an element that has no theme assigned.
         public static HUDTheme Fallback
         {

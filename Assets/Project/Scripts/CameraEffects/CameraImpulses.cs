@@ -11,6 +11,11 @@ namespace CGD.CameraEffects
         // (position, radius, trauma at the centre)
         public static event Action<Vector3, float, float> Emitted;
 
+        // Cleared at the start of every play session, so it stays empty even when Enter Play Mode
+        // skips the domain reload (subscribers from the last session are gone).
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => Emitted = null;
+
         public static void Emit(Vector3 position, float radius, float trauma)
         {
             if (radius > 0f && trauma > 0f) Emitted?.Invoke(position, radius, trauma);

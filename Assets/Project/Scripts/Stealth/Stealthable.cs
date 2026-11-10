@@ -12,6 +12,7 @@ namespace CGD.Stealth
     // ConcealmentZone (bushes, smoke) or cloaked by a stealth ability; attacks and other
     // noise it makes reveal it for a moment. While Hidden, enemies only detect it inside
     // a short range — longer when they share the same cover — see StealthSettings.
+    [DisallowMultipleComponent]
     public class Stealthable : MonoBehaviour
     {
         // Noise further away than this (a grenade landing across the room) doesn't give the

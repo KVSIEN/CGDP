@@ -19,7 +19,6 @@ namespace CGD.Enemies
     public sealed class StealthDash : EnemyAction
     {
         private const int   Directions   = 12;
-        private const float EyeHeight    = 1.5f;
         private const float ChestHeight  = 1.1f;
         private const float Unseen       = 3f;    // score for each hostile that can't see the spot
         private const float Unexpected   = 1.5f;  // score for going against its heading
@@ -114,7 +113,7 @@ namespace CGD.Enemies
                 HealthManager hostile = hostiles[i];
                 if (hostile == null || hostile.IsDead) continue;
 
-                Vector3 eye = hostile.transform.position + Vector3.up * EyeHeight;
+                Vector3 eye = hostile.transform.position + Vector3.up * EnemyEyes.Height;
                 if (!CanSee(eye, spot + Vector3.up * ChestHeight, hostile.transform)) score += Unseen;
 
                 float before = Flat(from - hostile.transform.position).magnitude;

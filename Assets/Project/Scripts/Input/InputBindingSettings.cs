@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Core;
 
 namespace CGD.Input
 {
     [CreateAssetMenu(fileName = "InputBindingSettings", menuName = "CGD/Input/Input Binding Settings")]
-    public class InputBindingSettings : ScriptableObject
+    public class InputBindingSettings : ScriptableObject, IRestoredAfterPlayMode
     {
         public List<ActionBinding> Bindings = new();
 

@@ -21,6 +21,7 @@ namespace CGD.Enemies
     [RequireComponent(typeof(NavMeshAgent))]
     [RequireComponent(typeof(EnemyHealth))]
     [RequireComponent(typeof(Stunnable))]
+    [DisallowMultipleComponent]
     public class EnemyAI : MonoBehaviour, IPoolable, IBehaviorTreeOwner, IBtAgentStatus
     {
         // Investigate: curious, checking something out. Hunt: knows a hostile is about and is
@@ -42,9 +43,7 @@ namespace CGD.Enemies
         [Tooltip("Geometry that blocks line of sight")]
         [SerializeField] private LayerMask   _obstacleMask;
 
-        private static readonly Collider[] _attackBuffer = new Collider[16];
         private static readonly ProfilerMarker SensesMarker = new("EnemyAI.Senses");
-        private readonly HashSet<HealthManager> _attackHits = new();
 
         private EnemyHealth  _health;
         private Stunnable    _stunnable;
@@ -64,8 +63,6 @@ namespace CGD.Enemies
         private Vector3 _facePoint;
         private float   _faceTimeLeft;
 
-        private CooldownTimer _attackCooldown;
-        private float _windupTimer;
         private float _nextStaggerAt;
         private bool  _alarmTried;
         private EngageStep    _step;
@@ -104,6 +101,7 @@ namespace CGD.Enemies
         internal EnemyRouting      Routing      { get; private set; }
         internal EnemyPerception   Perception   { get; private set; }
         internal EnemyRangedCombat RangedCombat { get; private set; }
+        internal EnemyMelee        Melee        { get; private set; }
         internal EnemySearch       Search       { get; private set; }
         internal EnemyTactics      Tactics      { get; private set; }
         internal EnemyPost         Post         { get; private set; }
@@ -136,8 +134,8 @@ namespace CGD.Enemies
         internal EnemyHealth       Health       => _health;
         internal EnemyData         Data         => _data;
         internal Transform[]       Waypoints    => _waypoints ?? Array.Empty<Transform>();
-        internal bool              IsAttacking  { get; private set; }
-        internal bool              CanAttack    => !IsAttacking && _attackCooldown.IsReady;
+        internal bool              IsAttacking  => Melee.IsAttacking;
+        internal bool              CanAttack    => Melee.CanAttack;
         internal bool              IsStunned    => _stunnable.IsStunned;
 
         private void Awake()
@@ -152,6 +150,7 @@ namespace CGD.Enemies
             TryGetComponent(out _stats);
             Perception    = new EnemyPerception(this, _data, _targetMask, _obstacleMask, _health.Team);
             RangedCombat  = new EnemyRangedCombat(this, _damageSource, _obstacleMask);
+            Melee         = new EnemyMelee(this, _damageSource, _targetMask, _stats);
             Search        = new EnemySearch(this);
             Tactics       = new EnemyTactics(this, _obstacleMask);
             Post          = new EnemyPost(this);
@@ -229,8 +228,7 @@ namespace CGD.Enemies
             {
                 using (SensesMarker.Auto())
                 {
-                    _attackCooldown.Tick(dt);
-                    TickAttack(dt);
+                    Melee.Tick(dt);
                     RangedCombat.Tick(dt);
                     Perception.Tick(dt);
                     Belief.Tick(Time.time);
@@ -380,7 +378,6 @@ namespace CGD.Enemies
         }
 
         // Buffs speed up the melee swing (FireRate stat, base 1): wind-up and recovery both shrink.
-        private float AttackSpeedFromStats => _stats != null ? Mathf.Max(0.1f, _stats.Apply(ItemStat.FireRate, 1f)) : 1f;
 
         private float SpeedFromStats => _stats != null ? Mathf.Max(0.1f, _stats.Apply(ItemStat.MovementSpeed, 1f)) : 1f;
 
@@ -424,13 +421,7 @@ namespace CGD.Enemies
 
         internal void TryStartAttack()
         {
-            if (!CanAttack) return;
-
-            IsAttacking  = true;
-            float swing = 1f / AttackSpeedFromStats;
-            _windupTimer = _data.AttackWindup * swing;
-            _attackCooldown.Start((_data.AttackWindup + _data.AttackCooldown) * swing);
-            AttackStarted?.Invoke();
+            if (Melee.TryStart()) AttackStarted?.Invoke();
         }
 
         internal void NotifyFired()
@@ -453,41 +444,6 @@ namespace CGD.Enemies
         internal void NotifyAbilityUsed(Ability ability) => AbilityUsed?.Invoke(ability);
 
         internal void JoinSquad(EnemySquad squad) => Squad = squad;
-
-        private void TickAttack(float dt)
-        {
-            if (!IsAttacking) return;
-
-            _windupTimer -= dt;
-            if (_windupTimer > 0f) return;
-
-            IsAttacking = false;
-            ResolveAttack();
-            Tactics.OnStrike();
-        }
-
-        private void ResolveAttack()
-        {
-            _data.AttackSound.TryPlay(transform.position);
-
-            float   range  = _data.AttackRange;
-            Vector3 center = transform.position + Vector3.up + transform.forward * (range * 0.5f);
-            int count = Physics.OverlapSphereNonAlloc(center, range * 0.6f, _attackBuffer,
-                _targetMask, QueryTriggerInteraction.Ignore);
-
-            _attackHits.Clear();
-            float damage = _stats != null ? _stats.Apply(ItemStat.Damage, _data.AttackDamage) : _data.AttackDamage;
-            damage *= Ambush.Consume();
-            Reveal();
-            var info = new DamageInfo(damage, source: _damageSource);
-
-            for (int i = 0; i < count; i++)
-            {
-                if (Hitbox.FindDamageable(_attackBuffer[i]) is not HealthManager target) continue;
-                if (target == _health || !_attackHits.Add(target)) continue;
-                target.TakeDamage(info);
-            }
-        }
 
         // Remembers who it is fighting so it notices when that fight is won.
         private void TrackEngagement()
@@ -523,7 +479,7 @@ namespace CGD.Enemies
             if (amount < _health.MaxHealth * _data.StaggerThreshold) return;
 
             _nextStaggerAt = Time.time + _data.StaggerCooldown;
-            IsAttacking = false;
+            Melee.Interrupt();
             RangedCombat.CancelBurst();
             Abilities.Cancel();
             Grenades.Cancel();
@@ -560,8 +516,7 @@ namespace CGD.Enemies
             Agent.Warp(transform.position);
             Routing.Clear();
             enabled      = true;
-            IsAttacking  = false;
-            _attackCooldown.Reset();
+            Melee.Reset();
             RangedCombat.Reset();
             Ambush.Disarm();
             Minions.DismissAll();

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace CGD.Quests
 {
@@ -8,6 +9,11 @@ namespace CGD.Quests
     public static class QuestEvents
     {
         public static event Action<QuestEvent> Reported;
+
+        // Cleared at the start of every play session, so it stays empty even when Enter Play Mode
+        // skips the domain reload (subscribers from the last session are gone).
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => Reported = null;
 
         public static void Report(ObjectiveKind kind, UnityEngine.Object target, int amount = 1)
         {

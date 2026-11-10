@@ -1,0 +1,42 @@
+# Line endings: everything text is stored and checked out with LF on every platform (Unity reads
+# and writes LF fine on Windows), so commits don't churn line endings or warn about them.
+* text=auto eol=lf
+
+# Unity YAML (Force Text serialization). merge=unityyamlmerge uses Unity's Smart Merge once it
+# is set up (see README › Conventions); without that, git falls back to a normal text merge.
+*.unity          text eol=lf merge=unityyamlmerge
+*.prefab         text eol=lf merge=unityyamlmerge
+*.asset          text eol=lf merge=unityyamlmerge
+*.mat            text eol=lf merge=unityyamlmerge
+*.anim           text eol=lf merge=unityyamlmerge
+*.controller     text eol=lf merge=unityyamlmerge
+*.overrideController text eol=lf merge=unityyamlmerge
+*.physicMaterial text eol=lf merge=unityyamlmerge
+*.mixer          text eol=lf merge=unityyamlmerge
+*.meta           text eol=lf
+*.cs             text eol=lf diff=csharp
+*.shadergraph    text eol=lf
+*.inputactions   text eol=lf
+
+# Binary assets: never diffed or merged as text.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.tga  binary
+*.tif  binary
+*.tiff binary
+*.psd  binary
+*.exr  binary
+*.hdr  binary
+*.fbx  binary
+*.obj  binary
+*.blend binary
+*.wav  binary
+*.mp3  binary
+*.ogg  binary
+*.aif  binary
+*.aiff binary
+*.ttf  binary
+*.otf  binary
+*.dll  binary
+*.so   binary

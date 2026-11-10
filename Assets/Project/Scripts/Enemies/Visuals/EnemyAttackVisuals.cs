@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using CGD.Combat;
-using CGD.Core;
 using CGD.Weapons;
 
 namespace CGD.Enemies
@@ -119,9 +118,7 @@ namespace CGD.Enemies
 
         private void Flash(Vector3 position, float radius, Color color)
         {
-            if (_flash == null) return;
-            GameObject flash = PrefabPool.Spawn(_flash, position, Quaternion.identity);
-            if (flash.TryGetComponent(out ExplosionFlash burst)) burst.Play(radius, color);
+            ExplosionFlash.Spawn(_flash, position, radius, color);
         }
 
         // At the arm's tip, so the trail traces the thrust.

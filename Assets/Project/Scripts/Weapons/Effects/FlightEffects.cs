@@ -87,9 +87,8 @@ namespace CGD.Weapons
 
         private void OnImpacted(Vector3 point, Vector3 normal)
         {
-            if (_impactFlash == null || _impactRadius <= 0f) return;
-            GameObject flash = PrefabPool.Spawn(_impactFlash, point + normal * 0.05f, Quaternion.identity);
-            if (flash.TryGetComponent(out ExplosionFlash burst)) burst.Play(_impactRadius, _impactColor);
+            if (_impactRadius <= 0f) return;
+            ExplosionFlash.Spawn(_impactFlash, point + normal * 0.05f, _impactRadius, _impactColor);
         }
 
         // A child of its own: an object can carry only one renderer, and the shot has its mesh.

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace CGD.Combat
 {
@@ -8,6 +9,11 @@ namespace CGD.Combat
     public static class CombatEvents
     {
         public static event Action<DamageReport> DamageDealt;
+
+        // Cleared at the start of every play session, so it stays empty even when Enter Play Mode
+        // skips the domain reload (subscribers from the last session are gone).
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => DamageDealt = null;
 
         internal static void Report(in DamageReport report) => DamageDealt?.Invoke(report);
     }

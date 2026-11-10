@@ -10,6 +10,7 @@ namespace CGD.Combat
     // parried hit (MeleeWeaponData.ParryReflect). Lives on the same object as the
     // HealthManager and runs after a melee guard, so it works on the damage actually taken.
     // Only hits with an attacker are caught, and reflected damage is never caught again.
+    [DisallowMultipleComponent]
     public class Reflector : MonoBehaviour, IDamageInterceptor
     {
         private const float ProjectileSpawnOffset = 1f;

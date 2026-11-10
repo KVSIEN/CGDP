@@ -17,6 +17,7 @@ namespace CGD.Player
     [RequireComponent(typeof(Stunnable))]
     [RequireComponent(typeof(PlayerDodge))]
     [RequireComponent(typeof(PlayerMantle))]
+    [DisallowMultipleComponent]
     public class PlayerMovement : MonoBehaviour
     {
         private const float MantleForwardInputThreshold = 0.5f;

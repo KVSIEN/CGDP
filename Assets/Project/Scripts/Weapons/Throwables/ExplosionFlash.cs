@@ -26,6 +26,16 @@ namespace CGD.Weapons
             _block    = new MaterialPropertyBlock();
         }
 
+        // A flash from the pool at `position`: what every blast, cast and impact effect uses.
+        // Does nothing without a prefab, so an optional effect field can simply be left empty.
+        public static void Spawn(GameObject prefab, Vector3 position, float radius, Color color)
+        {
+            if (prefab == null) return;
+
+            GameObject flash = PrefabPool.Spawn(prefab, position, Quaternion.identity);
+            if (flash.TryGetComponent(out ExplosionFlash burst)) burst.Play(radius, color);
+        }
+
         // The blast's radius; the mesh is a unit sphere, so its scale is the diameter.
         public void Play(float radius, Color color)
         {

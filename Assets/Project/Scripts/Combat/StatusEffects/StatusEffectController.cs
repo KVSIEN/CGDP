@@ -8,6 +8,7 @@ namespace CGD.Combat
     // so damage-over-time effects resolve through the same TakeDamage(DamageInfo)
     // pipeline as direct hits. Also the context effects act on: the character's
     // IDamageable and (optional) Stunnable. All effects are cleared on death.
+    [DisallowMultipleComponent]
     public class StatusEffectController : MonoBehaviour
     {
         private class ActiveEffect

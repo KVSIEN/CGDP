@@ -13,7 +13,6 @@ namespace CGD.Enemies
     // height hides a crouching target but not a standing one; stealth, smoke and walls apply.
     internal class EnemySenses
     {
-        private const float EyeHeight       = 1.5f;
         private const float DefaultLoudness = 0.6f;   // footsteps of a hostile without Stealthable
 
         // Each hostile's body collider and status effects, looked up once instead of per check.
@@ -49,7 +48,7 @@ namespace CGD.Enemies
             DestroyedKeys.Remove(Effects);
         }
 
-        public Vector3 Eye => _self.position + Vector3.up * EyeHeight;
+        public Vector3 Eye => _self.position + Vector3.up * EnemyEyes.Height;
 
         public bool CanSee(HealthManager target, out float gain, out bool instant)
         {

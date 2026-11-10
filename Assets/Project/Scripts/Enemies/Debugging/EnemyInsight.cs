@@ -13,7 +13,6 @@ namespace CGD.Enemies
     // so this is the one surface tools outside it are given.
     public readonly struct EnemyInsight
     {
-        private const float EyeHeight = 1.5f;
 
         private readonly EnemyAI _ai;
 
@@ -30,7 +29,7 @@ namespace CGD.Enemies
 
         // --- Senses -----------------------------------------------------------------
 
-        public Vector3        Eye           => _ai.transform.position + Vector3.up * EyeHeight;
+        public Vector3        Eye           => _ai.transform.position + Vector3.up * EnemyEyes.Height;
         public Vector3        Forward       => _ai.transform.forward;
         public float          SightRange    => _ai.Perception.SightRange;
         public float          SightAngle    => _ai.Perception.SightAngle;

@@ -9,7 +9,6 @@ namespace CGD.Enemies
     // enemy that wandered into an unfamiliar room has to look around before it can use it.
     internal sealed class CoverKnowledge
     {
-        private const float EyeHeight      = 1.5f;
         private const float HomeRadius     = 10f;
         private const float LearnInterval  = 0.5f;
         private const float LearnRange     = 14f;
@@ -94,7 +93,7 @@ namespace CGD.Enemies
             map.Query(self.position, LearnRange, _scratch);
             if (_scratch.Count == 0) return;
 
-            Vector3 eye       = self.position + Vector3.up * EyeHeight;
+            Vector3 eye       = self.position + Vector3.up * EnemyEyes.Height;
             float   halfAngle = _ai.Data.SightAngle * 0.5f;
             int     checks    = 0;
 

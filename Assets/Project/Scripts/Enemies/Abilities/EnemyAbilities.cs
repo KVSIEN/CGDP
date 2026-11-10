@@ -15,7 +15,6 @@ namespace CGD.Enemies
     // Each ability keeps its own cooldown per enemy; meter costs and charges don't apply.
     internal sealed class EnemyAbilities
     {
-        private const float EyeHeight = 1.5f;
 
         private readonly EnemyAI _ai;
         private readonly Transform _aim;
@@ -35,7 +34,7 @@ namespace CGD.Enemies
             _ai = ai;
             _aim = new GameObject("AbilityAim").transform;
             _aim.SetParent(ai.transform, false);
-            _aim.localPosition = Vector3.up * EyeHeight;
+            _aim.localPosition = Vector3.up * EnemyEyes.Height;
 
             ai.TryGetComponent(out CharacterStats stats);
             ai.TryGetComponent(out TimelineAbilityRunner timeline);
@@ -54,6 +53,10 @@ namespace CGD.Enemies
                 Ambush          = ai.Ambush,
                 Summoner        = summoner,
             };
+            // An enemy always aims somewhere, so abilities that land on the aim point (Rift) are
+            // usable from the start. Each cast re-aims it at its target as it goes off (AimAt);
+            // without this they stayed unready until some other ability had been cast once.
+            AimAt(_aim.position + ai.transform.forward * 5f);
         }
 
         public bool IsCasting => _casting != null;

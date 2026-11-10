@@ -16,6 +16,11 @@ namespace CGD.Crafting
         // (station, the interacting player)
         public static event Action<CraftingStation, GameObject> Opened;
 
+        // Cleared at the start of every play session, so it stays empty even when Enter Play Mode
+        // skips the domain reload (subscribers from the last session are gone).
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => Opened = null;
+
         public string             Label   => _label;
         public RecipeDefinition[] Recipes => _recipes;
 

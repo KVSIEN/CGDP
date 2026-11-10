@@ -26,7 +26,6 @@ namespace CGD.Enemies
         private const float CheckedFactor  = 0.1f;
         private const int   MaxChecks      = 6;
         private const float MinWeight      = 0.04f;
-        private const float EyeHeight      = 1.5f;
         private const float BodyHeight     = 0.5f;   // where a hiding place is tested for concealment
         private const float VantageRadius  = 16f;
         private const int   VantageSpots   = 6;
@@ -172,7 +171,7 @@ namespace CGD.Enemies
                 if (map.IsTakenByOther(index, _ai)) continue;
 
                 CoverPoint cover = map[index];
-                Vector3 eye = cover.Position + Vector3.up * EyeHeight;
+                Vector3 eye = cover.Position + Vector3.up * EnemyEyes.Height;
                 float seen = 0f;
                 Vector3 centre = Vector3.zero;
                 foreach (BeliefSpot spot in _top)
@@ -295,7 +294,7 @@ namespace CGD.Enemies
             if (_spots.Count == 0) return;
 
             Vector3 self    = _ai.transform.position;
-            Vector3 eye     = self + Vector3.up * EyeHeight;
+            Vector3 eye     = self + Vector3.up * EnemyEyes.Height;
             Vector3 forward = _ai.transform.forward;
             float minDot    = Mathf.Cos(_ai.Perception.SightAngle * 0.5f * Mathf.Deg2Rad);
             int rays = 0;

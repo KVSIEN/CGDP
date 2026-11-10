@@ -88,6 +88,13 @@ namespace CGD.Targeting
             return false;
         }
 
+        // The floor under a point (an aim point at chest height, say), at most `maxDrop` below;
+        // `fallbackDrop` below the point when there is none in reach.
+        public static Vector3 FloorBelow(Vector3 point, float maxDrop = 4f, float fallbackDrop = 1f) =>
+            Physics.Raycast(point, Vector3.down, out RaycastHit hit, maxDrop, ~0, QueryTriggerInteraction.Ignore)
+                ? hit.point
+                : point + Vector3.down * fallbackDrop;
+
         public static void SortByDistance(List<HealthManager> targets, Vector3 origin)
         {
             _byDistance.Origin = origin;

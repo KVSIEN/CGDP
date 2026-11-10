@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Core;
 using CGD.Input;
 
 namespace CGD.DevTools
@@ -11,7 +12,7 @@ namespace CGD.DevTools
     // table every one would show as a conflict. Same pattern as InputBindingSettings:
     // rebindable in the spectator's own settings panel, saved to PlayerPrefs (SpectatorSave).
     [CreateAssetMenu(fileName = "SpectatorInputSettings", menuName = "CGD/DevTools/Spectator Input Settings")]
-    public class SpectatorInputSettings : ScriptableObject
+    public class SpectatorInputSettings : ScriptableObject, IRestoredAfterPlayMode
     {
         public List<SpectatorBinding> Bindings = new();
 

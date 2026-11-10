@@ -176,7 +176,7 @@ namespace CGD.UI
             text.fontSize = 13f;
             text.color = Color.white;
             text.alignment = TextAlignmentOptions.MidlineLeft;
-            text.enableWordWrapping = false;
+            text.textWrappingMode = TextWrappingModes.NoWrap;
             Stretch(text.rectTransform);
 
             var inputField = go.GetComponent<TMP_InputField>();

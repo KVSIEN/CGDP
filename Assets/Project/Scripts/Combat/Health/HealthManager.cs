@@ -9,6 +9,7 @@ namespace CGD.Combat
     // Parent of a character's Hitboxes and the single place damage is resolved:
     // region multiplier → armor → interceptors (a raised guard) → shield → health.
     // Subclasses only supply their stats.
+    [DisallowMultipleComponent]
     public abstract class HealthManager : MonoBehaviour, IDamageable
     {
         [Tooltip("Per-region damage multipliers. Empty = every region ×1, Head still counts as critical.")]

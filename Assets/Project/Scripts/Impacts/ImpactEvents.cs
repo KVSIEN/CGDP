@@ -12,6 +12,11 @@ namespace CGD.Impacts
     {
         public static event Action<Impact> Occurred;
 
+        // Cleared at the start of every play session, so it stays empty even when Enter Play Mode
+        // skips the domain reload (subscribers from the last session are gone).
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => Occurred = null;
+
         // source: who fired, if known (bullets pass it so enemies can feel near misses).
         public static void Report(Vector3 point, Vector3 normal, Collider collider, ImpactKind kind, DamageSource source = default)
         {

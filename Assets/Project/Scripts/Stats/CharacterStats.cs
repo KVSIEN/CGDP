@@ -15,6 +15,7 @@ namespace CGD.Stats
     //
     // Health, weapons and enemy attacks read through this when it's on the character;
     // without it they use their base values unchanged.
+    [DisallowMultipleComponent]
     public class CharacterStats : MonoBehaviour, ITickable
     {
         [Tooltip("Always applied, e.g. a difficulty preset for enemies")]

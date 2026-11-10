@@ -120,10 +120,7 @@ namespace CGD.Enemies
 
         private void Flash(float radius)
         {
-            if (_settings.PulseFlash == null) return;
-
-            GameObject flash = PrefabPool.Spawn(_settings.PulseFlash, transform.position + Vector3.up * 0.6f, Quaternion.identity);
-            if (flash.TryGetComponent(out ExplosionFlash ring)) ring.Play(radius, _spoofed ? Color.gray : _settings.Color);
+            ExplosionFlash.Spawn(_settings.PulseFlash, transform.position + Vector3.up * 0.6f, radius, _spoofed ? Color.gray : _settings.Color);
         }
 
         private void Tint(Color color)

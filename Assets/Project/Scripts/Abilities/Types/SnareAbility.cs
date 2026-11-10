@@ -1,6 +1,7 @@
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
+using CGD.Targeting;
 
 namespace CGD.Abilities
 {
@@ -39,14 +40,8 @@ namespace CGD.Abilities
         public override void Execute(AbilityContext ctx)
         {
             Vector3 aim = ctx.HasAimPoint ? ctx.AimPoint : ctx.CasterTransform.position + ctx.CasterTransform.forward * 6f;
-            GameObject zone = PrefabPool.Spawn(ZonePrefab, GroundBelow(aim), Quaternion.identity);
+            GameObject zone = PrefabPool.Spawn(ZonePrefab, TargetQuery.FloorBelow(aim) + Vector3.up * 0.05f, Quaternion.identity);
             if (zone.TryGetComponent(out SnareZone snare)) snare.Begin(this, ctx.Source);
         }
-
-        // The aim point is at chest height; the patch lies on the floor beneath it.
-        private static Vector3 GroundBelow(Vector3 point) =>
-            Physics.Raycast(point, Vector3.down, out RaycastHit hit, 4f, ~0, QueryTriggerInteraction.Ignore)
-                ? hit.point + Vector3.up * 0.05f
-                : point + Vector3.down * 1f;
     }
 }

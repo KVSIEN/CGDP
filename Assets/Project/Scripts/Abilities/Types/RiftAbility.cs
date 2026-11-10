@@ -1,6 +1,7 @@
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
+using CGD.Targeting;
 
 namespace CGD.Abilities
 {
@@ -38,14 +39,8 @@ namespace CGD.Abilities
         {
             if (!ctx.HasAimPoint) return;
 
-            GameObject zone = PrefabPool.Spawn(ZonePrefab, GroundBelow(ctx.AimPoint), Quaternion.identity);
+            GameObject zone = PrefabPool.Spawn(ZonePrefab, TargetQuery.FloorBelow(ctx.AimPoint) + Vector3.up * 0.05f, Quaternion.identity);
             if (zone.TryGetComponent(out RiftZone rift)) rift.Begin(this, ctx.Source, ctx.Health);
         }
-
-        // The aim point is at chest height; the disc lies on the floor beneath it.
-        private Vector3 GroundBelow(Vector3 point) =>
-            Physics.Raycast(point, Vector3.down, out RaycastHit hit, 4f, ~0, QueryTriggerInteraction.Ignore)
-                ? hit.point + Vector3.up * 0.05f
-                : point + Vector3.down * 1f;
     }
 }

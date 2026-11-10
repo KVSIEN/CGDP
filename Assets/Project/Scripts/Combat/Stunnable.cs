@@ -8,6 +8,7 @@ namespace CGD.Combat
     // (e.g. Ice) and abilities write to it; PlayerMovement and EnemyAI read it. Cleared on death.
     // Stuns only ever extend (a short stun never cuts a long one short), and each source
     // keeps its own slow — the strongest one applies, and ending one leaves the others.
+    [DisallowMultipleComponent]
     public class Stunnable : MonoBehaviour
     {
         private readonly Dictionary<object, float> _slows = new();

@@ -27,7 +27,6 @@ namespace CGD.Enemies
         private const float VantageMax = 8f;
         private const float ArrivalDistance = 0.8f;
         private const float VantageSpeedShare = 0.6f;
-        private const float EyeHeight = 1.5f;
 
         [Tooltip("Seconds to keep watching (random within the range)")]
         [SerializeField] private FloatRange _seconds = new(4f, 6f);
@@ -92,7 +91,7 @@ namespace CGD.Enemies
                 Vector2 ring = UnityEngine.Random.insideUnitCircle.normalized * UnityEngine.Random.Range(VantageMin, VantageMax);
                 Vector3 candidate = origin + new Vector3(ring.x, 0f, ring.y);
                 if (!NavMesh.SamplePosition(candidate, out NavMeshHit hit, 2f, NavMesh.AllAreas)) continue;
-                if (!SightLines.IsClear(hit.position + Vector3.up * EyeHeight, belief + Vector3.up, Ai.ObstacleMask, null)) continue;
+                if (!SightLines.IsClear(hit.position + Vector3.up * EnemyEyes.Height, belief + Vector3.up, Ai.ObstacleMask, null)) continue;
 
                 Ai.Agent.isStopped = false;
                 if (Ai.Routing.SetDestination(hit.position)) return true;
@@ -143,7 +142,7 @@ namespace CGD.Enemies
 
         private float ClearDistance(Vector3 direction, float max = 12f)
         {
-            Vector3 eye = Ai.transform.position + Vector3.up * EyeHeight;
+            Vector3 eye = Ai.transform.position + Vector3.up * EnemyEyes.Height;
             return Physics.Raycast(eye, direction, out RaycastHit hit, max, Ai.ObstacleMask, QueryTriggerInteraction.Ignore)
                 ? hit.distance
                 : max;

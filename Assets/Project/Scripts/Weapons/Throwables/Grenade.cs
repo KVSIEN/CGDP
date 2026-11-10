@@ -147,7 +147,7 @@ namespace CGD.Weapons
             Noise.Emit(center, _data.NoiseRadius, _source);
             CameraImpulses.Emit(center, _data.ShakeRadius, _data.CameraTrauma);
             if (_data.LingeringZone != null) SpawnZone(center);
-            if (_data.ExplosionEffect != null) SpawnFlash(center);
+            ExplosionFlash.Spawn(_data.ExplosionEffect, center, _data.ExplosionRadius, _data.FlashColor);
 
             _initialized = false;
             PrefabPool.Release(gameObject);
@@ -210,12 +210,6 @@ namespace CGD.Weapons
         {
             GameObject zone = PrefabPool.Spawn(_data.LingeringZone, center, Quaternion.identity);
             if (zone.TryGetComponent(out FireZone fire)) fire.Begin(_source, _data);
-        }
-
-        private void SpawnFlash(Vector3 center)
-        {
-            GameObject flash = PrefabPool.Spawn(_data.ExplosionEffect, center, Quaternion.identity);
-            if (flash.TryGetComponent(out ExplosionFlash fireball)) fireball.Play(_data.ExplosionRadius, _data.FlashColor);
         }
     }
 }

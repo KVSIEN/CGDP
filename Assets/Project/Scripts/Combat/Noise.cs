@@ -10,6 +10,11 @@ namespace CGD.Combat
     {
         public static event Action<NoiseEvent> Emitted;
 
+        // Cleared at the start of every play session, so it stays empty even when Enter Play Mode
+        // skips the domain reload (subscribers from the last session are gone).
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => Emitted = null;
+
         public static void Emit(Vector3 position, float radius, DamageSource source)
         {
             if (radius > 0f) Emitted?.Invoke(new NoiseEvent(position, radius, source));

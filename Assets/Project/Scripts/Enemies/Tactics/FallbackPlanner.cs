@@ -16,7 +16,6 @@ namespace CGD.Enemies
     {
         private const float SearchRadius   = 28f;
         private const float FacingDot      = 0.35f;
-        private const float EyeHeight      = 1.5f;
         private const float RefreshAfter   = 2.5f;
         private const float ThreatDrift    = 6f;     // metres the threat may move before the plan is stale
         private const float MinSafeDistance = 8f;    // no hostile nearer than this to the spot
@@ -94,7 +93,7 @@ namespace CGD.Enemies
             _scored.Sort((a, b) => b.score.CompareTo(a.score));
 
             float bestScore = float.MinValue;
-            Vector3 threatEye = threat + Vector3.up * EyeHeight;
+            Vector3 threatEye = threat + Vector3.up * EnemyEyes.Height;
             for (int i = 0; i < _scored.Count && i < RouteChecks; i++)
             {
                 CoverPoint cover = map[_scored[i].index];
