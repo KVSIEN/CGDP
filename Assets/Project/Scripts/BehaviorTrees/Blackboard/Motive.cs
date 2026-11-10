@@ -13,7 +13,9 @@ namespace CGD.BehaviorTrees
     public sealed class Motive : BtCondition
     {
         private const float Threshold = 1f;
-        private const float AskedGap  = 1f;   // seconds without being asked that start the patience over
+        // Seconds without being asked that start the patience over. Longer than the gaps between
+        // asks a waiting branch sees: a Utility Selector re-scoring every second, a calm agent's tree.
+        private const float AskedGap  = 2.5f;
 
         [SerializeField] private MotiveReason[] _reasons = Array.Empty<MotiveReason>();
         [Tooltip("Seconds after which it goes anyway with no reason. 0 = never without one")]
@@ -21,17 +23,36 @@ namespace CGD.BehaviorTrees
 
         [NonSerialized] private float _askedSince;
         [NonSerialized] private float _lastAsked;
+        [NonSerialized] private int   _decidedOnTick;
+        [NonSerialized] private bool  _decision;
 
         public override string Summary =>
             $"{Count} reason{(Count == 1 ? "" : "s")}" + (_patience > 0f ? $", patience {_patience:0.#} s" : "");
 
         private int Count => _reasons != null ? _reasons.Length : 0;
 
-        protected override void OnInitialize(BtContext context) => _lastAsked = float.NegativeInfinity;
+        protected override void OnInitialize(BtContext context) => Forget();
 
-        protected override void OnReset() => _lastAsked = float.NegativeInfinity;
+        protected override void OnReset() => Forget();
 
+        private void Forget()
+        {
+            _lastAsked     = float.NegativeInfinity;
+            _decidedOnTick = -1;
+        }
+
+        // One answer per tick. The same tick usually asks twice — a parent checking whether the
+        // branch may interrupt, then the branch itself running — and acting resets the patience,
+        // so a second, fresh look would take back a "go" that patience alone had earned.
         protected override bool Check(BtContext context)
+        {
+            if (context.TickCount == _decidedOnTick) return _decision;
+            _decidedOnTick = context.TickCount;
+            _decision      = Decide(context);
+            return _decision;
+        }
+
+        private bool Decide(BtContext context)
         {
             float now = context.Time;
             if (now - _lastAsked > AskedGap) _askedSince = now;

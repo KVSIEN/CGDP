@@ -23,8 +23,8 @@ namespace CGD.BehaviorTrees
 
         protected override void OnAbort(BtContext context)
         {
-            foreach (BtNode child in _childNodes)
-                child.Abort(context);
+            for (int i = 0; i < _childNodes.Count; i++)
+                _childNodes[i].Abort(context);
         }
 
         // --- Authoring (editor) ----------------------------------------------------

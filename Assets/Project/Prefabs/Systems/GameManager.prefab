@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2000706075381569866}
-  - component: {fileID: 3344366746406441557}
   - component: {fileID: 3032223770986978485}
   - component: {fileID: 3438852244346241981}
   m_Layer: 0
@@ -34,23 +33,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3344366746406441557
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1499200479158133452}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a04e8c6bda95fa4bb6ac69ddf5bf86a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VisibilityCullingManager
-  _camera: {fileID: 0}
-  _activationMargin: 1
-  _deactivationMargin: 3
-  _alwaysVisibleDistance: 12
-  _batchFrames: 4
 --- !u!114 &3032223770986978485
 MonoBehaviour:
   m_ObjectHideFlags: 0

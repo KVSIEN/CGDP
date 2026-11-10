@@ -13,8 +13,9 @@ namespace CGD.BehaviorTrees
         protected bool LeadingConditionsPass(BtContext context, bool requireAll)
         {
             bool any = false;
-            foreach (BtNode child in Children)
+            for (int i = 0; i < Children.Count; i++)   // indexed: foreach on the interface would allocate every tick
             {
+                BtNode child = Children[i];
                 if (!child.IsConditional) break;
 
                 bool holds = child.CheckCondition(context);

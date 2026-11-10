@@ -47,9 +47,10 @@ namespace CGD.Weapons
         [SerializeField] private float _adsMaxRecoverTime = 0.15f;
 
         [Header("Sway Scaling")]
-        [Tooltip("Rotation applied per unit of look input (multiplied by LookSwayAmount from WeaponData)")]
-        [SerializeField] private float _lookPitchScale = 0.06f;
-        [SerializeField] private float _lookYawScale   = 0.08f;
+        [Tooltip("Degrees the weapon lags per degree-per-second the view turns (multiplied by LookSwayAmount from WeaponData). " +
+                 "Follows the turn itself, so it is the same at any frame rate, sensitivity or input device")]
+        [SerializeField] private float _lookPitchScale = 0.0067f;
+        [SerializeField] private float _lookYawScale   = 0.0089f;
         [Tooltip("Slight roll added when swinging horizontally, as a fraction of yaw sway")]
         [SerializeField] private float _lookRollFactor = 0.15f;
         [Tooltip("Vertical bob amplitude in metres per unit of MoveSwayAmount at full speed")]
@@ -88,7 +89,7 @@ namespace CGD.Weapons
         private Vector3 _swayPosVelocity;
 
         // Live inputs pushed by WeaponController
-        private Vector2 _lookInput;
+        private Vector2 _lookRate;
         private float   _horizontalSpeed;
         private bool    _isGrounded = true;
         private float   _adsT;
@@ -105,10 +106,13 @@ namespace CGD.Weapons
             _idlePhaseOffset = UnityEngine.Random.value * 100f;
         }
 
-        /// <summary>Called by WeaponController every Update so LateUpdate has fresh values.</summary>
-        public void SetSwayInputs(Vector2 lookInput, float horizontalSpeed, bool isGrounded, float adsT)
+        /// <summary>
+        /// Called by WeaponController every Update so LateUpdate has fresh values. lookRate is
+        /// how fast the view turns, in degrees per second (+x right, +y up).
+        /// </summary>
+        public void SetSwayInputs(Vector2 lookRate, float horizontalSpeed, bool isGrounded, float adsT)
         {
-            _lookInput       = lookInput;
+            _lookRate        = lookRate;
             _horizontalSpeed = horizontalSpeed;
             _isGrounded      = isGrounded;
             _adsT            = adsT;
@@ -174,9 +178,9 @@ namespace CGD.Weapons
             if (swayScale <= 0f) return;
 
             float lookAmount = _data.LookSwayAmount * swayScale;
-            rotTarget.x += -_lookInput.y * _lookPitchScale * lookAmount;
-            rotTarget.y += -_lookInput.x * _lookYawScale   * lookAmount;
-            rotTarget.z += -_lookInput.x * _lookYawScale   * lookAmount * _lookRollFactor;
+            rotTarget.x += -_lookRate.y * _lookPitchScale * lookAmount;
+            rotTarget.y += -_lookRate.x * _lookYawScale   * lookAmount;
+            rotTarget.z += -_lookRate.x * _lookYawScale   * lookAmount * _lookRollFactor;
 
             float t     = Time.time * _data.IdleSwaySpeed + _idlePhaseOffset;
             float idleX = (Mathf.PerlinNoise(t, 0f)      - 0.5f) * 2f;

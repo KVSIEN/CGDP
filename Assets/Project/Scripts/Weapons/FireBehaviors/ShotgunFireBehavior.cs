@@ -33,7 +33,7 @@ namespace CGD.Weapons
 
             for (int i = 0; i < pellets; i++)
             {
-                Vector3 dir = ComputeSpreadDirection(ctx.CameraForward, ctx.SpreadDeg);
+                Vector3 dir = ComputeSpreadDirection(ctx.AimDirection, ctx.SpreadDeg);
                 if (shot.IsValid) FireProjectileShot(ctx, dir, shot);
                 else              FireHitscanRay(ctx, dir);
             }

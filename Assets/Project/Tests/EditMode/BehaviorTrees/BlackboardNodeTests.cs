@@ -114,6 +114,43 @@ namespace CGD.Tests
             Assert.AreEqual(BtStatus.Success, Copy(tree, motive).LastStatus);
         }
 
+        [Test]
+        public void MotivePatienceInterruptsWhatRunsToItsRight()
+        {
+            // The Selector asks the Motive whether its branch may interrupt, then the branch asks it
+            // again as it runs: both in one tick, and both must say yes.
+            var selector = _t.Add(new Selector(), _t.Root);
+            var urgent   = _t.Add(Set(new Sequence(), "_abort", AbortMode.LowerPriority), selector);
+            _t.Add(Set(new Motive(), "_patience", 1f), urgent);
+            var cast     = _t.Add(new ScriptedLeaf { Result = BtStatus.Running }, urgent);
+            var routine  = _t.Add(new ScriptedLeaf { Result = BtStatus.Running }, selector);
+            var tree = _t.Build();
+
+            for (int i = 0; i < 3; i++) tree.Tick(0.4f);
+            Assert.IsTrue(Copy(tree, routine).IsRunning);
+            Assert.AreEqual(0, Copy(tree, cast).Enters);
+
+            tree.Tick(0.4f);
+            Assert.AreEqual(1, Copy(tree, cast).Enters);
+            Assert.IsFalse(Copy(tree, routine).IsRunning);
+        }
+
+        [Test]
+        public void MotivePatienceSurvivesAskingAboutOnceASecond()
+        {
+            // A Utility Selector re-scores every second; patience must keep building across that gap.
+            var motive = _t.Add(Set(new Motive(), "_patience", 3f), _t.Root);
+            var tree = _t.Build();
+
+            for (int i = 0; i < 3; i++)
+            {
+                tree.Tick(1.2f);
+                Assert.AreEqual(BtStatus.Failure, Copy(tree, motive).LastStatus);
+            }
+            tree.Tick(1.2f);
+            Assert.AreEqual(BtStatus.Success, Copy(tree, motive).LastStatus);
+        }
+
         private static MotiveReason Reason(string key, float from, float to, float weight)
         {
             var reason = new MotiveReason();

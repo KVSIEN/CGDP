@@ -14,6 +14,7 @@ namespace CGD.DevTools
         public static readonly Color Highlight  = new(1f, 0.82f, 0.29f, 1f);
         public static readonly Color Threat     = new(1f, 0.25f, 0.2f, 1f);
         public static readonly Color Belief     = new(1f, 0.6f, 0.2f, 0.9f);
+        public static readonly Color Concealed  = new(0.45f, 0.95f, 0.45f, 0.9f);
         public static readonly Color Truth      = new(1f, 1f, 1f, 0.35f);
 
         public static Color ForTeam(Team team) => team switch

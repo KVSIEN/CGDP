@@ -3,8 +3,8 @@ using UnityEngine;
 namespace CGD.Enemies
 {
     // The launch velocity that lobs something from one point onto another under gravity, at
-    // a chosen upward angle: the arc an enemy throws a grenade along. Pure maths, no physics
-    // queries, so it can be tested.
+    // a chosen upward angle: the arc an enemy throws a grenade along, and how far to lead a
+    // moving target. Pure maths, no physics queries, so it can be tested.
     public static class ThrowArc
     {
         // False when no throw at that angle lands there within the speed limits.
@@ -31,6 +31,21 @@ namespace CGD.Enemies
             Vector3 horizontal = flat / distance;
             velocity = horizontal * (speed * cos) + Vector3.up * (speed * Mathf.Sin(angle));
             return true;
+        }
+
+        // Seconds a throw at this velocity takes to cover the flat distance to `to`.
+        public static float FlightTime(Vector3 from, Vector3 to, Vector3 velocity)
+        {
+            float flatSpeed = new Vector2(velocity.x, velocity.z).magnitude;
+            return flatSpeed > 0.01f ? new Vector2(to.x - from.x, to.z - from.z).magnitude / flatSpeed : 0f;
+        }
+
+        // Where a target moving along the ground at `velocity` will be after `seconds`, never
+        // more than `maxLead` metres from where it is now (it may turn).
+        public static Vector3 Lead(Vector3 position, Vector3 velocity, float seconds, float maxLead)
+        {
+            Vector3 flat = new(velocity.x, 0f, velocity.z);
+            return position + Vector3.ClampMagnitude(flat * Mathf.Max(0f, seconds), Mathf.Max(0f, maxLead));
         }
     }
 }

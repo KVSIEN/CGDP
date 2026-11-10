@@ -102,8 +102,9 @@ namespace CGD.BehaviorTrees
             if (node.IsConditional) return node.CheckCondition(context);
             if (node is not Sequence sequence) return true;
 
-            foreach (BtNode child in sequence.Children)
+            for (int i = 0; i < sequence.Children.Count; i++)
             {
+                BtNode child = sequence.Children[i];
                 if (!child.IsConditional) break;
                 if (!child.CheckCondition(context)) return false;
             }

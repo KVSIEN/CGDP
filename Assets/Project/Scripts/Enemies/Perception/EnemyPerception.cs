@@ -41,6 +41,9 @@ namespace CGD.Enemies
         private const float NearMissRadius  = 2.5f;   // a hostile bullet landing this close is felt
         private const float UnderFireMemory = 1.5f;   // seconds "under fire" lasts after the last shot
         private const float AimedAtAngle    = 5f;     // degrees: a target facing it this squarely is aiming at it
+        private const float LinkRange       = 80f;    // metres a union's link reaches
+        private const float LinkEvery       = 1f;     // seconds between a union's shared sightings
+        private const float FocusBonus      = 1.5f;   // a union's pull toward the target its kin fight
 
         private static PerceptionProfile _fallbackProfile;
         private static readonly Dictionary<HealthManager, Collider> Bodies = new();
@@ -50,12 +53,7 @@ namespace CGD.Enemies
 
         private readonly EnemyAI           _owner;
         private readonly Transform         _self;
-        private const float LinkRange  = 80f;   // metres a union's link reaches
-        private const float LinkEvery  = 1f;    // seconds between shared sightings
-        private const float FocusBonus = 1.5f;
-
         private readonly EnemyData         _data;
-        private float _nextLink;
         private readonly PerceptionProfile _profile;
         private readonly LayerMask         _obstacleMask;
         private readonly Team              _team;
@@ -68,6 +66,7 @@ namespace CGD.Enemies
         private readonly float               _retaliationMemory;
 
         private float   _clock;
+        private float   _nextLink;
         private float   _nextSample;
         private float   _lastSample;
         private float   _lastSensedAt = float.NegativeInfinity;
@@ -176,10 +175,17 @@ namespace CGD.Enemies
         private static PerceptionProfile FallbackProfile =>
             _fallbackProfile != null ? _fallbackProfile : _fallbackProfile = ScriptableObject.CreateInstance<PerceptionProfile>();
 
+        // A hostile that is no longer there to fight: dead, destroyed, or put back in its pool
+        // (a summoned minion whose time ran out leaves alive). Its last known spot means nothing.
+        public static bool IsGone(HealthManager hostile) =>
+            hostile == null || hostile.IsDead || !hostile.gameObject.activeInHierarchy;
+
         public void Tick(float deltaTime)
         {
             _clock += deltaTime;
-            if (Target != null && Target.IsDead) LoseTarget();
+            // ReferenceEquals: a destroyed target compares equal to null but is still held.
+            if (!ReferenceEquals(Target, null) && IsGone(Target)) LoseTarget();
+            if (!ReferenceEquals(_lastAttacker, null) && IsGone(_lastAttacker)) _lastAttacker = null;
             if (_clock < _nextSample) return;
 
             float elapsed = _clock - _lastSample;
@@ -269,7 +275,7 @@ namespace CGD.Enemies
 
             _meter.Raise(_profile.HitAwareness, 0.95f);
             _hunting = true;
-            if (Target == null) Target = _lastAttacker;
+            if (Target == null && !IsGone(_lastAttacker)) Target = _lastAttacker;
             Lead(attacker + Error(distance, _profile.HitError));
             UpdateLevel();
         }

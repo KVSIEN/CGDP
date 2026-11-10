@@ -1,13 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
+using CGD.Stealth;
 
 namespace CGD.Enemies
 {
     // What an enemy thinks about where its target went once it has lost sight of it: not a single
-    // guess but a likelihood over the cover spots round the last sighting (BeliefModel), spreading
-    // outward the longer it has been, leaning the way the target was heading. Spots it has looked at
-    // and found empty drop out, so a search works through the likely places in order instead of
+    // guess but a likelihood over the cover spots and bushes round the last sighting (BeliefModel),
+    // spreading outward the longer it has been, leaning the way the target was heading. Spots it has
+    // looked at and found empty drop out — a bush only once it has walked up to it, since nobody can
+    // see into one from afar — so a search works through the likely places in order instead of
     // wandering. Confidence fades over time; a new sighting collapses everything back to a point.
     // Sounds and calls for help can seed it too (Hint). Never reads the target's real position
     // except while it genuinely senses it.
@@ -25,6 +27,7 @@ namespace CGD.Enemies
         private const int   MaxChecks      = 6;
         private const float MinWeight      = 0.04f;
         private const float EyeHeight      = 1.5f;
+        private const float BodyHeight     = 0.5f;   // where a hiding place is tested for concealment
         private const float VantageRadius  = 16f;
         private const int   VantageSpots   = 6;
 
@@ -68,7 +71,7 @@ namespace CGD.Enemies
         public void Tick(float now)
         {
             EnemyPerception perception = _ai.Perception;
-            if (_target != null && _target.IsDead)
+            if (!ReferenceEquals(_target, null) && EnemyPerception.IsGone(_target))
             {
                 Clear();
                 return;
@@ -146,6 +149,7 @@ namespace CGD.Enemies
 
         // A cover spot near it from which it can see the most likely places at once, so it can hold
         // there watching them, and the point to face: the likelihood-weighted middle of what it sees.
+        // Bushes don't count: watching one from afar shows nothing.
         public bool TryVantage(out Vector3 position, out Vector3 watch)
         {
             position = watch = default;
@@ -154,7 +158,7 @@ namespace CGD.Enemies
 
             _top.Clear();
             foreach (BeliefSpot candidate in _spots)
-                if (!candidate.Checked && candidate.Weight >= MinWeight) _top.Add(candidate);
+                if (!candidate.Checked && !candidate.Concealed && candidate.Weight >= MinWeight) _top.Add(candidate);
             if (_top.Count == 0) return false;
             _top.Sort((a, b) => b.Weight.CompareTo(a.Weight));
             if (_top.Count > VantageSpots) _top.RemoveRange(VantageSpots, _top.Count - VantageSpots);
@@ -174,7 +178,7 @@ namespace CGD.Enemies
                 foreach (BeliefSpot spot in _top)
                 {
                     if ((spot.Position - eye).sqrMagnitude > sightRange * sightRange) continue;
-                    if (Physics.Linecast(eye, spot.Position + Vector3.up, _obstacleMask, QueryTriggerInteraction.Ignore)) continue;
+                    if (!IsClearView(eye, spot.Position + Vector3.up)) continue;
                     seen   += spot.Weight;
                     centre += spot.Position * spot.Weight;
                 }
@@ -240,13 +244,37 @@ namespace CGD.Enemies
             _spots.Clear();
 
             CoverMap map = CoverMap.Active;
-            if (map == null) return;
-
-            map.Query(_lastSeen, SpotRadius, _indices);
-            foreach (int index in _indices)
-                _spots.Add(new BeliefSpot { Slot = _spots.Count, Position = map[index].Position });
-            Refresh(now);
+            if (map != null)
+            {
+                map.Query(_lastSeen, SpotRadius, _indices);
+                foreach (int index in _indices) AddSpot(map[index].Position);
+            }
+            AddConcealment();
+            if (_spots.Count > 0) Refresh(now);
         }
+
+        // Bushes and smoke near the last sighting are hiding places too, cover or no cover.
+        private void AddConcealment()
+        {
+            IReadOnlyList<ConcealmentZone> zones = ConcealmentZone.Active;
+            for (int i = 0; i < zones.Count; i++)
+            {
+                Vector3 centre = zones[i].GroundCenter;
+                if ((centre - _lastSeen).sqrMagnitude <= SpotRadius * SpotRadius) AddSpot(centre);
+            }
+        }
+
+        private void AddSpot(Vector3 position) => _spots.Add(new BeliefSpot
+        {
+            Slot      = _spots.Count,
+            Position  = position,
+            Concealed = ConcealmentZone.AnyContains(position + Vector3.up * BodyHeight, crouching: true),
+        });
+
+        // Nothing solid and no smoke in between.
+        private bool IsClearView(Vector3 eye, Vector3 point) =>
+            !Physics.Linecast(eye, point, _obstacleMask, QueryTriggerInteraction.Ignore) &&
+            !ConcealmentZone.BlocksLine(eye, point);
 
         // Re-weighs every spot for the time that has passed, and ticks off the ones it can see are empty.
         private void Refresh(float now)
@@ -284,9 +312,10 @@ namespace CGD.Enemies
                 bool arrived = distance <= ArrivedWithin;
                 if (!arrived)
                 {
-                    if (distance > CheckRange || Vector3.Dot(forward, to / distance) < minDot) continue;
+                    // Someone in a bush can't be seen from out here: it has to be walked up to.
+                    if (spot.Concealed || distance > CheckRange || Vector3.Dot(forward, to / distance) < minDot) continue;
                     if (rays++ >= MaxChecks) { _cursor = i; return; }
-                    if (Physics.Linecast(eye, spot.Position + Vector3.up, _obstacleMask, QueryTriggerInteraction.Ignore)) continue;
+                    if (!IsClearView(eye, spot.Position + Vector3.up)) continue;
                 }
 
                 spot.Checked = true;

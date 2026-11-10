@@ -6,7 +6,8 @@ namespace CGD.Editor
     // Checks a tree for mistakes the runtime would quietly put up with: parents with nothing
     // to run, nodes nothing reaches, subtrees with no tree (or that loop into themselves),
     // nodes that never finish with nothing above able to interrupt them, abort modes with
-    // nothing to re-check, keys read that nothing writes, and odd weights or scores. Runs on
+    // nothing to re-check, branches waiting on a Motive that can't interrupt, keys read that
+    // nothing writes, and odd weights or scores. Runs on
     // the asset as authored — no play mode needed — after every edit.
     internal static class BtTreeValidator
     {
@@ -39,6 +40,7 @@ namespace CGD.Editor
                 CheckChildren(asset, node, issues);
                 CheckSubtree(asset, node, issues);
                 CheckAbortMode(asset, node, issues);
+                CheckMotiveCanAct(asset, node, issues);
                 CheckNeverFinishes(asset, node, asSubtree, issues);
                 CheckKeys(asset, node, issues);
                 CheckComposite(asset, node, issues);
@@ -98,6 +100,29 @@ namespace CGD.Editor
             bool fromSubtreeRoot = above is BtRoot;
             if (lower && above is not Selector && !fromSubtreeRoot)
                 Add(issues, node, BtIssueSeverity.Info, "Lower-priority aborts only act directly under a Selector (or from a subtree's root).");
+        }
+
+        // A branch in a Selector that waits for a reason (a leading Motive) but can't interrupt:
+        // the Selector only asks it once the branches to its right have finished, so the moment
+        // its reasons add up goes by unnoticed — and its patience only builds while it is asked.
+        private static void CheckMotiveCanAct(BehaviorTreeAsset asset, BtNode node, List<BtIssue> issues)
+        {
+            if (node is not Sequence sequence || sequence.AbortSetting is AbortMode.LowerPriority or AbortMode.Both) return;
+            if (asset.FindParent(node) is not Selector || !LeadsWithMotive(asset, sequence)) return;
+
+            Add(issues, node, BtIssueSeverity.Warning,
+                "Waits for a reason (Motive) but can't interrupt the branches to its right, so it is only considered once they finish. Set Abort to Lower Priority so it acts as soon as its reasons add up.");
+        }
+
+        private static bool LeadsWithMotive(BehaviorTreeAsset asset, BtParentNode parent)
+        {
+            foreach (string guid in parent.ChildGuids)
+            {
+                BtNode child = asset.FindNode(guid);
+                if (child is Motive) return true;
+                if (!IsConditional(asset, child, 0)) return false;
+            }
+            return false;
         }
 
         private static void CheckNeverFinishes(BehaviorTreeAsset asset, BtNode node, bool asSubtree, List<BtIssue> issues)
@@ -198,8 +223,8 @@ namespace CGD.Editor
             return node switch
             {
                 BtCondition         => true,
-                Cooldown or Limit   => true,
                 Inverter or Score   => IsConditional(asset, FirstChild(asset, (BtParentNode)node), depth),
+                BtDecorator gate    => gate.IsGate,
                 Subtree subtree     => subtree.Tree != null && IsConditional(subtree.Tree, Branch(subtree.Tree), depth + 1),
                 _                   => false,
             };

@@ -38,6 +38,16 @@ namespace CGD.Stealth
         private void OnEnable()  => _active.Add(this);
         private void OnDisable() => _active.Remove(this);
 
+        // The middle of its footprint, on the ground: where a searcher walks to look inside.
+        public Vector3 GroundCenter
+        {
+            get
+            {
+                Bounds bounds = _collider.bounds;
+                return new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
+            }
+        }
+
         // Primitive colliders only: ClosestPoint returns the point itself when it's inside.
         public bool Contains(Vector3 point) => (_collider.ClosestPoint(point) - point).sqrMagnitude < 0.0001f;
 

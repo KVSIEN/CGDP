@@ -5,7 +5,8 @@ namespace CGD.DevTools
 {
     // What the inspected agent thinks about where an unseen target went: the last place it saw it
     // and the way it was heading, and a ring on every spot it is weighing, sized and brightened by
-    // how likely it is. Spots it has looked at and found empty show as small grey crosses.
+    // how likely it is — green for a bush, which it must walk up to before it can rule it out.
+    // Spots it has looked at and found empty show as small grey crosses.
     internal static class BeliefOverlay
     {
         private const float GroundLift = 0.1f;
@@ -26,7 +27,10 @@ namespace CGD.DevTools
                 Vector3 foot = spot.Position + Vector3.up * GroundLift;
                 if (spot.Checked) mesh.Cross(foot, 0.25f, OverlayPalette.Truth, 1.5f);
                 else if (spot.Weight >= MinShown)
-                    mesh.Circle(foot, 0.3f + 0.9f * spot.Weight, OverlayPalette.Faded(OverlayPalette.Belief, Mathf.Clamp01(0.3f + spot.Weight)), 2f);
+                {
+                    Color colour = spot.Concealed ? OverlayPalette.Concealed : OverlayPalette.Belief;
+                    mesh.Circle(foot, 0.3f + 0.9f * spot.Weight, OverlayPalette.Faded(colour, Mathf.Clamp01(0.3f + spot.Weight)), 2f);
+                }
             }
         }
     }

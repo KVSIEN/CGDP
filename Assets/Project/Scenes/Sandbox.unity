@@ -130,7 +130,6 @@ GameObject:
   - component: {fileID: 148735877}
   - component: {fileID: 148735882}
   - component: {fileID: 148735881}
-  - component: {fileID: 148735880}
   - component: {fileID: 148735879}
   - component: {fileID: 148735878}
   - component: {fileID: 8800000104}
@@ -204,21 +203,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &148735880
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 148735876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!23 &148735881
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -505,7 +489,6 @@ GameObject:
   - component: {fileID: 538248549}
   - component: {fileID: 538248554}
   - component: {fileID: 538248553}
-  - component: {fileID: 538248552}
   - component: {fileID: 538248551}
   - component: {fileID: 538248550}
   - component: {fileID: 8800000103}
@@ -579,21 +562,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &538248552
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 538248548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!23 &538248553
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -664,7 +632,6 @@ GameObject:
   - component: {fileID: 542727093}
   - component: {fileID: 542727092}
   - component: {fileID: 542727091}
-  - component: {fileID: 542727096}
   - component: {fileID: 542727090}
   m_Layer: 6
   m_Name: WeaponPickup
@@ -800,21 +767,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 682983114}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &542727096
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 542727089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &682983113
 GameObject:
   m_ObjectHideFlags: 0
@@ -869,7 +821,6 @@ GameObject:
   - component: {fileID: 764462086}
   - component: {fileID: 764462090}
   - component: {fileID: 764462089}
-  - component: {fileID: 764462088}
   - component: {fileID: 764462087}
   - component: {fileID: 8800000101}
   m_Layer: 0
@@ -916,21 +867,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &764462088
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 764462085}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!23 &764462089
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1001,7 +937,6 @@ GameObject:
   - component: {fileID: 833757124}
   - component: {fileID: 833757123}
   - component: {fileID: 833757122}
-  - component: {fileID: 833757127}
   - component: {fileID: 833757121}
   m_Layer: 6
   m_Name: WeaponPickup 2
@@ -1137,21 +1072,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 682983114}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &833757127
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 833757120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &873400010
 GameObject:
   m_ObjectHideFlags: 0
@@ -1163,7 +1083,6 @@ GameObject:
   - component: {fileID: 873400011}
   - component: {fileID: 873400012}
   - component: {fileID: 873400013}
-  - component: {fileID: 873400016}
   - component: {fileID: 873400014}
   - component: {fileID: 873400015}
   - component: {fileID: 8800000109}
@@ -1294,21 +1213,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
---- !u!114 &873400016
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 873400010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &873400020
 GameObject:
   m_ObjectHideFlags: 0
@@ -1320,7 +1224,6 @@ GameObject:
   - component: {fileID: 873400021}
   - component: {fileID: 873400022}
   - component: {fileID: 873400023}
-  - component: {fileID: 873400026}
   - component: {fileID: 873400024}
   - component: {fileID: 873400025}
   - component: {fileID: 8800000110}
@@ -1451,21 +1354,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
---- !u!114 &873400026
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 873400020}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &873400030
 GameObject:
   m_ObjectHideFlags: 0
@@ -1642,7 +1530,6 @@ GameObject:
   - component: {fileID: 901040742}
   - component: {fileID: 901040747}
   - component: {fileID: 901040746}
-  - component: {fileID: 901040745}
   - component: {fileID: 901040744}
   - component: {fileID: 901040743}
   - component: {fileID: 8800000106}
@@ -1716,21 +1603,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &901040745
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 901040741}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!23 &901040746
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1801,7 +1673,6 @@ GameObject:
   - component: {fileID: 956865469}
   - component: {fileID: 956865468}
   - component: {fileID: 956865467}
-  - component: {fileID: 956865472}
   - component: {fileID: 956865466}
   m_Layer: 6
   m_Name: WeaponPickup 3
@@ -1937,21 +1808,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 682983114}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &956865472
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 956865465}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &1011782616
 GameObject:
   m_ObjectHideFlags: 0
@@ -1963,7 +1819,6 @@ GameObject:
   - component: {fileID: 1011782621}
   - component: {fileID: 1011782620}
   - component: {fileID: 1011782619}
-  - component: {fileID: 1011782622}
   - component: {fileID: 1011782618}
   - component: {fileID: 1011782617}
   - component: {fileID: 8800000102}
@@ -2094,21 +1949,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1716879155}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1011782622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1011782616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &1230599299
 GameObject:
   m_ObjectHideFlags: 0
@@ -2122,7 +1962,6 @@ GameObject:
   - component: {fileID: 1230599305}
   - component: {fileID: 1230599304}
   - component: {fileID: 1230599303}
-  - component: {fileID: 1230599302}
   - component: {fileID: 1230599301}
   m_Layer: 6
   m_Name: WeaponPickup 3 (1)
@@ -2167,21 +2006,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1230599302
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1230599299}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!114 &1230599303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2286,7 +2110,6 @@ GameObject:
   - component: {fileID: 1255501658}
   - component: {fileID: 1255501657}
   - component: {fileID: 1255501656}
-  - component: {fileID: 1255501655}
   m_Layer: 0
   m_Name: AmmoPickup
   m_TagString: Untagged
@@ -2309,21 +2132,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 682983114}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1255501655
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1255501653}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!114 &1255501656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2636,7 +2444,6 @@ GameObject:
   - component: {fileID: 1660548677}
   - component: {fileID: 1660548676}
   - component: {fileID: 1660548675}
-  - component: {fileID: 1660548674}
   - component: {fileID: 1660548673}
   m_Layer: 6
   m_Name: WeaponPickup 4 (1)
@@ -2681,21 +2488,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1660548674
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1660548671}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!114 &1660548675
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2798,7 +2590,6 @@ GameObject:
   - component: {fileID: 1682356390}
   - component: {fileID: 1682356395}
   - component: {fileID: 1682356394}
-  - component: {fileID: 1682356393}
   - component: {fileID: 1682356392}
   - component: {fileID: 1682356391}
   - component: {fileID: 8800000105}
@@ -2872,21 +2663,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1682356393
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1682356389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!23 &1682356394
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3012,7 +2788,6 @@ GameObject:
   - component: {fileID: 1718815691}
   - component: {fileID: 1718815690}
   - component: {fileID: 1718815689}
-  - component: {fileID: 1718815694}
   - component: {fileID: 1718815688}
   m_Layer: 6
   m_Name: WeaponPickup 4
@@ -3148,21 +2923,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 682983114}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1718815694
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1718815687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &1748494543
 GameObject:
   m_ObjectHideFlags: 0
@@ -3174,7 +2934,6 @@ GameObject:
   - component: {fileID: 1748494544}
   - component: {fileID: 1748494549}
   - component: {fileID: 1748494548}
-  - component: {fileID: 1748494547}
   - component: {fileID: 1748494546}
   - component: {fileID: 1748494545}
   - component: {fileID: 8800000107}
@@ -3248,21 +3007,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1748494547
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1748494543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!23 &1748494548
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3333,7 +3077,6 @@ GameObject:
   - component: {fileID: 1905990760}
   - component: {fileID: 1905990759}
   - component: {fileID: 1905990758}
-  - component: {fileID: 1905990757}
   - component: {fileID: 1905990756}
   m_Layer: 6
   m_Name: WeaponPickup (1)
@@ -3378,21 +3121,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1905990757
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1905990754}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!114 &1905990758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3506,7 +3234,6 @@ GameObject:
   - component: {fileID: 2070597241}
   - component: {fileID: 2070597240}
   - component: {fileID: 2070597239}
-  - component: {fileID: 2070597242}
   - component: {fileID: 2070597238}
   - component: {fileID: 8800000100}
   m_Layer: 0
@@ -3610,21 +3337,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1716879155}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2070597242
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2070597237}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &2094077159
 GameObject:
   m_ObjectHideFlags: 0
@@ -3636,7 +3348,6 @@ GameObject:
   - component: {fileID: 2094077160}
   - component: {fileID: 2094077165}
   - component: {fileID: 2094077164}
-  - component: {fileID: 2094077163}
   - component: {fileID: 2094077162}
   - component: {fileID: 2094077161}
   - component: {fileID: 8800000108}
@@ -3710,21 +3421,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2094077163
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2094077159}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!23 &2094077164
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3795,7 +3491,6 @@ GameObject:
   - component: {fileID: 2112730629}
   - component: {fileID: 2112730628}
   - component: {fileID: 2112730627}
-  - component: {fileID: 2112730626}
   - component: {fileID: 2112730625}
   m_Layer: 6
   m_Name: WeaponPickup 2 (1)
@@ -3840,21 +3535,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2112730626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2112730623}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!114 &2112730627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4228,7 +3908,6 @@ GameObject:
   - component: {fileID: 8800000203}
   - component: {fileID: 8800000204}
   - component: {fileID: 8800000205}
-  - component: {fileID: 8800000206}
   m_Layer: 0
   m_Name: Wall Side Doorway South
   m_TagString: Untagged
@@ -4342,21 +4021,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
   _metersPerTile: 1
---- !u!114 &8800000206
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8800000200}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &8800000210
 GameObject:
   m_ObjectHideFlags: 0
@@ -4370,7 +4034,6 @@ GameObject:
   - component: {fileID: 8800000213}
   - component: {fileID: 8800000214}
   - component: {fileID: 8800000215}
-  - component: {fileID: 8800000216}
   m_Layer: 0
   m_Name: Wall Side Doorway Lintel
   m_TagString: Untagged
@@ -4484,21 +4147,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
   _metersPerTile: 1
---- !u!114 &8800000216
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8800000210}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &8800000220
 GameObject:
   m_ObjectHideFlags: 0
@@ -4512,7 +4160,6 @@ GameObject:
   - component: {fileID: 8800000223}
   - component: {fileID: 8800000224}
   - component: {fileID: 8800000225}
-  - component: {fileID: 8800000226}
   m_Layer: 0
   m_Name: Wall Side Room North
   m_TagString: Untagged
@@ -4626,21 +4273,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
   _metersPerTile: 1
---- !u!114 &8800000226
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8800000220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &8800000230
 GameObject:
   m_ObjectHideFlags: 0
@@ -4654,7 +4286,6 @@ GameObject:
   - component: {fileID: 8800000233}
   - component: {fileID: 8800000234}
   - component: {fileID: 8800000235}
-  - component: {fileID: 8800000236}
   m_Layer: 0
   m_Name: Wall Side Room South
   m_TagString: Untagged
@@ -4768,21 +4399,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
   _metersPerTile: 1
---- !u!114 &8800000236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8800000230}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &8800000240
 GameObject:
   m_ObjectHideFlags: 0
@@ -4796,7 +4412,6 @@ GameObject:
   - component: {fileID: 8800000243}
   - component: {fileID: 8800000244}
   - component: {fileID: 8800000245}
-  - component: {fileID: 8800000246}
   m_Layer: 0
   m_Name: Wall Side Room End
   m_TagString: Untagged
@@ -4910,21 +4525,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
   _metersPerTile: 1
---- !u!114 &8800000246
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8800000240}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &8800000250
 GameObject:
   m_ObjectHideFlags: 0
@@ -5191,7 +4791,6 @@ GameObject:
   - component: {fileID: 8800000503}
   - component: {fileID: 8800000504}
   - component: {fileID: 8800000505}
-  - component: {fileID: 8800000506}
   m_Layer: 0
   m_Name: Lane Cover 1
   m_TagString: Untagged
@@ -5305,21 +4904,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
   _metersPerTile: 1
---- !u!114 &8800000506
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8800000500}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &8800000510
 GameObject:
   m_ObjectHideFlags: 0
@@ -5333,7 +4917,6 @@ GameObject:
   - component: {fileID: 8800000513}
   - component: {fileID: 8800000514}
   - component: {fileID: 8800000515}
-  - component: {fileID: 8800000516}
   m_Layer: 0
   m_Name: Lane Cover 2
   m_TagString: Untagged
@@ -5447,21 +5030,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
   _metersPerTile: 1
---- !u!114 &8800000516
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8800000510}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &8800000520
 GameObject:
   m_ObjectHideFlags: 0
@@ -5475,7 +5043,6 @@ GameObject:
   - component: {fileID: 8800000523}
   - component: {fileID: 8800000524}
   - component: {fileID: 8800000525}
-  - component: {fileID: 8800000526}
   m_Layer: 0
   m_Name: Lane Cover 3
   m_TagString: Untagged
@@ -5589,21 +5156,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
   _metersPerTile: 1
---- !u!114 &8800000526
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8800000520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1 &8800000530
 GameObject:
   m_ObjectHideFlags: 0
@@ -5617,7 +5169,6 @@ GameObject:
   - component: {fileID: 8800000533}
   - component: {fileID: 8800000534}
   - component: {fileID: 8800000535}
-  - component: {fileID: 8800000536}
   m_Layer: 0
   m_Name: Lane Cover 4
   m_TagString: Untagged
@@ -5731,21 +5282,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CGD.FiringRange.TiledSurface
   _metersPerTile: 1
---- !u!114 &8800000536
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8800000530}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223a2f054d8f354ba9f05eabbc91f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CullableObject
-  _renderers: []
-  _showStableChecks: 1
-  _hideStableChecks: 2
 --- !u!1001 &1518525293528471056
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6288,7 +5824,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7100000000000000002, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.4
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 7100000000000000002, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6329,7 +5865,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7100000000000000002, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.2
+      value: -1.8
       objectReference: {fileID: 0}
     - target: {fileID: 7100000000000000002, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6374,7 +5910,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7100000000000000002, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.6
       objectReference: {fileID: 0}
     - target: {fileID: 7100000000000000002, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6419,7 +5955,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7100000000000000002, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.2
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 7100000000000000002, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6464,7 +6000,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7100000000000000002, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.4
+      value: 1.8
       objectReference: {fileID: 0}
     - target: {fileID: 7100000000000000002, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6493,6 +6029,51 @@ PrefabInstance:
     - target: {fileID: 7100000000000000006, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
       propertyPath: _setting
       value: 4
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
+--- !u!1001 &6300000000000000006
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7100000000000000002, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7100000000000000002, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7100000000000000006, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
+      propertyPath: _range
+      value:
+      objectReference: {fileID: 6100000000000000003}
+    - target: {fileID: 7100000000000000006, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
+      propertyPath: _color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7100000000000000006, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
+      propertyPath: _color.b
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7100000000000000006, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
+      propertyPath: _color.g
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7100000000000000006, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
+      propertyPath: _color.r
+      value: 0.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 7100000000000000006, guid: 0dca04ce9e7548e2b178c1ed502b5fbf, type: 3}
+      propertyPath: _setting
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6836,10 +6417,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3344366746406441557, guid: 9e90f7c7970e7174381989a0abd26939, type: 3}
-      propertyPath: _camera
-      value: 
-      objectReference: {fileID: 330585545}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7327,6 +6904,7 @@ SceneRoots:
   - {fileID: 6300000000000000003}
   - {fileID: 6300000000000000004}
   - {fileID: 6300000000000000005}
+  - {fileID: 6300000000000000006}
   - {fileID: 6500000000000000002}
   - {fileID: 6600000000000000011}
   - {fileID: 6400000000000000002}

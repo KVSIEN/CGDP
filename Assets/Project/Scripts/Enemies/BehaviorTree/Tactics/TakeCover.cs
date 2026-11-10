@@ -17,17 +17,21 @@ namespace CGD.Enemies
         [SerializeField] private CoverUse _use = CoverUse.Fight;
         [Tooltip("Give up if not there after this many seconds")]
         [SerializeField, Min(1f)] private float _giveUpAfter = 6f;
+        [Tooltip("Never take cover closer to the target than EnemyData's preferred range — a long-range fighter " +
+                 "pushing up (Advance) stops where it fights best instead of closing all the way in")]
+        [SerializeField] private bool _stopAtPreferredRange;
 
         [NonSerialized] private bool  _moving;
         [NonSerialized] private float _givesUpAt;
 
-        public override string Summary => _use.ToString();
+        public override string Summary => _stopAtPreferredRange ? $"{_use}, to preferred range" : _use.ToString();
 
         protected override void OnEnter(BtContext context)
         {
             _givesUpAt = context.Time + _giveUpAfter;
+            float nearest = _stopAtPreferredRange ? Ai.Data.PreferredRange : 0f;
             _moving = Ai.Perception.Target != null &&
-                      Ai.Tactics.TryTakeCover(Ai.Perception.TargetPosition, _use, out Vector3 destination) &&
+                      Ai.Tactics.TryTakeCover(Ai.Perception.TargetPosition, _use, out Vector3 destination, nearest) &&
                       Ai.Agent.SetDestination(destination);
             if (_moving) Ai.Agent.isStopped = false;
         }

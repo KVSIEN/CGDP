@@ -105,9 +105,9 @@ namespace CGD.Enemies
 
                 if (!NavMesh.CalculatePath(self, cover.Position, NavMesh.AllAreas, _path) ||
                     _path.status != NavMeshPathStatus.PathComplete) continue;
-                if (RouteClearance(_path, hostiles) < MinRouteClearance) continue;
+                if (RouteMetrics.Clearance(_path, hostiles) < MinRouteClearance) continue;
 
-                float score = _scored[i].score - 1.5f * Exposure(_path, threatEye);
+                float score = _scored[i].score - 1.5f * RouteMetrics.Exposure(_path, threatEye, _obstacleMask);
                 if (score <= bestScore) continue;
 
                 bestScore = score;
@@ -129,29 +129,6 @@ namespace CGD.Enemies
                 if (hostiles[i] != null && !hostiles[i].IsDead)
                     nearest = Mathf.Min(nearest, Vector3.Distance(spot, hostiles[i].transform.position));
             return nearest;
-        }
-
-        private static float RouteClearance(NavMeshPath path, IReadOnlyList<HealthManager> hostiles)
-        {
-            float clearance = float.MaxValue;
-            Vector3[] corners = path.corners;
-            for (int i = 0; i < corners.Length; i++)
-            for (int h = 0; h < hostiles.Count; h++)
-                if (hostiles[h] != null && !hostiles[h].IsDead)
-                    clearance = Mathf.Min(clearance, Vector3.Distance(corners[i], hostiles[h].transform.position));
-            return clearance;
-        }
-
-        // Share of the route's corners the threat could see.
-        private float Exposure(NavMeshPath path, Vector3 threatEye)
-        {
-            Vector3[] corners = path.corners;
-            if (corners.Length < 2) return 0f;
-
-            int seen = 0;
-            for (int i = 1; i < corners.Length; i++)
-                if (!Physics.Linecast(threatEye, corners[i] + Vector3.up * 1.2f, _obstacleMask, QueryTriggerInteraction.Ignore)) seen++;
-            return seen / (float)(corners.Length - 1);
         }
     }
 }

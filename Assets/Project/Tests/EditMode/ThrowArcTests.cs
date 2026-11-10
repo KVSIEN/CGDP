@@ -59,5 +59,34 @@ namespace CGD.Tests
         {
             Assert.IsFalse(ThrowArc.TrySolve(Vector3.zero, Vector3.up, 40f, 1f, 50f, Gravity, out _));
         }
+
+        [Test]
+        public void FlightTimeMatchesTheArcsOwnTime()
+        {
+            Vector3 from = new(0f, 1.6f, 0f), to = new(12f, 0f, 0f);
+            Assert.IsTrue(ThrowArc.TrySolve(from, to, 40f, 1f, 50f, Gravity, out Vector3 velocity));
+            float time = ThrowArc.FlightTime(from, to, velocity);
+            Assert.AreEqual(to.y, from.y + velocity.y * time - 0.5f * Gravity * time * time, 0.01f);
+        }
+
+        [Test]
+        public void LeadsAMovingTargetAlongTheGround()
+        {
+            Vector3 led = ThrowArc.Lead(new Vector3(5f, 0f, 5f), new Vector3(2f, 3f, 0f), 1.5f, 10f);
+            Assert.AreEqual(new Vector3(8f, 0f, 5f), led);
+        }
+
+        [Test]
+        public void LeadIsCappedSoATurningTargetIsStillNearTheBlast()
+        {
+            Vector3 led = ThrowArc.Lead(Vector3.zero, new Vector3(0f, 0f, 6f), 2f, 4f);
+            Assert.AreEqual(4f, led.magnitude, 0.0001f);
+        }
+
+        [Test]
+        public void AStillTargetIsNotLed()
+        {
+            Assert.AreEqual(Vector3.one, ThrowArc.Lead(Vector3.one, Vector3.zero, 3f, 5f));
+        }
     }
 }

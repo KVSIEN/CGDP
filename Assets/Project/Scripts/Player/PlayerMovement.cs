@@ -61,6 +61,10 @@ namespace CGD.Player
         private float _coyoteTimer;
         private float _jumpBufferTimer;
         private float _mantleBufferTimer;
+        // Aiming or firing dropped the sprint; it stays down until Sprint is let go and pressed
+        // again, so holding Sprint through a fight doesn't break into a run (and cancel a reload)
+        // the moment the shooting stops.
+        private bool _sprintInterrupted;
         private bool _slideQueued;
         private float _slideTimer;
         private Vector3 _slideDirection;
@@ -136,6 +140,12 @@ namespace CGD.Player
             }
 
             _jumpBufferTimer -= Time.deltaTime;
+
+            if (!_input.GetAction(GameAction.Sprint)) _sprintInterrupted = false;
+
+            // Sprinting from a toggled crouch stands the player up (once there's headroom).
+            if (_input.WasPressed(GameAction.Sprint) && IsCrouching && !IsSliding)
+                _input.ClearToggle(GameAction.Crouch);
 
             if (_input.WasPressed(GameAction.Crouch) && IsGrounded)
             {
@@ -214,7 +224,7 @@ namespace CGD.Player
                 Vector3 horiz = HorizontalVelocity;
                 _slideDirection = horiz.magnitude > 0.1f
                     ? horiz.normalized
-                    : -Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
+                    : Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
                 float boostedSpeed = Mathf.Max(horiz.magnitude, _settings.SprintSpeed) + _settings.SlideBoost;
                 _rb.linearVelocity = new Vector3(
                     _slideDirection.x * boostedSpeed,
@@ -248,7 +258,11 @@ namespace CGD.Player
             // The dodge sets the velocity itself while it moves the player.
             if (_dodge.IsDrivingMovement) return;
 
-            _isSprinting = _input.GetAction(GameAction.Sprint) && rawInput.magnitude > 0.1f && !IsCrouching && IsGrounded && !IsSliding
+            // Aiming (or guarding, the same input) holds the sprint down like firing does.
+            if (_input.GetAction(GameAction.AimDownSights)) InterruptSprint();
+
+            _isSprinting = _input.GetAction(GameAction.Sprint) && !_sprintInterrupted
+                        && rawInput.magnitude > 0.1f && !IsCrouching && IsGrounded && !IsSliding
                         && _settings.SprintCost.TryDrain(_meters, Time.fixedDeltaTime);
 
             if (IsSliding)
@@ -405,6 +419,17 @@ namespace CGD.Player
             // and matches the collider height visually.
             _playerMesh.localPosition = new Vector3(0f, height * 0.5f, 0f);
             _playerMesh.localScale    = new Vector3(1f, height / _settings.StandHeight, 1f);
+        }
+
+        // Stops the sprint now. While Sprint is held it stays stopped until the key is pressed
+        // again; a toggled sprint is simply switched off.
+        public void InterruptSprint()
+        {
+            _isSprinting = false;
+            if (!_input.GetAction(GameAction.Sprint)) return;
+
+            _sprintInterrupted = true;
+            _input.ClearToggle(GameAction.Sprint);
         }
 
         public void AddImpulse(Vector3 force) => _rb.AddForce(force, ForceMode.Impulse);

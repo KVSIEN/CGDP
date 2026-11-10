@@ -57,6 +57,34 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void AMotiveBranchThatCannotInterruptWarns()
+        {
+            var selector = _t.Add(new Selector(), _t.Root);
+            var waiting  = _t.Add(new Sequence(), selector);
+            _t.Add(new ScriptedCondition(), waiting);
+            _t.Add(new Motive(), waiting);
+            _t.Add(new ScriptedLeaf(), waiting);
+            _t.Add(new ScriptedLeaf(), selector);
+
+            Assert.IsTrue(HasIssue(waiting, BtIssueSeverity.Warning));
+
+            Set(waiting, "_abort", AbortMode.LowerPriority);
+            Assert.IsFalse(HasIssue(waiting, BtIssueSeverity.Warning));
+        }
+
+        [Test]
+        public void AGateCountsAsALeadingCondition()
+        {
+            var selector = _t.Add(new Selector(), _t.Root);
+            var gated    = _t.Add(Set(new Sequence(), "_abort", AbortMode.LowerPriority), selector);
+            var cooldown = _t.Add(new Cooldown(), gated);
+            _t.Add(new ScriptedLeaf(), cooldown);
+            _t.Add(new ScriptedLeaf(), selector);
+
+            Assert.IsFalse(HasIssue(gated, BtIssueSeverity.Warning));
+        }
+
+        [Test]
         public void ANeverEndingNodeWithNothingToInterruptItWarns()
         {
             var forever = _t.Add(Set(Set(new Repeat(), "_count", 0), "_stopOnFailure", false), _t.Root);

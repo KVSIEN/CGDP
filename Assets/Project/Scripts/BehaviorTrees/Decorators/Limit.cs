@@ -17,7 +17,7 @@ namespace CGD.BehaviorTrees
 
         public override string Summary => _maxRuns == 1 ? "Once" : $"≤ {_maxRuns} times";
 
-        internal override bool IsConditional => true;
+        internal override bool IsGate => true;
         internal override bool CheckCondition(BtContext context) =>
             _runs < _maxRuns && (Child == null || !Child.IsConditional || Child.CheckCondition(context));
 

@@ -56,9 +56,25 @@ namespace CGD.Player
         private float _counterplayAccum;
         private Transform _lockTarget;
         private float     _lockHeight;
+        private Vector3   _eyePosition;
 
+        // Far enough for any weapon's range, so the aim converges where the crosshair points
+        // even at sniper distances.
+        private const float AimDistance = 1000f;
+        // The player's own colliders a single aim ray may pass through before giving up.
+        private const int MaxSelfSkips = 4;
+
+        // Where shots leave from and go: from the eye (the camera itself in first person)
+        // toward the point under the crosshair. Third person can't shoot from the camera, or
+        // a player behind cover could fire over it, and hit things between camera and body.
+        public Vector3 AimOrigin        { get; private set; }
+        public Vector3 AimDirection     { get; private set; } = Vector3.forward;
+        // Third person: something between the eye and the crosshair's point stops the shot there.
         public bool    IsAimObstructed  { get; private set; }
         public Vector3 ObstructionPoint { get; private set; }
+        // How fast the player is turning the view, in degrees per second (+x right, +y up),
+        // from look input only — recoil and lock-on steering aren't counted.
+        public Vector2 LookRate         { get; private set; }
         public Camera  Camera           => _camera;
         /// <summary>0 = hip, 1 = fully aimed. Used by WeaponController for spread/recoil scaling.</summary>
         public float AdsT     => _adsT;
@@ -68,7 +84,6 @@ namespace CGD.Player
         public float ZoomT    => GameSettings.Current.AdsZoom == AdsZoomMode.Snap ? (_adsT >= 1f ? 1f : 0f) : _adsT;
 
         public Transform LockTarget => _lockTarget;
-
 
         public void SetSensitivity(float mouse, float gamepad)
         {
@@ -114,6 +129,9 @@ namespace CGD.Player
 
             _yaw = _playerBody.eulerAngles.y;
             _currentYaw = _yaw;
+            // A shot fired before the first LateUpdate still leaves from the player.
+            _eyePosition = AimOrigin = _headAnchor.position;
+            AimDirection = _playerBody.forward;
 
             _transitionTarget = _startingMode == CameraMode.FirstPerson ? 0f : 1f;
             _transitionT = _transitionTarget;
@@ -133,7 +151,7 @@ namespace CGD.Player
             UpdateCamera();
             UpdateBodyRotation();
             UpdateFOV();
-            CheckAimObstruction();
+            UpdateAim();
         }
 
         private void HandleToggleInput()
@@ -162,12 +180,12 @@ namespace CGD.Player
             _recoilIdleTimer -= Time.deltaTime;
             if (_recoilIdleTimer > 0f) return;
 
-            float dt = Time.deltaTime;
             float prevPitch = _recoilPitch;
             float prevYaw   = _recoilYaw;
 
-            _recoilPitch = Mathf.Lerp(_recoilPitch, 0f, _recoilRecoverySpeed * dt);
-            _recoilYaw   = Mathf.Lerp(_recoilYaw,   0f, _recoilRecoverySpeed * dt);
+            float t = Ease(_recoilRecoverySpeed);
+            _recoilPitch = Mathf.Lerp(_recoilPitch, 0f, t);
+            _recoilYaw   = Mathf.Lerp(_recoilYaw,   0f, t);
 
             // Pitch: clamp so recovery never pushes past the pre-burst origin.
             float pitchRecovery = (prevPitch - _recoilPitch) * _recoilRecoveryFraction;
@@ -221,6 +239,7 @@ namespace CGD.Player
 
             _yaw += look.x * mult;
             _pitch = Mathf.Clamp(_pitch - look.y * mult, _settings.MinPitch, _settings.MaxPitch);
+            LookRate = Time.deltaTime > 0f ? look * (mult / Time.deltaTime) : Vector2.zero;
 
             // Deliberate counter-pull shifts the recovery origin so it settles where the player aimed.
             if (_recoilPitch > 0f && look.y < 0f)
@@ -273,7 +292,8 @@ namespace CGD.Player
 
             float targetCrouchOffset = _movement.IsCrouching ? -_settings.CrouchHeadLower : 0f;
             _crouchHeadOffset = Mathf.SmoothDamp(_crouchHeadOffset, targetCrouchOffset, ref _crouchHeadVelocity, _settings.CrouchHeadSmoothTime);
-            Vector3 fpsPos = _headAnchor.position + Vector3.up * _crouchHeadOffset;
+            _eyePosition = _headAnchor.position + Vector3.up * _crouchHeadOffset;
+            Vector3 fpsPos = _eyePosition;
 
             float activeDistance = Mathf.Lerp(_settings.TpDistance, _settings.AdsTpDistance, _adsT);
             // In TP, keep a meaningful shoulder offset while ADS so the camera sits beside
@@ -317,8 +337,12 @@ namespace CGD.Player
             // In Snap mode the zoom itself jumps; sprint widening still eases.
             bool snapped = zoomT != _lastZoomT && GameSettings.Current.AdsZoom == AdsZoomMode.Snap;
             _lastZoomT = zoomT;
-            _camera.fieldOfView = snapped ? target : Mathf.Lerp(_camera.fieldOfView, target, _settings.FovSpeed * Time.deltaTime);
+            _camera.fieldOfView = snapped ? target : Mathf.Lerp(_camera.fieldOfView, target, Ease(_settings.FovSpeed));
         }
+
+        // Share of the remaining distance to close this frame when easing at `rate` per
+        // second — the same curve at any frame rate, unlike Lerp(a, b, rate * dt).
+        private static float Ease(float rate) => 1f - Mathf.Exp(-rate * Time.deltaTime);
 
         // Weapon ADS FOVs are authored against the default hip FOV (BaseFov). Independent uses
         // them as they are; Affected keeps the weapon's magnification — the ratio of the view
@@ -341,31 +365,51 @@ namespace CGD.Player
             }
         }
 
-        private void CheckAimObstruction()
+        // Finds the point under the crosshair and aims from the eye at it. The camera's ray
+        // starts level with the eye, so whatever lies between the camera and the player (a
+        // wall behind them, a target they walked past) is never what the crosshair is on. In
+        // first person the eye is the camera, so this is just the camera's own ray.
+        private void UpdateAim()
         {
-            // Only relevant when in or transitioning to third-person.
-            if (_transitionT < 0.1f)
-            {
-                IsAimObstructed = false;
-                return;
-            }
+            Vector3 forward  = transform.forward;
+            float   skip     = Mathf.Max(0f, Vector3.Dot(_eyePosition - transform.position, forward));
+            Vector3 rayStart = transform.position + forward * skip;
+            Vector3 aimPoint = RaycastPastSelf(rayStart, forward, AimDistance, out RaycastHit aimHit)
+                ? aimHit.point
+                : rayStart + forward * AimDistance;
 
-            Vector3 camForward = transform.forward;
-            float maxDist = _settings.TpDistance + 100f;
-            Vector3 aimPoint = Physics.Raycast(transform.position, camForward, out RaycastHit camHit, maxDist, _settings.CollisionMask, QueryTriggerInteraction.Ignore)
-                ? camHit.point
-                : transform.position + camForward * maxDist;
+            Vector3 toAim = aimPoint - _eyePosition;
+            float   distance = toAim.magnitude;
+            AimOrigin    = _eyePosition;
+            AimDirection = distance > 0.05f ? toAim / distance : forward;
 
-            Vector3 toAim = aimPoint - _headAnchor.position;
-            if (Physics.Raycast(_headAnchor.position, toAim.normalized, out RaycastHit headHit, toAim.magnitude - 0.05f, _settings.CollisionMask, QueryTriggerInteraction.Ignore))
+            // Only third person can have the eye's line differ from the crosshair's.
+            IsAimObstructed = false;
+            if (_transitionT < 0.1f) return;
+            if (!RaycastPastSelf(_eyePosition, AimDirection, distance - 0.05f, out RaycastHit eyeHit)) return;
+
+            IsAimObstructed  = true;
+            ObstructionPoint = eyeHit.point;
+        }
+
+        // The nearest hit that isn't part of the player (the body can sit across the camera's
+        // ray while the shoulder swaps sides).
+        private bool RaycastPastSelf(Vector3 origin, Vector3 direction, float distance, out RaycastHit hit)
+        {
+            Transform self = _movement.transform;
+            for (int i = 0; i < MaxSelfSkips; i++)
             {
-                IsAimObstructed  = true;
-                ObstructionPoint = headHit.point;
+                if (distance <= 0f || !Physics.Raycast(origin, direction, out hit, distance,
+                        _settings.CollisionMask, QueryTriggerInteraction.Ignore))
+                    break;
+                if (!hit.transform.IsChildOf(self)) return true;
+
+                float step = hit.distance + 0.01f;
+                origin   += direction * step;
+                distance -= step;
             }
-            else
-            {
-                IsAimObstructed = false;
-            }
+            hit = default;
+            return false;
         }
 
         public void SetMode(CameraMode mode, bool instant = false)

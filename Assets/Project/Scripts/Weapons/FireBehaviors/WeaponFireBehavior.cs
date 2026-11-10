@@ -62,12 +62,12 @@ namespace CGD.Weapons
             }
 
             float range  = MaxRangeOf(ctx);
-            bool  didHit = Physics.Raycast(ctx.CameraPosition, direction, out RaycastHit hit,
+            bool  didHit = Physics.Raycast(ctx.Origin, direction, out RaycastHit hit,
                 range, ctx.Data.HitMask, QueryTriggerInteraction.Ignore);
 
             if (ctx.DebugDraw)
             {
-                Vector3 origin = ctx.Muzzle != null ? ctx.Muzzle.position : ctx.CameraPosition;
+                Vector3 origin = ctx.Muzzle != null ? ctx.Muzzle.position : ctx.Origin;
                 Vector3 end    = didHit ? hit.point : origin + direction * range;
                 Debug.DrawLine(origin, end, didHit ? ctx.DebugHitColor : ctx.DebugMissColor, ctx.DebugLineDuration);
             }
@@ -81,7 +81,7 @@ namespace CGD.Weapons
         private static void FirePiercingRay(in FireContext ctx, Vector3 direction)
         {
             float range = MaxRangeOf(ctx);
-            int   count = Physics.RaycastNonAlloc(ctx.CameraPosition, direction, PierceHits,
+            int   count = Physics.RaycastNonAlloc(ctx.Origin, direction, PierceHits,
                 range, ctx.Data.HitMask, QueryTriggerInteraction.Ignore);
             System.Array.Sort(PierceHits, 0, count, ByDistance);
 
@@ -110,9 +110,9 @@ namespace CGD.Weapons
 
             if (ctx.DebugDraw)
             {
-                Vector3 origin = ctx.Muzzle != null ? ctx.Muzzle.position : ctx.CameraPosition;
+                Vector3 origin = ctx.Muzzle != null ? ctx.Muzzle.position : ctx.Origin;
                 bool    didHit = PiercedTargets.Count > 0 || end < range;
-                Debug.DrawLine(origin, ctx.CameraPosition + direction * end,
+                Debug.DrawLine(origin, ctx.Origin + direction * end,
                                didHit ? ctx.DebugHitColor : ctx.DebugMissColor, ctx.DebugLineDuration);
             }
             PiercedTargets.Clear();
@@ -145,7 +145,7 @@ namespace CGD.Weapons
             float instantRange = Mathf.Min(shot.Speed * shot.InstantHitTime, maxRange);
 
             if (instantRange > 0f &&
-                Physics.Raycast(ctx.CameraPosition, direction, out RaycastHit hit,
+                Physics.Raycast(ctx.Origin, direction, out RaycastHit hit,
                                 instantRange, ctx.Data.HitMask, QueryTriggerInteraction.Ignore))
             {
                 ApplyHitDamage(hit, ctx);
@@ -154,7 +154,7 @@ namespace CGD.Weapons
 
             // Nothing that close, so hand the rest of the flight to a projectile starting where
             // the raycast stopped — the two stages neither overlap nor leave a gap.
-            Vector3    origin = ctx.CameraPosition + direction * instantRange;
+            Vector3    origin = ctx.Origin + direction * instantRange;
             GameObject go     = PrefabPool.Spawn(shot.Prefab.gameObject, origin, Quaternion.LookRotation(direction));
 
             go.GetComponent<Projectile>().Launch(new ProjectileLaunch

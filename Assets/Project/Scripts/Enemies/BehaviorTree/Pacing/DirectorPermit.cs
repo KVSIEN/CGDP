@@ -15,7 +15,7 @@ namespace CGD.Enemies
 
         public override string Summary => "Bold move";
 
-        internal override bool IsConditional => true;
+        internal override bool IsGate => true;
         internal override bool CheckCondition(BtContext context) =>
             BoldMovePermits.IsAvailableTo(_ai) && (Child == null || !Child.IsConditional || Child.CheckCondition(context));
 

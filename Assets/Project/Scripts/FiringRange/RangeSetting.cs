@@ -13,5 +13,7 @@ namespace CGD.FiringRange
         Distance,
         // Not a setting: stands every dummy back up at full health and clears its effects.
         Reset,
+        // The shooter's reserve: normal, or never running out (magazines still need reloading).
+        Ammo,
     }
 }

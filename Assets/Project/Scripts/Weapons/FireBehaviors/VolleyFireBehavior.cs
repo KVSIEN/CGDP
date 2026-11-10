@@ -39,7 +39,7 @@ namespace CGD.Weapons
             for (int i = 0; i < arrows; i++)
             {
                 float   offset = (i - (arrows - 1) * 0.5f) * spacing;
-                Vector3 lane   = (ctx.CameraForward + ctx.VolleyAxis * offset).normalized;
+                Vector3 lane   = (ctx.AimDirection + ctx.VolleyAxis * offset).normalized;
                 FireProjectileShot(arrowCtx, ComputeSpreadDirection(lane, ctx.SpreadDeg), shot);
             }
         }

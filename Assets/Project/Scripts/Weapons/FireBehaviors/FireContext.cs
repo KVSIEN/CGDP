@@ -5,8 +5,10 @@ namespace CGD.Weapons
 {
     public struct FireContext
     {
-        public Vector3    CameraPosition;
-        public Vector3    CameraForward;     // un-spread forward; multi-pellet behaviors use this as their cone axis
+        // Where the shot leaves from and the un-spread way it goes (PlayerCamera's aim: the eye,
+        // toward the point under the crosshair); multi-pellet behaviors use it as their cone axis.
+        public Vector3    Origin;
+        public Vector3    AimDirection;
         public float      SpreadDeg;         // cone half-angle computed by WeaponController
         public Vector3    Direction;         // spread applied once; single-pellet behaviors use this directly
         public Transform  Muzzle;

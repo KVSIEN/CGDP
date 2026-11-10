@@ -19,7 +19,7 @@ namespace CGD.BehaviorTrees
 
         // A gate: "may this run yet?" — so a branch behind a cooldown doesn't interrupt
         // others (abort modes) only to fail straight away.
-        internal override bool IsConditional => true;
+        internal override bool IsGate => true;
         internal override bool CheckCondition(BtContext context) =>
             context.Time >= _readyAt && (Child == null || !Child.IsConditional || Child.CheckCondition(context));
 

@@ -83,6 +83,18 @@ namespace CGD.Weapons
         public int  Reserve           => _reloader.Reserve;
         public bool IsReloading       => _reloader.IsReloading;
         public bool IsHolstered       => _holstered;
+
+        // Reloads take nothing from the reserve and never run out of it (the firing range's
+        // Ammo switch); the magazine still empties, so reloading is practised as usual.
+        public bool InfiniteReserve
+        {
+            get => _reloader.Infinite;
+            set
+            {
+                _reloader.Infinite = value;
+                NotifyAmmoChanged();
+            }
+        }
         /// <summary>0 at rest, 1 fully charged. Always 0 for non-Charge fire modes.</summary>
         public float ChargeRatio      => Data != null && Data.FireMode == FireMode.Charge && ChargeTime > 0f
                                           ? Mathf.Clamp01(_trigger.ChargeTimer / ChargeTime) : 0f;
@@ -222,7 +234,8 @@ namespace CGD.Weapons
             Vector3 vel = _movement != null ? _movement.Velocity : Vector3.zero;
             float horizSpeed = new Vector2(vel.x, vel.z).magnitude;
             bool  grounded   = _movement == null || _movement.IsGrounded;
-            _visuals.SetSwayInputs(_input.LookInput, horizSpeed, grounded, _camera != null ? _camera.AdsT : 0f);
+            _visuals.SetSwayInputs(_camera != null ? _camera.LookRate : Vector2.zero, horizSpeed, grounded,
+                                   _camera != null ? _camera.AdsT : 0f);
         }
 
         /// <summary>Swap the active weapon at runtime (null = unarmed).</summary>
@@ -300,6 +313,8 @@ namespace CGD.Weapons
             _current.Magazine--;
             _fireCooldown.Start(60f / RoundsPerMinute);
             NotifyAmmoChanged();
+            // Can't run and shoot: the shot drops the sprint until Sprint is pressed again.
+            if (_movement != null) _movement.InterruptSprint();
 
             ApplyRecoil();
             // Multishot: extra shots for the same round, each with its own spread and crit roll.
@@ -359,16 +374,17 @@ namespace CGD.Weapons
             DrawStance stance = Stance;
             float   spreadDeg = SpreadDeg(adsT) * stance.SpreadMultiplier;
             bool    crit      = UnityEngine.Random.value < Wielder(ItemStat.CritChance, _current.CritChance);
-            Vector3 forward   = _camera.transform.forward;
+            Vector3 aim       = _camera.AimDirection;
             Vector3 volleyAxis = _current.Draw == DrawOrientation.Horizontal ? _camera.transform.right : _camera.transform.up;
 
-            // Camera-origin ray avoids muzzle parallax in third-person.
+            // From the eye to the crosshair's point: no muzzle parallax, and in third person
+            // the shot is stopped by whatever stands between the character and the target.
             D.FireBehavior.Execute(new FireContext
             {
-                CameraPosition    = _camera.transform.position,
-                CameraForward     = forward,
+                Origin            = _camera.AimOrigin,
+                AimDirection      = aim,
                 SpreadDeg         = spreadDeg,
-                Direction         = WeaponFireBehavior.ComputeSpreadDirection(forward, spreadDeg),
+                Direction         = WeaponFireBehavior.ComputeSpreadDirection(aim, spreadDeg),
                 Muzzle            = _muzzle,
                 Data              = D,
                 Damage            = ResolveDamage() * D.GetChargeDamageScale(charge) * stance.DamageMultiplier,

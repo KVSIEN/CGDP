@@ -31,6 +31,9 @@ namespace CGD.Weapons
 
         public bool IsReloading { get; private set; }
 
+        // Rounds are loaded without taking them from the reserve, so it never runs out.
+        public bool Infinite { get; set; }
+
         // The rounds are in; what is left is the tail of the animation.
         public bool IsCommitted { get; private set; }
 
@@ -41,7 +44,7 @@ namespace CGD.Weapons
         public int Reserve =>
             _inventory != null && _weapon != null ? _inventory.Inventory.CountOf(_weapon.Data.AmmoType) : 0;
 
-        public bool CanReload => _weapon != null && _weapon.Magazine < _weapon.MagazineSize && Reserve > 0;
+        public bool CanReload => _weapon != null && _weapon.Magazine < _weapon.MagazineSize && (Infinite || Reserve > 0);
 
         private WeaponData D => _weapon.Data;
 
@@ -110,15 +113,16 @@ namespace CGD.Weapons
         {
             if (_weapon == null) return 0;
 
-            int room      = _weapon.MagazineSize - _weapon.Magazine;
-            int available = free ? room : Reserve;
-            int taken     = Mathf.Min(Mathf.Min(count, room), available);
+            bool fromReserve = !free && !Infinite;
+            int  room        = _weapon.MagazineSize - _weapon.Magazine;
+            int  available   = fromReserve ? Reserve : room;
+            int  taken       = Mathf.Min(Mathf.Min(count, room), available);
             if (taken <= 0) return 0;
 
             _weapon.Magazine += taken;
             // Remove fires Changed, which covers both mag and reserve in one event.
-            if (!free) _inventory.Inventory.Remove(D.AmmoType, taken);
-            else       _changed();
+            if (fromReserve) _inventory.Inventory.Remove(D.AmmoType, taken);
+            else             _changed();
             return taken;
         }
 

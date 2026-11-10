@@ -85,7 +85,7 @@ namespace CGD.BehaviorTrees
                     CollectRunning(subtree.Branch, depth + 1, results);
                     break;
                 case BtParentNode parent when parent.Children != null:
-                    foreach (BtNode child in parent.Children) CollectRunning(child, depth + 1, results);
+                    for (int i = 0; i < parent.Children.Count; i++) CollectRunning(parent.Children[i], depth + 1, results);
                     break;
             }
         }

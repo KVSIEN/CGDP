@@ -43,7 +43,7 @@ Order matters; `[DefaultExecutionOrder]` makes it explicit:
 | -500 | `LevelBuilder` | The level (rooms, NavMesh, player placement) exists before other components wake. |
 | -200 | `GameFlow` | Game state exists before anything asks it to change. |
 | -190 | `GameTime` | Pause / time scale are ready. |
-| -100 | `VisibilityCullingManager`, `PlayerMantle` | Culling registry and mantle input run ahead of movement. |
+| -100 | `PlayerMantle` | The mantle runs ahead of movement. |
 | -50 | `WorldMapArea` | Fits itself to the built level. |
 | 100 | `CameraEffectsController`, `PlayerDodge`, `ExpeditionRunner` | Run after the player's own setup (starting stacks, loadout). |
 
@@ -78,7 +78,8 @@ camera, use a bus. If two components always travel together, use a serialized re
 
 **A shot lands.** `PlayerInputHandler` (attack bound via `InputBindingSettings`) →
 `WeaponController` asks `WeaponTrigger` what the button means → `WeaponFireBehavior`
-raycasts/spawns a `Projectile` (pooled) → `Hitbox.TakeDamage` forwards to its
+raycasts/spawns a `Projectile` (pooled) along `PlayerCamera`'s aim — from the eye toward
+the point under the crosshair, so in third person cover in front of the character stops it → `Hitbox.TakeDamage` forwards to its
 `HealthManager` → damage resolves in one place: region multiplier → armor → interceptors
 (a raised guard) → shield → health → `CombatEvents.Report`. Beside that, the shot reports
 `ImpactEvents` (surface effects) and `Noise` (enemies hear it). Stats flow in through

@@ -8,5 +8,7 @@ namespace CGD.FiringRange
         Sway,
         // Back and forth along the dummy's facing, toward and away from whoever is shooting.
         Advance,
+        // Side to side like a dodging player: turns at random moments, so it can't be pre-aimed.
+        Strafe,
     }
 }

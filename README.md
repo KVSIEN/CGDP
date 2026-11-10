@@ -37,7 +37,7 @@ Assets/
       Audio/                audio pool, sound banks, surface lookup; mixer: AudioMixerController, AudioMixerSettings, MixState (+ request), GameplayMixStates
       CameraEffects/        shake, kicks, FOV punches, lag, view blends (CameraEffectsController), CameraImpulses
       Combat/               Damage/, Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/, Reflect/ (Reflector, ReflectProfile), Projectile, Stunnable, Noise
-      Core/                 shared utilities (cooldowns, ranges, Culling/, Pooling/ — PrefabPool, IPoolable,
+      Core/                 shared utilities (cooldowns, ranges, Pooling/ — PrefabPool, IPoolable,
                             Random/ — Seed, RandomStream, SeedVariants; StateMachine/ — StateMachine<T>, IState)
       Crafting/             RecipeDefinition, Crafter (rules), CraftingStation
       DevTools/             dev console: DevConsole (commands), DevCommands (cheats), DevCatalog;
@@ -72,7 +72,7 @@ Assets/
                             ShipPersistence + ShipSave (the hold and kit on disk)
       Factions/             FactionDefinition (name, colour, enemy roster) — used by the map graph and generated levels
       Feedback/             FeedbackBus, FeedbackPreset, FeedbackPlayer (feed, flash, rumble, shake), combat/quest feedback
-      FiringRange/          the sandbox firing range: RangeControl (faction, tier, movement, distance), RangeDummy (stats, colour), RangeSwitch (the buttons), TargetMover
+      FiringRange/          the sandbox firing range: RangeControl (faction, tier, movement, distance, infinite ammo), RangeDummy (stats, colour), RangeSwitch (the buttons), TargetMover
       Flow/                 GameFlow, GameState/GameStateMachine, settings and UI commands
       Impacts/              ImpactEvents (hit broadcast), ImpactDatabase (effects per surface), ImpactSpawner, DecalPool
       Input/                PlayerInputHandler and binding settings

@@ -19,8 +19,9 @@ namespace CGD.Weapons
     {
         private const float SlowestBlink = 0.5f;   // seconds per blink at the start of the fuse
         private const float FastestBlink = 0.07f;  // … and just before it goes off
-        private const float GroundNormalY = 0.6f;  // contacts flatter than ~53° count as ground
-        private const float StopSpeed     = 0.3f;  // below this on the ground it comes to rest
+        // Shared with GrenadeFlight, which predicts where a throw ends up.
+        internal const float GroundNormalY = 0.6f;  // contacts flatter than ~53° count as ground
+        internal const float StopSpeed     = 0.3f;  // below this on the ground it comes to rest
 
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly Collider[] HitBuffer = new Collider[64];

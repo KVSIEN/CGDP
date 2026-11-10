@@ -7,8 +7,9 @@ namespace CGD.UI
     [RequireComponent(typeof(RectTransform))]
     public class WeaponHUD : HUDElement
     {
-        [SerializeField] private WeaponController _weapon;
+        private const string InfiniteReserveText = "∞";
 
+        [SerializeField] private WeaponController _weapon;
 
         [Header("Layout")]
         [SerializeField] private Vector2 _screenPadding = new Vector2(20f, 20f);
@@ -78,13 +79,15 @@ namespace CGD.UI
                 return;
             }
 
+            bool infinite = _weapon.InfiniteReserve;
+            _reserveText.text  = infinite ? InfiniteReserveText : _reserve.ToString();
+            _reserveText.color = !infinite && !_isReloading && _reserve == 0 ? Theme.Danger : _reserveColor;
+
             if (_isReloading)
             {
                 _magText.text = "-";
                 _magText.color = Theme.Warning;
                 _reloadText.gameObject.SetActive(true);
-                _reserveText.text = _reserve.ToString();
-                _reserveText.color = _reserveColor;
                 return;
             }
 
@@ -93,9 +96,6 @@ namespace CGD.UI
             bool empty = _magazine == 0;
             _magText.text = _magazine.ToString();
             _magText.color = empty ? Theme.Danger : _magColor;
-
-            _reserveText.text = _reserve.ToString();
-            _reserveText.color = _reserve == 0 ? Theme.Danger : _reserveColor;
         }
 
         private void Build()

@@ -25,6 +25,6 @@ namespace CGD.FiringRange
 
         public string GetInteractLabel(GameObject interactor) => _range.Describe(_setting);
 
-        public void Interact(GameObject interactor) => _range.Cycle(_setting);
+        public void Interact(GameObject interactor) => _range.Cycle(_setting, interactor);
     }
 }

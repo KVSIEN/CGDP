@@ -107,11 +107,14 @@ namespace CGD.Enemies
 
         public void Cancel() => _casting = null;
 
-        // Back from the dead: buffs ended with it (CharacterStats clears them on revive).
+        // Starting over (a respawn, a reused pooled enemy, a test scenario restarting): buffs
+        // ended with it (CharacterStats clears them on revive) and every ability is ready again,
+        // like the rest of its kit. The abilities stay known, so the inspector keeps listing them.
         public void Reset()
         {
             _casting = null;
             _effectEndsAt.Clear();
+            foreach (Ability ability in _known) _readyAt[ability] = 0f;
         }
 
         private void AimAt(Vector3 point)

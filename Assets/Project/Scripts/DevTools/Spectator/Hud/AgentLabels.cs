@@ -4,13 +4,14 @@ using UnityEngine.UI;
 using TMPro;
 using CGD.Combat;
 using CGD.Enemies;
+using CGD.Stealth;
 using CGD.UI;
 
 namespace CGD.DevTools
 {
     // On-screen labels that follow enemies around: its number (the key that watches it),
-    // name and health (+ shield), what it is doing (state · step) and what it believes
-    // (awareness → target). The inspected agent's label is highlighted. Text is rebuilt a few
+    // name and health (+ shield), what it is doing (state · step, and whether it is hidden in a
+    // bush, cloaked or giving itself away) and what it believes (awareness → target). The inspected agent's label is highlighted. Text is rebuilt a few
     // times a second; positions follow every frame. A screen-space overlay of its own, so it
     // shows with the game HUD switched off.
     internal sealed class AgentLabels
@@ -24,6 +25,7 @@ namespace CGD.DevTools
         {
             public EnemyAI         Ai;
             public EnemyHealth     Health;
+            public Stealthable     Stealth;
             public RectTransform   Panel;
             public Image           Background;
             public TextMeshProUGUI Text;
@@ -114,7 +116,16 @@ namespace CGD.DevTools
             string step   = ai.Step == EngageStep.None ? "" : $" · {ai.Step}";
             HealthManager target = ai.Perception.Target;
             string belief = target != null ? $"{ai.Awareness} → {target.DisplayName}" : ai.Awareness.ToString();
-            return $"{number}<b>{health.DisplayName}</b>  {health.Health:0}{shield}\n{ai.State}{step}\n<size=85%>{belief}</size>";
+            return $"{number}<b>{health.DisplayName}</b>  {health.Health:0}{shield}\n{ai.State}{step}{StealthTag(label.Stealth)}\n<size=85%>{belief}</size>";
+        }
+
+        // Concealed agents fade to a ghost in the Game view; the label says why, and whether it is
+        // a bush (hidden), its own cloak, or a moment of giving itself away (revealed).
+        private static string StealthTag(Stealthable stealth)
+        {
+            if (stealth == null || !stealth.IsConcealed) return "";
+            if (stealth.State == StealthState.Revealed) return "  <color=#FFB347>revealed</color>";
+            return stealth.IsCloaked ? "  <color=#7CFF8A>cloaked</color>" : "  <color=#7CFF8A>hidden</color>";
         }
 
         private static Label Build(EnemyAI ai, RectTransform canvas, Vector2 size, float fontSize)
@@ -133,7 +144,8 @@ namespace CGD.DevTools
             text.fontSize  = fontSize;
             text.alignment = TextAlignmentOptions.Center;
 
-            return new Label { Ai = ai, Health = ai.GetComponent<EnemyHealth>(), Panel = rect, Background = panel, Text = text };
+            ai.TryGetComponent(out Stealthable stealth);
+            return new Label { Ai = ai, Health = ai.GetComponent<EnemyHealth>(), Stealth = stealth, Panel = rect, Background = panel, Text = text };
         }
     }
 }

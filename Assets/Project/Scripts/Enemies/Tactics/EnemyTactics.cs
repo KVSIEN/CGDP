@@ -177,7 +177,9 @@ namespace CGD.Enemies
 
         // Picks and claims the best known cover against the threat (a different spot from the
         // current one, so this also repositions). False if it knows of nothing suitable.
-        public bool TryTakeCover(Vector3 threat, CoverUse use, out Vector3 destination)
+        // `nearestToThreat` rules out spots closer to the threat than that (0 = no limit): a
+        // long-range fighter pushing up advances to where it fights best, not into the open.
+        public bool TryTakeCover(Vector3 threat, CoverUse use, out Vector3 destination, float nearestToThreat = 0f)
         {
             destination = default;
             CoverMap map = _knowledge.Map;
@@ -189,11 +191,14 @@ namespace CGD.Enemies
             foreach (int index in _nearby)
             {
                 if (index == _claimed || map.IsTakenByOther(index, _ai)) continue;
+                if (nearestToThreat > 0f && (map[index].Position - threat).sqrMagnitude < nearestToThreat * nearestToThreat) continue;
                 if (TryScore(map[index], threat, use, out float score)) Keep(index, score);
             }
 
             // Only the best few get a ray from the threat: cheap, and it catches cover that
-            // faces the right way but is too short or has a gap.
+            // faces the right way but is too short or has a gap. Best first, so the first that
+            // passes is the one to take (Keep fills slots in no particular order).
+            SortBestFirst(_best);
             TacticalDecision log = Log.Cover;
             log.Begin(threat);
             Vector3 threatEye = threat + Vector3.up * EyeHeight;
@@ -278,14 +283,15 @@ namespace CGD.Enemies
                     continue;
                 }
 
-                float length = PathLength(_path);
+                float length = RouteMetrics.Length(_path);
                 if (length > straight * FlankDetourLimit + standOff)
                 {
                     log.Add(hit.position, 0f, CandidateVerdict.TooFar);
                     continue;
                 }
 
-                float score = -2f * Exposure(_path, threat) - 0.3f * length / Mathf.Max(1f, straight) + Random.value * 0.3f
+                float exposure = RouteMetrics.Exposure(_path, threat + Vector3.up * EyeHeight, _obstacleMask);
+                float score = -2f * exposure - 0.3f * length / Mathf.Max(1f, straight) + Random.value * 0.3f
                               - WatchedSidePenalty * Watched(watching, threat, hit.position);
                 int entry = log.Add(hit.position, score, CandidateVerdict.Passed);
                 if (score <= bestScore) continue;
@@ -450,6 +456,18 @@ namespace CGD.Enemies
             if (score > _best[worst].score) _best[worst] = (index, score);
         }
 
+        // Insertion sort: a handful of entries, and no allocation.
+        private static void SortBestFirst((int index, float score)[] entries)
+        {
+            for (int i = 1; i < entries.Length; i++)
+            {
+                var entry = entries[i];
+                int at = i;
+                for (; at > 0 && entries[at - 1].score < entry.score; at--) entries[at] = entries[at - 1];
+                entries[at] = entry;
+            }
+        }
+
         // How squarely a spot lies in the direction the threat was facing: 1 dead ahead of it,
         // 0 at its side or behind it (or when its facing is unknown).
         private static float Watched(Vector3 facing, Vector3 threat, Vector3 spot)
@@ -458,27 +476,6 @@ namespace CGD.Enemies
             toSpot.y = 0f;
             if (facing == Vector3.zero || toSpot.sqrMagnitude < 0.01f) return 0f;
             return Mathf.Max(0f, Vector3.Dot(facing, toSpot.normalized));
-        }
-
-        // Share of the route's corners the threat could see.
-        private float Exposure(NavMeshPath path, Vector3 threat)
-        {
-            Vector3[] corners = path.corners;
-            if (corners.Length < 2) return 0f;
-
-            Vector3 eye = threat + Vector3.up * EyeHeight;
-            int seen = 0;
-            for (int i = 1; i < corners.Length; i++)
-                if (!Physics.Linecast(eye, corners[i] + Vector3.up * 1.2f, _obstacleMask, QueryTriggerInteraction.Ignore)) seen++;
-            return seen / (float)(corners.Length - 1);
-        }
-
-        private static float PathLength(NavMeshPath path)
-        {
-            Vector3[] corners = path.corners;
-            float length = 0f;
-            for (int i = 1; i < corners.Length; i++) length += Vector3.Distance(corners[i - 1], corners[i]);
-            return length;
         }
     }
 }

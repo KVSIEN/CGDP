@@ -1,20 +1,23 @@
 using UnityEngine;
 using CGD.Enemies;
 using CGD.Factions;
+using CGD.Weapons;
 
 namespace CGD.FiringRange
 {
     // The firing range's settings, changed by RangeSwitches: which faction's enemies the
-    // dummies stand in for, at which tier, how they move (still, swaying or advancing) and how far down
+    // dummies stand in for, at which tier, how they move (still, swaying, advancing or strafing) and how far down
     // the lane they stand. Every dummy gets the first three; only the lane dummies move. A dummy takes on the stats of
     // the chosen enemy, so health, shield, armour and name all follow the enemy assets, and
     // is tinted in the faction's colour. Placeholder tier 2 and 3 affixes are not rolled: a
-    // dummy shows the enemy's plain stats.
+    // dummy shows the enemy's plain stats. The Ammo switch gives whoever uses it a reserve
+    // that never runs out.
     public class RangeControl : MonoBehaviour
     {
         private const int MinTier = 1;
         private const int MaxTier = 3;
         private const int MixedFactions = -1;
+        private static readonly int MovementCount = System.Enum.GetValues(typeof(DummyMovement)).Length;
 
         [Tooltip("Factions the Faction switch cycles through. Their tier rosters decide which enemy a dummy plays")]
         [SerializeField] private FactionDefinition[] _factions;
@@ -32,6 +35,7 @@ namespace CGD.FiringRange
         private int  _tier = MinTier;
         private DummyMovement _movement;
         private int  _distanceChoice;
+        private bool _infiniteAmmo;
         private Vector3[] _laneHomes;
 
         private void Start()
@@ -41,7 +45,8 @@ namespace CGD.FiringRange
             Apply();
         }
 
-        public void Cycle(RangeSetting setting)
+        // `user` is whoever pressed the switch; the Ammo setting applies to their weapons.
+        public void Cycle(RangeSetting setting, GameObject user)
         {
             switch (setting)
             {
@@ -53,7 +58,7 @@ namespace CGD.FiringRange
                     _tier = _tier >= MaxTier ? MinTier : _tier + 1;
                     break;
                 case RangeSetting.Movement:
-                    _movement = (DummyMovement)(((int)_movement + 1) % System.Enum.GetValues(typeof(DummyMovement)).Length);
+                    _movement = (DummyMovement)(((int)_movement + 1) % MovementCount);
                     break;
                 case RangeSetting.Distance:
                     _distanceChoice = (_distanceChoice + 1) % _distanceScales.Length;
@@ -62,8 +67,19 @@ namespace CGD.FiringRange
                     foreach (RangeDummy dummy in _dummies) dummy.Restore();
                     DummiesRestored?.Invoke();
                     return;
+                case RangeSetting.Ammo:
+                    ToggleAmmo(user);
+                    return;
             }
             Apply();
+        }
+
+        private void ToggleAmmo(GameObject user)
+        {
+            if (user == null || !user.TryGetComponent(out WeaponController weapons)) return;
+
+            _infiniteAmmo = !_infiniteAmmo;
+            weapons.InfiniteReserve = _infiniteAmmo;
         }
 
         // The prompt text of the switch for this setting, with its current value.
@@ -74,6 +90,7 @@ namespace CGD.FiringRange
             RangeSetting.Movement => $"Change movement  ({_movement})",
             RangeSetting.Distance => $"Change distance  ({DistanceSpan()})",
             RangeSetting.Reset => "Reset dummies",
+            RangeSetting.Ammo  => $"Infinite ammo  ({(_infiniteAmmo ? "On" : "Off")})",
             _ => string.Empty,
         };
 

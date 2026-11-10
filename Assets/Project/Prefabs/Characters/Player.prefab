@@ -174,8 +174,8 @@ MonoBehaviour:
     Rise: 0.0015
     Pushback: 0.01
   _adsMaxRecoverTime: 0.15
-  _lookPitchScale: 0.06
-  _lookYawScale: 0.08
+  _lookPitchScale: 0.0067
+  _lookYawScale: 0.0089
   _lookRollFactor: 0.15
   _moveBobAmplitude: 0.012
   _moveBobSpeed: 5

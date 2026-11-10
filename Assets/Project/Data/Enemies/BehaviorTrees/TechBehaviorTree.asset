@@ -108,6 +108,15 @@ MonoBehaviour:
   - rid: 1097
   - rid: 1098
   - rid: 1099
+  - rid: 1100
+  - rid: 1101
+  - rid: 1102
+  - rid: 1103
+  - rid: 1104
+  - rid: 1105
+  - rid: 1106
+  - rid: 1107
+  - rid: 1108
   references:
     version: 2
     RefIds:
@@ -252,6 +261,7 @@ MonoBehaviour:
         - e2a1b2c3d4e5f60718293a4b5c6d701
         - 005f4c77603840d4ab6a10fa5550053b
         - 223bb24576d84dd29211ebc63a235095
+        - 47dd9f0899c0475d9ee88439d3e2f8ce
         - 97e380fa678d412082ad0d2bab96eef0
         - d0af4340b2804db3ab7aeb7b81c5bae1
         - 9b4f8aa4e67d4a628908272ba7c56088
@@ -676,7 +686,7 @@ MonoBehaviour:
       data:
         _guid: e2a1b2c3d4e5f60718293a4b5c6d701
         _position: {x: -900, y: 600}
-        _comment: 'Someone within reach (5 m) with its shield up, and reason to (pressed hard, hit, or several on top of it): discharge the shield in a slowing burst, then withdraw'
+        _comment: 'Someone within reach (5 m) with its shield up, and reason to (pressed hard, hit, or several on top of it): discharge the shield in a slowing burst, then withdraw. Aborts lower priority, so a reason to discharge cuts into shooting from cover'
         _children:
         - e2a1b2c3d4e5f60718293a4b5c6d702
         - e2a1b2c3d4e5f60718293a4b5c6d703
@@ -684,7 +694,7 @@ MonoBehaviour:
         - 76cc1729c0f6f410522c5134b72713c0
         - e2a1b2c3d4e5f60718293a4b5c6d705
         - 5c502daf1ea14baba9dc6effcd00e012
-        _abort: 0
+        _abort: 2
     - rid: 1071
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
@@ -830,9 +840,10 @@ MonoBehaviour:
       data:
         _guid: 97e380fa678d412082ad0d2bab96eef0
         _position: {x: 3440, y: 1600}
-        _comment: 'Union: given the suppress role, it pins the target''s head down from where it stands while its mates reposition'
+        _comment: 'Union: given the suppress role, it pins the target''s head down from where it stands while its mates reposition — only while it saw the target moments ago, so it doesn''t keep firing at a spot the target (or a minion that has gone) left long since'
         _children:
         - 640cfd34330d4f9eb80f2b55de2d6234
+        - 9e688d709caf44f988d24e5cb5230b5c
         - 2d7fcc8d073143a889b17cbbc0470cae
         _abort: 2
     - rid: 1090
@@ -964,5 +975,82 @@ MonoBehaviour:
       data:
         _guid: c885840e9e114a79ed919739fe7fcb5f
         _position: {x: -2930, y: 450}
-        _comment: 
+        _comment:
         _giveUpAfter: 3
+    - rid: 1100
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9e688d709caf44f988d24e5cb5230b5c
+        _position: {x: 3110, y: 1850}
+        _comment:
+        _memory: 4
+    - rid: 1101
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 47dd9f0899c0475d9ee88439d3e2f8ce
+        _position: {x: 150, y: 600}
+        _comment: 'Very far back (target over 32 m off): defensive or not, push up and take ground — a bound to cover closer in (never nearer than its preferred range), or a short advance in the open if it knows none. At most every 10 s, so it fights between bounds; aborts lower priority, so it breaks off suppressing from the back line'
+        _children:
+        - c815cea5f46e41eab9611e63568decb8
+        - 5e92b4dbf96449e8bd9267db3752eefd
+        _abort: 2
+    - rid: 1102
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c815cea5f46e41eab9611e63568decb8
+        _position: {x: 40, y: 750}
+        _comment:
+        _children:
+        - 28485e44d5684379bd273b30cba7e63a
+    - rid: 1103
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 28485e44d5684379bd273b30cba7e63a
+        _position: {x: 40, y: 900}
+        _comment:
+        _range: 32
+    - rid: 1104
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5e92b4dbf96449e8bd9267db3752eefd
+        _position: {x: 260, y: 750}
+        _comment:
+        _children:
+        - ce479b255b5d46b4869c0fbafaf9338a
+        _seconds: 10
+        _onlyAfterSuccess: 0
+    - rid: 1105
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ce479b255b5d46b4869c0fbafaf9338a
+        _position: {x: 260, y: 900}
+        _comment:
+        _children:
+        - 7225b4c4bd5746758ee1039106011478
+        - 6b03407286714f74ad48f715836cc942
+        _abort: 0
+    - rid: 1106
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7225b4c4bd5746758ee1039106011478
+        _position: {x: 150, y: 1050}
+        _comment:
+        _use: 2
+        _giveUpAfter: 8
+        _stopAtPreferredRange: 1
+    - rid: 1107
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6b03407286714f74ad48f715836cc942
+        _position: {x: 370, y: 1050}
+        _comment:
+        _children:
+        - 2a89718b4fe143668999ae26038c27c9
+        _seconds: 5
+    - rid: 1108
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2a89718b4fe143668999ae26038c27c9
+        _position: {x: 370, y: 1200}
+        _comment:
+        _stopDistance: 26

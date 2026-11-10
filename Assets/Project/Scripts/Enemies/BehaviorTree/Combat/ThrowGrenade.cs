@@ -6,9 +6,10 @@ using CGD.Weapons;
 namespace CGD.Enemies
 {
     // Lobs a grenade onto where it believes its target is — the way to flush someone out of
-    // cover it can't see past. A short wind-up facing the spot, then a high arc. Fails when
-    // the spot is too close (it won't throw at its own feet) or out of throwing range. Put a
-    // Cooldown (and a Limit, for a supply) above it.
+    // cover it can't see past. A short wind-up facing the spot, then a high arc aimed so the
+    // grenade goes off there after bouncing and rolling, leading a target it sees moving.
+    // Fails when the spot is too close (it won't throw at its own feet) or out of throwing
+    // range. Put a Cooldown (and a Limit, for a supply) above it.
     [Serializable]
     [BtNodeInfo("Enemy/Combat/Throw Grenade", "Lobs a grenade onto the (believed) target position. Fails if too close or out of range.")]
     public sealed class ThrowGrenade : EnemyAction
@@ -26,7 +27,7 @@ namespace CGD.Enemies
             var perception = Ai.Perception;
             _throwing = perception.Target != null &&
                         (perception.TargetPosition - Ai.transform.position).sqrMagnitude >= _minDistance * _minDistance &&
-                        Ai.Grenades.TryBegin(_grenade, perception.TargetPosition);
+                        Ai.Grenades.TryBegin(_grenade, perception.TargetPosition, perception.TargetVelocity);
         }
 
         protected override BtStatus OnTick(BtContext context)

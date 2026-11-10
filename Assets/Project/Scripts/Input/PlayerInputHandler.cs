@@ -225,6 +225,16 @@ namespace CGD.Input
             _toggleStates[i] = false;
         }
 
+        // Switches a toggled action off from gameplay (sprinting stands you out of a toggled
+        // crouch), as of this frame. Held and pressed actions follow the key, so it leaves them be.
+        public void ClearToggle(GameAction action)
+        {
+            int i = (int)action;
+            if (_modes[i] != InputActionMode.Toggle) return;
+            _toggleStates[i] = false;
+            _results[i]      = false;
+        }
+
         public void RebuildActions()
         {
             for (int i = 0; i < _actions.Length; i++)
