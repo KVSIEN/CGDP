@@ -110,6 +110,7 @@ Assets/
       Settings/             GameSettings (audio, video, accessibility preferences) and SettingsData
       Stats/                generic stat modifiers (ModifierSet, Stat, TimedModifiers), CharacterStats, presets
       Stealth/              Stealthable (hide state), StealthStatus (rules), ConcealmentZone (bushes, smoke), StealthSettings
+      Telemetry/            RunStats (what one run did), LifetimeStats + TelemetryStore (totals on disk), RunStatsRecorder (feeds them from combat and quest events)
       Targeting/            TargetQuery, TargetFilter and TargetSelector assets (Selectors/)
       Timing/               GameClock (fixed ticks, pause, time scale, scheduling) and GameTime
       UI/                   Common/ (UIFactory), HUD/ (HUDManager, HUDElement; Combat/ — crosshair, hit and damage feedback, status, stealth;

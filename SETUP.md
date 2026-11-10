@@ -825,7 +825,7 @@ Each Rooms entry lists enemy prefabs (count read at the room's intensity), a cen
 ### Expedition loop (extraction)
 
 ```
-Expedition         [ExpeditionRunner]          ← scene root
+Expedition         [ExpeditionRunner] [RunStatsRecorder]   ← scene root
 HUD (prefab instance)
   ExpeditionScreen [ExpeditionScreen]          ← stretched RectTransform, layer UI, last child (draws on top)
 ```
@@ -833,7 +833,8 @@ HUD (prefab instance)
 | Component | Assign | Notes |
 |---|---|---|
 | **ExpeditionRunner** | `_inventory` = Player's PlayerInventory · `_weapons` = PlayerWeaponLoadout · `_equipment` = PlayerEquipment · `_input` = PlayerInputHandler · `_starterKit` = `Expedition/DefaultRunStarterKit` · `_level`? = the LevelBuilder (seeds the loadout) · `_upgrades`? = `Expedition/Upgrades/DefaultShipUpgradeCatalog` · `_stats` = Player's CharacterStats · `_health` = Player's PlayerHealth | Settles the run when GameFlow reaches Victory (extract) or GameOver (death). Needs `GameFlow` (with `ExpeditionSession`) in the scene. Adds every owned ship upgrade's bonus to `_stats` at the start of the run; without `_upgrades` the ship screen offers none. |
-| **ExpeditionScreen** | `_runner` = the ExpeditionRunner | Builds its own hidden panel; shows after a run with the hold, the next-run kit, the ship upgrades and Deploy (restarts the scene). |
+| **RunStatsRecorder** | `_player` = Player's PlayerHealth · `_runner` = the ExpeditionRunner · `_saveInEditor` (off: the editor writes no lifetime totals) · `_fileName` = `telemetry.json` | Counts the run (time, kills by tier, damage dealt and taken, items collected) from `CombatEvents` and `QuestEvents`; when the runner ends the run it adds it to the lifetime totals on disk. Goes on the `Expedition` object. |
+| **ExpeditionScreen** | `_runner` = the ExpeditionRunner · `_telemetry`? = the RunStatsRecorder (adds the run's stats line) | Builds its own hidden panel; shows after a run with the hold, the next-run kit, the ship upgrades and Deploy (restarts the scene). |
 | **PlayerLifecycle** (Player) | `_gameOverOnDeath` = on | Death must end the run, or nothing is ever lost. |
 | **PlayerInventory** (Player) | `_startingStacks` = empty | The starting room's loadout replaces the Sandbox's dev ammo and credits. |
 

@@ -7,6 +7,7 @@ using CGD.Crafting;
 using CGD.Expedition;
 using CGD.Flow;
 using CGD.Items;
+using CGD.Telemetry;
 
 namespace CGD.UI
 {
@@ -23,10 +24,13 @@ namespace CGD.UI
         private const float FooterSize = 52f;
 
         [SerializeField] private ExpeditionRunner _runner;
+        [Tooltip("Optional — adds how the run went (time, kills, damage) under the summary")]
+        [SerializeField] private RunStatsRecorder _telemetry;
 
         private GameObject _panel;
         private TextMeshProUGUI _title;
         private TextMeshProUGUI _summary;
+        private TextMeshProUGUI _runStats;
         private UIButtonList _hold;
         private UIButtonList _kit;
         private UIButtonList _upgrades;
@@ -67,6 +71,8 @@ namespace CGD.UI
                 RunOutcome.EmergencyExtracted => $"{report.Carried} items secured; {report.Left} didn't fit in the escape pod.",
                 _                             => $"Lost {report.Carried} items, {report.Brought} of them brought from the ship.",
             };
+
+            _runStats.text = _telemetry != null ? RunStatsText.Summary(_telemetry.Current) : string.Empty;
 
             Unsubscribe();
             Ledger.Storage.Changed += Refresh;
@@ -196,6 +202,12 @@ namespace CGD.UI
             _summary.fontSize  = 16f;
             _summary.alignment = TextAlignmentOptions.Center;
             UIFactory.Place(_summary.rectTransform, new Vector2(0f, -58f), new Vector2(WindowSize.x, 28f));
+
+            _runStats = UIFactory.MakeText("RunStats", windowRt);
+            _runStats.fontSize  = 14f;
+            _runStats.color     = new Color(0.7f, 0.7f, 0.75f);
+            _runStats.alignment = TextAlignmentOptions.Center;
+            UIFactory.Place(_runStats.rectTransform, new Vector2(0f, -84f), new Vector2(WindowSize.x, 22f));
 
             float columnWidth  = (WindowSize.x - 16f * (Columns + 1)) / Columns;
             float columnHeight = WindowSize.y - ListTop - FooterSize - 12f;

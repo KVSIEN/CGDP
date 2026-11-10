@@ -1401,6 +1401,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1482240602}
   - component: {fileID: 1482240603}
+  - component: {fileID: 1482240690}
   m_Layer: 0
   m_Name: Expedition
   m_TagString: Untagged
@@ -1444,6 +1445,22 @@ MonoBehaviour:
   _upgrades: {fileID: 11400000, guid: 2e68a528d467b7c30fc095cba0ecc33c, type: 2}
   _stats: {fileID: 1555766120}
   _health: {fileID: 1555766054}
+--- !u!114 &1482240690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482240601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 763d2266982c403bac106fec4a074c03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Telemetry.RunStatsRecorder
+  _player: {fileID: 1555766054}
+  _runner: {fileID: 1482240603}
+  _saveInEditor: 0
+  _fileName: telemetry.json
 --- !u!1 &1482240610
 GameObject:
   m_ObjectHideFlags: 0
@@ -1493,6 +1510,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ExpeditionScreen
   _runner: {fileID: 1482240603}
+  _telemetry: {fileID: 1482240690}
 --- !u!1 &1482240650
 GameObject:
   m_ObjectHideFlags: 0
