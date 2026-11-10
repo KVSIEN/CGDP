@@ -14,7 +14,7 @@ namespace CGD.Enemies
                 destination = cover;
 
             ai.Agent.isStopped = false;
-            ai.Agent.SetDestination(destination);
+            ai.Routing.SetDestination(destination);
         }
 
         public static void Tick(EnemyAI ai, float deltaTime, float arrivalDistance)

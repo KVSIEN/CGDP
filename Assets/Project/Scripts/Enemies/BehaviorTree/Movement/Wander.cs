@@ -30,7 +30,7 @@ namespace CGD.Enemies
                 Vector2 offset = UnityEngine.Random.insideUnitCircle * _radius;
                 Vector3 spot   = center + new Vector3(offset.x, 0f, offset.y);
                 if (NavMesh.SamplePosition(spot, out NavMeshHit hit, 1.5f, NavMesh.AllAreas))
-                    _moving = Ai.Agent.SetDestination(hit.position);
+                    _moving = Ai.Routing.SetDestination(hit.position);
             }
             if (_moving) Ai.Agent.isStopped = false;
         }

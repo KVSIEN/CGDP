@@ -74,6 +74,7 @@ namespace CGD.Enemies
         private bool    _hunting;   // it knows a hostile is about, not just that something seemed off
         private float   _cautiousUntil = float.NegativeInfinity;
         private float   _underFireAt   = float.NegativeInfinity;
+        private float   _warnedAt      = float.NegativeInfinity;
         private HealthManager _lastAttacker;
         private float   _lastAttackedAt = float.NegativeInfinity;
         private readonly HashSet<EnemyAI> _bodiesSeen = new();
@@ -169,6 +170,9 @@ namespace CGD.Enemies
 
         // Shot at moments ago — hit, a bullet cracking past, or a target it sees aiming at it.
         public bool    IsUnderFire     => _clock - _underFireAt <= UnderFireMemory;
+        // The warning signs alone, without being hit: a bullet cracking past or a target it sees
+        // aiming at it. What to dodge on so it moves before the shot lands rather than after.
+        public bool    IsFireIncoming  => _clock - _warnedAt <= UnderFireMemory;
         // Roughly where the fire came from (where to dodge away from).
         public Vector3 ThreatDirection { get; private set; }
 
@@ -289,6 +293,7 @@ namespace CGD.Enemies
             Vector3 shooter  = impact.Source.Owner.transform.position;
             float   distance = Vector3.Distance(shooter, _self.position);
             FeelFire(shooter + Error(distance, _profile.HitError));
+            _warnedAt = _clock;
             if (IsTargetDetected) return;
 
             _meter.Raise(_profile.NoiseAwareness, _profile.HearingCeiling);
@@ -452,7 +457,10 @@ namespace CGD.Enemies
             Vector3 toSelf = _self.position - position;
             toSelf.y = 0f;
             if (toSelf.sqrMagnitude > 0.01f && Vector3.Angle(_sighting.Facing, toSelf) <= AimedAtAngle && _meter.IsSuspicious)
+            {
                 FeelFire(position);
+                _warnedAt = _clock;
+            }
             LastKnownPosition = position;
             LookPosition      = position;
 

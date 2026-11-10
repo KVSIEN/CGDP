@@ -153,7 +153,7 @@ namespace CGD.Enemies
             Vector3 destination = NavMesh.SamplePosition(point, out NavMeshHit hit, 3f, NavMesh.AllAreas) ? hit.position : point;
             _phase = Phase.Approach;
             _ai.Agent.isStopped = false;
-            _ai.Agent.SetDestination(destination);
+            _ai.Routing.SetDestination(destination);
         }
 
         // A few reachable spots around the belief: when hunting, first the known cover nearby

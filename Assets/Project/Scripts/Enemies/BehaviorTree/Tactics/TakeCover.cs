@@ -32,7 +32,7 @@ namespace CGD.Enemies
             float nearest = _stopAtPreferredRange ? Ai.Data.PreferredRange : 0f;
             _moving = Ai.Perception.Target != null &&
                       Ai.Tactics.TryTakeCover(Ai.Perception.TargetPosition, _use, out Vector3 destination, nearest) &&
-                      Ai.Agent.SetDestination(destination);
+                      Ai.Routing.SetDestination(destination);
             if (_moving) Ai.Agent.isStopped = false;
         }
 

@@ -156,7 +156,7 @@ namespace CGD.Enemies
             if (NavMesh.SamplePosition(point, out NavMeshHit hit, 1.5f, NavMesh.AllAreas))
             {
                 _ai.Agent.isStopped = false;
-                _ai.Agent.SetDestination(hit.position);
+                _ai.Routing.SetDestination(hit.position);
             }
             else
             {

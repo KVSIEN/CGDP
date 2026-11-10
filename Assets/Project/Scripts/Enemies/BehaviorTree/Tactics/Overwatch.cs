@@ -46,7 +46,7 @@ namespace CGD.Enemies
         protected override void OnEnter(BtContext context)
         {
             _endsAt = context.Time + _seconds.EvaluateClamped();
-            if (Ai.Agent.isOnNavMesh) Ai.Agent.ResetPath();
+            Ai.Routing.Stop();
 
             Vector3 belief = Ai.Perception.TargetPosition;
             _shifting = !HasOpenView(belief) && TryShiftToView(belief);
@@ -67,7 +67,7 @@ namespace CGD.Enemies
                 if (!HasArrived()) return BtStatus.Running;
 
                 _shifting = false;
-                Ai.Agent.ResetPath();
+                Ai.Routing.Stop();
                 PickLook(belief, context.Time);
             }
 
@@ -95,7 +95,7 @@ namespace CGD.Enemies
                 if (!SightLines.IsClear(hit.position + Vector3.up * EyeHeight, belief + Vector3.up, Ai.ObstacleMask, null)) continue;
 
                 Ai.Agent.isStopped = false;
-                if (Ai.Agent.SetDestination(hit.position)) return true;
+                if (Ai.Routing.SetDestination(hit.position)) return true;
             }
             return false;
         }

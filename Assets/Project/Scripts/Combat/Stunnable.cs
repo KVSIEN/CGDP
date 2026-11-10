@@ -4,8 +4,8 @@ using CGD.Core;
 
 namespace CGD.Combat
 {
-    // Movement slow and stun state for any character that moves. Status effects
-    // (e.g. Ice) write to it; PlayerMovement and EnemyAI read it. Cleared on death.
+    // Movement slow, stun and knockback state for any character that moves. Status effects
+    // (e.g. Ice) and abilities write to it; PlayerMovement and EnemyAI read it. Cleared on death.
     // Stuns only ever extend (a short stun never cuts a long one short), and each source
     // keeps its own slow — the strongest one applies, and ending one leaves the others.
     public class Stunnable : MonoBehaviour
@@ -16,8 +16,30 @@ namespace CGD.Combat
         private CooldownTimer _stunTimer;
         private HealthManager _health;
 
+        private Vector3 _pushVelocity;
+        private float   _pushDuration;
+        private float   _pushLeft;
+
         // 1 = full speed; the strongest active slow otherwise.
         public float SpeedMultiplier => _speedMultiplier;
+
+        // Being shoved: the mover carries the character along KnockbackVelocity instead of walking.
+        public bool IsKnockedBack => _pushLeft > 0f;
+
+        // Horizontal, easing out to nothing over the push so it lands rather than stops dead.
+        public Vector3 KnockbackVelocity => IsKnockedBack ? _pushVelocity * (_pushLeft / _pushDuration) : Vector3.zero;
+
+        // Shoves the character along velocity's horizontal part for duration seconds, stunned
+        // throughout (no walking or acting against it). A new push replaces one under way.
+        public void Knockback(Vector3 velocity, float duration)
+        {
+            if (duration <= 0f) return;
+
+            velocity.y    = 0f;
+            _pushVelocity = velocity;
+            _pushDuration = _pushLeft = duration;
+            ApplyStun(duration);
+        }
 
         // Stunned by a timer, or for as long as something holds the character in place (a grab
         // that lasts until the player breaks free).
@@ -49,6 +71,7 @@ namespace CGD.Combat
             _slows.Clear();
             _holds.Clear();
             _speedMultiplier = 1f;
+            _pushLeft = 0f;
             _stunTimer.Reset();
         }
 
@@ -69,6 +92,10 @@ namespace CGD.Combat
             if (_health != null) _health.OnDeath -= Clear;
         }
 
-        private void Update() => _stunTimer.Tick(Time.deltaTime);
+        private void Update()
+        {
+            _stunTimer.Tick(Time.deltaTime);
+            if (_pushLeft > 0f) _pushLeft = Mathf.Max(0f, _pushLeft - Time.deltaTime);
+        }
     }
 }

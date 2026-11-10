@@ -25,3 +25,10 @@ MonoBehaviour:
   OnHitEffects:
   - Effect: {fileID: 11400000, guid: d0a1b2c3d4e5f60718293a4b5c6d7e03, type: 2}
     Chance: 1
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  KnockbackSpeed: 14
+  KnockbackDuration: 0.4
+  SelfBuff: {fileID: 11400000, guid: 9b2bc76c741a44468cca757692a0bd87, type: 2}
+  SelfBuffDuration: 3

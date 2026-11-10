@@ -179,7 +179,7 @@ MonoBehaviour:
       data:
         _guid: 54b29e8d5ce840e6a9b4fe8b992a76fe
         _position: {x: -1320, y: 600}
-        _comment: 'Shot at on the way in: zig-zag out of the line of fire (not once it is close enough to strike)'
+        _comment: 'Shot at on the way in: zig-zag out of the line of fire when it sees the shot coming (not once it is close enough to strike)'
         _children:
         - 957e0cc2b29f4bf4ae417fc892a0cf12
         - 374b8f74617f49a88e2f618981dbc1f1
@@ -190,7 +190,8 @@ MonoBehaviour:
       data:
         _guid: 957e0cc2b29f4bf4ae417fc892a0cf12
         _position: {x: -1540, y: 750}
-        _comment: 
+        _comment:
+        _warningsOnly: 1
     - rid: 1009
       type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -540,18 +541,21 @@ MonoBehaviour:
         - 0c680bb2ad5445d8b02a74d7b9811655
         _abort: 0
     - rid: 1055
-      type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      type: {class: Prowl, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: 65946abc19704d938f0e269e91c66339
         _position: {x: -2750, y: 1350}
-        _comment: 
-        _seconds: {Min: 3, Max: 4, Bias: 0}
+        _comment: 'Recovering unseen: stalk round the target spot to hidden spot, watching it, so it comes back in knowing where it is and from a side it was not last seen on'
+        _seconds: {Min: 3, Max: 4.5, Bias: 0}
+        _distance: {Min: 7, Max: 11, Bias: 0}
+        _pause: {Min: 0.4, Max: 0.9, Bias: 0}
+        _speed: 0.55
     - rid: 1056
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: ff1af1ccaa2d4168b1284aeb6d7329d8
         _position: {x: -3300, y: 1200}
-        _comment: 'Ambush ready and reason to (mostly being hurt, also taking a beating or being crowded): slip out of sight (Ambush: faster regen, the next strike hits hard and unstealths), dash off somewhere it will not be looked for, break away to full cover and recover, then come back'
+        _comment: 'Ambush ready and reason to (mostly being hurt, also taking a beating or being crowded): slip out of sight (Ambush: faster regen, the next strike hits hard and unstealths), dash off somewhere it will not be looked for, break away to full cover, then prowl round the target while it recovers, and come back'
         _children:
         - 2b85daef7cd44b949b7d4ccce732b489
         - 5bcf555fb7074753934dab44045230d3

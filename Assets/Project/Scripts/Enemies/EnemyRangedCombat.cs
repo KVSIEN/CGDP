@@ -67,7 +67,7 @@ namespace CGD.Enemies
             if (dist > data.PreferredRange + tolerance)
             {
                 _ai.Agent.isStopped = false;
-                _ai.Agent.SetDestination(targetPos);
+                _ai.Routing.SetDestination(targetPos);
                 return false;
             }
 
@@ -159,7 +159,7 @@ namespace CGD.Enemies
             if (NavMesh.SamplePosition(retreatTarget, out var hit, tolerance * 2f, NavMesh.AllAreas))
             {
                 _ai.Agent.isStopped = false;
-                _ai.Agent.SetDestination(hit.position);
+                _ai.Routing.SetDestination(hit.position);
             }
         }
 
@@ -180,7 +180,7 @@ namespace CGD.Enemies
             if (NavMesh.SamplePosition(strafeTarget, out var hit, data.StrafeDistance, NavMesh.AllAreas))
             {
                 _ai.Agent.isStopped = false;
-                _ai.Agent.SetDestination(hit.position);
+                _ai.Routing.SetDestination(hit.position);
             }
             else
             {

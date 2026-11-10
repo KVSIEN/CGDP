@@ -19,3 +19,4 @@ MonoBehaviour:
   CastTime: 0.6
   Buff: {fileID: 11400000, guid: 733e2a7e027b46ad8f0c915c11306f1a, type: 2}
   Duration: 8
+  ChargeAddedShield: 1

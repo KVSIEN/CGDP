@@ -20,8 +20,12 @@ namespace CGD.Enemies
         [SerializeField, Min(0f)] private float _wounded;
         [Tooltip("×(1 + this) for a hostile it sees fighting someone else (another faction's enemy that is engaged elsewhere; never the player)")]
         [SerializeField, Min(0f)] private float _distracted;
+        [Tooltip("Focus fire: ×(1 + this × share of health and shield missing) for the hostile it is already fighting, " +
+                 "so the more it has worn one down the more it sees it through. With 3, a target at a third left counts 3×; " +
+                 "a fresh one hardly at all, so it still turns on a bigger threat")]
+        [SerializeField, Min(0f)] private float _finish;
 
-        public TargetWeights Weights           => new(_focus, _retaliation, _wounded, _distracted);
+        public TargetWeights Weights           => new(_focus, _retaliation, _wounded, _distracted, _finish);
         public float         RetaliationMemory => _retaliationMemory;
     }
 }

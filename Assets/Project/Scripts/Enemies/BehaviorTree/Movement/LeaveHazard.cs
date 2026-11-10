@@ -33,7 +33,7 @@ namespace CGD.Enemies
             _givesUpAt = context.Time + _giveUpAfter;
             _moving = Hazards.TryFindWayOut(Ai.transform.position, Ai.Health, _walkable, out Vector3 exit) &&
                       NavMesh.SamplePosition(exit, out NavMeshHit hit, SnapDistance, NavMesh.AllAreas) &&
-                      Ai.Agent.SetDestination(hit.position);
+                      Ai.Routing.SetDestination(hit.position);
             if (_moving) Ai.Agent.isStopped = false;
         }
 

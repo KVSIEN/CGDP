@@ -41,7 +41,7 @@ namespace CGD.Enemies
             {
                 _nextRepath = context.Time + RepathEvery;
                 Ai.Agent.isStopped = false;
-                if (!Ai.Agent.SetDestination(_kin.transform.position)) return BtStatus.Failure;
+                if (!Ai.Routing.SetDestination(_kin.transform.position)) return BtStatus.Failure;
             }
 
             Ai.ReportState(EnemyAI.AiState.Chase);

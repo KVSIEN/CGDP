@@ -39,7 +39,7 @@ namespace CGD.Enemies
 
             float distance = Vector3.Distance(Ai.transform.position, spot);
             Ai.Agent.isStopped = distance < 0.8f;
-            if (!Ai.Agent.isStopped) Ai.Agent.SetDestination(spot);
+            if (!Ai.Agent.isStopped) Ai.Routing.SetDestination(spot);
             return BtStatus.Running;
         }
 

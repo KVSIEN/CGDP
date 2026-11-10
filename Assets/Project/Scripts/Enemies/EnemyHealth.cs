@@ -44,7 +44,7 @@ namespace CGD.Enemies
         public override Team  Team      => _data.Team;
         public override float MaxHealth => WithModifiers(ItemStat.Health, _data.MaxHealth);
         public override float Armor     => WithModifiers(ItemStat.Armor, _data.Armor);
-        public override float MaxShield => _data.MaxShield;
+        public override float MaxShield => WithModifiers(ItemStat.Shield, _data.MaxShield);
         protected override float ShieldRegenDelay => _data.ShieldRegenDelay;
         protected override float ShieldRegenRate  => _data.ShieldRegenRate;
 

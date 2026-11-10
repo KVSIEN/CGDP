@@ -9,7 +9,7 @@ namespace CGD.Enemies
     {
         protected override BtStatus OnTick(BtContext context)
         {
-            if (Ai.Agent.isOnNavMesh) Ai.Agent.ResetPath();
+            Ai.Routing.Stop();
             return BtStatus.Success;
         }
     }

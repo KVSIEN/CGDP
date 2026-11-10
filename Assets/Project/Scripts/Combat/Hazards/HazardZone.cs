@@ -32,5 +32,22 @@ namespace CGD.Combat
         }
 
         public bool Hurts(HealthManager victim) => victim != null && victim.CanBeDamagedBy(Source);
+
+        // Whether the straight line from → to passes within `margin` of its edge. `along` is how
+        // far along the line (0–1) it comes closest, to tell which of several it meets first.
+        public bool Crosses(Vector3 from, Vector3 to, float margin, out float along)
+        {
+            along = 0f;
+            if (Mathf.Abs(from.y - Center.y) > HeightReach && Mathf.Abs(to.y - Center.y) > HeightReach) return false;
+
+            var start  = new Vector2(from.x, from.z);
+            var line   = new Vector2(to.x, to.z) - start;
+            var center = new Vector2(Center.x, Center.z);
+            float lengthSq = line.sqrMagnitude;
+            along = lengthSq > 0.0001f ? Mathf.Clamp01(Vector2.Dot(center - start, line) / lengthSq) : 0f;
+
+            float reach = Radius + margin;
+            return (start + line * along - center).sqrMagnitude <= reach * reach;
+        }
     }
 }

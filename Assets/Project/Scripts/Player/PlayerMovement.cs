@@ -170,6 +170,11 @@ namespace CGD.Player
                 HandleMovement();
                 HandleJump();
             }
+            else if (_stunnable.IsKnockedBack)
+            {
+                Vector3 push = _stunnable.KnockbackVelocity;
+                _rb.linearVelocity = new Vector3(push.x, _rb.linearVelocity.y, push.z);
+            }
 
             ApplyGravity();
             ClampFallSpeed();

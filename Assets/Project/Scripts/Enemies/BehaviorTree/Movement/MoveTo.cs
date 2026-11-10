@@ -29,7 +29,7 @@ namespace CGD.Enemies
             if (!NavMesh.SamplePosition(goal, out NavMeshHit hit, 2f, NavMesh.AllAreas)) return;
 
             Ai.Agent.isStopped = false;
-            _moving = Ai.Agent.SetDestination(hit.position);
+            _moving = Ai.Routing.SetDestination(hit.position);
         }
 
         protected override BtStatus OnTick(BtContext context)

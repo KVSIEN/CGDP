@@ -34,23 +34,16 @@ namespace CGD.Enemies
 
         [NonSerialized] private bool  _moving;
         [NonSerialized] private float _endsAt;
-        [NonSerialized] private float _acceleration;
-        [NonSerialized] private float _angularSpeed;
 
         public override string Summary => $"{_distance:0.#} m";
 
+        // SetSpeed scales acceleration with the burst: off the mark at once and round corners
+        // without drifting wide — a dash, not a jog.
         protected override void OnEnter(BtContext context)
         {
             _endsAt = context.Time + _maxTime;
-            _moving = TryPickSpot(out Vector3 destination) && Ai.Agent.SetDestination(destination);
-            if (!_moving) return;
-
-            // Off the mark at once and round corners without slowing: a dash, not a jog.
-            _acceleration = Ai.Agent.acceleration;
-            _angularSpeed = Ai.Agent.angularSpeed;
-            Ai.Agent.acceleration = 80f;
-            Ai.Agent.angularSpeed = 1440f;
-            Ai.Agent.isStopped    = false;
+            _moving = TryPickSpot(out Vector3 destination) && Ai.Routing.SetDestination(destination);
+            if (_moving) Ai.Agent.isStopped = false;
         }
 
         protected override BtStatus OnTick(BtContext context)
@@ -60,14 +53,6 @@ namespace CGD.Enemies
             Ai.ReportStep(EngageStep.Dash);
             Ai.SetSpeed(Ai.Data.ChaseSpeed * _speed);
             return context.Time >= _endsAt || HasArrived(Ai.Agent, 0.5f) ? BtStatus.Success : BtStatus.Running;
-        }
-
-        protected override void OnExit(BtContext context)
-        {
-            if (!_moving) return;
-
-            Ai.Agent.acceleration = _acceleration;
-            Ai.Agent.angularSpeed = _angularSpeed;
         }
 
         private bool TryPickSpot(out Vector3 destination)

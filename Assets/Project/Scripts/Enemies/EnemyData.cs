@@ -31,6 +31,8 @@ namespace CGD.Enemies
         [Header("Movement")]
         public float PatrolSpeed = 2f;
         public float ChaseSpeed  = 5f;
+        [Tooltip("Seconds to get up to speed, or stop, from whatever pace it is moving at. Lower = snappier turns and stops, less sliding at high speed")]
+        [Min(0.02f)] public float MoveResponseTime = 0.15f;
 
         [Header("Detection")]
         [Tooltip("Maximum sight distance in metres.")]

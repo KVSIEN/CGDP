@@ -3,14 +3,17 @@ using CGD.Stats;
 
 namespace CGD.Abilities
 {
-    // Applies a StatModifierPreset to the player for a while (e.g. +30% damage for 8 s).
-    // The player needs a CharacterStats component for it to do anything.
+    // Applies a StatModifierPreset to the caster for a while (e.g. +30% damage for 8 s).
+    // The caster needs a CharacterStats component for it to do anything.
     [CreateAssetMenu(fileName = "StatBuffAbility", menuName = "CGD/Abilities/Stat Buff")]
     public class StatBuffAbility : Ability
     {
         public StatModifierPreset Buff;
         [Tooltip("Game seconds; pauses and slows with game time")]
         [Min(0.1f)] public float Duration = 8f;
+        [Tooltip("Shield capacity the buff adds (Shield stat) comes charged, rather than empty to recharge. " +
+                 "It is gone again when the buff ends")]
+        public bool ChargeAddedShield;
 
         public override bool CanExecute(AbilityContext ctx) => Buff != null && ctx.Stats != null;
 
@@ -18,7 +21,11 @@ namespace CGD.Abilities
 
         public override void Execute(AbilityContext ctx)
         {
-            if (ctx.Stats != null) ctx.Stats.AddTimed(Buff, Duration);
+            if (ctx.Stats == null) return;
+
+            float shieldBefore = ctx.Health != null ? ctx.Health.MaxShield : 0f;
+            ctx.Stats.AddTimed(Buff, Duration);
+            if (ChargeAddedShield && ctx.Health != null) ctx.Health.RestoreShield(ctx.Health.MaxShield - shieldBefore);
         }
     }
 }

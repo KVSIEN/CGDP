@@ -32,6 +32,8 @@ namespace CGD.Enemies
         // Alarm panels within this distance of its post are ones it knows about.
         private const float AlarmKnownRadius = 25f;
         private const float CorneredDistance = 3f;
+        // Even a slow walker stops and turns crisply.
+        private const float MinAcceleration = 20f;
 
         [SerializeField] private EnemyData   _data;
         [SerializeField] private Transform[] _waypoints;
@@ -98,6 +100,8 @@ namespace CGD.Enemies
         public float          MoraleValue    => Morale.Value;
 
         internal NavMeshAgent      Agent        { get; private set; }
+        // Destinations go through this, not Agent.SetDestination, so they route round hazards.
+        internal EnemyRouting      Routing      { get; private set; }
         internal EnemyPerception   Perception   { get; private set; }
         internal EnemyRangedCombat RangedCombat { get; private set; }
         internal EnemySearch       Search       { get; private set; }
@@ -140,6 +144,7 @@ namespace CGD.Enemies
             Agent         = GetComponent<NavMeshAgent>();
             // Facing is ours (TickFacing): it follows the walk by default, but a node can hold the gaze elsewhere.
             Agent.updateRotation = false;
+            Routing       = new EnemyRouting(this);
             _health      = GetComponent<EnemyHealth>();
             _stunnable    = GetComponent<Stunnable>();
             _damageSource = DamageSource.Of(gameObject);
@@ -234,6 +239,8 @@ namespace CGD.Enemies
             }
 
             if (_tree != null) TickTree(dt);
+            Routing.Tick(Time.time);
+            TickKnockback(dt);
             TickFacing(dt);
         }
 
@@ -349,7 +356,26 @@ namespace CGD.Enemies
         internal LayerMask ObstacleMask => _obstacleMask;
 
         // Slowed by status effects, and sped up or slowed by buffs (MovementSpeed stat, base 1).
-        internal void SetSpeed(float speed) => Agent.speed = speed * _stunnable.SpeedMultiplier * SpeedFromStats;
+        // Acceleration scales with the pace so it reaches, turns at and sheds any speed within
+        // MoveResponseTime: a fixed acceleration leaves a fast mover drifting wide round corners
+        // and sliding past where it meant to stop.
+        internal void SetSpeed(float speed)
+        {
+            Agent.speed        = speed * _stunnable.SpeedMultiplier * SpeedFromStats;
+            Agent.acceleration = Mathf.Max(MinAcceleration, Agent.speed / _data.MoveResponseTime);
+
+            // Out of a burst (a dash, a dodge) it drops straight to the new pace instead of coasting on.
+            if (!Agent.isOnNavMesh) return;
+            Vector3 velocity = Agent.velocity;
+            if (velocity.sqrMagnitude > Agent.speed * Agent.speed) Agent.velocity = velocity.normalized * Agent.speed;
+        }
+
+        // Shoved (Stunnable.Knockback): carried along the navmesh, so it can't be pushed through walls or off it.
+        private void TickKnockback(float dt)
+        {
+            if (!_stunnable.IsKnockedBack || !Agent.enabled || !Agent.isOnNavMesh) return;
+            Agent.Move(_stunnable.KnockbackVelocity * dt);
+        }
 
         // Buffs speed up the melee swing (FireRate stat, base 1): wind-up and recovery both shrink.
         private float AttackSpeedFromStats => _stats != null ? Mathf.Max(0.1f, _stats.Apply(ItemStat.FireRate, 1f)) : 1f;
@@ -517,6 +543,7 @@ namespace CGD.Enemies
             _tree?.Abort();
             ReportState(AiState.Dead);
             _faceTimeLeft = 0f;
+            Routing.Clear();
             Agent.enabled = false;
             enabled = false;
         }
@@ -529,6 +556,7 @@ namespace CGD.Enemies
 
             Agent.enabled = true;
             Agent.Warp(transform.position);
+            Routing.Clear();
             enabled      = true;
             IsAttacking  = false;
             _attackCooldown.Reset();

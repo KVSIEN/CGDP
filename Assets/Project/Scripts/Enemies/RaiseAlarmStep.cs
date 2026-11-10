@@ -21,7 +21,7 @@ namespace CGD.Enemies
 
             _useLeft = _panel.UseTime;
             ai.Agent.isStopped = false;
-            ai.Agent.SetDestination(_panel.transform.position);
+            ai.Routing.SetDestination(_panel.transform.position);
             return true;
         }
 

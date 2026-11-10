@@ -40,7 +40,7 @@ namespace CGD.Enemies
 
             Vector3 from = _ai.transform.position;
             _ai.Agent.Warp(spot);
-            _ai.Agent.ResetPath();
+            _ai.Routing.Stop();
             _ai.NotifyRelocated(from);
             return true;
         }

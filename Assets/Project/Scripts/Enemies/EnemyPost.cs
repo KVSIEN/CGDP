@@ -51,7 +51,7 @@ namespace CGD.Enemies
             if ((_ai.transform.position - _position).sqrMagnitude > AtPostDistance * AtPostDistance)
             {
                 agent.isStopped = false;
-                if (!agent.hasPath || (agent.destination - _position).sqrMagnitude > 0.25f) agent.SetDestination(_position);
+                if (!agent.hasPath || (agent.destination - _position).sqrMagnitude > 0.25f) _ai.Routing.SetDestination(_position);
                 return;
             }
 

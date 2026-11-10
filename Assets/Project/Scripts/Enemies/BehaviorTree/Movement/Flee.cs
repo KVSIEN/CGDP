@@ -33,7 +33,7 @@ namespace CGD.Enemies
             if (!NavMesh.SamplePosition(goal, out var hit, _distance * 0.5f, NavMesh.AllAreas)) return;
 
             Ai.Agent.isStopped = false;
-            _hasDestination = Ai.Agent.SetDestination(hit.position);
+            _hasDestination = Ai.Routing.SetDestination(hit.position);
         }
 
         protected override BtStatus OnTick(BtContext context)

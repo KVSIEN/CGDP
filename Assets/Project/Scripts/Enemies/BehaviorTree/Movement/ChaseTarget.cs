@@ -50,7 +50,7 @@ namespace CGD.Enemies
             if (current <= distance) return BtStatus.Success;
 
             Ai.Agent.isStopped = false;
-            Ai.Agent.SetDestination(targetPos);
+            Ai.Routing.SetDestination(targetPos);
             if (Ai.IsPathBlocked)
             {
                 Ai.Agent.isStopped = true;

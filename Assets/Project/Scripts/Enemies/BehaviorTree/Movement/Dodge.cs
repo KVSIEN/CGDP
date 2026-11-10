@@ -19,19 +19,15 @@ namespace CGD.Enemies
 
         [NonSerialized] private bool  _moving;
         [NonSerialized] private float _endsAt;
-        [NonSerialized] private float _acceleration;
 
         public override string Summary => $"{_distance:0.#} m";
 
+        // SetSpeed scales acceleration with the burst, so it is off the mark at once.
         protected override void OnEnter(BtContext context)
         {
             _endsAt = context.Time + _maxTime;
-            _moving = TryPickSide(out Vector3 destination) && Ai.Agent.SetDestination(destination);
-            if (!_moving) return;
-
-            _acceleration = Ai.Agent.acceleration;
-            Ai.Agent.acceleration = 60f;
-            Ai.Agent.isStopped    = false;
+            _moving = TryPickSide(out Vector3 destination) && Ai.Routing.SetDestination(destination);
+            if (_moving) Ai.Agent.isStopped = false;
         }
 
         protected override BtStatus OnTick(BtContext context)
@@ -41,11 +37,6 @@ namespace CGD.Enemies
             Ai.ReportStep(EngageStep.Dodge);
             Ai.SetSpeed(Ai.Data.ChaseSpeed * _speed);
             return context.Time >= _endsAt || HasArrived(Ai.Agent, 0.4f) ? BtStatus.Success : BtStatus.Running;
-        }
-
-        protected override void OnExit(BtContext context)
-        {
-            if (_moving) Ai.Agent.acceleration = _acceleration;
         }
 
         private bool TryPickSide(out Vector3 destination)
