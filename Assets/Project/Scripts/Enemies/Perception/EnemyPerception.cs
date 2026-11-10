@@ -127,7 +127,7 @@ namespace CGD.Enemies
 
         // Engaged: certain of a hostile and sensing it right now.
         public bool IsTargetDetected => Level == AwarenessLevel.Engaged;
-        public bool IsSensing        => Target != null && _clock - _lastSensedAt <= _profile.SightLossGrace;
+        public bool IsSensing        => Target != null && _clock - _lastSensedAt <= SightLossGrace();
         // Seconds since it last actually sensed its target (infinity if never).
         public float TimeSinceSensed => _clock - _lastSensedAt;
 
@@ -456,6 +456,14 @@ namespace CGD.Enemies
             // A glimpse it isn't sure of yet: it wants a closer look.
             if (!_meter.IsFull && _meter.IsSuspicious) _hasLead = true;
         }
+
+        // The grace is for a target flicking behind a pillar. One that has cloaked vanished on
+        // purpose: past the gap between two looks it is lost, or the grace would keep tracking
+        // its real position as it slips away.
+        private float SightLossGrace() =>
+            Stealthable.TryGet(Target, out Stealthable stealth) && stealth.IsCloaked
+                ? Mathf.Min(_profile.SightLossGrace, _profile.SenseInterval * 1.5f)
+                : _profile.SightLossGrace;
 
         private float SightBonus()
         {

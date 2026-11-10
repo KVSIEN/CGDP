@@ -22,6 +22,11 @@ namespace CGD.Enemies
         private float _recentDamage;
         private float _recentDamageAt;
 
+        // Health and shield gained but not shown yet, and when they next are (-1: nothing pending).
+        private float _pendingHeal;
+        private float _pendingShield;
+        private float _showGainsAt = -1f;
+
         // How hard it is being hit right now: health and shield lost lately, as a share of both
         // maxima together, fading by half every RecentDamageHalfLife seconds.
         public float RecentDamageShare =>
@@ -90,6 +95,40 @@ namespace CGD.Enemies
             if (_healthBar != null) _healthBar.ShowDamage(Health, MaxHealth, Shield, MaxShield);
         }
 
+        protected override void OnRestored(float health, float shield)
+        {
+            if (_showGainsAt < 0f) _showGainsAt = Time.time + DamageNumberStyle.GainTallySeconds;
+            _pendingHeal   += health;
+            _pendingShield += shield;
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+            if (_showGainsAt >= 0f && Time.time >= _showGainsAt) ShowGains();
+        }
+
+        // Green for health, blue for shield. Less than a whole point waits for the next tally,
+        // so a slow trickle still shows up eventually instead of as a string of "+1"s or nothing.
+        private void ShowGains()
+        {
+            Vector3 point = DefaultHitPoint + _popupOffset;
+            _pendingHeal   = ShowGain(_pendingHeal, point, DamageNumberStyle.HealColor);
+            _pendingShield = ShowGain(_pendingShield, point, DamageNumberStyle.ShieldColor);
+            _showGainsAt   = _pendingHeal > 0f || _pendingShield > 0f
+                ? Time.time + DamageNumberStyle.GainTallySeconds
+                : -1f;
+        }
+
+        private static float ShowGain(float pending, Vector3 point, Color color)
+        {
+            int whole = Mathf.FloorToInt(pending);
+            if (whole < 1) return pending;
+
+            DamageNumbers.SpawnGain(whole, point, color);
+            return pending - whole;
+        }
+
         // Damage numbers take the colour of the enemy that dealt the hit, if its data gives one.
         private static Color DealerColor(DamageSource source) =>
             source.Owner != null && source.Owner.TryGetComponent(out EnemyHealth dealer) ? dealer.Data.DamageNumberColor : Color.clear;
@@ -104,7 +143,10 @@ namespace CGD.Enemies
         // A pooled enemy comes back at full health; OnRevived lets its other systems reset.
         public void OnSpawned()
         {
-            _recentDamage = 0f;
+            _recentDamage  = 0f;
+            _pendingHeal   = 0f;
+            _pendingShield = 0f;
+            _showGainsAt   = -1f;
             if (IsDead) Revive();
         }
     }

@@ -92,7 +92,7 @@ namespace CGD.Combat
             if (stat == ItemStat.Shield) _shield.SetMax(MaxShield, keepRatio: false);
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (TickShield(Time.deltaTime)) OnChanged?.Invoke();
             Regenerate(Time.deltaTime);
@@ -102,10 +102,12 @@ namespace CGD.Combat
         // stat) while it is recharging — the delay after a hit stays as it is.
         private bool TickShield(float deltaTime)
         {
+            float before = _shield.Current;
             if (!_shield.Tick(deltaTime)) return false;
 
             float bonus = WithModifiers(ItemStat.ShieldRegenRate, ShieldRegenRate) - ShieldRegenRate;
             if (bonus > 0f) _shield.Restore(bonus * deltaTime);
+            if (_shield.Current > before) OnRestored(0f, _shield.Current - before);
             return true;
         }
 
@@ -117,8 +119,10 @@ namespace CGD.Combat
             float regen = _stats.Apply(ItemStat.HealthRegen, 0f);
             if (regen <= 0f) return;
 
+            float before = _currentHealth;
             _currentHealth = Mathf.Min(_currentHealth + regen * deltaTime, MaxHealth);
             OnChanged?.Invoke();
+            OnRestored(_currentHealth - before, 0f);
         }
 
         public void TakeDamage(DamageInfo info) =>
@@ -140,8 +144,12 @@ namespace CGD.Combat
             float before = _currentHealth;
             _currentHealth = Mathf.Clamp(_currentHealth + amount, 0f, MaxHealth);
             OnChanged?.Invoke();
-            if (_currentHealth > before) OnHealed?.Invoke(_currentHealth - before);
+            if (_currentHealth <= before) return;
+
+            OnHealed?.Invoke(_currentHealth - before);
+            OnRestored(_currentHealth - before, 0f);
         }
+
         // Gives up up to this much shield on purpose (a discharge) and returns how much it was.
         // The shield then waits out its regen delay, as after a hit.
         public float DrainShield(float amount)
@@ -161,10 +169,11 @@ namespace CGD.Combat
         {
             if (IsDead || amount <= 0f) return;
 
+            float before = _shield.Current;
             _shield.Restore(amount);
             OnChanged?.Invoke();
+            if (_shield.Current > before) OnRestored(0f, _shield.Current - before);
         }
-
 
         // Sets health and shield straight to these shares of their maxima, without a hit (test
         // scenarios: "start wounded", "start with the shield broken"). Health stays above 0;
@@ -209,6 +218,10 @@ namespace CGD.Combat
 
         // Every hit that lands, shield and health together; called after health and shield are updated.
         protected virtual void OnDamageTaken(float amount, Vector3 point, bool isCritical) { }
+
+        // Health and shield actually gained, from any source: heals, regeneration, a siphon.
+        // Not raised by Revive, refills or test scenarios setting them directly.
+        protected virtual void OnRestored(float health, float shield) { }
 
         // A base value with this character's stat modifiers (buffs, difficulty) applied,
         // for subclasses' MaxHealth/Armor. Unchanged when there's no CharacterStats.

@@ -27,7 +27,16 @@ namespace CGD.UI
             if (damage <= 0f) return;
 
             DamageNumbers numbers = GetOrCreate();
-            if (numbers != null) numbers.Add(damage, worldPosition, critical, tint);
+            if (numbers != null) numbers.Add(damage, worldPosition, critical, tint, gain: false);
+        }
+
+        // Something restored (health, shield), shown as "+N" in the given colour.
+        public static void SpawnGain(float amount, Vector3 worldPosition, Color color)
+        {
+            if (amount <= 0f) return;
+
+            DamageNumbers numbers = GetOrCreate();
+            if (numbers != null) numbers.Add(amount, worldPosition, false, color, gain: true);
         }
 
         private static DamageNumbers GetOrCreate()
@@ -43,7 +52,7 @@ namespace CGD.UI
 
         private void Awake() => _uiLayer = LayerMask.NameToLayer("UI");
 
-        private void Add(float damage, Vector3 worldPosition, bool critical, Color tint)
+        private void Add(float amount, Vector3 worldPosition, bool critical, Color tint, bool gain)
         {
             int stackDepth = CountCluster(worldPosition);
             MakeRoom();
@@ -51,7 +60,7 @@ namespace CGD.UI
             DamagePopup popup = Rent();
 
             if (++_sortingOrder > 10000) _sortingOrder = 1;
-            popup.Show(damage, worldPosition, critical, tint, stackDepth, _sortingOrder);
+            popup.Show(amount, worldPosition, critical, tint, gain, stackDepth, _sortingOrder);
             _active.Add(popup);
         }
 

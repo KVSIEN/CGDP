@@ -51,8 +51,8 @@ namespace CGD.UI
         }
 
         // stackDepth is how many numbers were already clustered here, which widens the patch
-        // this one can land in.
-        public void Show(float damage, Vector3 anchor, bool crit, Color tint, int stackDepth, int sortingOrder)
+        // this one can land in. gain: a restore rather than a hit, shown with a leading "+".
+        public void Show(float damage, Vector3 anchor, bool crit, Color tint, bool gain, int stackDepth, int sortingOrder)
         {
             int   rounded = Mathf.Max(1, Mathf.RoundToInt(damage));
             float weight  = Mathf.Clamp01(damage / DamageNumberStyle.SizeRefDamage);
@@ -68,7 +68,7 @@ namespace CGD.UI
             _offset   = DamageNumberLayout.ScatterOffset(stackDepth);
             _velocity = DamageNumberLayout.LaunchVelocity();
 
-            _text.text      = rounded.ToString();
+            _text.text      = gain ? "+" + rounded : rounded.ToString();
             _text.fontSize  = FontSize;
             _text.fontStyle = crit ? FontStyles.Bold : FontStyles.Normal;
             _text.color     = tint.a > 0f ? tint : crit ? CritColor : NormalColor;

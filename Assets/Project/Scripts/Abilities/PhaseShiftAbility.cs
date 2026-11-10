@@ -4,8 +4,8 @@ using CGD.Stats;
 namespace CGD.Abilities
 {
     // Vanishes and reappears a short way off behind full cover, out of sight of every hostile
-    // around, then gets a buff for a while (Void: its shield recharges much faster). Where it
-    // vanished it leaves minions that go after its hostiles, so the way it came is busy while it
+    // around, then gets a buff for a while (Void: its shield recharges much faster). Minions
+    // appear beside it where it reappears and go after its hostiles, guarding it while it
     // recovers. Needs a caster that can relocate unseen (enemies) and, for the buff, a CharacterStats.
     [CreateAssetMenu(fileName = "PhaseShiftAbility", menuName = "CGD/Abilities/Phase Shift")]
     public class PhaseShiftAbility : Ability
@@ -17,8 +17,8 @@ namespace CGD.Abilities
         [Tooltip("Game seconds the buff lasts")]
         [Min(0.1f)] public float Duration = 6f;
 
-        [Header("Minions left behind")]
-        [Tooltip("Enemy prefab called up where it vanished. Empty = none")]
+        [Header("Minions")]
+        [Tooltip("Enemy prefab called up where it reappears. Empty = none")]
         public GameObject MinionPrefab;
         [Min(0)] public int MinionCount = 2;
         [Tooltip("Game seconds before they dissolve")]
@@ -37,11 +37,10 @@ namespace CGD.Abilities
         {
             if (ctx.Relocator == null) return;
 
-            Vector3 vanishedFrom = ctx.CasterTransform.position;
             if (!ctx.Relocator.TryRelocateUnseen(MaxDistance)) return;
 
             if (MinionPrefab != null && ctx.Summoner != null)
-                ctx.Summoner.Summon(MinionPrefab, MinionCount, vanishedFrom, MinionLifetime);
+                ctx.Summoner.Summon(MinionPrefab, MinionCount, ctx.CasterTransform.position, MinionLifetime);
             if (Buff != null && ctx.Stats != null) ctx.Stats.AddTimed(Buff, Duration);
         }
     }

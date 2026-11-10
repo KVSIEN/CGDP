@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace CGD.UI
 {
     // Every number that decides how damage numbers feel, in one place. Values are screen
@@ -39,5 +41,11 @@ namespace CGD.UI
         public const float MaxHeightPx   = 48f;
         public const float SizeRefDamage = 60f;
         public const float CritSizeScale = 1.1f;
+
+        // Restores (heals, regeneration, siphons). Regeneration comes in tiny amounts every
+        // frame, so gains are summed and shown at most this often per character.
+        public const float GainTallySeconds = 0.5f;
+        public static readonly Color HealColor   = new Color(0.35f, 0.95f, 0.40f, 1f);
+        public static readonly Color ShieldColor = new Color(0.35f, 0.70f, 1.00f, 1f);
     }
 }

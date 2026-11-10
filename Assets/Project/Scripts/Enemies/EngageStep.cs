@@ -17,5 +17,6 @@ namespace CGD.Enemies
         Cast,           // winding up an ability or a grenade throw
         Suppress,       // firing at where the target hides, to pin it down
         LeaveHazard,    // stepping out of ground that hurts it
+        Dash,           // bursting away unseen right after vanishing
     }
 }

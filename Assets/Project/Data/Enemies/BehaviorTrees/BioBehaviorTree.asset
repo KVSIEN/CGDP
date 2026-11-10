@@ -95,6 +95,8 @@ MonoBehaviour:
   - rid: 1106
   - rid: 1107
   - rid: 1108
+  - rid: 1109
+  - rid: 1110
   references:
     version: 2
     RefIds:
@@ -549,15 +551,34 @@ MonoBehaviour:
       data:
         _guid: ff1af1ccaa2d4168b1284aeb6d7329d8
         _position: {x: -3300, y: 1200}
-        _comment: 'Ambush ready and reason to (mostly being hurt, also taking a beating or being crowded): slip out of sight (Ambush: faster regen, the next strike hits hard and unstealths), break away to full cover and recover, then come back'
+        _comment: 'Ambush ready and reason to (mostly being hurt, also taking a beating or being crowded): slip out of sight (Ambush: faster regen, the next strike hits hard and unstealths), dash off somewhere it will not be looked for, break away to full cover and recover, then come back'
         _children:
         - 2b85daef7cd44b949b7d4ccce732b489
         - 5bcf555fb7074753934dab44045230d3
         - 97c2670e36b24808ae37c9f929c87d48
         - d0a1cdfdcd7041beb4ab58f8c9527ba4
+        - a21bd89fe44d4141994780af5ed451e3
         - ba039ce9e4a743178c1af6cdc7ec6b5e
         - 65946abc19704d938f0e269e91c66339
         _abort: 2
+    - rid: 1109
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a21bd89fe44d4141994780af5ed451e3
+        _position: {x: -3190, y: 1500}
+        _comment: 'The moment it vanishes, burst off out of sight and against the way it was heading, so where it was last seen is the wrong place to look. Nowhere to dash: straight on to cover'
+        _children:
+        - 82095a25218a4bc8b0dd7d55b5dcf997
+        _succeed: 1
+    - rid: 1110
+      type: {class: StealthDash, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 82095a25218a4bc8b0dd7d55b5dcf997
+        _position: {x: -3300, y: 1650}
+        _comment:
+        _distance: 6
+        _speed: 2.8
+        _maxTime: 1.2
     - rid: 1079
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
