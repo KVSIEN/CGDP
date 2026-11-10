@@ -50,6 +50,8 @@ namespace CGD.Flow
             // Without an asset the defaults apply: no menu scene, short transitions.
             if (_settings == null) _settings = ScriptableObject.CreateInstance<GameFlowSettings>();
 
+            GameDifficulty.Table = _settings.Difficulty;
+
             transform.SetParent(null);
             DontDestroyOnLoad(gameObject);
             _machine.Changed += OnStateChanged;

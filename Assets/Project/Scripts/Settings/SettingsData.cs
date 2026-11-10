@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using CGD.Difficulty;
 
 namespace CGD.Settings
 {
@@ -27,6 +28,9 @@ namespace CGD.Settings
         public float FieldOfView = 70f;
         public AdsZoomMode AdsZoom = AdsZoomMode.Gradual;
         public AdsFovMode  AdsFov  = AdsFovMode.Independent;
+
+        // Gameplay
+        public DifficultyLevel Difficulty = DifficultyLevel.Normal;
 
         // Accessibility (0..1 scales)
         public float CameraShake    = 1f;

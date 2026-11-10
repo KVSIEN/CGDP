@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Difficulty;
 
 namespace CGD.Flow
 {
@@ -24,10 +25,15 @@ namespace CGD.Flow
         [Tooltip("Also pause world audio while the game is paused")]
         [SerializeField] private bool _pauseAudio = true;
 
+        [Header("Difficulty")]
+        [Tooltip("What each difficulty level changes. Empty = every level plays as balanced")]
+        [SerializeField] private DifficultyTable _difficulty;
+
         public string MainMenuScene      => _mainMenuScene;
         public string FirstLevelScene    => _firstLevelScene;
         public float  TransitionDuration => _transitionDuration;
         public float  MinimumLoadingTime => _minimumLoadingTime;
         public bool   PauseAudio         => _pauseAudio;
+        public DifficultyTable Difficulty => _difficulty;
     }
 }

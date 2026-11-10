@@ -1,16 +1,18 @@
 using System;
 using UnityEngine;
+using CGD.Difficulty;
 using CGD.Settings;
 
 namespace CGD.UI
 {
-    // Comfort and input-assist options of the SettingsMenu: how much the camera moves on
+    // Difficulty plus the comfort and input-assist options of the SettingsMenu: how much the camera moves on
     // its own, how strong full-screen flashes are, and input buffering. Hold vs. toggle per
     // action lives on the Controls tab.
     public class AccessibilitySection
     {
         private readonly Action _changed;
 
+        private readonly OptionCycler  _difficulty;
         private readonly LabeledSlider _shake;
         private readonly LabeledSlider _flash;
         private readonly OptionCycler  _vignette;
@@ -25,6 +27,9 @@ namespace CGD.UI
             _changed = changed;
 
             var layout = new SettingsPageLayout(page);
+            layout.Header("Gameplay");
+            _difficulty = layout.Options("Difficulty", Enum.GetNames(typeof(DifficultyLevel)), i => Set(d => d.Difficulty = (DifficultyLevel)i));
+
             layout.Header("Comfort");
             _shake    = layout.Slider("Camera Shake & Kicks", 0f, 1f, SettingsPageLayout.Percent, v => Set(d => d.CameraShake    = v));
             _flash    = layout.Slider("Screen Flashes",       0f, 1f, SettingsPageLayout.Percent, v => Set(d => d.FlashIntensity = v));
@@ -39,6 +44,7 @@ namespace CGD.UI
         public void Load(SettingsData draft)
         {
             _draft = draft;
+            _difficulty.SetIndexWithoutNotify((int)draft.Difficulty);
             _shake.SetValueWithoutNotify(draft.CameraShake);
             _flash.SetValueWithoutNotify(draft.FlashIntensity);
             _vignette.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(draft.DamageVignette));
@@ -50,6 +56,7 @@ namespace CGD.UI
         public void ResetToDefaults()
         {
             var defaults = new SettingsData();
+            _draft.Difficulty     = defaults.Difficulty;
             _draft.CameraShake    = defaults.CameraShake;
             _draft.FlashIntensity = defaults.FlashIntensity;
             _draft.DamageVignette = defaults.DamageVignette;

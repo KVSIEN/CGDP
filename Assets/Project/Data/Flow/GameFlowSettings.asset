@@ -17,3 +17,4 @@ MonoBehaviour:
   _transitionDuration: 0.5
   _minimumLoadingTime: 0.5
   _pauseAudio: 1
+  _difficulty: {fileID: 11400000, guid: c5da1defbbcd4b908c0e8dd1da0242e0, type: 2}

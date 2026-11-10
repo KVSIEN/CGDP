@@ -1,11 +1,13 @@
 using UnityEngine;
 using CGD.Combat;
+using CGD.Difficulty;
 using CGD.Items;
 
 namespace CGD.Player
 {
-    // The player's health, armor and shield values, plus lifesteal.
-    public class PlayerHealth : HealthManager
+    // The player's health, armor and shield values, plus lifesteal and the difficulty's say in
+    // how hard hits land (as the last interceptor, so it scales what guards and barriers let through).
+    public class PlayerHealth : HealthManager, IDamageInterceptor
     {
         [Header("Health")]
         [SerializeField] private float _maxHealth = 100f;
@@ -30,6 +32,11 @@ namespace CGD.Player
         protected override float StartingHealth   => _health;
 
         public override Team Team => Team.Player;
+
+        int IDamageInterceptor.Order => int.MaxValue;
+
+        float IDamageInterceptor.Intercept(in DamageInfo info, float amount, Vector3 point) =>
+            info.Source.Team == Team.Player ? amount : amount * GameDifficulty.DamageTaken;
 
         // Lifesteal: a share of the damage the player deals comes back as health — from gear
         // and buffs on the player, plus the Lifesteal of the weapon that dealt the hit.

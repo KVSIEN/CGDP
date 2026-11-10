@@ -49,7 +49,7 @@ Global Volume
 | **AudioPool** | — | Raise `_initialSize` (16) if sounds cut out. |
 | **AudioMixerController**? | `_settings` = `Audio/DefaultAudioMixerSettings` | Drives the AudioMixer and its snapshots — see [Audio Mixer](#audio-mixer). Without it sounds scale their own volume and mix states do nothing. |
 | **PoolPrewarmer**? | `_entries` = prefab + count | Pre-spawns pooled objects. Pools grow anyway. |
-| **GameFlow** | `_settings`? = `Flow/GameFlowSettings` | See [Game Flow](#game-flow--time). |
+| **GameFlow** | `_settings`? = `Flow/GameFlowSettings` (its `_difficulty` = `Difficulty/DefaultDifficultyTable`) | See [Game Flow](#game-flow--time). |
 | **GameTime**? | `_settings`? = `Timing/GameTimeSettings` | Created automatically at 60 ticks/s if absent. |
 
 **Pooling rules**
@@ -899,6 +899,7 @@ All under `Assets/Project/Data/`. Shared settings are **single assets** — neve
 | `Player/` | `PlayerCameraSettings` | PlayerCamera |
 | `Player/Dodges/` | `SidestepRoll`, `CommittedRoll`, `SteerableBoost`, `LongDash`, `AirDash`, `AbilityDash` (`…Dodge`; the last is the Dash ability's `Move`) — stages with speed, curve, steering, i-frames, commitment, follow-up press, cooldown | PlayerDodge, DevCatalog |
 | `Flow/` | `GameFlowSettings` | GameFlow |
+| `Difficulty/` | `DefaultDifficultyTable` — enemy health and damage-taken multipliers for Easy, Normal and Hard (`Create › CGD › Difficulty › Difficulty Table`) | GameFlowSettings (`_difficulty`) |
 | `Timing/` | `GameTimeSettings` | GameTime |
 | `Enemies/` | `MaintenanceBot`/`Scavenger`/`Husk` `…EnemyData` (tier 1, ≈100 effective health each; the firing-range dummies run on them), `Tech`/`Bio`/`Void` `Tier2`/`Tier3` `…EnemyData` (placeholders, ≈2.5× / ≈5×; *Tier* set on each), `DefaultEnemyData` | EnemyAI, EnemyHealth |
 | `Enemies/Perception/` | `DefaultPerceptionProfile`, `WaryPerceptionProfile`, `SkittishPerceptionProfile` | EnemyData › Senses |

@@ -1,6 +1,7 @@
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
+using CGD.Difficulty;
 using CGD.Items;
 using CGD.Quests;
 using CGD.Stats;
@@ -42,9 +43,9 @@ namespace CGD.Enemies
             string.IsNullOrEmpty(_data.DisplayName) ? base.DisplayName : _data.DisplayName;
 
         public override Team  Team      => _data.Team;
-        public override float MaxHealth => WithModifiers(ItemStat.Health, _data.MaxHealth);
+        public override float MaxHealth => WithModifiers(ItemStat.Health, _data.MaxHealth) * GameDifficulty.EnemyHealth;
         public override float Armor     => WithModifiers(ItemStat.Armor, _data.Armor);
-        public override float MaxShield => WithModifiers(ItemStat.Shield, _data.MaxShield);
+        public override float MaxShield => WithModifiers(ItemStat.Shield, _data.MaxShield) * GameDifficulty.EnemyHealth;
         protected override float ShieldRegenDelay => _data.ShieldRegenDelay;
         protected override float ShieldRegenRate  => _data.ShieldRegenRate;
 
