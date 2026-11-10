@@ -24,7 +24,7 @@ MonoBehaviour:
   SightRange: 60
   SightAngle: 140
   HearingRadius: 14
-  Senses: {fileID: 11400000, guid: b4dbcf2c7fae4eebb839c7454d0c4a00, type: 2}
+  Senses: {fileID: 11400000, guid: e66560965f274b00979876d9560ae1d5, type: 2}
   TargetPriorities: {fileID: 11400000, guid: 1f3dbf48a26a4e6abf1849b773ff40b0, type: 2}
   BehaviorTree: {fileID: 11400000, guid: a7f09d1ad88843648a047e87a5125de1, type: 2}
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}

@@ -97,6 +97,28 @@ MonoBehaviour:
   - rid: 1108
   - rid: 1109
   - rid: 1110
+  - rid: 1111
+  - rid: 1112
+  - rid: 1113
+  - rid: 1114
+  - rid: 1115
+  - rid: 1116
+  - rid: 1117
+  - rid: 1118
+  - rid: 1119
+  - rid: 1120
+  - rid: 1121
+  - rid: 1122
+  - rid: 1123
+  - rid: 1124
+  - rid: 1125
+  - rid: 1126
+  - rid: 1127
+  - rid: 1128
+  - rid: 1129
+  - rid: 1130
+  - rid: 1131
+  - rid: 1132
   references:
     version: 2
     RefIds:
@@ -165,6 +187,9 @@ MonoBehaviour:
         - 54b29e8d5ce840e6a9b4fe8b992a76fe
         - 8525a0dd07764968836142bf0a1aa5a3
         - dfc2d59965ab4c20b4e02b569892bea5
+        - 0563f3ddfd0547058c325a9527215791
+        - d12b7193a2414ef0a78ca184901b5908
+        - 95da2a10e67d4af7829fe9b4c197119a
         - 675b5a1e36e94ec98d5df56a48a0b53a
         - c4736511dc764bce89be0efb64cea50a
         - ee06be27f963487eb2f4bfaa9ecd6f6a
@@ -862,3 +887,206 @@ MonoBehaviour:
         _position: {x: -2780, y: 450}
         _comment: 
         _giveUpAfter: 3
+    - rid: 1111
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0563f3ddfd0547058c325a9527215791
+        _position: {x: -490, y: 3000}
+        _comment: 'Predator: the target turns its back or reloads within 18 m: pounce at once (a committed charge, up to 4 s)'
+        _children:
+        - f6466672588e47cb99233e071ebd4198
+        - fd735a79a04a46e2ade489bcf287368a
+        - 885fe9e05e7c4eb39680d611eaa2b45e
+        - fb4422d103ea4bf09abefc356e28ee07
+        _abort: 2
+    - rid: 1112
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f6466672588e47cb99233e071ebd4198
+        _position: {x: -820, y: 3150}
+        _comment: 
+    - rid: 1113
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: fd735a79a04a46e2ade489bcf287368a
+        _position: {x: -600, y: 3150}
+        _comment: 
+        _key: TargetExposed
+        _comparison: 4
+        _value: 0.5
+        _ifMissing: 0
+    - rid: 1114
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 885fe9e05e7c4eb39680d611eaa2b45e
+        _position: {x: -380, y: 3150}
+        _comment: 
+        _range: 18
+    - rid: 1115
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: fb4422d103ea4bf09abefc356e28ee07
+        _position: {x: -160, y: 3150}
+        _comment: 
+        _children:
+        - 1200949b341d49458de2bd61bdd14870
+        _seconds: 4
+    - rid: 1116
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1200949b341d49458de2bd61bdd14870
+        _position: {x: -160, y: 3300}
+        _comment: 
+        _stopDistance: 0
+    - rid: 1117
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d12b7193a2414ef0a78ca184901b5908
+        _position: {x: -450, y: 3450}
+        _comment: 'Stared down: the target has held it squarely in view for 1.5 s and it is not yet in reach. A predator does not charge into a stare: it breaks off and circles round to come from where it is not watched (every 8 s at most)'
+        _children:
+        - e21214c5b04542cda7128d95f44d7d39
+        - e0aeace7f0f14b35baa2e23d003969af
+        - 299aa47a17ca4118a07115c016606fea
+        - 7532a847738445c6aaa756c59511a428
+        _abort: 2
+    - rid: 1118
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e21214c5b04542cda7128d95f44d7d39
+        _position: {x: -780, y: 3600}
+        _comment: 
+    - rid: 1119
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e0aeace7f0f14b35baa2e23d003969af
+        _position: {x: -560, y: 3600}
+        _comment: 
+        _key: TargetWatching
+        _comparison: 4
+        _value: 1.5
+        _ifMissing: 0
+    - rid: 1120
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 299aa47a17ca4118a07115c016606fea
+        _position: {x: -340, y: 3600}
+        _comment: 
+        _children:
+        - d78579a87e574abf8d4f6f6b6b2bf242
+    - rid: 1121
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d78579a87e574abf8d4f6f6b6b2bf242
+        _position: {x: -340, y: 3750}
+        _comment: 
+        _range: 5
+    - rid: 1122
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7532a847738445c6aaa756c59511a428
+        _position: {x: -120, y: 3600}
+        _comment: 
+        _children:
+        - b0091ed3b5c54da8aafe7f247c8c0f5b
+        _seconds: 8
+        _onlyAfterSuccess: 0
+    - rid: 1123
+      type: {class: Prowl, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b0091ed3b5c54da8aafe7f247c8c0f5b
+        _position: {x: -120, y: 3750}
+        _comment: 
+        _seconds: {Min: 2.5, Max: 3.5, Bias: 0}
+        _distance: {Min: 8, Max: 11, Bias: 0}
+        _pause: {Min: 0.3, Max: 0.6, Bias: 0}
+        _speed: 0.7
+    - rid: 1124
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 95da2a10e67d4af7829fe9b4c197119a
+        _position: {x: -410, y: 3900}
+        _comment: 'Barbed Snare ready, the target in view beyond 6 m and a reason to (moving fast or getting away, a weak target): burst a snare under it (slow and bleed: a bleeding target can be tracked by scent), then circle while the trap works'
+        _children:
+        - 3af9df4d71824aae821394cd7bac8950
+        - d37cd8591cdf4145922bb0da9129da16
+        - b2c3c45fac0f40cc9f1077c37a6ca394
+        - b4a93a8072334c1d9779003e97632569
+        - 9f073f46e7d94e20b15e9e2211589317
+        - b733ee09daa248448864d45c00faee0f
+        - 51e6e06a64e946ec94b9398210b57fd1
+        _abort: 2
+    - rid: 1125
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3af9df4d71824aae821394cd7bac8950
+        _position: {x: -1070, y: 4050}
+        _comment: 
+    - rid: 1126
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d37cd8591cdf4145922bb0da9129da16
+        _position: {x: -850, y: 4050}
+        _comment: 
+    - rid: 1127
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b2c3c45fac0f40cc9f1077c37a6ca394
+        _position: {x: -630, y: 4050}
+        _comment: 
+        _children:
+        - 1d9ba506918347088825431efff8ea07
+    - rid: 1128
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1d9ba506918347088825431efff8ea07
+        _position: {x: -630, y: 4200}
+        _comment: 
+        _range: 6
+    - rid: 1129
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b4a93a8072334c1d9779003e97632569
+        _position: {x: -410, y: 4050}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 8bafc7ca1d184b0c9405cef65ec41f97, type: 2}
+    - rid: 1130
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 9f073f46e7d94e20b15e9e2211589317
+        _position: {x: -190, y: 4050}
+        _comment: 'Snare what keeps its distance: a fast-moving or fleeing target, one further off, or one worth finishing'
+        _reasons:
+        - _key: TargetSpeed
+          _from: 1
+          _to: 4
+          _weight: 0.45
+        - _key: TargetDistance
+          _from: 8
+          _to: 16
+          _weight: 0.35
+        - _key: TargetHealth
+          _from: 1
+          _to: 0.5
+          _weight: 0.2
+        _patience: 14
+    - rid: 1131
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b733ee09daa248448864d45c00faee0f
+        _position: {x: 30, y: 4050}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 8bafc7ca1d184b0c9405cef65ec41f97, type: 2}
+        _aim: 0
+        _maxRange: 20
+        _requireClearShot: 0
+    - rid: 1132
+      type: {class: Prowl, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 51e6e06a64e946ec94b9398210b57fd1
+        _position: {x: 250, y: 4050}
+        _comment: 
+        _seconds: {Min: 2, Max: 3, Bias: 0}
+        _distance: {Min: 7, Max: 9, Bias: 0}
+        _pause: {Min: 0.3, Max: 0.6, Bias: 0}
+        _speed: 0.55

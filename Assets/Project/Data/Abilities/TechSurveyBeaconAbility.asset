@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6aaa6e68baed4c2a9627432adf758eac, type: 3}
+  m_Name: TechSurveyBeaconAbility
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.SurveyBeaconAbility
+  DisplayName: Survey Beacon
+  SlotColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  Cooldown: 25
+  MaxCharges: 1
+  CastTime: 0.8
+  BeaconPrefab: {fileID: 7300000000000000001, guid: 08973d3393db441faf4d1ca3058b71d5, type: 3}
+  MaxDeployDistance: 14
+  Lifetime: 15
+  PulseInterval: 3
+  Color: {r: 1, g: 0.85, b: 0.2, a: 0.6}
+  PulseFlash: {fileID: 7000000000000000001, guid: d3520984238c41a78a4ca49a0a007f9f, type: 3}
+  ScanRadius: 12
+  RevealSeconds: 2.5
+  ReportRange: 80
+  TargetMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  RepairRadius: 8
+  RepairPerPulse: 15
+  SpoofHoldSeconds: 2
+  SpoofOffset: 15

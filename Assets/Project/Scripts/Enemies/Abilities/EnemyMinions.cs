@@ -42,6 +42,7 @@ namespace CGD.Enemies
                 GameObject body = PrefabPool.Spawn(prefab, spot, Quaternion.Euler(0f, Random.value * 360f, 0f));
                 if (!body.TryGetComponent(out EnemyHealth health)) continue;
 
+                if (body.TryGetComponent(out ISummoned summoned)) summoned.SummonedBy(_ai);
                 SendHunting(body);
                 _minions.Add(new Minion { Body = body, Health = health, ExpiresAt = Time.time + lifetime, DiedAt = -1f });
             }

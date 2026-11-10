@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d2910de5fcb459192ab4a338c9023cd, type: 3}
+  m_Name: BioPerceptionProfile
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.PerceptionProfile
+  _senseInterval: 0.15
+  _nearSightGain: 3.5
+  _farSightGain: 0.5
+  _instantSightDistance: 3
+  _centralView: 0.4
+  _peripheralGain: 0.45
+  _searchingSightBonus: 1.75
+  _sightLossGrace: 0.4
+  _footstepGain: 1.0
+  _noiseAwareness: 0.55
+  _hearingCeiling: 0.9
+  _occludedHearing: 0.5
+  _hearingError: 0.25
+  _scentRange: 30
+  _scentGain: 0.6
+  _touchRadius: 1.3
+  _hitAwareness: 0.6
+  _hitError: 0.25
+  _suspiciousThreshold: 0.3
+  _decayRate: 0.14
+  _prediction:
+    Min: 0.2
+    Max: 1.0
+    Bias: 0
+  _calloutRadius: 18
+  _noticePause:
+    Min: 0.2
+    Max: 0.6
+    Bias: 0
+  _searchPoints:
+    Min: 1
+    Max: 3
+    Bias: 0
+  _searchRadius: 5
+  _lookAroundPause:
+    Min: 0.5
+    Max: 1.1
+    Bias: 0
+  _huntSpeed: 0.9

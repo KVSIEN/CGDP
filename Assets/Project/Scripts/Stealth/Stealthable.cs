@@ -103,6 +103,10 @@ namespace CGD.Stealth
         // cloaks stop hiding it for a moment.
         public void Reveal() => _status.OnNoise(_settings.RevealAfterNoise);
 
+        // Something exposed it from outside (a Tech scan): cover and breakable cloaks stop
+        // hiding it for `seconds`.
+        public void Reveal(float seconds) => _status.OnNoise(seconds);
+
         // Whether an observer at this position can detect the character right now. While
         // not Hidden this is always true — normal sight and hearing rules then decide.
         public bool IsExposedTo(Vector3 observer)

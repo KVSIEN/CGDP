@@ -22,6 +22,8 @@ namespace CGD.Enemies
 
         public static void Remove(EnemyAI enemy) => Members.Remove(enemy);
 
+        public static IReadOnlyList<EnemyAI> All => Members;
+
         public static bool IsKin(EnemyAI asker, EnemyAI other)
         {
             if (other == asker || other.State == EnemyAI.AiState.Dead) return false;

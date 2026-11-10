@@ -117,6 +117,12 @@ MonoBehaviour:
   - rid: 1106
   - rid: 1107
   - rid: 1108
+  - rid: 1109
+  - rid: 1110
+  - rid: 1111
+  - rid: 1112
+  - rid: 1113
+  - rid: 1114
   references:
     version: 2
     RefIds:
@@ -265,6 +271,7 @@ MonoBehaviour:
         - 97e380fa678d412082ad0d2bab96eef0
         - d0af4340b2804db3ab7aeb7b81c5bae1
         - 9b4f8aa4e67d4a628908272ba7c56088
+        - 3ddf33ed036b4eb0b5d431a4c9c1697d
         - 1280971f72074b778a3eda977d66b5f8
         - de7fe51f82c14a4aa3416eacf94a599e
         - 6bf2b656b18d4bf7a4c01701eb09e0eb
@@ -1054,3 +1061,54 @@ MonoBehaviour:
         _position: {x: 370, y: 1200}
         _comment:
         _stopDistance: 26
+    - rid: 1109
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 3ddf33ed036b4eb0b5d431a4c9c1697d
+        _position: {x: 2082, y: 3000}
+        _comment: 'Protocol on losing sight: after 4 s without contact, launch a Survey Beacon toward where the target was (pulses every 3 s for 15 s: reveals and reports hostiles to the whole Union through walls, repairs shields when it finds none)'
+        _children:
+        - bd36bb0b68194fe5b07b311c3bf571b2
+        - a30bd59fa7974216a9a6eb513dd6cd80
+        - c8694a51b8c546449f73ca39d487adf6
+        - 06152ce014b249fa8690e90dacc3e809
+        _abort: 0
+    - rid: 1110
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: bd36bb0b68194fe5b07b311c3bf571b2
+        _position: {x: 1752, y: 3150}
+        _comment: 
+        _children:
+        - 9c241db7fc3f47cabdc47dacaed7066b
+    - rid: 1111
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9c241db7fc3f47cabdc47dacaed7066b
+        _position: {x: 1752, y: 3300}
+        _comment: 
+    - rid: 1112
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a30bd59fa7974216a9a6eb513dd6cd80
+        _position: {x: 1972, y: 3150}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 26cb58484e344d6c9db09ec82fd7eacc, type: 2}
+    - rid: 1113
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c8694a51b8c546449f73ca39d487adf6
+        _position: {x: 2192, y: 3150}
+        _comment: 'No reason needed: a fixed delay, so the protocol is regular (and learnable)'
+        _reasons: []
+        _patience: 4
+    - rid: 1114
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 06152ce014b249fa8690e90dacc3e809
+        _position: {x: 2412, y: 3150}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 26cb58484e344d6c9db09ec82fd7eacc, type: 2}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0

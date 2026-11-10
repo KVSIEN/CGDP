@@ -103,6 +103,20 @@ MonoBehaviour:
   - rid: 1092
   - rid: 1093
   - rid: 1094
+  - rid: 1095
+  - rid: 1096
+  - rid: 1097
+  - rid: 1098
+  - rid: 1099
+  - rid: 1100
+  - rid: 1101
+  - rid: 1102
+  - rid: 1103
+  - rid: 1104
+  - rid: 1105
+  - rid: 1106
+  - rid: 1107
+  - rid: 1108
   references:
     version: 2
     RefIds:
@@ -243,8 +257,10 @@ MonoBehaviour:
         _position: {x: 647, y: 450}
         _comment: 
         _children:
+        - 0753e076b6f34572ab0d11f28f48f49e
         - d4099671484a45ea81d33d45ebb4332d
         - 279e267b49594a7ebc5a39bc5e2c42c5
+        - 01611ae078d04342a6ff83f5940a365c
         - f9499f0e9aac46d883a898c8f92589f2
         - 71598e06f3c24e7e87880fd410af2cc8
         - a1c0de01b2d34e5f8a9b0c1d2e3f4a51
@@ -1083,3 +1099,132 @@ MonoBehaviour:
         _position: {x: -3280, y: 450}
         _comment: 
         _giveUpAfter: 3
+    - rid: 1095
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0753e076b6f34572ab0d11f28f48f49e
+        _position: {x: -1108, y: 3000}
+        _comment: 'The target flinched (whipped round, or shot at one of its echoes) within 16 m: in for the kill while it is turned the wrong way (3 s at most)'
+        _children:
+        - d5587f97fb6d44a3b286d534c0790f30
+        - 44a4dd6c2b044b4eb50c7a449cb42976
+        - 5b6a4869a7fd42ffa98e22d5a3c96007
+        - 94cad067e5ad44f1a407f4a75124c55f
+        _abort: 2
+    - rid: 1096
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d5587f97fb6d44a3b286d534c0790f30
+        _position: {x: -1438, y: 3150}
+        _comment: 
+    - rid: 1097
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 44a4dd6c2b044b4eb50c7a449cb42976
+        _position: {x: -1218, y: 3150}
+        _comment: 
+        _key: TargetFlinch
+        _comparison: 4
+        _value: 0.5
+        _ifMissing: 0
+    - rid: 1098
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5b6a4869a7fd42ffa98e22d5a3c96007
+        _position: {x: -998, y: 3150}
+        _comment: 
+        _range: 16
+    - rid: 1099
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 94cad067e5ad44f1a407f4a75124c55f
+        _position: {x: -118, y: 3150}
+        _comment: 
+        _children:
+        - 59543e4f1c754c9d9af9c63d8c789a39
+        _seconds: 3
+    - rid: 1100
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 59543e4f1c754c9d9af9c63d8c789a39
+        _position: {x: -118, y: 3300}
+        _comment: 
+        _children:
+        - 68b69adbb8b741afb750fbd0e0bb1693
+        - 03417a47cd054a60ad85f0b37485c65b
+        _abort: 0
+    - rid: 1101
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 68b69adbb8b741afb750fbd0e0bb1693
+        _position: {x: -228, y: 3450}
+        _comment: 
+        _stopDistance: 0
+    - rid: 1102
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 03417a47cd054a60ad85f0b37485c65b
+        _position: {x: -8, y: 3450}
+        _comment: 
+    - rid: 1103
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 01611ae078d04342a6ff83f5940a365c
+        _position: {x: -338, y: 3000}
+        _comment: 'Wrong Echo ready, the target watching it and a reason to (under fire, being hurt, the target closing in): leave an echo where it stands and slip away unseen. The echo holds still while watched and creeps closer while not'
+        _children:
+        - ebd5a82eb762458f8c7b565606c06797
+        - 57b74106621b4c1a8f7733e092f17fb1
+        - 1b78e6f50f7d41c580eac9233162a801
+        - d07ba50a014a4352854a3bb4e056da65
+        - 9f53fa7bfb514f52b45b061528f5ecb3
+        _abort: 2
+    - rid: 1104
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ebd5a82eb762458f8c7b565606c06797
+        _position: {x: -778, y: 3150}
+        _comment: 
+    - rid: 1105
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 57b74106621b4c1a8f7733e092f17fb1
+        _position: {x: -558, y: 3150}
+        _comment: 
+    - rid: 1106
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1b78e6f50f7d41c580eac9233162a801
+        _position: {x: -338, y: 3150}
+        _comment: 
+        _ability: {fileID: 11400000, guid: d21ef9a3e5ed46ebbb3b7cf0ee9cead6, type: 2}
+    - rid: 1107
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d07ba50a014a4352854a3bb4e056da65
+        _position: {x: -118, y: 3150}
+        _comment: 'Leave an echo to escape pressure: shot at, hurt lately, or the target getting close'
+        _reasons:
+        - _key: UnderFire
+          _from: 0
+          _to: 1
+          _weight: 0.35
+        - _key: RecentDamage
+          _from: 0
+          _to: 0.25
+          _weight: 0.35
+        - _key: TargetDistance
+          _from: 25
+          _to: 10
+          _weight: 0.3
+        _patience: 30
+    - rid: 1108
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9f53fa7bfb514f52b45b061528f5ecb3
+        _position: {x: 102, y: 3150}
+        _comment: 
+        _ability: {fileID: 11400000, guid: d21ef9a3e5ed46ebbb3b7cf0ee9cead6, type: 2}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0

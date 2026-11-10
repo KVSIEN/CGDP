@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using CGD.Combat;
+using CGD.Core;
 
 namespace CGD.Enemies
 {
@@ -17,6 +19,15 @@ namespace CGD.Enemies
         {
             Melee.Clear();
             Ranged.Clear();
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
+        }
+
+        // Targets of the level just left (enemies fight each other, so not only the player).
+        private static void OnSceneUnloaded(Scene scene)
+        {
+            DestroyedKeys.Remove(Melee);
+            DestroyedKeys.Remove(Ranged);
         }
 
         // limit counts the asker too: 2 means "me and at most one other".

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using CGD.Combat;
+using CGD.Core;
 using CGD.Impacts;
 using CGD.Stealth;
 using CGD.Targeting;
@@ -33,9 +35,7 @@ namespace CGD.Enemies
     // with at most a few raycasts per candidate; noises and hits are pushed in as they happen.
     public class EnemyPerception
     {
-        private const float EyeHeight       = 1.5f;
         private const int   MaxCandidates   = 3;
-        private const float DefaultLoudness = 0.6f;   // footsteps of a hostile without Stealthable
         private const float DeathHearingRange = 10f;  // an ally going down is heard this far
         private const int   MaxBodyChecks   = 2;      // raycasts per sample spent looking for bodies
         private const float NearMissRadius  = 2.5f;   // a hostile bullet landing this close is felt
@@ -46,7 +46,6 @@ namespace CGD.Enemies
         private const float FocusBonus      = 1.5f;   // a union's pull toward the target its kin fight
 
         private static PerceptionProfile _fallbackProfile;
-        private static readonly Dictionary<HealthManager, Collider> Bodies = new();
         // Which hostiles are enemies with minds of their own (null for the player), to tell
         // whether one is busy fighting someone else.
         private static readonly Dictionary<HealthManager, EnemyAI> Brains = new();
@@ -55,7 +54,7 @@ namespace CGD.Enemies
         private readonly Transform         _self;
         private readonly EnemyData         _data;
         private readonly PerceptionProfile _profile;
-        private readonly LayerMask         _obstacleMask;
+        private readonly EnemySenses       _senses;
         private readonly Team              _team;
         private readonly TargetFilter        _hostiles;
         private readonly List<HealthManager> _candidates = new();
@@ -91,10 +90,13 @@ namespace CGD.Enemies
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics()
         {
-            Bodies.Clear();
             Brains.Clear();
             _fallbackProfile = null;
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
         }
+
+        private static void OnSceneUnloaded(Scene scene) => DestroyedKeys.Remove(Brains);
 
         public EnemyPerception(EnemyAI owner, EnemyData data, LayerMask targetMask, LayerMask obstacleMask, Team team)
         {
@@ -102,7 +104,7 @@ namespace CGD.Enemies
             _self         = owner.transform;
             _data         = data;
             _profile      = data.Senses != null ? data.Senses : FallbackProfile;
-            _obstacleMask = obstacleMask;
+            _senses       = new EnemySenses(_self, data, _profile, obstacleMask);
             _team         = team;
             _hostiles     = new TargetFilter(TargetAffiliation.Enemies, team, null, targetMask);
             _meter        = new AwarenessMeter(_profile.SuspiciousThreshold);
@@ -247,7 +249,7 @@ namespace CGD.Enemies
             if (noise.Source.Owner == _self.gameObject || IsTargetDetected) return;
 
             float distance = Vector3.Distance(noise.Position, _self.position);
-            if (!CanHear(noise.Position, distance, noise.Radius, noise.Source.Owner != null ? noise.Source.Owner.transform : null)) return;
+            if (!_senses.CanHear(noise.Position, distance, noise.Radius, noise.Source.Owner != null ? noise.Source.Owner.transform : null)) return;
 
             if (noise.Source.Team == _team)
             {
@@ -316,7 +318,7 @@ namespace CGD.Enemies
             if (!EnemyRoster.IsKinTeam(_data, _team, callout.Team)) return;
 
             float distance = Vector3.Distance(callout.From, _self.position);
-            bool heard = callout.ThroughWalls ? distance <= callout.Radius : CanHear(callout.From, distance, callout.Radius, callout.Caller != null ? callout.Caller.transform : null);
+            bool heard = callout.ThroughWalls ? distance <= callout.Radius : _senses.CanHear(callout.From, distance, callout.Radius, callout.Caller != null ? callout.Caller.transform : null);
             if (!heard) return;
 
             _meter.RaiseToSuspicious(0.1f);
@@ -332,7 +334,7 @@ namespace CGD.Enemies
             if (fallen.Body == _owner || fallen.Team != _team || _bodiesSeen.Contains(fallen.Body)) return;
 
             float distance = Vector3.Distance(fallen.Position, _self.position);
-            if (!CanHear(fallen.Position, distance, DeathHearingRange, fallen.Body.transform)) return;
+            if (!_senses.CanHear(fallen.Position, distance, DeathHearingRange, fallen.Body.transform)) return;
             DiscoverBody(fallen);
         }
 
@@ -367,7 +369,7 @@ namespace CGD.Enemies
             Stimulus bestStimulus = default;
             float bestScore = 0f;
 
-            float searchRange = Mathf.Max(_data.SightRange, _data.HearingRadius * 2f);
+            float searchRange = Mathf.Max(_data.SightRange, _data.HearingRadius * 2f, _profile.ScentRange);
             TargetQuery.Sphere(_self.position, searchRange, _hostiles, _candidates);
             TargetQuery.SortByDistance(_candidates, _self.position);
             _weighed.Clear();
@@ -405,10 +407,12 @@ namespace CGD.Enemies
             float distance = Vector3.Distance(candidate.transform.position, _self.position);
             if (distance <= _profile.TouchRadius) return new Stimulus { Seen = true, Instant = true };
 
-            if (CanSee(candidate, out float sightGain, out bool instant))
+            if (_senses.CanSee(candidate, out float sightGain, out bool instant))
                 return new Stimulus { Seen = true, Instant = instant, Gain = sightGain };
 
-            return new Stimulus { Gain = FootstepGain(candidate, distance) };
+            // Unseen, it can still be heard, or smelled if it is bleeding: whichever is stronger.
+            float gain = Mathf.Max(_senses.FootstepGain(candidate, distance), _senses.ScentGain(candidate, distance));
+            return new Stimulus { Gain = gain };
         }
 
         private TargetTraits TraitsOf(HealthManager candidate) => new(
@@ -491,7 +495,7 @@ namespace CGD.Enemies
             IReadOnlyList<FallenAlly> bodies = FallenAllies.All;
             if (bodies.Count == 0) return;
 
-            Vector3 eye       = _self.position + Vector3.up * EyeHeight;
+            Vector3 eye       = _senses.Eye;
             float   halfAngle = _data.SightAngle * 0.5f;
             int     checks    = 0;
 
@@ -506,7 +510,7 @@ namespace CGD.Enemies
                 if (Vector3.Angle(_self.forward, toBody) > halfAngle) continue;
 
                 checks++;
-                if (IsClear(eye, body, fallen.Body.transform)) DiscoverBody(fallen);
+                if (_senses.IsClear(eye, body, fallen.Body.transform)) DiscoverBody(fallen);
             }
         }
 
@@ -589,85 +593,6 @@ namespace CGD.Enemies
             LookPosition      = position;
             _hasLead          = true;
             _owner.Belief?.Hint(position);
-        }
-
-        // --- Senses ---------------------------------------------------------------
-
-        private bool CanSee(HealthManager target, out float gain, out bool instant)
-        {
-            gain    = 0f;
-            instant = false;
-
-            Vector3 eye = _self.position + Vector3.up * EyeHeight;
-            AimPoints(target, out Vector3 chest, out Vector3 head);
-
-            Vector3 toChest  = chest - eye;
-            float   distance = toChest.magnitude;
-            if (distance > _data.SightRange) return false;
-
-            float halfAngle = _data.SightAngle * 0.5f;
-            float angle     = Vector3.Angle(_self.forward, toChest);
-            if (angle > halfAngle) return false;
-
-            bool hasStealth = Stealthable.TryGet(target, out Stealthable stealth);
-            if (hasStealth && !stealth.IsExposedTo(_self.position)) return false;
-
-            if (!IsClear(eye, chest, target.transform) && !IsClear(eye, head, target.transform)) return false;
-
-            instant = distance <= _profile.InstantSightDistance;
-            gain    = Mathf.Lerp(_profile.NearSightGain, _profile.FarSightGain, distance / _data.SightRange);
-            if (angle > halfAngle * _profile.CentralView) gain *= _profile.PeripheralGain;
-            if (hasStealth) gain *= stealth.SightVisibility;
-            return true;
-        }
-
-        private float FootstepGain(HealthManager target, float distance)
-        {
-            float loudness = Stealthable.TryGet(target, out Stealthable stealth) ? stealth.FootstepLoudness : DefaultLoudness;
-            if (loudness <= 0f) return 0f;
-
-            float range = _data.HearingRadius * loudness;
-            if (distance > range || !CanHear(target.transform.position, distance, range, target.transform)) return 0f;
-
-            return _profile.FootstepGain * (1f - 0.5f * distance / range);
-        }
-
-        // Within range, and still within it once a wall in between has muffled it. `emitter` is
-        // the character making the sound, if any — its own body doesn't muffle it.
-        private bool CanHear(Vector3 source, float distance, float range, Transform emitter = null)
-        {
-            if (distance > range) return false;
-            if (distance <= range * _profile.OccludedHearing) return true;
-
-            Vector3 ears = _self.position + Vector3.up * EyeHeight;
-            return IsClear(ears, source + Vector3.up * 0.5f, emitter);
-        }
-
-        // `subject` is the character (or body) the line ends on, which never blocks its own view.
-        private bool IsClear(Vector3 from, Vector3 to, Transform subject) =>
-            !ConcealmentZone.BlocksLine(from, to) && SightLines.IsClear(from, to, _obstacleMask, subject);
-
-        // Chest and head of the target's body (its collider), so cover at chest height but
-        // below the head doesn't hide a standing target — and does hide a crouching one.
-        private static void AimPoints(HealthManager target, out Vector3 chest, out Vector3 head)
-        {
-            if (!Bodies.TryGetValue(target, out Collider body))
-            {
-                target.TryGetComponent(out body);
-                Bodies[target] = body;
-            }
-
-            if (body != null && body.enabled)
-            {
-                Bounds bounds = body.bounds;
-                chest = bounds.center;
-                head  = new Vector3(bounds.center.x, bounds.max.y - 0.15f, bounds.center.z);
-                return;
-            }
-
-            Vector3 feet = target.transform.position;
-            chest = feet + Vector3.up;
-            head  = feet + Vector3.up * 1.6f;
         }
 
         private bool IsHostile(DamageSource source) => source.Team != Team.None && source.Team != _team;

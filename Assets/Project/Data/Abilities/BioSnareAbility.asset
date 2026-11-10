@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e7de4e5d01d452c92c5bbc47a455cd2, type: 3}
+  m_Name: BioSnareAbility
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.SnareAbility
+  DisplayName: Barbed Snare
+  SlotColor: {r: 0.35, g: 0.75, b: 0.2, a: 1}
+  Cooldown: 14
+  MaxCharges: 1
+  CastTime: 0.5
+  ZonePrefab: {fileID: 7200000000000000001, guid: 7d323a39c1c04ecea8063000ddeb3b76, type: 3}
+  Radius: 3
+  Duration: 5
+  TickInterval: 0.5
+  Color: {r: 0.35, g: 0.75, b: 0.2, a: 0.5}
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  DamagePerTick: 1
+  OnHitEffects:
+  - Effect: {fileID: 11400000, guid: 63d1fc126b5444bb9c0b805a4ca82c9a, type: 2}
+    Chance: 1
+  - Effect: {fileID: 11400000, guid: c2c7decb36084b4cb2e762ba33b3351c, type: 2}
+    Chance: 1
+  EntryNoiseRadius: 18

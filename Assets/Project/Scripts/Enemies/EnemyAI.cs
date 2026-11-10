@@ -116,6 +116,7 @@ namespace CGD.Enemies
         internal SquadRole         SquadRole    => Squad != null ? Squad.RoleOf(this) : SquadRole.None;
         internal EnemyMorale       Morale       { get; private set; }
         internal EnemyVoice        Voice        { get; private set; }
+        internal TargetReadings    Readings     { get; private set; }
 
         // Set when it gave up a search or won its fight: it should head back to its post.
         // Shaken and not cornered: time to fall back. Cornered, it fights instead.
@@ -162,6 +163,7 @@ namespace CGD.Enemies
             Grenades      = new GrenadeThrower(this, _damageSource, _obstacleMask);
             Morale        = new EnemyMorale(this);
             Voice         = new EnemyVoice(this);
+            Readings      = new TargetReadings(this);
             _health.OnDeath += OnDeath;
         }
 
@@ -566,6 +568,7 @@ namespace CGD.Enemies
             Search.Cancel();
             Tactics.Reset();
             Perception.Reset();
+            Readings.Forget();
             Belief.Clear();
             Morale.Reset();
             Voice.Reset();

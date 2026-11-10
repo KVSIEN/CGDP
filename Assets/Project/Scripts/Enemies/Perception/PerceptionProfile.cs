@@ -41,6 +41,12 @@ namespace CGD.Enemies
         [Tooltip("How far off a heard position may be, as a share of the distance to it")]
         [SerializeField, Range(0f, 0.5f)] private float _hearingError = 0.15f;
 
+        [Header("Scent")]
+        [Tooltip("Metres a bleeding hostile can be tracked by smell, walls or not; 0 = no sense of smell. Works like hearing: rough positions, never certainty")]
+        [SerializeField, Min(0f)] private float _scentRange;
+        [Tooltip("Awareness per second from a bleeding hostile's trail (scaled by how close)")]
+        [SerializeField, Min(0f)] private float _scentGain = 0.6f;
+
         [Header("Touch")]
         [Tooltip("Metres: a hostile this close is felt, seen or not")]
         [SerializeField, Min(0f)] private float _touchRadius = 1.3f;
@@ -146,5 +152,7 @@ namespace CGD.Enemies
         public float MoraleRecovery       => _moraleRecovery;
         public float RetreatBelow         => _retreatBelow;
         public float RallyAbove           => _rallyAbove;
+        public float ScentRange           => _scentRange;
+        public float ScentGain            => _scentGain;
     }
 }

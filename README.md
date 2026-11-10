@@ -17,7 +17,7 @@ Open `Assets/Project/Scenes/Sandbox.unity` to play, `MapTest.unity` for a freshl
 ```
 Assets/
   Project/                  everything owned by this project
-    Art/                    Animations, Fonts, Materials, Shaders, Textures
+    Art/                    Animations, Fonts, Materials (incl. VFX/, Physics/ — physic materials), Shaders, Textures
     Audio/                  Music, SFX
     Data/                   ScriptableObject assets, one folder per feature
       Abilities/  Artifacts/  Audio/  CameraEffects/  Combat/  Crafting/  DevTools/  Dialogue/  Director/  Economy/  Enemies/  Expedition/  Factions/  Feedback/  Flow/
@@ -60,7 +60,7 @@ Assets/
       Enemies/              enemy components, EnemyRangedCombat, EnemySearch, EnemyPost (guarding, return point), shared steps (Return/Retreat/RaiseAlarmStep),
                             Abilities/ (EnemyAbilities: casting Ability assets; GrenadeThrower, ThrowArc),
                             BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/, Squad/, Pacing/, Voice/; EnemyBlackboard keys),
-                            Perception/ (EnemyPerception: sight, hearing, touch, memory; AwarenessMeter, PerceptionProfile, callouts),
+                            Perception/ (EnemyPerception: awareness, targets, memory; EnemySenses: sight and hearing checks; AwarenessMeter, PerceptionProfile, callouts),
                             Tactics/ (CoverMap: cover spots from the NavMesh; CoverKnowledge, EnemyTactics: cover, flanking, hiding spots, melee turns;
                             AttackTokens, EnemyMorale, AlarmPanel; TacticsLog: its latest cover / flank / vanish searches),
                             Debugging/ (EnemyInsight: the read-only view debug tools get; EnemyStatusReport, AwarenessColors),
@@ -80,13 +80,16 @@ Assets/
                             Locks/ — ConditionLock (multi-condition door locks), LockProgress (rule), LockTerminal
       Items/                item definitions, inventory, equipment, quality rolls, stats;
                             Catalog/ — ItemCatalog (stable item ids); Saving/ — InventoryRecord, GearRecord, StackRecord
-      Level/                map graph → level: LevelLayoutBuilder (rooms, CorridorRouter), LevelGeometryBuilder,
-                            RoomPopulator, LevelBuilder (scene entry point), LevelExit, LevelBuildSettings,
-                            DoorwaySignBuilder + RoomLabel (signs, room names), RoomArrivalAnnouncer, GeneratedAssets;
+      Level/                map graph → level: LevelBuilder (scene entry point), LevelBuildSettings, LevelExit,
+                            RoomLabel (room names), RoomArrivalAnnouncer;
+                            Layout/ — the level as tiles: LevelLayoutBuilder, RoomPlacer (cells, multi-cell rooms), CorridorRouter,
+                            DirectRoomAligner, LevelLayout/LevelRoom/LevelDoorway, LevelWallPlan, LevelBlueprint (floor-plan drawing);
+                            Geometry/ — tiles → meshes: LevelGeometryBuilder, LevelWallBuilder, BoxMeshBuilder, DoorwaySignBuilder,
+                            RuntimeNavMesh, GeneratedAssets; Population/ — RoomPopulator, RoomContentRule, RoomRoster, EnemyTierOdds;
                             Shapes/ — RoomShape assets, RoomShapeRasterizer, RoomFootprint (tiles + door sockets)
-                            RoomOutline (curved walls), LevelWallBuilder; Functions/ — RoomFunction;
-                            Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), CoverHeights (low / high cover bands), Rules/
-                            RoomPlacer (cells, multi-cell rooms); Landmarks/ — hand-built rooms; Props/ — RoomPropPlanner (footprints, clearance,
+                            RoomOutline (curved walls); Functions/ — RoomFunction;
+                            Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), CoverHeights (low / high cover bands), Rules/;
+                            Landmarks/ — hand-built rooms; Props/ — RoomPropPlanner (footprints, clearance,
                             spread, cover, lattices, symmetry, clusters), RoomDressing (cover and clutter per room type);
                             Design/ — FactionDesign (each faction's floor plans, structure, props and crowding)
                             Objectives/ — map objectives: templates, MapObjectivePlanner, MapObjectiveRunner;
@@ -110,7 +113,7 @@ Assets/
       Weapons/              WeaponItem (what a loadout slot holds), WeaponCategory (firearm or melee, rolls WeaponItems), IOffhand (what an offhand item implements), Ranged/, FireBehaviors/, Generation/, Melee/ (controller, guard, melee categories and generator), Shields/, Throwables/
       WorldMap/             WorldMapArea (bounds, background, fog of war), MapMarker, MapRevealer, projection
     Settings/               URP assets, volume profiles, project-wide input actions
-    Tests/EditMode/         NUnit tests for the Unity-independent logic (CGD.Tests.EditMode assembly)
+    Tests/EditMode/         NUnit tests for the Unity-independent logic (CGD.Tests.EditMode assembly), one folder per feature as in Scripts/
   ThirdParty/               imported asset packs
   TextMesh Pro/             TMP essentials
 ```

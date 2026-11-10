@@ -39,10 +39,17 @@ namespace CGD.Enemies
         public const string Pressure = "Pressure";
         [AgentBlackboardKey(BlackboardValueType.Float, "How stressed the player is, 0–1 (director's intensity; 0 without one)")]
         public const string PlayerStress = "PlayerStress";
+        [AgentBlackboardKey(BlackboardValueType.Float, "1 while its sensed target has its back turned or is reloading (an opening); else 0")]
+        public const string TargetExposed = "TargetExposed";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Seconds its sensed target has held it squarely in view, unbroken (being stared down)")]
+        public const string TargetWatching = "TargetWatching";
+        [AgentBlackboardKey(BlackboardValueType.Float, "1 for a moment after its sensed target whipped round or shot one of its decoys; else 0")]
+        public const string TargetFlinch = "TargetFlinch";
 
         internal static void Publish(EnemyAI ai, Blackboard blackboard)
         {
             var health = ai.Health;
+            ai.Readings.Update(UnityEngine.Time.time);
             blackboard.SetFloat(Health, health.MaxHealth > 0f ? health.Health / health.MaxHealth : 0f);
             blackboard.SetFloat(ShieldMissing, health.MaxShield > 0f ? 1f - UnityEngine.Mathf.Clamp01(health.Shield / health.MaxShield) : 0f);
             blackboard.SetFloat(RecentDamage, health.RecentDamageShare);
@@ -65,12 +72,18 @@ namespace CGD.Enemies
                 blackboard.SetFloat(TargetDistance, UnityEngine.Vector3.Distance(ai.transform.position, perception.TargetPosition));
                 blackboard.SetFloat(TargetHealth, perception.TargetHealthShare);
                 blackboard.SetFloat(TargetSpeed, perception.TargetVelocity.magnitude);
+                blackboard.SetFloat(TargetExposed, ai.Readings.IsExposed ? 1f : 0f);
+                blackboard.SetFloat(TargetWatching, ai.Readings.Watching);
+                blackboard.SetFloat(TargetFlinch, ai.Readings.Flinched ? 1f : 0f);
             }
             else
             {
                 blackboard.Remove(TargetDistance);
                 blackboard.Remove(TargetHealth);
                 blackboard.Remove(TargetSpeed);
+                blackboard.Remove(TargetExposed);
+                blackboard.Remove(TargetWatching);
+                blackboard.Remove(TargetFlinch);
             }
         }
 
