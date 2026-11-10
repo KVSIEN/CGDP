@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd74bf8cf5a348608f7381aed0be386c, type: 3}
+  m_Name: BioStragglerAIScenario
+  m_EditorClassIdentifier: CGD.Runtime::CGD.DevTools.AIScenario
+  DisplayName: 'Bio, one cut off'
+  Description: 'Two Bio, calm: Bio Agent 2 starts alone in the east lane, far from the herd. It should drift back to Bio Agent rather than wander off. Starts paused.'
+  Agents:
+  - Agent: Bio Agent
+    Placement: 0
+    Position: {x: 0, y: 0, z: 0}
+    Facing: 0
+    Health: 1
+    Shield: 1
+    Invulnerable: 0
+    AwareOf: 
+  - Agent: Bio Agent 2
+    Placement: 1
+    Position: {x: 26, y: 0, z: -12}
+    Facing: 270
+    Health: 1
+    Shield: 1
+    Invulnerable: 0
+    AwareOf: 
+  OthersSitOut: 1
+  ResetStats: 1
+  StartPaused: 1
+  Watch: Bio Agent 2

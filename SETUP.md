@@ -398,12 +398,17 @@ Spectator Camera   [Camera (off), UniversalAdditionalCameraData, AudioListener (
 Alarm Panel        [MeshFilter, MeshRenderer, BoxCollider, AlarmPanel]   ← on the north wall between the bunkers; `_screen` = its renderer
 Enemies            [EnemyRespawner]                      ← _delay 3, _territoryRadius 6, _alsoAvoid = Player (its PlayerHealth): revives any enemy under it in its own territory, at the safest spot
   Waypoints        Bio 1–4, Tech 1–2, Void 1–4
-  Bio Agent                      (BioTestAgent, patrol Bio — west lane and stones)
-  Tech Agent                     (TechTestAgent, patrol Tech — along the gallery)
+  Bio Herd         [EnemySquad]                          ← _assaulters 1, _suppressors 1: the first Bio goes straight in, the others flank (Bio's tree reads the role)
+    Bio Agent                    (BioTestAgent, patrol Bio — west lane and stones)
+    Bio Agent 2                  (BioTestAgent, at (−27, −14); the same patrol in another order)
+  Tech Union       [EnemySquad]                          ← _suppressors 1: one Tech pins the target, the other bounds to a new firing position
+    Tech Agent                   (TechTestAgent, patrol Tech — along the gallery)
+    Tech Agent 2                 (TechTestAgent, at (10, 16))
   Void Agent                     (VoidTestAgent, patrol Void — the south yard)
+  Void Agent 2                   (VoidTestAgent, at (20, −19); no squad — Voids act on their own accord)
 ```
 
-The agents are `Prefabs/Characters/Enemies/AITest/BioTestAgent`, `TechTestAgent` and `VoidTestAgent`:
+The agents are `Prefabs/Characters/Enemies/AITest/BioTestAgent`, `TechTestAgent` and `VoidTestAgent` — two of each, the second named *Bio Agent 2* and so on through `EnemyHealth` › `_displayName` (an override of the data's name, so labels, stats and scenarios can tell them apart; a scenario's agent name matches the GameObject name). Keys 1–4 watch the first four; Tab and clicking reach the rest. Only the Bio and Tech pairs sit under an `EnemySquad` (callouts relay inside a squad whatever the team, so one squad per faction):
 
 ```
 <Agent>   [NavMeshAgent, EnemyHealth, EnemyAI, Stunnable, StatusEffectController, EnemyHealthBar,

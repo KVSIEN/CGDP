@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FreeForAllAIScenario
   m_EditorClassIdentifier: CGD.Runtime::CGD.DevTools.AIScenario
   DisplayName: 'Free for all'
-  Description: 'All three factions from their own ground, full health, nobody aware of anyone. The arena as it starts.'
+  Description: 'All six agents (two of each faction) from their own ground, full health, nobody aware of anyone. The arena as it starts.'
   Agents:
   - Agent: Bio Agent
     Placement: 0
@@ -32,6 +32,30 @@ MonoBehaviour:
     Invulnerable: 0
     AwareOf: 
   - Agent: Void Agent
+    Placement: 0
+    Position: {x: 0, y: 0, z: 0}
+    Facing: 0
+    Health: 1
+    Shield: 1
+    Invulnerable: 0
+    AwareOf: 
+  - Agent: Bio Agent 2
+    Placement: 0
+    Position: {x: 0, y: 0, z: 0}
+    Facing: 0
+    Health: 1
+    Shield: 1
+    Invulnerable: 0
+    AwareOf: 
+  - Agent: Tech Agent 2
+    Placement: 0
+    Position: {x: 0, y: 0, z: 0}
+    Facing: 0
+    Health: 1
+    Shield: 1
+    Invulnerable: 0
+    AwareOf: 
+  - Agent: Void Agent 2
     Placement: 0
     Position: {x: 0, y: 0, z: 0}
     Facing: 0

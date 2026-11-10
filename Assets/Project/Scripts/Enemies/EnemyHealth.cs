@@ -11,6 +11,8 @@ namespace CGD.Enemies
     public class EnemyHealth : HealthManager, IPoolable
     {
         [SerializeField] private EnemyData      _data;
+        [Tooltip("Shown instead of the data's name: tells apart two of a kind in one scene (Bio Agent 2)")]
+        [SerializeField] private string         _displayName;
         [SerializeField] private EnemyHealthBar _healthBar;
         [SerializeField] private Vector3        _popupOffset = new Vector3(0f, 0.3f, 0f);
 
@@ -19,6 +21,7 @@ namespace CGD.Enemies
         public EnemyData Data => _data;
 
         public override string DisplayName =>
+            !string.IsNullOrEmpty(_displayName) ? _displayName :
             string.IsNullOrEmpty(_data.DisplayName) ? base.DisplayName : _data.DisplayName;
 
         public override Team  Team      => _data.Team;
