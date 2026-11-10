@@ -67,10 +67,12 @@ Assets/
                             Debugging/ (EnemyInsight: the read-only view debug tools get; EnemyStatusReport, AwarenessColors),
                             Squads/ (EnemySquad: roles, radio relay, leader; SquadRoles rules, SquadRole),
                             Pacing/ (EnemyPacing: the director's word to enemies; EnemyPacingState, BoldMovePermits),
-                            Voice/ (EnemyVoice: barks from EnemyBarkSet per type; BarkRules spacing, EnemyBarks bus)
+                            Voice/ (EnemyVoice: barks from EnemyBarkSet per type; BarkRules spacing, EnemyBarks bus),
+                            Bosses/ (BossDefinition, BossPhase; BossPhases: which phase a fight is in)
       Expedition/           the extraction loop: ExpeditionLedger (ship hold, packed kit, extract/die rules),
                             ExpeditionSession (keeps it across loads), ExpeditionRunner (a run in a level), RunStarterKit,
-                            ShipPersistence + ShipSave (the hold and kit on disk)
+                            ShipPersistence + ShipSave (the hold, kit and upgrades on disk);
+                            Upgrades/ (ShipUpgrade + levels, ShipUpgradeCatalog; ShipUpgrades: owned levels and buying rules)
       Factions/             FactionDefinition (name, colour, enemy roster) — used by the map graph and generated levels
       Feedback/             FeedbackBus, FeedbackPreset, FeedbackPlayer (feed, flash, rumble, shake), combat/quest feedback
       FiringRange/          the sandbox firing range: RangeControl (faction, tier, movement, distance, infinite ammo), RangeDummy (stats, colour), RangeSwitch (the buttons), TargetMover
@@ -97,7 +99,7 @@ Assets/
                             Encounters/ — encounter rooms: Core/ (RoomEncounter, RoomEncounterBuilder, EncounterContext/Settings,
                             RoomShutter/RoomSeal, EncounterSpawner, rules: RoomArea, EnemyGroup, WaveSchedule); one folder per kind:
                             Waves/ (Lockdown, Holdout, Ambush, Rift), Survival/ (Siege, Gauntlet), Spawner/, Shrine/, Stealth/,
-                            Puzzle/ (+ PuzzleSwitch, LightsOutPuzzle), Hazard/
+                            Puzzle/ (+ PuzzleSwitch, LightsOutPuzzle), Hazard/, Boss/
       Loot/                 LootTable, LootDropper, LootContainer
       Map/                  map graph data (Graph/: MapGraph, MapNode, analysis) and Generation/ (MapGenerator and its settings at the root; Layout/ — layout settings, grid, path, branches, loops, organic growth and the builders; Content/ — content settings, node type rules, guarantees, pacing, sections, type/intensity/tier passes; Categories/ — ship-space categories and their painter; Gates/ — locks and secrets; Factions/ — faction mixes and painter; RunModifiers/ — run modifiers and tuning; Analysis/ — validator, style report, style learner)
       Meters/               generic resources (stamina, mana, oxygen…): Meter, MeterSet, MeterCost, MeterZone

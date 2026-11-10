@@ -35,6 +35,13 @@ namespace CGD.Level
 
         public bool CanSpawn => _spots.Count > 0 && !_roster.IsEmpty;
 
+        // One enemy of `tier` from the room's roster (falling back to lower tiers), or null.
+        public GameObject PickOfTier(int tier)
+        {
+            GameObject[] options = _roster.OfTier(tier);
+            return options.Length > 0 ? _random.Pick(options) : null;
+        }
+
         public List<HealthManager> Spawn(int count, bool fromSecondRoster = false)
         {
             var spawned = new List<HealthManager>();

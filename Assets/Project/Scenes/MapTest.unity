@@ -284,6 +284,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f66ec9f7421f8544596bae8dcb0cfdc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAbilities
+--- !u!114 &1555766120 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3176522613028045428, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
+  m_PrefabInstance: {fileID: 7657266172198037326}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 353ba5af8b294084a6cb019c7fc15ad4, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Stats.CharacterStats
 --- !u!114 &1555766054 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5598995267719665189, guid: d0d195cd1c1424d428f727b379e8909a, type: 3}
@@ -1430,6 +1441,9 @@ MonoBehaviour:
   _input: {fileID: 1555766056}
   _starterKit: {fileID: 11400000, guid: 8c41f2d7a95e4b3c9e06d1a7b2f58e94, type: 2}
   _level: {fileID: 1349939063}
+  _upgrades: {fileID: 11400000, guid: 2e68a528d467b7c30fc095cba0ecc33c, type: 2}
+  _stats: {fileID: 1555766120}
+  _health: {fileID: 1555766054}
 --- !u!1 &1482240610
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,7 +1,9 @@
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CGD.Core;
+using CGD.Crafting;
 using CGD.Expedition;
 using CGD.Flow;
 using CGD.Items;
@@ -9,13 +11,14 @@ using CGD.Items;
 namespace CGD.UI
 {
     // The docked ship between runs: when a run ends it shows how it went, the ship's hold,
-    // and the kit packed for the next run. Clicking an entry moves it between the two;
-    // Deploy starts the next run (a fresh level from the same scene). Builds its own
+    // the kit packed for the next run and the ship's upgrades. Clicking an entry moves it
+    // between hold and kit, or buys an upgrade's next level from the hold. Deploy starts the next run (a fresh level from the same scene). Builds its own
     // hidden panel, so it only needs a RectTransform under the HUD canvas.
     [RequireComponent(typeof(RectTransform))]
     public class ExpeditionScreen : MonoBehaviour
     {
-        private static readonly Vector2 WindowSize = new(760f, 520f);
+        private static readonly Vector2 WindowSize = new(1100f, 540f);
+        private const int   Columns    = 3;
         private const float ListTop    = 110f;
         private const float FooterSize = 52f;
 
@@ -26,6 +29,7 @@ namespace CGD.UI
         private TextMeshProUGUI _summary;
         private UIButtonList _hold;
         private UIButtonList _kit;
+        private UIButtonList _upgrades;
 
         private ExpeditionLedger Ledger => _runner.Ledger;
 
@@ -67,6 +71,7 @@ namespace CGD.UI
             Unsubscribe();
             Ledger.Storage.Changed += Refresh;
             Ledger.Kit.Changed     += Refresh;
+            Ledger.Upgrades.Changed += Refresh;
             Refresh();
 
             _panel.SetActive(true);
@@ -78,12 +83,14 @@ namespace CGD.UI
             if (_runner == null) return;
             Ledger.Storage.Changed -= Refresh;
             Ledger.Kit.Changed     -= Refresh;
+            Ledger.Upgrades.Changed -= Refresh;
         }
 
         private void Refresh()
         {
             Fill(_hold, "Ship hold  (click to pack)", Ledger.Storage, pack: true);
             Fill(_kit,  "Bringing next run  (click to unpack)", Ledger.Kit, pack: false);
+            FillUpgrades();
         }
 
         private void Fill(UIButtonList list, string heading, Inventory inventory, bool pack)
@@ -101,6 +108,48 @@ namespace CGD.UI
             foreach (ItemInstance item in inventory.Items)
                 list.Add(item.DisplayName, () => Move(item, pack));
             list.End();
+        }
+
+        private void FillUpgrades()
+        {
+            _upgrades.Begin();
+            _upgrades.Heading("Ship upgrades  (click to buy from the hold)");
+
+            ShipUpgradeCatalog catalog = _runner.Upgrades;
+            if (catalog == null || catalog.Upgrades.Count == 0) _upgrades.Label("  none available");
+            else
+                foreach (ShipUpgrade upgrade in catalog.Upgrades)
+                    if (upgrade != null) AddUpgrade(upgrade);
+            _upgrades.End();
+        }
+
+        private void AddUpgrade(ShipUpgrade upgrade)
+        {
+            ShipUpgrades owned = Ledger.Upgrades;
+            string title = $"{upgrade.DisplayName}  {owned.LevelOf(upgrade)}/{upgrade.MaxLevel}";
+
+            ShipUpgradeLevel next = owned.Next(upgrade);
+            if (next == null)
+            {
+                _upgrades.Add($"{title}\n<size=80%>fully upgraded</size>", () => { }, interactable: false);
+                return;
+            }
+
+            string line = $"{next.Summary} · {CostText(next)}";
+            _upgrades.Add($"{title}\n<size=80%>{line}</size>", () => Ledger.BuyUpgrade(upgrade),
+                          owned.CanAfford(upgrade, Ledger.Storage));
+        }
+
+        private static string CostText(ShipUpgradeLevel level)
+        {
+            var text = new StringBuilder();
+            foreach (ItemAmount cost in level.Cost)
+            {
+                if (cost.Item == null) continue;
+                if (text.Length > 0) text.Append(", ");
+                text.Append(cost.SafeCount).Append(' ').Append(cost.Item.DisplayName);
+            }
+            return text.Length > 0 ? text.ToString() : "free";
         }
 
         private void Move(ItemDefinition definition, int count, bool pack)
@@ -148,10 +197,11 @@ namespace CGD.UI
             _summary.alignment = TextAlignmentOptions.Center;
             UIFactory.Place(_summary.rectTransform, new Vector2(0f, -58f), new Vector2(WindowSize.x, 28f));
 
-            float columnWidth  = (WindowSize.x - 48f) * 0.5f;
+            float columnWidth  = (WindowSize.x - 16f * (Columns + 1)) / Columns;
             float columnHeight = WindowSize.y - ListTop - FooterSize - 12f;
             _hold = new UIButtonList(Column("Hold", windowRt, 16f, columnWidth, columnHeight));
             _kit  = new UIButtonList(Column("Kit", windowRt, 32f + columnWidth, columnWidth, columnHeight));
+            _upgrades = new UIButtonList(Column("Upgrades", windowRt, 48f + columnWidth * 2f, columnWidth, columnHeight), rowHeight: 40f);
 
             Button deploy = UIFactory.MakeButton("Deploy", windowRt, "Deploy", out _);
             RectTransform deployRt = deploy.GetComponent<RectTransform>();

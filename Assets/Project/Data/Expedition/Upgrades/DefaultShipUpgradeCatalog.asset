@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1420e73fe8dcc00db48f09324d57d123, type: 3}
+  m_Name: DefaultShipUpgradeCatalog
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Expedition.ShipUpgradeCatalog
+  _upgrades:
+  - {fileID: 11400000, guid: c8504edd9591d82d37b646125f57e831, type: 2}
+  - {fileID: 11400000, guid: 35c9472c47427d3cc5e39500126abb3d, type: 2}
+  - {fileID: 11400000, guid: 5fc1edb6b62fb091d88db5e50adf1193, type: 2}
+  - {fileID: 11400000, guid: d0a2928377a3fb3e0814bac2f021d1c8, type: 2}
+  - {fileID: 11400000, guid: b8fedd9be90a911f84f13a9cd01d1fad, type: 2}

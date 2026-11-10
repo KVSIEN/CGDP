@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using CGD.Enemies;
 
 namespace CGD.Factions
 {
@@ -24,10 +25,13 @@ namespace CGD.Factions
         [SerializeField] private GameObject[] _tier2 = Array.Empty<GameObject>();
         [Tooltip("Tier 3: the faction's strongest regular enemies, with more affixes")]
         [SerializeField] private GameObject[] _tier3 = Array.Empty<GameObject>();
+        [Tooltip("Waits in the Boss room of a generated level when this faction holds it. Empty = the encounter settings' boss")]
+        [SerializeField] private BossDefinition _boss;
 
         public string DisplayName => string.IsNullOrEmpty(_displayName) ? name : _displayName;
         public Color  Color       => _color;
         public float  FloorTint   => _floorTint;
+        public BossDefinition Boss => _boss;
         // Tier 1, the faction's everyday roster.
         public GameObject[] Enemies => _tier1;
 

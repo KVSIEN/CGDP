@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using CGD.Combat;
 using CGD.Core;
 using CGD.Flow;
 using CGD.Input;
 using CGD.Items;
 using CGD.Level;
 using CGD.Player;
+using CGD.Stats;
 using CGD.Weapons;
 
 namespace CGD.Expedition
@@ -29,6 +32,15 @@ namespace CGD.Expedition
         [Tooltip("Optional — rolls the starting loadout from the level's seed, so a kept seed keeps its loadout")]
         [SerializeField] private LevelBuilder        _level;
 
+        [Header("Ship upgrades")]
+        [Tooltip("Optional — the upgrades the ship screen offers. Empty = no upgrades")]
+        [SerializeField] private ShipUpgradeCatalog  _upgrades;
+        [Tooltip("The player's stats, which owned upgrades add their bonuses to")]
+        [SerializeField] private CharacterStats      _stats;
+        [Tooltip("The player's health, topped up after the upgrades raise its maximum")]
+        [SerializeField] private HealthManager       _health;
+
+        private readonly List<ShipUpgradeLevel> _bonuses = new();
         private ExpeditionLedger _localLedger;
         private GameFlow _flow;
         private bool _leftByEmergencyExit;
@@ -36,11 +48,14 @@ namespace CGD.Expedition
         public ExpeditionLedger Ledger =>
             ExpeditionSession.Instance != null ? ExpeditionSession.Instance.Ledger : _localLedger ??= new ExpeditionLedger();
 
+        public ShipUpgradeCatalog Upgrades => _upgrades;
+
         // Raised once the run is settled, with what it kept or cost.
         public event Action<RunReport> RunEnded;
 
         private void Start()
         {
+            ApplyUpgrades();
             Give(Ledger.Deploy());
             GiveStarterKit();
 
@@ -50,6 +65,18 @@ namespace CGD.Expedition
         }
 
         private void OnExitUsed(LevelExit exit) => _leftByEmergencyExit = exit.IsEmergency;
+
+        // The ship's upgrades last for the whole run: permanent modifiers, gone with the level.
+        private void ApplyUpgrades()
+        {
+            if (_stats == null) return;
+
+            Ledger.Upgrades.CollectBonuses(_upgrades, _bonuses);
+            if (_bonuses.Count == 0) return;
+
+            foreach (ShipUpgradeLevel level in _bonuses) _stats.AddPreset(level.Bonus);
+            if (_health != null) _health.Heal(_health.MaxHealth);
+        }
 
         private void OnDestroy()
         {

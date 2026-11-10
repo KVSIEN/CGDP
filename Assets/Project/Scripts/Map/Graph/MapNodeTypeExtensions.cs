@@ -17,7 +17,7 @@ namespace CGD.Map
         {
             MapNodeType.Lockdown or MapNodeType.Holdout or MapNodeType.Ambush or MapNodeType.Stealth
                 or MapNodeType.Rift or MapNodeType.Puzzle or MapNodeType.Hazard or MapNodeType.Spawner or MapNodeType.Shrine or MapNodeType.Siege
-                or MapNodeType.Gauntlet => true,
+                or MapNodeType.Gauntlet or MapNodeType.Boss => true,
             _ => false,
         };
 

@@ -10,10 +10,14 @@ namespace CGD.Expedition
     // Deploy hands the kit to the run. Extract moves everything carried into storage;
     // Die keeps storage as it is — what was brought and gathered is gone. An emergency
     // extraction is in between: worn gear and half of every stack make it, loose gear doesn't.
+    //   Upgrades — the ship's permanent improvements, bought from storage; never lost.
     public class ExpeditionLedger
     {
-        public Inventory Storage { get; } = new();
-        public Inventory Kit     { get; } = new();
+        public Inventory    Storage  { get; } = new();
+        public Inventory    Kit      { get; } = new();
+        public ShipUpgrades Upgrades { get; } = new();
+
+        public bool BuyUpgrade(ShipUpgrade upgrade) => Upgrades.TryBuy(upgrade, Storage);
 
         public bool IsRunning { get; private set; }
         public int  Brought   { get; private set; }

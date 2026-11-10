@@ -8,7 +8,7 @@ using CGD.WorldMap;
 namespace CGD.Level
 {
     // Turns the level's encounter rooms (Lockdown, Holdout, Ambush, Stealth, Rift, Puzzle,
-    // Hazard, Spawner, Shrine, Siege, Gauntlet) into encounters once the level is built, its NavMesh baked and its enemies
+    // Hazard, Spawner, Shrine, Siege, Gauntlet, Boss) into encounters once the level is built, its NavMesh baked and its enemies
     // placed: a shutter in each of the room's doorways, spots set aside for enemies and
     // consoles, and the room type's RoomEncounter on its own object under the level.
     public class RoomEncounterBuilder
@@ -56,6 +56,7 @@ namespace CGD.Level
             MapNodeType.Shrine   => typeof(ShrineEncounter),
             MapNodeType.Siege    => typeof(SiegeEncounter),
             MapNodeType.Gauntlet => typeof(GauntletEncounter),
+            MapNodeType.Boss     => typeof(BossEncounter),
             _                    => null,
         };
 

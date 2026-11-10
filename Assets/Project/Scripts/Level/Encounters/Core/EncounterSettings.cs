@@ -2,12 +2,13 @@ using System;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Core;
+using CGD.Enemies;
 using CGD.Stats;
 
 namespace CGD.Level
 {
     // Tuning and prefabs for the rooms that play out as encounters (Lockdown, Holdout,
-    // Ambush, Stealth, Rift, Puzzle, Hazard, Spawner, Shrine, Siege, Gauntlet). Shared by every generated level.
+    // Ambush, Stealth, Rift, Puzzle, Hazard, Spawner, Shrine, Siege, Gauntlet, Boss). Shared by every generated level.
     [CreateAssetMenu(fileName = "EncounterSettings", menuName = "CGD/Level/Encounter Settings")]
     public class EncounterSettings : ScriptableObject
     {
@@ -80,6 +81,10 @@ namespace CGD.Level
         [SerializeField] private IntRange _puzzleNodes = new(4, 5);
         [SerializeField, Min(1)] private int _puzzleScramble = 2;
 
+        [Header("Boss")]
+        [Tooltip("The boss of a Boss room whose faction has none of its own. Empty = a built-in boss made from the room's strongest enemy")]
+        [SerializeField] private BossDefinition _boss;
+
         [Header("Hazard")]
         [Tooltip("One is picked per Hazard room; it is applied to everyone inside on every tick")]
         [SerializeField] private StatusEffect[] _hazardEffects = Array.Empty<StatusEffect>();
@@ -128,6 +133,8 @@ namespace CGD.Level
         public GameObject PuzzleDoorPrefab   => _puzzleDoorPrefab;
         public IntRange   PuzzleNodes        => _puzzleNodes;
         public int        PuzzleScramble     => _puzzleScramble;
+
+        public BossDefinition Boss => _boss;
 
         public StatusEffect[] HazardEffects   => _hazardEffects;
         public float          HazardTick      => _hazardTick;
