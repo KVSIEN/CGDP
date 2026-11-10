@@ -15,9 +15,9 @@ MonoBehaviour:
   DisplayName: Tech Tier 3
   Team: 2
   Tier: 3
-  MaxHealth: 150
+  MaxHealth: 130
   Armor: 75
-  MaxShield: 180
+  MaxShield: 156
   ShieldRegenDelay: 4
   ShieldRegenRate: 12
   PatrolSpeed: 1.5

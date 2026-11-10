@@ -182,6 +182,7 @@
 - **Attachments** — craftable modifiers fitted into a weapon or armor piece's slots. Their effects are fixed, not rolled, and many carry a drawback alongside their benefit
   - Fitting is fully reversible: attachments sit on top of the item's own roll rather than overwriting it, so removing one restores the original
   - Higher-tier gear comes with more attachment slots (1 at Common through 4 at Legendary)
+- **Armor for every slot** — Combat Helm (armor, a little shield), Combat Vest (torso: the most armor, bonus health), Combat Gloves, Combat Greaves (legs), Combat Boots and a Utility Pack (backslot: health and shield, no armor) can all drop from equipment loot and roll their own stats by item quality. A full set of good pieces roughly triples your effective health
 - **Included baseline items** — one of each kind to copy from: Combat Vest (torso armor rolling armor and bonus health), Extended Magazine (attachment: +25% magazine, 10% slower reload), Bandage (consumable), Scrap Metal (crafting resource)
 - **Inventory** — holds counted stacks and unique items side by side, with no capacity limit
 - **Starting contents** — the player can be set up to spawn with a list of stackable items (typically a munition stack per caliber they expect to use). Left empty, the player spawns with an empty pack and zero reserve ammo, so the first magazine is all they have until they find a pickup
@@ -449,6 +450,7 @@
 - Enemies can be spawned from the object pool and reused: a reused enemy comes back at full health and starts patrolling again
 - **Enemy tiers**: every faction has three tiers of regular enemies. Tier 1 is the everyday roster (~100 effective health); tiers 2 and 3 are tougher (about 2.5× and 5× the effective health, harder hits) and a little bigger. For now tiers 2–3 are stat-only placeholders built on their faction's tier 1; their own looks and behaviour come later
 - How often higher tiers turn up depends on the room's tier (see Map Graph Generation): tier-1 rooms are almost all tier 1 enemies (10% tier 2), tier-2 rooms mix in tier 2s (45%) and a few tier 3s (10%), and tier-3 rooms are mostly tier 2 and 3 (45% each). Encounter waves (Holdout, Rift, Lockdown) follow the same odds
+- **Tier strength**: tier 2 enemies have about 2.5 times the effective health of a tier 1 (health, shield and armour together) and tier 3 about five times, in every faction, hitting 1.5 and 2.2 times as hard. Each faction keeps its own shape — Bio health-heavy, Tech armoured with a shield, Void mostly shield
 - **Random affixes**: tier 2 enemies roll one random affix and tier 3 two (tier 1 none), named in front of them ("Brutal Warded Void Tier 3"): **Armored** (+40 armour), **Warded** (+40 shield, even on factions that normally have none), **Vital** (+60% health), **Brutal** (+40% damage) and **Swift** (+30% speed). Each spawn rolls afresh
 - Patrol follows an ordered list of waypoints, looping continuously; idles in place if no waypoints are assigned
 - Investigate / Hunt: the enemy looks into what it noticed — see *Enemy Senses & Memory* — and heads back to its post once the search turns up nothing

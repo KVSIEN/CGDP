@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: def1e646405e21d42ae6ea9177a3c6cd, type: 3}
+  m_Name: CombatBootsArmor
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Items.ArmorDefinition
+  _displayName: Combat Boots
+  _description: Sturdy boots. Rolls a little armor and shield.
+  _icon: {fileID: 0}
+  _reality: 0
+  _tier: 0
+  _weight: 3
+  _rollProfile: {fileID: 11400000, guid: 17e540ee9242e574e855d1eef9dcb80a, type: 2}
+  _statRanges:
+  - Stat: 18
+    Range: {Min: 2, Max: 8, Bias: 0}
+  - Stat: 19
+    Range: {Min: 0, Max: 15, Bias: 0}
+  _perkPool: {fileID: 11400000, guid: 1e239de2c87346d588473435a6761ab1, type: 2}
+  _slot: 4

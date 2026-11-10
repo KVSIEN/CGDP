@@ -40,6 +40,67 @@ Higher-tier enemies scale up from 100 EHP; the targets below still hold as
 
 ---
 
+## Enemy Tier Scaling
+
+Locked scaling for the authored tier 2 and 3 enemies, measured in effective health
+(`EnemyData.EffectiveHealth` = (health + shield) × (1 + armor / 100)) against the 100-EHP tier 1:
+
+| Enemy tier | Effective health | Melee damage (per hit) | Notes |
+|------------|------------------|------------------------|-------|
+| Tier 1     | ≈ 100  (×1)      | ×1   | rank and file; no affixes |
+| Tier 2     | ≈ 250  (×2.5)    | ×1.5 | rolls one affix |
+| Tier 3     | ≈ 500  (×5)      | ×2.2 | rolls two affixes |
+
+| Faction | T1 → T2 → T3 health / armor / shield | T1 → T2 → T3 damage |
+|---------|--------------------------------------|---------------------|
+| Bio     | 80/25/0 → 185/35/0 → 335/50/0        | 8 → 12 → 18   |
+| Tech    | 30/50/37 → 70/60/86 → 130/75/156     | 12 → 18 → 26  |
+| Void    | 45/0/55 → 110/0/140 → 220/0/280      | 18 → 27 → 40  |
+
+Each faction keeps its shape from the reality table above (Bio health-heavy, Tech armor-heavy,
+Void shield-heavy) at every tier. The numbers are before affixes: Armored (+40 armour) and Warded
+(+40 shield) lift a rolled enemy above its band, so a tier 3 with two affixes can reach ~600–700.
+`TierBalanceTests` keeps the assets within ±10% of these bands.
+
+What it means at the shots-to-kill the category table sets for a tier 1 (body shots, Common roll,
+before the headshot bonus), as arithmetic rather than playtested numbers:
+
+| Category    | Tier 1 | Tier 2 | Tier 3 |
+|-------------|--------|--------|--------|
+| Sniper      | 1      | 3      | 5      |
+| DMR         | 2–3    | 5–8    | 10–15  |
+| AR          | 4–5    | 10–12  | 20–25  |
+| LMG         | 3–4    | 8–10   | 15–20  |
+| SMG         | 5–6    | 12–15  | 25–30  |
+| Pistol      | 3–4    | 8–10   | 15–20  |
+| Hand cannon | 2      | 5      | 10     |
+| Shotgun     | 1      | 3      | 5      |
+
+A tier 3 should take a Common AR about 1.8 s of sustained body fire (≈ 0.9 s on headshots), a
+Legendary one about 1.3 s: tougher fights, not a different game. Headshots, Legendary rolls, ship
+upgrades (+10% damage at most) and worn armour are what bring the TTK back down.
+
+## Worn Gear (armor)
+
+Armor pieces roll inside the windows below (desirability from the quality curve picks the point:
+Common sits in the low third, Legendary in the top third). All six slots now have a piece:
+
+| Slot     | Piece           | Armor | Health | Shield |
+|----------|-----------------|-------|--------|--------|
+| Helm     | Combat Helm     | 5–15  | —      | 0–25   |
+| Torso    | Combat Vest     | 10–30 | 0–20   | —      |
+| Gloves   | Combat Gloves   | 2–8   | 0–10   | —      |
+| Legs     | Combat Greaves  | 5–20  | 0–15   | —      |
+| Boots    | Combat Boots    | 2–8   | —      | 0–15   |
+| Backslot | Utility Pack    | —     | 0–25   | 0–25   |
+
+A full Legendary set lands near 65 armor, +50 health and +45 shield: about 330 effective health
+against the player's 100, so a tier 3 hit (Void husk, 40) lands for ~24 instead of 40. A full
+Common set is roughly 45 armor and +35 health and shield between them. Torso carries the most armor, the pack none,
+so the slots stay worth choosing between. Armor pieces draw their perks from `DefaultArmorPerkPool`.
+
+---
+
 ## Category Targets @ Optimal Range
 
 Each category is best in exactly one dimension of engagement and average or
@@ -615,6 +676,5 @@ For each new or modified weapon:
 
 ## Open Questions
 
-- Higher-tier enemy EHP scaling (from GDD: "specific values per tier are TBD"). Once locked, add a scaling row for each tier here.
 - Shotguns, energy weapons and melee not yet baselined in the GDD's Weapon Damage Targets table. Shotguns are proposed above; energy weapons and melee still need their own rows once designed.
 - Reality-matchup swings (Lightning vs shields, Ice vs armor, BIO Bleed vs everything) haven't been quantified — currently a hand-wave "±20–40%". A follow-up doc could formalize per-affinity multipliers.

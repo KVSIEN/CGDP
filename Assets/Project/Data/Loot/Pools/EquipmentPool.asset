@@ -99,6 +99,51 @@ MonoBehaviour:
       Max: 1
       Bias: 0
     Weight: 1.5
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 64250e541cb94beb860d9a6a4f5b743f, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.6
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 77ad0137208b45fcadabc6d253710064, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.6
+  - Kind: 0
+    Item: {fileID: 11400000, guid: d41268b7b072431a94a996ef355750d9, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.6
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 7b4e8368f91945708982330258af8979, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.6
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 9749e62d17ff4bcbb564790faaae9b7b, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Weight: 0.6
   _nothingWeight: 0
   _uniqueDraws: 0
   _tierChecks: []
