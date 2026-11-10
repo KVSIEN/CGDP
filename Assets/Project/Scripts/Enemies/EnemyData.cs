@@ -54,6 +54,10 @@ namespace CGD.Enemies
 
         [Header("Combat")]
         public EnemyCombatType CombatType = EnemyCombatType.Melee;
+        [Tooltip("How it relates to its kin: a union that shares what it sees, a loner, a herd (see SocialStyle)")]
+        public SocialStyle Social = SocialStyle.Standard;
+        [Tooltip("Other teams it counts as kin: it hears their calls and a herd stays near them (a pact)")]
+        public Team[] Pacts;
         public float AttackRange    = 1.5f;
         public float AttackDamage   = 15f;
         public float AttackCooldown = 1f;

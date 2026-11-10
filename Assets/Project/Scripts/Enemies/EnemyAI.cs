@@ -172,6 +172,7 @@ namespace CGD.Enemies
 
         private void OnEnable()
         {
+            EnemyRoster.Add(this);
             Noise.Emitted         += Perception.OnNoise;
             EnemyCallouts.Raised  += Perception.OnCallout;
             FallenAllies.Fell     += Perception.OnAllyFell;
@@ -182,6 +183,7 @@ namespace CGD.Enemies
 
         private void OnDisable()
         {
+            EnemyRoster.Remove(this);
             Noise.Emitted         -= Perception.OnNoise;
             EnemyCallouts.Raised  -= Perception.OnCallout;
             FallenAllies.Fell     -= Perception.OnAllyFell;

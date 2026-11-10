@@ -50,7 +50,12 @@ namespace CGD.Enemies
 
         private readonly EnemyAI           _owner;
         private readonly Transform         _self;
+        private const float LinkRange  = 80f;   // metres a union's link reaches
+        private const float LinkEvery  = 1f;    // seconds between shared sightings
+        private const float FocusBonus = 1.5f;
+
         private readonly EnemyData         _data;
+        private float _nextLink;
         private readonly PerceptionProfile _profile;
         private readonly LayerMask         _obstacleMask;
         private readonly Team              _team;
@@ -296,7 +301,8 @@ namespace CGD.Enemies
 
         public void OnCallout(EnemyCallout callout)
         {
-            if (callout.Caller == _owner || callout.Team != _team || IsTargetDetected) return;
+            if (callout.Caller == _owner || IsTargetDetected || _data.Social == SocialStyle.Loner) return;
+            if (!EnemyRoster.IsKinTeam(_data, _team, callout.Team)) return;
 
             float distance = Vector3.Distance(callout.From, _self.position);
             bool heard = callout.ThroughWalls ? distance <= callout.Radius : CanHear(callout.From, distance, callout.Radius, callout.Caller != null ? callout.Caller.transform : null);
@@ -363,6 +369,8 @@ namespace CGD.Enemies
 
                 float weight = _weights.Weigh(stimulus.Traits);
                 float score  = stimulus.Instant ? float.MaxValue : stimulus.Gain * (stimulus.Seen ? 2f : 1f) * weight;
+                // A union closes on the target its kin are already fighting.
+                if (!stimulus.Instant && _data.Social == SocialStyle.Network && EnemyRoster.IsFocusedByKin(_owner, candidate)) score *= FocusBonus;
                 _weighed.Add(new WeighedHostile(candidate, weight, stimulus.Seen, stimulus.Instant || stimulus.Gain > 0f));
                 if (score <= bestScore) continue;
 
@@ -430,6 +438,7 @@ namespace CGD.Enemies
 
             _sighting.Record(position, target.transform.forward, _clock);
             _lastSensedAt      = _clock;
+            ShareSighting();
             TargetHealthShare  = stimulus.Traits.HealthShare;
             IsTargetDistracted = stimulus.Traits.IsDistracted;
 
@@ -536,7 +545,20 @@ namespace CGD.Enemies
 
         private void CallOut()
         {
-            EnemyCallouts.Raise(new EnemyCallout(_owner, _self.position, Target.transform.position, _team, _profile.CalloutRadius));
+            if (_data.Social == SocialStyle.Loner) return;
+
+            // A union's link reaches every member, through walls.
+            bool linked = _data.Social == SocialStyle.Network;
+            EnemyCallouts.Raise(new EnemyCallout(_owner, _self.position, Target.transform.position, _team,
+                linked ? LinkRange : _profile.CalloutRadius, throughWalls: linked));
+        }
+
+        // A union shares each sighting as it happens, not just the first one.
+        private void ShareSighting()
+        {
+            if (_data.Social != SocialStyle.Network || _clock < _nextLink) return;
+            _nextLink = _clock + LinkEvery;
+            CallOut();
         }
 
         private void Lead(Vector3 position)

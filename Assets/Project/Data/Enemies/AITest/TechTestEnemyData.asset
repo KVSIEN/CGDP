@@ -29,6 +29,7 @@ MonoBehaviour:
   BehaviorTree: {fileID: 11400000, guid: e0e5d3b2627b47dcb4fc82b16842b21c, type: 2}
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
   CombatType: 1
+  Social: 1
   AttackRange: 1.6
   AttackDamage: 9
   AttackCooldown: 1.5

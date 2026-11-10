@@ -76,6 +76,21 @@ MonoBehaviour:
   - rid: 1087
   - rid: 1088
   - rid: 1089
+  - rid: 1090
+  - rid: 1091
+  - rid: 1092
+  - rid: 1093
+  - rid: 1094
+  - rid: 1095
+  - rid: 1096
+  - rid: 1097
+  - rid: 1098
+  - rid: 1099
+  - rid: 1100
+  - rid: 1101
+  - rid: 1102
+  - rid: 1103
+  - rid: 1104
   references:
     version: 2
     RefIds:
@@ -98,6 +113,7 @@ MonoBehaviour:
         - 630b80e8cc974ea982793e670e2c149d
         - 56abf79eec294040afc52f36ffed73e9
         - 9609f52a3296435c9d9df0317b79d196
+        - ab1218ba19f64f6b8d70923e46a21bcc
         - a6cf5ba10c184f2398441c4efdc470ec
         _abort: 0
     - rid: 1002
@@ -142,6 +158,8 @@ MonoBehaviour:
         - 54b29e8d5ce840e6a9b4fe8b992a76fe
         - 8525a0dd07764968836142bf0a1aa5a3
         - dfc2d59965ab4c20b4e02b569892bea5
+        - 675b5a1e36e94ec98d5df56a48a0b53a
+        - c4736511dc764bce89be0efb64cea50a
         - ee06be27f963487eb2f4bfaa9ecd6f6a
         - fe8565c356ca47df9eca06231399a424
         - 5b6193cc0451411e99e01f9be2be6b1b
@@ -612,3 +630,126 @@ MonoBehaviour:
         - c1eaf0e2076b4514bb20465fd9b8ddfe
         - 2349a3a496764645932bae3a7491bb26
         _abort: 2
+    - rid: 1090
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d125e6c111da4bfd9664ce2dec823b5b
+        _position: {x: 3000, y: 1700}
+        _comment: 
+    - rid: 1091
+      type: {class: KinNear, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 35b8e25a54d940ab9ce7784ef6584c47
+        _position: {x: 3220, y: 1700}
+        _comment: 
+        _radius: 25
+        _atLeast: 1
+    - rid: 1092
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2f087df73ee24db189a9e9d7f1d71c0f
+        _position: {x: 3440, y: 1700}
+        _comment: 
+        _children:
+        - 35b8e25a54d940ab9ce7784ef6584c47
+    - rid: 1093
+      type: {class: JoinHerd, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a13704a409cd4db7a4498abebfd4b7ab
+        _position: {x: 3660, y: 1700}
+        _comment: 
+        _within: 8
+        _giveUpAfter: 12
+    - rid: 1094
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 675b5a1e36e94ec98d5df56a48a0b53a
+        _position: {x: 3880, y: 1600}
+        _comment: 'Cut off from the herd (nothing of its kin within 25 m, but some exist): rejoin them before pouncing; alone, it carries on as before'
+        _children:
+        - d125e6c111da4bfd9664ce2dec823b5b
+        - 2f087df73ee24db189a9e9d7f1d71c0f
+        - a13704a409cd4db7a4498abebfd4b7ab
+        _abort: 2
+    - rid: 1095
+      type: {class: HasSquadRole, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 12343260eb324c59b0e0146628f85330
+        _position: {x: 4100, y: 1700}
+        _comment: 
+        _role: 2
+    - rid: 1096
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 046caaad519547c8b09dbb22b69a4ea2
+        _position: {x: 4320, y: 1700}
+        _comment: 
+        _range: 8
+    - rid: 1097
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8af35ec5d5824d3fa894636fd975b7e2
+        _position: {x: 4540, y: 1700}
+        _comment: 
+        _children:
+        - 046caaad519547c8b09dbb22b69a4ea2
+    - rid: 1098
+      type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5ad5c81814e44b91b34cc792d189495f
+        _position: {x: 4760, y: 1700}
+        _comment: 
+        _giveUpAfter: 8
+    - rid: 1099
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 22201d0f46e14f8aa566058e3ad920a9
+        _position: {x: 4980, y: 1700}
+        _comment: 
+        _children:
+        - 5ad5c81814e44b91b34cc792d189495f
+    - rid: 1100
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c4736511dc764bce89be0efb64cea50a
+        _position: {x: 5200, y: 1600}
+        _comment: 'Pack hunting: when its squad gives it the flank role it circles to the target''s side while the others go straight in'
+        _children:
+        - 12343260eb324c59b0e0146628f85330
+        - 8af35ec5d5824d3fa894636fd975b7e2
+        - 22201d0f46e14f8aa566058e3ad920a9
+        _abort: 0
+    - rid: 1101
+      type: {class: KinNear, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1c504d1a647a49a782d5f066bda1ae42
+        _position: {x: 5420, y: 1700}
+        _comment: 
+        _radius: 20
+        _atLeast: 1
+    - rid: 1102
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 73875ee8b0b94295bbc2a22a0b9fb393
+        _position: {x: 5640, y: 1700}
+        _comment: 
+        _children:
+        - 1c504d1a647a49a782d5f066bda1ae42
+    - rid: 1103
+      type: {class: JoinHerd, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4cb886f56d764597aa8b438e2ac8c35d
+        _position: {x: 5860, y: 1700}
+        _comment: 
+        _within: 8
+        _giveUpAfter: 15
+    - rid: 1104
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ab1218ba19f64f6b8d70923e46a21bcc
+        _position: {x: 6080, y: 1600}
+        _comment: 'Nothing to hunt: drift back to the herd instead of wandering off alone'
+        _children:
+        - 73875ee8b0b94295bbc2a22a0b9fb393
+        - 4cb886f56d764597aa8b438e2ac8c35d
+        _abort: 0

@@ -95,6 +95,13 @@ MonoBehaviour:
   - rid: 1084
   - rid: 1085
   - rid: 1086
+  - rid: 1087
+  - rid: 1088
+  - rid: 1089
+  - rid: 1090
+  - rid: 1091
+  - rid: 1092
+  - rid: 1093
   references:
     version: 2
     RefIds:
@@ -238,6 +245,8 @@ MonoBehaviour:
         - e2a1b2c3d4e5f60718293a4b5c6d701
         - 005f4c77603840d4ab6a10fa5550053b
         - 223bb24576d84dd29211ebc63a235095
+        - 97e380fa678d412082ad0d2bab96eef0
+        - d0af4340b2804db3ab7aeb7b81c5bae1
         - 9b4f8aa4e67d4a628908272ba7c56088
         - 1280971f72074b778a3eda977d66b5f8
         - de7fe51f82c14a4aa3416eacf94a599e
@@ -794,3 +803,61 @@ MonoBehaviour:
         - 4e88b4c2e36e40779bf422a983e01c34
         - 655611f936a44c8a90ae9daaa6e195b0
         _abort: 2
+    - rid: 1087
+      type: {class: HasSquadRole, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 640cfd34330d4f9eb80f2b55de2d6234
+        _position: {x: 3000, y: 1700}
+        _comment: 
+        _role: 3
+    - rid: 1088
+      type: {class: Suppress, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2d7fcc8d073143a889b17cbbc0470cae
+        _position: {x: 3220, y: 1700}
+        _comment: 
+    - rid: 1089
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 97e380fa678d412082ad0d2bab96eef0
+        _position: {x: 3440, y: 1600}
+        _comment: 'Union: given the suppress role, it pins the target''s head down from where it stands while its mates reposition'
+        _children:
+        - 640cfd34330d4f9eb80f2b55de2d6234
+        - 2d7fcc8d073143a889b17cbbc0470cae
+        _abort: 2
+    - rid: 1090
+      type: {class: HasSquadRole, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 43c5ed3b645c41ac972770fdc48f3ec2
+        _position: {x: 3660, y: 1700}
+        _comment: 
+        _role: 2
+    - rid: 1091
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 12705a62f99645e1b47da317590fa61c
+        _position: {x: 3880, y: 1700}
+        _comment: 
+        _use: 0
+        _giveUpAfter: 6
+    - rid: 1092
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4c989e63ebb2464e854d55de22d73b4d
+        _position: {x: 4100, y: 1700}
+        _comment: 
+        _children:
+        - 12705a62f99645e1b47da317590fa61c
+        _seconds: 6
+        _onlyAfterSuccess: 0
+    - rid: 1093
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d0af4340b2804db3ab7aeb7b81c5bae1
+        _position: {x: 4320, y: 1600}
+        _comment: 'Union: while a mate pins the target, bound to another firing position (a different spot each time) to build a crossfire'
+        _children:
+        - 43c5ed3b645c41ac972770fdc48f3ec2
+        - 4c989e63ebb2464e854d55de22d73b4d
+        _abort: 0
