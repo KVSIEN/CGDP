@@ -22,12 +22,16 @@ namespace CGD.Abilities
         private HealthManager _siphoner;
         private float _age;
         private float _nextTick;
+        // What characters know about it, so they can decide to step out.
+        private readonly HazardZone _hazard = new();
 
         private void Awake()
         {
             _renderer = GetComponent<Renderer>();
             _block    = new MaterialPropertyBlock();
         }
+
+        private void OnDisable() => Hazards.Remove(_hazard);
 
         // `siphoner` is who recovers shield from the damage (the caster).
         public void Begin(RiftAbility rift, DamageSource source, HealthManager siphoner)
@@ -39,6 +43,9 @@ namespace CGD.Abilities
             _nextTick = 0f;
             // The mesh is a unit cylinder, so its scale is the diameter.
             transform.localScale = new Vector3(rift.Radius * 2f, 0.02f, rift.Radius * 2f);
+
+            _hazard.Place(transform.position, rift.Radius, rift.DamagePerTick / rift.TickInterval, source);
+            Hazards.Add(_hazard);
         }
 
         private void Update()
@@ -49,6 +56,7 @@ namespace CGD.Abilities
             if (_age >= _rift.Duration)
             {
                 _rift = null;
+                Hazards.Remove(_hazard);
                 PrefabPool.Release(gameObject);
                 return;
             }

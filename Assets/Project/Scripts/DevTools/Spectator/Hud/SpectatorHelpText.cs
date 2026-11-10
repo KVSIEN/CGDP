@@ -9,7 +9,7 @@ namespace CGD.DevTools
             string P(SpectatorAction action) => settings.PromptFor(action);
 
             string move  = $"{P(SpectatorAction.MoveForward)} {P(SpectatorAction.MoveLeft)} {P(SpectatorAction.MoveBack)} {P(SpectatorAction.MoveRight)}";
-            string watch = $"{P(SpectatorAction.WatchAgent1)} {P(SpectatorAction.WatchAgent2)} {P(SpectatorAction.WatchAgent3)} {P(SpectatorAction.WatchAgent4)}";
+            string watch = $"{P(SpectatorAction.WatchAgent1)} {P(SpectatorAction.WatchAgent2)} {P(SpectatorAction.WatchAgent3)} {P(SpectatorAction.WatchAgent4)} {P(SpectatorAction.WatchAgent5)} {P(SpectatorAction.WatchAgent6)}";
 
             return
                 "<b>SPECTATOR CONTROLS</b>\n" +
@@ -17,7 +17,7 @@ namespace CGD.DevTools
                 Line("Move / pan", $"{move}   ({P(SpectatorAction.MoveDown)} {P(SpectatorAction.MoveUp)} down / up)") +
                 Line("Faster", $"hold {P(SpectatorAction.Fast)}") +
                 Line("Look / orbit", $"hold {P(SpectatorAction.Look)}") +
-                Line("Zoom", $"{P(SpectatorAction.ZoomIn)} / {P(SpectatorAction.ZoomOut)}   (free: fly speed)") +
+                Line("Zoom", $"{P(SpectatorAction.ZoomIn)} / {P(SpectatorAction.ZoomOut)}") +
                 Section("Watching") +
                 Line("Watch an agent", $"{watch}   or click it") +
                 Line("Next / previous", $"{P(SpectatorAction.NextAgent)}   ({P(SpectatorAction.Fast)}+{P(SpectatorAction.NextAgent)} back)") +
@@ -34,6 +34,7 @@ namespace CGD.DevTools
                 Line("Reset stats", P(SpectatorAction.ResetStats)) +
                 Line("Scenarios", P(SpectatorAction.Scenarios)) +
                 Line("Restart scenario", P(SpectatorAction.RestartScenario)) +
+                Line("Squad sizes", P(SpectatorAction.Squads)) +
                 Section("Time") +
                 Line("Pause / step", $"{P(SpectatorAction.Pause)}   /   {P(SpectatorAction.StepFrame)}") +
                 Line("Slower / faster", $"{P(SpectatorAction.SlowDown)}   /   {P(SpectatorAction.SpeedUp)}") +
@@ -47,10 +48,10 @@ namespace CGD.DevTools
         {
             string P(SpectatorAction action) => settings.PromptFor(action);
             return $"<b>{P(SpectatorAction.ToggleHelp)}</b> controls     <b>{P(SpectatorAction.Settings)}</b> settings     " +
-                   $"<b>{P(SpectatorAction.WatchAgent1)}–{P(SpectatorAction.WatchAgent4)}</b> watch an agent     " +
+                   $"<b>{P(SpectatorAction.WatchAgent1)}–{P(SpectatorAction.WatchAgent6)}</b> watch an agent     " +
                    $"<b>{P(SpectatorAction.InspectorPage)}</b> inspector page     " +
                    $"<b>{P(SpectatorAction.ToggleSenses)} {P(SpectatorAction.ToggleCover)} {P(SpectatorAction.TogglePlans)}</b> overlays     " +
-                   $"<b>{P(SpectatorAction.Scenarios)}</b> scenarios";
+                   $"<b>{P(SpectatorAction.Scenarios)}</b> scenarios     <b>{P(SpectatorAction.Squads)}</b> squad sizes";
         }
 
         private static string Section(string title) => $"<color=#FFD24A>{title}</color>\n";

@@ -24,6 +24,12 @@ namespace CGD.Enemies
 
         public override string Summary => _ability != null ? _ability.name : "(no ability)";
 
+        protected override void OnInitialize(BtContext context)
+        {
+            base.OnInitialize(context);
+            Ai.Abilities.Register(_ability);
+        }
+
         protected override void OnEnter(BtContext context)
         {
             _casting = TryAimPoint(out Vector3 aimAt) && InRange(aimAt) && HasClearShot(aimAt) && Ai.Abilities.TryBegin(_ability, aimAt);

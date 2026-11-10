@@ -26,7 +26,7 @@ MonoBehaviour:
   HearingRadius: 12
   Senses: {fileID: 11400000, guid: 68d72b2fee444c769b2a6753111afb2e, type: 2}
   TargetPriorities: {fileID: 11400000, guid: 792f742e9d8d46afb0dde3fc7260fdaf, type: 2}
-  BehaviorTree: {fileID: 11400000, guid: e7612450fa2d4d9084473b8b50dd87ce, type: 2}
+  BehaviorTree: {fileID: 11400000, guid: 5f3347897d9db3ba3c41bc8581ab0d60, type: 2}
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
   CombatType: 0
   Social: 2

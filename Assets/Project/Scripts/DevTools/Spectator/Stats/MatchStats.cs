@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace CGD.DevTools
 {
@@ -10,20 +11,25 @@ namespace CGD.DevTools
     {
         public const int Nobody = -1;
 
-        private readonly AgentTally[] _agents;
+        private readonly List<AgentTally> _agents = new();
 
         public MatchStats(int agentCount)
         {
-            _agents = new AgentTally[agentCount];
-            for (int i = 0; i < agentCount; i++) _agents[i] = new AgentTally();
+            Grow(agentCount);
         }
 
-        public int        Count  => _agents.Length;
+        public int        Count  => _agents.Count;
         public AgentTally Others { get; } = new();
         // Game time the match (re)started at.
         public float      StartedAt { get; private set; }
 
         public AgentTally this[int agent] => _agents[agent];
+
+        // Room for more agents (the roster grew); never shrinks, so numbers stay put.
+        public void Grow(int agentCount)
+        {
+            while (_agents.Count < agentCount) _agents.Add(new AgentTally());
+        }
 
         public float Duration(float now) => Math.Max(0f, now - StartedAt);
 
@@ -55,6 +61,6 @@ namespace CGD.DevTools
 
         public void AbilityUsed(int agent) => Tally(agent).AbilityUses++;
 
-        private AgentTally Tally(int agent) => agent >= 0 && agent < _agents.Length ? _agents[agent] : Others;
+        private AgentTally Tally(int agent) => agent >= 0 && agent < _agents.Count ? _agents[agent] : Others;
     }
 }

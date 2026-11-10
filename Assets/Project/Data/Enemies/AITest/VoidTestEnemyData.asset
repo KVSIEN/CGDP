@@ -19,7 +19,7 @@ MonoBehaviour:
   MaxShield: 60
   ShieldRegenDelay: 2.5
   ShieldRegenRate: 20
-  PatrolSpeed: 1.2
+  PatrolSpeed: 2
   ChaseSpeed: 4.5
   SightRange: 60
   SightAngle: 110
@@ -29,12 +29,12 @@ MonoBehaviour:
   BehaviorTree: {fileID: 11400000, guid: 68a35ba375dc4e338a9e54d8c61ddf63, type: 2}
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
   CombatType: 1
-  Social: 2
+  Social: 1
   AttackRange: 1.6
   AttackDamage: 12
   AttackCooldown: 1
-  RangedAttackCooldown: 2.2
-  RangedAttackDamage: 28
+  RangedAttackCooldown: 1.8
+  RangedAttackDamage: 34
   AttackWindup: 0.6
   DamageNumberColor: {r: 0.78, g: 0.55, b: 1, a: 1}
   PreferredRange: 13
@@ -44,7 +44,7 @@ MonoBehaviour:
   StrafeInterval: 1.5
   StrafeDistance: 4
   ShotProjectile: {fileID: 2000000000000000001, guid: 3c5eb489a8194290a25b01c4d17cb91c, type: 3}
-  ShotSpeed: 14
+  ShotSpeed: 20
   ShotRadius: 0.4
   ShotBlastRadius: 1.6
   ShotEffects:

@@ -92,7 +92,9 @@ namespace CGD.DevTools
             Bind(SpectatorAction.WatchAgent2,   "<Keyboard>/2"),
             Bind(SpectatorAction.WatchAgent3,   "<Keyboard>/3"),
             Bind(SpectatorAction.WatchAgent4,   "<Keyboard>/4"),
-            Bind(SpectatorAction.Overview,      "<Keyboard>/0",          "<Gamepad>/buttonNorth"),
+            Bind(SpectatorAction.WatchAgent5,   "<Keyboard>/5"),
+            Bind(SpectatorAction.WatchAgent6,   "<Keyboard>/6"),
+            Bind(SpectatorAction.Overview,     "<Keyboard>/0",          "<Gamepad>/buttonNorth"),
             Bind(SpectatorAction.FreeCamera,    "<Keyboard>/f",          "<Gamepad>/buttonWest"),
             Bind(SpectatorAction.Pause,         "<Keyboard>/p",          "<Gamepad>/start"),
             Bind(SpectatorAction.SlowDown,      "<Keyboard>/minus",      "<Gamepad>/dpad/left"),
@@ -109,6 +111,7 @@ namespace CGD.DevTools
             Bind(SpectatorAction.ResetStats,    "<Keyboard>/backspace"),
             Bind(SpectatorAction.Scenarios,     "<Keyboard>/b"),
             Bind(SpectatorAction.RestartScenario, "<Keyboard>/r"),
+            Bind(SpectatorAction.Squads,        "<Keyboard>/g"),
         };
 
         private static SpectatorBinding Bind(SpectatorAction action, string primary, string secondary = "") =>

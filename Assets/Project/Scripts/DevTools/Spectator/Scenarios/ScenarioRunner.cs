@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using CGD.Combat;
@@ -14,27 +15,27 @@ namespace CGD.DevTools
     {
         private const float SnapReach = 3f;
 
-        private readonly EnemyAI[]    _agents;
-        private readonly Vector3[]    _homes;
-        private readonly Quaternion[] _homeRotations;
+        private readonly AgentRoster      _agents;
+        private readonly List<Vector3>    _homes = new();
+        private readonly List<Quaternion> _homeRotations = new();
 
-        public ScenarioRunner(EnemyAI[] agents)
+        public ScenarioRunner(AgentRoster agents)
         {
-            _agents        = agents;
-            _homes         = new Vector3[agents.Length];
-            _homeRotations = new Quaternion[agents.Length];
-            for (int i = 0; i < agents.Length; i++)
-            {
-                if (agents[i] == null) continue;
-                _homes[i]         = agents[i].transform.position;
-                _homeRotations[i] = agents[i].transform.rotation;
-            }
+            _agents = agents;
+            for (int i = 0; i < agents.Count; i++) RememberHome(agents[i]);
+            agents.Added += RememberHome;   // an agent brought in later calls where it arrived home
+        }
+
+        private void RememberHome(EnemyAI agent)
+        {
+            _homes.Add(agent != null ? agent.transform.position : Vector3.zero);
+            _homeRotations.Add(agent != null ? agent.transform.rotation : Quaternion.identity);
         }
 
         // Index of the agent the scenario wants watched, −1 for none.
         public int Load(AIScenario scenario)
         {
-            for (int i = 0; i < _agents.Length; i++)
+            for (int i = 0; i < _agents.Count; i++)
             {
                 EnemyAI agent = _agents[i];
                 if (agent == null) continue;
@@ -49,10 +50,17 @@ namespace CGD.DevTools
             return IndexOf(scenario.Watch);
         }
 
+        // One agent into the fight at home, untouched (squad sizes); or out of it.
+        public void Deploy(int index) => Start(_agents[index], index, null);
+
+        public Vector3 HomeOf(int index) => _homes[index];
+
+        public void Bench(int index) => SitOut(_agents[index]);
+
         public int IndexOf(string agentName)
         {
             if (string.IsNullOrWhiteSpace(agentName)) return -1;
-            for (int i = 0; i < _agents.Length; i++)
+            for (int i = 0; i < _agents.Count; i++)
                 if (_agents[i] != null && Matches(_agents[i], agentName)) return i;
             return -1;
         }
@@ -62,7 +70,7 @@ namespace CGD.DevTools
             if (!agent.gameObject.activeSelf) agent.gameObject.SetActive(true);
 
             bool placed = entry != null && entry.Placement == ScenarioPlacement.Position;
-            Vector3    position = placed ? Walkable(entry.Position) : _homes[index];
+            Vector3    position = placed ? Walkable(entry.Position) : Walkable(_homes[index]);
             Quaternion rotation = placed ? Quaternion.Euler(0f, entry.Facing, 0f) : _homeRotations[index];
             EnemyRestart.At(agent.gameObject, position, rotation);
 
@@ -99,7 +107,7 @@ namespace CGD.DevTools
         private static bool Matches(EnemyAI agent, string name) =>
             !string.IsNullOrWhiteSpace(name) &&
             (string.Equals(agent.name, name.Trim(), StringComparison.OrdinalIgnoreCase) ||
-             string.Equals(agent.Health.DisplayName, name.Trim(), StringComparison.OrdinalIgnoreCase));
+             (agent.TryGetComponent(out EnemyHealth health) && string.Equals(health.DisplayName, name.Trim(), StringComparison.OrdinalIgnoreCase)));
 
         private static Vector3 Walkable(Vector3 position) =>
             NavMesh.SamplePosition(position, out NavMeshHit hit, SnapReach, NavMesh.AllAreas) ? hit.position : position;

@@ -122,15 +122,19 @@ namespace CGD.Enemies
             if (fallen.Body != _leader) return;
 
             foreach (EnemyAI member in _members)
-                if (member != _leader && member.State != EnemyAI.AiState.Dead) member.Morale.Shake(_leaderLossMorale);
+                if (member != _leader && IsInPlay(member)) member.Morale.Shake(_leaderLossMorale);
             _leader = FirstAlive();
         }
 
         private EnemyAI FirstAlive()
         {
             foreach (EnemyAI member in _members)
-                if (member != null && member.State != EnemyAI.AiState.Dead) return member;
+                if (IsInPlay(member)) return member;
             return null;
         }
+
+        // Agents the spectator has sent away are switched off and may never have woken up (no morale yet).
+        private static bool IsInPlay(EnemyAI member) =>
+            member != null && member.isActiveAndEnabled && member.State != EnemyAI.AiState.Dead;
     }
 }

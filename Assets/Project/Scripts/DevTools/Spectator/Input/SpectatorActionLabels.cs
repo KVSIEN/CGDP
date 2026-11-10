@@ -22,6 +22,8 @@ namespace CGD.DevTools
             SpectatorAction.WatchAgent2   => "Watch agent 2",
             SpectatorAction.WatchAgent3   => "Watch agent 3",
             SpectatorAction.WatchAgent4   => "Watch agent 4",
+            SpectatorAction.WatchAgent5   => "Watch agent 5",
+            SpectatorAction.WatchAgent6   => "Watch agent 6",
             SpectatorAction.Overview      => "Whole arena",
             SpectatorAction.FreeCamera    => "Free camera",
             SpectatorAction.Pause         => "Pause / resume",
@@ -39,6 +41,7 @@ namespace CGD.DevTools
             SpectatorAction.ResetStats    => "Reset match stats",
             SpectatorAction.Scenarios     => "Scenarios",
             SpectatorAction.RestartScenario => "Restart scenario",
+            SpectatorAction.Squads        => "Squad sizes",
             _                             => action.ToString(),
         };
     }

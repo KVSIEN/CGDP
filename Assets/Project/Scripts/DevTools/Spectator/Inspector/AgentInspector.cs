@@ -71,6 +71,9 @@ namespace CGD.DevTools
             if (health.Armor > 0f)
                 _text.Append("   ").Coloured(InspectorText.Armor, $"armor {health.Armor:0}");
             _text.Append('\n');
+
+            // Cooldowns matter on every page, not only the overview.
+            OverviewSections.Abilities(_text, insight);
         }
 
         private void Overview(EnemyInsight insight)
@@ -79,7 +82,6 @@ namespace CGD.DevTools
             insight.DescribeStatus(_rows);
             foreach ((string label, string value) in _rows) _text.Row(label, value);
 
-            OverviewSections.Abilities(_text, insight);
             OverviewSections.Hostiles(_text, insight);
             if (insight.Tree == null) return;
             insight.Tree.CollectRunning(_running);

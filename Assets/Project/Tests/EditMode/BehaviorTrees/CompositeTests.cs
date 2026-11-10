@@ -123,6 +123,26 @@ namespace CGD.Tests
             Assert.IsTrue(Copy(tree, wanted).IsRunning);
         }
 
+        [Test]
+        public void UtilitySelectorKeepsRunningWhenTheBetterChildCannotStart()
+        {
+            var utility = _t.Add(new UtilitySelector(), _t.Root);
+            Set(utility, "_randomness", 0f);
+            Set(utility, "_reconsiderEvery", 0.1f);
+            var fallback = _t.Add(new ScriptedLeaf { Result = BtStatus.Running }, FixedScore(utility, 0.2f));
+            var blocked  = _t.Add(new Sequence(), FixedScore(utility, 0.9f));
+            _t.Add(new ScriptedCondition { Holds = false }, blocked);
+            _t.Add(new ScriptedLeaf { Result = BtStatus.Running }, blocked);
+            var tree = _t.Build();
+
+            tree.Tick(0.05f);
+            tree.Tick(0.2f);
+            tree.Tick(0.2f);
+
+            Assert.IsTrue(Copy(tree, fallback).IsRunning);
+            Assert.AreEqual(1, Copy(tree, fallback).Enters);
+        }
+
         private Score FixedScore(BtNode parent, float weight) =>
             _t.Add(Set(Set(new Score(), "_key", ""), "_weight", weight), parent);
     }

@@ -36,6 +36,7 @@ namespace CGD.Enemies
             Ai.ReportState(EnemyAI.AiState.Retreat);
             Ai.ReportStep(EngageStep.MoveToCover);
             Ai.SetSpeed(Ai.Data.ChaseSpeed);
+            Ai.KeepEyesOnTarget(context.DeltaTime);
             return HasArrived(Ai.Agent, ArrivalDistance) ? BtStatus.Success : BtStatus.Running;
         }
     }

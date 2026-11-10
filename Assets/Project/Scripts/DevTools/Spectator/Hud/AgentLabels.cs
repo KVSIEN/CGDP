@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -29,11 +30,15 @@ namespace CGD.DevTools
         }
 
         private readonly Canvas  _canvas;
-        private readonly Label[] _labels;
+        private readonly List<Label> _labels = new();
+        private readonly RectTransform _labelParent;
+        private readonly Vector2 _labelSize;
+        private readonly float   _labelFontSize;
+        private float _labelScale = 1f;
         private float _nextRefresh;
         private int   _highlighted = -1;
 
-        public AgentLabels(Transform parent, EnemyAI[] agents, Vector2 size, float fontSize)
+        public AgentLabels(Transform parent, AgentRoster agents, Vector2 size, float fontSize)
         {
             var canvasObject = new GameObject("Agent Labels", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
             canvasObject.transform.SetParent(parent, false);
@@ -45,15 +50,26 @@ namespace CGD.DevTools
             scaler.referenceResolution = ReferenceResolution;
             scaler.matchWidthOrHeight  = 0.5f;
 
-            _labels = new Label[agents.Length];
-            for (int i = 0; i < agents.Length; i++)
-                _labels[i] = Build(agents[i], (RectTransform)canvasObject.transform, size, fontSize);
+            _labelParent   = (RectTransform)canvasObject.transform;
+            _labelSize     = size;
+            _labelFontSize = fontSize;
+            for (int i = 0; i < agents.Count; i++)
+                _labels.Add(Build(agents[i], _labelParent, size, fontSize));
+            agents.Added += OnAdded;
+        }
+
+        private void OnAdded(EnemyAI agent)
+        {
+            Label label = Build(agent, _labelParent, _labelSize, _labelFontSize);
+            label.Panel.localScale = Vector3.one * _labelScale;
+            _labels.Add(label);
         }
 
         public void SetVisible(bool visible) => _canvas.gameObject.SetActive(visible);
 
         public void SetScale(float scale)
         {
+            _labelScale = scale;
             foreach (Label label in _labels) label.Panel.localScale = Vector3.one * scale;
         }
 
@@ -62,7 +78,7 @@ namespace CGD.DevTools
         {
             if (index == _highlighted) return;
             _highlighted = index;
-            for (int i = 0; i < _labels.Length; i++)
+            for (int i = 0; i < _labels.Count; i++)
                 _labels[i].Background.color = i == index ? Highlighted : Normal;
             _nextRefresh = 0f;
         }
@@ -74,7 +90,7 @@ namespace CGD.DevTools
             if (refresh) _nextRefresh = time + RefreshEvery;
             float scale = _canvas.scaleFactor > 0f ? _canvas.scaleFactor : 1f;
 
-            for (int i = 0; i < _labels.Length; i++)
+            for (int i = 0; i < _labels.Count; i++)
             {
                 Label label = _labels[i];
                 if (label.Ai == null) continue;

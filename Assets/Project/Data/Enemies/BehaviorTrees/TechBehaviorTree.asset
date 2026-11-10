@@ -102,6 +102,12 @@ MonoBehaviour:
   - rid: 1091
   - rid: 1092
   - rid: 1093
+  - rid: 1094
+  - rid: 1095
+  - rid: 1096
+  - rid: 1097
+  - rid: 1098
+  - rid: 1099
   references:
     version: 2
     RefIds:
@@ -120,6 +126,7 @@ MonoBehaviour:
         _position: {x: 0, y: 150}
         _comment: 'Most urgent first: branches that abort lower priority interrupt whatever runs to their right'
         _children:
+        - 1ef65bb63bda03348d9f9360569ac7d7
         - 6c7346685b604452becb4ad69523a7a4
         - ff20ad5a8dfa4ef89ec4f2c3d28dba8c
         - 556ec30074cc4cbe8a65570413ee7380
@@ -656,10 +663,11 @@ MonoBehaviour:
       data:
         _guid: 223bb24576d84dd29211ebc63a235095
         _position: {x: -315, y: 600}
-        _comment: 'Fortify ready and the target in view: dig in (+60 armour, half speed) and pin it down where it stands or hides, shooting and throwing grenades, without stopping to dodge'
+        _comment: 'Fortify ready and reason to dig in (taking fire or damage, shield worn down, the target closing to mid range, a crowd): dig in (+60 armour, half speed) and pin it down where it stands or hides, shooting and throwing grenades, without stopping to dodge'
         _children:
         - 196b55c680584fd4840b379c967368b3
         - 4cbfbd75988a4f46a36a3ec85daa0093
+        - c4a77895b5342d98102975494ec8e1f3
         - 0e10f67050ff4c3eb675d01d552aaf14
         - c0f27fb799824fa492062f5724c63187
         _abort: 2
@@ -668,11 +676,12 @@ MonoBehaviour:
       data:
         _guid: e2a1b2c3d4e5f60718293a4b5c6d701
         _position: {x: -900, y: 600}
-        _comment: 'Someone right on top of it with its shield up: discharge the shield in a slowing burst, then withdraw'
+        _comment: 'Someone within reach (5 m) with its shield up, and reason to (pressed hard, hit, or several on top of it): discharge the shield in a slowing burst, then withdraw'
         _children:
         - e2a1b2c3d4e5f60718293a4b5c6d702
         - e2a1b2c3d4e5f60718293a4b5c6d703
         - e2a1b2c3d4e5f60718293a4b5c6d704
+        - 76cc1729c0f6f410522c5134b72713c0
         - e2a1b2c3d4e5f60718293a4b5c6d705
         - 5c502daf1ea14baba9dc6effcd00e012
         _abort: 0
@@ -861,3 +870,99 @@ MonoBehaviour:
         - 43c5ed3b645c41ac972770fdc48f3ec2
         - 4c989e63ebb2464e854d55de22d73b4d
         _abort: 0
+    - rid: 1094
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c4a77895b5342d98102975494ec8e1f3
+        _position: {x: -645, y: 750}
+        _comment: 'Dig in when it pays: under fire or taking damage, shield worn down, the target coming into mid range, or several hostiles near'
+        _reasons:
+        - _key: UnderFire
+          _from: 0
+          _to: 1
+          _weight: 0.35
+        - _key: RecentDamage
+          _from: 0
+          _to: 0.2
+          _weight: 0.4
+        - _key: ShieldMissing
+          _from: 0
+          _to: 0.8
+          _weight: 0.3
+        - _key: TargetDistance
+          _from: 30
+          _to: 12
+          _weight: 0.3
+        - _key: HostilesClose
+          _from: 0
+          _to: 2
+          _weight: 0.2
+        _patience: 25
+    - rid: 1095
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 76cc1729c0f6f410522c5134b72713c0
+        _position: {x: -600, y: 750}
+        _comment: 'Discharge when it pays: the target right on top of it, being hit, under fire, or several in the blast'
+        _reasons:
+        - _key: TargetDistance
+          _from: 5
+          _to: 1.5
+          _weight: 0.5
+        - _key: RecentDamage
+          _from: 0
+          _to: 0.2
+          _weight: 0.4
+        - _key: UnderFire
+          _from: 0
+          _to: 1
+          _weight: 0.3
+        - _key: HostilesClose
+          _from: 1
+          _to: 3
+          _weight: 0.4
+        _patience: 4
+    - rid: 1096
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 1ef65bb63bda03348d9f9360569ac7d7
+        _position: {x: -3150, y: 300}
+        _comment: 'Standing in a hostile zone (a rift): step out, unless finishing a nearly dead target is worth the damage. The more it hurts and the more hurt it is, the sooner it goes'
+        _children:
+        - 48dcf88c3c67b2aebf9ad60f6cc1bb96
+        - 417448e889a20929c43c5c579b8f3c50
+        - c885840e9e114a79ed919739fe7fcb5f
+        _abort: 2
+    - rid: 1097
+      type: {class: InHazard, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 48dcf88c3c67b2aebf9ad60f6cc1bb96
+        _position: {x: -3370, y: 450}
+        _comment: 
+    - rid: 1098
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 417448e889a20929c43c5c579b8f3c50
+        _position: {x: -3150, y: 450}
+        _comment: 'How badly the zone hurts it, how hurt it already is, and how far its target is from dying (a nearly dead one is worth staying for)'
+        _reasons:
+        - _key: HazardDanger
+          _from: 0
+          _to: 0.12
+          _weight: 1
+        - _key: Health
+          _from: 1
+          _to: 0.3
+          _weight: 0.4
+        - _key: TargetHealth
+          _from: 0.15
+          _to: 1
+          _weight: 0.3
+        _patience: 3
+    - rid: 1099
+      type: {class: LeaveHazard, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c885840e9e114a79ed919739fe7fcb5f
+        _position: {x: -2930, y: 450}
+        _comment: 
+        _giveUpAfter: 3

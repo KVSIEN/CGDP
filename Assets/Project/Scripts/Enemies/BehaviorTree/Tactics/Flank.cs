@@ -13,6 +13,7 @@ namespace CGD.Enemies
     public sealed class Flank : EnemyAction
     {
         private const float ArrivalDistance = 0.8f;
+        private const float MinCommitment   = 1.5f;   // seconds before a flank may be broken off
 
         [Tooltip("Metres from the target to end up at. 0 = a little beyond attack range (melee) or the preferred range (ranged)")]
         [SerializeField, Min(0f)] private float _standOff;
@@ -40,7 +41,25 @@ namespace CGD.Enemies
             Ai.ReportState(EnemyAI.AiState.Chase);
             Ai.ReportStep(EngageStep.Flank);
             Ai.SetSpeed(Ai.Data.ChaseSpeed);
-            return HasArrived(Ai.Agent, ArrivalDistance) ? BtStatus.Success : BtStatus.Running;
+            Ai.KeepEyesOnTarget(context.DeltaTime);
+            if (HasArrived(Ai.Agent, ArrivalDistance)) return BtStatus.Success;
+            return CanBreakOffToShoot(context) ? BtStatus.Success : BtStatus.Running;
+        }
+
+        // A ranged enemy flanks to get a shot: once it has one (in view, in range, clear line) the
+        // circling has done its job, so it stops and fights instead of finishing the walk.
+        private bool CanBreakOffToShoot(BtContext context)
+        {
+            if (Ai.Data.CombatType != EnemyCombatType.Ranged) return false;
+            if (context.Time < _givesUpAt - _giveUpAfter + MinCommitment) return false;
+
+            var perception = Ai.Perception;
+            if (!perception.IsTargetDetected) return false;
+
+            Vector3 targetPos = perception.TargetPosition;
+            float range = Ai.Data.PreferredRange * 1.2f;
+            return (targetPos - Ai.transform.position).sqrMagnitude <= range * range &&
+                   Ai.RangedCombat.HasClearShot(targetPos);
         }
 
         // Squad flankers split left and right; anyone else picks a side at random.

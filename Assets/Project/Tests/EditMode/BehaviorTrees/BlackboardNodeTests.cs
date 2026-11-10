@@ -81,5 +81,51 @@ namespace CGD.Tests
             tree.Tick(0.1f);
             Assert.AreEqual(BtStatus.Failure, Copy(tree, has).LastStatus);
         }
+
+        [Test]
+        public void MotiveActsOnceItsReasonsAddUp()
+        {
+            var motive = Set(new Motive(), "_patience", 0f);
+            Set(motive, "_reasons", new[] { Reason("Health", from: 1f, to: 0f, weight: 1f) });
+            _t.Add(motive, _t.Root);
+            var tree = _t.Build();
+
+            tree.Blackboard.SetFloat("Health", 0.3f);
+            tree.Tick(0.1f);
+            Assert.AreEqual(BtStatus.Failure, Copy(tree, motive).LastStatus);
+
+            tree.Blackboard.SetFloat("Health", 0f);
+            tree.Tick(0.1f);
+            Assert.AreEqual(BtStatus.Success, Copy(tree, motive).LastStatus);
+        }
+
+        [Test]
+        public void MotiveWithoutAReasonActsOnceItsPatienceRunsOut()
+        {
+            var motive = _t.Add(Set(new Motive(), "_patience", 1f), _t.Root);
+            var tree = _t.Build();
+
+            for (int i = 0; i < 3; i++)
+            {
+                tree.Tick(0.4f);
+                Assert.AreEqual(BtStatus.Failure, Copy(tree, motive).LastStatus);
+            }
+            tree.Tick(0.4f);
+            Assert.AreEqual(BtStatus.Success, Copy(tree, motive).LastStatus);
+        }
+
+        private static MotiveReason Reason(string key, float from, float to, float weight)
+        {
+            var reason = new MotiveReason();
+            SetField(reason, "_key", key);
+            SetField(reason, "_from", from);
+            SetField(reason, "_to", to);
+            SetField(reason, "_weight", weight);
+            return reason;
+        }
+
+        private static void SetField(object target, string field, object value) =>
+            target.GetType().GetField(field, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                  .SetValue(target, value);
     }
 }

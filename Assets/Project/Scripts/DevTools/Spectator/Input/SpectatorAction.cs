@@ -12,7 +12,7 @@ namespace CGD.DevTools
         MoveDown,
         Fast,           // held: move, pan and fly faster; with Next Agent, go back one
         Look,           // held: the mouse turns the camera (and orbits a followed agent)
-        ZoomIn,         // overview: lower; following: closer; free: slower
+        ZoomIn,         // overview: lower; following: closer; free: forward / back along the view
         ZoomOut,
         NextAgent,
         PreviousAgent,
@@ -38,5 +38,8 @@ namespace CGD.DevTools
         ResetStats,     // start the match stats over
         Scenarios,      // the scenario list (AIScenario presets)
         RestartScenario, // load the last scenario again, as it started
+        WatchAgent5,    // appended later, so not contiguous with WatchAgent1–4
+        WatchAgent6,
+        Squads,         // the squad sizes list: how many of each faction are in the fight
     }
 }

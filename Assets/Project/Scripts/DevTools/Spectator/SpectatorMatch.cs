@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using CGD.Enemies;
 
 namespace CGD.DevTools
 {
@@ -10,38 +9,55 @@ namespace CGD.DevTools
     // whom to watch. Restart loads the last one again exactly as it began.
     internal sealed class SpectatorMatch : IDisposable
     {
-        private readonly EnemyAI[]          _agents;
+        private readonly AgentRoster        _agents;
         private readonly MatchStats         _stats;
         private readonly MatchStatsRecorder _recorder;
         private readonly MatchStatsText     _statsText = new();
         private readonly ScenarioRunner     _runner;
         private readonly ScenarioMenu       _menu;
+        private readonly SquadMenu          _squadMenu;
         private readonly SpectatorTime      _time;
         private readonly Action<string>     _toast;
         private readonly Action<int>        _watch;
 
         private AIScenario _current;
 
-        public SpectatorMatch(EnemyAI[] agents, AIScenario[] scenarios, RectTransform canvas, SpectatorInputSettings settings,
+        public SpectatorMatch(AgentRoster agents, Transform agentsRoot, GameObject[] agentPrefabs, AIScenario[] scenarios, RectTransform canvas, SpectatorInputSettings settings,
                               SpectatorTime time, Action<string> toast, Action<int> watch)
         {
             _agents   = agents;
             _time     = time;
             _toast    = toast;
             _watch    = watch;
-            _stats    = new MatchStats(agents.Length);
+            _stats    = new MatchStats(agents.Count);
             _stats.Reset(Time.time);
             _recorder = new MatchStatsRecorder(agents, _stats);
             _runner   = new ScenarioRunner(agents);
             _menu     = new ScenarioMenu(canvas, scenarios ?? Array.Empty<AIScenario>(),
                                          settings.PromptFor(SpectatorAction.Scenarios),
                                          settings.PromptFor(SpectatorAction.RestartScenario), Load);
+            _squadMenu = new SquadMenu(canvas, new SquadSizer(agents, _runner, agentsRoot, agentPrefabs), settings.PromptFor(SpectatorAction.Squads), toast);
         }
 
-        public bool IsMenuOpen => _menu.IsOpen;
+        public bool IsMenuOpen => _menu.IsOpen || _squadMenu.IsOpen;
 
-        public void ToggleMenu() => _menu.Toggle();
-        public void CloseMenu()  => _menu.Close();
+        public void ToggleMenu()
+        {
+            _squadMenu.Close();
+            _menu.Toggle();
+        }
+
+        public void ToggleSquadMenu()
+        {
+            _menu.Close();
+            _squadMenu.Toggle();
+        }
+
+        public void CloseMenu()
+        {
+            _menu.Close();
+            _squadMenu.Close();
+        }
 
         public void ResetStats()
         {

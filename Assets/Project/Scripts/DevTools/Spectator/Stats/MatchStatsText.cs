@@ -14,7 +14,7 @@ namespace CGD.DevTools
         private readonly StringBuilder _text = new();
         private readonly AgentTally    _teamTotal = new();
 
-        public string Write(MatchStats stats, EnemyAI[] agents, float now, string scenario, string resetKey)
+        public string Write(MatchStats stats, AgentRoster agents, float now, string scenario, string resetKey)
         {
             float duration = stats.Duration(now);
             _text.Clear();
@@ -29,20 +29,25 @@ namespace CGD.DevTools
             return _text.ToString();
         }
 
-        private void TeamRows(MatchStats stats, EnemyAI[] agents, Team team, float duration)
+        private void TeamRows(MatchStats stats, AgentRoster agents, Team team, float duration)
         {
             int members = 0;
             _teamTotal.Clear();
-            for (int i = 0; i < agents.Length; i++)
+            for (int i = 0; i < agents.Count; i++)
             {
-                if (agents[i] == null || agents[i].Health.Team != team) continue;
-                members++;
+                if (agents[i] == null || !agents[i].TryGetComponent(out EnemyHealth health) || health.Team != team) continue;
                 AgentTally tally = stats[i];
-                Row($"{i + 1}  {agents[i].Health.DisplayName}", OverlayPalette.Hex(OverlayPalette.ForTeam(team)), tally, duration);
+                if (!agents[i].gameObject.activeSelf && IsUntouched(tally)) continue;   // sent away without taking part
+                members++;
+                Row($"{i + 1}  {health.DisplayName}", OverlayPalette.Hex(OverlayPalette.ForTeam(team)), tally, duration);
                 Add(_teamTotal, tally);
             }
             if (members > 1) Row($"<i>{team} total</i>", OverlayPalette.Hex(OverlayPalette.ForTeam(team)), _teamTotal, duration);
         }
+
+        private static bool IsUntouched(AgentTally tally) =>
+            tally.Kills == 0 && tally.Deaths == 0 && tally.Hits == 0 && tally.AbilityUses == 0 &&
+            tally.DamageDealt <= 0f && tally.DamageTaken <= 0f;
 
         private void Row(string name, string colour, AgentTally tally, float duration)
         {

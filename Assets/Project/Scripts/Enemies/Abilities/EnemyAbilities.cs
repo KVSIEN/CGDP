@@ -96,10 +96,11 @@ namespace CGD.Enemies
             AimAt(_castAimAt);
             Ability ability = _casting;
             _casting = null;
-            ability.Execute(_context);
-            if (ability.GivesAway) _ai.Reveal();
+            // Spent before it goes off: should it fail half way, it must not be free to go off again next tick.
             _readyAt[ability] = Time.time + ability.Cooldown;
             if (ability.EffectDuration > 0f) _effectEndsAt[ability] = Time.time + ability.EffectDuration;
+            ability.Execute(_context);
+            if (ability.GivesAway) _ai.Reveal();
             _ai.NotifyAbilityUsed(ability);
             return true;
         }
@@ -121,9 +122,13 @@ namespace CGD.Enemies
             if (direction.sqrMagnitude > 0.0001f) _aim.rotation = Quaternion.LookRotation(direction);
         }
 
+        // Its tree names the abilities up front, so the inspector lists them (as ready) before the
+        // first time one is asked about.
+        public void Register(Ability ability) => Remember(ability);
+
         private void Remember(Ability ability)
         {
-            if (_readyAt.ContainsKey(ability)) return;
+            if (ability == null || _readyAt.ContainsKey(ability)) return;
             _readyAt[ability] = 0f;
             _known.Add(ability);
         }

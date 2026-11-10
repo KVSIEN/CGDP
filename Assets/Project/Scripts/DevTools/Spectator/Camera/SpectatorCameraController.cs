@@ -24,8 +24,7 @@ namespace CGD.DevTools
         private const float MinFollowPitch   = 5f;
         private const float MaxFollowPitch   = 85f;
         private const float FreePitchLimit   = 85f;
-        private const float MinFreeSpeed     = 0.25f;  // × the move speed
-        private const float MaxFreeSpeed     = 8f;
+        private const float FreeZoomStep     = 0.4f;   // × the move speed, metres the camera dollies per zoom step
         private const float SnapSharpness    = 30f;    // per second, smoothing 0
         private const float GlideSharpness   = 3.5f;   // per second, smoothing 1
 
@@ -68,8 +67,6 @@ namespace CGD.DevTools
         public SpectatorCameraMode Mode { get; private set; }
         public Vector3    Position { get; private set; }
         public Quaternion Rotation { get; private set; }
-        // Free flight speed, as a multiple of the move speed (zoom changes it).
-        public float FreeSpeed { get; private set; } = 1f;
 
         public void ShowOverview()
         {
@@ -161,11 +158,15 @@ namespace CGD.DevTools
         {
             _freeYaw  += motion.Look.x;
             _freePitch = Mathf.Clamp(_freePitch - motion.Look.y, -FreePitchLimit, FreePitchLimit);
-            if (motion.Zoom != 0) FreeSpeed = Mathf.Clamp(FreeSpeed * Mathf.Pow(1.25f, motion.Zoom), MinFreeSpeed, MaxFreeSpeed);
 
             Quaternion rotation = Quaternion.Euler(_freePitch, _freeYaw, 0f);
-            Vector3 move = rotation * new Vector3(motion.Move.x, 0f, motion.Move.z) + Vector3.up * motion.Move.y;
-            _freePosition += move * (speed * FreeSpeed * deltaTime);
+            // Zoom dollies along where the camera looks; W / S stay level (below).
+            _freePosition += rotation * Vector3.forward * (motion.Zoom * FreeZoomStep * speed);
+            // Forward / back stay level (yaw only): following the pitch would turn W / S into a
+            // zoom whenever the camera looks down at what it was watching. Height has its own keys.
+            Quaternion level = Quaternion.Euler(0f, _freeYaw, 0f);
+            Vector3 move = level * new Vector3(motion.Move.x, 0f, motion.Move.z) + Vector3.up * motion.Move.y;
+            _freePosition += move * (speed * deltaTime);
 
             _targetPosition = _freePosition;
             _targetRotation = rotation;

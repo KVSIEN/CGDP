@@ -75,7 +75,6 @@ MonoBehaviour:
   - rid: 1059
   - rid: 1060
   - rid: 1061
-  - rid: 1062
   - rid: 1063
   - rid: 1064
   - rid: 1065
@@ -88,16 +87,22 @@ MonoBehaviour:
   - rid: 1072
   - rid: 1073
   - rid: 1074
-  - rid: 1075
-  - rid: 1076
-  - rid: 1077
-  - rid: 1078
   - rid: 1079
   - rid: 1080
   - rid: 1081
   - rid: 1082
   - rid: 1083
   - rid: 1084
+  - rid: 1085
+  - rid: 1086
+  - rid: 1087
+  - rid: 1088
+  - rid: 1089
+  - rid: 1090
+  - rid: 1091
+  - rid: 1092
+  - rid: 1093
+  - rid: 1094
   references:
     version: 2
     RefIds:
@@ -116,6 +121,7 @@ MonoBehaviour:
         _position: {x: 0, y: 150}
         _comment: 'Most urgent first: branches that abort lower priority interrupt whatever runs to their right'
         _children:
+        - d7d49fdbe37051d8d49096d3d9a04387
         - 453649334941488ab9b15273342b2611
         - 3ff8a757f4bc405b84b40b2ef0a17d5f
         - 5ffaf5dbe05343eaa7f0e1bee6050e62
@@ -174,7 +180,6 @@ MonoBehaviour:
         _position: {x: -2488, y: 750}
         _comment: 
         _children:
-        - b1c0de01b2d34e5f8a9b0c1d2e3f4a61
         - cd50881722294eed98ea7284f2ce01a3
         - c25abb3952e349f6a9493d890be0dba6
         _abort: 0
@@ -252,7 +257,7 @@ MonoBehaviour:
       data:
         _guid: d4099671484a45ea81d33d45ebb4332d
         _position: {x: -1168, y: 600}
-        _comment: 'Shot at (hit or near miss): sometimes sidestep out of the line of fire'
+        _comment: 'Shot at (hit or near miss): sometimes (half the time, at most every 2.5 s) sidestep out of the line of fire'
         _children:
         - 852efd735f5a4488b4fd22aef0027c37
         - 44b2be43e0154cd8b4cb13515e6ba7a2
@@ -271,7 +276,7 @@ MonoBehaviour:
         _comment: 
         _children:
         - 456e173ca3094e43bc9d02b2ed4ab90d
-        _seconds: 1
+        _seconds: 2.5
         _onlyAfterSuccess: 0
     - rid: 1019
       type: {class: Chance, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
@@ -281,7 +286,7 @@ MonoBehaviour:
         _comment: 
         _children:
         - 26355c9feff746879832db18ff32e65a
-        _probability: 0.85
+        _probability: 0.5
     - rid: 1020
       type: {class: Dodge, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
@@ -296,11 +301,12 @@ MonoBehaviour:
       data:
         _guid: 279e267b49594a7ebc5a39bc5e2c42c5
         _position: {x: -398, y: 600}
-        _comment: 'Rift ready and target in view: drop a Void Rift on it (slow damage, shield siphoned back to the caster), then half the time slip into cover'
+        _comment: 'Rift ready, target in view and a reason to (target holding still, its own shield to siphon back, target in mid range): drop a Void Rift on it (slow damage, shield siphoned back to the caster), then half the time slip into cover'
         _children:
         - 73871abbded244d1a1e1a436d6cde704
         - 7319b1e7cc1446199b16c0b9bfc87082
         - 9dc7c5bc46774f269108f3eec5e47bf8
+        - f6aa5773fb932348bc9b3d9cf8190929
         - 0cc861b217b64051b93df49e1a467a83
         - d07a7fa151914c4f8de982d1a8b35294
         _abort: 2
@@ -391,7 +397,6 @@ MonoBehaviour:
         _position: {x: 812, y: 900}
         _comment: 
         _children:
-        - b1c0de02b2d34e5f8a9b0c1d2e3f4a62
         - a8f4b6a777f4416994ebc7cbf6470852
         - adf3baa31c1b49728f5478ed81d4a13f
         _abort: 0
@@ -423,7 +428,7 @@ MonoBehaviour:
       data:
         _guid: 71598e06f3c24e7e87880fd410af2cc8
         _position: {x: 1912, y: 600}
-        _comment: 'Every few seconds: shift to a new angle on the target, by the least visible route'
+        _comment: 'Now and then (every 10 s or more, half the time): shift to a new angle on the target, by the least visible route'
         _children:
         - 1c2f704b8e6741bda55fae0b8fb99234
         - 2f42d69319e94c34ad15f13814598ebe
@@ -441,8 +446,8 @@ MonoBehaviour:
         _position: {x: 2022, y: 750}
         _comment: 
         _children:
-        - 10c1820f6e57471b876cc674f325ae35
-        _seconds: 6
+        - a1c0de0fb2d34e5f8a9b0c1d2e3f4a5f
+        _seconds: 10
         _onlyAfterSuccess: 0
     - rid: 1039
       type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
@@ -629,20 +634,11 @@ MonoBehaviour:
         - 03b13f3096454e24b91f6dfd50439eed
         - 482900fcd5df48219b556dd600e94812
         _abort: 0
-    - rid: 1062
-      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 1dc08dc91e5a4272ac695f66b96b4984
-        _position: {x: -2818, y: 900}
-        _comment: 
-        _ability: {fileID: 11400000, guid: 6b185f0aede34efba5d90e883f4efcb6, type: 2}
-        _aim: 0
-        _maxRange: 0
     - rid: 1063
       type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: da968508ff1d4fa3bbb332c3e5dae02c
-        _position: {x: 482, y: 1050}
+        _position: {x: 2300, y: 1050}
         _comment: 
         _ability: {fileID: 11400000, guid: 6b185f0aede34efba5d90e883f4efcb6, type: 2}
         _aim: 0
@@ -657,6 +653,7 @@ MonoBehaviour:
         - a1c0de02b2d34e5f8a9b0c1d2e3f4a52
         - a1c0de04b2d34e5f8a9b0c1d2e3f4a54
         - a1c0de06b2d34e5f8a9b0c1d2e3f4a56
+        - a1c0de0cb2d34e5f8a9b0c1d2e3f4a5c
         _reconsiderEvery: 1
         _switchMargin: 0.15
         _randomness: 0.08
@@ -850,7 +847,7 @@ MonoBehaviour:
       data:
         _guid: a1c0de06b2d34e5f8a9b0c1d2e3f4a56
         _position: {x: 1800, y: 750}
-        _comment: 'Skirmish is worth 0.4'
+        _comment: 'Skirmish is worth 0.55: the default at range, so it stops to shoot instead of repositioning'
         _children:
         - 5ec74dc1c24c4700ae091fdb30f74c46
         _key: 
@@ -880,41 +877,7 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        _weight: 0.4
-    - rid: 1075
-      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: b1c0de01b2d34e5f8a9b0c1d2e3f4a61
-        _position: {x: -2818, y: 820}
-        _comment: 'Phase Shift only once the shield is half gone'
-        _children:
-        - b1c0de03b2d34e5f8a9b0c1d2e3f4a63
-        - 1dc08dc91e5a4272ac695f66b96b4984
-        _abort: 0
-    - rid: 1076
-      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: b1c0de02b2d34e5f8a9b0c1d2e3f4a62
-        _position: {x: 482, y: 820}
-        _comment: 'Phase Shift only once the shield is half gone'
-        _children:
-        - b1c0de04b2d34e5f8a9b0c1d2e3f4a64
-        - da968508ff1d4fa3bbb332c3e5dae02c
-        _abort: 0
-    - rid: 1077
-      type: {class: ShieldBelow, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: b1c0de03b2d34e5f8a9b0c1d2e3f4a63
-        _position: {x: -2928, y: 950}
-        _comment: 
-        _fraction: 0.5
-    - rid: 1078
-      type: {class: ShieldBelow, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: b1c0de04b2d34e5f8a9b0c1d2e3f4a64
-        _position: {x: 372, y: 950}
-        _comment: 
-        _fraction: 0.5
+        _weight: 0.55
     - rid: 1079
       type: {class: HasBelief, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
@@ -965,3 +928,158 @@ MonoBehaviour:
         - 615487df5d87454ba413a4afb87263a0
         - 30a3d2c131674ad4a912010449bf073a
         _abort: 2
+    - rid: 1085
+      type: {class: Score, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a1c0de0cb2d34e5f8a9b0c1d2e3f4a5c
+        _position: {x: 2100, y: 750}
+        _comment: 'Phase Shift: whenever off cooldown, and worth far more the more of its shield is gone (the recharge boost pays off)'
+        _children:
+        - a1c0de0db2d34e5f8a9b0c1d2e3f4a5d
+        _key: ShieldMissing
+        _min: 0
+        _max: 0.5
+        _curve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0.45
+            inSlope: 0.55
+            outSlope: 0.55
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0.55
+            outSlope: 0.55
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        _weight: 1.5
+    - rid: 1086
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a1c0de0db2d34e5f8a9b0c1d2e3f4a5d
+        _position: {x: 2100, y: 900}
+        _comment:
+        _children:
+        - a1c0de0eb2d34e5f8a9b0c1d2e3f4a5e
+        - 500237c5eba33d438f4afb6fccdc45db
+        - da968508ff1d4fa3bbb332c3e5dae02c
+        _abort: 0
+    - rid: 1087
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a1c0de0eb2d34e5f8a9b0c1d2e3f4a5e
+        _position: {x: 1900, y: 1050}
+        _comment:
+        _ability: {fileID: 11400000, guid: 6b185f0aede34efba5d90e883f4efcb6, type: 2}
+    - rid: 1088
+      type: {class: Chance, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a1c0de0fb2d34e5f8a9b0c1d2e3f4a5f
+        _position: {x: 2022, y: 825}
+        _comment:
+        _children:
+        - 10c1820f6e57471b876cc674f325ae35
+        _probability: 0.5
+    - rid: 1089
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 500237c5eba33d438f4afb6fccdc45db
+        _position: {x: 2100, y: 1050}
+        _comment: 'Phase Shift to escape and recover: shield gone (the recharge boost pays off), being hit hard, shot at, hurt, or something closing in'
+        _reasons:
+        - _key: ShieldMissing
+          _from: 0
+          _to: 0.7
+          _weight: 0.6
+        - _key: RecentDamage
+          _from: 0
+          _to: 0.25
+          _weight: 0.6
+        - _key: UnderFire
+          _from: 0
+          _to: 1
+          _weight: 0.3
+        - _key: Health
+          _from: 1
+          _to: 0.4
+          _weight: 0.5
+        - _key: TargetDistance
+          _from: 8
+          _to: 2
+          _weight: 0.4
+        _patience: 40
+    - rid: 1090
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f6aa5773fb932348bc9b3d9cf8190929
+        _position: {x: -288, y: 750}
+        _comment: 'A rift pays off on a target that holds still, when there is shield to siphon back, and closer in'
+        _reasons:
+        - _key: TargetSpeed
+          _from: 4
+          _to: 0.5
+          _weight: 0.5
+        - _key: ShieldMissing
+          _from: 0
+          _to: 0.6
+          _weight: 0.4
+        - _key: TargetDistance
+          _from: 20
+          _to: 8
+          _weight: 0.3
+        _patience: 15
+    - rid: 1091
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d7d49fdbe37051d8d49096d3d9a04387
+        _position: {x: -3500, y: 300}
+        _comment: 'Standing in a hostile zone (a rift): step out, unless finishing a nearly dead target is worth the damage. The more it hurts and the more hurt it is, the sooner it goes'
+        _children:
+        - 566bc20c20acadf648c587badabc83a0
+        - bb973e699856fee3b9d93bca54f63891
+        - c226b650569acc65c7138992c0f38fee
+        _abort: 2
+    - rid: 1092
+      type: {class: InHazard, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 566bc20c20acadf648c587badabc83a0
+        _position: {x: -3720, y: 450}
+        _comment: 
+    - rid: 1093
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: bb973e699856fee3b9d93bca54f63891
+        _position: {x: -3500, y: 450}
+        _comment: 'How badly the zone hurts it, how hurt it already is, and how far its target is from dying (a nearly dead one is worth staying for)'
+        _reasons:
+        - _key: HazardDanger
+          _from: 0
+          _to: 0.12
+          _weight: 1
+        - _key: Health
+          _from: 1
+          _to: 0.3
+          _weight: 0.4
+        - _key: TargetHealth
+          _from: 0.15
+          _to: 1
+          _weight: 0.3
+        _patience: 3
+    - rid: 1094
+      type: {class: LeaveHazard, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c226b650569acc65c7138992c0f38fee
+        _position: {x: -3280, y: 450}
+        _comment: 
+        _giveUpAfter: 3

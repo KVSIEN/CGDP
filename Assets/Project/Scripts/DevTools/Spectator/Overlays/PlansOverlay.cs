@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using CGD.Enemies;
@@ -16,25 +17,30 @@ namespace CGD.DevTools
         private const float SearchFade   = 8f;
         private const int   MaxCorners   = 32;
 
-        private readonly EnemyAI[]      _agents;
-        private readonly NavMeshAgent[] _navigation;
-        private readonly NavMeshPath[]  _paths;
-        private readonly Vector3[][]    _corners;
-        private readonly int[]          _cornerCounts;
+        private readonly AgentRoster         _agents;
+        private readonly List<NavMeshAgent>  _navigation = new();
+        private readonly List<NavMeshPath>   _paths = new();
+        private readonly List<Vector3[]>     _corners = new();
+        private readonly List<int>           _cornerCounts = new();
         private float _nextRefresh;
 
-        public PlansOverlay(EnemyAI[] agents)
+        public PlansOverlay(AgentRoster agents)
         {
-            _agents       = agents;
-            _navigation   = new NavMeshAgent[agents.Length];
-            _paths        = new NavMeshPath[agents.Length];
-            _corners      = new Vector3[agents.Length][];
-            _cornerCounts = new int[agents.Length];
-            for (int i = 0; i < agents.Length; i++)
+            _agents = agents;
+            Sync();
+        }
+
+        // Room for agents the roster gained since.
+        private void Sync()
+        {
+            while (_navigation.Count < _agents.Count)
             {
-                if (agents[i] != null) agents[i].TryGetComponent(out _navigation[i]);
-                _paths[i]   = new NavMeshPath();
-                _corners[i] = new Vector3[MaxCorners];
+                NavMeshAgent navigation = null;
+                _agents[_navigation.Count]?.TryGetComponent(out navigation);
+                _navigation.Add(navigation);
+                _paths.Add(new NavMeshPath());
+                _corners.Add(new Vector3[MaxCorners]);
+                _cornerCounts.Add(0);
             }
         }
 
@@ -43,8 +49,9 @@ namespace CGD.DevTools
         {
             if (now < _nextRefresh) return;
             _nextRefresh = now + PathRefresh;
+            Sync();
 
-            for (int i = 0; i < _agents.Length; i++)
+            for (int i = 0; i < _agents.Count; i++)
             {
                 _cornerCounts[i] = 0;
                 if (_agents[i] == null) continue;
@@ -58,6 +65,7 @@ namespace CGD.DevTools
 
         public void DrawPath(OverlayMesh mesh, int index, bool detailed)
         {
+            if (index >= _cornerCounts.Count) return;
             int count = _cornerCounts[index];
             if (count < 2) return;
 

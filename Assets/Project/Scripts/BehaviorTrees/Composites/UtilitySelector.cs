@@ -12,6 +12,8 @@ namespace CGD.BehaviorTrees
     [BtNodeInfo("Composites/Utility Selector", "Runs the child with the best Score right now; switches when another clearly wins.")]
     public sealed class UtilitySelector : BtComposite
     {
+        private const float Unavailable = -1f;   // ranks below every real score; still tried last
+
         [Tooltip("Seconds between re-scoring while a child runs. 0 = only when it starts")]
         [SerializeField, Min(0f)] private float _reconsiderEvery = 0.5f;
         [Tooltip("How much better another child must score to interrupt the running one")]
@@ -75,7 +77,9 @@ namespace CGD.BehaviorTrees
             _rank = 0;
             for (int i = 0; i < Children.Count; i++)
             {
-                _scores[i] = ScoreOf(Children[i], context) + UnityEngine.Random.value * _randomness;
+                _scores[i] = CanStart(Children[i], context)
+                    ? ScoreOf(Children[i], context) + UnityEngine.Random.value * _randomness
+                    : Unavailable;
                 int at = i;
                 while (at > 0 && _scores[_order[at - 1]] < _scores[i])
                 {
@@ -87,5 +91,23 @@ namespace CGD.BehaviorTrees
         }
 
         private static float ScoreOf(BtNode child, BtContext context) => child is Score score ? score.Evaluate(context) : 0f;
+
+        // A child whose leading conditions fail right now (an ability on cooldown, no reason to
+        // cast) can't run, so it must not top the ranking: it would cut off the one running only
+        // to fail straight away. Looks through Score decorators to the branch they score.
+        private static bool CanStart(BtNode node, BtContext context)
+        {
+            while (node is Score score) node = score.Children.Count > 0 ? score.Children[0] : null;
+            if (node == null) return false;
+            if (node.IsConditional) return node.CheckCondition(context);
+            if (node is not Sequence sequence) return true;
+
+            foreach (BtNode child in sequence.Children)
+            {
+                if (!child.IsConditional) break;
+                if (!child.CheckCondition(context)) return false;
+            }
+            return true;
+        }
     }
 }

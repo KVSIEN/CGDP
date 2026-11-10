@@ -30,7 +30,7 @@ namespace CGD.DevTools
         private const float FocusHeight = 1.2f;   // metres above an agent's feet the camera orbits
         private const float PickRadius  = 70f;    // pixels at 1080p around an agent or its label that count as clicking it
         private const float HudRefresh  = 0.25f;
-        private const int   WatchKeys   = 4;
+        private const int   WatchKeys   = 6;
 
         [SerializeField] private Camera        _camera;
         [SerializeField] private AudioListener _listener;
@@ -38,6 +38,8 @@ namespace CGD.DevTools
         [SerializeField] private Camera        _gameplayCamera;
         [Tooltip("Every EnemyAI under this can be watched and gets a label")]
         [SerializeField] private Transform     _agents;
+        [Tooltip("Prefabs the squad sizes (G) spawn more agents from, one per faction (BioTestAgent, TechTestAgent, VoidTestAgent)")]
+        [SerializeField] private GameObject[]  _agentPrefabs;
         [Tooltip("The spectator's controls and default feel (Data/DevTools/SpectatorInputSettings)")]
         [SerializeField] private SpectatorInputSettings _inputSettings;
         [Tooltip("Metres the overview may pan away from where it looks at first")]
@@ -57,7 +59,7 @@ namespace CGD.DevTools
         private readonly SpectatorTime  _time      = new();
         private readonly AgentInspector _inspector = new();
 
-        private EnemyAI[]                 _watchable;
+        private AgentRoster              _watchable;
         private SpectatorInput            _input;
         private SpectatorPreferences      _preferences;
         private SpectatorCameraController _controller;
@@ -85,7 +87,7 @@ namespace CGD.DevTools
                 _inputSettings.ResetBindings();
             }
 
-            _watchable     = _agents != null ? _agents.GetComponentsInChildren<EnemyAI>(true) : System.Array.Empty<EnemyAI>();
+            _watchable     = new AgentRoster(_agents != null ? _agents.GetComponentsInChildren<EnemyAI>(true) : System.Array.Empty<EnemyAI>());
             _input         = new SpectatorInput(_inputSettings);
             _preferences   = SpectatorSave.LoadPreferences(_inputSettings);
             _controller    = new SpectatorCameraController(transform.position, transform.rotation, _panLimit);
@@ -93,7 +95,7 @@ namespace CGD.DevTools
             _hud           = new SpectatorHud(transform);
             _settingsPanel = new SpectatorSettingsPanel(_hud.Root, _inputSettings, _input, _preferences, ApplyPreferences);
             _overlays      = new SpectatorOverlays(OverlayMaterial(), _watchable);
-            _match         = new SpectatorMatch(_watchable, _scenarios, _hud.Root, _inputSettings, _time, Toast, Watch);
+            _match         = new SpectatorMatch(_watchable, _agents, _agentPrefabs, _scenarios, _hud.Root, _inputSettings, _time, Toast, Watch);
 
             _inputSettings.Changed += OnBindingsChanged;
             OnBindingsChanged();
@@ -168,7 +170,7 @@ namespace CGD.DevTools
         {
             // Escape belongs to the rebind prompt while one is listening.
             if (_settingsPanel.IsRebinding) return;
-            if (_match.IsMenuOpen && (Pressed(SpectatorAction.Settings) || Pressed(SpectatorAction.Scenarios)))
+            if (_match.IsMenuOpen && (Pressed(SpectatorAction.Settings) || Pressed(SpectatorAction.Scenarios) || Pressed(SpectatorAction.Squads)))
             {
                 _match.CloseMenu();
                 return;
@@ -187,7 +189,7 @@ namespace CGD.DevTools
             if (Pressed(SpectatorAction.NextAgent))     Cycle(_input.IsHeld(SpectatorAction.Fast) ? -1 : 1);
             if (Pressed(SpectatorAction.PreviousAgent)) Cycle(-1);
             for (int i = 0; i < WatchKeys; i++)
-                if (Pressed(SpectatorAction.WatchAgent1 + i)) Watch(i);
+                if (Pressed(WatchAction(i))) Watch(i);
             if (Pressed(SpectatorAction.Select)) TryPick();
 
             if (Pressed(SpectatorAction.Pause))
@@ -227,6 +229,7 @@ namespace CGD.DevTools
             }
             if (Pressed(SpectatorAction.ResetStats))      _match.ResetStats();
             if (Pressed(SpectatorAction.Scenarios))       _match.ToggleMenu();
+            if (Pressed(SpectatorAction.Squads))          _match.ToggleSquadMenu();
             if (Pressed(SpectatorAction.RestartScenario)) _match.Restart();
         }
 
@@ -266,9 +269,12 @@ namespace CGD.DevTools
             _nextHud = 0f;
         }
 
+        private static SpectatorAction WatchAction(int index) =>
+            index < 4 ? SpectatorAction.WatchAgent1 + index : SpectatorAction.WatchAgent5 + (index - 4);
+
         private void Watch(int index)
         {
-            if (index < 0 || index >= _watchable.Length || _watchable[index] == null)
+            if (index < 0 || index >= _watchable.Count || _watchable[index] == null)
             {
                 Toast($"There is no agent {index + 1}");
                 return;
@@ -288,7 +294,7 @@ namespace CGD.DevTools
 
         private void Cycle(int direction)
         {
-            int count = _watchable.Length;
+            int count = _watchable.Count;
             if (count == 0) return;
             int at = _followed >= 0 ? _followed : direction > 0 ? -1 : 0;
             // Skips agents sitting a scenario out.
@@ -319,7 +325,7 @@ namespace CGD.DevTools
             float   radius  = PickRadius * Screen.height / 1080f;
             float   best    = radius * radius;
             int     picked  = -1;
-            for (int i = 0; i < _watchable.Length; i++)
+            for (int i = 0; i < _watchable.Count; i++)
             {
                 if (_watchable[i] == null || !_watchable[i].gameObject.activeInHierarchy) continue;
                 Vector3 feet = _watchable[i].transform.position;
@@ -374,7 +380,7 @@ namespace CGD.DevTools
 
         private Vector3? FollowPoint()
         {
-            if (_followed < 0 || _followed >= _watchable.Length || _watchable[_followed] == null) return null;
+            if (_followed < 0 || _followed >= _watchable.Count || _watchable[_followed] == null) return null;
             return _watchable[_followed].transform.position + Vector3.up * FocusHeight;
         }
 
@@ -418,8 +424,8 @@ namespace CGD.DevTools
             SpectatorCameraMode.Follow => _followed >= 0
                 ? $"<b>WATCHING</b>   <color=#FFD24A>{_followed + 1}</color>  {AgentName(_followed)}"
                 : "<b>WATCHING</b>",
-            SpectatorCameraMode.Free => $"<b>FREE CAMERA</b>   <color=#9AA0B0>fly speed ×{_controller.FreeSpeed:0.##}</color>{InspectingText()}",
-            _ => $"<b>WHOLE ARENA</b>   <color=#9AA0B0>{_watchable.Length} agents</color>{InspectingText()}",
+            SpectatorCameraMode.Free => $"<b>FREE CAMERA</b>{InspectingText()}",
+            _ => $"<b>WHOLE ARENA</b>   <color=#9AA0B0>{_watchable.Count} agents</color>{InspectingText()}",
         };
 
         private string InspectingText() => _inspected >= 0

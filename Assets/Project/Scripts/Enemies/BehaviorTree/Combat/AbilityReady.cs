@@ -15,6 +15,12 @@ namespace CGD.Enemies
 
         public override string Summary => _ability != null ? _ability.name : "(no ability)";
 
+        protected override void OnInitialize(BtContext context)
+        {
+            base.OnInitialize(context);
+            Ai.Abilities.Register(_ability);
+        }
+
         protected override bool Check(BtContext context) => Ai.Abilities.IsReady(_ability);
     }
 }

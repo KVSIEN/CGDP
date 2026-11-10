@@ -91,6 +91,10 @@ MonoBehaviour:
   - rid: 1102
   - rid: 1103
   - rid: 1104
+  - rid: 1105
+  - rid: 1106
+  - rid: 1107
+  - rid: 1108
   references:
     version: 2
     RefIds:
@@ -109,6 +113,7 @@ MonoBehaviour:
         _position: {x: 0, y: 150}
         _comment: 'Most urgent first: branches that abort lower priority interrupt whatever runs to their right'
         _children:
+        - 4fb3a5417be539c772efe9cedb336448
         - d0824b37061c4cec9d9f55b271ec3098
         - 630b80e8cc974ea982793e670e2c149d
         - 56abf79eec294040afc52f36ffed73e9
@@ -468,17 +473,34 @@ MonoBehaviour:
         _position: {x: -3850, y: 1350}
         _comment: 
     - rid: 1049
-      type: {class: HealthBelow, ns: CGD.Enemies, asm: CGD.Runtime}
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: 97c2670e36b24808ae37c9f929c87d48
-        _position: {x: -3630, y: 1350}
-        _comment: 
-        _fraction: 0.5
+        _position: {x: -3410, y: 1350}
+        _comment: 'Go to ground when it is worth it: hurt, being hit hard or shot at, or crowded by several hostiles. Never without a reason'
+        _reasons:
+        - _key: Health
+          _from: 0.8
+          _to: 0.3
+          _weight: 0.8
+        - _key: RecentDamage
+          _from: 0
+          _to: 0.3
+          _weight: 0.5
+        - _key: UnderFire
+          _from: 0
+          _to: 1
+          _weight: 0.2
+        - _key: HostilesClose
+          _from: 1
+          _to: 3
+          _weight: 0.3
+        _patience: 0
     - rid: 1050
       type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: 5bcf555fb7074753934dab44045230d3
-        _position: {x: -3410, y: 1350}
+        _position: {x: -3630, y: 1350}
         _comment: 
         _ability: {fileID: 11400000, guid: d0a1b2c3d4e5f60718293a4b5c6d7e02, type: 2}
     - rid: 1051
@@ -527,11 +549,11 @@ MonoBehaviour:
       data:
         _guid: ff1af1ccaa2d4168b1284aeb6d7329d8
         _position: {x: -3300, y: 1200}
-        _comment: 'Hurt: slip out of sight (Ambush: faster regen, the next strike hits hard and unstealths), break away to full cover and recover, then come back'
+        _comment: 'Ambush ready and reason to (mostly being hurt, also taking a beating or being crowded): slip out of sight (Ambush: faster regen, the next strike hits hard and unstealths), break away to full cover and recover, then come back'
         _children:
         - 2b85daef7cd44b949b7d4ccce732b489
-        - 97c2670e36b24808ae37c9f929c87d48
         - 5bcf555fb7074753934dab44045230d3
+        - 97c2670e36b24808ae37c9f929c87d48
         - d0a1cdfdcd7041beb4ab58f8c9527ba4
         - ba039ce9e4a743178c1af6cdc7ec6b5e
         - 65946abc19704d938f0e269e91c66339
@@ -543,20 +565,38 @@ MonoBehaviour:
         _position: {x: 3000, y: 1350}
         _comment: 
     - rid: 1080
-      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: e4ab65aa003f433b8349ed01d14cce8a
-        _position: {x: 3220, y: 1350}
-        _comment: 
-        _key: TargetDistance
-        _comparison: 1
-        _value: 6
-        _ifMissing: 0
+        _position: {x: 3440, y: 1350}
+        _comment: 'Surge when a brawl is on: the target close, lifesteal needed (hurt or being hit), a weak target to finish, or several hostiles near'
+        _reasons:
+        - _key: TargetDistance
+          _from: 10
+          _to: 3
+          _weight: 0.7
+        - _key: Health
+          _from: 1
+          _to: 0.4
+          _weight: 0.3
+        - _key: TargetHealth
+          _from: 1
+          _to: 0.3
+          _weight: 0.3
+        - _key: RecentDamage
+          _from: 0
+          _to: 0.2
+          _weight: 0.3
+        - _key: HostilesClose
+          _from: 0
+          _to: 2
+          _weight: 0.2
+        _patience: 30
     - rid: 1081
       type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: 8cfb199548a340e6a83d4abeac83021f
-        _position: {x: 3440, y: 1350}
+        _position: {x: 3220, y: 1350}
         _comment: 
         _ability: {fileID: 11400000, guid: 6b563373d2e941f7b293da35d1e5d87a, type: 2}
     - rid: 1082
@@ -573,11 +613,11 @@ MonoBehaviour:
       data:
         _guid: 8525a0dd07764968836142bf0a1aa5a3
         _position: {x: 3880, y: 1200}
-        _comment: 'Within 6 m of the target: Surge (attack speed and lifesteal) and brawl; a fresh Surge is the reason to commit'
+        _comment: 'Surge ready and a brawl worth it (mostly the target close, also lifesteal needed, a weak target or a crowd): Surge (attack speed and lifesteal) and brawl; a fresh Surge is the reason to commit'
         _children:
         - 3f2ad719ce1041b58bdfd16772dcdca9
-        - e4ab65aa003f433b8349ed01d14cce8a
         - 8cfb199548a340e6a83d4abeac83021f
+        - e4ab65aa003f433b8349ed01d14cce8a
         - 9d0a0120bdb842c685382d21489c082d
         _abort: 2
     - rid: 1084
@@ -753,3 +793,47 @@ MonoBehaviour:
         - 73875ee8b0b94295bbc2a22a0b9fb393
         - 4cb886f56d764597aa8b438e2ac8c35d
         _abort: 0
+    - rid: 1105
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4fb3a5417be539c772efe9cedb336448
+        _position: {x: -3000, y: 300}
+        _comment: 'Standing in a hostile zone (a rift): step out, unless finishing a nearly dead target is worth the damage. The more it hurts and the more hurt it is, the sooner it goes'
+        _children:
+        - 5e958889d64929313a5c427e81fe8bee
+        - 13aa6d14cc456089bd686c55b67155cc
+        - 00d8c0ff0e22f2830611aa18c5817807
+        _abort: 2
+    - rid: 1106
+      type: {class: InHazard, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5e958889d64929313a5c427e81fe8bee
+        _position: {x: -3220, y: 450}
+        _comment: 
+    - rid: 1107
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 13aa6d14cc456089bd686c55b67155cc
+        _position: {x: -3000, y: 450}
+        _comment: 'How badly the zone hurts it, how hurt it already is, and how far its target is from dying (a nearly dead one is worth staying for)'
+        _reasons:
+        - _key: HazardDanger
+          _from: 0
+          _to: 0.12
+          _weight: 1
+        - _key: Health
+          _from: 1
+          _to: 0.3
+          _weight: 0.4
+        - _key: TargetHealth
+          _from: 0.15
+          _to: 1
+          _weight: 0.3
+        _patience: 3
+    - rid: 1108
+      type: {class: LeaveHazard, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 00d8c0ff0e22f2830611aa18c5817807
+        _position: {x: -2780, y: 450}
+        _comment: 
+        _giveUpAfter: 3

@@ -20,13 +20,11 @@ namespace CGD.Enemies
         public static void Tick(EnemyAI ai, float deltaTime, float arrivalDistance)
         {
             ai.SetSpeed(ai.Data.ChaseSpeed);
+            ai.KeepEyesOnTarget(deltaTime);
 
             var agent = ai.Agent;
             bool arrived = !agent.pathPending && (!agent.hasPath || agent.remainingDistance <= arrivalDistance);
-            if (!arrived) return;
-
-            agent.isStopped = true;
-            if (ai.Perception.Target != null) ai.FaceTowards(ai.Perception.TargetPosition, deltaTime);
+            if (arrived) agent.isStopped = true;
         }
     }
 }

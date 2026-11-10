@@ -138,7 +138,9 @@ namespace CGD.Enemies
         private void Awake()
         {
             Agent         = GetComponent<NavMeshAgent>();
-            _health       = GetComponent<EnemyHealth>();
+            // Facing is ours (TickFacing): it follows the walk by default, but a node can hold the gaze elsewhere.
+            Agent.updateRotation = false;
+            _health      = GetComponent<EnemyHealth>();
             _stunnable    = GetComponent<Stunnable>();
             _damageSource = DamageSource.Of(gameObject);
             TryGetComponent(out _stats);
@@ -362,13 +364,29 @@ namespace CGD.Enemies
             _faceTimeLeft = deltaTime;
         }
 
+        // Repositioning without losing the objective: keeps the target (or where it was last known)
+        // in view while walking, so the agent sidesteps and backpedals instead of turning its back.
+        internal void KeepEyesOnTarget(float deltaTime)
+        {
+            if (Perception.Target != null) FaceTowards(Perception.TargetPosition, deltaTime);
+        }
+
         private void TickFacing(float dt)
         {
-            if (_faceTimeLeft <= 0f) return;
-            float step = Mathf.Min(dt, _faceTimeLeft);
-            _faceTimeLeft -= step;
+            Vector3 flat;
+            float   step = dt;
+            if (_faceTimeLeft > 0f)
+            {
+                step = Mathf.Min(dt, _faceTimeLeft);
+                _faceTimeLeft -= step;
+                flat = _facePoint - transform.position;
+            }
+            else if (Agent.enabled && Agent.isOnNavMesh && !Agent.isStopped)
+            {
+                flat = Agent.velocity;   // nothing to watch: look where it is going
+            }
+            else return;
 
-            Vector3 flat = _facePoint - transform.position;
             flat.y = 0f;
             if (flat.sqrMagnitude < 0.0001f) return;
 

@@ -15,12 +15,12 @@ namespace CGD.DevTools
     {
         private const float FocusDistance = 60f;
 
-        private readonly EnemyAI[]    _agents;
+        private readonly AgentRoster   _agents;
         private readonly OverlayMesh  _mesh;
         private readonly CoverOverlay _cover = new();
         private readonly PlansOverlay _plans;
 
-        public SpectatorOverlays(Material material, EnemyAI[] agents)
+        public SpectatorOverlays(Material material, AgentRoster agents)
         {
             _agents = agents;
             _mesh   = new OverlayMesh(material);
@@ -40,7 +40,7 @@ namespace CGD.DevTools
             if (preferences.ShowCover) _cover.Draw(_mesh, focus, LookPoint(camera));
             if (preferences.ShowPlans) _plans.Refresh(now);
 
-            for (int i = 0; i < _agents.Length; i++)
+            for (int i = 0; i < _agents.Count; i++)
             {
                 if (!Alive(_agents[i])) continue;
                 bool detailed = _agents[i] == inspected;

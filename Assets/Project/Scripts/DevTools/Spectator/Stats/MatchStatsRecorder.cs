@@ -13,35 +13,42 @@ namespace CGD.DevTools
     internal sealed class MatchStatsRecorder : IDisposable
     {
         private readonly MatchStats _stats;
-        private readonly EnemyAI[]  _agents;
-        private readonly Action<Ability>[] _abilityHandlers;
+        private readonly AgentRoster _agents;
+        private readonly List<Action<Ability>> _abilityHandlers = new();
         private readonly Dictionary<GameObject, int>    _byOwner  = new();
         private readonly Dictionary<HealthManager, int> _byHealth = new();
 
-        public MatchStatsRecorder(EnemyAI[] agents, MatchStats stats)
+        public MatchStatsRecorder(AgentRoster agents, MatchStats stats)
         {
             _agents = agents;
             _stats  = stats;
-            _abilityHandlers = new Action<Ability>[agents.Length];
-
-            for (int i = 0; i < agents.Length; i++)
-            {
-                EnemyAI agent = agents[i];
-                if (agent == null) continue;
-                int number = i;
-                _byOwner[agent.gameObject] = i;
-                if (agent.TryGetComponent(out EnemyHealth health)) _byHealth[health] = i;
-                _abilityHandlers[i] = _ => _stats.AbilityUsed(number);
-                agent.AbilityUsed += _abilityHandlers[i];
-            }
+            for (int i = 0; i < agents.Count; i++) Register(agents[i], i);
+            agents.Added += OnAdded;
             CombatEvents.DamageDealt += OnDamage;
         }
 
         public void Dispose()
         {
             CombatEvents.DamageDealt -= OnDamage;
-            for (int i = 0; i < _agents.Length; i++)
+            _agents.Added -= OnAdded;
+            for (int i = 0; i < _agents.Count; i++)
                 if (_agents[i] != null && _abilityHandlers[i] != null) _agents[i].AbilityUsed -= _abilityHandlers[i];
+        }
+
+        private void OnAdded(EnemyAI agent) => Register(agent, _agents.Count - 1);
+
+        private void Register(EnemyAI agent, int number)
+        {
+            _stats.Grow(number + 1);
+            Action<Ability> handler = null;
+            if (agent != null)
+            {
+                _byOwner[agent.gameObject] = number;
+                if (agent.TryGetComponent(out EnemyHealth health)) _byHealth[health] = number;
+                handler = _ => _stats.AbilityUsed(number);
+                agent.AbilityUsed += handler;
+            }
+            _abilityHandlers.Add(handler);
         }
 
         private void OnDamage(DamageReport report)

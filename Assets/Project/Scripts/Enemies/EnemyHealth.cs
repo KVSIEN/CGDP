@@ -16,9 +16,21 @@ namespace CGD.Enemies
         [SerializeField] private EnemyHealthBar _healthBar;
         [SerializeField] private Vector3        _popupOffset = new Vector3(0f, 0.3f, 0f);
 
-        private bool _hasStats;
+        private const float RecentDamageHalfLife = 1.5f;   // seconds for the recent-damage share to halve
+
+        private bool  _hasStats;
+        private float _recentDamage;
+        private float _recentDamageAt;
+
+        // How hard it is being hit right now: health and shield lost lately, as a share of both
+        // maxima together, fading by half every RecentDamageHalfLife seconds.
+        public float RecentDamageShare =>
+            _recentDamage * Mathf.Pow(0.5f, (Time.time - _recentDamageAt) / RecentDamageHalfLife);
 
         public EnemyData Data => _data;
+
+        // For agents spawned at runtime, so two of a kind can be told apart.
+        public void SetDisplayName(string displayName) => _displayName = displayName;
 
         public override string DisplayName =>
             !string.IsNullOrEmpty(_displayName) ? _displayName :
@@ -72,6 +84,8 @@ namespace CGD.Enemies
 
         protected override void OnDamageTaken(float amount, Vector3 point, bool isCritical)
         {
+            _recentDamage   = RecentDamageShare + amount / Mathf.Max(1f, MaxHealth + MaxShield);
+            _recentDamageAt = Time.time;
             DamageNumbers.Spawn(amount, point + _popupOffset, isCritical, DealerColor(LastHitSource));
             if (_healthBar != null) _healthBar.ShowDamage(Health, MaxHealth, Shield, MaxShield);
         }
@@ -90,6 +104,7 @@ namespace CGD.Enemies
         // A pooled enemy comes back at full health; OnRevived lets its other systems reset.
         public void OnSpawned()
         {
+            _recentDamage = 0f;
             if (IsDead) Revive();
         }
     }
