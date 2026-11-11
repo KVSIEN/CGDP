@@ -64,6 +64,7 @@ namespace CGD.Enemies
         private readonly TargetWeights       _weights;
         private readonly float               _retaliationMemory;
 
+        private AwarenessLevel _reportedLevel;
         private float   _clock;
         private float   _nextLink;
         private float   _nextSample;
@@ -125,6 +126,8 @@ namespace CGD.Enemies
         // The hostile it is focused on. Known by identity; where it is, only while sensed.
         public HealthManager  Target { get; private set; }
         public AwarenessLevel Level  { get; private set; }
+        // Its level changed (from, to): the moment it noticed something, committed to a fight, lost it.
+        public event System.Action<AwarenessLevel, AwarenessLevel> LevelChanged;
         public float          Awareness => _meter.Value;
 
         // Engaged: certain of a hostile and sensing it right now.
@@ -240,6 +243,7 @@ namespace CGD.Enemies
             IsTargetDistracted = false;
             _meter.Clear();
             Level = AwarenessLevel.Unaware;
+            ReportLevel();
         }
 
         // --- Pushed stimuli ---------------------------------------------------------
@@ -517,7 +521,8 @@ namespace CGD.Enemies
         private void DiscoverBody(FallenAlly fallen)
         {
             _bodiesSeen.Add(fallen.Body);
-            _owner.Morale.OnAllyDown();
+            _owner.Morale.OnAllyDown(fallen.Body);
+            if (_owner.Doctrine.Escalation.ReportsFallenKin) ReportBody(fallen);
             if (IsTargetDetected) return;
 
             _meter.RaiseToSuspicious(0.15f);
@@ -557,6 +562,17 @@ namespace CGD.Enemies
             }
 
             if (Level == AwarenessLevel.Unaware && _meter.Value <= 0f && Target != null) LoseTarget();
+            ReportLevel();
+        }
+
+        // Tells listeners once per change, however the level got there.
+        private void ReportLevel()
+        {
+            if (Level == _reportedLevel) return;
+
+            AwarenessLevel from = _reportedLevel;
+            _reportedLevel = Level;
+            LevelChanged?.Invoke(from, Level);
         }
 
         // Out of sight: guess where it went from how it was moving, and go looking.
@@ -575,8 +591,22 @@ namespace CGD.Enemies
 
             // A union's link reaches every member, through walls.
             bool linked = _data.Social == SocialStyle.Network;
-            EnemyCallouts.Raise(new EnemyCallout(_owner, _self.position, Target.transform.position, _team,
-                linked ? LinkRange : _profile.CalloutRadius, throughWalls: linked));
+            float radius = (linked ? LinkRange : _profile.CalloutRadius) * _owner.Doctrine.Escalation.CalloutRadiusScale;
+            EnemyCallouts.Raise(new EnemyCallout(_owner, _self.position, Target.transform.position, _team, radius, throughWalls: linked));
+        }
+
+        // Losing its nerve: tells its kin where the trouble is, over the radio, walls or not.
+        public void CallForHelp()
+        {
+            if (_data.Social == SocialStyle.Loner) return;
+            EnemyCallouts.Raise(new EnemyCallout(_owner, _self.position, TargetPosition, _team, LinkRange, throughWalls: true));
+        }
+
+        // Found one of its own dead: reports where, so its kin come to look.
+        private void ReportBody(FallenAlly fallen)
+        {
+            if (_data.Social == SocialStyle.Loner) return;
+            EnemyCallouts.Raise(new EnemyCallout(_owner, _self.position, fallen.Position, _team, LinkRange, throughWalls: true));
         }
 
         // A union shares each sighting as it happens, not just the first one.

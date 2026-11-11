@@ -21,6 +21,7 @@ namespace CGD.Enemies
         protected override void OnEnter(BtContext context)
         {
             Ai.Agent.isStopped = false;
+            Ai.Idle.Cancel();
             if (Ai.Waypoints.Length > 0)
                 Ai.Routing.SetDestination(Ai.Waypoints[_waypointIndex % Ai.Waypoints.Length].position);
         }
@@ -29,7 +30,9 @@ namespace CGD.Enemies
         {
             Ai.ReportState(EnemyAI.AiState.Patrol);
             var perception = Ai.Perception;
-            Ai.SetSpeed(Ai.Data.PatrolSpeed * (perception.IsCautious ? perception.Profile.CautionPatrolSpeed : 1f));
+            float time = UnityEngine.Time.time;
+            Ai.SetSpeed(Ai.Data.PatrolSpeed * (perception.IsCautious ? perception.Profile.CautionPatrolSpeed : 1f) * Ai.Idle.PaceScale(time));
+            Ai.Idle.Mutter(time);
 
             var waypoints = Ai.Waypoints;
             if (waypoints.Length == 0)
@@ -37,10 +40,17 @@ namespace CGD.Enemies
                 Ai.Post.TickGuard(context.DeltaTime, UnityEngine.Time.time);
                 return BtStatus.Running;
             }
-            if (!HasArrived(Ai.Agent, ArrivalDistance)) return BtStatus.Running;
+            // Waiting at a waypoint or stopped dead mid-route, looking about: its faction's manner.
+            if (Ai.Idle.TickPause(context.DeltaTime, time)) return BtStatus.Running;
+            if (!HasArrived(Ai.Agent, ArrivalDistance))
+            {
+                Ai.Idle.MaybeHalt(context.DeltaTime, time);
+                return BtStatus.Running;
+            }
 
             _waypointIndex = (_waypointIndex + 1) % waypoints.Length;
             Ai.Routing.SetDestination(waypoints[_waypointIndex].position);
+            Ai.Idle.BeginDwell(time);
             return BtStatus.Running;
         }
     }

@@ -619,6 +619,20 @@
   - **VOID third-parties**: when its target is fighting another faction, VOID slips round behind it while its back is turned (every 4 s at most)
   - Everyone sidesteps out of the line of fire now and then when shot at. Hiding means full-height cover only: a low crate no longer counts as out of sight for anyone. The player starts with a rifle and respawns on death
 - **Sight cones in the Scene view**: every enemy's view cone (sight range and angle) is drawn on the ground. In play mode it turns yellow, orange or red as the enemy grows suspicious, searches or engages, with a line to whoever it is sensing; the selected enemy's cone stands out. It can be hidden from the Scene view's Gizmos menu
+- **Faction doctrine**: each faction carries itself in its own way, in generated levels as well as the AI Test arena (the three tiers of every faction and the AI Test agents; Void's minions and echoes are left alone). Nothing here changes what an enemy can do in a fight, only how its nerve, its idle hours and its warning signs look:
+  - **Nerve (morale)**:
+    - *TECH* is steadied by numbers and wears down when it counts the odds: it loses nerve for every hostile beyond its kin close by, and each kin within 20 m steadies it. Seeing an officer (a higher tier) fall hurts more than a rank-and-file loss, but not hugely. When it breaks it falls back in good order to the nearest kin that still has its nerve (its squad leader first), at a measured pace, and calls everyone to where it is falling back from. Finding a fallen comrade is reported over the radio, sending its kin to look
+    - *BIO* breaks late and mostly over its alpha: its own wounds shake it less (it is more dangerous hurt), it fights on while its target is weak (smelling victory it regains nerve in the fight), and herd mates nearby steady it. Seeing a stronger kin fall (an alpha) shakes a lesser one badly, while a weaker kin falling barely registers. When it finally breaks it runs home to its post. Its roar carries a good deal further than anyone else's
+    - *VOID* barely cares for the fallen (they are expendable), but it cares about its shield: with the shield gone its nerve drains steadily, and it recovers from any shock very quickly. When shaken it drifts away to cover slowly, keeping its eyes on you, rather than running. Its call carries a shorter way
+  - **Idle hours**:
+    - *TECH* stands watch like a scanner, sweeping its view steadily from side to side and walking its route at an even pace, stopping a couple of seconds at each waypoint for a scan. It now and then mutters a check-in
+    - *BIO* is restless: it looks about in quick, short glances through a wide arc, wanders a few metres from its post and back again, walks at an uneven pace and stops now and then for a moment, lingering at waypoints
+    - *VOID* is wrong in small ways: it stares at one spot for a long time, then looks somewhere else with no turn in between; it walks slowly at a drifting pace, stops dead mid-route for several seconds for no reason, waits a long time at waypoints and now and then mutters
+  - **Warning signs**: each faction shows when it has noticed something and when it has made up its mind, and holds its first attack for a beat after deciding to fight. The enemy pulses in its faction's colour:
+    - *TECH*: a sharp blink as it notices something, a quick double blink and about a quarter of a second to lock on before it opens fire or swings
+    - *BIO*: a double beat as it tests the air, then a long bright flash as it roars and charges with no delay at all
+    - *VOID*: a long slow fade as it turns to stare at what it noticed (it snaps round to look and takes the longest to take it in), and nearly a second of unblinking stare before it strikes
+    - A second look at someone it was fighting a few seconds ago takes less than half the time
 - **Faction teams**: an enemy can be put on its faction's own team (BIO, TECH or VOID) instead of the shared enemy side; it then fights the other factions as well as the player. Only the AI Test scene's agents use this for now — in generated levels all factions still fight together against the player
 
 ## Object Pooling

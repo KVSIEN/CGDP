@@ -12,8 +12,6 @@ namespace CGD.Enemies
         private readonly EnemyAI _ai;
         private Vector3    _position;
         private Quaternion _rotation;
-        private Quaternion _lookAt;
-        private float      _nextLook;
 
         public EnemyPost(EnemyAI ai)
         {
@@ -26,8 +24,6 @@ namespace CGD.Enemies
         {
             _position = _ai.transform.position;
             _rotation = _ai.transform.rotation;
-            _lookAt   = _rotation;
-            _nextLook = 0f;
         }
 
         // Where to head back to: the nearest point of its route, or its post.
@@ -44,9 +40,12 @@ namespace CGD.Enemies
             return best;
         }
 
-        // Guard duty: walk back if it drifted off, otherwise stand and look around now and then.
+        // Guard duty: walk back if it drifted off, otherwise stand and look around now and then
+        // (how, and whether it wanders a little, is its faction's idle manner).
         public void TickGuard(float deltaTime, float time)
         {
+            if (_ai.Idle.TickRoam(_position, deltaTime, time)) return;
+
             var agent = _ai.Agent;
             if ((_ai.transform.position - _position).sqrMagnitude > AtPostDistance * AtPostDistance)
             {
@@ -56,17 +55,7 @@ namespace CGD.Enemies
             }
 
             agent.isStopped = true;
-            PerceptionProfile profile = _ai.Perception.Profile;
-            if (time >= _nextLook)
-            {
-                float interval = profile.GuardLookInterval.EvaluateClamped();
-                if (_ai.Perception.IsCautious) interval *= 0.5f;
-                _nextLook = time + interval;
-
-                float angle = profile.GuardLookAngle;
-                _lookAt = _rotation * Quaternion.Euler(0f, Random.Range(-angle, angle), 0f);
-            }
-            _ai.FaceTowards(_ai.transform.position + _lookAt * Vector3.forward, deltaTime);
+            _ai.Idle.Gaze(_rotation, deltaTime, time);
         }
 
         public bool IsNear(Vector3 point, float radius) => (point - _position).sqrMagnitude <= radius * radius;

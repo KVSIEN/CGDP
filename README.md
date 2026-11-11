@@ -63,6 +63,7 @@ Assets/
                             Abilities/ (EnemyAbilities: casting Ability assets; GrenadeThrower, ThrowArc),
                             BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/, Squad/, Pacing/, Voice/; EnemyBlackboard keys),
                             Perception/ (EnemyPerception: awareness, targets, memory; EnemySenses: sight and hearing checks; AwarenessMeter, PerceptionProfile, callouts),
+                            Doctrine/ (FactionDoctrine: how a faction carries itself — morale, escalation, idle routine and tells; EnemyIdleLife, EnemyTells),
                             Tactics/ (CoverMap: cover spots from the NavMesh; CoverKnowledge, EnemyTactics: cover, flanking, hiding spots, melee turns;
                             AttackTokens, EnemyMorale, AlarmPanel; TacticsLog: its latest cover / flank / vanish searches),
                             Debugging/ (EnemyInsight: the read-only view debug tools get; EnemyStatusReport, AwarenessColors),

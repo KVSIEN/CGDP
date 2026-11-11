@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41daa03c64c14bb0a0583d3587237b77, type: 3}
+  m_Name: TechDoctrine
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.FactionDoctrine
+  _morale:
+    _allyDownScale: 0.8
+    _hurtScale: 0.9
+    _rankSensitivity: 0.35
+    _recoveryScale: 1
+    _kinSteadiesRadius: 20
+    _kinSteadiesRecovery: 0.01
+    _targetWeakBelow: 0.5
+    _targetWeakRecovery: 0
+    _outnumberedDrain: 0.04
+    _brokenShieldDrain: 0
+    _retreatBelowScale: 1
+    _rallyAboveScale: 1
+    _retreatTo: 1
+    _retreatSpeedScale: 0.85
+  _escalation:
+    _calloutRadiusScale: 1
+    _reportsFallenKin: 1
+    _callsForHelpWhenShaken: 1
+  _idle:
+    _gaze: 1
+    _lookIntervalScale: 0.7
+    _lookAngleScale: 1
+    _sweepSpeed: 35
+    _waypointDwell: {Min: 1.5, Max: 3, Bias: 0}
+    _patrolSpeedScale: 1
+    _paceDrift: 0
+    _haltsPerMinute: 0
+    _haltDuration: {Min: 2, Max: 4, Bias: 0}
+    _roamRadius: 0
+    _roamEvery: {Min: 6, Max: 12, Bias: 0}
+    _mutterEvery: {Min: 25, Max: 50, Bias: 0}
+  _tells:
+    _noticedKind: 1
+    _noticeHold: {Min: 0.3, Max: 0.6, Bias: 0}
+    _noticeSnapsToLead: 0
+    _committedKind: 4
+    _hesitation: {Min: 0.15, Max: 0.3, Bias: 0}

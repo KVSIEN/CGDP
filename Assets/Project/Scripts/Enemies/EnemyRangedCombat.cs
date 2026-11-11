@@ -40,7 +40,7 @@ namespace CGD.Enemies
         }
 
         public bool IsBursting => _burstRemaining > 0;
-        public bool CanFire    => !IsBursting && _fireCooldown.IsReady;
+        public bool CanFire    => !IsBursting && _fireCooldown.IsReady && !_ai.Tells.IsCommitting;
 
         // Called every unstunned frame by EnemyAI, so cooldowns and bursts carry on whoever is deciding.
         public void Tick(float deltaTime)

@@ -1,9 +1,12 @@
+using System.Collections;
 using UnityEngine;
 
 namespace CGD.Enemies
 {
     // Tints the enemy per AI state (placeholder until animations/VFX exist): grey patrolling,
     // yellow investigating or heading home, orange hunting, red fighting, purple regrouping.
+    // A tell (noticing something, committing to a fight) pulses it in the faction's colour,
+    // in a rhythm of the faction's own: a sharp blink, a double beat, a long slow fade.
     [RequireComponent(typeof(EnemyAI))]
     public class EnemyStateVisuals : MonoBehaviour
     {
@@ -22,6 +25,8 @@ namespace CGD.Enemies
 
         private EnemyAI _ai;
         private MaterialPropertyBlock _mpb;
+        private Color     _stateColor;
+        private Coroutine _tell;
 
         private void Awake()
         {
@@ -32,14 +37,50 @@ namespace CGD.Enemies
         private void OnEnable()
         {
             _ai.StateChanged += Apply;
+            _ai.Told         += OnTold;
             Apply(_ai.State);
         }
 
-        private void OnDisable() => _ai.StateChanged -= Apply;
+        private void OnDisable()
+        {
+            _ai.StateChanged -= Apply;
+            _ai.Told         -= OnTold;
+            _tell = null;
+        }
+
+        private void OnTold(TellKind kind)
+        {
+            if (_ai.State == EnemyAI.AiState.Dead) return;
+            if (_tell != null) StopCoroutine(_tell);
+            _tell = StartCoroutine(Pulse(kind));
+        }
+
+        private IEnumerator Pulse(TellKind kind)
+        {
+            (int pulses, float beat) = kind switch
+            {
+                TellKind.Scan   => (1, 0.25f),
+                TellKind.LockOn => (2, 0.12f),
+                TellKind.Sniff  => (2, 0.18f),
+                TellKind.Roar   => (1, 0.6f),
+                TellKind.Stare  => (1, 0.9f),
+                _               => (1, 0.3f),
+            };
+            Color accent = _ai.Data.DamageNumberColor.a > 0f ? _ai.Data.DamageNumberColor : Color.white;
+
+            for (int i = 0; i < pulses; i++)
+            {
+                Paint(accent);
+                yield return new WaitForSeconds(beat);
+                Paint(_stateColor);
+                if (i < pulses - 1) yield return new WaitForSeconds(beat);
+            }
+            _tell = null;
+        }
 
         private void Apply(EnemyAI.AiState state)
         {
-            Color color = state switch
+            _stateColor = state switch
             {
                 EnemyAI.AiState.Investigate => _alertColor,
                 EnemyAI.AiState.Return      => _alertColor,
@@ -52,6 +93,12 @@ namespace CGD.Enemies
                 _                       => _patrolColor,
             };
 
+            // A pulse in progress carries on; it hands back to this colour when it ends.
+            if (_tell == null) Paint(_stateColor);
+        }
+
+        private void Paint(Color color)
+        {
             _mpb.SetColor(ColorId, color);
             foreach (var r in _renderers)
             {

@@ -47,6 +47,9 @@ namespace CGD.Enemies
         [Tooltip("Whom it would rather fight when it senses several hostiles (rival factions): the weakest, whoever hurt it, whoever is busy elsewhere. Empty = it just sticks with its current target")]
         public TargetPriorities TargetPriorities;
 
+        [Tooltip("How its faction carries itself: what shakes its nerve, how it idles, what it gives away before a fight. Empty = a plain enemy")]
+        public FactionDoctrine Doctrine;
+
         [Header("Behavior")]
         [Tooltip("Decides what the enemy does: patrolling, searching, fighting (edit it in CGD › AI › Behavior Tree Editor). " +
                  "Without one the enemy just stands there")]

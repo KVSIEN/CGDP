@@ -15,7 +15,8 @@ namespace CGD.Enemies
             if (ai.Perception.Target != null)
                 rows.Add(("Target", $"{ai.Perception.Target.name} · last seen {ai.Perception.TargetMotion} · " +
                                     $"{ai.Perception.TargetHealthShare:P0} strength{(ai.Perception.IsTargetDistracted ? " · distracted" : "")}"));
-            rows.Add(("Morale", $"{ai.MoraleValue:0.00}{(ai.Morale.IsShaken ? " · shaken" : "")}"));
+            rows.Add(("Morale", $"{ai.MoraleValue:0.00}{(ai.Morale.IsShaken ? " · shaken" : "")}{(ai.Tells.IsCommitting ? " · taking it in" : "")}"));
+            rows.Add(("Doctrine", ai.Data.Doctrine != null ? ai.Data.Doctrine.name : "none"));
             if (ai.Squad != null)
                 rows.Add(("Squad", $"{ai.SquadRole}{(ai.Squad.Leader == ai ? " · leader" : "")} ({ai.Squad.Members.Count} members)"));
             if (ai.Tactics.HasMeleeTurn) rows.Add(("Melee turn", "has it"));

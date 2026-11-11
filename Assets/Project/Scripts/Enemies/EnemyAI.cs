@@ -83,6 +83,8 @@ namespace CGD.Enemies
         public event Action<Vector3> Relocated;
         // An ability it cast went off (after its wind-up).
         public event Action<Ability> AbilityUsed;
+        // It gave a sign of what it just noticed or decided (see TellDoctrine), for visuals and audio.
+        public event Action<TellKind> Told;
 
         public AiState State => _state;
 
@@ -113,8 +115,13 @@ namespace CGD.Enemies
         internal EnemySquad        Squad        { get; private set; }
         internal SquadRole         SquadRole    => Squad != null ? Squad.RoleOf(this) : SquadRole.None;
         internal EnemyMorale       Morale       { get; private set; }
+        internal EnemyIdleLife     Idle         { get; private set; }
+        internal EnemyTells        Tells        { get; private set; }
         internal EnemyVoice        Voice        { get; private set; }
         internal TargetReadings    Readings     { get; private set; }
+
+        // How its faction carries itself; a plain doctrine without one.
+        internal FactionDoctrine Doctrine => _data.Doctrine != null ? _data.Doctrine : FactionDoctrine.Neutral;
 
         // Set when it gave up a search or won its fight: it should head back to its post.
         // Shaken and not cornered: time to fall back. Cornered, it fights instead.
@@ -135,7 +142,8 @@ namespace CGD.Enemies
         internal EnemyData         Data         => _data;
         internal Transform[]       Waypoints    => _waypoints ?? Array.Empty<Transform>();
         internal bool              IsAttacking  => Melee.IsAttacking;
-        internal bool              CanAttack    => Melee.CanAttack;
+        // Not while it is still taking in that it is in a fight (its faction's beat before the first blow).
+        internal bool              CanAttack    => Melee.CanAttack && !Tells.IsCommitting;
         internal bool              IsStunned    => _stunnable.IsStunned;
 
         private void Awake()
@@ -149,6 +157,8 @@ namespace CGD.Enemies
             _damageSource = DamageSource.Of(gameObject);
             TryGetComponent(out _stats);
             Perception    = new EnemyPerception(this, _data, _targetMask, _obstacleMask, _health.Team);
+            Tells         = new EnemyTells(this);
+            Idle          = new EnemyIdleLife(this);
             RangedCombat  = new EnemyRangedCombat(this, _damageSource, _obstacleMask);
             Melee         = new EnemyMelee(this, _damageSource, _targetMask, _stats);
             Search        = new EnemySearch(this);
@@ -381,6 +391,15 @@ namespace CGD.Enemies
 
         private float SpeedFromStats => _stats != null ? Mathf.Max(0.1f, _stats.Apply(ItemStat.MovementSpeed, 1f)) : 1f;
 
+        // Turns at once, with nothing in between: a head that is simply somewhere else now.
+        internal void SnapFacing(Vector3 position)
+        {
+            Vector3 flat = position - transform.position;
+            flat.y = 0f;
+            if (flat.sqrMagnitude < 0.0001f) return;
+            transform.rotation = Quaternion.LookRotation(flat);
+        }
+
         // Turns as far as deltaTime allows. The turn itself is applied frame by frame (TickFacing),
         // so it stays smooth when a calm enemy's tree ticks only a few times a second.
         internal void FaceTowards(Vector3 position, float deltaTime)
@@ -442,6 +461,11 @@ namespace CGD.Enemies
         internal void NotifyRelocated(Vector3 from) => Relocated?.Invoke(from);
 
         internal void NotifyAbilityUsed(Ability ability) => AbilityUsed?.Invoke(ability);
+
+        internal void NotifyTold(TellKind kind)
+        {
+            if (kind != TellKind.None) Told?.Invoke(kind);
+        }
 
         internal void JoinSquad(EnemySquad squad) => Squad = squad;
 
@@ -526,6 +550,8 @@ namespace CGD.Enemies
             Readings.Forget();
             Belief.Clear();
             Morale.Reset();
+            Tells.Reset();
+            Idle.Cancel();
             Voice.Reset();
             Abilities.Reset();
             Post.Remember();

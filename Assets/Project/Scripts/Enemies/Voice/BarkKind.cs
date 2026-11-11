@@ -18,5 +18,6 @@ namespace CGD.Enemies
         RaisingAlarm,   // running for an alarm panel
         Pushing,        // the director's peak: "go, go!"
         HoldingBack,    // the director's calm: "hold position"
+        Ambient,        // idle muttering while nothing is going on
     }
 }

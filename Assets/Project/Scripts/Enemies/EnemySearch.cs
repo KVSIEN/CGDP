@@ -86,10 +86,18 @@ namespace CGD.Enemies
         private void StartNotice(bool fresh)
         {
             _phase = Phase.Notice;
-            _timer = fresh ? Profile.NoticePause.EvaluateClamped() * (IsHunting ? HuntNoticeShare : 1f) : RenoticePause;
+            _timer = fresh ? NoticeHold() * (IsHunting ? HuntNoticeShare : 1f) : RenoticePause;
+            if (fresh && _ai.Doctrine.Tells.NoticeSnapsToLead) _ai.SnapFacing(_ai.Perception.LookPosition);
             _spots.Clear();
             _spotIndex = -1;
             _ai.Agent.isStopped = true;
+        }
+
+        // How long it takes something in before going to look: its faction's way, else the profile's.
+        private float NoticeHold()
+        {
+            var hold = _ai.Doctrine.Tells.NoticeHold;
+            return hold.Max > 0f ? hold.EvaluateClamped() : Profile.NoticePause.EvaluateClamped();
         }
 
         private void TickNotice(float deltaTime)
