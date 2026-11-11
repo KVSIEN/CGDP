@@ -22,6 +22,11 @@ namespace CGD.Enemies
         [Tooltip("Seconds between making up its mind and its first attack. A second look at someone it was fighting moments ago is quicker")]
         [SerializeField] private FloatRange _hesitation = new(0f, 0f);
 
+        [Header("Standing down")]
+        [Tooltip("The sign it gives when it finally relaxes after a fight")]
+        [SerializeField] private TellKind _standDownKind = TellKind.None;
+
+        public TellKind StandDownKind     => _standDownKind;
         public TellKind NoticedKind       => _noticedKind;
         public FloatRange NoticeHold      => _noticeHold;
         public bool NoticeSnapsToLead     => _noticeSnapsToLead;

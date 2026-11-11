@@ -32,21 +32,48 @@ MonoBehaviour:
     _reportsFallenKin: 1
     _callsForHelpWhenShaken: 1
   _idle:
-    _gaze: 1
-    _lookIntervalScale: 0.7
-    _lookAngleScale: 1
-    _sweepSpeed: 35
-    _waypointDwell: {Min: 1.5, Max: 3, Bias: 0}
+    _beats:
+    - _label: Scan
+      _gaze: 1
+      _duration: {Min: 4, Max: 5, Bias: 0}
+      _weight: 1
+      _lookInterval: {Min: 0, Max: 0, Bias: 0}
+      _arcScale: 1
+      _walkRadius: 0
+      _bark: 0
+    - _label: Report
+      _gaze: 3
+      _duration: {Min: 1.5, Max: 2.2, Bias: 0}
+      _weight: 1
+      _lookInterval: {Min: 0, Max: 0, Bias: 0}
+      _arcScale: 1
+      _walkRadius: 0
+      _bark: 14
+    - _label: Tight scan
+      _gaze: 1
+      _duration: {Min: 3, Max: 4, Bias: 0}
+      _weight: 1
+      _lookInterval: {Min: 0, Max: 0, Bias: 0}
+      _arcScale: 0.5
+      _walkRadius: 0
+      _bark: 0
+    _order: 0
+    _waypointStopChance: 1
+    _haltsPerMinute: 0
+    _sweepSpeed: 40
     _patrolSpeedScale: 1
     _paceDrift: 0
-    _haltsPerMinute: 0
-    _haltDuration: {Min: 2, Max: 4, Bias: 0}
-    _roamRadius: 0
-    _roamEvery: {Min: 6, Max: 12, Bias: 0}
-    _mutterEvery: {Min: 25, Max: 50, Bias: 0}
+    _edgeBeatScale: 0.6
+    _edgeSweepScale: 1.5
+  _aftermath:
+    _cautionScale: 1.3
+    _victoryCautionShare: 0.8
+    _victoryPauseScale: 1.2
+    _victoryGaze: 1
   _tells:
     _noticedKind: 1
     _noticeHold: {Min: 0.3, Max: 0.6, Bias: 0}
     _noticeSnapsToLead: 0
     _committedKind: 4
     _hesitation: {Min: 0.15, Max: 0.3, Bias: 0}
+    _standDownKind: 6

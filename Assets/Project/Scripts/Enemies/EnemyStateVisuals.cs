@@ -64,9 +64,14 @@ namespace CGD.Enemies
                 TellKind.Sniff  => (2, 0.18f),
                 TellKind.Roar   => (1, 0.6f),
                 TellKind.Stare  => (1, 0.9f),
+                TellKind.AllClear => (1, 0.3f),
+                TellKind.Settle   => (1, 0.7f),
+                TellKind.Fade     => (1, 1.1f),
                 _               => (1, 0.3f),
             };
             Color accent = _ai.Data.DamageNumberColor.a > 0f ? _ai.Data.DamageNumberColor : Color.white;
+            // Standing down is quieter than noticing or committing.
+            if (kind is TellKind.AllClear or TellKind.Settle or TellKind.Fade) accent = Color.Lerp(_stateColor, accent, 0.5f);
 
             for (int i = 0; i < pulses; i++)
             {

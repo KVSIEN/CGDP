@@ -20,7 +20,10 @@ namespace CGD.Enemies
         {
             var profile = Ai.Perception.Profile;
             _pauseLeft = (Ai.ReturnIsVictory ? profile.VictoryPause : profile.LostInterestPause).EvaluateClamped();
+            // Standing over a kill is the faction's own ritual: Void stares on, Bio sniffs round it.
+            if (Ai.ReturnIsVictory) _pauseLeft *= Ai.Doctrine.Aftermath.VictoryPauseScale;
             _walking   = false;
+            Ai.Idle.BeginAftermath(UnityEngine.Time.time);
         }
 
         protected override BtStatus OnTick(BtContext context)

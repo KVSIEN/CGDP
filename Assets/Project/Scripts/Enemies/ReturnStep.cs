@@ -10,7 +10,7 @@ namespace CGD.Enemies
             {
                 pauseLeft -= deltaTime;
                 ai.Agent.isStopped = true;
-                ai.FaceTowards(ai.ReturnLookAt, deltaTime);
+                ai.Idle.TickAftermath(ai.ReturnIsVictory, deltaTime, UnityEngine.Time.time);
                 return false;
             }
 

@@ -38,16 +38,30 @@ namespace CGD.Tests
         {
             var plain = ScriptableObject.CreateInstance<FactionDoctrine>();
 
-            Assert.AreEqual(GazePattern.Scatter, plain.Idle.Gaze);
-            Assert.AreEqual(0f, plain.Idle.WaypointDwell.Max);
+            Assert.AreEqual(0, plain.Idle.Beats.Length);
+            Assert.AreEqual(0f, plain.Idle.WaypointStopChance);
             Assert.AreEqual(0f, plain.Idle.HaltsPerMinute);
-            Assert.AreEqual(0f, plain.Idle.RoamRadius);
-            Assert.AreEqual(0f, plain.Idle.MutterEvery.Max);
+            Assert.AreEqual(1f, plain.Idle.PatrolSpeedScale);
+            Assert.AreEqual(0f, plain.Idle.PaceDrift);
             Assert.AreEqual(TellKind.None, plain.Tells.NoticedKind);
             Assert.AreEqual(TellKind.None, plain.Tells.CommittedKind);
+            Assert.AreEqual(TellKind.None, plain.Tells.StandDownKind);
             Assert.AreEqual(0f, plain.Tells.Hesitation.Max);
             Assert.IsFalse(plain.Escalation.ReportsFallenKin);
             Assert.IsFalse(plain.Escalation.CallsForHelpWhenShaken);
+            Object.DestroyImmediate(plain);
+        }
+
+        [Test]
+        public void PlainDoctrineLeavesAFightEndingAsItWas()
+        {
+            var plain = ScriptableObject.CreateInstance<FactionDoctrine>();
+            AftermathDoctrine aftermath = plain.Aftermath;
+
+            Assert.AreEqual(45f, aftermath.GiveUpCaution(45f), 0.0001f);
+            Assert.AreEqual(0f, aftermath.VictoryCaution(45f), 0.0001f);
+            Assert.AreEqual(1f, aftermath.VictoryPauseScale);
+            Assert.AreEqual(GazePattern.Hold, aftermath.VictoryGaze);
             Object.DestroyImmediate(plain);
         }
 
@@ -161,27 +175,110 @@ namespace CGD.Tests
             }
         }
 
-        [Test]
-        public void FactionsIdleInDifferentWays()
+        private static bool Uses(IdleBeat[] beats, GazePattern gaze)
         {
-            Assert.AreEqual(GazePattern.Sweep,   Doctrine("Tech").Idle.Gaze);
-            Assert.AreEqual(GazePattern.Scatter, Doctrine("Bio").Idle.Gaze);
-            Assert.AreEqual(GazePattern.Fixate,  Doctrine("Void").Idle.Gaze);
+            foreach (IdleBeat beat in beats)
+                if (beat.Gaze == gaze) return true;
+            return false;
+        }
 
-            // Tech walks like a machine, the others do not.
-            Assert.AreEqual(0f, Doctrine("Tech").Idle.PaceDrift);
-            Assert.Greater(Doctrine("Bio").Idle.PaceDrift, 0f);
-            Assert.Greater(Doctrine("Void").Idle.PaceDrift, 0f);
+        private static bool Walks(IdleBeat[] beats)
+        {
+            foreach (IdleBeat beat in beats)
+                if (beat.WalkRadius > 0f) return true;
+            return false;
+        }
 
-            // Only Bio wanders from its post; Tech stands its ground.
-            Assert.Greater(Doctrine("Bio").Idle.RoamRadius, 0f);
-            Assert.AreEqual(0f, Doctrine("Tech").Idle.RoamRadius);
-            Assert.AreEqual(0f, Doctrine("Void").Idle.RoamRadius);
+        private static float LongestBeat(IdleBeat[] beats)
+        {
+            float longest = 0f;
+            foreach (IdleBeat beat in beats) longest = Mathf.Max(longest, beat.Duration.Max);
+            return longest;
+        }
 
-            // Void is the slowest walker and the longest starer.
-            Assert.Less(Doctrine("Void").Idle.PatrolSpeedScale, Doctrine("Tech").Idle.PatrolSpeedScale);
-            Assert.Greater(Doctrine("Void").Idle.LookIntervalScale, Doctrine("Tech").Idle.LookIntervalScale);
-            Assert.Greater(Doctrine("Void").Idle.HaltDuration.Min, Doctrine("Bio").Idle.HaltDuration.Min);
+        [Test]
+        public void EveryFactionHasAnIdleRoutine()
+        {
+            foreach (string faction in new[] { "Bio", "Tech", "Void" })
+            {
+                IdleDoctrine idle = Doctrine(faction).Idle;
+                Assert.Greater(idle.Beats.Length, 1, faction);
+                foreach (IdleBeat beat in idle.Beats)
+                {
+                    Assert.Greater(beat.Duration.Min, 0f, faction + " " + beat.Gaze);
+                    Assert.GreaterOrEqual(beat.Duration.Max, beat.Duration.Min, faction);
+                    Assert.Greater(beat.Weight, 0f, faction);
+                }
+            }
+        }
+
+        [Test]
+        public void TechIdlesByTheBookAndTheOthersByMood()
+        {
+            IdleDoctrine tech = Doctrine("Tech").Idle;
+
+            Assert.AreEqual(IdleOrder.Cycle, tech.Order);
+            Assert.AreEqual(IdleOrder.Weighted, Doctrine("Bio").Idle.Order);
+            Assert.AreEqual(IdleOrder.Weighted, Doctrine("Void").Idle.Order);
+
+            // Tech stops at every waypoint, never halts at random, never wanders, walks like a machine.
+            Assert.AreEqual(1f, tech.WaypointStopChance);
+            Assert.AreEqual(0f, tech.HaltsPerMinute);
+            Assert.AreEqual(0f, tech.PaceDrift);
+            Assert.IsFalse(Walks(tech.Beats));
+            Assert.IsTrue(Uses(tech.Beats, GazePattern.Sweep));
+        }
+
+        [Test]
+        public void BioIsRestlessAndWandersFromItsPost()
+        {
+            IdleDoctrine bio = Doctrine("Bio").Idle;
+
+            Assert.IsTrue(Walks(bio.Beats));
+            Assert.IsTrue(Uses(bio.Beats, GazePattern.Scatter));
+            Assert.Greater(bio.PaceDrift, 0f);
+            Assert.Greater(bio.HaltsPerMinute, Doctrine("Void").Idle.HaltsPerMinute);
+            // Restless when on edge: its beats come quicker.
+            Assert.Less(bio.EdgeBeatScale, 1f);
+        }
+
+        [Test]
+        public void VoidStaresTurnsItsBackAndIsTheSlowestWalker()
+        {
+            IdleDoctrine voidIdle = Doctrine("Void").Idle;
+
+            Assert.IsTrue(Uses(voidIdle.Beats, GazePattern.Fixate));
+            Assert.IsTrue(Uses(voidIdle.Beats, GazePattern.Away));
+            Assert.Less(voidIdle.PatrolSpeedScale, Doctrine("Tech").Idle.PatrolSpeedScale);
+            Assert.Less(voidIdle.PatrolSpeedScale, Doctrine("Bio").Idle.PatrolSpeedScale);
+            Assert.Greater(LongestBeat(voidIdle.Beats), LongestBeat(Doctrine("Tech").Idle.Beats));
+            // Patient when on edge, not jumpy.
+            Assert.Greater(voidIdle.EdgeBeatScale, 1f);
+        }
+
+        [Test]
+        public void FactionsStayOnEdgeAfterAWonFightForDifferentTimes()
+        {
+            float tech = Doctrine("Tech").Aftermath.VictoryCaution(45f);
+            float bio  = Doctrine("Bio").Aftermath.VictoryCaution(45f);
+            float voidCaution = Doctrine("Void").Aftermath.VictoryCaution(45f);
+
+            Assert.Greater(bio, 0f);
+            Assert.Greater(tech, voidCaution);
+            Assert.Greater(voidCaution, bio);
+            // A won fight leaves less edge than a search that found nothing.
+            foreach (string faction in new[] { "Bio", "Tech", "Void" })
+                Assert.Less(Doctrine(faction).Aftermath.VictoryCaution(45f), Doctrine(faction).Aftermath.GiveUpCaution(45f), faction);
+        }
+
+        [Test]
+        public void FactionsStandOverTheirKillInTheirOwnWay()
+        {
+            Assert.AreEqual(GazePattern.Sweep,   Doctrine("Tech").Aftermath.VictoryGaze);
+            Assert.AreEqual(GazePattern.Scatter, Doctrine("Bio").Aftermath.VictoryGaze);
+            Assert.AreEqual(GazePattern.Hold,    Doctrine("Void").Aftermath.VictoryGaze);
+            Assert.Greater(Doctrine("Void").Aftermath.VictoryPauseScale, Doctrine("Bio").Aftermath.VictoryPauseScale);
+            Assert.Greater(Doctrine("Bio").Aftermath.VictoryPauseScale, 1f);
         }
 
         [Test]
@@ -204,6 +301,10 @@ namespace CGD.Tests
 
             Assert.IsTrue(voidTells.NoticeSnapsToLead);
             Assert.IsFalse(tech.NoticeSnapsToLead);
+
+            Assert.AreEqual(TellKind.AllClear, tech.StandDownKind);
+            Assert.AreEqual(TellKind.Settle,   bio.StandDownKind);
+            Assert.AreEqual(TellKind.Fade,     voidTells.StandDownKind);
         }
 
         [Test]

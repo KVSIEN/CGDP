@@ -479,6 +479,7 @@ namespace CGD.Enemies
             else if (_engagedTarget != null && _engagedTarget.IsDead)
             {
                 BeginReturn(victory: true, _engagedTarget.transform.position);
+                Perception.StayOnEdge(Perception.VictoryEdgeSeconds);
                 _engagedTarget = null;
             }
             else if (Perception.Level == AwarenessLevel.Unaware)

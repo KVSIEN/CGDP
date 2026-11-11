@@ -21,6 +21,7 @@ namespace CGD.Enemies
         {
             _ai = ai;
             ai.Perception.LevelChanged += OnLevelChanged;
+            ai.Perception.Settled      += OnSettled;
         }
 
         // Made up its mind a moment ago and has not acted on it yet.
@@ -30,6 +31,12 @@ namespace CGD.Enemies
         {
             _committedUntil   = float.NegativeInfinity;
             _lastFightEndedAt = float.NegativeInfinity;
+        }
+
+        // On edge after a fight, and now the tension goes: the faction's way of showing it.
+        private void OnSettled()
+        {
+            if (_ai.Perception.Level == AwarenessLevel.Unaware) _ai.NotifyTold(_ai.Doctrine.Tells.StandDownKind);
         }
 
         private void OnLevelChanged(AwarenessLevel from, AwarenessLevel to)

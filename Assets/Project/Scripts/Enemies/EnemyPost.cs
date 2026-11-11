@@ -41,10 +41,10 @@ namespace CGD.Enemies
         }
 
         // Guard duty: walk back if it drifted off, otherwise stand and look around now and then
-        // (how, and whether it wanders a little, is its faction's idle manner).
+        // (what it does with the time is its faction's idle routine).
         public void TickGuard(float deltaTime, float time)
         {
-            if (_ai.Idle.TickRoam(_position, deltaTime, time)) return;
+            if (_ai.Idle.TickWalkingBeat(deltaTime, time)) return;
 
             var agent = _ai.Agent;
             if ((_ai.transform.position - _position).sqrMagnitude > AtPostDistance * AtPostDistance)
@@ -55,7 +55,7 @@ namespace CGD.Enemies
             }
 
             agent.isStopped = true;
-            _ai.Idle.Gaze(_rotation, deltaTime, time);
+            _ai.Idle.TickWatch(_rotation, _position, deltaTime, time);
         }
 
         public bool IsNear(Vector3 point, float radius) => (point - _position).sqrMagnitude <= radius * radius;

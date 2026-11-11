@@ -32,7 +32,6 @@ namespace CGD.Enemies
             var perception = Ai.Perception;
             float time = UnityEngine.Time.time;
             Ai.SetSpeed(Ai.Data.PatrolSpeed * (perception.IsCautious ? perception.Profile.CautionPatrolSpeed : 1f) * Ai.Idle.PaceScale(time));
-            Ai.Idle.Mutter(time);
 
             var waypoints = Ai.Waypoints;
             if (waypoints.Length == 0)
@@ -40,8 +39,8 @@ namespace CGD.Enemies
                 Ai.Post.TickGuard(context.DeltaTime, UnityEngine.Time.time);
                 return BtStatus.Running;
             }
-            // Waiting at a waypoint or stopped dead mid-route, looking about: its faction's manner.
-            if (Ai.Idle.TickPause(context.DeltaTime, time)) return BtStatus.Running;
+            // A stop at a waypoint or dead mid-route, doing a beat of its faction's routine.
+            if (Ai.Idle.TickStop(context.DeltaTime, time)) return BtStatus.Running;
             if (!HasArrived(Ai.Agent, ArrivalDistance))
             {
                 Ai.Idle.MaybeHalt(context.DeltaTime, time);
@@ -50,7 +49,7 @@ namespace CGD.Enemies
 
             _waypointIndex = (_waypointIndex + 1) % waypoints.Length;
             Ai.Routing.SetDestination(waypoints[_waypointIndex].position);
-            Ai.Idle.BeginDwell(time);
+            Ai.Idle.BeginStop(time);
             return BtStatus.Running;
         }
     }

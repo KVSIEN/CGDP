@@ -1,47 +1,50 @@
 using UnityEngine;
 using UnityEngine.AI;
-using CGD.Core;
 
 namespace CGD.Enemies
 {
     // What an enemy does with its time while nothing is going on, in its faction's manner
-    // (FactionDoctrine › Idle): where its eyes go, how it walks its route and stops along it,
-    // whether it wanders off its post, and what it mutters. The post and the Patrol node ask
-    // it; it never decides anything about a fight. A plain doctrine gives the old behavior:
-    // random glances, a steady walk, no stops.
+    // (FactionDoctrine › Idle): a routine of beats — look about in some way for a while, maybe
+    // after a short walk, maybe saying something — worked through while it stands watch and at
+    // stops along its route; how it walks; and how it spends the quiet after a fight. The
+    // post, the Patrol node and the return step ask it; it never decides anything about a
+    // fight. Without beats it does what a plain enemy does: random glances, a steady walk.
     internal sealed class EnemyIdleLife
     {
-        // A gaze that has not been asked for this long starts afresh (a new stop, a new watch).
-        private const float GazeGap          = 1f;
-        private const float RoamArrival      = 0.6f;
-        private const int   RoamAttempts     = 4;
-        private const float PaceDriftSpeed   = 0.35f;
-        private const float MinPaceScale     = 0.3f;
-        private static readonly FloatRange RoamLinger = new(1f, 2.5f);
+        private const float RoamArrival     = 0.6f;
+        private const int   RoamAttempts    = 4;
+        private const float PaceDriftSpeed  = 0.35f;
+        private const float MinPaceScale    = 0.3f;
+        // Glances round a body while it stands over it, either side of the way to it.
+        private const float BodyGlanceArc   = 30f;
+        private const float OnEdgeGlanceScale = 0.5f;
 
-        private enum Roam { None, Walking, Lingering }
+        private enum Walk { None, Going, Performing }
 
         private readonly EnemyAI _ai;
         private readonly float   _paceSeed = Random.value * 100f;
 
-        // Gaze.
-        private float      _lastGazeAt = float.NegativeInfinity;
-        private float      _gazeStart;
-        private float      _nextLook;
+        // The beat in progress.
+        private IdleBeat   _beat;
+        private bool       _hadBeat;
+        private float      _beatStart;
+        private float      _beatEnd;
+        private Quaternion _beatFacing;
         private float      _lookAngle;
+        private float      _nextLook;
+        private int        _cycleIndex = -1;
 
-        // Stops along its route (waypoint dwells and halts).
-        private bool       _pausing;
-        private float      _pauseUntil;
-        private Quaternion _pauseFacing;
+        // A beat that is a stop on its route, and one that starts with a walk from its post.
+        private bool       _stopping;
+        private Walk       _walk;
+        private IdleBeat   _walkBeat;
 
-        // Wandering off its post.
-        private Roam       _roam;
-        private float      _nextRoam = float.NegativeInfinity;
-        private float      _roamLingerUntil;
-        private Quaternion _roamFacing;
+        // With no beats: plain random glances.
+        private float      _plainNextLook;
+        private float      _plainAngle;
 
-        private float      _nextMutter = float.NegativeInfinity;
+        // Standing over a body or the spot a search ended.
+        private float      _aftermathStart;
 
         public EnemyIdleLife(EnemyAI ai) => _ai = ai;
 
@@ -50,56 +53,11 @@ namespace CGD.Enemies
         // Back to a clean slate: it was doing something else (a fight, a respawn).
         public void Cancel()
         {
-            _pausing    = false;
-            _roam       = Roam.None;
-            _lastGazeAt = float.NegativeInfinity;
-            _nextRoam   = float.NegativeInfinity;
+            _beat     = null;
+            _stopping = false;
+            _walk     = Walk.None;
+            _hadBeat  = false;
         }
-
-        // --- Eyes -------------------------------------------------------------------
-
-        // Looks about, centred on baseFacing, in the faction's way. Call every tick while idling.
-        public void Gaze(Quaternion baseFacing, float deltaTime, float time)
-        {
-            IdleDoctrine style   = Style;
-            PerceptionProfile profile = _ai.Perception.Profile;
-            float halfArc = Mathf.Min(180f, profile.GuardLookAngle * style.LookAngleScale);
-
-            if (time - _lastGazeAt > GazeGap)
-            {
-                _gazeStart = time;
-                _nextLook  = time;
-                _lookAngle = 0f;
-            }
-            _lastGazeAt = time;
-
-            float angle;
-            if (style.Gaze == GazePattern.Sweep)
-            {
-                // Starts from straight ahead and works out to one side, then the other. Aims a
-                // tick ahead so the turn is under way before the point arrives.
-                float sweep = (time + deltaTime - _gazeStart) * style.SweepSpeed;
-                angle = Mathf.PingPong(sweep + halfArc, 2f * halfArc) - halfArc;
-            }
-            else
-            {
-                if (time >= _nextLook)
-                {
-                    float interval = profile.GuardLookInterval.EvaluateClamped() * style.LookIntervalScale;
-                    if (_ai.Perception.IsCautious) interval *= 0.5f;
-                    _nextLook  = time + interval;
-                    _lookAngle = Random.Range(-halfArc, halfArc);
-                    // The first look of a watch turns normally; after that a fixed stare jumps.
-                    if (style.Gaze == GazePattern.Fixate && time > _gazeStart)
-                        _ai.SnapFacing(PointAt(baseFacing, _lookAngle));
-                }
-                angle = _lookAngle;
-            }
-            _ai.FaceTowards(PointAt(baseFacing, angle), deltaTime);
-        }
-
-        private Vector3 PointAt(Quaternion baseFacing, float angle) =>
-            _ai.transform.position + baseFacing * Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
 
         // --- Walking a route --------------------------------------------------------
 
@@ -112,112 +70,270 @@ namespace CGD.Enemies
             return Mathf.Max(MinPaceScale, style.PatrolSpeedScale * (1f + drift));
         }
 
-        // It reached a waypoint: it may wait there, looking about.
-        public void BeginDwell(float time)
+        // It reached a waypoint: it may stop and do a beat.
+        public void BeginStop(float time)
         {
-            float dwell = Style.WaypointDwell.Max > 0f ? Style.WaypointDwell.EvaluateClamped() : 0f;
-            if (dwell > 0f) BeginPause(time, dwell);
+            if (Random.value >= Style.WaypointStopChance) return;
+            StartStop(time);
         }
 
-        // Between waypoints it may stop dead for a while. Rolled every tick it walks.
+        // Between waypoints it may stop dead for a beat. Rolled every tick it walks.
         public void MaybeHalt(float deltaTime, float time)
         {
             float perSecond = Style.HaltsPerMinute / 60f;
             if (perSecond <= 0f || Random.value >= perSecond * deltaTime) return;
-            BeginPause(time, Style.HaltDuration.EvaluateClamped());
+            StartStop(time);
         }
 
-        // True while it stands paused (a dwell or a halt): it holds still and looks about. When
-        // the pause is over it sets off again and this returns false.
-        public bool TickPause(float deltaTime, float time)
+        private void StartStop(float time)
         {
-            if (!_pausing) return false;
+            IdleBeat beat = ChooseBeat(allowWalk: false);
+            if (beat == null) return;
 
-            if (time >= _pauseUntil)
+            StartBeat(beat, _ai.transform.rotation, time);
+            _stopping = true;
+            _ai.Agent.isStopped = true;
+        }
+
+        // True while it stands at a stop doing its beat. When the beat is over it sets off again.
+        public bool TickStop(float deltaTime, float time)
+        {
+            if (!_stopping) return false;
+
+            if (time >= _beatEnd)
             {
-                _pausing = false;
+                _stopping = false;
+                _beat     = null;
                 _ai.Agent.isStopped = false;
                 return false;
             }
 
             _ai.Agent.isStopped = true;
-            Gaze(_pauseFacing, deltaTime, time);
+            PerformBeat(deltaTime, time);
             return true;
-        }
-
-        private void BeginPause(float time, float duration)
-        {
-            _pausing     = true;
-            _pauseUntil  = time + duration;
-            _pauseFacing = _ai.transform.rotation;
-            _ai.Agent.isStopped = true;
         }
 
         // --- Standing watch ---------------------------------------------------------
 
-        // True while it is off wandering from its post (or lingering where it wandered), so the
-        // post leaves it alone; once that is over the post walks it home.
-        public bool TickRoam(Vector3 post, float deltaTime, float time)
+        // True while it is off on a beat that starts with a walk from its post (walking there,
+        // or doing the beat once there), so the post leaves it alone. Once the beat is over
+        // the post walks it home.
+        public bool TickWalkingBeat(float deltaTime, float time)
         {
-            IdleDoctrine style = Style;
-            if (style.RoamRadius <= 0f) return false;
-
             NavMeshAgent agent = _ai.Agent;
-            switch (_roam)
+            switch (_walk)
             {
-                case Roam.Walking:
-                    if (!agent.pathPending && (!agent.hasPath || agent.remainingDistance <= RoamArrival))
-                    {
-                        _roam            = Roam.Lingering;
-                        _roamLingerUntil = time + RoamLinger.EvaluateClamped();
-                        _roamFacing      = _ai.transform.rotation;
-                        agent.isStopped  = true;
-                    }
+                case Walk.Going:
+                    if (agent.pathPending || (agent.hasPath && agent.remainingDistance > RoamArrival)) return true;
+                    _walk = Walk.Performing;
+                    StartBeat(_walkBeat, _ai.transform.rotation, time);
+                    agent.isStopped = true;
                     return true;
 
-                case Roam.Lingering:
-                    if (time >= _roamLingerUntil)
+                case Walk.Performing:
+                    if (time >= _beatEnd)
                     {
-                        _roam            = Roam.None;
-                        _nextRoam        = time + style.RoamEvery.EvaluateClamped();
-                        agent.isStopped  = false;
+                        _walk = Walk.None;
+                        _beat = null;
+                        agent.isStopped = false;
                         return false;
                     }
-                    Gaze(_roamFacing, deltaTime, time);
+                    PerformBeat(deltaTime, time);
                     return true;
             }
+            return false;
+        }
 
-            if (_nextRoam == float.NegativeInfinity) _nextRoam = time + style.RoamEvery.EvaluateClamped();
-            if (time < _nextRoam) return false;
+        // At its post: works through its routine, or just glances about if it has none.
+        public void TickWatch(Quaternion postFacing, Vector3 post, float deltaTime, float time)
+        {
+            if (Style.Beats.Length == 0)
+            {
+                PlainGaze(postFacing, deltaTime, time);
+                return;
+            }
 
-            _nextRoam = time + style.RoamEvery.EvaluateClamped();
+            if (_beat == null || time >= _beatEnd)
+            {
+                IdleBeat next = ChooseBeat(allowWalk: true);
+                if (next != null && next.WalkRadius > 0f && TryBeginWalk(post, next)) return;
+                if (next == null) { PlainGaze(postFacing, deltaTime, time); return; }
+
+                StartBeat(next, postFacing, time);
+            }
+            PerformBeat(deltaTime, time);
+        }
+
+        private bool TryBeginWalk(Vector3 post, IdleBeat beat)
+        {
             for (int i = 0; i < RoamAttempts; i++)
             {
-                Vector2 offset = Random.insideUnitCircle * style.RoamRadius;
+                Vector2 offset = Random.insideUnitCircle * beat.WalkRadius;
                 var spot = post + new Vector3(offset.x, 0f, offset.y);
                 if (!NavMesh.SamplePosition(spot, out NavMeshHit hit, 1.5f, NavMesh.AllAreas)) continue;
                 if (!_ai.Routing.SetDestination(hit.position)) continue;
 
-                agent.isStopped = false;
-                _roam = Roam.Walking;
+                _ai.Agent.isStopped = false;
+                _walk     = Walk.Going;
+                _walkBeat = beat;
+                _beat     = null;
                 return true;
             }
             return false;
         }
 
-        // --- Voice ------------------------------------------------------------------
+        // --- Beats ------------------------------------------------------------------
 
-        // Mutters to itself every so often while it has nothing on its mind.
-        public void Mutter(float time)
+        // The next beat: in turn, or by weight. Beats that need a walk are left out when it
+        // cannot walk (it is at a stop on its route).
+        private IdleBeat ChooseBeat(bool allowWalk)
         {
-            var every = Style.MutterEvery;
-            if (every.Max <= 0f) return;
+            IdleBeat[] beats = Style.Beats;
+            if (beats.Length == 0) return null;
 
-            if (_nextMutter == float.NegativeInfinity) _nextMutter = time + every.EvaluateClamped();
-            if (time < _nextMutter) return;
+            if (Style.Order == IdleOrder.Cycle)
+            {
+                for (int i = 0; i < beats.Length; i++)
+                {
+                    _cycleIndex = (_cycleIndex + 1) % beats.Length;
+                    if (beats[_cycleIndex] != null && (allowWalk || beats[_cycleIndex].WalkRadius <= 0f)) return beats[_cycleIndex];
+                }
+                return null;
+            }
 
-            _nextMutter = time + every.EvaluateClamped();
-            _ai.Bark(BarkKind.Ambient);
+            float total = 0f;
+            foreach (IdleBeat beat in beats)
+                if (beat != null && (allowWalk || beat.WalkRadius <= 0f)) total += beat.Weight;
+            if (total <= 0f) return null;
+
+            float roll = Random.value * total;
+            foreach (IdleBeat beat in beats)
+            {
+                if (beat == null || (!allowWalk && beat.WalkRadius > 0f)) continue;
+                roll -= beat.Weight;
+                if (roll <= 0f) return beat;
+            }
+            return null;
+        }
+
+        private void StartBeat(IdleBeat beat, Quaternion facing, float time)
+        {
+            float length = beat.Duration.EvaluateClamped();
+            if (_ai.Perception.IsCautious) length *= Style.EdgeBeatScale;
+
+            _beat       = beat;
+            _beatStart  = time;
+            _beatEnd    = time + Mathf.Max(0.1f, length);
+            _beatFacing = facing;
+            _nextLook   = time;
+            _lookAngle  = Random.Range(-HalfArc(beat), HalfArc(beat));
+
+            // A stare or a turned back is a jump, not a turn — but the very first beat just turns.
+            if (_hadBeat && beat.Gaze is GazePattern.Fixate or GazePattern.Away)
+                _ai.SnapFacing(PointAt(facing, beat.Gaze == GazePattern.Away ? 180f : _lookAngle));
+            _hadBeat = true;
+
+            if (beat.Bark != BarkKind.None) _ai.Bark(beat.Bark);
+        }
+
+        private void PerformBeat(float deltaTime, float time)
+        {
+            IdleBeat beat = _beat;
+            float angle;
+            switch (beat.Gaze)
+            {
+                case GazePattern.Sweep:
+                    angle = SweepAngle(time + deltaTime - _beatStart, HalfArc(beat));
+                    break;
+                case GazePattern.Fixate:
+                    angle = _lookAngle;
+                    break;
+                case GazePattern.Away:
+                    angle = 180f;
+                    break;
+                case GazePattern.Hold:
+                    angle = 0f;
+                    break;
+                default:
+                    if (time >= _nextLook)
+                    {
+                        float interval = beat.LookInterval.Max > 0f
+                            ? beat.LookInterval.EvaluateClamped()
+                            : _ai.Perception.Profile.GuardLookInterval.EvaluateClamped();
+                        if (_ai.Perception.IsCautious) interval *= OnEdgeGlanceScale;
+                        _nextLook  = time + interval;
+                        _lookAngle = Random.Range(-HalfArc(beat), HalfArc(beat));
+                    }
+                    angle = _lookAngle;
+                    break;
+            }
+            _ai.FaceTowards(PointAt(_beatFacing, angle), deltaTime);
+        }
+
+        private float HalfArc(IdleBeat beat) => Mathf.Min(180f, _ai.Perception.Profile.GuardLookAngle * beat.ArcScale);
+
+        // Starts from straight ahead and works out to one side, then the other. The caller
+        // aims a tick ahead so the turn is under way before the point arrives.
+        private float SweepAngle(float elapsed, float halfArc)
+        {
+            float speed = Style.SweepSpeed * (_ai.Perception.IsCautious ? Style.EdgeSweepScale : 1f);
+            return Mathf.PingPong(elapsed * speed + halfArc, 2f * halfArc) - halfArc;
+        }
+
+        private Vector3 PointAt(Quaternion facing, float angle) =>
+            _ai.transform.position + facing * Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+
+        // A plain enemy's idle: a random glance every so often, twice as often when on edge.
+        private void PlainGaze(Quaternion facing, float deltaTime, float time)
+        {
+            PerceptionProfile profile = _ai.Perception.Profile;
+            if (time >= _plainNextLook)
+            {
+                float interval = profile.GuardLookInterval.EvaluateClamped();
+                if (_ai.Perception.IsCautious) interval *= OnEdgeGlanceScale;
+                _plainNextLook = time + interval;
+                _plainAngle    = Random.Range(-profile.GuardLookAngle, profile.GuardLookAngle);
+            }
+            _ai.FaceTowards(PointAt(facing, _plainAngle), deltaTime);
+        }
+
+        // --- After a fight ----------------------------------------------------------
+
+        // It starts standing over what it killed (or where a search ended).
+        public void BeginAftermath(float time) => _aftermathStart = time;
+
+        // Its eyes while it stands there, in its faction's manner: staring at the body, scanning
+        // round it, or sniffing about it. Only a won fight has a manner; after a search it
+        // simply looks where it was told.
+        public void TickAftermath(bool victory, float deltaTime, float time)
+        {
+            Vector3 lookAt = _ai.ReturnLookAt;
+            Vector3 toLook = lookAt - _ai.transform.position;
+            toLook.y = 0f;
+            GazePattern gaze = victory ? _ai.Doctrine.Aftermath.VictoryGaze : GazePattern.Hold;
+            if (gaze == GazePattern.Hold || toLook.sqrMagnitude < 0.0001f)
+            {
+                _ai.FaceTowards(lookAt, deltaTime);
+                return;
+            }
+
+            Quaternion toBody = Quaternion.LookRotation(toLook);
+            float angle;
+            if (gaze == GazePattern.Sweep)
+            {
+                float half = _ai.Perception.Profile.GuardLookAngle;
+                angle = SweepAngle(time + deltaTime - _aftermathStart, half);
+            }
+            else
+            {
+                if (time >= _nextLook)
+                {
+                    _nextLook  = time + _ai.Perception.Profile.GuardLookInterval.EvaluateClamped() * OnEdgeGlanceScale;
+                    _lookAngle = Random.Range(-BodyGlanceArc, BodyGlanceArc);
+                }
+                angle = _lookAngle;
+            }
+            _ai.FaceTowards(PointAt(toBody, angle), deltaTime);
         }
     }
 }

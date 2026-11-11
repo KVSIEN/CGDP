@@ -65,6 +65,7 @@ namespace CGD.Enemies
         private readonly float               _retaliationMemory;
 
         private AwarenessLevel _reportedLevel;
+        private bool    _wasCautious;
         private float   _clock;
         private float   _nextLink;
         private float   _nextSample;
@@ -128,6 +129,8 @@ namespace CGD.Enemies
         public AwarenessLevel Level  { get; private set; }
         // Its level changed (from, to): the moment it noticed something, committed to a fight, lost it.
         public event System.Action<AwarenessLevel, AwarenessLevel> LevelChanged;
+        // It has been on edge after a fight or a fruitless search, and now relaxes.
+        public event System.Action Settled;
         public float          Awareness => _meter.Value;
 
         // Engaged: certain of a hostile and sensing it right now.
@@ -192,6 +195,9 @@ namespace CGD.Enemies
         public void Tick(float deltaTime)
         {
             _clock += deltaTime;
+            bool cautious = IsCautious;
+            if (_wasCautious && !cautious) Settled?.Invoke();
+            _wasCautious = cautious;
             // ReferenceEquals: a destroyed target compares equal to null but is still held.
             if (!ReferenceEquals(Target, null) && IsGone(Target)) LoseTarget();
             if (!ReferenceEquals(_lastAttacker, null) && IsGone(_lastAttacker)) _lastAttacker = null;
@@ -215,14 +221,24 @@ namespace CGD.Enemies
         public void GiveUp()
         {
             LoseTarget();
-            _cautiousUntil = _clock + _profile.CautionDuration;
+            _cautiousUntil = _clock + _owner.Doctrine.Aftermath.GiveUpCaution(_profile.CautionDuration);
         }
+
+        // Stays on edge for a while longer (a fight it won leaves the enemy tense, not carefree).
+        public void StayOnEdge(float seconds)
+        {
+            if (seconds > 0f) _cautiousUntil = Mathf.Max(_cautiousUntil, _clock + seconds);
+        }
+
+        // How long it stays on edge after a fight it won, by its faction's temperament.
+        public float VictoryEdgeSeconds => _owner.Doctrine.Aftermath.VictoryCaution(_profile.CautionDuration);
 
         // Back to how it was spawned: calm, knowing nothing (respawn, pooling).
         public void Reset()
         {
             LoseTarget();
             _cautiousUntil = float.NegativeInfinity;
+            _wasCautious   = false;
             _bodiesSeen.Clear();
             _candidates.Clear();
             _weighed.Clear();
