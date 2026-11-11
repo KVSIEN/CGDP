@@ -1,4 +1,3 @@
-using System.IO;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Enemies;
@@ -35,7 +34,7 @@ namespace CGD.Telemetry
         private void Awake()
         {
             if (!SavingEnabled) return;
-            _store = new TelemetryStore(new SaveFile(SavePath()));
+            _store = new TelemetryStore(SaveFile.InPersistentData(_fileName));
             _store.Load();
         }
 
@@ -88,13 +87,5 @@ namespace CGD.Telemetry
 
         private static int TierOf(HealthManager target) =>
             target != null && target.TryGetComponent(out EnemyHealth enemy) && enemy.Data != null ? enemy.Data.Tier : 0;
-
-        private string SavePath()
-        {
-            string fileName = Application.isEditor
-                ? Path.GetFileNameWithoutExtension(_fileName) + "-editor" + Path.GetExtension(_fileName)
-                : _fileName;
-            return Path.Combine(Application.persistentDataPath, fileName);
-        }
     }
 }

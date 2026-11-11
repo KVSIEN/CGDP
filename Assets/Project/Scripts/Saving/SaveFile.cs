@@ -22,6 +22,15 @@ namespace CGD.Saving
             Path = path;
         }
 
+        // A save in the persistent data folder. The editor gets its own copy ("ship-editor.json"),
+        // so play mode never touches a build's save.
+        public static SaveFile InPersistentData(string fileName)
+        {
+            if (Application.isEditor)
+                fileName = System.IO.Path.GetFileNameWithoutExtension(fileName) + "-editor" + System.IO.Path.GetExtension(fileName);
+            return new SaveFile(System.IO.Path.Combine(Application.persistentDataPath, fileName));
+        }
+
         // False when there is no save, or it can't be read or parsed.
         public bool TryRead<T>(out T data) where T : class
         {

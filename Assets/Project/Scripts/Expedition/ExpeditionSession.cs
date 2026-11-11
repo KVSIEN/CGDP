@@ -1,4 +1,3 @@
-using System.IO;
 using UnityEngine;
 using CGD.Flow;
 using CGD.Items;
@@ -40,7 +39,7 @@ namespace CGD.Expedition
             Instance = this;
 
             if (!SavingEnabled) return;
-            Persistence = new ShipPersistence(Ledger, _catalog, new SaveFile(SavePath()));
+            Persistence = new ShipPersistence(Ledger, _catalog, SaveFile.InPersistentData(_fileName));
             Persistence.Load();
         }
 
@@ -56,14 +55,6 @@ namespace CGD.Expedition
             Persistence?.Dispose();
             Persistence = null;
             Instance = null;
-        }
-
-        private string SavePath()
-        {
-            string fileName = Application.isEditor
-                ? Path.GetFileNameWithoutExtension(_fileName) + "-editor" + Path.GetExtension(_fileName)
-                : _fileName;
-            return Path.Combine(Application.persistentDataPath, fileName);
         }
     }
 }
