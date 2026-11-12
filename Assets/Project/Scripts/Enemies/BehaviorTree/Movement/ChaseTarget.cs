@@ -14,6 +14,8 @@ namespace CGD.Enemies
     {
         private const float TurnRing     = 3f;    // metres beyond attack range where it needs its turn
         private const float CircleRadius = 2.5f;  // metres beyond attack range it waits at
+        // Only well short of its melee turn does it run to where the target will be, not at it.
+        private const float InterceptBeyond = 2f;
 
         [Tooltip("Metres. 0 = EnemyData's attack range")]
         [SerializeField, Min(0f)] private float _stopDistance;
@@ -50,7 +52,10 @@ namespace CGD.Enemies
             if (current <= distance) return BtStatus.Success;
 
             Ai.Agent.isStopped = false;
-            Ai.Routing.SetDestination(targetPos);
+            Vector3 goal = current > range + TurnRing + InterceptBeyond
+                ? Ai.Foresight.Intercept(targetPos, perception.TargetVelocity, current)
+                : targetPos;
+            Ai.Routing.SetDestination(goal);
             if (Ai.IsPathBlocked)
             {
                 Ai.Agent.isStopped = true;

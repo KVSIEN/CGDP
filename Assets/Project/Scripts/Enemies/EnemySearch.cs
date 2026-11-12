@@ -65,7 +65,7 @@ namespace CGD.Enemies
             switch (_phase)
             {
                 case Phase.Notice:     TickNotice(deltaTime);     break;
-                case Phase.Approach:   TickApproach();            break;
+                case Phase.Approach:   TickApproach(deltaTime);   break;
                 case Phase.LookAround: TickLookAround(deltaTime); break;
             }
             return _phase == Phase.Done;
@@ -107,9 +107,11 @@ namespace CGD.Enemies
             if (_timer <= 0f) GoTo(_ai.Perception.LastKnownPosition);
         }
 
-        private void TickApproach()
+        private void TickApproach(float deltaTime)
         {
-            _ai.SetSpeed(IsHunting ? _ai.Data.ChaseSpeed * Profile.HuntSpeed : _ai.Data.PatrolSpeed);
+            // Reading the route: a hold at a corner or to listen, a rush on a clear stretch.
+            if (_ai.Foresight.TickApproach(deltaTime, Time.time, out float pace)) return;
+            _ai.SetSpeed((IsHunting ? _ai.Data.ChaseSpeed * Profile.HuntSpeed : _ai.Data.PatrolSpeed) * pace);
 
             NavMeshAgent agent = _ai.Agent;
             if (agent.pathPending) return;
@@ -160,6 +162,7 @@ namespace CGD.Enemies
         {
             Vector3 destination = NavMesh.SamplePosition(point, out NavMeshHit hit, 3f, NavMesh.AllAreas) ? hit.position : point;
             _phase = Phase.Approach;
+            _ai.Foresight.BeginApproach();
             _ai.Agent.isStopped = false;
             _ai.Routing.SetDestination(destination);
         }

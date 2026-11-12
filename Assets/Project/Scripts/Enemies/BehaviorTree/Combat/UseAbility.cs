@@ -20,6 +20,9 @@ namespace CGD.Enemies
         [Tooltip("Only casts with a clear line to the target: no wall or corner in the way (for projectiles)")]
         [SerializeField] private bool _requireClearShot;
 
+        [Tooltip("Aims ahead of a target it sees moving, by the ability's wind-up, as far as its faction thinks ahead (and never through a wall)")]
+        [SerializeField] private bool _leadMovingTarget = true;
+
         [NonSerialized] private bool _casting;
 
         public override string Summary => _ability != null ? _ability.name : "(no ability)";
@@ -57,7 +60,10 @@ namespace CGD.Enemies
                 return true;
             }
 
-            point = Ai.Perception.TargetPosition + Vector3.up;
+            Vector3 ground = Ai.Perception.TargetPosition;
+            if (_leadMovingTarget && _ability != null)
+                ground = Ai.Foresight.LeadAim(ground, Ai.Perception.TargetVelocity, _ability.CastTime);
+            point = ground + Vector3.up;
             return Ai.Perception.Target != null;
         }
 

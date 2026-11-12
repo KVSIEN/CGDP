@@ -53,6 +53,20 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void PlainDoctrineLooksNoFurtherAheadAndStaysPutForGrenades()
+        {
+            var plain = ScriptableObject.CreateInstance<FactionDoctrine>();
+
+            Assert.AreEqual(0f, plain.Foresight.InterceptShare);
+            Assert.AreEqual(0f, plain.Foresight.ZoneLeadShare);
+            Assert.AreEqual(0f, plain.Foresight.CornerPause.Max);
+            Assert.AreEqual(1f, plain.Foresight.StraightPace);
+            Assert.AreEqual(0f, plain.Foresight.ListenStopsPerMinute);
+            Assert.IsFalse(plain.Reflexes.AvoidsGrenades);
+            Object.DestroyImmediate(plain);
+        }
+
+        [Test]
         public void PlainDoctrineLeavesAFightEndingAsItWas()
         {
             var plain = ScriptableObject.CreateInstance<FactionDoctrine>();
@@ -327,6 +341,68 @@ namespace CGD.Tests
         {
             Assert.Less(Doctrine("Bio").Morale.RetreatBelowScale, Doctrine("Tech").Morale.RetreatBelowScale);
             Assert.Less(Doctrine("Bio").Morale.RetreatBelowScale, Doctrine("Void").Morale.RetreatBelowScale);
+        }
+
+        // --- Thinking ahead and reflexes ------------------------------------------------
+
+        [Test]
+        public void BioRunsToCutATargetOffAndTechBarelyBothers()
+        {
+            Assert.Greater(Doctrine("Bio").Foresight.InterceptShare, Doctrine("Void").Foresight.InterceptShare);
+            Assert.Greater(Doctrine("Void").Foresight.InterceptShare, Doctrine("Tech").Foresight.InterceptShare);
+            Assert.Greater(Doctrine("Bio").Foresight.MaxLead, Doctrine("Tech").Foresight.MaxLead);
+        }
+
+        [Test]
+        public void EveryFactionAimsAheadOfAMovingTarget()
+        {
+            foreach (string faction in new[] { "Bio", "Tech", "Void" })
+                Assert.Greater(Doctrine(faction).Foresight.ZoneLeadShare, 0f, faction);
+            // Void expects you to keep running; Bio is the least exact.
+            Assert.Greater(Doctrine("Void").Foresight.ZoneLeadShare, Doctrine("Tech").Foresight.ZoneLeadShare);
+            Assert.Less(Doctrine("Bio").Foresight.ZoneLeadShare, Doctrine("Tech").Foresight.ZoneLeadShare);
+        }
+
+        [Test]
+        public void FactionsReadTheRouteToWhatTheyHaveNotSeenDifferently()
+        {
+            ForesightDoctrine tech = Doctrine("Tech").Foresight;
+            ForesightDoctrine bio  = Doctrine("Bio").Foresight;
+            ForesightDoctrine voidFore = Doctrine("Void").Foresight;
+
+            // Tech holds at corners; only Bio rushes the long stretches; only Void stops to listen.
+            Assert.Greater(tech.CornerPause.Min, 0f);
+            Assert.AreEqual(0f, bio.CornerPause.Max);
+            Assert.AreEqual(0f, voidFore.CornerPause.Max);
+            Assert.Greater(bio.StraightPace, 1f);
+            Assert.AreEqual(1f, tech.StraightPace);
+            Assert.Greater(voidFore.ListenStopsPerMinute, 0f);
+            Assert.AreEqual(0f, tech.ListenStopsPerMinute);
+            Assert.AreEqual(0f, bio.ListenStopsPerMinute);
+        }
+
+        [Test]
+        public void EveryFactionGetsOutOfAGrenadesWayInItsOwnManner()
+        {
+            ReflexDoctrine tech = Doctrine("Tech").Reflexes;
+            ReflexDoctrine bio  = Doctrine("Bio").Reflexes;
+            ReflexDoctrine voidReflex = Doctrine("Void").Reflexes;
+
+            foreach (ReflexDoctrine reflex in new[] { tech, bio, voidReflex })
+                Assert.IsTrue(reflex.AvoidsGrenades);
+
+            // Bio is off before it thinks, fastest and furthest; Void is the slowest to notice.
+            Assert.Less(bio.ReactionDelay.Max, tech.ReactionDelay.Min);
+            Assert.Greater(voidReflex.ReactionDelay.Min, tech.ReactionDelay.Max);
+            Assert.Greater(bio.SpeedScale, tech.SpeedScale);
+            Assert.Greater(bio.SafetyMargin, tech.SafetyMargin);
+
+            // Tech looks for cover; Void accepts a graze and keeps its eyes on the grenade.
+            Assert.IsTrue(tech.SeeksCover);
+            Assert.IsFalse(bio.SeeksCover);
+            Assert.Less(voidReflex.SafetyMargin, 0f);
+            Assert.IsTrue(voidReflex.WatchesIt);
+            Assert.AreEqual(BarkKind.Warning, tech.Bark);
         }
     }
 }

@@ -27,6 +27,7 @@ namespace CGD.Weapons
         private static readonly Collider[] HitBuffer = new Collider[64];
         private static readonly Dictionary<IDamageable, float> TargetFalloff = new();
         private static readonly HashSet<Rigidbody> Pushed = new();
+        private static readonly List<Grenade> LiveGrenades = new();
 
         [Tooltip("Parts that take the body colour and blink as the fuse burns down")]
         [SerializeField] private Renderer[] _body;
@@ -39,6 +40,40 @@ namespace CGD.Weapons
         private float _age;
         private bool _initialized;
         private bool _blinking;
+
+        // Every armed grenade in play, so those it would hurt can get out of the way.
+        public static IReadOnlyList<Grenade> Live => LiveGrenades;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => LiveGrenades.Clear();
+
+        public Vector3 Position    => transform.position;
+        public bool    IsLive      => _initialized;
+        public Team    ThrowerTeam => _source.Team;
+        public float   BlastRadius => _data != null ? _data.ExplosionRadius : 0f;
+        // Seconds until it goes off (for an impact fuse, the longest it can still fly).
+        public float   FuseLeft    => _initialized ? Mathf.Max(0f, _data.FuseTime - _age) : 0f;
+
+        // Whether its blast would reach a point, give or take a margin: inside the radius, and
+        // not behind a wall if the blast needs a line. `ignore` is the body that stands there,
+        // which does not count as cover from itself.
+        public bool Threatens(Vector3 point, float margin, Transform ignore = null)
+        {
+            if (!_initialized || _data == null) return false;
+            if (Vector3.Distance(transform.position, point) > _data.ExplosionRadius + margin) return false;
+            if (!_data.NeedsLineOfSight) return true;
+
+            Vector3 chest = point + Vector3.up * 0.9f;
+            if (!Physics.Linecast(transform.position, chest, out RaycastHit hit, _data.BlockerMask, QueryTriggerInteraction.Ignore)) return true;
+            return ignore != null && hit.collider.transform.IsChildOf(ignore);
+        }
+
+        private void OnEnable()
+        {
+            if (!LiveGrenades.Contains(this)) LiveGrenades.Add(this);
+        }
+
+        private void OnDisable() => LiveGrenades.Remove(this);
 
         private void Awake()
         {

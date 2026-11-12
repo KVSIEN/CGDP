@@ -65,6 +65,24 @@ MonoBehaviour:
     _paceDrift: 0
     _edgeBeatScale: 0.6
     _edgeSweepScale: 1.5
+  _foresight:
+    _interceptShare: 0.3
+    _maxLead: 5
+    _zoneLeadShare: 1
+    _cornerPause: {Min: 0.4, Max: 0.7, Bias: 0}
+    _straightPace: 1
+    _straightLength: 8
+    _listenStopsPerMinute: 0
+    _listenDuration: {Min: 1, Max: 2, Bias: 0}
+  _reflexes:
+    _avoidsGrenades: 1
+    _noticeRange: 16
+    _reactionDelay: {Min: 0.1, Max: 0.25, Bias: 0}
+    _speedScale: 1.1
+    _safetyMargin: 1.5
+    _seeksCover: 1
+    _watchesIt: 0
+    _bark: 15
   _aftermath:
     _cautionScale: 1.3
     _victoryCautionShare: 0.8

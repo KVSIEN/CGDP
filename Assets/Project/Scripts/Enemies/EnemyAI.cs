@@ -117,6 +117,8 @@ namespace CGD.Enemies
         internal EnemyMorale       Morale       { get; private set; }
         internal EnemyIdleLife     Idle         { get; private set; }
         internal EnemyTells        Tells        { get; private set; }
+        internal EnemyForesight    Foresight    { get; private set; }
+        internal EnemyReflexes     Reflexes     { get; private set; }
         internal EnemyVoice        Voice        { get; private set; }
         internal TargetReadings    Readings     { get; private set; }
 
@@ -159,6 +161,8 @@ namespace CGD.Enemies
             Perception    = new EnemyPerception(this, _data, _targetMask, _obstacleMask, _health.Team);
             Tells         = new EnemyTells(this);
             Idle          = new EnemyIdleLife(this);
+            Foresight     = new EnemyForesight(this);
+            Reflexes      = new EnemyReflexes(this);
             RangedCombat  = new EnemyRangedCombat(this, _damageSource, _obstacleMask);
             Melee         = new EnemyMelee(this, _damageSource, _targetMask, _stats);
             Search        = new EnemySearch(this);
@@ -270,6 +274,9 @@ namespace CGD.Enemies
                 Agent.isStopped = false;
                 ReportState(_stateBeforeStun);
             }
+
+            // Getting out of a grenade's way takes the tree's place until it is clear.
+            if (Reflexes.Tick(dt, Time.time)) return;
 
             _sinceTreeTick += dt;
             if (_sinceTreeTick < TreeTickInterval()) return;
@@ -516,6 +523,7 @@ namespace CGD.Enemies
         {
             Minions.DismissAll();
             Belief.Clear();
+            Reflexes.Cancel();
             RangedCombat.CancelBurst();
             Search.Cancel();
             Tactics.ReleaseCover();
@@ -553,6 +561,8 @@ namespace CGD.Enemies
             Morale.Reset();
             Tells.Reset();
             Idle.Cancel();
+            Foresight.Reset();
+            Reflexes.Cancel();
             Voice.Reset();
             Abilities.Reset();
             Post.Remember();

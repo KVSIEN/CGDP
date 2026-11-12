@@ -19,5 +19,6 @@ namespace CGD.Enemies
         Pushing,        // the director's peak: "go, go!"
         HoldingBack,    // the director's calm: "hold position"
         Ambient,        // idle muttering while nothing is going on
+        Warning,        // a grenade is about to go off
     }
 }
