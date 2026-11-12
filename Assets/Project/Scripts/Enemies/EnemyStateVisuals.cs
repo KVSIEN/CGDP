@@ -67,6 +67,7 @@ namespace CGD.Enemies
                 TellKind.AllClear => (1, 0.3f),
                 TellKind.Settle   => (1, 0.7f),
                 TellKind.Fade     => (1, 1.1f),
+                TellKind.StepUp   => (3, 0.15f),
                 _               => (1, 0.3f),
             };
             Color accent = _ai.Data.DamageNumberColor.a > 0f ? _ai.Data.DamageNumberColor : Color.white;

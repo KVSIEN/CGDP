@@ -18,7 +18,15 @@ namespace CGD.Enemies
             rows.Add(("Morale", $"{ai.MoraleValue:0.00}{(ai.Morale.IsShaken ? " · shaken" : "")}{(ai.Tells.IsCommitting ? " · taking it in" : "")}"));
             rows.Add(("Doctrine", ai.Data.Doctrine != null ? ai.Data.Doctrine.name : "none"));
             if (ai.Squad != null)
-                rows.Add(("Squad", $"{ai.SquadRole}{(ai.Squad.Leader == ai ? " · leader" : "")} ({ai.Squad.Members.Count} members)"));
+                rows.Add(("Squad", $"{(ai.Squad.Leader == ai ? "leader · " : "")}{ai.Squad.Members.Count} members"));
+            if (ai.Encounter != null)
+            {
+                Encounter encounter = ai.Encounter;
+                rows.Add(("Encounter", $"{ai.SquadRole}{(encounter.Lead == ai ? " · lead" : "")}{(encounter.IsSteppedUp(ai) ? " · stepped up" : "")}" +
+                                       $" · {encounter.Posture} ({encounter.Members.Count} on {(encounter.Target != null ? encounter.Target.name : "?")})"));
+            }
+            if (Overseers.TryGet(ai.Doctrine, ai.Health.Team, out FactionOverseer overseer))
+                rows.Add(("Overseer", $"menace {overseer.MenaceShare:P0}{(overseer.IsBackingOff ? " · backing off" : "")} · escalation {overseer.Escalation}"));
             if (ai.Tactics.HasMeleeTurn) rows.Add(("Melee turn", "has it"));
 
             EnemyPacingState pacing = EnemyPacing.Current;

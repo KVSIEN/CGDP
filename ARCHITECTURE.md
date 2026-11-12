@@ -108,10 +108,16 @@ visuals, animation and audio follow.
 
 Enemies use the player's ability system as-is: `AbilityContext` describes any caster
 (`CasterTransform`, `CasterRigidbody`, `AimTransform`, `Health`), and `EnemyAbilities` /
-`GrenadeThrower` are plain classes owned by `EnemyAI`. An **`EnemySquad`** coordinates
-without taking control: it hands out a `SquadRole` per member (rules in the pure
-`SquadRoles`), relays members' callouts as through-wall callouts, and shakes morale when
-its leader falls; tree nodes read `EnemyAI.SquadRole` and decide for themselves.
+`GrenadeThrower` are plain classes owned by `EnemyAI`. Group behaviour coordinates
+without taking control. **Encounters** (`EncounterBoard`, a static list the enemies tick a
+couple of times a second) group kin of one faction fighting the same target; each picks a
+lead (`Succession`) and hands out a `SquadRole` per member from its faction's doctrine
+(`RoleAssignment`, both pure), and shifts posture when its lead falls. **Faction overseers**
+(`Overseers`, also ticked by the enemies) are each faction's own director: a `MenaceGauge`
+that can hold the faction back, vague hints to calm members, and escalation. An
+**`EnemySquad`** placed in a scene only adds a radio relay and leader-loss morale (and makes
+its members coordinate). Tree nodes read `EnemyAI.SquadRole` and the blackboard keys these
+publish, and decide for themselves.
 
 **An enemy decides with a behavior tree.** Every enemy runs the `BehaviorTreeAsset` named by
 its `EnemyData` (there is no other brain): `EnemyAI` ticks a `BehaviorTree` — the agent's own copy of the

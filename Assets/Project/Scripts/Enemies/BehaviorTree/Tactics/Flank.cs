@@ -62,8 +62,8 @@ namespace CGD.Enemies
                    Ai.RangedCombat.HasClearShot(targetPos);
         }
 
-        // Squad flankers split left and right; anyone else picks a side at random.
-        private int SquadSide() => Ai.SquadRole == SquadRole.Flank ? Ai.Squad.NextFlankSide() : 0;
+        // Flankers of one encounter split left and right; anyone else picks a side at random.
+        private int SquadSide() => Ai.SquadRole == SquadRole.Flank && Ai.Encounter != null ? Ai.Encounter.NextFlankSide() : 0;
 
         private float StandOff()
         {

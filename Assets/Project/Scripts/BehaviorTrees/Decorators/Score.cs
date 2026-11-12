@@ -20,8 +20,12 @@ namespace CGD.BehaviorTrees
         [Tooltip("Shapes the 0..1 value into a score (x: value, y: score)")]
         [SerializeField] private AnimationCurve _curve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
         [SerializeField, Min(0f)] private float _weight = 1f;
+        [Tooltip("Blackboard number the score is multiplied by as it stands (a temperament such as Aggression or Caution; 1 = no change). Empty = none")]
+        [SerializeField, BlackboardKey(BlackboardKeyAccess.Read, BlackboardValueType.Float, AllowEmpty = true)] private string _biasKey = "";
 
-        public override string Summary => string.IsNullOrEmpty(_key) ? $"Fixed {_weight:0.##}" : $"{_key} × {_weight:0.##}";
+        public override string Summary =>
+            (string.IsNullOrEmpty(_key) ? $"Fixed {_weight:0.##}" : $"{_key} × {_weight:0.##}") +
+            (string.IsNullOrEmpty(_biasKey) ? "" : $" × {_biasKey}");
 
         internal override bool IsConditional => Child != null && Child.IsConditional;
         internal override bool CheckCondition(BtContext context) => Child.CheckCondition(context);
@@ -34,6 +38,7 @@ namespace CGD.BehaviorTrees
                 float t = Mathf.InverseLerp(_min, _max, context.Blackboard.GetFloat(_key, _min));
                 own *= Mathf.Max(0f, _curve.Evaluate(t));
             }
+            if (!string.IsNullOrEmpty(_biasKey)) own *= Mathf.Max(0f, context.Blackboard.GetFloat(_biasKey, 1f));
             return Child is Score inner ? own * inner.Evaluate(context) : own;
         }
 

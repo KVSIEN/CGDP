@@ -113,7 +113,9 @@ namespace CGD.Enemies
         internal EnemyBelief       Belief       { get; private set; }
         internal GrenadeThrower    Grenades     { get; private set; }
         internal EnemySquad        Squad        { get; private set; }
-        internal SquadRole         SquadRole    => Squad != null ? Squad.RoleOf(this) : SquadRole.None;
+        // The fight it is part of with its kin (Encounter), and its job in it.
+        internal Encounter         Encounter    { get; private set; }
+        internal SquadRole         SquadRole    => Encounter != null ? Encounter.RoleOf(this) : SquadRole.None;
         internal EnemyMorale       Morale       { get; private set; }
         internal EnemyIdleLife     Idle         { get; private set; }
         internal EnemyTells        Tells        { get; private set; }
@@ -235,6 +237,7 @@ namespace CGD.Enemies
         private void Update()
         {
             float dt = Time.deltaTime;
+            EnemyCoordination.Tick(Time.time);
             Minions.Tick(Time.time);
 
             // A stun freezes attacks and senses as well as movement.
@@ -318,6 +321,7 @@ namespace CGD.Enemies
         internal void GiveUpSearch()
         {
             Perception.GiveUp();
+            Overseers.ReportEscape(this, Time.time);
             BeginReturn(victory: false, transform.position + transform.forward);
         }
 
@@ -475,6 +479,16 @@ namespace CGD.Enemies
         }
 
         internal void JoinSquad(EnemySquad squad) => Squad = squad;
+
+        internal void JoinEncounter(Encounter encounter) => Encounter = encounter;
+
+        internal void LeaveEncounter(Encounter encounter)
+        {
+            if (Encounter == encounter) Encounter = null;
+        }
+
+        // Which layers hostile characters are found on (its overseer looks for them too).
+        internal LayerMask TargetMask => _targetMask;
 
         // Remembers who it is fighting so it notices when that fight is won.
         private void TrackEngagement()

@@ -45,6 +45,22 @@ namespace CGD.Enemies
         public const string TargetWatching = "TargetWatching";
         [AgentBlackboardKey(BlackboardValueType.Float, "1 for a moment after its sensed target whipped round or shot one of its decoys; else 0")]
         public const string TargetFlinch = "TargetFlinch";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Its encounter's posture: 0 steady, 1 regrouping (its lead fell, or its overseer is holding it back)")]
+        public const string Posture = "Posture";
+        [AgentBlackboardKey(BlackboardValueType.Bool, "True while it leads its encounter")]
+        public const string IsLead = "IsLead";
+        [AgentBlackboardKey(BlackboardValueType.Bool, "True for a while after it stepped up to lead when the lead fell")]
+        public const string SteppedUp = "SteppedUp";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Temperament: eagerness to close and hit (1 = neutral; see the faction doctrine)")]
+        public const string Aggression = "Aggression";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Temperament: concern for its own safety (1 = neutral)")]
+        public const string Caution = "Caution";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Temperament: liking for angles and tricks (1 = neutral)")]
+        public const string Cunning = "Cunning";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Its faction overseer's menace, 0–1 (0 without one)")]
+        public const string Menace = "Menace";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Its faction overseer's escalation, 0 and up (0 without one)")]
+        public const string Escalation = "Escalation";
 
         internal static void Publish(EnemyAI ai, Blackboard blackboard)
         {
@@ -65,6 +81,8 @@ namespace CGD.Enemies
             blackboard.SetFloat(Pacing, (int)pacing.Phase);
             blackboard.SetFloat(Pressure, pacing.Pressure);
             blackboard.SetFloat(PlayerStress, pacing.Intensity);
+
+            PublishGroup(ai, blackboard);
 
             var perception = ai.Perception;
             if (perception.Target != null)
@@ -88,6 +106,27 @@ namespace CGD.Enemies
         }
 
         private const float CloseRange = 6f;
+
+        // Its encounter, its overseer and the temperament they leave it in.
+        private static void PublishGroup(EnemyAI ai, Blackboard blackboard)
+        {
+            Encounter encounter = ai.Encounter;
+            bool hasOverseer = Overseers.TryGet(ai.Doctrine, ai.Health.Team, out FactionOverseer overseer);
+            bool regrouping  = (encounter != null && encounter.Posture == EncounterPosture.Regroup) || (hasOverseer && overseer.IsBackingOff);
+            bool steppedUp   = encounter != null && encounter.IsSteppedUp(ai);
+
+            blackboard.SetFloat(Posture, regrouping ? 1f : 0f);
+            blackboard.SetBool(IsLead, encounter != null && encounter.Lead == ai);
+            blackboard.SetBool(SteppedUp, steppedUp);
+
+            var temperament = EnemyTemperament.Of(ai.Doctrine.Temperament, regrouping, steppedUp);
+            blackboard.SetFloat(Aggression, temperament.Aggression);
+            blackboard.SetFloat(Caution, temperament.Caution);
+            blackboard.SetFloat(Cunning, temperament.Cunning);
+
+            blackboard.SetFloat(Menace, hasOverseer ? overseer.MenaceShare : 0f);
+            blackboard.SetFloat(Escalation, hasOverseer ? overseer.Escalation : 0f);
+        }
 
         private static int HostilesWithin(EnemyAI ai, float range)
         {

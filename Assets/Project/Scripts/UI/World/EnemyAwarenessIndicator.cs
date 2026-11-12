@@ -91,7 +91,7 @@ namespace CGD.UI
         private void ShowLevel(AwarenessLevel level, TellKind tell, float tellProgress)
         {
             bool quiet   = IsStandDown(tell);
-            bool engaged = !quiet && (level == AwarenessLevel.Engaged || tell is TellKind.LockOn or TellKind.Roar);
+            bool engaged = !quiet && (level == AwarenessLevel.Engaged || tell is TellKind.LockOn or TellKind.Roar or TellKind.StepUp);
             Color color  = quiet ? _standDownColor
                          : engaged ? _engagedColor
                          : level == AwarenessLevel.Searching ? _searchingColor : _suspiciousColor;
@@ -126,6 +126,7 @@ namespace CGD.UI
             TellKind.AllClear => 1f,
             TellKind.Settle   => 1.4f,
             TellKind.Fade     => 1.8f,
+            TellKind.StepUp   => 0.9f,
             _                 => 0f,
         };
 
@@ -153,6 +154,11 @@ namespace CGD.UI
                 case TellKind.Stare:
                     size *= Mathf.Lerp(0.5f, 1.25f, t * t);
                     color.a *= 0.75f + 0.25f * Mathf.Sin(t * 40f);
+                    break;
+                case TellKind.StepUp:
+                    // Rising to the occasion: the mark climbs and swells twice.
+                    size *= 1f + 0.5f * Mathf.Abs(Mathf.Sin(t * Mathf.PI * 2f));
+                    lift  = t * 14f;
                     break;
                 case TellKind.AllClear:
                 case TellKind.Settle:

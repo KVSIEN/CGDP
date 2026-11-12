@@ -14,6 +14,9 @@ namespace CGD.Enemies
         [SerializeField] private MoraleDoctrine     _morale     = new();
         [SerializeField] private EscalationDoctrine _escalation = new();
         [SerializeField] private IdleDoctrine       _idle       = new();
+        [SerializeField] private EncounterDoctrine  _encounter  = new();
+        [SerializeField] private OverseerDoctrine   _overseer   = new();
+        [SerializeField] private TemperamentDoctrine _temperament = new();
         [SerializeField] private ForesightDoctrine  _foresight  = new();
         [SerializeField] private ReflexDoctrine     _reflexes    = new();
         [SerializeField] private AftermathDoctrine  _aftermath  = new();
@@ -22,6 +25,9 @@ namespace CGD.Enemies
         public MoraleDoctrine     Morale     => _morale;
         public EscalationDoctrine Escalation => _escalation;
         public IdleDoctrine       Idle       => _idle;
+        public EncounterDoctrine  Encounter  => _encounter;
+        public OverseerDoctrine   Overseer   => _overseer;
+        public TemperamentDoctrine Temperament => _temperament;
         public ForesightDoctrine  Foresight  => _foresight;
         public ReflexDoctrine     Reflexes   => _reflexes;
         public AftermathDoctrine  Aftermath  => _aftermath;

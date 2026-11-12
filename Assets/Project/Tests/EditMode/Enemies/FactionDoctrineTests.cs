@@ -404,5 +404,119 @@ namespace CGD.Tests
             Assert.IsTrue(voidReflex.WatchesIt);
             Assert.AreEqual(BarkKind.Warning, tech.Bark);
         }
+
+        // --- Encounters, overseers and temperament ---------------------------------------
+
+        [Test]
+        public void PlainDoctrineNeitherCoordinatesNorOversees()
+        {
+            var plain = ScriptableObject.CreateInstance<FactionDoctrine>();
+
+            Assert.IsFalse(plain.Encounter.Coordinates);
+            Assert.AreEqual(EncounterPosture.Steady, plain.Encounter.OnLeadLost);
+            Assert.AreEqual(0f, plain.Encounter.SteppedUpSeconds);
+            Assert.IsFalse(plain.Overseer.Oversees);
+            Assert.AreEqual(1f, plain.Temperament.Aggression);
+            Assert.AreEqual(1f, plain.Temperament.Caution);
+            Assert.AreEqual(1f, plain.Temperament.Cunning);
+            Object.DestroyImmediate(plain);
+        }
+
+        [Test]
+        public void EveryFactionCoordinatesStepsUpAndRegroupsWhenItsLeadFalls()
+        {
+            foreach (string faction in new[] { "Bio", "Tech", "Void" })
+            {
+                EncounterDoctrine encounter = Doctrine(faction).Encounter;
+                Assert.IsTrue(encounter.Coordinates, faction);
+                Assert.AreEqual(EncounterPosture.Regroup, encounter.OnLeadLost, faction);
+                Assert.Greater(encounter.RegroupSeconds, 0f, faction);
+                Assert.Greater(encounter.SteppedUpSeconds, 0f, faction);
+                Assert.Greater(encounter.SuccessorNerve, 0f, faction);
+            }
+            Assert.AreEqual(SuccessionRule.Rank,     Doctrine("Tech").Encounter.Succession);
+            Assert.AreEqual(SuccessionRule.Strength, Doctrine("Bio").Encounter.Succession);
+            Assert.AreEqual(SuccessionRule.Depth,    Doctrine("Void").Encounter.Succession);
+        }
+
+        private static bool Has(RoleSlot[] slots, SquadRole role)
+        {
+            foreach (RoleSlot slot in slots)
+                if (slot.Role == role) return true;
+            return false;
+        }
+
+        [Test]
+        public void TechHandsOutFearStyleSlotsAndPinsDownWhileItReforms()
+        {
+            EncounterDoctrine tech = Doctrine("Tech").Encounter;
+            RoleSlot[] steady  = tech.RolesFor(EncounterPosture.Steady);
+            RoleSlot[] regroup = tech.RolesFor(EncounterPosture.Regroup);
+
+            Assert.IsTrue(Has(steady, SquadRole.Assault));
+            Assert.IsTrue(Has(steady, SquadRole.Suppress));
+            Assert.IsTrue(Has(steady, SquadRole.Flank));
+            Assert.IsTrue(steady[0].LeadFirst, "the lead takes point");
+            // Regrouping: the new lead still bounds forward, every other gun pins the target down.
+            Assert.IsTrue(regroup[0].LeadFirst);
+            Assert.IsTrue(Has(regroup, SquadRole.Suppress));
+            Assert.IsFalse(Has(regroup, SquadRole.Flank));
+        }
+
+        [Test]
+        public void BioAndVoidLetTheirLeadPressOnWhileTheRestCircle()
+        {
+            foreach (string faction in new[] { "Bio", "Void" })
+            {
+                EncounterDoctrine encounter = Doctrine(faction).Encounter;
+                RoleSlot[] steady = encounter.RolesFor(EncounterPosture.Steady);
+                Assert.IsTrue(steady[0].LeadFirst, faction);
+                Assert.AreEqual(SquadRole.Assault, steady[0].Role, faction);
+                Assert.AreEqual(SquadRole.Flank, encounter.FallbackFor(EncounterPosture.Steady), faction);
+            }
+            // A Bio pack that lost its alpha circles round its new one; a coven that lost its
+            // deepest falls back on each member's own judgement (and its caution).
+            Assert.AreEqual(SquadRole.Flank, Doctrine("Bio").Encounter.FallbackFor(EncounterPosture.Regroup));
+            Assert.AreEqual(0, Doctrine("Void").Encounter.RolesFor(EncounterPosture.Regroup).Length);
+            Assert.AreEqual(SquadRole.None, Doctrine("Void").Encounter.FallbackFor(EncounterPosture.Regroup));
+        }
+
+        [Test]
+        public void OverseersPaceEachFactionDifferently()
+        {
+            OverseerDoctrine tech = Doctrine("Tech").Overseer;
+            OverseerDoctrine bio  = Doctrine("Bio").Overseer;
+            OverseerDoctrine voidOverseer = Doctrine("Void").Overseer;
+
+            foreach (OverseerDoctrine overseer in new[] { tech, bio, voidOverseer })
+                Assert.IsTrue(overseer.Oversees);
+
+            // Void breathes in and out the most (backs off soonest), Tech never lets up.
+            Assert.IsTrue(voidOverseer.BacksOff);
+            Assert.IsTrue(bio.BacksOff);
+            Assert.IsFalse(tech.BacksOff);
+            Assert.Less(voidOverseer.BackOffAt, bio.BackOffAt);
+            // Void hints soonest; Tech's network gives the sharpest hints, to two members at once.
+            Assert.Less(voidOverseer.HintAfterQuiet, tech.HintAfterQuiet);
+            Assert.Less(tech.HintAccuracy(0), bio.HintAccuracy(0));
+            Assert.Less(bio.HintAccuracy(0), voidOverseer.HintAccuracy(0));
+            Assert.Greater(tech.HintMembers, voidOverseer.HintMembers);
+            // Escalating sharpens every faction's hints.
+            foreach (OverseerDoctrine overseer in new[] { tech, bio, voidOverseer })
+                Assert.Less(overseer.HintAccuracy(3), overseer.HintAccuracy(0));
+        }
+
+        [Test]
+        public void TemperamentsFitTheFactions()
+        {
+            TemperamentDoctrine tech = Doctrine("Tech").Temperament;
+            TemperamentDoctrine bio  = Doctrine("Bio").Temperament;
+            TemperamentDoctrine voidTemperament = Doctrine("Void").Temperament;
+
+            Assert.Greater(bio.Aggression, tech.Aggression);
+            Assert.Greater(tech.Caution, bio.Caution);
+            Assert.Greater(voidTemperament.Cunning, tech.Cunning);
+            Assert.Greater(voidTemperament.Cunning, bio.Cunning);
+        }
     }
 }

@@ -117,6 +117,11 @@ MonoBehaviour:
   - rid: 1106
   - rid: 1107
   - rid: 1108
+  - rid: 1109
+  - rid: 1110
+  - rid: 1111
+  - rid: 1112
+  - rid: 1113
   references:
     version: 2
     RefIds:
@@ -262,6 +267,7 @@ MonoBehaviour:
         - 279e267b49594a7ebc5a39bc5e2c42c5
         - 01611ae078d04342a6ff83f5940a365c
         - f9499f0e9aac46d883a898c8f92589f2
+        - ded1ebec8c9f4bffa2ad1af180f690a0
         - 71598e06f3c24e7e87880fd410af2cc8
         - a1c0de01b2d34e5f8a9b0c1d2e3f4a51
         - 039c8196783b4c3b98b4b9a7a3c3d94b
@@ -709,6 +715,7 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         _weight: 1
+        _biasKey: Caution
     - rid: 1066
       type: {class: Score, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -781,6 +788,7 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         _weight: 1.5
+        _biasKey: Aggression
     - rid: 1068
       type: {class: Score, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -980,6 +988,7 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         _weight: 1.5
+        _biasKey: Caution
     - rid: 1086
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -1228,3 +1237,46 @@ MonoBehaviour:
         _aim: 0
         _maxRange: 0
         _requireClearShot: 0
+    - rid: 1109
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ded1ebec8c9f4bffa2ad1af180f690a0
+        _position: {x: 1692, y: 600}
+        _comment: 'Coven: given the flank role by its encounter (everyone but the deepest, who presses on), work round to the target''s side by the least visible route, at most every 7 s'
+        _children:
+        - 02975a87b88d4034a513250d7afa4681
+        - c12cb3073047404b89960f227526e267
+        _abort: 0
+    - rid: 1110
+      type: {class: HasSquadRole, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 02975a87b88d4034a513250d7afa4681
+        _position: {x: 1582, y: 750}
+        _comment: 
+        _role: 2
+    - rid: 1111
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c12cb3073047404b89960f227526e267
+        _position: {x: 1802, y: 750}
+        _comment: 
+        _children:
+        - 769c4b37b0a34c65ba22655fe1deaf63
+        _seconds: 7
+        _onlyAfterSuccess: 0
+    - rid: 1112
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 769c4b37b0a34c65ba22655fe1deaf63
+        _position: {x: 1802, y: 900}
+        _comment: 
+        _children:
+        - 3ef4617fd96a4de0924c4a17b0d09142
+    - rid: 1113
+      type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3ef4617fd96a4de0924c4a17b0d09142
+        _position: {x: 1802, y: 1050}
+        _comment: 
+        _standOff: 0
+        _giveUpAfter: 6

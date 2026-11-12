@@ -49,6 +49,13 @@ namespace CGD.Enemies
             UpdateShaken();
         }
 
+        // Something put fight back into it (it stepped up to lead).
+        public void Steady(float amount)
+        {
+            Value = Mathf.Min(1f, Value + Mathf.Max(0f, amount));
+            UpdateShaken();
+        }
+
         public void OnDamaged()
         {
             var health = _ai.Health;

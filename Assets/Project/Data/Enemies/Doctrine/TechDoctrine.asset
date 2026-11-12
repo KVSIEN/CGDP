@@ -65,6 +65,87 @@ MonoBehaviour:
     _paceDrift: 0
     _edgeBeatScale: 0.6
     _edgeSweepScale: 1.5
+  _encounter:
+    _coordinates: 1
+    _succession: 0
+    _roles:
+    - _role: 1
+      _count: 1
+      _who: 0
+      _leadFirst: 1
+      _closeness: 0.5
+      _offAxis: 0
+      _health: 0
+      _rank: 0
+      _cover: 0
+      _stickiness: 0.3
+    - _role: 3
+      _count: 1
+      _who: 1
+      _leadFirst: 0
+      _closeness: 0.5
+      _offAxis: 0
+      _health: 0
+      _rank: 0
+      _cover: 1
+      _stickiness: 0.4
+    - _role: 2
+      _count: 2
+      _who: 0
+      _leadFirst: 0
+      _closeness: 0
+      _offAxis: 1
+      _health: 0.5
+      _rank: 0
+      _cover: 0
+      _stickiness: 0.4
+    _fallbackRole: 1
+    _onLeadLost: 1
+    _regroupSeconds: 8
+    _regroupRoles:
+    - _role: 1
+      _count: 1
+      _who: 0
+      _leadFirst: 1
+      _closeness: 0.5
+      _offAxis: 0
+      _health: 0
+      _rank: 0
+      _cover: 0
+      _stickiness: 0.3
+    - _role: 3
+      _count: 0
+      _who: 1
+      _leadFirst: 0
+      _closeness: 0.3
+      _offAxis: 0
+      _health: 0
+      _rank: 0
+      _cover: 1
+      _stickiness: 0.3
+    _regroupFallbackRole: 1
+    _steppedUpSeconds: 12
+    _successorNerve: 0.3
+  _overseer:
+    _oversees: 1
+    _menaceRise: 1
+    _menaceDecay: 1
+    _menaceMax: 30
+    _backsOff: 0
+    _backOffAt: 20
+    _backOffSeconds: 10
+    _resumeBelow: 8
+    _hintAfterQuiet: 30
+    _hintEvery: 20
+    _hintAccuracy: 6
+    _hintRange: 60
+    _hintMembers: 2
+    _sharpenPerEscalation: 0.2
+    _maxEscalation: 3
+  _temperament:
+    _aggression: 0.8
+    _caution: 1.2
+    _cunning: 1
   _foresight:
     _interceptShare: 0.3
     _maxLead: 5

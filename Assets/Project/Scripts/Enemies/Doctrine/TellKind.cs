@@ -21,5 +21,7 @@ namespace CGD.Enemies
         Settle,
         // Stood down after a fight: it simply loses interest and fades.
         Fade,
+        // Its lead fell and it stepped up to take charge.
+        StepUp,
     }
 }

@@ -67,7 +67,9 @@ Assets/
                             Tactics/ (CoverMap: cover spots from the NavMesh; CoverKnowledge, EnemyTactics: cover, flanking, hiding spots, melee turns;
                             AttackTokens, EnemyMorale, AlarmPanel; TacticsLog: its latest cover / flank / vanish searches),
                             Debugging/ (EnemyInsight: the read-only view debug tools get; EnemyStatusReport, AwarenessColors),
-                            Squads/ (EnemySquad: roles, radio relay, leader; SquadRoles rules, SquadRole),
+                            Squads/ (EnemySquad: radio relay, leader; SquadRole),
+                            Encounters/ (Encounter, EncounterBoard: kin fighting one target as a group; RoleSlot, RoleAssignment, Succession, EnemyTemperament),
+                            Overseer/ (FactionOverseer, Overseers, MenaceGauge: each faction's own director),
                             Pacing/ (EnemyPacing: the director's word to enemies; EnemyPacingState, BoldMovePermits),
                             Voice/ (EnemyVoice: barks from EnemyBarkSet per type; BarkRules spacing, EnemyBarks bus),
                             Bosses/ (BossDefinition, BossPhase; BossPhases: which phase a fight is in)
