@@ -100,8 +100,8 @@ routine behind Investigate. Space works the same
 way: a scene's `CoverMap` lists every cover spot (scanned from the NavMesh), but each
 enemy's `CoverKnowledge` holds only the spots it has learned (home turf, then what it
 sees), and `EnemyTactics` answers cover / flank / hiding-spot questions from that and the
-believed threat position. Longer routines live in plain classes the nodes call:
-`EnemySearch`, `ReturnStep`, `RetreatStep`, `RaiseAlarmStep`, `EnemyPost` (guarding),
+believed threat position. Longer routines live in plain classes the nodes call
+(`Enemies/Routines/`): `EnemySearch`, `ReturnStep`, `RetreatStep`, `RaiseAlarmStep`; beside them `EnemyPost` (guarding),
 `EnemyMorale`, `AttackTokens` (how many enemies may melee or shoot one target at once).
 Nodes stay thin wrappers that decide *when*; they report `AiState` and `EngageStep` so
 visuals, animation and audio follow.

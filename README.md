@@ -59,10 +59,15 @@ Assets/
                             BehaviorTrees/ (Behavior Tree Editor: window, side panel; Canvas/ — GraphView, node, group and note views,
                             layout, search; Blackboard/ — key catalog and picker; Validation/ — tree checks; Debugging/ — trace,
                             live view, breakpoints)
-      Enemies/              enemy components, EnemyMelee, EnemyRangedCombat, EnemyEyes (the one eye height every enemy system uses), EnemySearch, EnemyPost (guarding, return point), shared steps (Return/Retreat/RaiseAlarmStep),
-                            Abilities/ (EnemyAbilities: casting Ability assets; GrenadeThrower, ThrowArc),
-                            BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/, Squad/, Pacing/, Voice/; EnemyBlackboard keys),
+      Enemies/              the agent itself at the root: EnemyAI (body + tree; owns every plain class below), EnemyData, EnemyHealth,
+                            EnemyEyes (the one eye height every enemy system uses), EngageStep, SocialStyle, EnemyCombatType;
+                            BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/, Squad/, Pacing/, Voice/;
+                            EnemyAction/EnemyCondition base nodes, EnemyBlackboard keys, TreeTickRate),
+                            Routines/ (multi-frame routines nodes call: EnemySearch, ReturnStep, RetreatStep, RaiseAlarmStep),
+                            Combat/ (EnemyMelee, EnemyRangedCombat), Navigation/ (EnemyRouting: hazard-aware paths; EnemyPost: guarding, return point),
+                            Abilities/ (EnemyAbilities: casting Ability assets; GrenadeThrower, ThrowArc; ambush, minions, phase shift, survey beacon),
                             Perception/ (EnemyPerception: awareness, targets, memory; EnemySenses: sight and hearing checks; AwarenessMeter, PerceptionProfile, callouts),
+                            Belief/ (EnemyBelief, BeliefModel: where an unseen target likely went),
                             Doctrine/ (FactionDoctrine: how a faction carries itself — morale, escalation, idle routine and tells; EnemyIdleLife, EnemyTells),
                             Tactics/ (CoverMap: cover spots from the NavMesh; CoverKnowledge, EnemyTactics: cover, flanking, hiding spots, melee turns;
                             AttackTokens, EnemyMorale, AlarmPanel; TacticsLog: its latest cover / flank / vanish searches),
@@ -71,7 +76,9 @@ Assets/
                             Encounters/ (Encounter, EncounterBoard: kin fighting one target as a group; RoleSlot, RoleAssignment, Succession, EnemyTemperament),
                             Overseer/ (FactionOverseer, Overseers, MenaceGauge: each faction's own director),
                             Pacing/ (EnemyPacing: the director's word to enemies; EnemyPacingState, BoldMovePermits),
-                            Voice/ (EnemyVoice: barks from EnemyBarkSet per type; BarkRules spacing, EnemyBarks bus),
+                            Voice/ (EnemyVoice: barks from EnemyBarkSet per type; BarkRules spacing, EnemyBarks bus; EnemyAudio: hurt and death sounds),
+                            Visuals/ (EnemyStateVisuals, EnemyPlaceholderAnimation, attack / ability / buff / cloak looks),
+                            Affixes/ (EnemyAffix, EnemyAffixPool, EnemyAffixes: rolled modifiers), Spawning/ (EnemyRespawner, TerritorySpawn, EnemyRestart),
                             Bosses/ (BossDefinition, BossPhase; BossPhases: which phase a fight is in)
       Expedition/           the extraction loop: ExpeditionLedger (ship hold, packed kit, extract/die rules),
                             ExpeditionSession (keeps it across loads), ExpeditionRunner (a run in a level), RunStarterKit,

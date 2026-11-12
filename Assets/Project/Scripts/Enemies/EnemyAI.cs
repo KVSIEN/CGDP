@@ -127,13 +127,13 @@ namespace CGD.Enemies
         // How its faction carries itself; a plain doctrine without one.
         internal FactionDoctrine Doctrine => _data.Doctrine != null ? _data.Doctrine : FactionDoctrine.Neutral;
 
-        // Set when it gave up a search or won its fight: it should head back to its post.
         // Shaken and not cornered: time to fall back. Cornered, it fights instead.
         internal bool ShouldRetreat => Morale.IsShaken && !IsCornered;
         internal bool IsCornered =>
             Perception.IsTargetDetected &&
             (Perception.TargetPosition - transform.position).sqrMagnitude < CorneredDistance * CorneredDistance;
 
+        // Set when it gave up a search or won its fight: it should head back to its post.
         internal bool    ReturnPending   { get; private set; }
         internal bool    ReturnIsVictory { get; private set; }
         internal Vector3 ReturnLookAt    { get; private set; }
@@ -156,7 +156,7 @@ namespace CGD.Enemies
             // Facing is ours (TickFacing): it follows the walk by default, but a node can hold the gaze elsewhere.
             Agent.updateRotation = false;
             Routing       = new EnemyRouting(this);
-            _health      = GetComponent<EnemyHealth>();
+            _health       = GetComponent<EnemyHealth>();
             _stunnable    = GetComponent<Stunnable>();
             _damageSource = DamageSource.Of(gameObject);
             TryGetComponent(out _stats);
@@ -397,8 +397,6 @@ namespace CGD.Enemies
             if (!_stunnable.IsKnockedBack || !Agent.enabled || !Agent.isOnNavMesh) return;
             Agent.Move(_stunnable.KnockbackVelocity * dt);
         }
-
-        // Buffs speed up the melee swing (FireRate stat, base 1): wind-up and recovery both shrink.
 
         private float SpeedFromStats => _stats != null ? Mathf.Max(0.1f, _stats.Apply(ItemStat.MovementSpeed, 1f)) : 1f;
 
