@@ -1,0 +1,208 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: StalkRushHide
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7971759471a94f2293a8098787391139
+        _position: {x: 0, y: 0}
+        _comment: 'A predator''s hunt in a loop: stalk the target from bush to bush, watching it (cut short the moment it turns its back or reloads), rush in for a committed strike, break off to a bush away from it and lie low, then stalk again from wherever the target last saw it least.'
+        _children:
+        - b5138bdf35b941928545489fabff7dd2
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b5138bdf35b941928545489fabff7dd2
+        _position: {x: 0, y: 150}
+        _comment: 'Stalk, rush, disengage, hide; then round again'
+        _children:
+        - 325642f2b8274af8bb91631e3d04cbf7
+        - 530292ba5f17438696e5247e43297058
+        - f0254c0673524c93bfc9796e1004b2f7
+        - 19bd31b2c0534cbc8d422be664d78624
+        _abort: 0
+    - rid: 1002
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 325642f2b8274af8bb91631e3d04cbf7
+        _position: {x: -330, y: 300}
+        _comment: 'Stalk and size it up: circle it from bush to bush at a wary distance for a few seconds. An opening (its back turned, reloading) ends the stalk at once'
+        _children:
+        - 455a1ed8ee1843de86cb34751ef5908c
+        _succeed: 1
+    - rid: 1003
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 455a1ed8ee1843de86cb34751ef5908c
+        _position: {x: -330, y: 450}
+        _comment:
+        _children:
+        - 0a5f80dedf1144749a0b0897cefd8cda
+        - 7045f8c7a61c4af8875b02bea3cc1fc0
+        _abort: 1
+    - rid: 1004
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0a5f80dedf1144749a0b0897cefd8cda
+        _position: {x: -440, y: 600}
+        _comment:
+        _children:
+        - 663396f7ec794f08a4f1552c9523a6a8
+    - rid: 1005
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 663396f7ec794f08a4f1552c9523a6a8
+        _position: {x: -440, y: 750}
+        _comment: 'Target turned its back or is reloading'
+        _key: TargetExposed
+        _comparison: 4
+        _value: 0.5
+        _ifMissing: 0
+    - rid: 1006
+      type: {class: Prowl, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7045f8c7a61c4af8875b02bea3cc1fc0
+        _position: {x: -220, y: 600}
+        _comment: 'From bush to bush round it, watching'
+        _seconds: {Min: 3.5, Max: 5, Bias: 0}
+        _distance: {Min: 8, Max: 12, Bias: 0}
+        _pause: {Min: 0.4, Max: 0.9, Bias: 0}
+        _speed: 0.55
+        _preferBushes: 1
+    - rid: 1007
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 530292ba5f17438696e5247e43297058
+        _position: {x: -110, y: 300}
+        _comment: 'Only rush what it can sense right now (otherwise follow up on where it went)'
+    - rid: 1008
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f0254c0673524c93bfc9796e1004b2f7
+        _position: {x: 110, y: 300}
+        _comment: 'Rush: a committed charge and strike, at most 4 s; whether it lands or not, it breaks off after'
+        _children:
+        - 6ac34d5038af46b4820c67188d74cd79
+        _succeed: 1
+    - rid: 1009
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6ac34d5038af46b4820c67188d74cd79
+        _position: {x: 110, y: 450}
+        _comment:
+        _children:
+        - 47a830ae88954e73acc706429dc72308
+        _seconds: 4
+    - rid: 1010
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 47a830ae88954e73acc706429dc72308
+        _position: {x: 110, y: 600}
+        _comment:
+        _children:
+        - 29576c9f9c8b48ea852d821fadfbf7af
+        - 087d70ead52248d98785eaa52a58ad66
+        _abort: 0
+    - rid: 1011
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 29576c9f9c8b48ea852d821fadfbf7af
+        _position: {x: 0, y: 750}
+        _comment:
+        _stopDistance: 0
+    - rid: 1012
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 087d70ead52248d98785eaa52a58ad66
+        _position: {x: 220, y: 750}
+        _comment:
+    - rid: 1013
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 19bd31b2c0534cbc8d422be664d78624
+        _position: {x: 990, y: 300}
+        _comment: 'Disengage and hide: a bush away from it, else behind full cover, else just get clear'
+        _children:
+        - 9e357e3ce84b42b38b2204bcda92013e
+        - f8d466df9bcd4f8d8c84de20a480c741
+        - 79c668b082be4aab97d8509f4fd03b64
+        _abort: 0
+    - rid: 1014
+      type: {class: HideInBush, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9e357e3ce84b42b38b2204bcda92013e
+        _position: {x: 770, y: 450}
+        _comment:
+        _minFromTarget: 9
+        _maxRun: 25
+        _hold: {Min: 2, Max: 3.5, Bias: 0}
+        _speed: 1
+        _giveUpAfter: 6
+    - rid: 1015
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f8d466df9bcd4f8d8c84de20a480c741
+        _position: {x: 1100, y: 450}
+        _comment:
+        _children:
+        - 0bb87ead16cb46e4bd21fdb064fc5945
+        - 374e8489901449c0b2bd3fa949ef3cb6
+        _abort: 0
+    - rid: 1016
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 0bb87ead16cb46e4bd21fdb064fc5945
+        _position: {x: 990, y: 600}
+        _comment:
+        _use: 1
+        _giveUpAfter: 4
+    - rid: 1017
+      type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 374e8489901449c0b2bd3fa949ef3cb6
+        _position: {x: 1210, y: 600}
+        _comment:
+        _seconds: {Min: 1.5, Max: 2.5, Bias: 0}
+    - rid: 1018
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 79c668b082be4aab97d8509f4fd03b64
+        _position: {x: 1210, y: 450}
+        _comment:
+        _distance: 12

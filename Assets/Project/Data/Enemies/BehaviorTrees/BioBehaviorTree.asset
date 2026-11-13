@@ -119,6 +119,7 @@ MonoBehaviour:
   - rid: 1130
   - rid: 1131
   - rid: 1132
+  - rid: 1133
   references:
     version: 2
     RefIds:
@@ -186,6 +187,7 @@ MonoBehaviour:
         - ff1af1ccaa2d4168b1284aeb6d7329d8
         - 54b29e8d5ce840e6a9b4fe8b992a76fe
         - 8525a0dd07764968836142bf0a1aa5a3
+        - 7b5417a2541c49f8a5fdeb3d44029aa6
         - dfc2d59965ab4c20b4e02b569892bea5
         - 0563f3ddfd0547058c325a9527215791
         - d12b7193a2414ef0a78ca184901b5908
@@ -383,7 +385,7 @@ MonoBehaviour:
         _guid: a6cf5ba10c184f2398441c4efdc470ec
         _position: {x: 3800, y: 300}
         _comment: 
-        _tree: {fileID: 11400000, guid: cba441f48fd34dec9c15d7d0c6903346, type: 2}
+        _tree: {fileID: 11400000, guid: 449cb9aa6da94adab852d5a683dc7a4d, type: 2}
     - rid: 1035
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
@@ -1090,3 +1092,11 @@ MonoBehaviour:
         _distance: {Min: 7, Max: 9, Bias: 0}
         _pause: {Min: 0.3, Max: 0.6, Bias: 0}
         _speed: 0.55
+    - rid: 1133
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7b5417a2541c49f8a5fdeb3d44029aa6
+        _position: {x: -660, y: 600}
+        _comment: 'The hunt: stalk it from bush to bush, rush in, break off to a bush and lie low, stalk again. The branches below only run when it can''t: nothing to stalk, or it lost sight of it after stalking'
+        _tree: {fileID: 11400000, guid: 0775db7493e442ab921957297ef112ac, type: 2}
+        _off: 0

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
 using CGD.Combat;
 
 namespace CGD.Enemies
@@ -12,6 +13,9 @@ namespace CGD.Enemies
     // A destination inside one stops at its edge instead — walking in only to step straight
     // back out (Leave Hazard), over and over, is what this prevents. Costs nothing while no
     // hazard that could hurt it is open.
+    //
+    // A sneaking move (RouteStyle.ThroughBushes) also passes through bushes on the way, one at a
+    // time (BushHops), if the enemy's data allows the detour; hazards still come first.
     internal sealed class EnemyRouting
     {
         private const float Clearance       = 0.6f;   // metres kept from a hazard's edge, beyond its own radius
@@ -25,11 +29,14 @@ namespace CGD.Enemies
         private readonly NavMeshPath _path = new();
         private readonly Vector3[] _corners = new Vector3[MaxCorners];
         private readonly Func<Vector3, bool> _walkable;
+        private readonly List<Vector3> _bushes = new();
 
         private Vector3 _goal;
         private Vector3 _waypoint;
         private bool    _hasGoal;
-        private bool    _detouring;
+        private bool    _detouring;   // heading for a waypoint round a hazard
+        private bool    _hopping;     // heading for a bush on the way
+        private RouteStyle _style;
         private float   _nextCheck;
 
         public EnemyRouting(EnemyAI ai)
@@ -43,16 +50,17 @@ namespace CGD.Enemies
         private float         Margin => Agent.radius + Clearance;
 
         // Same contract as NavMeshAgent.SetDestination: false if no route could be requested.
-        public bool SetDestination(Vector3 goal)
+        public bool SetDestination(Vector3 goal, RouteStyle style = RouteStyle.Direct)
         {
             // Asked again for where it is already headed (nodes re-send it every tick): keep going round.
-            if (_detouring && (goal - _goal).sqrMagnitude < SameGoal * SameGoal)
+            if ((_detouring || _hopping) && style == _style && (goal - _goal).sqrMagnitude < SameGoal * SameGoal)
             {
                 _goal = goal;
                 return true;
             }
 
             _goal    = goal;
+            _style   = style;
             _hasGoal = true;
             return Route();
         }
@@ -68,7 +76,7 @@ namespace CGD.Enemies
         public void Clear()
         {
             _hasGoal = false;
-            SetDetour(false);
+            SetWaypoint(detour: false, hop: false);
         }
 
         // Each frame: on to the destination once round a hazard (or once it has closed), and a
@@ -76,6 +84,20 @@ namespace CGD.Enemies
         public void Tick(float time)
         {
             if (!_hasGoal || !Agent.isOnNavMesh) return;
+
+            if (_hopping)
+            {
+                // At the bush, or as close as the NavMesh gets it: on to the next bush, or the destination.
+                bool atBush = Flat(Agent.transform.position - _waypoint).sqrMagnitude < WaypointReached * WaypointReached ||
+                              (!Agent.pathPending && (!Agent.hasPath || Agent.remainingDistance < WaypointReached));
+                if (atBush) Route();
+                else if (time >= _nextCheck && Hazards.AnyHurting(Self))
+                {
+                    _nextCheck = time + RecheckInterval;
+                    Route();
+                }
+                return;
+            }
 
             if (_detouring)
             {
@@ -91,7 +113,7 @@ namespace CGD.Enemies
 
         private void Reroute()
         {
-            SetDetour(false);
+            SetWaypoint(detour: false, hop: false);
             Route();
         }
 
@@ -101,7 +123,13 @@ namespace CGD.Enemies
 
             if (!Hazards.AnyHurting(Self))
             {
-                SetDetour(false);
+                if (_style == RouteStyle.ThroughBushes && TryFindBushOnTheWay(out Vector3 bush))
+                {
+                    _waypoint = bush;
+                    SetWaypoint(detour: false, hop: true);
+                    return Agent.SetDestination(bush);
+                }
+                SetWaypoint(detour: false, hop: false);
                 return Agent.SetDestination(_goal);
             }
 
@@ -109,19 +137,34 @@ namespace CGD.Enemies
             Vector3 goal = OutsideHazards(from, _goal);
             if (!NavMesh.CalculatePath(from, goal, NavMesh.AllAreas, _path) || _path.status == NavMeshPathStatus.PathInvalid)
             {
-                SetDetour(false);
+                SetWaypoint(detour: false, hop: false);
                 return Agent.SetDestination(goal);
             }
 
             if (TryFindWayRound(out Vector3 waypoint))
             {
                 _waypoint = waypoint;
-                SetDetour(true);
+                SetWaypoint(detour: true, hop: false);
                 return Agent.SetDestination(waypoint);
             }
 
-            SetDetour(false);
+            SetWaypoint(detour: false, hop: false);
             return Agent.SetPath(_path);
+        }
+
+        // The next bush to pass through, on the NavMesh, if its data allows the detour.
+        private bool TryFindBushOnTheWay(out Vector3 bush)
+        {
+            bush = default;
+            float detour = _ai.Data.BushDetour;
+            if (detour <= 0f) return false;
+
+            BushHops.CollectCenters(_bushes);
+            if (!BushHops.TryPick(Agent.transform.position, _goal, detour, _bushes, out Vector3 center)) return false;
+            if (!NavMesh.SamplePosition(center, out NavMeshHit hit, SnapDistance, NavMesh.AllAreas)) return false;
+
+            bush = hit.position;
+            return true;
         }
 
         // A waypoint round the first hazard the planned path (_path) runs through. False when it
@@ -159,11 +202,13 @@ namespace CGD.Enemies
             return Hazards.TryFindWayOut(goal, Self, _walkable, out Vector3 exit) ? exit : goal;
         }
 
-        // Through a waypoint it keeps its pace instead of braking as if it were the end of the road.
-        private void SetDetour(bool detouring)
+        // Through a waypoint (round a hazard, or a bush on the way) it keeps its pace instead of
+        // braking as if it were the end of the road.
+        private void SetWaypoint(bool detour, bool hop)
         {
-            _detouring = detouring;
-            if (Agent.isOnNavMesh) Agent.autoBraking = !detouring;
+            _detouring = detour;
+            _hopping   = hop;
+            if (Agent.isOnNavMesh) Agent.autoBraking = !(detour || hop);
         }
 
         private bool IsWalkable(Vector3 spot) =>

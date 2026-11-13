@@ -23,7 +23,7 @@ namespace CGD.Enemies
             Ai.Agent.isStopped = false;
             Ai.Idle.Cancel();
             if (Ai.Waypoints.Length > 0)
-                Ai.Routing.SetDestination(Ai.Waypoints[_waypointIndex % Ai.Waypoints.Length].position);
+                Ai.Routing.SetDestination(Ai.Waypoints[_waypointIndex % Ai.Waypoints.Length].position, RouteStyle.ThroughBushes);
         }
 
         protected override BtStatus OnTick(BtContext context)
@@ -48,7 +48,7 @@ namespace CGD.Enemies
             }
 
             _waypointIndex = (_waypointIndex + 1) % waypoints.Length;
-            Ai.Routing.SetDestination(waypoints[_waypointIndex].position);
+            Ai.Routing.SetDestination(waypoints[_waypointIndex].position, RouteStyle.ThroughBushes);
             Ai.Idle.BeginStop(time);
             return BtStatus.Running;
         }

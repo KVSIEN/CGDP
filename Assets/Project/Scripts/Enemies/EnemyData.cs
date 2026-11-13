@@ -33,6 +33,9 @@ namespace CGD.Enemies
         public float ChaseSpeed  = 5f;
         [Tooltip("Seconds to get up to speed, or stop, from whatever pace it is moving at. Lower = snappier turns and stops, less sliding at high speed")]
         [Min(0.02f)] public float MoveResponseTime = 0.15f;
+        [Tooltip("When sneaking (roaming, stalking, searching, heading home) it passes through bushes on the way if that " +
+                 "makes the walk at most this much longer: 0.5 = up to 50% further. 0 = always the direct way. Rushes and dodges stay direct")]
+        [Range(0f, 2f)] public float BushDetour = 0f;
 
         [Header("Detection")]
         [Tooltip("Maximum sight distance in metres.")]

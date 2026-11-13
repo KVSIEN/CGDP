@@ -40,7 +40,7 @@ namespace CGD.Enemies
             if (!TryPick(out Vector3 goal)) return;
             if (!NavMesh.SamplePosition(goal, out NavMeshHit hit, 2f, NavMesh.AllAreas)) return;
 
-            _moving = Ai.Routing.SetDestination(hit.position);
+            _moving = Ai.Routing.SetDestination(hit.position, RouteStyle.ThroughBushes);
             if (_moving) Ai.Agent.isStopped = false;
         }
 

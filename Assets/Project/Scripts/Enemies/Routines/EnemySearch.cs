@@ -164,7 +164,7 @@ namespace CGD.Enemies
             _phase = Phase.Approach;
             _ai.Foresight.BeginApproach();
             _ai.Agent.isStopped = false;
-            _ai.Routing.SetDestination(destination);
+            _ai.Routing.SetDestination(destination, RouteStyle.ThroughBushes);
         }
 
         // A few reachable spots around the belief: when hunting, first the known cover nearby

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using CGD.BehaviorTrees;
@@ -12,8 +13,10 @@ namespace CGD.Enemies
     // circles it a few metres at a time at a wary distance, from one spot out of every
     // hostile's sight to the next, stopping at each to watch. Its eyes stay on the target
     // throughout, so what it knows (where the target is, which way it is heading) is fresh
-    // when it comes back in, and from a side it wasn't last seen on. Succeeds when time is up;
-    // fails without a target.
+    // when it comes back in, and from a side it wasn't last seen on. With Prefer Bushes it
+    // stalks from bush to bush round the target where there are any (and sneaks through bushes
+    // between spots), so it watches from cover the target can't see into. Succeeds when time is
+    // up; fails without a target.
     [Serializable]
     [BtNodeInfo("Enemy/Tactics/Prowl", "Circles the target at a distance, unseen spot to unseen spot, watching it. Succeeds when time is up.")]
     public sealed class Prowl : EnemyAction
@@ -30,6 +33,9 @@ namespace CGD.Enemies
         private const float Unseen          = 3f;    // score for each hostile that can't see the spot
         private const float KeepCircling    = 1f;    // score for carrying on round the same way
         private const float Chance          = 0.5f;  // random score, so the circuit varies
+        private const float InBush          = 4f;    // score for a spot inside a bush (with Prefer Bushes)
+        private const float BushBand        = 3f;    // metres either side of the kept distance a bush still counts
+        private const float MinMove         = 2f;    // a bush closer than this is the one it is in
         private const int   MaxCorners      = 16;
 
         [Tooltip("Seconds to prowl (random within the range)")]
@@ -40,6 +46,8 @@ namespace CGD.Enemies
         [SerializeField] private FloatRange _pause = new(0.4f, 0.9f);
         [Tooltip("Speed while prowling, as a share of chase speed")]
         [SerializeField, Range(0.2f, 1f)] private float _speed = 0.55f;
+        [Tooltip("Watch from bushes round the target where there are any, and sneak through bushes between spots")]
+        [SerializeField] private bool _preferBushes;
 
         [NonSerialized] private float _endsAt;
         [NonSerialized] private float _pauseUntil;
@@ -49,7 +57,7 @@ namespace CGD.Enemies
         [NonSerialized] private NavMeshPath _path;
         [NonSerialized] private Vector3[]   _corners;
 
-        public override string Summary => $"{_distance.Min:0.#}–{_distance.Max:0.#} m";
+        public override string Summary => $"{_distance.Min:0.#}–{_distance.Max:0.#} m" + (_preferBushes ? ", via bushes" : "");
 
         protected override void OnInitialize(BtContext context)
         {
@@ -124,13 +132,40 @@ namespace CGD.Enemies
                 bestSpot  = spot;
                 bestSense = sense;
             }
+            if (_preferBushes) ConsiderBushes(self, target, ref best, ref bestSpot);
 
-            if (best == float.NegativeInfinity || !Ai.Routing.SetDestination(bestSpot)) return false;
+            RouteStyle style = _preferBushes ? RouteStyle.ThroughBushes : RouteStyle.Direct;
+            if (best == float.NegativeInfinity || !Ai.Routing.SetDestination(bestSpot, style)) return false;
 
             _sense         = bestSense;
             _moveGivesUpAt = now + MoveGiveUp;
             Ai.Agent.isStopped = false;
             return true;
+        }
+
+        // Bushes round the target at about the distance it keeps, scored like the circle's spots
+        // plus a bonus for the cover; it keeps circling the same way round.
+        private void ConsiderBushes(Vector3 self, Vector3 target, ref float best, ref Vector3 bestSpot)
+        {
+            IReadOnlyList<ConcealmentZone> zones = ConcealmentZone.Active;
+            for (int i = 0; i < zones.Count; i++)
+            {
+                if (!BushHops.Hides(zones[i])) continue;
+
+                Vector3 center = zones[i].GroundCenter;
+                float   fromTarget = Flat(center - target).magnitude;
+                if (fromTarget < _distance.Min - BushBand || fromTarget > _distance.Max + BushBand) continue;
+                if (Flat(center - self).sqrMagnitude < MinMove * MinMove) continue;
+                if (!TryReach(self, center, out Vector3 spot)) continue;
+
+                float turn  = Vector3.SignedAngle(Flat(self - target), Flat(spot - target), Vector3.up);
+                float score = UnityEngine.Random.value * Chance + InBush + HiddenScore(spot) +
+                              (Mathf.Sign(turn) == _sense ? KeepCircling : 0f);
+                if (score <= best) continue;
+
+                best     = score;
+                bestSpot = spot;
+            }
         }
 
         // On the NavMesh, clear of hazards, and a short walk rather than the long way round.

@@ -24,7 +24,7 @@ namespace CGD.Enemies
             {
                 walking = true;
                 agent.isStopped = false;
-                ai.Routing.SetDestination(ai.Post.ReturnPoint());
+                ai.Routing.SetDestination(ai.Post.ReturnPoint(), RouteStyle.ThroughBushes);
                 return false;
             }
 

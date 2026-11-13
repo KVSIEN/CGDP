@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: BushRoamRoutine
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 655f4459f3ce425a89312888802379d6
+        _position: {x: 0, y: 0}
+        _comment: 'Calm: checks out anything it notices and heads home after a fight, otherwise roams from bush to bush round its post, pausing in each for its faction''s idle beats. Walks its patrol (or guards) where there are no bushes.'
+        _children:
+        - 00d15e4406654c6ab8094a2575f09b7e
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 00d15e4406654c6ab8094a2575f09b7e
+        _position: {x: 0, y: 150}
+        _comment: 'What it does when not fighting'
+        _children:
+        - cb20c46a8b5e4ecc917001a2c9c289c2
+        - 1da3dd8d7fcc4384b84975d9f268cc6b
+        - 3e7a63363b114a7283cc308d04c1f51a
+        - 9a42416544254dee98225505e59f6b0f
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: cb20c46a8b5e4ecc917001a2c9c289c2
+        _position: {x: -330, y: 300}
+        _comment: 'Check out noises, hits and the target''s last known position'
+        _children:
+        - 01b022f801e545be8a8c37c31d0b042b
+        - 704b268b579b409da5e91716dbfbd28c
+        _abort: 2
+    - rid: 1003
+      type: {class: IsSuspicious, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 01b022f801e545be8a8c37c31d0b042b
+        _position: {x: -440, y: 450}
+        _comment:
+    - rid: 1004
+      type: {class: Investigate, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 704b268b579b409da5e91716dbfbd28c
+        _position: {x: -220, y: 450}
+        _comment:
+    - rid: 1005
+      type: {class: ReturnToPost, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1da3dd8d7fcc4384b84975d9f268cc6b
+        _position: {x: -110, y: 300}
+        _comment:
+    - rid: 1006
+      type: {class: RoamBushes, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3e7a63363b114a7283cc308d04c1f51a
+        _position: {x: 110, y: 300}
+        _comment: 'Bush to bush round its post, a beat of its idle routine in each'
+        _radius: 25
+    - rid: 1007
+      type: {class: Patrol, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9a42416544254dee98225505e59f6b0f
+        _position: {x: 330, y: 300}
+        _comment: 'No bushes in reach: its patrol route, or guard its post'
