@@ -6,13 +6,16 @@ using CGD.BehaviorTrees;
 namespace CGD.Enemies
 {
     // Casts one of the project's Ability assets — the same ones the player uses — aimed at
-    // where it believes its target is. The ability's cast time is a wind-up spent facing
+    // where it believes its target is: the one set here, or one from the enemy's own kit
+    // (Slot), so a shared behavior casts whatever that enemy type carries. The ability's cast time is a wind-up spent facing
     // the target; its cooldown is kept per enemy. Fails straight away if it's cooling down,
     // out of range, or needs something enemies don't have (dash, reflect, stealth).
     [Serializable]
     [BtNodeInfo("Enemy/Combat/Use Ability", "Casts an Ability asset at the (believed) target, with its wind-up and cooldown. Fails if not ready.")]
     public sealed class UseAbility : EnemyAction
     {
+        [Tooltip("Own: the Ability below. Signature / Escape / Summon: that slot of the enemy's kit (EnemyData › Kit)")]
+        [SerializeField] private AbilitySlot _slot;
         [SerializeField] private Ability    _ability;
         [SerializeField] private AbilityAim _aim = AbilityAim.Target;
         [Tooltip("Metres. Only casts with the target this close. 0 = any distance")]
@@ -25,17 +28,25 @@ namespace CGD.Enemies
 
         [NonSerialized] private bool _casting;
 
-        public override string Summary => _ability != null ? _ability.name : "(no ability)";
+        [NonSerialized] private Ability _resolved;
 
+        public override string Summary => _slot != AbilitySlot.Own ? $"Kit: {_slot}" : _ability != null ? _ability.name : "(no ability)";
+
+        internal AbilitySlot Slot => _slot;
+        // The ability named on the node itself (used only with the Own slot).
+        internal Ability Named => _ability;
+
+        // Resolved once the tree is built: rolled affixes swap in their data before that.
         protected override void OnInitialize(BtContext context)
         {
             base.OnInitialize(context);
-            Ai.Abilities.Register(_ability);
+            _resolved = _slot == AbilitySlot.Own ? _ability : Ai.Data.KitAbility(_slot);
+            Ai.Abilities.Register(_resolved);
         }
 
         protected override void OnEnter(BtContext context)
         {
-            _casting = TryAimPoint(out Vector3 aimAt) && InRange(aimAt) && HasClearShot(aimAt) && Ai.Abilities.TryBegin(_ability, aimAt);
+            _casting = TryAimPoint(out Vector3 aimAt) && InRange(aimAt) && HasClearShot(aimAt) && Ai.Abilities.TryBegin(_resolved, aimAt);
         }
 
         protected override BtStatus OnTick(BtContext context)
@@ -61,8 +72,8 @@ namespace CGD.Enemies
             }
 
             Vector3 ground = Ai.Perception.TargetPosition;
-            if (_leadMovingTarget && _ability != null)
-                ground = Ai.Foresight.LeadAim(ground, Ai.Perception.TargetVelocity, _ability.CastTime);
+            if (_leadMovingTarget && _resolved != null)
+                ground = Ai.Foresight.LeadAim(ground, Ai.Perception.TargetVelocity, _resolved.CastTime);
             point = ground + Vector3.up;
             return Ai.Perception.Target != null;
         }

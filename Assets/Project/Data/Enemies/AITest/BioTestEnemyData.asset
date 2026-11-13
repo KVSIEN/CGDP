@@ -43,6 +43,10 @@ MonoBehaviour:
   BurstInterval: 0.1
   StrafeInterval: 2
   StrafeDistance: 4
+  Grenade: {fileID: 0}
+  Signature: {fileID: 11400000, guid: 8bafc7ca1d184b0c9405cef65ec41f97, type: 2}
+  Escape: {fileID: 11400000, guid: d0a1b2c3d4e5f60718293a4b5c6d7e02, type: 2}
+  Summon: {fileID: 0}
   AlertDuration: 4
   AttackSound: {fileID: 0}
   RangedAttackSound: {fileID: 0}

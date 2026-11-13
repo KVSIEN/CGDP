@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: PounceOnOpening
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0f956005aaa54cae9842407d8328f1af
+        _position: {x: 0, y: 0}
+        _comment: 'The moment its target turns its back or reloads within 14 m, it charges and strikes (3 s at most). Interrupts whatever is below it — a predator''s or a horror''s jump scare.'
+        _children:
+        - 302dd1ad5d514113bf5655525af0dc88
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 302dd1ad5d514113bf5655525af0dc88
+        _position: {x: 0, y: 150}
+        _comment: 'An opening: pounce'
+        _children:
+        - f5d6c69774914d3ca9aa6fb151fc7a49
+        - bb0b4d59baf34c88bd7f5ba368a865f1
+        - 81dec45190d74ed08b915387be751b8b
+        - 5812361676594be1a7d296b9cd65d171
+        _abort: 2
+    - rid: 1002
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f5d6c69774914d3ca9aa6fb151fc7a49
+        _position: {x: -330, y: 300}
+        _comment:
+    - rid: 1003
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: bb0b4d59baf34c88bd7f5ba368a865f1
+        _position: {x: -110, y: 300}
+        _comment: 'Back turned or reloading'
+        _key: TargetExposed
+        _comparison: 4
+        _value: 0.5
+        _ifMissing: 0
+    - rid: 1004
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 81dec45190d74ed08b915387be751b8b
+        _position: {x: 110, y: 300}
+        _comment:
+        _range: 14
+    - rid: 1005
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5812361676594be1a7d296b9cd65d171
+        _position: {x: 330, y: 300}
+        _comment:
+        _children:
+        - 9f09b1deb77140a58b6f74cf416a8488
+        _seconds: 3
+    - rid: 1006
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 9f09b1deb77140a58b6f74cf416a8488
+        _position: {x: 330, y: 450}
+        _comment:
+        _children:
+        - 548fa2ed610b452aa62fbb1dc65633f6
+        - 5c328d802ae6426da5d0c9890f1587c3
+        _abort: 0
+    - rid: 1007
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 548fa2ed610b452aa62fbb1dc65633f6
+        _position: {x: 220, y: 600}
+        _comment:
+        _stopDistance: 0
+    - rid: 1008
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5c328d802ae6426da5d0c9890f1587c3
+        _position: {x: 440, y: 600}
+        _comment:

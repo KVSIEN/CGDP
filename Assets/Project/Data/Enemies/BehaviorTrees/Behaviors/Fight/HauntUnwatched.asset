@@ -1,0 +1,182 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: HauntUnwatched
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 66f2bf7fdcce49e099fda31f069b28ef
+        _position: {x: 0, y: 0}
+        _comment: 'A haunting (ghost, wraith, a hologram gone wrong — any faction''s apparition): it never fights under your gaze — look at it and it slips out of sight; look away and it drifts closer, and strikes the moment it is in reach and unwatched. Give its prefab a Horror Presence so it glitches while you stare.'
+        _children:
+        - 6a7f16ad9a53413cb437c2927283fd5b
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6a7f16ad9a53413cb437c2927283fd5b
+        _position: {x: 0, y: 150}
+        _comment: 'Seen: vanish. Unseen: drift in and strike'
+        _children:
+        - f9030922200f402a80cc1b30d268b406
+        - a34be49738eb44bbba2bb947274869a0
+        - d64987d0a7384b1cbfac74224b325c8a
+        - 56e449f651c64b3e9c228b8bcd4e0ba7
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f9030922200f402a80cc1b30d268b406
+        _position: {x: -330, y: 300}
+        _comment: 'Looked at: slip out of sight (every 2.5 s at most)'
+        _children:
+        - 57942e4c1b764da0bbc38137fabe48f4
+        - e2949c22a944415c9a5b1284d3189f25
+        _abort: 2
+    - rid: 1003
+      type: {class: BeingWatched, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 57942e4c1b764da0bbc38137fabe48f4
+        _position: {x: -440, y: 450}
+        _comment:
+        _angle: 35
+    - rid: 1004
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e2949c22a944415c9a5b1284d3189f25
+        _position: {x: -220, y: 450}
+        _comment:
+        _children:
+        - f1571a1b04ed4480bafd9046b9da8a25
+        _seconds: 2.5
+        _onlyAfterSuccess: 0
+    - rid: 1005
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f1571a1b04ed4480bafd9046b9da8a25
+        _position: {x: -220, y: 600}
+        _comment:
+        _children:
+        - 59b34145b9e54f428b60928b82f62db9
+        - 93cf8930f4d045aca2b689448cfecb54
+        _abort: 0
+    - rid: 1006
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 59b34145b9e54f428b60928b82f62db9
+        _position: {x: -330, y: 750}
+        _comment:
+        _use: 1
+        _giveUpAfter: 4
+    - rid: 1007
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 93cf8930f4d045aca2b689448cfecb54
+        _position: {x: -110, y: 750}
+        _comment:
+        _distance: 8
+    - rid: 1008
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a34be49738eb44bbba2bb947274869a0
+        _position: {x: 110, y: 300}
+        _comment: 'Unwatched and in reach: strike'
+        _children:
+        - 9907f3e765cf484cb3f428f22c006a2e
+        - 6dc96783b57e4c0a989c4837bcd9540d
+        - 64e06c9f02b341ce8deb51098ada8fd7
+        _abort: 1
+    - rid: 1009
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 9907f3e765cf484cb3f428f22c006a2e
+        _position: {x: -110, y: 450}
+        _comment:
+        _children:
+        - 73cf71d8395a47a581587ef5dfc7fef9
+    - rid: 1010
+      type: {class: BeingWatched, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 73cf71d8395a47a581587ef5dfc7fef9
+        _position: {x: -110, y: 600}
+        _comment:
+        _angle: 35
+    - rid: 1011
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6dc96783b57e4c0a989c4837bcd9540d
+        _position: {x: 110, y: 450}
+        _comment:
+        _range: 0
+    - rid: 1012
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 64e06c9f02b341ce8deb51098ada8fd7
+        _position: {x: 330, y: 450}
+        _comment:
+    - rid: 1013
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d64987d0a7384b1cbfac74224b325c8a
+        _position: {x: 330, y: 300}
+        _comment: 'Unwatched: drift closer'
+        _children:
+        - eef256199b0d4c9a8fe47b2c9754d66e
+        - 85a629f2dee540f2aec20ae4b9a58bd5
+        _abort: 0
+    - rid: 1014
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: eef256199b0d4c9a8fe47b2c9754d66e
+        _position: {x: 220, y: 450}
+        _comment:
+    - rid: 1015
+      type: {class: CreepUnwatched, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 85a629f2dee540f2aec20ae4b9a58bd5
+        _position: {x: 440, y: 450}
+        _comment:
+        _stopDistance: 1.2
+        _lookAngle: 35
+        _speed: 0.8
+        _lurchAfter: 0
+        _lurchFor: 0.4
+    - rid: 1016
+      type: {class: Overwatch, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 56e449f651c64b3e9c228b8bcd4e0ba7
+        _position: {x: 330, y: 300}
+        _comment: 'Out of sight: wait for it to look away'
+        _seconds: {Min: 1, Max: 2, Bias: 0}

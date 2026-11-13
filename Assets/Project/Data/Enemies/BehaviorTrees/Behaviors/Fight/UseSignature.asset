@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: UseSignature
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 20b4593750a547faa45fb8137f179ff2
+        _position: {x: 0, y: 0}
+        _comment: 'Its signature attack (EnemyData › Kit › Signature) on the target whenever it is ready and in sight, within 25 m. Interrupts whatever is below it. Put it near the top of a fight list.'
+        _children:
+        - 3ec5d19596024c4f86d5b11d304b94b8
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 3ec5d19596024c4f86d5b11d304b94b8
+        _position: {x: 0, y: 150}
+        _comment: 'Signature ready, target in sight: use it'
+        _children:
+        - 4e6b1d43e8ea4c52a5308a7b5b7d7cb1
+        - f3b2973211154e84ae8a0dce13f74048
+        - 5686cb379ff142438f3287a972999c9b
+        - f1358dda375946088ae1d4f5ec65be03
+        _abort: 2
+    - rid: 1002
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4e6b1d43e8ea4c52a5308a7b5b7d7cb1
+        _position: {x: -330, y: 300}
+        _comment:
+    - rid: 1003
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f3b2973211154e84ae8a0dce13f74048
+        _position: {x: -110, y: 300}
+        _comment:
+    - rid: 1004
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5686cb379ff142438f3287a972999c9b
+        _position: {x: 110, y: 300}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+    - rid: 1005
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f1358dda375946088ae1d4f5ec65be03
+        _position: {x: 330, y: 300}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+        _aim: 0
+        _maxRange: 25
+        _requireClearShot: 0
+        _leadMovingTarget: 1

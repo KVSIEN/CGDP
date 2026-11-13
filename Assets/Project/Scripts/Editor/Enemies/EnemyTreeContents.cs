@@ -11,10 +11,18 @@ namespace CGD.Editor
     {
         public static HashSet<Type> NodeTypes(BehaviorTreeAsset tree)
         {
-            var types   = new HashSet<Type>();
-            var visited = new HashSet<BehaviorTreeAsset>();
-            Collect(tree, types, visited);
+            var types = new HashSet<Type>();
+            foreach (BtNode node in Nodes(tree)) types.Add(node.GetType());
             return types;
+        }
+
+        // The nodes themselves, for checks that need their settings (which kit slot an ability uses).
+        public static List<BtNode> Nodes(BehaviorTreeAsset tree)
+        {
+            var nodes   = new List<BtNode>();
+            var visited = new HashSet<BehaviorTreeAsset>();
+            Collect(tree, nodes, visited);
+            return nodes;
         }
 
         public static bool UsesAny(HashSet<Type> types, params Type[] wanted)
@@ -24,7 +32,7 @@ namespace CGD.Editor
             return false;
         }
 
-        private static void Collect(BehaviorTreeAsset tree, HashSet<Type> types, HashSet<BehaviorTreeAsset> visited)
+        private static void Collect(BehaviorTreeAsset tree, List<BtNode> nodes, HashSet<BehaviorTreeAsset> visited)
         {
             if (tree == null || tree.Root == null || !visited.Add(tree)) return;
 
@@ -36,8 +44,8 @@ namespace CGD.Editor
                 BtNode node = stack.Pop();
                 if (node == null || !reached.Add(node)) continue;
 
-                types.Add(node.GetType());
-                if (node is Subtree { IsOn: true } subtree) Collect(subtree.Tree, types, visited);
+                nodes.Add(node);
+                if (node is Subtree { IsOn: true } subtree) Collect(subtree.Tree, nodes, visited);
                 if (node is not BtParentNode parent) continue;
                 foreach (string guid in parent.ChildGuids) stack.Push(tree.FindNode(guid));
             }

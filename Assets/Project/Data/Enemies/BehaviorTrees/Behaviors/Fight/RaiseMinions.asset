@@ -1,0 +1,158 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: RaiseMinions
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 75ec7db76a0b4722be20f023c325226f
+        _position: {x: 0, y: 0}
+        _comment: 'A summoner (necromancer, hive mother, drone controller — any faction): it raises minions whenever it can (EnemyData › Kit › Summon, e.g. Raise the Dead), keeps its distance behind cover, backs off when anything gets close, and otherwise strikes from hiding (Peekaboo).'
+        _children:
+        - 8485c8f4d1c7461a9bc96682472e4510
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8485c8f4d1c7461a9bc96682472e4510
+        _position: {x: 0, y: 150}
+        _comment: 'Raise, keep away, strike from hiding'
+        _children:
+        - 9061deac5d324d2ab3ca804fd2b1a2ba
+        - 4ae4a1adc1a4457491e3143609bdffe6
+        - a8b20c5d13114faca50b4c3e9cb45876
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 9061deac5d324d2ab3ca804fd2b1a2ba
+        _position: {x: -220, y: 300}
+        _comment: 'Raise more whenever its Summon is ready'
+        _children:
+        - 61737fbce71646559c44fb7b4c4ead59
+        - 6ebf5f6b133b4235a8698e6608342b6f
+        - 466ca7c137e047e9a7a110beea364a81
+        _abort: 2
+    - rid: 1003
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 61737fbce71646559c44fb7b4c4ead59
+        _position: {x: -440, y: 450}
+        _comment:
+        _memory: 8
+    - rid: 1004
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6ebf5f6b133b4235a8698e6608342b6f
+        _position: {x: -220, y: 450}
+        _comment:
+        _slot: 3
+        _ability: {fileID: 0}
+    - rid: 1005
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 466ca7c137e047e9a7a110beea364a81
+        _position: {x: 0, y: 450}
+        _comment:
+        _slot: 3
+        _ability: {fileID: 0}
+        _aim: 1
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 1
+    - rid: 1006
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4ae4a1adc1a4457491e3143609bdffe6
+        _position: {x: 220, y: 300}
+        _comment: 'Something within 8 m: back off behind cover (every 3 s at most)'
+        _children:
+        - 8f5c06e3e1044046a3792fea67d99393
+        - 450a1fa708064595965ed5ad2b0387db
+        - 07c25cc1f1504673b50c10eaaf693c50
+        _abort: 2
+    - rid: 1007
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8f5c06e3e1044046a3792fea67d99393
+        _position: {x: 0, y: 450}
+        _comment:
+    - rid: 1008
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 450a1fa708064595965ed5ad2b0387db
+        _position: {x: 220, y: 450}
+        _comment:
+        _range: 8
+    - rid: 1009
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 07c25cc1f1504673b50c10eaaf693c50
+        _position: {x: 440, y: 450}
+        _comment:
+        _children:
+        - 45518ea51c8c43dc841f58c5e3ea11fb
+        _seconds: 3
+        _onlyAfterSuccess: 0
+    - rid: 1010
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 45518ea51c8c43dc841f58c5e3ea11fb
+        _position: {x: 440, y: 600}
+        _comment:
+        _children:
+        - e825b41f06b34c40a0a2b1508a67ba26
+        - 8add157520f84bcab8f0d840f0a1fc76
+        _abort: 0
+    - rid: 1011
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e825b41f06b34c40a0a2b1508a67ba26
+        _position: {x: 330, y: 750}
+        _comment:
+        _use: 1
+        _giveUpAfter: 5
+    - rid: 1012
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8add157520f84bcab8f0d840f0a1fc76
+        _position: {x: 550, y: 750}
+        _comment:
+        _distance: 10
+    - rid: 1013
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a8b20c5d13114faca50b4c3e9cb45876
+        _position: {x: 220, y: 300}
+        _comment: 'Otherwise: hide, peek, strike'
+        _tree: {fileID: 11400000, guid: 0db1ad346a7e4ee885b59956c172d088, type: 2}
+        _off: 0

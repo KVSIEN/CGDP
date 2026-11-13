@@ -1,0 +1,148 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: EscapeWhenHurt
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a2ee56f3885a43cab4bc8fca6f47c131
+        _position: {x: 0, y: 0}
+        _comment: 'Below half health: get away — its escape ability (EnemyData › Kit › Escape: Phase Shift, Ambush, Echo…), else full cover, else just run — and lie low a moment. At most every 12 s. Interrupts the fight below it.'
+        _children:
+        - e7cdda0b3e684355847ce2f84f8e54cd
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e7cdda0b3e684355847ce2f84f8e54cd
+        _position: {x: 0, y: 150}
+        _comment: 'Hurt: escape and lie low'
+        _children:
+        - fe204423905c423c97147635762b4ecd
+        - b994f2652f644af691b1a0163af35398
+        - 193d1b0e044142918dce91ab88cbfedd
+        _abort: 2
+    - rid: 1002
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: fe204423905c423c97147635762b4ecd
+        _position: {x: -220, y: 300}
+        _comment:
+    - rid: 1003
+      type: {class: HealthBelow, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b994f2652f644af691b1a0163af35398
+        _position: {x: 0, y: 300}
+        _comment:
+        _fraction: 0.5
+    - rid: 1004
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 193d1b0e044142918dce91ab88cbfedd
+        _position: {x: 220, y: 300}
+        _comment:
+        _children:
+        - 4c7fc10756c4472f86713267b8eeda42
+        _seconds: 12
+        _onlyAfterSuccess: 0
+    - rid: 1005
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4c7fc10756c4472f86713267b8eeda42
+        _position: {x: 220, y: 450}
+        _comment:
+        _children:
+        - f8f27a7f9d7b45a595a6758d661599d8
+        - d6adcc836e76448eabb273ebe3855c95
+        _abort: 0
+    - rid: 1006
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f8f27a7f9d7b45a595a6758d661599d8
+        _position: {x: 110, y: 600}
+        _comment: 'Its escape, else cover, else run'
+        _children:
+        - 5dff42d7651b448099934af6fb859445
+        - 0750c558db564e4e8f212661063ccf15
+        - 22458cd7a7d941e6aa6755659cf7eac9
+        _abort: 0
+    - rid: 1007
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5dff42d7651b448099934af6fb859445
+        _position: {x: -110, y: 750}
+        _comment:
+        _children:
+        - 7f69a41e31dd4c878da0c3a404da17b9
+        - 12c2693be3fd4ed1b633e013436179f0
+        _abort: 0
+    - rid: 1008
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7f69a41e31dd4c878da0c3a404da17b9
+        _position: {x: -220, y: 900}
+        _comment:
+        _slot: 2
+        _ability: {fileID: 0}
+    - rid: 1009
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 12c2693be3fd4ed1b633e013436179f0
+        _position: {x: 0, y: 900}
+        _comment:
+        _slot: 2
+        _ability: {fileID: 0}
+        _aim: 1
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 1
+    - rid: 1010
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 0750c558db564e4e8f212661063ccf15
+        _position: {x: 110, y: 750}
+        _comment:
+        _use: 1
+        _giveUpAfter: 6
+    - rid: 1011
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 22458cd7a7d941e6aa6755659cf7eac9
+        _position: {x: 330, y: 750}
+        _comment:
+        _distance: 10
+    - rid: 1012
+      type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d6adcc836e76448eabb273ebe3855c95
+        _position: {x: 330, y: 600}
+        _comment: 'Lie low'
+        _seconds: {Min: 2, Max: 3, Bias: 0}

@@ -1,0 +1,122 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: TormentFromHiding
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f91666e0f4f448e1af3d52ac29eb52d1
+        _position: {x: 0, y: 0}
+        _comment: 'An unseen tormentor (poltergeist, saboteur, sniper''s spotter — any faction): it keeps behind full cover and hurls its kit grenade at you every few seconds, and now and then shows itself for a moment without attacking — just to be seen — then is gone again. Needs EnemyData › Kit › Grenade.'
+        _children:
+        - f645a643bf234211bd615ced6bb0bd20
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f645a643bf234211bd615ced6bb0bd20
+        _position: {x: 0, y: 150}
+        _comment: 'Hide; then torment from there; then a new hiding place'
+        _children:
+        - f54cd9de0cfc476e86d2f3775eb86907
+        - 656585ffe38e41b3bb6cf3af1f75fc5d
+        _abort: 0
+    - rid: 1002
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f54cd9de0cfc476e86d2f3775eb86907
+        _position: {x: -110, y: 300}
+        _comment:
+        _use: 1
+        _giveUpAfter: 5
+    - rid: 1003
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 656585ffe38e41b3bb6cf3af1f75fc5d
+        _position: {x: 110, y: 300}
+        _comment: 'Three times from this hiding place'
+        _children:
+        - fc754f32ad6c4cae9e5f78a79744c93d
+        _count: 3
+        _stopOnFailure: 1
+    - rid: 1004
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: fc754f32ad6c4cae9e5f78a79744c93d
+        _position: {x: 110, y: 450}
+        _comment:
+        _children:
+        - 0bf8c52b4f10490bad65e9af7212639e
+        - 3948cd338aa248a2bf3e79f3b0b5c430
+        _abort: 0
+    - rid: 1005
+      type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0bf8c52b4f10490bad65e9af7212639e
+        _position: {x: 0, y: 600}
+        _comment: 'Quiet'
+        _seconds: {Min: 1, Max: 2.5, Bias: 0}
+    - rid: 1006
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 3948cd338aa248a2bf3e79f3b0b5c430
+        _position: {x: 330, y: 600}
+        _comment: 'Something thrown, else a glimpse of it'
+        _children:
+        - 4f668ed1be2342ebbbdf32d7758c0fa3
+        - 55fb1b6d1eab4420a6cbdd8e65db6d7c
+        _abort: 0
+    - rid: 1007
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4f668ed1be2342ebbbdf32d7758c0fa3
+        _position: {x: 220, y: 750}
+        _comment:
+        _children:
+        - 0e070916ffea4e46bb6ac5bc6076ed72
+        _seconds: 5
+        _onlyAfterSuccess: 0
+    - rid: 1008
+      type: {class: ThrowGrenade, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 0e070916ffea4e46bb6ac5bc6076ed72
+        _position: {x: 220, y: 900}
+        _comment:
+        _grenade: {fileID: 0}
+        _minDistance: 5
+    - rid: 1009
+      type: {class: Peek, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 55fb1b6d1eab4420a6cbdd8e65db6d7c
+        _position: {x: 440, y: 750}
+        _comment: 'Shows itself without attacking'
+        _stepOut: {Min: 1, Max: 2.5, Bias: 0}
+        _exposure: {Min: 0.3, Max: 0.7, Bias: 0}
+        _speed: 1.4
+        _attack: 0
+        _giveUpAfter: 3

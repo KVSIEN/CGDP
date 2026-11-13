@@ -124,7 +124,7 @@ MonoBehaviour:
         _guid: 2ebb8e00c3fe45529f424f1eecff6a32
         _position: {x: -110, y: 900}
         _comment:
-        _grenade: {fileID: 11400000, guid: 18271d81f56c4cd78f9b87c2b6ff2141, type: 2}
+        _grenade: {fileID: 0}
         _minDistance: 6
     - rid: 1010
       type: {class: Suppress, ns: CGD.Enemies, asm: CGD.Runtime}

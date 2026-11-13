@@ -51,6 +51,10 @@ MonoBehaviour:
   ShotEffects:
   - Effect: {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
     Chance: 1
+  Grenade: {fileID: 0}
+  Signature: {fileID: 11400000, guid: 7a1a948ba1764738b81386388a5aa1e3, type: 2}
+  Escape: {fileID: 11400000, guid: 6b185f0aede34efba5d90e883f4efcb6, type: 2}
+  Summon: {fileID: 11400000, guid: 522b7d1c7987496d91198a25661e0849, type: 2}
   AlertDuration: 8
   AttackSound: {fileID: 0}
   RangedAttackSound: {fileID: 0}

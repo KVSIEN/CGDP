@@ -1,7 +1,9 @@
 using UnityEngine;
+using CGD.Abilities;
 using CGD.Audio;
 using CGD.BehaviorTrees;
 using CGD.Combat;
+using CGD.Weapons;
 
 namespace CGD.Enemies
 {
@@ -116,6 +118,16 @@ namespace CGD.Enemies
         [Tooltip("On first spotting a hostile, runs to an alarm panel near its post to raise the alarm, if it knows one")]
         public bool RaisesAlarm;
 
+        [Header("Kit")]
+        [Tooltip("What Throw Grenade nodes that name no grenade of their own throw (shared behaviors like Flush Out). Empty = none")]
+        public GrenadeData Grenade;
+        [Tooltip("Its signature attack, for ability nodes set to the Signature slot. Empty = none")]
+        public Ability Signature;
+        [Tooltip("How it gets away, for ability nodes set to the Escape slot. Empty = none")]
+        public Ability Escape;
+        [Tooltip("What it calls up (a Summon ability), for ability nodes set to the Summon slot. Empty = none")]
+        public Ability Summon;
+
         [Header("Alert")]
         [Tooltip("Longest it spends investigating something before it gives up and goes back to patrol (2.5× when hunting a hostile it knows is about).")]
         public float AlertDuration = 5f;
@@ -127,6 +139,15 @@ namespace CGD.Enemies
         // Raw damage it takes to kill from full: shield and health together, both behind
         // armor (Effective Damage = Raw × 100 / (100 + Armor), GDD › Damage Calculation).
         // Low-tier enemies sit around 100; each reality spreads it differently.
+        // The kit ability in a slot (null for Own or an empty slot).
+        public Ability KitAbility(AbilitySlot slot) => slot switch
+        {
+            AbilitySlot.Signature => Signature,
+            AbilitySlot.Escape    => Escape,
+            AbilitySlot.Summon    => Summon,
+            _                     => null,
+        };
+
         public float EffectiveHealth => (MaxHealth + MaxShield) * (1f + Mathf.Max(0f, Armor) / 100f);
 
         // Damage per second of non-stop attacking at base speed (no buffs, every hit landing), for

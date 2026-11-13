@@ -22,11 +22,56 @@ namespace CGD.Tests
         [TestCase("Behaviors/Fight/FlushOut")]
         [TestCase("Behaviors/Fight/PeekABoo")]
         [TestCase("Behaviors/Fight/CreepUnwatched")]
+        [TestCase("Behaviors/Fight/ShambleAndLunge")]
+        [TestCase("Behaviors/Fight/HauntUnwatched")]
+        [TestCase("Behaviors/Fight/TormentFromHiding")]
+        [TestCase("Behaviors/Fight/RaiseMinions")]
+        [TestCase("Behaviors/Fight/CurseAndVanish")]
+        [TestCase("Behaviors/Fight/UseSignature")]
+        [TestCase("Behaviors/Reactions/EscapeWhenHurt")]
+        [TestCase("Behaviors/Reactions/PounceOnOpening")]
         public void TreeHasNoErrors(string name)
         {
             BehaviorTreeAsset tree = Load(name);
             foreach (BtIssue issue in BtTreeValidator.Validate(tree))
                 Assert.AreNotEqual(BtIssueSeverity.Error, issue.Severity, $"{name}: {issue.Message}");
+        }
+
+        // The library is for every faction: a behavior there never names one faction's ability or
+        // grenade, it uses the kit slot each enemy type fills (EnemyData › Kit).
+        [Test]
+        public void LibraryBehaviorsAreFactionNeutral()
+        {
+            string[] guids = AssetDatabase.FindAssets("t:BehaviorTreeAsset", new[] { Trees + "Behaviors" });
+            Assert.IsNotEmpty(guids);
+
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var tree = AssetDatabase.LoadAssetAtPath<BehaviorTreeAsset>(path);
+                foreach (BtNode node in tree.Nodes)
+                {
+                    bool named = node switch
+                    {
+                        UseAbility use     => use.Slot == AbilitySlot.Own && use.Named != null,
+                        AbilityReady ready => ready.Slot == AbilitySlot.Own && ready.Named != null,
+                        ThrowGrenade throwing => !throwing.UsesKit,
+                        _ => false,
+                    };
+                    Assert.IsFalse(named, $"{path}: {node.GetType().Name} names its own asset; use a kit slot instead");
+                }
+            }
+        }
+
+        [Test]
+        public void AITestAgentsCarryTheKitTheirTreesUse()
+        {
+            foreach (string name in new[] { "BioTestEnemyData", "TechTestEnemyData", "VoidTestEnemyData" })
+            {
+                var data = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/AITest/{name}.asset");
+                foreach (EnemyDataReview.Issue issue in EnemyDataReview.Check(data))
+                    Assert.IsFalse(issue.Message.Contains("kit"), $"{name}: {issue.Message}");
+            }
         }
 
         [Test]

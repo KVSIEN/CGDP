@@ -29,6 +29,8 @@ namespace CGD.Enemies
 
         public EnemyMinions(EnemyAI ai) => _ai = ai;
 
+        public int Alive => _minions.Count;
+
         public void Summon(GameObject prefab, int count, Vector3 around, float lifetime)
         {
             if (prefab == null) return;

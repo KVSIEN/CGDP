@@ -1,0 +1,152 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: CurseAndVanish
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4419c67919ce44758e505c0b88fc59c7
+        _position: {x: 0, y: 0}
+        _comment: 'A curser (witch, hex-caster, field engineer — any faction): the moment it can see you with its signature ready (EnemyData › Kit › Signature: a Rift, a Snare…) it lays it on you, then vanishes with its escape (Kit › Escape: a Phase Shift, an Ambush…) or behind cover; otherwise it strikes from hiding (Peekaboo).'
+        _children:
+        - 4765a05b08304fd693ac17907f98a67e
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4765a05b08304fd693ac17907f98a67e
+        _position: {x: 0, y: 150}
+        _comment: 'Curse, then vanish; otherwise strike from hiding'
+        _children:
+        - 0f3c7c1b0eb4474c87d7f4d41d3a892d
+        - 83a74d1c696e4a0e87083426c9e33244
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0f3c7c1b0eb4474c87d7f4d41d3a892d
+        _position: {x: -110, y: 300}
+        _comment: 'Signature ready and the target in sight: curse it, then vanish'
+        _children:
+        - 5cdced336bb947359ae1c63aa7ab07af
+        - 3ad9e36560544671954eb0bc8705e050
+        - e750b91f565f46b8b61236ea8a109af4
+        - 14f13d9d21f94f9e817b0fd8f3df44c1
+        - e6c41695770f408c81c38d21b5772a14
+        _abort: 2
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5cdced336bb947359ae1c63aa7ab07af
+        _position: {x: -550, y: 450}
+        _comment:
+    - rid: 1004
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3ad9e36560544671954eb0bc8705e050
+        _position: {x: -330, y: 450}
+        _comment:
+    - rid: 1005
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e750b91f565f46b8b61236ea8a109af4
+        _position: {x: -110, y: 450}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+    - rid: 1006
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 14f13d9d21f94f9e817b0fd8f3df44c1
+        _position: {x: 110, y: 450}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+        _aim: 0
+        _maxRange: 22
+        _requireClearShot: 0
+        _leadMovingTarget: 1
+    - rid: 1007
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e6c41695770f408c81c38d21b5772a14
+        _position: {x: 770, y: 450}
+        _comment: 'Vanish: its escape, else behind cover'
+        _children:
+        - eb0768e00aa64857b6236f22ee5ee51f
+        - 5cd153f03fa647598af49a3826f0869c
+        _abort: 0
+    - rid: 1008
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: eb0768e00aa64857b6236f22ee5ee51f
+        _position: {x: 660, y: 600}
+        _comment:
+        _children:
+        - 957fb0cbf2a444ce99acc9e7b0299ae4
+        - faefd7fada9d4f29a101ebb20d43b6ca
+        _abort: 0
+    - rid: 1009
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 957fb0cbf2a444ce99acc9e7b0299ae4
+        _position: {x: 550, y: 750}
+        _comment:
+        _slot: 2
+        _ability: {fileID: 0}
+    - rid: 1010
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: faefd7fada9d4f29a101ebb20d43b6ca
+        _position: {x: 770, y: 750}
+        _comment:
+        _slot: 2
+        _ability: {fileID: 0}
+        _aim: 1
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 1
+    - rid: 1011
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5cd153f03fa647598af49a3826f0869c
+        _position: {x: 880, y: 600}
+        _comment:
+        _use: 1
+        _giveUpAfter: 5
+    - rid: 1012
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 83a74d1c696e4a0e87083426c9e33244
+        _position: {x: 110, y: 300}
+        _comment: 'Otherwise: hide, peek, strike'
+        _tree: {fileID: 11400000, guid: 0db1ad346a7e4ee885b59956c172d088, type: 2}
+        _off: 0

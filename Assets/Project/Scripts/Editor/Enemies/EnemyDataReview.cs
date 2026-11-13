@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CGD.BehaviorTrees;
 using CGD.Combat;
 using CGD.Enemies;
 
@@ -83,6 +84,8 @@ namespace CGD.Editor
             if (data.RaisesAlarm && !nodes.Contains(typeof(RaiseAlarm)))
                 issues.Add(new Issue(BtIssueSeverity.Warning, "Raises Alarm is on, but its tree has no Raise Alarm node (add the shared RaiseAlarmSubtree)."));
 
+            CheckKit(data, issues);
+
             if (data.ChaseSpeed < data.PatrolSpeed)
                 issues.Add(new Issue(BtIssueSeverity.Warning, "Chase Speed is slower than Patrol Speed: it slows down when it starts a fight."));
 
@@ -90,6 +93,27 @@ namespace CGD.Editor
                 issues.Add(new Issue(BtIssueSeverity.Info, "No Voice: it never barks."));
 
             return issues;
+        }
+
+        // Shared behaviors cast whatever is in the enemy's kit: a slot its tree relies on but the
+        // data leaves empty means those branches never fire.
+        private static void CheckKit(EnemyData data, List<Issue> issues)
+        {
+            var missing = new HashSet<string>();
+            foreach (BtNode node in EnemyTreeContents.Nodes(data.BehaviorTree))
+            {
+                AbilitySlot slot = node switch
+                {
+                    UseAbility use     => use.Slot,
+                    AbilityReady ready => ready.Slot,
+                    _                  => AbilitySlot.Own,
+                };
+                if (slot != AbilitySlot.Own && data.KitAbility(slot) == null) missing.Add(slot.ToString());
+                if (node is ThrowGrenade { UsesKit: true } && data.Grenade == null) missing.Add("Grenade");
+            }
+
+            foreach (string slot in missing)
+                issues.Add(new Issue(BtIssueSeverity.Warning, $"Its tree uses its kit's {slot}, but Kit › {slot} is empty: those behaviors never fire."));
         }
 
         private static bool Shoots(EnemyData data, HashSet<Type> nodes) =>
