@@ -125,5 +125,23 @@ namespace CGD.Enemies
         // armor (Effective Damage = Raw × 100 / (100 + Armor), GDD › Damage Calculation).
         // Low-tier enemies sit around 100; each reality spreads it differently.
         public float EffectiveHealth => (MaxHealth + MaxShield) * (1f + Mathf.Max(0f, Armor) / 100f);
+
+        // Damage per second of non-stop attacking at base speed (no buffs, every hit landing), for
+        // comparing enemy types: a melee swing every wind-up + cooldown...
+        public float MeleeDamagePerSecond => AttackDamage / Mathf.Max(0.01f, AttackWindup + AttackCooldown);
+
+        // ...and a ranged burst every cooldown (counted from the burst's first shot), or every
+        // burst's length if the shots take longer than that.
+        public float RangedDamagePerSecond
+        {
+            get
+            {
+                int   shots    = Mathf.Max(1, BurstCount);
+                float damage   = RangedAttackDamage > 0f ? RangedAttackDamage : AttackDamage;
+                float cooldown = RangedAttackCooldown > 0f ? RangedAttackCooldown : AttackCooldown;
+                float cycle    = Mathf.Max(cooldown, (shots - 1) * BurstInterval);
+                return damage * shots / Mathf.Max(0.01f, cycle);
+            }
+        }
     }
 }

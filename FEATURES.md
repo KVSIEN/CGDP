@@ -654,6 +654,13 @@
 - **Faction teams**
 - **Faction teams**: an enemy can be put on its faction's own team (BIO, TECH or VOID) instead of the shared enemy side; it then fights the other factions as well as the player. Only the AI Test scene's agents use this for now — in generated levels all factions still fight together against the player
 
+## Enemy Design Tools
+Making and tuning enemies without code — every tool is under **CGD › AI**:
+- **New Enemy Type** (CGD › AI › New Enemy Type…): pick an existing enemy to start from, give the new one a name, tier and team, and tick which parts it gets its own copy of — its behavior tree, senses, target priorities, faction doctrine, voice. Unticked parts stay shared with the template. It makes the new enemy data and a prefab variant of the template (same body and visuals, the new data), and can add it straight to a faction's roster so generated levels spawn it. With its own tree ticked, the tree opens in the Behavior Tree Editor ready to change
+- **Enemy Roster** (CGD › AI › Enemy Roster): every enemy type in one table — tier, team, melee or ranged, toughness (raw damage to kill), melee and ranged damage per second, sight range, run speed, tree and doctrine — sortable by any column and searchable, with a ✓ / ⚠ / ⛔ checks column (hover for the details). Click a name to edit it, a tree to open it
+- **Enemy Data inspector**: an *At a glance* box at the top says in plain words what the numbers add up to ("about 18 damage/s, prefers 20 m", "sees 60 m in a 110° cone"), followed by warnings for settings that probably don't do what was meant: no tree (it just stands there), a ranged enemy whose tree never shoots, a preferred range beyond its sight, *Raises Alarm* on with no Raise Alarm node in its tree, a projectile prefab that can't fly, chasing slower than it patrols
+- The inspector's **Mind** section lists the assets it thinks with (tree, senses, target priorities, doctrine, voice), how many enemy types share each one, an *Open* button, and **Make Own Copy** — so changing one enemy's tree or temperament never silently changes another's. *Find Prefabs* lists the prefabs using the data; *New Type From This…* starts the New Enemy Type window from it
+- A behavior tree's inspector lists the enemy types that think with it, so it's clear whom an edit affects
 ## Object Pooling
 - Frequently spawned objects — projectiles, grenades, zones, pickups, particle effects and enemies — are reused instead of created and destroyed, avoiding hitches and garbage collection
 - Pools grow on demand; they can also be pre-filled when a scene starts so the first burst of gunfire or the first enemy wave doesn't stutter
