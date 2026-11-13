@@ -1,0 +1,176 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: SwarmDive
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c5f6ca131460401ab95de785966ce112
+        _position: {x: 0, y: 0}
+        _comment: 'A kamikaze (seeker drone, bloater, burster — any faction): darts at its target, dodging incoming fire on the way, and blows itself up once within 2.5 m (a short fuse and a warning bark: get clear). Best fast, fragile and in groups.'
+        _children:
+        - 46e0ab515cab4c9f84b98e82ae2dcee1
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 46e0ab515cab4c9f84b98e82ae2dcee1
+        _position: {x: 0, y: 150}
+        _comment: 'Blow up in reach; dodge; dart in'
+        _children:
+        - 1ea84def611546c39f6c03249bc2d662
+        - 58d8c7c47e90439884d2ed7e0dfd24d8
+        - 9d20f67310054d5cb7f79a6a7bd8a7d0
+        - ea1d51b8890e4c67866c5ca667a789fb
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 1ea84def611546c39f6c03249bc2d662
+        _position: {x: -330, y: 300}
+        _comment: 'In reach: arm and blow up'
+        _children:
+        - a7270fb5405743d09e9286220ddb3d7d
+        - c211d30cf1f24875af0399d57f84c1f4
+        - 1d00fb9358fc4773b84777c5bb6ed1c6
+        _abort: 2
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a7270fb5405743d09e9286220ddb3d7d
+        _position: {x: -550, y: 450}
+        _comment:
+    - rid: 1004
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c211d30cf1f24875af0399d57f84c1f4
+        _position: {x: -330, y: 450}
+        _comment:
+        _range: 2.5
+    - rid: 1005
+      type: {class: SelfDestruct, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1d00fb9358fc4773b84777c5bb6ed1c6
+        _position: {x: -110, y: 450}
+        _comment:
+        _triggerRange: 2.5
+        _fuse: 0.6
+        _radius: 4
+        _damage: 45
+        _blast: {fileID: 0}
+        _noiseRadius: 25
+    - rid: 1006
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 58d8c7c47e90439884d2ed7e0dfd24d8
+        _position: {x: 0, y: 300}
+        _comment: 'Shot at: jink aside'
+        _children:
+        - 4bcc8ef6537d4896afd5ee40caa60cd8
+        - 3f983b8c8bfe448bbda199f81338a241
+        _abort: 2
+    - rid: 1007
+      type: {class: UnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4bcc8ef6537d4896afd5ee40caa60cd8
+        _position: {x: -110, y: 450}
+        _comment:
+        _warningsOnly: 1
+    - rid: 1008
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 3f983b8c8bfe448bbda199f81338a241
+        _position: {x: 110, y: 450}
+        _comment:
+        _children:
+        - b333061039774db79c5eeb98990da427
+        _seconds: 1.2
+        _onlyAfterSuccess: 0
+    - rid: 1009
+      type: {class: Dodge, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b333061039774db79c5eeb98990da427
+        _position: {x: 110, y: 600}
+        _comment:
+        _distance: 2.5
+        _speed: 2
+        _maxTime: 0.5
+    - rid: 1010
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 9d20f67310054d5cb7f79a6a7bd8a7d0
+        _position: {x: 330, y: 300}
+        _comment: 'Dart in'
+        _children:
+        - 5682c6c4a61f4784a569f00280f0dd88
+        - cecce9c3f0fd46499a748d3df0f552fc
+        _abort: 0
+    - rid: 1011
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5682c6c4a61f4784a569f00280f0dd88
+        _position: {x: 220, y: 450}
+        _comment:
+    - rid: 1012
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: cecce9c3f0fd46499a748d3df0f552fc
+        _position: {x: 440, y: 450}
+        _comment:
+        _stopDistance: 0
+    - rid: 1013
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ea1d51b8890e4c67866c5ca667a789fb
+        _position: {x: 660, y: 300}
+        _comment: 'Lost it: swarm where it was'
+        _children:
+        - eef91a2c58f040f093a4baa97b792024
+        - fae9bf28033a41419e6ef7ac6e08a600
+        _abort: 0
+    - rid: 1014
+      type: {class: HasBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: eef91a2c58f040f093a4baa97b792024
+        _position: {x: 550, y: 450}
+        _comment:
+    - rid: 1015
+      type: {class: PursueBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: fae9bf28033a41419e6ef7ac6e08a600
+        _position: {x: 770, y: 450}
+        _comment:
+        _style: 0
+        _look: 0.5
+        _giveUpAfter: 6

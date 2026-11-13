@@ -1,0 +1,244 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: Spotter
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  - rid: 1020
+  - rid: 1021
+  - rid: 1022
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 3328478bacda49ec85c71b930a2e9679
+        _position: {x: 0, y: 0}
+        _comment: 'An overseer that never fights (spotter drone, scout, watcher — any faction): keeps its target in view from 14–20 m, out of its sight where it can, launches its signature (Kit › Signature, e.g. a Survey Beacon) toward it and radios its kin every 10 s so they converge; backs off from anything within 10 m. Best on a Network (union) enemy, whose sightings reach everyone. Kill it first.'
+        _children:
+        - 1f1f0bf4fb6346218b879cb196370abb
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 1f1f0bf4fb6346218b879cb196370abb
+        _position: {x: 0, y: 150}
+        _comment: 'Mark, keep away, call in, watch'
+        _children:
+        - 8c49dfad2dc24be69ce2d4a426d46e3e
+        - ce50ff491b354c7198024ec127087a15
+        - 25c53053ded346dabc8e3bd94841f169
+        - c0280a8278534e868c1ff03f77b08509
+        - 58298ab81700439482a986844f5228a9
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8c49dfad2dc24be69ce2d4a426d46e3e
+        _position: {x: -440, y: 300}
+        _comment: 'Mark it: its signature'
+        _children:
+        - a601935b6ec2417f9f357bbb702d0acb
+        - 35e6869ac320433bb73d98cc4b9f5f18
+        - 491bde5e9e5b466fbe2e4a5814815720
+        _abort: 2
+    - rid: 1003
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a601935b6ec2417f9f357bbb702d0acb
+        _position: {x: -660, y: 450}
+        _comment:
+        _memory: 8
+    - rid: 1004
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 35e6869ac320433bb73d98cc4b9f5f18
+        _position: {x: -440, y: 450}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+    - rid: 1005
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 491bde5e9e5b466fbe2e4a5814815720
+        _position: {x: -220, y: 450}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 1
+    - rid: 1006
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ce50ff491b354c7198024ec127087a15
+        _position: {x: 0, y: 300}
+        _comment: 'Within 10 m: back off'
+        _children:
+        - 081585d797b04d0d8bf8df5e72498f77
+        - c189efafef5a412c8f00c4ab12dfc74c
+        - c450ca17ff11410ba13c5d5baa2b00b8
+        _abort: 2
+    - rid: 1007
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 081585d797b04d0d8bf8df5e72498f77
+        _position: {x: -220, y: 450}
+        _comment:
+    - rid: 1008
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c189efafef5a412c8f00c4ab12dfc74c
+        _position: {x: 0, y: 450}
+        _comment:
+        _range: 10
+    - rid: 1009
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c450ca17ff11410ba13c5d5baa2b00b8
+        _position: {x: 220, y: 450}
+        _comment:
+        _children:
+        - 99ed29e264824718bd48200c19ed5b9b
+        _seconds: 3
+        _onlyAfterSuccess: 0
+    - rid: 1010
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 99ed29e264824718bd48200c19ed5b9b
+        _position: {x: 220, y: 600}
+        _comment:
+        _children:
+        - 3080271a17f74bebb4711c27d677358b
+        - 56ee3ccc69904894a032e5fec169ab2a
+        _abort: 0
+    - rid: 1011
+      type: {class: FallBack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3080271a17f74bebb4711c27d677358b
+        _position: {x: 110, y: 750}
+        _comment:
+        _giveUpAfter: 6
+    - rid: 1012
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 56ee3ccc69904894a032e5fec169ab2a
+        _position: {x: 330, y: 750}
+        _comment:
+        _distance: 12
+    - rid: 1013
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 25c53053ded346dabc8e3bd94841f169
+        _position: {x: 220, y: 300}
+        _comment: 'Call it in (every 10 s)'
+        _children:
+        - 12396e6f24884d1cad6b774655e5ba1a
+        - 66d24165a6314cfa80e7b54f9096fd62
+        _abort: 0
+    - rid: 1014
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 12396e6f24884d1cad6b774655e5ba1a
+        _position: {x: 110, y: 450}
+        _comment:
+    - rid: 1015
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 66d24165a6314cfa80e7b54f9096fd62
+        _position: {x: 330, y: 450}
+        _comment:
+        _children:
+        - d096690e0dc74c19bd9b3ee62c9ca747
+        _seconds: 10
+        _onlyAfterSuccess: 0
+    - rid: 1016
+      type: {class: CallForHelp, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d096690e0dc74c19bd9b3ee62c9ca747
+        _position: {x: 330, y: 600}
+        _comment:
+    - rid: 1017
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c0280a8278534e868c1ff03f77b08509
+        _position: {x: 550, y: 300}
+        _comment: 'Keep it in view from a distance'
+        _children:
+        - bd951e89f0f7443a89efb7f6e5e0922d
+        - 71effcb3575d4ffca6298cc30004bfd4
+        _abort: 0
+    - rid: 1018
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: bd951e89f0f7443a89efb7f6e5e0922d
+        _position: {x: 440, y: 450}
+        _comment:
+    - rid: 1019
+      type: {class: Prowl, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 71effcb3575d4ffca6298cc30004bfd4
+        _position: {x: 660, y: 450}
+        _comment:
+        _seconds: {Min: 3, Max: 5, Bias: 0}
+        _distance: {Min: 14, Max: 20, Bias: 0}
+        _pause: {Min: 0.5, Max: 1, Bias: 0}
+        _speed: 0.6
+        _preferBushes: 1
+    - rid: 1020
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 58298ab81700439482a986844f5228a9
+        _position: {x: 880, y: 300}
+        _comment: 'Lost it: a vantage over the likely places'
+        _children:
+        - 526576a44dfb4eafa694e510f65c8345
+        - bf4a730883294cdf8b579b2f2c973e5a
+        _abort: 0
+    - rid: 1021
+      type: {class: HasBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 526576a44dfb4eafa694e510f65c8345
+        _position: {x: 770, y: 450}
+        _comment:
+    - rid: 1022
+      type: {class: PursueBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: bf4a730883294cdf8b579b2f2c973e5a
+        _position: {x: 990, y: 450}
+        _comment:
+        _style: 1
+        _look: 3
+        _giveUpAfter: 12

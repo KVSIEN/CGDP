@@ -14,7 +14,7 @@ namespace CGD.Enemies
     [BtNodeInfo("Enemy/Combat/Use Ability", "Casts an Ability asset at the (believed) target, with its wind-up and cooldown. Fails if not ready.")]
     public sealed class UseAbility : EnemyAction
     {
-        [Tooltip("Own: the Ability below. Signature / Escape / Summon: that slot of the enemy's kit (EnemyData › Kit)")]
+        [Tooltip("Own: the Ability below. Signature / Escape / Summon / Boost / Support: that slot of the enemy's kit (EnemyData › Kit)")]
         [SerializeField] private AbilitySlot _slot;
         [SerializeField] private Ability    _ability;
         [SerializeField] private AbilityAim _aim = AbilityAim.Target;

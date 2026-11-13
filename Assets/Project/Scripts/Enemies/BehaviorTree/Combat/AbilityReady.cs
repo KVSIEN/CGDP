@@ -13,7 +13,7 @@ namespace CGD.Enemies
     [BtNodeInfo("Enemy/Combat/Ability Ready", "Succeeds while the ability is off cooldown and usable by this enemy.")]
     public sealed class AbilityReady : EnemyCondition
     {
-        [Tooltip("Own: the Ability below. Signature / Escape / Summon: that slot of the enemy's kit (EnemyData › Kit)")]
+        [Tooltip("Own: the Ability below. Signature / Escape / Summon / Boost / Support: that slot of the enemy's kit (EnemyData › Kit)")]
         [SerializeField] private AbilitySlot _slot;
         [SerializeField] private Ability _ability;
 

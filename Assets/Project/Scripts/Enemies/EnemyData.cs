@@ -127,6 +127,10 @@ namespace CGD.Enemies
         public Ability Escape;
         [Tooltip("What it calls up (a Summon ability), for ability nodes set to the Summon slot. Empty = none")]
         public Ability Summon;
+        [Tooltip("A buff on itself (Fortify, Surge…), for ability nodes set to the Boost slot. Empty = none")]
+        public Ability Boost;
+        [Tooltip("What it does for allies (a Repair: a heal on allies around it), for Support Ally and ability nodes set to the Support slot. Empty = none")]
+        public Ability Support;
 
         [Header("Alert")]
         [Tooltip("Longest it spends investigating something before it gives up and goes back to patrol (2.5× when hunting a hostile it knows is about).")]
@@ -145,6 +149,8 @@ namespace CGD.Enemies
             AbilitySlot.Signature => Signature,
             AbilitySlot.Escape    => Escape,
             AbilitySlot.Summon    => Summon,
+            AbilitySlot.Boost     => Boost,
+            AbilitySlot.Support   => Support,
             _                     => null,
         };
 

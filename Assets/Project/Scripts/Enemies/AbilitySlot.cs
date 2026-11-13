@@ -13,5 +13,9 @@ namespace CGD.Enemies
         Escape,
         // What it calls up (a Summon ability).
         Summon,
+        // A buff on itself (a Fortify, a Surge, an Overdrive…).
+        Boost,
+        // What it does for an ally (a Repair, a heal on allies…).
+        Support,
     }
 }

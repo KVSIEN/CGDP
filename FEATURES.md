@@ -674,6 +674,19 @@ Making and tuning enemies without code — every tool is under **CGD › AI**:
   - *Use Signature* — its signature attack whenever it is ready and the target in sight
   - *Escape When Hurt* — below half health: its escape ability, else cover, else run, and lie low
   - *Pounce On Opening* — charges the moment the target turns its back or reloads within 14 m
+  - *Sentry* — a fixed gun (turret, emplacement): never moves, fires at anything in view, fires into where a target went to ground, sweeps the angle it was last seen at
+  - *Artillery* — a bombardier (mortar bot): stays far back behind cover and shells where its target was last seen with its kit grenade, needing no line of sight of its own
+  - *Juggernaut* — an unstoppable heavy (mech, brute): walks straight at you facing you and firing, digs in with its boost under fire, slams anything within 4 m with its signature, never retreats
+  - *Infiltrator* — a cloaker: vanishes with its escape the moment it is seen, slips round to your side, pounces when you turn your back
+  - *Spotter* — an overseer that never fights: keeps you in view from 14–20 m, launches its signature (a beacon) at you and radios its kin every 10 s. Kill it first
+  - *Marksman* — a sniper: takes a long sightline from cover, shows a **laser for a second** before each heavy shot — break line of sight while it is on you and the shot never comes — two shots, then relocates
+  - *Bulwark* — a shield-bearer: advances slowly behind a frontal shield, always facing you, then holds at mid range firing and bashes anything in reach. Flank it
+  - *Swarm Dive* — a kamikaze: darts at you dodging fire, arms with a short fuse and a warning bark within 2.5 m, and blows itself up
+  - *Engineer* — support: repairs the most damaged ally nearby (Kit › Support), deploys what its Summon calls up (turrets, drones), shoots from cover, keeps out of reach
+  - *Hacker* — a disruptor: pulses you with its signature (an EMP: a 1 s stun and a slow) the moment it sees you, then moves to fresh cover; shoots from cover in between
+  - *Fall Back To Range*, *Call For Support* (shield broken and hurt: radio the kin, every 20 s at most), *Lock On* (fire burst after burst while you are in sight, then into where you vanished)
+- **Kit slots** also include *Boost* (a buff on itself: Fortify, Surge) and *Support* (what it does for allies: Field Repair heals every ally within 8 m)
+- **New pieces for any enemy**: *Aimed Shot* (a telegraphed single shot), *Advance Facing* (close in without ever turning its front away, optionally holding there), *Self Destruct*, *Support Ally*, *Call For Help* nodes; a **Frontal Shield** component (stops 80% of damage from within 60° in front; lightning goes through) and an **Aim Laser** component (the marksman's warning line)
 - **Summon** abilities (`Create › CGD › Abilities › Summon`): call up a number of an enemy prefab round the caster, sent after its hostiles, gone after a while or when the caster falls, never more than a set number about at once. *Raise the Dead* (three Void minions, every 18 s) is the first
 - The enemy checks follow behaviors: a ranged enemy whose only shooting behavior is switched off is flagged as never shooting
 ## Object Pooling

@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: LockOn
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 92a957e1f5c84fb39e27f837b7619382
+        _position: {x: 0, y: 0}
+        _comment: 'Pressure: once it has its target in sight it keeps firing burst after burst for as long as it stays in sight, then fires into where it vanished for a few seconds.'
+        _children:
+        - 64ae99daf8d648949f548f7208e7defa
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 64ae99daf8d648949f548f7208e7defa
+        _position: {x: 0, y: 150}
+        _comment: 'Fire while in sight; then into where it went'
+        _children:
+        - 23383a5ee9574d339d57e0cf33826d2c
+        - b84a016114e0499ebae3a3c3784025b9
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 23383a5ee9574d339d57e0cf33826d2c
+        _position: {x: -110, y: 300}
+        _comment: 'In sight: never let up'
+        _children:
+        - 357709c29e624356b72426c34acccbc0
+        - 35cf1a772f1f47a6a9ad5e4f80df7aad
+        _abort: 1
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 357709c29e624356b72426c34acccbc0
+        _position: {x: -220, y: 450}
+        _comment:
+    - rid: 1004
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 35cf1a772f1f47a6a9ad5e4f80df7aad
+        _position: {x: 0, y: 450}
+        _comment:
+        _children:
+        - 37507a30112b4d7a82b9e4d21708686c
+        _count: 0
+        _stopOnFailure: 1
+    - rid: 1005
+      type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 37507a30112b4d7a82b9e4d21708686c
+        _position: {x: 0, y: 600}
+        _comment:
+    - rid: 1006
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b84a016114e0499ebae3a3c3784025b9
+        _position: {x: 220, y: 300}
+        _comment: 'Just lost it: fire into the spot'
+        _children:
+        - b513a4d538b343dcb0c0c4957af8d3a2
+        - 78c832151280411fb6ced4fd30884815
+        _abort: 0
+    - rid: 1007
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b513a4d538b343dcb0c0c4957af8d3a2
+        _position: {x: 110, y: 450}
+        _comment:
+        _memory: 3
+    - rid: 1008
+      type: {class: Suppress, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 78c832151280411fb6ced4fd30884815
+        _position: {x: 330, y: 450}
+        _comment:

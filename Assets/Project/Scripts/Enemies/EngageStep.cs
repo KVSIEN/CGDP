@@ -20,5 +20,6 @@ namespace CGD.Enemies
         Dash,           // bursting away unseen right after vanishing
         Peek,           // darting out of cover to strike, then back
         Freeze,         // holding dead still because the target is looking at it
+        Aim,            // drawing a bead for one telegraphed shot (Aimed Shot): its laser is showing
     }
 }

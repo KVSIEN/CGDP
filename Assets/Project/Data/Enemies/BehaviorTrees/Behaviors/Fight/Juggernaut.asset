@@ -1,0 +1,271 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: Juggernaut
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  - rid: 1020
+  - rid: 1021
+  - rid: 1022
+  - rid: 1023
+  - rid: 1024
+  - rid: 1025
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: bf31fb38c4174c7e913884675761e2db
+        _position: {x: 0, y: 0}
+        _comment: 'An unstoppable heavy (mech, brute, colossus — any faction): walks straight at its target at a steady pace, facing it and firing all the way; uses its boost (Kit › Boost, e.g. Fortify) when under fire, its signature (Kit › Signature, e.g. Ground Slam) on anything within 4 m, and strikes in reach. Never retreats. Give it heavy armour.'
+        _children:
+        - 87275a75e8b140d6867a635840edcd51
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 87275a75e8b140d6867a635840edcd51
+        _position: {x: 0, y: 150}
+        _comment: 'Slam, dig in, strike, advance firing'
+        _children:
+        - 7d62c1dfb2d34a4193a3f428e2903b44
+        - 7731b90fde38405b92578d66ad23269a
+        - 75e2efd6587349f9b098fd11532b6abc
+        - 6877b302586143f4b5ef14c5b82e621d
+        - 6daffcf06f86448a8ea451b82dbb3e4a
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7d62c1dfb2d34a4193a3f428e2903b44
+        _position: {x: -440, y: 300}
+        _comment: 'Within 4 m: its signature (a slam)'
+        _children:
+        - d9ca91da39c8425787d5ba7418206ba0
+        - c2f8e5f627e643fcab9c15f7d8bc4fd6
+        - ab3859a91969457199fa47a9184143ca
+        - f639ec8c1d954666b2f6b06934b5ca26
+        _abort: 2
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d9ca91da39c8425787d5ba7418206ba0
+        _position: {x: -770, y: 450}
+        _comment:
+    - rid: 1004
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c2f8e5f627e643fcab9c15f7d8bc4fd6
+        _position: {x: -550, y: 450}
+        _comment:
+        _range: 4
+    - rid: 1005
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ab3859a91969457199fa47a9184143ca
+        _position: {x: -330, y: 450}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+    - rid: 1006
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f639ec8c1d954666b2f6b06934b5ca26
+        _position: {x: -110, y: 450}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 1
+    - rid: 1007
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7731b90fde38405b92578d66ad23269a
+        _position: {x: 110, y: 300}
+        _comment: 'Under fire: its boost'
+        _children:
+        - 9fbbf42cf5014f01a61c86107b1355e6
+        - 1b39e69e9d7d471297e22802eab91569
+        - 63cfec0df6604039992ccc483352a3d8
+        - e7af404cb84643a1a9c7de5ab49ad53f
+        _abort: 2
+    - rid: 1008
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9fbbf42cf5014f01a61c86107b1355e6
+        _position: {x: -220, y: 450}
+        _comment:
+    - rid: 1009
+      type: {class: UnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1b39e69e9d7d471297e22802eab91569
+        _position: {x: 0, y: 450}
+        _comment:
+        _warningsOnly: 0
+    - rid: 1010
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 63cfec0df6604039992ccc483352a3d8
+        _position: {x: 220, y: 450}
+        _comment:
+        _slot: 4
+        _ability: {fileID: 0}
+    - rid: 1011
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e7af404cb84643a1a9c7de5ab49ad53f
+        _position: {x: 440, y: 450}
+        _comment:
+        _slot: 4
+        _ability: {fileID: 0}
+        _aim: 1
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 1
+    - rid: 1012
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 75e2efd6587349f9b098fd11532b6abc
+        _position: {x: 660, y: 300}
+        _comment: 'In reach: strike'
+        _children:
+        - ed71ad4b7970453084ebca8d23be222c
+        - c8f8c5686e494c3782c616bebe64283d
+        - f1f1c0f8e6894c239039b94561d8f9b4
+        - 04d144d6d90f40bd976457d29fe18e2a
+        _abort: 3
+    - rid: 1013
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ed71ad4b7970453084ebca8d23be222c
+        _position: {x: 330, y: 450}
+        _comment:
+    - rid: 1014
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c8f8c5686e494c3782c616bebe64283d
+        _position: {x: 550, y: 450}
+        _comment:
+        _range: 0
+    - rid: 1015
+      type: {class: TakesMeleeTurn, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f1f1c0f8e6894c239039b94561d8f9b4
+        _position: {x: 770, y: 450}
+        _comment:
+    - rid: 1016
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 04d144d6d90f40bd976457d29fe18e2a
+        _position: {x: 990, y: 450}
+        _comment:
+    - rid: 1017
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6877b302586143f4b5ef14c5b82e621d
+        _position: {x: 550, y: 300}
+        _comment: 'Walk straight at it, firing'
+        _children:
+        - 147a1f549f0c4ff589e2ec02f2ede0dd
+        - cfa4a532f04b4e6dbce4452f781f7c38
+        _abort: 0
+    - rid: 1018
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 147a1f549f0c4ff589e2ec02f2ede0dd
+        _position: {x: 440, y: 450}
+        _comment:
+    - rid: 1019
+      type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: cfa4a532f04b4e6dbce4452f781f7c38
+        _position: {x: 770, y: 450}
+        _comment:
+        _children:
+        - e73b17af3c7349f0905b6924eba30889
+        - a015ce61f74e4f95951e8aa5045933bc
+        _policy: 1
+    - rid: 1020
+      type: {class: AdvanceFacing, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e73b17af3c7349f0905b6924eba30889
+        _position: {x: 660, y: 600}
+        _comment:
+        _stopDistance: 1.5
+        _speed: 0.45
+        _holdOnArrival: 1
+    - rid: 1021
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a015ce61f74e4f95951e8aa5045933bc
+        _position: {x: 880, y: 600}
+        _comment:
+        _children:
+        - d68f859f27054cf89767c78c87326bcc
+        _count: 0
+        _stopOnFailure: 1
+    - rid: 1022
+      type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d68f859f27054cf89767c78c87326bcc
+        _position: {x: 880, y: 750}
+        _comment:
+    - rid: 1023
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6daffcf06f86448a8ea451b82dbb3e4a
+        _position: {x: 880, y: 300}
+        _comment: 'Lost sight: keep coming'
+        _children:
+        - 208feddd081742c8bff5efab80efdff8
+        - 061303802f5a4e8dbd5f08310e399676
+        _abort: 0
+    - rid: 1024
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 208feddd081742c8bff5efab80efdff8
+        _position: {x: 770, y: 450}
+        _comment:
+        _memory: 10
+    - rid: 1025
+      type: {class: AdvanceFacing, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 061303802f5a4e8dbd5f08310e399676
+        _position: {x: 990, y: 450}
+        _comment:
+        _stopDistance: 2
+        _speed: 0.45
+        _holdOnArrival: 0

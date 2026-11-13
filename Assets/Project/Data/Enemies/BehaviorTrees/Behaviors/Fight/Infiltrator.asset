@@ -1,0 +1,237 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: Infiltrator
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  - rid: 1020
+  - rid: 1021
+  - rid: 1022
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: dbddd9fab59f4d17a8aeba0dd335a662
+        _position: {x: 0, y: 0}
+        _comment: 'A cloaker (infiltrator, stalker, shade — any faction): the moment it is seen with its escape ready (Kit › Escape, e.g. an Ambush cloak) it vanishes, slips round to its target''s side by the least-watched route, pounces when the target turns its back, and strikes in reach.'
+        _children:
+        - dcaf9a76a7e745f396bc3df77e6fb459
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: dcaf9a76a7e745f396bc3df77e6fb459
+        _position: {x: 0, y: 150}
+        _comment: 'Vanish when seen, pounce, strike, work round'
+        _children:
+        - 2b8c0e1f30e64a0bbf09730eb2a52771
+        - cdb0587c48e948ce9d1e2b167228d1d7
+        - 7f9d9c4dfd2148ba98ca49786ce6e316
+        - 4f33944eaa324f5ea7408c2b7c175306
+        - cfb1854df1e54cb4a8ea3229b21a3963
+        - ffe420e591d947e3ad14b30b0fb81e72
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2b8c0e1f30e64a0bbf09730eb2a52771
+        _position: {x: -550, y: 300}
+        _comment: 'Seen: vanish (its escape)'
+        _children:
+        - 923503d5cdeb48b5a78ab0813d824e02
+        - cfb60ec3579c48b485190a4896be0c9d
+        - 4d89b335fb2848cab4253219e44cd2de
+        - eb219481fb6a4eb2aaaa7deb5bf4ed0e
+        _abort: 2
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 923503d5cdeb48b5a78ab0813d824e02
+        _position: {x: -880, y: 450}
+        _comment:
+    - rid: 1004
+      type: {class: BeingWatched, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: cfb60ec3579c48b485190a4896be0c9d
+        _position: {x: -660, y: 450}
+        _comment:
+        _angle: 40
+    - rid: 1005
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4d89b335fb2848cab4253219e44cd2de
+        _position: {x: -440, y: 450}
+        _comment:
+        _slot: 2
+        _ability: {fileID: 0}
+    - rid: 1006
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: eb219481fb6a4eb2aaaa7deb5bf4ed0e
+        _position: {x: -220, y: 450}
+        _comment:
+        _slot: 2
+        _ability: {fileID: 0}
+        _aim: 1
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 1
+    - rid: 1007
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: cdb0587c48e948ce9d1e2b167228d1d7
+        _position: {x: -330, y: 300}
+        _comment: 'An opening: pounce'
+        _tree: {fileID: 11400000, guid: 8703a23c3ef247569bbafb25bf7a43a2, type: 2}
+        _off: 0
+    - rid: 1008
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7f9d9c4dfd2148ba98ca49786ce6e316
+        _position: {x: 550, y: 300}
+        _comment: 'In reach: strike'
+        _children:
+        - e7d259cf87eb40a2843b62708944acd4
+        - c2e9def9b0f44841aff8a6052c7d5a12
+        - 129b068bad4c45979efa9da24a5a0982
+        - fdfc99cf845a4dafb87a7147e5367d54
+        _abort: 3
+    - rid: 1009
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e7d259cf87eb40a2843b62708944acd4
+        _position: {x: 220, y: 450}
+        _comment:
+    - rid: 1010
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c2e9def9b0f44841aff8a6052c7d5a12
+        _position: {x: 440, y: 450}
+        _comment:
+        _range: 0
+    - rid: 1011
+      type: {class: TakesMeleeTurn, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 129b068bad4c45979efa9da24a5a0982
+        _position: {x: 660, y: 450}
+        _comment:
+    - rid: 1012
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: fdfc99cf845a4dafb87a7147e5367d54
+        _position: {x: 880, y: 450}
+        _comment:
+    - rid: 1013
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4f33944eaa324f5ea7408c2b7c175306
+        _position: {x: 440, y: 300}
+        _comment: 'Round to its side, least-watched route (every 4 s)'
+        _children:
+        - 12b5349f93fc4748981ae71dac1ed73c
+        - ee006e9477be42679bd07ba6f268b81b
+        _abort: 0
+    - rid: 1014
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 12b5349f93fc4748981ae71dac1ed73c
+        _position: {x: 330, y: 450}
+        _comment:
+    - rid: 1015
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ee006e9477be42679bd07ba6f268b81b
+        _position: {x: 550, y: 450}
+        _comment:
+        _children:
+        - 8b43be8a6aa04719a7ccc0a244482a04
+        _seconds: 4
+        _onlyAfterSuccess: 0
+    - rid: 1016
+      type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8b43be8a6aa04719a7ccc0a244482a04
+        _position: {x: 550, y: 600}
+        _comment:
+        _standOff: 2
+        _giveUpAfter: 7
+    - rid: 1017
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: cfb1854df1e54cb4a8ea3229b21a3963
+        _position: {x: 770, y: 300}
+        _comment: 'Close in'
+        _children:
+        - cf87a1eaf2d74b5897963c8b63368c16
+        - 37565cce14e74fe7a5ca34a062457288
+        _abort: 0
+    - rid: 1018
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: cf87a1eaf2d74b5897963c8b63368c16
+        _position: {x: 660, y: 450}
+        _comment:
+    - rid: 1019
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 37565cce14e74fe7a5ca34a062457288
+        _position: {x: 880, y: 450}
+        _comment:
+        _stopDistance: 0
+    - rid: 1020
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ffe420e591d947e3ad14b30b0fb81e72
+        _position: {x: 1100, y: 300}
+        _comment: 'Lost it: follow up'
+        _children:
+        - 69c940285a0b458187d8b2f11423607c
+        - 4a982b7fae4940eeba8a758ae9d1f665
+        _abort: 0
+    - rid: 1021
+      type: {class: HasBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 69c940285a0b458187d8b2f11423607c
+        _position: {x: 990, y: 450}
+        _comment:
+    - rid: 1022
+      type: {class: PursueBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4a982b7fae4940eeba8a758ae9d1f665
+        _position: {x: 1210, y: 450}
+        _comment:
+        _style: 0
+        _look: 1
+        _giveUpAfter: 8

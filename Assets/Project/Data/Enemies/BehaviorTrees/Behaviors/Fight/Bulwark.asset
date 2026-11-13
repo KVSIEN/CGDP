@@ -1,0 +1,169 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: Bulwark
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 64b31246bc8f438b82cce5f40eee251f
+        _position: {x: 0, y: 0}
+        _comment: 'A shield-bearer (riot bot, carapace, tower shield — any faction): advances slowly, always facing its target, to mid range, then holds there facing it and firing, giving its squad cover; bashes anything in reach. Give its prefab a Frontal Shield (most damage from the front is stopped), so the answer is to flank it.'
+        _children:
+        - f7ac4e96d5854807b7709f186ca97de3
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f7ac4e96d5854807b7709f186ca97de3
+        _position: {x: 0, y: 150}
+        _comment: 'Bash in reach; otherwise advance and hold, shield first'
+        _children:
+        - c227c0bd1fca49aea4b8b3d50d637c91
+        - 0e84eb61cac14ed183d734c535b88669
+        - e2cf30aa2dc44790b192ed9edf3e0c86
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c227c0bd1fca49aea4b8b3d50d637c91
+        _position: {x: -220, y: 300}
+        _comment: 'In reach: shield bash'
+        _children:
+        - c944ed0889c643798e6fa61759b561fe
+        - d0e166fb26f24da9a75b7873e12644a1
+        - 641cf789fbaf497191193dd42e315705
+        - ebe18c614da34d908b512bb713bab894
+        _abort: 3
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c944ed0889c643798e6fa61759b561fe
+        _position: {x: -550, y: 450}
+        _comment:
+    - rid: 1004
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d0e166fb26f24da9a75b7873e12644a1
+        _position: {x: -330, y: 450}
+        _comment:
+        _range: 0
+    - rid: 1005
+      type: {class: TakesMeleeTurn, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 641cf789fbaf497191193dd42e315705
+        _position: {x: -110, y: 450}
+        _comment:
+    - rid: 1006
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ebe18c614da34d908b512bb713bab894
+        _position: {x: 110, y: 450}
+        _comment:
+    - rid: 1007
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0e84eb61cac14ed183d734c535b88669
+        _position: {x: 110, y: 300}
+        _comment: 'Shield first to 7 m, then hold there firing'
+        _children:
+        - 66c403dc9b1448769c5ee8bdff5ca2d7
+        - 928ad0817b69419c8ab656a850884624
+        _abort: 0
+    - rid: 1008
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 66c403dc9b1448769c5ee8bdff5ca2d7
+        _position: {x: 0, y: 450}
+        _comment:
+    - rid: 1009
+      type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 928ad0817b69419c8ab656a850884624
+        _position: {x: 330, y: 450}
+        _comment:
+        _children:
+        - 3a24a7d530ba4a7fb23d43cf3a31706f
+        - 036501038ab74063bc64a7879800b2d5
+        _policy: 1
+    - rid: 1010
+      type: {class: AdvanceFacing, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3a24a7d530ba4a7fb23d43cf3a31706f
+        _position: {x: 220, y: 600}
+        _comment:
+        _stopDistance: 7
+        _speed: 0.4
+        _holdOnArrival: 1
+    - rid: 1011
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 036501038ab74063bc64a7879800b2d5
+        _position: {x: 440, y: 600}
+        _comment:
+        _children:
+        - 91be0152fdc34f85a3fe72f804852d67
+        _count: 0
+        _stopOnFailure: 1
+    - rid: 1012
+      type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 91be0152fdc34f85a3fe72f804852d67
+        _position: {x: 440, y: 750}
+        _comment:
+    - rid: 1013
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e2cf30aa2dc44790b192ed9edf3e0c86
+        _position: {x: 440, y: 300}
+        _comment: 'Lost sight: keep coming, shield first'
+        _children:
+        - 07fe1c7a052e4be9a17f987e64509474
+        - eceff99229f14ea4b74594aa775d987d
+        _abort: 0
+    - rid: 1014
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 07fe1c7a052e4be9a17f987e64509474
+        _position: {x: 330, y: 450}
+        _comment:
+        _memory: 10
+    - rid: 1015
+      type: {class: AdvanceFacing, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: eceff99229f14ea4b74594aa775d987d
+        _position: {x: 550, y: 450}
+        _comment:
+        _stopDistance: 3
+        _speed: 0.4
+        _holdOnArrival: 0

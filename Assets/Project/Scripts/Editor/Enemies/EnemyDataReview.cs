@@ -110,6 +110,7 @@ namespace CGD.Editor
                 };
                 if (slot != AbilitySlot.Own && data.KitAbility(slot) == null) missing.Add(slot.ToString());
                 if (node is ThrowGrenade { UsesKit: true } && data.Grenade == null) missing.Add("Grenade");
+                if (node is SupportAlly && data.Support == null) missing.Add("Support");
             }
 
             foreach (string slot in missing)
