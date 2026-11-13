@@ -431,7 +431,9 @@ namespace CGD.Enemies
             Tactics.EndMeleeTurn();
             AttackTokens.ReleaseAll(this);
             BoldMovePermits.Release(this);
-            FallenAllies.Add(new FallenAlly(this, transform.position, _health.Team));
+            GameObject killer = _health.LastHitSource.Owner;
+            FallenAllies.Add(new FallenAlly(this, transform.position, _health.Team,
+                                            killer != null ? killer.GetComponentInParent<HealthManager>() : null));
             _tree?.Abort();
             ReportState(AiState.Dead);
             Motion.StopTurning();

@@ -1,0 +1,315 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: DefendArea
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  - rid: 1020
+  - rid: 1021
+  - rid: 1022
+  - rid: 1023
+  - rid: 1024
+  - rid: 1025
+  - rid: 1026
+  - rid: 1027
+  - rid: 1028
+  - rid: 1029
+  - rid: 1030
+  - rid: 1031
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: be5636223fe54ccf8ddbba3665b5fb32
+        _position: {x: 0, y: 0}
+        _comment: 'A defender (garrison, warden, hive guard — any faction): holds the area round its post (12 m) — a room, a doorway, a terminal. It fights whatever comes into the area but never chases past its edge; it shoots at what approaches from inside the edge (if it fights at range); pulled out of the area it goes back to its spot; quiet, it guards. Place it where it should defend.'
+        _children:
+        - d6aaac5bb5ab4d22b06266d02715737c
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d6aaac5bb5ab4d22b06266d02715737c
+        _position: {x: 0, y: 150}
+        _comment: 'Fight intruders inside; hold the edge; go back; guard'
+        _children:
+        - c2e976fddbd84f73889cea5331ee2f84
+        - bde4f0e5474b4d50802e126119096fb8
+        - f0aefbf95dd04b69beabb57d9e6e95a8
+        - e16f5c1cc87f4a6893c19856b211d0dc
+        - 442202dc51ee44bb9aefb362c0e555c9
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c2e976fddbd84f73889cea5331ee2f84
+        _position: {x: -440, y: 300}
+        _comment: 'An intruder in the area: fight it, staying inside'
+        _children:
+        - 89ba7701c4624e37bf882f16ab519f30
+        - 30bb9053d98e47018b57ffad154fd4f9
+        - 8de80495cec64a01b9b456982b0c9b98
+        _abort: 3
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 89ba7701c4624e37bf882f16ab519f30
+        _position: {x: -660, y: 450}
+        _comment:
+    - rid: 1004
+      type: {class: InArea, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 30bb9053d98e47018b57ffad154fd4f9
+        _position: {x: -440, y: 450}
+        _comment:
+        _subject: 1
+        _radius: 14
+    - rid: 1005
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8de80495cec64a01b9b456982b0c9b98
+        _position: {x: 220, y: 450}
+        _comment:
+        _children:
+        - 6aa95105fe8a433fac3cfbc3ebea9d6b
+        - c4fc46b9288940d8a94a8cfdc2cf1961
+        - 2073d947d96242729691303e0b59a8d2
+        _abort: 0
+    - rid: 1006
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6aa95105fe8a433fac3cfbc3ebea9d6b
+        _position: {x: 0, y: 600}
+        _comment: 'In reach: strike'
+        _children:
+        - 4075b3f77d6c43a9a553562f8319fb16
+        - 49e7feaf752a46a889a7c0d779525cc5
+        - 70486b69825a4052812298ed0c1c7e63
+        _abort: 0
+    - rid: 1007
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4075b3f77d6c43a9a553562f8319fb16
+        _position: {x: -220, y: 750}
+        _comment:
+        _range: 0
+    - rid: 1008
+      type: {class: TakesMeleeTurn, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 49e7feaf752a46a889a7c0d779525cc5
+        _position: {x: 0, y: 750}
+        _comment:
+    - rid: 1009
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 70486b69825a4052812298ed0c1c7e63
+        _position: {x: 220, y: 750}
+        _comment:
+    - rid: 1010
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c4fc46b9288940d8a94a8cfdc2cf1961
+        _position: {x: 440, y: 600}
+        _comment: 'Ranged: shoot'
+        _children:
+        - 92ee780ea5bc40cca1bb639d85befeff
+        - cc004ca2590f4d7bb5425f2b3a9b0e2c
+        - e7598b09fcfe49d88ddeed908e9384fb
+        _abort: 0
+    - rid: 1011
+      type: {class: IsRanged, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 92ee780ea5bc40cca1bb639d85befeff
+        _position: {x: 220, y: 750}
+        _comment:
+    - rid: 1012
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: cc004ca2590f4d7bb5425f2b3a9b0e2c
+        _position: {x: 440, y: 750}
+        _comment:
+    - rid: 1013
+      type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e7598b09fcfe49d88ddeed908e9384fb
+        _position: {x: 660, y: 750}
+        _comment:
+    - rid: 1014
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2073d947d96242729691303e0b59a8d2
+        _position: {x: 660, y: 600}
+        _comment: 'Close in, but only inside the area'
+        _children:
+        - 39afa62b8e7a41bb945f90e67165efa1
+        - 30d0e451ed5549f0b71a413667ae4ec5
+        _abort: 1
+    - rid: 1015
+      type: {class: InArea, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 39afa62b8e7a41bb945f90e67165efa1
+        _position: {x: 550, y: 750}
+        _comment:
+        _subject: 0
+        _radius: 12
+    - rid: 1016
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 30d0e451ed5549f0b71a413667ae4ec5
+        _position: {x: 770, y: 750}
+        _comment:
+        _stopDistance: 0
+    - rid: 1017
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: bde4f0e5474b4d50802e126119096fb8
+        _position: {x: 110, y: 300}
+        _comment: 'Approaching from outside: shoot from inside the edge'
+        _children:
+        - d6c5ff729f7849c7887418039cbe2e6c
+        - 7392e2f393b6494f8ba8d838ca641bd1
+        - b1442e6389f54a61b83564a1f436d313
+        - f72a5bcf2ada487eb41705324b8256f7
+        _abort: 1
+    - rid: 1018
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d6c5ff729f7849c7887418039cbe2e6c
+        _position: {x: -220, y: 450}
+        _comment:
+    - rid: 1019
+      type: {class: IsRanged, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7392e2f393b6494f8ba8d838ca641bd1
+        _position: {x: 0, y: 450}
+        _comment:
+    - rid: 1020
+      type: {class: InArea, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b1442e6389f54a61b83564a1f436d313
+        _position: {x: 220, y: 450}
+        _comment:
+        _subject: 0
+        _radius: 12
+    - rid: 1021
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f72a5bcf2ada487eb41705324b8256f7
+        _position: {x: 440, y: 450}
+        _comment:
+        _children:
+        - c148558c7b5b4c23abfe4b31c406924b
+        _count: 0
+        _stopOnFailure: 1
+    - rid: 1022
+      type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c148558c7b5b4c23abfe4b31c406924b
+        _position: {x: 440, y: 600}
+        _comment:
+    - rid: 1023
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f0aefbf95dd04b69beabb57d9e6e95a8
+        _position: {x: 440, y: 300}
+        _comment: 'Pulled out of its area: back to its spot'
+        _children:
+        - 126c454289dd42c9be92b7a3f166cd88
+        - dbbbb605397a405098d57e3c3d4c16c8
+        - 2b03d854bea9401ebd59910f8044ab34
+        _abort: 0
+    - rid: 1024
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 126c454289dd42c9be92b7a3f166cd88
+        _position: {x: 220, y: 450}
+        _comment:
+        _children:
+        - 7c00b6be8d5746df8ed759cc90f8c4e2
+    - rid: 1025
+      type: {class: InArea, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7c00b6be8d5746df8ed759cc90f8c4e2
+        _position: {x: 220, y: 600}
+        _comment:
+        _subject: 0
+        _radius: 10
+    - rid: 1026
+      type: {class: RememberPosition, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: dbbbb605397a405098d57e3c3d4c16c8
+        _position: {x: 440, y: 450}
+        _comment:
+        _key: DefendSpot
+        _what: 1
+    - rid: 1027
+      type: {class: MoveTo, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2b03d854bea9401ebd59910f8044ab34
+        _position: {x: 660, y: 450}
+        _comment:
+        _key: DefendSpot
+        _run: 1
+        _arrivalDistance: 1.5
+    - rid: 1028
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e16f5c1cc87f4a6893c19856b211d0dc
+        _position: {x: 550, y: 300}
+        _comment: 'Something about outside: watch for it from inside'
+        _children:
+        - f2a18e576efd47798ba302e9a2eec6f0
+        - 548fbf8b58cc4f4daf139b78ad8d1217
+        _abort: 0
+    - rid: 1029
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f2a18e576efd47798ba302e9a2eec6f0
+        _position: {x: 440, y: 450}
+        _comment:
+        _memory: 10
+    - rid: 1030
+      type: {class: Overwatch, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 548fbf8b58cc4f4daf139b78ad8d1217
+        _position: {x: 660, y: 450}
+        _comment:
+        _seconds: {Min: 2, Max: 3, Bias: 0}
+    - rid: 1031
+      type: {class: Patrol, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 442202dc51ee44bb9aefb362c0e555c9
+        _position: {x: 440, y: 300}
+        _comment: 'Quiet: guard (its patrol, or its post)'

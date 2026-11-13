@@ -40,6 +40,7 @@ namespace CGD.Enemies
         private const float UnderFireMemory = 1.5f;   // seconds "under fire" lasts after the last shot
         private const float AimedAtAngle    = 5f;     // degrees: a target facing it this squarely is aiming at it
         private const float FocusBonus      = 1.5f;   // a union's pull toward the target its kin fight
+        private const float VendettaBonus   = 3f;     // pull toward the one that killed an ally it saw fall
 
         private static PerceptionProfile _fallbackProfile;
 
@@ -72,6 +73,14 @@ namespace CGD.Enemies
         private HealthManager _lastAttacker;
         private float   _lastAttackedAt = float.NegativeInfinity;
         private readonly HashSet<EnemyAI> _bodiesSeen = new();
+
+        // The last ally it saw or heard fall, and its killer, until it avenges it (Avenge Ally).
+        private HealthManager _fallKiller;
+        private Vector3       _fallSpot;
+        private float         _fellAt = float.NegativeInfinity;
+        // Whom it has sworn to get, and until when.
+        private HealthManager _vendetta;
+        private float         _vendettaUntil = float.NegativeInfinity;
 
         // What a look at one candidate turned up.
         private struct Stimulus
@@ -230,7 +239,41 @@ namespace CGD.Enemies
             _weighed.Clear();
             _lastAttacker   = null;
             _lastAttackedAt = float.NegativeInfinity;
+            _fallKiller     = null;
+            _fellAt         = float.NegativeInfinity;
+            _vendetta       = null;
+            _vendettaUntil  = float.NegativeInfinity;
         }
+
+        // --- Fallen allies and vendettas ---------------------------------------------
+
+        // An ally of its own it saw or heard fall at most `within` seconds ago, killed by a hostile
+        // it hasn't avenged yet.
+        public bool HasUnavengedFall(float within, float radius, out HealthManager killer)
+        {
+            killer = _fallKiller;
+            if (IsGone(killer) || _clock - _fellAt > within) return false;
+            return (_fallSpot - _self.position).sqrMagnitude <= radius * radius;
+        }
+
+        // Swears to get the killer of the ally it last saw fall: makes it its target for `seconds`,
+        // strongly preferred over anyone else in its senses, and heads for where the ally fell.
+        public void Avenge(float seconds)
+        {
+            if (IsGone(_fallKiller)) return;
+
+            _vendetta      = _fallKiller;
+            _vendettaUntil = _clock + seconds;
+            _fallKiller    = null;
+            Target   = _vendetta;
+            _hunting = true;
+            _meter.RaiseToSuspicious(0.2f);
+            Lead(_fallSpot);
+            UpdateLevel();
+        }
+
+        // Whom it is out to get right now (null when nobody).
+        public HealthManager Vendetta => _clock < _vendettaUntil && !IsGone(_vendetta) ? _vendetta : null;
 
         // Calms down completely and forgets its target.
         public void LoseTarget()
@@ -390,6 +433,7 @@ namespace CGD.Enemies
                 float score  = stimulus.Instant ? float.MaxValue : stimulus.Gain * (stimulus.Seen ? 2f : 1f) * weight;
                 // A union closes on the target its kin are already fighting.
                 if (!stimulus.Instant && _data.Social == SocialStyle.Network && EnemyRoster.IsFocusedByKin(_owner, candidate)) score *= FocusBonus;
+                if (!stimulus.Instant && candidate == Vendetta) score *= VendettaBonus;
                 _weighed.Add(new WeighedHostile(candidate, weight, stimulus.Seen, stimulus.Instant || stimulus.Gain > 0f));
                 if (score <= bestScore) continue;
 
@@ -508,6 +552,12 @@ namespace CGD.Enemies
         private void DiscoverBody(FallenAlly fallen)
         {
             _bodiesSeen.Add(fallen.Body);
+            if (!IsGone(fallen.Killer) && fallen.Killer.Team != _team)
+            {
+                _fallKiller = fallen.Killer;
+                _fallSpot   = fallen.Position;
+                _fellAt     = _clock;
+            }
             _owner.Morale.OnAllyDown(fallen.Body);
             if (_owner.Doctrine.Escalation.ReportsFallenKin) _callouts.ReportBody(fallen.Position);
             if (IsTargetDetected) return;
