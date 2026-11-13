@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 1000000000000000029}
   - component: {fileID: 1000000000000000030}
   - component: {fileID: 1000000000000000040}
+  - component: {fileID: 1000000000000000041}
   m_Layer: 0
   m_Name: VoidTestAgent
   m_TagString: Untagged
@@ -618,3 +619,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Stealth.Stealthable
   _settings: {fileID: 0}
   _spottedFeedback: {fileID: 0}
+--- !u!114 &1000000000000000041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07ee8929c4e0465588c1e8a98716e9f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.HorrorPresence
+  _model: {fileID: 1000000000000000022}
+  _body:
+  - {fileID: 1000000000000000014}
+  - {fileID: 1000000000000000020}
+  - {fileID: 1000000000000000026}
+  _watchedAngle: 35
+  _stillSpeed: 0.4
+  _glitchEvery: {Min: 0.35, Max: 1.4, Bias: 0}
+  _glitchFor: {Min: 0.04, Max: 0.12, Bias: 0}
+  _twitch: 0.08
+  _peekBlinks: 3
+  _peekSound: {fileID: 0}
+  _whisper: {fileID: 0}
+  _whisperRange: 12
+  _whisperEvery: {Min: 6, Max: 12, Bias: 0}

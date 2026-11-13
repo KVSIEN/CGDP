@@ -81,7 +81,7 @@ namespace CGD.Enemies
 
         private BtStatus Hold(BtContext context)
         {
-            Ai.ReportState(EnemyAI.AiState.Hunt);
+            Ai.ReportState(EnemyAI.AiState.Chase);   // still in the fight, so the Hold step shows
             Ai.ReportStep(EngageStep.Hold);
             Ai.Motion.KeepEyesOnTarget(context.DeltaTime);
             return context.Time >= _until ? BtStatus.Success : BtStatus.Running;

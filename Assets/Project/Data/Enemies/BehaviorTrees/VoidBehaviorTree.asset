@@ -122,6 +122,8 @@ MonoBehaviour:
   - rid: 1111
   - rid: 1112
   - rid: 1113
+  - rid: 1114
+  - rid: 1115
   references:
     version: 2
     RefIds:
@@ -268,6 +270,8 @@ MonoBehaviour:
         - 01611ae078d04342a6ff83f5940a365c
         - f9499f0e9aac46d883a898c8f92589f2
         - ded1ebec8c9f4bffa2ad1af180f690a0
+        - 3e8a3abee9c749bb9d2fb7c199164a2f
+        - 35e74da142be4072bb585616c99e0021
         - 71598e06f3c24e7e87880fd410af2cc8
         - a1c0de01b2d34e5f8a9b0c1d2e3f4a51
         - 039c8196783b4c3b98b4b9a7a3c3d94b
@@ -1280,3 +1284,19 @@ MonoBehaviour:
         _comment: 
         _standOff: 0
         _giveUpAfter: 6
+    - rid: 1114
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 3e8a3abee9c749bb9d2fb7c199164a2f
+        _position: {x: 1472, y: 600}
+        _comment: 'Far off: it only comes closer while you are not looking, and freezes, staring, when you are'
+        _tree: {fileID: 11400000, guid: 5d8bb4b18b794a99b02462ef1426f121, type: 2}
+        _off: 0
+    - rid: 1115
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 35e74da142be4072bb585616c99e0021
+        _position: {x: 1692, y: 600}
+        _comment: 'Peekaboo: hide, wait, dart out and strike, duck back; three times, then a new hiding place. The branches below are what it falls back on when there is no cover to play it from'
+        _tree: {fileID: 11400000, guid: 0db1ad346a7e4ee885b59956c172d088, type: 2}
+        _off: 0

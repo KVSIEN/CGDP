@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: CreepUnwatched
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 10116b90eedd43e9954f21f9bdfb5de9
+        _position: {x: 0, y: 0}
+        _comment: 'Far off, it only comes closer while the target isn''t looking: the moment it looks, the thing stops dead and stares back (glitching under the stare); look away and it is nearer every time you look again.'
+        _children:
+        - ec3cc8ec6d9a4a9bb62d5c077f39ec98
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ec3cc8ec6d9a4a9bb62d5c077f39ec98
+        _position: {x: 0, y: 150}
+        _comment: 'Far off: creep in while unwatched, freeze while watched'
+        _children:
+        - f1b1ac93118e4a4885e66f0fbf1d275d
+        - 721dd28f889842b697816ffa239db8df
+        - edf9d64057ea41708dc58640f7e32248
+        _abort: 0
+    - rid: 1002
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f1b1ac93118e4a4885e66f0fbf1d275d
+        _position: {x: -220, y: 300}
+        _comment:
+    - rid: 1003
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 721dd28f889842b697816ffa239db8df
+        _position: {x: 0, y: 300}
+        _comment:
+        _children:
+        - 91c3828f8888402b93e6aa8f4741c82d
+    - rid: 1004
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 91c3828f8888402b93e6aa8f4741c82d
+        _position: {x: 0, y: 450}
+        _comment:
+        _range: 14
+    - rid: 1005
+      type: {class: CreepUnwatched, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: edf9d64057ea41708dc58640f7e32248
+        _position: {x: 220, y: 300}
+        _comment:
+        _stopDistance: 12
+        _lookAngle: 35
+        _speed: 0.9

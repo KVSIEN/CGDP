@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: PeekABoo
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f2dc60b15dd34664bfb127ec85e7eb7e
+        _position: {x: 0, y: 0}
+        _comment: 'Peekaboo: vanish behind full cover out of the target''s sight, wait in silence, then dart out a step to the side, head snapping round, strike and duck back before it can answer. Three times from one hiding place, never from quite the same spot, then on to another.'
+        _children:
+        - 087ce1fd1b72441f94923d33ce7d39c6
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 087ce1fd1b72441f94923d33ce7d39c6
+        _position: {x: 0, y: 150}
+        _comment: 'Hide, wait, pop out and strike; again; then a new hiding place'
+        _children:
+        - dc6fd8ec2ec74cb691369cfe8c82a8c4
+        - dd28fe78975f424cbc5ee002b7feb338
+        _abort: 0
+    - rid: 1002
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: dc6fd8ec2ec74cb691369cfe8c82a8c4
+        _position: {x: -110, y: 300}
+        _comment: 'Gone: behind full cover, out of its sight'
+        _use: 1
+        _giveUpAfter: 5
+    - rid: 1003
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: dd28fe78975f424cbc5ee002b7feb338
+        _position: {x: 110, y: 300}
+        _comment: 'Three peeks from this hiding place'
+        _children:
+        - 7e1bc52da1fe4d1e8e243f34291a6117
+        _count: 3
+        _stopOnFailure: 1
+    - rid: 1004
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7e1bc52da1fe4d1e8e243f34291a6117
+        _position: {x: 110, y: 450}
+        _comment:
+        _children:
+        - dcf6d44d566e4c599cb27d016e37e867
+        - d22e8d9929cb40f9b2e2398c935b860b
+        _abort: 0
+    - rid: 1005
+      type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: dcf6d44d566e4c599cb27d016e37e867
+        _position: {x: 0, y: 600}
+        _comment: 'Silence. Long enough to wonder where it went'
+        _seconds: {Min: 0.8, Max: 2.6, Bias: 0}
+    - rid: 1006
+      type: {class: Peek, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d22e8d9929cb40f9b2e2398c935b860b
+        _position: {x: 220, y: 600}
+        _comment:
+        _stepOut: {Min: 1.5, Max: 3.5, Bias: 0}
+        _exposure: {Min: 0.6, Max: 1.4, Bias: 0}
+        _speed: 1.4
+        _attack: 1
+        _giveUpAfter: 3

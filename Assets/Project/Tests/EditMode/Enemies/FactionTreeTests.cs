@@ -20,6 +20,8 @@ namespace CGD.Tests
         [TestCase("Behaviors/Idle/BushRoamRoutine")]
         [TestCase("Behaviors/Fight/StalkRushHide")]
         [TestCase("Behaviors/Fight/FlushOut")]
+        [TestCase("Behaviors/Fight/PeekABoo")]
+        [TestCase("Behaviors/Fight/CreepUnwatched")]
         public void TreeHasNoErrors(string name)
         {
             BehaviorTreeAsset tree = Load(name);
@@ -45,6 +47,15 @@ namespace CGD.Tests
             Assert.IsTrue(nodes.Contains(typeof(TargetHiding)), "notices a target gone to ground");
             Assert.IsTrue(nodes.Contains(typeof(ThrowGrenade)), "grenades it out");
             Assert.IsTrue(nodes.Contains(typeof(Suppress)), "pins it down");
+        }
+
+        [Test]
+        public void VoidPeeksAndCreepsWhileUnwatched()
+        {
+            HashSet<Type> nodes = EnemyTreeContents.NodeTypes(Load("VoidBehaviorTree"));
+
+            Assert.IsTrue(nodes.Contains(typeof(Peek)), "pops out of cover to strike");
+            Assert.IsTrue(nodes.Contains(typeof(CreepUnwatched)), "only closes in while unwatched");
         }
 
         [Test]

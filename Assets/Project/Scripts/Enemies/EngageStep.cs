@@ -18,5 +18,7 @@ namespace CGD.Enemies
         Suppress,       // firing at where the target hides, to pin it down
         LeaveHazard,    // stepping out of ground that hurts it
         Dash,           // bursting away unseen right after vanishing
+        Peek,           // darting out of cover to strike, then back
+        Freeze,         // holding dead still because the target is looking at it
     }
 }
