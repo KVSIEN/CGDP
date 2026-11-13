@@ -164,6 +164,14 @@ namespace CGD.Editor
             BtTreeLayout.Apply(asset);
         }
 
+        // A new behavior's starting point: the Root holding one Sequence, which reads as
+        // "when these checks hold, do these things" once conditions and actions go under it.
+        public static void BuildEmptyBehavior(BehaviorTreeAsset asset)
+        {
+            asset.EnsureRoot();
+            Add(asset, asset.Root, new Sequence { Comment = "Checks first (when it acts), then what it does" });
+        }
+
         private static T Add<T>(BehaviorTreeAsset asset, BtParentNode parent, T node) where T : BtNode
         {
             node.Position = NextChildPosition(asset, parent);

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CGD.BehaviorTrees;
 using CGD.Combat;
 using CGD.Enemies;
 
@@ -99,22 +98,9 @@ namespace CGD.Editor
         // data leaves empty means those branches never fire.
         private static void CheckKit(EnemyData data, List<Issue> issues)
         {
-            var missing = new HashSet<string>();
-            foreach (BtNode node in EnemyTreeContents.Nodes(data.BehaviorTree))
-            {
-                AbilitySlot slot = node switch
-                {
-                    UseAbility use     => use.Slot,
-                    AbilityReady ready => ready.Slot,
-                    _                  => AbilitySlot.Own,
-                };
-                if (slot != AbilitySlot.Own && data.KitAbility(slot) == null) missing.Add(slot.ToString());
-                if (node is ThrowGrenade { UsesKit: true } && data.Grenade == null) missing.Add("Grenade");
-                if (node is SupportAlly && data.Support == null) missing.Add("Support");
-            }
-
-            foreach (string slot in missing)
-                issues.Add(new Issue(BtIssueSeverity.Warning, $"Its tree uses its kit's {slot}, but Kit › {slot} is empty: those behaviors never fire."));
+            List<KitNeed> needs = KitNeed.Of(EnemyTreeContents.Nodes(data.BehaviorTree));
+            foreach (KitNeed need in KitNeed.Missing(data, needs))
+                issues.Add(new Issue(BtIssueSeverity.Warning, $"Its tree uses its kit's {need.Name}, but {need.Field} is empty: those behaviors never fire."));
         }
 
         private static bool Shoots(EnemyData data, HashSet<Type> nodes) =>

@@ -40,11 +40,32 @@ namespace CGD.Editor
             Finish(tree, structure: false);
         }
 
-        public static void Add(BehaviorTreeAsset tree, BtParentNode list, BehaviorTreeAsset behavior)
+        // At `index` in the list, or the end (-1).
+        public static void Add(BehaviorTreeAsset tree, BtParentNode list, BehaviorTreeAsset behavior, int index = -1)
         {
             Undo.RecordObject(tree, "Add Behavior");
-            BehaviorEditing.AddBehavior(tree, list, behavior);
+            BehaviorEditing.AddBehavior(tree, list, behavior, index);
             Finish(tree, structure: true);
+        }
+
+        // Asks for a name, makes a new behavior holding an empty Sequence (its checks go first,
+        // then what it does), adds it to the list and returns it to open — the way to write a
+        // behavior from scratch without first building it inside an enemy's tree. Null if cancelled.
+        public static BehaviorTreeAsset CreateEmptyBehavior(BehaviorTreeAsset tree, BtParentNode list, int index = -1)
+        {
+            string path = BehaviorLibrary.AskForNewPath("NewBehavior",
+                "Name the new behavior. Put it in a sub-folder to file it under a category (e.g. Behaviors/Fight).");
+            if (path == null) return null;
+
+            BehaviorTreeAsset behavior = BehaviorLibrary.CreateEmpty(path);
+            BehaviorEditing.BuildEmptyBehavior(behavior);
+            EditorUtility.SetDirty(behavior);
+
+            Undo.RecordObject(tree, "Add New Behavior");
+            // Undo takes it out of the list; the new asset stays (delete it if unwanted).
+            BehaviorEditing.AddBehavior(tree, list, behavior, index);
+            Finish(tree, structure: true);
+            return behavior;
         }
 
         public static void Move(BehaviorTreeAsset tree, BtParentNode list, int from, int to)

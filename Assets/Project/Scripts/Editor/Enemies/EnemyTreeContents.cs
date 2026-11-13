@@ -17,11 +17,14 @@ namespace CGD.Editor
         }
 
         // The nodes themselves, for checks that need their settings (which kit slot an ability uses).
-        public static List<BtNode> Nodes(BehaviorTreeAsset tree)
+        public static List<BtNode> Nodes(BehaviorTreeAsset tree) => Nodes(tree, tree != null ? tree.Root : null);
+
+        // What one branch of `tree` can run (a row in the Behavior Composer), subtrees followed.
+        public static List<BtNode> Nodes(BehaviorTreeAsset tree, BtNode top)
         {
             var nodes   = new List<BtNode>();
             var visited = new HashSet<BehaviorTreeAsset>();
-            Collect(tree, nodes, visited);
+            if (tree != null && top != null && visited.Add(tree)) CollectFrom(tree, top, nodes, visited);
             return nodes;
         }
 
@@ -35,10 +38,14 @@ namespace CGD.Editor
         private static void Collect(BehaviorTreeAsset tree, List<BtNode> nodes, HashSet<BehaviorTreeAsset> visited)
         {
             if (tree == null || tree.Root == null || !visited.Add(tree)) return;
+            CollectFrom(tree, tree.Root, nodes, visited);
+        }
 
+        private static void CollectFrom(BehaviorTreeAsset tree, BtNode top, List<BtNode> nodes, HashSet<BehaviorTreeAsset> visited)
+        {
             var reached = new HashSet<BtNode>();
             var stack   = new Stack<BtNode>();
-            stack.Push(tree.Root);
+            stack.Push(top);
             while (stack.Count > 0)
             {
                 BtNode node = stack.Pop();
