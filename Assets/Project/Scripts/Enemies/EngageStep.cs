@@ -21,5 +21,7 @@ namespace CGD.Enemies
         Peek,           // darting out of cover to strike, then back
         Freeze,         // holding dead still because the target is looking at it
         Aim,            // drawing a bead for one telegraphed shot (Aimed Shot): its laser is showing
+        WindUp,         // pawing the ground before a charge: the tell that it is coming
+        Charge,         // charging in a straight line it can no longer turn from
     }
 }

@@ -43,6 +43,20 @@ namespace CGD.Tests
         [TestCase("Behaviors/Reactions/FallBackToRange")]
         [TestCase("Behaviors/Reactions/CallForSupport")]
         [TestCase("Behaviors/Reactions/LockOn")]
+        [TestCase("Behaviors/Fight/Swarm")]
+        [TestCase("Behaviors/Fight/PackHunter")]
+        [TestCase("Behaviors/Fight/Lurker")]
+        [TestCase("Behaviors/Fight/Spitter")]
+        [TestCase("Behaviors/Fight/Broodmother")]
+        [TestCase("Behaviors/Fight/Regenerator")]
+        [TestCase("Behaviors/Fight/Charger")]
+        [TestCase("Behaviors/Fight/Burrower")]
+        [TestCase("Behaviors/Fight/Infector")]
+        [TestCase("Behaviors/Fight/Lure")]
+        [TestCase("Behaviors/Fight/SporePod")]
+        [TestCase("Behaviors/Fight/Alpha")]
+        [TestCase("Behaviors/Reactions/Frenzy")]
+        [TestCase("SwarmlingBehaviorTree")]
         public void TreeHasNoErrors(string name)
         {
             BehaviorTreeAsset tree = Load(name);

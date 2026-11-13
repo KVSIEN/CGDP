@@ -1,0 +1,221 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: Broodmother
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: dc60395dafa64ab08f1f353a4e917912
+        _position: {x: 0, y: 0}
+        _comment: 'A broodmother (hive, egg-layer, drone carrier — any faction): spawns its brood (EnemyData › Kit › Summon) whenever it can, hangs back deep in cover or a bush and retreats further when pushed. Its brood dies with it: kill the mother.'
+        _children:
+        - a6c51d3f5bbe41039ecf6e35b8410286
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a6c51d3f5bbe41039ecf6e35b8410286
+        _position: {x: 0, y: 150}
+        _comment: 'Spawn, keep away, stay hidden'
+        _children:
+        - 4c271fb6473748d6aedb3b309d6072bc
+        - 8df5c3d622b7498d90908eb003ac2541
+        - c7c0f148864c4b6f96ca9e3b14c48ae3
+        - 552f0924544b475caac2b4db03db0d57
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4c271fb6473748d6aedb3b309d6072bc
+        _position: {x: -330, y: 300}
+        _comment: 'Spawn the brood when it can'
+        _children:
+        - 3fc558bb431a4eabb5c97c0f18092820
+        - e4ee213b8661464ea7b85f854b09ecca
+        - c38a8e7bce7049f6b4ec6f934efcbbaf
+        _abort: 2
+    - rid: 1003
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3fc558bb431a4eabb5c97c0f18092820
+        _position: {x: -550, y: 450}
+        _comment:
+        _memory: 8
+    - rid: 1004
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e4ee213b8661464ea7b85f854b09ecca
+        _position: {x: -330, y: 450}
+        _comment:
+        _slot: 3
+        _ability: {fileID: 0}
+    - rid: 1005
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c38a8e7bce7049f6b4ec6f934efcbbaf
+        _position: {x: -110, y: 450}
+        _comment:
+        _slot: 3
+        _ability: {fileID: 0}
+        _aim: 1
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 1
+    - rid: 1006
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8df5c3d622b7498d90908eb003ac2541
+        _position: {x: 110, y: 300}
+        _comment: 'Within 10 m: retreat deeper'
+        _children:
+        - b507d1bdbd384f77891640e6ce5e27bd
+        - b69a8d19ac764da88d378850e3a5cb1d
+        - 433244fc41b8462c9c54f8421437f2bf
+        _abort: 2
+    - rid: 1007
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b507d1bdbd384f77891640e6ce5e27bd
+        _position: {x: -110, y: 450}
+        _comment:
+    - rid: 1008
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b69a8d19ac764da88d378850e3a5cb1d
+        _position: {x: 110, y: 450}
+        _comment:
+        _range: 10
+    - rid: 1009
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 433244fc41b8462c9c54f8421437f2bf
+        _position: {x: 330, y: 450}
+        _comment:
+        _children:
+        - ab65877b7f294165a6e000b081ad6f4a
+        _seconds: 3
+        _onlyAfterSuccess: 0
+    - rid: 1010
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ab65877b7f294165a6e000b081ad6f4a
+        _position: {x: 330, y: 600}
+        _comment:
+        _children:
+        - 1a6cd2d07f4a4f1cb630acc5cb2b4d00
+        - d2e4af88be214cb790e3d3676b513f52
+        - 3b4fdc80452c42beba2be3261d219b87
+        _abort: 0
+    - rid: 1011
+      type: {class: HideInBush, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1a6cd2d07f4a4f1cb630acc5cb2b4d00
+        _position: {x: 110, y: 750}
+        _comment:
+        _minFromTarget: 12
+        _maxRun: 20
+        _hold: {Min: 0.5, Max: 1, Bias: 0}
+        _speed: 1
+        _giveUpAfter: 5
+    - rid: 1012
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d2e4af88be214cb790e3d3676b513f52
+        _position: {x: 330, y: 750}
+        _comment:
+        _use: 1
+        _giveUpAfter: 5
+    - rid: 1013
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3b4fdc80452c42beba2be3261d219b87
+        _position: {x: 550, y: 750}
+        _comment:
+        _distance: 12
+    - rid: 1014
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c7c0f148864c4b6f96ca9e3b14c48ae3
+        _position: {x: 330, y: 300}
+        _comment: 'Stay hidden, well back'
+        _children:
+        - 8d0dbaf5781942c79cf6dd84942c0e39
+        - 515fb0d4633044c898e481df60918986
+        _abort: 0
+    - rid: 1015
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8d0dbaf5781942c79cf6dd84942c0e39
+        _position: {x: 220, y: 450}
+        _comment:
+    - rid: 1016
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 515fb0d4633044c898e481df60918986
+        _position: {x: 550, y: 450}
+        _comment:
+        _children:
+        - f8aab8aa52f64b14a1194eb2cd72cc1d
+        - e554624137e74bae84c61fc198a3deb2
+        _abort: 0
+    - rid: 1017
+      type: {class: HideInBush, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f8aab8aa52f64b14a1194eb2cd72cc1d
+        _position: {x: 440, y: 600}
+        _comment:
+        _minFromTarget: 12
+        _maxRun: 20
+        _hold: {Min: 2, Max: 4, Bias: 0}
+        _speed: 0.8
+        _giveUpAfter: 6
+    - rid: 1018
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e554624137e74bae84c61fc198a3deb2
+        _position: {x: 660, y: 600}
+        _comment:
+        _use: 1
+        _giveUpAfter: 5
+    - rid: 1019
+      type: {class: Overwatch, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 552f0924544b475caac2b4db03db0d57
+        _position: {x: 330, y: 300}
+        _comment: 'Watch from where it hides'
+        _seconds: {Min: 2, Max: 3, Bias: 0}

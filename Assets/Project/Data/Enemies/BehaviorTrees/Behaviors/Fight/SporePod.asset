@@ -1,0 +1,184 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: SporePod
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 46da2344c27643aabc27ae2a488ba724
+        _position: {x: 0, y: 0}
+        _comment: 'An area-denial bloom (spore pod, puffball, gas mine — any faction): stationary or slow. Shot at, or with anything within 6 m, it bursts its signature (EnemyData › Kit › Signature: a Cloud Burst — a cloud that hides its kin and poisons whoever stands in it) and regrows it on cooldown; strikes in reach. Give its data low or zero speed.'
+        _children:
+        - 6585ced93792400ca2868cb1c7b3406f
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6585ced93792400ca2868cb1c7b3406f
+        _position: {x: 0, y: 150}
+        _comment: 'Burst when shot or approached; strike in reach; wait'
+        _children:
+        - 215c41b8dda740b187774fd09bddaa63
+        - 592c59c014a8491f837f9c189ab079ba
+        - ccbc3ff6002e4d43abecdb02fe045ed3
+        - 34bf54c4f0fa4928a3da90d7ffae3715
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 215c41b8dda740b187774fd09bddaa63
+        _position: {x: -330, y: 300}
+        _comment: 'Shot at: burst'
+        _children:
+        - 8bf2bc8c4cae4d519768bda0780444cf
+        - fdd01ec259104ce0b5c47133701cbad5
+        - 06253e3b4ca94b27bdf7ebe62eb40e09
+        _abort: 2
+    - rid: 1003
+      type: {class: UnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8bf2bc8c4cae4d519768bda0780444cf
+        _position: {x: -550, y: 450}
+        _comment:
+        _warningsOnly: 0
+    - rid: 1004
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: fdd01ec259104ce0b5c47133701cbad5
+        _position: {x: -330, y: 450}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+    - rid: 1005
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 06253e3b4ca94b27bdf7ebe62eb40e09
+        _position: {x: -110, y: 450}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+        _aim: 1
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 1
+    - rid: 1006
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 592c59c014a8491f837f9c189ab079ba
+        _position: {x: 220, y: 300}
+        _comment: 'Something within 6 m: burst'
+        _children:
+        - eed93f84730a4a46abb1643eb7bfccb6
+        - 42e32eb432c94dce901004d214574164
+        - c51ebd3f10b1431bb34d7d9a99dfb55a
+        - 7b2a924725cf43969ba73936407c1f96
+        _abort: 2
+    - rid: 1007
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: eed93f84730a4a46abb1643eb7bfccb6
+        _position: {x: -110, y: 450}
+        _comment:
+    - rid: 1008
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 42e32eb432c94dce901004d214574164
+        _position: {x: 110, y: 450}
+        _comment:
+        _range: 6
+    - rid: 1009
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c51ebd3f10b1431bb34d7d9a99dfb55a
+        _position: {x: 330, y: 450}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+    - rid: 1010
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7b2a924725cf43969ba73936407c1f96
+        _position: {x: 550, y: 450}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+        _aim: 1
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 1
+    - rid: 1011
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ccbc3ff6002e4d43abecdb02fe045ed3
+        _position: {x: 770, y: 300}
+        _comment: 'In reach and its turn: strike'
+        _children:
+        - 1949951c00d94423b5127611a45681b3
+        - d58367bbe4494869b6d7ea478719cf11
+        - 239e8719eb2d461aa649a31586218182
+        - 53ce7a3a7ecf4a01a30635a68949494e
+        _abort: 3
+    - rid: 1012
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1949951c00d94423b5127611a45681b3
+        _position: {x: 440, y: 450}
+        _comment:
+    - rid: 1013
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d58367bbe4494869b6d7ea478719cf11
+        _position: {x: 660, y: 450}
+        _comment:
+        _range: 0
+    - rid: 1014
+      type: {class: TakesMeleeTurn, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 239e8719eb2d461aa649a31586218182
+        _position: {x: 880, y: 450}
+        _comment:
+    - rid: 1015
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 53ce7a3a7ecf4a01a30635a68949494e
+        _position: {x: 1100, y: 450}
+        _comment:
+    - rid: 1016
+      type: {class: Overwatch, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 34bf54c4f0fa4928a3da90d7ffae3715
+        _position: {x: 330, y: 300}
+        _comment: 'Wait'
+        _seconds: {Min: 2, Max: 4, Bias: 0}

@@ -86,7 +86,7 @@ namespace CGD.Enemies
             float damage = _stats != null ? _stats.Apply(ItemStat.Damage, data.AttackDamage) : data.AttackDamage;
             damage *= _ai.Ambush.Consume();
             _ai.Reveal();
-            var info = new DamageInfo(damage, source: _source);
+            var info = new DamageInfo(damage, source: _source, onHitEffects: data.MeleeEffects);
 
             _hits.Clear();
             for (int i = 0; i < count; i++)

@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: SwarmlingBehaviorTree
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 83e62fbc3a194ce7bb6aa0c4faabee0a
+        _position: {x: 0, y: 0}
+        _comment: 'Bio swarmling: swarm while it knows its target, otherwise the shared routine'
+        _children:
+        - 4ee18f2f2c504b08a7e48d43b095dc27
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4ee18f2f2c504b08a7e48d43b095dc27
+        _position: {x: 0, y: 150}
+        _comment: 'Most urgent first'
+        _children:
+        - 865a95306d384d8bad30dd8eeb693850
+        - eb2fc43d8ce140538b9ffa6fab5fcb72
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 865a95306d384d8bad30dd8eeb693850
+        _position: {x: -110, y: 300}
+        _comment: 'Fight while it knows where the target is'
+        _children:
+        - 004170fe0ba543bbb6634e75cf00cb8e
+        - f890469192c049099756982b64292ace
+        _abort: 3
+    - rid: 1003
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 004170fe0ba543bbb6634e75cf00cb8e
+        _position: {x: -220, y: 450}
+        _comment:
+        _memory: 6
+    - rid: 1004
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f890469192c049099756982b64292ace
+        _position: {x: 0, y: 450}
+        _comment: 'Swarm it'
+        _tree: {fileID: 11400000, guid: 3bad3a458b9043d28fc12e121475f0d1, type: 2}
+        _off: 0
+    - rid: 1005
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: eb2fc43d8ce140538b9ffa6fab5fcb72
+        _position: {x: 110, y: 300}
+        _comment:
+        _tree: {fileID: 11400000, guid: cba441f48fd34dec9c15d7d0c6903346, type: 2}
+        _off: 0

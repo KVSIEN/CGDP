@@ -1,0 +1,205 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: Lure
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ec11c2ad949944cfaee31caea5fe70db
+        _position: {x: 0, y: 0}
+        _comment: 'A lure (anglerfish, mimic, decoy beacon — any faction): stays hidden in a bush and makes noises somewhere else — beside its target, or behind it — every few seconds, drawing it (and anyone else) to look the wrong way while its kin come in from the side. Strikes only what comes close. Give its Make Noise nodes a sound.'
+        _children:
+        - 194ff940a9924c51957fa0ae61eac717
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 194ff940a9924c51957fa0ae61eac717
+        _position: {x: 0, y: 150}
+        _comment: 'Strike what comes close; call from elsewhere; stay hidden'
+        _children:
+        - 8e799d9459474e8080f1132d6fbe4c7e
+        - 437cec65156e4166bea231e7927ae7f8
+        - 0061dad0bb7b4e5d828c77997b9c5869
+        - 4c5bee37d8f24ea4ad4219db7372aa46
+        - 5843948a8c3f403cafaeb86a5b4219fe
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8e799d9459474e8080f1132d6fbe4c7e
+        _position: {x: -440, y: 300}
+        _comment: 'It came close: strike'
+        _children:
+        - 6a6ad9ec62fb43b08349060ef36413f7
+        - 7b2d4fd4d52a490fb864606db6cc6ab0
+        - a9cb152c0cd74259864468d37bba493c
+        - 15102026f2dd4da6a688bd27f69542d0
+        _abort: 3
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6a6ad9ec62fb43b08349060ef36413f7
+        _position: {x: -770, y: 450}
+        _comment:
+    - rid: 1004
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7b2d4fd4d52a490fb864606db6cc6ab0
+        _position: {x: -550, y: 450}
+        _comment:
+        _range: 0
+    - rid: 1005
+      type: {class: TakesMeleeTurn, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a9cb152c0cd74259864468d37bba493c
+        _position: {x: -330, y: 450}
+        _comment:
+    - rid: 1006
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 15102026f2dd4da6a688bd27f69542d0
+        _position: {x: -110, y: 450}
+        _comment:
+    - rid: 1007
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 437cec65156e4166bea231e7927ae7f8
+        _position: {x: -110, y: 300}
+        _comment: 'Call from beside it (every 5 s)'
+        _children:
+        - df140acb2b1b422895f913d007a958ef
+        - c2f6e1518139453aa1da9f52eb1e6e34
+        _abort: 0
+    - rid: 1008
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: df140acb2b1b422895f913d007a958ef
+        _position: {x: -220, y: 450}
+        _comment:
+        _memory: 10
+    - rid: 1009
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c2f6e1518139453aa1da9f52eb1e6e34
+        _position: {x: 0, y: 450}
+        _comment:
+        _children:
+        - 7c0bdee2d0f54ede81a1dd4d0da9dae2
+        _seconds: 5
+        _onlyAfterSuccess: 0
+    - rid: 1010
+      type: {class: MakeNoise, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7c0bdee2d0f54ede81a1dd4d0da9dae2
+        _position: {x: 0, y: 600}
+        _comment:
+        _where: 0
+        _offset: 7
+        _radius: 25
+        _sound: {fileID: 0}
+    - rid: 1011
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0061dad0bb7b4e5d828c77997b9c5869
+        _position: {x: 220, y: 300}
+        _comment: 'Stay hidden in a bush'
+        _children:
+        - 88286edbaee842d6a92d01a3dfc7b38a
+        - 03cc80176a874087aaced0a54644aee2
+        _abort: 0
+    - rid: 1012
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 88286edbaee842d6a92d01a3dfc7b38a
+        _position: {x: 110, y: 450}
+        _comment:
+    - rid: 1013
+      type: {class: HideInBush, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 03cc80176a874087aaced0a54644aee2
+        _position: {x: 330, y: 450}
+        _comment:
+        _minFromTarget: 8
+        _maxRun: 15
+        _hold: {Min: 2, Max: 3, Bias: 0}
+        _speed: 0.8
+        _giveUpAfter: 5
+    - rid: 1014
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4c5bee37d8f24ea4ad4219db7372aa46
+        _position: {x: 550, y: 300}
+        _comment: 'No bush: call from behind it instead'
+        _children:
+        - fe2abc9e9c5c4717a1fd555bae18659f
+        - 1efc1f2e1a3b4a71bf45e45f132f4198
+        _abort: 0
+    - rid: 1015
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: fe2abc9e9c5c4717a1fd555bae18659f
+        _position: {x: 440, y: 450}
+        _comment:
+        _memory: 10
+    - rid: 1016
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 1efc1f2e1a3b4a71bf45e45f132f4198
+        _position: {x: 660, y: 450}
+        _comment:
+        _children:
+        - c8427e083c0e454286d18d151141a41d
+        _seconds: 5
+        _onlyAfterSuccess: 0
+    - rid: 1017
+      type: {class: MakeNoise, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c8427e083c0e454286d18d151141a41d
+        _position: {x: 660, y: 600}
+        _comment:
+        _where: 1
+        _offset: 6
+        _radius: 25
+        _sound: {fileID: 0}
+    - rid: 1018
+      type: {class: Overwatch, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5843948a8c3f403cafaeb86a5b4219fe
+        _position: {x: 440, y: 300}
+        _comment: 'Watch'
+        _seconds: {Min: 2, Max: 3, Bias: 0}

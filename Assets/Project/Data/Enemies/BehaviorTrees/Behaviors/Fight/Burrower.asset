@@ -1,0 +1,206 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: Burrower
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6374ae74e1a946a890cf6d9af736905f
+        _position: {x: 0, y: 0}
+        _comment: 'A burrower (sandworm, mole, tunnelling drill — any faction): sinks underground and erupts right beside its target with a burst that hurts and shoves everyone close (EnemyData › Kit › Signature: a Burrow ability), strikes while surfaced, and dives again as soon as it can.'
+        _children:
+        - 17db64d621524f7eb16bcc9cbbac5ec2
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 17db64d621524f7eb16bcc9cbbac5ec2
+        _position: {x: 0, y: 150}
+        _comment: 'Burrow and erupt; strike while up'
+        _children:
+        - dc95d7c4f77a45d180ed8f4dd7da36c6
+        - 4483267334c9440f84becc7b46ed4134
+        - ef8c3a4dcec04248a8e3ea283c7d926d
+        - 80ba0b4856324c5a81b5e9fff7ca5d5e
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: dc95d7c4f77a45d180ed8f4dd7da36c6
+        _position: {x: -330, y: 300}
+        _comment: 'Not in reach: burrow to it and erupt'
+        _children:
+        - df26fcd78dea461b8d21813d38f3e163
+        - c78ab4df47144b9d9afe9dc6b8bd834b
+        - e3d4c5c4683d4f89882b118f0201519c
+        - a59fec5f371740d1ab7f68675eeee9ed
+        - 52737e1dbd34440fb5b6b35a8138498a
+        _abort: 2
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: df26fcd78dea461b8d21813d38f3e163
+        _position: {x: -770, y: 450}
+        _comment:
+    - rid: 1004
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c78ab4df47144b9d9afe9dc6b8bd834b
+        _position: {x: -550, y: 450}
+        _comment:
+        _range: 25
+    - rid: 1005
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e3d4c5c4683d4f89882b118f0201519c
+        _position: {x: -330, y: 450}
+        _comment:
+        _children:
+        - 14463fd280f643a895e9c83fd20b14ec
+    - rid: 1006
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 14463fd280f643a895e9c83fd20b14ec
+        _position: {x: -330, y: 600}
+        _comment:
+        _range: 4
+    - rid: 1007
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a59fec5f371740d1ab7f68675eeee9ed
+        _position: {x: -110, y: 450}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+    - rid: 1008
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 52737e1dbd34440fb5b6b35a8138498a
+        _position: {x: 110, y: 450}
+        _comment:
+        _slot: 1
+        _ability: {fileID: 0}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 1
+    - rid: 1009
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4483267334c9440f84becc7b46ed4134
+        _position: {x: 220, y: 300}
+        _comment: 'Surfaced and in reach: strike'
+        _children:
+        - 65a23af3cc2a46978a2360f71500e1d0
+        - 565061133c8043ef83c2e04910dc6cad
+        - a7d68855ca814ee09ecb8e150e28abe1
+        - 895da85b52bd41bb97fe45e9d672eabf
+        _abort: 3
+    - rid: 1010
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 65a23af3cc2a46978a2360f71500e1d0
+        _position: {x: -110, y: 450}
+        _comment:
+    - rid: 1011
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 565061133c8043ef83c2e04910dc6cad
+        _position: {x: 110, y: 450}
+        _comment:
+        _range: 0
+    - rid: 1012
+      type: {class: TakesMeleeTurn, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a7d68855ca814ee09ecb8e150e28abe1
+        _position: {x: 330, y: 450}
+        _comment:
+    - rid: 1013
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 895da85b52bd41bb97fe45e9d672eabf
+        _position: {x: 550, y: 450}
+        _comment:
+    - rid: 1014
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ef8c3a4dcec04248a8e3ea283c7d926d
+        _position: {x: 330, y: 300}
+        _comment: 'Surfaced: go at it'
+        _children:
+        - a6bfe0395f9e42259fc8fabfbbe10674
+        - 20db145225464817a10cd769f671eb96
+        _abort: 0
+    - rid: 1015
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a6bfe0395f9e42259fc8fabfbbe10674
+        _position: {x: 220, y: 450}
+        _comment:
+    - rid: 1016
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 20db145225464817a10cd769f671eb96
+        _position: {x: 440, y: 450}
+        _comment:
+        _stopDistance: 0
+    - rid: 1017
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 80ba0b4856324c5a81b5e9fff7ca5d5e
+        _position: {x: 660, y: 300}
+        _comment: 'Lost it: follow up where it went'
+        _children:
+        - 026e3ef90f3f4f9d8d379644fd69db68
+        - 1a8c8ef1c61e4900b380a2915c92141c
+        _abort: 0
+    - rid: 1018
+      type: {class: HasBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 026e3ef90f3f4f9d8d379644fd69db68
+        _position: {x: 550, y: 450}
+        _comment:
+    - rid: 1019
+      type: {class: PursueBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1a8c8ef1c61e4900b380a2915c92141c
+        _position: {x: 770, y: 450}
+        _comment:
+        _style: 0
+        _look: 1
+        _giveUpAfter: 8

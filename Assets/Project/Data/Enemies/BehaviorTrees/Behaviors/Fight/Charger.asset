@@ -1,0 +1,244 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: Charger
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  - rid: 1020
+  - rid: 1021
+  - rid: 1022
+  - rid: 1023
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a64eab8c2f07436b87ed7e1f132e1ec4
+        _position: {x: 0, y: 0}
+        _comment: 'A charger (rhino, battering beast, ram drone — any faction): from 5–25 m with the target in sight it paws the ground for a moment (the tell), then charges in a straight line it can''t turn from — hitting knocks the target flat, sidestepping it slams the charger into whatever is behind and stuns it. Closes to charging range facing its target; strikes in reach.'
+        _children:
+        - 385ea1a887484032bf12f709f98b13cd
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 385ea1a887484032bf12f709f98b13cd
+        _position: {x: 0, y: 150}
+        _comment: 'Strike in reach, charge from range, close in'
+        _children:
+        - b90d05e991ba4e4a9bc7206d559b32c4
+        - 1ccb9ea0face4f9f9b1ec78bed8f5d59
+        - eb0b474a327f4a1fba3bb2d85bd43e73
+        - 0b9326815b914e5aaaf47dda78a95957
+        - 39ed8c799b924474adf96e706f1b6bfd
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b90d05e991ba4e4a9bc7206d559b32c4
+        _position: {x: -440, y: 300}
+        _comment: 'In reach and its turn: strike'
+        _children:
+        - 467ba5b7c64e4bde99f957f30a6eae19
+        - da2e5a38fb16493f845342a85b716cf2
+        - f8284f96f7444fb4bf4fcd436ae216a7
+        - 863973eeee8c40a98c6b8586e31406bc
+        _abort: 3
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 467ba5b7c64e4bde99f957f30a6eae19
+        _position: {x: -770, y: 450}
+        _comment:
+    - rid: 1004
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: da2e5a38fb16493f845342a85b716cf2
+        _position: {x: -550, y: 450}
+        _comment:
+        _range: 0
+    - rid: 1005
+      type: {class: TakesMeleeTurn, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f8284f96f7444fb4bf4fcd436ae216a7
+        _position: {x: -330, y: 450}
+        _comment:
+    - rid: 1006
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 863973eeee8c40a98c6b8586e31406bc
+        _position: {x: -110, y: 450}
+        _comment:
+    - rid: 1007
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 1ccb9ea0face4f9f9b1ec78bed8f5d59
+        _position: {x: 220, y: 300}
+        _comment: 'In sight, 5–25 m: paw the ground and charge (every 5 s)'
+        _children:
+        - 0dcc62ee05e34cf8a7fd9fcb1b85d7bd
+        - abae71b084da43febcdb7dff5316eb0f
+        - d228496b5e094d97bef354f929b9acbd
+        - 5f6e6704733b4e5486cfc67b1511c289
+        - 0cb738c50b504458b304b919057783b9
+        _abort: 0
+    - rid: 1008
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 0dcc62ee05e34cf8a7fd9fcb1b85d7bd
+        _position: {x: -220, y: 450}
+        _comment:
+    - rid: 1009
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: abae71b084da43febcdb7dff5316eb0f
+        _position: {x: 0, y: 450}
+        _comment:
+    - rid: 1010
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d228496b5e094d97bef354f929b9acbd
+        _position: {x: 220, y: 450}
+        _comment:
+        _range: 25
+    - rid: 1011
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5f6e6704733b4e5486cfc67b1511c289
+        _position: {x: 440, y: 450}
+        _comment:
+        _children:
+        - 023e991933734147af267064efcfdd97
+    - rid: 1012
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 023e991933734147af267064efcfdd97
+        _position: {x: 440, y: 600}
+        _comment:
+        _range: 5
+    - rid: 1013
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0cb738c50b504458b304b919057783b9
+        _position: {x: 660, y: 450}
+        _comment:
+        _children:
+        - c4b4969e237d40bf91ad9bdfa8369f16
+        _seconds: 5
+        _onlyAfterSuccess: 0
+    - rid: 1014
+      type: {class: Charge, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c4b4969e237d40bf91ad9bdfa8369f16
+        _position: {x: 660, y: 600}
+        _comment:
+        _windUp: 0.8
+        _distance: 18
+        _speed: 2.2
+        _damage: 30
+        _knockback: 9
+        _stunOnImpact: 1.5
+    - rid: 1015
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: eb0b474a327f4a1fba3bb2d85bd43e73
+        _position: {x: 220, y: 300}
+        _comment: 'Into charging range, facing it'
+        _children:
+        - 663a3b64d0f54c868ed8a76f33ae594e
+        - ba2d9114f5154b6ab83bba9088007010
+        _abort: 0
+    - rid: 1016
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 663a3b64d0f54c868ed8a76f33ae594e
+        _position: {x: 110, y: 450}
+        _comment:
+    - rid: 1017
+      type: {class: AdvanceFacing, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ba2d9114f5154b6ab83bba9088007010
+        _position: {x: 330, y: 450}
+        _comment:
+        _stopDistance: 12
+        _speed: 0.7
+        _holdOnArrival: 0
+    - rid: 1018
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0b9326815b914e5aaaf47dda78a95957
+        _position: {x: 550, y: 300}
+        _comment: 'Too close to charge: close in'
+        _children:
+        - cae5e1addabd4ceaa2d0933e06c3c56e
+        - 8407ad450fea48cfa8c233a62407e370
+        _abort: 0
+    - rid: 1019
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: cae5e1addabd4ceaa2d0933e06c3c56e
+        _position: {x: 440, y: 450}
+        _comment:
+    - rid: 1020
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8407ad450fea48cfa8c233a62407e370
+        _position: {x: 660, y: 450}
+        _comment:
+        _stopDistance: 0
+    - rid: 1021
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 39ed8c799b924474adf96e706f1b6bfd
+        _position: {x: 880, y: 300}
+        _comment: 'Lost it: follow up where it went'
+        _children:
+        - 6672b4d9c3c54196bb2d6de5167fe613
+        - 64a2fa4c96894700892a32f2504e963e
+        _abort: 0
+    - rid: 1022
+      type: {class: HasBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6672b4d9c3c54196bb2d6de5167fe613
+        _position: {x: 770, y: 450}
+        _comment:
+    - rid: 1023
+      type: {class: PursueBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 64a2fa4c96894700892a32f2504e963e
+        _position: {x: 990, y: 450}
+        _comment:
+        _style: 0
+        _look: 1
+        _giveUpAfter: 8

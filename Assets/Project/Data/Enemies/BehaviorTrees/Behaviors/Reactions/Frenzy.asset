@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: Frenzy
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0602e95a3b6549e1b4ff831dce4d9153
+        _position: {x: 0, y: 0}
+        _comment: 'Below 40% health it stops being careful: its boost (EnemyData › Kit › Boost, e.g. Surge: faster attacks, lifesteal) the moment it is ready. Interrupts whatever is below it — put the chase and strike right after.'
+        _children:
+        - 3b6f124867864cbbbd6d3b2dadd64ff4
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 3b6f124867864cbbbd6d3b2dadd64ff4
+        _position: {x: 0, y: 150}
+        _comment: 'Badly hurt: frenzy'
+        _children:
+        - 941d5955705844c390c75fbc7a264b09
+        - c9f9e9a31d564ddba5c29b9906c45b9d
+        - 72d7016894ff4a658cbfa481490718e1
+        - 82b2fd9fae3c4d7e9ceb4ce966001fd0
+        _abort: 2
+    - rid: 1002
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 941d5955705844c390c75fbc7a264b09
+        _position: {x: -330, y: 300}
+        _comment:
+    - rid: 1003
+      type: {class: HealthBelow, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c9f9e9a31d564ddba5c29b9906c45b9d
+        _position: {x: -110, y: 300}
+        _comment:
+        _fraction: 0.4
+    - rid: 1004
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 72d7016894ff4a658cbfa481490718e1
+        _position: {x: 110, y: 300}
+        _comment:
+        _slot: 4
+        _ability: {fileID: 0}
+    - rid: 1005
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 82b2fd9fae3c4d7e9ceb4ce966001fd0
+        _position: {x: 330, y: 300}
+        _comment:
+        _slot: 4
+        _ability: {fileID: 0}
+        _aim: 1
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 1

@@ -1,0 +1,197 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: Swarm
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8fc5d03448da44a4b9ef200196a5b549
+        _position: {x: 0, y: 0}
+        _comment: 'A swarmling (rat, larva, nanite mite — any faction): tiny, fast and fragile, always in numbers. Pounces the instant its target turns or reloads, nips in for a bite and darts back out, jinks away from incoming fire.'
+        _children:
+        - b0cba622f5424c2485e043246e554888
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b0cba622f5424c2485e043246e554888
+        _position: {x: 0, y: 150}
+        _comment: 'Pounce, nip and dart, jink, close in'
+        _children:
+        - 6a5c878d498b444ea08ac050d48db31e
+        - 63f4d3f308a643aaa5adf347f55c1a87
+        - 906ece7c17cb4f12b865245ef056e79e
+        - db1ac40c77394ccf91d60ff8759eba66
+        - 18988d67ff0349629725226a4f0010b1
+        _abort: 0
+    - rid: 1002
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6a5c878d498b444ea08ac050d48db31e
+        _position: {x: -440, y: 300}
+        _comment: 'An opening: pounce'
+        _tree: {fileID: 11400000, guid: 8703a23c3ef247569bbafb25bf7a43a2, type: 2}
+        _off: 0
+    - rid: 1003
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 63f4d3f308a643aaa5adf347f55c1a87
+        _position: {x: 220, y: 300}
+        _comment: 'In reach: bite, then dart back out'
+        _children:
+        - 414b707511c444fc97bc648cdfa4b819
+        - 3a68abf267994ce4870604e721519551
+        - 7c3d49d49c7a4bcaa6701de4e487eb22
+        - 38cbd266f5af440c8d772e9f2483c8da
+        - 964496314b1748b993df20468671bee2
+        _abort: 3
+    - rid: 1004
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 414b707511c444fc97bc648cdfa4b819
+        _position: {x: -220, y: 450}
+        _comment:
+    - rid: 1005
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3a68abf267994ce4870604e721519551
+        _position: {x: 0, y: 450}
+        _comment:
+        _range: 0
+    - rid: 1006
+      type: {class: TakesMeleeTurn, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7c3d49d49c7a4bcaa6701de4e487eb22
+        _position: {x: 220, y: 450}
+        _comment:
+    - rid: 1007
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 38cbd266f5af440c8d772e9f2483c8da
+        _position: {x: 440, y: 450}
+        _comment:
+    - rid: 1008
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 964496314b1748b993df20468671bee2
+        _position: {x: 660, y: 450}
+        _comment:
+        _distance: 4
+    - rid: 1009
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 906ece7c17cb4f12b865245ef056e79e
+        _position: {x: 220, y: 300}
+        _comment: 'Shot at: jink aside'
+        _children:
+        - 7d1a56b71b65421d9a701ab228411c1d
+        - c18a1d68e0ae42a5bbebd1ebdb3009bb
+        _abort: 2
+    - rid: 1010
+      type: {class: UnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7d1a56b71b65421d9a701ab228411c1d
+        _position: {x: 110, y: 450}
+        _comment:
+        _warningsOnly: 1
+    - rid: 1011
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c18a1d68e0ae42a5bbebd1ebdb3009bb
+        _position: {x: 330, y: 450}
+        _comment:
+        _children:
+        - 5695e6d4d9b845e396390cefe87a95ee
+        _seconds: 1.2
+        _onlyAfterSuccess: 0
+    - rid: 1012
+      type: {class: Dodge, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5695e6d4d9b845e396390cefe87a95ee
+        _position: {x: 330, y: 600}
+        _comment:
+        _distance: 2.5
+        _speed: 2
+        _maxTime: 0.5
+    - rid: 1013
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: db1ac40c77394ccf91d60ff8759eba66
+        _position: {x: 550, y: 300}
+        _comment: 'Swarm it'
+        _children:
+        - b2161a10bd5f4977918a0082fd6fe130
+        - 64d647b3167f461f80da9d2260cb56a7
+        _abort: 0
+    - rid: 1014
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b2161a10bd5f4977918a0082fd6fe130
+        _position: {x: 440, y: 450}
+        _comment:
+    - rid: 1015
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 64d647b3167f461f80da9d2260cb56a7
+        _position: {x: 660, y: 450}
+        _comment:
+        _stopDistance: 0
+    - rid: 1016
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 18988d67ff0349629725226a4f0010b1
+        _position: {x: 880, y: 300}
+        _comment: 'Lost it: follow up where it went'
+        _children:
+        - d8f122a679ea48668092197c92d44c82
+        - 2ad664106f7f4a408ae8b001a8d39486
+        _abort: 0
+    - rid: 1017
+      type: {class: HasBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d8f122a679ea48668092197c92d44c82
+        _position: {x: 770, y: 450}
+        _comment:
+    - rid: 1018
+      type: {class: PursueBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2ad664106f7f4a408ae8b001a8d39486
+        _position: {x: 990, y: 450}
+        _comment:
+        _style: 0
+        _look: 1
+        _giveUpAfter: 8

@@ -685,6 +685,20 @@ Making and tuning enemies without code — every tool is under **CGD › AI**:
   - *Engineer* — support: repairs the most damaged ally nearby (Kit › Support), deploys what its Summon calls up (turrets, drones), shoots from cover, keeps out of reach
   - *Hacker* — a disruptor: pulses you with its signature (an EMP: a 1 s stun and a slow) the moment it sees you, then moves to fresh cover; shoots from cover in between
   - *Fall Back To Range*, *Call For Support* (shield broken and hurt: radio the kin, every 20 s at most), *Lock On* (fire burst after burst while you are in sight, then into where you vanished)
+  - *Pack Hunter* — hunts only in a group: cut off, it rejoins the pack first; the lead holds your attention head-on at 5–8 m while the flankers fan out to your sides; whoever is behind you pounces when you turn; alone it stalks, rushes and hides
+  - *Lurker* — an ambush predator: lies motionless in a bush near your path; within 5 m and not being looked at it erupts — a lunge and two strikes — and goes to ground again
+  - *Spitter* — lobs its kit grenade (an acid glob) every few seconds from 9–14 m, moving to another bush in between; backs off from anything within 6 m
+  - *Broodmother* — spawns its brood (Kit › Summon) whenever it can, hangs back deep in cover or a bush, retreats further when pushed; the brood dies with her
+  - *Swarm* — tiny, fast and in numbers: pounces when you turn, nips in for a bite and darts back out, jinks away from fire
+  - *Regenerator* — brawls until below 45% health, then crashes into a bush or behind cover, regrows with its boost (a heal) and comes back
+  - *Charger* — paws the ground for a moment (the tell), then charges in a straight line it can't turn from: it knocks you flat, or slams into whatever is behind you and is stunned for 1.5 s
+  - *Burrower* — sinks underground and erupts right beside you with a burst that hurts and shoves (Kit › Signature: Burrow), strikes while up, dives again
+  - *Infector* — bites and backs off, letting its infestation work; anything that dies infested bursts into swarmlings, so keep the fight at a distance
+  - *Lure* — stays hidden and makes noises somewhere else (beside you, or behind you), so you look the wrong way while its kin come in from the side
+  - *Spore Pod* — stationary: shot at or approached within 6 m it bursts a spore cloud that hides its kin and poisons whoever stands in it
+  - *Alpha* — roars when it spots you: every ally near it is rallied (faster, harder hitting) and radioed in; otherwise it hunts as a Pack Hunter
+  - *Frenzy* (a reaction) — below 40% health, its boost the moment it is ready
+- **Abilities for them**: *Burrow* (dig, then surface beside the target with a shockwave), *Cloud Burst* (a cloud at its feet — the smoke cloud's concealment — plus a hit with status effects), *Rally* (a buff on every ally nearby); and the *Infest* status effect (poison that bursts the dead into creatures). Melee hits can now carry status effects too (Enemy Data › Melee Effects)
 - **Kit slots** also include *Boost* (a buff on itself: Fortify, Surge) and *Support* (what it does for allies: Field Repair heals every ally within 8 m)
 - **New pieces for any enemy**: *Aimed Shot* (a telegraphed single shot), *Advance Facing* (close in without ever turning its front away, optionally holding there), *Self Destruct*, *Support Ally*, *Call For Help* nodes; a **Frontal Shield** component (stops 80% of damage from within 60° in front; lightning goes through) and an **Aim Laser** component (the marksman's warning line)
 - **Summon** abilities (`Create › CGD › Abilities › Summon`): call up a number of an enemy prefab round the caster, sent after its hostiles, gone after a while or when the caster falls, never more than a set number about at once. *Raise the Dead* (three Void minions, every 18 s) is the first

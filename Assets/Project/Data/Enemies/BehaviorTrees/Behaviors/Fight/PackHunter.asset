@@ -1,0 +1,228 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: PackHunter
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  - rid: 1020
+  - rid: 1021
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 28af69cd64d0477dac45aafa128ea0b5
+        _position: {x: 0, y: 0}
+        _comment: 'A pack hunter (wolf, raptor, hunter-killer drone — any faction): only hunts in a group. Cut off, it slinks back to its kin first. The pack''s lead (the Assault role) holds the target''s attention head-on, circling at 5–8 m; the rest (Flank) fan out to its sides; whoever ends up behind it pounces when it turns. On its own it stalks, rushes and hides (Stalk Rush Hide).'
+        _children:
+        - 614d578e921b4bb6a7a582f9555170c1
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 614d578e921b4bb6a7a582f9555170c1
+        _position: {x: 0, y: 150}
+        _comment: 'Regroup, pounce, strike, hold attention or flank, else stalk'
+        _children:
+        - f59b055a86364a5e88bcfe5fbff9a64b
+        - 543af21cd94b4b4a92f12325988a1d79
+        - 547d83be276c428f8ab372b9704dd620
+        - d3e46ba9b36748cb810455d80b8568af
+        - a563c565c71248f6a51542a81ebad03a
+        - caa56bee1a484b97882be1e48567c7e9
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f59b055a86364a5e88bcfe5fbff9a64b
+        _position: {x: -550, y: 300}
+        _comment: 'Cut off from the pack: rejoin it first'
+        _children:
+        - 127e90ec8aaf42029e25c6671cc13292
+        - 0697dc11b8174379bb5c1a12bf878b56
+        - 2a7a4315783641ba812cf2ba4cf97206
+        _abort: 2
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 127e90ec8aaf42029e25c6671cc13292
+        _position: {x: -770, y: 450}
+        _comment:
+    - rid: 1004
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0697dc11b8174379bb5c1a12bf878b56
+        _position: {x: -550, y: 450}
+        _comment:
+        _children:
+        - 707f9db8208d497ba9a63bfc3b154d51
+    - rid: 1005
+      type: {class: KinNear, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 707f9db8208d497ba9a63bfc3b154d51
+        _position: {x: -550, y: 600}
+        _comment:
+        _radius: 25
+        _atLeast: 1
+    - rid: 1006
+      type: {class: JoinHerd, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2a7a4315783641ba812cf2ba4cf97206
+        _position: {x: -330, y: 450}
+        _comment:
+        _within: 8
+        _giveUpAfter: 10
+    - rid: 1007
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 543af21cd94b4b4a92f12325988a1d79
+        _position: {x: -330, y: 300}
+        _comment: 'An opening: pounce'
+        _tree: {fileID: 11400000, guid: 8703a23c3ef247569bbafb25bf7a43a2, type: 2}
+        _off: 0
+    - rid: 1008
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 547d83be276c428f8ab372b9704dd620
+        _position: {x: 550, y: 300}
+        _comment: 'In reach and its turn: strike'
+        _children:
+        - 89993abf05b94b1c8845e001ad312e2f
+        - ac280ba9fe724acf9311106ea822e83a
+        - 5fcb5ad512364d97a7e379a06fca1073
+        - 9c15668d547e4c89b72a869f3c56ef08
+        _abort: 3
+    - rid: 1009
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 89993abf05b94b1c8845e001ad312e2f
+        _position: {x: 220, y: 450}
+        _comment:
+    - rid: 1010
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ac280ba9fe724acf9311106ea822e83a
+        _position: {x: 440, y: 450}
+        _comment:
+        _range: 0
+    - rid: 1011
+      type: {class: TakesMeleeTurn, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5fcb5ad512364d97a7e379a06fca1073
+        _position: {x: 660, y: 450}
+        _comment:
+    - rid: 1012
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9c15668d547e4c89b72a869f3c56ef08
+        _position: {x: 880, y: 450}
+        _comment:
+    - rid: 1013
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d3e46ba9b36748cb810455d80b8568af
+        _position: {x: 440, y: 300}
+        _comment: 'Flank role: fan out to its side (every 3 s)'
+        _children:
+        - 77986534875d415e9224aef96ff1b27a
+        - 637a724e30204560a024879b71ea763f
+        _abort: 0
+    - rid: 1014
+      type: {class: HasSquadRole, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 77986534875d415e9224aef96ff1b27a
+        _position: {x: 330, y: 450}
+        _comment:
+        _role: 2
+    - rid: 1015
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 637a724e30204560a024879b71ea763f
+        _position: {x: 550, y: 450}
+        _comment:
+        _children:
+        - 80761230c11748f3bbcc1ef6de5a5530
+        _seconds: 3
+        _onlyAfterSuccess: 0
+    - rid: 1016
+      type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 80761230c11748f3bbcc1ef6de5a5530
+        _position: {x: 550, y: 600}
+        _comment:
+        _standOff: 2
+        _giveUpAfter: 6
+    - rid: 1017
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a563c565c71248f6a51542a81ebad03a
+        _position: {x: 1210, y: 300}
+        _comment: 'Lead: hold its attention head-on, circling close'
+        _children:
+        - 25933431e916455b8379095e6367d84d
+        - d83637edb77f4609abadfb7733e14e01
+        - 3d2523c862c94030a0fb26749c3e8abf
+        _abort: 0
+    - rid: 1018
+      type: {class: HasSquadRole, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 25933431e916455b8379095e6367d84d
+        _position: {x: 990, y: 450}
+        _comment:
+        _role: 1
+    - rid: 1019
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d83637edb77f4609abadfb7733e14e01
+        _position: {x: 1210, y: 450}
+        _comment:
+    - rid: 1020
+      type: {class: Prowl, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3d2523c862c94030a0fb26749c3e8abf
+        _position: {x: 1430, y: 450}
+        _comment:
+        _seconds: {Min: 2, Max: 3, Bias: 0}
+        _distance: {Min: 5, Max: 8, Bias: 0}
+        _pause: {Min: 0.3, Max: 0.7, Bias: 0}
+        _speed: 0.7
+        _preferBushes: 0
+    - rid: 1021
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: caa56bee1a484b97882be1e48567c7e9
+        _position: {x: 550, y: 300}
+        _comment: 'Alone, or no job: stalk, rush, hide'
+        _tree: {fileID: 11400000, guid: 0775db7493e442ab921957297ef112ac, type: 2}
+        _off: 0

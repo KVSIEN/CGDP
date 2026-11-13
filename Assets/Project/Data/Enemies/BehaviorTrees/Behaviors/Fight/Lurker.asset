@@ -1,0 +1,234 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: Lurker
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  - rid: 1020
+  - rid: 1021
+  - rid: 1022
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0449efc177104b348ba195702f8cbdbf
+        _position: {x: 0, y: 0}
+        _comment: 'An ambush predator (trapdoor spider, swamp lurker, mine-layer — any faction): lies motionless in a bush near its target''s path and lets it come. Within 5 m and not being looked at, it erupts: a lunge and two strikes, then it goes to ground in the nearest bush again.'
+        _children:
+        - b0e67538640641518f2ac9be98b027b8
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b0e67538640641518f2ac9be98b027b8
+        _position: {x: 0, y: 150}
+        _comment: 'Erupt when close and unwatched; otherwise lie in wait'
+        _children:
+        - ffb108a60ef244408d97d886f7207010
+        - 484372b40ecc4f4c8e2df3e45849db67
+        - ec0d573586844dc9bb26ca8b758ccdcc
+        - 584dc1184f5a4670b6bb2ffed42efc15
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ffb108a60ef244408d97d886f7207010
+        _position: {x: -330, y: 300}
+        _comment: 'Close and unwatched: erupt, strike twice, go to ground'
+        _children:
+        - 21f4894f024e4cf5b5820d7a74a83356
+        - 841838fd885f4ebc9e5a1840a2057d80
+        - 402146c0666442a68bb44214f9dc4c26
+        - 619602c2018c4d76b9131f7a780ce01e
+        - 9c3c7eb86c6e4521b74ad10d9d90f635
+        _abort: 2
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 21f4894f024e4cf5b5820d7a74a83356
+        _position: {x: -770, y: 450}
+        _comment:
+    - rid: 1004
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 841838fd885f4ebc9e5a1840a2057d80
+        _position: {x: -550, y: 450}
+        _comment:
+        _range: 5
+    - rid: 1005
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 402146c0666442a68bb44214f9dc4c26
+        _position: {x: -330, y: 450}
+        _comment:
+        _children:
+        - 40819750d7cb4efdb5ccb3e6bbf96915
+    - rid: 1006
+      type: {class: BeingWatched, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 40819750d7cb4efdb5ccb3e6bbf96915
+        _position: {x: -330, y: 600}
+        _comment:
+        _angle: 25
+    - rid: 1007
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 619602c2018c4d76b9131f7a780ce01e
+        _position: {x: -110, y: 450}
+        _comment:
+        _children:
+        - 32fafc03acb34b57903764336256cfdc
+        _succeed: 1
+    - rid: 1008
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 32fafc03acb34b57903764336256cfdc
+        _position: {x: -110, y: 600}
+        _comment:
+        _children:
+        - 18b363b6cf0a4ef8b0b37f554f34b441
+        _seconds: 3
+    - rid: 1009
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 18b363b6cf0a4ef8b0b37f554f34b441
+        _position: {x: -110, y: 750}
+        _comment:
+        _children:
+        - 44dae3529b50422fb143fac8069713ea
+        - c945a243b4e84e5d97d9214c4d3d63df
+        - 5014961de06849e2acae0861f757dfb1
+        _abort: 0
+    - rid: 1010
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 44dae3529b50422fb143fac8069713ea
+        _position: {x: -330, y: 900}
+        _comment:
+        _stopDistance: 0
+    - rid: 1011
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c945a243b4e84e5d97d9214c4d3d63df
+        _position: {x: -110, y: 900}
+        _comment:
+    - rid: 1012
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5014961de06849e2acae0861f757dfb1
+        _position: {x: 110, y: 900}
+        _comment:
+    - rid: 1013
+      type: {class: HideInBush, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9c3c7eb86c6e4521b74ad10d9d90f635
+        _position: {x: 110, y: 450}
+        _comment:
+        _minFromTarget: 4
+        _maxRun: 15
+        _hold: {Min: 1, Max: 2, Bias: 0}
+        _speed: 1.2
+        _giveUpAfter: 5
+    - rid: 1014
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 484372b40ecc4f4c8e2df3e45849db67
+        _position: {x: 220, y: 300}
+        _comment: 'Cornered in reach: strike'
+        _children:
+        - 5ed61be7a18e4b41be826ce6ab889572
+        - 8d66f7f7796c4fd1a7711a89e157b960
+        - 7c52ae38b7974bb281a2eec8fe756d87
+        - eb6b2c3985ae4dfd9320712a9f43a089
+        _abort: 3
+    - rid: 1015
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5ed61be7a18e4b41be826ce6ab889572
+        _position: {x: -110, y: 450}
+        _comment:
+    - rid: 1016
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8d66f7f7796c4fd1a7711a89e157b960
+        _position: {x: 110, y: 450}
+        _comment:
+        _range: 0
+    - rid: 1017
+      type: {class: TakesMeleeTurn, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7c52ae38b7974bb281a2eec8fe756d87
+        _position: {x: 330, y: 450}
+        _comment:
+    - rid: 1018
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: eb6b2c3985ae4dfd9320712a9f43a089
+        _position: {x: 550, y: 450}
+        _comment:
+    - rid: 1019
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ec0d573586844dc9bb26ca8b758ccdcc
+        _position: {x: 330, y: 300}
+        _comment: 'Lie in wait in a bush, watching it come'
+        _children:
+        - 6d131c8d8c2f45409d6b21f4ea9f069c
+        - 82056d5d2062422fbaaba47680b48f1f
+        _abort: 0
+    - rid: 1020
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6d131c8d8c2f45409d6b21f4ea9f069c
+        _position: {x: 220, y: 450}
+        _comment:
+    - rid: 1021
+      type: {class: HideInBush, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 82056d5d2062422fbaaba47680b48f1f
+        _position: {x: 440, y: 450}
+        _comment:
+        _minFromTarget: 3
+        _maxRun: 12
+        _hold: {Min: 6, Max: 10, Bias: 0}
+        _speed: 0.8
+        _giveUpAfter: 6
+    - rid: 1022
+      type: {class: Overwatch, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 584dc1184f5a4670b6bb2ffed42efc15
+        _position: {x: 330, y: 300}
+        _comment: 'No bush: hold still and watch'
+        _seconds: {Min: 2, Max: 4, Bias: 0}
