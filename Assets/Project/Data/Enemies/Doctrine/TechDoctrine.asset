@@ -69,26 +69,16 @@ MonoBehaviour:
     _coordinates: 1
     _succession: 0
     _roles:
-    - _role: 1
-      _count: 1
-      _who: 0
-      _leadFirst: 1
-      _closeness: 0.5
-      _offAxis: 0
-      _health: 0
-      _rank: 0
-      _cover: 0
-      _stickiness: 0.3
     - _role: 3
       _count: 1
       _who: 1
-      _leadFirst: 0
-      _closeness: 0.5
+      _leadFirst: 1
+      _closeness: 0.3
       _offAxis: 0
       _health: 0
       _rank: 0
       _cover: 1
-      _stickiness: 0.4
+      _stickiness: 0.5
     - _role: 2
       _count: 2
       _who: 0
@@ -99,7 +89,7 @@ MonoBehaviour:
       _rank: 0
       _cover: 0
       _stickiness: 0.4
-    _fallbackRole: 1
+    _fallbackRole: 2
     _onLeadLost: 1
     _regroupSeconds: 8
     _regroupRoles:

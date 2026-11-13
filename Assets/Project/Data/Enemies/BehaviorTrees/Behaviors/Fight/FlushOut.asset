@@ -1,0 +1,176 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: FlushOut
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a5742a32ad0c4debadafb4de86229827
+        _position: {x: 0, y: 0}
+        _comment: 'Siege a target that went to ground: while it hides in a bush or behind cover it was seen going into, keep the pressure on — grenades on the spot to flush it out (not the squad''s suppressor, who keeps firing), fire into the spot, flankers bound to a fresh angle on it — until it breaks cover or the trail goes cold. Interrupts searching and watching below it.'
+        _children:
+        - 7de88e0deed84d718206c6a2c87a880f
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7de88e0deed84d718206c6a2c87a880f
+        _position: {x: 0, y: 150}
+        _comment: 'Flush it out while it hides; stops the moment it shows itself'
+        _children:
+        - df496f9f008a4324a67b9091f8a9d5ca
+        - c8ea5eda5908480ca7360348071a1de0
+        _abort: 3
+    - rid: 1002
+      type: {class: TargetHiding, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: df496f9f008a4324a67b9091f8a9d5ca
+        _position: {x: -110, y: 300}
+        _comment:
+        _within: 10
+        _inBushes: 1
+        _behindCover: 1
+    - rid: 1003
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c8ea5eda5908480ca7360348071a1de0
+        _position: {x: 110, y: 300}
+        _comment: 'Keep the pressure on'
+        _children:
+        - 27c98b4e0b474220b00cd55c49dae681
+        _count: 0
+        _stopOnFailure: 1
+    - rid: 1004
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 27c98b4e0b474220b00cd55c49dae681
+        _position: {x: 110, y: 450}
+        _comment: 'A grenade when ready, else fire into the spot, else a new angle, else watch for it'
+        _children:
+        - 5ac2d2e2823f4b4e97c4de8eb28460ad
+        - 868fa009db464091a012671216a149ff
+        - 6c9f1de9099042d6905210271086dcb8
+        - 70dedf5e7758422490196aa5044930ee
+        _abort: 0
+    - rid: 1005
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5ac2d2e2823f4b4e97c4de8eb28460ad
+        _position: {x: -220, y: 600}
+        _comment: 'Flush it out: a grenade on where it hides, every 7 s at most (the suppressor keeps firing instead)'
+        _children:
+        - 874fb558795443a18e24194cf2e55f07
+        - d5f3d39016d2478da0ace67d0e462773
+        _abort: 0
+    - rid: 1006
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 874fb558795443a18e24194cf2e55f07
+        _position: {x: -330, y: 750}
+        _comment:
+        _children:
+        - 1586097206c3483e88d44b098bf47e05
+    - rid: 1007
+      type: {class: HasSquadRole, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1586097206c3483e88d44b098bf47e05
+        _position: {x: -330, y: 900}
+        _comment:
+        _role: 3
+    - rid: 1008
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d5f3d39016d2478da0ace67d0e462773
+        _position: {x: -110, y: 750}
+        _comment:
+        _children:
+        - 2ebb8e00c3fe45529f424f1eecff6a32
+        _seconds: 7
+        _onlyAfterSuccess: 0
+    - rid: 1009
+      type: {class: ThrowGrenade, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2ebb8e00c3fe45529f424f1eecff6a32
+        _position: {x: -110, y: 900}
+        _comment:
+        _grenade: {fileID: 11400000, guid: 18271d81f56c4cd78f9b87c2b6ff2141, type: 2}
+        _minDistance: 6
+    - rid: 1010
+      type: {class: Suppress, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 868fa009db464091a012671216a149ff
+        _position: {x: 0, y: 600}
+        _comment: 'Pin it: fire into the spot while it was seen there moments ago'
+    - rid: 1011
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6c9f1de9099042d6905210271086dcb8
+        _position: {x: 440, y: 600}
+        _comment: 'Crossfire: a flanker bounds to fresh cover at another angle on the spot'
+        _children:
+        - 74458262aa234c74a4767193cc4d4769
+        - 36f52a88ba3a43c0a81cb54ab48caa72
+        _abort: 0
+    - rid: 1012
+      type: {class: HasSquadRole, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 74458262aa234c74a4767193cc4d4769
+        _position: {x: 330, y: 750}
+        _comment:
+        _role: 2
+    - rid: 1013
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 36f52a88ba3a43c0a81cb54ab48caa72
+        _position: {x: 550, y: 750}
+        _comment:
+        _children:
+        - e15e525bae65439fa261b1f44c12fbb6
+        _seconds: 6
+        _onlyAfterSuccess: 0
+    - rid: 1014
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e15e525bae65439fa261b1f44c12fbb6
+        _position: {x: 550, y: 900}
+        _comment:
+        _use: 0
+        _giveUpAfter: 5
+    - rid: 1015
+      type: {class: Overwatch, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 70dedf5e7758422490196aa5044930ee
+        _position: {x: 440, y: 600}
+        _comment: 'Watch the spot: it breaks cover or it doesn''t'
+        _seconds: {Min: 1.5, Max: 2.5, Bias: 0}

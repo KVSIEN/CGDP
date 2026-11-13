@@ -69,8 +69,8 @@ namespace CGD.Tests
         [Test]
         public void AFlankSlotWeightedOffAxisGoesToWhoeverIsAlreadyOnTheSide()
         {
-            RoleSlot flank = Doctrine("Tech").Encounter.RolesFor(EncounterPosture.Steady)[2];
-            Assume.That(flank.Role, Is.EqualTo(SquadRole.Flank));
+            RoleSlot flank = System.Array.Find(Doctrine("Tech").Encounter.RolesFor(EncounterPosture.Steady), slot => slot.Role == SquadRole.Flank);
+            Assume.That(flank, Is.Not.Null);
 
             // Tech's flank slot takes two: the two furthest round the target's side, not the one in front.
             var members = new[] { Member(10f, offAxis: 0.1f), Member(10f, offAxis: 0.9f), Member(10f, offAxis: 0.5f) };

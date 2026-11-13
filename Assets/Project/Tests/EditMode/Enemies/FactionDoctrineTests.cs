@@ -447,16 +447,19 @@ namespace CGD.Tests
         }
 
         [Test]
-        public void TechHandsOutFearStyleSlotsAndPinsDownWhileItReforms()
+        public void TechSiegesFromItsLeadsFireAndPinsDownWhileItReforms()
         {
             EncounterDoctrine tech = Doctrine("Tech").Encounter;
             RoleSlot[] steady  = tech.RolesFor(EncounterPosture.Steady);
             RoleSlot[] regroup = tech.RolesFor(EncounterPosture.Regroup);
 
-            Assert.IsTrue(Has(steady, SquadRole.Assault));
-            Assert.IsTrue(Has(steady, SquadRole.Suppress));
+            // The lead anchors the siege, pinning the target from cover; everyone else works
+            // crossfire angles (and throws the grenades that flush it out).
+            Assert.AreEqual(SquadRole.Suppress, steady[0].Role);
+            Assert.IsTrue(steady[0].LeadFirst, "the lead anchors the siege");
             Assert.IsTrue(Has(steady, SquadRole.Flank));
-            Assert.IsTrue(steady[0].LeadFirst, "the lead takes point");
+            Assert.IsFalse(Has(steady, SquadRole.Assault), "nobody charges in");
+            Assert.AreEqual(SquadRole.Flank, tech.FallbackFor(EncounterPosture.Steady));
             // Regrouping: the new lead still bounds forward, every other gun pins the target down.
             Assert.IsTrue(regroup[0].LeadFirst);
             Assert.IsTrue(Has(regroup, SquadRole.Suppress));

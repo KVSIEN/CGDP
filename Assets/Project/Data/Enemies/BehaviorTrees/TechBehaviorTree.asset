@@ -123,6 +123,7 @@ MonoBehaviour:
   - rid: 1112
   - rid: 1113
   - rid: 1114
+  - rid: 1115
   references:
     version: 2
     RefIds:
@@ -271,6 +272,7 @@ MonoBehaviour:
         - 97e380fa678d412082ad0d2bab96eef0
         - d0af4340b2804db3ab7aeb7b81c5bae1
         - 9b4f8aa4e67d4a628908272ba7c56088
+        - 71cbaadb5f314d7d8c1b2c6e26e6f119
         - 3ddf33ed036b4eb0b5d431a4c9c1697d
         - 1280971f72074b778a3eda977d66b5f8
         - de7fe51f82c14a4aa3416eacf94a599e
@@ -1112,3 +1114,11 @@ MonoBehaviour:
         _aim: 0
         _maxRange: 0
         _requireClearShot: 0
+    - rid: 1115
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 71cbaadb5f314d7d8c1b2c6e26e6f119
+        _position: {x: 963, y: 600}
+        _comment: 'Siege: the target went to ground in a bush or behind cover it was seen going into. Grenades to flush it out, fire into the spot, flankers to a new angle, until it shows itself (interrupts the searching below)'
+        _tree: {fileID: 11400000, guid: 000ee7836fd241b883e0d2dab2fc2f49, type: 2}
+        _off: 0
