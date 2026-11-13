@@ -117,6 +117,8 @@ namespace CGD.Editor
             EditorGUILayout.Space(8f);
             using (new EditorGUILayout.HorizontalScope())
             {
+                if (GUILayout.Button(new GUIContent("Behavior Composer", "Switch its behaviors on and off, reorder them, add more from the library")))
+                    BehaviorComposerWindow.Open(data, data.BehaviorTree);
                 if (GUILayout.Button("Enemy Roster")) EnemyRosterWindow.OpenWindow();
                 if (GUILayout.Button(new GUIContent("Find Prefabs", "Lists the enemy prefabs that use this data")))
                     _prefabs = EnemyAssetLibrary.PrefabsUsing(data);

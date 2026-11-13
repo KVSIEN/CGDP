@@ -54,14 +54,16 @@ namespace CGD.Editor
 
         private void OnEnable()
         {
-            Undo.undoRedoPerformed      += OnUndoRedo;
-            BtEditorEvents.AssetEdited  += OnAssetEdited;
+            Undo.undoRedoPerformed         += OnUndoRedo;
+            BtEditorEvents.AssetEdited     += OnAssetEdited;
+            BtEditorEvents.StructureEdited += OnStructureEdited;
         }
 
         private void OnDisable()
         {
-            Undo.undoRedoPerformed      -= OnUndoRedo;
-            BtEditorEvents.AssetEdited  -= OnAssetEdited;
+            Undo.undoRedoPerformed         -= OnUndoRedo;
+            BtEditorEvents.AssetEdited     -= OnAssetEdited;
+            BtEditorEvents.StructureEdited -= OnStructureEdited;
             Trace(null);
             _graph?.Dispose();
         }
@@ -171,6 +173,14 @@ namespace CGD.Editor
         {
             if (asset != _asset || _graph == null) return;
             _graph.RefreshAllNodes();
+            Validate();
+        }
+
+        private void OnStructureEdited(BehaviorTreeAsset asset)
+        {
+            if (asset != _asset || _graph == null) return;
+            _graph.Rebuild();
+            _inspector.SetNode(null);
             Validate();
         }
 

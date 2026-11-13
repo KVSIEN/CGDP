@@ -57,7 +57,8 @@ Assets/
                             ShopCatalog, stock sources (ItemStock, RolledWeaponStock), listings
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report),
                             Enemies/ (New Enemy Type wizard, Enemy Roster window, EnemyData inspector + EnemyDataReview checks, sight gizmo),
-                            BehaviorTrees/ (Behavior Tree Editor: window, side panel; Canvas/ — GraphView, node, group and note views,
+                            BehaviorTrees/ (Behavior Tree Editor: window, side panel; Behaviors/ — reusable behaviors: Behavior Composer window,
+                            BehaviorLibrary, BehaviorEditing / BehaviorActions (save branch as behavior, switch on/off, reorder); Canvas/ — GraphView, node, group and note views,
                             layout, search; Blackboard/ — key catalog and picker; Validation/ — tree checks; Debugging/ — trace,
                             live view, breakpoints)
       Enemies/              the agent itself at the root: EnemyAI (body + tree; owns every plain class below), EnemyData, EnemyHealth,

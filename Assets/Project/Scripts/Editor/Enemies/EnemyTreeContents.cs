@@ -5,8 +5,8 @@ using CGD.BehaviorTrees;
 namespace CGD.Editor
 {
     // Which node types an enemy's tree can actually run: everything connected to the Root,
-    // following Subtree nodes into their own trees. Lets the enemy tools answer questions like
-    // "does this enemy ever shoot?" without opening the graph.
+    // following the Subtree nodes (behaviors) that are switched on into their own trees. Lets
+    // the enemy tools answer questions like "does this enemy ever shoot?" without opening the graph.
     internal static class EnemyTreeContents
     {
         public static HashSet<Type> NodeTypes(BehaviorTreeAsset tree)
@@ -37,7 +37,7 @@ namespace CGD.Editor
                 if (node == null || !reached.Add(node)) continue;
 
                 types.Add(node.GetType());
-                if (node is Subtree subtree) Collect(subtree.Tree, types, visited);
+                if (node is Subtree { IsOn: true } subtree) Collect(subtree.Tree, types, visited);
                 if (node is not BtParentNode parent) continue;
                 foreach (string guid in parent.ChildGuids) stack.Push(tree.FindNode(guid));
             }

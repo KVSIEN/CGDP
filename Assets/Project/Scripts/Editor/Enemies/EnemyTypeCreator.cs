@@ -18,6 +18,8 @@ namespace CGD.Editor
     //   <Name>.prefab     a variant of the template prefab (beside it) with the new data in
     //                     every slot that held the old — so the body, visuals and components
     //                     follow the template, and only the data differs;
+    //   a starter tree    optionally, instead of the template's tree: one laid out for picking
+    //                     behaviors in the Behavior Composer;
     //   own copies        of whichever shared assets the designer wants to change for this type
     //                     alone (tree, senses, target priorities, doctrine, voice); the rest stay
     //                     shared with the template;
@@ -35,6 +37,8 @@ namespace CGD.Editor
             public int        Tier        = 1;
             public Team       Team        = Team.Enemy;
             public bool       OwnTree;
+            // Instead of the template's tree: a new starter tree to fill from the behavior library.
+            public bool       StarterTree;
             public bool       OwnSenses;
             public bool       OwnTargetPriorities;
             public bool       OwnDoctrine;
@@ -102,7 +106,10 @@ namespace CGD.Editor
             data.Tier        = Mathf.Clamp(request.Tier, 1, 3);
             data.Team        = request.Team;
 
-            if (request.OwnTree             && data.BehaviorTree     != null) data.BehaviorTree     = EnemyAssetLibrary.CopyFor(data.BehaviorTree, request.Name);
+            if (request.StarterTree)
+                data.BehaviorTree = BehaviorActions.CreateStarterTree(
+                    AssetDatabase.GenerateUniqueAssetPath($"{BehaviorLibrary.TreesFolder}/{request.Name}BehaviorTree.asset"), null);
+            else if (request.OwnTree        && data.BehaviorTree     != null) data.BehaviorTree     = EnemyAssetLibrary.CopyFor(data.BehaviorTree, request.Name);
             if (request.OwnSenses           && data.Senses           != null) data.Senses           = EnemyAssetLibrary.CopyFor(data.Senses, request.Name);
             if (request.OwnTargetPriorities && data.TargetPriorities != null) data.TargetPriorities = EnemyAssetLibrary.CopyFor(data.TargetPriorities, request.Name);
             if (request.OwnDoctrine         && data.Doctrine         != null) data.Doctrine         = EnemyAssetLibrary.CopyFor(data.Doctrine, request.Name);

@@ -458,7 +458,29 @@ namespace CGD.Editor
                 evt.menu.AppendAction("Frame All", _ => FrameAll());
                 evt.menu.AppendSeparator();
             }
+            else if (evt.target is BtNodeView view && _asset != null)
+            {
+                AddBehaviorActions(evt, view.Data);
+            }
             base.BuildContextualMenu(evt);
+        }
+
+        // Behaviors (see BehaviorActions): any branch can be saved as a reusable behavior, and a
+        // behavior (Subtree) switched off and on. The window rebuilds the canvas afterwards.
+        private void AddBehaviorActions(ContextualMenuPopulateEvent evt, BtNode node)
+        {
+            BehaviorTreeAsset asset = _asset;
+            if (node is Subtree subtree)
+            {
+                evt.menu.AppendAction(subtree.IsOn ? "Switch Behavior Off" : "Switch Behavior On",
+                    _ => BehaviorActions.SetOn(asset, subtree, !subtree.IsOn));
+            }
+            else if (node is not BtRoot)
+            {
+                evt.menu.AppendAction("Save Branch as Behavior…", _ => BehaviorActions.SaveBranchAsBehavior(asset, node),
+                    _ => asset.FindParent(node) != null ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
+            }
+            evt.menu.AppendSeparator();
         }
 
         // Screen point (search window, context menu) to canvas coordinates, through pan and zoom.

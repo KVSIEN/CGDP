@@ -22,7 +22,7 @@ namespace CGD.BehaviorTrees
         [NonSerialized] private bool _started;
 
         public string Guid    => _guid;
-        public string Comment => _comment;
+        public string Comment { get => _comment; internal set => _comment = value; }
 
         // Editor layout only.
         internal Vector2 Position { get => _position; set => _position = value; }

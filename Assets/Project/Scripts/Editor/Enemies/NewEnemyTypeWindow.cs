@@ -9,7 +9,7 @@ namespace CGD.Editor
 {
     // CGD › AI › New Enemy Type: a new kind of enemy without touching prefabs or code. Pick an
     // existing enemy to start from, name it, choose which of its parts it should get its own
-    // copy of, and it is ready to tune (EnemyData inspector), re-think (Behavior Tree Editor)
+    // copy of, and it is ready to tune (EnemyData inspector), re-think (Behavior Composer)
     // and drop into a scene or a faction's roster. See EnemyTypeCreator for what gets made.
     internal sealed class NewEnemyTypeWindow : EditorWindow
     {
@@ -58,7 +58,7 @@ namespace CGD.Editor
 
             EditorGUILayout.HelpBox(
                 "Starts from an enemy that already works and copies it. Afterwards, tune the numbers in the new " +
-                "Enemy Data, and change how it thinks in the Behavior Tree Editor.", MessageType.None);
+                "Enemy Data, and pick its behaviors in the Behavior Composer.", MessageType.None);
 
             Section("1. Start from");
             int picked = EditorGUILayout.Popup("Template", _templateIndex, _templateNames);
@@ -78,7 +78,7 @@ namespace CGD.Editor
             EditorGUILayout.LabelField(
                 "Ticked parts are copied so you can change them for this enemy alone. Unticked parts stay shared " +
                 "with the template: editing them later changes every enemy that uses them.", EditorStyles.wordWrappedMiniLabel);
-            _request.OwnTree             = OwnCopyToggle("Behavior Tree", "How it decides what to do", template != null ? template.BehaviorTree : null, _request.OwnTree);
+            DrawTreeChoice(template);
             _request.OwnSenses           = OwnCopyToggle("Senses", "How quickly it notices, remembers and searches", template != null ? template.Senses : null, _request.OwnSenses);
             _request.OwnTargetPriorities = OwnCopyToggle("Target Priorities", "Whom it prefers to fight among several hostiles", template != null ? template.TargetPriorities : null, _request.OwnTargetPriorities);
             _request.OwnDoctrine         = OwnCopyToggle("Doctrine", "Its faction's manner: morale, idling, tells, escalation", template != null ? template.Doctrine : null, _request.OwnDoctrine);
@@ -97,6 +97,21 @@ namespace CGD.Editor
 
         private EnemyData TemplateData() =>
             _request.Template != null && _request.Template.TryGetComponent(out EnemyAI ai) ? ai.Data : null;
+
+        private static readonly GUIContent[] TreeChoices =
+        {
+            new("Share the template's tree", "Thinks exactly like the template; edits to that tree change both"),
+            new("Copy the template's tree", "Starts with all of the template's behaviors, to switch off, reorder or change"),
+            new("Start from a starter tree", "Regroup, raise alarm, an empty fight list and the routine: pick its behaviors from the library"),
+        };
+
+        private void DrawTreeChoice(EnemyData template)
+        {
+            int choice = _request.StarterTree ? 2 : _request.OwnTree ? 1 : 0;
+            choice = EditorGUILayout.Popup(new GUIContent("Behavior Tree", "How it decides what to do"), choice, TreeChoices);
+            _request.OwnTree     = choice == 1 && template != null && template.BehaviorTree != null;
+            _request.StarterTree = choice == 2;
+        }
 
         private static bool OwnCopyToggle(string label, string tooltip, Object shared, bool value)
         {
@@ -135,7 +150,8 @@ namespace CGD.Editor
             EnemyTypeCreator.Result result = EnemyTypeCreator.Create(_request);
             Selection.activeObject = result.Data;
             EditorGUIUtility.PingObject(result.Data);
-            if (_request.OwnTree && result.Data.BehaviorTree != null) BehaviorTreeWindow.Open(result.Data.BehaviorTree);
+            if ((_request.OwnTree || _request.StarterTree) && result.Data.BehaviorTree != null)
+                BehaviorComposerWindow.Open(result.Data, result.Data.BehaviorTree);
             Close();
             GUIUtility.ExitGUI();
         }

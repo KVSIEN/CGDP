@@ -69,6 +69,16 @@ namespace CGD.Editor
         {
             if (node is not Subtree subtree) return;
 
+            if (!subtree.IsOn)
+            {
+                // Off means "fail at once": a Selector moves on, but a Sequence stops there.
+                if (asset.FindParent(node) is Selector)
+                    Add(issues, node, BtIssueSeverity.Info, "Switched off: skipped.");
+                else
+                    Add(issues, node, BtIssueSeverity.Warning, "Switched off, so it always fails — the branch it sits in never gets past it. Switch behaviors off only directly under a Selector.");
+                return;
+            }
+
             if (subtree.Tree == null)
                 Add(issues, node, BtIssueSeverity.Error, "No tree to run: it always fails.");
             else if (Reaches(subtree.Tree, asset, 0))

@@ -91,6 +91,19 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void ASwitchedOffShootingBehaviorDoesNotCount()
+        {
+            _data.CombatType = EnemyCombatType.Ranged;
+            using var shooting = new BtTestTree();
+            shooting.Add(new ShootBurst(), shooting.Root);
+            Sequence fight = _tree.Add(new Sequence(), _tree.Root);
+            _tree.Add(new MeleeAttack(), fight);
+            _tree.Add(BtTestTree.Set(new Subtree(), "_tree", shooting.Asset), fight).SetOn(false);
+
+            Assert.IsTrue(HasWarning("never shoots"));
+        }
+
+        [Test]
         public void NodesNotConnectedToTheRootDoNotCount()
         {
             _data.CombatType = EnemyCombatType.Ranged;

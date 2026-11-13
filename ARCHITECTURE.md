@@ -126,7 +126,11 @@ publish, and decide for themselves.
 its `EnemyData` (there is no other brain): `EnemyAI` ticks a `BehaviorTree` — the agent's own copy of the
 asset's nodes (the asset is shared and never changes at runtime; per-agent state lives on
 the copies, made with `CreateInstance`). A `Subtree` node instantiates its asset into the same copy, so
-shared branches cost nothing extra and keep one blackboard. Interruptions use abort modes
+shared branches cost nothing extra and keep one blackboard. That is what a *behavior* is: a
+branch in its own asset, run by a Subtree, which the Behavior Composer
+(`Editor/BehaviorTrees/Behaviors/`) adds to enemy types, reorders and switches off (an off
+Subtree fails at once and never builds its tree), so enemy types are put together from
+shared behaviors rather than copied trees. Interruptions use abort modes
 (`AbortMode` on Sequence/Selector): composites re-check only *conditional* nodes —
 conditions, and gates like Cooldown that answer "may this run now?" — never actions.
 Debugging hooks stay out of the hot path: nodes only report to a `BtTrace` when the

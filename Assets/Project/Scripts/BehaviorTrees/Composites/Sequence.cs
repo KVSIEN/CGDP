@@ -18,7 +18,7 @@ namespace CGD.BehaviorTrees
 
         public override string Summary => AbortSummary(_abort);
 
-        internal AbortMode AbortSetting => _abort;
+        internal AbortMode AbortSetting { get => _abort; set => _abort = value; }
 
         internal override bool AbortsLowerPriority => _abort is AbortMode.LowerPriority or AbortMode.Both;
         internal override bool PreconditionsPass(BtContext context) => LeadingConditionsPass(context, requireAll: true);
