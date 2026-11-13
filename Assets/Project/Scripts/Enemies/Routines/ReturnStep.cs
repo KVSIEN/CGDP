@@ -17,7 +17,7 @@ namespace CGD.Enemies
             var perception = ai.Perception;
             float speed = ai.Data.PatrolSpeed;
             if (perception.IsCautious) speed *= perception.Profile.CautionPatrolSpeed;
-            ai.SetSpeed(speed);
+            ai.Motion.SetSpeed(speed);
 
             var agent = ai.Agent;
             if (!walking)

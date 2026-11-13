@@ -4,12 +4,10 @@ using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.AI;
 using CGD.Abilities;
-using CGD.Audio;
 using CGD.BehaviorTrees;
 using CGD.Combat;
 using CGD.Core;
 using CGD.Impacts;
-using CGD.Items;
 using CGD.Stealth;
 using CGD.Stats;
 
@@ -29,12 +27,7 @@ namespace CGD.Enemies
         // Tree nodes report which of these they are doing, for visuals, animation and audio.
         public enum AiState { Patrol, Investigate, Hunt, Return, Chase, Retreat, RaiseAlarm, Stunned, Dead }
 
-        private const float TurnSpeed = 540f;
-        // Alarm panels within this distance of its post are ones it knows about.
-        private const float AlarmKnownRadius = 25f;
         private const float CorneredDistance = 3f;
-        // Even a slow walker stops and turns crisply.
-        private const float MinAcceleration = 20f;
 
         [SerializeField] private EnemyData   _data;
         [SerializeField] private Transform[] _waypoints;
@@ -59,12 +52,7 @@ namespace CGD.Enemies
         private float        _sinceTreeTick;
         private bool         _started;
 
-        // Turning toward a point, spread over the frames until the tree's next tick.
-        private Vector3 _facePoint;
-        private float   _faceTimeLeft;
-
         private float _nextStaggerAt;
-        private bool  _alarmTried;
         private EngageStep    _step;
         private HealthManager _engagedTarget;
 
@@ -101,12 +89,15 @@ namespace CGD.Enemies
         internal NavMeshAgent      Agent        { get; private set; }
         // Destinations go through this, not Agent.SetDestination, so they route round hazards.
         internal EnemyRouting      Routing      { get; private set; }
+        // Speed, facing and knockback.
+        internal EnemyMotion       Motion       { get; private set; }
         internal EnemyPerception   Perception   { get; private set; }
         internal EnemyRangedCombat RangedCombat { get; private set; }
         internal EnemyMelee        Melee        { get; private set; }
         internal EnemySearch       Search       { get; private set; }
         internal EnemyTactics      Tactics      { get; private set; }
         internal EnemyPost         Post         { get; private set; }
+        internal AlarmKnowledge    Alarms       { get; private set; }
         internal EnemyAbilities    Abilities    { get; private set; }
         internal EnemyAmbush       Ambush       { get; private set; }
         internal EnemyMinions      Minions      { get; private set; }
@@ -138,10 +129,6 @@ namespace CGD.Enemies
         internal bool    ReturnIsVictory { get; private set; }
         internal Vector3 ReturnLookAt    { get; private set; }
 
-        // Stuck at the end of a partial path: the target is somewhere it can't walk to.
-        internal bool IsPathBlocked =>
-            Agent.isOnNavMesh && !Agent.pathPending && Agent.pathStatus == NavMeshPathStatus.PathPartial &&
-            Agent.remainingDistance < 0.6f;
         internal EnemyHealth       Health       => _health;
         internal EnemyData         Data         => _data;
         internal Transform[]       Waypoints    => _waypoints ?? Array.Empty<Transform>();
@@ -153,13 +140,12 @@ namespace CGD.Enemies
         private void Awake()
         {
             Agent         = GetComponent<NavMeshAgent>();
-            // Facing is ours (TickFacing): it follows the walk by default, but a node can hold the gaze elsewhere.
-            Agent.updateRotation = false;
-            Routing       = new EnemyRouting(this);
             _health       = GetComponent<EnemyHealth>();
             _stunnable    = GetComponent<Stunnable>();
             _damageSource = DamageSource.Of(gameObject);
             TryGetComponent(out _stats);
+            Routing       = new EnemyRouting(this);
+            Motion        = new EnemyMotion(this, Agent, _stunnable, _stats);
             Perception    = new EnemyPerception(this, _data, _targetMask, _obstacleMask, _health.Team);
             Tells         = new EnemyTells(this);
             Idle          = new EnemyIdleLife(this);
@@ -170,6 +156,7 @@ namespace CGD.Enemies
             Search        = new EnemySearch(this);
             Tactics       = new EnemyTactics(this, _obstacleMask);
             Post          = new EnemyPost(this);
+            Alarms        = new AlarmKnowledge(this);
             TryGetComponent(out _stealth);
             Ambush        = new EnemyAmbush(_stealth);
             Minions       = new EnemyMinions(this);
@@ -257,8 +244,7 @@ namespace CGD.Enemies
 
             if (_tree != null) TickTree(dt);
             Routing.Tick(Time.time);
-            TickKnockback(dt);
-            TickFacing(dt);
+            Motion.Tick(dt);
         }
 
         // A stun pauses the tree where it is, so the enemy resumes what it was doing.
@@ -334,32 +320,6 @@ namespace CGD.Enemies
             StepChanged?.Invoke(step);
         }
 
-        // A panel near its post it can still raise, if this enemy raises alarms and hasn't tried yet.
-        internal bool TryFindAlarm(out AlarmPanel panel)
-        {
-            panel = null;
-            return !_alarmTried && TryFindAlarmIgnoringTried(out panel);
-        }
-
-        internal bool TryFindAlarmIgnoringTried(out AlarmPanel panel)
-        {
-            panel = null;
-            if (!_data.RaisesAlarm) return false;
-
-            float best = float.MaxValue;
-            foreach (AlarmPanel candidate in AlarmPanel.All)
-            {
-                if (!candidate.IsAvailable || candidate.Team != _health.Team) continue;
-                if (!Post.IsNear(candidate.transform.position, AlarmKnownRadius)) continue;
-
-                float distance = (candidate.transform.position - transform.position).sqrMagnitude;
-                if (distance < best) { best = distance; panel = candidate; }
-            }
-            return panel != null;
-        }
-
-        internal void MarkAlarmTried() => _alarmTried = true;
-
         // Behavior tree nodes say what the enemy is doing, so its visor, animation and
         // stealth feedback match (patrolling, investigating, fighting).
         internal void ReportState(AiState state)
@@ -375,77 +335,6 @@ namespace CGD.Enemies
 
         // What blocks sight and shots, for nodes that need to know whether a view is open.
         internal LayerMask ObstacleMask => _obstacleMask;
-
-        // Slowed by status effects, and sped up or slowed by buffs (MovementSpeed stat, base 1).
-        // Acceleration scales with the pace so it reaches, turns at and sheds any speed within
-        // MoveResponseTime: a fixed acceleration leaves a fast mover drifting wide round corners
-        // and sliding past where it meant to stop.
-        internal void SetSpeed(float speed)
-        {
-            Agent.speed        = speed * _stunnable.SpeedMultiplier * SpeedFromStats;
-            Agent.acceleration = Mathf.Max(MinAcceleration, Agent.speed / _data.MoveResponseTime);
-
-            // Out of a burst (a dash, a dodge) it drops straight to the new pace instead of coasting on.
-            if (!Agent.isOnNavMesh) return;
-            Vector3 velocity = Agent.velocity;
-            if (velocity.sqrMagnitude > Agent.speed * Agent.speed) Agent.velocity = velocity.normalized * Agent.speed;
-        }
-
-        // Shoved (Stunnable.Knockback): carried along the navmesh, so it can't be pushed through walls or off it.
-        private void TickKnockback(float dt)
-        {
-            if (!_stunnable.IsKnockedBack || !Agent.enabled || !Agent.isOnNavMesh) return;
-            Agent.Move(_stunnable.KnockbackVelocity * dt);
-        }
-
-        private float SpeedFromStats => _stats != null ? Mathf.Max(0.1f, _stats.Apply(ItemStat.MovementSpeed, 1f)) : 1f;
-
-        // Turns at once, with nothing in between: a head that is simply somewhere else now.
-        internal void SnapFacing(Vector3 position)
-        {
-            Vector3 flat = position - transform.position;
-            flat.y = 0f;
-            if (flat.sqrMagnitude < 0.0001f) return;
-            transform.rotation = Quaternion.LookRotation(flat);
-        }
-
-        // Turns as far as deltaTime allows. The turn itself is applied frame by frame (TickFacing),
-        // so it stays smooth when a calm enemy's tree ticks only a few times a second.
-        internal void FaceTowards(Vector3 position, float deltaTime)
-        {
-            _facePoint    = position;
-            _faceTimeLeft = deltaTime;
-        }
-
-        // Repositioning without losing the objective: keeps the target (or where it was last known)
-        // in view while walking, so the agent sidesteps and backpedals instead of turning its back.
-        internal void KeepEyesOnTarget(float deltaTime)
-        {
-            if (Perception.Target != null) FaceTowards(Perception.TargetPosition, deltaTime);
-        }
-
-        private void TickFacing(float dt)
-        {
-            Vector3 flat;
-            float   step = dt;
-            if (_faceTimeLeft > 0f)
-            {
-                step = Mathf.Min(dt, _faceTimeLeft);
-                _faceTimeLeft -= step;
-                flat = _facePoint - transform.position;
-            }
-            else if (Agent.enabled && Agent.isOnNavMesh && !Agent.isStopped)
-            {
-                flat = Agent.velocity;   // nothing to watch: look where it is going
-            }
-            else return;
-
-            flat.y = 0f;
-            if (flat.sqrMagnitude < 0.0001f) return;
-
-            transform.rotation = Quaternion.RotateTowards(
-                transform.rotation, Quaternion.LookRotation(flat), TurnSpeed * step);
-        }
 
         internal void TryStartAttack()
         {
@@ -512,7 +401,7 @@ namespace CGD.Enemies
             ReturnPending   = true;
             ReturnIsVictory = victory;
             ReturnLookAt    = lookAt;
-            _alarmTried     = false;
+            Alarms.Forget();
         }
 
         // A heavy hit knocks it off balance: a short stun that also spoils a wind-up.
@@ -545,7 +434,7 @@ namespace CGD.Enemies
             FallenAllies.Add(new FallenAlly(this, transform.position, _health.Team));
             _tree?.Abort();
             ReportState(AiState.Dead);
-            _faceTimeLeft = 0f;
+            Motion.StopTurning();
             Routing.Clear();
             Agent.enabled = false;
             enabled = false;
@@ -579,8 +468,9 @@ namespace CGD.Enemies
             Abilities.Reset();
             Post.Remember();
             FallenAllies.Remove(this);
+            Motion.StopTurning();
+            Alarms.Forget();
             ReturnPending  = false;
-            _alarmTried    = false;
             _engagedTarget = null;
             _sinceTreeTick = 0f;
 

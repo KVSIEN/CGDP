@@ -40,8 +40,8 @@ namespace CGD.Enemies
 
             Ai.ReportState(EnemyAI.AiState.Chase);
             Ai.ReportStep(EngageStep.Flank);
-            Ai.SetSpeed(Ai.Data.ChaseSpeed);
-            Ai.KeepEyesOnTarget(context.DeltaTime);
+            Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed);
+            Ai.Motion.KeepEyesOnTarget(context.DeltaTime);
             if (HasArrived(Ai.Agent, ArrivalDistance)) return BtStatus.Success;
             return CanBreakOffToShoot(context) ? BtStatus.Success : BtStatus.Running;
         }

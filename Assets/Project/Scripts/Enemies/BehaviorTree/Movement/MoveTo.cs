@@ -36,7 +36,7 @@ namespace CGD.Enemies
         {
             if (!_moving) return BtStatus.Failure;
 
-            Ai.SetSpeed(_run ? Ai.Data.ChaseSpeed : Ai.Data.PatrolSpeed);
+            Ai.Motion.SetSpeed(_run ? Ai.Data.ChaseSpeed : Ai.Data.PatrolSpeed);
             var agent = Ai.Agent;
             if (agent.pathPending) return BtStatus.Running;
             if (agent.pathStatus == NavMeshPathStatus.PathInvalid) return BtStatus.Failure;

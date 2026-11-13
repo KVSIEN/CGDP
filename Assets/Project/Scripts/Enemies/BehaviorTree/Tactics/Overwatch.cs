@@ -71,7 +71,7 @@ namespace CGD.Enemies
             }
 
             if (context.Time >= _nextGlance) PickLook(belief, context.Time);
-            Ai.FaceTowards(Ai.transform.position + _lookDirection * OpenSightline, context.DeltaTime);
+            Ai.Motion.FaceTowards(Ai.transform.position + _lookDirection * OpenSightline, context.DeltaTime);
             return BtStatus.Running;
         }
 
@@ -104,7 +104,7 @@ namespace CGD.Enemies
             var agent = Ai.Agent;
             if (agent.pathPending) return false;
 
-            Ai.SetSpeed(Ai.Data.ChaseSpeed * VantageSpeedShare);
+            Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed * VantageSpeedShare);
             return !agent.hasPath || agent.remainingDistance <= ArrivalDistance;
         }
 

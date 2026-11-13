@@ -21,7 +21,7 @@ namespace CGD.Enemies
         }
 
         protected override void OnEnter(BtContext context) =>
-            _started = Ai.TryFindAlarm(out _) && _step.Begin(Ai);
+            _started = Ai.Alarms.TryFind(out _) && _step.Begin(Ai);
 
         protected override BtStatus OnTick(BtContext context)
         {

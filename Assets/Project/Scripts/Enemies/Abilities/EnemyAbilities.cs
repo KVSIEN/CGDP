@@ -93,7 +93,7 @@ namespace CGD.Enemies
             if (_casting == null) return true;
 
             _castAimAt = aimAt;
-            _ai.FaceTowards(aimAt, deltaTime);
+            _ai.Motion.FaceTowards(aimAt, deltaTime);
             if (Time.time < _castEndsAt) return false;
 
             AimAt(_castAimAt);

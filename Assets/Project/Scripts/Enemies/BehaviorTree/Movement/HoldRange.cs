@@ -20,8 +20,8 @@ namespace CGD.Enemies
             Ai.ReportState(EnemyAI.AiState.Chase);
             Ai.ReportStep(EngageStep.KeepDistance);
             var targetPos = perception.Target.transform.position;
-            Ai.SetSpeed(Ai.Data.ChaseSpeed);
-            Ai.FaceTowards(targetPos, context.DeltaTime);
+            Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed);
+            Ai.Motion.FaceTowards(targetPos, context.DeltaTime);
 
             if (Ai.RangedCombat.IsBursting) Ai.Agent.isStopped = true;
             else                             Ai.RangedCombat.HoldPreferredRange(targetPos, context.DeltaTime);

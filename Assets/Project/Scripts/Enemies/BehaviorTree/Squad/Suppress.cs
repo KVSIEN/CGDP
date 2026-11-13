@@ -31,7 +31,7 @@ namespace CGD.Enemies
 
             Ai.ReportStep(EngageStep.Suppress);
             Ai.Agent.isStopped = true;
-            Ai.FaceTowards(perception.TargetPosition, context.DeltaTime);
+            Ai.Motion.FaceTowards(perception.TargetPosition, context.DeltaTime);
 
             var combat = Ai.RangedCombat;
             // Pinning a target down means hitting its cover, not the wall in front of the shooter.

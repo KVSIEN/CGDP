@@ -45,7 +45,7 @@ namespace CGD.Enemies
             }
 
             Ai.ReportState(EnemyAI.AiState.Chase);
-            Ai.SetSpeed(Ai.Data.ChaseSpeed * PaceShare);
+            Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed * PaceShare);
             return BtStatus.Running;
         }
     }

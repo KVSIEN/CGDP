@@ -31,7 +31,7 @@ namespace CGD.Enemies
             Ai.ReportState(EnemyAI.AiState.Patrol);
             var perception = Ai.Perception;
             float time = UnityEngine.Time.time;
-            Ai.SetSpeed(Ai.Data.PatrolSpeed * (perception.IsCautious ? perception.Profile.CautionPatrolSpeed : 1f) * Ai.Idle.PaceScale(time));
+            Ai.Motion.SetSpeed(Ai.Data.PatrolSpeed * (perception.IsCautious ? perception.Profile.CautionPatrolSpeed : 1f) * Ai.Idle.PaceScale(time));
 
             var waypoints = Ai.Waypoints;
             if (waypoints.Length == 0)

@@ -70,7 +70,7 @@ namespace CGD.Enemies
             if (_pending == null) return true;
 
             _ai.Agent.isStopped = true;
-            _ai.FaceTowards(_aimAt, deltaTime);
+            _ai.Motion.FaceTowards(_aimAt, deltaTime);
             if (Time.time < _throwAt) return false;
 
             if (IsHandClear(_hand)) Throw(_pending);

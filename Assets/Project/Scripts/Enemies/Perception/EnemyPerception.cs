@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using CGD.Combat;
-using CGD.Core;
 using CGD.Impacts;
 using CGD.Stealth;
 using CGD.Targeting;
@@ -41,20 +39,16 @@ namespace CGD.Enemies
         private const float NearMissRadius  = 2.5f;   // a hostile bullet landing this close is felt
         private const float UnderFireMemory = 1.5f;   // seconds "under fire" lasts after the last shot
         private const float AimedAtAngle    = 5f;     // degrees: a target facing it this squarely is aiming at it
-        private const float LinkRange       = 80f;    // metres a union's link reaches
-        private const float LinkEvery       = 1f;     // seconds between a union's shared sightings
         private const float FocusBonus      = 1.5f;   // a union's pull toward the target its kin fight
 
         private static PerceptionProfile _fallbackProfile;
-        // Which hostiles are enemies with minds of their own (null for the player), to tell
-        // whether one is busy fighting someone else.
-        private static readonly Dictionary<HealthManager, EnemyAI> Brains = new();
 
         private readonly EnemyAI           _owner;
         private readonly Transform         _self;
         private readonly EnemyData         _data;
         private readonly PerceptionProfile _profile;
         private readonly EnemySenses       _senses;
+        private readonly CalloutSender     _callouts;
         private readonly Team              _team;
         private readonly TargetFilter        _hostiles;
         private readonly List<HealthManager> _candidates = new();
@@ -67,7 +61,6 @@ namespace CGD.Enemies
         private AwarenessLevel _reportedLevel;
         private bool    _wasCautious;
         private float   _clock;
-        private float   _nextLink;
         private float   _nextSample;
         private float   _lastSample;
         private float   _lastSensedAt = float.NegativeInfinity;
@@ -90,15 +83,7 @@ namespace CGD.Enemies
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics()
-        {
-            Brains.Clear();
-            _fallbackProfile = null;
-            SceneManager.sceneUnloaded -= OnSceneUnloaded;
-            SceneManager.sceneUnloaded += OnSceneUnloaded;
-        }
-
-        private static void OnSceneUnloaded(Scene scene) => DestroyedKeys.Remove(Brains);
+        private static void ResetStatics() => _fallbackProfile = null;
 
         public EnemyPerception(EnemyAI owner, EnemyData data, LayerMask targetMask, LayerMask obstacleMask, Team team)
         {
@@ -107,6 +92,7 @@ namespace CGD.Enemies
             _data         = data;
             _profile      = data.Senses != null ? data.Senses : FallbackProfile;
             _senses       = new EnemySenses(_self, data, _profile, obstacleMask);
+            _callouts     = new CalloutSender(owner, data, _profile, team);
             _team         = team;
             _hostiles     = new TargetFilter(TargetAffiliation.Enemies, team, null, targetMask);
             _meter        = new AwarenessMeter(_profile.SuspiciousThreshold);
@@ -438,23 +424,8 @@ namespace CGD.Enemies
         private TargetTraits TraitsOf(HealthManager candidate) => new(
             isCurrent:      candidate == Target,
             hurtItRecently: candidate == _lastAttacker && _clock - _lastAttackedAt <= _retaliationMemory,
-            isDistracted:   IsFightingSomeoneElse(candidate),
+            isDistracted:   HostileFocus.IsFightingSomeoneElse(candidate, _owner.Health),
             healthShare:    StrengthLeft(candidate));
-
-        // An enemy engaged with a target other than this one — its attention is elsewhere.
-        // The player's attention can't be read, so the player never counts as distracted.
-        private bool IsFightingSomeoneElse(HealthManager candidate)
-        {
-            if (!Brains.TryGetValue(candidate, out EnemyAI brain))
-            {
-                candidate.TryGetComponent(out brain);
-                Brains[candidate] = brain;
-            }
-            if (brain == null || brain.Perception == null) return false;
-
-            EnemyPerception other = brain.Perception;
-            return other.IsTargetDetected && other.Target != null && other.Target != _owner.Health;
-        }
 
         private static float StrengthLeft(HealthManager candidate)
         {
@@ -473,7 +444,7 @@ namespace CGD.Enemies
 
             _sighting.Record(position, target.transform.forward, _clock);
             _lastSensedAt      = _clock;
-            ShareSighting();
+            _callouts.Sighted(position, _clock);
             TargetHealthShare  = stimulus.Traits.HealthShare;
             IsTargetDistracted = stimulus.Traits.IsDistracted;
 
@@ -538,7 +509,7 @@ namespace CGD.Enemies
         {
             _bodiesSeen.Add(fallen.Body);
             _owner.Morale.OnAllyDown(fallen.Body);
-            if (_owner.Doctrine.Escalation.ReportsFallenKin) ReportBody(fallen);
+            if (_owner.Doctrine.Escalation.ReportsFallenKin) _callouts.ReportBody(fallen.Position);
             if (IsTargetDetected) return;
 
             _meter.RaiseToSuspicious(0.15f);
@@ -570,7 +541,7 @@ namespace CGD.Enemies
             {
                 _hunting = true;
                 if (Stealthable.TryGet(Target, out Stealthable stealth)) stealth.NotifySpotted();
-                if (previous != AwarenessLevel.Engaged) CallOut();
+                if (previous != AwarenessLevel.Engaged) _callouts.Spotted(Target.transform.position);
             }
             else if (previous == AwarenessLevel.Engaged)
             {
@@ -601,37 +572,8 @@ namespace CGD.Enemies
             _hasLead          = true;
         }
 
-        private void CallOut()
-        {
-            if (_data.Social == SocialStyle.Loner) return;
-
-            // A union's link reaches every member, through walls.
-            bool linked = _data.Social == SocialStyle.Network;
-            float radius = (linked ? LinkRange : _profile.CalloutRadius) * _owner.Doctrine.Escalation.CalloutRadiusScale;
-            EnemyCallouts.Raise(new EnemyCallout(_owner, _self.position, Target.transform.position, _team, radius, throughWalls: linked));
-        }
-
-        // Losing its nerve: tells its kin where the trouble is, over the radio, walls or not.
-        public void CallForHelp()
-        {
-            if (_data.Social == SocialStyle.Loner) return;
-            EnemyCallouts.Raise(new EnemyCallout(_owner, _self.position, TargetPosition, _team, LinkRange, throughWalls: true));
-        }
-
-        // Found one of its own dead: reports where, so its kin come to look.
-        private void ReportBody(FallenAlly fallen)
-        {
-            if (_data.Social == SocialStyle.Loner) return;
-            EnemyCallouts.Raise(new EnemyCallout(_owner, _self.position, fallen.Position, _team, LinkRange, throughWalls: true));
-        }
-
-        // A union shares each sighting as it happens, not just the first one.
-        private void ShareSighting()
-        {
-            if (_data.Social != SocialStyle.Network || _clock < _nextLink) return;
-            _nextLink = _clock + LinkEvery;
-            CallOut();
-        }
+        // Losing its nerve: tells its kin where the trouble is.
+        public void CallForHelp() => _callouts.CallForHelp(TargetPosition);
 
         private void Lead(Vector3 position)
         {

@@ -33,17 +33,17 @@ namespace CGD.Enemies
             if (Ai.IsAttacking)
             {
                 Ai.Agent.isStopped = true;
-                Ai.FaceTowards(targetPos, context.DeltaTime);
+                Ai.Motion.FaceTowards(targetPos, context.DeltaTime);
                 return BtStatus.Running;
             }
 
-            Ai.SetSpeed(Ai.Data.ChaseSpeed);
+            Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed);
             float range    = Ai.Data.AttackRange;
             float current  = Vector3.Distance(targetPos, Ai.transform.position);
             if (current <= range + TurnRing && !Ai.Tactics.TryTakeMeleeTurn(perception.Target))
             {
                 Ai.Tactics.CircleTarget(targetPos, range + CircleRadius);
-                Ai.FaceTowards(targetPos, context.DeltaTime);
+                Ai.Motion.FaceTowards(targetPos, context.DeltaTime);
                 Ai.ReportStep(EngageStep.Circle);
                 return BtStatus.Running;
             }
@@ -56,10 +56,10 @@ namespace CGD.Enemies
                 ? Ai.Foresight.Intercept(targetPos, perception.TargetVelocity, current)
                 : targetPos;
             Ai.Routing.SetDestination(goal);
-            if (Ai.IsPathBlocked)
+            if (Ai.Motion.IsPathBlocked)
             {
                 Ai.Agent.isStopped = true;
-                Ai.FaceTowards(targetPos, context.DeltaTime);
+                Ai.Motion.FaceTowards(targetPos, context.DeltaTime);
                 Ai.ReportStep(EngageStep.Hold);
                 return BtStatus.Running;
             }

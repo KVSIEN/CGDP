@@ -73,12 +73,12 @@ namespace CGD.Enemies
             if (context.Time >= _endsAt) return BtStatus.Success;
 
             Ai.ReportState(perception.IsTargetDetected ? EnemyAI.AiState.Chase : EnemyAI.AiState.Hunt);
-            Ai.KeepEyesOnTarget(context.DeltaTime);
+            Ai.Motion.KeepEyesOnTarget(context.DeltaTime);
 
             if (_moving)
             {
                 Ai.ReportStep(EngageStep.Circle);
-                Ai.SetSpeed(Ai.Data.ChaseSpeed * _speed);
+                Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed * _speed);
                 if (!HasArrived(Ai.Agent, ArrivalDistance) && context.Time < _moveGivesUpAt) return BtStatus.Running;
 
                 // There: stop and watch a moment before the next move.

@@ -28,7 +28,7 @@ namespace CGD.Enemies
             if (leader == null || leader == Ai) return BtStatus.Failure;
 
             Ai.ReportState(EnemyAI.AiState.Patrol);
-            Ai.SetSpeed(Ai.Data.ChaseSpeed);
+            Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed);
             if (context.Time < _nextPath) return BtStatus.Running;
             _nextPath = context.Time + Repath;
 

@@ -87,7 +87,7 @@ namespace CGD.Enemies
             if (_holding && time < _holdUntil)
             {
                 agent.isStopped = true;
-                _ai.FaceTowards(_holdLook, deltaTime);
+                _ai.Motion.FaceTowards(_holdLook, deltaTime);
                 return true;
             }
             if (_holding)

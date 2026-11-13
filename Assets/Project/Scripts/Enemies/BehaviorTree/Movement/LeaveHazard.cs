@@ -43,8 +43,8 @@ namespace CGD.Enemies
             if (!_moving || context.Time >= _givesUpAt) return BtStatus.Failure;
 
             Ai.ReportStep(EngageStep.LeaveHazard);
-            Ai.SetSpeed(Ai.Data.ChaseSpeed);
-            Ai.KeepEyesOnTarget(context.DeltaTime);
+            Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed);
+            Ai.Motion.KeepEyesOnTarget(context.DeltaTime);
             return BtStatus.Running;
         }
 

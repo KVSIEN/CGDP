@@ -41,7 +41,7 @@ namespace CGD.Enemies
             if (!_hasDestination) return BtStatus.Failure;
 
             Ai.ReportState(EnemyAI.AiState.Retreat);
-            Ai.SetSpeed(Ai.Data.ChaseSpeed);
+            Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed);
             return HasArrived(Ai.Agent, ArrivalDistance) ? BtStatus.Success : BtStatus.Running;
         }
     }

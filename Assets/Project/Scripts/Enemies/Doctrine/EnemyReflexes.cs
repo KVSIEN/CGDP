@@ -137,8 +137,8 @@ namespace CGD.Enemies
                 return false;
             }
 
-            _ai.SetSpeed(_ai.Data.ChaseSpeed * Style.SpeedScale);
-            if (Style.WatchesIt) _ai.FaceTowards(_threat.Position, deltaTime);
+            _ai.Motion.SetSpeed(_ai.Data.ChaseSpeed * Style.SpeedScale);
+            if (Style.WatchesIt) _ai.Motion.FaceTowards(_threat.Position, deltaTime);
             return true;
         }
 

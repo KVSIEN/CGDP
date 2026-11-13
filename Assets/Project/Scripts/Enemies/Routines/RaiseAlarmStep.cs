@@ -16,8 +16,8 @@ namespace CGD.Enemies
 
         public bool Begin(EnemyAI ai)
         {
-            ai.MarkAlarmTried();
-            if (!ai.TryFindAlarmIgnoringTried(out _panel)) return false;
+            ai.Alarms.MarkTried();
+            if (!ai.Alarms.TryFindIgnoringTried(out _panel)) return false;
 
             _useLeft = _panel.UseTime;
             ai.Agent.isStopped = false;
@@ -34,12 +34,12 @@ namespace CGD.Enemies
                 Vector3.Distance(perception.TargetPosition, ai.transform.position) < InterruptRange)
                 return Result.Abandoned;
 
-            ai.SetSpeed(ai.Data.ChaseSpeed);
+            ai.Motion.SetSpeed(ai.Data.ChaseSpeed);
             Vector3 panel = _panel.transform.position;
             if ((panel - ai.transform.position).sqrMagnitude > UseDistance * UseDistance && !Arrived(ai)) return Result.Running;
 
             ai.Agent.isStopped = true;
-            ai.FaceTowards(panel, deltaTime);
+            ai.Motion.FaceTowards(panel, deltaTime);
             _useLeft -= deltaTime;
             if (_useLeft > 0f) return Result.Running;
 

@@ -230,7 +230,7 @@ namespace CGD.Enemies
 
             // A stare or a turned back is a jump, not a turn — but the very first beat just turns.
             if (_hadBeat && beat.Gaze is GazePattern.Fixate or GazePattern.Away)
-                _ai.SnapFacing(PointAt(facing, beat.Gaze == GazePattern.Away ? 180f : _lookAngle));
+                _ai.Motion.SnapFacing(PointAt(facing, beat.Gaze == GazePattern.Away ? 180f : _lookAngle));
             _hadBeat = true;
 
             if (beat.Bark != BarkKind.None) _ai.Bark(beat.Bark);
@@ -267,7 +267,7 @@ namespace CGD.Enemies
                     angle = _lookAngle;
                     break;
             }
-            _ai.FaceTowards(PointAt(_beatFacing, angle), deltaTime);
+            _ai.Motion.FaceTowards(PointAt(_beatFacing, angle), deltaTime);
         }
 
         private float HalfArc(IdleBeat beat) => Mathf.Min(180f, _ai.Perception.Profile.GuardLookAngle * beat.ArcScale);
@@ -294,7 +294,7 @@ namespace CGD.Enemies
                 _plainNextLook = time + interval;
                 _plainAngle    = Random.Range(-profile.GuardLookAngle, profile.GuardLookAngle);
             }
-            _ai.FaceTowards(PointAt(facing, _plainAngle), deltaTime);
+            _ai.Motion.FaceTowards(PointAt(facing, _plainAngle), deltaTime);
         }
 
         // --- After a fight ----------------------------------------------------------
@@ -313,7 +313,7 @@ namespace CGD.Enemies
             GazePattern gaze = victory ? _ai.Doctrine.Aftermath.VictoryGaze : GazePattern.Hold;
             if (gaze == GazePattern.Hold || toLook.sqrMagnitude < 0.0001f)
             {
-                _ai.FaceTowards(lookAt, deltaTime);
+                _ai.Motion.FaceTowards(lookAt, deltaTime);
                 return;
             }
 
@@ -333,7 +333,7 @@ namespace CGD.Enemies
                 }
                 angle = _lookAngle;
             }
-            _ai.FaceTowards(PointAt(toBody, angle), deltaTime);
+            _ai.Motion.FaceTowards(PointAt(toBody, angle), deltaTime);
         }
     }
 }

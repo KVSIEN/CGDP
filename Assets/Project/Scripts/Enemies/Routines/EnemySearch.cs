@@ -87,7 +87,7 @@ namespace CGD.Enemies
         {
             _phase = Phase.Notice;
             _timer = fresh ? NoticeHold() * (IsHunting ? HuntNoticeShare : 1f) : RenoticePause;
-            if (fresh && _ai.Doctrine.Tells.NoticeSnapsToLead) _ai.SnapFacing(_ai.Perception.LookPosition);
+            if (fresh && _ai.Doctrine.Tells.NoticeSnapsToLead) _ai.Motion.SnapFacing(_ai.Perception.LookPosition);
             _spots.Clear();
             _spotIndex = -1;
             _ai.Agent.isStopped = true;
@@ -102,7 +102,7 @@ namespace CGD.Enemies
 
         private void TickNotice(float deltaTime)
         {
-            _ai.FaceTowards(_ai.Perception.LookPosition, deltaTime);
+            _ai.Motion.FaceTowards(_ai.Perception.LookPosition, deltaTime);
             _timer -= deltaTime;
             if (_timer <= 0f) GoTo(_ai.Perception.LastKnownPosition);
         }
@@ -111,7 +111,7 @@ namespace CGD.Enemies
         {
             // Reading the route: a hold at a corner or to listen, a rush on a clear stretch.
             if (_ai.Foresight.TickApproach(deltaTime, Time.time, out float pace)) return;
-            _ai.SetSpeed((IsHunting ? _ai.Data.ChaseSpeed * Profile.HuntSpeed : _ai.Data.PatrolSpeed) * pace);
+            _ai.Motion.SetSpeed((IsHunting ? _ai.Data.ChaseSpeed * Profile.HuntSpeed : _ai.Data.PatrolSpeed) * pace);
 
             NavMeshAgent agent = _ai.Agent;
             if (agent.pathPending) return;
@@ -132,7 +132,7 @@ namespace CGD.Enemies
 
         private void TickLookAround(float deltaTime)
         {
-            _ai.FaceTowards(_lookAt, deltaTime);
+            _ai.Motion.FaceTowards(_lookAt, deltaTime);
             _timer -= deltaTime;
 
             // Scan: one glance, then another the other way.

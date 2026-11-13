@@ -62,8 +62,8 @@ namespace CGD.Enemies
 
         public static void Tick(EnemyAI ai, float deltaTime, float arrivalDistance)
         {
-            ai.SetSpeed(ai.Data.ChaseSpeed * ai.Doctrine.Morale.RetreatSpeedScale);
-            ai.KeepEyesOnTarget(deltaTime);
+            ai.Motion.SetSpeed(ai.Data.ChaseSpeed * ai.Doctrine.Morale.RetreatSpeedScale);
+            ai.Motion.KeepEyesOnTarget(deltaTime);
 
             var agent = ai.Agent;
             bool arrived = !agent.pathPending && (!agent.hasPath || agent.remainingDistance <= arrivalDistance);

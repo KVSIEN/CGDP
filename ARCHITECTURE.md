@@ -85,8 +85,11 @@ the point under the crosshair, so in third person cover in front of the characte
 `ImpactEvents` (surface effects) and `Noise` (enemies hear it). Stats flow in through
 `CharacterStats` (base data → equipment → presets → timed buffs).
 
-**An enemy notices you.** `EnemyAI` owns the body (movement, melee, `EnemyRangedCombat`)
-and ticks its behavior tree; attacks go through the same `IDamageable` path as the player's.
+**An enemy notices you.** `EnemyAI` is a thin MonoBehaviour: it builds the plain classes that
+make up the enemy (`EnemyMotion` for speed and facing, `EnemyRouting` for paths, melee,
+`EnemyRangedCombat`, perception, tactics…), ticks them and its behavior tree, and handles
+stuns, staggers, death and pooling. Nodes reach the parts through it (`Ai.Motion`,
+`Ai.Perception`); attacks go through the same `IDamageable` path as the player's.
 `EnemyPerception` is the only place an enemy learns anything: it samples sight and
 footsteps on a staggered timer, takes `Noise`, hits and `EnemyCallouts` as they happen,
 and turns them into an `AwarenessMeter` value, an `AwarenessLevel` and a belief

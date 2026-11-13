@@ -35,7 +35,7 @@ namespace CGD.Enemies
             if (!_moving) return BtStatus.Failure;
 
             Ai.ReportStep(EngageStep.Dodge);
-            Ai.SetSpeed(Ai.Data.ChaseSpeed * _speed);
+            Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed * _speed);
             return context.Time >= _endsAt || HasArrived(Ai.Agent, 0.4f) ? BtStatus.Success : BtStatus.Running;
         }
 

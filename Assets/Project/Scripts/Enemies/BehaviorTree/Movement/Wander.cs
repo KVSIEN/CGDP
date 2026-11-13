@@ -40,7 +40,7 @@ namespace CGD.Enemies
             if (!_moving) return BtStatus.Failure;
 
             Ai.ReportState(EnemyAI.AiState.Patrol);
-            Ai.SetSpeed(_run ? Ai.Data.ChaseSpeed : Ai.Data.PatrolSpeed);
+            Ai.Motion.SetSpeed(_run ? Ai.Data.ChaseSpeed : Ai.Data.PatrolSpeed);
             return HasArrived(Ai.Agent, 0.6f) ? BtStatus.Success : BtStatus.Running;
         }
     }

@@ -64,13 +64,14 @@ Assets/
                             BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/, Squad/, Pacing/, Voice/;
                             EnemyAction/EnemyCondition base nodes, EnemyBlackboard keys, TreeTickRate),
                             Routines/ (multi-frame routines nodes call: EnemySearch, ReturnStep, RetreatStep, RaiseAlarmStep),
-                            Combat/ (EnemyMelee, EnemyRangedCombat), Navigation/ (EnemyRouting: hazard-aware paths; EnemyPost: guarding, return point),
+                            Combat/ (EnemyMelee, EnemyRangedCombat), Navigation/ (EnemyRouting: hazard-aware paths; EnemyMotion: speed, facing, knockback; EnemyPost: guarding, return point),
                             Abilities/ (EnemyAbilities: casting Ability assets; GrenadeThrower, ThrowArc; ambush, minions, phase shift, survey beacon),
-                            Perception/ (EnemyPerception: awareness, targets, memory; EnemySenses: sight and hearing checks; AwarenessMeter, PerceptionProfile, callouts),
+                            Perception/ (EnemyPerception: awareness, targets, memory; EnemySenses: sight and hearing checks; AwarenessMeter, PerceptionProfile;
+                            CalloutSender: what it tells its kin; HostileFocus: who is busy fighting someone else),
                             Belief/ (EnemyBelief, BeliefModel: where an unseen target likely went),
                             Doctrine/ (FactionDoctrine: how a faction carries itself — morale, escalation, idle routine and tells; EnemyIdleLife, EnemyTells),
                             Tactics/ (CoverMap: cover spots from the NavMesh; CoverKnowledge, EnemyTactics: cover, flanking, hiding spots, melee turns;
-                            AttackTokens, EnemyMorale, AlarmPanel; TacticsLog: its latest cover / flank / vanish searches),
+                            AttackTokens, EnemyMorale, AlarmPanel + AlarmKnowledge (the panels it knows); TacticsLog: its latest cover / flank / vanish searches),
                             Debugging/ (EnemyInsight: the read-only view debug tools get; EnemyStatusReport, AwarenessColors),
                             Squads/ (EnemySquad: radio relay, leader; SquadRole),
                             Encounters/ (Encounter, EncounterBoard: kin fighting one target as a group; RoleSlot, RoleAssignment, Succession, EnemyTemperament),

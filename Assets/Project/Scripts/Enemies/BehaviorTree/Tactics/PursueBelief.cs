@@ -52,7 +52,7 @@ namespace CGD.Enemies
             {
                 Ai.ReportState(EnemyAI.AiState.Hunt);
                 Ai.ReportStep(EngageStep.Approach);
-                Ai.SetSpeed(_style == BeliefStyle.Sweep ? Ai.Data.ChaseSpeed : Ai.Data.ChaseSpeed * DeliberateSpeed);
+                Ai.Motion.SetSpeed(_style == BeliefStyle.Sweep ? Ai.Data.ChaseSpeed : Ai.Data.ChaseSpeed * DeliberateSpeed);
                 if (!HasArrived(Ai.Agent, ArrivalDistance)) return BtStatus.Running;
 
                 _arrived   = true;
@@ -62,7 +62,7 @@ namespace CGD.Enemies
 
             Ai.ReportStep(EngageStep.Hold);
             Ai.Agent.isStopped = true;
-            Ai.FaceTowards(_watch, context.DeltaTime);
+            Ai.Motion.FaceTowards(_watch, context.DeltaTime);
             return context.Time >= _lookUntil ? BtStatus.Success : BtStatus.Running;
         }
 
