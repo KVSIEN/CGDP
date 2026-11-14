@@ -70,5 +70,18 @@ namespace CGD.Tests
             }
             Assert.Greater(checkedPrefabs.Count, 10);
         }
+
+        // Each faction leans on its own trait: BIO hides, VOID breaks sight with walls, TECH
+        // holds lines of fire — and each is low on another's strength.
+        [TestCase("Bio",  TraitPriority.High,   TraitPriority.Medium, TraitPriority.Low)]
+        [TestCase("Void", TraitPriority.Medium, TraitPriority.High,   TraitPriority.Low)]
+        [TestCase("Tech", TraitPriority.Low,    TraitPriority.Medium, TraitPriority.High)]
+        public void EachFactionHasItsPriorities(string faction, TraitPriority concealment, TraitPriority walls, TraitPriority linesOfFire)
+        {
+            var design = Load<FactionDesign>($"Assets/Project/Data/Level/Designs/{faction}FactionDesign.asset");
+            Assert.AreEqual(concealment, design.Priorities.Of(RoomTrait.Concealment));
+            Assert.AreEqual(walls,       design.Priorities.Of(RoomTrait.Walls));
+            Assert.AreEqual(linesOfFire, design.Priorities.Of(RoomTrait.LinesOfFire));
+        }
     }
 }

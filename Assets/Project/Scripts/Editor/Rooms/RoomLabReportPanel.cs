@@ -36,6 +36,8 @@ namespace CGD.Editor
             {
                 DrawSummary(sample);
                 EditorGUILayout.Space(6f);
+                DrawPriorities(sample);
+                EditorGUILayout.Space(6f);
                 DrawIssues(sample);
                 EditorGUILayout.Space(6f);
                 DrawFurniture(sample);
@@ -64,12 +66,45 @@ namespace CGD.Editor
             CountFurniture(sample, out int pieces, out int floor);
             EditorGUILayout.LabelField("Furniture", $"{pieces} pieces on {floor} tiles ({(float)floor / Mathf.Max(1, room.Footprint.Count):0%} of the floor)");
 
-            RoomSampleChecks.LongestLane(sample, out int lane);
-            EditorGUILayout.LabelField(new GUIContent("Longest lane", "The longest unbroken row or column of see-through floor (Sightlines layer)"),
-                                       new GUIContent($"{lane * tile:0} m"));
             EditorGUILayout.LabelField("Seed", sample.SeedText);
             EditorGUIUtility.labelWidth = 0f;
         }
+
+        // What the holding faction asks of its fight rooms, next to what this room offers.
+        private static void DrawPriorities(RoomSample sample)
+        {
+            string title = sample.Design != null ? $"Priorities ({(sample.Room.Faction != null ? sample.Room.Faction.DisplayName : sample.Design.name)})" : "Priorities";
+            EditorGUILayout.LabelField(new GUIContent(title, "Wants: the faction design's Priorities. Has: measured from this room's floor and furniture"),
+                                       EditorStyles.miniBoldLabel);
+            if (!RoomSampleChecks.IsFightRoom(sample))
+                EditorGUILayout.LabelField("Not a fight room: priorities aren't checked.", EditorStyles.wordWrappedMiniLabel);
+            else if (sample.Design == null)
+                EditorGUILayout.LabelField("No faction design holds this room: pick a faction to check its priorities.", EditorStyles.wordWrappedMiniLabel);
+
+            foreach (RoomTrait trait in RoomSampleChecks.Traits)
+            {
+                TraitPriority got = sample.Traits.LevelOf(trait);
+                string wants = sample.Design != null ? sample.Design.Priorities.Of(trait).ToString() : "—";
+                string detail = RoomSampleChecks.Describe(trait, sample);
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    EditorGUILayout.LabelField(new GUIContent(RoomSampleChecks.Name(trait), detail), EditorStyles.miniLabel, GUILayout.Width(90f));
+                    GUILayout.Label(new GUIContent($"wants {wants}", detail), EditorStyles.miniLabel, GUILayout.Width(82f));
+                    Color previous = GUI.contentColor;
+                    if (sample.Design != null) GUI.contentColor = PriorityColor(Mathf.Abs((int)got - (int)sample.Design.Priorities.Of(trait)));
+                    GUILayout.Label(new GUIContent($"has {got}", detail), EditorStyles.miniLabel);
+                    GUI.contentColor = previous;
+                }
+                EditorGUILayout.LabelField(detail, EditorStyles.wordWrappedMiniLabel);
+            }
+        }
+
+        private static Color PriorityColor(int off) => off switch
+        {
+            0 => new Color(0.55f, 0.95f, 0.55f),
+            1 => new Color(1f, 0.85f, 0.4f),
+            _ => new Color(1f, 0.5f, 0.4f),
+        };
 
         // Pieces counted one per prop (a pile of crates is several); floor once per tile.
         private static void CountFurniture(RoomSample sample, out int pieces, out int floor)

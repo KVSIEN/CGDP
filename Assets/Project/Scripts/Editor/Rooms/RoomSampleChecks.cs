@@ -23,7 +23,7 @@ namespace CGD.Editor
             foreach (string warning in sample.Warnings) issues.Add(new RoomIssue(RoomIssue.Severity.Warning, warning));
             CheckReachable(sample, issues);
             CheckFurnishing(sample, issues);
-            CheckExposure(sample, issues);
+            CheckPriorities(sample, issues);
             return issues;
         }
 
@@ -91,38 +91,75 @@ namespace CGD.Editor
             }
         }
 
-        private static void CheckExposure(RoomSample sample, List<RoomIssue> issues)
+        // A fight room is checked against its faction's priorities; without a faction design,
+        // only for the plain hazard of a long open lane with nothing beside it to fight from.
+        private static void CheckPriorities(RoomSample sample, List<RoomIssue> issues)
+        {
+            if (!IsFightRoom(sample)) return;
+
+            RoomTraitReading traits = sample.Traits;
+            if (sample.Design == null)
+            {
+                if (traits.LongestLane >= ExposedLaneTiles && !traits.LaneHasCover)
+                    issues.Add(new RoomIssue(RoomIssue.Severity.Warning,
+                        $"A {traits.LongestLane * sample.Settings.TileSize:0} m open lane with nothing beside it: a fight here favours whoever holds the far end.",
+                        traits.Lane));
+                return;
+            }
+
+            foreach (RoomTrait trait in Traits)
+            {
+                TraitPriority wanted = sample.Design.Priorities.Of(trait), got = traits.LevelOf(trait);
+                int off = Mathf.Abs((int)got - (int)wanted);
+                if (off == 0) continue;
+
+                string faction = sample.Room.Faction != null ? sample.Room.Faction.DisplayName : sample.Design.name;
+                issues.Add(new RoomIssue(off >= 2 ? RoomIssue.Severity.Warning : RoomIssue.Severity.Info,
+                    $"{faction} wants {Lower(wanted)} {Name(trait)}; this room's is {Lower(got)} ({Describe(trait, sample)}). {Hint(trait, got < wanted)}",
+                    trait == RoomTrait.LinesOfFire ? traits.Lane : (RectInt?)null));
+            }
+        }
+
+        public static readonly RoomTrait[] Traits = { RoomTrait.Concealment, RoomTrait.Walls, RoomTrait.LinesOfFire };
+
+        // Rooms that hold enemies: the ones a faction's priorities are about.
+        public static bool IsFightRoom(RoomSample sample)
         {
             RoomContentRule rule = sample.Settings.RuleFor(sample.Room.Node.Type);
-            if (rule == null || rule.EnemyCount.Max <= 0) return;
-
-            RectInt lane = LongestLane(sample, out int length);
-            if (length < ExposedLaneTiles) return;
-            issues.Add(new RoomIssue(RoomIssue.Severity.Warning,
-                $"A {length * sample.Settings.TileSize:0} m open lane with nothing to break it: a fight here favours whoever holds the far end.", lane));
+            return rule != null && rule.EnemyCount.Max > 0;
         }
 
-        // The longest unbroken row or column of see-through floor, as a strip of tiles.
-        public static RectInt LongestLane(RoomSample sample, out int length)
+        public static string Name(RoomTrait trait) => trait switch
         {
-            length = 0;
-            Vector2Int best = default;
-            bool alongX = true;
-            foreach (Vector2Int tile in sample.Room.Footprint.Tiles)
-            {
-                (int x, int y) = sample.Sight.Runs(tile);
-                if (x > length) { length = x; best = tile; alongX = true; }
-                if (y > length) { length = y; best = tile; alongX = false; }
-            }
-            if (length == 0) return default;
+            RoomTrait.Concealment => "concealment",
+            RoomTrait.Walls       => "walls",
+            _                     => "lines of fire",
+        };
 
-            Vector2Int step = alongX ? Vector2Int.right : Vector2Int.up;
-            Vector2Int start = best;
-            RoomStructure structure = sample.Room.Structure;
-            while (structure.Footprint.Contains(start - step) && !structure.Has(start - step, SightlineMap.BlocksSight)
-                   && !structure.IsPartitioned(start - step, start))
-                start -= step;
-            return alongX ? new RectInt(start, new Vector2Int(length, 1)) : new RectInt(start, new Vector2Int(1, length));
+        // The measurement behind a trait's level, in a designer's words.
+        public static string Describe(RoomTrait trait, RoomSample sample)
+        {
+            RoomTraitReading traits = sample.Traits;
+            float tile = sample.Settings.TileSize;
+            return trait switch
+            {
+                RoomTrait.Concealment => $"{traits.ConcealedShare:0%} of the floor under concealment",
+                RoomTrait.Walls       => $"{traits.NarrowShare:0%} of the floor at most {RoomTraitMeasure.NarrowTiles * tile:0} m across",
+                _                     => $"longest lane {traits.LongestLane * tile:0} m, {(traits.LaneHasCover ? "with" : "no")} cover beside it",
+            };
         }
+
+        private static string Lower(TraitPriority priority) => priority.ToString().ToLowerInvariant();
+
+        // Which knobs move a trait, so the check says what to change.
+        private static string Hint(RoomTrait trait, bool tooLittle) => (trait, tooLittle) switch
+        {
+            (RoomTrait.Concealment, true)  => "Add concealment patches to the faction's or room type's dressing.",
+            (RoomTrait.Concealment, false) => "Fewer concealment patches in its dressing.",
+            (RoomTrait.Walls, true)        => "More dividers or pillars, a higher fill share or smaller rooms in the faction design.",
+            (RoomTrait.Walls, false)       => "Fewer dividers, a lower fill share or larger rooms.",
+            (RoomTrait.LinesOfFire, true)  => "Longer rooms (Rect, Cross), cover set along the lanes rather than across them, a lower fill share.",
+            _                              => "Break the long lane with cover across it, or a divider.",
+        };
     }
 }

@@ -27,6 +27,9 @@ namespace CGD.Editor
             DoorsWanted = doorsWanted;
             Warnings    = warnings;
             Sight       = new SightlineMap(room.Structure);
+            Traits      = RoomTraitMeasure.Measure(room.Structure, furnishing.Props);
+            // A Breach room is built by its first faction's design.
+            Design      = settings.DesignFor(room.Faction);
             Issues      = RoomSampleChecks.Run(this);
         }
 
@@ -42,6 +45,10 @@ namespace CGD.Editor
         public List<string>       Warnings    { get; }
         // Open floor along each row and column with the props in place.
         internal SightlineMap     Sight       { get; }
+        // How much concealment, walls and lines of fire the room offers.
+        public RoomTraitReading   Traits      { get; }
+        // The holding faction's design (its priorities), or null.
+        public FactionDesign      Design      { get; }
         public List<RoomIssue>    Issues      { get; }
 
         public bool IsValid => Room != null;

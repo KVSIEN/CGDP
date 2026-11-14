@@ -40,3 +40,7 @@ MonoBehaviour:
     Replacement: {fileID: 11400000, guid: a1fde776e5a24060a7d634376a10370e, type: 2}
   _fillShare: 0.3
   _propScale: 0.9
+  _priorities:
+    _concealment: 0
+    _walls: 1
+    _linesOfFire: 2

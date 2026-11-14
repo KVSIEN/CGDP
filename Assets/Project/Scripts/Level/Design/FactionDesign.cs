@@ -10,6 +10,8 @@ namespace CGD.Level
     //   - structure: the columns and walls it builds where a room's function brings none
     //   - dressing: its own props, its own version of the room types' cover and clutter, and
     //     how crowded it keeps a room
+    //   - priorities: what its fight rooms should offer (concealment, walls, lines of fire),
+    //     the targets the Room Lab checks each room against
     // LevelBuildSettings lists one per faction; a faction without one is built plainly. In a
     // Breach room the first faction's design sets the building, and both bring their props.
     [CreateAssetMenu(fileName = "FactionDesign", menuName = "CGD/Level/Faction Design")]
@@ -37,12 +39,17 @@ namespace CGD.Level
         [Tooltip("Multiplies how many of every prop a room gets (required ones excepted)")]
         [SerializeField, Min(0.1f)] private float _propScale = 1f;
 
+        [Header("Priorities")]
+        [Tooltip("How much this faction's fight rooms should offer each trait. Checked by the Room Lab; generation follows the settings above")]
+        [SerializeField] private RoomTraitPriorities _priorities = new();
+
         public FactionDefinition Faction => _faction;
         public float RoomSizeScale => _roomSizeScale;
         public IReadOnlyList<RoomStructureRule> Structure => _structure;
         public RoomDressing Dressing => _dressing;
         public float FillShare => _fillShare;
         public float PropScale => _propScale;
+        public RoomTraitPriorities Priorities => _priorities;
 
         public float ShapeWeight(RoomShape shape)
         {
