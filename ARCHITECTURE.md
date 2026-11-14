@@ -130,7 +130,12 @@ shared branches cost nothing extra and keep one blackboard. That is what a *beha
 branch in its own asset, run by a Subtree, which the Behavior Composer
 (`Editor/BehaviorTrees/Behaviors/`) adds to enemy types, reorders and switches off (an off
 Subtree fails at once and never builds its tree), so enemy types are put together from
-shared behaviors rather than copied trees. Interruptions use abort modes
+shared behaviors rather than copied trees. A behavior can name some of its node values as
+*settings* (`BehaviorSetting`, on the asset); each Subtree passes its own values, and an
+`EnemyData`'s `BehaviorTuning` list layers that enemy type's values (and per-type switch-offs)
+on top. `BehaviorTree.Instantiate` writes them into the agent's node copies as the tree is
+built (`BehaviorSettings`, reflection at spawn only — nothing per tick), so one asset runs
+with different numbers per use and per enemy type without being copied. Interruptions use abort modes
 (`AbortMode` on Sequence/Selector): composites re-check only *conditional* nodes —
 conditions, and gates like Cooldown that answer "may this run now?" — never actions.
 Debugging hooks stay out of the hot path: nodes only report to a `BtTrace` when the

@@ -68,6 +68,50 @@ namespace CGD.Editor
             return behavior;
         }
 
+        // --- Settings and per-enemy tuning ------------------------------------------------
+
+        // This use's own value for a behavior setting (null clears it back to the behavior's).
+        public static void SetUseValue(BehaviorTreeAsset tree, Subtree use, string setting, float? value)
+        {
+            Undo.RecordObject(tree, value.HasValue ? "Change Behavior Setting" : "Reset Behavior Setting");
+            if (value.HasValue) use.SetValue(setting, value.Value);
+            else use.ClearValue(setting);
+            Finish(tree, structure: false);
+        }
+
+        // The enemy type's own value for a setting of `behavior` (null clears it).
+        public static void SetEnemyValue(EnemyData enemy, BehaviorTreeAsset behavior, string setting, float? value)
+        {
+            EditTuning(enemy, behavior, value.HasValue ? "Tune Behavior for Enemy" : "Reset Enemy Tuning", tuning =>
+            {
+                if (value.HasValue) tuning.SetValue(setting, value.Value);
+                else tuning.ClearValue(setting);
+            });
+        }
+
+        // Switches `behavior` off (or back on) for this enemy type alone.
+        public static void SetEnemyOff(EnemyData enemy, BehaviorTreeAsset behavior, bool off)
+        {
+            EditTuning(enemy, behavior, off ? "Switch Behavior Off for Enemy" : "Switch Behavior On for Enemy", tuning => tuning.SetOff(off));
+        }
+
+        private static void EditTuning(EnemyData enemy, BehaviorTreeAsset behavior, string undoName, System.Action<BehaviorTuning> edit)
+        {
+            Undo.RecordObject(enemy, undoName);
+            BehaviorTuning tuning = BehaviorTuning.Find(enemy.BehaviorTuning, behavior);
+            if (tuning == null)
+            {
+                tuning = new BehaviorTuning(behavior);
+                enemy.BehaviorTuning.Add(tuning);
+            }
+            edit(tuning);
+            if (tuning.IsEmpty) enemy.BehaviorTuning.Remove(tuning);
+
+            EditorUtility.SetDirty(enemy);
+            AssetDatabase.SaveAssets();
+            if (enemy.BehaviorTree != null) BtEditorEvents.RaiseAssetEdited(enemy.BehaviorTree);
+        }
+
         public static void Move(BehaviorTreeAsset tree, BtParentNode list, int from, int to)
         {
             Undo.RecordObject(tree, "Reorder Behaviors");

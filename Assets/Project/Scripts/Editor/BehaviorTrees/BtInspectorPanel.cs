@@ -130,6 +130,9 @@ namespace CGD.Editor
             }
 
             if (_serialized.ApplyModifiedProperties()) NodeChanged?.Invoke(_asset.FindNode(_nodeGuid));
+
+            BtNode node = _asset.FindNode(_nodeGuid);
+            if (node != null) BtSettingsSection.Draw(_asset, node, _serialized.FindProperty("_nodes").GetArrayElementAtIndex(index));
         }
 
         private void DrawBreakpoints(BtNode node)

@@ -15,10 +15,13 @@ namespace CGD.BehaviorTrees
         // Editor canvas only: frames and notes for readers, not used at runtime.
         [SerializeField] private List<BtGroup> _groups = new();
         [SerializeField] private List<BtNote>  _notes  = new();
+        // Node settings promoted to named knobs that each use of this tree may change.
+        [SerializeField] private List<BehaviorSetting> _settings = new();
 
         [NonSerialized] private ProfilerMarker? _marker;
 
         public IReadOnlyList<BtNode> Nodes => _nodes;
+        public IReadOnlyList<BehaviorSetting> Settings => _settings;
 
         public BtRoot Root
         {
@@ -30,8 +33,10 @@ namespace CGD.BehaviorTrees
             }
         }
 
-        // A runnable copy for one agent; null if the tree has no root.
-        public BehaviorTree CreateInstance(GameObject owner, object agent) => BehaviorTree.Create(this, owner, agent);
+        // A runnable copy for one agent; null if the tree has no root. `tuning` is the agent
+        // type's own layer over its behaviors (switched off, own setting values), if any.
+        public BehaviorTree CreateInstance(GameObject owner, object agent, IReadOnlyList<BehaviorTuning> tuning = null) =>
+            BehaviorTree.Create(this, owner, agent, tuning);
 
         // "BehaviorTree.<name>" in the Profiler: the cost of every agent running this tree.
         internal ProfilerMarker Marker => _marker ??= new ProfilerMarker("BehaviorTree." + name);
@@ -48,12 +53,29 @@ namespace CGD.BehaviorTrees
 
         internal void AddNode(BtNode node) => _nodes.Add(node);
 
+        internal BehaviorSetting FindSetting(string nodeGuid, string field) =>
+            _settings.Find(setting => setting.NodeGuid == nodeGuid && setting.Field == field);
+
+        internal void AddSetting(BehaviorSetting setting) => _settings.Add(setting);
+
+        internal void RemoveSetting(BehaviorSetting setting) => _settings.Remove(setting);
+
+        // The distinct setting names, in the order first declared.
+        internal List<string> SettingNames()
+        {
+            var names = new List<string>();
+            foreach (BehaviorSetting setting in _settings)
+                if (!names.Contains(setting.Name)) names.Add(setting.Name);
+            return names;
+        }
+
         // Removes the node and every link to it; its children become unattached.
         internal void RemoveNode(BtNode node)
         {
             if (node is BtRoot) return;
 
             _nodes.Remove(node);
+            _settings.RemoveAll(setting => setting.NodeGuid == node.Guid);
             foreach (BtNode other in _nodes)
                 if (other is BtParentNode parent) parent.RemoveChild(node.Guid);
         }

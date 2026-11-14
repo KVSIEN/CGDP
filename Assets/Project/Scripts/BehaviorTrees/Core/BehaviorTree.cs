@@ -12,13 +12,16 @@ namespace CGD.BehaviorTrees
         private readonly Dictionary<BehaviorTreeAsset, Dictionary<string, BtNode>> _copies = new();
         // Assets being instantiated right now, so a subtree that contains itself is refused.
         private readonly HashSet<BehaviorTreeAsset> _building = new();
+        // The agent type's own layer over its behaviors (see BehaviorTuning); may be null.
+        private readonly IReadOnlyList<BehaviorTuning> _tuning;
         private BtRoot _root;
         private int    _traceWatchers;
 
-        private BehaviorTree(BehaviorTreeAsset asset, BtContext context)
+        private BehaviorTree(BehaviorTreeAsset asset, BtContext context, IReadOnlyList<BehaviorTuning> tuning)
         {
             Asset   = asset;
             Context = context;
+            _tuning = tuning;
             context.Tree = this;
         }
 
@@ -103,23 +106,30 @@ namespace CGD.BehaviorTrees
             return _copies.TryGetValue(asset, out var nodes) && nodes.TryGetValue(guid, out node);
         }
 
-        internal static BehaviorTree Create(BehaviorTreeAsset asset, GameObject owner, object agent)
+        // Whether the agent type switched this behavior off for itself (Subtrees running it fail).
+        internal bool IsSwitchedOff(BehaviorTreeAsset behavior) => BehaviorTuning.Find(_tuning, behavior)?.IsOff == true;
+
+        internal static BehaviorTree Create(BehaviorTreeAsset asset, GameObject owner, object agent, IReadOnlyList<BehaviorTuning> tuning = null)
         {
-            var tree = new BehaviorTree(asset, new BtContext(owner, agent));
+            var tree = new BehaviorTree(asset, new BtContext(owner, agent), tuning);
             tree._root = tree.Instantiate(asset);
             return tree._root != null ? tree : null;
         }
 
-        // Copies an asset's nodes for this agent, links them and initialises them (a Subtree
-        // node instantiates its own asset here). Null when the asset has no root, or would
-        // contain itself.
-        internal BtRoot Instantiate(BehaviorTreeAsset asset)
+        // Copies an asset's nodes for this agent, gives them their setting values (the ones
+        // this use passes, then the agent type's own, which win), links them and initialises
+        // them (a Subtree node instantiates its own asset here). Null when the asset has no
+        // root, or would contain itself.
+        internal BtRoot Instantiate(BehaviorTreeAsset asset, IReadOnlyList<SettingValue> values = null)
         {
             if (asset == null || !_building.Add(asset)) return null;
 
             var copies = new Dictionary<string, BtNode>();
             foreach (BtNode node in asset.Nodes)
                 if (node != null) copies[node.Guid] = node.CreateRuntimeCopy();
+
+            BehaviorSettings.Apply(asset, copies, values);
+            BehaviorSettings.Apply(asset, copies, BehaviorTuning.Find(_tuning, asset)?.Values);
 
             foreach (BtNode copy in copies.Values)
                 if (copy is BtParentNode parent) parent.LinkChildren(copies);

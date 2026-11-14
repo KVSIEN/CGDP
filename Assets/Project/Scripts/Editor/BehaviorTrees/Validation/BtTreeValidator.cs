@@ -7,7 +7,8 @@ namespace CGD.Editor
     // to run, nodes nothing reaches, subtrees with no tree (or that loop into themselves),
     // nodes that never finish with nothing above able to interrupt them, abort modes with
     // nothing to re-check, branches waiting on a Motive that can't interrupt, keys read that
-    // nothing writes, and odd weights or scores. Runs on
+    // nothing writes, odd weights or scores, and behavior settings that point nowhere (or values
+    // given to settings a behavior no longer has). Runs on
     // the asset as authored — no play mode needed — after every edit.
     internal static class BtTreeValidator
     {
@@ -45,6 +46,7 @@ namespace CGD.Editor
                 CheckKeys(asset, node, issues);
                 CheckComposite(asset, node, issues);
             }
+            CheckSettings(asset, issues);
             return issues;
         }
 
@@ -85,6 +87,25 @@ namespace CGD.Editor
                 Add(issues, node, BtIssueSeverity.Error, $"{subtree.Tree.name} leads back to this tree: it would run itself, so it fails instead.");
             else if (subtree.Tree.Root == null || subtree.Tree.Root.ChildGuids.Count == 0)
                 Add(issues, node, BtIssueSeverity.Warning, $"{subtree.Tree.name} has nothing under its Root.");
+
+            if (subtree.Tree == null) return;
+            List<string> names = subtree.Tree.SettingNames();
+            foreach (SettingValue value in subtree.Values)
+                if (!names.Contains(value.Name))
+                    Add(issues, node, BtIssueSeverity.Warning, $"Gives '{value.Name}' a value, but {subtree.Tree.name} has no setting of that name (renamed or removed?), so it is ignored.");
+        }
+
+        // A setting whose node or field is gone does nothing: uses giving it a value change nothing.
+        private static void CheckSettings(BehaviorTreeAsset asset, List<BtIssue> issues)
+        {
+            foreach (BehaviorSetting setting in asset.Settings)
+            {
+                BtNode node = asset.FindNode(setting.NodeGuid);
+                if (node == null)
+                    issues.Add(new BtIssue(null, BtIssueSeverity.Warning, $"Setting '{setting.Name}' belongs to a node that no longer exists."));
+                else if (BehaviorSettings.FieldType(node, setting.Field) == null)
+                    Add(issues, node, BtIssueSeverity.Warning, $"Setting '{setting.Name}' points at '{setting.Field}', which this node no longer has.");
+            }
         }
 
         private static void CheckAbortMode(BehaviorTreeAsset asset, BtNode node, List<BtIssue> issues)

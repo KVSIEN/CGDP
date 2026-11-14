@@ -129,6 +129,19 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void ABehaviorAnEnemySwitchedOffNeedsNothingFromItsKit()
+        {
+            _module.Add(Set(new UseAbility(), "_slot", AbilitySlot.Escape), _module.Root);
+            BehaviorEditing.AddBehavior(_main.Asset, _main.Add(new Selector(), _main.Root), _module.Asset);
+
+            var tuning = new BehaviorTuning(_module.Asset);
+            tuning.SetOff(true);
+
+            Assert.AreEqual("Escape", KitNeed.Names(KitNeed.Of(EnemyTreeContents.Nodes(_main.Asset))));
+            Assert.AreEqual("", KitNeed.Names(KitNeed.Of(EnemyTreeContents.Nodes(_main.Asset, new[] { tuning }))));
+        }
+
+        [Test]
         public void AnEmptyBehaviorStartsWithASequence()
         {
             BehaviorEditing.BuildEmptyBehavior(_module.Asset);

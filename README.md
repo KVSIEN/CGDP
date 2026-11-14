@@ -32,7 +32,7 @@ Assets/
                             Cast, Ward and Channel behaviors; add a new artifact kind by subclassing OffhandBehavior and OffhandUse
       Animation/            Animator parameter bridge (AnimatorBridge, AnimatorParams), PlayerAnimator, EnemyAnimator, ViewmodelAnimator (per-weapon override controllers), Ragdoll;
                             animation cues: AnimationCue, AnimationEventRelay, AnimationCueSoundSet, AnimationCueAudio
-      BehaviorTrees/        generic behavior trees: Core/ (BtNode, BtParentNode, BtComposite, BtDecorator, BtAction, BtCondition, BtRoot,
+      BehaviorTrees/        generic behavior trees: Settings/ (BehaviorSetting, SettingValue, BehaviorTuning, BehaviorSettings — named node values each use and enemy type can change), Core/ (BtNode, BtParentNode, BtComposite, BtDecorator, BtAction, BtCondition, BtRoot,
                             AbortMode, Subtree, BehaviorTreeAsset, BehaviorTree (per-agent copy), BtContext, Blackboard),
                             Composites/, Decorators/, Actions/, Blackboard/ (flag, number and key nodes), Debugging/ (BtTrace)
       Audio/                audio pool, sound banks, surface lookup; mixer: AudioMixerController, AudioMixerSettings, MixState (+ request), GameplayMixStates
@@ -58,7 +58,7 @@ Assets/
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report),
                             Enemies/ (New Enemy Type wizard, Enemy Roster window, EnemyData inspector + EnemyDataReview checks, KitNeed (kit pieces a tree casts from) + EnemyKitSection, sight gizmo),
                             BehaviorTrees/ (Behavior Tree Editor: window, side panel; Behaviors/ — reusable behaviors: Behavior Composer window,
-                            BehaviorLibrary (+ BehaviorLibraryPanel), BehaviorPicker (searchable add list), BehaviorTrigger (when a behavior acts), BehaviorEditing / BehaviorActions (save branch as behavior, new empty behavior, switch on/off, reorder); Canvas/ — GraphView, node, group and note views,
+                            BehaviorLibrary (+ BehaviorLibraryPanel), BehaviorPicker (searchable add list), BehaviorTrigger (when a behavior acts), BehaviorSettingsDrawer (per-use / per-enemy values), BehaviorRowProblems, BehaviorEditing / BehaviorActions (save branch as behavior, new empty behavior, switch on/off, reorder); Canvas/ — GraphView, node, group and note views,
                             layout, search; Blackboard/ — key catalog and picker; Validation/ — tree checks; Debugging/ — trace,
                             live view, breakpoints)
       Enemies/              the agent itself at the root: EnemyAI (body + tree; owns every plain class below), EnemyData, EnemyHealth,

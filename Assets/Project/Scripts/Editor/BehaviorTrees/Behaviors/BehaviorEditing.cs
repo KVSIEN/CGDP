@@ -77,7 +77,8 @@ namespace CGD.Editor
 
         // Moves a branch into `module` (an empty tree) and puts a Subtree running it in its place,
         // so the tree behaves exactly as before. The branch's comment becomes the behavior's
-        // description (the module Root's comment) and stays on the Subtree node. Null (nothing
+        // description (the module Root's comment) and stays on the Subtree node; the branch's
+        // settings move with it. Null (nothing
         // changed) for the Root or a branch that isn't connected to anything.
         public static Subtree ExtractBranch(BehaviorTreeAsset source, BtNode top, BehaviorTreeAsset module)
         {
@@ -90,6 +91,7 @@ namespace CGD.Editor
 
             var order = new List<string>(parent.ChildGuids);
             order[order.IndexOf(top.Guid)] = subtree.Guid;
+            List<BehaviorSetting> settings = SettingsOf(source, moved);   // removing the nodes drops them
             foreach (BtNode node in moved) source.RemoveNode(node);   // parents first, so links inside the branch survive
             source.AddNode(subtree);
             parent.SetChildOrder(order);
@@ -104,7 +106,18 @@ namespace CGD.Editor
                 module.AddNode(node);
             }
             module.Root.AddChild(top.Guid);
+            foreach (BehaviorSetting setting in settings) module.AddSetting(setting);
             return subtree;
+        }
+
+        private static List<BehaviorSetting> SettingsOf(BehaviorTreeAsset asset, List<BtNode> nodes)
+        {
+            var guids = new HashSet<string>();
+            foreach (BtNode node in nodes) guids.Add(node.Guid);
+            var settings = new List<BehaviorSetting>();
+            foreach (BehaviorSetting setting in asset.Settings)
+                if (guids.Contains(setting.NodeGuid)) settings.Add(setting);
+            return settings;
         }
 
         // Adds a Subtree running `module` to the list, at `index` (or the end), beside its siblings.

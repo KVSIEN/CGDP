@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CGD.BehaviorTrees;
 using CGD.Combat;
 using CGD.Enemies;
 
@@ -33,7 +34,7 @@ namespace CGD.Editor
             var lines = new List<string>();
             if (data == null) return lines;
 
-            HashSet<Type> nodes = EnemyTreeContents.NodeTypes(data.BehaviorTree);
+            HashSet<Type> nodes = EnemyTreeContents.NodeTypes(data.BehaviorTree, data.BehaviorTuning);
             lines.Add($"Toughness: {data.EffectiveHealth:0} raw damage to kill ({data.MaxHealth:0} health + {data.MaxShield:0} shield, {data.Armor:0} armour).");
 
             if (MeleeAttacks(data, nodes))
@@ -63,7 +64,7 @@ namespace CGD.Editor
                 return issues;
             }
 
-            HashSet<Type> nodes = EnemyTreeContents.NodeTypes(data.BehaviorTree);
+            HashSet<Type> nodes = EnemyTreeContents.NodeTypes(data.BehaviorTree, data.BehaviorTuning);
             if (data.MaxHealth <= 0f)
                 issues.Add(new Issue(BtIssueSeverity.Error, "Max Health is 0: it dies the moment it spawns."));
 
@@ -84,6 +85,7 @@ namespace CGD.Editor
                 issues.Add(new Issue(BtIssueSeverity.Warning, "Raises Alarm is on, but its tree has no Raise Alarm node (add the shared RaiseAlarmSubtree)."));
 
             CheckKit(data, issues);
+            CheckTuning(data, issues);
 
             if (data.ChaseSpeed < data.PatrolSpeed)
                 issues.Add(new Issue(BtIssueSeverity.Warning, "Chase Speed is slower than Patrol Speed: it slows down when it starts a fight."));
@@ -98,9 +100,33 @@ namespace CGD.Editor
         // data leaves empty means those branches never fire.
         private static void CheckKit(EnemyData data, List<Issue> issues)
         {
-            List<KitNeed> needs = KitNeed.Of(EnemyTreeContents.Nodes(data.BehaviorTree));
+            List<KitNeed> needs = KitNeed.Of(EnemyTreeContents.Nodes(data.BehaviorTree, data.BehaviorTuning));
             foreach (KitNeed need in KitNeed.Missing(data, needs))
                 issues.Add(new Issue(BtIssueSeverity.Warning, $"Its tree uses its kit's {need.Name}, but {need.Field} is empty: those behaviors never fire."));
+        }
+
+        // Tuning for a behavior its tree doesn't run does nothing; nor does a value for a setting
+        // the behavior no longer has (renamed or removed in the tree editor).
+        private static void CheckTuning(EnemyData data, List<Issue> issues)
+        {
+            var used = new HashSet<BehaviorTreeAsset> { data.BehaviorTree };
+            foreach (BtNode node in EnemyTreeContents.Nodes(data.BehaviorTree))
+                if (node is Subtree { Tree: not null } subtree) used.Add(subtree.Tree);
+
+            foreach (BehaviorTuning tuning in data.BehaviorTuning)
+            {
+                if (tuning == null || tuning.Behavior == null) continue;
+                if (!used.Contains(tuning.Behavior))
+                {
+                    issues.Add(new Issue(BtIssueSeverity.Info, $"Behavior Tuning for {tuning.Behavior.name}, which its tree doesn't run: it does nothing."));
+                    continue;
+                }
+
+                List<string> names = tuning.Behavior.SettingNames();
+                foreach (SettingValue value in tuning.Values)
+                    if (!names.Contains(value.Name))
+                        issues.Add(new Issue(BtIssueSeverity.Warning, $"Behavior Tuning gives {tuning.Behavior.name}'s '{value.Name}' a value, but it has no setting of that name (renamed?): it is ignored."));
+            }
         }
 
         private static bool Shoots(EnemyData data, HashSet<Type> nodes) =>

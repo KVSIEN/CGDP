@@ -112,9 +112,26 @@ namespace CGD.Editor
             Selection.activeObject = asset;
         }
 
+        // Its own layer over the shared behaviors (Behavior Tuning, drawn with the usual fields).
+        private static void DrawTuningSummary(EnemyData data)
+        {
+            int tuned = 0, off = 0;
+            foreach (BehaviorTuning tuning in data.BehaviorTuning)
+            {
+                if (tuning == null || tuning.Behavior == null) continue;
+                tuned++;
+                if (tuning.IsOff) off++;
+            }
+            if (tuned == 0) return;
+
+            EditorGUILayout.LabelField($"Own tuning: {tuned} behavior{(tuned == 1 ? "" : "s")} ({off} switched off for it alone) — " +
+                                       "edit in the Behavior Composer with 'Only this enemy'.", EditorStyles.wordWrappedMiniLabel);
+        }
+
         private void DrawTools(EnemyData data)
         {
             EditorGUILayout.Space(8f);
+            DrawTuningSummary(data);
             using (new EditorGUILayout.HorizontalScope())
             {
                 if (GUILayout.Button(new GUIContent("Behavior Composer", "Switch its behaviors on and off, reorder them, add more from the library")))

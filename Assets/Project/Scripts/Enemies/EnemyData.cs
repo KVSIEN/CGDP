@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Abilities;
 using CGD.Audio;
@@ -59,6 +60,9 @@ namespace CGD.Enemies
         [Tooltip("Decides what the enemy does: patrolling, searching, fighting (edit it in CGD › AI › Behavior Tree Editor). " +
                  "Without one the enemy just stands there")]
         public BehaviorTreeAsset BehaviorTree;
+        [Tooltip("This enemy type's own take on the behaviors in its tree: some switched off, some with their own settings — " +
+                 "so it can share a tree with other types and still differ (edit it in the Behavior Composer, 'Only this enemy')")]
+        public List<BehaviorTuning> BehaviorTuning = new();
         [Tooltip("What it says out loud (spotted you, flanking, falling back…). Empty = silent")]
         public EnemyBarkSet Voice;
 

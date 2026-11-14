@@ -176,7 +176,7 @@ namespace CGD.Enemies
         {
             _started = true;
             Post.Remember();
-            if (_data.BehaviorTree != null) _tree = _data.BehaviorTree.CreateInstance(gameObject, this);
+            if (_data.BehaviorTree != null) _tree = _data.BehaviorTree.CreateInstance(gameObject, this, _data.BehaviorTuning);
             // Spread first ticks so a level's worth of calm enemies don't all think on one frame.
             _sinceTreeTick = UnityEngine.Random.value * TreeTickRate.Remote;
             if (_health.IsDead) ReportState(AiState.Dead);

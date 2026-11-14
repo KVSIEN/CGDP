@@ -8,7 +8,7 @@ using UnityEngine;
 namespace CGD.Editor
 {
     // The Behavior Composer's library section: every behavior by category, searchable, each with
-    // its description, when it acts, the kit pieces it needs (flagged when the enemy being
+    // its description, when it acts, its settings, the kit pieces it needs (flagged when the enemy being
     // composed lacks them) and how many trees use it. Reading the library walks every tree
     // asset, so it is cached and refreshed when the Composer regains focus or edits it.
     internal sealed class BehaviorLibraryPanel
@@ -16,6 +16,7 @@ namespace CGD.Editor
         private readonly Dictionary<BehaviorTreeAsset, int>           _users = new();
         private readonly Dictionary<BehaviorTreeAsset, List<KitNeed>> _needs = new();
         private readonly Dictionary<BehaviorTreeAsset, string>        _when  = new();
+        private readonly Dictionary<BehaviorTreeAsset, string>        _settings = new();
         private bool   _expanded;
         private string _search = "";
 
@@ -27,11 +28,13 @@ namespace CGD.Editor
             _users.Clear();
             _needs.Clear();
             _when.Clear();
+            _settings.Clear();
             foreach (BehaviorLibrary.Entry entry in Entries)
             {
                 _users[entry.Asset] = BehaviorLibrary.TreesUsing(entry.Asset).Count;
                 _needs[entry.Asset] = KitNeed.Of(EnemyTreeContents.Nodes(entry.Asset));
                 _when[entry.Asset]  = BehaviorTrigger.Describe(entry.Asset, entry.Asset.Root);
+                _settings[entry.Asset] = BehaviorSettingsDrawer.Summary(entry.Asset);
             }
         }
 
@@ -73,6 +76,8 @@ namespace CGD.Editor
                     if (entry.Description.Length > 0) GUILayout.Label(entry.Description, EditorStyles.wordWrappedMiniLabel);
                     if (_when.TryGetValue(entry.Asset, out string when)) GUILayout.Label("When: " + when, EditorStyles.wordWrappedMiniLabel);
                     DrawNeeds(entry.Asset, enemy);
+                    if (_settings.TryGetValue(entry.Asset, out string settings) && settings.Length > 0)
+                        GUILayout.Label("Settings: " + settings, EditorStyles.wordWrappedMiniLabel);
                 }
                 int users = Users(entry.Asset);
                 GUILayout.Label($"in {users} tree{(users == 1 ? "" : "s")}", EditorStyles.miniLabel, GUILayout.Width(60f));

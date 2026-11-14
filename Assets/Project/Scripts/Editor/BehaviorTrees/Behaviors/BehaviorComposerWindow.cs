@@ -17,12 +17,14 @@ namespace CGD.Editor
     // filled in right here — plus the tree checks' problems inside each behavior, and a hint when
     // one sits below a behavior that takes every turn. In Play mode, selecting an agent marks
     // the behaviors it is running.
+    // Behaviors with settings (BehaviorSetting) show them, editable for this tree's use of the
+    // behavior — or, with "Only <enemy>" picked, for that enemy type alone (its BehaviorTuning,
+    // which can also switch behaviors off for it), so enemy types can share one tree and differ.
     // Everything here is an ordinary edit of the tree asset: the Behavior Tree Editor shows the
     // same tree, and either can be used at any time.
     internal sealed class BehaviorComposerWindow : EditorWindow
     {
         private const int ExpandedDepth = 1;   // deeper lists (choices inside one behavior) start folded
-        private const int ShownProblems = 3;
         private static readonly Color RunningTint = new(1f, 0.8f, 0.2f, 0.18f);
 
         private EnemyData         _enemy;
@@ -31,9 +33,10 @@ namespace CGD.Editor
         private List<KitNeed>     _treeNeeds = new();
         private readonly BehaviorLibraryPanel _library = new();
         private readonly Dictionary<string, bool> _folded = new();
-        private readonly Dictionary<string, List<BtIssue>> _rowProblems = new();   // by row node guid
+        private readonly BehaviorRowProblems _problems = new();
         private int       _treeSharing;   // enemy types thinking with _tree
         private bool      _showKit;
+        private bool      _onlyEnemy;     // switches and settings edit the enemy's tuning, not the tree
         private Component _watchedOwner;  // the selected agent, in Play mode
         private Vector2   _scroll;
 
@@ -44,7 +47,12 @@ namespace CGD.Editor
         {
             var window = GetWindow<BehaviorComposerWindow>("Behavior Composer");
             window.minSize = new Vector2(460f, 400f);
-            if (enemy != null) window.UseEnemy(enemy);
+            if (enemy != null)
+            {
+                window.UseEnemy(enemy);
+                // A shared tree opened for one enemy: edits are most likely meant for it alone.
+                window._onlyEnemy = window._treeSharing > 1;
+            }
             else if (tree != null) window.UseTree(tree);
             window.Show();
         }
@@ -74,8 +82,8 @@ namespace CGD.Editor
 
         private void RefreshTreeFacts()
         {
-            _treeNeeds = KitNeed.Of(EnemyTreeContents.Nodes(_tree));
-            RefreshProblems();
+            _treeNeeds = KitNeed.Of(EnemyTreeContents.Nodes(_tree, EnemyTuning));
+            _problems.Refresh(_tree);
             Repaint();
         }
 
@@ -114,44 +122,20 @@ namespace CGD.Editor
         {
             _tree        = tree;
             _treeSharing = EnemyAssetLibrary.CountUsers(tree, EnemyAssetLibrary.AllEnemyData());
-            _treeNeeds   = KitNeed.Of(EnemyTreeContents.Nodes(tree));
-            RefreshProblems();
+            _treeNeeds   = KitNeed.Of(EnemyTreeContents.Nodes(tree, EnemyTuning));
+            _problems.Refresh(_tree);
         }
 
-        // The tree checks' warnings and errors, gathered per row: those on the row's own nodes,
-        // and for a behavior those inside its asset. Validating is too slow to redo every repaint.
-        private void RefreshProblems()
-        {
-            _rowProblems.Clear();
-            if (_tree == null) return;
+        // The picked enemy thinks with this tree, so its own tuning applies to what is shown.
+        private bool CanTuneEnemy => _enemy != null && _tree != null && _enemy.BehaviorTree == _tree;
+        private bool EditingEnemy => _onlyEnemy && CanTuneEnemy;
+        private IReadOnlyList<BehaviorTuning> EnemyTuning => CanTuneEnemy ? _enemy.BehaviorTuning : null;
 
-            var byNode = new Dictionary<string, List<BtIssue>>();
-            foreach (BtIssue issue in BtTreeValidator.Validate(_tree)) AddProblem(byNode, issue.NodeGuid, issue);
+        private bool IsEnemyOff(Subtree subtree) =>
+            CanTuneEnemy && BehaviorTuning.Find(_enemy.BehaviorTuning, subtree.Tree)?.IsOff == true;
 
-            var insideBehaviors = new Dictionary<BehaviorTreeAsset, List<BtIssue>>();
-            foreach (BehaviorEditing.BehaviorList list in BehaviorEditing.Lists(_tree))
-            foreach (string guid in list.Selector.ChildGuids)
-            {
-                BtNode row = _tree.FindNode(guid);
-                if (row == null) continue;
-
-                foreach (BtNode node in BehaviorEditing.Branch(_tree, row))
-                    if (byNode.TryGetValue(node.Guid, out List<BtIssue> own))
-                        foreach (BtIssue issue in own) AddProblem(_rowProblems, row.Guid, issue);
-
-                if (row is not Subtree { Tree: not null } subtree) continue;
-                if (!insideBehaviors.TryGetValue(subtree.Tree, out List<BtIssue> inside))
-                    insideBehaviors[subtree.Tree] = inside = BtTreeValidator.Validate(subtree.Tree);
-                foreach (BtIssue issue in inside) AddProblem(_rowProblems, row.Guid, issue);
-            }
-        }
-
-        private static void AddProblem(Dictionary<string, List<BtIssue>> problems, string guid, BtIssue issue)
-        {
-            if (guid == null || issue.Severity == BtIssueSeverity.Info) return;
-            if (!problems.TryGetValue(guid, out List<BtIssue> list)) problems[guid] = list = new List<BtIssue>();
-            list.Add(issue);
-        }
+        // Whether the behavior runs for what is being edited: the tree as a whole, or the enemy.
+        private bool IsOnFor(Subtree subtree) => subtree.IsOn && !(EditingEnemy && IsEnemyOff(subtree));
 
         // The selected agent's running tree, when it runs this one.
         private BehaviorTree WatchedTree()
@@ -176,6 +160,7 @@ namespace CGD.Editor
                     "(Undo works) and show in the Behavior Tree Editor.",
                     MessageType.None);
                 DrawWatchStatus();
+                DrawTreeSettings();
                 List<BehaviorEditing.BehaviorList> lists = BehaviorEditing.Lists(_tree);
                 if (lists.Count == 0)
                     EditorGUILayout.HelpBox("This tree has no Selector to hold behaviors. Open it in the Behavior Tree Editor, or start a new tree.", MessageType.Info);
@@ -207,7 +192,10 @@ namespace CGD.Editor
 
                 if (_tree != null && _treeSharing > 1)
                     EditorGUILayout.HelpBox($"{_treeSharing} enemy types think with this tree: changes here change all of them. " +
-                                            "Give one its own (Make Own Copy in its Enemy Data) to change it alone.", MessageType.Warning);
+                                            (CanTuneEnemy ? $"Pick 'Only {_enemy.name}' below to switch behaviors and change settings for it alone, or " : "") +
+                                            "give one its own tree (Make Own Copy in its Enemy Data).", MessageType.Warning);
+
+                DrawScope();
 
                 if (_enemyObject != null && _enemyObject.targetObject != null) EnemyKitSection.Draw(_enemyObject, _treeNeeds, ref _showKit);
 
@@ -228,6 +216,37 @@ namespace CGD.Editor
                 "Pick an enemy or a tree to compose. A new starter tree is laid out like the AITest agents' trees " +
                 "(regroup, raise alarm, fight while it knows the target, routine), ready for fight behaviors from the library.",
                 MessageType.Info);
+        }
+
+        // Who an on/off switch or a setting edit changes.
+        private void DrawScope()
+        {
+            if (!CanTuneEnemy) return;
+
+            int scope = GUILayout.Toolbar(_onlyEnemy ? 1 : 0, new[]
+            {
+                new GUIContent("Every enemy using this tree", "Switches and settings change the tree itself"),
+                new GUIContent($"Only {_enemy.name}", "Switches and settings change this enemy type alone (its Behavior Tuning)"),
+            });
+            _onlyEnemy = scope == 1;
+            if (_onlyEnemy)
+                EditorGUILayout.LabelField($"On/off switches and settings now change {_enemy.name} alone. Ordering, adding and removing behaviors still change the tree.",
+                                           EditorStyles.wordWrappedMiniLabel);
+        }
+
+        // The tree's own settings: only an enemy type can give them other values.
+        private void DrawTreeSettings()
+        {
+            if (_tree.Settings.Count == 0) return;
+
+            using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+            {
+                EditorGUILayout.LabelField("Tree settings", EditorStyles.boldLabel);
+                if (EditingEnemy) BehaviorSettingsDrawer.Draw(_tree, _tree, null, _enemy, true);
+                else EditorGUILayout.LabelField(BehaviorSettingsDrawer.Summary(_tree) +
+                                                (CanTuneEnemy ? $"   — pick 'Only {_enemy.name}' to tune them for it" : "   — tune them per enemy type from its Composer"),
+                                                EditorStyles.wordWrappedMiniLabel);
+            }
         }
 
         private void DrawWatchStatus()
@@ -284,7 +303,7 @@ namespace CGD.Editor
                                                        EditorStyles.wordWrappedMiniLabel);
                         DrawRow(list.Selector, child, i, children.Count, watched);
 
-                        bool on = child is not Subtree { IsOn: false };
+                        bool on = child is not Subtree subtreeChild || IsOnFor(subtreeChild);
                         if (takesEveryTurn == null && on && BehaviorTrigger.ActsAlways(_tree, child)) takesEveryTurn = Title(child);
                     }
                     DrawAddButton(list.Selector);
@@ -302,29 +321,63 @@ namespace CGD.Editor
                 if (running && Event.current.type == EventType.Repaint) EditorGUI.DrawRect(row.rect, RunningTint);
                 GUILayout.Label(running ? "▶" : (index + 1).ToString(), EditorStyles.miniLabel, GUILayout.Width(18f));
 
-                if (subtree != null)
-                {
-                    bool on = EditorGUILayout.Toggle(subtree.IsOn, GUILayout.Width(16f));
-                    if (on != subtree.IsOn)
-                    {
-                        BehaviorActions.SetOn(_tree, subtree, on);
-                        GUIUtility.ExitGUI();
-                    }
-                }
+                if (subtree != null) DrawSwitch(subtree);
                 else GUILayout.Space(20f);
 
-                using (new EditorGUI.DisabledScope(subtree != null && !subtree.IsOn))
+                using (new EditorGUI.DisabledScope(subtree != null && !IsOnFor(subtree)))
                 using (new EditorGUILayout.VerticalScope())
                 {
-                    GUILayout.Label(new GUIContent(Title(node), Tooltip(node)), EditorStyles.boldLabel);
+                    string title = Title(node) + (subtree != null && IsEnemyOff(subtree) ? $"   (off for {_enemy.name})" : "");
+                    GUILayout.Label(new GUIContent(title, Tooltip(node)), EditorStyles.boldLabel);
                     string description = Description(node);
                     if (description.Length > 0) GUILayout.Label(description, EditorStyles.wordWrappedMiniLabel);
                     DrawFacts(node, subtree);
-                    DrawProblems(node);
+                    DrawSettings(subtree);
+                    _problems.Draw(node);
                 }
 
                 DrawRowButtons(list, node, subtree, index, count);
             }
+        }
+
+        // On/off for the tree, or — editing one enemy — for that enemy alone (a behavior off in
+        // the tree is off for everyone, so it can't be switched on for one enemy here).
+        private void DrawSwitch(Subtree subtree)
+        {
+            if (!EditingEnemy)
+            {
+                bool on = EditorGUILayout.Toggle(subtree.IsOn, GUILayout.Width(16f));
+                if (on == subtree.IsOn) return;
+                BehaviorActions.SetOn(_tree, subtree, on);
+                GUIUtility.ExitGUI();
+            }
+
+            bool shown = IsOnFor(subtree);
+            using (new EditorGUI.DisabledScope(!subtree.IsOn || subtree.Tree == null))
+            {
+                bool on = EditorGUILayout.Toggle(new GUIContent("", subtree.IsOn ? $"On for {_enemy.name}" : "Switched off in the tree, for every enemy"),
+                                                 shown, GUILayout.Width(16f));
+                if (on == shown) return;
+            }
+            BehaviorActions.SetEnemyOff(_enemy, subtree.Tree, !shown);
+            GUIUtility.ExitGUI();
+        }
+
+        private void DrawSettings(Subtree subtree)
+        {
+            if (subtree == null || subtree.Tree == null) return;
+            int count = subtree.Tree.SettingNames().Count;
+            if (count == 0) return;
+
+            string key = subtree.Guid + "/settings";
+            bool open = _folded.TryGetValue(key, out bool expanded) && expanded;
+            string scope = EditingEnemy ? $"for {_enemy.name}" : "for this tree";
+            open = EditorGUILayout.Foldout(open, $"Settings ({count}) — {scope}", true);
+            _folded[key] = open;
+            if (!open) return;
+
+            using (new EditorGUI.IndentLevelScope())
+                BehaviorSettingsDrawer.Draw(_tree, subtree.Tree, subtree, _enemy, EditingEnemy);
         }
 
         private void DrawRowButtons(Selector list, BtNode node, Subtree subtree, int index, int count)
@@ -399,17 +452,6 @@ namespace CGD.Editor
             if (missing.Count > 0)
                 EditorGUILayout.HelpBox($"{_enemy.name}'s {KitNeed.Names(missing)} {(missing.Count == 1 ? "is" : "are")} empty: " +
                                         "the parts using it never fire (fill it in under Kit above).", MessageType.Warning);
-        }
-
-        private void DrawProblems(BtNode node)
-        {
-            if (!_rowProblems.TryGetValue(node.Guid, out List<BtIssue> problems)) return;
-
-            bool error = problems.Exists(issue => issue.Severity == BtIssueSeverity.Error);
-            var lines = new List<string>();
-            for (int i = 0; i < problems.Count && i < ShownProblems; i++) lines.Add(problems[i].Message);
-            if (problems.Count > ShownProblems) lines.Add($"… and {problems.Count - ShownProblems} more (Open to see them on the nodes).");
-            EditorGUILayout.HelpBox(string.Join("\n", lines), error ? MessageType.Error : MessageType.Warning);
         }
 
         private void DrawAddButton(Selector list)
