@@ -124,6 +124,8 @@ namespace CGD.Editor
                 _session.BuildSettings, typeof(LevelBuildSettings), false, GUILayout.Width(180f));
             _blueprintView.Fill = (LevelBlueprint.Fill)EditorGUILayout.EnumPopup(
                 _blueprintView.Fill, EditorStyles.toolbarPopup, GUILayout.Width(90f));
+            _blueprintView.ShowProps = GUILayout.Toggle(_blueprintView.ShowProps,
+                new GUIContent("Props", "Show each room's furniture and cover, as the level places it"), EditorStyles.toolbarButton);
         }
 
         // Settings and seed are plain serialized fields on the asset, edited through

@@ -51,6 +51,9 @@ namespace CGD.Editor
             using (new EditorGUILayout.HorizontalScope())
             {
                 EditorGUILayout.LabelField($"Node #{node.Id}", EditorStyles.boldLabel);
+                if (GUILayout.Button(new GUIContent("Room Lab", "Open the room this node becomes in the Room Lab: its plan, furniture, sightlines and checks"),
+                                     EditorStyles.miniButton, GUILayout.Width(70f)))
+                    RoomLabWindow.OpenMapRoom(session.Asset, node.Id, session.BuildSettings);
                 using (new EditorGUI.DisabledScope(!MapGraphPlayLauncher.CanPlay(session.Asset)))
                 {
                     if (GUILayout.Button(new GUIContent("Play from here", "Play this graph in the MapTest scene, starting in this room"),

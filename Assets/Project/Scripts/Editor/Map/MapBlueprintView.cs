@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CGD.Core;
 using CGD.Level;
 using CGD.Map;
@@ -9,15 +10,17 @@ namespace CGD.Editor
     // The Map Graph window's Blueprint mode: the graph run through LevelLayoutBuilder —
     // exactly what LevelBuilder lays out, with the graph's seed and the session's build
     // settings — and drawn as a floor
-    // plan (LevelBlueprint). Rebuilt whenever the graph changes. Scroll to zoom, drag to
-    // pan, F to frame; clicking a room selects its node, so the side panel works as in
-    // Graph mode.
+    // plan (LevelBlueprint), with each room's furniture when Props is on (RoomFurnisher, the
+    // level's own seeds). Rebuilt whenever the graph changes. Scroll to zoom, drag to pan, F
+    // to frame; clicking a room selects its node, so the side panel works as in Graph mode,
+    // and double-clicking one opens it in the Room Lab.
     public class MapBlueprintView
     {
         private const float LabelMinZoom = 1.2f;
 
         private LevelBuildSettings _builtWith;
         private LevelBlueprint.Fill _builtFill;
+        private bool        _builtProps;
         private int         _builtVersion = -1;
         private MapGraphAsset _builtAsset;
         private Seed        _builtSeed;
@@ -30,6 +33,7 @@ namespace CGD.Editor
         private GUIStyle    _labelStyle;
 
         public LevelBlueprint.Fill Fill { get; set; }
+        public bool ShowProps { get; set; }
 
         public void Draw(Rect rect, MapGraphEditorSession session)
         {
@@ -68,18 +72,20 @@ namespace CGD.Editor
         {
             MapGraphAsset asset = session.Asset;
             if (_texture != null && _builtVersion == session.Version && _builtWith == settings
-                && _builtFill == Fill && _builtAsset == asset && _builtSeed == asset.Seed) return;
+                && _builtFill == Fill && _builtProps == ShowProps && _builtAsset == asset && _builtSeed == asset.Seed) return;
 
             if (_builtAsset != asset) _needsFrame = true;
             _builtVersion = session.Version;
             _builtWith    = settings;
             _builtFill    = Fill;
+            _builtProps   = ShowProps;
             _builtAsset   = asset;
             _builtSeed    = asset.Seed;
 
             _layout = new LevelLayoutBuilder(settings).Build(session.Graph, asset.NodeSpacing, asset.Seed, asset.Content);
 
-            Color32[] pixels = LevelBlueprint.Render(_layout, settings, Fill, out int width, out int height, out _tileOrigin);
+            Color32[] pixels = LevelBlueprint.Render(_layout, settings, Fill, out int width, out int height, out _tileOrigin,
+                                                     ShowProps ? Furnish(_layout, settings, asset.Seed) : null);
             if (_texture == null || _texture.width != width || _texture.height != height)
             {
                 if (_texture != null) Object.DestroyImmediate(_texture);
@@ -92,6 +98,16 @@ namespace CGD.Editor
             }
             _texture.SetPixels32(pixels);
             _texture.Apply();
+        }
+
+        // Every room's furniture, from the seeds LevelBuilder uses with the graph's seed.
+        private static List<PlannedProp> Furnish(LevelLayout layout, LevelBuildSettings settings, Seed seed)
+        {
+            var furnisher = new RoomFurnisher(settings, seed.Derive("contents"));
+            var props = new List<PlannedProp>();
+            foreach (LevelRoom room in layout.Rooms.Values)
+                props.AddRange(furnisher.Furnish(room).Props);
+            return props;
         }
 
         private Rect ImageRect(Rect local)
@@ -135,7 +151,7 @@ namespace CGD.Editor
 
         private void DrawFooter(Rect local)
         {
-            string text = $"Seed {_builtAsset.SeedText} · {_layout.Rooms.Count} rooms · yellow = locked, purple = secret, cyan = one-way";
+            string text = $"Seed {_builtAsset.SeedText} · {_layout.Rooms.Count} rooms · yellow = locked, purple = secret, cyan = one-way · double-click a room for the Room Lab";
             if (_layout.Warnings.Count > 0) text += $" · {_layout.Warnings.Count} layout warning(s): {_layout.Warnings[0]}";
             GUI.Label(new Rect(6f, local.height - 20f, local.width - 12f, 18f), text, EditorStyles.whiteMiniLabel);
         }
@@ -164,6 +180,13 @@ namespace CGD.Editor
                     LevelRoom room = LevelBlueprint.RoomAtPixel(_layout, _tileOrigin, ToPixel(image, e.mousePosition));
                     if (room != null) session.SelectNode(room.Node.Id);
                     else session.ClearSelection();
+                    break;
+
+                case EventType.MouseDown when e.button == 0 && e.clickCount == 2:
+                    LevelRoom opened = LevelBlueprint.RoomAtPixel(_layout, _tileOrigin, ToPixel(image, e.mousePosition));
+                    if (opened == null) break;
+                    RoomLabWindow.OpenMapRoom(session.Asset, opened.Node.Id, session.BuildSettings);
+                    e.Use();
                     break;
 
                 case EventType.KeyDown when e.keyCode == KeyCode.F && !EditorGUIUtility.editingTextField:

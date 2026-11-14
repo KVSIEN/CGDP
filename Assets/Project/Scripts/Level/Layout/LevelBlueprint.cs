@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Map;
 
@@ -7,8 +8,9 @@ namespace CGD.Level
     // A top-down floor plan of a LevelLayout, drawn blueprint-style: rooms filled in their
     // room type's or faction's colour, corridors, walls (LevelWallPlan — the same lines the
     // level is built from, chamfers and curves included) and inner walls as light lines,
-    // pillars and landmark furniture as dark blocks, and a marker on every gated doorway —
-    // so the level a graph becomes can be read without building it.
+    // pillars and landmark furniture as dark blocks, furniture (when given) as sand-coloured
+    // blocks, and a marker on every gated doorway — so the level a graph becomes can be read
+    // without building it.
     //
     // PixelsPerTile pixels per tile; row 0 is the south edge, so drawn as a texture it
     // shows north up, matching the level seen from above.
@@ -24,12 +26,16 @@ namespace CGD.Level
         private static readonly Color32 Locked    = new(242, 191, 51, 255);
         private static readonly Color32 Secret    = new(179, 102, 230, 255);
         private static readonly Color32 OneWay    = new(77, 204, 217, 255);
+        public  static readonly Color32 Prop      = new(201, 168, 118, 255);
+        private static readonly Color32 Decor     = new(120, 170, 110, 255);
 
         public enum Fill { RoomType, Faction }
 
         // `tileOrigin` is the tile at pixel (0, 0); pixel = (tile - origin) * PixelsPerTile.
+        // `props`: planned furniture to draw (RoomFurnisher), or null for the bare plan.
         public static Color32[] Render(LevelLayout layout, LevelBuildSettings settings, Fill fill,
-                                       out int width, out int height, out Vector2Int tileOrigin)
+                                       out int width, out int height, out Vector2Int tileOrigin,
+                                       IEnumerable<PlannedProp> props = null)
         {
             RectInt bounds = TileBounds(layout);
             tileOrigin = bounds.min - Vector2Int.one * MarginTiles;
@@ -54,6 +60,7 @@ namespace CGD.Level
                 canvas.Line(segment.From, segment.To, Wall);
             foreach (LevelRoom room in layout.Rooms.Values)
                 DrawPartitions(room, canvas);
+            if (props != null) DrawProps(props, canvas);
 
             foreach (LevelDoorway doorway in layout.Doorways)
                 if (doorway.HasGate && GateColor(doorway.Connection, out Color32 color))
@@ -96,6 +103,22 @@ namespace CGD.Level
                         canvas.FillEdge(tile, side, Wall, thickness: 1);
         }
 
+        // Props on one tile share it (a pile), so each tile is filled once; decorations are a dot.
+        private static void DrawProps(IEnumerable<PlannedProp> props, Canvas canvas)
+        {
+            foreach (PlannedProp prop in props)
+            {
+                if (prop.Tiles.width <= 0 || prop.Tiles.height <= 0) continue;
+                if (prop.Decor)
+                {
+                    canvas.FillDot(prop.Position, Decor);
+                    continue;
+                }
+                foreach (Vector2Int tile in prop.Tiles.allPositionsWithin)
+                    canvas.FillTile(tile, Prop, inset: 1);
+            }
+        }
+
         private static RectInt TileBounds(LevelLayout layout)
         {
             Vector2Int min = new(int.MaxValue, int.MaxValue), max = new(int.MinValue, int.MinValue);
@@ -130,6 +153,13 @@ namespace CGD.Level
             {
                 Vector2Int p = (tile - _origin) * PixelsPerTile;
                 Fill(p.x + inset, p.y + inset, PixelsPerTile - inset * 2, PixelsPerTile - inset * 2, color);
+            }
+
+            // A 2×2 dot at a point in tile units.
+            public void FillDot(Vector2 tilePoint, Color32 color)
+            {
+                Vector2 p = ToPixel(tilePoint);
+                Fill(Mathf.RoundToInt(p.x) - 1, Mathf.RoundToInt(p.y) - 1, 2, 2, color);
             }
 
             // A strip along one side of a tile, inside it.

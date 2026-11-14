@@ -157,10 +157,12 @@ factions, gates, objectives) from a `MapGenerationSettings` style and a seed →
 `LevelBuilder` turns it into geometry: `LevelLayoutBuilder` (grid placement, corridors) →
 `LevelGeometryBuilder` / `LevelWallBuilder` (floors, walls, structure split into full-height
 and low cover by `CoverHeights`) → `DoorwaySignBuilder` (signs and room labels) →
-`RoomPopulator` (props, enemies, loot, encounters per room function and faction) → NavMesh
+`RoomPopulator` (props planned by `RoomFurnisher`, enemies, loot, encounters per room function and faction) → NavMesh
 bake → `CoverMap` scan → player to the Start room, `LevelExit` in the Exit room. Meshes,
 materials and the map texture made on the way are tracked in `GeneratedAssets` and freed
-with the `LevelBuilder`. Same seed ⇒ same level (`Core/Random`).
+with the `LevelBuilder`. Same seed ⇒ same level (`Core/Random`). The editor previews run the same
+passes without spawning anything: the Map Graph window's Blueprint (`LevelLayoutBuilder` + `RoomFurnisher`)
+and the Room Lab (`RoomSampleBuilder`: one room, either from a one-room graph or a room of a saved graph).
 
 **Pacing.** `GameDirector` turns damage taken and kills into an intensity and a pacing
 phase; `ReinforcementSpawner`, `SupplySpawner`, `DirectorMusic` and `PatrolProbes` read its

@@ -43,7 +43,9 @@ namespace CGD.Level
         private readonly PropPlacementRules _rules;
         private readonly PropSelector _selector;
         private readonly List<PlannedProp> _planned = new();
+        private readonly List<PropPlacementOutcome> _outcomes = new();
         private int _claimed;
+        private bool _hitFillCap;
 
         // fillShare: the part of the floor props may take (a clean hall less, a crowded office
         // more). countScale multiplies every placement's count, required ones excepted.
@@ -65,6 +67,8 @@ namespace CGD.Level
         }
 
         public IReadOnlyList<PlannedProp> Planned => _planned;
+        // One per placement added, in order: what it asked for and what it got.
+        public IReadOnlyList<PropPlacementOutcome> Outcomes => _outcomes;
 
         public void Add(IEnumerable<RoomPropPlacement> placements)
         {
@@ -79,9 +83,16 @@ namespace CGD.Level
             int count = Scaled(placement, RollCount(placement));
             if (count <= 0) return 0;
 
+            _hitFillCap = false;
             int placed = Fill(placement, count, required: false);
+            bool hitFillCap = _hitFillCap;
+            bool relaxed = false;
             for (int level = 1; placed == 0 && placement.Required && level <= 2; level++)
-                placed = Fill(placement.Relaxed(level), 1, required: true);
+            {
+                placed  = Fill(placement.Relaxed(level), 1, required: true);
+                relaxed = placed > 0;
+            }
+            _outcomes.Add(new PropPlacementOutcome(placement, count, placed, hitFillCap, relaxed));
             return placed;
         }
 
@@ -110,7 +121,11 @@ namespace CGD.Level
             int placed = 0;
             while (placed < count)
             {
-                if (!required && !placement.Decor && _claimed + size.x * size.y > _fillCap) break;
+                if (!required && !placement.Decor && _claimed + size.x * size.y > _fillCap)
+                {
+                    _hitFillCap = true;
+                    break;
+                }
 
                 int index = _selector.Select(placement, pool, own);
                 if (index < 0) break;
@@ -194,7 +209,7 @@ namespace CGD.Level
 
             if (pile == 1)
             {
-                _planned.Add(new PlannedProp(_random.Pick(placement.Prefabs), position, yaw));
+                _planned.Add(new PlannedProp(_random.Pick(placement.Prefabs), position, yaw, candidate.Rect, placement.Decor));
                 return;
             }
 
@@ -203,7 +218,8 @@ namespace CGD.Level
             for (int i = 0; i < pile; i++)
             {
                 float turn = _random.Range(-PileTurn, PileTurn);
-                _planned.Add(new PlannedProp(_random.Pick(placement.Prefabs), position + quarters[i] * PileOffset, yaw + turn));
+                _planned.Add(new PlannedProp(_random.Pick(placement.Prefabs), position + quarters[i] * PileOffset, yaw + turn,
+                                             candidate.Rect, placement.Decor));
             }
         }
 

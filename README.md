@@ -56,6 +56,7 @@ Assets/
       Economy/              CurrencyDefinition, Wallet, PriceTable, Vendor, GambleMachine (+ GambleOdds); Shops/ — Shop (buy/sell/trade-in),
                             ShopCatalog, stock sources (ItemStock, RolledWeaponStock), listings
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report),
+                            Rooms/ (Room Lab window: one room built on its own — RoomSampleBuilder, RoomSampleChecks, plan layers, seed variations; RoomFunction inspector),
                             Enemies/ (New Enemy Type wizard, Enemy Roster window, EnemyData inspector + EnemyDataReview checks, KitNeed (kit pieces a tree casts from) + EnemyKitSection, sight gizmo),
                             BehaviorTrees/ (Behavior Tree Editor: window, side panel; Behaviors/ — reusable behaviors: Behavior Composer window,
                             BehaviorLibrary (+ BehaviorLibraryPanel), BehaviorPicker (searchable add list), BehaviorTrigger (when a behavior acts, live ✓/✗), BehaviorSituation (what-if), BehaviorSettingsDrawer (per-use / per-enemy values), BehaviorRowProblems, BehaviorEditing / BehaviorActions (save branch as behavior, new empty behavior, switch on/off, reorder); Canvas/ — GraphView, node, group and note views,
@@ -106,8 +107,8 @@ Assets/
                             Shapes/ — RoomShape assets, RoomShapeRasterizer, RoomFootprint (tiles + door sockets)
                             RoomOutline (curved walls); Functions/ — RoomFunction;
                             Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), CoverHeights (low / high cover bands), Rules/;
-                            Landmarks/ — hand-built rooms; Props/ — RoomPropPlanner (footprints, clearance,
-                            spread, cover, lattices, symmetry, clusters), RoomDressing (cover and clutter per room type);
+                            Landmarks/ — hand-built rooms; Props/ — RoomFurnisher (what a room is furnished with, shared by the level and the editor),
+                            RoomPropPlanner (footprints, clearance, spread, cover, lattices, symmetry, clusters; reports each placement's outcome), RoomDressing (cover and clutter per room type);
                             Design/ — FactionDesign (each faction's floor plans, structure, props and crowding)
                             Objectives/ — map objectives: templates, MapObjectivePlanner, MapObjectiveRunner;
                             Encounters/ — encounter rooms: Core/ (RoomEncounter, RoomEncounterBuilder, EncounterContext/Settings,
