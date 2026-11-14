@@ -8,44 +8,99 @@ namespace CGD.Editor
     // around it — e.g. "Knows Target (4 s memory) · Health Below (≤ 30%) · Cooldown (8 s)".
     // Ordering a priority list is mostly a question of these: a behavior with none takes the
     // turn whenever it can act, so whatever sits below it rarely or never runs.
+    // The checks also come back as data, for the Composer's live ✓/✗ marks and its what-if
+    // situation (BehaviorSituation).
     internal static class BehaviorTrigger
     {
         private const int MaxDepth = 8;   // a branch's checks sit near its top; deeper is its body
 
+        // One check at the top of a behavior: a condition (maybe negated) or a gate.
+        public readonly struct Check
+        {
+            public readonly BehaviorTreeAsset Asset;   // the asset the node lives in (a behavior's, for a Subtree)
+            public readonly BtNode            Node;
+            public readonly bool              Negated;
+            public readonly bool              IsGate;
+            public readonly string            Phrase;  // "Health Below (≤ 30%)", without "not"
+
+            public Check(BehaviorTreeAsset asset, BtNode node, bool negated, bool isGate)
+            {
+                Asset   = asset;
+                Node    = node;
+                Negated = negated;
+                IsGate  = isGate;
+                Phrase  = PhraseOf(node);
+            }
+
+            public string Text => Negated ? "not " + Phrase : Phrase;
+        }
+
+        // A behavior read from the top: its checks, then its body — the node where the checks
+        // end, in the asset it lives in. A body that is a list of choices acts when one of them can.
+        public readonly struct Reading
+        {
+            public readonly List<Check>       Checks;
+            public readonly BtNode            Body;
+            public readonly BehaviorTreeAsset BodyAsset;
+
+            public Reading(List<Check> checks, BtNode body, BehaviorTreeAsset bodyAsset)
+            {
+                Checks    = checks;
+                Body      = body;
+                BodyAsset = bodyAsset;
+            }
+
+            public bool IsChoice => Body is BtComposite and not Sequence and not Parallel;
+
+            // The choices of a choice body, switched-off behaviors left out.
+            public List<BtNode> Choices()
+            {
+                var choices = new List<BtNode>();
+                if (!IsChoice) return choices;
+                foreach (string guid in ((BtParentNode)Body).ChildGuids)
+                {
+                    BtNode choice = BodyAsset.FindNode(guid);
+                    if (choice != null && choice is not Subtree { IsOn: false }) choices.Add(choice);
+                }
+                return choices;
+            }
+        }
+
         public static string Describe(BehaviorTreeAsset asset, BtNode top)
         {
-            var checks = new List<string>();
-            BtNode body = Read(ref asset, top, checks);
-            if (checks.Count > 0) return string.Join(" · ", checks);
-            if (!IsChoice(body)) return "always, when its turn comes";
-            return ActsAlways(asset, body, 1) ? "always (one of its choices always can)" : "when one of its choices can act";
+            Reading reading = Read(asset, top);
+            if (reading.Checks.Count > 0) return Join(reading.Checks, null);
+            if (!reading.IsChoice) return "always, when its turn comes";
+            return ActsAlways(reading, 1) ? "always (one of its choices always can)" : "when one of its choices can act";
+        }
+
+        // The checks with how each last answered for the watched agent: ✓ held, ✗ didn't,
+        // · not asked yet. Gates are left unmarked (their answer is their child's).
+        public static string DescribeLive(BehaviorTreeAsset asset, BtNode top, BehaviorTree watched)
+        {
+            Reading reading = Read(asset, top);
+            return reading.Checks.Count > 0 ? Join(reading.Checks, watched) : Describe(asset, top);
         }
 
         // No checks of its own, or a list of choices one of which has none: it takes every turn
         // it gets (a routine ending in Patrol, a catch-all attack).
-        public static bool ActsAlways(BehaviorTreeAsset asset, BtNode top) => ActsAlways(asset, top, 0);
+        public static bool ActsAlways(BehaviorTreeAsset asset, BtNode top) => ActsAlways(Read(asset, top), 0);
 
-        private static bool ActsAlways(BehaviorTreeAsset asset, BtNode top, int depth)
+        private static bool ActsAlways(Reading reading, int depth)
         {
-            var checks = new List<string>();
-            BtNode body = Read(ref asset, top, checks);
-            if (checks.Count > 0 || body == null) return false;
-            if (!IsChoice(body)) return true;
+            if (reading.Checks.Count > 0 || reading.Body == null) return false;
+            if (!reading.IsChoice) return true;
             if (depth >= MaxDepth) return false;
 
-            foreach (string guid in ((BtParentNode)body).ChildGuids)
-            {
-                BtNode choice = asset.FindNode(guid);
-                if (choice != null && choice is not Subtree { IsOn: false } && ActsAlways(asset, choice, depth + 1)) return true;
-            }
+            foreach (BtNode choice in reading.Choices())
+                if (ActsAlways(Read(reading.BodyAsset, choice), depth + 1)) return true;
             return false;
         }
 
-        // Collects the checks from the top down and returns the node where they end (the
-        // behavior's body: its Sequence, its first action, a list of choices); `asset` follows
-        // it into subtrees.
-        private static BtNode Read(ref BehaviorTreeAsset asset, BtNode top, List<string> checks)
+        // Collects the checks from the top down, following subtrees into their assets.
+        public static Reading Read(BehaviorTreeAsset asset, BtNode top)
         {
+            var checks = new List<Check>();
             BtNode node = top;
             for (int depth = 0; depth < MaxDepth && node != null; depth++)
             {
@@ -56,39 +111,38 @@ namespace CGD.Editor
                         continue;
 
                     case Subtree subtree:
-                        if (subtree.Tree == null || subtree.Tree == asset || subtree.Tree.Root == null) return null;
+                        if (subtree.Tree == null || subtree.Tree == asset || subtree.Tree.Root == null) return new Reading(checks, null, asset);
                         asset = subtree.Tree;
                         node  = FirstChild(asset, asset.Root);
                         continue;
 
                     case Inverter inverter:
-                        BtNode inverted = FirstChild(asset, inverter);
-                        if (inverted is BtCondition) checks.Add("not " + Phrase(inverted));
-                        return inverter;
+                        if (FirstChild(asset, inverter) is BtCondition inverted) checks.Add(new Check(asset, inverted, true, false));
+                        return new Reading(checks, inverter, asset);
 
                     case BtDecorator decorator:
-                        if (IsGate(decorator)) checks.Add(Phrase(decorator));
+                        if (IsGate(decorator)) checks.Add(new Check(asset, decorator, false, true));
                         node = FirstChild(asset, decorator);
                         continue;
 
                     case BtCondition:
-                        checks.Add(Phrase(node));
-                        return node;
+                        checks.Add(new Check(asset, node, false, false));
+                        return new Reading(checks, node, asset);
 
                     case Sequence sequence:
                         AddLeadingChecks(asset, sequence, checks);
-                        return sequence;
+                        return new Reading(checks, sequence, asset);
 
                     default:
-                        return node;
+                        return new Reading(checks, node, asset);
                 }
             }
-            return node;
+            return new Reading(checks, node, asset);
         }
 
         // A Sequence runs its children in order, so the conditions before its first action are
         // what must hold for the behavior to start.
-        private static void AddLeadingChecks(BehaviorTreeAsset asset, Sequence sequence, List<string> checks)
+        private static void AddLeadingChecks(BehaviorTreeAsset asset, Sequence sequence, List<Check> checks)
         {
             foreach (string guid in sequence.ChildGuids)
             {
@@ -96,14 +150,14 @@ namespace CGD.Editor
                 switch (child)
                 {
                     case BtCondition:
-                        checks.Add(Phrase(child));
+                        checks.Add(new Check(asset, child, false, false));
                         break;
                     case Inverter inverter when FirstChild(asset, inverter) is BtCondition inverted:
-                        checks.Add("not " + Phrase(inverted));
+                        checks.Add(new Check(asset, inverted, true, false));
                         break;
                     case BtDecorator decorator when IsGate(decorator) && FirstChild(asset, decorator) is BtCondition gated:
-                        checks.Add(Phrase(decorator));
-                        checks.Add(Phrase(gated));
+                        checks.Add(new Check(asset, decorator, false, true));
+                        checks.Add(new Check(asset, gated, false, false));
                         break;
                     default:
                         return;
@@ -111,14 +165,28 @@ namespace CGD.Editor
             }
         }
 
+        private static string Join(List<Check> checks, BehaviorTree watched)
+        {
+            var parts = new string[checks.Count];
+            for (int i = 0; i < checks.Count; i++)
+                parts[i] = watched != null && !checks[i].IsGate ? Mark(checks[i], watched) + " " + checks[i].Text : checks[i].Text;
+            return string.Join(" · ", parts);
+        }
+
+        // A condition's own answer, flipped when an Inverter wraps it. A behavior run in several
+        // places reports its first use (BehaviorTree.TryGetNode).
+        private static string Mark(Check check, BehaviorTree watched)
+        {
+            if (!watched.TryGetNode(check.Asset, check.Node.Guid, out BtNode live) || live.LastTick < 0) return "·";
+            bool held = live.LastStatus == BtStatus.Success;
+            return held != check.Negated ? "✓" : "✗";
+        }
+
         // Chance isn't a gate for abort purposes (it rolls once per try), but to a designer it
         // is the same kind of "only sometimes" as a Cooldown.
         private static bool IsGate(BtDecorator decorator) => decorator.IsGate || decorator is Chance;
 
-        // A Selector-like body acts when one of its children can (a Parallel runs them all).
-        private static bool IsChoice(BtNode node) => node is BtComposite and not Sequence and not Parallel;
-
-        private static string Phrase(BtNode node)
+        private static string PhraseOf(BtNode node)
         {
             string name    = BtNodeNames.Of(node);
             string summary = node.Summary;

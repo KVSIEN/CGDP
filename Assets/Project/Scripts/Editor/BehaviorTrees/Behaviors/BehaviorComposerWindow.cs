@@ -16,7 +16,8 @@ namespace CGD.Editor
     // from (KitNeed), warning when the chosen enemy's kit leaves one empty — the kit can be
     // filled in right here — plus the tree checks' problems inside each behavior, and a hint when
     // one sits below a behavior that takes every turn. In Play mode, selecting an agent marks
-    // the behaviors it is running.
+    // the behaviors it is running, and each check's last answer (✓ ✗). Out of Play mode, "What
+    // if…" (BehaviorSituation) marks which behavior would get each list's turn in a situation.
     // Behaviors with settings (BehaviorSetting) show them, editable for this tree's use of the
     // behavior — or, with "Only <enemy>" picked, for that enemy type alone (its BehaviorTuning,
     // which can also switch behaviors off for it), so enemy types can share one tree and differ.
@@ -26,6 +27,7 @@ namespace CGD.Editor
     {
         private const int ExpandedDepth = 1;   // deeper lists (choices inside one behavior) start folded
         private static readonly Color RunningTint = new(1f, 0.8f, 0.2f, 0.18f);
+        private static readonly Color TurnTint    = new(0.3f, 0.8f, 0.4f, 0.16f);
 
         private EnemyData         _enemy;
         private SerializedObject  _enemyObject;   // for editing its kit in place
@@ -34,6 +36,7 @@ namespace CGD.Editor
         private readonly BehaviorLibraryPanel _library = new();
         private readonly Dictionary<string, bool> _folded = new();
         private readonly BehaviorRowProblems _problems = new();
+        private readonly BehaviorSituation   _situation = new();
         private int       _treeSharing;   // enemy types thinking with _tree
         private bool      _showKit;
         private bool      _onlyEnemy;     // switches and settings edit the enemy's tuning, not the tree
@@ -161,6 +164,7 @@ namespace CGD.Editor
                     MessageType.None);
                 DrawWatchStatus();
                 DrawTreeSettings();
+                if (!Application.isPlaying) _situation.Draw(_tree);
                 List<BehaviorEditing.BehaviorList> lists = BehaviorEditing.Lists(_tree);
                 if (lists.Count == 0)
                     EditorGUILayout.HelpBox("This tree has no Selector to hold behaviors. Open it in the Behavior Tree Editor, or start a new tree.", MessageType.Info);
@@ -292,6 +296,7 @@ namespace CGD.Editor
                 {
                     IReadOnlyList<string> children = list.Selector.ChildGuids;
                     string takesEveryTurn = null;   // the first behavior above with no checks
+                    int turn = _situation.IsActive && watched == null ? _situation.Turn(_tree, list.Selector, IsOnFor) : -1;
                     for (int i = 0; i < children.Count; i++)
                     {
                         BtNode child = _tree.FindNode(children[i]);
@@ -301,7 +306,7 @@ namespace CGD.Editor
                             EditorGUILayout.LabelField($"↓ May never get a turn: “{takesEveryTurn}” above has no checks, so it acts " +
                                                        "whenever it can. Move this above it, or give that one a condition.",
                                                        EditorStyles.wordWrappedMiniLabel);
-                        DrawRow(list.Selector, child, i, children.Count, watched);
+                        DrawRow(list.Selector, child, i, children.Count, watched, i == turn);
 
                         bool on = child is not Subtree subtreeChild || IsOnFor(subtreeChild);
                         if (takesEveryTurn == null && on && BehaviorTrigger.ActsAlways(_tree, child)) takesEveryTurn = Title(child);
@@ -311,15 +316,17 @@ namespace CGD.Editor
             }
         }
 
-        private void DrawRow(Selector list, BtNode node, int index, int count, BehaviorTree watched)
+        // `getsTurn`: the what-if situation gives this behavior the list's turn.
+        private void DrawRow(Selector list, BtNode node, int index, int count, BehaviorTree watched, bool getsTurn)
         {
             var subtree = node as Subtree;
             bool running = watched != null && watched.TryGetNode(_tree, node.Guid, out BtNode live) && live.IsRunning;
 
             using (var row = new EditorGUILayout.HorizontalScope())
             {
-                if (running && Event.current.type == EventType.Repaint) EditorGUI.DrawRect(row.rect, RunningTint);
-                GUILayout.Label(running ? "▶" : (index + 1).ToString(), EditorStyles.miniLabel, GUILayout.Width(18f));
+                if (Event.current.type == EventType.Repaint && (running || getsTurn))
+                    EditorGUI.DrawRect(row.rect, running ? RunningTint : TurnTint);
+                GUILayout.Label(running ? "▶" : getsTurn ? "→" : (index + 1).ToString(), EditorStyles.miniLabel, GUILayout.Width(18f));
 
                 if (subtree != null) DrawSwitch(subtree);
                 else GUILayout.Space(20f);
@@ -331,7 +338,7 @@ namespace CGD.Editor
                     GUILayout.Label(new GUIContent(title, Tooltip(node)), EditorStyles.boldLabel);
                     string description = Description(node);
                     if (description.Length > 0) GUILayout.Label(description, EditorStyles.wordWrappedMiniLabel);
-                    DrawFacts(node, subtree);
+                    DrawFacts(node, subtree, watched);
                     DrawSettings(subtree);
                     _problems.Draw(node);
                 }
@@ -437,9 +444,11 @@ namespace CGD.Editor
         }
 
         // When it acts, and which kit pieces it casts from — flagged when the enemy lacks them.
-        private void DrawFacts(BtNode node, Subtree subtree)
+        // In Play mode the checks carry the watched agent's last answers (✓ ✗ ·).
+        private void DrawFacts(BtNode node, Subtree subtree, BehaviorTree watched)
         {
-            GUILayout.Label("When: " + BehaviorTrigger.Describe(_tree, node), EditorStyles.wordWrappedMiniLabel);
+            string when = watched != null ? BehaviorTrigger.DescribeLive(_tree, node, watched) : BehaviorTrigger.Describe(_tree, node);
+            GUILayout.Label("When: " + when, EditorStyles.wordWrappedMiniLabel);
 
             List<BtNode> nodes = subtree != null ? EnemyTreeContents.Nodes(subtree.Tree) : EnemyTreeContents.Nodes(_tree, node);
             List<KitNeed> needs = KitNeed.Of(nodes);

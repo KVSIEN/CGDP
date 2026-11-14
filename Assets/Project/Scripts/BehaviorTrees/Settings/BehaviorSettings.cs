@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
 
 namespace CGD.BehaviorTrees
 {
     // Reads and writes the node fields behind BehaviorSettings. Values are written into an
     // agent's own node copies while its tree is built (never into the asset, never per tick),
     // so one behavior can run with different values for each tree and enemy type using it.
+    // Values are kept inside the field's own limits ([Range], [Min]), as its inspector would.
     internal static class BehaviorSettings
     {
         private static readonly Dictionary<(Type, string), FieldInfo> Fields = new();
@@ -66,10 +68,29 @@ namespace CGD.BehaviorTrees
             return true;
         }
 
+        // The field's [Range] or [Min]; ±infinity where it has none.
+        public static void Limits(BtNode node, string field, out float min, out float max)
+        {
+            min = float.NegativeInfinity;
+            max = float.PositiveInfinity;
+            FieldInfo info = Find(node.GetType(), field);
+            if (info == null) return;
+
+            if (info.GetCustomAttribute<RangeAttribute>() is { } range)
+            {
+                min = range.min;
+                max = range.max;
+            }
+            else if (info.GetCustomAttribute<MinAttribute>() is { } least) min = least.min;
+        }
+
         public static bool TrySet(BtNode node, string field, float value)
         {
             FieldInfo info = Find(node.GetType(), field);
             if (info == null || !CanBeSetting(info.FieldType)) return false;
+
+            Limits(node, field, out float min, out float max);
+            value = Math.Clamp(value, min, max);
 
             Type type = info.FieldType;
             object converted;

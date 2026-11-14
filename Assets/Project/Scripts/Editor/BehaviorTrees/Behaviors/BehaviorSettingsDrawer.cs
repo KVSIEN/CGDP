@@ -21,7 +21,7 @@ namespace CGD.Editor
             BehaviorTuning tuning = enemy != null ? BehaviorTuning.Find(enemy.BehaviorTuning, behavior) : null;
             foreach (string name in behavior.SettingNames())
             {
-                Type type = TypeOf(behavior, name);
+                Type type = Target(behavior, name, out BtNode target, out string field);
                 if (type == null)
                 {
                     EditorGUILayout.LabelField(name, "(points at a setting the node no longer has)", EditorStyles.miniLabel);
@@ -41,8 +41,10 @@ namespace CGD.Editor
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     EditorGUI.BeginChangeCheck();
-                    float edited = Field(new GUIContent(name, Tooltip(own, hasUse, useValue, type)), type, shown, overrides);
-                    if (EditorGUI.EndChangeCheck()) Write(tree, behavior, use, enemy, editEnemy, name, edited);
+                    BehaviorSettings.Limits(target, field, out float min, out float max);
+                    var label = new GUIContent(name + LimitsText(min, max, type), Tooltip(own, hasUse, useValue, type));
+                    float edited = Field(label, type, shown, overrides);
+                    if (EditorGUI.EndChangeCheck()) Write(tree, behavior, use, enemy, editEnemy, name, Math.Clamp(edited, min, max));
 
                     GUILayout.Label(Source(editEnemy, hasEnemy, hasUse, enemy), EditorStyles.miniLabel, GUILayout.Width(SourceWidth));
                     using (new EditorGUI.DisabledScope(!overrides))
@@ -66,7 +68,7 @@ namespace CGD.Editor
             var parts = new System.Collections.Generic.List<string>();
             foreach (string name in behavior.SettingNames())
             {
-                Type type = TypeOf(behavior, name);
+                Type type = Target(behavior, name, out _, out _);
                 if (type != null && BehaviorSettings.TryGetDefault(behavior, name, out float value)) parts.Add($"{name} {Format(value, type)}");
             }
             return string.Join(" · ", parts);
@@ -116,16 +118,29 @@ namespace CGD.Editor
             return type == typeof(int) ? Mathf.RoundToInt(value).ToString() : value.ToString("0.##");
         }
 
-        // A setting name's type, from the first node it points at that still has the field.
-        private static Type TypeOf(BehaviorTreeAsset behavior, string name)
+        // "  (0–1)" or "  (≥ 0)" after a number's name, so the allowed values are plain.
+        private static string LimitsText(float min, float max, Type type)
+        {
+            if (type == typeof(bool) || type.IsEnum) return "";
+            bool hasMin = !float.IsNegativeInfinity(min), hasMax = !float.IsPositiveInfinity(max);
+            if (hasMin && hasMax) return $"  ({min:0.##}–{max:0.##})";
+            return hasMin ? $"  (≥ {min:0.##})" : "";
+        }
+
+        // A setting name's type, from the first node it points at that still has the field
+        // (that node and field also give its limits).
+        private static Type Target(BehaviorTreeAsset behavior, string name, out BtNode node, out string field)
         {
             foreach (BehaviorSetting setting in behavior.Settings)
             {
                 if (setting.Name != name) continue;
-                BtNode node = behavior.FindNode(setting.NodeGuid);
-                Type type = node != null ? BehaviorSettings.FieldType(node, setting.Field) : null;
+                node  = behavior.FindNode(setting.NodeGuid);
+                field = setting.Field;
+                Type type = node != null ? BehaviorSettings.FieldType(node, field) : null;
                 if (type != null) return type;
             }
+            node  = null;
+            field = null;
             return null;
         }
     }

@@ -145,6 +145,21 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void ValuesStayInsideTheFieldsLimits()
+        {
+            var chance = new Chance();
+
+            BehaviorSettings.TrySet(chance, "_probability", 3f);
+            Assert.IsTrue(BehaviorSettings.TryGet(chance, "_probability", out float value));
+            Assert.AreEqual(1f, value, "Range(0, 1)");
+
+            var cooldown = new Cooldown();
+            BehaviorSettings.TrySet(cooldown, "_seconds", -5f);
+            BehaviorSettings.TryGet(cooldown, "_seconds", out value);
+            Assert.AreEqual(0f, value, "Min(0)");
+        }
+
+        [Test]
         public void SavingABranchAsABehaviorTakesItsSettingsAlong()
         {
             var list   = _main.Add(new Selector(), _main.Root);
