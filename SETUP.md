@@ -300,7 +300,7 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 | **EnemyAwarenessIndicator** | — | The ?/! over the enemy (on every enemy prefab). Builds its own world-space canvas; colours, height and how long the ! shows are on the component. |
 | **EnemyStateVisuals**? | `_renderers` | Tints by AI state. |
 | **EnemyAudio**? | `_hurtSound`, `_deathSound` | |
-| **LootDropper**? | `_table`, `_itemPickupPrefab`, `_weaponPickupPrefab` | Tick `_dropOnDeath`. Kill credit: `_creditedTeam` (Player; None = always the full drop) and `_fullCreditShare` (0.75) — leave the defaults. |
+| **LootDropper**? | `_table`, `_itemPickupPrefab`, `_weaponPickupPrefab` | Tick `_dropOnDeath`. Kill credit: `_creditedTeam` (Player: its damage share scales the drop odds; None = always the full drop). |
 | **DespawnOnDeath**? | `_delay` | Returns pooled enemies to the pool. |
 | **RespawnOnDeath**? | `_delay` (4 s) | Alternative to DespawnOnDeath for things that must keep being shot at: hides the body (all child objects) while dead, then revives in place. Used by the firing-range dummies. |
 | **CharacterStats**? | `_presets` = e.g. `Stats/HardDifficultyModifierPreset` | Tougher enemy. |

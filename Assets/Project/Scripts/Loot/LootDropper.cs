@@ -23,9 +23,8 @@ namespace CGD.Loot
     // it's opened and the same seed always makes the same kind of container.
     //
     // A death drop is shared out by kill credit: the credited team's share of the effective
-    // health taken off this object (HealthManager.DamageShareOf). At the full-credit share
-    // or more everything rolled drops; below it each item drops with a proportional chance,
-    // so a kill left to another faction or a hazard pays out little or nothing.
+    // health taken off this object (HealthManager.DamageShareOf) scales every item's chance
+    // to drop. All of it = the authored odds; 10% of it turns a 1-in-100 drop into 1-in-1000.
     public class LootDropper : MonoBehaviour, ISeedable, IPoolable
     {
         [SerializeField] private LootTable _table;
@@ -37,10 +36,8 @@ namespace CGD.Loot
         [SerializeField] private WeightedLootFilter[] _subtypes = System.Array.Empty<WeightedLootFilter>();
 
         [Header("Kill Credit")]
-        [Tooltip("Whose share of the damage decides how much a death drop gives. None = always the full drop")]
+        [Tooltip("Whose share of the damage scales a death drop's odds. None = always the full drop")]
         [SerializeField] private Team _creditedTeam = Team.Player;
-        [Tooltip("Share of the damage that earns the full drop; below it each item drops with chance share ÷ this")]
-        [SerializeField, Range(0.05f, 1f)] private float _fullCreditShare = 0.75f;
 
         [Header("Pickups")]
         [SerializeField] private ItemPickup   _itemPickupPrefab;
@@ -121,12 +118,8 @@ namespace CGD.Loot
 
         private void DropOnDeath() => Drop(KillCredit());
 
-        // 0..1: how much of a death drop the credited team has earned.
-        private float KillCredit()
-        {
-            if (_creditedTeam == Team.None) return 1f;
-            return Mathf.Clamp01(_health.DamageShareOf(_creditedTeam) / _fullCreditShare);
-        }
+        // 0..1: the credited team's share of the kill, which every item's drop chance is scaled by.
+        private float KillCredit() => _creditedTeam == Team.None ? 1f : _health.DamageShareOf(_creditedTeam);
 
         private void Drop(float credit)
         {
