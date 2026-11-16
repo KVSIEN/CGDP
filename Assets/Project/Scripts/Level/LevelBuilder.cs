@@ -17,8 +17,9 @@ namespace CGD.Level
     // doors on connections (and keys for the locked ones), room contents, a NavMesh for
     // enemies, the player in the Start room and a way out in the Exit room.
     //
-    // The graph is either a MapGraphAsset (a hand-checked map, same every time) or generated
-    // on the spot from a MapGenerationSettings style and a seed. Seed 0 rolls a new one every play
+    // The graph is either a MapGraphAsset (a hand-checked map, same every time), generated
+    // on the spot from a MapGenerationSettings style and a seed, or a RoomGallerySettings
+    // walk-through of every place (the RoomGallery scene). Seed 0 rolls a new one every play
     // (with a graph asset, 0 uses the asset's seed, matching its blueprint); the one used is
     // shown in Seed so a good level can be kept.
     //
@@ -31,6 +32,8 @@ namespace CGD.Level
         [Tooltip("Build this graph. Leave empty to generate one from the settings below")]
         [SerializeField] private MapGraphAsset _graphAsset;
         [SerializeField] private MapGenerationSettings _generation;
+        [Tooltip("Build a gallery of every place, faction and side instead of a map (takes the place of the graph asset and the generation settings)")]
+        [SerializeField] private RoomGallerySettings _gallery;
         [Tooltip("A number or any text. Empty or 0 = a new random seed every play (with a graph asset: the asset's seed). Also drives room shapes and contents")]
         [SerializeField] private string _seed;
         [Tooltip("For testing one room: start (and respawn) in the room of this node id instead of the Start room. -1 = the Start room")]
@@ -77,7 +80,7 @@ namespace CGD.Level
             // A graph asset's own seed lays its rooms out the way the Map Graph window's
             // blueprint shows them; only generated maps roll a fresh seed for 0.
             Seed  = !RollsFreshSeed(_seed) ? Seed.Parse(_seed)
-                  : _graphAsset != null ? _graphAsset.Seed
+                  : _graphAsset != null && _gallery == null ? _graphAsset.Seed
                   : Seed.Random();
             Graph = ResolveGraph(out Vector2 nodeSpacing, out MapContentSettings content);
             if (Graph == null)
@@ -194,6 +197,13 @@ namespace CGD.Level
         // content: where the graph's faction indices point (null = rooms have no faction).
         private MapGraph ResolveGraph(out Vector2 nodeSpacing, out MapContentSettings content)
         {
+            if (_gallery != null)
+            {
+                // Gallery positions are in cells.
+                nodeSpacing = Vector2.one;
+                content     = _gallery.Content;
+                return RoomGalleryGraph.Build(_gallery, _settings);
+            }
             if (_graphAsset != null)
             {
                 nodeSpacing = _graphAsset.NodeSpacing;

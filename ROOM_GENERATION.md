@@ -385,3 +385,10 @@ a run of seeds, and reports the results.
 
 The bands live in `RoomTraitMeasure` (code constants, because the Room Lab's checks and the
 generation steering must agree). *Priority Tries* lives in `LevelBuildSettings`.
+
+### Seeing it in play
+
+`Scenes/RoomGallery` builds every place once instead of a map. The places come in quiet
+rooms, with the realities and ship sections taken in turn. Then come a Combat, a Stealth and
+a Breach room for each reality. The scene's Prop Yard (outside the level, seen in the Scene
+view) holds one of every placeholder column and prop.

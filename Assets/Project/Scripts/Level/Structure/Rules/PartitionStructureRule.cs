@@ -63,7 +63,7 @@ namespace CGD.Level
             {
                 Vector2Int a = splitAlongX ? new Vector2Int(line - 1, c) : new Vector2Int(c, line - 1);
                 Vector2Int b = splitAlongX ? new Vector2Int(line, c)     : new Vector2Int(c, line);
-                if (!structure.Footprint.Contains(a) || !structure.Footprint.Contains(b))
+                if (!structure.Contains(a) || !structure.Contains(b))
                 {
                     current = null;
                     continue;

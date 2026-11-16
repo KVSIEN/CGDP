@@ -11,7 +11,7 @@ runtime-built HUD.
 - [ROOM_GENERATION.md](ROOM_GENERATION.md) — room generation rules, room cards and their roadmap
 - [CLAUDE.md](CLAUDE.md) — coding guidelines
 
-Open `Assets/Project/Scenes/Sandbox.unity` to play, `MapTest.unity` for a freshly generated level, or `AITest.unity` to try enemies driven by behavior trees.
+Open `Assets/Project/Scenes/Sandbox.unity` to play, `MapTest.unity` for a freshly generated level, `RoomGallery.unity` to walk through one room of every place, or `AITest.unity` to try enemies driven by behavior trees.
 
 ## Project layout
 
@@ -25,7 +25,7 @@ Assets/
       Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Perks/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors (keycard, terminal, puzzle), secret wall, keycard, terminal, hub workbench, encounter pieces (shutter, reward cache, loot pickups, puzzle switch, rift core, gamble station, escape pod); WallKit/ — placeholder wall art), Pickups, Systems (GameFlow, GameManager, EventSystem, Global Volume), UI, VFX, Weapons
-    Scenes/                 Sandbox.unity, MapTest.unity (generated level), AITest.unity (behavior tree arena)
+    Scenes/                 Sandbox.unity, MapTest.unity (generated level), RoomGallery.unity (every room place and prop), AITest.unity (behavior tree arena)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            Core/ (Ability base, AbilityContext, cooldowns and charges, Surge, resource costs, PlayerAbilities — the player's slots,
                             TimelineAbilityRunner, caster interfaces), Types/ (one class per kind of ability, incl. TargetedAbility), Zones/ (Rift, Snare)
@@ -110,7 +110,9 @@ Assets/
                             Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), CoverHeights (low / high cover bands), Rules/ (pillars, partitions, rows, remnants, office maze);
                             Landmarks/ — hand-built rooms; Props/ — RoomFurnisher (what a room is furnished with, shared by the level and the editor),
                             RoomPropPlanner (footprints, clearance, spread, cover, lattices, symmetry, clusters; reports each placement's outcome), RoomDressing (cover and clutter per room type);
-                            Design/ — FactionDesign (each faction's floor plans, structure, props and crowding)
+                            Design/ — FactionDesign (each faction's floor plans, structure, props and crowding), ShipSideDesign, BreachSplit,
+                            Traits/ (RoomTraitMeasure, RoomTraitFit: what fight rooms offer and how generation steers toward it);
+                            Gallery/ — RoomGallerySettings and RoomGalleryGraph (the RoomGallery scene's walk-through of every place)
                             Objectives/ — map objectives: templates, MapObjectivePlanner, MapObjectiveRunner;
                             Encounters/ — encounter rooms: Core/ (RoomEncounter, RoomEncounterBuilder, EncounterContext/Settings,
                             RoomShutter/RoomSeal, EncounterSpawner, rules: RoomArea, EnemyGroup, WaveSchedule); one folder per kind:

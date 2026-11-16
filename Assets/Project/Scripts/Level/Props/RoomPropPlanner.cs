@@ -73,6 +73,8 @@ namespace CGD.Level
         }
 
         public IReadOnlyList<PlannedProp> Planned => _planned;
+        // How the furnished room reads on each trait, from the sightlines kept while placing.
+        public RoomTraitReading Traits => RoomTraitMeasure.Measure(_structure, _planned, _sight);
         // One per placement added, in order: what it asked for and what it got.
         public IReadOnlyList<PropPlacementOutcome> Outcomes => _outcomes;
 

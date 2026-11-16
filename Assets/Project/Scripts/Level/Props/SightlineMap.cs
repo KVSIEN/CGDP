@@ -53,7 +53,7 @@ namespace CGD.Level
             for (int i = 0; i <= length; i++)
             {
                 Vector2Int tile = origin + step * i;
-                bool open = i < length && _structure.Footprint.Contains(tile) && !_structure.Has(tile, BlocksSight);
+                bool open = i < length && _structure.Contains(tile) && !_structure.Has(tile, BlocksSight);
                 bool cut = open && i > start && _structure.IsPartitioned(tile - step, tile);
                 if (open && !cut) continue;
 

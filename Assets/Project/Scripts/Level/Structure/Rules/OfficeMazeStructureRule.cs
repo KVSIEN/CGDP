@@ -124,7 +124,7 @@ namespace CGD.Level
             {
                 Vector2Int a = tileAt(along, row - 1);
                 Vector2Int b = tileAt(along, row);
-                if (!structure.Footprint.Contains(a) || !structure.Footprint.Contains(b)) continue;
+                if (!structure.Contains(a) || !structure.Contains(b)) continue;
 
                 bool opening = along == doorway || structure.EdgeMustStayOpen(a, b);
                 (opening ? openings : walls).Add(new PartitionEdge(a, b, opening ? _doorHeight : 0f, dividesZones: false));
@@ -142,7 +142,7 @@ namespace CGD.Level
             {
                 Vector2Int a = tileAt(along - 1, row);
                 Vector2Int b = tileAt(along, row);
-                if (!structure.Footprint.Contains(a) || !structure.Footprint.Contains(b)) continue;
+                if (!structure.Contains(a) || !structure.Contains(b)) continue;
 
                 bool opening = row == doorway || structure.EdgeMustStayOpen(a, b);
                 (opening ? openings : walls).Add(new PartitionEdge(a, b, opening ? _doorHeight : 0f, dividesZones: false));
@@ -153,7 +153,7 @@ namespace CGD.Level
         private static bool HasBothSides(RoomStructure structure, System.Func<int, int, Vector2Int> tileAt, int from, int to, int row)
         {
             for (int along = from; along < to; along++)
-                if (structure.Footprint.Contains(tileAt(along, row - 1)) && structure.Footprint.Contains(tileAt(along, row))) return true;
+                if (structure.Contains(tileAt(along, row - 1)) && structure.Contains(tileAt(along, row))) return true;
             return false;
         }
 

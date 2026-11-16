@@ -40,27 +40,31 @@ namespace CGD.Level
             FactionDesign design = _settings.DesignFor(room.Faction);
             Seed seed = _seed.Derive("props").Derive(room.Node.Id);
             int tries = RoomTraitFit.TriesFor(room, rule, design, _settings);
-            int attempt = tries > 1 ? BestAttempt(room, rule, design, seed, tries) : 0;
+            if (tries <= 1)
+            {
+                RoomPropPlanner only = Plan(room, room.Structure, rule, design, seed);
+                return new RoomFurnishing(only.Planned, only.Outcomes);
+            }
 
-            RoomPropPlanner planner = Plan(room, room.Structure, rule, design, RoomTraitFit.Try(seed, attempt));
-            return new RoomFurnishing(planner.Planned, planner.Outcomes, attempt, tries);
-        }
-
-        // Furnishes copies of the room from each try's seed and returns the try whose traits
-        // miss the faction's priorities least (the earliest, of equals).
-        private int BestAttempt(LevelRoom room, RoomContentRule rule, FactionDesign design, Seed seed, int tries)
-        {
-            int best = 0, bestMiss = int.MaxValue;
+            // Each try furnishes its own copy of the room; the best one's floor becomes the room's,
+            // so the winner is never furnished twice.
+            RoomStructure bestFloor = null;
+            RoomPropPlanner best = null;
+            int bestAttempt = 0, bestMiss = int.MaxValue;
             for (int attempt = 0; attempt < tries && bestMiss > 0; attempt++)
             {
                 RoomStructure trial = room.Structure.Copy();
                 RoomPropPlanner planner = Plan(room, trial, rule, design, RoomTraitFit.Try(seed, attempt));
-                int miss = RoomTraitFit.Miss(RoomTraitMeasure.Measure(trial, planner.Planned), design.Priorities);
+                int miss = RoomTraitFit.Miss(planner.Traits, design.Priorities);
                 if (miss >= bestMiss) continue;
-                best     = attempt;
-                bestMiss = miss;
+                bestFloor   = trial;
+                best        = planner;
+                bestAttempt = attempt;
+                bestMiss    = miss;
             }
-            return best;
+
+            room.Structure.TakeFloorFrom(bestFloor);
+            return new RoomFurnishing(best.Planned, best.Outcomes, bestAttempt, tries);
         }
 
         private RoomPropPlanner Plan(LevelRoom room, RoomStructure structure, RoomContentRule rule, FactionDesign design, Seed seed)

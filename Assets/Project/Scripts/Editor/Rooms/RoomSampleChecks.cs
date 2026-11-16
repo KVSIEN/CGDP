@@ -77,7 +77,7 @@ namespace CGD.Editor
         }
 
         private static bool IsWalkable(RoomStructure structure, Vector2Int tile) =>
-            structure.Footprint.Contains(tile) && !structure.Has(tile, Solid);
+            structure.Contains(tile) && !structure.Has(tile, Solid);
 
         private static void CheckFurnishing(RoomSample sample, List<RoomIssue> issues)
         {

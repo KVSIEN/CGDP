@@ -23,7 +23,7 @@ namespace CGD.Level
             _bounds        = structure.Footprint.Bounds;
             _sight         = sight;
             _routes        = routes;
-            _mainZone      = LargestZone(structure);
+            _mainZone      = structure.LargestZone;
             _latticeOrigin = new Vector2Int(Mathf.FloorToInt(anchor.x), Mathf.FloorToInt(anchor.y));
         }
 
@@ -61,7 +61,7 @@ namespace CGD.Level
                 for (int x = rect.xMin; x < rect.xMax; x++)
                 {
                     var tile = new Vector2Int(x, y);
-                    if (!_structure.Footprint.Contains(tile) || _structure.Has(tile, placement.Avoid)) return false;
+                    if (!_structure.Contains(tile) || _structure.Has(tile, placement.Avoid)) return false;
                     if (zones != null && !zones.Contains(_structure.ZoneOf(tile))) return false;
                     if (placement.Zone == PropZone.Largest && _structure.ZoneOf(tile) != _mainZone) return false;
                     if (placement.Zone == PropZone.Others  && _structure.ZoneOf(tile) == _mainZone) return false;
@@ -137,7 +137,7 @@ namespace CGD.Level
                 for (int step = 0; step < depth; step++)
                 {
                     Vector2Int next = tile + forward;
-                    if (_structure.IsPartitioned(tile, next) || !_structure.Footprint.Contains(next)
+                    if (_structure.IsPartitioned(tile, next) || !_structure.Contains(next)
                         || _structure.Has(next, RoomTileTags.Structure | RoomTileTags.Prop)) return false;
                     tile = next;
                 }
@@ -187,17 +187,6 @@ namespace CGD.Level
             Vector2 toward = _anchor - point;
             if (toward.sqrMagnitude < 0.01f) return 0;
             return Mathf.Abs(toward.x) > Mathf.Abs(toward.y) ? (toward.x > 0f ? 1 : 3) : (toward.y > 0f ? 0 : 2);
-        }
-
-        private static int LargestZone(RoomStructure structure)
-        {
-            var sizes = new int[structure.ZoneCount];
-            foreach (Vector2Int tile in structure.Footprint.Tiles) sizes[structure.ZoneOf(tile)]++;
-
-            int largest = 0;
-            for (int zone = 1; zone < sizes.Length; zone++)
-                if (sizes[zone] > sizes[largest]) largest = zone;
-            return largest;
         }
     }
 }

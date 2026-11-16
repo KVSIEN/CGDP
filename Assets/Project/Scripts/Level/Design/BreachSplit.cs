@@ -23,7 +23,7 @@ namespace CGD.Level
             if (breachEntrances != null)
                 foreach (Vector2Int entrance in breachEntrances)
                 {
-                    if (!structure.Footprint.Contains(entrance)) continue;
+                    if (!structure.Contains(entrance)) continue;
                     int zone = structure.ZoneOf(entrance);
                     if (breach[zone]) continue;
                     breach[zone] = true;
@@ -32,7 +32,7 @@ namespace CGD.Level
 
             if (marked == 0 || marked == breach.Length)
             {
-                int largest = Largest(structure);
+                int largest = structure.LargestZone;
                 for (int zone = 0; zone < breach.Length; zone++) breach[zone] = zone != largest;
             }
             return new BreachSplit(breach);
@@ -49,17 +49,6 @@ namespace CGD.Level
             for (int zone = 0; zone < _breach.Length; zone++)
                 if (_breach[zone] == breachSide) zones.Add(zone);
             return zones;
-        }
-
-        private static int Largest(RoomStructure structure)
-        {
-            var sizes = new int[structure.ZoneCount];
-            foreach (Vector2Int tile in structure.Footprint.Tiles) sizes[structure.ZoneOf(tile)]++;
-
-            int largest = 0;
-            for (int zone = 1; zone < sizes.Length; zone++)
-                if (sizes[zone] > sizes[largest]) largest = zone;
-            return largest;
         }
     }
 }

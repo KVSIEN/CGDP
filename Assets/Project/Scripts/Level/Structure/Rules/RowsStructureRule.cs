@@ -58,7 +58,7 @@ namespace CGD.Level
 
         // A row may run beside a walkway, just not across one (EdgeMustStayOpen).
         private static bool CanStand(RoomStructure structure, Vector2Int a, Vector2Int b) =>
-            structure.Footprint.Contains(a) && structure.Footprint.Contains(b) && !structure.IsPartitioned(a, b) && !structure.EdgeMustStayOpen(a, b);
+            structure.Contains(a) && structure.Contains(b) && !structure.IsPartitioned(a, b) && !structure.EdgeMustStayOpen(a, b);
 
         // Stands the run of wall collected so far (if the room stays whole) and starts a new one.
         private static void Close(RoomStructure structure, List<PartitionEdge> run)

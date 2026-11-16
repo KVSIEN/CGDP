@@ -118,7 +118,7 @@ namespace CGD.Level
         {
             if (own.Count == 0) return SelectRandom(placement, pool, own);
 
-            pool.RemoveAll(candidate => !_rules.Placeable(candidate, placement, own));
+            DropUnplaceable(placement, pool, own);
 
             int best = -1;
             float bestCost = float.MaxValue;
@@ -132,6 +132,15 @@ namespace CGD.Level
                 bestCost = cost;
             }
             return best;
+        }
+
+        // Keeps the pool's order (it was shuffled) and allocates nothing.
+        private void DropUnplaceable(RoomPropPlacement placement, List<PropCandidate> pool, List<RectInt> own)
+        {
+            int kept = 0;
+            for (int i = 0; i < pool.Count; i++)
+                if (_rules.Placeable(pool[i], placement, own)) pool[kept++] = pool[i];
+            pool.RemoveRange(kept, pool.Count - kept);
         }
 
         private float LineCost(Vector2 point, List<RectInt> own)
@@ -152,7 +161,7 @@ namespace CGD.Level
         // firing lane; stops when nothing is left to break.
         private int SelectCover(RoomPropPlacement placement, List<PropCandidate> pool, List<RectInt> own)
         {
-            pool.RemoveAll(candidate => !_rules.Placeable(candidate, placement, own));
+            DropUnplaceable(placement, pool, own);
 
             int best = -1;
             int bestRun = CoverMinRun - 1;
@@ -168,15 +177,16 @@ namespace CGD.Level
             return best;
         }
 
-        // How far a point is from the nearest prop: of everything in the room for furniture, of this
-        // placement's own for decorations (which aren't in the room's list).
+        // How far a point is from the nearest prop (squared: only ever compared): of everything in
+        // the room for furniture, of this placement's own for decorations (which aren't in the
+        // room's list).
         private float DistanceToPlaced(Vector2 point, RoomPropPlacement placement, List<RectInt> own)
         {
             if (placement.Decor) return DistanceToOwn(point, own);
 
             float nearest = float.MaxValue;
             foreach (Vector2 centre in _centres)
-                nearest = Mathf.Min(nearest, (centre - point).magnitude);
+                nearest = Mathf.Min(nearest, (centre - point).sqrMagnitude);
             return nearest;
         }
 
@@ -184,7 +194,7 @@ namespace CGD.Level
         {
             float nearest = float.MaxValue;
             foreach (RectInt rect in own)
-                nearest = Mathf.Min(nearest, (rect.center - point).magnitude);
+                nearest = Mathf.Min(nearest, (rect.center - point).sqrMagnitude);
             return nearest;
         }
     }

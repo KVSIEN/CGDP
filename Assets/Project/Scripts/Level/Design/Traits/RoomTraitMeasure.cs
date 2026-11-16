@@ -24,9 +24,12 @@ namespace CGD.Level
 
         private const RoomTileTags Solid = RoomTileTags.Structure | RoomTileTags.Prop;
 
-        public static RoomTraitReading Measure(RoomStructure structure, IReadOnlyList<PlannedProp> props)
+        public static RoomTraitReading Measure(RoomStructure structure, IReadOnlyList<PlannedProp> props) =>
+            Measure(structure, props, new SightlineMap(structure));
+
+        // With the sightlines already kept current for this structure (a prop planner's).
+        internal static RoomTraitReading Measure(RoomStructure structure, IReadOnlyList<PlannedProp> props, SightlineMap sight)
         {
-            var sight = new SightlineMap(structure);
             int walkable = 0, narrow = 0;
             foreach (Vector2Int tile in structure.Footprint.Tiles)
             {
@@ -54,7 +57,7 @@ namespace CGD.Level
                 if (!hides) continue;
 
                 foreach (Vector2Int tile in prop.Tiles.allPositionsWithin)
-                    if (structure.Footprint.Contains(tile) && !structure.Has(tile, Solid)) tiles.Add(tile);
+                    if (structure.Contains(tile) && !structure.Has(tile, Solid)) tiles.Add(tile);
             }
             return tiles.Count;
         }
@@ -92,7 +95,7 @@ namespace CGD.Level
         {
             Vector2Int step = alongX ? Vector2Int.right : Vector2Int.up;
             Vector2Int start = tile;
-            while (structure.Footprint.Contains(start - step) && !structure.Has(start - step, SightlineMap.BlocksSight)
+            while (structure.Contains(start - step) && !structure.Has(start - step, SightlineMap.BlocksSight)
                    && !structure.IsPartitioned(start - step, start))
                 start -= step;
             return alongX ? new RectInt(start, new Vector2Int(length, 1)) : new RectInt(start, new Vector2Int(1, length));
@@ -117,6 +120,6 @@ namespace CGD.Level
         }
 
         private static bool IsCover(RoomStructure structure, Vector2Int tile) =>
-            structure.Footprint.Contains(tile) && structure.Has(tile, Solid);
+            structure.Contains(tile) && structure.Has(tile, Solid);
     }
 }
