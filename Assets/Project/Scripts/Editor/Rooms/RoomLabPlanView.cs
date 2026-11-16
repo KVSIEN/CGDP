@@ -142,6 +142,8 @@ namespace CGD.Editor
             RoomStructure structure = room.Structure;
             _readout.Append($"Tile {tile.x}, {tile.y}");
             if (structure.ZoneCount > 1) _readout.Append($" · zone {structure.ZoneOf(tile) + 1}");
+            if (sample.Split != null)
+                _readout.Append($" ({(sample.Split.IsBreachZone(structure.ZoneOf(tile)) ? room.BreachFaction.DisplayName : room.Faction?.DisplayName ?? "holder")}'s side)");
             RoomTileTags tags = structure.TagsAt(tile);
             _readout.Append('\n').Append(tags == RoomTileTags.None ? "Open floor" : Describe(tags));
 

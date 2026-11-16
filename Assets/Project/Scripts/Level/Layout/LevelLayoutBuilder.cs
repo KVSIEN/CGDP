@@ -60,21 +60,37 @@ namespace CGD.Level
             foreach (LevelRoom room in layout.Rooms.Values)
             {
                 FactionDesign design = _settings.DesignFor(room.Faction);
+                RoomStructureRule divider = room.BreachFaction != null ? _settings.DesignFor(room.BreachFaction)?.BreachDivider : null;
                 int tries = RoomTraitFit.TriesFor(room, _settings.RuleFor(room.Node.Type), design, _settings);
-                room.AttachStructure(BestStructure(planner, room, layout, seed.Derive(room.Node.Id), design, tries));
+                room.AttachStructure(BestStructure(planner, room, layout, seed.Derive(room.Node.Id), design, divider, tries));
+                if (room.BreachFaction != null) room.AttachBreachEntrances(BreachEntrances(room, layout));
             }
+        }
+
+        // The doorways of a Breach room whose corridors come from a room the breach faction holds.
+        private static List<Vector2Int> BreachEntrances(LevelRoom room, LevelLayout layout)
+        {
+            var entrances = new List<Vector2Int>();
+            foreach (LevelDoorway doorway in layout.Doorways)
+            {
+                if (doorway.Room != room || doorway.Connection == null) continue;
+                if (layout.Rooms.TryGetValue(doorway.Connection.Other(room.Node.Id), out LevelRoom other)
+                    && other.Node.Faction == room.Node.BreachFaction)
+                    entrances.Add(doorway.RoomTile);
+            }
+            return entrances;
         }
 
         // A fight room a faction design holds keeps the try whose walls and lines of fire come
         // closest to the faction's priorities (RoomTraitFit); any other room has one try.
         private static RoomStructure BestStructure(RoomStructurePlanner planner, LevelRoom room, LevelLayout layout, Seed seed,
-                                                   FactionDesign design, int tries)
+                                                   FactionDesign design, RoomStructureRule breachDivider, int tries)
         {
             RoomStructure best = null;
             int bestMiss = int.MaxValue;
             for (int attempt = 0; attempt < tries && bestMiss > 0; attempt++)
             {
-                RoomStructure structure = planner.Plan(room, layout.Doorways, RoomTraitFit.Try(seed, attempt).Stream(), design?.Structure, design?.Additions);
+                RoomStructure structure = planner.Plan(room, layout.Doorways, RoomTraitFit.Try(seed, attempt).Stream(), design?.Structure, design?.Additions, breachDivider);
                 if (tries == 1) return structure;
 
                 int miss = RoomTraitFit.Miss(RoomTraitMeasure.Measure(structure, System.Array.Empty<PlannedProp>()), design.Priorities,

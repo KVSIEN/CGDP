@@ -28,14 +28,17 @@ namespace CGD.Editor
             Warnings    = warnings;
             Sight       = new SightlineMap(room.Structure);
             Traits      = RoomTraitMeasure.Measure(room.Structure, furnishing.Props);
-            // A Breach room is built by its first faction's design.
+            // A Breach room is built by its holder's design; its zones are dressed by both factions.
             Design      = settings.DesignFor(room.Faction);
+            Split       = room.BreachFaction != null ? BreachSplit.Of(room.Structure, room.BreachEntrances) : null;
             Issues      = RoomSampleChecks.Run(this);
         }
 
         public string             Message     { get; }
         public LevelLayout        Layout      { get; }
         public LevelRoom          Room        { get; }
+        // Breach rooms split into zones: which side each zone is (null when not split).
+        public BreachSplit        Split       { get; }
         public RoomFurnishing     Furnishing  { get; }
         public LevelBuildSettings Settings    { get; }
         public string             SeedText    { get; }

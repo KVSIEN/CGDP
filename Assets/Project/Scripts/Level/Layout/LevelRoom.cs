@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Factions;
 using CGD.Map;
@@ -45,6 +47,9 @@ namespace CGD.Level
         public FactionDefinition BreachFaction { get; }
         // Who the room is for: guests in first class or steerage, or the crew.
         public ShipSide Side { get; }
+        // Breach rooms: the floor tiles inside the doorways whose corridors lead from a room
+        // the breach faction holds. Its side of the room is the one they open into.
+        public IReadOnlyList<Vector2Int> BreachEntrances { get; private set; } = Array.Empty<Vector2Int>();
 
         // Middle of the room's bounds, in tile units.
         public Vector2 Center => Footprint.Center;
@@ -56,9 +61,11 @@ namespace CGD.Level
         // Set once by LevelLayoutBuilder once the doorways are known (no chamfer cuts a doorway).
         public void AttachOutline(RoomOutlinePlan outline) => Outline = outline;
 
+        public void AttachBreachEntrances(IReadOnlyList<Vector2Int> entrances) => BreachEntrances = entrances ?? Array.Empty<Vector2Int>();
+
         public void AttachStructure(RoomStructure structure)
         {
-            if (Structure != null) throw new System.InvalidOperationException("Room structure is already set.");
+            if (Structure != null) throw new InvalidOperationException("Room structure is already set.");
             Structure = structure;
         }
     }

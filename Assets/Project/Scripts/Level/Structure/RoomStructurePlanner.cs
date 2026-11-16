@@ -8,7 +8,7 @@ namespace CGD.Level
     // centre and doorway tiles, notes where the entrances are, reserves a walkway from every
     // doorway to the centre, runs the room function's structure rules (or the faction's where
     // the function has none) and then the faction's additions, then works out the zones their
-    // inner walls make.
+    // inner walls make. A Breach room left in one piece gets the breach faction's divider.
     // A landmark room brings its own interior: its furniture tiles are marked instead.
     public class RoomStructurePlanner
     {
@@ -17,9 +17,12 @@ namespace CGD.Level
         // `factionRules`: the building style of the room's faction, applied only where the room's
         // function brings no structure of its own, so a restaurant keeps its kitchen wall.
         // `factionAdditions`: applied to every room the faction holds, after either.
+        // `breachDivider`: a Breach room's dividing wall, built only when nothing else has
+        // already split the room into zones, so the two factions each get a side.
         public RoomStructure Plan(LevelRoom room, IReadOnlyList<LevelDoorway> doorways, RandomStream random,
                                   IReadOnlyList<RoomStructureRule> factionRules = null,
-                                  IReadOnlyList<RoomStructureRule> factionAdditions = null)
+                                  IReadOnlyList<RoomStructureRule> factionAdditions = null,
+                                  RoomStructureRule breachDivider = null)
         {
             var entrances = new List<Vector2Int>();
             foreach (LevelDoorway doorway in doorways)
@@ -36,6 +39,11 @@ namespace CGD.Level
             }
 
             structure.AssignZones();
+            if (room.Landmark == null && breachDivider != null && structure.ZoneCount < 2)
+            {
+                breachDivider.Apply(structure, random);
+                structure.AssignZones();
+            }
             return structure;
         }
 

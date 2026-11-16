@@ -33,6 +33,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7d7409943dcc4e01a4c4ab110e66fb17, type: 2}
   _additions:
   - {fileID: 11400000, guid: 379326d434a84841b2622a457747f1f5, type: 2}
+  _breachDivider: {fileID: 11400000, guid: a446681aa3ad4835b86bf0c6c31f3866, type: 2}
   _dressing: {fileID: 11400000, guid: 3c91c86dbd2e4ce18bbf70a9516d276a, type: 2}
   _swaps:
   - Original: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}

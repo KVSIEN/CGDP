@@ -204,11 +204,35 @@ try was kept. Where no try fits, the check names the setting to change.
 
 ## 6. Breach rooms (Phase 6)
 
-A Breach room is held by two realities. For now it is built by the first faction's design,
-and both factions bring their props. The plan is to **split it by zone**: when the structure
-divides the room (a partition), each zone follows one faction's dressing. The faction whose
-corridor leads in gets the zone by that doorway. An undivided room gets a breach divider
-first, made from wall remnants in the second faction's style.
+A Breach room (and a Rift, the other room type held by two realities) is **split by zone**:
+the reality that holds it and the one breaching it each dress their own side.
+
+1. **Building.** The holder's design builds the room, as for any room it holds: the
+   function's structure (or the holder's), then the holder's additions.
+2. **Breach divider.** If the room is still one zone after that, the breaching reality's
+   *Breach Divider* (`FactionDesign` › *Structure*) goes across it, a `PartitionStructureRule`
+   two-fifths to halfway along the longer side, with openings where walkways cross:
+   - BIO: a low root wall (1.1 m, 2-tile openings).
+   - TECH: a low checkpoint line (1.1 m, 3-tile openings).
+   - VOID: a full-height fold (2-tile openings).
+   A room too small for two 8-tile sides stays whole.
+3. **Who gets which zone** (`BreachSplit`). A *breach doorway* is one whose corridor comes
+   from a room the breaching reality holds. The breaching reality takes every zone with a
+   breach doorway, and the holder takes the rest. If no zone has one, or every zone does,
+   the holder keeps the largest zone and the breaching reality takes the others.
+4. **Dressing by side.** On each side:
+   - The room type's cover goes down in that reality's pieces (its *Dressing Swaps*).
+   - Then the reality's own props follow.
+   - Counts that scale by room size read that side's floor alone.
+   Everything before that is shared: the offerings, the function's furniture, the side
+   dressing and the room type's *Extra Dressing*. The fill share and prop scale stay the
+   holder's.
+5. **A room that stays whole** is dressed as before: the holder's cover everywhere, and both
+   realities' props anywhere.
+
+The Room Lab shows the split. Its report has a *Breach* row naming each side's zones, and the
+tile readout names the side. A Recipe Breach room's first doorway comes from the breaching
+reality's territory.
 
 A gradient from the breach doorway (swaps get more likely closer to it) would look more
 natural but is harder to read and tune. It stays a possible follow-up.
@@ -332,5 +356,5 @@ Farm take the holding reality's structure; Junction stays bare on purpose.
 | **3. Anchors and furniture** | A `Required` anchor and a furniture list for each card, built from the placeholder kit (section 7); rules in *Furnishing rules* | **Done in code, not yet compiled or run** |
 | **4. Ship side** | A Guest first class / Guest steerage / Crew dial (the section's side where the function allows it), scaling size, fill and prop counts, with each side's dressing (a service door in crew rooms); the Room Lab picks a section | **Done in code, not yet compiled or run** |
 | **5. Concealment by routes, service doors** | *Near Route* and *Off Route* placement options measured from the walkways and route-marking props (the service door); concealment patches stand beside routes, VOID shadow pockets in dead ends | **Done in code, not yet compiled or run** |
-| **6. Breach split by zone** | Each zone of a Breach room dressed by one faction; a breach divider for undivided rooms | After 2 |
+| **6. Breach split by zone** | Each zone of a Breach or Rift room dressed by one faction (the breach takes the zones its doorways open into); the breaching faction's divider splits a room left in one piece; the Room Lab shows the sides | **Done in code, not yet compiled or run** |
 | **7. Tuning** | Set the trait bands (`RoomTraitMeasure`) and *Priority Tries* from Room Lab runs of each card in each reality | Ongoing |

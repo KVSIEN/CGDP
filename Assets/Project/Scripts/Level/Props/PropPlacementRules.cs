@@ -35,7 +35,8 @@ namespace CGD.Level
             size == Vector2Int.one && placement.Clearance == 0 && !placement.Symmetric
             && placement.Facing is not (PropFacing.AgainstWall or PropFacing.AcrossSightline or PropFacing.AlongRoom);
 
-        internal List<PropCandidate> Candidates(RoomPropPlacement placement, Vector2Int size)
+        // `zones`: only spots wholly inside these zones (null = anywhere in the room).
+        internal List<PropCandidate> Candidates(RoomPropPlacement placement, Vector2Int size, ICollection<int> zones = null)
         {
             var candidates = new List<PropCandidate>();
             int rotations = HasFreeYaw(placement, size) ? 1 : 4;
@@ -44,13 +45,13 @@ namespace CGD.Level
                 {
                     Vector2Int extent = rotation % 2 == 0 ? size : new Vector2Int(size.y, size.x);
                     var candidate = new PropCandidate(new RectInt(tile, extent), rotation);
-                    if (Suits(candidate, placement, size, checkLattice: true)) candidates.Add(candidate);
+                    if (Suits(candidate, placement, size, checkLattice: true, zones)) candidates.Add(candidate);
                 }
             return candidates;
         }
 
         // What can't change while the room is furnished: the floor plan, tags, zones and walls.
-        internal bool Suits(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, bool checkLattice)
+        internal bool Suits(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, bool checkLattice, ICollection<int> zones = null)
         {
             RectInt rect = candidate.Rect;
             if (checkLattice && !OnLattice(rect.min, placement.Lattice)) return false;
@@ -61,6 +62,7 @@ namespace CGD.Level
                 {
                     var tile = new Vector2Int(x, y);
                     if (!_structure.Footprint.Contains(tile) || _structure.Has(tile, placement.Avoid)) return false;
+                    if (zones != null && !zones.Contains(_structure.ZoneOf(tile))) return false;
                     if (placement.Zone == PropZone.Largest && _structure.ZoneOf(tile) != _mainZone) return false;
                     if (placement.Zone == PropZone.Others  && _structure.ZoneOf(tile) == _mainZone) return false;
                     if (_structure.Has(tile, placement.On)) matchesOn = true;

@@ -1,13 +1,14 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Core;
-using CGD.Factions;
 
 namespace CGD.Level
 {
     // Plans what a room is furnished with, most important first, as each placement takes floor
     // the next can't have: what a player comes for (offerings), the function's furniture, then
     // its side's dressing (a crew room's staff door), the room type's cover and clutter (and its
-    // extra dressing), then the faction's own pieces. The side's design scales the faction's
+    // extra dressing), then the faction's own pieces — in a Breach room split into zones, each
+    // side by its own faction. The side's design scales the faction's
     // fill share and prop counts.
     // A hand-built landmark keeps its own interior. A fight room a faction design holds is
     // furnished the way that design's priorities ask (RoomTraitFit).
@@ -75,19 +76,39 @@ namespace CGD.Level
             {
                 if (room.Function != null) planner.Add(room.Function.Props);
                 if (side != null && side.Dressing != null) planner.Add(side.Dressing.Props);
-                if (rule != null && rule.Dressing != null) planner.Add((design != null ? design.Dress(rule.Dressing) : rule.Dressing).Props);
-                if (rule != null && rule.ExtraDressing != null) planner.Add(rule.ExtraDressing.Props, exactConcealment: true);
-                AddFactionProps(planner, room.Faction);
-                if (room.BreachFaction != null) AddFactionProps(planner, room.BreachFaction);
+                AddRoomTypeDressing(planner, room, structure, rule, design);
             }
             return planner;
         }
 
-        // A faction's own props: its furnishing of the room, after everything the room needs.
-        private void AddFactionProps(RoomPropPlanner planner, FactionDefinition faction)
+        // The room type's cover and clutter, then the factions' own props. A Breach room split
+        // into zones (BreachSplit) has each side dressed by its own faction: the cover in that
+        // faction's pieces, then its props. Otherwise the holder's version covers the room and
+        // both factions' props go anywhere.
+        private void AddRoomTypeDressing(RoomPropPlanner planner, LevelRoom room, RoomStructure structure, RoomContentRule rule, FactionDesign design)
         {
-            FactionDesign design = _settings.DesignFor(faction);
-            if (design != null && design.Dressing != null) planner.Add(design.Dressing.Props);
+            FactionDesign breachDesign = room.BreachFaction != null ? _settings.DesignFor(room.BreachFaction) : null;
+            BreachSplit split = room.BreachFaction != null ? BreachSplit.Of(structure, room.BreachEntrances) : null;
+            ICollection<int> holderZones = split?.Zones(breachSide: false);
+            ICollection<int> breachZones = split?.Zones(breachSide: true);
+
+            if (rule != null && rule.Dressing != null)
+            {
+                planner.Add(Dressed(design, rule.Dressing).Props, zones: holderZones);
+                if (split != null) planner.Add(Dressed(breachDesign, rule.Dressing).Props, zones: breachZones);
+            }
+            if (rule != null && rule.ExtraDressing != null) planner.Add(rule.ExtraDressing.Props, exactConcealment: true);
+
+            AddFactionProps(planner, design, holderZones);
+            if (room.BreachFaction != null) AddFactionProps(planner, breachDesign, breachZones);
+        }
+
+        private static RoomDressing Dressed(FactionDesign design, RoomDressing dressing) => design != null ? design.Dress(dressing) : dressing;
+
+        // A faction's own props: its furnishing of the room, after everything the room needs.
+        private static void AddFactionProps(RoomPropPlanner planner, FactionDesign design, ICollection<int> zones)
+        {
+            if (design != null && design.Dressing != null) planner.Add(design.Dressing.Props, zones: zones);
         }
     }
 }

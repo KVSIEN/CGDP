@@ -14,7 +14,8 @@ namespace CGD.Level
     //   - priorities: what its fight rooms should offer (concealment, walls, lines of fire);
     //     generation steers toward them (RoomTraitFit) and the Room Lab checks each room
     // LevelBuildSettings lists one per faction; a faction without one is built plainly. In a
-    // Breach room the first faction's design sets the building, and both bring their props.
+    // Breach room the holder's design sets the building, the breach faction's divider splits
+    // a room that is one open space, and each zone is dressed by one of the two (BreachSplit).
     [CreateAssetMenu(fileName = "FactionDesign", menuName = "CGD/Level/Faction Design")]
     public class FactionDesign : ScriptableObject
     {
@@ -31,6 +32,8 @@ namespace CGD.Level
         [SerializeField] private RoomStructureRule[] _structure = Array.Empty<RoomStructureRule>();
         [Tooltip("Applied in order to every room it holds, after the room's own structure (or the list above): what still marks a casino or a library as this faction's")]
         [SerializeField] private RoomStructureRule[] _additions = Array.Empty<RoomStructureRule>();
+        [Tooltip("Where this faction breaches a room that is still one open space, this wall goes across it first, so the room splits into its side and the holder's (a Partition rule that divides zones)")]
+        [SerializeField] private RoomStructureRule _breachDivider;
 
         [Header("Dressing")]
         [Tooltip("The faction's own props, placed after the room type's dressing and the function's furniture")]
@@ -50,6 +53,7 @@ namespace CGD.Level
         public float RoomSizeScale => _roomSizeScale;
         public IReadOnlyList<RoomStructureRule> Structure => _structure;
         public IReadOnlyList<RoomStructureRule> Additions => _additions;
+        public RoomStructureRule BreachDivider => _breachDivider;
         public RoomDressing Dressing => _dressing;
         public float FillShare => _fillShare;
         public float PropScale => _propScale;

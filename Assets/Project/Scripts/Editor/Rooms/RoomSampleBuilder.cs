@@ -80,9 +80,13 @@ namespace CGD.Editor
             return graph;
         }
 
+        // A Breach room's first neighbour belongs to the breaching faction, so the breach
+        // comes in through that doorway as it would from the faction's territory.
         private static void AddNeighbour(MapGraph graph, MapNode room, Vector2 position)
         {
+            bool first = graph.Nodes.Count == 1;
             MapNode neighbour = graph.AddNode(MapNodeType.Junction, position);
+            if (first && room.HasBreachFaction) neighbour.SetFaction(room.BreachFaction, 1f);
             graph.Connect(room.Id, neighbour.Id);
         }
 

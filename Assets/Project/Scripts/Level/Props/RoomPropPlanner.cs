@@ -77,40 +77,52 @@ namespace CGD.Level
         public IReadOnlyList<PropPlacementOutcome> Outcomes => _outcomes;
 
         // `exactConcealment`: concealment placements keep their counts whatever the
-        // concealment scale (what a room type needs whoever holds it).
-        public void Add(IEnumerable<RoomPropPlacement> placements, bool exactConcealment = false)
+        // concealment scale (what a room type needs whoever holds it). `zones`: only in these
+        // zones of the room (one faction's side of a Breach room), with counts that scale by
+        // room size read from their floor alone; null = the whole room.
+        public void Add(IEnumerable<RoomPropPlacement> placements, bool exactConcealment = false, ICollection<int> zones = null)
         {
-            foreach (RoomPropPlacement placement in placements) Add(placement, exactConcealment);
+            foreach (RoomPropPlacement placement in placements) Add(placement, exactConcealment, zones);
         }
 
         // Places one kind of furnishing; returns how many it placed.
-        public int Add(RoomPropPlacement placement, bool exactConcealment = false)
+        public int Add(RoomPropPlacement placement, bool exactConcealment = false, ICollection<int> zones = null)
         {
             if (placement == null || placement.Prefabs == null || placement.Prefabs.Length == 0) return 0;
+            if (zones != null && zones.Count == 0) return 0;
 
-            int count = Scaled(placement, RollCount(placement), exactConcealment);
+            int count = Scaled(placement, RollCount(placement, zones), exactConcealment);
             if (count <= 0) return 0;
 
             _hitFillCap = false;
-            int placed = Fill(placement, count, required: false);
+            int placed = Fill(placement, count, required: false, zones);
             bool hitFillCap = _hitFillCap;
             bool relaxed = false;
             for (int level = 1; placed == 0 && placement.Required && level <= 2; level++)
             {
-                placed  = Fill(placement.Relaxed(level), 1, required: true);
+                placed  = Fill(placement.Relaxed(level), 1, required: true, zones);
                 relaxed = placed > 0;
             }
             _outcomes.Add(new PropPlacementOutcome(placement, count, placed, hitFillCap, relaxed));
             return placed;
         }
 
-        private int RollCount(RoomPropPlacement placement)
+        private int RollCount(RoomPropPlacement placement, ICollection<int> zones)
         {
             int count = placement.Count.Evaluate(_random);
             if (!placement.ScaleByRoomSize || count <= 0) return count;
 
-            float scale = Mathf.Clamp(_structure.Footprint.Count / ReferenceTiles, MinScale, MaxScale);
+            float scale = Mathf.Clamp(FloorTiles(zones) / ReferenceTiles, MinScale, MaxScale);
             return Mathf.Max(1, Mathf.RoundToInt(count * scale));
+        }
+
+        private int FloorTiles(ICollection<int> zones)
+        {
+            if (zones == null) return _structure.Footprint.Count;
+            int tiles = 0;
+            foreach (Vector2Int tile in _structure.Footprint.Tiles)
+                if (zones.Contains(_structure.ZoneOf(tile))) tiles++;
+            return tiles;
         }
 
         // What the room's style does to a placement's count: Required placements are exempt.
@@ -132,10 +144,10 @@ namespace CGD.Level
 
         // --- Choosing -------------------------------------------------------------------
 
-        private int Fill(RoomPropPlacement placement, int count, bool required)
+        private int Fill(RoomPropPlacement placement, int count, bool required, ICollection<int> zones)
         {
             Vector2Int size = PropPlacementRules.FootprintOf(placement);
-            List<PropCandidate> pool = _rules.Candidates(placement, size);
+            List<PropCandidate> pool = _rules.Candidates(placement, size, zones);
             _random.Shuffle(pool);
 
             var own = new List<RectInt>();
@@ -156,17 +168,18 @@ namespace CGD.Level
                 if (!TryPlace(chosen, placement, own)) continue;
 
                 placed++;
-                if (placed < count && placement.Symmetric && TryPlaceTwin(chosen, placement, size, own, required)) placed++;
+                if (placed < count && placement.Symmetric && TryPlaceTwin(chosen, placement, size, own, required, zones)) placed++;
             }
             return placed;
         }
 
         // The mirror image of a placed prop, if the room has the floor for it.
-        private bool TryPlaceTwin(PropCandidate placed, RoomPropPlacement placement, Vector2Int size, List<RectInt> own, bool required)
+        private bool TryPlaceTwin(PropCandidate placed, RoomPropPlacement placement, Vector2Int size, List<RectInt> own, bool required,
+                                  ICollection<int> zones)
         {
             PropCandidate twin = Mirror(placed);
             if (twin.Rect.Equals(placed.Rect) || (!required && _claimed + size.x * size.y > _fillCap)) return false;
-            return _rules.Suits(twin, placement, size, checkLattice: false) && _rules.Placeable(twin, placement, own) && TryPlace(twin, placement, own);
+            return _rules.Suits(twin, placement, size, checkLattice: false, zones) && _rules.Placeable(twin, placement, own) && TryPlace(twin, placement, own);
         }
 
         // Across the line down the middle of the room's long side.

@@ -47,6 +47,27 @@ namespace CGD.Editor
             GUILayout.EndArea();
         }
 
+        private static string BreachSummary(RoomSample sample)
+        {
+            LevelRoom room = sample.Room;
+            if (sample.Split == null) return "not split: one zone, both factions dress all of it";
+            string holder = room.Faction != null ? room.Faction.DisplayName : "holder";
+            string from = room.BreachEntrances.Count > 0 ? $"{room.BreachEntrances.Count} doorway(s) from its rooms" : "no doorway from its rooms: all but the largest zone";
+            return $"{holder} zones {ZoneList(sample.Split, false)} · {room.BreachFaction.DisplayName} zones {ZoneList(sample.Split, true)} ({from})";
+        }
+
+        private static string ZoneList(BreachSplit split, bool breachSide)
+        {
+            var names = new System.Text.StringBuilder();
+            for (int zone = 0; zone < split.ZoneCount; zone++)
+            {
+                if (split.IsBreachZone(zone) != breachSide) continue;
+                if (names.Length > 0) names.Append(", ");
+                names.Append(zone + 1);
+            }
+            return names.ToString();
+        }
+
         private static void DrawSummary(RoomSample sample)
         {
             LevelRoom room = sample.Room;
@@ -65,6 +86,9 @@ namespace CGD.Editor
             EditorGUILayout.LabelField("Floor", $"{room.Footprint.Count} tiles{(room.Footprint.CurvedWalls ? " · curved walls" : "")}{(room.Chamfer > 0 ? $" · {room.Chamfer}-tile bevels" : "")}");
             EditorGUILayout.LabelField("Doorways", sample.DoorsWanted >= 0 ? $"{sample.DoorwayCount} of {sample.DoorsWanted}" : sample.DoorwayCount.ToString());
             EditorGUILayout.LabelField("Structure", $"{room.Structure.Pillars.Count} pillars · {room.Structure.Partitions.Count} inner wall edges · {room.Structure.ZoneCount} zone(s)");
+            if (room.BreachFaction != null)
+                EditorGUILayout.LabelField(new GUIContent("Breach", "Each zone is dressed by one faction: the breaching one takes the zones its doorways open into (else all but the largest). A room in one piece gets the breaching faction's divider first"),
+                                           new GUIContent(BreachSummary(sample)));
 
             CountFurniture(sample, out int pieces, out int floor);
             EditorGUILayout.LabelField("Furniture", $"{pieces} pieces on {floor} tiles ({(float)floor / Mathf.Max(1, room.Footprint.Count):0%} of the floor)");
