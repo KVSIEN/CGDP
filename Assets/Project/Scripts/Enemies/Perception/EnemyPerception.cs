@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
+using CGD.Factions;
 using CGD.Impacts;
 using CGD.Stealth;
 using CGD.Targeting;
@@ -423,13 +424,16 @@ namespace CGD.Enemies
             TargetQuery.SortByDistance(_candidates, _self.position);
             _weighed.Clear();
 
+            bool calm = Level is AwarenessLevel.Unaware or AwarenessLevel.Suspicious;
             for (int i = 0; i < _candidates.Count && i < MaxCandidates; i++)
             {
                 HealthManager candidate = _candidates[i];
+                if (calm && KeepsTruce(candidate)) continue;
+
                 Stimulus stimulus = Sense(candidate);
                 stimulus.Traits = TraitsOf(candidate);
 
-                float weight = _weights.Weigh(stimulus.Traits);
+                float weight = _weights.Weigh(stimulus.Traits) * AttitudeWeight(candidate, stimulus);
                 float score  = stimulus.Instant ? float.MaxValue : stimulus.Gain * (stimulus.Seen ? 2f : 1f) * weight;
                 // A union closes on the target its kin are already fighting.
                 if (!stimulus.Instant && _data.Social == SocialStyle.Network && EnemyRoster.IsFocusedByKin(_owner, candidate)) score *= FocusBonus;
@@ -450,6 +454,24 @@ namespace CGD.Enemies
             else                         HearFootsteps(best, bestStimulus, elapsed);
 
             UpdateLevel();
+        }
+
+        // A calm enemy leaves rival factions be (FactionRelations › Truce While Calm).
+        private bool KeepsTruce(HealthManager candidate) =>
+            _data.Relations != null && _data.Relations.KeepsTruce(_team, candidate.Team);
+
+        public FactionAttitude AttitudeToward(Team other) =>
+            _data.Relations != null ? _data.Relations.AttitudeOf(_team, other) : FactionAttitude.Fight;
+
+        // How much its faction's attitude makes it want this hostile. One it avoids or flees
+        // counts for nothing unless it is touching it or has just hurt it: then it fights back.
+        private float AttitudeWeight(HealthManager candidate, in Stimulus stimulus)
+        {
+            if (_data.Relations == null) return 1f;
+
+            float weight = _data.Relations.TargetWeight(AttitudeToward(candidate.Team));
+            if (weight > 0f) return weight;
+            return stimulus.Instant || stimulus.Traits.HurtItRecently ? 1f : 0f;
         }
 
         private Stimulus Sense(HealthManager candidate)

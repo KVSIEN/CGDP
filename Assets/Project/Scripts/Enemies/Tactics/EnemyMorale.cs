@@ -1,4 +1,6 @@
 using UnityEngine;
+using CGD.Combat;
+using CGD.Factions;
 
 namespace CGD.Enemies
 {
@@ -29,8 +31,9 @@ namespace CGD.Enemies
 
         public void Tick(float deltaTime)
         {
-            Value = Mathf.Clamp01(Value + Doctrine.RecoveryPerSecond(Profile.MoraleRecovery, KinNear(), InFight,
-                TargetIsWeak, HostilesSensed(), ShieldIsBroken) * deltaTime);
+            float rate = Doctrine.RecoveryPerSecond(Profile.MoraleRecovery, KinNear(), InFight,
+                TargetIsWeak, HostilesSensed(), ShieldIsBroken) - FearPerSecond();
+            Value = Mathf.Clamp01(Value + rate * deltaTime);
             UpdateShaken();
         }
 
@@ -98,6 +101,22 @@ namespace CGD.Enemies
             for (int i = 0; i < weighed.Count; i++)
                 if (weighed[i].Sensed) count++;
             return count;
+        }
+
+        // A faction it flees (FactionRelations) wears its nerve down for as long as it senses one.
+        private float FearPerSecond()
+        {
+            FactionRelations relations = _ai.Data.Relations;
+            if (relations == null || relations.FearDrain <= 0f) return 0f;
+
+            var weighed = _ai.Perception.Weighed;
+            int feared = 0;
+            for (int i = 0; i < weighed.Count; i++)
+            {
+                HealthManager hostile = weighed[i].Hostile;
+                if (weighed[i].Sensed && hostile != null && _ai.Perception.AttitudeToward(hostile.Team) == FactionAttitude.Flee) feared++;
+            }
+            return relations.FearDrain * feared;
         }
 
         private int KinNear()

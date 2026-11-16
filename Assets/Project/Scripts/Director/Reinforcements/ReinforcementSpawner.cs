@@ -69,12 +69,14 @@ namespace CGD.Director
             if (count <= 0) return;
             if (!_spots.TryFind(_player.position, _settings.Distance, _settings.SpotAttempts, SpotVisibility.Hidden, out Vector3 spot)) return;
 
+            // One kind per group: the factions are hostile to each other, so a mixed group would
+            // turn on itself the moment it arrived.
+            GameObject prefab = _random.Pick(_settings.Enemies);
+            if (prefab == null) return;
+
             DamageSource lure = DamageSource.Of(_player.gameObject);
             for (int i = 0; i < count; i++)
             {
-                GameObject prefab = _random.Pick(_settings.Enemies);
-                if (prefab == null) continue;
-
                 GameObject enemy = PrefabPool.Spawn(prefab, _spots.Scatter(spot, GroupSpread), Quaternion.Euler(0f, _random.Range(0, 360), 0f));
                 ISeedable.SeedAll(enemy, _seed.Derive("enemies").Derive(_spawned++));
                 if (enemy.TryGetComponent(out EnemyAI ai)) ai.AlertTo(_player.position, lure);

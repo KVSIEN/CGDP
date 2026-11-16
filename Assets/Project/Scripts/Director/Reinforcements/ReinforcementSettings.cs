@@ -10,7 +10,7 @@ namespace CGD.Director
     [CreateAssetMenu(fileName = "ReinforcementSettings", menuName = "CGD/Director/Reinforcement Settings")]
     public class ReinforcementSettings : ScriptableObject
     {
-        [Tooltip("Enemy prefabs a group is picked from, one pick per enemy")]
+        [Tooltip("Enemy prefabs a group is picked from: one pick per group, so a group is all one kind (and one faction)")]
         [SerializeField] private GameObject[] _enemies = Array.Empty<GameObject>();
         [Tooltip("Seconds between groups, counted only while the director lets pressure build")]
         [SerializeField] private FloatRange _interval = new(20f, 35f);

@@ -4,6 +4,7 @@ using CGD.Abilities;
 using CGD.Audio;
 using CGD.BehaviorTrees;
 using CGD.Combat;
+using CGD.Factions;
 using CGD.Weapons;
 
 namespace CGD.Enemies
@@ -52,6 +53,8 @@ namespace CGD.Enemies
         public PerceptionProfile Senses;
         [Tooltip("Whom it would rather fight when it senses several hostiles (rival factions): the weakest, whoever hurt it, whoever is busy elsewhere. Empty = it just sticks with its current target")]
         public TargetPriorities TargetPriorities;
+        [Tooltip("How its faction treats the others: whom it hunts, avoids or flees, and whether rivals leave each other be while calm. Empty = it fights every hostile alike")]
+        public FactionRelations Relations;
 
         [Tooltip("How its faction carries itself: what shakes its nerve, how it idles, what it gives away before a fight. Empty = a plain enemy")]
         public FactionDoctrine Doctrine;

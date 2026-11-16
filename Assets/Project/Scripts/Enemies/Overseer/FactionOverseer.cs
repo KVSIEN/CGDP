@@ -101,6 +101,9 @@ namespace CGD.Enemies
             }
         }
 
+        private bool KeepsTruce(EnemyAI member, HealthManager hostile) =>
+            member.Data.Relations != null && member.Data.Relations.KeepsTruce(Team, hostile.Team);
+
         // The hostile nearest to any of its calm members, within hint range.
         private bool TryFindHostile(out HealthManager nearest)
         {
@@ -113,6 +116,8 @@ namespace CGD.Enemies
                 TargetQuery.Sphere(member.transform.position, range, filter, Hostiles);
                 foreach (HealthManager hostile in Hostiles)
                 {
+                    // Its calm members leave rivals be, so it doesn't send them after one either.
+                    if (KeepsTruce(member, hostile)) continue;
                     float distance = (hostile.transform.position - member.transform.position).sqrMagnitude;
                     if (distance >= best) continue;
                     best    = distance;

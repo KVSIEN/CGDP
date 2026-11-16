@@ -25,6 +25,7 @@ MonoBehaviour:
   SightAngle: 120
   HearingRadius: 10
   Senses: {fileID: 11400000, guid: 251b916bd85e47ba8781cb4c02764333, type: 2}
+  Relations: {fileID: 11400000, guid: 9c155ca7d04f48f79a7c98afa50b6c27, type: 2}
   TargetPriorities: {fileID: 11400000, guid: 46ee83ed83df41e1a115adf56016f655, type: 2}
   Doctrine: {fileID: 11400000, guid: 5a8228b7000940fb8101a853e95b701e, type: 2}
   BehaviorTree: {fileID: 11400000, guid: e0e5d3b2627b47dcb4fc82b16842b21c, type: 2}

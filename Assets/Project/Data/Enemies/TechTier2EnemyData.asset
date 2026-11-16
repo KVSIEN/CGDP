@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TechTier2EnemyData
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
   DisplayName: Tech Tier 2
-  Team: 2
+  Team: 4
   Tier: 2
   MaxHealth: 70
   Armor: 60
@@ -26,6 +26,7 @@ MonoBehaviour:
   SightAngle: 120
   HearingRadius: 10
   Senses: {fileID: 11400000, guid: 251b916bd85e47ba8781cb4c02764333, type: 2}
+  Relations: {fileID: 11400000, guid: 45a2aac401544b4cafdf2c79c67f5ce0, type: 2}
   Doctrine: {fileID: 11400000, guid: 5a8228b7000940fb8101a853e95b701e, type: 2}
   BehaviorTree: {fileID: 11400000, guid: e7612450fa2d4d9084473b8b50dd87ce, type: 2}
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
