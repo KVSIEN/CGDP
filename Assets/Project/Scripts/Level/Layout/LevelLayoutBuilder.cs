@@ -74,7 +74,7 @@ namespace CGD.Level
             int bestMiss = int.MaxValue;
             for (int attempt = 0; attempt < tries && bestMiss > 0; attempt++)
             {
-                RoomStructure structure = planner.Plan(room, layout.Doorways, RoomTraitFit.Try(seed, attempt).Stream(), design?.Structure);
+                RoomStructure structure = planner.Plan(room, layout.Doorways, RoomTraitFit.Try(seed, attempt).Stream(), design?.Structure, design?.Additions);
                 if (tries == 1) return structure;
 
                 int miss = RoomTraitFit.Miss(RoomTraitMeasure.Measure(structure, System.Array.Empty<PlannedProp>()), design.Priorities,

@@ -31,6 +31,8 @@ MonoBehaviour:
   _roomSizeScale: 0.8
   _structure:
   - {fileID: 11400000, guid: 135aff73d97f493b931cc0928b9f9aa3, type: 2}
+  _additions:
+  - {fileID: 11400000, guid: f2359b44fe014af3a1779bb4dad689cf, type: 2}
   _dressing: {fileID: 11400000, guid: 228054c834044feb801d8142f77da82a, type: 2}
   _swaps:
   - Original: {fileID: 11400000, guid: 46883336bfad4b398d9a19cd4b93004e, type: 2}

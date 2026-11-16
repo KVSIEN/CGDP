@@ -36,14 +36,48 @@ anchor and furniture. Each pattern is made from structure rules (`Data/Level/Str
 | Pattern | Structure | How it plays |
 |---|---|---|
 | **Hall**: large, with a pillar grid | `WidePillarGrid`, `DensePillarGrid`, `BrokenColumnGrid` | Long lanes with pillar cover. Flanking around columns |
-| **Aisles**: parallel rows | Furniture on a `Lattice`, or a *Rows* structure rule (Phase 2) | Lanes along the rows; crossing between rows is risky |
+| **Aisles**: parallel rows | `ShelfRows` (tall), `LowRows` (seats, pews, benches) | Lanes along the rows; crossing between rows is risky |
 | **Cells**: small rooms off one spine | `OfficeMaze`, `DividerWall` | Close range, corners, doorways |
 | **Ring**: a feature in the middle | `ColumnRing` | Fights circle the centre; the anchor blocks sight across the room |
 | **Strip**: long and thin | Long floor plans, `CornerPillars` | Transit space and ambush points; cover at the ends |
 | **Service**: machines along the walls | `CornerPillars`, `ServiceCounter`, wall props | Narrow gaps, hazards, a cramped centre |
 
-A function's own structure always wins. A reality's structure is only used when the function
-has none (`RoomStructurePlanner`), so a restaurant keeps its kitchen wall in every reality.
+Structure is applied in two steps (`RoomStructurePlanner`):
+- **The room's own structure.** The function's structure if it has any, otherwise the
+  reality's fallback (`FactionDesign` › *Structure*). A restaurant keeps its kitchen wall in
+  every reality.
+- **The reality's additions**, applied to every room the reality holds (`FactionDesign` ›
+  *Additions*). This is what still marks a room as BIO or VOID once the function brings its own
+  layout:
+  - BIO adds wall remnants: a ruin grown over.
+  - VOID adds full-height folds that pinch the floor into corridors.
+  - TECH adds nothing, which keeps its lanes open.
+- Every rule keeps the walkways open and the floor connected, so the additions can't block a room.
+
+### Structure for each function (Phase 2)
+
+| Pattern | Structure | Functions |
+|---|---|---|
+| Hall | `WidePillarGrid` | Exhibit Hall, Food Court, Lobby, Docking Bay |
+| Hall | `DensePillarGrid` | Cargo Bay |
+| Hall | `CornerPillars` | Commons, Hangar |
+| Hall | none (fallback) | Park, Farm: their trees and crop beds are furniture |
+| Aisles | `ShelfRows` | Library, Storage, Data Center, Armory, Hydroponics Bay |
+| Aisles | `LowRows` | Theatre, Chapel, School, Control Room, Ward, Barracks, Gym, Processing Plant |
+| Aisles | `ColumnRing`, `CornerPillars`, `ServiceCounter` | Casino (unchanged) |
+| Cells | `OfficeMaze` | Offices, Cabin Row |
+| Cells | `DividerWall` | Quarters, Restaurant, Wellness Center, Medical Bay, Laboratory |
+| Cells | `CheckpointBarrier` | Security Office |
+| Ring | `ColumnRing` | Pool, Bridge, Shrine |
+| Ring | `ColumnRing`, `CornerPillars` | Grand Atrium (unchanged) |
+| Ring | `ServiceCounter` | Bar: the counter *is* the ring's centre |
+| Ring | landmark | Reactor Core (hand-built) |
+| Strip | `CornerPillars` | Promenade, Observation Deck, Escape Pod Bay |
+| Strip | none (fallback) | Junction |
+| Service | `ServiceCounter`, `CornerPillars` | Kitchen, Pharmacy |
+| Service | `CornerPillars` | Engine Room, Life Support, Workshop, Water Treatment, Morgue |
+
+Rooms left at *none* get the holding reality's fallback, or stay bare when no reality holds them.
 
 ## 3. Ship side (Phase 4)
 
@@ -87,7 +121,8 @@ takes an anchor's spot.
 |---|---|---|---|
 | **Priorities** (concealment / walls / lines of fire) | High / Medium / Low | Medium / High / Low | Low / Medium / High |
 | **Outline** | Favours domes and rings (curved walls) | Smaller rooms (×0.8) | Favours rectangles |
-| **Structure** (where the function has none) | Broken column grid and wall remnants: a ruin grown over | Office maze: folds the room into corridors | Wide pillar grid and a checkpoint barrier: ordered lanes |
+| **Structure** (where the function has none) | Broken growth-column grid: a ruin grown over | Office maze: folds the room into corridors | Pylon grid and a checkpoint barrier: ordered lanes |
+| **Additions** (every room it holds) | Wall remnants | Fold walls: full-height runs that pinch the floor | None: keeps the lanes open |
 | **Dressing swaps** | Furniture becomes overgrown mounds; rows break up | Furniture becomes jagged shards that block sight | Clutter becomes barricades and turrets |
 | **Concealment** | Many patches beside routes | Shadow pockets in dead ends | Next to none: open, lit floor |
 | **Fill** | Medium (0.3), mostly soft | High (0.55), hard | Low (0.3, props ×0.9): the lanes stay open |
@@ -126,7 +161,36 @@ first, made from wall remnants in the second faction's style.
 A gradient from the breach doorway (swaps get more likely closer to it) would look more
 natural but is harder to read and tune. It stays a possible follow-up.
 
-## 7. Room cards
+## 7. Placeholder kit
+
+Until there is art, every structure piece, anchor and prop is a prefab built from Unity's
+primitives (cubes, cylinders, spheres, capsules), like the setups in the AITest and Sandbox
+scenes. Each one is coloured by its role with the Gridbox prototype materials, so a room reads
+at a glance in play and in the Room Lab. When a real model arrives, it replaces the
+placeholder inside the same prefab, so no rule or asset has to change.
+
+| Role | Colour (Gridbox material) | Examples |
+|---|---|---|
+| Columns and neutral structure | White, Grey 1 | Round and square columns |
+| Built inner walls and pillars | The level's wall material; low cover in its low-cover material | Rows, dividers, counters |
+| BIO pieces | Green 1–3 | Growth column, root mound |
+| TECH pieces | Cyan, Blue 1–3 | Console, barricade |
+| VOID pieces | Purple, Magenta | Shard, fold |
+| Anchors | Orange | Bar counter, operating table, reactor (Phase 3) |
+| Furniture | Brown, Grey 3 | Shelves, pews, beds (Phase 3) |
+| Machines | Yellow, Grey 4 | Turbines, pumps, conveyors (Phase 3) |
+| Concealment | Green (decor, no collider) | Existing `ConcealmentPatch`, `GrassPatch`, `MossPatch` |
+
+Rules for placeholder prefabs:
+- **Origin** at the base. For props, the origin is the centre of the footprint and +Z is the front.
+- **Pillar prefabs** (`_pillarPrefab` on the structure rules) are 1 m wide and 1 m tall. The
+  builder stretches each one to its pillar's width and height, so one column prefab fits any
+  room height, and broken columns too.
+- **Prop size** matches the placement's footprint in tiles (3 m a tile).
+- **Colliders:** a collider on every solid part; none on decor.
+- **Location:** `Prefabs/Environment/Structure/` for structure pieces, `Prefabs/Environment/Props/` for props.
+
+## 8. Room cards
 
 One line per function. A card is the spec its asset is built to; a room that can't be
 described in one line has no clear identity yet. Columns:
@@ -195,8 +259,8 @@ Most functions are still bare; Phases 2 and 3 fill them in from these cards.
 | Phase | What | Status |
 |---|---|---|
 | **1. Priorities steer generation** | Concealment scaled by priority; fight rooms keep the best-fitting of several structure and furnishing tries; the Room Lab shows the kept try | **Done in code, not yet compiled or run** |
-| **2. Patterns for every function** | Give each function its card's structure. Add a *Rows* structure rule for Aisles rooms (parallel low partitions with gaps) | Next |
-| **3. Anchors and furniture** | A `Required` anchor and furniture list for each card, starting with placeholder boxes until art exists | After 2 |
+| **2. Patterns for every function** | Each function gets its pattern's structure (table in section 2); a *Rows* rule for Aisles rooms; reality *Additions*; pillar prefabs stretched to size; the placeholder kit and its column pieces | **Done in code, not yet compiled or run** |
+| **3. Anchors and furniture** | A `Required` anchor and a furniture list for each card, built from the placeholder kit (section 7) | Next |
 | **4. Ship side** | A Guest first class / Guest steerage / Crew dial (on the section or the function) that scales size, fill and decor, and adds a service door on crew rooms | After 3 |
 | **5. Concealment by routes, service doors** | A placement option to put props within N tiles of a walkway; concealment dressings use it | Any time |
 | **6. Breach split by zone** | Each zone of a Breach room dressed by one faction; a breach divider for undivided rooms | After 2 |

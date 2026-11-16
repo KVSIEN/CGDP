@@ -12,6 +12,7 @@ namespace CGD.Level
         private static readonly Vector2Int[] Diagonals = { new(1, 1), new(1, -1), new(-1, -1), new(-1, 1) };
 
         [SerializeField, Min(0.1f)] private float _pillarWidth = 1f;
+        [Tooltip("Optional — placed instead of a plain box: built 1 m wide and 1 m tall with its origin at the base, it is stretched to the pillar's width and height")]
         [SerializeField] private GameObject _pillarPrefab;
 
         public override void Apply(RoomStructure structure, RandomStream random)

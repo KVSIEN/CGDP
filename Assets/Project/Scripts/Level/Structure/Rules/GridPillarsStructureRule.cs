@@ -12,7 +12,7 @@ namespace CGD.Level
         [Tooltip("Tiles kept free between a pillar and the walls")]
         [SerializeField, Min(0)] private int _wallMargin = 1;
         [SerializeField, Min(0.1f)] private float _pillarWidth = 0.8f;
-        [Tooltip("Optional — placed instead of a plain box (origin at the base)")]
+        [Tooltip("Optional — placed instead of a plain box: built 1 m wide and 1 m tall with its origin at the base, it is stretched to the pillar's width and height")]
         [SerializeField] private GameObject _pillarPrefab;
 
         [Header("Ruin")]
@@ -20,7 +20,7 @@ namespace CGD.Level
         [SerializeField, Range(0f, 1f)] private float _missingChance;
         [Tooltip("Chance a column that stands is broken off short")]
         [SerializeField, Range(0f, 1f)] private float _brokenChance;
-        [Tooltip("Metres a broken column still stands (a plain box only); pulled into low (0.9–1.2) or high (2.2+) cover")]
+        [Tooltip("Metres a broken column still stands; pulled into low (0.9–1.2) or high (2.2+) cover")]
         [SerializeField] private FloatRange _brokenHeight = new(0.7f, 2.4f);
 
         public override void Apply(RoomStructure structure, RandomStream random)

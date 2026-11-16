@@ -15,7 +15,7 @@ MonoBehaviour:
   _spacing: 4
   _wallMargin: 1
   _pillarWidth: 1.1
-  _pillarPrefab: {fileID: 0}
+  _pillarPrefab: {fileID: 4956733172118067192, guid: 6771771380004aa8a8beceb062855892, type: 3}
   _missingChance: 0.25
   _brokenChance: 0.55
   _brokenHeight:

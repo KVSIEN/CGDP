@@ -107,7 +107,7 @@ Assets/
                             RuntimeNavMesh, GeneratedAssets; Population/ — RoomPopulator, RoomContentRule, RoomRoster, EnemyTierOdds;
                             Shapes/ — RoomShape assets, RoomShapeRasterizer, RoomFootprint (tiles + door sockets)
                             RoomOutline (curved walls); Functions/ — RoomFunction;
-                            Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), CoverHeights (low / high cover bands), Rules/;
+                            Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), CoverHeights (low / high cover bands), Rules/ (pillars, partitions, rows, remnants, office maze);
                             Landmarks/ — hand-built rooms; Props/ — RoomFurnisher (what a room is furnished with, shared by the level and the editor),
                             RoomPropPlanner (footprints, clearance, spread, cover, lattices, symmetry, clusters; reports each placement's outcome), RoomDressing (cover and clutter per room type);
                             Design/ — FactionDesign (each faction's floor plans, structure, props and crowding)

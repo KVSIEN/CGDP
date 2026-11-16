@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: CornerPillarsStructureRule
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.CornerPillarsStructureRule
   _pillarWidth: 1
-  _pillarPrefab: {fileID: 0}
+  _pillarPrefab: {fileID: 2294246062720604583, guid: 395ab99313eb45dba7c5d8e5ccb1ea49, type: 3}

@@ -7,7 +7,8 @@ namespace CGD.Level
 {
     // The design principles of one faction's architecture, applied to every room it holds:
     //   - floor plans: which shapes it favours and how big its rooms are
-    //   - structure: the columns and walls it builds where a room's function brings none
+    //   - structure: the columns and walls it builds where a room's function brings none, and
+    //     what it adds to every room it holds (a ruin's wall stubs, a fold of corridors)
     //   - dressing: its own props, its own version of the room types' cover and clutter, and
     //     how crowded it keeps a room
     //   - priorities: what its fight rooms should offer (concealment, walls, lines of fire);
@@ -28,6 +29,8 @@ namespace CGD.Level
         [Header("Structure")]
         [Tooltip("Columns and walls, applied in order to rooms whose function has none of its own (a function with its own structure keeps it)")]
         [SerializeField] private RoomStructureRule[] _structure = Array.Empty<RoomStructureRule>();
+        [Tooltip("Applied in order to every room it holds, after the room's own structure (or the list above): what still marks a casino or a library as this faction's")]
+        [SerializeField] private RoomStructureRule[] _additions = Array.Empty<RoomStructureRule>();
 
         [Header("Dressing")]
         [Tooltip("The faction's own props, placed after the room type's dressing and the function's furniture")]
@@ -46,6 +49,7 @@ namespace CGD.Level
         public FactionDefinition Faction => _faction;
         public float RoomSizeScale => _roomSizeScale;
         public IReadOnlyList<RoomStructureRule> Structure => _structure;
+        public IReadOnlyList<RoomStructureRule> Additions => _additions;
         public RoomDressing Dressing => _dressing;
         public float FillShare => _fillShare;
         public float PropScale => _propScale;

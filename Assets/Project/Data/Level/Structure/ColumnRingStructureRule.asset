@@ -15,4 +15,4 @@ MonoBehaviour:
   _count: 8
   _radius: 0.6
   _pillarWidth: 1
-  _pillarPrefab: {fileID: 0}
+  _pillarPrefab: {fileID: 1378471840891649848, guid: c6a3f2984c0245eb97adaa7f873681d7, type: 3}

@@ -169,12 +169,15 @@ namespace CGD.Level
             foreach (StructurePillar pillar in room.Structure.Pillars)
             {
                 Vector3 foot = new Vector3(pillar.Position.x, 0f, pillar.Position.y) * tile;
+                float h = pillar.Height > 0f ? Mathf.Min(pillar.Height, height) : height;
                 if (pillar.Prefab != null)
                 {
-                    Object.Instantiate(pillar.Prefab, parent.TransformPoint(foot), parent.rotation, parent);
+                    // Pillar prefabs are 1 m wide and 1 m tall: stretched to this pillar, one
+                    // column prefab fits every room height, broken columns included.
+                    GameObject column = Object.Instantiate(pillar.Prefab, parent.TransformPoint(foot), parent.rotation, parent);
+                    column.transform.localScale = Vector3.Scale(column.transform.localScale, new Vector3(pillar.Width, h, pillar.Width));
                     continue;
                 }
-                float h = pillar.Height > 0f ? Mathf.Min(pillar.Height, height) : height;
                 (CoverHeights.IsLow(h) ? lowCover : boxes).AddBox(foot + Vector3.up * (h * 0.5f), new Vector3(pillar.Width, h, pillar.Width));
             }
 

@@ -12,6 +12,7 @@ namespace CGD.Level
         [Tooltip("Circle radius as a fraction of half the room's smaller side")]
         [SerializeField, Range(0.2f, 0.95f)] private float _radius = 0.6f;
         [SerializeField, Min(0.1f)] private float _pillarWidth = 1f;
+        [Tooltip("Optional — placed instead of a plain box: built 1 m wide and 1 m tall with its origin at the base, it is stretched to the pillar's width and height")]
         [SerializeField] private GameObject _pillarPrefab;
 
         public override void Apply(RoomStructure structure, RandomStream random)

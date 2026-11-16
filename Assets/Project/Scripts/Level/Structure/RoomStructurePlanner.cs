@@ -6,8 +6,9 @@ namespace CGD.Level
 {
     // Lays out one room's structure once its doorways are known: tags the edge, corner,
     // centre and doorway tiles, notes where the entrances are, reserves a walkway from every
-    // doorway to the centre, runs the room function's structure rules, then works out the zones
-    // their inner walls make.
+    // doorway to the centre, runs the room function's structure rules (or the faction's where
+    // the function has none) and then the faction's additions, then works out the zones their
+    // inner walls make.
     // A landmark room brings its own interior: its furniture tiles are marked instead.
     public class RoomStructurePlanner
     {
@@ -15,8 +16,10 @@ namespace CGD.Level
 
         // `factionRules`: the building style of the room's faction, applied only where the room's
         // function brings no structure of its own, so a restaurant keeps its kitchen wall.
+        // `factionAdditions`: applied to every room the faction holds, after either.
         public RoomStructure Plan(LevelRoom room, IReadOnlyList<LevelDoorway> doorways, RandomStream random,
-                                  IReadOnlyList<RoomStructureRule> factionRules = null)
+                                  IReadOnlyList<RoomStructureRule> factionRules = null,
+                                  IReadOnlyList<RoomStructureRule> factionAdditions = null)
         {
             var entrances = new List<Vector2Int>();
             foreach (LevelDoorway doorway in doorways)
@@ -28,13 +31,19 @@ namespace CGD.Level
             else
             {
                 IReadOnlyList<RoomStructureRule> rules = room.Function != null && HasRules(room.Function.Structure) ? room.Function.Structure : factionRules;
-                if (rules != null)
-                    foreach (RoomStructureRule rule in rules)
-                        if (rule != null) rule.Apply(structure, random);
+                Apply(rules, structure, random);
+                Apply(factionAdditions, structure, random);
             }
 
             structure.AssignZones();
             return structure;
+        }
+
+        private static void Apply(IReadOnlyList<RoomStructureRule> rules, RoomStructure structure, RandomStream random)
+        {
+            if (rules == null) return;
+            foreach (RoomStructureRule rule in rules)
+                if (rule != null) rule.Apply(structure, random);
         }
 
         private static bool HasRules(IReadOnlyList<RoomStructureRule> rules)

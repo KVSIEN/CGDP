@@ -83,5 +83,32 @@ namespace CGD.Tests
             Assert.AreEqual(walls,       design.Priorities.Of(RoomTrait.Walls));
             Assert.AreEqual(linesOfFire, design.Priorities.Of(RoomTrait.LinesOfFire));
         }
+
+        // What still marks a room with its own layout as this faction's: BIO's wall stubs,
+        // VOID's folds. TECH adds nothing, to keep its lanes open.
+        [TestCase("Bio", 1)]
+        [TestCase("Void", 1)]
+        [TestCase("Tech", 0)]
+        public void EachFactionAddsItsOwnStructure(string faction, int additions)
+        {
+            var design = Load<FactionDesign>($"Assets/Project/Data/Level/Designs/{faction}FactionDesign.asset");
+            Assert.AreEqual(additions, design.Additions.Count);
+            foreach (RoomStructureRule rule in design.Additions) Assert.IsNotNull(rule, $"{faction} adds a missing structure rule");
+        }
+
+        // Every place has its layout pattern's structure (ROOM_GENERATION.md, section 2), except
+        // those left to the holding faction and the hand-built landmarks.
+        [Test]
+        public void EveryPlaceBuildsItsPattern()
+        {
+            var leftToTheFaction = new HashSet<string> { "Park", "Farm", "Junction" };
+            foreach (RoomFunction function in Settings().Functions)
+            {
+                Assert.IsNotNull(function, "the level build settings list a missing room function");
+                foreach (RoomStructureRule rule in function.Structure) Assert.IsNotNull(rule, $"{function.name} lists a missing structure rule");
+                if (function.Landmark != null || leftToTheFaction.Contains(function.name.Replace("RoomFunction", ""))) continue;
+                Assert.Greater(function.Structure.Count, 0, $"{function.name} has no structure of its own");
+            }
+        }
     }
 }
