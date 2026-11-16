@@ -11,8 +11,9 @@ using CGD.Map;
 
 namespace CGD.Level
 {
-    // Furnishes rooms from their function and room type (RoomPropPlanner), then fills them with
-    // what their RoomContentRule asks for, on tiles the room's structure leaves free: never on
+    // Furnishes rooms from their function and room type (RoomFurnisher), puts their enemies on
+    // the posts their faction favours (RoomEnemyPlanner), and fills them with what their
+    // RoomContentRule asks for, on tiles the room's structure leaves free: never on
     // pillars, furniture, in doorways or on the centre spot, and props also keep off the walkways
     // and the floor kept in front of things to use, so routes and approaches stay clear. Props
     // and centrepieces go in before the NavMesh is built (so it walks around them), enemies
@@ -29,15 +30,19 @@ namespace CGD.Level
         private readonly Seed _seed;
         private readonly RandomStream _random;
         private readonly RoomFurnisher _furnisher;
+        private readonly RoomEnemyPlanner _enemyPlanner;
 
-        private const RoomTileTags NeverSpawnOn = RoomTileTags.Structure | RoomTileTags.Prop | RoomTileTags.NearDoor | RoomTileTags.Centre;
         private const RoomTileTags KeepPropsOff = RoomTileTags.Walkway | RoomTileTags.Access;
 
-        // Tiles still free to spawn on, per room, in shuffled order.
+        // Tiles still free to spawn on, per room, in shuffled order, and those already used.
         private readonly Dictionary<int, List<Vector2Int>> _freeTiles = new();
+        private readonly Dictionary<int, HashSet<Vector2Int>> _takenTiles = new();
+        // What each room was furnished with, for its enemies' posts.
+        private readonly Dictionary<int, IReadOnlyList<PlannedProp>> _props = new();
         // Enemies placed in each room at build time, for the room's encounter.
         private readonly Dictionary<int, List<HealthManager>> _roomEnemies = new();
-        private readonly Dictionary<int, Transform[]> _routes = new();
+        // Patrol loops per room and side (a Breach room's second faction walks its own).
+        private readonly Dictionary<(int, bool), Transform[]> _routes = new();
         // Things placed in each room so far, numbering their seeds.
         private readonly Dictionary<int, int> _placedCount = new();
 
@@ -49,6 +54,7 @@ namespace CGD.Level
             _seed     = seed;
             _random   = seed.Stream();
             _furnisher = new RoomFurnisher(settings, seed);
+            _enemyPlanner = new RoomEnemyPlanner(settings);
         }
 
         public void PlaceProps()
@@ -56,7 +62,9 @@ namespace CGD.Level
             foreach (LevelRoom room in _layout.Rooms.Values)
             {
                 RoomContentRule rule = _settings.RuleFor(room.Node.Type);
-                foreach (PlannedProp prop in _furnisher.Furnish(room).Props)
+                IReadOnlyList<PlannedProp> props = _furnisher.Furnish(room).Props;
+                _props[room.Node.Id] = props;
+                foreach (PlannedProp prop in props)
                 {
                     if (prop.Prefab == null) continue;
 
@@ -95,7 +103,7 @@ namespace CGD.Level
         public bool WillHaveEnemies(LevelRoom room)
         {
             RoomContentRule rule = _settings.RuleFor(room.Node.Type);
-            return rule != null && rule.EnemyCount.Lerp(room.Node.Intensity) > 0
+            return RoomEnemyPlanner.CountFor(rule, room) > 0
                    && !(RosterFor(room).IsEmpty && SecondRosterFor(room).IsEmpty);
         }
 
@@ -160,6 +168,8 @@ namespace CGD.Level
             conditionLock.SetRequired(Mathf.Max(1, placed));
         }
 
+        // Each enemy starts on the post RoomEnemyPlanner gave it (its faction's favoured kind of
+        // tile, on its own side of a Breach room) and either holds it or patrols its side's loop.
         public void SpawnEnemies()
         {
             foreach (LevelRoom room in _layout.Rooms.Values)
@@ -170,20 +180,28 @@ namespace CGD.Level
                 RoomRoster breach = SecondRosterFor(room);
                 if (roster.IsEmpty && breach.IsEmpty) continue;
 
-                int count = rule.EnemyCount.Lerp(room.Node.Intensity);
+                int count = RoomEnemyPlanner.CountFor(rule, room);
                 if (count <= 0) continue;
 
-                Transform[] route = PatrolRouteFor(room);
+                _props.TryGetValue(room.Node.Id, out IReadOnlyList<PlannedProp> props);
+                RoomEnemyPlan plan = _enemyPlanner.Plan(room, props ?? System.Array.Empty<PlannedProp>(), count,
+                                                        RoomEnemyPlanner.SeedFor(_seed, room).Stream(), TakenTiles(room));
                 var placed = new List<HealthManager>();
-                for (int i = 0; i < count && TryTakeTile(room, RoomTileTags.None, out Vector3 position); i++)
+                for (int i = 0; i < plan.Spawns.Count; i++)
                 {
-                    // A Breach room alternates between its two factions' rosters.
-                    bool fromBreach = roster.IsEmpty || (i % 2 == 1 && !breach.IsEmpty);
+                    PlannedSpawn spawn = plan.Spawns[i];
+                    Claim(room, spawn.Tile);
+                    // A side whose roster is empty borrows the other's.
+                    bool fromBreach = roster.IsEmpty || (spawn.Breach && !breach.IsEmpty);
                     GameObject prefab = (fromBreach ? breach : roster).Pick(_random);
                     if (prefab == null) continue;
-                    GameObject enemy = PrefabPool.Spawn(prefab, OnNavMesh(position), RandomYaw());
+
+                    Vector3 position = OnNavMesh(_parent.TransformPoint(_layout.TileToLocal(spawn.Tile)));
+                    GameObject enemy = PrefabPool.Spawn(prefab, position, RandomYaw());
                     ISeedable.SeedAll(enemy, _seed.Derive("enemies").Derive(room.Node.Id).Derive(i));
-                    if (enemy.TryGetComponent(out EnemyAI ai)) ai.SetWaypoints(route);
+                    // A pooled enemy keeps its last route unless told otherwise: guards get none.
+                    if (enemy.TryGetComponent(out EnemyAI ai))
+                        ai.SetWaypoints(spawn.Holds ? System.Array.Empty<Transform>() : RouteOf(room, plan, spawn.Breach));
                     if (enemy.TryGetComponent(out HealthManager health)) placed.Add(health);
                 }
                 _roomEnemies[room.Node.Id] = placed;
@@ -207,11 +225,21 @@ namespace CGD.Level
         public IReadOnlyList<HealthManager> EnemiesIn(LevelRoom room) =>
             _roomEnemies.TryGetValue(room.Node.Id, out List<HealthManager> enemies) ? enemies : System.Array.Empty<HealthManager>();
 
-        // Shared by everything patrolling the room, built once.
+        // The holding faction's patrol loop, shared by everything patrolling the room (an
+        // encounter's reinforcements too), built once.
         public Transform[] PatrolRouteFor(LevelRoom room)
         {
-            if (!_routes.TryGetValue(room.Node.Id, out Transform[] route))
-                _routes[room.Node.Id] = route = CreatePatrolRoute(room);
+            if (_routes.TryGetValue((room.Node.Id, false), out Transform[] route)) return route;
+            RoomEnemyPlan plan = _enemyPlanner.Plan(room, System.Array.Empty<PlannedProp>(), 0, RoomEnemyPlanner.SeedFor(_seed, room).Stream());
+            return RouteOf(room, plan, breach: false);
+        }
+
+        private Transform[] RouteOf(LevelRoom room, RoomEnemyPlan plan, bool breach)
+        {
+            // An unsplit room has one loop, whichever faction walks it.
+            breach &= plan.Split != null;
+            if (_routes.TryGetValue((room.Node.Id, breach), out Transform[] route)) return route;
+            _routes[(room.Node.Id, breach)] = route = CreatePatrolRoute(room, plan.PatrolOf(breach), breach);
             return route;
         }
 
@@ -228,54 +256,32 @@ namespace CGD.Level
 
         public Vector3 RoomCenter(LevelRoom room) => _parent.TransformPoint(_layout.RoomCenterLocal(room));
 
-        // A loop through the room's outermost reachable spots (north-east, south-east,
-        // south-west, north-west), a spawn margin in from the walls. For a cross or T these
-        // are the arms, for a ring its corners.
-        private Transform[] CreatePatrolRoute(LevelRoom room)
+        private Transform[] CreatePatrolRoute(LevelRoom room, IReadOnlyList<Vector2Int> loop, bool breach)
         {
-            var holder = new GameObject($"PatrolRoute_{room.Node.Id}").transform;
+            var holder = new GameObject(breach ? $"PatrolRoute_{room.Node.Id}_Breach" : $"PatrolRoute_{room.Node.Id}").transform;
             holder.SetParent(_parent, false);
 
-            List<Vector2Int> inner = InnerTiles(room);
-            Vector2Int[] corners =
-            {
-                Extreme(inner, 1, 1), Extreme(inner, 1, -1), Extreme(inner, -1, -1), Extreme(inner, -1, 1),
-            };
-
-            var route = new Transform[corners.Length];
-            for (int i = 0; i < corners.Length; i++)
+            var route = new Transform[loop.Count];
+            for (int i = 0; i < loop.Count; i++)
             {
                 route[i] = new GameObject($"Waypoint{i}").transform;
                 route[i].SetParent(holder, false);
-                route[i].localPosition = _layout.TileToLocal(corners[i]);
+                route[i].localPosition = _layout.TileToLocal(loop[i]);
             }
             return route;
-        }
-
-        private static Vector2Int Extreme(List<Vector2Int> tiles, int x, int y)
-        {
-            Vector2Int best = tiles[0];
-            foreach (Vector2Int tile in tiles)
-                if (tile.x * x + tile.y * y > best.x * x + best.y * y) best = tile;
-            return best;
         }
 
         // Takes the last free tile without any of the `avoid` tags.
         private bool TryTakeTile(LevelRoom room, RoomTileTags avoid, out Vector3 position)
         {
-            if (!_freeTiles.TryGetValue(room.Node.Id, out List<Vector2Int> free))
-            {
-                free = SpawnableTiles(room);
-                _random.Shuffle(free);
-                _freeTiles[room.Node.Id] = free;
-            }
-
+            List<Vector2Int> free = FreeTiles(room);
             for (int i = free.Count - 1; i >= 0; i--)
             {
                 Vector2Int tile = free[i];
                 if (room.Structure != null && room.Structure.Has(tile, avoid)) continue;
 
                 free.RemoveAt(i);
+                TakenTiles(room).Add(tile);
                 position = _parent.TransformPoint(_layout.TileToLocal(tile));
                 return true;
             }
@@ -284,25 +290,27 @@ namespace CGD.Level
             return false;
         }
 
-        // Inside the spawn margin, off pillars, doorways and the centre spot.
-        private List<Vector2Int> SpawnableTiles(LevelRoom room)
+        private List<Vector2Int> FreeTiles(LevelRoom room)
         {
-            var tiles = new List<Vector2Int>();
-            foreach (Vector2Int tile in InnerTiles(room))
-                if (room.Structure == null || !room.Structure.Has(tile, NeverSpawnOn))
-                    tiles.Add(tile);
-            return tiles;
+            if (_freeTiles.TryGetValue(room.Node.Id, out List<Vector2Int> free)) return free;
+            free = RoomEnemyPlanner.SpawnableTiles(room, _settings.SpawnMarginTiles);
+            _random.Shuffle(free);
+            _freeTiles[room.Node.Id] = free;
+            return free;
         }
 
-        // Floor tiles at least the spawn margin away from every wall — or, in a room too
-        // narrow for that, as far from the walls as it allows.
-        private List<Vector2Int> InnerTiles(LevelRoom room)
+        private HashSet<Vector2Int> TakenTiles(LevelRoom room)
         {
-            var tiles = new List<Vector2Int>();
-            for (int margin = _settings.SpawnMarginTiles; margin >= 0 && tiles.Count == 0; margin--)
-                foreach (Vector2Int tile in room.Footprint.Tiles)
-                    if (room.Footprint.IsInterior(tile, margin)) tiles.Add(tile);
-            return tiles;
+            if (!_takenTiles.TryGetValue(room.Node.Id, out HashSet<Vector2Int> taken))
+                _takenTiles[room.Node.Id] = taken = new HashSet<Vector2Int>();
+            return taken;
+        }
+
+        // A tile an enemy starts on: nothing else is put there afterwards.
+        private void Claim(LevelRoom room, Vector2Int tile)
+        {
+            FreeTiles(room).Remove(tile);
+            TakenTiles(room).Add(tile);
         }
 
         private Quaternion RandomYaw() => _parent.rotation * Quaternion.Euler(0f, _random.Range(0f, 360f), 0f);

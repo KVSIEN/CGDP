@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace CGD.Editor
 {
-    // The Room Lab's plan: the room's blueprint, a layer painted over it (tile tags, zones or
-    // sightlines), the doorways, a highlighted issue, and a readout for the tile under the
+    // The Room Lab's plan: the room's blueprint, a layer painted over it (tile tags, zones,
+    // sightlines or enemy posts), the doorways, a highlighted issue, and a readout for the tile under the
     // mouse — what it is tagged, how far you see from it and what stands on it — so every
     // choice the generator made can be read off the floor.
     public class RoomLabPlanView
@@ -23,6 +23,13 @@ namespace CGD.Editor
         private static readonly Color Edge     = new(1f, 1f, 1f, 0.12f);
         private static readonly Color Open     = new(0.2f, 0.8f, 0.3f, 0.35f);
         private static readonly Color Exposed  = new(0.95f, 0.2f, 0.15f, 0.6f);
+        private static readonly Color Concealed = new(0.2f, 0.85f, 0.3f, 0.55f);
+        private static readonly Color Overwatch = new(0.95f, 0.3f, 0.2f, 0.5f);
+        private static readonly Color Choke     = new(1f, 0.6f, 0.15f, 0.45f);
+        private static readonly Color DeadEnd   = new(0.6f, 0.35f, 0.95f, 0.45f);
+        private static readonly Color Route     = new(0.3f, 0.7f, 1f, 0.25f);
+        private static readonly Color HolderSide = new(1f, 1f, 1f, 0.95f);
+        private static readonly Color BreachSide = new(1f, 0.35f, 0.85f, 0.95f);
 
         private readonly RoomPlanTexture _plan = new();
         private readonly StringBuilder _readout = new();
@@ -75,10 +82,57 @@ namespace CGD.Editor
                     RoomLabLayer.Tags       => TagColor(structure.TagsAt(tile)),
                     RoomLabLayer.Zones      => structure.ZoneCount > 1 ? ZoneColor(structure.ZoneOf(tile)) : (Color?)null,
                     RoomLabLayer.Sightlines => SightColor(sample, tile),
+                    RoomLabLayer.Posts      => PostColor(sample.Posts.KindsAt(tile)),
                     _                       => null,
                 };
                 if (color.HasValue) EditorGUI.DrawRect(TileRect(image, tile), color.Value);
             }
+            if (Layer == RoomLabLayer.Posts) DrawEnemies(image, sample);
+        }
+
+        // The kind that matters most to the factions: hiding, then firing positions, then the rest.
+        private static Color? PostColor(RoomPostKinds kinds)
+        {
+            if ((kinds & RoomPostKinds.Concealed) != 0) return Concealed;
+            if ((kinds & RoomPostKinds.Overwatch) != 0) return Overwatch;
+            if ((kinds & RoomPostKinds.DeadEnd)   != 0) return DeadEnd;
+            if ((kinds & RoomPostKinds.Choke)     != 0) return Choke;
+            if ((kinds & RoomPostKinds.Route)     != 0) return Route;
+            return null;
+        }
+
+        // Each side's patrol loop, then every spawn: a ring for a guard holding its post, a dot
+        // for a patroller, white for the holder and pink for the breaching faction.
+        private void DrawEnemies(Rect image, RoomSample sample)
+        {
+            RoomEnemyPlan plan = sample.Enemies;
+            DrawLoop(image, plan.PatrolOf(false), HolderSide);
+            if (plan.Split != null) DrawLoop(image, plan.PatrolOf(true), BreachSide);
+
+            foreach (PlannedSpawn spawn in plan.Spawns)
+            {
+                Color color = spawn.Breach ? BreachSide : HolderSide;
+                Rect rect = TileRect(image, spawn.Tile);
+                if (spawn.Holds) MapGraphStyle.DrawOutline(Shrink(rect, 0.15f), color, 2f);
+                else EditorGUI.DrawRect(Shrink(rect, 0.32f), color);
+            }
+        }
+
+        private void DrawLoop(Rect image, IReadOnlyList<Vector2Int> loop, Color color)
+        {
+            if (loop.Count < 2) return;
+            var points = new Vector3[loop.Count + 1];
+            for (int i = 0; i <= loop.Count; i++) points[i] = TileRect(image, loop[i % loop.Count]).center;
+            Color before = Handles.color;
+            Handles.color = new Color(color.r, color.g, color.b, 0.6f);
+            Handles.DrawAAPolyLine(2f, points);
+            Handles.color = before;
+        }
+
+        private static Rect Shrink(Rect rect, float share)
+        {
+            float dx = rect.width * share, dy = rect.height * share;
+            return new Rect(rect.x + dx, rect.y + dy, rect.width - 2f * dx, rect.height - 2f * dy);
         }
 
         // The tag that says most about a tile: what it is kept free for before where it is.
@@ -151,6 +205,12 @@ namespace CGD.Editor
             if (alongX + alongY > 0)
                 _readout.Append($"\nSees {alongX * sample.Settings.TileSize:0} m east–west, {alongY * sample.Settings.TileSize:0} m north–south");
 
+            RoomPostKinds kinds = sample.Posts.KindsAt(tile);
+            if (kinds != RoomPostKinds.None) _readout.Append($"\nFor an enemy: {kinds.ToString().ToLowerInvariant()}");
+            foreach (PlannedSpawn spawn in sample.Enemies.Spawns)
+                if (spawn.Tile == tile)
+                    _readout.Append($"\nAn enemy starts here ({(spawn.Breach ? room.BreachFaction?.DisplayName : room.Faction?.DisplayName) ?? "no faction"}) and {(spawn.Holds ? "holds the post" : "patrols")}");
+
             foreach (PlannedProp prop in sample.Furnishing.Props)
                 if (prop.Tiles.Contains(tile) && prop.Prefab != null)
                     _readout.Append($"\n{prop.Prefab.name}{(prop.Decor ? " (decor)" : "")}, facing {Mathf.Repeat(prop.Yaw, 360f):0}°");
@@ -185,6 +245,7 @@ namespace CGD.Editor
                 RoomLabLayer.Tags       => "cyan doorway front · blue walkway · yellow access · pink centre · violet corner · sand furniture",
                 RoomLabLayer.Zones      => sample.Room.Structure.ZoneCount > 1 ? $"{sample.Room.Structure.ZoneCount} zones split by inner walls" : "One zone: no inner walls split this room",
                 RoomLabLayer.Sightlines => $"green short sightlines → red {RoomSampleChecks.ExposedLaneTiles * sample.Settings.TileSize:0} m+ open lanes",
+                RoomLabLayer.Posts      => "green concealed · red overwatch · violet dead end · orange choke · blue route · ring guard, dot patrol (pink: breach side)",
                 _                       => "sand furniture · dark pillars · cyan outline doorway",
             };
             GUI.Label(rect, legend + " · hover a tile for details", EditorStyles.whiteMiniLabel);

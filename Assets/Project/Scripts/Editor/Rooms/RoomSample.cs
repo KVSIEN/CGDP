@@ -16,9 +16,11 @@ namespace CGD.Editor
             Issues   = new List<RoomIssue>();
         }
 
-        public RoomSample(LevelLayout layout, LevelRoom room, RoomFurnishing furnishing, LevelBuildSettings settings,
-                          string seedText, int doorsWanted, List<string> warnings)
+        public RoomSample(LevelLayout layout, LevelRoom room, RoomFurnishing furnishing, RoomEnemyPlan enemies,
+                          LevelBuildSettings settings, string seedText, int doorsWanted, List<string> warnings)
         {
+            Enemies     = enemies;
+            Posts       = new RoomPostMap(room.Structure, furnishing.Props);
             Layout      = layout;
             Room        = room;
             Furnishing  = furnishing;
@@ -40,6 +42,10 @@ namespace CGD.Editor
         // Breach rooms split into zones: which side each zone is (null when not split).
         public BreachSplit        Split       { get; }
         public RoomFurnishing     Furnishing  { get; }
+        // Where the room's enemies start and patrol, as the level would place them, and what
+        // each tile offers them.
+        public RoomEnemyPlan      Enemies     { get; }
+        public RoomPostMap        Posts       { get; }
         public LevelBuildSettings Settings    { get; }
         public string             SeedText    { get; }
         // Doorways the recipe asked for (-1 for a map room: its connections decide).

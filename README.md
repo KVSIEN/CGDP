@@ -104,7 +104,7 @@ Assets/
                             Layout/ — the level as tiles: LevelLayoutBuilder, RoomPlacer (cells, multi-cell rooms), CorridorRouter,
                             DirectRoomAligner, LevelLayout/LevelRoom/LevelDoorway, LevelWallPlan, LevelBlueprint (floor-plan drawing);
                             Geometry/ — tiles → meshes: LevelGeometryBuilder, LevelWallBuilder, BoxMeshBuilder, DoorwaySignBuilder,
-                            RuntimeNavMesh, GeneratedAssets; Population/ — RoomPopulator, RoomContentRule, RoomRoster, EnemyTierOdds;
+                            RuntimeNavMesh, GeneratedAssets; Population/ — RoomPopulator, RoomContentRule, RoomRoster, EnemyTierOdds, Posts/ (RoomPostMap, RoomEnemyPlanner: where enemies start, who guards and who patrols);
                             Shapes/ — RoomShape assets, RoomShapeRasterizer, RoomFootprint (tiles + door sockets)
                             RoomOutline (curved walls); Functions/ — RoomFunction;
                             Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), CoverHeights (low / high cover bands), Rules/ (pillars, partitions, rows, remnants, office maze);

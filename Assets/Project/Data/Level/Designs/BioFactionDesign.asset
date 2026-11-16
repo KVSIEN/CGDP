@@ -46,3 +46,10 @@ MonoBehaviour:
     _concealment: 2
     _walls: 1
     _linesOfFire: 0
+  _posts:
+    _concealed: 4
+    _overwatch: 1
+    _choke: 1.5
+    _deadEnd: 1
+    _route: 1
+    _hold: 1

@@ -47,6 +47,20 @@ namespace CGD.Editor
             GUILayout.EndArea();
         }
 
+        private static string EnemySummary(RoomEnemyPlan plan)
+        {
+            if (plan.Spawns.Count == 0) return "none";
+            int holding = 0;
+            RoomPostKinds kinds = RoomPostKinds.None;
+            foreach (PlannedSpawn spawn in plan.Spawns)
+            {
+                if (spawn.Holds) holding++;
+                kinds |= spawn.Kinds;
+            }
+            return $"{plan.Spawns.Count}: {holding} hold their post, {plan.Spawns.Count - holding} patrol" +
+                   (kinds != RoomPostKinds.None ? $" · on {kinds.ToString().ToLowerInvariant()}" : "");
+        }
+
         private static string BreachSummary(RoomSample sample)
         {
             LevelRoom room = sample.Room;
@@ -89,6 +103,9 @@ namespace CGD.Editor
             if (room.BreachFaction != null)
                 EditorGUILayout.LabelField(new GUIContent("Breach", "Each zone is dressed by one faction: the breaching one takes the zones its doorways open into (else all but the largest). A room in one piece gets the breaching faction's divider first"),
                                            new GUIContent(BreachSummary(sample)));
+
+            EditorGUILayout.LabelField(new GUIContent("Enemies", "Where the room's enemies start (Posts layer): on the tiles their faction favours, holding the post or patrolling their side"),
+                                       new GUIContent(EnemySummary(sample.Enemies)));
 
             CountFurniture(sample, out int pieces, out int floor);
             EditorGUILayout.LabelField("Furniture", $"{pieces} pieces on {floor} tiles ({(float)floor / Mathf.Max(1, room.Footprint.Count):0%} of the floor)");

@@ -347,6 +347,69 @@ Farm take the holding reality's structure; Junction stays bare on purpose.
 
 ---
 
+## 9. Agents in the room
+
+The map paints faction territory, room generation builds each faction's rooms to its
+priorities, and the faction AI fights in them. This section is the seam between the last
+two: where a room's enemies stand when it is built, and who patrols and who holds a post.
+Before it, enemies stood on random free tiles and patrolled the room's four outermost corners,
+whatever the room was made of, and a Breach room's two factions were mixed across both sides.
+
+### Post kinds
+
+Once a room is furnished, every floor tile an enemy may start on (inside the spawn margin,
+off pillars, props, doorways and the centre spot) is read for what it offers (`RoomPostMap`):
+
+| Kind | Where | Reads |
+|---|---|---|
+| **Concealed** | Under a concealment prop (patch, shadow pocket) | Hidden until someone is close |
+| **Overwatch** | On a lane of at least 6 open tiles, with hard cover beside it | A firing position down a line of fire |
+| **Choke** | At most 2 open tiles across one way | A corridor, aisle or gap between pillars |
+| **Dead end** | 3 or more steps from every route | Out of the traffic, a back corner |
+| **Route** | On or beside a walkway (doorways to the centre) | Where everyone passes |
+
+A tile can be several kinds at once.
+
+### Who stands where
+
+Each `FactionDesign` has *Posts* (`PostPreference`):
+- a **weight** for each kind: how much likelier a tile of that kind is than plain floor (weight 1);
+- the kinds that make an enemy **hold** its post (stand guard, scanning) instead of patrolling.
+
+| | BIO | VOID | TECH |
+|---|---|---|---|
+| Favours | Concealed ×4, choke ×1.5 | Dead end ×3, choke ×2.5 | Overwatch ×4, route ×1.5 |
+| Holds on | Concealed: an ambush in the bushes | Dead end: waiting in the dark | Overwatch: covering the lane |
+
+So the priorities a room is built to (section 5) are the ones its enemies use: BIO rooms get
+concealment and BIO enemies wait in it.
+
+`RoomEnemyPlanner` picks the posts. It is shared by the level and the Room Lab, like the furnisher.
+- **Picking.** Spawns are picked one by one, at random in proportion to their weights, at least
+  two tiles apart where the room allows. They come from the room's own seed, so the same seed
+  puts enemies in the same places.
+- **Breach rooms split by zone** (section 6) put each faction's enemies on its own side, with
+  its own preference.
+- **Patrols.** Enemies that don't hold their post patrol a loop through the outermost walkable
+  tiles of their side. These are never a pillar or a prop, as the old corners could be.
+- **Fallback.** A room without a design, or with no tile of the favoured kinds, spreads its
+  enemies over plain floor as before.
+
+The Room Lab's **Posts** layer paints the kinds and marks each planned spawn: a ring for one
+holding its post, a dot for a patroller, with the patrol loop drawn per side.
+
+### Next steps for the ecosystem
+
+- **Territory depth.** The map painter gives every room an influence (0–1): deep in a
+  faction's territory or on its frontier. Frontier rooms could take the design at half
+  strength (fewer additions, swaps by chance). Core rooms would be the purest, and Breach rooms
+  would sit where territories meet.
+- **Agents reading posts at runtime.** Searches, retreats and regrouping could prefer the
+  room's posts of their faction's kinds (a TECH squad falls back to overwatch tiles, BIO to
+  concealment), through a per-room post list handed to `EnemyAI` like the patrol route.
+- **Doctrine per post.** A holding enemy's idle (`FactionDoctrine` › Idle) could depend on
+  its post: scanning a lane at overwatch, still in concealment.
+
 ## Roadmap
 
 | Phase | What | Status |
@@ -358,6 +421,7 @@ Farm take the holding reality's structure; Junction stays bare on purpose.
 | **5. Concealment by routes, service doors** | *Near Route* and *Off Route* placement options measured from the walkways and route-marking props (the service door); concealment patches stand beside routes, VOID shadow pockets in dead ends | **Done in code, not yet compiled or run** |
 | **6. Breach split by zone** | Each zone of a Breach or Rift room dressed by one faction (the breach takes the zones its doorways open into); the breaching faction's divider splits a room left in one piece; the Room Lab shows the sides | **Done in code, not yet compiled or run** |
 | **7. Tuning** | Set the trait bands (`RoomTraitMeasure`) and *Priority Tries* from Room Lab runs of each card in each reality. The **Room Sweep** that gathers the runs is built (see *Tuning* below); the values wait on its first report | **Sweep done in code, not yet compiled or run; values not yet tuned** |
+| **8. Agents in the room** | Enemies start on posts their faction favours (section 9), hold or patrol by post kind, each Breach faction on its own side; patrol loops over walkable floor; Room Lab *Posts* layer | **Done in code, not yet compiled or run** |
 
 ### Tuning (Phase 7)
 

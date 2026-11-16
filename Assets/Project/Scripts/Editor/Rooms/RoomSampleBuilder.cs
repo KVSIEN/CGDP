@@ -54,8 +54,13 @@ namespace CGD.Editor
             if (!layout.Rooms.TryGetValue(roomId, out LevelRoom room) || room.Structure == null)
                 return new RoomSample(layout.Warnings.Count > 0 ? layout.Warnings[0] : "The room could not be laid out.");
 
-            RoomFurnishing furnishing = new RoomFurnisher(settings, seed.Derive("contents")).Furnish(room);
-            return new RoomSample(layout, room, furnishing, settings, seedText, doorsWanted, WarningsAbout(layout, room));
+            Seed contents = seed.Derive("contents");
+            RoomFurnishing furnishing = new RoomFurnisher(settings, contents).Furnish(room);
+            // As RoomPopulator does, but without the keys and terminals that may take a tile first.
+            int count = RoomEnemyPlanner.CountFor(settings.RuleFor(room.Node.Type), room);
+            RoomEnemyPlan enemies = new RoomEnemyPlanner(settings).Plan(room, furnishing.Props, count,
+                                                                        RoomEnemyPlanner.SeedFor(contents, room).Stream());
+            return new RoomSample(layout, room, furnishing, enemies, settings, seedText, doorsWanted, WarningsAbout(layout, room));
         }
 
         // The recipe's room at the origin and one Junction per doorway side; the corridor to

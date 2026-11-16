@@ -7,5 +7,6 @@ namespace CGD.Editor
         Tags,        // what each tile is for: walkways, doorway fronts, kept-clear access, edges, corners
         Zones,       // the areas inner walls split the room into
         Sightlines,  // how far you can see along each tile's row or column (red = long, exposed)
+        Posts,       // what each tile offers an enemy, where the room's enemies start and the loops they patrol
     }
 }

@@ -1,0 +1,74 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace CGD.Level
+{
+    // What each floor tile of a furnished room offers an enemy (RoomPostKinds): concealment
+    // from the concealment props over it, overwatch and chokes from the sightlines, dead ends
+    // and routes from the walkways. Read once the room's props are planned.
+    public sealed class RoomPostMap
+    {
+        public const int OverwatchLaneTiles = RoomTraitMeasure.LaneMediumTiles;
+        public const int ChokeTiles         = RoomTraitMeasure.NarrowTiles;
+        public const int DeadEndSteps       = 3;
+        public const int RouteSteps         = 1;
+
+        private const RoomTileTags Solid = RoomTileTags.Structure | RoomTileTags.Prop;
+        private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
+
+        private readonly RoomStructure _structure;
+        private readonly SightlineMap _sight;
+        private readonly RouteMap _routes;
+        private readonly HashSet<Vector2Int> _concealed = new();
+
+        public RoomPostMap(RoomStructure structure, IReadOnlyList<PlannedProp> props)
+        {
+            _structure = structure;
+            _sight     = new SightlineMap(structure);
+            _routes    = new RouteMap(structure);
+
+            var conceals = new Dictionary<GameObject, bool>();
+            foreach (PlannedProp prop in props)
+            {
+                if (prop.Prefab == null) continue;
+                if (!conceals.TryGetValue(prop.Prefab, out bool hides)) conceals[prop.Prefab] = hides = RoomTraitMeasure.Conceals(prop.Prefab);
+                if (!hides) continue;
+                foreach (Vector2Int tile in prop.Tiles.allPositionsWithin)
+                    if (structure.Contains(tile)) _concealed.Add(tile);
+            }
+        }
+
+        // Nothing for tiles off the floor or taken by a pillar or prop.
+        public RoomPostKinds KindsAt(Vector2Int tile)
+        {
+            if (!_structure.Contains(tile) || _structure.Has(tile, Solid)) return RoomPostKinds.None;
+
+            RoomPostKinds kinds = RoomPostKinds.None;
+            if (_concealed.Contains(tile)) kinds |= RoomPostKinds.Concealed;
+
+            (int alongX, int alongY) = _sight.Runs(tile);
+            if (Mathf.Min(alongX, alongY) <= ChokeTiles) kinds |= RoomPostKinds.Choke;
+            if (Mathf.Max(alongX, alongY) >= OverwatchLaneTiles && HasCoverBeside(tile)) kinds |= RoomPostKinds.Overwatch;
+
+            if (_routes.HasRoutes)
+            {
+                int steps = _routes.DistanceOf(tile);
+                if (steps <= RouteSteps) kinds |= RoomPostKinds.Route;
+                else if (steps >= DeadEndSteps && steps != RouteMap.Unreached) kinds |= RoomPostKinds.DeadEnd;
+            }
+            return kinds;
+        }
+
+        // A pillar, a prop or an inner wall right next to the tile (the room's own walls don't count).
+        private bool HasCoverBeside(Vector2Int tile)
+        {
+            foreach (Vector2Int side in Sides)
+            {
+                Vector2Int next = tile + side;
+                if (_structure.IsPartitioned(tile, next)) return true;
+                if (_structure.Contains(next) && _structure.Has(next, Solid)) return true;
+            }
+            return false;
+        }
+    }
+}
