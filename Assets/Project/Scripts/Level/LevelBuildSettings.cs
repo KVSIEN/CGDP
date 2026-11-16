@@ -46,6 +46,8 @@ namespace CGD.Level
         [SerializeField] private List<FactionWallKit> _factionWallKits = new();
         [Tooltip("How each faction builds its rooms: favoured floor plans and sizes, structure, props and how crowded they are. A faction without one is built plainly")]
         [SerializeField] private List<FactionDesign> _factionDesigns = new();
+        [Tooltip("What each side of the ship (guest first class, guest steerage, crew) does to its rooms, on top of the faction's design. A side without one changes nothing")]
+        [SerializeField] private List<ShipSideDesign> _sideDesigns = new();
 
         [Header("Ceilings")]
         [Tooltip("Roof every room and corridor at its wall height. Interiors then need their own lights")]
@@ -129,6 +131,9 @@ namespace CGD.Level
         // The design a faction builds by, or null for a faction (or no faction) without one.
         public FactionDesign DesignFor(FactionDefinition faction) =>
             faction == null ? null : _factionDesigns.Find(d => d != null && d.Faction == faction);
+
+        public ShipSideDesign DesignFor(ShipSide side) =>
+            side == ShipSide.None ? null : _sideDesigns.Find(d => d != null && d.Side == side);
 
         public bool  BuildCeilings  => _buildCeilings;
         public Material CeilingMaterial => _ceilingMaterial != null ? _ceilingMaterial : _wallMaterial;

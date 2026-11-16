@@ -17,6 +17,7 @@ MonoBehaviour:
   _weight: 1
   _preferredSections: []
   _sectionPreference: 3
+  _sides: []
   _shapes: []
   _cells: {x: 1, y: 1}
   _size:

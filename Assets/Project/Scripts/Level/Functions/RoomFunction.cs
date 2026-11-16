@@ -21,6 +21,8 @@ namespace CGD.Level
         [SerializeField] private MapSectionDefinition[] _preferredSections = Array.Empty<MapSectionDefinition>();
         [Tooltip("Weight multiplier inside a preferred section")]
         [SerializeField, Min(1f)] private float _sectionPreference = 3f;
+        [Tooltip("Who this room can be for, its usual side first. It takes its section's side when listed here (a restaurant in Engineering is a crew mess), otherwise the first. Empty = no side")]
+        [SerializeField] private ShipSide[] _sides = Array.Empty<ShipSide>();
         [Tooltip("Floor plans for this kind of room. Empty = the build settings' shapes")]
         [SerializeField] private RoomShape[] _shapes = Array.Empty<RoomShape>();
         [Tooltip("Grid cells the room spans (1 or 2 each way; turned to fit). Falls back to one cell when its neighbours leave no room")]
@@ -59,6 +61,16 @@ namespace CGD.Level
         // Weight for a room in `section` (null = no section).
         public float WeightIn(MapSectionDefinition section) =>
             section != null && Array.IndexOf(_preferredSections, section) >= 0 ? _weight * _sectionPreference : _weight;
+
+        public IReadOnlyList<ShipSide> Sides => _sides;
+
+        // The side a room of this function is on in `section` (null = no section): the
+        // section's side if this function can sit on it, else its usual side.
+        public ShipSide SideIn(MapSectionDefinition section)
+        {
+            if (section != null && section.Side != ShipSide.None && Array.IndexOf(_sides, section.Side) >= 0) return section.Side;
+            return _sides.Length > 0 ? _sides[0] : ShipSide.None;
+        }
 
         // Tiles per side for one room, between minTiles and maxTiles.
         public int RollSize(RandomStream random, int minTiles, int maxTiles)

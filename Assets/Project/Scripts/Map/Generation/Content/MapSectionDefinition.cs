@@ -11,8 +11,11 @@ namespace CGD.Map
         [SerializeField] private string _displayName = "Section";
         [Tooltip("Map Graph window colour")]
         [SerializeField] private Color _color = Color.gray;
+        [Tooltip("Who its rooms are for. A room takes this side when its function can sit on it (RoomFunction › Sides)")]
+        [SerializeField] private ShipSide _side;
 
         public string DisplayName => string.IsNullOrEmpty(_displayName) ? name : _displayName;
         public Color  Color       => _color;
+        public ShipSide Side      => _side;
     }
 }

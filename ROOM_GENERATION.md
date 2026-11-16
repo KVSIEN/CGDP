@@ -20,7 +20,7 @@ two rules.
 | Layer | Decides | Data |
 |---|---|---|
 | **Function**: what the room is on the ship | Size, floor plan, layout pattern, anchor and furniture | `RoomFunction` (`Data/Level/Functions/`) |
-| **Ship side**: who the room is for | How large, ordered and decorated it is. Back-of-house doors | *Phase 4* |
+| **Ship side**: who the room is for | How large, full and decorated it is. Back-of-house doors | `ShipSideDesign` (`Data/Level/Sides/`); section and function sides |
 | **Reality**: who holds it now | Shape bias, size scale, extra structure, dressing swaps, how full it gets, priorities | `FactionDesign` (`Data/Level/Designs/`) |
 | **Content**: what you do there | Cover, concealment, enemies, loot, objectives | `RoomContentRule` plus the dressings (`Data/Level/Dressing/`) |
 | **Checks**: did it work | Doorways fit, all floor reachable, nothing came up short, priorities met | Room Lab (`Window/CGD/Room Lab`) |
@@ -79,7 +79,7 @@ Structure is applied in two steps (`RoomStructurePlanner`):
 
 Rooms left at *none* get the holding reality's fallback, or stay bare when no reality holds them.
 
-## 3. Ship side (Phase 4)
+## 3. Ship side
 
 This dial is what makes the ship read as a cruise liner rather than a generic base.
 
@@ -91,6 +91,38 @@ This dial is what makes the ship read as a cruise liner rather than a generic ba
 
 The same function can sit on two sides: a first-class restaurant and a crew mess share one
 `RoomFunction` and differ only by side.
+
+### How a room gets its side
+
+- **The map section decides, where it can.** Each `MapSectionDefinition` has a side:
+  Commerce is guest first class, Habitation is guest steerage, Engineering is crew.
+- **Each function lists the sides it can sit on** (`RoomFunction` › *Sides*), its usual side
+  first. A room takes its section's side when the function lists it, and otherwise the
+  function's usual side. So a restaurant in Engineering becomes a crew mess, while an engine
+  room in Commerce stays crew.
+- A room with no section takes its function's usual side. Junction has no side.
+
+### What a side changes
+
+Each side has a `ShipSideDesign` (`Data/Level/Sides/`), applied on top of the holding
+reality's design:
+
+| | Guest, first class | Guest, steerage | Crew and service |
+|---|---|---|---|
+| Room size (single-cell rooms) | ×1.1 | ×1 | ×0.85 |
+| Fill share | ×0.8 | ×1 | ×1.25 |
+| Prop counts | ×0.85 | ×1 | ×1.2 |
+| Dressing | Planters in the corners, rugs (decor) | None | A **service door** on a back wall, crates in the corners |
+
+The service door is a placeholder prop, a closed staff door set against a wall. It is not a
+passage: real doorways only come from the map graph's connections. It is there to say
+"back of house".
+
+Symmetric, centred layouts for first class are left for later; nothing in the order of
+placement supports them yet.
+
+The side dressing goes down after the function's furniture and before the room type's
+cover, so a crew room's service door is never crowded out.
 
 ## 4. Placement order
 
@@ -278,7 +310,7 @@ Farm take the holding reality's structure; Junction stays bare on purpose.
 | **1. Priorities steer generation** | Concealment scaled by priority; fight rooms keep the best-fitting of several structure and furnishing tries; the Room Lab shows the kept try | **Done in code, not yet compiled or run** |
 | **2. Patterns for every function** | Each function gets its pattern's structure (table in section 2); a *Rows* rule for Aisles rooms; reality *Additions*; pillar prefabs stretched to size; the placeholder kit and its column pieces | **Done in code, not yet compiled or run** |
 | **3. Anchors and furniture** | A `Required` anchor and a furniture list for each card, built from the placeholder kit (section 7); rules in *Furnishing rules* | **Done in code, not yet compiled or run** |
-| **4. Ship side** | A Guest first class / Guest steerage / Crew dial (on the section or the function) that scales size, fill and decor, and adds a service door on crew rooms | After 3 |
+| **4. Ship side** | A Guest first class / Guest steerage / Crew dial (the section's side where the function allows it), scaling size, fill and prop counts, with each side's dressing (a service door in crew rooms); the Room Lab picks a section | **Done in code, not yet compiled or run** |
 | **5. Concealment by routes, service doors** | A placement option to put props within N tiles of a walkway; concealment dressings use it | Any time |
 | **6. Breach split by zone** | Each zone of a Breach room dressed by one faction; a breach divider for undivided rooms | After 2 |
 | **7. Tuning** | Set the trait bands (`RoomTraitMeasure`) and *Priority Tries* from Room Lab runs of each card in each reality | Ongoing |

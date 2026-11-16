@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Map.MapSectionDefinition
   _displayName: Engineering
   _color: {r: 0.85, g: 0.4, b: 0.3, a: 1}
+  _side: 3

@@ -59,6 +59,7 @@ namespace CGD.Editor
             recipe.Faction = FactionPopup("Holder", recipe.Content, recipe.Faction);
             if (recipe.Type.HasSecondFaction())
                 recipe.BreachFaction = FactionPopup("Breaching", recipe.Content, recipe.BreachFaction);
+            recipe.Section = SectionPopup(recipe.Content, recipe.Section);
 
             EditorGUILayout.Space(6f);
             EditorGUILayout.LabelField(new GUIContent("Doorways", "Which walls get a corridor. The floor plan decides where along the wall"), EditorStyles.boldLabel);
@@ -109,6 +110,28 @@ namespace CGD.Editor
             var names = new string[content.Factions.Count + 1];
             names[0] = "None";
             for (int i = 0; i < content.Factions.Count; i++) names[i + 1] = content.FactionName(i);
+            int picked = EditorGUILayout.Popup(label, Mathf.Clamp(current + 1, 0, names.Length - 1), names);
+            return picked - 1;
+        }
+
+        // The section sets the room's side of the ship (guest first class, steerage, crew) where
+        // the place can sit on it, so each entry says which side it is.
+        private static int SectionPopup(MapContentSettings content, int current)
+        {
+            var label = new GUIContent("Section", "The ship section the room stands in: its side of the ship, where the place can sit on that side");
+            if (content == null || content.Sections.Count == 0)
+            {
+                EditorGUILayout.LabelField(label, new GUIContent("none (no content sections)"));
+                return MapNode.NoSection;
+            }
+
+            var names = new string[content.Sections.Count + 1];
+            names[0] = "None (the place's usual side)";
+            for (int i = 0; i < content.Sections.Count; i++)
+            {
+                MapSectionDefinition section = content.Sections[i];
+                names[i + 1] = section != null ? $"{section.DisplayName} ({RoomSampleChecks.SideName(section.Side)})" : "(missing)";
+            }
             int picked = EditorGUILayout.Popup(label, Mathf.Clamp(current + 1, 0, names.Length - 1), names);
             return picked - 1;
         }

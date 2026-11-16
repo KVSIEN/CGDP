@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Map.MapSectionDefinition
   _displayName: Habitation
   _color: {r: 0.45, g: 0.65, b: 0.9, a: 1}
+  _side: 2

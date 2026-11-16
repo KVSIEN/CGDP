@@ -27,6 +27,8 @@ namespace CGD.Editor
         public MapContentSettings Content;
         public int Faction = MapNode.NoFaction;
         public int BreachFaction = MapNode.NoFaction;
+        [Tooltip("The ship section the room stands in (from the content's list): its side of the ship, where the place can sit on it")]
+        public int Section = MapNode.NoSection;
         [Range(1, 3)] public int Tier = 1;
         [Range(0f, 1f)] public float Intensity = 0.5f;
         public bool DoorNorth = true, DoorEast = true, DoorSouth = true, DoorWest;
@@ -54,6 +56,7 @@ namespace CGD.Editor
                 Content       = graph.Content,
                 Faction       = node.Faction,
                 BreachFaction = node.BreachFaction,
+                Section       = node.Section,
                 Tier          = node.Tier,
                 Intensity     = node.Intensity,
                 DoorNorth = false, DoorEast = false, DoorSouth = false, DoorWest = false,

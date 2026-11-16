@@ -38,6 +38,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a155692b67434b72bf00b3a61569f6e7, type: 2}
   - {fileID: 11400000, guid: 485147287d0f44b7aff60b3211344ad1, type: 2}
   - {fileID: 11400000, guid: afab00b8ebd34573920785418002a8af, type: 2}
+  _sideDesigns:
+  - {fileID: 11400000, guid: 284b270376c94851949f1b756796c2d2, type: 2}
+  - {fileID: 11400000, guid: 4d498863d53a4769a22f8a1733c1059c, type: 2}
+  - {fileID: 11400000, guid: 714620597e7e46b6898579406006de20, type: 2}
   _buildCeilings: 0
   _ceilingMaterial: {fileID: 0}
   _ceilingLayer: 0

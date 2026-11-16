@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CGD.Level;
+using CGD.Map;
 using UnityEditor;
 using UnityEngine;
 
@@ -58,6 +59,8 @@ namespace CGD.Editor
                                                + (room.BreachFaction != null ? $" + {room.BreachFaction.DisplayName}" : ""));
             if (room.Function != null)
                 EditorGUILayout.LabelField("Category", room.Function.Category.ToString());
+            EditorGUILayout.LabelField(new GUIContent("Side", "Who the room is for: its section's side where the place can sit on it, else the place's usual side. Scales size, fill and prop counts, and adds the side's dressing"),
+                                       new GUIContent(RoomSampleChecks.SideName(room.Side) + (sample.Settings.DesignFor(room.Side) == null && room.Side != ShipSide.None ? " (no side design)" : "")));
             EditorGUILayout.LabelField("Size", $"{bounds.width * tile:0} × {bounds.height * tile:0} m · {room.WallHeight:0.#} m high");
             EditorGUILayout.LabelField("Floor", $"{room.Footprint.Count} tiles{(room.Footprint.CurvedWalls ? " · curved walls" : "")}{(room.Chamfer > 0 ? $" · {room.Chamfer}-tile bevels" : "")}");
             EditorGUILayout.LabelField("Doorways", sample.DoorsWanted >= 0 ? $"{sample.DoorwayCount} of {sample.DoorsWanted}" : sample.DoorwayCount.ToString());

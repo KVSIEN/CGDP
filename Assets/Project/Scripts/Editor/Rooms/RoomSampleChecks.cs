@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CGD.Level;
+using CGD.Map;
 using UnityEngine;
 
 namespace CGD.Editor
@@ -144,6 +145,14 @@ namespace CGD.Editor
                 _                     => $"longest lane {traits.LongestLane * tile:0} m, {(traits.LaneHasCover ? "with" : "no")} cover beside it",
             };
         }
+
+        public static string SideName(ShipSide side) => side switch
+        {
+            ShipSide.GuestFirstClass => "guest, first class",
+            ShipSide.GuestSteerage   => "guest, steerage",
+            ShipSide.Crew            => "crew",
+            _                        => "no side",
+        };
 
         private static string Lower(TraitPriority priority) => priority.ToString().ToLowerInvariant();
 

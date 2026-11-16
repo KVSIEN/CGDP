@@ -70,6 +70,7 @@ namespace CGD.Editor
             room.Intensity     = recipe.Intensity;
             room.SetFaction(recipe.Faction, 1f);
             room.BreachFaction = recipe.Type.HasSecondFaction() ? recipe.BreachFaction : MapNode.NoFaction;
+            room.Section       = recipe.Section;
 
             // Node positions are in cells here (spacing 1); the editor's y grows downward.
             if (recipe.DoorNorth) AddNeighbour(graph, room, new Vector2(0f, -NeighbourCells));

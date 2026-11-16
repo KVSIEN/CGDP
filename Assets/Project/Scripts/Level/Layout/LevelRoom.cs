@@ -10,8 +10,9 @@ namespace CGD.Level
     {
         public LevelRoom(MapNode node, RoomFootprint footprint, RoomFunction function, float wallHeight,
             LandmarkRoomDefinition landmark = null, FactionDefinition faction = null,
-            FactionDefinition breachFaction = null, int chamfer = 0)
+            FactionDefinition breachFaction = null, int chamfer = 0, ShipSide side = ShipSide.None)
         {
+            Side          = side;
             Chamfer       = chamfer;
             Faction       = faction;
             BreachFaction = breachFaction;
@@ -25,7 +26,7 @@ namespace CGD.Level
         // The same room shifted by `offset` tiles. Only before its structure and outline are
         // planned, which depend on where the doorways end up.
         public LevelRoom Translated(Vector2Int offset) =>
-            new(Node, Footprint.Translated(offset), Function, WallHeight, Landmark, Faction, BreachFaction, Chamfer);
+            new(Node, Footprint.Translated(offset), Function, WallHeight, Landmark, Faction, BreachFaction, Chamfer, Side);
 
         public MapNode       Node       { get; }
         public RoomFootprint Footprint  { get; }
@@ -42,6 +43,8 @@ namespace CGD.Level
         public FactionDefinition Faction { get; }
         // Breach rooms: the second faction bleeding in, whose enemies fight here too.
         public FactionDefinition BreachFaction { get; }
+        // Who the room is for: guests in first class or steerage, or the crew.
+        public ShipSide Side { get; }
 
         // Middle of the room's bounds, in tile units.
         public Vector2 Center => Footprint.Center;

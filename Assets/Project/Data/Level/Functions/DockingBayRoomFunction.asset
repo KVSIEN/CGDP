@@ -18,6 +18,8 @@ MonoBehaviour:
   _preferredSections:
   - {fileID: 11400000, guid: 127b4364c57a4639989fe8ae021843f4, type: 2}
   _sectionPreference: 3
+  _sides:
+  - 3
   _shapes:
   - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
   - {fileID: 11400000, guid: 9eb4483ea2cb4971b2a8c97462165979, type: 2}
