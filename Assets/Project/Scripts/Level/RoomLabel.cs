@@ -1,5 +1,6 @@
 using System.Text;
 using UnityEngine;
+using CGD.Factions;
 using CGD.Map;
 
 namespace CGD.Level
@@ -21,8 +22,33 @@ namespace CGD.Level
         {
             string tier = $"Tier {Mathf.Clamp(room.Node.EffectiveTier, 1, 3)}";
             if (room.Faction == null) return tier;
-            return $"<color=#{ColorUtility.ToHtmlStringRGB(room.Faction.Color)}>{room.Faction.DisplayName}</color> · {tier}";
+            return $"{Coloured(room.Faction)} · {tier}";
         }
+
+        // The Room Gallery's fuller placard, for judging the room against its recipe: the
+        // details above, then the ship side, how deep in its faction's territory it stands,
+        // what kind of fight it is and who breaches it — "BIO · Tier 1 · crew · frontier · Combat".
+        public static string Exhibit(LevelRoom room, TerritoryDepth depth)
+        {
+            var text = new StringBuilder(Details(room));
+            string side = SideName(room.Side);
+            if (side != null) text.Append(" · ").Append(side);
+            if (room.Faction != null && depth != null) text.Append(" · ").Append(depth.NameOf(room.DesignStrength));
+            if (room.Node.Type != MapNodeType.Quiet) text.Append(" · ").Append(Spaced(room.Node.Type.ToString()));
+            if (room.BreachFaction != null) text.Append(", breached by ").Append(Coloured(room.BreachFaction));
+            return text.ToString();
+        }
+
+        private static string Coloured(FactionDefinition faction) =>
+            $"<color=#{ColorUtility.ToHtmlStringRGB(faction.Color)}>{faction.DisplayName}</color>";
+
+        private static string SideName(ShipSide side) => side switch
+        {
+            ShipSide.GuestFirstClass => "first class",
+            ShipSide.GuestSteerage   => "steerage",
+            ShipSide.Crew            => "crew",
+            _                        => null,
+        };
 
         // EmergencyExit → Emergency Exit.
         private static string Spaced(string name)

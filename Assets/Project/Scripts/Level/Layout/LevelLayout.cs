@@ -26,6 +26,10 @@ namespace CGD.Level
         public bool IsCorridor(Vector2Int tile) => _corridorTiles.Contains(tile);
         public LevelRoom RoomAt(Vector2Int tile) => _roomTiles.TryGetValue(tile, out LevelRoom room) ? room : null;
 
+        // The room at a point in the level's own space (metres from its origin); null in a corridor.
+        public LevelRoom RoomAtLocal(Vector3 local) =>
+            RoomAt(new Vector2Int(Mathf.FloorToInt(local.x / TileSize), Mathf.FloorToInt(local.z / TileSize)));
+
         public void AddRoom(LevelRoom room)
         {
             Rooms[room.Node.Id] = room;

@@ -547,7 +547,10 @@ generation steering must agree). *Priority Tries* lives in `LevelBuildSettings`.
 
 ### Seeing it in play
 
-`Scenes/RoomGallery` builds every place once instead of a map. The places come in quiet
-rooms, with the realities and ship sections taken in turn. Then come a Combat, a Stealth and
-a Breach room for each reality. The scene's Prop Yard (outside the level, seen in the Scene
+`Scenes/RoomGallery` builds every place instead of a map. The places come in quiet
+rooms, with the realities and ship sections taken in turn; a place that lists several sides
+is built once on each, side by side (section 3). Then each reality has a wing: Combat rooms
+at influence 0.35 (frontier) and 0.525 (held, strength 0.7), then a core Combat, Stealth and
+Breach room (section 10). Each room's placard in the HUD feed names its side, depth and fight
+type, and the dev console's `/room` jumps between rooms. The scene's Prop Yard (outside the level, seen in the Scene
 view) holds one of every placeholder column and prop.

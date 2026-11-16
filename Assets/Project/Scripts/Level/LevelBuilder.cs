@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.AI.Navigation;
 using CGD.Core;
+using CGD.DevTools;
 using CGD.Enemies;
 using CGD.Feedback;
 using CGD.Interaction;
 using CGD.Loot;
 using CGD.Map;
+using CGD.Player;
 using CGD.Quests;
 using CGD.WorldMap;
 
@@ -57,7 +59,7 @@ namespace CGD.Level
         [SerializeField] private bool _blueprintMap = true;
         [Tooltip("Optional — the scene's cover spots, found as soon as the NavMesh is built instead of when the first enemy looks for cover mid-fight")]
         [SerializeField] private CoverMap _coverMap;
-        [Tooltip("Name each room in the HUD feed (place, faction, tier) the first time the player walks in. Needs a FeedbackPlayer in the scene")]
+        [Tooltip("Name each room in the HUD feed (place, faction, tier) the first time the player walks in; in a gallery, every time, with its side, depth and fight type too. Needs a FeedbackPlayer in the scene")]
         [SerializeField] private bool _announceRooms = true;
 
         public Seed        Seed   { get; private set; }
@@ -116,8 +118,24 @@ namespace CGD.Level
             StartObjectives(objectives, populator, geometry);
             PlacePlayer(populator);
             FitWorldMap();
-            if (_announceRooms && _player != null)
-                gameObject.AddComponent<RoomArrivalAnnouncer>().Begin(Layout, transform, _player);
+            AnnounceRooms();
+            AddRoomTravel(populator);
+        }
+
+        private void AnnounceRooms()
+        {
+            if (!_announceRooms || _player == null) return;
+
+            var announcer = gameObject.AddComponent<RoomArrivalAnnouncer>();
+            if (_gallery != null) announcer.BeginGallery(Layout, transform, _player, _settings.TerritoryDepth);
+            else                  announcer.Begin(Layout, transform, _player);
+        }
+
+        // The dev console's /room, wherever the player carries one.
+        private void AddRoomTravel(RoomPopulator populator)
+        {
+            if (_player == null || !_player.TryGetComponent(out DevCommands commands) || !_player.TryGetComponent(out PlayerMovement movement)) return;
+            new RoomTravelCommand(Layout, transform, movement, populator.RoomCenter).Register(commands.Console);
         }
 
         // "0" too: the field used to be a number where 0 meant a fresh seed, and scenes saved then still hold it.
