@@ -96,6 +96,8 @@ namespace CGD.Level
         [SerializeField, Min(1)] private int _minRoomWidthTiles = 2;
         [Tooltip("Keeps spawned enemies and props this many tiles away from the walls")]
         [SerializeField, Min(0)] private int _spawnMarginTiles = 1;
+        [Tooltip("Fight rooms a faction design holds are built from this many seeds — structure, then furnishing — keeping the one closest to the faction's priorities. 1 = no steering")]
+        [SerializeField, Range(1, 8)] private int _priorityTries = 4;
 
         public float TileSize       => _tileSize;
         public int   RoomTiles      => _roomTiles;
@@ -133,6 +135,7 @@ namespace CGD.Level
         public int   CeilingLayer   => _ceilingLayer;
         public int   SpawnMarginTiles => _spawnMarginTiles;
         public int   MinRoomWidthTiles => _minRoomWidthTiles;
+        public int   PriorityTries  => _priorityTries;
 
         public GameObject DoorPrefabFor(MapConnection connection) => connection.Type switch
         {

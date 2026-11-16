@@ -8,6 +8,7 @@ runtime-built HUD.
 - [ARCHITECTURE.md](ARCHITECTURE.md) — how the systems fit together (event buses, start-up order, key flows)
 - [SETUP.md](SETUP.md) — how every system is wired into a scene
 - [TASKS.md](TASKS.md) — open work
+- [ROOM_GENERATION.md](ROOM_GENERATION.md) — room generation rules, room cards and their roadmap
 - [CLAUDE.md](CLAUDE.md) — coding guidelines
 
 Open `Assets/Project/Scenes/Sandbox.unity` to play, `MapTest.unity` for a freshly generated level, or `AITest.unity` to try enemies driven by behavior trees.

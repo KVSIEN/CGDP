@@ -3,8 +3,9 @@ using UnityEngine;
 
 namespace CGD.Level
 {
-    // How much each RoomTrait matters in a faction's fight rooms. Design targets: the Room Lab
-    // measures every room against them and says where one falls short or overshoots.
+    // How much each RoomTrait matters in a faction's fight rooms. Generation steers toward them
+    // (RoomTraitFit); the Room Lab measures every room against them and says where one still
+    // falls short or overshoots.
     [Serializable]
     public class RoomTraitPriorities
     {

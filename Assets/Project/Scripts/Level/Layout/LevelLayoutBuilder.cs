@@ -10,7 +10,8 @@ namespace CGD.Level
     //   2. Each connection becomes a corridor from a door socket facing one room to one
     //      facing the other, routed around every room.
     //   3. With the doorways fixed, each room's structure (walkways, pillars, dividers) is
-    //      planned by RoomStructurePlanner.
+    //      planned by RoomStructurePlanner — for a faction's fight room, the best of a few
+    //      tries at its priorities (RoomTraitFit).
     // Corridors keep a wall's width apart so two connections never merge into one — the
     // level has exactly the routes the graph has. When that's impossible (crossing
     // shortcuts) the corridors cross and a warning says so.
@@ -59,8 +60,30 @@ namespace CGD.Level
             foreach (LevelRoom room in layout.Rooms.Values)
             {
                 FactionDesign design = _settings.DesignFor(room.Faction);
-                room.AttachStructure(planner.Plan(room, layout.Doorways, seed.Derive(room.Node.Id).Stream(), design?.Structure));
+                int tries = RoomTraitFit.TriesFor(room, _settings.RuleFor(room.Node.Type), design, _settings);
+                room.AttachStructure(BestStructure(planner, room, layout, seed.Derive(room.Node.Id), design, tries));
             }
+        }
+
+        // A fight room a faction design holds keeps the try whose walls and lines of fire come
+        // closest to the faction's priorities (RoomTraitFit); any other room has one try.
+        private static RoomStructure BestStructure(RoomStructurePlanner planner, LevelRoom room, LevelLayout layout, Seed seed,
+                                                   FactionDesign design, int tries)
+        {
+            RoomStructure best = null;
+            int bestMiss = int.MaxValue;
+            for (int attempt = 0; attempt < tries && bestMiss > 0; attempt++)
+            {
+                RoomStructure structure = planner.Plan(room, layout.Doorways, RoomTraitFit.Try(seed, attempt).Stream(), design?.Structure);
+                if (tries == 1) return structure;
+
+                int miss = RoomTraitFit.Miss(RoomTraitMeasure.Measure(structure, System.Array.Empty<PlannedProp>()), design.Priorities,
+                                             countConcealment: false);
+                if (miss >= bestMiss) continue;
+                best     = structure;
+                bestMiss = miss;
+            }
+            return best;
         }
 
         // Curved and chamfered rooms get their wall line now the doorways are fixed. Tiles a

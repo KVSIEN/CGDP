@@ -115,7 +115,7 @@ namespace CGD.Editor
 
                 string faction = sample.Room.Faction != null ? sample.Room.Faction.DisplayName : sample.Design.name;
                 issues.Add(new RoomIssue(off >= 2 ? RoomIssue.Severity.Warning : RoomIssue.Severity.Info,
-                    $"{faction} wants {Lower(wanted)} {Name(trait)}; this room's is {Lower(got)} ({Describe(trait, sample)}). {Hint(trait, got < wanted)}",
+                    $"{faction} wants {Lower(wanted)} {Name(trait)}; this room's is {Lower(got)} ({Describe(trait, sample)}){(sample.Furnishing.Tries > 1 ? $", the closest of {sample.Furnishing.Tries} tries" : "")}. {Hint(trait, got < wanted)}",
                     trait == RoomTrait.LinesOfFire ? traits.Lane : (RectInt?)null));
             }
         }
@@ -123,11 +123,7 @@ namespace CGD.Editor
         public static readonly RoomTrait[] Traits = { RoomTrait.Concealment, RoomTrait.Walls, RoomTrait.LinesOfFire };
 
         // Rooms that hold enemies: the ones a faction's priorities are about.
-        public static bool IsFightRoom(RoomSample sample)
-        {
-            RoomContentRule rule = sample.Settings.RuleFor(sample.Room.Node.Type);
-            return rule != null && rule.EnemyCount.Max > 0;
-        }
+        public static bool IsFightRoom(RoomSample sample) => RoomTraitFit.IsFightRoom(sample.Settings.RuleFor(sample.Room.Node.Type));
 
         public static string Name(RoomTrait trait) => trait switch
         {

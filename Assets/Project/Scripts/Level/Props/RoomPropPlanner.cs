@@ -38,6 +38,7 @@ namespace CGD.Level
         private readonly RandomStream _random;
         private readonly int _fillCap;
         private readonly float _countScale;
+        private readonly float _concealmentScale;
         private readonly RectInt _bounds;
         private readonly SightlineMap _sight;
         private readonly PropPlacementRules _rules;
@@ -48,14 +49,17 @@ namespace CGD.Level
         private bool _hitFillCap;
 
         // fillShare: the part of the floor props may take (a clean hall less, a crowded office
-        // more). countScale multiplies every placement's count, required ones excepted.
-        public RoomPropPlanner(RoomStructure structure, Vector2 anchor, RandomStream random, float fillShare = DefaultFillShare, float countScale = 1f)
+        // more). countScale multiplies every placement's count, required ones excepted;
+        // concealmentScale multiplies it again for placements of concealment props.
+        public RoomPropPlanner(RoomStructure structure, Vector2 anchor, RandomStream random, float fillShare = DefaultFillShare,
+                               float countScale = 1f, float concealmentScale = 1f)
         {
             _structure  = structure;
             _anchor     = anchor;
             _random     = random;
             _fillCap    = Mathf.FloorToInt(structure.Footprint.Count * Mathf.Clamp01(fillShare));
             _countScale = Mathf.Max(0f, countScale);
+            _concealmentScale = Mathf.Max(0f, concealmentScale);
 
             foreach (Vector2Int tile in structure.Footprint.Tiles)
                 if (structure.Has(tile, RoomTileTags.Structure | RoomTileTags.Prop)) _claimed++;
@@ -70,17 +74,19 @@ namespace CGD.Level
         // One per placement added, in order: what it asked for and what it got.
         public IReadOnlyList<PropPlacementOutcome> Outcomes => _outcomes;
 
-        public void Add(IEnumerable<RoomPropPlacement> placements)
+        // `exactConcealment`: concealment placements keep their counts whatever the
+        // concealment scale (what a room type needs whoever holds it).
+        public void Add(IEnumerable<RoomPropPlacement> placements, bool exactConcealment = false)
         {
-            foreach (RoomPropPlacement placement in placements) Add(placement);
+            foreach (RoomPropPlacement placement in placements) Add(placement, exactConcealment);
         }
 
         // Places one kind of furnishing; returns how many it placed.
-        public int Add(RoomPropPlacement placement)
+        public int Add(RoomPropPlacement placement, bool exactConcealment = false)
         {
             if (placement == null || placement.Prefabs == null || placement.Prefabs.Length == 0) return 0;
 
-            int count = Scaled(placement, RollCount(placement));
+            int count = Scaled(placement, RollCount(placement), exactConcealment);
             if (count <= 0) return 0;
 
             _hitFillCap = false;
@@ -106,8 +112,21 @@ namespace CGD.Level
         }
 
         // What the room's style does to a placement's count: Required placements are exempt.
-        private int Scaled(RoomPropPlacement placement, int count) =>
-            placement.Required || count <= 0 || Mathf.Approximately(_countScale, 1f) ? count : Mathf.Max(1, Mathf.RoundToInt(count * _countScale));
+        private int Scaled(RoomPropPlacement placement, int count, bool exactConcealment)
+        {
+            if (placement.Required || count <= 0) return count;
+
+            float scale = _countScale;
+            if (!exactConcealment && !Mathf.Approximately(_concealmentScale, 1f) && Conceals(placement)) scale *= _concealmentScale;
+            return Mathf.Approximately(scale, 1f) ? count : Mathf.Max(1, Mathf.RoundToInt(count * scale));
+        }
+
+        private static bool Conceals(RoomPropPlacement placement)
+        {
+            foreach (GameObject prefab in placement.Prefabs)
+                if (RoomTraitMeasure.Conceals(prefab)) return true;
+            return false;
+        }
 
         // --- Choosing -------------------------------------------------------------------
 

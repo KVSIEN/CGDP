@@ -336,3 +336,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3cf90817eefb42238292adbde28bfc6b, type: 2}
   _minRoomWidthTiles: 2
   _spawnMarginTiles: 1
+  _priorityTries: 4

@@ -61,6 +61,23 @@ namespace CGD.Level
         public IReadOnlyList<Vector2Int>      Entrances  => _entrances;
         public int ZoneCount { get; private set; } = 1;
 
+        // An independent copy, to try a furnishing on without touching this structure.
+        public RoomStructure Copy()
+        {
+            var copy = new RoomStructure(Footprint, WallHeight);
+            foreach (KeyValuePair<Vector2Int, RoomTileTags> pair in _tags) copy._tags[pair.Key] = pair.Value;
+            foreach (KeyValuePair<Vector2Int, int> pair in _zones) copy._zones[pair.Key] = pair.Value;
+            copy._pillars.AddRange(_pillars);
+            copy._partitions.AddRange(_partitions);
+            copy._openings.AddRange(_openings);
+            copy._blocked.UnionWith(_blocked);
+            copy._entrances.AddRange(_entrances);
+            System.Array.Copy(_solid, copy._solid, _solid.Length);
+            copy._solidCount = _solidCount;
+            copy.ZoneCount   = ZoneCount;
+            return copy;
+        }
+
         public RoomTileTags TagsAt(Vector2Int tile) => _tags.TryGetValue(tile, out RoomTileTags tags) ? tags : RoomTileTags.None;
         public bool Has(Vector2Int tile, RoomTileTags tags) => (TagsAt(tile) & tags) != 0;
 

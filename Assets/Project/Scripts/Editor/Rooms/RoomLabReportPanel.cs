@@ -80,6 +80,10 @@ namespace CGD.Editor
                 EditorGUILayout.LabelField("Not a fight room: priorities aren't checked.", EditorStyles.wordWrappedMiniLabel);
             else if (sample.Design == null)
                 EditorGUILayout.LabelField("No faction design holds this room: pick a faction to check its priorities.", EditorStyles.wordWrappedMiniLabel);
+            else if (sample.Furnishing.Tries > 1)
+                EditorGUILayout.LabelField(new GUIContent($"Furnishing try {sample.Furnishing.Attempt + 1} of {sample.Furnishing.Tries} kept, as the closest fit",
+                                                          "The structure and then the furnishing are each built from several seeds (Level Build Settings › Priority Tries), keeping the one closest to these priorities"),
+                                           EditorStyles.wordWrappedMiniLabel);
 
             foreach (RoomTrait trait in RoomSampleChecks.Traits)
             {

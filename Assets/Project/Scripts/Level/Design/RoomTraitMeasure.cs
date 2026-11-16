@@ -50,7 +50,7 @@ namespace CGD.Level
             {
                 if (prop.Prefab == null) continue;
                 if (!conceals.TryGetValue(prop.Prefab, out bool hides))
-                    conceals[prop.Prefab] = hides = prop.Prefab.GetComponentInChildren<ConcealmentZone>(true) != null;
+                    conceals[prop.Prefab] = hides = Conceals(prop.Prefab);
                 if (!hides) continue;
 
                 foreach (Vector2Int tile in prop.Tiles.allPositionsWithin)
@@ -58,6 +58,10 @@ namespace CGD.Level
             }
             return tiles.Count;
         }
+
+        // Whether a prop hides whoever stands in it.
+        public static bool Conceals(GameObject prefab) =>
+            prefab != null && prefab.GetComponentInChildren<ConcealmentZone>(true) != null;
 
         // The longest unbroken row or column of see-through floor, as a strip of tiles — of
         // several as long, one with cover beside it.
