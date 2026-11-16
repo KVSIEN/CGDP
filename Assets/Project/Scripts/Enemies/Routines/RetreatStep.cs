@@ -2,8 +2,9 @@ using UnityEngine;
 
 namespace CGD.Enemies
 {
-    // Falling back to regroup, behind the Regroup node: run to high cover
-    // from the (believed) threat, or home to its post, then hold there facing the threat.
+    // Falling back to regroup, behind the Regroup node: run to the best place it knows (its
+    // faction's kind of ground, EnemyGround) or high cover from the (believed) threat, or home
+    // to its post, then hold there facing the threat.
     internal static class RetreatStep
     {
         // Kin it rallies on stand this far from it when it arrives.
@@ -15,10 +16,19 @@ namespace CGD.Enemies
             RetreatDestination to = ai.Doctrine.Morale.RetreatTo;
 
             if (to == RetreatDestination.Kin && TryFindRally(ai, out Vector3 rally)) destination = rally;
+            else if (to != RetreatDestination.Den && TryFindKnownGround(ai, out Vector3 ground)) destination = ground;
             else if (to != RetreatDestination.Den && TryFindCover(ai, out Vector3 cover)) destination = cover;
 
             ai.Agent.isStopped = false;
             ai.Routing.SetDestination(destination);
+        }
+
+        // The best place it has learned for its faction (GroundDoctrine), away from the threat.
+        private static bool TryFindKnownGround(EnemyAI ai, out Vector3 point)
+        {
+            point = default;
+            var perception = ai.Perception;
+            return perception.Target != null && ai.Ground.TryFallBack(perception.TargetPosition, out point);
         }
 
         private static bool TryFindCover(EnemyAI ai, out Vector3 cover)

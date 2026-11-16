@@ -59,6 +59,10 @@ namespace CGD.Enemies
         public Vector3 BeliefHeading    => _ai.Belief.Heading;
         public IReadOnlyList<BeliefSpot> BeliefSpots => _ai.Belief.Spots;
 
+        // --- Ground it has learned --------------------------------------------------
+
+        public void CopyKnownPlaces(List<GroundPlace> results) => _ai.Ground.CopyPlaces(results);
+
         // Index in CoverMap.Active of the spot it holds, −1 for none.
         public int        ClaimedCover => _ai.Tactics.ClaimedCover;
         public bool       KnowsCover(int index) => _ai.Tactics.KnowsCover(index);

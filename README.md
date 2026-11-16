@@ -73,6 +73,7 @@ Assets/
                             Perception/ (EnemyPerception: awareness, targets, memory; EnemySenses: sight and hearing checks; AwarenessMeter, PerceptionProfile;
                             CalloutSender: what it tells its kin; HostileFocus: who is busy fighting someone else),
                             Belief/ (EnemyBelief, BeliefModel: where an unseen target likely went),
+                            Ground/ (EnemyGround, PlaceMemory: hidden spots, vantages and corridors it has learned by walking and looking),
                             Doctrine/ (FactionDoctrine: how a faction carries itself — morale, escalation, idle routine and tells; EnemyIdleLife, EnemyTells),
                             Tactics/ (CoverMap: cover spots from the NavMesh; CoverKnowledge, EnemyTactics: cover, flanking, hiding spots, melee turns;
                             AttackTokens, EnemyMorale, AlarmPanel + AlarmKnowledge (the panels it knows); TacticsLog: its latest cover / flank / vanish searches),

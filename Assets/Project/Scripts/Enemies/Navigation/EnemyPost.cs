@@ -55,7 +55,8 @@ namespace CGD.Enemies
             }
 
             agent.isStopped = true;
-            _ai.Idle.TickWatch(_rotation, _position, deltaTime, time);
+            // A post it has learned looks down a lane is watched down that lane.
+            _ai.Idle.TickWatch(_ai.Ground.WatchFacing(_position, _rotation), _position, deltaTime, time);
         }
 
         public bool IsNear(Vector3 point, float radius) => (point - _position).sqrMagnitude <= radius * radius;

@@ -552,6 +552,7 @@ namespace CGD.Enemies
         private void DiscoverBody(FallenAlly fallen)
         {
             _bodiesSeen.Add(fallen.Body);
+            _owner.Ground.OnAllyFell(fallen.Position, Time.time);
             if (!IsGone(fallen.Killer) && fallen.Killer.Team != _team)
             {
                 _fallKiller = fallen.Killer;

@@ -53,6 +53,7 @@ namespace CGD.DevTools
 
             if (preferences.ShowPlans && focus.HasValue) PlansOverlay.DrawSearches(_mesh, focus.Value, Time.time);
             if (preferences.ShowPlans && focus.HasValue) BeliefOverlay.Draw(_mesh, focus.Value);
+            if (preferences.ShowPlans && focus.HasValue) GroundOverlay.Draw(_mesh, focus.Value);
             _mesh.Render();
         }
 

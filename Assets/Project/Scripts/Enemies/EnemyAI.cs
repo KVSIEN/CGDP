@@ -98,6 +98,8 @@ namespace CGD.Enemies
         internal EnemyTactics      Tactics      { get; private set; }
         internal EnemyPost         Post         { get; private set; }
         internal AlarmKnowledge    Alarms       { get; private set; }
+        // The places it has learned by walking and looking: hidden spots, vantages, corridors.
+        internal EnemyGround       Ground       { get; private set; }
         internal EnemyAbilities    Abilities    { get; private set; }
         internal EnemyAmbush       Ambush       { get; private set; }
         internal EnemyMinions      Minions      { get; private set; }
@@ -157,6 +159,7 @@ namespace CGD.Enemies
             Tactics       = new EnemyTactics(this, _obstacleMask);
             Post          = new EnemyPost(this);
             Alarms        = new AlarmKnowledge(this);
+            Ground        = new EnemyGround(this, _obstacleMask);
             TryGetComponent(out _stealth);
             Ambush        = new EnemyAmbush(_stealth);
             Minions       = new EnemyMinions(this);
@@ -236,6 +239,7 @@ namespace CGD.Enemies
                     RangedCombat.Tick(dt);
                     Perception.Tick(dt);
                     Belief.Tick(Time.time);
+                    Ground.Tick(Time.time);
                     Tactics.Tick(Time.time);
                     Morale.Tick(dt);
                     TrackEngagement();
@@ -408,6 +412,7 @@ namespace CGD.Enemies
         private void OnDamaged(float amount)
         {
             Morale.OnDamaged();
+            Ground.OnHurt(Time.time);
             if (_health.IsDead || Time.time < _nextStaggerAt) return;
             if (amount < _health.MaxHealth * _data.StaggerThreshold) return;
 
@@ -472,6 +477,7 @@ namespace CGD.Enemies
             FallenAllies.Remove(this);
             Motion.StopTurning();
             Alarms.Forget();
+            Ground.Forget();
             ReturnPending  = false;
             _engagedTarget = null;
             _sinceTreeTick = 0f;

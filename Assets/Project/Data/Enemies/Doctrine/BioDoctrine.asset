@@ -146,3 +146,10 @@ MonoBehaviour:
     _committedKind: 5
     _hesitation: {Min: 0, Max: 0, Bias: 0}
     _standDownKind: 7
+  _ground:
+    _hidden: 3
+    _vantage: 0.5
+    _tight: 1
+    _dangerAversion: 1
+    _fallBackToKnownGround: 1
+    _shareWithKin: 1

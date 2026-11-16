@@ -4,7 +4,8 @@ namespace CGD.Enemies
 {
     // How a faction carries itself, apart from how a single enemy type is built (EnemyData
     // › Doctrine): what shakes its nerve and what it does when it breaks, how it raises the
-    // alarm, how it idles, how it winds down after a fight and what it gives away before one. Shared by every enemy of
+    // alarm, how it idles, how it winds down after a fight, what it gives away before one and
+    // how it uses the ground it has learned. Shared by every enemy of
     // the faction, whichever behavior tree it runs. Empty = a plain enemy.
     [CreateAssetMenu(fileName = "NewFactionDoctrine", menuName = "CGD/Enemies/Faction Doctrine")]
     public class FactionDoctrine : ScriptableObject
@@ -21,6 +22,7 @@ namespace CGD.Enemies
         [SerializeField] private ReflexDoctrine     _reflexes    = new();
         [SerializeField] private AftermathDoctrine  _aftermath  = new();
         [SerializeField] private TellDoctrine       _tells      = new();
+        [SerializeField] private GroundDoctrine     _ground     = new();
 
         public MoraleDoctrine     Morale     => _morale;
         public EscalationDoctrine Escalation => _escalation;
@@ -32,6 +34,7 @@ namespace CGD.Enemies
         public ReflexDoctrine     Reflexes   => _reflexes;
         public AftermathDoctrine  Aftermath  => _aftermath;
         public TellDoctrine       Tells      => _tells;
+        public GroundDoctrine     Ground     => _ground;
 
         // What an enemy without a doctrine follows: every default, no differences.
         public static FactionDoctrine Neutral =>

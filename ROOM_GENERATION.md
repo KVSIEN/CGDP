@@ -401,11 +401,8 @@ holding its post, a dot for a patroller, with the patrol loop drawn per side.
 ### Next steps for the ecosystem
 
 - **Territory depth.** Done: see section 10.
-- **Agents reading posts at runtime.** Searches, retreats and regrouping could prefer the
-  room's posts of their faction's kinds (a TECH squad falls back to overwatch tiles, BIO to
-  concealment), through a per-room post list handed to `EnemyAI` like the patrol route.
-- **Doctrine per post.** A holding enemy's idle (`FactionDoctrine` › Idle) could depend on
-  its post: scanning a lane at overwatch, still in concealment.
+- **Agents using places at runtime** and **watching from their post**: done, but from each
+  enemy's own experience rather than the room's post map. See section 11.
 
 ## 10. Territory depth (Phase 9)
 
@@ -439,6 +436,73 @@ from the same seed. A Breach room's breaching side is always at full strength: i
 other reality bleeding in. The Room Lab's recipe has an *Influence* slider, and the report
 shows the room's depth and strength.
 
+## 11. Enemies learn their ground (Phase 10)
+
+Section 9 places enemies when a room is built, from the room's own data. What they do
+afterwards must come from what *they* know. An enemy is never handed the room's post map.
+It learns the ground it walks, the way it already learns cover (`CoverKnowledge`): by being
+there and looking. The longer it roams a room, the better it knows it, and it fights from
+what it knows.
+
+### What an enemy learns (`EnemyGround`, `PlaceMemory`)
+
+About once a second, while it moves about, an enemy takes stock of where it stands. It sends
+eight rays out at eye height (`GroundSense`) and reads the spot:
+
+| Trait | How it tells | Means |
+|---|---|---|
+| **Hidden** | It is standing inside a concealment zone | A place to lie in wait |
+| **Vantage** | One ray runs 15 m or more, and something solid stands within 1.5 m beside it | A firing position down a lane, with cover to duck behind |
+| **Tight** | Some pair of opposite rays adds up to 4.5 m or less | A corridor or aisle |
+
+It also spots concealment zones it can see from up to 20 m, and remembers them as hidden
+places before it has been in them.
+
+Each place is remembered by a 2.5 m cell, with:
+- its traits;
+- the way its longest ray ran (a vantage's lane);
+- a **familiarity**. Each visit adds 0.25, a sighting from afar 0.15, and it never goes above 1.
+  The ground an enemy walks every day becomes the ground it trusts;
+- a **danger** level. It is set where the enemy was hurt and where it saw an ally fall, and
+  fades over 30 s.
+
+An enemy keeps at most 48 places and forgets the least familiar first. It forgets everything
+when it is pooled and spawned again. Kin within 6 m pass on what they know well (familiarity
+0.5 and up) every few seconds, at half the familiarity: a patrol that walked the east wing
+tells the guard at the door.
+
+### What it does with it
+
+Each faction values the traits differently (`FactionDoctrine` › *Ground*):
+
+| | BIO | VOID | TECH |
+|---|---|---|---|
+| Hidden / Vantage / Tight | 3 / 0.5 / 1 | 1 / 0.5 / 3 | 0.5 / 3 / 1 |
+| Falls back to known ground | yes | yes | yes |
+| Danger aversion | 1 | 0.5 | 1.5 |
+
+- **Falling back.** When its morale breaks, an enemy whose doctrine says so runs to the best
+  place it knows. A place's score is its value to the faction × familiarity × (1 − danger ×
+  aversion) − distance / 25 m. Fresh danger at aversion 1 makes a place worthless until it fades. Only places within 25 m count, at least 6 m from the threat
+  and no closer to it than the enemy is now. It holds there as it would in cover. With nothing
+  good known, it falls back as before (cover, kin or its post).
+- **Watching from its post.** A guard whose post it knows as a vantage faces down that lane
+  instead of the way it happened to spawn.
+
+Nothing here reads the level's tile data. A room built with concealment and lanes (sections
+5 and 9) is simply ground worth learning: a BIO enemy that has walked its room knows where the
+patches are, and one that wandered in from elsewhere doesn't yet.
+
+The spectator's *Paths & plans* overlay shows the inspected agent's known places. Green
+means hidden, red vantage, orange tight; larger means more familiar, and a cross marks danger.
+
+### Next
+
+- **Searching from memory.** A belief search could weigh the hidden places it knows (the
+  target may be lying where *it* would).
+- **Ambush from memory.** BIO hunters could set up in a known hidden place along the
+  target's path instead of only where they spawned.
+
 ## Roadmap
 
 | Phase | What | Status |
@@ -452,6 +516,7 @@ shows the room's depth and strength.
 | **7. Tuning** | Set the trait bands (`RoomTraitMeasure`) and *Priority Tries* from Room Lab runs of each card in each reality. The **Room Sweep** that gathers the runs is built (see *Tuning* below); the values wait on its first report | **Sweep done in code, not yet compiled or run; values not yet tuned** |
 | **8. Agents in the room** | Enemies start on posts their faction favours (section 9), hold or patrol by post kind, each Breach faction on its own side; patrol loops over walkable floor; Room Lab *Posts* layer | **Done in code, not yet compiled or run** |
 | **9. Territory depth** | The holder's design blends toward neutral with the room's map influence: core rooms purest, frontier rooms at 0.4 (section 10); Room Lab *Influence* | **Done in code, not yet compiled or run** |
+| **10. Enemies learn their ground** | Each enemy learns hidden, vantage and tight places by walking and looking, with familiarity and danger, shares them with nearby kin, falls back to the best it knows and watches a known lane from its post (section 11) | **Done in code, not yet compiled or run** |
 
 ### Tuning (Phase 7)
 
