@@ -41,6 +41,7 @@ namespace CGD.Level
         private readonly float _concealmentScale;
         private readonly RectInt _bounds;
         private readonly SightlineMap _sight;
+        private readonly RouteMap _routes;
         private readonly PropPlacementRules _rules;
         private readonly PropSelector _selector;
         private readonly List<PlannedProp> _planned = new();
@@ -66,7 +67,8 @@ namespace CGD.Level
 
             _bounds   = structure.Footprint.Bounds;
             _sight    = new SightlineMap(structure);
-            _rules    = new PropPlacementRules(structure, anchor, _sight);
+            _routes   = new RouteMap(structure);
+            _rules    = new PropPlacementRules(structure, anchor, _sight, _routes);
             _selector = new PropSelector(_rules, _sight, random, _bounds);
         }
 
@@ -196,6 +198,7 @@ namespace CGD.Level
             if (!_structure.TryClaim(tiles, RoomTileTags.Prop)) return false;
 
             ReserveAccess(candidate, placement.Clearance);
+            if (placement.MarksRoute) MarkRoute(candidate);
             _sight.Refresh(candidate.Rect);
             Emit(candidate, placement);
             own.Add(candidate.Rect);
@@ -211,6 +214,14 @@ namespace CGD.Level
             for (int i = 0; i < length; i++)
                 for (int step = 1; step <= depth; step++)
                     _structure.Tag(first + along * i + forward * step, RoomTileTags.Access);
+        }
+
+        // The row of floor in front of a door-like prop: where its traffic comes out.
+        private void MarkRoute(PropCandidate candidate)
+        {
+            Vector2Int forward = candidate.Forward;
+            PropPlacementRules.SideSpan(candidate.Rect, forward, out Vector2Int first, out Vector2Int along, out int length);
+            for (int i = 0; i < length; i++) _routes.Mark(first + along * i + forward);
         }
 
         private void Emit(PropCandidate candidate, RoomPropPlacement placement)

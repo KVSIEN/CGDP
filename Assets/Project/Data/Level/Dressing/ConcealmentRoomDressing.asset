@@ -37,3 +37,6 @@ MonoBehaviour:
     Lattice: {x: 0, y: 0}
     Symmetric: 0
     Decor: 1
+    NearRoute: 2
+    OffRoute: 0
+    MarksRoute: 0

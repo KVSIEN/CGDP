@@ -4,7 +4,7 @@ using UnityEngine;
 namespace CGD.Level
 {
     // Where a RoomPropPlacement may put a prop in one room: the candidate spots (tiles and
-    // facing) that suit its tags, zone, walls and lattice, and whether a spot is still
+    // facing) that suit its tags, zone, walls, lattice and distance from the routes, and whether a spot is still
     // placeable now that other props have taken floor. RoomPropPlanner chooses among them.
     internal sealed class PropPlacementRules
     {
@@ -14,13 +14,15 @@ namespace CGD.Level
         private readonly SightlineMap _sight;
         private readonly int _mainZone;
         private readonly Vector2Int _latticeOrigin;
+        private readonly RouteMap _routes;
 
-        public PropPlacementRules(RoomStructure structure, Vector2 anchor, SightlineMap sight)
+        public PropPlacementRules(RoomStructure structure, Vector2 anchor, SightlineMap sight, RouteMap routes)
         {
             _structure     = structure;
             _anchor        = anchor;
             _bounds        = structure.Footprint.Bounds;
             _sight         = sight;
+            _routes        = routes;
             _mainZone      = LargestZone(structure);
             _latticeOrigin = new Vector2Int(Mathf.FloorToInt(anchor.x), Mathf.FloorToInt(anchor.y));
         }
@@ -66,7 +68,7 @@ namespace CGD.Level
                     if (x + 1 < rect.xMax && _structure.IsPartitioned(tile, tile + Vector2Int.right)) return false;
                     if (y + 1 < rect.yMax && _structure.IsPartitioned(tile, tile + Vector2Int.up))    return false;
                 }
-            if (!matchesOn) return false;
+            if (!matchesOn || !SuitsRoutes(rect, placement)) return false;
 
             switch (placement.Facing)
             {
@@ -83,6 +85,16 @@ namespace CGD.Level
                 default:
                     return true;
             }
+        }
+
+        private bool SuitsRoutes(RectInt rect, RoomPropPlacement placement)
+        {
+            if (placement.NearRoute <= 0 && placement.OffRoute <= 0) return true;
+            if (!_routes.HasRoutes) return true;
+
+            int steps = _routes.DistanceOf(rect);
+            if (placement.NearRoute > 0 && steps > placement.NearRoute) return false;
+            return placement.OffRoute <= 0 || (steps >= placement.OffRoute && steps != RouteMap.Unreached);
         }
 
         // What changes as props go down: free floor, spacing and access. A decoration only needs

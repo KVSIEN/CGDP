@@ -40,6 +40,12 @@ namespace CGD.Level
         public bool Symmetric;
         [Tooltip("A decoration without a collider (ground cover, litter): takes no floor, so it may lie on walkways and in doorways, but never on a pillar or prop")]
         public bool Decor;
+        [Tooltip("Only within this many steps of a route: the walkways between the doorways and the centre, and the floor in front of route-marking props. Where people pass, so patches of cover get used. 0 = anywhere")]
+        [Min(0)] public int NearRoute;
+        [Tooltip("Only at least this many steps from every route: dead ends and back corners, out of the traffic. 0 = anywhere")]
+        [Min(0)] public int OffRoute;
+        [Tooltip("People come and go through it (a service door): the floor in front of it counts as a route for the placements after it")]
+        public bool MarksRoute;
 
         // The spot for something to find and use (a resource node, an ammo cache): against a
         // wall, off the routes and doorways, with floor in front and away from what is placed.
@@ -55,7 +61,7 @@ namespace CGD.Level
         };
 
         // The same placement with its picky rules dropped, to find any spot at all. Level 1 gives
-        // up where and which way; level 2 also the floor in front.
+        // up where (tags, zone, routes) and which way; level 2 also the floor in front.
         public RoomPropPlacement Relaxed(int level)
         {
             var copy = (RoomPropPlacement)MemberwiseClone();
@@ -65,6 +71,8 @@ namespace CGD.Level
             copy.Selection = PropSelection.Random;
             copy.Lattice   = Vector2Int.zero;
             copy.Symmetric = false;
+            copy.NearRoute = 0;
+            copy.OffRoute  = 0;
             if (copy.Facing is PropFacing.AgainstWall or PropFacing.AcrossSightline or PropFacing.AlongRoom) copy.Facing = PropFacing.Square;
             if (level >= 2) copy.Clearance = 0;
             return copy;

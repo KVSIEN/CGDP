@@ -92,6 +92,7 @@ namespace CGD.Tests
             ShipSideDesign crew = settings.DesignFor(ShipSide.Crew);
             Assert.IsNotNull(crew.Dressing);
             Assert.IsTrue(crew.Dressing.Props.Count > 0 && crew.Dressing.Props[0].Required, "the service door is the crew dressing's first, required piece");
+            Assert.IsTrue(crew.Dressing.Props[0].MarksRoute, "staff come and go through the service door");
         }
 
         [Test]

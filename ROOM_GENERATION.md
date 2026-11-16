@@ -139,13 +139,33 @@ whatever is placed has to keep every free tile reachable from every doorway
 7. **Cover**: the room type's dressing, in the reality's own pieces (`DressingSwap`).
    Hard cover blocks movement and sight; low cover blocks movement only. Cover set
    *along* a lane makes a firing line, cover set *across* it breaks the lane up.
-8. **Concealment**: soft cover. It takes no floor and hides whoever stands in it. It goes by
-   walls and corners, off the walkway, and within two tiles of a route so people actually
-   pass it (the rule is in Phase 5).
+8. **Concealment**: soft cover. It takes no floor and hides whoever stands in it. It goes
+   off the walkway but within two steps of a route, so people actually pass it (*Near
+   Route*), or, for VOID's shadow pockets, into dead ends at least three steps from any
+   route (*Off Route*). See *Routes* below.
 9. **Reality props and decor**: the holding faction's dressing, then the breach faction's.
 
 Big things go before small ones, and required things before optional ones, so clutter never
 takes an anchor's spot.
+
+### Routes (Phase 5)
+
+A **route** is where people walk through a room: the walkways tagged from each doorway to the
+centre, plus the row of floor in front of any prop placed with *Marks Route* (the crew
+service door, so staff traffic counts). The distance of a tile from the routes is counted in
+steps over the floor plan, around inner walls and pillars but not around props, so it stays
+the same while the room is furnished (`RouteMap`).
+
+Two placement options use it:
+- **Near Route** *N*: only where a tile of the prop is within *N* steps of a route. Concealment
+  patches use 2: beside the way through, never on it (they still avoid the walkway tag).
+- **Off Route** *N*: only where every tile is at least *N* steps from every route: dead ends
+  and back corners. VOID's shadow pockets use 3.
+
+A room with no route (no doorway) puts no limit on either. A *Required* placement that finds
+no spot drops both rules when it is relaxed, along with its tags and zone. Because the
+service door is placed with the side dressing, before the room type's concealment, a crew
+Stealth room's patch can gather by the staff door.
 
 ## 5. Realities
 
@@ -211,7 +231,7 @@ placeholder inside the same prefab, so no rule or asset has to change.
 | Anchors | Orange | Bar counter, operating table, reactor (Phase 3) |
 | Furniture | Brown, Grey 3 | Shelves, pews, beds (Phase 3) |
 | Machines | Yellow, Grey 4 | Turbines, pumps, conveyors (Phase 3) |
-| Concealment | Green (decor, no collider) | Existing `ConcealmentPatch`, `GrassPatch`, `MossPatch` |
+| Concealment | Green (decor, no collider); VOID dark violet | Existing `ConcealmentPatch`, `GrassPatch`, `MossPatch`; `ShadowPocket` (Phase 5) |
 
 Rules for placeholder prefabs:
 - **Origin** at the base. For props, the origin is the centre of the footprint and +Z is the front.
@@ -311,6 +331,6 @@ Farm take the holding reality's structure; Junction stays bare on purpose.
 | **2. Patterns for every function** | Each function gets its pattern's structure (table in section 2); a *Rows* rule for Aisles rooms; reality *Additions*; pillar prefabs stretched to size; the placeholder kit and its column pieces | **Done in code, not yet compiled or run** |
 | **3. Anchors and furniture** | A `Required` anchor and a furniture list for each card, built from the placeholder kit (section 7); rules in *Furnishing rules* | **Done in code, not yet compiled or run** |
 | **4. Ship side** | A Guest first class / Guest steerage / Crew dial (the section's side where the function allows it), scaling size, fill and prop counts, with each side's dressing (a service door in crew rooms); the Room Lab picks a section | **Done in code, not yet compiled or run** |
-| **5. Concealment by routes, service doors** | A placement option to put props within N tiles of a walkway; concealment dressings use it | Any time |
+| **5. Concealment by routes, service doors** | *Near Route* and *Off Route* placement options measured from the walkways and route-marking props (the service door); concealment patches stand beside routes, VOID shadow pockets in dead ends | **Done in code, not yet compiled or run** |
 | **6. Breach split by zone** | Each zone of a Breach room dressed by one faction; a breach divider for undivided rooms | After 2 |
 | **7. Tuning** | Set the trait bands (`RoomTraitMeasure`) and *Priority Tries* from Room Lab runs of each card in each reality | Ongoing |
