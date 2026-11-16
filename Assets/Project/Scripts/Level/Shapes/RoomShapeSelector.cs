@@ -16,10 +16,11 @@ namespace CGD.Level
 
         public RoomShapeSelector(int minWidthTiles) => _minWidthTiles = minWidthTiles;
 
-        // `design`: the faction building the room, whose favourite shapes come up more often.
-        public RoomFootprint Build(IReadOnlyList<RoomShape> shapes, int connections, RectInt area, RandomStream random, FactionDesign design = null)
+        // `style`: the faction building the room (at the room's strength), whose favourite shapes
+        // come up more often. Default: a plain room.
+        public RoomFootprint Build(IReadOnlyList<RoomShape> shapes, int connections, RectInt area, RandomStream random, FactionStyle style = default)
         {
-            float WeightOf(RoomShape shape) => shape.Weight * (design != null ? design.ShapeWeight(shape) : 1f);
+            float WeightOf(RoomShape shape) => shape.Weight * style.ShapeWeight(shape);
 
             _candidates.Clear();
             foreach (RoomShape shape in shapes)

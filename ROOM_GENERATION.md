@@ -400,15 +400,44 @@ holding its post, a dot for a patroller, with the patrol loop drawn per side.
 
 ### Next steps for the ecosystem
 
-- **Territory depth.** The map painter gives every room an influence (0–1): deep in a
-  faction's territory or on its frontier. Frontier rooms could take the design at half
-  strength (fewer additions, swaps by chance). Core rooms would be the purest, and Breach rooms
-  would sit where territories meet.
+- **Territory depth.** Done: see section 10.
 - **Agents reading posts at runtime.** Searches, retreats and regrouping could prefer the
   room's posts of their faction's kinds (a TECH squad falls back to overwatch tiles, BIO to
   concealment), through a per-room post list handed to `EnemyAI` like the patrol route.
 - **Doctrine per post.** A holding enemy's idle (`FactionDoctrine` › Idle) could depend on
   its post: scanning a lane at overwatch, still in concealment.
+
+## 10. Territory depth (Phase 9)
+
+The map's faction painter grows each territory out from an origin room. Each room gets an
+*influence*: 1 at the origin, ×0.85 for every room further out, never below 0.35. Rooms an
+anomaly flipped get 0.5. Room generation turns influence into how strongly the holding
+faction's design shows, its **strength** (`LevelBuildSettings` › *Territory Depth*):
+
+| Influence | Strength | Reads as |
+|---|---|---|
+| 0.7 and up (origin and the first two rings) | 1 | **Core**: the faction's architecture at its purest |
+| between | rises evenly | **Held** |
+| 0.35 and below | 0.4 | **Frontier**: the ship showing through, the faction thinning out |
+
+A room whose node has no influence (0, as in old graphs) is built at full strength.
+
+What strength does (`FactionStyle`, a design at a strength). Each number moves from the
+neutral value toward the design's by the strength:
+- **Floor plan.** Room size scale and shape weights. A shape the design never uses (weight 0)
+  stays unused.
+- **Structure.** The design's fallback structure is always built. Each of its *Additions*
+  (wall remnants, fold walls) is built with chance equal to the strength.
+- **Dressing.** Fill share, prop scale and the concealment step all blend. The room type's
+  cover is swapped for the faction's version with chance equal to the strength, decided once
+  per room. The faction's own props come in at the strength times their count.
+- **Agents.** Post preferences move toward plain floor (×4 at core is ×2.2 at strength 0.4).
+  Holding stays as it is.
+
+Rooms at full strength draw no extra random numbers, so core rooms build exactly as before
+from the same seed. A Breach room's breaching side is always at full strength: it is the
+other reality bleeding in. The Room Lab's recipe has an *Influence* slider, and the report
+shows the room's depth and strength.
 
 ## Roadmap
 
@@ -422,6 +451,7 @@ holding its post, a dot for a patroller, with the patrol loop drawn per side.
 | **6. Breach split by zone** | Each zone of a Breach or Rift room dressed by one faction (the breach takes the zones its doorways open into); the breaching faction's divider splits a room left in one piece; the Room Lab shows the sides | **Done in code, not yet compiled or run** |
 | **7. Tuning** | Set the trait bands (`RoomTraitMeasure`) and *Priority Tries* from Room Lab runs of each card in each reality. The **Room Sweep** that gathers the runs is built (see *Tuning* below); the values wait on its first report | **Sweep done in code, not yet compiled or run; values not yet tuned** |
 | **8. Agents in the room** | Enemies start on posts their faction favours (section 9), hold or patrol by post kind, each Breach faction on its own side; patrol loops over walkable floor; Room Lab *Posts* layer | **Done in code, not yet compiled or run** |
+| **9. Territory depth** | The holder's design blends toward neutral with the room's map influence: core rooms purest, frontier rooms at 0.4 (section 10); Room Lab *Influence* | **Done in code, not yet compiled or run** |
 
 ### Tuning (Phase 7)
 

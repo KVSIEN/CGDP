@@ -100,6 +100,8 @@ namespace CGD.Level
         [SerializeField, Min(0)] private int _spawnMarginTiles = 1;
         [Tooltip("Fight rooms a faction design holds are built from this many seeds — structure, then furnishing — keeping the one closest to the faction's priorities. 1 = no steering")]
         [SerializeField, Range(1, 8)] private int _priorityTries = 4;
+        [Tooltip("How strongly a faction's design shows in a room, from how firmly the map's faction painter holds it: full in the core of a territory, thinner on its frontier")]
+        [SerializeField] private TerritoryDepth _territoryDepth = new();
 
         public float TileSize       => _tileSize;
         public int   RoomTiles      => _roomTiles;
@@ -141,6 +143,10 @@ namespace CGD.Level
         public int   SpawnMarginTiles => _spawnMarginTiles;
         public int   MinRoomWidthTiles => _minRoomWidthTiles;
         public int   PriorityTries  => _priorityTries;
+        public TerritoryDepth TerritoryDepth => _territoryDepth;
+
+        // The holding faction's design as this room shows it (full strength without a faction influence).
+        public FactionStyle StyleFor(LevelRoom room) => new(DesignFor(room.Faction), room.DesignStrength);
 
         public GameObject DoorPrefabFor(MapConnection connection) => connection.Type switch
         {

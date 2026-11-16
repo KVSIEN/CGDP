@@ -100,6 +100,9 @@ namespace CGD.Editor
             EditorGUILayout.LabelField("Floor", $"{room.Footprint.Count} tiles{(room.Footprint.CurvedWalls ? " · curved walls" : "")}{(room.Chamfer > 0 ? $" · {room.Chamfer}-tile bevels" : "")}");
             EditorGUILayout.LabelField("Doorways", sample.DoorsWanted >= 0 ? $"{sample.DoorwayCount} of {sample.DoorsWanted}" : sample.DoorwayCount.ToString());
             EditorGUILayout.LabelField("Structure", $"{room.Structure.Pillars.Count} pillars · {room.Structure.Partitions.Count} inner wall edges · {room.Structure.ZoneCount} zone(s)");
+            if (room.Faction != null)
+                EditorGUILayout.LabelField(new GUIContent("Territory", "How strongly the holder's design shows, from the room's map influence (Level Build Settings › Territory Depth)"),
+                                           new GUIContent($"{sample.Settings.TerritoryDepth.NameOf(room.DesignStrength)} · design at {room.DesignStrength:0%} (influence {room.Node.FactionInfluence:0.00})"));
             if (room.BreachFaction != null)
                 EditorGUILayout.LabelField(new GUIContent("Breach", "Each zone is dressed by one faction: the breaching one takes the zones its doorways open into (else all but the largest). A room in one piece gets the breaching faction's divider first"),
                                            new GUIContent(BreachSummary(sample)));

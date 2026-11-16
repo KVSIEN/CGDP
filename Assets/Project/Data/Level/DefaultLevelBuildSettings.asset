@@ -341,3 +341,7 @@ MonoBehaviour:
   _minRoomWidthTiles: 2
   _spawnMarginTiles: 1
   _priorityTries: 4
+  _territoryDepth:
+    _coreInfluence: 0.7
+    _frontierInfluence: 0.35
+    _frontierStrength: 0.4

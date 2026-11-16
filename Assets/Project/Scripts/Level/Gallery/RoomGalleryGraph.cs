@@ -5,11 +5,14 @@ using CGD.Map;
 namespace CGD.Level
 {
     // Turns RoomGallerySettings into a map graph LevelBuilder can build: Start, one room per
-    // place, the showcase fight rooms, then Exit, in a grid of rows joined in a snake so the
-    // walk visits every room once. Node positions are in cells (lay it out with a node
+    // place, the showcase fight rooms, a frontier Combat room per faction, then Exit, in a
+    // grid of rows joined in a snake so the walk visits every room once. Node positions are in cells (lay it out with a node
     // spacing of one), as the Room Lab's one-room graphs are.
     public static class RoomGalleryGraph
     {
+        // The faction painter's lowest influence: a room on the edge of its territory.
+        private const float FrontierInfluence = 0.35f;
+
         public static MapGraph Build(RoomGallerySettings gallery, LevelBuildSettings settings)
         {
             var graph = new MapGraph();
@@ -36,6 +39,14 @@ namespace CGD.Level
                     MapNode node = Add(graph, gallery, type);
                     node.SetFaction(faction, 1f);
                     if (type.HasSecondFaction() && factions > 1) node.BreachFaction = (faction + 1) % factions;
+                    previous = Link(graph, previous, node);
+                }
+
+            if (gallery.FrontierShowcase)
+                for (int faction = 0; faction < factions; faction++)
+                {
+                    MapNode node = Add(graph, gallery, MapNodeType.Combat);
+                    node.SetFaction(faction, FrontierInfluence);
                     previous = Link(graph, previous, node);
                 }
 

@@ -37,12 +37,14 @@ namespace CGD.Level
             if (room.Structure == null) return RoomFurnishing.Empty;
 
             RoomContentRule rule = _settings.RuleFor(room.Node.Type);
-            FactionDesign design = _settings.DesignFor(room.Faction);
+            FactionStyle style = _settings.StyleFor(room);
             Seed seed = _seed.Derive("props").Derive(room.Node.Id);
-            int tries = RoomTraitFit.TriesFor(room, rule, design, _settings);
+            // Decided once for the room, so every try dresses it the same way; a core room draws nothing.
+            bool swaps = style.IsFull || style.Shows(seed.Derive("territory").Stream());
+            int tries = RoomTraitFit.TriesFor(room, rule, style.Design, _settings);
             if (tries <= 1)
             {
-                RoomPropPlanner only = Plan(room, room.Structure, rule, design, seed);
+                RoomPropPlanner only = Plan(room, room.Structure, rule, style, swaps, seed);
                 return new RoomFurnishing(only.Planned, only.Outcomes);
             }
 
@@ -54,8 +56,8 @@ namespace CGD.Level
             for (int attempt = 0; attempt < tries && bestMiss > 0; attempt++)
             {
                 RoomStructure trial = room.Structure.Copy();
-                RoomPropPlanner planner = Plan(room, trial, rule, design, RoomTraitFit.Try(seed, attempt));
-                int miss = RoomTraitFit.Miss(planner.Traits, design.Priorities);
+                RoomPropPlanner planner = Plan(room, trial, rule, style, swaps, RoomTraitFit.Try(seed, attempt));
+                int miss = RoomTraitFit.Miss(planner.Traits, style.Design.Priorities);
                 if (miss >= bestMiss) continue;
                 bestFloor   = trial;
                 best        = planner;
@@ -67,20 +69,22 @@ namespace CGD.Level
             return new RoomFurnishing(best.Planned, best.Outcomes, bestAttempt, tries);
         }
 
-        private RoomPropPlanner Plan(LevelRoom room, RoomStructure structure, RoomContentRule rule, FactionDesign design, Seed seed)
+        // `style`: the holder's design at the room's strength. `swaps`: whether the room type's
+        // cover comes in the holder's own pieces.
+        private RoomPropPlanner Plan(LevelRoom room, RoomStructure structure, RoomContentRule rule, FactionStyle style, bool swaps, Seed seed)
         {
-            float concealment = RoomTraitFit.Steers(rule, design)
-                ? RoomTraitFit.ConcealmentScale(design.Priorities.Of(RoomTrait.Concealment)) : 1f;
+            float concealment = RoomTraitFit.Steers(rule, style.Design)
+                ? style.ConcealmentScale(style.Design.Priorities.Of(RoomTrait.Concealment)) : 1f;
             ShipSideDesign side = _settings.DesignFor(room.Side);
-            float fillShare = (design != null ? design.FillShare : RoomPropPlanner.DefaultFillShare) * (side != null ? side.FillShareScale : 1f);
-            float propScale = (design != null ? design.PropScale : 1f) * (side != null ? side.PropScale : 1f);
+            float fillShare = style.FillShare * (side != null ? side.FillShareScale : 1f);
+            float propScale = style.PropScale * (side != null ? side.PropScale : 1f);
             var planner = new RoomPropPlanner(structure, room.Anchor, seed.Stream(), Mathf.Min(fillShare, MaxFillShare), propScale, concealment);
             if (rule != null && rule.Offerings.Length > 0) planner.Add(RoomPropPlacement.Nook(rule.Offerings));
             if (room.Landmark == null)
             {
                 if (room.Function != null) planner.Add(room.Function.Props);
                 if (side != null && side.Dressing != null) planner.Add(side.Dressing.Props);
-                AddRoomTypeDressing(planner, room, structure, rule, design);
+                AddRoomTypeDressing(planner, room, structure, rule, style, swaps);
             }
             return planner;
         }
@@ -88,9 +92,12 @@ namespace CGD.Level
         // The room type's cover and clutter, then the factions' own props. A Breach room split
         // into zones (BreachSplit) has each side dressed by its own faction: the cover in that
         // faction's pieces, then its props. Otherwise the holder's version covers the room and
-        // both factions' props go anywhere.
-        private void AddRoomTypeDressing(RoomPropPlanner planner, LevelRoom room, RoomStructure structure, RoomContentRule rule, FactionDesign design)
+        // both factions' props go anywhere. The holder's props come in at its strength; the
+        // breaching faction's always at full.
+        private void AddRoomTypeDressing(RoomPropPlanner planner, LevelRoom room, RoomStructure structure, RoomContentRule rule,
+                                         FactionStyle style, bool swaps)
         {
+            FactionDesign design = style.Design;
             FactionDesign breachDesign = room.BreachFaction != null ? _settings.DesignFor(room.BreachFaction) : null;
             BreachSplit split = room.BreachFaction != null ? BreachSplit.Of(structure, room.BreachEntrances) : null;
             ICollection<int> holderZones = split?.Zones(breachSide: false);
@@ -98,21 +105,21 @@ namespace CGD.Level
 
             if (rule != null && rule.Dressing != null)
             {
-                planner.Add(Dressed(design, rule.Dressing).Props, zones: holderZones);
+                planner.Add(Dressed(swaps ? design : null, rule.Dressing).Props, zones: holderZones);
                 if (split != null) planner.Add(Dressed(breachDesign, rule.Dressing).Props, zones: breachZones);
             }
             if (rule != null && rule.ExtraDressing != null) planner.Add(rule.ExtraDressing.Props, exactConcealment: true);
 
-            AddFactionProps(planner, design, holderZones);
-            if (room.BreachFaction != null) AddFactionProps(planner, breachDesign, breachZones);
+            AddFactionProps(planner, design, holderZones, style.Strength);
+            if (room.BreachFaction != null) AddFactionProps(planner, breachDesign, breachZones, 1f);
         }
 
         private static RoomDressing Dressed(FactionDesign design, RoomDressing dressing) => design != null ? design.Dress(dressing) : dressing;
 
         // A faction's own props: its furnishing of the room, after everything the room needs.
-        private static void AddFactionProps(RoomPropPlanner planner, FactionDesign design, ICollection<int> zones)
+        private static void AddFactionProps(RoomPropPlanner planner, FactionDesign design, ICollection<int> zones, float countScale)
         {
-            if (design != null && design.Dressing != null) planner.Add(design.Dressing.Props, zones: zones);
+            if (design != null && design.Dressing != null) planner.Add(design.Dressing.Props, zones: zones, countScale: countScale);
         }
     }
 }

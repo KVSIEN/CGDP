@@ -57,6 +57,8 @@ namespace CGD.Editor
                 new GUIContent("Content", "The map content whose faction list the faction below comes from"),
                 recipe.Content, typeof(MapContentSettings), false);
             recipe.Faction = FactionPopup("Holder", recipe.Content, recipe.Faction);
+            recipe.Influence = EditorGUILayout.Slider(new GUIContent("Influence", "How firmly the holder holds the room on the map: 1 at its territory's origin, 0.35 on its frontier. Lower shows less of its design"),
+                                                      recipe.Influence, 0f, 1f);
             if (recipe.Type.HasSecondFaction())
                 recipe.BreachFaction = FactionPopup("Breaching", recipe.Content, recipe.BreachFaction);
             recipe.Section = SectionPopup(recipe.Content, recipe.Section);

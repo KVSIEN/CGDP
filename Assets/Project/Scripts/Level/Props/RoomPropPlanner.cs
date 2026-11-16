@@ -81,19 +81,21 @@ namespace CGD.Level
         // `exactConcealment`: concealment placements keep their counts whatever the
         // concealment scale (what a room type needs whoever holds it). `zones`: only in these
         // zones of the room (one faction's side of a Breach room), with counts that scale by
-        // room size read from their floor alone; null = the whole room.
-        public void Add(IEnumerable<RoomPropPlacement> placements, bool exactConcealment = false, ICollection<int> zones = null)
+        // room size read from their floor alone; null = the whole room. `countScale`: these
+        // placements' counts only, on top of the room's (a frontier faction's thinner props).
+        public void Add(IEnumerable<RoomPropPlacement> placements, bool exactConcealment = false, ICollection<int> zones = null,
+                        float countScale = 1f)
         {
-            foreach (RoomPropPlacement placement in placements) Add(placement, exactConcealment, zones);
+            foreach (RoomPropPlacement placement in placements) Add(placement, exactConcealment, zones, countScale);
         }
 
         // Places one kind of furnishing; returns how many it placed.
-        public int Add(RoomPropPlacement placement, bool exactConcealment = false, ICollection<int> zones = null)
+        public int Add(RoomPropPlacement placement, bool exactConcealment = false, ICollection<int> zones = null, float countScale = 1f)
         {
             if (placement == null || placement.Prefabs == null || placement.Prefabs.Length == 0) return 0;
             if (zones != null && zones.Count == 0) return 0;
 
-            int count = Scaled(placement, RollCount(placement, zones), exactConcealment);
+            int count = Scaled(placement, RollCount(placement, zones), exactConcealment, countScale);
             if (count <= 0) return 0;
 
             _hitFillCap = false;
@@ -128,11 +130,11 @@ namespace CGD.Level
         }
 
         // What the room's style does to a placement's count: Required placements are exempt.
-        private int Scaled(RoomPropPlacement placement, int count, bool exactConcealment)
+        private int Scaled(RoomPropPlacement placement, int count, bool exactConcealment, float countScale)
         {
             if (placement.Required || count <= 0) return count;
 
-            float scale = _countScale;
+            float scale = _countScale * Mathf.Max(0f, countScale);
             if (!exactConcealment && !Mathf.Approximately(_concealmentScale, 1f) && Conceals(placement)) scale *= _concealmentScale;
             return Mathf.Approximately(scale, 1f) ? count : Mathf.Max(1, Mathf.RoundToInt(count * scale));
         }

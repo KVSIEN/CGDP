@@ -62,7 +62,7 @@ namespace CGD.Level
                 FactionDesign design = _settings.DesignFor(room.Faction);
                 RoomStructureRule divider = room.BreachFaction != null ? _settings.DesignFor(room.BreachFaction)?.BreachDivider : null;
                 int tries = RoomTraitFit.TriesFor(room, _settings.RuleFor(room.Node.Type), design, _settings);
-                room.AttachStructure(BestStructure(planner, room, layout, seed.Derive(room.Node.Id), design, divider, tries));
+                room.AttachStructure(BestStructure(planner, room, layout, seed.Derive(room.Node.Id), design, divider, room.DesignStrength, tries));
                 if (room.BreachFaction != null) room.AttachBreachEntrances(BreachEntrances(room, layout));
             }
         }
@@ -84,13 +84,13 @@ namespace CGD.Level
         // A fight room a faction design holds keeps the try whose walls and lines of fire come
         // closest to the faction's priorities (RoomTraitFit); any other room has one try.
         private static RoomStructure BestStructure(RoomStructurePlanner planner, LevelRoom room, LevelLayout layout, Seed seed,
-                                                   FactionDesign design, RoomStructureRule breachDivider, int tries)
+                                                   FactionDesign design, RoomStructureRule breachDivider, float strength, int tries)
         {
             RoomStructure best = null;
             int bestMiss = int.MaxValue;
             for (int attempt = 0; attempt < tries && bestMiss > 0; attempt++)
             {
-                RoomStructure structure = planner.Plan(room, layout.Doorways, RoomTraitFit.Try(seed, attempt).Stream(), design?.Structure, design?.Additions, breachDivider);
+                RoomStructure structure = planner.Plan(room, layout.Doorways, RoomTraitFit.Try(seed, attempt).Stream(), design?.Structure, design?.Additions, breachDivider, strength);
                 if (tries == 1) return structure;
 
                 int miss = RoomTraitFit.Miss(RoomTraitMeasure.Measure(structure, System.Array.Empty<PlannedProp>()), design.Priorities,

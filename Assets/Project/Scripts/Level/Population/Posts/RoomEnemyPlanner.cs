@@ -35,7 +35,9 @@ namespace CGD.Level
         public RoomEnemyPlan Plan(LevelRoom room, IReadOnlyList<PlannedProp> props, int count, RandomStream random,
                                   ICollection<Vector2Int> taken = null)
         {
-            PostPreference holder = _settings.DesignFor(room.Faction)?.Posts;
+            // The holder's preference at the room's strength (a frontier room's enemies are less
+            // particular); the breaching faction's at full.
+            PostPreference holder = _settings.StyleFor(room).Posts;
             PostPreference breach = room.BreachFaction != null ? _settings.DesignFor(room.BreachFaction)?.Posts : holder;
             return Plan(room, props, count, random, taken, holder, breach, _settings.SpawnMarginTiles);
         }

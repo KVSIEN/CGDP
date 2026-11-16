@@ -27,6 +27,8 @@ namespace CGD.Editor
         public MapContentSettings Content;
         public int Faction = MapNode.NoFaction;
         public int BreachFaction = MapNode.NoFaction;
+        [Tooltip("How firmly the holder holds the room (the map's faction influence): full design at 0.7 and up, thinner toward the frontier")]
+        [Range(0f, 1f)] public float Influence = 1f;
         [Tooltip("The ship section the room stands in (from the content's list): its side of the ship, where the place can sit on it")]
         public int Section = MapNode.NoSection;
         [Range(1, 3)] public int Tier = 1;
@@ -56,6 +58,7 @@ namespace CGD.Editor
                 Content       = graph.Content,
                 Faction       = node.Faction,
                 BreachFaction = node.BreachFaction,
+                Influence     = node.FactionInfluence,
                 Section       = node.Section,
                 Tier          = node.Tier,
                 Intensity     = node.Intensity,

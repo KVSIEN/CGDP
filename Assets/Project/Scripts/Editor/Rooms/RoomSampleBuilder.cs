@@ -73,7 +73,7 @@ namespace CGD.Editor
             room.Category      = recipe.Category;
             room.Tier          = recipe.Tier;
             room.Intensity     = recipe.Intensity;
-            room.SetFaction(recipe.Faction, 1f);
+            room.SetFaction(recipe.Faction, recipe.Influence);
             room.BreachFaction = recipe.Type.HasSecondFaction() ? recipe.BreachFaction : MapNode.NoFaction;
             room.Section       = recipe.Section;
 

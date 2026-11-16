@@ -19,6 +19,7 @@ MonoBehaviour:
   - 1
   - 14
   - 10
+  _frontierShowcase: 1
   _tier: 1
   _roomsPerRow: 6
   _cellsApart: 3

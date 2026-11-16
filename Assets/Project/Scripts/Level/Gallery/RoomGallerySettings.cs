@@ -21,6 +21,8 @@ namespace CGD.Level
         [SerializeField] private MapNodeType _placeType = MapNodeType.Quiet;
         [Tooltip("Fight types shown once per faction after the places, in a place picked as a level would: cover dressing, concealment, the breach split")]
         [SerializeField] private MapNodeType[] _showcaseTypes = { MapNodeType.Combat, MapNodeType.Stealth, MapNodeType.Breach };
+        [Tooltip("Also show a Combat room on each faction's frontier (map influence 0.35): its design at its thinnest, beside the full-strength rooms above")]
+        [SerializeField] private bool _frontierShowcase = true;
         [SerializeField, Range(1, 3)] private int _tier = 1;
         [SerializeField, Min(2)] private int _roomsPerRow = 6;
         [Tooltip("Cells from one room to the next: 3 keeps two-cell rooms and their neighbours apart")]
@@ -30,6 +32,7 @@ namespace CGD.Level
         public IReadOnlyList<RoomFunction> Places => _places;
         public MapNodeType PlaceType => _placeType;
         public IReadOnlyList<MapNodeType> ShowcaseTypes => _showcaseTypes;
+        public bool FrontierShowcase => _frontierShowcase;
         public int Tier => _tier;
         public int RoomsPerRow => _roomsPerRow;
         public int CellsApart => _cellsApart;

@@ -110,7 +110,7 @@ Assets/
                             Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), CoverHeights (low / high cover bands), Rules/ (pillars, partitions, rows, remnants, office maze);
                             Landmarks/ — hand-built rooms; Props/ — RoomFurnisher (what a room is furnished with, shared by the level and the editor),
                             RoomPropPlanner (footprints, clearance, spread, cover, lattices, symmetry, clusters; reports each placement's outcome), RoomDressing (cover and clutter per room type);
-                            Design/ — FactionDesign (each faction's floor plans, structure, props and crowding), ShipSideDesign, BreachSplit,
+                            Design/ — FactionDesign (each faction's floor plans, structure, props and crowding), FactionStyle + TerritoryDepth (the design at a room's strength), ShipSideDesign, BreachSplit,
                             Traits/ (RoomTraitMeasure, RoomTraitFit: what fight rooms offer and how generation steers toward it);
                             Gallery/ — RoomGallerySettings and RoomGalleryGraph (the RoomGallery scene's walk-through of every place)
                             Objectives/ — map objectives: templates, MapObjectivePlanner, MapObjectiveRunner;

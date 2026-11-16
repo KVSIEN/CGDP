@@ -12,8 +12,9 @@ namespace CGD.Level
     {
         public LevelRoom(MapNode node, RoomFootprint footprint, RoomFunction function, float wallHeight,
             LandmarkRoomDefinition landmark = null, FactionDefinition faction = null,
-            FactionDefinition breachFaction = null, int chamfer = 0, ShipSide side = ShipSide.None)
+            FactionDefinition breachFaction = null, int chamfer = 0, ShipSide side = ShipSide.None, float designStrength = 1f)
         {
+            DesignStrength = Mathf.Clamp01(designStrength);
             Side          = side;
             Chamfer       = chamfer;
             Faction       = faction;
@@ -28,7 +29,7 @@ namespace CGD.Level
         // The same room shifted by `offset` tiles. Only before its structure and outline are
         // planned, which depend on where the doorways end up.
         public LevelRoom Translated(Vector2Int offset) =>
-            new(Node, Footprint.Translated(offset), Function, WallHeight, Landmark, Faction, BreachFaction, Chamfer, Side);
+            new(Node, Footprint.Translated(offset), Function, WallHeight, Landmark, Faction, BreachFaction, Chamfer, Side, DesignStrength);
 
         public MapNode       Node       { get; }
         public RoomFootprint Footprint  { get; }
@@ -47,6 +48,9 @@ namespace CGD.Level
         public FactionDefinition BreachFaction { get; }
         // Who the room is for: guests in first class or steerage, or the crew.
         public ShipSide Side { get; }
+        // How strongly the holding faction's design shows here: 1 in the core of its territory,
+        // less toward the frontier (TerritoryDepth). See LevelBuildSettings.StyleFor.
+        public float DesignStrength { get; }
         // Breach rooms: the floor tiles inside the doorways whose corridors lead from a room
         // the breach faction holds. Its side of the room is the one they open into.
         public IReadOnlyList<Vector2Int> BreachEntrances { get; private set; } = Array.Empty<Vector2Int>();

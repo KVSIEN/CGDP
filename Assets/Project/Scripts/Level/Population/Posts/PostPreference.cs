@@ -46,5 +46,13 @@ namespace CGD.Level
         }
 
         public bool Holds(RoomPostKinds kinds) => (kinds & _hold) != 0;
+
+        // The same preference moved toward plain floor: every weight a share of the way back to
+        // 1 (strength 1 = unchanged, 0 = no preference). What it holds on stays.
+        public PostPreference Toward(float strength)
+        {
+            float Blend(float weight) => Mathf.Lerp(1f, weight, Mathf.Clamp01(strength));
+            return new PostPreference(Blend(_concealed), Blend(_overwatch), Blend(_choke), Blend(_deadEnd), Blend(_route), _hold);
+        }
     }
 }

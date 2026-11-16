@@ -19,10 +19,12 @@ namespace CGD.Level
         // `factionAdditions`: applied to every room the faction holds, after either.
         // `breachDivider`: a Breach room's dividing wall, built only when nothing else has
         // already split the room into zones, so the two factions each get a side.
+        // `additionChance`: how likely each addition is to be built (a frontier room's thinner
+        // style, TerritoryDepth); at 1 every one is, with no random draw.
         public RoomStructure Plan(LevelRoom room, IReadOnlyList<LevelDoorway> doorways, RandomStream random,
                                   IReadOnlyList<RoomStructureRule> factionRules = null,
                                   IReadOnlyList<RoomStructureRule> factionAdditions = null,
-                                  RoomStructureRule breachDivider = null)
+                                  RoomStructureRule breachDivider = null, float additionChance = 1f)
         {
             var entrances = new List<Vector2Int>();
             foreach (LevelDoorway doorway in doorways)
@@ -35,7 +37,7 @@ namespace CGD.Level
             {
                 IReadOnlyList<RoomStructureRule> rules = room.Function != null && HasRules(room.Function.Structure) ? room.Function.Structure : factionRules;
                 Apply(rules, structure, random);
-                Apply(factionAdditions, structure, random);
+                Apply(factionAdditions, structure, random, additionChance);
             }
 
             structure.AssignZones();
@@ -47,11 +49,11 @@ namespace CGD.Level
             return structure;
         }
 
-        private static void Apply(IReadOnlyList<RoomStructureRule> rules, RoomStructure structure, RandomStream random)
+        private static void Apply(IReadOnlyList<RoomStructureRule> rules, RoomStructure structure, RandomStream random, float chance = 1f)
         {
             if (rules == null) return;
             foreach (RoomStructureRule rule in rules)
-                if (rule != null) rule.Apply(structure, random);
+                if (rule != null && (chance >= 1f || random.Chance(chance))) rule.Apply(structure, random);
         }
 
         private static bool HasRules(IReadOnlyList<RoomStructureRule> rules)
