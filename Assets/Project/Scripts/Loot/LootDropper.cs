@@ -21,6 +21,11 @@ namespace CGD.Loot
     // A dropper can roll a subtype (a LootFilter, e.g. a weapon crate that only holds
     // pistols) from its Subtypes, once per seed, so a container shows what it is before
     // it's opened and the same seed always makes the same kind of container.
+    //
+    // A death drop is shared out by kill credit: the credited team's share of the effective
+    // health taken off this object (HealthManager.DamageShareOf). At the full-credit share
+    // or more everything rolled drops; below it each item drops with a proportional chance,
+    // so a kill left to another faction or a hazard pays out little or nothing.
     public class LootDropper : MonoBehaviour, ISeedable, IPoolable
     {
         [SerializeField] private LootTable _table;
@@ -30,6 +35,12 @@ namespace CGD.Loot
         [SerializeField, Min(0f)] private float _luck;
         [Tooltip("Optional: subtypes this dropper rolls one of, by weight. An entry without a filter is the plain table")]
         [SerializeField] private WeightedLootFilter[] _subtypes = System.Array.Empty<WeightedLootFilter>();
+
+        [Header("Kill Credit")]
+        [Tooltip("Whose share of the damage decides how much a death drop gives. None = always the full drop")]
+        [SerializeField] private Team _creditedTeam = Team.Player;
+        [Tooltip("Share of the damage that earns the full drop; below it each item drops with chance share ÷ this")]
+        [SerializeField, Range(0.05f, 1f)] private float _fullCreditShare = 0.75f;
 
         [Header("Pickups")]
         [SerializeField] private ItemPickup   _itemPickupPrefab;
@@ -53,6 +64,7 @@ namespace CGD.Loot
         private int   _dropCount;
         private LootFilter _subtype;
         private bool       _subtypeRolled;
+        private float      _dropScale = 1f;
 
         // What this dropper's drops are narrowed to; null = anything its table holds.
         public LootFilter Subtype
@@ -66,12 +78,12 @@ namespace CGD.Loot
 
         private void Awake()
         {
-            if (_dropOnDeath && TryGetComponent(out _health)) _health.OnDeath += Drop;
+            if (_dropOnDeath && TryGetComponent(out _health)) _health.OnDeath += DropOnDeath;
         }
 
         private void OnDestroy()
         {
-            if (_health != null) _health.OnDeath -= Drop;
+            if (_health != null) _health.OnDeath -= DropOnDeath;
         }
 
         // Run-wide bonuses (a warning's loot luck) stack on top of the authored luck.
@@ -84,10 +96,15 @@ namespace CGD.Loot
             _subtypeRolled = false;
         }
 
+        // Shrinks every drop of this use to a chance per item (0 = drops nothing), e.g. for
+        // enemies a spawner sends, whose reward is the spawner itself. Reset when pooled.
+        public void ScaleDrops(float scale) => _dropScale = Mathf.Clamp01(scale);
+
         public void OnDespawned()
         {
             _seed          = null;
             _subtypeRolled = false;
+            _dropScale     = 1f;
         }
 
         private void RollSubtype()
@@ -100,18 +117,36 @@ namespace CGD.Loot
             _subtype = random.PickWeighted(_subtypes, option => option.Weight).Filter;
         }
 
-        public void Drop()
+        public void Drop() => Drop(1f);
+
+        private void DropOnDeath() => Drop(KillCredit());
+
+        // 0..1: how much of a death drop the credited team has earned.
+        private float KillCredit()
+        {
+            if (_creditedTeam == Team.None) return 1f;
+            return Mathf.Clamp01(_health.DamageShareOf(_creditedTeam) / _fullCreditShare);
+        }
+
+        private void Drop(float credit)
         {
             if (_table == null) return;
 
             // Each drop its own child, so a dropper that drops twice doesn't repeat itself.
             Seed seed = _seed?.Derive(_dropCount++) ?? Seed.Random();
+            float keepChance = credit * _dropScale;
+            if (keepChance <= 0f) return;
+
             _drops.Clear();
             _table.Roll(_drops, _luck, seed, Subtype);
 
             RandomStream placement = seed.Derive("placement").Stream();
+            RandomStream keep      = seed.Derive("credit").Stream();
             foreach (LootDrop drop in _drops)
+            {
+                if (keepChance < 1f && !keep.Chance(keepChance)) continue;
                 Spawn(drop, DropPosition(placement), placement);
+            }
 
             _drops.Clear();
         }

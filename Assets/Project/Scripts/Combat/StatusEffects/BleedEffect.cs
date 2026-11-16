@@ -17,7 +17,7 @@ namespace CGD.Combat
         public override void Tick(StatusEffectController target, int stacks, float magnitude)
         {
             float damage = magnitude * RawDamageFraction + target.Damageable.MaxHealth * MaxHealthFraction;
-            target.Damageable.TakeDamage(new DamageInfo(damage, type: DamageType.True));
+            target.Damageable.TakeDamage(new DamageInfo(damage, type: DamageType.True, instigator: target.InstigatorOf(this)));
         }
     }
 }

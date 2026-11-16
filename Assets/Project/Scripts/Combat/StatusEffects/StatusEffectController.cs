@@ -17,6 +17,7 @@ namespace CGD.Combat
             public float RemainingDuration;
             public float TickTimer;
             public float Magnitude; // raw damage of the hit that (most recently) applied this effect
+            public DamageSource Instigator; // who (most recently) applied it: its ticks count for them
             public readonly List<float> StackTimers = new(); // Independent stacking only
         }
 
@@ -125,8 +126,8 @@ namespace CGD.Combat
         }
 
         // Adds (or refreshes) a stack according to the effect's Stacking mode and
-        // updates magnitude to the new hit's value.
-        public void AddStack(StatusEffect effect, float magnitude)
+        // updates magnitude and instigator to the new hit's.
+        public void AddStack(StatusEffect effect, float magnitude, DamageSource instigator = default)
         {
             if (IsImmuneTo(effect)) return;
 
@@ -137,6 +138,7 @@ namespace CGD.Combat
             }
 
             active.Magnitude         = magnitude;
+            active.Instigator        = instigator;
             active.RemainingDuration = effect.Duration;
 
             switch (effect.Stacking)
@@ -169,6 +171,10 @@ namespace CGD.Combat
                 if (timers[i] < timers[shortest]) shortest = i;
             timers[shortest] = effect.Duration;
         }
+
+        // Who most recently applied `effect` (default if it isn't active), for damage ticks to credit.
+        public DamageSource InstigatorOf(StatusEffect effect) =>
+            _active.TryGetValue(effect, out ActiveEffect active) ? active.Instigator : default;
 
         // Current stack count for `effect`, or 0 if it isn't active.
         public int GetStacks(StatusEffect effect)

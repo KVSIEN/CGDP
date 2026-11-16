@@ -19,7 +19,7 @@ namespace CGD.Combat
         {
             float effectiveDamage = new DamageInfo(magnitude).ResolveDamage(target.Damageable.Armor);
             float damage = effectiveDamage * FireDpsPercent;
-            target.Damageable.TakeDamage(new DamageInfo(damage, type: DamageType.True));
+            target.Damageable.TakeDamage(new DamageInfo(damage, type: DamageType.True, instigator: target.InstigatorOf(this)));
         }
     }
 }

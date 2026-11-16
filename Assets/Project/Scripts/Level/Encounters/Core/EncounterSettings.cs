@@ -45,6 +45,9 @@ namespace CGD.Level
         [SerializeField, Min(1)] private int _spawnerCap = 5;
         [Tooltip("The spawner only runs while the player is this close")]
         [SerializeField, Min(1f)] private float _spawnerActivationRange = 25f;
+        [Tooltip("How much of their usual loot the spawner's enemies drop (0 = none): the reward for the room is " +
+                 "the spawner's own, so an endless stream can't be farmed")]
+        [SerializeField, Range(0f, 1f)] private float _spawnerEnemyLoot = 0f;
 
         [Header("Shrine")]
         [Tooltip("An altar the player takes a boon from (ShrineAltar + a collider)")]
@@ -112,6 +115,7 @@ namespace CGD.Level
         public int          SpawnerBatch           => _spawnerBatch;
         public int          SpawnerCap             => _spawnerCap;
         public float        SpawnerActivationRange => _spawnerActivationRange;
+        public float        SpawnerEnemyLoot       => _spawnerEnemyLoot;
 
         public ShrineAltar ShrineAltarPrefab => _altarPrefab;
         public StatBoon[]  ShrineBoons       => _shrineBoons;

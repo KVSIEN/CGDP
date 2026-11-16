@@ -21,6 +21,7 @@ namespace CGD.Combat
         private StatusEffectController _statusEffects;
         private IDamageInterceptor[]   _interceptors = System.Array.Empty<IDamageInterceptor>();
         private CharacterStats _stats;
+        private readonly DamageContribution _contribution = new();
 
         public abstract Team  Team      { get; }
         public abstract float MaxHealth { get; }
@@ -44,6 +45,10 @@ namespace CGD.Combat
         private int _invulnerabilityHolds;
         public void AddInvulnerability() => _invulnerabilityHolds++;
         public void RemoveInvulnerability() => _invulnerabilityHolds = Mathf.Max(0, _invulnerabilityHolds - 1);
+
+        // The share (0..1) of the effective health taken off this character since it was last
+        // at full that came from this team — kill credit for loot.
+        public float DamageShareOf(Team team) => _contribution.ShareOf(team);
 
         public float Health => _currentHealth;
         public float Shield => _shield.Current;
@@ -214,6 +219,7 @@ namespace CGD.Combat
         {
             _currentHealth = StartingHealth;
             _shield.Fill();
+            _contribution.Clear();
             OnChanged?.Invoke();
         }
 
@@ -244,6 +250,7 @@ namespace CGD.Combat
             // A hit an interceptor stopped outright (a parry) carries no status effects either.
             bool deflected = resolved > 0f && amount <= 0f;
             float dealt  = amount;
+            float before = _currentHealth + _shield.Current;
             _shield.SuppressRegen();
 
             if (!_shield.IsEmpty)
@@ -262,6 +269,7 @@ namespace CGD.Combat
                 OnDamaged?.Invoke(amount);
             }
 
+            _contribution.Record(info.Credited.Team, before - _currentHealth - _shield.Current);
             OnChanged?.Invoke();
             // Damage the shield soaked up counts too, so hits on a shielded enemy still show a number.
             if (dealt > 0f) OnDamageTaken(dealt, point, isCritical);

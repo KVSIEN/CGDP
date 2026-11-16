@@ -22,10 +22,14 @@ namespace CGD.Combat
         public readonly bool IsReflected;
         // Rolled crits and status boosts from the attacker's gear (perks).
         public readonly HitBonuses Bonuses;
+        // Who set a sourceless hit in motion, e.g. whoever applied the burn a fire tick comes
+        // from. Only kill credit reads it: the hit itself still comes from no one, so ticks
+        // don't give the burner away or trigger their on-hit perks.
+        public readonly DamageSource Instigator;
 
         public DamageInfo(float rawDamage, float armorPenetration = 0f, DamageType type = DamageType.Physical,
             float criticalMultiplier = 1f, DamageSource source = default, StatusEffectApplication[] onHitEffects = null,
-            bool isReflected = false, HitBonuses bonuses = default)
+            bool isReflected = false, HitBonuses bonuses = default, DamageSource instigator = default)
         {
             RawDamage          = rawDamage;
             ArmorPenetration   = Mathf.Clamp01(armorPenetration);
@@ -35,16 +39,20 @@ namespace CGD.Combat
             OnHitEffects       = onHitEffects;
             IsReflected        = isReflected;
             Bonuses            = bonuses;
+            Instigator         = instigator;
         }
+
+        // Whom the damage counts for: the hit's source, or else whoever instigated it.
+        public DamageSource Credited => Source.Team != Team.None ? Source : Instigator;
 
         // Rescales the hit while keeping every other property. For damage that only learns
         // its multiplier after the DamageInfo was built, such as a projectile that resolves
         // range falloff at the moment of impact.
         public DamageInfo WithDamageScale(float scale) =>
-            new(RawDamage * scale, ArmorPenetration, Type, CriticalMultiplier, Source, OnHitEffects, IsReflected, Bonuses);
+            new(RawDamage * scale, ArmorPenetration, Type, CriticalMultiplier, Source, OnHitEffects, IsReflected, Bonuses, Instigator);
 
         public DamageInfo AsReflected() =>
-            new(RawDamage, ArmorPenetration, Type, CriticalMultiplier, Source, OnHitEffects, true, Bonuses);
+            new(RawDamage, ArmorPenetration, Type, CriticalMultiplier, Source, OnHitEffects, true, Bonuses, Instigator);
 
         // Effective Armor = Armor × (1 − Armor Penetration%)
         // Effective Damage = Raw Damage × (100 / (100 + Effective Armor))

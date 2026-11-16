@@ -24,7 +24,7 @@ namespace CGD.Combat
         // Called when a hit applies this effect. Default: add a stack. Override for
         // effects that do something on application (e.g. Lightning chaining).
         public virtual void Apply(StatusEffectController target, in DamageInfo hit) =>
-            target.AddStack(this, hit.RawDamage);
+            target.AddStack(this, hit.RawDamage, hit.Credited);
 
         // Called once per TickInterval while the effect is active. `stacks` is the
         // current stack count (1..MaxStacks) — implementations decide what stacking
