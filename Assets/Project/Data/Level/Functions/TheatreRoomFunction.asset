@@ -30,4 +30,52 @@ MonoBehaviour:
   _landmark: {fileID: 0}
   _structure:
   - {fileID: 11400000, guid: bc41b23240354b2685106c18b0574a1e, type: 2}
-  _props: []
+  _props:
+  - Prefabs:
+    - {fileID: 7341706307952147615, guid: 301b423378c140cba69d0c80a53046a4, type: 3}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 2, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 1
+    Spacing: 1
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 1
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+  - Prefabs:
+    - {fileID: 372200163368048613, guid: 8ee81fcaa91145ebaee4f63467853bab, type: 3}
+    Count:
+      Min: 3
+      Max: 6
+      Bias: 0
+    ScaleByRoomSize: 1
+    Footprint: {x: 2, y: 1}
+    On: 0
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 0
+    Spacing: 0
+    Selection: 4
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0

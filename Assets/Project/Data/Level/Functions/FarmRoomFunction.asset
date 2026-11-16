@@ -29,4 +29,52 @@ MonoBehaviour:
   _openCeiling: 1
   _landmark: {fileID: 0}
   _structure: []
-  _props: []
+  _props:
+  - Prefabs:
+    - {fileID: 5735228119551967564, guid: 76f8aaf4d4fd42958cf59a8be1dd04e9, type: 3}
+    Count:
+      Min: 4
+      Max: 8
+      Bias: 0
+    ScaleByRoomSize: 1
+    Footprint: {x: 2, y: 1}
+    On: 0
+    Avoid: 124
+    Zone: 0
+    Facing: 1
+    Clearance: 0
+    Spacing: 1
+    Selection: 4
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 3, y: 2}
+    Symmetric: 0
+    Decor: 0
+  - Prefabs:
+    - {fileID: 4302891258951448465, guid: c2a8050858a549c0881c4c4e53bf970b, type: 3}
+    Count:
+      Min: 1
+      Max: 2
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 1
+    Clearance: 0
+    Spacing: 1
+    Selection: 0
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0

@@ -54,21 +54,42 @@ namespace CGD.Tests
             foreach (string guid in AssetDatabase.FindAssets("t:RoomDressing"))
             {
                 var dressing = AssetDatabase.LoadAssetAtPath<RoomDressing>(AssetDatabase.GUIDToAssetPath(guid));
-                foreach (RoomPropPlacement placement in dressing.Props)
-                {
-                    Assert.Greater(placement.Prefabs.Length, 0, $"{dressing.name} has a placement with no prefab");
-                    foreach (GameObject prefab in placement.Prefabs)
-                    {
-                        Assert.IsNotNull(prefab, $"{dressing.name} places a missing prefab");
-                        if (!checkedPrefabs.Add(prefab)) continue;
-
-                        bool solid = prefab.GetComponentInChildren<Collider>() != null;
-                        if (placement.Decor) Assert.IsFalse(solid, $"{prefab.name} is ground cover but has a collider");
-                        else Assert.IsTrue(solid, $"{prefab.name} is furniture but has no collider");
-                    }
-                }
+                foreach (RoomPropPlacement placement in dressing.Props) AssertRightKind(placement, dressing.name, checkedPrefabs);
             }
             Assert.Greater(checkedPrefabs.Count, 10);
+        }
+
+        // Every place is furnished (ROOM_GENERATION.md, Furnishing rules), with real prefabs, and
+        // its anchor — when it has one — goes down before its furniture.
+        [Test]
+        public void EveryPlaceIsFurnishedAnchorFirst()
+        {
+            var checkedPrefabs = new HashSet<GameObject>();
+            foreach (RoomFunction function in Settings().Functions)
+            {
+                if (function.Landmark != null || function.name == "JunctionRoomFunction") continue;
+                Assert.Greater(function.Props.Count, 0, $"{function.name} has no furniture");
+                for (int i = 0; i < function.Props.Count; i++)
+                {
+                    AssertRightKind(function.Props[i], function.name, checkedPrefabs);
+                    if (i > 0 && function.Props[i].Required && !function.Props[i - 1].Required)
+                        Assert.Fail($"{function.name}: a required piece comes after optional furniture");
+                }
+            }
+        }
+
+        private static void AssertRightKind(RoomPropPlacement placement, string owner, HashSet<GameObject> checkedPrefabs)
+        {
+            Assert.Greater(placement.Prefabs.Length, 0, $"{owner} has a placement with no prefab");
+            foreach (GameObject prefab in placement.Prefabs)
+            {
+                Assert.IsNotNull(prefab, $"{owner} places a missing prefab");
+                if (!checkedPrefabs.Add(prefab)) continue;
+
+                bool solid = prefab.GetComponentInChildren<Collider>() != null;
+                if (placement.Decor) Assert.IsFalse(solid, $"{prefab.name} is ground cover but has a collider");
+                else Assert.IsTrue(solid, $"{prefab.name} is furniture but has no collider");
+            }
         }
 
         // Each faction leans on its own trait: BIO hides, VOID breaks sight with walls, TECH
