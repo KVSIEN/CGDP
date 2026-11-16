@@ -152,6 +152,11 @@ namespace CGD.Editor
             _fill  = (LevelBlueprint.Fill)EditorGUILayout.EnumPopup(new GUIContent("", "Floor colour: room type or faction"), _fill, EditorStyles.toolbarPopup, GUILayout.Width(90f));
             if (EditorGUI.EndChangeCheck()) MarkDirty();
 
+            using (new EditorGUI.DisabledScope(_recipe.BuildSettings == null || _recipe.Content == null))
+                if (GUILayout.Button(new GUIContent("Sweep…", "Build this recipe for every place and faction over a run of seeds and summarise how the rooms read: for tuning the trait bands and Priority Tries"),
+                                     EditorStyles.toolbarButton))
+                    RoomSweepWindow.Open(_recipe);
+
             bool canPlay = _recipe.Source == RoomLabRecipe.SourceKind.MapRoom && MapGraphPlayLauncher.CanPlay(_recipe.Graph);
             using (new EditorGUI.DisabledScope(!canPlay))
             {

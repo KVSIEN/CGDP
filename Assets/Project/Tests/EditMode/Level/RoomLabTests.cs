@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEditor;
 using CGD.Editor;
 using CGD.Level;
+using CGD.Factions;
 using CGD.Map;
 
 namespace CGD.Tests
@@ -18,6 +19,27 @@ namespace CGD.Tests
             var settings = AssetDatabase.LoadAssetAtPath<LevelBuildSettings>(SettingsPath);
             Assert.IsNotNull(settings, $"Missing {SettingsPath}");
             return new RoomLabRecipe { BuildSettings = settings, Type = type };
+        }
+
+        // One seed of every place for every faction: everything builds, and the report covers it.
+        [Test]
+        public void ASweepBuildsEveryPlaceForEveryFaction()
+        {
+            RoomLabRecipe recipe = Recipe();
+            recipe.Content = AssetDatabase.LoadAssetAtPath<MapContentSettings>("Assets/Project/Data/Map/Content/StandardMapContentSettings.asset");
+            Assert.IsNotNull(recipe.Content);
+
+            var sweep = new RoomSweep(recipe, seeds: 1);
+            Assert.That(sweep.Total, Is.GreaterThan(0));
+            while (sweep.Step()) { }
+
+            Assert.IsTrue(sweep.IsFinished);
+            Assert.AreEqual(0, sweep.Failed, "rooms the pipeline could not build");
+            Assert.AreEqual(sweep.Total, sweep.Results.Count);
+
+            string report = RoomSweepReport.Write(sweep);
+            foreach (FactionDefinition faction in recipe.Content.Factions)
+                StringAssert.Contains($"| {faction.DisplayName} |", report);
         }
 
         [Test]

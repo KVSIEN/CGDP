@@ -357,4 +357,31 @@ Farm take the holding reality's structure; Junction stays bare on purpose.
 | **4. Ship side** | A Guest first class / Guest steerage / Crew dial (the section's side where the function allows it), scaling size, fill and prop counts, with each side's dressing (a service door in crew rooms); the Room Lab picks a section | **Done in code, not yet compiled or run** |
 | **5. Concealment by routes, service doors** | *Near Route* and *Off Route* placement options measured from the walkways and route-marking props (the service door); concealment patches stand beside routes, VOID shadow pockets in dead ends | **Done in code, not yet compiled or run** |
 | **6. Breach split by zone** | Each zone of a Breach or Rift room dressed by one faction (the breach takes the zones its doorways open into); the breaching faction's divider splits a room left in one piece; the Room Lab shows the sides | **Done in code, not yet compiled or run** |
-| **7. Tuning** | Set the trait bands (`RoomTraitMeasure`) and *Priority Tries* from Room Lab runs of each card in each reality | Ongoing |
+| **7. Tuning** | Set the trait bands (`RoomTraitMeasure`) and *Priority Tries* from Room Lab runs of each card in each reality. The **Room Sweep** that gathers the runs is built (see *Tuning* below); the values wait on its first report | **Sweep done in code, not yet compiled or run; values not yet tuned** |
+
+### Tuning (Phase 7)
+
+The bands that turn a room's scores into Low / Medium / High, and how many tries a fight room
+gets, are set from what generation really builds, not guessed. The **Room Sweep** (Room Lab ›
+*Sweep…*) builds the lab's recipe for every place but the landmarks, held by each faction, over
+a run of seeds, and reports the results.
+
+1. In the Room Lab pick *Type* Combat, tier 1, three doorways, no section, *Content*
+   `StandardMapContentSettings`. Open *Sweep…*, set 10 seeds, *Run*, then *Copy report*.
+2. Read the **By faction** table against each faction's priorities:
+   - A trait a faction wants High should read High in most of its rooms, and one it wants
+     Low should mostly read Low. Medium should sit between the two.
+   - When every faction reads the same level, the band is in the wrong place. Move it to
+     between those factions' medians (the raw-score column). For example, if BIO's median
+     concealed share is 8% and VOID's 3%, the High band belongs at about 5%.
+   - When a faction can't reach its level even on its best tries, the fix is in its assets
+     (dressing counts, structure), not the bands.
+3. **Priority Tries:** read the *Kept try* column. If the last try is often the one kept,
+   more tries would still help. If try 0 is kept almost always, fewer tries cost nothing.
+   Weigh it against level build time, since each try is another structure plan and furnishing.
+4. The **By place** table and *Worst fits* name the cards that don't fit their faction. Open
+   them in the Room Lab with that place, faction and seed.
+5. Repeat for the other fight types (Elite, Ambush, Breach) once Combat reads right.
+
+The bands live in `RoomTraitMeasure` (code constants, because the Room Lab's checks and the
+generation steering must agree). *Priority Tries* lives in `LevelBuildSettings`.

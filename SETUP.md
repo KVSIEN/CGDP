@@ -795,6 +795,8 @@ Open **Window › CGD › Room Lab**, or *Open in Room Lab* at the top of any `R
 | **Content** (made-up rooms) | a `MapContentSettings` (defaults to the project's first) | Only its faction list is used, for the Holder / Breaching popups |
 | **Map graph** (map rooms) | a generated `MapGraphAsset` | Built with the graph's own seed, as `LevelBuilder` does with `_seed` empty |
 
+**Sweep…** (Room Lab toolbar; needs *Build with* and *Content*) opens the Room Sweep window: it builds the current made-up recipe (type, tier, doorways, section, seed) for every place but the landmarks, held by each faction of the Content, over 1–50 seeds, and shows a Markdown summary with *Copy report*. Nothing to assign.
+
 ## Generated Levels
 
 A scene can build its level from a map graph at load instead of using hand-placed geometry.
