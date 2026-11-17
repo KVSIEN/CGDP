@@ -11,7 +11,7 @@ namespace CGD.Editor
     // its behaviors top to bottom in the order they are tried, each one switchable on and off,
     // movable, removable, and addable from the shared library (BehaviorLibrary). Branches still
     // written into the tree itself show up too, with Save as Behavior to make them reusable —
-    // the way to turn the AITest agents' trees into building blocks for new enemy types.
+    // the way to turn the AI Simulator agents' trees into building blocks for new enemy types.
     // Each row also says when the behavior acts (BehaviorTrigger) and which kit pieces it casts
     // from (KitNeed), warning when the chosen enemy's kit leaves one empty — the kit can be
     // filled in right here — plus the tree checks' problems inside each behavior, and a hint when
@@ -217,7 +217,7 @@ namespace CGD.Editor
         private void DrawNoTree()
         {
             EditorGUILayout.HelpBox(
-                "Pick an enemy or a tree to compose. A new starter tree is laid out like the AITest agents' trees " +
+                "Pick an enemy or a tree to compose. A new starter tree is laid out like the AI Simulator agents' trees " +
                 "(regroup, raise alarm, fight while it knows the target, routine), ready for fight behaviors from the library.",
                 MessageType.Info);
         }

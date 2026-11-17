@@ -11,7 +11,7 @@ runtime-built HUD.
 - [ROOM_GENERATION.md](ROOM_GENERATION.md) — room generation rules, room cards and their roadmap
 - [CLAUDE.md](CLAUDE.md) — coding guidelines
 
-Open `Assets/Project/Scenes/Sandbox.unity` to play, `MapTest.unity` for a freshly generated level, `RoomGallery.unity` to walk through one room of every place, or `AITest.unity` to try enemies driven by behavior trees.
+Open `Assets/Project/Scenes/ShootingRange.unity` to play, `MapTest.unity` for a freshly generated level, `RoomGallery.unity` to walk through one room of every place, or `AISimulator.unity` to try enemies driven by behavior trees.
 
 ## Project layout
 
@@ -25,7 +25,7 @@ Assets/
       Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Perks/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors (keycard, terminal, puzzle), secret wall, keycard, terminal, hub workbench, encounter pieces (shutter, reward cache, loot pickups, puzzle switch, rift core, gamble station, escape pod); WallKit/ — placeholder wall art), Pickups, Systems (GameFlow, GameManager, EventSystem, Global Volume), UI, VFX, Weapons
-    Scenes/                 Sandbox.unity, MapTest.unity (generated level), RoomGallery.unity (every room place and prop), AITest.unity (behavior tree arena)
+    Scenes/                 ShootingRange.unity, MapTest.unity (generated level), RoomGallery.unity (every room place and prop), AISimulator.unity (behavior tree arena)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            Core/ (Ability base, AbilityContext, cooldowns and charges, Surge, resource costs, PlayerAbilities — the player's slots,
                             TimelineAbilityRunner, caster interfaces), Types/ (one class per kind of ability, incl. TargetedAbility), Zones/ (Rift, Snare)
@@ -43,7 +43,7 @@ Assets/
                             Random/ — Seed, RandomStream, SeedVariants; StateMachine/ — StateMachine<T>, IState)
       Crafting/             RecipeDefinition, Crafter (rules), CraftingStation
       DevTools/             dev console: DevConsole (commands), DevCommands (cheats), DevCatalog;
-                            Spectator/ (AI test spectator mode: SpectatorCamera; Input/, Camera/, Hud/,
+                            Spectator/ (AI Simulator spectator mode: SpectatorCamera; Input/, Camera/, Hud/,
                             Inspector/ — AgentInspector pages, Overlays/ — senses, cover, paths & plans,
                             Stats/ — MatchStats, Scenarios/ — AIScenario presets, ScenarioRunner, ScenarioMenu; SpectatorMatch)
       Difficulty/           DifficultyLevel, DifficultyTuning, DifficultyTable (asset), GameDifficulty (the level in force; GameFlow registers the table)
@@ -92,7 +92,7 @@ Assets/
                             Upgrades/ (ShipUpgrade + levels, ShipUpgradeCatalog; ShipUpgrades: owned levels and buying rules)
       Factions/             FactionDefinition (name, colour, enemy roster) — used by the map graph and generated levels
       Feedback/             FeedbackBus, FeedbackPreset, FeedbackPlayer (feed, flash, rumble, shake), combat/quest feedback
-      FiringRange/          the sandbox firing range: RangeControl (faction, tier, movement, distance, infinite ammo), RangeDummy (stats, colour), RangeSwitch (the buttons), TargetMover
+      FiringRange/          the ShootingRange firing range: RangeControl (faction, tier, movement, distance, infinite ammo), RangeDummy (stats, colour), RangeSwitch (the buttons), TargetMover
       Flow/                 GameFlow, GameState/GameStateMachine, settings and UI commands
       Impacts/              ImpactEvents (hit broadcast), ImpactDatabase (effects per surface), ImpactSpawner, DecalPool
       Input/                PlayerInputHandler and binding settings

@@ -8,7 +8,7 @@ using CGD.Enemies;
 
 namespace CGD.Tests
 {
-    // The AITest faction agents' trees and the behaviors they are built from: each loads, has
+    // The AI Simulator faction agents' trees and the behaviors they are built from: each loads, has
     // nothing the validator calls broken, and still contains what its playstyle rests on.
     public class FactionTreeTests
     {

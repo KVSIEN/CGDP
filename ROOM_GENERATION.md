@@ -240,7 +240,7 @@ natural but is harder to read and tune. It stays a possible follow-up.
 ## 7. Placeholder kit
 
 Until there is art, every structure piece, anchor and prop is a prefab built from Unity's
-primitives (cubes, cylinders, spheres, capsules), like the setups in the AITest and Sandbox
+primitives (cubes, cylinders, spheres, capsules), like the setups in the AISimulator and ShootingRange
 scenes. Each one is coloured by its role with the Gridbox prototype materials, so a room reads
 at a glance in play and in the Room Lab. When a real model arrives, it replaces the
 placeholder inside the same prefab, so no rule or asset has to change.

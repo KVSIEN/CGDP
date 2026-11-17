@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GameFlowSettings
   m_EditorClassIdentifier: CGD.Runtime::CGD.Flow.GameFlowSettings
   _mainMenuScene: 
-  _firstLevelScene: Sandbox
+  _firstLevelScene: ShootingRange
   _transitionDuration: 0.5
   _minimumLoadingTime: 0.5
   _pauseAudio: 1

@@ -659,7 +659,7 @@ For each new or modified weapon:
 
 1. **Identify the category's TTK target** from the table above.
 2. **Roll the weapon a few times** and measure TTK vs a 100-HP target in Play
-   mode (target dummy in the sandbox scene).
+   mode (target dummy in the shooting range scene).
 3. **Compare against target.** If TTK is off by more than ~30%:
    - Too fast → lower `Damage` or `RPM` range on the category
    - Too slow → raise them

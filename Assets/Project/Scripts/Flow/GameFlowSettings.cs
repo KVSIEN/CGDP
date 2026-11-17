@@ -13,7 +13,7 @@ namespace CGD.Flow
         [Tooltip("Scene loaded by 'Main Menu' commands. Empty = there is no menu scene yet.")]
         [SerializeField] private string _mainMenuScene;
         [Tooltip("Scene the main menu's 'Play' starts")]
-        [SerializeField] private string _firstLevelScene = "Sandbox";
+        [SerializeField] private string _firstLevelScene = "ShootingRange";
 
         [Header("Timing (unscaled seconds)")]
         [Tooltip("How long LevelTransition lasts before loading starts — time for a fade-out or results panel")]
