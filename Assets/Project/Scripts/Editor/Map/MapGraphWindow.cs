@@ -162,7 +162,7 @@ namespace CGD.Editor
 
             using (new EditorGUI.DisabledScope(!MapGraphPlayLauncher.CanPlay(asset)))
             {
-                if (GUILayout.Button(new GUIContent("Play", "Play this graph in the MapTest scene (the scene file isn't changed). Select a room and use Play from here in the side panel to start there"),
+                if (GUILayout.Button(new GUIContent("Play", "Play this graph in the MapGenerator scene (the scene file isn't changed). Select a room and use Play from here in the side panel to start there"),
                                      EditorStyles.toolbarButton))
                 {
                     MapGraphPlayLauncher.Play(asset);

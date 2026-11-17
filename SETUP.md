@@ -27,8 +27,8 @@ Build a new playable scene in this order:
 **Missing from ShootingRange** (add when needed): `TimelineAbilityRunner`, animation and
 ragdoll components (no rigged models yet), `FeedbackPlayer`, the world map, stealth,
 crafting stations, `GameDirector` and `LevelBuilder`. The firing-range dummies have no
-`EnemyAI` (they stand still). `MapTest` adds the map, feedback, director, expedition and
-generated-level systems on top of the ShootingRange set. `RoomGallery` is MapTest building a walk-through of every room place instead of a map (see [Generated Levels](#generated-levels)). `AISimulator` is the behavior tree arena (see [AI Simulator Scene](#ai-simulator-scene)).
+`EnemyAI` (they stand still). `MapGenerator` adds the map, feedback, director, expedition and
+generated-level systems on top of the ShootingRange set. `RoomGallery` is MapGenerator building a walk-through of every room place instead of a map (see [Generated Levels](#generated-levels)). `AISimulator` is the behavior tree arena (see [AI Simulator Scene](#ai-simulator-scene)).
 
 ---
 
@@ -204,15 +204,15 @@ The remaining HUD elements (crosshair, quests, objective, interact prompt, hit m
 | Element | Assign | Notes |
 |---|---|---|
 | **CrosshairHUD** | `_playerCamera` = PlayerCamera | Draws the player's crosshair style from `GameSettings` (edited on the Settings menu's Crosshair tab). No asset to assign. |
-| **DamageIndicatorHUD** | `_playerHealth` = PlayerHealth, `_playerCamera` = PlayerCamera (set on the HUD instance in ShootingRange and MapTest) | Arrows toward whoever hurt the player. Listens to `CombatEvents`; stretch-anchored, builds its own arrows. Optional `_sprite` = your own arrow art (pointing up); `_radius`, `_size`, `_duration`, `_maxIndicators` tune it. Off switch: Settings › Accessibility. |
-| **StruggleHUD** | `_restraint` = PlayerRestraint (set on the HUD instance in ShootingRange and MapTest) | Placeholder prompt below the crosshair while the player is held: the label, "MASH <Interact key>", and a bar that fills per tap. Shows only while restrained. |
+| **DamageIndicatorHUD** | `_playerHealth` = PlayerHealth, `_playerCamera` = PlayerCamera (set on the HUD instance in ShootingRange and MapGenerator) | Arrows toward whoever hurt the player. Listens to `CombatEvents`; stretch-anchored, builds its own arrows. Optional `_sprite` = your own arrow art (pointing up); `_radius`, `_size`, `_duration`, `_maxIndicators` tune it. Off switch: Settings › Accessibility. |
+| **StruggleHUD** | `_restraint` = PlayerRestraint (set on the HUD instance in ShootingRange and MapGenerator) | Placeholder prompt below the crosshair while the player is held: the label, "MASH <Interact key>", and a bar that fills per tap. Shows only while restrained. |
 | **StatsHUD**, **HitEffect** | `_playerHealth` = PlayerHealth | HitEffect = damage flash + low-health vignette. |
 | **WeaponHUD** | `_weapon` = WeaponController | |
 | **AbilityHUD** | `_abilities` = PlayerAbilities | |
 | **DodgeHUD** | `_dodge` = PlayerDodge | |
-| **OffhandHUD** | `_offhand` = PlayerOffhand | The held artifact's slot, left of the ability bar (shown only while an artifact is in use). ShootingRange and MapTest are wired. |
+| **OffhandHUD** | `_offhand` = PlayerOffhand | The held artifact's slot, left of the ability bar (shown only while an artifact is in use). ShootingRange and MapGenerator are wired. |
 | **StatusEffectHUD** | `_target` = Player's StatusEffectController | |
-| **MeterHUD** | `_meters` = Player's MeterSet (set on the HUD instance in ShootingRange and MapTest) | Hides itself without meters. |
+| **MeterHUD** | `_meters` = Player's MeterSet (set on the HUD instance in ShootingRange and MapGenerator) | Hides itself without meters. |
 | **VelocityHUD** | `_movement` = PlayerMovement | |
 | **InteractHUD** | `_interaction` = PlayerInteraction | |
 | **WeaponPickupHUD** | `_interaction` = PlayerInteraction | Shows when aiming at a weapon pickup. |
@@ -224,7 +224,7 @@ The remaining HUD elements (crosshair, quests, objective, interact prompt, hit m
 | **NotificationHUD**, **ScreenFlashHUD** | — | Driven by `FeedbackPlayer` (its `_notifications` and `_screenFlash` are set on the Player instance in each scene). Both are in the HUD prefab. |
 | **ObjectiveHUD** | — | Top-centre panel for the Siege/Gauntlet in progress and the boss fight (title, detail, countdown, objective or boss health bar). Driven by `ObjectiveFeed`; already in the HUD prefab. |
 | **HitMarkerHUD** | — | Driven by `CombatFeedback` through `HitMarkerFeed`; no reference to set. |
-| **StealthHUD** | `_stealth` = Player's Stealthable (set on the HUD instance in ShootingRange and MapTest) | HIDDEN / REVEALED / SPOTTED under the crosshair. In the HUD prefab. |
+| **StealthHUD** | `_stealth` = Player's Stealthable (set on the HUD instance in ShootingRange and MapGenerator) | HIDDEN / REVEALED / SPOTTED under the crosshair. In the HUD prefab. |
 
 Damage numbers and enemy health bars build themselves — don't place them under the HUD. `EnemyHealthBar` also tunes its damage band: `_trailColor`, `_trailHold` (seconds before it shrinks), `_trailSpeed` and `_punch` (swell on a hit).
 
@@ -312,7 +312,7 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
 
 **Alarm panels** — any object with a collider and an **AlarmPanel** (`_radius` 60 m, `_useTime`, `_rearmTime`, `_disableTime` for the player's hold-Interact, `_team`, `_screen`? = a renderer it tints green / red / dark). Enemies only use panels within 25 m of their post. PlayerInteraction finds it like any interactable.
 
-**Cover** — add a **CoverMap** (one per scene, any object; it's on its own `CoverMap` object in AISimulator and MapTest): `_spacing` (1.25 m between spots), `_lowHeight` / `_highHeight` (0.8 / 1.6 m: how tall an obstacle must be for low / full cover), `_obstacleMask` = what counts as an obstacle (Default). It scans the NavMesh the first time an enemy asks, so baked and runtime NavMeshes both work; call `Rebuild()` if the NavMesh changes later. Without a CoverMap enemies simply never use cover. Enemies learn cover around their spawn point and `_waypoints`, so give patrols routes through the area they should defend.
+**Cover** — add a **CoverMap** (one per scene, any object; it's on its own `CoverMap` object in AISimulator and MapGenerator): `_spacing` (1.25 m between spots), `_lowHeight` / `_highHeight` (0.8 / 1.6 m: how tall an obstacle must be for low / full cover), `_obstacleMask` = what counts as an obstacle (Default). It scans the NavMesh the first time an enemy asks, so baked and runtime NavMeshes both work; call `Rebuild()` if the NavMesh changes later. Without a CoverMap enemies simply never use cover. Enemies learn cover around their spawn point and `_waypoints`, so give patrols routes through the area they should defend.
 
 **Squads** — put an **EnemySquad** on a parent object; every `EnemyAI` under it joins in `Awake` (spawners call `Join(enemy)` for ones spawned later, `Leave` to remove). `_radioRange` (40 m: callouts reach members through walls; 0 = shouting only), `_leaderLossMorale` (0.25). The first member is the leader. Roles no longer come from the squad: squad members always form an encounter in a fight, which hands out roles from their doctrine (*Encounter* below; the plain doctrine's table is the old rule: nearest ranged suppresses, two nearest melee go in, the rest flank). Factions whose doctrine coordinates form encounters without any squad, so generated levels need nothing placed. (The AISimulator squads still carry `_suppressors`, `_assaulters` and `_reassignEvery` from before; they are unused.)
 
@@ -438,7 +438,7 @@ No scene wiring: every `EnemyData` › **Behavior** › `BehaviorTree` names the
 
 ## AI Simulator Scene
 
-`Scenes/AISimulator` — the MapTest scene root, Player and HUD without the map, director and expedition systems, plus:
+`Scenes/AISimulator` — the MapGenerator scene root, Player and HUD without the map, director and expedition systems, plus:
 
 ```
 Arena              [NavMeshSurface, RuntimeNavMesh]      ← NavMesh built from its children at load
@@ -783,7 +783,7 @@ A map **style** (`MapGenerationSettings`) is what a `MapGraphAsset` or `LevelBui
 - **Generate** stays disabled until the style has content and at least one layout.
 - **Blueprint** shows the floor plan; its toolbar picks the `LevelBuildSettings` to lay out with (defaults to the project's first one, e.g. `Level/DefaultLevelBuildSettings`) and the fill (room type / faction); *Props* draws each room's furniture. It uses the graph asset's seed, as `LevelBuilder` does with `_seed` empty. Double-click a room (or *Room Lab* in the side panel) to open it in the Room Lab.
 - **Analyze** opens the style report for the asset's style (seed count and first seed in its toolbar; the first seed can be a number or any text).
-- **Play** opens `Scenes/MapTest`, points its `Level` (LevelBuilder) at the asset with the asset's seed and enters play mode; **Play from here** (side panel) also sets `_startRoom` to the selected node. Nothing is saved to the scene: the previously open scenes are reloaded when play mode ends. It needs a LevelBuilder somewhere in MapTest.
+- **Play** opens `Scenes/MapGenerator`, points its `Level` (LevelBuilder) at the asset with the asset's seed and enters play mode; **Play from here** (side panel) also sets `_startRoom` to the selected node. Nothing is saved to the scene: the previously open scenes are reloaded when play mode ends. It needs a LevelBuilder somewhere in MapGenerator.
 - **Gallery** opens the seed gallery for the asset (`MapSeedGalleryWindow`): previews for a page of seeds counting up from its toolbar's first seed; **Use** on one generates the asset from that seed.
 - A room function only prefers sections listed in a style's content; a style without `_sections` gives every room no section.
 - A new map style is usually just a new style asset pointing at existing layouts and content.
@@ -803,8 +803,8 @@ Open **Window › CGD › Room Lab**, or *Open in Room Lab* at the top of any `R
 ## Generated Levels
 
 A scene can build its level from a map graph at load instead of using hand-placed geometry.
-**`Scenes/MapTest`** is ready-made: the ShootingRange systems (Player, HUD, GameManager, GameFlow, EventSystem, Global Volume, RespawnPoint, Directional Light) and a `Level` object generating from `Map/RandomMapGenerationSettings` with `Level/DefaultLevelBuildSettings`, seed 0 (a new map every play and every restart; empty does the same). Change `_generation` or `_seed` on `Level` to test a style or keep a map; set `_graphAsset` to play a hand-edited graph. Its NavMeshSurface collects **Physics Colliders**, so the wall kit's visual pieces stay out of it. It also has the map set up: a `WorldMap` object (`WorldMapArea`, fog of war on) that `LevelBuilder` fits to the level and paints with the level's blueprint; `Minimap`, `WorldMap` (M) and `ScreenFlash` elements added under the HUD; and `MapRevealer` + `FeedbackPlayer` added to the Player (run modifiers and pickups are announced). `Level` has `_objectives` = `Level/Objectives/DefaultMapObjectiveSettings`. The expedition loop is wired too — see *Expedition loop* below — and `Level` has `_encounters` = `Level/DefaultEncounterSettings`, so encounter rooms play out. These are scene additions to the HUD and Player prefab instances — the prefabs themselves (and ShootingRange) are unchanged.
-**`Scenes/RoomGallery`** is a copy of MapTest whose `Level` has `_gallery` = `Level/Gallery/RoomGallerySettings` and no `_objectives`. It builds one Quiet room of every place, with factions and ship sections taken in turn (a place listing several sides gets one per side, in a section of that side), then a wing per faction (Combat rooms at each depth step, then a full-strength Combat, Stealth and Breach room), joined in one walk from Start to Exit. Its arrival announcements show the fuller gallery placard on every entry, and `/room` in the dev console travels between rooms (registered by LevelBuilder when the Player has DevCommands and PlayerMovement; nothing to wire). A **Prop Yard** object (at z = 60, outside the level, so look at it in the Scene view) holds one instance of every prefab in `Prefabs/Environment/Structure/` (first row) and `Prefabs/Environment/Props/` (rows of 12, 7 m apart) on a grey floor. Regenerate the yard rows when prefabs are added.
+**`Scenes/MapGenerator`** is ready-made: the ShootingRange systems (Player, HUD, GameManager, GameFlow, EventSystem, Global Volume, RespawnPoint, Directional Light) and a `Level` object generating from `Map/RandomMapGenerationSettings` with `Level/DefaultLevelBuildSettings`, seed 0 (a new map every play and every restart; empty does the same). Change `_generation` or `_seed` on `Level` to test a style or keep a map; set `_graphAsset` to play a hand-edited graph. Its NavMeshSurface collects **Physics Colliders**, so the wall kit's visual pieces stay out of it. It also has the map set up: a `WorldMap` object (`WorldMapArea`, fog of war on) that `LevelBuilder` fits to the level and paints with the level's blueprint; `Minimap`, `WorldMap` (M) and `ScreenFlash` elements added under the HUD; and `MapRevealer` + `FeedbackPlayer` added to the Player (run modifiers and pickups are announced). `Level` has `_objectives` = `Level/Objectives/DefaultMapObjectiveSettings`. The expedition loop is wired too — see *Expedition loop* below — and `Level` has `_encounters` = `Level/DefaultEncounterSettings`, so encounter rooms play out. These are scene additions to the HUD and Player prefab instances — the prefabs themselves (and ShootingRange) are unchanged.
+**`Scenes/RoomGallery`** is a copy of MapGenerator whose `Level` has `_gallery` = `Level/Gallery/RoomGallerySettings` and no `_objectives`. It builds one Quiet room of every place, with factions and ship sections taken in turn (a place listing several sides gets one per side, in a section of that side), then a wing per faction (Combat rooms at each depth step, then a full-strength Combat, Stealth and Breach room), joined in one walk from Start to Exit. Its arrival announcements show the fuller gallery placard on every entry, and `/room` in the dev console travels between rooms (registered by LevelBuilder when the Player has DevCommands and PlayerMovement; nothing to wire). A **Prop Yard** object (at z = 60, outside the level, so look at it in the Scene view) holds one instance of every prefab in `Prefabs/Environment/Structure/` (first row) and `Prefabs/Environment/Props/` (rows of 12, 7 m apart) on a grey floor. Regenerate the yard rows when prefabs are added.
 
 | Asset | Folder | Sets |
 |---|---|---|
@@ -908,7 +908,7 @@ HUD (prefab instance)
 
 `RunStarterKit` (`Data/Expedition/`): `_startingWeapon` (a weapon category, rolled fresh each run — `Weapons/Categories/ModularPistolCategory`), `_startingOffhands` (one-handed melee categories; one is rolled into the starting weapon's offhand — default `Weapons/Melee/` Dagger, Sword, Axe; empty = none), `_gear` + `_gearCount` (random extra gear — armor or weapon categories — no piece twice; default `Items/Armor/CombatVestArmor`, 0–1), `_supplies` (item + count range each).
 `ShipUpgradeCatalog` (`Create › CGD › Expedition › Ship Upgrade Catalog`) lists `ShipUpgrade`s (`Create › CGD › Expedition › Ship Upgrade`) in ship-screen order. An upgrade has `_id` (names it in the save — never change it once shipped), `_displayName` and `_levels`, each with a `Summary` line, a `Cost` (items taken from the hold, e.g. Credits + Scrap Metal) and a `Bonus` (`StatModifierPreset`; only stats the player reads take effect: Health, Armor, MovementSpeed, Damage, CooldownReduction, …).
-`Scenes/MapTest` is wired this way: `Expedition` root, `ExpeditionScreen` added under the HUD instance, and the two Player overrides above as instance overrides (the Player prefab and ShootingRange are unchanged).
+`Scenes/MapGenerator` is wired this way: `Expedition` root, `ExpeditionScreen` added under the HUD instance, and the two Player overrides above as instance overrides (the Player prefab and ShootingRange are unchanged).
 - **Obstacle masks**: generated geometry goes on `_geometryLayer`. Keep that layer in enemies' `_obstacleMask` and in weapons' hit masks.
 
 ### Director (pacing)
@@ -928,7 +928,7 @@ Director  [GameDirector, ReinforcementSpawner, SupplySpawner, DirectorMusic, Pat
 
 **Enemies and pacing** need no extra wiring: the GameDirector publishes its phase to every enemy (`EnemyPacing`), using `DefaultDirectorSettings` › *Enemies* — one row per phase: *Bold Moves* (level-wide Director Permits at neutral pressure; build-up 2, peak 4, fade 1, calm 1), *Attackers* (× EnemyData's MaxMeleeAttackers / MaxShooters; 1, 1.5, 0.75, 0.5), *Search Time* (× search duration; 1, 1.25, 0.6, 0.4), *Fall Back* (× the PerceptionProfile's retreat threshold; 1, 0.75, 1.25, 1.5). Pressure scales Bold Moves. Scenes without a GameDirector run enemies unscaled and with unlimited permits.
 
-`Scenes/MapTest` is wired this way (ShootingRange has no director). Any gameplay scene can add the same root object.
+`Scenes/MapGenerator` is wired this way (ShootingRange has no director). Any gameplay scene can add the same root object.
 
 **Music clips:** assign the stems of one piece (same length, they loop together) to `DefaultMusicSettings` → *Layers*: 0 calm bed (always on), 1 tension (fades in from intensity 0.1–0.4), 2 combat (0.35–0.7, silent in the calm), 3 peak (only while the peak is held); plus *Peak Stinger* and *Calm Stinger*. Import music clips with *Load Type* = Streaming. The reinforcement arrival sound goes in `DefaultReinforcementSettings` → *Arrival Sound*.
 

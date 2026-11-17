@@ -8,14 +8,14 @@ using UnityEngine.SceneManagement;
 
 namespace CGD.Editor
 {
-    // Plays a Map Graph asset (Map Graph window › Play): opens the MapTest scene, points its
+    // Plays a Map Graph asset (Map Graph window › Play): opens the MapGenerator scene, points its
     // LevelBuilder at the asset — the asset's own seed, optionally starting in one room — and
     // enters play mode. The scene file is never changed: when play mode ends, the scenes that
     // were open before are reloaded from disk, which also drops the temporary wiring.
     [InitializeOnLoad]
     public static class MapGraphPlayLauncher
     {
-        private const string ScenePath  = "Assets/Project/Scenes/MapTest.unity";
+        private const string ScenePath  = "Assets/Project/Scenes/MapGenerator.unity";
         // Survives the domain reload of entering play mode.
         private const string RestoreKey = "CGD.MapGraphPlay.RestoreScenes";
 
@@ -93,8 +93,8 @@ namespace CGD.Editor
         }
 
         // Reloads the remembered scenes from disk. An empty scene first, so a scene that is
-        // still open (MapTest itself) is read again rather than kept with the temporary wiring.
-        // Without a saved scene to go back to, MapTest is reloaded on its own.
+        // still open (MapGenerator itself) is read again rather than kept with the temporary wiring.
+        // Without a saved scene to go back to, MapGenerator is reloaded on its own.
         private static void Restore(OpenScenes before)
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);

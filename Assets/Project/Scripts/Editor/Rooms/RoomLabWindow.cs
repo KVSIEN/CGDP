@@ -160,7 +160,7 @@ namespace CGD.Editor
             bool canPlay = _recipe.Source == RoomLabRecipe.SourceKind.MapRoom && MapGraphPlayLauncher.CanPlay(_recipe.Graph);
             using (new EditorGUI.DisabledScope(!canPlay))
             {
-                if (GUILayout.Button(new GUIContent("Play from here", "Play the map graph in MapTest, starting in this room (map rooms only: a made-up room has no level)"),
+                if (GUILayout.Button(new GUIContent("Play from here", "Play the map graph in MapGenerator, starting in this room (map rooms only: a made-up room has no level)"),
                                      EditorStyles.toolbarButton))
                 {
                     MapGraphPlayLauncher.Play(_recipe.Graph, _recipe.NodeId);

@@ -56,7 +56,7 @@ namespace CGD.Editor
                     RoomLabWindow.OpenMapRoom(session.Asset, node.Id, session.BuildSettings);
                 using (new EditorGUI.DisabledScope(!MapGraphPlayLauncher.CanPlay(session.Asset)))
                 {
-                    if (GUILayout.Button(new GUIContent("Play from here", "Play this graph in the MapTest scene, starting in this room"),
+                    if (GUILayout.Button(new GUIContent("Play from here", "Play this graph in the MapGenerator scene, starting in this room"),
                                          EditorStyles.miniButton, GUILayout.Width(96f)))
                     {
                         MapGraphPlayLauncher.Play(session.Asset, node.Id);

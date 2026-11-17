@@ -125,7 +125,7 @@ The character forgets. The player does not. The gap between what the character k
 
 ### In the Prototype
 
-**Built.** The full loop runs in the MapTest scene: start in the hub with a random loadout, explore, extract at the Exit, review the run on the ship screen, pack a kit and deploy again. Not built yet: extraction gated by the boss, skill trees, saving the ship's hold.
+**Built.** The full loop runs in the MapGenerator scene: start in the hub with a random loadout, explore, extract at the Exit, review the run on the ship screen, pack a kit and deploy again. Not built yet: extraction gated by the boss, skill trees, saving the ship's hold.
 
 ## Docked Ship and Extraction
 
