@@ -8,7 +8,7 @@ using CGD.Stats;
 namespace CGD.Level
 {
     // Tuning and prefabs for the rooms that play out as encounters (Lockdown, Holdout,
-    // Ambush, Stealth, Rift, Puzzle, Hazard, Spawner, Shrine, Siege, Gauntlet, Boss). Shared by every generated level.
+    // Ambush, Stealth, Rift, Puzzle, Hazard, Spawner, Shrine, Siege, Gauntlet, Haunt, Boss). Shared by every generated level.
     [CreateAssetMenu(fileName = "EncounterSettings", menuName = "CGD/Level/Encounter Settings")]
     public class EncounterSettings : ScriptableObject
     {
@@ -48,6 +48,15 @@ namespace CGD.Level
         [Tooltip("How much of their usual loot the spawner's enemies drop (0 = none): the reward for the room is " +
                  "the spawner's own, so an endless stream can't be farmed")]
         [SerializeField, Range(0f, 1f)] private float _spawnerEnemyLoot = 0f;
+
+        [Header("Haunt")]
+        [Tooltip("The Void entity that stalks a Haunt room (an enemy prefab with EnemyAI). Killing it only banishes it")]
+        [SerializeField] private GameObject _hauntEntityPrefab;
+        [Tooltip("What binds the entity to the room: a prefab with a HealthManager (e.g. Destructible) and a collider. Break them all to unbind it")]
+        [SerializeField] private HealthManager _hauntAnchorPrefab;
+        [SerializeField, Range(1, 4)] private int _hauntAnchors = 3;
+        [Tooltip("Seconds a banished entity stays away before it comes back")]
+        [SerializeField, Min(1f)] private float _hauntBanishSeconds = 25f;
 
         [Header("Shrine")]
         [Tooltip("An altar the player takes a boon from (ShrineAltar + a collider)")]
@@ -116,6 +125,11 @@ namespace CGD.Level
         public int          SpawnerCap             => _spawnerCap;
         public float        SpawnerActivationRange => _spawnerActivationRange;
         public float        SpawnerEnemyLoot       => _spawnerEnemyLoot;
+
+        public GameObject    HauntEntityPrefab  => _hauntEntityPrefab;
+        public HealthManager HauntAnchorPrefab  => _hauntAnchorPrefab;
+        public int           HauntAnchors       => _hauntAnchors;
+        public float         HauntBanishSeconds => _hauntBanishSeconds;
 
         public ShrineAltar ShrineAltarPrefab => _altarPrefab;
         public StatBoon[]  ShrineBoons       => _shrineBoons;

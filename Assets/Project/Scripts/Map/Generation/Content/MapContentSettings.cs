@@ -141,6 +141,7 @@ namespace CGD.Map
             new(MapNodeType.Shrine,   min: 0, max: 1,  weight: 0.4f, minDepth: 0.2f, allowAdjacentSameType: false, intensityBonus: -0.4f, minSpacing: 3),
             new(MapNodeType.Siege,    min: 0, max: 1,  weight: 0.4f, minDepth: 0.4f, allowAdjacentSameType: false, intensityBonus: 0.25f, minSpacing: 3),
             new(MapNodeType.Gauntlet, min: 0, max: 1,  weight: 0.3f, minDepth: 0.5f, allowAdjacentSameType: false, intensityBonus: 0.3f, minSpacing: 3),
+            new(MapNodeType.Haunt,    min: 0, max: 1,  weight: 0.35f, minDepth: 0.4f, allowAdjacentSameType: false, intensityBonus: 0.25f, minSpacing: 3),
             new(MapNodeType.Quiet,    min: 0, max: 2,  weight: 0.35f, minDepth: 0.15f, allowAdjacentSameType: false, intensityBonus: -0.6f, minSpacing: 3),
             new(MapNodeType.Junction, min: 0, max: 3,  weight: 0.6f,  minDepth: 0.1f,  allowAdjacentSameType: false, intensityBonus: -0.4f, minSpacing: 3, minConnections: 3),
         };

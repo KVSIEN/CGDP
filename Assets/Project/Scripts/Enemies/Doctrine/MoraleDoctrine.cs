@@ -22,6 +22,10 @@ namespace CGD.Enemies
         [SerializeField, Min(0f)] private float _hurtScale = 1f;
         [Tooltip("Per tier a fallen ally stood above it (or below, taking away), the share added to that loss. Herds and chains of command feel a leader fall; 0 = every ally counts the same")]
         [SerializeField, Min(0f)] private float _rankSensitivity;
+        [Tooltip("Allies of this tier or above lead the pack: seeing one fall breaks the lesser ones (0 = no apex)")]
+        [SerializeField, Range(0, 3)] private int _apexTier;
+        [Tooltip("Extra morale lost when an apex ally above it falls, on top of the usual loss: enough to break it and scatter the pack")]
+        [SerializeField, Range(0f, 1f)] private float _apexFallLoss;
 
         [Header("Recovery")]
         [Tooltip("Scales the profile's morale regained per second")]
@@ -60,9 +64,16 @@ namespace CGD.Enemies
         public float RetreatSpeedScale        => _retreatSpeedScale;
         public float HurtLoss(float profileLoss) => profileLoss * _hurtScale;
 
-        // Morale lost on seeing an ally fall, by how far above or below this enemy it ranked.
-        public float AllyDownLoss(float profileLoss, int fallenTier, int ownTier) =>
-            profileLoss * _allyDownScale * Mathf.Max(MinRankScale, 1f + _rankSensitivity * (fallenTier - ownTier));
+        // Morale lost on seeing an ally fall, by how far above or below this enemy it ranked —
+        // and, when the fallen one was the pack's apex, the shock of losing it.
+        public float AllyDownLoss(float profileLoss, int fallenTier, int ownTier)
+        {
+            float loss = profileLoss * _allyDownScale * Mathf.Max(MinRankScale, 1f + _rankSensitivity * (fallenTier - ownTier));
+            if (IsApexFall(fallenTier, ownTier)) loss += _apexFallLoss;
+            return loss;
+        }
+
+        private bool IsApexFall(int fallenTier, int ownTier) => _apexTier > 0 && fallenTier >= _apexTier && fallenTier > ownTier;
 
         // Net morale per second (negative = draining). Pressure only applies in a fight.
         public float RecoveryPerSecond(float profileRecovery, int kinNear, bool inFight, bool targetWeak, int hostilesSensed, bool shieldBroken)

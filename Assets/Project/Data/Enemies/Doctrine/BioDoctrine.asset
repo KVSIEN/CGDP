@@ -16,6 +16,8 @@ MonoBehaviour:
     _allyDownScale: 1
     _hurtScale: 0.6
     _rankSensitivity: 0.8
+    _apexTier: 3
+    _apexFallLoss: 0.6
     _recoveryScale: 0.8
     _kinSteadiesRadius: 15
     _kinSteadiesRecovery: 0.03
@@ -139,6 +141,10 @@ MonoBehaviour:
     _victoryCautionShare: 0.4
     _victoryPauseScale: 1.5
     _victoryGaze: 0
+    _feeds: 1
+    _feedSeconds: 4
+    _feedHealPerSecond: 0.06
+    _feedAttention: 0.35
   _tells:
     _noticedKind: 2
     _noticeHold: {Min: 0.2, Max: 0.5, Bias: 0}

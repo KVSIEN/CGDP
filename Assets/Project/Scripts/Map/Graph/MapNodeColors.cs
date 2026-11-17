@@ -32,6 +32,7 @@ namespace CGD.Map
             MapNodeType.Siege    => new Color(0.8f, 0.3f, 0.2f),
             MapNodeType.Gauntlet => new Color(0.7f, 0.15f, 0.15f),
             MapNodeType.Spawner  => new Color(0.75f, 0.2f, 0.3f),
+            MapNodeType.Haunt    => new Color(0.3f, 0.1f, 0.4f),
             MapNodeType.Quiet    => new Color(0.55f, 0.75f, 0.7f),
             MapNodeType.Junction => new Color(0.6f, 0.6f, 0.65f),
             _                    => Color.gray

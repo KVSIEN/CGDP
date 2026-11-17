@@ -72,6 +72,9 @@ namespace CGD.Enemies
         private float   _underFireAt   = float.NegativeInfinity;
         private float   _warnedAt      = float.NegativeInfinity;
         private HealthManager _lastAttacker;
+        // Below 1 while it is busy with something else (feeding): it is slower to notice what it
+        // sees, hears or smells, though never what touches it.
+        private float   _attention = 1f;
         private float   _lastAttackedAt = float.NegativeInfinity;
         private readonly HashSet<EnemyAI> _bodiesSeen = new();
 
@@ -235,6 +238,7 @@ namespace CGD.Enemies
             LoseTarget();
             _cautiousUntil = float.NegativeInfinity;
             _wasCautious   = false;
+            _attention     = 1f;
             _bodiesSeen.Clear();
             _candidates.Clear();
             _weighed.Clear();
@@ -456,6 +460,8 @@ namespace CGD.Enemies
             UpdateLevel();
         }
 
+        internal void SetAttention(float attention) => _attention = Mathf.Clamp01(attention);
+
         // A calm enemy leaves rival factions be (FactionRelations › Truce While Calm).
         private bool KeepsTruce(HealthManager candidate) =>
             _data.Relations != null && _data.Relations.KeepsTruce(_team, candidate.Team);
@@ -480,11 +486,11 @@ namespace CGD.Enemies
             if (distance <= _profile.TouchRadius) return new Stimulus { Seen = true, Instant = true };
 
             if (_senses.CanSee(candidate, out float sightGain, out bool instant))
-                return new Stimulus { Seen = true, Instant = instant, Gain = sightGain };
+                return new Stimulus { Seen = true, Instant = instant, Gain = sightGain * _attention };
 
             // Unseen, it can still be heard, or smelled if it is bleeding: whichever is stronger.
             float gain = Mathf.Max(_senses.FootstepGain(candidate, distance), _senses.ScentGain(candidate, distance));
-            return new Stimulus { Gain = gain };
+            return new Stimulus { Gain = gain * _attention };
         }
 
         private TargetTraits TraitsOf(HealthManager candidate) => new(

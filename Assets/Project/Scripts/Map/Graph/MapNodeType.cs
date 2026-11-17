@@ -31,5 +31,6 @@ namespace CGD.Map
         Shrine,     // altars offering boons; take one and the others close
         Siege,      // defend an objective against waves until the timer runs out
         Gauntlet,   // back-to-back waves, each bigger and with its own twist
+        Haunt,      // a Void entity that can't be killed, only unbound by breaking its anchors
     }
 }

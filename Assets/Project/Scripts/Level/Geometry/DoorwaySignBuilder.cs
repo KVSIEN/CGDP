@@ -68,7 +68,7 @@ namespace CGD.Level
         private bool IsDangerous(MapNode node) => node.Type switch
         {
             MapNodeType.Boss or MapNodeType.Lockdown or MapNodeType.Holdout or MapNodeType.Rift
-                or MapNodeType.Siege or MapNodeType.Gauntlet => true,
+                or MapNodeType.Siege or MapNodeType.Gauntlet or MapNodeType.Haunt => true,
             MapNodeType.Ambush => false,
             _ => node.EffectiveTier >= 3 || node.Intensity >= _settings.DangerIntensity,
         };

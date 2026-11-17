@@ -51,17 +51,24 @@ namespace CGD.Level
             int start = _random.Range(0, _spots.Count);
             for (int i = 0; i < count; i++)
             {
-                Vector3 spot = _spots[(start + i) % _spots.Count];
-                if (NavMesh.SamplePosition(spot, out NavMeshHit hit, NavMeshSearch, NavMesh.AllAreas)) spot = hit.position;
-
                 GameObject prefab = roster.Pick(_random);
                 if (prefab == null) continue;
-                GameObject enemy = PrefabPool.Spawn(prefab, spot, Quaternion.Euler(0f, _random.Range(0, 360), 0f));
-                ISeedable.SeedAll(enemy, _seed.Derive("enemies").Derive(_spawned++));
-                if (enemy.TryGetComponent(out EnemyAI ai)) ai.SetWaypoints(_route);
-                if (enemy.TryGetComponent(out HealthManager health)) spawned.Add(health);
+
+                HealthManager health = SpawnAt(prefab, _spots[(start + i) % _spots.Count]);
+                if (health != null) spawned.Add(health);
             }
             return spawned;
+        }
+
+        // One enemy of this prefab (any faction's), seeded and patrolling the room like the rest.
+        public HealthManager SpawnAt(GameObject prefab, Vector3 spot)
+        {
+            if (NavMesh.SamplePosition(spot, out NavMeshHit hit, NavMeshSearch, NavMesh.AllAreas)) spot = hit.position;
+
+            GameObject enemy = PrefabPool.Spawn(prefab, spot, Quaternion.Euler(0f, _random.Range(0, 360), 0f));
+            ISeedable.SeedAll(enemy, _seed.Derive("enemies").Derive(_spawned++));
+            if (enemy.TryGetComponent(out EnemyAI ai)) ai.SetWaypoints(_route);
+            return enemy.TryGetComponent(out HealthManager health) ? health : null;
         }
     }
 }

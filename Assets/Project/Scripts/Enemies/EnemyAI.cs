@@ -130,6 +130,8 @@ namespace CGD.Enemies
         internal bool    ReturnPending   { get; private set; }
         internal bool    ReturnIsVictory { get; private set; }
         internal Vector3 ReturnLookAt    { get; private set; }
+        // What it killed, after a won fight (null otherwise): a faction that feeds goes to it.
+        internal HealthManager ReturnBody { get; private set; }
 
         internal EnemyHealth       Health       => _health;
         internal EnemyData         Data         => _data;
@@ -390,7 +392,7 @@ namespace CGD.Enemies
             }
             else if (_engagedTarget != null && _engagedTarget.IsDead)
             {
-                BeginReturn(victory: true, _engagedTarget.transform.position);
+                BeginReturn(victory: true, _engagedTarget.transform.position, _engagedTarget);
                 Perception.StayOnEdge(Perception.VictoryEdgeSeconds);
                 _engagedTarget = null;
             }
@@ -400,11 +402,12 @@ namespace CGD.Enemies
             }
         }
 
-        private void BeginReturn(bool victory, Vector3 lookAt)
+        private void BeginReturn(bool victory, Vector3 lookAt, HealthManager body = null)
         {
             ReturnPending   = true;
             ReturnIsVictory = victory;
             ReturnLookAt    = lookAt;
+            ReturnBody      = body;
             Alarms.Forget();
         }
 
@@ -479,6 +482,7 @@ namespace CGD.Enemies
             Alarms.Forget();
             Ground.Forget();
             ReturnPending  = false;
+            ReturnBody     = null;
             _engagedTarget = null;
             _sinceTreeTick = 0f;
 
