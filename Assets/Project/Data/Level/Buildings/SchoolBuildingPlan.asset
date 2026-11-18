@@ -19,42 +19,56 @@ MonoBehaviour:
   _spaces:
   - _name: Principal's Office
     _function: {fileID: 11400000, guid: 663f6ffade454c229fcb58d00ee1629a, type: 2}
+    _layout: {fileID: 0}
+    _pickLayout: 0
     _count: {Min: 1, Max: 1, Bias: 0}
     _width: {Min: 3, Max: 3, Bias: 0}
     _placement: 1
     _fills: 0
   - _name: Teachers' Lounge
     _function: {fileID: 11400000, guid: 70888b7bd5ad4c528538107f1fd5f98f, type: 2}
+    _layout: {fileID: 11400000, guid: e21f15bbc8cc43d38adc749b10207c80, type: 2}
+    _pickLayout: 0
     _count: {Min: 1, Max: 1, Bias: 0}
     _width: {Min: 3, Max: 4, Bias: 0}
     _placement: 0
     _fills: 0
   - _name: Classroom
     _function: {fileID: 11400000, guid: 644b60300b7f43beb9c905cf63a3fcef, type: 2}
+    _layout: {fileID: 11400000, guid: e50a52a13ca544299d677a85093ce3a2, type: 2}
+    _pickLayout: 0
     _count: {Min: 3, Max: 6, Bias: 0}
     _width: {Min: 3, Max: 4, Bias: 0}
     _placement: 0
     _fills: 1
   - _name: Restroom
-    _function: {fileID: 0}
+    _function: {fileID: 11400000, guid: 3bc7f060b0bf46b9ab88029bd053352b, type: 2}
+    _layout: {fileID: 0}
+    _pickLayout: 0
     _count: {Min: 2, Max: 2, Bias: 0}
     _width: {Min: 2, Max: 3, Bias: 0}
     _placement: 0
     _fills: 0
   - _name: Library
     _function: {fileID: 11400000, guid: 7e6198d9625440e3859ed7ca6b322723, type: 2}
+    _layout: {fileID: 11400000, guid: a2b01d74d0a34e78bea2541366dc1b43, type: 2}
+    _pickLayout: 0
     _count: {Min: 0, Max: 1, Bias: 0}
     _width: {Min: 4, Max: 5, Bias: 0}
     _placement: 0
     _fills: 0
   - _name: Supply Closet
     _function: {fileID: 11400000, guid: b3d42bb6e6d6481283d78fa14413f453, type: 2}
+    _layout: {fileID: 11400000, guid: eb0696fe45674b37a589dbf0afe3cbb2, type: 2}
+    _pickLayout: 0
     _count: {Min: 1, Max: 1, Bias: 0}
     _width: {Min: 2, Max: 2, Bias: 0}
     _placement: 0
     _fills: 0
   - _name: Gymnasium
     _function: {fileID: 11400000, guid: bb2c782d8f06449b98a207a9d5fcd759, type: 2}
+    _layout: {fileID: 11400000, guid: a77d4eaaae014be3a50360ce8a4e8e13, type: 2}
+    _pickLayout: 0
     _count: {Min: 1, Max: 1, Bias: 0}
     _width: {Min: 4, Max: 5, Bias: 0}
     _placement: 2

@@ -72,7 +72,8 @@ namespace CGD.Level
             foreach (Side side in sides)
                 foreach (Slot slot in side.Slots)
                 {
-                    blueprint.Spaces.Add(new PlannedSpace(frame.Rect(slot.From, slot.To, side.From, side.To), slot.Spec.Function, slot.Spec.Name, isHall: false));
+                    blueprint.Spaces.Add(new PlannedSpace(frame.Rect(slot.From, slot.To, side.From, side.To), slot.Spec.Function, slot.Spec.Name, isHall: false,
+                                                          layout: slot.Spec.RollLayout(random)));
                     int along = random.Range(slot.From, slot.To);
                     blueprint.Doors.Add(new BuildingDoor(frame.At(along, side.RoomRow), frame.At(along, side.HallRow)));
                 }
@@ -80,7 +81,8 @@ namespace CGD.Level
             int middle = hallFrom + hall / 2;
             if (backDepth > 0)
             {
-                blueprint.Spaces.Add(new PlannedSpace(frame.Rect(flank, frame.Depth, 0, frame.Across), back.Function, back.Name, isHall: false));
+                blueprint.Spaces.Add(new PlannedSpace(frame.Rect(flank, frame.Depth, 0, frame.Across), back.Function, back.Name, isHall: false,
+                                                      layout: back.RollLayout(random)));
                 blueprint.Doors.Add(new BuildingDoor(frame.At(flank - 1, middle), frame.At(flank, middle)));
             }
             Vector2Int inside = frame.At(0, middle);

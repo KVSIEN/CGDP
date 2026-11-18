@@ -19,49 +19,79 @@ MonoBehaviour:
   _spaces:
   - _name: Reception
     _function: {fileID: 11400000, guid: 921ce82c13644f47a1398a4bd8c57f7c, type: 2}
+    _layout: {fileID: 11400000, guid: 489fe797a6104781b62286c09dc1daa3, type: 2}
+    _pickLayout: 0
     _count: {Min: 1, Max: 1, Bias: 0}
     _width: {Min: 4, Max: 4, Bias: 0}
     _placement: 1
     _fills: 0
   - _name: Waiting Room
     _function: {fileID: 11400000, guid: 921ce82c13644f47a1398a4bd8c57f7c, type: 2}
+    _layout: {fileID: 11400000, guid: a092c058e5bf4416bf2d0ca944df96e4, type: 2}
+    _pickLayout: 0
     _count: {Min: 1, Max: 1, Bias: 0}
     _width: {Min: 3, Max: 4, Bias: 0}
     _placement: 1
     _fills: 0
   - _name: Ward
     _function: {fileID: 11400000, guid: 97e12e89c7d648ab8f369021466dcbac, type: 2}
+    _layout: {fileID: 0}
+    _pickLayout: 1
     _count: {Min: 2, Max: 5, Bias: 0}
     _width: {Min: 3, Max: 4, Bias: 0}
     _placement: 0
     _fills: 1
   - _name: Operating Room
     _function: {fileID: 11400000, guid: b3fdcdc57908400294d5b2714ee70aae, type: 2}
+    _layout: {fileID: 11400000, guid: fcd74cf801b24a2abbabb144631ba869, type: 2}
+    _pickLayout: 0
     _count: {Min: 1, Max: 2, Bias: 0}
     _width: {Min: 4, Max: 4, Bias: 0}
     _placement: 0
     _fills: 0
   - _name: Pharmacy
     _function: {fileID: 11400000, guid: 16da928ac699423387fa6547109dc9ac, type: 2}
+    _layout: {fileID: 11400000, guid: 928f0eebc5684824acd576eb2cb462e8, type: 2}
+    _pickLayout: 0
     _count: {Min: 1, Max: 1, Bias: 0}
     _width: {Min: 3, Max: 3, Bias: 0}
     _placement: 0
     _fills: 0
   - _name: Laboratory
     _function: {fileID: 11400000, guid: 724d0e081467427ba7752bc0e980b17e, type: 2}
+    _layout: {fileID: 11400000, guid: 6e692a8321d74888a42790e43dcc6d04, type: 2}
+    _pickLayout: 0
     _count: {Min: 0, Max: 1, Bias: 0}
     _width: {Min: 3, Max: 4, Bias: 0}
     _placement: 0
     _fills: 0
   - _name: Storage
     _function: {fileID: 11400000, guid: b3d42bb6e6d6481283d78fa14413f453, type: 2}
+    _layout: {fileID: 11400000, guid: 7ef2eed89e674dd4baeae54e169780ad, type: 2}
+    _pickLayout: 0
     _count: {Min: 1, Max: 1, Bias: 0}
     _width: {Min: 2, Max: 3, Bias: 0}
     _placement: 0
     _fills: 0
   - _name: Morgue
     _function: {fileID: 11400000, guid: 5bbef9de3d274175ae4f819e760e5ba1, type: 2}
+    _layout: {fileID: 11400000, guid: b2686064e7774bc4b5d7a668066ba839, type: 2}
+    _pickLayout: 0
     _count: {Min: 1, Max: 1, Bias: 0}
     _width: {Min: 3, Max: 4, Bias: 0}
     _placement: 2
+    _fills: 0
+  - _name: Restroom
+    _function: {fileID: 11400000, guid: 3bc7f060b0bf46b9ab88029bd053352b, type: 2}
+    _layout: {fileID: 0}
+    _pickLayout: 0
+    _count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    _width:
+      Min: 2
+      Max: 3
+      Bias: 0
+    _placement: 0
     _fills: 0

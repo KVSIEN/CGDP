@@ -300,8 +300,8 @@ namespace CGD.Level
 
         // Marks the zone holding `tile` as a place of its own, to be furnished by `function`.
         // Call before AssignZones or after: the zone is looked up from the tile when needed.
-        public void AddSpace(Vector2Int tile, RoomFunction function, string name) =>
-            _spaces.Add(new StructureSpace(tile, function, name));
+        public void AddSpace(Vector2Int tile, RoomFunction function, string name, RoomLayout layout = null) =>
+            _spaces.Add(new StructureSpace(tile, function, name, layout));
 
         // Whether an inner wall can't stand on the edge between two tiles: a route crosses it, or
         // a doorway or pillar is right beside it.

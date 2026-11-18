@@ -62,7 +62,7 @@ namespace CGD.Level
             {
                 TagWalls(structure, space.Rect);
                 if (TryFirstFloor(structure, space.Rect, out Vector2Int first))
-                    structure.AddSpace(first, space.Function, space.Name);
+                    structure.AddSpace(first, space.Function, space.Name, space.Layout);
             }
             return true;
         }

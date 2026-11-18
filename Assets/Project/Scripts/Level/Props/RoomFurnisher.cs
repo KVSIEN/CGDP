@@ -92,13 +92,17 @@ namespace CGD.Level
         }
 
         // The rooms of a building and the streets round it each get their own place's furniture,
-        // in their own zone only: a hospital's ward gets beds, its storeroom shelves.
+        // in their own zone only: a hospital's ward gets beds, its storeroom shelves. A room with
+        // a layout gets that arrangement's set pieces too (a surgery's tables).
         private static void AddSpaces(RoomPropPlanner planner, RoomStructure structure)
         {
             foreach (StructureSpace space in structure.Spaces)
             {
                 if (space.Function == null) continue;
-                planner.Add(space.Function.PropsWith(null), zones: new[] { structure.ZoneOf(space.Tile) });
+
+                var zone = new[] { structure.ZoneOf(space.Tile) };
+                foreach (RoomPropPlacement placement in space.Function.PropsWith(space.Layout))
+                    planner.Add(placement?.ForSingleZone(), zones: zone);
             }
         }
 

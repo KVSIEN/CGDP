@@ -126,6 +126,65 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void ARoomTakesItsPinnedLayoutAndTheOthersTakeNone()
+        {
+            var layout = ScriptableObject.CreateInstance<RoomLayout>();
+            BuildingSpaceSpec classroom = Spec("Classroom", 2, 4, 3, 4, fills: true);
+            Set(classroom, "_layout", layout);
+            BuildingPlan plan = Plan(1, Spec("Principal", 1, 1, 3, 3, BuildingSpacePlacement.Entrance), classroom);
+            try
+            {
+                BuildingBlueprint blueprint = new BuildingLayoutPlanner(plan).Plan(new RectInt(0, 0, 14, 10), Vector2Int.up, Stream(3));
+                foreach (PlannedSpace space in blueprint.Spaces)
+                    Assert.AreSame(space.Name == "Classroom" ? layout : null, space.Layout, space.Name);
+            }
+            finally
+            {
+                Object.DestroyImmediate(plan);
+                Object.DestroyImmediate(layout);
+            }
+        }
+
+        [Test]
+        public void ZoneRulesInASingleZoneSpaceKeepTheMainSpaceAndDropTheRest()
+        {
+            RoomPropPlacement any = Placement(1, 1);
+            RoomPropPlacement main = Placement(1, 1);
+            main.Zone = PropZone.Largest;
+            RoomPropPlacement others = Placement(1, 1);
+            others.Zone = PropZone.Others;
+
+            Assert.AreSame(any, any.ForSingleZone());
+            Assert.AreEqual(PropZone.Any, main.ForSingleZone().Zone);
+            Assert.AreEqual(PropZone.Largest, main.Zone, "the original is untouched");
+            Assert.IsNull(others.ForSingleZone());
+        }
+
+        [Test]
+        public void ARoomWithALayoutIsFurnishedByIt()
+        {
+            var layout = ScriptableObject.CreateInstance<RoomLayout>();
+            Set(layout, "_props", new List<RoomPropPlacement> { Placement(2, 2) });
+            var function = ScriptableObject.CreateInstance<RoomFunction>();
+            try
+            {
+                RoomStructure room = Room(6, 6, new Vector2Int(0, 3));
+                room.AssignZones();
+                room.AddSpace(new Vector2Int(2, 2), function, "Surgery", layout);
+
+                RoomPropPlanner planner = Planner(room, 1);
+                foreach (RoomPropPlacement placement in function.PropsWith(room.Spaces[0].Layout))
+                    planner.Add(placement.ForSingleZone(), zones: new[] { room.ZoneOf(room.Spaces[0].Tile) });
+                Assert.AreEqual(2, planner.Planned.Count, "the layout's set pieces furnish the room");
+            }
+            finally
+            {
+                Object.DestroyImmediate(function);
+                Object.DestroyImmediate(layout);
+            }
+        }
+
+        [Test]
         public void ALotTooSmallForThePlanGetsNoBuilding()
         {
             BuildingPlan plan = School();

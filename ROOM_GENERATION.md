@@ -783,9 +783,12 @@ room's doorways, nothing is built. In a town, lots that would swallow a doorway,
 or an earlier structure are left as plazas.
 
 **Open items.**
-- Restrooms and bathrooms are bare rooms: no place with toilets or sinks exists yet.
-- A classroom is furnished by the School place's own props (the teacher's desk and set), not
-  its layouts' rows of desks. Sub-spaces could pick one of the place's layouts.
+- A room's layout (`BuildingSpaceSpec` › `_layout`, or `_pickLayout`) furnishes it with the
+  layout's set pieces and sets; the layout's structure rules (rows of seats built as walls)
+  are not applied inside a room. Zone rules in its props are read against the room alone
+  (`RoomPropPlacement.ForSingleZone`: "main space" is the whole room, "others" are skipped).
+- The Restroom place (`Data/Level/Functions/Buildings/`) is used by School, Hospital and House
+  plans; it has no stalls, only toilets, sinks and a bin.
 - A town's room has an open ceiling, so its buildings have no roofs; a roof per lot would
   close them in.
 - Buildings are not in the build settings' place list, so no map picks them yet: pin them.

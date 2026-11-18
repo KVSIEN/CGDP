@@ -82,6 +82,19 @@ namespace CGD.Level
             Required  = true,
         };
 
+        // The placement for a space that is a single zone of its own (a room of a building):
+        // "the main space" is all of it, so that zone rule is dropped; "everything else" is
+        // nothing, so null. Others are unchanged.
+        public RoomPropPlacement ForSingleZone()
+        {
+            if (Zone == PropZone.Others) return null;
+            if (Zone == PropZone.Any) return this;
+
+            var copy = (RoomPropPlacement)MemberwiseClone();
+            copy.Zone = PropZone.Any;
+            return copy;
+        }
+
         // The same placement with its picky rules dropped, to find any spot at all. Level 1 gives
         // up where (tags, zone, routes, what it stands near), which way and growing with the
         // room; level 2 also the floor in front.

@@ -19,24 +19,32 @@ MonoBehaviour:
   _spaces:
   - _name: Living Room
     _function: {fileID: 11400000, guid: f1a29d511be545d8a4c85396a4afaaa1, type: 2}
+    _layout: {fileID: 11400000, guid: 4d76258bc16b466c85c97f703ae3c63d, type: 2}
+    _pickLayout: 0
     _count: {Min: 1, Max: 1, Bias: 0}
     _width: {Min: 3, Max: 4, Bias: 0}
     _placement: 1
     _fills: 0
   - _name: Kitchen
     _function: {fileID: 11400000, guid: a01f205130054443963698539bf9826b, type: 2}
+    _layout: {fileID: 11400000, guid: b468b7ec58c047c388b737e9e6a9ca47, type: 2}
+    _pickLayout: 0
     _count: {Min: 1, Max: 1, Bias: 0}
     _width: {Min: 2, Max: 3, Bias: 0}
     _placement: 0
     _fills: 0
   - _name: Bedroom
     _function: {fileID: 11400000, guid: f1a29d511be545d8a4c85396a4afaaa1, type: 2}
+    _layout: {fileID: 11400000, guid: 91d61140d719427782d8238dfb6873a2, type: 2}
+    _pickLayout: 0
     _count: {Min: 1, Max: 2, Bias: 0}
     _width: {Min: 3, Max: 3, Bias: 0}
     _placement: 0
     _fills: 1
   - _name: Bathroom
-    _function: {fileID: 0}
+    _function: {fileID: 11400000, guid: 3bc7f060b0bf46b9ab88029bd053352b, type: 2}
+    _layout: {fileID: 0}
+    _pickLayout: 0
     _count: {Min: 1, Max: 1, Bias: 0}
     _width: {Min: 2, Max: 2, Bias: 0}
     _placement: 0
