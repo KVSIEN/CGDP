@@ -2,9 +2,13 @@ using UnityEngine;
 
 namespace CGD.Interaction
 {
-    // Attach to a door GameObject with a Collider, pivoted at the hinge edge (not
-    // the center). Press E to swing it open/closed; a Switch can also call Toggle()
-    // directly. No animation clips — the swing is a plain procedural rotation.
+    // Press E to open/close; a Switch can also call Toggle() directly, and a DoorSensor can
+    // open it automatically. No animation clips — every motion is procedural.
+    //
+    // Two ways to build one. Simple: attach it to a GameObject with a Collider, pivoted at the
+    // hinge edge (not the center); it swings by Open Angle. Or give it DoorPanels (children
+    // carrying the colliders): they swing or slide as the panels say — single, double, split,
+    // vertical or sideways — and the door just says when they open.
     //
     // With a Key set the door starts locked: interacting while carrying the key unlocks
     // and opens it (optionally using the key up), and it stays unlocked afterwards.
@@ -14,11 +18,14 @@ namespace CGD.Interaction
     // A one-way door (MakeOneWay, set by the level builder) is barred from one side: it
     // only opens for someone standing on its open side, and works both ways after that —
     // a shortcut the player unbars from the far end.
-    [RequireComponent(typeof(Collider))]
     public class Door : MonoBehaviour, IInteractable
     {
+        [Tooltip("Seconds a full open or close takes")]
+        [SerializeField, Min(0.05f)] private float _openDuration = 0.4f;
+        [Tooltip("Swing of a door with no DoorPanels (it turns itself about its origin)")]
         [SerializeField] private float _openAngle = 90f;
-        [SerializeField] private float _openSpeed = 120f;
+        [Tooltip("Untick for a sensor-only door: no prompt to open it, but a key, condition or bar still shows one")]
+        [SerializeField] private bool _interactable = true;
         [Tooltip("Seconds the Interact key must be held (0 = instant)")]
         [SerializeField] private float _holdDuration = 0f;
 
@@ -35,24 +42,29 @@ namespace CGD.Interaction
 
         private bool        _isOpen;
         private bool        _isLocked;
-        private float       _currentAngle;
+        private float       _progress;
+        private DoorPanel[] _panels;
         private Quaternion  _closedRotation;
         private bool        _isBarred;
         private Vector3     _openSide;
 
         private void Awake()
         {
+            _panels         = GetComponentsInChildren<DoorPanel>(true);
             _closedRotation = transform.localRotation;
             _isLocked       = !_key.IsNone;
         }
 
         private void Update()
         {
-            float targetAngle = _isOpen ? _openAngle : 0f;
-            if (Mathf.Approximately(_currentAngle, targetAngle)) return;
+            float target = _isOpen ? 1f : 0f;
+            if (_progress == target) return;
 
-            _currentAngle = Mathf.MoveTowards(_currentAngle, targetAngle, _openSpeed * Time.deltaTime);
-            transform.localRotation = _closedRotation * Quaternion.Euler(0f, _currentAngle, 0f);
+            _progress = Mathf.MoveTowards(_progress, target, Time.deltaTime / _openDuration);
+            if (_panels.Length == 0)
+                transform.localRotation = _closedRotation * Quaternion.Euler(0f, _openAngle * _progress, 0f);
+            else
+                foreach (DoorPanel panel in _panels) panel.SetProgress(_progress);
         }
 
         public string GetInteractLabel(GameObject interactor)
@@ -62,6 +74,9 @@ namespace CGD.Interaction
             if (!_isLocked) return _isOpen ? "Close" : "Open";
             return _key.IsMetBy(interactor) ? "Unlock" : $"Locked  ({_key.Describe()})";
         }
+
+        // A sensor-only door has no prompt, except while something still stands between you and it.
+        public bool CanInteract(GameObject interactor) => _interactable || IsLocked || _isBarred;
 
         public void Interact(GameObject interactor)
         {
@@ -84,6 +99,13 @@ namespace CGD.Interaction
 
         // Remote control (switches, scripted events) bypasses both locks.
         public void Toggle() => _isOpen = !_isOpen;
+
+        public bool IsOpen => _isOpen;
+
+        // Automatic opening (a DoorSensor) never gets past a key, a condition or a bar.
+        public bool CanOpenAutomatically => !IsLocked && !_isBarred;
+
+        public void SetOpen(bool open) => _isOpen = open;
 
         public void Unlock() => _isLocked = false;
 
