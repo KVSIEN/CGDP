@@ -104,7 +104,7 @@ namespace CGD.Level
             // encounters the player triggered first.
             Seed roomSeed = _seed.Derive(room.Node.Id);
             var spawner = new EncounterSpawner(spawnSpots, _populator.RosterFor(room), _populator.SecondRosterFor(room),
-                                               _populator.PatrolRouteFor(room), _populator.HomeOf(room), roomSeed.Derive("waves"));
+                                               _populator.PatrolRouteFor(room), _populator.EncounterHomeOf(room), roomSeed.Derive("waves"));
 
             return new EncounterContext(room, area, floor, PlaceShutters(doorways, holder), spawner, _settings,
                 _populator.EnemiesIn(room), _player, _level, _layout.TileSize, _populator.RoomCenter(room), _random, roomSeed.Derive("rewards"),

@@ -33,6 +33,7 @@ namespace CGD.Level
         private readonly RoomEnemyPlanner _enemyPlanner;
         // Built on first use, once the doorways are known.
         private TerritoryZones _territories;
+        private readonly Dictionary<int, HomeZone> _roomZones = new();
 
         private const RoomTileTags KeepPropsOff = RoomTileTags.Walkway | RoomTileTags.Access;
 
@@ -232,6 +233,14 @@ namespace CGD.Level
 
         // The territory a room's enemies (build-time and encounter ones alike) stay within.
         public HomeZone HomeOf(LevelRoom room) => (_territories ??= new TerritoryZones(_layout, _parent)).ZoneOf(room);
+
+        // The room alone, for enemies an encounter brings in: they fight where the encounter is
+        // (its shutters seal the doorways) instead of spilling into the rest of the territory.
+        public HomeZone EncounterHomeOf(LevelRoom room)
+        {
+            if (_roomZones.TryGetValue(room.Node.Id, out HomeZone zone)) return zone;
+            return _roomZones[room.Node.Id] = new HomeZone(new[] { _layout.RoomLocalRect(room) }, _parent);
+        }
 
         public IReadOnlyList<HealthManager> EnemiesIn(LevelRoom room) =>
             _roomEnemies.TryGetValue(room.Node.Id, out List<HealthManager> enemies) ? enemies : System.Array.Empty<HealthManager>();

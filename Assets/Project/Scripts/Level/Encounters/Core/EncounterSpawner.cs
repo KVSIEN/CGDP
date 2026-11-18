@@ -9,7 +9,7 @@ namespace CGD.Level
 {
     // Brings enemies into a room mid-encounter: on spots set aside when the level was
     // built, from the room's faction roster at the room's tier odds (or, for a room held by
-    // two realities, the second one), patrolling the room's route and held to its territory. Each enemy is seeded by
+    // two realities, the second one), patrolling the room's route and held to the room. Each enemy is seeded by
     // its place in the room's spawn order (ISeedable: affixes, drops).
     public class EncounterSpawner
     {
