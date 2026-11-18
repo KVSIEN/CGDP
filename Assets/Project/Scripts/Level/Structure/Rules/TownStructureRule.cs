@@ -90,7 +90,7 @@ namespace CGD.Level
             {
                 BuildingBlueprint blueprint = planner.Plan(lot, front, random);
                 if (blueprint == null || !structure.Contains(blueprint.FrontDoor.B)) continue;
-                if (BuildingBlueprintWriter.Write(structure, blueprint)) return true;
+                if (BuildingBlueprintWriter.Write(structure, blueprint, shell: true, keepRoutesOpen: false)) return true;
             }
             return false;
         }

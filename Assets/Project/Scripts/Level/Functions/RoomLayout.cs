@@ -31,6 +31,18 @@ namespace CGD.Level
         [Tooltip("Shared kits placed after the set pieces (a control station, a pipe run), so every layout that lists one gets it the same way")]
         [SerializeField] private RoomPropSet[] _sets = Array.Empty<RoomPropSet>();
 
+        // The arrangement is a building: a hall with walled rooms, each furnished by its own place
+        // (BuildingStructureRule), so it has no set pieces of its own.
+        public bool IsBuilding
+        {
+            get
+            {
+                foreach (RoomStructureRule rule in _structure)
+                    if (rule is BuildingStructureRule) return true;
+                return false;
+            }
+        }
+
         public string DisplayName => _displayName;
         public float  Weight      => _weight;
         public IReadOnlyList<RoomShape>         Shapes    => _shapes;

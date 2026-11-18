@@ -44,7 +44,7 @@ namespace CGD.Tests
                 {
                     Assert.IsNotNull(layout, $"{place.DisplayName} lists an empty layout");
                     Assert.IsTrue(layoutNames.Add(layout.DisplayName), $"{place.DisplayName} has two layouts called {layout.DisplayName}");
-                    Assert.Greater(layout.Props.Count, 0, $"{place.DisplayName}: {layout.DisplayName} has no set pieces");
+                    if (!layout.IsBuilding) Assert.Greater(layout.Props.Count, 0, $"{place.DisplayName}: {layout.DisplayName} has no set pieces");
                 }
             }
         }
@@ -90,13 +90,16 @@ namespace CGD.Tests
 
                         foreach (PropPlacementOutcome outcome in sample.Furnishing.Outcomes)
                         {
+                            // A building's rooms furnish themselves and one may be too small for a piece:
+                            // the Room Lab reports such shortfalls, the check here is for the layouts of one room.
+                            if (layout.IsBuilding) continue;
                             if (outcome.Placement.Required) Assert.Greater(outcome.Placed, 0, $"{what}: {outcome.Name} is missing");
                             if (outcome.Placement == layout.Props[0] && outcome.Placed > 0) setPieces++;
                         }
                         foreach (RoomIssue issue in sample.Issues)
                             StringAssert.DoesNotContain("can't be walked to", issue.Text, what);
                     }
-                    Assert.Greater(setPieces, Seeds / 2, $"{place.DisplayName}: {layout.DisplayName}'s first set piece seldom fits");
+                    if (!layout.IsBuilding) Assert.Greater(setPieces, Seeds / 2, $"{place.DisplayName}: {layout.DisplayName}'s first set piece seldom fits");
                 }
         }
 

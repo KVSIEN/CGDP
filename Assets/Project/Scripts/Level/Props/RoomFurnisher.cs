@@ -83,8 +83,10 @@ namespace CGD.Level
             if (rule != null && rule.Offerings.Length > 0) planner.Add(RoomPropPlacement.Nook(rule.Offerings));
             if (room.Landmark == null)
             {
-                planner.Add(room.FunctionProps);
-                AddSpaces(planner, structure);
+                // A building's or a town's rooms are furnished by their own places; the place's own
+                // props would land in a hall or a street.
+                if (structure.Spaces.Count == 0) planner.Add(room.FunctionProps);
+                else AddSpaces(planner, structure);
                 if (side != null && side.Dressing != null) planner.Add(side.Dressing.Props);
                 AddRoomTypeDressing(planner, room, structure, rule, style, swaps);
             }
