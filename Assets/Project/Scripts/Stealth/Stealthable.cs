@@ -157,6 +157,8 @@ namespace CGD.Stealth
         }
 
         private bool IsGrounded => _movement != null ? _movement.IsGrounded : _agent != null && _agent.isOnNavMesh;
+        // Crouched: moves and handles things quietly (doors make no sound for it).
+        public bool IsSneaking => IsCrouching;
         private bool IsCrouching => _movement != null && _movement.IsCrouching;
         private bool IsSprinting => _movement != null && _movement.IsSprinting;
         private bool IsMoving

@@ -1,6 +1,7 @@
 using Unity.AI.Navigation;
 using UnityEngine;
 using CGD.Combat;
+using CGD.Stealth;
 
 namespace CGD.Interaction
 {
@@ -35,7 +36,7 @@ namespace CGD.Interaction
         [SerializeField] private bool _agentsPathThrough;
 
         [Header("Noise")]
-        [Tooltip("How far the player opening it can be heard (0 = silent). Powered and heavy doors are louder than a hinged one")]
+        [Tooltip("How far the player opening it can be heard, standing or walking; crouching makes none (0 = always silent). Kept short, so it only matters to guards right by the door; powered and heavy doors are louder than a hinged one")]
         [SerializeField, Min(0f)] private float _noiseRadius = 6f;
         [Tooltip("Closing it after the player, as a share of that")]
         [SerializeField, Range(0f, 1f)] private float _closeNoiseShare = 0.5f;
@@ -125,9 +126,14 @@ namespace CGD.Interaction
         // Automatic opening (a DoorSensor) never gets past a key, a condition or a bar.
         public bool CanOpenAutomatically => !IsLocked && !_isBarred;
 
-        // A sensor's call. Opened or shut by the player, a door makes noise; for anyone else it
+        // A sensor's call. Opened or shut by the player standing or walking, a door makes noise (crouched, none); for anyone else it
         // is silent, or guards walking their rounds would keep alerting each other.
         public void SetOpen(bool open, GameObject by = null) => Change(open, by);
+
+        // Crouching through a door is the stealthy way: no sound at all.
+        private static bool IsSneaking(GameObject by) =>
+            by.GetComponentInParent<HealthManager>() is HealthManager health
+            && Stealthable.TryGet(health, out Stealthable stealth) && stealth.IsSneaking;
 
         private void Change(bool open, GameObject by)
         {
@@ -136,7 +142,7 @@ namespace CGD.Interaction
             if (by == null || _noiseRadius <= 0f) return;
 
             DamageSource source = DamageSource.Of(by);
-            if (source.Team != Team.Player) return;
+            if (source.Team != Team.Player || IsSneaking(by)) return;
 
             // Closing behind you is quieter than opening it.
             Noise.Emit(transform.position, open ? _noiseRadius : _noiseRadius * _closeNoiseShare, source);
