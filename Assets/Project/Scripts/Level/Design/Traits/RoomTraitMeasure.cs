@@ -24,6 +24,8 @@ namespace CGD.Level
 
         private const RoomTileTags Solid = RoomTileTags.Structure | RoomTileTags.Prop;
 
+        private static readonly Dictionary<GameObject, bool> ConcealsCache = new();
+
         public static RoomTraitReading Measure(RoomStructure structure, IReadOnlyList<PlannedProp> props) =>
             Measure(structure, props, new SightlineMap(structure));
 
@@ -47,14 +49,10 @@ namespace CGD.Level
         // Walkable tiles some concealment prop lies on (patches are decorations: they take no floor).
         private static int ConcealedTiles(RoomStructure structure, IReadOnlyList<PlannedProp> props)
         {
-            var conceals = new Dictionary<GameObject, bool>();
             var tiles = new HashSet<Vector2Int>();
             foreach (PlannedProp prop in props)
             {
-                if (prop.Prefab == null) continue;
-                if (!conceals.TryGetValue(prop.Prefab, out bool hides))
-                    conceals[prop.Prefab] = hides = Conceals(prop.Prefab);
-                if (!hides) continue;
+                if (!Conceals(prop.Prefab)) continue;
 
                 foreach (Vector2Int tile in prop.Tiles.allPositionsWithin)
                     if (structure.Contains(tile) && !structure.Has(tile, Solid)) tiles.Add(tile);
@@ -62,9 +60,23 @@ namespace CGD.Level
             return tiles.Count;
         }
 
-        // Whether a prop hides whoever stands in it.
-        public static bool Conceals(GameObject prefab) =>
-            prefab != null && prefab.GetComponentInChildren<ConcealmentZone>(true) != null;
+        // Whether a prop hides whoever stands in it. Asked many times for the same few prefabs
+        // while a level is planned, so answered once per prefab while playing; in the editor
+        // (Room Lab) prefabs are being changed, so it always looks.
+        public static bool Conceals(GameObject prefab)
+        {
+            if (prefab == null) return false;
+            if (!Application.isPlaying) return HasZone(prefab);
+
+            if (!ConcealsCache.TryGetValue(prefab, out bool hides))
+                ConcealsCache[prefab] = hides = HasZone(prefab);
+            return hides;
+        }
+
+        private static bool HasZone(GameObject prefab) => prefab.GetComponentInChildren<ConcealmentZone>(true) != null;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => ConcealsCache.Clear();
 
         // The longest unbroken row or column of see-through floor, as a strip of tiles — of
         // several as long, one with cover beside it.

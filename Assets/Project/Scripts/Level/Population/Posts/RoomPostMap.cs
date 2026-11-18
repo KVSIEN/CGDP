@@ -20,19 +20,24 @@ namespace CGD.Level
         private readonly SightlineMap _sight;
         private readonly RouteMap _routes;
         private readonly HashSet<Vector2Int> _concealed = new();
+        // Each tile's kinds once worked out: the room is finished by now, and a plan asks about
+        // every floor tile again for every enemy it places.
+        private readonly RectInt _bounds;
+        private readonly RoomPostKinds[] _kinds;
+        private readonly bool[] _known;
 
         public RoomPostMap(RoomStructure structure, IReadOnlyList<PlannedProp> props)
         {
             _structure = structure;
             _sight     = new SightlineMap(structure);
             _routes    = new RouteMap(structure);
+            _bounds    = structure.Footprint.Bounds;
+            _kinds     = new RoomPostKinds[_bounds.width * _bounds.height];
+            _known     = new bool[_kinds.Length];
 
-            var conceals = new Dictionary<GameObject, bool>();
             foreach (PlannedProp prop in props)
             {
-                if (prop.Prefab == null) continue;
-                if (!conceals.TryGetValue(prop.Prefab, out bool hides)) conceals[prop.Prefab] = hides = RoomTraitMeasure.Conceals(prop.Prefab);
-                if (!hides) continue;
+                if (!RoomTraitMeasure.Conceals(prop.Prefab)) continue;
                 foreach (Vector2Int tile in prop.Tiles.allPositionsWithin)
                     if (structure.Contains(tile)) _concealed.Add(tile);
             }
@@ -41,7 +46,20 @@ namespace CGD.Level
         // Nothing for tiles off the floor or taken by a pillar or prop.
         public RoomPostKinds KindsAt(Vector2Int tile)
         {
-            if (!_structure.Contains(tile) || _structure.Has(tile, Solid)) return RoomPostKinds.None;
+            if (!_structure.Contains(tile)) return RoomPostKinds.None;
+
+            int index = (tile.y - _bounds.yMin) * _bounds.width + (tile.x - _bounds.xMin);
+            if (!_known[index])
+            {
+                _kinds[index] = Measure(tile);
+                _known[index] = true;
+            }
+            return _kinds[index];
+        }
+
+        private RoomPostKinds Measure(Vector2Int tile)
+        {
+            if (_structure.Has(tile, Solid)) return RoomPostKinds.None;
 
             RoomPostKinds kinds = RoomPostKinds.None;
             if (_concealed.Contains(tile)) kinds |= RoomPostKinds.Concealed;
