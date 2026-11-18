@@ -60,7 +60,7 @@ namespace CGD.Level
         public int    ChamferOr(int fallback) => _chamfer >= 0 ? _chamfer : fallback;
         // A town: built from buildings whose rooms are other places (TownStructureRule), so its
         // furniture and arrangements come from those, not from here.
-        public bool IsComposite
+        public bool IsTown
         {
             get
             {

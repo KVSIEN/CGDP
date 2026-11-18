@@ -59,6 +59,7 @@ namespace CGD.Level
                 structure.Tag(opening.Tile, RoomTileTags.Access);
                 structure.Tag(opening.Other, RoomTileTags.Access);
             }
+            foreach (string room in blueprint.Missing) structure.NoteLeftOut(room);
             foreach (PlannedSpace space in blueprint.Spaces)
             {
                 TagWalls(structure, space.Rect);

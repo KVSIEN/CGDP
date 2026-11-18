@@ -67,8 +67,8 @@ namespace CGD.Tests
             var checkedPrefabs = new HashSet<GameObject>();
             foreach (RoomFunction function in Settings().Functions)
             {
-                // A building or town is furnished by its rooms' places, not by props of its own.
-                if (function.Landmark != null || function.IsComposite || function.name == "JunctionRoomFunction") continue;
+                // A town is furnished by its buildings' rooms' places, not by props of its own.
+                if (function.Landmark != null || function.IsTown || function.name == "JunctionRoomFunction") continue;
                 Assert.Greater(function.Props.Count, 0, $"{function.name} has no furniture");
                 for (int i = 0; i < function.Props.Count; i++)
                 {

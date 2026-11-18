@@ -25,6 +25,7 @@ namespace CGD.Level
         private readonly List<PartitionEdge> _openings = new();
         private readonly List<Vector2Int> _entrances = new();
         private readonly List<StructureSpace> _spaces = new();
+        private readonly List<string> _leftOut = new();
         // Doorways that still divide zones: the gap in a building's wall opens onto the next
         // room, but the two stay separate places.
         private readonly HashSet<(Vector2Int, Vector2Int)> _sealedOpenings = new();
@@ -75,6 +76,8 @@ namespace CGD.Level
         // The walled-off places inside the room (rooms of a building, the streets round it), each
         // furnished by its own function. Empty for an ordinary room.
         public IReadOnlyList<StructureSpace> Spaces => _spaces;
+        // Rooms a building's plan asked for that its floor had no space for (the Room Lab says so).
+        public IReadOnlyList<string> LeftOut => _leftOut;
         public int ZoneCount { get; private set; } = 1;
         // The zone with the most floor (0 when the room is one zone).
         public int LargestZone { get; private set; }
@@ -91,6 +94,7 @@ namespace CGD.Level
             copy._openings.AddRange(_openings);
             copy._entrances.AddRange(_entrances);
             copy._spaces.AddRange(_spaces);
+            copy._leftOut.AddRange(_leftOut);
             copy._sealedOpenings.UnionWith(_sealedOpenings);
             System.Array.Copy(_zones, copy._zones, _zones.Length);
             System.Array.Copy(_wallEast, copy._wallEast, _wallEast.Length);
@@ -303,6 +307,8 @@ namespace CGD.Level
         // `roofed`: the space is a building standing in an open-air room, so it gets a roof.
         public void AddSpace(Vector2Int tile, RoomFunction function, string name, RoomLayout layout = null, bool roofed = false) =>
             _spaces.Add(new StructureSpace(tile, function, name, layout, roofed));
+
+        public void NoteLeftOut(string room) => _leftOut.Add(room);
 
         // Whether any space has a roof of its own.
         public bool HasRoofedSpaces

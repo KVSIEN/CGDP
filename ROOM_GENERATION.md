@@ -782,7 +782,7 @@ through the same zone argument a Breach room uses. A space's place gives its fur
 its own structure rules.
 
 **Safety.** The walls go in through `TryAddPartition`: if they would cut any floor off from the
-room's doorways, nothing is built. In a town, lots that would swallow a doorway, the centre spot
+room's doorways, nothing is built (the Room Lab warns). In a town, lots that would swallow a doorway, the centre spot
 or an earlier structure are left as plazas.
 
 **Open items.**
@@ -790,8 +790,8 @@ or an earlier structure are left as plazas.
   layout's set pieces and sets; the layout's structure rules (rows of seats built as walls)
   are not applied inside a room. Zone rules in its props are read against the room alone
   (`RoomPropPlacement.ForSingleZone`: "main space" is the whole room, "others" are skipped).
-- The Restroom place (`Data/Level/Functions/Buildings/`) is used by School, Hospital and House
-  plans; it has no stalls, only toilets, sinks and a bin.
+- The Restroom place (`Data/Level/Functions/`, not in the build settings' list) is used by the
+  School, Hospital, Library and House plans; it has no stalls, only toilets, sinks and a bin.
 - A town's room is open-air: it sits under a sky dome (`SkyDomeBuilder`, shared with parks,
   *Sky domes* in the build settings). Its buildings are roofed (`StructureSpace.Roofed`, set
   by a shell-walled blueprint; `LevelGeometryBuilder.BuildCeilings` roofs those tiles even
@@ -803,8 +803,10 @@ or an earlier structure are left as plazas.
 - A building in a ship room is the ordinary room behind a door in a corridor wall. A distinct
   frontage on the corridor side (a facade matching the place) is not built: the doorway signs
   already name the place.
-- A building layout has no set pieces of its own and skips its place's own props (they would
-  land in a hall); layout tests that count set pieces skip it, and the Room Lab reports any
+- A room with a building layout skips its place's own props (they would land in a hall), and
+  a building layout has no set pieces of its own, so the layout tests that count set pieces
+  skip it. The Room Lab reports a building that wasn't built (room too small, or its walls
+  would cut floor off), the rooms a plan had no space for (`RoomStructure.LeftOut`) and any
   room too small for a piece.
 - Not compiled or run in Unity (see the roadmap).
 

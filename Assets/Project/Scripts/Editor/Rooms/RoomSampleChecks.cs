@@ -21,11 +21,25 @@ namespace CGD.Editor
         {
             var issues = new List<RoomIssue>();
             CheckDoorways(sample, issues);
+            CheckBuilding(sample, issues);
             foreach (string warning in sample.Warnings) issues.Add(new RoomIssue(RoomIssue.Severity.Warning, warning));
             CheckReachable(sample, issues);
             CheckFurnishing(sample, issues);
             CheckPriorities(sample, issues);
             return issues;
+        }
+
+        // A building or town that was asked for but not built, and rooms a building had no space for.
+        private static void CheckBuilding(RoomSample sample, List<RoomIssue> issues)
+        {
+            LevelRoom room = sample.Room;
+            RoomStructure structure = room.Structure;
+            bool wanted = (room.RoomLayout != null && room.RoomLayout.IsBuilding) || (room.Function != null && room.Function.IsTown);
+            if (wanted && structure.Spaces.Count == 0)
+                issues.Add(new RoomIssue(RoomIssue.Severity.Warning,
+                    "No building was built: the room is too small for the plan, or its walls would have cut floor off from a doorway."));
+            if (structure.LeftOut.Count > 0)
+                issues.Add(new RoomIssue(RoomIssue.Severity.Info, $"The building had no space for: {string.Join(", ", structure.LeftOut)}."));
         }
 
         private static void CheckDoorways(RoomSample sample, List<RoomIssue> issues)

@@ -8,9 +8,9 @@ using static CGD.Tests.RoomTestKit;
 
 namespace CGD.Tests
 {
-    // Buildings carved into a room: the plan tiles the whole lot, every room is reachable from
-    // the hall through its doorway, the walls leave the room whole, and a town keeps its streets
-    // open round buildings that are each their own zone.
+    // Buildings, whole-room (a layout) or on a town's lots: the plan tiles the whole lot, every
+    // room is reachable from the hall through its doorway, the walls leave the room whole, and a
+    // town keeps its streets open round buildings that are each their own roofed zone.
     public class BuildingLayoutTests
     {
         private static BuildingPlan Plan(int hallTiles = 1, params BuildingSpaceSpec[] spaces)
@@ -235,6 +235,23 @@ namespace CGD.Tests
                 Object.DestroyImmediate(rule);
                 Object.DestroyImmediate(plan);
             }
+        }
+
+        [Test]
+        public void RoomsThePlanHadNoSpaceForAreNotedOnTheStructure()
+        {
+            BuildingPlan plan = Plan(1, Spec("Closet", 20, 20, 2, 2));
+            try
+            {
+                RoomStructure room = Room(12, 10);
+                BuildingBlueprint blueprint = new BuildingLayoutPlanner(plan).Plan(new RectInt(0, 0, 12, 10), Vector2Int.up, Stream(1));
+                Assert.IsNotEmpty(blueprint.Missing, "twenty closets can't all fit");
+
+                Assert.IsTrue(BuildingBlueprintWriter.Write(room, blueprint, shell: false, keepRoutesOpen: true));
+                CollectionAssert.AreEqual(blueprint.Missing, room.LeftOut);
+                Assert.IsTrue(room.Copy().LeftOut.Count == room.LeftOut.Count, "a copy keeps what was left out");
+            }
+            finally { Object.DestroyImmediate(plan); }
         }
 
         [Test]
