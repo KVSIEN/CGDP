@@ -104,6 +104,9 @@ namespace CGD.Director
                 return;
             }
 
+            // Animals are no threat to pace around: hunting or losing one raises no stress and is no combat.
+            if (report.Target.Team == Team.Prey) return;
+
             if (report.Source.Team == Team.Player) _lastCombatTime = Time.time;
             if (report.Killed && report.Target.Team != Team.Player) AddNearbyKillStress(report.Target.transform.position);
         }
