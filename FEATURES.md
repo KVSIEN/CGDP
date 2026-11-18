@@ -305,7 +305,7 @@
 - Weapons can't fire or reload while stunned, mantling, or mid-roll
 - Magazine is per weapon; reserve is a shared inventory pool keyed by `AmmoType` (LightRounds / StandardRounds / HeavyRounds / ShotgunShells / Arrows / EnergyCells). Reloading pulls rounds from that pool into the magazine; the HUD reserve display reads live from the inventory
 - Weapons come loaded with one full magazine on first pickup; if you drop an empty weapon and pick it back up, it stays empty — the pickup grant only happens once per weapon instance
-- Tactical reload (round in chamber) is faster than an empty reload
+- Tactical reload (round in chamber) is faster than an empty reload, and every generated gun saves at least a set amount of time over a full one — better rolls save more
 - Auto-reload: pulling the trigger on an empty magazine, or keeping it held as the magazine runs dry, starts a reload; with no reserve ammo left it plays the empty click instead
 - Weapon stats are grouped into three user-facing families that map directly to how the weapon *feels* — Accuracy, Control, Handling
 

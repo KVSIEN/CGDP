@@ -137,6 +137,7 @@ namespace CGD.Tests
             _category = ScriptableObject.CreateInstance<WeaponCategoryData>();
             _category.ReloadTime         = new FloatRange(2f, 2f);
             _category.TacticalReloadTime = new FloatRange(1.6f, 1.6f);
+            _category.TacticalReloadBonus = new FloatRange(0f, 0f);
             _category.Models = new[]
             {
                 new WeaponModel { Name = "Arbalest", Scales = new StyleScales(1f, 1f, 1f, 1f, 1f, 1f, reload: 1.5f) },
@@ -147,6 +148,21 @@ namespace CGD.Tests
                 WeaponData d = Generate(_category, i);
                 Assert.AreEqual(3f, d.ReloadTime, 1e-4f);
                 Assert.AreEqual(2.4f, d.TacticalReloadTime, 1e-4f);
+            }
+        }
+
+        [Test]
+        public void ATacticalReloadAlwaysSavesItsBonus()
+        {
+            _category = ScriptableObject.CreateInstance<WeaponCategoryData>();
+            _category.ReloadTime          = new FloatRange(2f, 2f);
+            _category.TacticalReloadTime  = new FloatRange(1.9f, 1.9f);   // would save only 0.1 s
+            _category.TacticalReloadBonus = new FloatRange(0.4f, 0.4f);
+
+            for (int i = 0; i < SeedCount; i++)
+            {
+                WeaponData d = Generate(_category, i);
+                Assert.AreEqual(1.6f, d.TacticalReloadTime, 1e-4f);
             }
         }
 

@@ -126,7 +126,12 @@ namespace CGD.Weapons
             float reload = build.Scales.Reload;
             float lean   = build.Leans.Reload;
             d.ReloadTime         = roll.Sample(ItemStat.ReloadTime, StyleScales.Scale(cat.ReloadTime, reload, lean));
-            d.TacticalReloadTime = Mathf.Max(0.5f, roll.Sample(ItemStat.ReloadTime, StyleScales.Scale(cat.TacticalReloadTime, reload, lean)));
+            float tactical = roll.Sample(ItemStat.ReloadTime, StyleScales.Scale(cat.TacticalReloadTime, reload, lean));
+
+            // A better roll saves more, so the bonus is read from the far end of the range reload times use.
+            var bonus = new FloatRange(cat.TacticalReloadBonus.Max, cat.TacticalReloadBonus.Min, cat.TacticalReloadBonus.Bias);
+            float savedAtLeast = roll.Sample(ItemStat.ReloadTime, bonus) * reload;
+            d.TacticalReloadTime = Mathf.Max(0.5f, Mathf.Min(tactical, d.ReloadTime - savedAtLeast));
         }
 
         private static void RollSpread(WeaponData d, WeaponCategoryData cat, ItemRoll roll, RandomStream random, WeaponBuild build)

@@ -88,7 +88,7 @@ namespace CGD.Weapons
         [Header("Reload")]
         public FloatRange ReloadTime          = new(2.2f, 3.0f);
         public FloatRange TacticalReloadTime  = new(1.7f, 2.2f);
-        // TacticalReloadTime is stored directly for WeaponData and can still be tuned via bonus.
+        [Tooltip("Seconds a tactical reload saves over a full one, at least: the rolled Tactical Reload Time is cut to Reload Time minus this when it would save less, so topping up a magazine is never as slow as emptying it. Better rolls save more. Scales with the model's reload. 0–0 = no guarantee")]
         public FloatRange TacticalReloadBonus = new(0.3f, 0.6f);
 
         [Header("Handling")]
