@@ -320,6 +320,14 @@ namespace CGD.Enemies
             return Home.Clamp(goal, territory.PursuitReach);
         }
 
+        // Whether the point is somewhere it would go: inside its home territory or within its
+        // pursuit reach of it. Always true without a home, or for a faction that roams freely.
+        internal bool IsInReach(Vector3 point)
+        {
+            TerritoryDoctrine territory = Doctrine.Territory;
+            return Home == null || !territory.IsBound || Home.DistanceOutside(point) <= territory.PursuitReach;
+        }
+
         // Whether the point is inside its home territory, give or take a margin. Always true without a home.
         internal bool IsWithinHome(Vector3 point, float margin) => Home == null || Home.DistanceOutside(point) <= margin;
 

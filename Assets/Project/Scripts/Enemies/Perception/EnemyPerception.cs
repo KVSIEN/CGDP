@@ -309,7 +309,7 @@ namespace CGD.Enemies
 
         public void OnNoise(NoiseEvent noise)
         {
-            if (noise.Source.Owner == _self.gameObject || IsTargetDetected) return;
+            if (noise.Source.Owner == _self.gameObject || IsTargetDetected || !_owner.IsInReach(noise.Position)) return;
 
             float distance = Vector3.Distance(noise.Position, _self.position);
             if (!_senses.CanHear(noise.Position, distance, noise.Radius, noise.Source.Owner != null ? noise.Source.Owner.transform : null)) return;
@@ -378,6 +378,7 @@ namespace CGD.Enemies
         public void OnCallout(EnemyCallout callout)
         {
             if (callout.Caller == _owner || IsTargetDetected || _data.Social == SocialStyle.Loner) return;
+            if (!_owner.IsInReach(callout.From)) return;
             if (!EnemyRoster.IsKinTeam(_data, _team, callout.Team)) return;
 
             float distance = Vector3.Distance(callout.From, _self.position);
