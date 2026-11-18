@@ -150,7 +150,7 @@ namespace CGD.Level
 
                 var path = new List<Vector2Int> { link.Tile };
                 Reserve(path, reserved);
-                layout.AddCorridor(path);
+                layout.AddCorridor(connection, path);
                 AddDoorways(layout, analysis, connection, a, link.InsideA, link.Tile, b, link.InsideB, link.Tile);
             }
 
@@ -185,7 +185,7 @@ namespace CGD.Level
                 usedDoors[a.Node.Id].Add(route.A.Outside);
                 usedDoors[b.Node.Id].Add(route.B.Outside);
                 Reserve(route.Path, reserved);
-                layout.AddCorridor(route.Path);
+                layout.AddCorridor(connection, route.Path);
 
                 AddDoorways(layout, analysis, connection, a, route.A.Inside, route.A.Outside, b, route.B.Inside, route.B.Outside);
             }

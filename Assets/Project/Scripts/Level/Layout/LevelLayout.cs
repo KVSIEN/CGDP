@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Map;
 
 namespace CGD.Level
 {
@@ -51,14 +52,24 @@ namespace CGD.Level
             AddRoom(room.Translated(offset));
         }
 
-        public void AddCorridor(IReadOnlyList<Vector2Int> tiles)
+        // The tiles of each connection's corridor.
+        private readonly Dictionary<MapConnection, IReadOnlyList<Vector2Int>> _corridors = new();
+
+        public IReadOnlyList<Vector2Int> CorridorOf(MapConnection connection) =>
+            _corridors.TryGetValue(connection, out IReadOnlyList<Vector2Int> tiles) ? tiles : System.Array.Empty<Vector2Int>();
+
+        public void AddCorridor(MapConnection connection, IReadOnlyList<Vector2Int> tiles)
         {
+            _corridors[connection] = tiles;
             foreach (Vector2Int tile in tiles)
             {
                 _walkable.Add(tile);
                 _corridorTiles.Add(tile);
             }
         }
+
+        // One tile's rectangle on the floor plan (x, z), in the level's space.
+        public Rect TileLocalRect(Vector2Int tile) => new(tile.x * TileSize, tile.y * TileSize, TileSize, TileSize);
 
         // Centre of a tile, on the floor.
         public Vector3 TileToLocal(Vector2Int tile) => new((tile.x + 0.5f) * TileSize, 0f, (tile.y + 0.5f) * TileSize);

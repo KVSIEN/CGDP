@@ -9,7 +9,7 @@ namespace CGD.Level
 {
     // Brings enemies into a room mid-encounter: on spots set aside when the level was
     // built, from the room's faction roster at the room's tier odds (or, for a room held by
-    // two realities, the second one), patrolling the room's route. Each enemy is seeded by
+    // two realities, the second one), patrolling the room's route and held to its territory. Each enemy is seeded by
     // its place in the room's spawn order (ISeedable: affixes, drops).
     public class EncounterSpawner
     {
@@ -19,16 +19,18 @@ namespace CGD.Level
         private readonly RoomRoster   _roster;
         private readonly RoomRoster   _secondRoster;
         private readonly Transform[]  _route;
+        private readonly HomeZone     _home;
         private readonly Seed         _seed;
         private readonly RandomStream _random;
         private int _spawned;
 
-        public EncounterSpawner(IReadOnlyList<Vector3> spots, RoomRoster roster, RoomRoster secondRoster, Transform[] route, Seed seed)
+        public EncounterSpawner(IReadOnlyList<Vector3> spots, RoomRoster roster, RoomRoster secondRoster, Transform[] route, HomeZone home, Seed seed)
         {
             _spots        = spots;
             _roster       = roster;
             _secondRoster = secondRoster != null && !secondRoster.IsEmpty ? secondRoster : roster;
             _route        = route;
+            _home         = home;
             _seed         = seed;
             _random       = seed.Stream();
         }
@@ -67,7 +69,11 @@ namespace CGD.Level
 
             GameObject enemy = PrefabPool.Spawn(prefab, spot, Quaternion.Euler(0f, _random.Range(0, 360), 0f));
             ISeedable.SeedAll(enemy, _seed.Derive("enemies").Derive(_spawned++));
-            if (enemy.TryGetComponent(out EnemyAI ai)) ai.SetWaypoints(_route);
+            if (enemy.TryGetComponent(out EnemyAI ai))
+            {
+                ai.SetWaypoints(_route);
+                ai.SetHome(_home);
+            }
             return enemy.TryGetComponent(out HealthManager health) ? health : null;
         }
     }

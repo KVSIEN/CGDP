@@ -191,7 +191,7 @@ namespace CGD.Level
                 RoomEnemyPlan plan = _enemyPlanner.Plan(room, props ?? System.Array.Empty<PlannedProp>(), count,
                                                         RoomEnemyPlanner.SeedFor(_seed, room).Stream(), TakenTiles(room));
                 var placed = new List<HealthManager>();
-                HomeZone home = (_territories ??= new TerritoryZones(_layout, _parent)).ZoneOf(room);
+                HomeZone home = HomeOf(room);
                 for (int i = 0; i < plan.Spawns.Count; i++)
                 {
                     PlannedSpawn spawn = plan.Spawns[i];
@@ -229,6 +229,9 @@ namespace CGD.Level
             GameObject[] fallback = rule != null ? rule.Enemies : System.Array.Empty<GameObject>();
             return new RoomRoster(faction, fallback, _settings.EnemyTierOddsFor(room.Node.EffectiveTier));
         }
+
+        // The territory a room's enemies (build-time and encounter ones alike) stay within.
+        public HomeZone HomeOf(LevelRoom room) => (_territories ??= new TerritoryZones(_layout, _parent)).ZoneOf(room);
 
         public IReadOnlyList<HealthManager> EnemiesIn(LevelRoom room) =>
             _roomEnemies.TryGetValue(room.Node.Id, out List<HealthManager> enemies) ? enemies : System.Array.Empty<HealthManager>();
