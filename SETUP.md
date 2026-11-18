@@ -1030,3 +1030,6 @@ Submachine Gun, Pistol, Modular Pistol), `PrecisionRifleStatRollProfile` (Sniper
 `AutomaticSupportStatRollProfile` (Light Machine Gun), `ShotgunStatRollProfile` (Shotgun). A category with no
 profile rolls at quality 1 / Common with uniformly random stats. If a preset in `StatRollProfile` changes,
 re-apply it to the matching asset (right-click → Axes/…); `StatRollProfileAxesTests` fails when they drift.
+## Firearm Lab (editor only)
+
+`CGD › Weapons › Firearm Lab…` needs no scene wiring: it edits the `Models` list of a firearm category asset (`Data/Weapons/Categories/*Category`) and rolls samples from it. A new model is made from an archetype and then tuned there; give it a name, weight, stat scales and recoil, and the category rolls it like the existing ones. Every firearm category inspector has an *Open in Firearm Lab* button at the top.

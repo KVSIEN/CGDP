@@ -9,6 +9,7 @@ namespace CGD.Weapons
     internal sealed class WeaponBuild
     {
         public readonly string     Name;
+        public readonly WeaponModel Model;   // null for a category without models
         public readonly FireMode   FireMode;
         public readonly FiringStyle Firing;  // null for a category without firing styles
         // Model × variant × stat style: how far each stat's range is stretched.
@@ -41,6 +42,7 @@ namespace CGD.Weapons
         private WeaponBuild(WeaponCategoryData cat, WeaponModel model, FiringStyle firing, StatStyle statStyle,
                             string name, FireMode fireMode)
         {
+            Model    = model;
             Firing   = firing;
             FireMode = fireMode;
             Name     = StyledName(!string.IsNullOrEmpty(firing?.ModelName) ? firing.ModelName : name, firing, statStyle);

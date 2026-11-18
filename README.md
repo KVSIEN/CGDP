@@ -56,7 +56,7 @@ Assets/
                             NearbyEnemies (shared non-allocating query); EnemyPacingTuning + PhaseConduct (how boldly enemies fight per phase)
       Economy/              CurrencyDefinition, Wallet, PriceTable, Vendor, GambleMachine (+ GambleOdds); Shops/ — Shop (buy/sell/trade-in),
                             ShopCatalog, stock sources (ItemStock, RolledWeaponStock), listings
-      Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report),
+      Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report), Weapons/ (Firearm Lab: model editing and roll preview),
                             Rooms/ (Room Lab window: one room built on its own — RoomSampleBuilder, RoomSampleChecks, plan layers, seed variations;
                               Authoring/ — RoomFunction and RoomLayout inspectors: New layout, Duplicate, RoomLayoutCheck over seeds;
                               Placeholders/ — PlaceholderPalette, Placeholder Prop Builder window),
