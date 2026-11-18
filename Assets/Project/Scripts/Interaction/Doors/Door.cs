@@ -1,3 +1,4 @@
+using Unity.AI.Navigation;
 using UnityEngine;
 
 namespace CGD.Interaction
@@ -29,6 +30,9 @@ namespace CGD.Interaction
         [Tooltip("Seconds the Interact key must be held (0 = instant)")]
         [SerializeField] private float _holdDuration = 0f;
 
+        [Tooltip("Leave the door out of the NavMesh so enemies path straight through it, as through an open doorway. For sensor doors, which open for them on arrival; never for a locked one")]
+        [SerializeField] private bool _agentsPathThrough;
+
         [Header("Lock")]
         [Tooltip("Item needed to unlock the door. Empty = never locked.")]
         [SerializeField] private ItemRequirement _key;
@@ -51,6 +55,7 @@ namespace CGD.Interaction
         private void Awake()
         {
             _panels         = GetComponentsInChildren<DoorPanel>(true);
+            if (_agentsPathThrough) LeaveOutOfNavMesh();
             _closedRotation = transform.localRotation;
             _isLocked       = !_key.IsNone;
         }
@@ -65,6 +70,14 @@ namespace CGD.Interaction
                 transform.localRotation = _closedRotation * Quaternion.Euler(0f, _openAngle * _progress, 0f);
             else
                 foreach (DoorPanel panel in _panels) panel.SetProgress(_progress);
+        }
+
+        // Added before the level's NavMesh is built (doors are placed first), so its closed
+        // panels don't cut the walkable ground.
+        private void LeaveOutOfNavMesh()
+        {
+            foreach (Collider body in GetComponentsInChildren<Collider>(true))
+                body.gameObject.AddComponent<NavMeshModifier>().ignoreFromBuild = true;
         }
 
         public string GetInteractLabel(GameObject interactor)

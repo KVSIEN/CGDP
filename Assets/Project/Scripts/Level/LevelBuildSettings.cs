@@ -57,7 +57,7 @@ namespace CGD.Level
         [SerializeField] private int _ceilingLayer;
 
         [Header("Doors")]
-        [Tooltip("Origin at the doorway's centre on the floor, +Z pointing out of the room. Optional for normal connections")]
+        [Tooltip("Origin at the doorway's centre on the floor, +Z pointing out of the room. Optional for normal connections; a faction design's door takes its place in that faction's rooms")]
         [SerializeField] private GameObject _doorPrefab;
         [Tooltip("Gate for Keycard locks (e.g. a Door with a Key set)")]
         [SerializeField] private GameObject _lockedDoorPrefab;
@@ -148,14 +148,18 @@ namespace CGD.Level
         // The holding faction's design as this room shows it (full strength without a faction influence).
         public FactionStyle StyleFor(LevelRoom room) => new(DesignFor(room.Faction), room.DesignStrength);
 
-        public GameObject DoorPrefabFor(MapConnection connection) => connection.Type switch
+        // The door on a connection. `gateRoom` is the room whose side of the corridor the door
+        // sits on: its faction's design may fit its own kind of door to an ordinary connection.
+        public GameObject DoorPrefabFor(MapConnection connection, LevelRoom gateRoom) => connection.Type switch
         {
             ConnectionType.Locked when connection.Lock == MapLockKind.Terminals && _terminalDoorPrefab != null => _terminalDoorPrefab,
             ConnectionType.Locked => _lockedDoorPrefab,
             ConnectionType.Secret => _secretDoorPrefab,
             _ when connection.OneWay && _oneWayDoorPrefab != null => _oneWayDoorPrefab,
-            _                     => _doorPrefab,
+            _                     => FactionDoorFor(gateRoom) ?? _doorPrefab,
         };
+
+        private GameObject FactionDoorFor(LevelRoom room) => room?.Faction == null ? null : DesignFor(room.Faction)?.DoorPrefab;
 
         public GameObject KeyPrefab      => _keyPrefab;
         // A door whose Condition is a ConditionLock (falls back to the keycard door).

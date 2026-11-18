@@ -13,6 +13,7 @@ namespace CGD.Level
     //     how crowded it keeps a room
     //   - priorities: what its fight rooms should offer (concealment, walls, lines of fire);
     //     generation steers toward them (RoomTraitFit) and the Room Lab checks each room
+    //   - doors: the kind of door it fits to its doorways
     //   - agents: where its enemies start in those rooms and who holds a post (PostPreference)
     // LevelBuildSettings lists one per faction; a faction without one is built plainly. In a
     // Breach room the holder's design sets the building, the breach faction's divider splits
@@ -50,6 +51,10 @@ namespace CGD.Level
         [Tooltip("How much this faction's fight rooms should offer each trait. Generation scales concealment props by it and keeps the closest of a few tries (Level Build Settings › Priority Tries); the Room Lab checks the result")]
         [SerializeField] private RoomTraitPriorities _priorities = new();
 
+        [Header("Doors")]
+        [Tooltip("The door on this faction's ordinary connections, at the end of the corridor its room holds (a Door prefab: origin at the doorway's centre on the floor, +Z out of the room). Empty = the build settings' door. Locks, secrets and one-way shortcuts keep theirs")]
+        [SerializeField] private GameObject _doorPrefab;
+
         [Header("Agents")]
         [Tooltip("Where its enemies start in its rooms, and which posts they hold instead of patrolling (RoomEnemyPlanner)")]
         [SerializeField] private PostPreference _posts = new();
@@ -64,6 +69,7 @@ namespace CGD.Level
         public float PropScale => _propScale;
         public RoomTraitPriorities Priorities => _priorities;
         public PostPreference Posts => _posts;
+        public GameObject DoorPrefab => _doorPrefab;
 
         public float ShapeWeight(RoomShape shape)
         {

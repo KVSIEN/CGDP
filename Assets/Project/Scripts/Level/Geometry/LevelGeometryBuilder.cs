@@ -210,7 +210,7 @@ namespace CGD.Level
                 if (!doorway.HasGate) continue;
 
                 bool objectiveGated = ObjectiveDoorPrefab != null && ObjectiveGated.Contains(doorway.Connection);
-                GameObject prefab = objectiveGated ? ObjectiveDoorPrefab : _settings.DoorPrefabFor(doorway.Connection);
+                GameObject prefab = objectiveGated ? ObjectiveDoorPrefab : _settings.DoorPrefabFor(doorway.Connection, doorway.Room);
                 if (prefab == null) continue;
 
                 Pose pose = DoorwayPose(layout, doorway, parent);

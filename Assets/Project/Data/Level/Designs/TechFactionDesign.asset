@@ -46,6 +46,7 @@ MonoBehaviour:
     _concealment: 0
     _walls: 1
     _linesOfFire: 2
+  _doorPrefab: {fileID: 7000000000001057, guid: 7153584c2b2c2f618b3eccdce751745e, type: 3}
   _posts:
     _concealed: 1
     _overwatch: 4

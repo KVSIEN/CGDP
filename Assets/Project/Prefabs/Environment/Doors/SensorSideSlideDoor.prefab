@@ -49,6 +49,7 @@ MonoBehaviour:
   _openDuration: 0.4
   _openAngle: 90
   _interactable: 0
+  _agentsPathThrough: 1
   _holdDuration: 0
   _key:
     Item: {fileID: 0}
