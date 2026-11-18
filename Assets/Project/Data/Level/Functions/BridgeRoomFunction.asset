@@ -70,3 +70,6 @@ MonoBehaviour:
   _layouts:
   - {fileID: 11400000, guid: e5ae9ef05d994d8cb9859116641e297b, type: 2}
   - {fileID: 11400000, guid: c4b8ce3032a641b285093e0aa57959ea, type: 2}
+  _sets:
+  - {fileID: 11400000, guid: 10178e46263a441e84464d2910644f93, type: 2}
+  - {fileID: 11400000, guid: 9bcf43e25ad44ea0b722aff6d0c841b5, type: 2}

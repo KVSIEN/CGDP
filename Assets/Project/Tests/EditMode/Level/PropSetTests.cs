@@ -92,6 +92,55 @@ namespace CGD.Tests
             }
         }
 
+        // The ecosystem's bookkeeping: a kit nobody lists is dead weight, a generated place
+        // without layouts always comes out the same, and a kit listed twice in one place doubles up.
+        [Test]
+        public void EveryKitIsListedByAPlaceOrALayout()
+        {
+            var used = new HashSet<RoomPropSet>();
+            foreach (RoomFunction place in Settings.Functions)
+            {
+                if (place == null) continue;
+                used.UnionWith(place.Sets);
+                foreach (RoomLayout layout in place.Layouts)
+                    if (layout != null) used.UnionWith(layout.Sets);
+            }
+            foreach (string guid in AssetDatabase.FindAssets("t:RoomPropSet", new[] { SetsFolder }))
+            {
+                var set = AssetDatabase.LoadAssetAtPath<RoomPropSet>(AssetDatabase.GUIDToAssetPath(guid));
+                Assert.IsTrue(used.Contains(set), $"{set.name} is listed by no place or layout");
+            }
+        }
+
+        [Test]
+        public void EveryGeneratedPlaceHasLayouts()
+        {
+            foreach (RoomFunction place in Settings.Functions)
+            {
+                if (place == null || place.Landmark != null || place.DisplayName == "Junction") continue;
+                Assert.GreaterOrEqual(place.Layouts.Count, 2, $"{place.DisplayName} has fewer than two layouts");
+            }
+        }
+
+        [Test]
+        public void NoPlaceListsAKitTwice()
+        {
+            foreach (RoomFunction place in Settings.Functions)
+            {
+                if (place == null) continue;
+                AssertNoDuplicates(place.Sets, place.DisplayName);
+                foreach (RoomLayout layout in place.Layouts)
+                    if (layout != null) AssertNoDuplicates(layout.Sets, $"{place.DisplayName}: {layout.DisplayName}");
+            }
+        }
+
+        private static void AssertNoDuplicates(IReadOnlyList<RoomPropSet> sets, string where)
+        {
+            var seen = new HashSet<RoomPropSet>();
+            foreach (RoomPropSet set in sets)
+                Assert.IsTrue(set == null || seen.Add(set), $"{where} lists {set.name} twice");
+        }
+
         [Test]
         public void AKitGoesDownWhereItIsListed()
         {

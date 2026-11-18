@@ -675,10 +675,32 @@ gather round whatever a place is built round.
 | Kit | What it puts down | Used by |
 |---|---|---|
 | **Control Station** | One or two consoles facing the *Plant* within 4 steps, each with its chair behind | Engine Room, Power Distribution, Coolant Plant; Life Support's Atmosphere Processor |
-| **Pipe Run** | Two to four pipe stacks in a line along a wall | Engine Room, Fuel Depot, Coolant Plant, Maintenance Hub, Life Support, Water Treatment |
+| **Pipe Run** | Two to four pipe stacks in a line along a wall | Engine Room, Fuel Depot, Coolant Plant, Maintenance Hub, Life Support, Water Treatment; Kitchen, Laboratory, Hydroponics Bay, Pool, Escape Pod Bay |
 | **Hazard Cordon** | Two to four barriers within a step of the *Plant*, facing it (72+ tiles) | Fuel Depot; Engine Room's Drive Gallery and Drive Core, Power's Substation, Processing's Smeltery |
-| **Service Corner** | A tool rack on a wall, crates in a corner, perhaps a trolley | Waste Reclamation, Processing Plant |
-| **Breakers** | One to three breaker panels on the walls | Power Distribution, Maintenance Hub, Comms Array |
+| **Service Corner** | A tool rack on a wall, crates in a corner, perhaps a trolley | Waste Reclamation, Processing Plant; Workshop, Hangar, Docking Bay, Cargo Bay, Storage |
+| **Breakers** | One to three breaker panels on the walls | Power Distribution, Maintenance Hub, Comms Array; Control Room, Bridge, Data Center, Security Office, Docking Bay, Hangar |
+| **Terminal Bank** | One or two consoles against the walls, floor kept free in front | Control Room, Bridge, Data Center, Offices, Security Office, Laboratory, Docking Bay, Hangar |
+| **Supply Stack** | Crate piles in corners and along walls, perhaps a trolley | Storage, Cargo Bay, Docking Bay, Hangar, Armory, Workshop, Kitchen, Pharmacy, Escape Pod Bay, Barracks |
+| **Locker Row** | Two to four lockers nose to tail along a wall | Barracks, Gym, Security Office, Armory, Quarters, Cabin Row, Workshop, School, Pool, Wellness Center |
+| **Seating Nook** | One or two benches against the walls with floor in front | Lobby, Promenade, Commons, Observation Deck, Wellness Center, Grand Atrium, Food Court, Medical Bay, Docking Bay |
+| **Greenery** | One to three planters in corners and along walls | Grand Atrium, Lobby, Promenade, Commons, Offices, Restaurant, Wellness Center, Observation Deck, Chapel |
+
+The first five are tuned for the operations places (the Control Station, Hazard Cordon and the
+operations Service Corner gather round the *Plant*); the last five stand Near nothing, so any
+place may list them. Every kit's counts scale with the room (`ScaleByRoomSize`) where it is a
+filler, so a closet and a hall are equally furnished.
+
+**Growing the ecosystem.** To add a kit: make the asset under `Sets/` (copy one, give it a new
+GUID in its `.meta`), then list it under *Sets* on each place or layout that wants it; the Room
+Lab and *Check layouts* show it as a *Kit* piece. To add a place: a function, 2+ layouts in
+`Layouts/<Place>/`, kits from the table, and its row in section 8. `PropSetTests` keeps the
+books: every kit is listed somewhere, no place lists one twice, every generated place has two
+layouts, and nothing stands Near a key that isn't set before it.
+
+**Shapes in the wider ship.** Waist and Comb are no longer operations-only: Storage's Aisle
+Comb, Barracks' Bunk Comb (bays off a spine) and Cargo Bay's Dock Neck (two halls joined by a
+neck) use them, copies of an existing layout of the place on the new shape. A layout that only
+changes the shape is the cheapest new arrangement: *Duplicate* it and swap the shape.
 
 ### Ship operations
 
