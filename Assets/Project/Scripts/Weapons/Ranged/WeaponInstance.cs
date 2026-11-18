@@ -61,6 +61,7 @@ namespace CGD.Weapons
         public float ProjectileSpeedScale => Modify(ItemStat.ProjectileSpeed, 1f);
         public float SpreadScale          => Modify(ItemStat.Spread, 1f);
         public float RecoilScale          => Modify(ItemStat.Recoil, 1f);
+        public float SwayScale            => Modify(ItemStat.Sway, 1f);
 
         // What the Melee key does with this gun in hand: its own bash, unless a perk (Tactical
         // Knife) swaps in another. Null = fists.

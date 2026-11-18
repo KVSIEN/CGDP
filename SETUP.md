@@ -110,7 +110,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 | **PlayerRestraint** (Player prefab) | `_tapsRequired`, `_decayPerSecond`, `_maxSeconds` = the defaults for `Restrain()` | Placeholder for being held in place: a trap or grab calls `Restrain()`; until the player breaks free (tap Interact) or it times out, movement and dodging are blocked and interacting is off. Needs `PlayerInputHandler` and `Stunnable` on the same object. Dev console: `/restrain [taps]` and `/free`. |
 | **PlayerAbilities** | `_health` = PlayerHealth, `_slots` = up to 4 ability assets | Aims with PlayerMovement's camera. Abilities act through the player's own components, found once: Dash needs PlayerDodge, Timeline abilities a TimelineAbilityRunner, Reflect a Reflector, Stealth a Stealthable, Stat Buff CharacterStats. |
 | **TimelineAbilityRunner**? | — | Needed for `TimelineAbility` assets. |
-| **WeaponVisuals** (WeaponRig) | — | Kick and sway are tuned on the component and the `WeaponData`. |
+| **WeaponVisuals** (WeaponRig) | — | Baseline kick and sway are tuned on the component; each `WeaponData` weights them per gun (`Kick Weights`, `Sway Weights`, `Move Spread`, `Air Spread`; generated guns take the weights from their model's recoil pattern). No new wiring. |
 | **WeaponAimPose** (Weapon) | `_camera` = PlayerCamera | Scene pose = hip pose. Set `_adsPosition`/`_adsRotation` for aiming. |
 
 > The gun mesh must have **no colliders** — they block shots while aiming.

@@ -44,6 +44,8 @@ namespace CGD.Weapons
 
         // Seconds a weapon swapped away from after its reload's commit point comes back without a draw.
         private const float QuickReturnWindow = 1f;
+        // Run speed (m/s) at which MoveSpread is fully applied.
+        private const float SpreadFullSpeed = 6f;
 
         private WeaponInstance _current;
         private CharacterStats _stats;
@@ -235,7 +237,8 @@ namespace CGD.Weapons
             float horizSpeed = new Vector2(vel.x, vel.z).magnitude;
             bool  grounded   = _movement == null || _movement.IsGrounded;
             _visuals.SetSwayInputs(_camera != null ? _camera.LookRate : Vector2.zero, horizSpeed, grounded,
-                                   _camera != null ? _camera.AdsT : 0f);
+                                   _camera != null ? _camera.AdsT : 0f,
+                                   Wielder(ItemStat.Sway, _current.SwayScale));
         }
 
         /// <summary>Swap the active weapon at runtime (null = unarmed).</summary>
@@ -358,7 +361,7 @@ namespace CGD.Weapons
             _camera.AddRecoil(shot.VertKick, shot.HorizKick, D.RecoilRecoverySpeed,
                               shot.RecoveryFraction, D.RecoilRecoveryDelay);
             if (_visuals != null) _visuals.AddKick(shot.GunVert, shot.GunHoriz, adsT, ShotInterval);
-            if (_cameraEffects != null) _cameraEffects.AddRecoil(shot.VertKick, shot.HorizKick);
+            if (_cameraEffects != null) _cameraEffects.AddRecoil(shot.VertKick, shot.HorizKick, shot.HorizKick * D.KickWeights.ViewRoll);
         }
 
         // Soonest the next round can fire: burst shots follow BurstInterval rather than RPM.
@@ -416,7 +419,18 @@ namespace CGD.Weapons
 
         // The cone shots land in, with spread perks and buffs applied.
         private float SpreadDeg(float adsT) =>
-            _spread.EffectiveConeDeg(adsT, _recoil.Heat) * Mathf.Max(0f, Wielder(ItemStat.Spread, _current.SpreadScale));
+            _spread.EffectiveConeDeg(adsT, _recoil.Heat) * MovementSpreadScale()
+            * Mathf.Max(0f, Wielder(ItemStat.Spread, _current.SpreadScale));
+
+        // Running and airborne open the cone, by the weapon's MoveSpread and AirSpread.
+        private float MovementSpreadScale()
+        {
+            if (_movement == null) return 1f;
+            Vector3 vel   = _movement.Velocity;
+            float   speed = new Vector2(vel.x, vel.z).magnitude;
+            float   scale = 1f + D.MoveSpread * Mathf.Clamp01(speed / SpreadFullSpeed);
+            return _movement.IsGrounded ? scale : scale + D.AirSpread;
+        }
 
         // Whole extras always happen; the fraction is a chance of one more.
         private static int RollExtra(float extra)

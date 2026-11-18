@@ -37,7 +37,7 @@ namespace CGD.Tests
                         new FiringStyle
                         {
                             FireMode = FireMode.Semi, ModelName = "Glock 17", RoundsPerLoad = 5, OwnRecoil = true,
-                            Recoil   = new RecoilPattern { Bias = 0.1f, MuzzleFlip = 0.2f },
+                            Recoil   = new RecoilPattern { Bias = 0.1f, MuzzleFlip = 0.2f, Kick = new KickWeights { Rise = 1f, Yaw = 1f, Roll = 1f, Hop = 1f, Pushback = 3f } },
                         },
                     },
                 },
@@ -67,6 +67,7 @@ namespace CGD.Tests
                     Assert.AreEqual(0.1f, d.RecoilHorizontalBias);
                     Assert.AreEqual(HorizontalDriftMode.Alternating, d.HorizontalDriftMode);
                     Assert.AreEqual(0.2f, d.MuzzleFlip);
+                    Assert.AreEqual(3f, d.KickWeights.Pushback, "The variant's own kick weights carry over");
                 }
                 else
                 {
@@ -77,6 +78,7 @@ namespace CGD.Tests
                     Assert.AreEqual(0.45f, d.RecoilHorizontalBias);
                     Assert.AreEqual(HorizontalDriftMode.OneWay, d.HorizontalDriftMode);
                     Assert.AreEqual(0.25f, d.MuzzleFlip);
+                    Assert.AreEqual(1f, d.KickWeights.Pushback, "A pattern that sets no weights keeps the baseline kick");
                 }
                 sawEach = sawGlock17 && sawGlock18;
             }

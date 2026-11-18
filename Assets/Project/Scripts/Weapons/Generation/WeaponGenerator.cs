@@ -164,6 +164,7 @@ namespace CGD.Weapons
                 d.HorizontalDriftMode = pattern.Drift;
                 d.RecoilJitter.x      = pattern.Jitter;
                 d.MuzzleFlip          = pattern.MuzzleFlip;
+                d.KickWeights         = pattern.Kick;
             }
 
             d.RecoilHeatPerShot          = Mathf.Clamp01(cat.RecoilHeatPerShot.EvaluateClamped(random));

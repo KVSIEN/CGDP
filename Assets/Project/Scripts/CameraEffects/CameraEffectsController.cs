@@ -69,9 +69,9 @@ namespace CGD.CameraEffects
         // and metres/second in camera space.
         public void Kick(Vector3 angularVelocity, Vector3 velocity = default) => _kick.Kick(angularVelocity, velocity);
 
-        // Visual kick to go with a weapon's aim recoil (degrees up / right).
-        public void AddRecoil(float pitch, float yaw) =>
-            _kick.Kick(new Vector3(-pitch, yaw, 0f) * _settings.RecoilViewKick, Vector3.zero);
+        // Visual kick to go with a weapon's aim recoil (degrees up / right / rolled clockwise).
+        public void AddRecoil(float pitch, float yaw, float roll = 0f) =>
+            _kick.Kick(new Vector3(-pitch, yaw, -roll) * _settings.RecoilViewKick, Vector3.zero);
 
         // Positive widens the view momentarily.
         public void KickFov(float degrees) => _fov.Kick(degrees);

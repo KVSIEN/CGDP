@@ -22,15 +22,16 @@ namespace CGD.Weapons
 
             // `flip` moves the vertical kick between rotation and pushback: a low-bore gun (0)
             // drives straight back into the hand, a high-bore one (1) rears its muzzle up.
-            public void Apply(float vertKick, float horizKick, float flip, float weight, ref Vector3 rot, ref Vector3 pos)
+            // `w` is the weapon's own weighting of each direction on top of this baseline.
+            public void Apply(float vertKick, float horizKick, float flip, in KickWeights w, float weight, ref Vector3 rot, ref Vector3 pos)
             {
                 float rear = 2f * flip;
                 float push = 2f * (1f - flip);
-                rot.x -= vertKick  * Pitch * rear * weight;  // negative X = muzzle rise in local space
-                rot.y += horizKick * Yaw   * weight;
-                rot.z -= horizKick * Roll  * weight;
-                pos.y += vertKick  * Rise  * rear * weight;
-                pos.z -= vertKick  * Pushback * push * weight;
+                rot.x -= vertKick  * Pitch * rear * w.Rise * weight;  // negative X = muzzle rise in local space
+                rot.y += horizKick * Yaw   * w.Yaw  * weight;
+                rot.z -= horizKick * Roll  * w.Roll * weight;
+                pos.y += vertKick  * Rise  * rear * w.Hop * weight;
+                pos.z -= vertKick  * Pushback * push * w.Pushback * weight;
             }
         }
 
@@ -93,6 +94,7 @@ namespace CGD.Weapons
         private float   _horizontalSpeed;
         private bool    _isGrounded = true;
         private float   _adsT;
+        private float   _swayScale = 1f;   // the gun's and wielder's Sway modifiers
         private float   _idlePhaseOffset;
 
         /// <summary>Called by WeaponController when the equipped weapon changes.</summary>
@@ -110,8 +112,9 @@ namespace CGD.Weapons
         /// Called by WeaponController every Update so LateUpdate has fresh values. lookRate is
         /// how fast the view turns, in degrees per second (+x right, +y up).
         /// </summary>
-        public void SetSwayInputs(Vector2 lookRate, float horizontalSpeed, bool isGrounded, float adsT)
+        public void SetSwayInputs(Vector2 lookRate, float horizontalSpeed, bool isGrounded, float adsT, float swayScale)
         {
+            _swayScale       = swayScale;
             _lookRate        = lookRate;
             _horizontalSpeed = horizontalSpeed;
             _isGrounded      = isGrounded;
@@ -126,13 +129,14 @@ namespace CGD.Weapons
         public void AddKick(float vertKick, float horizKick, float adsT, float shotInterval)
         {
             float flip = _data != null ? _data.MuzzleFlip : WeaponData.BalancedMuzzleFlip;
-            _hip.Apply(vertKick, horizKick, flip, 1f - adsT, ref _kickRot, ref _kickPos);
+            KickWeights weights = _data != null ? _data.KickWeights : KickWeights.Identity;
+            _hip.Apply(vertKick, horizKick, flip, weights, 1f - adsT, ref _kickRot, ref _kickPos);
 
             // Start the new pulse from whatever is left of the previous one so it never pops.
             float remaining = PulseRemaining();
             _pulseRot *= remaining;
             _pulsePos *= remaining;
-            _ads.Apply(vertKick, horizKick, flip, adsT, ref _pulseRot, ref _pulsePos);
+            _ads.Apply(vertKick, horizKick, flip, weights, adsT, ref _pulseRot, ref _pulsePos);
 
             _pulseStart    = Time.time;
             _pulseDuration = Mathf.Min(shotInterval * IntervalMargin, _adsMaxRecoverTime);
@@ -174,20 +178,21 @@ namespace CGD.Weapons
             posTarget = Vector3.zero;
             if (_data == null) return;
 
-            float swayScale = 1f - _adsT;
+            float swayScale = (1f - _adsT) * Mathf.Max(0f, _swayScale);
             if (swayScale <= 0f) return;
+            SwayWeights weights = _data.SwayWeights;
 
             float lookAmount = _data.LookSwayAmount * swayScale;
-            rotTarget.x += -_lookRate.y * _lookPitchScale * lookAmount;
-            rotTarget.y += -_lookRate.x * _lookYawScale   * lookAmount;
-            rotTarget.z += -_lookRate.x * _lookYawScale   * lookAmount * _lookRollFactor;
+            rotTarget.x += -_lookRate.y * _lookPitchScale * lookAmount * weights.LookPitch;
+            rotTarget.y += -_lookRate.x * _lookYawScale   * lookAmount * weights.LookYaw;
+            rotTarget.z += -_lookRate.x * _lookYawScale   * lookAmount * weights.LookYaw * _lookRollFactor;
 
             float t     = Time.time * _data.IdleSwaySpeed + _idlePhaseOffset;
             float idleX = (Mathf.PerlinNoise(t, 0f)      - 0.5f) * 2f;
             float idleY = (Mathf.PerlinNoise(0f, t + 5f) - 0.5f) * 2f;
             float idleAmp = _data.IdleSwayAmount * swayScale;
-            rotTarget.x += idleX * idleAmp;
-            rotTarget.y += idleY * idleAmp;
+            rotTarget.x += idleX * idleAmp * weights.IdlePitch;
+            rotTarget.y += idleY * idleAmp * weights.IdleYaw;
 
             if (_isGrounded && _horizontalSpeed > 0.1f)
             {

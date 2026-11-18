@@ -176,6 +176,9 @@ namespace CGD.Weapons
         [Tooltip("Cap on total accumulated sideways recoil (degrees), either direction. Drift that reaches it swings back the other way.")]
         public float MaxAccumulatedHorizontalRecoil = 7f;
 
+        [Tooltip("How the shot kick is shared out between rise, swing, roll, hop, pushback and view roll (visual only)")]
+        public KickWeights KickWeights = KickWeights.Identity;
+
         [Header("Control — Buildup")]
         [Tooltip("Heat added per shot, as a fraction of full heat (0.1 = full after 10 shots, 0 = no build-up)")]
         [Range(0f, 1f)]
@@ -227,6 +230,12 @@ namespace CGD.Weapons
         public float IdleSwaySpeed = 0.7f;
         [Tooltip("Sway amplitude while walking/sprinting, scaled by move speed. All sway fades out while aiming so the sights stay on the crosshair.")]
         public float MoveSwayAmount = 1.0f;
+        [Tooltip("Per-axis share of the look and idle sway above")]
+        public SwayWeights SwayWeights = SwayWeights.Identity;
+        [Tooltip("Extra cone while moving, as a fraction of the cone at full run speed (0 = moving doesn't open it, 1 = doubles it)")]
+        [Min(0f)] public float MoveSpread = 0f;
+        [Tooltip("Extra cone while airborne, as a fraction of the cone (0 = none)")]
+        [Min(0f)] public float AirSpread = 0f;
 
         [Header("ADS")]
         [Tooltip("Camera field-of-view while fully aimed (degrees). Lower = more zoom. Sniper scopes want 20-30, ARs 40-45, pistols 55-60.")]
