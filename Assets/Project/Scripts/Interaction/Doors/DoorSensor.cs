@@ -25,6 +25,8 @@ namespace CGD.Interaction
         private readonly Collider[] _buffer = new Collider[BufferSize];
         private float _nextPoll;
         private float _lastOccupied;
+        // Who held it open last: closing after the player makes noise, closing after a guard doesn't.
+        private HealthManager _lastOccupant;
         private bool  _holding;
 
         private void Update()
@@ -32,13 +34,15 @@ namespace CGD.Interaction
             if (Time.time < _nextPoll) return;
             _nextPoll = Time.time + _pollInterval;
 
-            if (IsOccupied())
+            HealthManager occupant = Occupant();
+            if (occupant != null)
             {
                 _lastOccupied = Time.time;
+                _lastOccupant = occupant;
                 if (!_holding && _door.CanOpenAutomatically)
                 {
                     _holding = true;
-                    _door.SetOpen(true);
+                    _door.SetOpen(true, occupant.gameObject);
                 }
                 return;
             }
@@ -47,23 +51,26 @@ namespace CGD.Interaction
             if (Time.time - _lastOccupied < _closeDelay) return;
 
             _holding = false;
-            _door.SetOpen(false);
+            _door.SetOpen(false, _lastOccupant != null ? _lastOccupant.gameObject : null);
         }
 
-        private bool IsOccupied()
+        // The creature in the box (the player if they're there too), or null.
+        private HealthManager Occupant()
         {
             Vector3 center = transform.TransformPoint(_center);
             Vector3 half   = Vector3.Scale(_size, transform.lossyScale) * 0.5f;
             int count = Physics.OverlapBoxNonAlloc(center, half, _buffer, transform.rotation, _mask, QueryTriggerInteraction.Ignore);
 
+            HealthManager found = null;
             for (int i = 0; i < count; i++)
             {
                 HealthManager creature = _buffer[i].GetComponentInParent<HealthManager>();
                 if (creature == null || creature.IsDead) continue;
                 if (_opensFor == DoorSensorTarget.PlayerOnly && creature is not PlayerHealth) continue;
-                return true;
+                if (creature is PlayerHealth) return creature;
+                found ??= creature;
             }
-            return false;
+            return found;
         }
     }
 }

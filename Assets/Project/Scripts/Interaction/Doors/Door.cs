@@ -1,5 +1,6 @@
 using Unity.AI.Navigation;
 using UnityEngine;
+using CGD.Combat;
 
 namespace CGD.Interaction
 {
@@ -32,6 +33,12 @@ namespace CGD.Interaction
 
         [Tooltip("Leave the door out of the NavMesh so enemies path straight through it, as through an open doorway. For sensor doors, which open for them on arrival; never for a locked one")]
         [SerializeField] private bool _agentsPathThrough;
+
+        [Header("Noise")]
+        [Tooltip("How far the player opening it can be heard (0 = silent). Powered and heavy doors are louder than a hinged one")]
+        [SerializeField, Min(0f)] private float _noiseRadius = 6f;
+        [Tooltip("Closing it after the player, as a share of that")]
+        [SerializeField, Range(0f, 1f)] private float _closeNoiseShare = 0.5f;
 
         [Header("Lock")]
         [Tooltip("Item needed to unlock the door. Empty = never locked.")]
@@ -107,7 +114,7 @@ namespace CGD.Interaction
                 _isLocked = false;
             }
 
-            Toggle();
+            Change(!_isOpen, interactor);
         }
 
         // Remote control (switches, scripted events) bypasses both locks.
@@ -118,7 +125,22 @@ namespace CGD.Interaction
         // Automatic opening (a DoorSensor) never gets past a key, a condition or a bar.
         public bool CanOpenAutomatically => !IsLocked && !_isBarred;
 
-        public void SetOpen(bool open) => _isOpen = open;
+        // A sensor's call. Opened or shut by the player, a door makes noise; for anyone else it
+        // is silent, or guards walking their rounds would keep alerting each other.
+        public void SetOpen(bool open, GameObject by = null) => Change(open, by);
+
+        private void Change(bool open, GameObject by)
+        {
+            if (open == _isOpen) return;
+            _isOpen = open;
+            if (by == null || _noiseRadius <= 0f) return;
+
+            DamageSource source = DamageSource.Of(by);
+            if (source.Team != Team.Player) return;
+
+            // Closing behind you is quieter than opening it.
+            Noise.Emit(transform.position, open ? _noiseRadius : _noiseRadius * _closeNoiseShare, source);
+        }
 
         public void Unlock() => _isLocked = false;
 

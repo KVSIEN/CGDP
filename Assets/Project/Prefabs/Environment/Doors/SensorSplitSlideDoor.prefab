@@ -51,6 +51,8 @@ MonoBehaviour:
   _openAngle: 90
   _interactable: 0
   _agentsPathThrough: 1
+  _noiseRadius: 7
+  _closeNoiseShare: 0.5
   _holdDuration: 0
   _key:
     Item: {fileID: 0}
