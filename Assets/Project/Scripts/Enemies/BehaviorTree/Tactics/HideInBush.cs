@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 using CGD.BehaviorTrees;
 using CGD.Combat;
 using CGD.Core;
@@ -24,7 +23,6 @@ namespace CGD.Enemies
         private const float PathSlack       = 1.8f;  // a run this many times the straight line is the long way round
         private const float TowardTarget    = -0.2f; // bushes further this way toward the target than this are out
         private const float Chance          = 2f;    // metres of random preference, so it doesn't always pick the same bush
-        private const int   MaxCorners      = 16;
 
         [Tooltip("Metres the bush must be from the target")]
         [SerializeField, Min(0f)] private float _minFromTarget = 9f;
@@ -39,17 +37,8 @@ namespace CGD.Enemies
 
         [NonSerialized] private bool        _holding;
         [NonSerialized] private float       _until;
-        [NonSerialized] private NavMeshPath _path;
-        [NonSerialized] private Vector3[]   _corners;
 
         public override string Summary => $"{_minFromTarget:0}+ m from target, {_hold.Min:0.#}–{_hold.Max:0.#} s";
-
-        protected override void OnInitialize(BtContext context)
-        {
-            base.OnInitialize(context);
-            _path    = new NavMeshPath();
-            _corners = new Vector3[MaxCorners];
-        }
 
         protected override void OnEnter(BtContext context)
         {
@@ -110,29 +99,12 @@ namespace CGD.Enemies
                 if (run > 0.01f && away.sqrMagnitude > 0.01f && Vector3.Dot(toBush / run, away) < TowardTarget) continue;
 
                 float score = fromTarget - run * 0.5f + UnityEngine.Random.value * Chance;
-                if (score <= best || !TryReach(self, center, run, out Vector3 spot)) continue;
+                if (score <= best || !ReachableSpot.TryFind(self, center, SnapDistance, PathSlack, 2f, Ai.Health, out Vector3 spot)) continue;
 
                 best = score;
                 bush = spot;
             }
             return best > float.NegativeInfinity;
-        }
-
-        private bool TryReach(Vector3 from, Vector3 center, float straight, out Vector3 spot)
-        {
-            spot = default;
-            if (!NavMesh.SamplePosition(center, out NavMeshHit hit, SnapDistance, NavMesh.AllAreas)) return false;
-            if (Hazards.DamagePerSecondAt(hit.position, Ai.Health) > 0f) return false;
-            if (!NavMesh.CalculatePath(from, hit.position, NavMesh.AllAreas, _path) ||
-                _path.status != NavMeshPathStatus.PathComplete) return false;
-
-            int count = _path.GetCornersNonAlloc(_corners);
-            float length = 0f;
-            for (int i = 1; i < count; i++) length += Vector3.Distance(_corners[i - 1], _corners[i]);
-            if (length > straight * PathSlack + 2f) return false;
-
-            spot = hit.position;
-            return true;
         }
 
         private static Vector3 Flat(Vector3 vector) => new(vector.x, 0f, vector.z);

@@ -77,12 +77,17 @@ namespace CGD.Enemies
             blackboard.SetFloat(Awareness, ai.Perception.Awareness);
             blackboard.SetBool(Cautious, ai.Perception.IsCautious);
 
-            EnemyPacingState pacing = EnemyPacing.Current;
-            blackboard.SetFloat(Pacing, (int)pacing.Phase);
-            blackboard.SetFloat(Pressure, pacing.Pressure);
-            blackboard.SetFloat(PlayerStress, pacing.Intensity);
+            // Director, encounter and overseer values change a few times a second at most, so an
+            // engaged enemy ticking every frame need not re-read them every frame.
+            if (ai.IsSlowPublishDue(UnityEngine.Time.time, SlowPublishEvery))
+            {
+                EnemyPacingState pacing = EnemyPacing.Current;
+                blackboard.SetFloat(Pacing, (int)pacing.Phase);
+                blackboard.SetFloat(Pressure, pacing.Pressure);
+                blackboard.SetFloat(PlayerStress, pacing.Intensity);
 
-            PublishGroup(ai, blackboard);
+                PublishGroup(ai, blackboard);
+            }
 
             var perception = ai.Perception;
             if (perception.Target != null)
@@ -106,6 +111,7 @@ namespace CGD.Enemies
         }
 
         private const float CloseRange = 6f;
+        private const float SlowPublishEvery = 0.2f;
 
         // Its encounter, its overseer and the temperament they leave it in.
         private static void PublishGroup(EnemyAI ai, Blackboard blackboard)

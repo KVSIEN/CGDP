@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 using CGD.BehaviorTrees;
 using CGD.Combat;
 using CGD.Core;
@@ -36,7 +35,6 @@ namespace CGD.Enemies
         private const float InBush          = 4f;    // score for a spot inside a bush (with Prefer Bushes)
         private const float BushBand        = 3f;    // metres either side of the kept distance a bush still counts
         private const float MinMove         = 2f;    // a bush closer than this is the one it is in
-        private const int   MaxCorners      = 16;
 
         [Tooltip("Seconds to prowl (random within the range)")]
         [SerializeField] private FloatRange _seconds = new(3f, 4.5f);
@@ -54,17 +52,8 @@ namespace CGD.Enemies
         [NonSerialized] private float _moveGivesUpAt;
         [NonSerialized] private bool  _moving;
         [NonSerialized] private int   _sense;   // which way round it circles: +1 or -1
-        [NonSerialized] private NavMeshPath _path;
-        [NonSerialized] private Vector3[]   _corners;
 
         public override string Summary => $"{_distance.Min:0.#}–{_distance.Max:0.#} m" + (_preferBushes ? ", via bushes" : "");
-
-        protected override void OnInitialize(BtContext context)
-        {
-            base.OnInitialize(context);
-            _path    = new NavMeshPath();
-            _corners = new Vector3[MaxCorners];
-        }
 
         protected override void OnEnter(BtContext context)
         {
@@ -123,7 +112,7 @@ namespace CGD.Enemies
                 float   sweep = UnityEngine.Random.Range(MinSweep, MaxSweep) * sense;
                 float   reach = Mathf.Clamp(radius + UnityEngine.Random.Range(-RadiusJitter, RadiusJitter), _distance.Min, _distance.Max);
                 Vector3 spot  = target + Quaternion.Euler(0f, sweep, 0f) * bearing * reach;
-                if (!TryReach(self, spot, out spot)) continue;
+                if (!ReachableSpot.TryFind(self, spot, SnapDistance, PathSlack, 1f, Ai.Health, out spot)) continue;
 
                 float score = UnityEngine.Random.value * Chance + (sense == _sense ? KeepCircling : 0f) + HiddenScore(spot);
                 if (score <= best) continue;
@@ -156,7 +145,7 @@ namespace CGD.Enemies
                 float   fromTarget = Flat(center - target).magnitude;
                 if (fromTarget < _distance.Min - BushBand || fromTarget > _distance.Max + BushBand) continue;
                 if (Flat(center - self).sqrMagnitude < MinMove * MinMove) continue;
-                if (!TryReach(self, center, out Vector3 spot)) continue;
+                if (!ReachableSpot.TryFind(self, center, SnapDistance, PathSlack, 1f, Ai.Health, out Vector3 spot)) continue;
 
                 float turn  = Vector3.SignedAngle(Flat(self - target), Flat(spot - target), Vector3.up);
                 float score = UnityEngine.Random.value * Chance + InBush + HiddenScore(spot) +
@@ -166,28 +155,6 @@ namespace CGD.Enemies
                 best     = score;
                 bestSpot = spot;
             }
-        }
-
-        // On the NavMesh, clear of hazards, and a short walk rather than the long way round.
-        private bool TryReach(Vector3 from, Vector3 spot, out Vector3 reached)
-        {
-            reached = default;
-            if (!NavMesh.SamplePosition(spot, out NavMeshHit hit, SnapDistance, NavMesh.AllAreas)) return false;
-            if (Hazards.DamagePerSecondAt(hit.position, Ai.Health) > 0f) return false;
-            if (!NavMesh.CalculatePath(from, hit.position, NavMesh.AllAreas, _path) ||
-                _path.status != NavMeshPathStatus.PathComplete) return false;
-
-            if (PathLength() > Flat(hit.position - from).magnitude * PathSlack + 1f) return false;
-            reached = hit.position;
-            return true;
-        }
-
-        private float PathLength()
-        {
-            int count = _path.GetCornersNonAlloc(_corners);
-            float length = 0f;
-            for (int i = 1; i < count; i++) length += Vector3.Distance(_corners[i - 1], _corners[i]);
-            return length;
         }
 
         private float HiddenScore(Vector3 spot)

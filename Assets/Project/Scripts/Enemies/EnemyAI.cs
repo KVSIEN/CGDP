@@ -50,6 +50,7 @@ namespace CGD.Enemies
         private AiState      _state = AiState.Patrol;
         private AiState      _stateBeforeStun;
         private float        _sinceTreeTick;
+        private float        _nextSlowPublish;
         private bool         _started;
 
         private float _nextStaggerAt;
@@ -290,6 +291,15 @@ namespace CGD.Enemies
             return TreeTickRate.IntervalFor(engaged, Perception.SensesHostiles);
         }
 
+        // Whether the blackboard's slow-moving keys are due a refresh; claims the slot when so.
+        // The first publish always is.
+        internal bool IsSlowPublishDue(float time, float every)
+        {
+            if (time < _nextSlowPublish) return false;
+            _nextSlowPublish = time + every;
+            return true;
+        }
+
         void IBtAgentStatus.DescribeStatus(List<(string Label, string Value)> rows) => EnemyStatusReport.Describe(this, rows);
 
         // For enemies spawned at runtime (level builder, dev console) instead of placed with a route.
@@ -485,6 +495,7 @@ namespace CGD.Enemies
             ReturnBody     = null;
             _engagedTarget = null;
             _sinceTreeTick = 0f;
+            _nextSlowPublish = 0f;
 
             _tree?.Reset();
             ReportState(AiState.Patrol);

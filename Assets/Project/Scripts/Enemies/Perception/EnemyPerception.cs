@@ -35,6 +35,7 @@ namespace CGD.Enemies
     public class EnemyPerception
     {
         private const int   MaxCandidates   = 3;
+        private const float IdleSampleScale = 2f;     // sample this much less often with nobody around
         private const float DeathHearingRange = 10f;  // an ally going down is heard this far
         private const int   MaxBodyChecks   = 2;      // raycasts per sample spent looking for bodies
         private const float NearMissRadius  = 2.5f;   // a hostile bullet landing this close is felt
@@ -204,9 +205,17 @@ namespace CGD.Enemies
 
             float elapsed = _clock - _lastSample;
             _lastSample = _clock;
-            _nextSample = _clock + _profile.SenseInterval;
+            _nextSample = _clock + NextSampleInterval();
             Sample(elapsed);
         }
+
+        // Nothing in sensing range at the last sample and nothing on its mind: looking again at
+        // the full rate would find nothing, and a hostile that walks in is still noticed one
+        // slow interval later at most. Anything pushed in (noise, hit, callout) acts at once.
+        private float NextSampleInterval() =>
+            _candidates.Count == 0 && Level == AwarenessLevel.Unaware && !_hasLead
+                ? _profile.SenseInterval * IdleSampleScale
+                : _profile.SenseInterval;
 
         // True once per new lead (something seen, heard or felt worth a look) since the last call.
         public bool ConsumeLead()
