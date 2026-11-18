@@ -1186,6 +1186,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2100000056}
   - component: {fileID: 2100001102}
+  - component: {fileID: 2100001103}
   m_Layer: 0
   m_Name: Enemies
   m_TagString: Untagged
@@ -1848,6 +1849,20 @@ MonoBehaviour:
   _obstacleMask:
     serializedVersion: 2
     m_Bits: 1
+--- !u!114 &2100001103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100000055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c6860fd8cb149838fb36086dd048a72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.DevTools.LineupSpawner
+  _lineup: {fileID: 11400000, guid: 10a643f938bc440994faea0f1c58e727, type: 2}
+  _waypoints: {fileID: 2100000058}
 --- !u!1 &2100001110
 GameObject:
   m_ObjectHideFlags: 0
@@ -5937,7 +5952,10 @@ MonoBehaviour:
   _listener: {fileID: 2100009004}
   _gameplayCamera: {fileID: 330585545}
   _agents: {fileID: 2100000056}
-  _agentPrefabs: []
+  _agentPrefabs:
+  - {fileID: 100100000, guid: 75ff1fd9d4ba476ba0050ba25edc0f3b, type: 3}
+  - {fileID: 100100000, guid: 7e7e2db0155b42e0a04c013d4ea42691, type: 3}
+  - {fileID: 100100000, guid: 3490f43dcd7c4caca28414efcacda7cf, type: 3}
   _inputSettings: {fileID: 11400000, guid: b3052e3d42934a0095e9ec6202ec3e23, type: 2}
   _panLimit: 30
   _overlayMaterial: {fileID: 0}
