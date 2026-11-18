@@ -34,7 +34,7 @@ namespace CGD.Level
         [Header("Corners")]
         [Tooltip("Tiles cut off each outside room corner at 45° (0 = sharp). Room functions can override it")]
         [SerializeField, Range(0, RoomOutline.MaxChamfer)] private int _roomChamfer = 1;
-        [Tooltip("Rounding passes for curved rooms (domes, rings): 0 = 45° walls, more = smoother arcs of shorter wall pieces")]
+        [Tooltip("Rounding passes for curved rooms (domes, rings): 0 = 45° walls, more = smoother arcs of shorter wall pieces. Rooms 24 tiles across or more get one more pass (up to the maximum)")]
         [SerializeField, Range(0, RoomOutline.MaxSmoothing)] private int _curveSmoothing = 2;
         [Tooltip("Cut the outside corner of every corridor bend at 45°")]
         [SerializeField] private bool _chamferCorridorBends = true;

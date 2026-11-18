@@ -34,6 +34,7 @@ namespace CGD.Level
         {
             Dictionary<int, Vector2Int> cells = AssignCells(graph, nodeSpacing);
             Dictionary<int, int> connections = CountConnections(graph);
+            Dictionary<int, List<Vector2Int>> toward = ConnectionDirections(graph, cells);
             var claimed = new HashSet<Vector2Int>(cells.Values);
             HashSet<RoomFunction> usedUnique = PinnedUniquePlaces(graph);
 
@@ -60,10 +61,11 @@ namespace CGD.Level
                 LandmarkRoomDefinition landmark = function != null ? function.Landmark : null;
                 float strength = faction != null ? _settings.TerritoryDepth.StrengthOf(node.FactionInfluence) : 1f;
                 if (function != null && function.IsUnique) usedUnique.Add(function);
-                if (landmark != null && TryPlaceLandmark(landmark, BlockArea(block), count, out RoomFootprint landmarkFootprint))
+                if (landmark != null && TryPlaceLandmark(landmark, BlockArea(block), count, toward[node.Id], seed.Derive(node.Id).Derive("turn").Stream(),
+                                                         out RoomFootprint landmarkFootprint, out int landmarkTurns))
                 {
                     layout.AddRoom(new LevelRoom(node, landmarkFootprint, function, height, landmark, faction, breach, side: side,
-                                                 designStrength: strength));
+                                                 designStrength: strength, landmarkTurns: landmarkTurns));
                     continue;
                 }
                 if (landmark != null)
@@ -204,20 +206,89 @@ namespace CGD.Level
             return new RectInt(area.xMin + inset, area.yMin + inset, size, size);
         }
 
-        private static bool TryPlaceLandmark(LandmarkRoomDefinition landmark, RectInt area, int connections, out RoomFootprint footprint)
+        // The landmark's footprint, turned by whichever quarter turns fit the area and leave a
+        // doorway for every connection; of those, the one whose doorways face the most connected
+        // rooms (`toward`: the side each connection leaves by). Ties are rolled from `random`,
+        // which a landmark with one best turn never touches.
+        private static bool TryPlaceLandmark(LandmarkRoomDefinition landmark, RectInt area, int connections, IReadOnlyList<Vector2Int> toward,
+                                             RandomStream random, out RoomFootprint footprint, out int turns)
         {
             footprint = null;
+            turns = 0;
             Vector2Int size = landmark.SizeTiles;
-            if (size.x < 1 || size.y < 1 || size.x > area.width || size.y > area.height) return false;
+            if (size.x < 1 || size.y < 1) return false;
 
+            var best = new List<(int turns, RoomFootprint footprint)>();
+            int bestScore = -1;
+            for (int turn = 0; turn < (landmark.CanTurn ? 4 : 1); turn++)
+            {
+                Vector2Int turned = LandmarkTurn.Size(size, turn);
+                if (turned.x > area.width || turned.y > area.height) continue;
+
+                RoomFootprint candidate = TurnedFootprint(landmark, area, turn);
+                if (candidate.Sockets.Count < connections) continue;
+
+                int score = DoorsFacing(candidate, toward);
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    best.Clear();
+                }
+                if (score == bestScore) best.Add((turn, candidate));
+            }
+            if (best.Count == 0) return false;
+
+            (turns, footprint) = best.Count == 1 ? best[0] : random.Pick(best);
+            return true;
+        }
+
+        private static RoomFootprint TurnedFootprint(LandmarkRoomDefinition landmark, RectInt area, int turns)
+        {
+            Vector2Int size = LandmarkTurn.Size(landmark.SizeTiles, turns);
             var origin = new Vector2Int(area.xMin + (area.width - size.x) / 2, area.yMin + (area.height - size.y) / 2);
             var sockets = new List<DoorSocket>();
             foreach (LandmarkDoorway doorway in landmark.Doorways)
-                sockets.Add(new DoorSocket(origin + doorway.Tile, doorway.Outward));
-
-            footprint = RoomFootprint.Rectangle(new RectInt(origin, size), sockets);
-            return footprint.Sockets.Count >= connections;
+            {
+                Vector2Int tile = LandmarkTurn.Tile(doorway.Tile, landmark.SizeTiles, turns);
+                sockets.Add(new DoorSocket(origin + tile, LandmarkDoorway.OutwardOf(LandmarkTurn.Side(doorway.Side, turns))));
+            }
+            return RoomFootprint.Rectangle(new RectInt(origin, size), sockets);
         }
+
+        // How many of the connections have a doorway on the side they leave by.
+        private static int DoorsFacing(RoomFootprint footprint, IReadOnlyList<Vector2Int> toward)
+        {
+            int score = 0;
+            var used = new List<DoorSocket>();
+            foreach (Vector2Int direction in toward)
+                foreach (DoorSocket socket in footprint.Sockets)
+                {
+                    if (socket.Outward != direction || used.Contains(socket)) continue;
+                    used.Add(socket);
+                    score++;
+                    break;
+                }
+            return score;
+        }
+
+        // For each node, the side each of its connections leaves by: toward the other room's
+        // cell, along the axis they are further apart on.
+        private static Dictionary<int, List<Vector2Int>> ConnectionDirections(MapGraph graph, Dictionary<int, Vector2Int> cells)
+        {
+            var directions = new Dictionary<int, List<Vector2Int>>();
+            foreach (MapNode node in graph.Nodes) directions[node.Id] = new List<Vector2Int>();
+            foreach (MapConnection connection in graph.Connections)
+            {
+                if (!cells.TryGetValue(connection.A, out Vector2Int a) || !cells.TryGetValue(connection.B, out Vector2Int b)) continue;
+                directions[connection.A].Add(Toward(b - a));
+                directions[connection.B].Add(Toward(a - b));
+            }
+            return directions;
+        }
+
+        private static Vector2Int Toward(Vector2Int delta) => Mathf.Abs(delta.x) >= Mathf.Abs(delta.y)
+            ? new Vector2Int(delta.x >= 0 ? 1 : -1, 0)
+            : new Vector2Int(0, delta.y >= 0 ? 1 : -1);
 
         private static Dictionary<int, int> CountConnections(MapGraph graph)
         {

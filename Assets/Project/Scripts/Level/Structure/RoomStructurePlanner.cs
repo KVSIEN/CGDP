@@ -86,8 +86,10 @@ namespace CGD.Level
         {
             Vector2Int origin = room.Footprint.Bounds.min;
             foreach (Vector2Int local in room.Landmark.OccupiedTiles)
-                if (room.Footprint.Contains(origin + local))
-                    structure.Tag(origin + local, RoomTileTags.Structure);
+            {
+                Vector2Int tile = origin + LandmarkTurn.Tile(local, room.Landmark.SizeTiles, room.LandmarkTurns);
+                if (room.Footprint.Contains(tile)) structure.Tag(tile, RoomTileTags.Structure);
+            }
         }
 
         private static void TagWalls(RoomStructure structure)

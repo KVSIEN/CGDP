@@ -11,7 +11,9 @@ namespace CGD.Level
         public Vector2Int Tile;
         public RoomSide Side;
 
-        public Vector2Int Outward => Side switch
+        public Vector2Int Outward => OutwardOf(Side);
+
+        public static Vector2Int OutwardOf(RoomSide side) => side switch
         {
             RoomSide.North => Vector2Int.up,
             RoomSide.East  => Vector2Int.right,

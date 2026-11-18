@@ -22,6 +22,20 @@ namespace CGD.Level
         public const int MaxSmoothing = 3;
         private const float MaxSmoothingCut = 0.5f;
 
+        // Rooms at least this many tiles across get one more smoothing pass, so a big dome's arc
+        // has smaller bends than a small one's (a bend is a fixed 45° kink at most, but a big dome
+        // has long gentle stretches and no reason to be coarser).
+        public const int LargeRoomTiles = 24;
+
+        // `smoothing` (the build settings' curve smoothing) for a room with these bounds: one more
+        // pass when it is large, never beyond MaxSmoothing, and none when smoothing is off.
+        public static int SmoothingFor(RectInt bounds, int smoothing)
+        {
+            if (smoothing <= 0) return 0;
+            bool large = Mathf.Max(bounds.width, bounds.height) >= LargeRoomTiles;
+            return Mathf.Min(MaxSmoothing, smoothing + (large ? 1 : 0));
+        }
+
         public static List<(Vector2 from, Vector2 to)> Build(RoomFootprint footprint, Func<Vector2Int, Vector2Int, bool> isOpening,
                                                              int chamfer = 0, int smoothing = 0) =>
             Plan(footprint, isOpening, chamfer, smoothing).Segments;

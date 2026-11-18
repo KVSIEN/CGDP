@@ -13,8 +13,9 @@ namespace CGD.Level
         public LevelRoom(MapNode node, RoomFootprint footprint, RoomFunction function, float wallHeight,
             LandmarkRoomDefinition landmark = null, FactionDefinition faction = null,
             FactionDefinition breachFaction = null, int chamfer = 0, ShipSide side = ShipSide.None, float designStrength = 1f,
-            RoomLayout roomLayout = null)
+            RoomLayout roomLayout = null, int landmarkTurns = 0)
         {
+            LandmarkTurns = landmarkTurns;
             RoomLayout    = roomLayout;
             DesignStrength = Mathf.Clamp01(designStrength);
             Side          = side;
@@ -31,7 +32,7 @@ namespace CGD.Level
         // The same room shifted by `offset` tiles. Only before its structure and outline are
         // planned, which depend on where the doorways end up.
         public LevelRoom Translated(Vector2Int offset) =>
-            new(Node, Footprint.Translated(offset), Function, WallHeight, Landmark, Faction, BreachFaction, Chamfer, Side, DesignStrength, RoomLayout);
+            new(Node, Footprint.Translated(offset), Function, WallHeight, Landmark, Faction, BreachFaction, Chamfer, Side, DesignStrength, RoomLayout, LandmarkTurns);
 
         public MapNode       Node       { get; }
         public RoomFootprint Footprint  { get; }
@@ -46,6 +47,8 @@ namespace CGD.Level
         public RoomOutlinePlan Outline  { get; private set; }
         // The hand-built interior placed in this room, if any.
         public LandmarkRoomDefinition Landmark { get; }
+        // Quarter turns, clockwise, the landmark was placed with (LandmarkTurn).
+        public int LandmarkTurns { get; }
         // The faction that holds this room, if any (from the map graph).
         public FactionDefinition Faction { get; }
         // Breach rooms: the second faction bleeding in, whose enemies fight here too.

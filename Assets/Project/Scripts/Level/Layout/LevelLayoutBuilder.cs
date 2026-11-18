@@ -112,7 +112,7 @@ namespace CGD.Level
                 if (!room.Footprint.CurvedWalls && room.Chamfer <= 0) continue;
 
                 RoomOutlinePlan outline = RoomOutline.Plan(room.Footprint, (tile, side) => layout.IsWalkable(tile + side),
-                                                            room.Chamfer, _settings.CurveSmoothing);
+                                                            room.Chamfer, RoomOutline.SmoothingFor(room.Footprint.Bounds, _settings.CurveSmoothing));
                 room.AttachOutline(outline);
                 foreach (Vector2Int tile in outline.CutTiles)
                     room.Structure?.Tag(tile, RoomTileTags.Structure);

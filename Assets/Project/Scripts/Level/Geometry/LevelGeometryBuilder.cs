@@ -163,13 +163,16 @@ namespace CGD.Level
             floors.AddBox(layout.TileToLocal(t) + Vector3.down * (floor * 0.5f), new Vector3(tile, floor, tile));
         }
 
-        // The interior prefab's origin goes on the room's south-west floor corner.
+        // The interior prefab's origin goes on the room's south-west floor corner, or, for a
+        // landmark placed turned, on the corner LandmarkTurn names, turned the same way.
         private static void PlaceLandmark(LevelLayout layout, LevelRoom room, Transform parent)
         {
             if (room.Landmark.Prefab == null) return;
             Vector2Int min = room.Footprint.Bounds.min;
-            Vector3 corner = new Vector3(min.x, 0f, min.y) * layout.TileSize;
-            Object.Instantiate(room.Landmark.Prefab, parent.TransformPoint(corner), parent.rotation, parent);
+            Vector2 offset = LandmarkTurn.PrefabOffset(room.Landmark.SizeTiles, room.LandmarkTurns);
+            Vector3 corner = new Vector3(min.x + offset.x, 0f, min.y + offset.y) * layout.TileSize;
+            Quaternion turn = Quaternion.Euler(0f, LandmarkTurn.Yaw(room.LandmarkTurns), 0f);
+            Object.Instantiate(room.Landmark.Prefab, parent.TransformPoint(corner), parent.rotation * turn, parent);
         }
 
         // Pieces short enough to shoot over go into `lowCover`, drawn in their own material, so
