@@ -94,6 +94,7 @@ namespace CGD.Editor
             if (EditorGUI.EndChangeCheck()) session.SetCategory(node, category);
 
             DrawPlace(node, session);
+            DrawLayout(node, session);
             DrawFaction(node, session);
             DrawSection(node, session);
 
@@ -123,6 +124,26 @@ namespace CGD.Editor
             if (GUILayout.Button(new GUIContent("Pin current", $"Pin {room.Function.DisplayName}, the place this room gets now"),
                                  EditorStyles.miniButton, GUILayout.Width(76f)))
                 session.SetPlace(node, room.Function);
+        }
+
+        // Only under a pinned place with layouts: which arrangement the level builds.
+        private static void DrawLayout(MapNode node, MapGraphEditorSession session)
+        {
+            if (node.Place is not RoomFunction place || place.Layouts.Count == 0) return;
+
+            var layouts = new List<RoomLayout> { null };
+            var labels  = new List<string> { "(pick by weight)" };
+            foreach (RoomLayout layout in place.Layouts)
+            {
+                if (layout == null) continue;
+                layouts.Add(layout);
+                labels.Add(layout.DisplayName);
+            }
+
+            EditorGUI.BeginChangeCheck();
+            int index = EditorGUILayout.Popup(new GUIContent("Layout", "Pin which of the place's arrangements the level builds. Pick = by weight from the seed"),
+                                              Mathf.Max(0, layouts.IndexOf(node.Layout as RoomLayout)), labels.ToArray());
+            if (EditorGUI.EndChangeCheck()) session.SetLayout(node, layouts[Mathf.Max(0, index)]);
         }
 
         private static void DrawFaction(MapNode node, MapGraphEditorSession session)

@@ -12,8 +12,10 @@ namespace CGD.Level
     {
         public LevelRoom(MapNode node, RoomFootprint footprint, RoomFunction function, float wallHeight,
             LandmarkRoomDefinition landmark = null, FactionDefinition faction = null,
-            FactionDefinition breachFaction = null, int chamfer = 0, ShipSide side = ShipSide.None, float designStrength = 1f)
+            FactionDefinition breachFaction = null, int chamfer = 0, ShipSide side = ShipSide.None, float designStrength = 1f,
+            RoomLayout roomLayout = null)
         {
+            RoomLayout    = roomLayout;
             DesignStrength = Mathf.Clamp01(designStrength);
             Side          = side;
             Chamfer       = chamfer;
@@ -29,11 +31,13 @@ namespace CGD.Level
         // The same room shifted by `offset` tiles. Only before its structure and outline are
         // planned, which depend on where the doorways end up.
         public LevelRoom Translated(Vector2Int offset) =>
-            new(Node, Footprint.Translated(offset), Function, WallHeight, Landmark, Faction, BreachFaction, Chamfer, Side, DesignStrength);
+            new(Node, Footprint.Translated(offset), Function, WallHeight, Landmark, Faction, BreachFaction, Chamfer, Side, DesignStrength, RoomLayout);
 
         public MapNode       Node       { get; }
         public RoomFootprint Footprint  { get; }
         public RoomFunction  Function   { get; }    // null for a plain room
+        // Which of the function's arrangements this room is (null = the function has none).
+        public RoomLayout    RoomLayout { get; }
         public float         WallHeight { get; }    // metres
         public RoomStructure Structure  { get; private set; }
         // Tiles cut off each outside corner at 45° (0 = sharp corners).
@@ -61,6 +65,22 @@ namespace CGD.Level
         public Vector2 Anchor => Footprint.Anchor;
 
         public string DisplayName => Function != null ? Function.DisplayName : Node.Type.ToString();
+        // The place and its arrangement, "Casino: Table Pits", or just the place.
+        public string LayoutName => RoomLayout != null ? $"{DisplayName}: {RoomLayout.DisplayName}" : DisplayName;
+
+        // What this room's structure rules, set pieces and furniture come from.
+        public IReadOnlyList<RoomStructureRule> StructureRules =>
+            Function != null ? Function.StructureWith(RoomLayout) : Array.Empty<RoomStructureRule>();
+
+        // The layout's set pieces first, then the function's own props.
+        public IEnumerable<RoomPropPlacement> FunctionProps
+        {
+            get
+            {
+                if (RoomLayout != null) foreach (RoomPropPlacement placement in RoomLayout.Props) yield return placement;
+                if (Function != null)   foreach (RoomPropPlacement placement in Function.Props)   yield return placement;
+            }
+        }
 
         // Set once by LevelLayoutBuilder once the doorways are known (no chamfer cuts a doorway).
         public void AttachOutline(RoomOutlinePlan outline) => Outline = outline;

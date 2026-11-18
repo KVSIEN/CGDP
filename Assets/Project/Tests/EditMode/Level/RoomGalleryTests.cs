@@ -8,7 +8,8 @@ using CGD.Map;
 
 namespace CGD.Tests
 {
-    // The RoomGallery scene's graph: every place once per ship side it can sit on, every faction
+    // The RoomGallery scene's graph: every place once per ship side it can sit on and per layout
+    // it has, every faction
     // and section in turn, each faction's wing from frontier to core with its showcase fights,
     // one walk from Start to Exit, and a layout that fits.
     public class RoomGalleryTests
@@ -22,26 +23,53 @@ namespace CGD.Tests
         [Test]
         public void EveryPlaceGetsARoomOnEachOfItsSides()
         {
-            MapGraph graph = RoomGalleryGraph.Build(Gallery, Settings);
-            var rooms = new Dictionary<IRoomPlace, List<ShipSide>>();
-            foreach (MapNode node in graph.Nodes)
-            {
-                if (node.Place == null) continue;
-                if (!rooms.TryGetValue(node.Place, out List<ShipSide> sides)) rooms[node.Place] = sides = new List<ShipSide>();
-                sides.Add(((RoomFunction)node.Place).SideIn(Gallery.Content.GetSection(node.Section)));
-            }
+            Dictionary<IRoomPlace, List<MapNode>> rooms = RoomsByPlace(RoomGalleryGraph.Build(Gallery, Settings));
 
             foreach (RoomFunction place in Settings.Functions)
             {
                 if (place == null) continue;
-                Assert.IsTrue(rooms.TryGetValue(place, out List<ShipSide> shown), $"{place.DisplayName} missing");
-                if (place.Sides.Count < 2)
-                {
-                    Assert.AreEqual(1, shown.Count, $"{place.DisplayName} more than once");
-                    continue;
-                }
-                CollectionAssert.AreEquivalent(place.Sides, shown, $"{place.DisplayName}'s sides");
+                Assert.IsTrue(rooms.TryGetValue(place, out List<MapNode> shown), $"{place.DisplayName} missing");
+                int expected = Mathf.Max(place.Sides.Count < 2 ? 1 : place.Sides.Count, Layouts(place).Count);
+                Assert.AreEqual(expected, shown.Count, $"{place.DisplayName}: one room per side or per layout, whichever is more");
+
+                var sides = new HashSet<ShipSide>();
+                foreach (MapNode node in shown) sides.Add(place.SideIn(Gallery.Content.GetSection(node.Section)));
+                if (place.Sides.Count >= 2) CollectionAssert.IsSubsetOf(place.Sides, sides, $"{place.DisplayName}'s sides");
             }
+        }
+
+        [Test]
+        public void EveryLayoutOfAPlaceGetsARoom()
+        {
+            Dictionary<IRoomPlace, List<MapNode>> rooms = RoomsByPlace(RoomGalleryGraph.Build(Gallery, Settings));
+
+            foreach (RoomFunction place in Settings.Functions)
+            {
+                if (place == null || Layouts(place).Count == 0) continue;
+                var shown = new List<RoomLayout>();
+                foreach (MapNode node in rooms[place]) shown.Add(node.Layout as RoomLayout);
+                CollectionAssert.IsSubsetOf(Layouts(place), shown, $"{place.DisplayName}'s layouts");
+            }
+        }
+
+        private static Dictionary<IRoomPlace, List<MapNode>> RoomsByPlace(MapGraph graph)
+        {
+            var rooms = new Dictionary<IRoomPlace, List<MapNode>>();
+            foreach (MapNode node in graph.Nodes)
+            {
+                if (node.Place == null) continue;
+                if (!rooms.TryGetValue(node.Place, out List<MapNode> nodes)) rooms[node.Place] = nodes = new List<MapNode>();
+                nodes.Add(node);
+            }
+            return rooms;
+        }
+
+        private static List<RoomLayout> Layouts(RoomFunction place)
+        {
+            var layouts = new List<RoomLayout>();
+            foreach (RoomLayout layout in place.Layouts)
+                if (layout != null) layouts.Add(layout);
+            return layouts;
         }
 
         [Test]

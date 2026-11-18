@@ -308,6 +308,7 @@ namespace CGD.Editor
         public void SetSection(MapNode node, int section) => Edits.SetSection(node, section);
         public void SetCategory(MapNode node, RoomCategory category) => Edits.SetCategory(node, category);
         public void SetPlace(MapNode node, IRoomPlace place) => Edits.SetPlace(node, place);
+        public void SetLayout(MapNode node, ScriptableObject layout) => Edits.SetLayout(node, layout);
         public void SetModifiers(IEnumerable<MapRunModifier> modifiers) => Edits.SetModifiers(modifiers);
         public void SetBreachFaction(MapNode node, int faction) => Edits.SetBreachFaction(node, faction);
         public void SetLockKind(MapConnection connection, MapLockKind kind) => Edits.SetLockKind(connection, kind);

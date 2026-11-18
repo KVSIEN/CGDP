@@ -5,7 +5,8 @@ using CGD.Map;
 namespace CGD.Level
 {
     // Turns RoomGallerySettings into a map graph LevelBuilder can build: Start, the place
-    // rooms (a place that sits on several ship sides once per side), a wing per faction —
+    // rooms (a place that sits on several ship sides once per side, a place with several
+    // layouts once per layout — as many rooms as the larger of the two), a wing per faction —
     // Combat rooms at its depth steps, frontier first, then its showcase fights — and the
     // Exit, in a grid of rows joined in a snake so the walk visits every room once. Node
     // positions are in cells (lay it out with a node spacing of one), as the Room Lab's
@@ -25,12 +26,16 @@ namespace CGD.Level
             {
                 // Factions and sections turn at different rates, so a place meets each pairing in time.
                 int section = sections > 0 ? turn / Mathf.Max(1, factions) % sections : MapNode.NoSection;
-                foreach (int placeSection in SectionsFor(place, gallery, section))
+                List<int> placeSections = SectionsFor(place, gallery, section);
+                List<RoomLayout> layouts = LayoutsFor(place, gallery);
+                int rooms = Mathf.Max(placeSections.Count, layouts.Count);
+                for (int i = 0; i < rooms; i++)
                 {
                     MapNode node = Add(graph, gallery, gallery.PlaceType);
                     node.Place    = place;
+                    node.Layout   = layouts.Count > 0 ? layouts[i % layouts.Count] : null;
                     node.Category = place.Category;
-                    node.Section  = placeSection;
+                    node.Section  = placeSections[i % placeSections.Count];
                     if (factions > 0) node.SetFaction(turn % factions, 1f);
                     previous = Link(graph, previous, node);
                 }
@@ -67,19 +72,31 @@ namespace CGD.Level
 
         // The section of each room a place gets: its turn's section, or with Every Side one per
         // side it lists, in a section of that side (one the content lacks keeps the turn's).
-        private static IEnumerable<int> SectionsFor(RoomFunction place, RoomGallerySettings gallery, int turnSection)
+        private static List<int> SectionsFor(RoomFunction place, RoomGallerySettings gallery, int turnSection)
         {
+            var sections = new List<int>();
             if (!gallery.EverySide || place.Sides.Count < 2 || gallery.Content == null)
             {
-                yield return turnSection;
-                yield break;
+                sections.Add(turnSection);
+                return sections;
             }
 
             foreach (ShipSide side in place.Sides)
             {
                 int section = SectionOf(gallery.Content, side);
-                yield return section != MapNode.NoSection ? section : turnSection;
+                sections.Add(section != MapNode.NoSection ? section : turnSection);
             }
+            return sections;
+        }
+
+        // Each layout pinned in turn with Every Layout; none (picked by seed) otherwise.
+        private static List<RoomLayout> LayoutsFor(RoomFunction place, RoomGallerySettings gallery)
+        {
+            var layouts = new List<RoomLayout>();
+            if (!gallery.EveryLayout) return layouts;
+            foreach (RoomLayout layout in place.Layouts)
+                if (layout != null) layouts.Add(layout);
+            return layouts;
         }
 
         private static int SectionOf(MapContentSettings content, ShipSide side)

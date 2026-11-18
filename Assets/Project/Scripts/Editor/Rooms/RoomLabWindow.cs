@@ -43,8 +43,16 @@ namespace CGD.Editor
             RoomLabWindow window = GetWindow<RoomLabWindow>();
             window._recipe.Source   = RoomLabRecipe.SourceKind.Recipe;
             window._recipe.Place    = function;
+            window._recipe.Layout   = null;
             window._recipe.Category = function.Category;
             window.MarkDirty();
+        }
+
+        // The Room Lab on one layout of the place that lists it.
+        public static void OpenLayout(RoomFunction function, RoomLayout layout)
+        {
+            OpenFunction(function);
+            GetWindow<RoomLabWindow>()._recipe.Layout = layout;
         }
 
         // The Room Lab on the room a map graph node becomes.

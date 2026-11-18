@@ -11,7 +11,8 @@ namespace CGD.Level
     //      nodes out on a column/lane grid; hand-moved nodes snap to the nearest free cell).
     //   2. It uses the function pinned on the node (MapNode.Place), or picks one (lobby,
     //      park…) of its category, favouring functions that
-    //      prefer the room's ship section. A function spanning several cells
+    //      prefer the room's ship section, and one of the function's layouts (the node's
+    //      pinned one, MapNode.Layout, if it has one). A function spanning several cells
     //      claims free neighbouring cells; with none free it stays in one.
     //   3. The room fills its cells minus a gap for corridors — a single-cell room may be
     //      smaller and centred — and gets a hand-built landmark or a generated floor plan.
@@ -46,7 +47,10 @@ namespace CGD.Level
                     List<RoomFunction> candidates = FunctionsInCategory(node, layout, usedUnique);
                     function = random.PickWeighted(candidates, f => f != null ? f.WeightIn(section) : 0f);
                 }
-                RectInt block = ClaimBlock(cells[node.Id], function != null ? function.Cells : Vector2Int.one, claimed, random);
+                // Its own seed layer, so a function without layouts rolls exactly as before.
+                RoomLayout roomLayout = function != null
+                    ? function.PickLayout(seed.Derive(node.Id).Derive("layout").Stream(), node.Layout as RoomLayout) : null;
+                RectInt block = ClaimBlock(cells[node.Id], function != null ? function.CellsWith(roomLayout) : Vector2Int.one, claimed, random);
                 connections.TryGetValue(node.Id, out int count);
 
                 float height = function != null && function.WallHeight > 0f ? function.WallHeight : _settings.WallHeight;
@@ -66,11 +70,12 @@ namespace CGD.Level
                     layout.Warnings.Add($"Landmark '{landmark.name}' doesn't fit {node.Type} #{node.Id} (too big, or fewer doorways than its {count} connections); generated instead.");
 
                 var style = new FactionStyle(_settings.DesignFor(faction), strength);
-                RectInt area = RoomArea(block, function, random, style, _settings.DesignFor(side));
-                IReadOnlyList<RoomShape> shapeList = function != null && function.Shapes.Count > 0 ? function.Shapes : _settings.DefaultShapes;
+                RectInt area = RoomArea(block, function, roomLayout, random, style, _settings.DesignFor(side));
+                IReadOnlyList<RoomShape> functionShapes = function != null ? function.ShapesWith(roomLayout) : null;
+                IReadOnlyList<RoomShape> shapeList = functionShapes != null && functionShapes.Count > 0 ? functionShapes : _settings.DefaultShapes;
                 layout.AddRoom(new LevelRoom(node, _shapes.Build(shapeList, count, area, random, style), function, height, faction: faction, breachFaction: breach,
                                              chamfer: function != null ? function.ChamferOr(_settings.RoomChamfer) : _settings.RoomChamfer, side: side,
-                                             designStrength: strength));
+                                             designStrength: strength, roomLayout: roomLayout));
             }
         }
 
@@ -186,12 +191,13 @@ namespace CGD.Level
         }
 
         // Multi-cell rooms fill their block; single-cell rooms may be smaller, centred.
-        private RectInt RoomArea(RectInt block, RoomFunction function, RandomStream random, FactionStyle style, ShipSideDesign sideDesign)
+        private RectInt RoomArea(RectInt block, RoomFunction function, RoomLayout roomLayout, RandomStream random, FactionStyle style,
+                                 ShipSideDesign sideDesign)
         {
             RectInt area = BlockArea(block);
             if (function == null || block.width * block.height > 1) return area;
 
-            int size = function.RollSize(random, MinRoomTiles, _settings.RoomTiles);
+            int size = function.RollSize(random, MinRoomTiles, _settings.RoomTiles, roomLayout);
             float scale = style.RoomSizeScale * (sideDesign != null ? sideDesign.RoomSizeScale : 1f);
             if (!Mathf.Approximately(scale, 1f)) size = Mathf.Clamp(Mathf.RoundToInt(size * scale), MinRoomTiles, _settings.RoomTiles);
             int inset = (_settings.RoomTiles - size) / 2;

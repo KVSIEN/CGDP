@@ -29,6 +29,8 @@ namespace CGD.Map
         [SerializeField] private RoomCategory _category;
         [Tooltip("Optional: the place (a Room Function) a level builds here instead of picking one of the category's")]
         [SerializeField] private ScriptableObject _place;
+        [Tooltip("Optional: which of the pinned place's layouts (a Room Layout) the level builds. Empty = picked by weight")]
+        [SerializeField] private ScriptableObject _layout;
 
         // For serialization: keeps the field defaults (no faction, no section) for data
         // saved before a field existed.
@@ -98,6 +100,14 @@ namespace CGD.Map
             set => _place = value as ScriptableObject;
         }
 
+        // One of the pinned place's arrangements, or null to let the level builder pick one.
+        // Stored untyped for the same reason as Place; ignored unless it belongs to the place.
+        public ScriptableObject Layout
+        {
+            get => _layout != null ? _layout : null;
+            set => _layout = value;
+        }
+
         public void SetFaction(int faction, float influence)
         {
             if (faction < 0)
@@ -126,6 +136,6 @@ namespace CGD.Map
             && _intensity == other._intensity && _tier == other._tier
             && _faction == other._faction && _factionInfluence == other._factionInfluence
             && _breachFaction == other._breachFaction && _section == other._section
-            && _category == other._category && _place == other._place;
+            && _category == other._category && _place == other._place && _layout == other._layout;
     }
 }

@@ -22,6 +22,8 @@ namespace CGD.Editor
         public MapNodeType Type = MapNodeType.Combat;
         [Tooltip("Pinned place. Empty = picked from the category, as the level does")]
         public RoomFunction Place;
+        [Tooltip("Pinned layout of the place. Empty = picked by weight, as the level does")]
+        public RoomLayout Layout;
         public RoomCategory Category;
         [Tooltip("Factions come from this content's list")]
         public MapContentSettings Content;
@@ -54,6 +56,7 @@ namespace CGD.Editor
                 Seed          = graph.SeedText,
                 Type          = node.Type,
                 Place         = node.Place as RoomFunction,
+                Layout        = node.Layout as RoomLayout,
                 Category      = node.Category,
                 Content       = graph.Content,
                 Faction       = node.Faction,

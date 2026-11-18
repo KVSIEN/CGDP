@@ -48,6 +48,7 @@ namespace CGD.Editor
             recipe.Category = (RoomCategory)EditorGUILayout.EnumPopup(
                 new GUIContent("Category", "The kind of ship space. With no place pinned, one of this category's places is picked"), recipe.Category);
             DrawPlace(recipe);
+            DrawLayout(recipe);
             recipe.Tier = EditorGUILayout.IntSlider(new GUIContent("Tier", "1 ordinary – 3 toughest"), recipe.Tier, 1, 3);
             recipe.Intensity = EditorGUILayout.Slider(new GUIContent("Intensity", "0 calm – 1 peak: how many enemies"), recipe.Intensity, 0f, 1f);
 
@@ -98,6 +99,36 @@ namespace CGD.Editor
                     if (GUILayout.Button(new GUIContent("Edit", "Select the room function asset; the plan updates as you change it"),
                                          EditorStyles.miniButton, GUILayout.Width(36f)))
                         Selection.activeObject = recipe.Place;
+            }
+        }
+
+        // Only for a place with layouts: any (as the level picks) or one of them.
+        private static void DrawLayout(RoomLabRecipe recipe)
+        {
+            if (recipe.Place == null || recipe.Place.Layouts.Count == 0)
+            {
+                recipe.Layout = null;
+                return;
+            }
+
+            var layouts = new List<RoomLayout> { null };
+            var labels  = new List<string> { "(pick by weight)" };
+            foreach (RoomLayout layout in recipe.Place.Layouts)
+            {
+                if (layout == null) continue;
+                layouts.Add(layout);
+                labels.Add(layout.DisplayName);
+            }
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                int index = EditorGUILayout.Popup(new GUIContent("Layout", "Pin one of the place's arrangements. Pick = by weight, as the level does; step the seed to see them come round"),
+                                                  Mathf.Max(0, layouts.IndexOf(recipe.Layout)), labels.ToArray());
+                recipe.Layout = layouts[Mathf.Max(0, index)];
+                using (new EditorGUI.DisabledScope(recipe.Layout == null))
+                    if (GUILayout.Button(new GUIContent("Edit", "Select the room layout asset; the plan updates as you change it"),
+                                         EditorStyles.miniButton, GUILayout.Width(36f)))
+                        Selection.activeObject = recipe.Layout;
             }
         }
 

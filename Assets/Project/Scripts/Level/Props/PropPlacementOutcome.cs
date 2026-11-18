@@ -23,7 +23,8 @@ namespace CGD.Level
 
         public bool IsShort => Placed < Wanted;
 
-        // The first prefab's name, which is what a designer recognises the placement by.
+        // The first prefab's name (a group's first member's, when it has none of its own),
+        // which is what a designer recognises the placement by.
         public string Name
         {
             get
@@ -31,6 +32,10 @@ namespace CGD.Level
                 if (Placement?.Prefabs == null) return "(none)";
                 foreach (var prefab in Placement.Prefabs)
                     if (prefab != null) return prefab.name;
+                if (Placement.HasMembers)
+                    foreach (PropMember member in Placement.Members)
+                        foreach (var prefab in member.Prefabs)
+                            if (prefab != null) return $"{prefab.name} group";
                 return "(no prefab)";
             }
         }
@@ -42,6 +47,7 @@ namespace CGD.Level
                 if (Relaxed)    return "no tile suited it, so its placement rules were loosened";
                 if (!IsShort)   return "all placed";
                 if (HitFillCap) return "the room's share of floor for props was used up";
+                if (Placed == 0 && Placement != null && Placement.StandsNear) return $"no tile matched its rules (tags, zone, spacing, clearance, within {Placement.NearDistance} of {Placement.Near})";
                 return Placed == 0 ? "no tile matched its rules (tags, zone, spacing, clearance)" : "ran out of tiles that match its rules";
             }
         }

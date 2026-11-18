@@ -1,13 +1,15 @@
+using UnityEngine;
+
 namespace CGD.Map
 {
     // A locked node carried into a regeneration: the new map gets a node of this type
-    // at the closest matching depth, with the same intensity, category and pinned place. Pins describe *what*
+    // at the closest matching depth, with the same intensity, category and pinned place (and layout). Pins describe *what*
     // the node is and roughly *where* in the run it sits, not its id — ids and layout
     // change with every seed.
     public readonly struct MapNodePin
     {
         public MapNodePin(MapNodeType type, float progress, bool onMainPath, float intensity,
-                          RoomCategory category = RoomCategory.None, IRoomPlace place = null)
+                          RoomCategory category = RoomCategory.None, IRoomPlace place = null, ScriptableObject layout = null)
         {
             Type       = type;
             Progress   = progress;
@@ -15,6 +17,7 @@ namespace CGD.Map
             Intensity  = intensity;
             Category   = category;
             Place      = place;
+            Layout     = layout;
         }
 
         public MapNodeType Type       { get; }
@@ -23,5 +26,7 @@ namespace CGD.Map
         public float       Intensity  { get; }
         public RoomCategory Category  { get; }
         public IRoomPlace  Place      { get; }
+        // The place's pinned layout, if any (MapNode.Layout).
+        public ScriptableObject Layout { get; }
     }
 }

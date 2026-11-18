@@ -8,7 +8,7 @@ namespace CGD.Level
     // A walk-through of what room generation makes, built by LevelBuilder in place of a map
     // (RoomGalleryGraph). First one room of every place, the factions and ship sections taken
     // in turn so every reality and side shows up; a place that can sit on more than one side
-    // of the ship is shown on each. Then a wing per faction: Combat rooms from its frontier
+    // of the ship is shown on each, and a place with several layouts in each of them. Then a wing per faction: Combat rooms from its frontier
     // inward, then its showcase fights at full strength (a Breach room breached by the next
     // faction). Rooms stand in a grid, joined in a snake from the Start room to the Exit.
     [CreateAssetMenu(fileName = "RoomGallerySettings", menuName = "CGD/Level/Room Gallery")]
@@ -22,6 +22,8 @@ namespace CGD.Level
         [SerializeField] private MapNodeType _placeType = MapNodeType.Quiet;
         [Tooltip("A place that lists more than one ship side (a first-class restaurant and a crew mess) gets a room on each, side by side. Off = one room, on whichever side its turn gives it")]
         [SerializeField] private bool _everySide = true;
+        [Tooltip("A place with several layouts (a casino as a slot hall, table pits or a salon) gets a room for each, side by side, its ship sides taken in turn. Off = one room per side, in whichever layout its seed picks")]
+        [SerializeField] private bool _everyLayout = true;
         [Tooltip("Each faction's wing opens with a Combat room at each of these map influences, frontier first (0.35 = frontier, 0.7 and up = core), so walking it shows the design thickening toward the full-strength rooms that follow")]
         [SerializeField] private float[] _depthSteps = { 0.35f, 0.525f };
         [Tooltip("Fight types shown at full strength in each faction's wing, in a place picked as a level would: cover dressing, concealment, the breach split")]
@@ -35,6 +37,7 @@ namespace CGD.Level
         public IReadOnlyList<RoomFunction> Places => _places;
         public MapNodeType PlaceType => _placeType;
         public bool EverySide => _everySide;
+        public bool EveryLayout => _everyLayout;
         public IReadOnlyList<float> DepthSteps => _depthSteps;
         public IReadOnlyList<MapNodeType> ShowcaseTypes => _showcaseTypes;
         public int Tier => _tier;

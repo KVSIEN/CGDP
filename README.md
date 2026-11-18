@@ -107,10 +107,10 @@ Assets/
                             Geometry/ — tiles → meshes: LevelGeometryBuilder, LevelWallBuilder, BoxMeshBuilder, DoorwaySignBuilder,
                             RuntimeNavMesh, GeneratedAssets; Population/ — RoomPopulator, RoomContentRule, RoomRoster, EnemyTierOdds, Posts/ (RoomPostMap, RoomEnemyPlanner: where enemies start, who guards and who patrols);
                             Shapes/ — RoomShape assets, RoomShapeRasterizer, RoomFootprint (tiles + door sockets)
-                            RoomOutline (curved walls); Functions/ — RoomFunction;
+                            RoomOutline (curved walls); Functions/ — RoomFunction, RoomLayout (one arrangement of a place: shapes, size, structure, set pieces);
                             Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), CoverHeights (low / high cover bands), Rules/ (pillars, partitions, rows, remnants, office maze);
                             Landmarks/ — hand-built rooms; Props/ — RoomFurnisher (what a room is furnished with, shared by the level and the editor),
-                            RoomPropPlanner (footprints, clearance, spread, cover, lattices, symmetry, clusters; reports each placement's outcome), RoomDressing (cover and clutter per room type);
+                            RoomPropPlanner (footprints, clearance, spread, cover, lattices, symmetry, clusters, prop groups, near/keyed placements, features that grow with the room; reports each placement's outcome), RoomDressing (cover and clutter per room type);
                             Design/ — FactionDesign (each faction's floor plans, structure, props and crowding), FactionStyle + TerritoryDepth (the design at a room's strength), ShipSideDesign, BreachSplit,
                             Traits/ (RoomTraitMeasure, RoomTraitFit: what fight rooms offer and how generation steers toward it);
                             Gallery/ — RoomGallerySettings and RoomGalleryGraph (the RoomGallery scene's walk-through of every place)

@@ -6,8 +6,9 @@ namespace CGD.Level
 {
     // Lays out one room's structure once its doorways are known: tags the edge, corner,
     // centre and doorway tiles, notes where the entrances are, reserves a walkway from every
-    // doorway to the centre, runs the room function's structure rules (or the faction's where
-    // the function has none) and then the faction's additions, then works out the zones their
+    // doorway to the centre, runs the room function's structure rules (its layout's, where the
+    // layout brings some; the faction's where neither has any) and then the faction's
+    // additions, then works out the zones their
     // inner walls make. A Breach room left in one piece gets the breach faction's divider.
     // A landmark room brings its own interior: its furniture tiles are marked instead.
     public class RoomStructurePlanner
@@ -35,7 +36,7 @@ namespace CGD.Level
                 TagLandmark(structure, room);
             else
             {
-                IReadOnlyList<RoomStructureRule> rules = room.Function != null && HasRules(room.Function.Structure) ? room.Function.Structure : factionRules;
+                IReadOnlyList<RoomStructureRule> rules = HasRules(room.StructureRules) ? room.StructureRules : factionRules;
                 Apply(rules, structure, random);
                 Apply(factionAdditions, structure, random, additionChance);
             }

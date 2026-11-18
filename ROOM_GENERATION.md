@@ -20,6 +20,7 @@ two rules.
 | Layer | Decides | Data |
 |---|---|---|
 | **Function**: what the room is on the ship | Size, floor plan, layout pattern, anchor and furniture | `RoomFunction` (`Data/Level/Functions/`) |
+| **Layout**: which arrangement of the place | Its floor plans, size, structure and set pieces (section 12) | `RoomLayout` (`Data/Level/Functions/Layouts/`) |
 | **Ship side**: who the room is for | How large, full and decorated it is. Back-of-house doors | `ShipSideDesign` (`Data/Level/Sides/`); section and function sides |
 | **Reality**: who holds it now | Shape bias, size scale, extra structure, dressing swaps, how full it gets, priorities | `FactionDesign` (`Data/Level/Designs/`) |
 | **Content**: what you do there | Cover, concealment, enemies, loot, objectives | `RoomContentRule` plus the dressings (`Data/Level/Dressing/`) |
@@ -62,13 +63,13 @@ Structure is applied in two steps (`RoomStructurePlanner`):
 | Hall | `DensePillarGrid` | Cargo Bay |
 | Hall | `CornerPillars` | Commons, Hangar |
 | Hall | none (fallback) | Park, Farm: their trees and crop beds are furniture |
-| Aisles | `ShelfRows` | Library, Storage, Data Center, Armory, Hydroponics Bay |
+| Aisles | `ShelfRows` | Storage, Data Center, Armory, Hydroponics Bay; Library's Stacks layout (its Reading Hall has `WidePillarGrid`, its Rotunda `ColumnRing`) |
 | Aisles | `LowRows` | Theatre, Chapel, School, Control Room, Ward, Barracks, Gym, Processing Plant |
-| Aisles | `ColumnRing`, `CornerPillars`, `ServiceCounter` | Casino (unchanged) |
+| Aisles / Ring / Cells | by layout (section 12) | Casino: Slot Hall `LowRows`, Table Pits `ColumnRing` + `CornerPillars`, High-Roller Salon `CornerPillars` |
 | Cells | `OfficeMaze` | Offices, Cabin Row |
 | Cells | `DividerWall` | Quarters, Restaurant, Wellness Center, Medical Bay, Laboratory |
 | Cells | `CheckpointBarrier` | Security Office |
-| Ring | `ColumnRing` | Pool, Bridge, Shrine |
+| Ring | `ColumnRing` | Bridge, Shrine; Pool when it has no layout (its layouts use `CornerPillars`: the water is the centre) |
 | Ring | `ColumnRing`, `CornerPillars` | Grand Atrium (unchanged) |
 | Ring | `ServiceCounter` | Bar: the counter *is* the ring's centre |
 | Ring | landmark | Reactor Core (hand-built) |
@@ -280,8 +281,11 @@ These are how each card becomes a function's `_props` list:
 - **Reuse before making.** Props that already exist (`Table`, `Bed`, `Chair`, `Sofa`,
   `OfficeDesk`, `ServerRack`, `ProductionLine`, `Planter`, `StreetLamp`, `CabinetBank`,
   `Crate`) are used where they fit. New placeholders are added only for what is missing.
-- **Already furnished** places keep their props: Casino, Restaurant, Quarters, Park, Grand
-  Atrium, Cargo Bay, Docking Bay and Storage. Lobby gains its reception desk.
+- **Already furnished** places keep their props: Restaurant, Quarters, Park, Grand
+  Atrium, Cargo Bay, Docking Bay and Storage. Lobby gains its reception desk. Casino, Library
+  and Pool are furnished by layout (section 12).
+- **Sets, not scatter.** Pieces that belong together are one placement with *Members* (a table
+  and its chairs), and pieces that serve another stand *Near* it (section 12).
 
 ## 8. Room cards
 
@@ -291,13 +295,13 @@ described in one line has no clear identity yet. Columns:
 - **Anchor**: the `Required` piece, placed before anything else.
 - **Plays as**: what a fight there should feel like before a reality changes it.
 
-The *Now* column says what the asset has today: S is its own structure, P is props. Park and
+The *Now* column says what the asset has today: S is its own structure, P is props, L layouts (section 12). Park and
 Farm take the holding reality's structure; Junction stays bare on purpose.
 
 | Room | Category | Side | Pattern | Anchor | Furniture | Plays as | Now |
 |---|---|---|---|---|---|---|---|
 | Grand Atrium | Entertainment | G1 | Ring | Central fountain or statue | Benches round the ring, planters | Circle the centrepiece; balcony-like edges | S, P |
-| Casino | Entertainment | G1 | Aisles | Cashier cage on a wall | Slot rows, card tables in the main zone | Lanes between rows, tables as cover at crossings | S, P |
+| Casino | Entertainment | G1 | by layout | Cashier cage on a wall | Slot banks, card-table pits, roulette, bar with stools, sofas | Lanes between slot banks; tables as cover at crossings | S, P, L |
 | Theatre | Entertainment | G1 | Aisles | Stage on the far wall | Seat rows facing the stage | Lanes down the aisles, stage as high ground | S, P |
 | Exhibit Hall | Entertainment | G1 | Hall | Centre display | Display cases on a lattice | Open hall, cases as waist cover | S, P |
 | Bar | Entertainment | G2 | Ring | Bar counter (low partition) | Stools, booths along walls | Counter splits the room; booths for close range | S, P |
@@ -309,7 +313,7 @@ Farm take the holding reality's structure; Junction stays bare on purpose.
 | Quarters | Residential | G1 | Cells | Divider wall | Bed, desk, wardrobe | Two zones, a doorway between | S, P |
 | Commons | Residential | G2 | Hall | Seating island | Sofas, tables | Medium cover all round | S, P |
 | School | Residential | G2 | Aisles | Teacher's desk | Desk rows | Low cover rows facing one wall | S, P |
-| Pool | Recreation | G1 | Ring | Pool (open floor or water) | Loungers round it | Open centre, cover only round the edge | S, P |
+| Pool | Recreation | G1 | by layout | The pool basin (grows with the room) | Lounger pairs facing it, jacuzzis, slide, pool bar, palms | Open water, cover only round the edge | S, P, L |
 | Park | Recreation | G1 | Hall | Central tree | Hedges, benches, paths | Hedges hide; long views across lawns | P |
 | Gym | Recreation | G2 | Aisles | — | Machine rows | Rows of hard cover | S, P |
 | Observation Deck | Recreation | G1 | Strip | Window wall | Telescopes, benches facing out | Open lane along the window | S, P |
@@ -334,7 +338,7 @@ Farm take the holding reality's structure; Junction stays bare on purpose.
 | Water Treatment | Agriculture | C | Service | Tanks | Pipes, pumps | Hard cover, narrow gaps | S, P |
 | Laboratory | Science | C | Cells | Lab bench island | Benches, fume hoods on walls | Bench islands as cover | S, P |
 | Data Center | Science | C | Aisles | — | Server racks on a lattice | Narrow aisles of tall racks | S, P |
-| Library | Science | G1 | Aisles | Reading table | Shelf rows | Shelves block sight; reading area open | S, P |
+| Library | Science | G1 | by layout | Front desk by the way in | Shelving, reading tables with chairs, carrels, sofas and lamps, card catalogue | Shelves block sight; reading area open | S, P, L |
 | Chapel | Worship | G2 | Aisles | Altar | Pew rows | Pews as low cover facing the altar | S, P |
 | Shrine | Worship | G2 | Ring | Shrine object | Candles, mats | Small, one centrepiece | S, P |
 | Lobby | Transit | G1 | Hall | Reception desk | Seating, planters | Open hall with a desk | S, P |
@@ -503,6 +507,83 @@ means hidden, red vantage, orange tight; larger means more familiar, and a cross
 - **Ambush from memory.** BIO hunters could set up in a known hidden place along the
   target's path instead of only where they spawned.
 
+## 12. Layouts and set pieces (Phase 11)
+
+A place should come out in many shapes, sizes and arrangements and still read as that place.
+Two things make that work:
+- **Layouts** give a place several arrangements.
+- **Set pieces** keep each arrangement recognisable at any size.
+
+### Layouts
+
+A `RoomFunction` can list `RoomLayout`s (*Layouts*), and each room of that function picks one
+by weight. The pick has its own seed layer, so places without layouts roll exactly as before.
+A layout overrides only what it sets: floor plans, cells, size and structure. It also adds its
+own set pieces. The function keeps what every arrangement of the place shares. The rule is:
+
+> **The function says what the place is; the layout says how this one is arranged.**
+
+Props go down in this order:
+1. The layout's set pieces: what the arrangement is built around (the pool basin, the card-table pits).
+2. The function's own props: its identity, the same in every layout (the casino's cashier cage, the library's front desk).
+3. Everything after that, as before: side dressing, room type cover, faction props.
+
+| Place | Layout | Cells / size | Shapes | Structure | Set pieces |
+|---|---|---|---|---|---|
+| Casino | **Slot Hall** | 2×1 | Rectangle, Long Hall, Stepped | `LowRows` (slot banks) | Slot machines lining both faces of the rows, bar (110+ tiles), lounge stage (250+), roulette (200+) |
+| | **Table Pits** | 10–12 | Rectangle, Dome, Cross, Bays | `ColumnRing`, `CornerPillars` | Card tables on a 2×2 lattice, mirrored; roulette (90+); rugs among the pits; bar (110+) |
+| | **High-Roller Salon** | 7–9 | Rectangle, Dome, Bays | `CornerPillars` | One or two card tables, a bar, sofas with rug and lamp, planters |
+| Library | **Stacks** | 10–12 | Rectangle, Long Hall, L | `ShelfRows` | Shelves lining the rows, study carrels on the walls, a reading nook off the routes |
+| | **Reading Hall** | 2×1 | Rectangle, Bays, Long Hall | `WidePillarGrid` | Shelves round every wall, reading tables on a 2×3 lattice, mirrored; lamps and rugs among them |
+| | **Rotunda** | 10–12 | Dome, Ring | `ColumnRing` | Shelves round the dome, reading tables, sofas facing the middle |
+| Pool | **Lap Pool** | 2×1 | Rectangle, Long Hall | `CornerPillars` | A basin 60% × 30% of the hall (it may cross the walkways), one or two jacuzzis by it |
+| | **Lagoon** | 2×2 | Dome, Rectangle, Cross | `CornerPillars` | A basin half the room each way, a children's pool (400+), a slide into the water (150+), jacuzzis, palms |
+| | **Spa Terrace** | 8–11 | Rectangle, Bays, Dome | `CornerPillars` | A plunge pool, two or three jacuzzis |
+
+What each place keeps in every layout:
+- **Casino**: a required cashier cage on a wall, and slot machines along the walls.
+- **Library**: a required front desk on a wall within a step of a route (by the way in), and the card catalogue beside it.
+- **Pool**: pairs of loungers under a parasol facing whatever is keyed *Pool* (basins and jacuzzis), the pool bar (100+ tiles) and palms in the corners.
+
+The numbers in brackets are *Min Room Tiles*. A multi-cell layout falls back to one cell
+where its neighbours leave no room, and its set pieces still fit, because they grow with the
+room or are left out by size.
+
+### Set pieces
+
+These options on `RoomPropPlacement` (every function, dressing and layout has them) keep a
+place recognisable at any size:
+- **Groups** (*Members*): pieces set round each prop on its tiles, turning with it, each with
+  its own chance. Examples are two to four chairs round a card table, stools along a bar and a
+  rug and lamp with a sofa. A group with no prefab of its own is just its members, like a pair
+  of loungers and a parasol.
+- **Relations** (*Key*, *Near*, *Near Distance*, facing *Toward Near*): a placement names what
+  it put down, and later ones stand within a few steps of it and can face it. Loungers face the
+  pool, the slide runs into the water and the catalogue stands beside the desk. If the key put
+  nothing down, nothing is placed; a *Required* one is still placed anywhere.
+- **Features that grow** (*Grow*, *Stretch*): the footprint is a share of the room's longer and
+  shorter side, tried a few sizes smaller where it doesn't fit. The prefab is built for one tile
+  and stretched to the footprint, so one basin fits every pool. Such a feature is part of the
+  room's plan: it neither stops at nor uses up the fill share, so the furniture round it keeps
+  its share.
+- **Pieces for big rooms** (*Min Room Tiles*): left out of a smaller room (or Breach side). That
+  is not reported as a shortfall.
+
+### Seeing it
+
+- The **Room Lab** has a *Layout* choice under *Place*. *Open in Room Lab* on a layout asset
+  opens its place in it, and the report names the layout.
+- The **Map Graph** side panel pins a layout under a pinned place, and regeneration keeps it.
+- The **Room Gallery** builds a room per layout (*Every Layout*), and the placard names the layout.
+
+### Next
+
+- Give more places layouts, with the bar, theatre, restaurant and park first.
+- Let a faction prefer layouts: VOID the salon's tight cells, TECH the hall's long lanes. That
+  could be a weight multiplier per layout on `FactionDesign`, like its shapes.
+- Placeholders are stretched boxes, so a pool's deck rim thickens with its size. Real art
+  needs a basin that can be built to any footprint, or nine-sliced.
+
 ## Roadmap
 
 | Phase | What | Status |
@@ -517,6 +598,7 @@ means hidden, red vantage, orange tight; larger means more familiar, and a cross
 | **8. Agents in the room** | Enemies start on posts their faction favours (section 9), hold or patrol by post kind, each Breach faction on its own side; patrol loops over walkable floor; Room Lab *Posts* layer | **Done in code, not yet compiled or run** |
 | **9. Territory depth** | The holder's design blends toward neutral with the room's map influence: core rooms purest, frontier rooms at 0.4 (section 10); Room Lab *Influence* | **Done in code, not yet compiled or run** |
 | **10. Enemies learn their ground** | Each enemy learns hidden, vantage and tight places by walking and looking, with familiarity and danger, shares them with nearby kin, falls back to the best it knows and watches a known lane from its post (section 11) | **Done in code, not yet compiled or run** |
+| **11. Layouts and set pieces** | Places in several arrangements (`RoomLayout`: shapes, cells, size, structure, set pieces) over the function's own props; prop groups, keyed *Near* placements, features that grow with the room and stretch, pieces for big rooms only; Casino, Library and Pool with three layouts each; gallery room per layout; Room Lab and Map Graph layout pins (section 12) | **Done in code, not yet compiled or run** |
 
 ### Tuning (Phase 7)
 

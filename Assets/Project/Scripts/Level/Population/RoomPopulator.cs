@@ -69,7 +69,8 @@ namespace CGD.Level
                     if (prop.Prefab == null) continue;
 
                     Vector3 local = new Vector3(prop.Position.x, 0f, prop.Position.y) * _layout.TileSize;
-                    Place(room, prop.Prefab, _parent.TransformPoint(local), _parent.rotation * Quaternion.Euler(0f, prop.Yaw, 0f));
+                    GameObject placed = Place(room, prop.Prefab, _parent.TransformPoint(local), _parent.rotation * Quaternion.Euler(0f, prop.Yaw, 0f));
+                    if (prop.Stretch != Vector2.one) placed.transform.localScale = Vector3.Scale(placed.transform.localScale, new Vector3(prop.Stretch.x, 1f, prop.Stretch.y));
                 }
 
                 if (rule != null && rule.Centerpiece != null)
@@ -79,7 +80,7 @@ namespace CGD.Level
 
         // A room's things share its tier: containers roll with its loot luck and resource
         // nodes yield by it.
-        private void Place(LevelRoom room, GameObject prefab, Vector3 position, Quaternion rotation)
+        private GameObject Place(LevelRoom room, GameObject prefab, Vector3 position, Quaternion rotation)
         {
             GameObject placed = Object.Instantiate(prefab, position, rotation, _parent);
             int tier = room.Node.EffectiveTier;
@@ -95,6 +96,7 @@ namespace CGD.Level
 
             foreach (ResourceNode node in placed.GetComponentsInChildren<ResourceNode>(true))
                 node.SetTier(tier);
+            return placed;
         }
 
         public float LootLuckFor(LevelRoom room) => _settings.LootLuckFor(room.Node.EffectiveTier);

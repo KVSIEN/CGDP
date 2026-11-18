@@ -26,11 +26,14 @@ namespace CGD.Level
         }
 
         // The Room Gallery's fuller placard, for judging the room against its recipe: the
-        // details above, then the ship side, how deep in its faction's territory it stands,
-        // what kind of fight it is and who breaches it — "BIO · Tier 1 · crew · frontier · Combat".
+        // place's layout, the details above, then the ship side, how deep in its faction's
+        // territory it stands, what kind of fight it is and who breaches it —
+        // "Table Pits · BIO · Tier 1 · crew · frontier · Combat".
         public static string Exhibit(LevelRoom room, TerritoryDepth depth)
         {
-            var text = new StringBuilder(Details(room));
+            var text = new StringBuilder();
+            if (room.RoomLayout != null) text.Append(room.RoomLayout.DisplayName).Append(" · ");
+            text.Append(Details(room));
             string side = SideName(room.Side);
             if (side != null) text.Append(" · ").Append(side);
             if (room.Faction != null && depth != null) text.Append(" · ").Append(depth.NameOf(room.DesignStrength));

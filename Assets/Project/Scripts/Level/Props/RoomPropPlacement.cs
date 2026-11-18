@@ -12,6 +12,12 @@ namespace CGD.Level
     {
         [Tooltip("Picked at random for each one placed. Origin at the centre of the footprint on the floor, +Z the front")]
         public GameObject[] Prefabs = Array.Empty<GameObject>();
+
+        // Whether it puts anything down: a prefab of its own or a group's members.
+        public bool HasPieces => (Prefabs != null && Prefabs.Length > 0) || (Members != null && Members.Length > 0);
+        public bool HasMembers => Members != null && Members.Length > 0;
+        public bool StandsNear => !string.IsNullOrEmpty(Near);
+        public bool GrowsWithRoom => Grow.x > 0f || Grow.y > 0f;
         public IntRange Count = new(2, 4);
         [Tooltip("Scale Count with the room's floor area (1× at 64 tiles, 0.4× to 2×), so a closet and a hall are equally furnished")]
         public bool ScaleByRoomSize;
@@ -47,6 +53,22 @@ namespace CGD.Level
         [Tooltip("People come and go through it (a service door): the floor in front of it counts as a route for the placements after it")]
         public bool MarksRoute;
 
+        [Header("Groups, relations and size")]
+        [Tooltip("Pieces set around each one placed, on its tiles: chairs round a card table, stools along a bar. With members, Prefabs may be left empty: then the members are the whole group")]
+        public PropMember[] Members = Array.Empty<PropMember>();
+        [Tooltip("Names what this placement puts down, so placements after it can stand Near it (several placements may share a key: the pool and its jacuzzis)")]
+        public string Key;
+        [Tooltip("Only within Near Distance of what an earlier placement with this Key put down: loungers round the pool, stools by the bar. Nothing is placed when it put nothing down (a Required one is still placed, anywhere). Empty = anywhere")]
+        public string Near;
+        [Tooltip("Steps from the nearest of what it stands Near: 1 = right beside it")]
+        [Min(1)] public int NearDistance = 2;
+        [Tooltip("Grows the footprint with the room, as a share of its longer (x) and shorter (y) side and never below Footprint: a pool basin that fills a big hall and shrinks in a small one. Where the grown size doesn't fit, smaller ones are tried. Such a feature is part of the room's plan, like its structure: it neither stops at nor uses up the room's share of floor for props, so the furniture round it still has its share. 0 = the fixed Footprint")]
+        public Vector2 Grow;
+        [Tooltip("The prefab is scaled across and front to back to the footprint it gets (build it for one 1×1 tile): one basin prefab fits every pool. Members keep their size")]
+        public bool Stretch;
+        [Tooltip("Only placed in a room with at least this many floor tiles (in a Breach room's side, that side's): the second pool, the roulette pit, the stage. 0 = any room")]
+        [Min(0)] public int MinRoomTiles;
+
         // The spot for something to find and use (a resource node, an ammo cache): against a
         // wall, off the routes and doorways, with floor in front and away from what is placed.
         public static RoomPropPlacement Nook(GameObject[] prefabs) => new()
@@ -61,7 +83,8 @@ namespace CGD.Level
         };
 
         // The same placement with its picky rules dropped, to find any spot at all. Level 1 gives
-        // up where (tags, zone, routes) and which way; level 2 also the floor in front.
+        // up where (tags, zone, routes, what it stands near), which way and growing with the
+        // room; level 2 also the floor in front.
         public RoomPropPlacement Relaxed(int level)
         {
             var copy = (RoomPropPlacement)MemberwiseClone();
@@ -73,7 +96,10 @@ namespace CGD.Level
             copy.Symmetric = false;
             copy.NearRoute = 0;
             copy.OffRoute  = 0;
-            if (copy.Facing is PropFacing.AgainstWall or PropFacing.AcrossSightline or PropFacing.AlongRoom) copy.Facing = PropFacing.Square;
+            copy.Near      = null;
+            copy.Grow      = Vector2.zero;
+            if (copy.Facing is PropFacing.AgainstWall or PropFacing.AcrossSightline or PropFacing.AlongRoom or PropFacing.TowardNear)
+                copy.Facing = PropFacing.Square;
             if (level >= 2) copy.Clearance = 0;
             return copy;
         }

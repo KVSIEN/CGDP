@@ -5,7 +5,8 @@ using CGD.Core;
 namespace CGD.Level
 {
     // Plans what a room is furnished with, most important first, as each placement takes floor
-    // the next can't have: what a player comes for (offerings), the function's furniture, then
+    // the next can't have: what a player comes for (offerings), the function's furniture (its
+    // layout's set pieces first), then
     // its side's dressing (a crew room's staff door), the room type's cover and clutter (and its
     // extra dressing), then the faction's own pieces — in a Breach room split into zones, each
     // side by its own faction. The side's design scales the faction's
@@ -82,7 +83,7 @@ namespace CGD.Level
             if (rule != null && rule.Offerings.Length > 0) planner.Add(RoomPropPlacement.Nook(rule.Offerings));
             if (room.Landmark == null)
             {
-                if (room.Function != null) planner.Add(room.Function.Props);
+                planner.Add(room.FunctionProps);
                 if (side != null && side.Dressing != null) planner.Add(side.Dressing.Props);
                 AddRoomTypeDressing(planner, room, structure, rule, style, swaps);
             }

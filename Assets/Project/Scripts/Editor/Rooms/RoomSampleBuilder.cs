@@ -70,6 +70,7 @@ namespace CGD.Editor
             var graph = new MapGraph();
             MapNode room = graph.AddNode(recipe.Type, Vector2.zero);
             room.Place         = recipe.Place;
+            room.Layout        = recipe.Layout;
             room.Category      = recipe.Category;
             room.Tier          = recipe.Tier;
             room.Intensity     = recipe.Intensity;

@@ -191,8 +191,18 @@ namespace CGD.Editor
         public void SetPlace(MapNode node, IRoomPlace place)
         {
             Record("Change Map Node Place");
+            // A layout belongs to its place.
+            if (!ReferenceEquals(node.Place, place)) node.Layout = null;
             node.Place = place;
             if (place != null && place.Category != RoomCategory.None) node.Category = place.Category;
+            Changed();
+        }
+
+        // Pins which of the place's layouts the level builds (null = picked by weight).
+        public void SetLayout(MapNode node, ScriptableObject layout)
+        {
+            Record("Change Map Node Layout");
+            node.Layout = layout;
             Changed();
         }
 

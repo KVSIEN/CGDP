@@ -16,6 +16,7 @@ MonoBehaviour:
   _places: []
   _placeType: 19
   _everySide: 1
+  _everyLayout: 1
   _depthSteps:
   - 0.35
   - 0.525

@@ -4,10 +4,14 @@ using UnityEngine;
 namespace CGD.Level
 {
     // Where a RoomPropPlacement may put a prop in one room: the candidate spots (tiles and
-    // facing) that suit its tags, zone, walls, lattice and distance from the routes, and whether a spot is still
-    // placeable now that other props have taken floor. RoomPropPlanner chooses among them.
+    // facing) that suit its tags, zone, walls, lattice, distance from the routes and from what
+    // it stands near, and whether a spot is still placeable now that other props have taken
+    // floor. RoomPropPlanner chooses among them.
     internal sealed class PropPlacementRules
     {
+        // A footprint that grows with the room is tried at this many sizes above its smallest.
+        private const int GrowSteps = 5;
+
         private readonly RoomStructure _structure;
         private readonly Vector2 _anchor;
         private readonly RectInt _bounds;
@@ -15,9 +19,13 @@ namespace CGD.Level
         private readonly int _mainZone;
         private readonly Vector2Int _latticeOrigin;
         private readonly RouteMap _routes;
+        // What each keyed placement has put down so far (RoomPropPlacement.Key), for Near.
+        private readonly IReadOnlyDictionary<string, List<RectInt>> _keyed;
 
-        public PropPlacementRules(RoomStructure structure, Vector2 anchor, SightlineMap sight, RouteMap routes)
+        public PropPlacementRules(RoomStructure structure, Vector2 anchor, SightlineMap sight, RouteMap routes,
+                                  IReadOnlyDictionary<string, List<RectInt>> keyed)
         {
+            _keyed         = keyed;
             _structure     = structure;
             _anchor        = anchor;
             _bounds        = structure.Footprint.Bounds;
@@ -29,6 +37,30 @@ namespace CGD.Level
 
         internal static Vector2Int FootprintOf(RoomPropPlacement placement) =>
             new(Mathf.Max(1, placement.Footprint.x), Mathf.Max(1, placement.Footprint.y));
+
+        // The footprints to try, largest first: for a placement that grows with the room, its
+        // share of the room's sides, then a few steps smaller down to its Footprint; otherwise
+        // just the Footprint.
+        internal List<Vector2Int> Footprints(RoomPropPlacement placement)
+        {
+            Vector2Int least = FootprintOf(placement);
+            var sizes = new List<Vector2Int>();
+            if (placement.GrowsWithRoom)
+            {
+                int longSide  = Mathf.Max(_bounds.width, _bounds.height);
+                int shortSide = Mathf.Min(_bounds.width, _bounds.height);
+                var grown = new Vector2Int(Mathf.Max(least.x, Mathf.FloorToInt(longSide * placement.Grow.x)),
+                                           Mathf.Max(least.y, Mathf.FloorToInt(shortSide * placement.Grow.y)));
+                for (int step = GrowSteps; step > 0; step--)
+                {
+                    float t = (float)step / GrowSteps;
+                    var size = new Vector2Int(Mathf.RoundToInt(Mathf.Lerp(least.x, grown.x, t)), Mathf.RoundToInt(Mathf.Lerp(least.y, grown.y, t)));
+                    if (size != least && !sizes.Contains(size)) sizes.Add(size);
+                }
+            }
+            sizes.Add(least);
+            return sizes;
+        }
 
         // A single tile that needs no particular side up can take any angle.
         internal static bool HasFreeYaw(RoomPropPlacement placement, Vector2Int size) =>
@@ -71,6 +103,7 @@ namespace CGD.Level
                     if (y + 1 < rect.yMax && _structure.IsPartitioned(tile, tile + Vector2Int.up))    return false;
                 }
             if (!matchesOn || !SuitsRoutes(rect, placement)) return false;
+            if (placement.StandsNear && !TryNearest(rect, placement.Near, placement.NearDistance, out _)) return false;
 
             switch (placement.Facing)
             {
@@ -84,9 +117,29 @@ namespace CGD.Level
                     return candidate.Rotation == RotationToward(rect.center);
                 case PropFacing.AlongRoom:
                     return candidate.Rotation == RotationAlongRoom(rect.center);
+                case PropFacing.TowardNear when placement.StandsNear && !HasFreeYaw(placement, size):
+                    return TryNearest(rect, placement.Near, int.MaxValue, out RectInt target)
+                           && candidate.Rotation == RotationToward(rect.center, target.center);
                 default:
                     return true;
             }
+        }
+
+        // The nearest of what the placements keyed `key` have put down, within `reach` steps.
+        internal bool TryNearest(RectInt rect, string key, int reach, out RectInt nearest)
+        {
+            nearest = default;
+            if (string.IsNullOrEmpty(key) || !_keyed.TryGetValue(key, out List<RectInt> placed)) return false;
+
+            int best = int.MaxValue;
+            foreach (RectInt other in placed)
+            {
+                int steps = TileDistance(rect, other);
+                if (steps > reach || steps >= best) continue;
+                best    = steps;
+                nearest = other;
+            }
+            return best != int.MaxValue;
         }
 
         private bool SuitsRoutes(RectInt rect, RoomPropPlacement placement)
@@ -182,9 +235,12 @@ namespace CGD.Level
             ? (point.x <= _anchor.x ? 1 : 3)
             : (point.y <= _anchor.y ? 0 : 2);
 
-        private int RotationToward(Vector2 point)
+        private int RotationToward(Vector2 point) => RotationToward(point, _anchor);
+
+        // The quarter turn whose front points most nearly from `point` to `target`.
+        internal static int RotationToward(Vector2 point, Vector2 target)
         {
-            Vector2 toward = _anchor - point;
+            Vector2 toward = target - point;
             if (toward.sqrMagnitude < 0.01f) return 0;
             return Mathf.Abs(toward.x) > Mathf.Abs(toward.y) ? (toward.x > 0f ? 1 : 3) : (toward.y > 0f ? 0 : 2);
         }

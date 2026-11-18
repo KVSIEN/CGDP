@@ -41,8 +41,10 @@ namespace CGD.Level
         [SerializeField] private LandmarkRoomDefinition _landmark;
         [Tooltip("Applied in order once doorways are known: pillars, dividers…")]
         [SerializeField] private RoomStructureRule[] _structure = Array.Empty<RoomStructureRule>();
-        [Tooltip("Furnishings, placed in order after the structure (tables, crates, beds…)")]
+        [Tooltip("Furnishings, placed in order after the structure (tables, crates, beds…). With layouts, these go into every layout, after its own set pieces: what makes the place itself (a casino's cashier cage)")]
         [SerializeField] private List<RoomPropPlacement> _props = new();
+        [Tooltip("Ways this place can be arranged; each room picks one by weight. A layout overrides the shapes, cells, size and structure it sets and adds its own set pieces. Empty = one arrangement, the function's")]
+        [SerializeField] private RoomLayout[] _layouts = Array.Empty<RoomLayout>();
 
         public string DisplayName => _displayName;
         public RoomCategory Category => _category;
@@ -57,6 +59,35 @@ namespace CGD.Level
         public IReadOnlyList<RoomShape>         Shapes    => _shapes;
         public IReadOnlyList<RoomStructureRule> Structure => _structure;
         public IReadOnlyList<RoomPropPlacement> Props     => _props;
+        public IReadOnlyList<RoomLayout>        Layouts   => _layouts;
+
+        // A layout picked by weight, or null when the function has none. `pinned` (a map node's
+        // choice) wins when it is one of this function's.
+        public RoomLayout PickLayout(RandomStream random, RoomLayout pinned = null)
+        {
+            if (pinned != null && Array.IndexOf(_layouts, pinned) >= 0) return pinned;
+
+            var candidates = new List<RoomLayout>();
+            foreach (RoomLayout layout in _layouts)
+                if (layout != null && layout.Weight > 0f) candidates.Add(layout);
+            return candidates.Count > 0 ? random.PickWeighted(candidates, l => l.Weight) : null;
+        }
+
+        // What a room of this function arranged by `layout` (null = the function alone) is built from.
+        public IReadOnlyList<RoomShape> ShapesWith(RoomLayout layout) =>
+            layout != null && layout.Shapes.Count > 0 ? layout.Shapes : _shapes;
+
+        public Vector2Int CellsWith(RoomLayout layout) => layout != null && layout.Cells.HasValue ? layout.Cells.Value : Cells;
+
+        public IReadOnlyList<RoomStructureRule> StructureWith(RoomLayout layout) =>
+            layout != null && HasAny(layout.Structure) ? layout.Structure : _structure;
+
+        private static bool HasAny<T>(IReadOnlyList<T> items) where T : class
+        {
+            foreach (T item in items)
+                if (item != null) return true;
+            return false;
+        }
 
         // Weight for a room in `section` (null = no section).
         public float WeightIn(MapSectionDefinition section) =>
@@ -72,10 +103,12 @@ namespace CGD.Level
             return _sides.Length > 0 ? _sides[0] : ShipSide.None;
         }
 
-        // Tiles per side for one room, between minTiles and maxTiles.
-        public int RollSize(RandomStream random, int minTiles, int maxTiles)
+        // Tiles per side for one room, between minTiles and maxTiles; a layout's size wins.
+        public int RollSize(RandomStream random, int minTiles, int maxTiles, RoomLayout layout = null)
         {
-            int size = _size.Max > 0 ? _size.Evaluate(random) : maxTiles;
+            int size = layout != null && layout.HasSize ? layout.RollSize(random)
+                     : _size.Max > 0                    ? _size.Evaluate(random)
+                     : maxTiles;
             return Mathf.Clamp(size, minTiles, maxTiles);
         }
     }

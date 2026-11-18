@@ -8,5 +8,6 @@ namespace CGD.Level
         TowardCentre,
         AcrossSightline, // front toward the longest open stretch of floor through it, so a barrier faces the lane it blocks
         AlongRoom,       // length (Z) running down the room's longer axis, front toward the room's middle: rows of machines, lines of desks
+        TowardNear,      // front toward the nearest of what it stands Near: loungers facing the pool, chairs facing the stage (Square without a Near)
     }
 }

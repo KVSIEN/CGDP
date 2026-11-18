@@ -78,6 +78,7 @@ namespace CGD.Map
             {
                 pinned.Category = pin.Category;
                 pinned.Place    = pin.Place;
+                pinned.Layout   = pin.Layout;
             }
             return best.NodeId;
         }

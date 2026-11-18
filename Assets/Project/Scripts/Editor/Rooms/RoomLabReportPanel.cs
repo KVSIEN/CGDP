@@ -94,6 +94,9 @@ namespace CGD.Editor
                                                + (room.BreachFaction != null ? $" + {room.BreachFaction.DisplayName}" : ""));
             if (room.Function != null)
                 EditorGUILayout.LabelField("Category", room.Function.Category.ToString());
+            if (room.RoomLayout != null)
+                EditorGUILayout.LabelField(new GUIContent("Layout", "Which of the place's arrangements this room is: its shapes, size, structure and set pieces"),
+                                           new GUIContent(room.RoomLayout.DisplayName));
             EditorGUILayout.LabelField(new GUIContent("Side", "Who the room is for: its section's side where the place can sit on it, else the place's usual side. Scales size, fill and prop counts, and adds the side's dressing"),
                                        new GUIContent(RoomSampleChecks.SideName(room.Side) + (sample.Settings.DesignFor(room.Side) == null && room.Side != ShipSide.None ? " (no side design)" : "")));
             EditorGUILayout.LabelField("Size", $"{bounds.width * tile:0} × {bounds.height * tile:0} m · {room.WallHeight:0.#} m high");
