@@ -103,6 +103,9 @@ namespace CGD.Editor
             EditorGUILayout.LabelField("Floor", $"{room.Footprint.Count} tiles{(room.Footprint.CurvedWalls ? " · curved walls" : "")}{(room.Chamfer > 0 ? $" · {room.Chamfer}-tile bevels" : "")}");
             EditorGUILayout.LabelField("Doorways", sample.DoorsWanted >= 0 ? $"{sample.DoorwayCount} of {sample.DoorsWanted}" : sample.DoorwayCount.ToString());
             EditorGUILayout.LabelField("Structure", $"{room.Structure.Pillars.Count} pillars · {room.Structure.Partitions.Count} inner wall edges · {room.Structure.ZoneCount} zone(s)");
+            if (room.Structure.Spaces.Count > 0)
+                EditorGUILayout.LabelField(new GUIContent("Spaces", "The walled-off places inside the room, each furnished by its own place (a building's classrooms, the streets round it). Each is a zone in the Zones layer"),
+                                           new GUIContent(SpaceSummary(room.Structure)));
             if (room.Faction != null)
                 EditorGUILayout.LabelField(new GUIContent("Territory", "How strongly the holder's design shows, from the room's map influence (Level Build Settings › Territory Depth)"),
                                            new GUIContent($"{sample.Settings.TerritoryDepth.NameOf(room.DesignStrength)} · design at {room.DesignStrength:0%} (influence {room.Node.FactionInfluence:0.00})"));
@@ -118,6 +121,22 @@ namespace CGD.Editor
 
             EditorGUILayout.LabelField("Seed", sample.SeedText);
             EditorGUIUtility.labelWidth = 0f;
+        }
+
+        // "Classroom ×6, Hall, Street": each kind of space and how many there are.
+        private static string SpaceSummary(RoomStructure structure)
+        {
+            var counts = new Dictionary<string, int>();
+            foreach (StructureSpace space in structure.Spaces)
+            {
+                counts.TryGetValue(space.Name, out int count);
+                counts[space.Name] = count + 1;
+            }
+
+            var parts = new List<string>();
+            foreach (KeyValuePair<string, int> entry in counts)
+                parts.Add(entry.Value > 1 ? $"{entry.Key} ×{entry.Value}" : entry.Key);
+            return string.Join(", ", parts);
         }
 
         // What the holding faction asks of its fight rooms, next to what this room offers.

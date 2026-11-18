@@ -112,7 +112,8 @@ Assets/
                             RuntimeNavMesh, GeneratedAssets; Population/ — RoomPopulator, RoomContentRule, RoomRoster, EnemyTierOdds, Posts/ (RoomPostMap, RoomEnemyPlanner: where enemies start, who guards and who patrols);
                             Shapes/ — RoomShape assets, RoomShapeRasterizer, RoomFootprint (tiles + door sockets)
                             RoomOutline (curved walls); Functions/ — RoomFunction, RoomLayout (one arrangement of a place: shapes, size, structure, set pieces), RoomPropSet (a shared kit);
-                            Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), CoverHeights (low / high cover bands), Rules/ (pillars, partitions, rows, remnants, office maze);
+                            Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), CoverHeights (low / high cover bands), Rules/ (pillars, partitions, rows, remnants, office maze, building, town);
+                            Buildings/ — BuildingPlan (data), BuildingLayoutPlanner and BuildingBlueprintWriter (a hall with rooms carved into a room; a town of buildings among streets);
                             Landmarks/ — hand-built rooms; Props/ — RoomFurnisher (what a room is furnished with, shared by the level and the editor),
                             RoomPropPlanner (footprints, clearance, spread, cover, lattices, symmetry, clusters, prop groups, near/keyed placements, features that grow with the room; reports each placement's outcome), RoomDressing (cover and clutter per room type);
                             Design/ — FactionDesign (each faction's floor plans, structure, props and crowding), FactionStyle + TerritoryDepth (the design at a room's strength), ShipSideDesign, BreachSplit,

@@ -84,10 +84,22 @@ namespace CGD.Level
             if (room.Landmark == null)
             {
                 planner.Add(room.FunctionProps);
+                AddSpaces(planner, structure);
                 if (side != null && side.Dressing != null) planner.Add(side.Dressing.Props);
                 AddRoomTypeDressing(planner, room, structure, rule, style, swaps);
             }
             return planner;
+        }
+
+        // The rooms of a building and the streets round it each get their own place's furniture,
+        // in their own zone only: a hospital's ward gets beds, its storeroom shelves.
+        private static void AddSpaces(RoomPropPlanner planner, RoomStructure structure)
+        {
+            foreach (StructureSpace space in structure.Spaces)
+            {
+                if (space.Function == null) continue;
+                planner.Add(space.Function.PropsWith(null), zones: new[] { structure.ZoneOf(space.Tile) });
+            }
         }
 
         // The room type's cover and clutter, then the factions' own props. A Breach room split

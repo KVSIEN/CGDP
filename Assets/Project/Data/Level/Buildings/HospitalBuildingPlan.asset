@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e922c0dee8c9418086c09d58b1e0d7de, type: 3}
+  m_Name: HospitalBuildingPlan
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.BuildingPlan
+  _displayName: Hospital
+  _hallTiles: 2
+  _hallFunction: {fileID: 0}
+  _doorHeight: 2.6
+  _spaces:
+  - _name: Reception
+    _function: {fileID: 11400000, guid: 921ce82c13644f47a1398a4bd8c57f7c, type: 2}
+    _count: {Min: 1, Max: 1, Bias: 0}
+    _width: {Min: 4, Max: 4, Bias: 0}
+    _placement: 1
+    _fills: 0
+  - _name: Waiting Room
+    _function: {fileID: 11400000, guid: 921ce82c13644f47a1398a4bd8c57f7c, type: 2}
+    _count: {Min: 1, Max: 1, Bias: 0}
+    _width: {Min: 3, Max: 4, Bias: 0}
+    _placement: 1
+    _fills: 0
+  - _name: Ward
+    _function: {fileID: 11400000, guid: 97e12e89c7d648ab8f369021466dcbac, type: 2}
+    _count: {Min: 2, Max: 5, Bias: 0}
+    _width: {Min: 3, Max: 4, Bias: 0}
+    _placement: 0
+    _fills: 1
+  - _name: Operating Room
+    _function: {fileID: 11400000, guid: b3fdcdc57908400294d5b2714ee70aae, type: 2}
+    _count: {Min: 1, Max: 2, Bias: 0}
+    _width: {Min: 4, Max: 4, Bias: 0}
+    _placement: 0
+    _fills: 0
+  - _name: Pharmacy
+    _function: {fileID: 11400000, guid: 16da928ac699423387fa6547109dc9ac, type: 2}
+    _count: {Min: 1, Max: 1, Bias: 0}
+    _width: {Min: 3, Max: 3, Bias: 0}
+    _placement: 0
+    _fills: 0
+  - _name: Laboratory
+    _function: {fileID: 11400000, guid: 724d0e081467427ba7752bc0e980b17e, type: 2}
+    _count: {Min: 0, Max: 1, Bias: 0}
+    _width: {Min: 3, Max: 4, Bias: 0}
+    _placement: 0
+    _fills: 0
+  - _name: Storage
+    _function: {fileID: 11400000, guid: b3d42bb6e6d6481283d78fa14413f453, type: 2}
+    _count: {Min: 1, Max: 1, Bias: 0}
+    _width: {Min: 2, Max: 3, Bias: 0}
+    _placement: 0
+    _fills: 0
+  - _name: Morgue
+    _function: {fileID: 11400000, guid: 5bbef9de3d274175ae4f819e760e5ba1, type: 2}
+    _count: {Min: 1, Max: 1, Bias: 0}
+    _width: {Min: 3, Max: 4, Bias: 0}
+    _placement: 2
+    _fills: 0

@@ -24,6 +24,10 @@ namespace CGD.Level
         private readonly List<PartitionEdge> _partitions = new();
         private readonly List<PartitionEdge> _openings = new();
         private readonly List<Vector2Int> _entrances = new();
+        private readonly List<StructureSpace> _spaces = new();
+        // Doorways that still divide zones: the gap in a building's wall opens onto the next
+        // room, but the two stay separate places.
+        private readonly HashSet<(Vector2Int, Vector2Int)> _sealedOpenings = new();
 
         // Everything known per tile, as flat arrays over the footprint's bounds: the prop planner,
         // the sightlines and the reachability check (run for every prop tried) read these
@@ -68,6 +72,9 @@ namespace CGD.Level
         public IReadOnlyList<PartitionEdge>   Openings   => _openings;
         // The floor tile inside each doorway.
         public IReadOnlyList<Vector2Int>      Entrances  => _entrances;
+        // The walled-off places inside the room (rooms of a building, the streets round it), each
+        // furnished by its own function. Empty for an ordinary room.
+        public IReadOnlyList<StructureSpace> Spaces => _spaces;
         public int ZoneCount { get; private set; } = 1;
         // The zone with the most floor (0 when the room is one zone).
         public int LargestZone { get; private set; }
@@ -83,6 +90,8 @@ namespace CGD.Level
             copy._partitions.AddRange(_partitions);
             copy._openings.AddRange(_openings);
             copy._entrances.AddRange(_entrances);
+            copy._spaces.AddRange(_spaces);
+            copy._sealedOpenings.UnionWith(_sealedOpenings);
             System.Array.Copy(_zones, copy._zones, _zones.Length);
             System.Array.Copy(_wallEast, copy._wallEast, _wallEast.Length);
             System.Array.Copy(_wallNorth, copy._wallNorth, _wallNorth.Length);
@@ -281,7 +290,18 @@ namespace CGD.Level
             return false;
         }
 
-        public void AddOpening(PartitionEdge opening) => _openings.Add(opening);
+        // `separatesZones`: the doorway joins two places that stay separate zones (a classroom and
+        // its hall), unlike a gap in a divider, which keeps the room's two halves one space.
+        public void AddOpening(PartitionEdge opening, bool separatesZones = false)
+        {
+            _openings.Add(opening);
+            if (separatesZones) _sealedOpenings.Add(Key(opening.Tile, opening.Other));
+        }
+
+        // Marks the zone holding `tile` as a place of its own, to be furnished by `function`.
+        // Call before AssignZones or after: the zone is looked up from the tile when needed.
+        public void AddSpace(Vector2Int tile, RoomFunction function, string name) =>
+            _spaces.Add(new StructureSpace(tile, function, name));
 
         // Whether an inner wall can't stand on the edge between two tiles: a route crosses it, or
         // a doorway or pillar is right beside it.
@@ -332,6 +352,7 @@ namespace CGD.Level
                         Vector2Int next = tile + side;
                         if (!Contains(next) || seen.Contains(next)) continue;
                         if (IsPartitioned(tile, next)) continue;
+                        if (_sealedOpenings.Contains(Key(tile, next))) continue;
                         if (lines != null && lines.Contains(Key(tile, next))) continue;
                         seen.Add(next);
                         open.Push(next);

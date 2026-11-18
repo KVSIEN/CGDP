@@ -750,6 +750,47 @@ three layouts, and nothing anywhere stands *Near* a key that isn't set before it
 - Placeholders are stretched boxes, so a pool's deck rim thickens with its size. Real art
   needs a basin that can be built to any footprint, or nine-sliced.
 
+## 13. Buildings and towns (Phase 13)
+
+A place can be a whole building (a school, a hospital) or a town of buildings among open
+streets, made inside one room from the same pieces every room uses: inner walls, doorways and
+zones. Nothing changes in the map graph or the corridor router; a building is a room whose
+structure is a floor plan.
+
+| Piece | Role | Where |
+|---|---|---|
+| `BuildingPlan` | Data: hall width, the rooms wanted (place, count, width, placement) | `Data/Level/Buildings/` |
+| `BuildingLayoutPlanner` | Plain C#: tiles a lot with the hall and rooms, returns a `BuildingBlueprint` (rectangles, doors, front door, rooms that didn't fit) | `Scripts/Level/Buildings/` |
+| `BuildingBlueprintWriter` | Writes a blueprint into a `RoomStructure`: a wall between any two spaces, a lintel doorway at each door, each space registered with its place | same |
+| `BuildingStructureRule` | The room is the building | `Data/Level/Structure/` |
+| `TownStructureRule` | The room is streets with a grid of lots, each a walled building | same |
+
+**Layout.** The hall runs in from the front door, `Entrance` rooms first beside it, then the
+required rooms, then the optional, each on whichever side has more frontage left; leftover
+frontage is filled by `Fills` rooms or the last room grows. A `Back` room closes the far end.
+The plan tiles the whole lot (no floor is left unassigned), and a lot too small for a hall and
+a room gets no building.
+
+**Zones and furnishing.** Doorways through a building's walls are added with
+`RoomStructure.AddOpening(…, separatesZones: true)`, so each room, the hall and the streets
+are zones of their own. Each space is recorded (`RoomStructure.Spaces`) with a tile and its
+place; `RoomFurnisher` then furnishes each space from that place's props in its own zone only,
+through the same zone argument a Breach room uses. A space's place gives its furniture, not
+its own structure rules.
+
+**Safety.** The walls go in through `TryAddPartition`: if they would cut any floor off from the
+room's doorways, nothing is built. In a town, lots that would swallow a doorway, the centre spot
+or an earlier structure are left as plazas.
+
+**Open items.**
+- Restrooms and bathrooms are bare rooms: no place with toilets or sinks exists yet.
+- A classroom is furnished by the School place's own props (the teacher's desk and set), not
+  its layouts' rows of desks. Sub-spaces could pick one of the place's layouts.
+- A town's room has an open ceiling, so its buildings have no roofs; a roof per lot would
+  close them in.
+- Buildings are not in the build settings' place list, so no map picks them yet: pin them.
+- Not compiled or run in Unity (see the roadmap).
+
 ## Roadmap
 
 | Phase | What | Status |
@@ -766,6 +807,7 @@ three layouts, and nothing anywhere stands *Near* a key that isn't set before it
 | **10. Enemies learn their ground** | Each enemy learns hidden, vantage and tight places by walking and looking, with familiarity and danger, shares them with nearby kin, falls back to the best it knows and watches a known lane from its post (section 11) | **Done in code, not yet compiled or run** |
 | **11. Layouts and set pieces** | Places in several arrangements (`RoomLayout`: shapes, cells, size, structure, set pieces) over the function's own props; prop groups, keyed *Near* placements, features that grow with the room and stretch, pieces for big rooms only; every generated place with two or three layouts (Casino, Library and Pool first); the function's Required anchor before the layout's pieces; placeholders cut to at most three primitives; gallery room per layout; Room Lab and Map Graph layout pins (section 12) | **Done in code, not yet compiled or run** |
 | **12. Ship operations and authoring kit** | Power Distribution, Waste Reclamation, Fuel Depot, Coolant Plant, Maintenance Hub and Comms Array, each with three layouts; Engine Room, Life Support, Water Treatment and Processing Plant reworked to three or four; shared kits (`RoomPropSet`) round a machine keyed *Plant*; Waist and Comb shapes; 18 operations props; the placeholder palette and Prop Builder; New layout, Duplicate and Check in the Inspector (section 12) | **Done in code, not yet compiled or run** |
+| **13. Buildings and towns** | `BuildingPlan` floor plans carved into a room (hall, rooms, back room), each room its own zone and furnished by its own place; a town of walled buildings among open streets; School Wing, Hospital Wing, Town Square places; Room Lab *Spaces* (section 13) | **Done in code, not yet compiled or run** |
 
 ### Tuning (Phase 7)
 

@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e922c0dee8c9418086c09d58b1e0d7de, type: 3}
+  m_Name: SchoolBuildingPlan
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.BuildingPlan
+  _displayName: School
+  _hallTiles: 1
+  _hallFunction: {fileID: 0}
+  _doorHeight: 2.6
+  _spaces:
+  - _name: Principal's Office
+    _function: {fileID: 11400000, guid: 663f6ffade454c229fcb58d00ee1629a, type: 2}
+    _count: {Min: 1, Max: 1, Bias: 0}
+    _width: {Min: 3, Max: 3, Bias: 0}
+    _placement: 1
+    _fills: 0
+  - _name: Teachers' Lounge
+    _function: {fileID: 11400000, guid: 70888b7bd5ad4c528538107f1fd5f98f, type: 2}
+    _count: {Min: 1, Max: 1, Bias: 0}
+    _width: {Min: 3, Max: 4, Bias: 0}
+    _placement: 0
+    _fills: 0
+  - _name: Classroom
+    _function: {fileID: 11400000, guid: 644b60300b7f43beb9c905cf63a3fcef, type: 2}
+    _count: {Min: 3, Max: 6, Bias: 0}
+    _width: {Min: 3, Max: 4, Bias: 0}
+    _placement: 0
+    _fills: 1
+  - _name: Restroom
+    _function: {fileID: 0}
+    _count: {Min: 2, Max: 2, Bias: 0}
+    _width: {Min: 2, Max: 3, Bias: 0}
+    _placement: 0
+    _fills: 0
+  - _name: Library
+    _function: {fileID: 11400000, guid: 7e6198d9625440e3859ed7ca6b322723, type: 2}
+    _count: {Min: 0, Max: 1, Bias: 0}
+    _width: {Min: 4, Max: 5, Bias: 0}
+    _placement: 0
+    _fills: 0
+  - _name: Supply Closet
+    _function: {fileID: 11400000, guid: b3d42bb6e6d6481283d78fa14413f453, type: 2}
+    _count: {Min: 1, Max: 1, Bias: 0}
+    _width: {Min: 2, Max: 2, Bias: 0}
+    _placement: 0
+    _fills: 0
+  - _name: Gymnasium
+    _function: {fileID: 11400000, guid: bb2c782d8f06449b98a207a9d5fcd759, type: 2}
+    _count: {Min: 1, Max: 1, Bias: 0}
+    _width: {Min: 4, Max: 5, Bias: 0}
+    _placement: 2
+    _fills: 0
