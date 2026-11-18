@@ -74,6 +74,7 @@ namespace CGD.Map
         public int   FirstRoomsMaxTier => _firstRoomsMaxTier;
 
         public IReadOnlyList<FactionDefinition> Factions => _factions;
+        public IReadOnlyList<MapFactionMixOption> FactionMixes => _factionMixes;
 
         public float BaseIntensity(float progress) => Mathf.Clamp01(_intensityByDepth.Evaluate(progress));
 

@@ -31,6 +31,10 @@ namespace CGD.Stealth
         [Tooltip("Seconds 'spotted' lingers after the last enemy saw you")]
         [SerializeField, Min(0f)] private float _spottedMemory = 0.3f;
 
+        public float RevealDistance            => _revealDistance;
+        public float SharedCoverRevealDistance => _sharedCoverRevealDistance;
+        public float CrouchMultiplier          => _crouchMultiplier;
+        public float SprintMultiplier          => _sprintMultiplier;
         public float CrouchVisibility          => _crouchVisibility;
         public float StillVisibility           => _stillVisibility;
         public float CrouchFootsteps           => _crouchFootsteps;

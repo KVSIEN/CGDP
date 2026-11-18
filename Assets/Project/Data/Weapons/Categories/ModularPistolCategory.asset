@@ -236,6 +236,10 @@ MonoBehaviour:
     Min: 1
     Max: 1.9
     Bias: 0
+  TacticalReloadBonus:
+    Min: 0.1
+    Max: 0.4
+    Bias: 0
   QuickMelee: {fileID: 11400000, guid: b8b8edef97fe44419568423b7b315222, type: 2}
   DrawTime:
     Min: 0.3

@@ -28,6 +28,7 @@ namespace CGD.Items
         [Tooltip("Perks every item of this gear has, on top of the ones it rolls (e.g. the Modular Pistol's Tactical Knife)")]
         [SerializeField] private GearPerk[] _guaranteedPerks = System.Array.Empty<GearPerk>();
 
+        public StatRollProfile RollProfile => _rollProfile;
         public StatRange[]     StatRanges  => _statRanges;
         public PerkPool        PerkPool    => _perkPool;
         public IReadOnlyList<GearPerk> GuaranteedPerks => _guaranteedPerks;
