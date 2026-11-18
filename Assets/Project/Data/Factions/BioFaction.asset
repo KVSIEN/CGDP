@@ -15,6 +15,13 @@ MonoBehaviour:
   _displayName: BIO
   _color: {r: 0.549, g: 0.667, b: 0.306, a: 1}
   _floorTint: 0.3
+  _fauna:
+  - {fileID: 1000000000000000001, guid: 0b898971a4ce41478d494dca641f1591, type: 3}
+  _faunaChance: 0.4
+  _faunaGroup:
+    Min: 1
+    Max: 3
+    Bias: 0
   _tier1:
   - {fileID: 6049590506595625700, guid: a91f3c7c0dcd4aed808a7ae84cb32d9b, type: 3}
   _tier2:

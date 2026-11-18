@@ -112,6 +112,7 @@ namespace CGD.Level
             // enemy first wants cover.
             if (_coverMap != null) _coverMap.Rebuild();
             populator.SpawnEnemies();
+            populator.SpawnFauna();
             new RoomEncounterBuilder(_encounters, Layout, Graph, transform, populator, _player, _worldMap,
                                      Seed.Derive("encounters"), new MapRunTuning(Modifiers).LootLuck).Build();
 

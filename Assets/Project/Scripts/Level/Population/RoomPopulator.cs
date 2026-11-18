@@ -217,6 +217,37 @@ namespace CGD.Level
             }
         }
 
+        // The faction's fauna (FactionDefinition › Fauna) settle in its calm rooms: a group of
+        // prey that wanders its room's territory. They are no enemies of the room: not counted
+        // in its encounter, not in its enemy count. Drawn from their own stream, so adding or
+        // changing them moves nothing else the level places.
+        public void SpawnFauna()
+        {
+            foreach (LevelRoom room in _layout.Rooms.Values)
+            {
+                FactionDefinition faction = room.Faction;
+                if (faction == null || !faction.HoldsFauna(room.Node.Type)) continue;
+
+                RandomStream random = _seed.Derive("fauna").Derive(room.Node.Id).Stream();
+                if (!random.Chance(faction.FaunaChance)) continue;
+
+                GameObject prefab = random.Pick(faction.Fauna);
+                int count = faction.FaunaGroup.Evaluate(random);
+                HomeZone home = HomeOf(room);
+                for (int i = 0; i < count; i++)
+                {
+                    if (!TryTakeSpawnSpot(room, out Vector3 position)) break;
+
+                    GameObject animal = PrefabPool.Spawn(prefab, position, _parent.rotation * Quaternion.Euler(0f, random.Range(0f, 360f), 0f));
+                    ISeedable.SeedAll(animal, _seed.Derive("fauna").Derive(room.Node.Id).Derive(i));
+                    if (!animal.TryGetComponent(out EnemyAI ai)) continue;
+
+                    ai.SetWaypoints(System.Array.Empty<Transform>());
+                    ai.SetHome(home);
+                }
+            }
+        }
+
         // A faction-held room fields that faction's enemies (by the room's tier); how many still
         // comes from the room type.
         public RoomRoster RosterFor(LevelRoom room) => RosterOf(room.Faction, room);
