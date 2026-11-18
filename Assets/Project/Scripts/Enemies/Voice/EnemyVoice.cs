@@ -30,7 +30,7 @@ namespace CGD.Enemies
             if (Random.value > line.Chance) return false;
             if (!EnemyBarks.Rules.TryClaim(kind, Time.time, ref _saidAt)) return false;
 
-            line.Sound.TryPlay(_ai.transform.position + Vector3.up * MouthHeight);
+            line.Sound.TryPlay(_ai.transform.position + Vector3.up * MouthHeight);   // no sound: said silently
             EnemyBarks.Report(_ai, kind);
             return true;
         }

@@ -5,7 +5,7 @@ namespace CGD.Enemies
 {
     // An enemy type's voice: which lines it says for each BarkKind (EnemyData › Voice). One
     // per faction or archetype — Tech bots chirp, Bio creatures snarl. Kinds without a line
-    // stay silent, so a set can start small.
+    // are never said, so a set can start small; a line with no sound is said silently.
     [CreateAssetMenu(fileName = "NewEnemyBarkSet", menuName = "CGD/Enemies/Bark Set")]
     public class EnemyBarkSet : ScriptableObject
     {
@@ -18,7 +18,9 @@ namespace CGD.Enemies
         {
             _byKind ??= Index(_lines);
             line = _byKind[(int)kind];
-            return line != null && line.Sound != null;
+            // A line without a sound is still said — silently — so the bark's timing, rules and
+            // events work before any sound exists.
+            return line != null;
         }
 
         private static BarkLine[] Index(BarkLine[] lines)
