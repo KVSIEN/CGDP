@@ -49,3 +49,12 @@ MonoBehaviour:
     Facing: 90
     Spread: 2.5
     Patrol: 
+  - Name: Cleaner Bot
+    Enabled: 1
+    Members:
+    - Prefab: {fileID: 100100000, guid: 627585cc39e9465b877a3d79d1261305, type: 3}
+      Count: 1
+    Position: {x: 8, y: 0, z: 6}
+    Facing: 180
+    Spread: 2.5
+    Patrol: 

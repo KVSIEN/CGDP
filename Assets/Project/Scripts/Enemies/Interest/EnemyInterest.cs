@@ -130,7 +130,7 @@ namespace CGD.Enemies
 
             Vector3 offset = centre - self;
             offset.y = 0f;
-            return InterestRules.Weight(kind.AppealTo(_ai.Health.Team), offset.magnitude, kind.Reach, PatrolScoring.DangerNear(centre, _places));
+            return InterestRules.Weight(kind.AppealTo(_ai.Health.Team, _ai.Data), offset.magnitude, kind.Reach, PatrolScoring.DangerNear(centre, _places));
         }
     }
 }

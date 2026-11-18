@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 952352510956944328}
+  - component: {fileID: 8841130115404802019}
   m_Layer: 0
   m_Name: Console
   m_TagString: Untagged
@@ -235,3 +236,18 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8841130115404802019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3592533658758260548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c75a5eea58046d1b40a88509d62a7c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.PointOfInterest
+  _kind: {fileID: 11400000, guid: f6d3c3a8b14440268ae9b52c0862029f, type: 2}
+  _spots: []
+  _spotRadius: 1.5

@@ -15,6 +15,13 @@ MonoBehaviour:
   _displayName: TECH
   _color: {r: 1, g: 0.698, b: 0.247, a: 1}
   _floorTint: 0.3
+  _fauna:
+  - {fileID: 4751797605688477134, guid: 627585cc39e9465b877a3d79d1261305, type: 3}
+  _faunaChance: 0.5
+  _faunaGroup:
+    Min: 1
+    Max: 2
+    Bias: 0
   _tier1:
   - {fileID: 4751797605688477134, guid: 54c366c401164802b7766c9304e684a7, type: 3}
   _tier2:

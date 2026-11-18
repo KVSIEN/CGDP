@@ -28,7 +28,7 @@ namespace CGD.Factions
         [Tooltip("Tier 3: the faction's strongest regular enemies, with more affixes")]
         [SerializeField] private GameObject[] _tier3 = Array.Empty<GameObject>();
         [Header("Fauna")]
-        [Tooltip("Animals (each needs EnemyAI) that live in this faction's calm rooms: prey that wanders, grazes and runs. They are no part of a room's fight or its enemy count, and the predators of the level hunt them. Empty = none")]
+        [Tooltip("Residents (each needs EnemyAI) of this faction's calm rooms: animals that graze and run, cleaning bots that roam. They are no part of a room's fight or its enemy count. Empty = none")]
         [SerializeField] private GameObject[] _fauna = Array.Empty<GameObject>();
         [Tooltip("Chance that a room of a fitting type holds a group of them")]
         [SerializeField, Range(0f, 1f)] private float _faunaChance = 0.4f;

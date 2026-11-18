@@ -58,5 +58,22 @@ namespace CGD.Tests
             Assert.AreEqual(0f,   kind.AppealTo(Team.Void));
             Object.DestroyImmediate(kind);
         }
+
+        [Test]
+        public void AKindForParticularTypesIgnoresTheRest()
+        {
+            var kind  = ScriptableObject.CreateInstance<InterestKind>();
+            var bot   = ScriptableObject.CreateInstance<EnemyData>();
+            var other = ScriptableObject.CreateInstance<EnemyData>();
+            var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+            typeof(InterestKind).GetField("_draws", flags).SetValue(kind, new[] { new InterestDraw { Team = Team.Tech, Appeal = 1f } });
+            typeof(InterestKind).GetField("_onlyFor", flags).SetValue(kind, new[] { bot });
+
+            Assert.AreEqual(1f, kind.AppealTo(Team.Tech, bot), 0.001f);
+            Assert.AreEqual(0f, kind.AppealTo(Team.Tech, other));
+            Object.DestroyImmediate(kind);
+            Object.DestroyImmediate(bot);
+            Object.DestroyImmediate(other);
+        }
     }
 }

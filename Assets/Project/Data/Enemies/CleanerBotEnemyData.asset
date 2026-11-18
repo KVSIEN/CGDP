@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fa9dd37a1333c94ba199e2bd61bbee3, type: 3}
+  m_Name: CleanerBotEnemyData
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
+  DisplayName: Cleaner Bot
+  Team: 4
+  MaxHealth: 25
+  Armor: 20
+  MaxShield: 20
+  ShieldRegenDelay: 4
+  ShieldRegenRate: 8
+  PatrolSpeed: 1.8
+  ChaseSpeed: 4
+  SightRange: 16
+  SightAngle: 140
+  HearingRadius: 12
+  Senses: {fileID: 11400000, guid: 251b916bd85e47ba8781cb4c02764333, type: 2}
+  Relations: {fileID: 11400000, guid: 45a2aac401544b4cafdf2c79c67f5ce0, type: 2}
+  Doctrine: {fileID: 11400000, guid: 4a51cef27d724cf4887b8f42b3c2877d, type: 2}
+  BehaviorTree: {fileID: 11400000, guid: a0dbd4eab120400697d2924f2e5af957, type: 2}
+  Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
+  CombatType: 1
+  Social: 1
+  AttackRange: 1.2
+  AttackDamage: 3
+  AttackCooldown: 1.5
+  AttackWindup: 0.4
+  PreferredRange: 14
+  SpreadAngle: 3
+  BurstCount: 1
+  BurstInterval: 0.1
+  StrafeInterval: 2
+  StrafeDistance: 3
+  AlertDuration: 6

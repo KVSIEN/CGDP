@@ -1,0 +1,151 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: CleanerBotBehaviorTree
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 9c077cde71784c88ae8e61074e791841
+        _position: {x: 0, y: 0}
+        _comment: 'Cleaner bot: roams and cleans like a roomba; on a threat it backs off, keeps watch and radios its kin where it is'
+        _children:
+        - 4954c3fff94f48c0a637e750d09fe11a
+    - rid: 1001
+      type: {class: CallForHelp, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2e07d7f0c9b94df69c62fcc8a07de731
+        _position: {x: -420, y: 600}
+        _comment: 'Radios kin where the threat is'
+    - rid: 1002
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d32307d878f84a989fa2abad08eda184
+        _position: {x: -420, y: 500}
+        _comment: 
+        _children:
+        - 2e07d7f0c9b94df69c62fcc8a07de731
+        _seconds: 6
+        _onlyAfterSuccess: 0
+    - rid: 1003
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 166cc17532cc40ed95d3fc80856b4ab5
+        _position: {x: -420, y: 400}
+        _comment: 'Never holds the report up'
+        _children:
+        - d32307d878f84a989fa2abad08eda184
+        _succeed: 1
+    - rid: 1004
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 59f15bb835734e0794284131dde6733b
+        _position: {x: -600, y: 400}
+        _comment: 
+        _memory: 6
+    - rid: 1005
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 994ead5cabce43b18c09ca0e8a116504
+        _position: {x: -120, y: 600}
+        _comment: 'Too close'
+        _range: 7
+    - rid: 1006
+      type: {class: FleeFromDisturbance, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3befa7bd03024578aac81bcb353021bf
+        _position: {x: 0, y: 600}
+        _comment: 'Backs away'
+        _distance: 12
+    - rid: 1007
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5d828ebf945c4af0b4679a277e3fc561
+        _position: {x: -60, y: 500}
+        _comment: 'A hostile too close: back off'
+        _children:
+        - 994ead5cabce43b18c09ca0e8a116504
+        - 3befa7bd03024578aac81bcb353021bf
+        _abort: 0
+    - rid: 1008
+      type: {class: HoldRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6e54bde7ed8e4a89908dcc37fdbe5a24
+        _position: {x: 100, y: 500}
+        _comment: 'Keeps its distance, watching, so each sighting reaches its kin'
+    - rid: 1009
+      type: {class: FleeFromDisturbance, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 22f8cf3f32174929ba51af444fcb0829
+        _position: {x: 250, y: 500}
+        _comment: 'Lost it: clears out'
+        _distance: 14
+    - rid: 1010
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c5540c3b65764d5e9224322dd4e5c3d1
+        _position: {x: 60, y: 400}
+        _comment: 
+        _children:
+        - 5d828ebf945c4af0b4679a277e3fc561
+        - 6e54bde7ed8e4a89908dcc37fdbe5a24
+        - 22f8cf3f32174929ba51af444fcb0829
+        _abort: 0
+    - rid: 1011
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: faeae48ef98e4bf4a5fbd55b1de54f46
+        _position: {x: -250, y: 300}
+        _comment: 'Reports a threat and keeps watch'
+        _children:
+        - 59f15bb835734e0794284131dde6733b
+        - 166cc17532cc40ed95d3fc80856b4ab5
+        - c5540c3b65764d5e9224322dd4e5c3d1
+        _abort: 3
+    - rid: 1012
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5599d9ea2e0a4a2cb1f562b4ba4e117e
+        _position: {x: 300, y: 300}
+        _comment: 'Cleans: explores, dusts, looks into noises'
+        _tree: {fileID: 11400000, guid: cba441f48fd34dec9c15d7d0c6903346, type: 2}
+        _off: 0
+    - rid: 1013
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4954c3fff94f48c0a637e750d09fe11a
+        _position: {x: 0, y: 150}
+        _comment: 'Most urgent first'
+        _children:
+        - faeae48ef98e4bf4a5fbd55b1de54f46
+        - 5599d9ea2e0a4a2cb1f562b4ba4e117e
+        _abort: 0

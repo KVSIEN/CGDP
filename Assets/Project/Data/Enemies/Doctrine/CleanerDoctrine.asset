@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41daa03c64c14bb0a0583d3587237b77, type: 3}
+  m_Name: CleanerDoctrine
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.FactionDoctrine
+  _escalation:
+    _calloutRadiusScale: 1.5
+    _reportsFallenKin: 1
+    _callsForHelpWhenShaken: 1
+  _idle:
+    _beats:
+    - _label: Sweep
+      _gaze: 1
+      _duration: {Min: 4, Max: 7, Bias: 0}
+      _weight: 4
+      _lookInterval: {Min: 0, Max: 0, Bias: 0}
+      _arcScale: 1
+      _walkRadius: 3.5
+      _bark: 0
+    - _label: Spot clean
+      _gaze: 2
+      _duration: {Min: 2, Max: 4, Bias: 0}
+      _weight: 2
+      _lookInterval: {Min: 0, Max: 0, Bias: 0}
+      _arcScale: 1
+      _walkRadius: 2
+      _bark: 0
+    - _label: Pause
+      _gaze: 3
+      _duration: {Min: 1.5, Max: 3, Bias: 0}
+      _weight: 1
+      _lookInterval: {Min: 0, Max: 0, Bias: 0}
+      _arcScale: 1
+      _walkRadius: 0
+      _bark: 0
+    _order: 1
+    _waypointStopChance: 0.3
+    _haltsPerMinute: 3
+    _sweepSpeed: 60
+    _patrolSpeedScale: 1
+    _paceDrift: 0
+    _edgeBeatScale: 0.7
+    _edgeSweepScale: 1
+  _patrol:
+    _exploreWithoutRoute: 1
+    _routeDrift: 0.5
+    _range: 30
+    _curiosity: 0.9
+    _forgetAfter: 60
+    _walk: 2
+    _interestChance: 0.5

@@ -14,6 +14,8 @@ namespace CGD.Enemies
         [SerializeField] private string _displayName = "Interest";
         [Tooltip("The factions it draws and how much. A faction not listed ignores it")]
         [SerializeField] private InterestDraw[] _draws;
+        [Tooltip("Only these enemy types are drawn (a cleaning bot's dust, not every Tech). Empty = every enemy of a listed faction")]
+        [SerializeField] private EnemyData[] _onlyFor;
         [Tooltip("Seconds an enemy stays once it is there")]
         [SerializeField] private FloatRange _duration = new(6f, 12f);
         [Tooltip("How many enemies can use one point at once")]
@@ -37,6 +39,13 @@ namespace CGD.Enemies
         public BarkKind   Bark            => _bark;
         public float      HealthPerSecond => _healthPerSecond;
         public float      ShieldPerSecond => _shieldPerSecond;
+
+        // 0 for a faction (or, where the kind is for particular types, an enemy type) that does not care for it.
+        public float AppealTo(Team team, EnemyData data)
+        {
+            if (_onlyFor != null && _onlyFor.Length > 0 && System.Array.IndexOf(_onlyFor, data) < 0) return 0f;
+            return AppealTo(team);
+        }
 
         // 0 for a faction that does not care for it.
         public float AppealTo(Team team)
