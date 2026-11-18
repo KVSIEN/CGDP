@@ -15,7 +15,9 @@ namespace CGD.Enemies
     // hazard that could hurt it is open.
     //
     // A sneaking move (RouteStyle.ThroughBushes) also passes through bushes on the way, one at a
-    // time (BushHops), if the enemy's data allows the detour; hazards still come first.
+    // time (BushHops), if the enemy's data allows the detour; one that keeps to the walls
+    // (RouteStyle.AlongWalls) is walked in legs, each pulled to the nearest wall (WallHug);
+    // hazards still come first.
     internal sealed class EnemyRouting
     {
         private const float Clearance       = 0.6f;   // metres kept from a hazard's edge, beyond its own radius
@@ -25,6 +27,7 @@ namespace CGD.Enemies
         private const float SnapDistance    = 1.5f;
         private const float ReachSnapDistance = 4f;  // the edge of its reach may fall inside a wall
         private const int   MaxCorners      = 32;
+        private const float WallClearance   = 0.35f;  // metres kept from the wall beyond its own radius
 
         private readonly EnemyAI _ai;
         private readonly NavMeshPath _path = new();
@@ -142,6 +145,12 @@ namespace CGD.Enemies
                     SetWaypoint(detour: false, hop: true);
                     return Agent.SetDestination(bush);
                 }
+                if (_style == RouteStyle.AlongWalls && TryFindWallLeg(out Vector3 leg))
+                {
+                    _waypoint = leg;
+                    SetWaypoint(detour: false, hop: true);
+                    return Agent.SetDestination(leg);
+                }
                 SetWaypoint(detour: false, hop: false);
                 return Agent.SetDestination(_goal);
             }
@@ -177,6 +186,29 @@ namespace CGD.Enemies
             if (!NavMesh.SamplePosition(center, out NavMeshHit hit, SnapDistance, NavMesh.AllAreas)) return false;
 
             bush = hit.position;
+            return true;
+        }
+
+        // The end of the next leg along the planned route, pulled to the nearest wall when one is
+        // close and doing so still gets it closer to where it is going. False when the way is
+        // short enough to walk in one go (or there is no way).
+        private bool TryFindWallLeg(out Vector3 leg)
+        {
+            leg = default;
+            Vector3 from = Agent.transform.position;
+            if (!NavMesh.CalculatePath(from, _goal, NavMesh.AllAreas, _path) || _path.status != NavMeshPathStatus.PathComplete) return false;
+
+            int count = _path.GetCornersNonAlloc(_corners);
+            if (count < 2 || WallHug.Length(_corners, count) <= WallHug.StepLength * 1.5f) return false;
+
+            Vector3 onRoute = WallHug.PointAlong(_corners, count, WallHug.StepLength);
+            leg = onRoute;
+            if (!NavMesh.FindClosestEdge(onRoute, out NavMeshHit edge, NavMesh.AllAreas) || edge.distance > WallHug.WallReach) return true;
+
+            Vector3 beside = WallHug.BesideWall(edge.position, onRoute, Agent.radius + WallClearance);
+            if (NavMesh.SamplePosition(beside, out NavMeshHit onMesh, SnapDistance, NavMesh.AllAreas) &&
+                Flat(onMesh.position - _goal).magnitude < Flat(from - _goal).magnitude - 1f)
+                leg = onMesh.position;
             return true;
         }
 

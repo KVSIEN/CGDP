@@ -105,6 +105,8 @@ namespace CGD.Enemies
         internal EnemyGround       Ground       { get; private set; }
         // Where it has walked, and where it explores next when its patrol leaves the choice to it.
         internal EnemyExploration  Exploration  { get; private set; }
+        // Its pull towards things its faction likes in the world (points of interest), and its time spent with them.
+        internal EnemyInterest     Interest     { get; private set; }
         internal EnemyAbilities    Abilities    { get; private set; }
         internal EnemyAmbush       Ambush       { get; private set; }
         internal EnemyMinions      Minions      { get; private set; }
@@ -168,6 +170,7 @@ namespace CGD.Enemies
             Alarms        = new AlarmKnowledge(this);
             Ground        = new EnemyGround(this, _obstacleMask);
             Exploration   = new EnemyExploration(this);
+            Interest      = new EnemyInterest(this);
             TryGetComponent(out _stealth);
             Ambush        = new EnemyAmbush(_stealth);
             Minions       = new EnemyMinions(this);
@@ -207,6 +210,7 @@ namespace CGD.Enemies
         private void OnDisable()
         {
             EnemyRoster.Remove(this);
+            Interest.Abort(Time.time);
             Noise.Emitted         -= Perception.OnNoise;
             EnemyCallouts.Raised  -= Perception.OnCallout;
             FallenAllies.Fell     -= Perception.OnAllyFell;
@@ -482,6 +486,7 @@ namespace CGD.Enemies
             FallenAllies.Add(new FallenAlly(this, transform.position, _health.Team,
                                             killer != null ? killer.GetComponentInParent<HealthManager>() : null));
             _tree?.Abort();
+            Interest.Abort(Time.time);
             ReportState(AiState.Dead);
             Motion.StopTurning();
             Routing.Clear();
@@ -522,6 +527,7 @@ namespace CGD.Enemies
             Alarms.Forget();
             Ground.Forget();
             Exploration.Forget();
+            Interest.Forget();
             ReturnPending  = false;
             ReturnBody     = null;
             _engagedTarget = null;

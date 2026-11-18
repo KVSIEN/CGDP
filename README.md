@@ -76,6 +76,7 @@ Assets/
                             CalloutSender: what it tells its kin; HostileFocus: who is busy fighting someone else),
                             Belief/ (EnemyBelief, BeliefModel: where an unseen target likely went),
                             Ground/ (EnemyGround, PlaceMemory: hidden spots, vantages and corridors it has learned by walking and looking),
+                            Interest/ (PointOfInterest: grass, a recharging station; InterestKind: who it draws and what it does for them; EnemyInterest),
                             Exploration/ (EnemyExploration: where it goes next when its patrol leaves the choice to it; PatrolCoverage: where it has walked; PatrolScoring),
                             Doctrine/ (FactionDoctrine: how a faction carries itself — morale, escalation, idle routine and tells; EnemyIdleLife, EnemyTells),
                             Tactics/ (CoverMap: cover spots from the NavMesh; CoverKnowledge, EnemyTactics: cover, flanking, hiding spots, melee turns;

@@ -21,16 +21,23 @@ namespace CGD.Enemies
         [SerializeField, Range(0f, 1f)] private float _curiosity = 0.5f;
         [Tooltip("Seconds until ground it has walked counts as unseen again")]
         [SerializeField, Min(10f)] private float _forgetAfter = 120f;
+        [Tooltip("How it walks from stop to stop and back to its post: Direct (the shortest way), Through Bushes (from bush to bush on the way, where its data allows the detour) or Along Walls (keeping to walls and obstacle edges)")]
+        [SerializeField] private RouteStyle _walk = RouteStyle.ThroughBushes;
+        [Tooltip("Each time it chooses where to go: the chance it heads for something it likes instead (a PointOfInterest within reach), to spend a while with it")]
+        [SerializeField, Range(0f, 1f)] private float _interestChance = 0.35f;
 
         public PatrolDoctrine() { }
 
-        public PatrolDoctrine(bool exploreWithoutRoute, float routeDrift, float range, float curiosity, float forgetAfter)
+        public PatrolDoctrine(bool exploreWithoutRoute, float routeDrift, float range, float curiosity, float forgetAfter,
+                              RouteStyle walk = RouteStyle.ThroughBushes, float interestChance = 0.35f)
         {
             _exploreWithoutRoute = exploreWithoutRoute;
             _routeDrift          = routeDrift;
             _range               = range;
             _curiosity           = curiosity;
             _forgetAfter         = forgetAfter;
+            _walk                = walk;
+            _interestChance      = interestChance;
         }
 
         public bool  ExploreWithoutRoute => _exploreWithoutRoute;
@@ -38,5 +45,7 @@ namespace CGD.Enemies
         public float Range               => _range;
         public float Curiosity           => _curiosity;
         public float ForgetAfter         => _forgetAfter;
+        public RouteStyle Walk           => _walk;
+        public float InterestChance      => _interestChance;
     }
 }

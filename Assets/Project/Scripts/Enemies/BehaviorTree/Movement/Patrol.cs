@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.AI;
 using CGD.BehaviorTrees;
 
 namespace CGD.Enemies
@@ -7,7 +8,9 @@ namespace CGD.Enemies
     // Walks the enemy's patrol: its waypoint loop, stepping off it now and then to somewhere its
     // experience points to (PatrolDoctrine.RouteDrift); or, with no waypoints, going from one
     // place of its own choosing to the next (EnemyExploration), or guarding its post when its
-    // faction would rather not explore. Faster (and more watchful) while on edge after a search.
+    // faction would rather not explore. From time to time it heads instead for something its
+    // faction likes in the world (EnemyInterest) and spends a while with it. It walks the way its
+    // faction walks (PatrolDoctrine.Walk: along walls, through bushes). Faster (and more watchful) while on edge after a search.
     // Never finishes: put it last, after branches that abort lower priority, so anything more
     // urgent interrupts it.
     [Serializable]
@@ -19,7 +22,7 @@ namespace CGD.Enemies
         private const float GiveUpAfter     = 45f;
         private const float RetryAfter      = 1f;
 
-        private enum Heading { None, Waypoint, Stop }
+        private enum Heading { None, Waypoint, Stop, Interest }
 
         [NonSerialized] private int     _waypointIndex;
         [NonSerialized] private Heading _heading;
@@ -29,7 +32,11 @@ namespace CGD.Enemies
 
         internal override bool NeverFinishes => true;
 
-        protected override void OnExit(BtContext context) => Ai.Agent.isStopped = false;
+        protected override void OnExit(BtContext context)
+        {
+            Ai.Interest.Abort(Time.time);
+            Ai.Agent.isStopped = false;
+        }
 
         protected override void OnEnter(BtContext context)
         {
@@ -54,17 +61,27 @@ namespace CGD.Enemies
                 return BtStatus.Running;
             }
 
+            // With something it likes, until it has had its fill.
+            if (Ai.Interest.IsInteracting)
+            {
+                if (Ai.Interest.Tick(context.DeltaTime, time)) return BtStatus.Running;
+                _heading = Heading.None;
+                _retryAt = 0f;
+            }
+
             // A stop at a waypoint or dead mid-route, doing a beat of its faction's routine.
             if (Ai.Idle.TickStop(context.DeltaTime, time)) return BtStatus.Running;
 
-            if (_heading == Heading.Stop && (Ai.Exploration.NeedsReplan || time >= _giveUpAt))
+            bool onItsOwn = _heading == Heading.Stop || _heading == Heading.Interest;
+            if (onItsOwn && (Ai.Exploration.NeedsReplan || time >= _giveUpAt))
             {
-                if (time >= _giveUpAt) Ai.Exploration.Visit(_stop, time);
-                ChooseNext(time, mayDetour: false);
+                if (_heading == Heading.Interest) Ai.Interest.Abort(time);
+                else if (time >= _giveUpAt) Ai.Exploration.Visit(_stop, time);
+                ChooseNext(time, mayDiverge: false);
             }
             else if (_heading == Heading.None && time >= _retryAt)
             {
-                ChooseNext(time, mayDetour: true);
+                ChooseNext(time, mayDiverge: true);
             }
 
             if (_heading == Heading.None)
@@ -88,23 +105,35 @@ namespace CGD.Enemies
         private void OnArrived(float time)
         {
             Ai.Exploration.Visit(Ai.transform.position, time);
+            if (_heading == Heading.Interest)
+            {
+                Ai.Interest.Begin(time);
+                if (Ai.Interest.IsInteracting) return;
+                NoStop(time);   // the point was gone by the time it got there
+                return;
+            }
             if (_heading == Heading.Waypoint) _waypointIndex = (_waypointIndex + 1) % Ai.Waypoints.Length;
 
-            bool wasWaypoint = _heading == Heading.Waypoint;
-            ChooseNext(time, mayDetour: wasWaypoint);
+            // Off its route for a stop of its own, it must get back to the route before straying again.
+            bool mayDiverge = _heading == Heading.Waypoint || Ai.Waypoints.Length == 0;
+            ChooseNext(time, mayDiverge);
             Ai.Idle.BeginStop(time);
         }
 
-        // On a route: usually the next waypoint, now and then (only from a waypoint) somewhere of its
-        // own choosing before carrying on. Without one: always somewhere of its own choosing.
-        private void ChooseNext(float time, bool mayDetour)
+        // Now and then something it likes (if it may diverge). On a route: usually the next waypoint,
+        // now and then (only from a waypoint) somewhere of its own choosing before carrying on.
+        // Without one: always somewhere of its own choosing.
+        private void ChooseNext(float time, bool mayDiverge)
         {
+            Ai.Exploration.Settle();
+            if (mayDiverge && Ai.Interest.WantsVisit() && TryHeadForInterest(time)) return;
+
             if (Ai.Waypoints.Length == 0)
             {
                 if (!TryHeadForStop(time)) NoStop(time);
                 return;
             }
-            if (mayDetour && Ai.Exploration.WantsDetour() && TryHeadForStop(time)) return;
+            if (mayDiverge && Ai.Exploration.WantsDetour() && TryHeadForStop(time)) return;
             HeadForWaypoint();
         }
 
@@ -112,18 +141,34 @@ namespace CGD.Enemies
         {
             Transform[] waypoints = Ai.Waypoints;
             _heading = Heading.Waypoint;
-            Ai.Routing.SetDestination(waypoints[_waypointIndex % waypoints.Length].position, RouteStyle.ThroughBushes);
+            Ai.Routing.SetDestination(waypoints[_waypointIndex % waypoints.Length].position, Ai.Doctrine.Patrol.Walk);
         }
 
         private bool TryHeadForStop(float time)
         {
             if (!Ai.Exploration.TryPickStop(time, out _stop)) return false;
-            if (!Ai.Routing.SetDestination(_stop, RouteStyle.ThroughBushes))
+            if (!Ai.Routing.SetDestination(_stop, Ai.Doctrine.Patrol.Walk))
             {
                 Ai.Exploration.Visit(_stop, time);
                 return false;
             }
             _heading  = Heading.Stop;
+            _giveUpAt = time + GiveUpAfter;
+            return true;
+        }
+
+        private bool TryHeadForInterest(float time)
+        {
+            if (!Ai.Interest.TryChoose(time, out Vector3 spot)) return false;
+
+            if (NavMesh.SamplePosition(spot, out NavMeshHit hit, 2f, NavMesh.AllAreas)) spot = hit.position;
+            if (!Ai.Routing.SetDestination(spot, Ai.Doctrine.Patrol.Walk))
+            {
+                Ai.Interest.Abort(time);
+                return false;
+            }
+            _heading  = Heading.Interest;
+            _stop     = spot;
             _giveUpAt = time + GiveUpAfter;
             return true;
         }

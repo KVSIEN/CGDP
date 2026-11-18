@@ -36,6 +36,9 @@ namespace CGD.Enemies
 
         public void Invalidate() => _replan = true;
 
+        // It has chosen again, so whatever made it think twice is dealt with.
+        public void Settle() => _replan = false;
+
         public void Visit(Vector3 position, float time) => _coverage.Visit(position, time);
 
         public void Forget()

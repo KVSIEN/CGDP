@@ -159,3 +159,10 @@ MonoBehaviour:
     _dangerAversion: 1
     _fallBackToKnownGround: 1
     _shareWithKin: 1
+  _patrol:
+    _exploreWithoutRoute: 1
+    _routeDrift: 0.25
+    _range: 20
+    _curiosity: 0.7
+    _forgetAfter: 120
+    _walk: 1
