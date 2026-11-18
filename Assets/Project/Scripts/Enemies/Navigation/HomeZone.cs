@@ -22,6 +22,8 @@ namespace CGD.Enemies
         // Metres from the nearest area to the point on the floor plan (0 while inside one).
         public float DistanceOutside(Vector3 point) => DistanceOutside(_space.InverseTransformPoint(point), out _);
 
+        public bool Contains(Vector3 point) => DistanceOutside(point) <= 0f;
+
         // The point itself while it is within `margin` of the zone, otherwise the nearest spot
         // that is.
         public Vector3 Clamp(Vector3 point, float margin)

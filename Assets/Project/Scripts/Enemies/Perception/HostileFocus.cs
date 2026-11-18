@@ -23,14 +23,20 @@ namespace CGD.Enemies
 
         private static void OnSceneUnloaded(Scene scene) => DestroyedKeys.Remove(Brains);
 
+        // The enemy a hostile is, or null for anything else (the player).
+        public static EnemyAI BrainOf(HealthManager hostile)
+        {
+            if (Brains.TryGetValue(hostile, out EnemyAI brain)) return brain;
+
+            hostile.TryGetComponent(out brain);
+            Brains[hostile] = brain;
+            return brain;
+        }
+
         // An enemy engaged with a target other than this one.
         public static bool IsFightingSomeoneElse(HealthManager hostile, HealthManager self)
         {
-            if (!Brains.TryGetValue(hostile, out EnemyAI brain))
-            {
-                hostile.TryGetComponent(out brain);
-                Brains[hostile] = brain;
-            }
+            EnemyAI brain = BrainOf(hostile);
             if (brain == null || brain.Perception == null) return false;
 
             EnemyPerception other = brain.Perception;

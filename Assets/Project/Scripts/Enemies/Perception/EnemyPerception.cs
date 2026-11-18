@@ -471,9 +471,21 @@ namespace CGD.Enemies
 
         internal void SetAttention(float attention) => _attention = Mathf.Clamp01(attention);
 
-        // A calm enemy leaves rival factions be (FactionRelations › Truce While Calm).
+        // A calm enemy leaves rival factions be (FactionRelations › Truce While Calm) — unless
+        // one has crossed into its territory.
         private bool KeepsTruce(HealthManager candidate) =>
-            _data.Relations != null && _data.Relations.KeepsTruce(_team, candidate.Team);
+            _data.Relations != null && _data.Relations.KeepsTruce(_team, candidate.Team) && !IsTrespasser(candidate);
+
+        // A rival standing in this enemy's territory that belongs to another one (TerritoryDoctrine ›
+        // Repels Intruders). Enemies sharing a territory — a Breach room's two factions — never are.
+        private bool IsTrespasser(HealthManager candidate)
+        {
+            if (_owner.Home == null || !_owner.Doctrine.Territory.RepelsIntruders) return false;
+
+            EnemyAI rival = HostileFocus.BrainOf(candidate);
+            if (rival == null || rival.Home == null || rival.Home == _owner.Home) return false;
+            return _owner.Home.Contains(candidate.transform.position);
+        }
 
         public FactionAttitude AttitudeToward(Team other) =>
             _data.Relations != null ? _data.Relations.AttitudeOf(_team, other) : FactionAttitude.Fight;

@@ -15,16 +15,22 @@ namespace CGD.Enemies
         [SerializeField] private bool _bound = true;
         [Tooltip("Metres past its territory's walls it will follow a target before holding at the edge")]
         [SerializeField, Min(0f)] private float _pursuitReach = 16f;
+        [Tooltip("A calm enemy turns on a rival faction's enemy the moment it steps into its territory, even " +
+                 "while rivals otherwise keep the peace (FactionRelations › Truce While Calm). Whether it " +
+                 "wants that fight still follows the faction's attitude to that rival")]
+        [SerializeField] private bool _repelsIntruders = true;
 
         public TerritoryDoctrine() { }
 
-        public TerritoryDoctrine(bool bound, float pursuitReach)
+        public TerritoryDoctrine(bool bound, float pursuitReach, bool repelsIntruders)
         {
-            _bound        = bound;
-            _pursuitReach = pursuitReach;
+            _bound           = bound;
+            _pursuitReach    = pursuitReach;
+            _repelsIntruders = repelsIntruders;
         }
 
         public bool  IsBound       => _bound;
         public float PursuitReach  => _pursuitReach;
+        public bool  RepelsIntruders => _repelsIntruders;
     }
 }
