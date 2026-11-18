@@ -69,6 +69,7 @@ namespace CGD.Level
             CreatePart("Structure",      structure,      _settings.WallMaterial,          parent);
             CreatePart("LowCover",       lowCover,       _settings.LowCoverMaterial,      parent);
             if (_settings.BuildCeilings) BuildCeilings(layout, outerRing, parent);
+            if (_settings.BuildSkyDomes && _settings.SkyDomeMaterial != null) new SkyDomeBuilder(_settings, _assets).Build(layout, parent);
             PlaceDoors(layout, parent);
         }
 

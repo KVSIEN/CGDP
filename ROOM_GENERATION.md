@@ -789,8 +789,10 @@ or an earlier structure are left as plazas.
   (`RoomPropPlacement.ForSingleZone`: "main space" is the whole room, "others" are skipped).
 - The Restroom place (`Data/Level/Functions/Buildings/`) is used by School, Hospital and House
   plans; it has no stalls, only toilets, sinks and a bin.
-- A town's room has an open ceiling, so its buildings have no roofs; a roof per lot would
-  close them in.
+- A town's room is open-air: it sits under a sky dome (`SkyDomeBuilder`, shared with parks,
+  *Sky domes* in the build settings) but its buildings have no roofs when ceilings are built;
+  a roof per lot would close them in. The town has no sun light or sky ambience yet, only
+  the dome to look at.
 - Buildings are not in the build settings' place list, so no map picks them yet: pin them.
 - Not compiled or run in Unity (see the roadmap).
 

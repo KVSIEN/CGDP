@@ -26,7 +26,7 @@ MonoBehaviour:
     Min: 0
     Max: 0
     Bias: 0
-  _wallHeight: 0
+  _wallHeight: 6
   _chamfer: 0
   _openCeiling: 1
   _unique: 0

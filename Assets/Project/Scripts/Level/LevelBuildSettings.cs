@@ -56,6 +56,16 @@ namespace CGD.Level
         [Tooltip("Keep this layer out of the world map's capture mask, or the top-down snapshot sees only roofs")]
         [SerializeField] private int _ceilingLayer;
 
+        [Header("Sky domes")]
+        [Tooltip("Roof every open-air room (a function with Open Ceiling: parks, towns) with a simulated sky, as on a colony ship's habitat decks. Needs a Sky Dome Material")]
+        [SerializeField] private bool _buildSkyDomes = true;
+        [Tooltip("An opaque unlit material (Universal Render Pipeline/Unlit). Its base map is replaced by the horizon-to-zenith gradient")]
+        [SerializeField] private Material _skyDomeMaterial;
+        [Tooltip("Metres from the top of the room's walls to the crown of its dome")]
+        [SerializeField, Min(1f)] private float _skyDomeHeight = 30f;
+        [SerializeField] private Color _skyHorizon = new(0.78f, 0.89f, 1f);
+        [SerializeField] private Color _skyZenith  = new(0.27f, 0.52f, 0.92f);
+
         [Header("Doors")]
         [Tooltip("Origin at the doorway's centre on the floor, +Z pointing out of the room. Optional for normal connections; a faction design's door takes its place in that faction's rooms")]
         [SerializeField] private GameObject _doorPrefab;
@@ -142,6 +152,11 @@ namespace CGD.Level
         public bool  BuildCeilings  => _buildCeilings;
         public Material CeilingMaterial => _ceilingMaterial != null ? _ceilingMaterial : _wallMaterial;
         public int   CeilingLayer   => _ceilingLayer;
+        public bool  BuildSkyDomes  => _buildSkyDomes;
+        public Material SkyDomeMaterial => _skyDomeMaterial;
+        public float SkyDomeHeight  => _skyDomeHeight;
+        public Color SkyHorizon     => _skyHorizon;
+        public Color SkyZenith      => _skyZenith;
         public int   SpawnMarginTiles => _spawnMarginTiles;
         public int   MinRoomWidthTiles => _minRoomWidthTiles;
         public int   PriorityTries  => _priorityTries;
