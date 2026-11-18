@@ -117,7 +117,7 @@ namespace CGD.Tests
         {
             foreach (RoomFunction place in Settings.Functions)
             {
-                if (place == null || place.Landmark != null || place.DisplayName == "Junction") continue;
+                if (place == null || place.Landmark != null || place.IsComposite || place.DisplayName == "Junction") continue;
                 Assert.GreaterOrEqual(place.Layouts.Count, 2, $"{place.DisplayName} has fewer than two layouts");
             }
         }

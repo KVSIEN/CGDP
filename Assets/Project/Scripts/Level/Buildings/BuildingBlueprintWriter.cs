@@ -6,7 +6,8 @@ namespace CGD.Level
     // Builds a blueprint into a room's structure: an inner wall on every edge between two spaces
     // (and, with a shell, between the building and the outside), a doorway with a lintel
     // wherever the blueprint has a door, and each space registered to be furnished by its own
-    // function. The doorways keep their spaces as zones of their own.
+    // function. The doorways keep their spaces as zones of their own. With a shell (a building
+    // among streets) the spaces are roofed too.
     //
     // All or nothing: the walls go in through RoomStructure.TryAddPartition, so if they would
     // cut any floor off from the room's doorways nothing is built and Write returns false.
@@ -62,7 +63,7 @@ namespace CGD.Level
             {
                 TagWalls(structure, space.Rect);
                 if (TryFirstFloor(structure, space.Rect, out Vector2Int first))
-                    structure.AddSpace(first, space.Function, space.Name, space.Layout);
+                    structure.AddSpace(first, space.Function, space.Name, space.Layout, roofed: shell);
             }
             return true;
         }

@@ -8,12 +8,13 @@ namespace CGD.Level
     // arrangement when it has one.
     public readonly struct StructureSpace
     {
-        public StructureSpace(Vector2Int tile, RoomFunction function, string name, RoomLayout layout = null)
+        public StructureSpace(Vector2Int tile, RoomFunction function, string name, RoomLayout layout = null, bool roofed = false)
         {
             Tile     = tile;
             Function = function;
             Name     = name;
             Layout   = layout;
+            Roofed   = roofed;
         }
 
         public Vector2Int   Tile     { get; }
@@ -21,5 +22,7 @@ namespace CGD.Level
         public string       Name     { get; }
         // The arrangement of the function that furnishes it (null = the function's own props).
         public RoomLayout   Layout   { get; }
+        // Under a roof of its own, in a room that is otherwise open to the sky (a building in a town).
+        public bool         Roofed   { get; }
     }
 }

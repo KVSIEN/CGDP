@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
   _displayName: Hospital Wing
   _category: 5
-  _weight: 1
+  _weight: 0.6
   _preferredSections: []
   _sectionPreference: 3
   _sides:

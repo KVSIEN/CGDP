@@ -300,8 +300,31 @@ namespace CGD.Level
 
         // Marks the zone holding `tile` as a place of its own, to be furnished by `function`.
         // Call before AssignZones or after: the zone is looked up from the tile when needed.
-        public void AddSpace(Vector2Int tile, RoomFunction function, string name, RoomLayout layout = null) =>
-            _spaces.Add(new StructureSpace(tile, function, name, layout));
+        // `roofed`: the space is a building standing in an open-air room, so it gets a roof.
+        public void AddSpace(Vector2Int tile, RoomFunction function, string name, RoomLayout layout = null, bool roofed = false) =>
+            _spaces.Add(new StructureSpace(tile, function, name, layout, roofed));
+
+        // Whether any space has a roof of its own.
+        public bool HasRoofedSpaces
+        {
+            get
+            {
+                foreach (StructureSpace space in _spaces)
+                    if (space.Roofed) return true;
+                return false;
+            }
+        }
+
+        // Whether the tile is in a space with a roof of its own. Needs the zones assigned.
+        public bool IsRoofed(Vector2Int tile)
+        {
+            if (_spaces.Count == 0 || !Contains(tile)) return false;
+
+            int zone = ZoneOf(tile);
+            foreach (StructureSpace space in _spaces)
+                if (space.Roofed && ZoneOf(space.Tile) == zone) return true;
+            return false;
+        }
 
         // Whether an inner wall can't stand on the edge between two tiles: a route crosses it, or
         // a doorway or pillar is right beside it.

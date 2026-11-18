@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
   _displayName: Town Square
   _category: 4
-  _weight: 1
+  _weight: 0.4
   _preferredSections: []
   _sectionPreference: 3
   _sides:
@@ -29,7 +29,7 @@ MonoBehaviour:
   _wallHeight: 6
   _chamfer: 0
   _openCeiling: 1
-  _unique: 0
+  _unique: 1
   _landmark: {fileID: 0}
   _structure:
   - {fileID: 11400000, guid: 291b9e5f0f6341eebfb5e3eb8b7f09d3, type: 2}

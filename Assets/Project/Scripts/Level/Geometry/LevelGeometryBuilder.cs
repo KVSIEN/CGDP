@@ -68,7 +68,9 @@ namespace CGD.Level
             }
             CreatePart("Structure",      structure,      _settings.WallMaterial,          parent);
             CreatePart("LowCover",       lowCover,       _settings.LowCoverMaterial,      parent);
-            if (_settings.BuildCeilings) BuildCeilings(layout, outerRing, parent);
+            bool roofedBuildings = HasRoofedBuildings(layout);
+            if (_settings.BuildCeilings || roofedBuildings) BuildCeilings(layout, outerRing, parent);
+            if (roofedBuildings && _settings.LightBuildings) new BuildingLightBuilder(_settings).Build(layout, parent);
             if (_settings.BuildSkyDomes && _settings.SkyDomeMaterial != null) new SkyDomeBuilder(_settings, _assets).Build(layout, parent);
             PlaceDoors(layout, parent);
         }
@@ -110,15 +112,25 @@ namespace CGD.Level
             return material;
         }
 
+        private static bool HasRoofedBuildings(LevelLayout layout)
+        {
+            foreach (LevelRoom room in layout.Rooms.Values)
+                if (room.Structure != null && room.Structure.HasRoofedSpaces) return true;
+            return false;
+        }
+
         // A slab on top of every tile at its room's wall height (corridors at the default),
-        // merged into one box per row of equal height. Rooms with an open ceiling stay open.
-        // The ceiling is left out of the NavMesh so nothing walks on the roof.
+        // merged into one box per row of equal height. Rooms with an open ceiling stay open,
+        // except for the buildings standing in them (a town's), which are roofed even when the
+        // level builds no ceilings. The ceiling is left out of the NavMesh so nothing walks on
+        // the roof.
         private void BuildCeilings(LevelLayout layout, Dictionary<Vector2Int, LevelRoom> outerRing, Transform parent)
         {
             var rows = new Dictionary<(int y, float height), List<int>>();
             void Add(Vector2Int t, LevelRoom room)
             {
-                if (room != null && room.Function != null && room.Function.OpenCeiling) return;
+                bool roofed = room != null && room.Structure != null && room.Structure.IsRoofed(t);
+                if (!roofed && (!_settings.BuildCeilings || (room != null && room.Function != null && room.Function.OpenCeiling))) return;
                 var key = (t.y, room != null ? room.WallHeight : _settings.WallHeight);
                 if (!rows.TryGetValue(key, out List<int> xs)) rows[key] = xs = new List<int>();
                 xs.Add(t.x);

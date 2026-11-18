@@ -185,6 +185,59 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void BuildingsInATownAreRoofedAndTheStreetsAreNot()
+        {
+            BuildingPlan plan = School();
+            var lot = new TownLot();
+            Set(lot, "_plan", plan);
+            Set(lot, "_weight", 1f);
+            var rule = ScriptableObject.CreateInstance<TownStructureRule>();
+            Set(rule, "_lots", new[] { lot });
+            Set(rule, "_emptyLotChance", 0f);
+            try
+            {
+                RoomStructure town = Room(30, 30, new Vector2Int(0, 15), new Vector2Int(29, 15));
+                rule.Apply(town, Stream(2));
+                town.AssignZones();
+                Assert.IsTrue(town.HasRoofedSpaces);
+
+                int roofed = 0;
+                foreach (Vector2Int tile in town.Footprint.Tiles)
+                    if (town.IsRoofed(tile)) roofed++;
+                Assert.Greater(roofed, 0, "no building has a roof");
+                Assert.Less(roofed, town.Footprint.Count, "the streets are roofed too");
+                foreach (Vector2Int entrance in town.Entrances)
+                    Assert.IsFalse(town.IsRoofed(entrance), "the way in from a corridor is under a roof");
+            }
+            finally
+            {
+                Object.DestroyImmediate(rule);
+                Object.DestroyImmediate(plan);
+            }
+        }
+
+        [Test]
+        public void ABuildingThatIsTheWholeRoomHasNoRoofOfItsOwn()
+        {
+            BuildingPlan plan = School();
+            var rule = ScriptableObject.CreateInstance<BuildingStructureRule>();
+            Set(rule, "_plan", plan);
+            try
+            {
+                RoomStructure room = Room(16, 12, new Vector2Int(0, 6));
+                rule.Apply(room, Stream(1));
+                room.AssignZones();
+                Assert.Greater(room.Spaces.Count, 3);
+                Assert.IsFalse(room.HasRoofedSpaces, "the room's own ceiling covers it");
+            }
+            finally
+            {
+                Object.DestroyImmediate(rule);
+                Object.DestroyImmediate(plan);
+            }
+        }
+
+        [Test]
         public void ALotTooSmallForThePlanGetsNoBuilding()
         {
             BuildingPlan plan = School();

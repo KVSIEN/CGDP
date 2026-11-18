@@ -50,6 +50,9 @@ MonoBehaviour:
   _skyDomeHeight: 30
   _skyHorizon: {r: 0.78, g: 0.89, b: 1, a: 1}
   _skyZenith: {r: 0.27, g: 0.52, b: 0.92, a: 1}
+  _lightBuildings: 1
+  _buildingLightColor: {r: 1, g: 0.93, b: 0.8, a: 1}
+  _buildingLightIntensity: 2
   _doorPrefab: {fileID: 7000000000000840, guid: 2942622fc78b642a551f1b6cdb884c86, type: 3}
   _stealthDoorPrefab: {fileID: 7000000000000763, guid: feecb9b0eed90e55a422f5e3d14cb0cb, type: 3}
   _lockedDoorPrefab: {fileID: 4494289139160384286, guid: 7e0f49f9ae704307be0b4bb2b4bce5d4, type: 3}
@@ -128,6 +131,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fb64efebfad04b309771ce3e9f40849c, type: 2}
   - {fileID: 11400000, guid: f6d258d4797945309163ccd50f8fa897, type: 2}
   - {fileID: 11400000, guid: 2530ed7026df479e87cf9c5d4ab27f8d, type: 2}
+  - {fileID: 11400000, guid: 710c936ffd314ca3832bca9cd93d3148, type: 2}
+  - {fileID: 11400000, guid: 399837e30d614a279fca9c48175887bc, type: 2}
+  - {fileID: 11400000, guid: 72b896c4412344b28883ebf4c8a2f14b, type: 2}
+  - {fileID: 11400000, guid: 1dc62d8147ee4f11b16d9b44b832f764, type: 2}
   _rooms:
   - Type: 0
     Enemies: []

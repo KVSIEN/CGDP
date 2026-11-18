@@ -66,6 +66,12 @@ namespace CGD.Level
         [SerializeField] private Color _skyHorizon = new(0.78f, 0.89f, 1f);
         [SerializeField] private Color _skyZenith  = new(0.27f, 0.52f, 0.92f);
 
+        [Header("Buildings")]
+        [Tooltip("A light in each roofed building of a town, since its roof shuts out the sky. Rooms with ceilings need their own lights anyway")]
+        [SerializeField] private bool _lightBuildings = true;
+        [SerializeField] private Color _buildingLightColor = new(1f, 0.93f, 0.8f);
+        [SerializeField, Min(0f)] private float _buildingLightIntensity = 2f;
+
         [Header("Doors")]
         [Tooltip("Origin at the doorway's centre on the floor, +Z pointing out of the room. Optional for normal connections; a faction design's door takes its place in that faction's rooms")]
         [SerializeField] private GameObject _doorPrefab;
@@ -152,6 +158,9 @@ namespace CGD.Level
         public bool  BuildCeilings  => _buildCeilings;
         public Material CeilingMaterial => _ceilingMaterial != null ? _ceilingMaterial : _wallMaterial;
         public int   CeilingLayer   => _ceilingLayer;
+        public bool  LightBuildings => _lightBuildings;
+        public Color BuildingLightColor => _buildingLightColor;
+        public float BuildingLightIntensity => _buildingLightIntensity;
         public bool  BuildSkyDomes  => _buildSkyDomes;
         public Material SkyDomeMaterial => _skyDomeMaterial;
         public float SkyDomeHeight  => _skyDomeHeight;

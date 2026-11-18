@@ -58,6 +58,17 @@ namespace CGD.Level
         public bool   OpenCeiling => _openCeiling;
         // Corner chamfer in tiles, or `fallback` when this function doesn't set one.
         public int    ChamferOr(int fallback) => _chamfer >= 0 ? _chamfer : fallback;
+        // A building or a town: built from rooms of other places (a BuildingStructureRule or
+        // TownStructureRule), so its furniture and arrangements come from those, not from here.
+        public bool IsComposite
+        {
+            get
+            {
+                foreach (RoomStructureRule rule in _structure)
+                    if (rule is BuildingStructureRule || rule is TownStructureRule) return true;
+                return false;
+            }
+        }
         public IReadOnlyList<RoomShape>         Shapes    => _shapes;
         public IReadOnlyList<RoomStructureRule> Structure => _structure;
         public IReadOnlyList<RoomPropPlacement> Props     => _props;

@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e922c0dee8c9418086c09d58b1e0d7de, type: 3}
+  m_Name: LibraryBuildingPlan
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.BuildingPlan
+  _displayName: Library
+  _hallTiles: 1
+  _hallFunction: {fileID: 0}
+  _doorHeight: 2.6
+  _spaces:
+  - _name: Circulation Desk
+    _function: {fileID: 11400000, guid: 921ce82c13644f47a1398a4bd8c57f7c, type: 2}
+    _layout: {fileID: 11400000, guid: 489fe797a6104781b62286c09dc1daa3, type: 2}
+    _pickLayout: 0
+    _count: {Min: 1, Max: 1, Bias: 0}
+    _width: {Min: 3, Max: 4, Bias: 0}
+    _placement: 1
+    _fills: 0
+  - _name: Reading Room
+    _function: {fileID: 11400000, guid: 7e6198d9625440e3859ed7ca6b322723, type: 2}
+    _layout: {fileID: 11400000, guid: a2b01d74d0a34e78bea2541366dc1b43, type: 2}
+    _pickLayout: 0
+    _count: {Min: 1, Max: 2, Bias: 0}
+    _width: {Min: 4, Max: 5, Bias: 0}
+    _placement: 0
+    _fills: 1
+  - _name: Stacks
+    _function: {fileID: 11400000, guid: 7e6198d9625440e3859ed7ca6b322723, type: 2}
+    _layout: {fileID: 11400000, guid: 0d055210f9624573a165dd0717bf68dc, type: 2}
+    _pickLayout: 0
+    _count: {Min: 2, Max: 4, Bias: 0}
+    _width: {Min: 3, Max: 4, Bias: 0}
+    _placement: 0
+    _fills: 1
+  - _name: Study Room
+    _function: {fileID: 11400000, guid: 644b60300b7f43beb9c905cf63a3fcef, type: 2}
+    _layout: {fileID: 11400000, guid: 3af93dd48e6f4ebcb3a733dab2e06587, type: 2}
+    _pickLayout: 0
+    _count: {Min: 1, Max: 2, Bias: 0}
+    _width: {Min: 3, Max: 3, Bias: 0}
+    _placement: 0
+    _fills: 0
+  - _name: Archive
+    _function: {fileID: 11400000, guid: b3d42bb6e6d6481283d78fa14413f453, type: 2}
+    _layout: {fileID: 11400000, guid: 7ef2eed89e674dd4baeae54e169780ad, type: 2}
+    _pickLayout: 0
+    _count: {Min: 1, Max: 1, Bias: 0}
+    _width: {Min: 2, Max: 3, Bias: 0}
+    _placement: 0
+    _fills: 0
+  - _name: Restroom
+    _function: {fileID: 11400000, guid: 3bc7f060b0bf46b9ab88029bd053352b, type: 2}
+    _layout: {fileID: 0}
+    _pickLayout: 0
+    _count: {Min: 1, Max: 1, Bias: 0}
+    _width: {Min: 2, Max: 3, Bias: 0}
+    _placement: 0
+    _fills: 0
+  - _name: Rotunda
+    _function: {fileID: 11400000, guid: 7e6198d9625440e3859ed7ca6b322723, type: 2}
+    _layout: {fileID: 11400000, guid: 9ee40260461140ef81723fdf02cb5ac2, type: 2}
+    _pickLayout: 0
+    _count: {Min: 1, Max: 1, Bias: 0}
+    _width: {Min: 5, Max: 6, Bias: 0}
+    _placement: 2
+    _fills: 0
