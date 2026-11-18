@@ -72,13 +72,25 @@ namespace CGD.Level
         public IReadOnlyList<RoomStructureRule> StructureRules =>
             Function != null ? Function.StructureWith(RoomLayout) : Array.Empty<RoomStructureRule>();
 
-        // The layout's set pieces first, then the function's own props.
+        // With a layout: the function's anchor (its Required pieces, which the layout's set pieces
+        // may stand Near), then the layout's set pieces, then the function's other props. Without
+        // one, the function's props in their own order.
         public IEnumerable<RoomPropPlacement> FunctionProps
         {
             get
             {
-                if (RoomLayout != null) foreach (RoomPropPlacement placement in RoomLayout.Props) yield return placement;
-                if (Function != null)   foreach (RoomPropPlacement placement in Function.Props)   yield return placement;
+                if (Function == null) yield break;
+                if (RoomLayout == null)
+                {
+                    foreach (RoomPropPlacement placement in Function.Props) yield return placement;
+                    yield break;
+                }
+
+                foreach (RoomPropPlacement placement in Function.Props)
+                    if (placement != null && placement.Required) yield return placement;
+                foreach (RoomPropPlacement placement in RoomLayout.Props) yield return placement;
+                foreach (RoomPropPlacement placement in Function.Props)
+                    if (placement == null || !placement.Required) yield return placement;
             }
         }
 

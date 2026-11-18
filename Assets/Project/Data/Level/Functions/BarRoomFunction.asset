@@ -59,51 +59,37 @@ MonoBehaviour:
     Lattice: {x: 0, y: 0}
     Symmetric: 0
     Decor: 0
-  - Prefabs:
-    - {fileID: 8100000000000017001, guid: bbfcec54324c4a86a6908b2d293c535d, type: 3}
-    Count:
-      Min: 2
-      Max: 3
-      Bias: 0
-    ScaleByRoomSize: 1
-    Footprint: {x: 1, y: 1}
-    On: 1
-    Avoid: 124
-    Zone: 0
-    Facing: 2
-    Clearance: 0
-    Spacing: 1
-    Selection: 1
-    Pile:
-      Min: 1
-      Max: 1
-      Bias: 0
-    Jitter: 0
-    Required: 0
-    Lattice: {x: 0, y: 0}
-    Symmetric: 0
-    Decor: 0
-  - Prefabs:
-    - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
-    Count:
-      Min: 3
-      Max: 6
-      Bias: 0
-    ScaleByRoomSize: 1
-    Footprint: {x: 1, y: 1}
-    On: 0
-    Avoid: 124
-    Zone: 0
-    Facing: 0
-    Clearance: 0
-    Spacing: 0
-    Selection: 0
-    Pile:
-      Min: 1
-      Max: 1
-      Bias: 0
-    Jitter: 0.3
-    Required: 0
-    Lattice: {x: 0, y: 0}
-    Symmetric: 0
-    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members:
+    - Prefabs:
+      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
+      Offset: {x: -0.7, y: 0.3}
+      Yaw: 0
+      Chance: 0.85
+    - Prefabs:
+      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
+      Offset: {x: -0.25, y: 0.3}
+      Yaw: 0
+      Chance: 0.85
+    - Prefabs:
+      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
+      Offset: {x: 0.25, y: 0.3}
+      Yaw: 0
+      Chance: 0.85
+    - Prefabs:
+      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
+      Offset: {x: 0.7, y: 0.3}
+      Yaw: 0
+      Chance: 0.85
+    Key: Bar
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  _layouts:
+  - {fileID: 11400000, guid: 274cdfd10ea94753acd8104d39cd99e0, type: 2}
+  - {fileID: 11400000, guid: 5b232a7595e24ec89d627f780aa17029, type: 2}
+  - {fileID: 11400000, guid: fe22234ec61449868f358d4e7a880a93, type: 2}

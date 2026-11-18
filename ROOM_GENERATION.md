@@ -259,6 +259,9 @@ placeholder inside the same prefab, so no rule or asset has to change.
 | Concealment | Green (decor, no collider); VOID dark violet | Existing `ConcealmentPatch`, `GrassPatch`, `MossPatch`; `ShadowPocket` (Phase 5) |
 
 Rules for placeholder prefabs:
+- **At most three primitives**, each in the colour of its role: a body and one or two
+  details that say what it is (a desk and its chair, a sofa's seat and back). No legs,
+  handles, LEDs or drawer fronts. `PlaceholderKitTests` checks it.
 - **Origin** at the base. For props, the origin is the centre of the footprint and +Z is the front.
 - **Pillar prefabs** (`_pillarPrefab` on the structure rules) are 1 m wide and 1 m tall. The
   builder stretches each one to its pillar's width and height, so one column prefab fits any
@@ -296,58 +299,58 @@ described in one line has no clear identity yet. Columns:
 - **Plays as**: what a fight there should feel like before a reality changes it.
 
 The *Now* column says what the asset has today: S is its own structure, P is props, L layouts (section 12). Park and
-Farm take the holding reality's structure; Junction stays bare on purpose.
+Farm take the holding reality's structure unless a layout brings its own; Junction stays bare on purpose.
 
 | Room | Category | Side | Pattern | Anchor | Furniture | Plays as | Now |
 |---|---|---|---|---|---|---|---|
-| Grand Atrium | Entertainment | G1 | Ring | Central fountain or statue | Benches round the ring, planters | Circle the centrepiece; balcony-like edges | S, P |
+| Grand Atrium | Entertainment | G1 | Ring | Central fountain or statue | Benches round the ring, planters | Circle the centrepiece; balcony-like edges | S, P, L |
 | Casino | Entertainment | G1 | by layout | Cashier cage on a wall | Slot banks, card-table pits, roulette, bar with stools, sofas | Lanes between slot banks; tables as cover at crossings | S, P, L |
-| Theatre | Entertainment | G1 | Aisles | Stage on the far wall | Seat rows facing the stage | Lanes down the aisles, stage as high ground | S, P |
-| Exhibit Hall | Entertainment | G1 | Hall | Centre display | Display cases on a lattice | Open hall, cases as waist cover | S, P |
-| Bar | Entertainment | G2 | Ring | Bar counter (low partition) | Stools, booths along walls | Counter splits the room; booths for close range | S, P |
-| Restaurant | Commercial | G1 | Cells | Kitchen wall (divider) | Tables in the dining zone, ovens in the kitchen | Open dining room, tight kitchen | S, P |
-| Food Court | Commercial | G2 | Hall | Kiosk island | Table clusters, kiosks on walls | Many low cover pieces, no long lanes | S, P |
-| Kitchen | Commercial | C | Service | Cooking line along a wall | Prep tables, shelves | Narrow gaps between counters | S, P |
-| Promenade | Commercial | G1 | Strip | — | Shopfronts on the walls, planters down the middle | Long lane broken by planters | S, P |
-| Cabin Row | Residential | G2 | Cells | — | Bunk, locker per cabin | Corridor with cabin doors; close range | S, P |
-| Quarters | Residential | G1 | Cells | Divider wall | Bed, desk, wardrobe | Two zones, a doorway between | S, P |
-| Commons | Residential | G2 | Hall | Seating island | Sofas, tables | Medium cover all round | S, P |
-| School | Residential | G2 | Aisles | Teacher's desk | Desk rows | Low cover rows facing one wall | S, P |
+| Theatre | Entertainment | G1 | Aisles | Stage on the far wall | Seat rows facing the stage | Lanes down the aisles, stage as high ground | S, P, L |
+| Exhibit Hall | Entertainment | G1 | Hall | Centre display | Display cases on a lattice | Open hall, cases as waist cover | S, P, L |
+| Bar | Entertainment | G2 | Ring | Bar counter (low partition) | Stools, booths along walls | Counter splits the room; booths for close range | S, P, L |
+| Restaurant | Commercial | G1 | Cells | Kitchen wall (divider) | Tables in the dining zone, ovens in the kitchen | Open dining room, tight kitchen | S, P, L |
+| Food Court | Commercial | G2 | Hall | Kiosk island | Table clusters, kiosks on walls | Many low cover pieces, no long lanes | S, P, L |
+| Kitchen | Commercial | C | Service | Cooking line along a wall | Prep tables, shelves | Narrow gaps between counters | S, P, L |
+| Promenade | Commercial | G1 | Strip | — | Shopfronts on the walls, planters down the middle | Long lane broken by planters | S, P, L |
+| Cabin Row | Residential | G2 | Cells | — | Bunk, locker per cabin | Corridor with cabin doors; close range | S, P, L |
+| Quarters | Residential | G1 | Cells | Divider wall | Bed, desk, wardrobe | Two zones, a doorway between | S, P, L |
+| Commons | Residential | G2 | Hall | Seating island | Sofas, tables | Medium cover all round | S, P, L |
+| School | Residential | G2 | Aisles | Teacher's desk | Desk rows | Low cover rows facing one wall | S, P, L |
 | Pool | Recreation | G1 | by layout | The pool basin (grows with the room) | Lounger pairs facing it, jacuzzis, slide, pool bar, palms | Open water, cover only round the edge | S, P, L |
-| Park | Recreation | G1 | Hall | Central tree | Hedges, benches, paths | Hedges hide; long views across lawns | P |
-| Gym | Recreation | G2 | Aisles | — | Machine rows | Rows of hard cover | S, P |
-| Observation Deck | Recreation | G1 | Strip | Window wall | Telescopes, benches facing out | Open lane along the window | S, P |
-| Wellness Center | Recreation | G1 | Cells | Divider wall | Treatment beds, steam booths | Small rooms, soft light | S, P |
-| Medical Bay | Medical | C | Cells | Operating table | Beds along walls, trolleys | Curtained bays | S, P |
-| Ward | Medical | C | Aisles | — | Bed rows | Rows of beds as low cover | S, P |
-| Pharmacy | Medical | G2 | Service | Counter | Shelf rows | Counter in front, shelves behind | S, P |
-| Morgue | Medical | C | Service | Drawer wall | Slabs on a lattice | Cold, narrow gaps | S, P |
-| Security Office | Security | C | Cells | Checkpoint barrier | Desks, lockers | Checkpoint funnels in | S, P |
-| Armory | Security | C | Aisles | Weapon rack wall | Rack rows, crates | Narrow aisles, hard cover | S, P |
-| Barracks | Security | C | Aisles | — | Bunk rows, lockers | Rows across the room | S, P |
-| Engine Room | Engineering | C | Service | Turbine blocks | Pipes, catwalk rails | Narrow gaps, hazard in the centre | S, P |
+| Park | Recreation | G1 | Hall | Central tree | Hedges, benches, paths | Hedges hide; long views across lawns | P, L |
+| Gym | Recreation | G2 | Aisles | — | Machine rows | Rows of hard cover | S, P, L |
+| Observation Deck | Recreation | G1 | Strip | Window wall | Telescopes, benches facing out | Open lane along the window | S, P, L |
+| Wellness Center | Recreation | G1 | Cells | Divider wall | Treatment beds, steam booths | Small rooms, soft light | S, P, L |
+| Medical Bay | Medical | C | Cells | Operating table | Beds along walls, trolleys | Curtained bays | S, P, L |
+| Ward | Medical | C | Aisles | — | Bed rows | Rows of beds as low cover | S, P, L |
+| Pharmacy | Medical | G2 | Service | Counter | Shelf rows | Counter in front, shelves behind | S, P, L |
+| Morgue | Medical | C | Service | Drawer wall | Slabs on a lattice | Cold, narrow gaps | S, P, L |
+| Security Office | Security | C | Cells | Checkpoint barrier | Desks, lockers | Checkpoint funnels in | S, P, L |
+| Armory | Security | C | Aisles | Weapon rack wall | Rack rows, crates | Narrow aisles, hard cover | S, P, L |
+| Barracks | Security | C | Aisles | — | Bunk rows, lockers | Rows across the room | S, P, L |
+| Engine Room | Engineering | C | Service | Turbine blocks | Pipes, catwalk rails | Narrow gaps, hazard in the centre | S, P, L |
 | Reactor Core | Engineering | C | Ring | Reactor | Consoles round it | Circle the core; no sight across | Landmark |
-| Life Support | Engineering | C | Service | Scrubber units on walls | Tanks, pipes | Cramped, machine noise | S, P |
-| Workshop | Engineering | C | Service | Workbench line | Tool racks, crates | Medium clutter | S, P |
-| Processing Plant | Engineering | C | Aisles | Conveyor line | Machines on a lattice | Production lines as lanes | S, P |
-| Bridge | Command | C | Ring | Captain's chair and command table | Console arc | Arc of consoles facing the front | S, P |
-| Control Room | Command | C | Aisles | Main screen wall | Console rows | Rows facing one wall | S, P |
-| Offices | Command | C | Cells | — | Desks, cubicle walls (`OfficeMaze`) | Maze of short walls | S, P |
-| Hydroponics Bay | Agriculture | C | Aisles | — | Grow racks on a lattice | Lanes between racks | S, P |
-| Farm | Agriculture | C | Hall | — | Crop beds, irrigation | Low cover, long views | P |
-| Water Treatment | Agriculture | C | Service | Tanks | Pipes, pumps | Hard cover, narrow gaps | S, P |
-| Laboratory | Science | C | Cells | Lab bench island | Benches, fume hoods on walls | Bench islands as cover | S, P |
-| Data Center | Science | C | Aisles | — | Server racks on a lattice | Narrow aisles of tall racks | S, P |
+| Life Support | Engineering | C | Service | Scrubber units on walls | Tanks, pipes | Cramped, machine noise | S, P, L |
+| Workshop | Engineering | C | Service | Workbench line | Tool racks, crates | Medium clutter | S, P, L |
+| Processing Plant | Engineering | C | Aisles | Conveyor line | Machines on a lattice | Production lines as lanes | S, P, L |
+| Bridge | Command | C | Ring | Captain's chair and command table | Console arc | Arc of consoles facing the front | S, P, L |
+| Control Room | Command | C | Aisles | Main screen wall | Console rows | Rows facing one wall | S, P, L |
+| Offices | Command | C | Cells | — | Desks, cubicle walls (`OfficeMaze`) | Maze of short walls | S, P, L |
+| Hydroponics Bay | Agriculture | C | Aisles | — | Grow racks on a lattice | Lanes between racks | S, P, L |
+| Farm | Agriculture | C | Hall | — | Crop beds, irrigation | Low cover, long views | P, L |
+| Water Treatment | Agriculture | C | Service | Tanks | Pipes, pumps | Hard cover, narrow gaps | S, P, L |
+| Laboratory | Science | C | Cells | Lab bench island | Benches, fume hoods on walls | Bench islands as cover | S, P, L |
+| Data Center | Science | C | Aisles | — | Server racks on a lattice | Narrow aisles of tall racks | S, P, L |
 | Library | Science | G1 | by layout | Front desk by the way in | Shelving, reading tables with chairs, carrels, sofas and lamps, card catalogue | Shelves block sight; reading area open | S, P, L |
-| Chapel | Worship | G2 | Aisles | Altar | Pew rows | Pews as low cover facing the altar | S, P |
-| Shrine | Worship | G2 | Ring | Shrine object | Candles, mats | Small, one centrepiece | S, P |
-| Lobby | Transit | G1 | Hall | Reception desk | Seating, planters | Open hall with a desk | S, P |
+| Chapel | Worship | G2 | Aisles | Altar | Pew rows | Pews as low cover facing the altar | S, P, L |
+| Shrine | Worship | G2 | Ring | Shrine object | Candles, mats | Small, one centrepiece | S, P, L |
+| Lobby | Transit | G1 | Hall | Reception desk | Seating, planters | Open hall with a desk | S, P, L |
 | Junction | Transit | — | Strip | — | — | A crossing of routes; keep it bare | — |
-| Cargo Bay | Transit | C | Hall | Loader | Container stacks | Dense pillar grid of crates | S, P |
-| Docking Bay | Transit | C | Hall | Airlock | Cargo, fuel lines | Wide grid, long lanes | S, P |
-| Hangar | Transit | C | Hall | Shuttle | Tool carts, crates | Huge, one big obstacle | S, P |
-| Escape Pod Bay | Transit | C | Strip | Pod row on a wall | Lockers | Long lane along the pods | S, P |
-| Storage | Transit | C | Aisles | Shelf wall | Crate stacks | Narrow aisles | S, P |
+| Cargo Bay | Transit | C | Hall | Loader | Container stacks | Dense pillar grid of crates | S, P, L |
+| Docking Bay | Transit | C | Hall | Airlock | Cargo, fuel lines | Wide grid, long lanes | S, P, L |
+| Hangar | Transit | C | Hall | Shuttle | Tool carts, crates | Huge, one big obstacle | S, P, L |
+| Escape Pod Bay | Transit | C | Strip | Pod row on a wall | Lockers | Long lane along the pods | S, P, L |
+| Storage | Transit | C | Aisles | Shelf wall | Crate stacks | Narrow aisles | S, P, L |
 
 ---
 
@@ -524,9 +527,72 @@ own set pieces. The function keeps what every arrangement of the place shares. T
 > **The function says what the place is; the layout says how this one is arranged.**
 
 Props go down in this order:
-1. The layout's set pieces: what the arrangement is built around (the pool basin, the card-table pits).
-2. The function's own props: its identity, the same in every layout (the casino's cashier cage, the library's front desk).
-3. Everything after that, as before: side dressing, room type cover, faction props.
+1. The function's anchor: its *Required* pieces, the same in every layout (the casino's
+   cashier cage, the library's front desk, the theatre's stage). They go first so the
+   layout's pieces can stand *Near* them and face them (desks facing the teacher, tables
+   facing the stage).
+2. The layout's set pieces: what the arrangement is built around (the pool basin, the
+   card-table pits, the seat rows).
+3. The function's other props, the same in every layout (the pool's loungers round whatever
+   water the layout put down).
+4. Everything after that, as before: side dressing, room type cover, faction props.
+
+A function with no layout places its props in their own order.
+
+Every generated place has two or three layouts. Junction stays bare on purpose, and the
+Reactor Core is a hand-built landmark. Casino, Library and Pool are written out in full below
+as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/` hold the rest.
+
+| Place | Layouts (cells or size · structure) |
+|---|---|
+| Quarters | **Suite** (9–11 tiles · DividerWall); **Twin Cabin** (7–9 tiles · CornerPillars); **Penthouse** (2×1 · CornerPillars) |
+| Cabin Row | **Cabin Corridor** (2×1 · OfficeMaze); **Dormitory** (10–12 tiles · LowRows) |
+| Commons | **Lounge** (11–12 tiles · CornerPillars); **Rec Room** (2×1 · WidePillarGrid); **Hearth** (10–12 tiles · ColumnRing) |
+| School | **Classroom** (9–11 tiles · CornerPillars); **Lecture Hall** (2×1 · AcrossLowRows); **Study Room** (8–10 tiles · CornerPillars) |
+| Park | **Garden** (2×1 · the faction’s); **Grove** (2×1 · the faction’s); **Plaza Garden** (10–12 tiles · CornerPillars) |
+| Gym | **Weight Room** (10–12 tiles · LowRows); **Fitness Hall** (2×1 · WidePillarGrid) |
+| Observation Deck | **Window Gallery** (2×1 · CornerPillars); **Star Lounge** (10–12 tiles · ColumnRing) |
+| Wellness Center | **Treatment Suites** (9–11 tiles · OfficeMaze); **Spa Lounge** (9–11 tiles · CornerPillars) |
+| Pool | **Lap Pool** (2×1 · CornerPillars); **Lagoon** (2×2 · CornerPillars); **Spa Terrace** (8–11 tiles · CornerPillars) |
+| Theatre | **Auditorium** (2×1 · AcrossLowRows); **Cabaret** (10–12 tiles · CornerPillars); **Amphitheatre** (2×1 · AcrossLowRows) |
+| Bar & Lounge | **Lounge Bar** (8–10 tiles · ServiceCounter); **Pub** (9–11 tiles · CornerPillars); **Cocktail Club** (9–11 tiles · ColumnRing) |
+| Casino | **Slot Hall** (2×1 · LowRows); **Table Pits** (10–12 tiles · ColumnRing, CornerPillars); **High-Roller Salon** (7–9 tiles · CornerPillars) |
+| Exhibit Hall | **Gallery** (10–12 tiles · WidePillarGrid); **Sculpture Court** (10–12 tiles · ColumnRing) |
+| Grand Atrium | **Fountain Court** (2×2 · ColumnRing, CornerPillars); **Galleria** (2×2 · WidePillarGrid) |
+| Restaurant | **Dining Room** (10–12 tiles · DividerWall); **Bistro** (8–10 tiles · DividerWall); **Banquet Hall** (2×1 · DividerWall) |
+| Food Court | **Food Hall** (2×1 · WidePillarGrid); **Kiosk Ring** (2×1 · ColumnRing) |
+| Kitchen | **Galley** (8–10 tiles · ServiceCounter, CornerPillars); **Line Kitchen** (9–11 tiles · LowRows) |
+| Promenade | **Arcade** (2×1 · CornerPillars); **Boulevard** (2×1 · WidePillarGrid) |
+| Medical Bay | **Surgery** (9–11 tiles · DividerWall); **Clinic Bays** (2×1 · OfficeMaze) |
+| Ward | **Long Ward** (2×1 · LowRows); **Bay Ward** (2×1 · OfficeMaze) |
+| Pharmacy | **Counter Shop** (6–8 tiles · ServiceCounter, CornerPillars); **Dispensary Aisles** (8–10 tiles · ShelfRows) |
+| Morgue | **Cold Room** (7–9 tiles · CornerPillars); **Autopsy Suite** (8–10 tiles · DividerWall) |
+| Security Office | **Checkpoint** (10–12 tiles · CheckpointBarrier); **Holding Cells** (10–12 tiles · OfficeMaze) |
+| Armory | **Rack Aisles** (8–10 tiles · ShelfRows); **Vault** (6–8 tiles · CornerPillars) |
+| Barracks | **Bunk Rows** (10–12 tiles · LowRows); **Bunk Bays** (2×1 · OfficeMaze) |
+| Workshop | **Fab Shop** (10–12 tiles · CornerPillars); **Assembly Bay** (2×1 · WidePillarGrid) |
+| Processing Plant | **Line Hall** (2×1 · LowRows); **Sorting Floor** (2×1 · WidePillarGrid) |
+| Life Support | **Scrubber Hall** (10–12 tiles · CornerPillars); **Plant Room** (9–11 tiles · DensePillarGrid) |
+| Engine Room | **Turbine Hall** (2×1 · CornerPillars); **Drive Gallery** (2×1 · LowRows) |
+| Bridge | **Command Deck** (2×1 · ColumnRing); **Flight Bridge** (2×1 · AcrossLowRows) |
+| Control Room | **Operations** (9–11 tiles · AcrossLowRows); **Monitoring Ring** (10–12 tiles · ColumnRing) |
+| Offices | **Cubicles** (9–11 tiles · OfficeMaze); **Open Plan** (2×1 · WidePillarGrid) |
+| Hydroponics Bay | **Rack Rows** (2×1 · ShelfRows); **Grow Hall** (2×1 · WidePillarGrid) |
+| Farm | **Fields** (2×1 · the faction’s); **Orchard** (2×1 · the faction’s) |
+| Water Treatment | **Tank Farm** (2×1 · CornerPillars); **Filter Gallery** (2×1 · LowRows) |
+| Laboratory | **Wet Lab** (9–11 tiles · DividerWall); **Clean Rooms** (2×1 · OfficeMaze) |
+| Data Center | **Server Aisles** (8–10 tiles · ShelfRows); **Core Vault** (9–11 tiles · ColumnRing) |
+| Library | **Stacks** (10–12 tiles · ShelfRows); **Reading Hall** (2×1 · WidePillarGrid); **Rotunda** (10–12 tiles · ColumnRing) |
+| Chapel | **Nave** (9–11 tiles · AcrossLowRows); **Round Chapel** (9–11 tiles · ColumnRing) |
+| Shrine | **Alcove Shrine** (6–8 tiles · ColumnRing); **Garden Shrine** (7–9 tiles · CornerPillars) |
+| Lobby | **Reception Hall** (1×1 · WidePillarGrid, CornerPillars); **Waiting Lounge** (9–11 tiles · LowRows) |
+| Cargo Bay | **Container Yard** (2×1 · DensePillarGrid); **Loading Dock** (2×1 · WidePillarGrid) |
+| Docking Bay | **Airlock Hall** (1×1 · WidePillarGrid); **Fuel Dock** (1×1 · CornerPillars) |
+| Hangar | **Flight Deck** (2×2 · CornerPillars); **Maintenance Bay** (2×1 · CornerPillars) |
+| Escape Pod Bay | **Pod Gallery** (8–10 tiles · CornerPillars); **Muster Station** (9–11 tiles · LowRows) |
+| Storage | **Shelf Aisles** (8–10 tiles · ShelfRows); **Crate Stacks** (8–10 tiles · WideShelfRows) |
+
+**Worked examples.**
 
 | Place | Layout | Cells / size | Shapes | Structure | Set pieces |
 |---|---|---|---|---|---|
@@ -545,7 +611,7 @@ What each place keeps in every layout:
 - **Library**: a required front desk on a wall within a step of a route (by the way in), and the card catalogue beside it.
 - **Pool**: pairs of loungers under a parasol facing whatever is keyed *Pool* (basins and jacuzzis), the pool bar (100+ tiles) and palms in the corners.
 
-The numbers in brackets are *Min Room Tiles*. A multi-cell layout falls back to one cell
+In the worked examples, the numbers in brackets are *Min Room Tiles*. A multi-cell layout falls back to one cell
 where its neighbours leave no room, and its set pieces still fit, because they grow with the
 room or are left out by size.
 
@@ -578,7 +644,7 @@ place recognisable at any size:
 
 ### Next
 
-- Give more places layouts, with the bar, theatre, restaurant and park first.
+- A third layout for the places that have two, starting with the guest places seen most.
 - Let a faction prefer layouts: VOID the salon's tight cells, TECH the hall's long lanes. That
   could be a weight multiplier per layout on `FactionDesign`, like its shapes.
 - Placeholders are stretched boxes, so a pool's deck rim thickens with its size. Real art
@@ -598,7 +664,7 @@ place recognisable at any size:
 | **8. Agents in the room** | Enemies start on posts their faction favours (section 9), hold or patrol by post kind, each Breach faction on its own side; patrol loops over walkable floor; Room Lab *Posts* layer | **Done in code, not yet compiled or run** |
 | **9. Territory depth** | The holder's design blends toward neutral with the room's map influence: core rooms purest, frontier rooms at 0.4 (section 10); Room Lab *Influence* | **Done in code, not yet compiled or run** |
 | **10. Enemies learn their ground** | Each enemy learns hidden, vantage and tight places by walking and looking, with familiarity and danger, shares them with nearby kin, falls back to the best it knows and watches a known lane from its post (section 11) | **Done in code, not yet compiled or run** |
-| **11. Layouts and set pieces** | Places in several arrangements (`RoomLayout`: shapes, cells, size, structure, set pieces) over the function's own props; prop groups, keyed *Near* placements, features that grow with the room and stretch, pieces for big rooms only; Casino, Library and Pool with three layouts each; gallery room per layout; Room Lab and Map Graph layout pins (section 12) | **Done in code, not yet compiled or run** |
+| **11. Layouts and set pieces** | Places in several arrangements (`RoomLayout`: shapes, cells, size, structure, set pieces) over the function's own props; prop groups, keyed *Near* placements, features that grow with the room and stretch, pieces for big rooms only; every generated place with two or three layouts (Casino, Library and Pool first); the function's Required anchor before the layout's pieces; placeholders cut to at most three primitives; gallery room per layout; Room Lab and Map Graph layout pins (section 12) | **Done in code, not yet compiled or run** |
 
 ### Tuning (Phase 7)
 

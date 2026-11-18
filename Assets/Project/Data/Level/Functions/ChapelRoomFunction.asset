@@ -58,44 +58,30 @@ MonoBehaviour:
     Lattice: {x: 0, y: 0}
     Symmetric: 0
     Decor: 0
-  - Prefabs:
-    - {fileID: 372200163368048613, guid: 8ee81fcaa91145ebaee4f63467853bab, type: 3}
-    Count:
-      Min: 3
-      Max: 6
-      Bias: 0
-    ScaleByRoomSize: 1
-    Footprint: {x: 2, y: 1}
-    On: 0
-    Avoid: 124
-    Zone: 0
-    Facing: 2
-    Clearance: 0
-    Spacing: 0
-    Selection: 4
-    Pile:
-      Min: 1
-      Max: 1
-      Bias: 0
-    Jitter: 0
-    Required: 0
-    Lattice: {x: 0, y: 0}
-    Symmetric: 0
-    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: Altar
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
   - Prefabs:
     - {fileID: 3681066440374514250, guid: 8610e5701fe04c00a24c12b772cae9f7, type: 3}
     Count:
       Min: 2
       Max: 4
       Bias: 0
-    ScaleByRoomSize: 1
+    ScaleByRoomSize: 0
     Footprint: {x: 1, y: 1}
-    On: 1
+    On: 0
     Avoid: 124
     Zone: 0
-    Facing: 1
+    Facing: 0
     Clearance: 0
-    Spacing: 0
+    Spacing: 1
     Selection: 0
     Pile:
       Min: 1
@@ -106,3 +92,16 @@ MonoBehaviour:
     Lattice: {x: 0, y: 0}
     Symmetric: 0
     Decor: 1
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: 
+    Near: Altar
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  _layouts:
+  - {fileID: 11400000, guid: 5f0751cc2b4b44c292b5058a2e49c18d, type: 2}
+  - {fileID: 11400000, guid: 606588274d0b40c99b80fcf1b4faa24f, type: 2}

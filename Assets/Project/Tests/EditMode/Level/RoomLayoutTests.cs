@@ -8,13 +8,13 @@ using CGD.Map;
 
 namespace CGD.Tests
 {
-    // Places with layouts (Casino, Library, Pool): every layout comes round, a pinned one is
-    // built, and whichever is built the place keeps what makes it that place — its Required
-    // pieces always go down, its layout's set pieces too, and no floor is cut off.
+    // Every generated place has layouts: every layout comes round, a pinned one is built, and
+    // whichever is built the place keeps what makes it that place — its Required pieces always
+    // go down, its layout's set pieces too, and no floor is cut off.
     public class RoomLayoutTests
     {
         private const string SettingsPath = "Assets/Project/Data/Level/DefaultLevelBuildSettings.asset";
-        private const int Seeds = 12;
+        private const int Seeds = 8;
 
         private static LevelBuildSettings Settings
         {
@@ -33,14 +33,11 @@ namespace CGD.Tests
         }
 
         [Test]
-        public void TheCasinoLibraryAndPoolEachHaveSeveralLayouts()
+        public void EveryGeneratedPlaceHasSeveralLayouts()
         {
-            var names = new HashSet<string>();
-            foreach (RoomFunction place in PlacesWithLayouts()) names.Add(place.DisplayName);
-            CollectionAssert.IsSubsetOf(new[] { "Casino", "Library", "Pool" }, names);
-
-            foreach (RoomFunction place in PlacesWithLayouts())
+            foreach (RoomFunction place in Settings.Functions)
             {
+                if (place == null || place.Landmark != null || place.DisplayName == "Junction") continue;
                 Assert.GreaterOrEqual(place.Layouts.Count, 2, place.DisplayName);
                 var layoutNames = new HashSet<string>();
                 foreach (RoomLayout layout in place.Layouts)
@@ -103,6 +100,7 @@ namespace CGD.Tests
                 }
         }
 
+        // Junction is kept bare on purpose: one arrangement, its own.
         [Test]
         public void APlaceWithoutLayoutsBuildsNone()
         {

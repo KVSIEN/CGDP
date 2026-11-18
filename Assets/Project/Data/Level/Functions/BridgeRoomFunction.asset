@@ -57,27 +57,16 @@ MonoBehaviour:
     Lattice: {x: 0, y: 0}
     Symmetric: 0
     Decor: 0
-  - Prefabs:
-    - {fileID: 3592533658758260548, guid: aafafa6e6fc74289abd3c1cbf7a260c2, type: 3}
-    Count:
-      Min: 4
-      Max: 6
-      Bias: 0
-    ScaleByRoomSize: 1
-    Footprint: {x: 1, y: 1}
-    On: 1
-    Avoid: 124
-    Zone: 0
-    Facing: 2
-    Clearance: 0
-    Spacing: 1
-    Selection: 1
-    Pile:
-      Min: 1
-      Max: 1
-      Bias: 0
-    Jitter: 0
-    Required: 0
-    Lattice: {x: 0, y: 0}
-    Symmetric: 0
-    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: Command
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  _layouts:
+  - {fileID: 11400000, guid: e5ae9ef05d994d8cb9859116641e297b, type: 2}
+  - {fileID: 11400000, guid: c4b8ce3032a641b285093e0aa57959ea, type: 2}

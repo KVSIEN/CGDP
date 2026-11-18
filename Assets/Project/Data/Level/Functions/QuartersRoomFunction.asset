@@ -39,8 +39,8 @@ MonoBehaviour:
   - Prefabs:
     - {fileID: 1196622646538182962, guid: f6160e58f484493488c2da6a83ecedc6, type: 3}
     Count:
-      Min: 3
-      Max: 6
+      Min: 1
+      Max: 1
       Bias: 0
     ScaleByRoomSize: 0
     Footprint: {x: 1, y: 1}
@@ -48,7 +48,7 @@ MonoBehaviour:
     Avoid: 124
     Zone: 0
     Facing: 2
-    Clearance: 0
+    Clearance: 1
     Spacing: 1
     Selection: 1
     Pile:
@@ -56,25 +56,21 @@ MonoBehaviour:
       Max: 1
       Bias: 0
     Jitter: 0
-    Required: 0
-  - Prefabs:
-    - {fileID: 3696935098255646125, guid: 6ef5f23a34b44945a100b9cfe0f7e1c0, type: 3}
-    Count:
-      Min: 1
-      Max: 2
-      Bias: 0
-    ScaleByRoomSize: 0
-    Footprint: {x: 1, y: 1}
-    On: 2
-    Avoid: 124
-    Zone: 0
-    Facing: 2
-    Clearance: 0
-    Spacing: 0
-    Selection: 0
-    Pile:
-      Min: 1
-      Max: 2
-      Bias: 0
-    Jitter: 0.6
-    Required: 0
+    Required: 1
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: Bed
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  _layouts:
+  - {fileID: 11400000, guid: 4d76258bc16b466c85c97f703ae3c63d, type: 2}
+  - {fileID: 11400000, guid: 91d61140d719427782d8238dfb6873a2, type: 2}
+  - {fileID: 11400000, guid: 36b09aa2ab3d408a9768bd56da2a9eea, type: 2}

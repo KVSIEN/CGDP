@@ -47,7 +47,7 @@ MonoBehaviour:
     Zone: 0
     Facing: 2
     Clearance: 1
-    Spacing: 2
+    Spacing: 1
     Selection: 1
     Pile:
       Min: 1
@@ -55,45 +55,19 @@ MonoBehaviour:
       Bias: 0
     Jitter: 0
     Required: 1
-  - Prefabs:
-    - {fileID: 3696935098255646125, guid: 6ef5f23a34b44945a100b9cfe0f7e1c0, type: 3}
-    Count:
-      Min: 8
-      Max: 14
-      Bias: 0
-    ScaleByRoomSize: 0
-    Footprint: {x: 1, y: 1}
-    On: 1
-    Avoid: 124
-    Zone: 0
-    Facing: 2
-    Clearance: 0
-    Spacing: 0
-    Selection: 0
-    Pile:
-      Min: 1
-      Max: 2
-      Bias: 0
-    Jitter: 0.6
-    Required: 0
-  - Prefabs:
-    - {fileID: 3696935098255646125, guid: 6ef5f23a34b44945a100b9cfe0f7e1c0, type: 3}
-    Count:
-      Min: 3
-      Max: 6
-      Bias: 0
-    ScaleByRoomSize: 0
-    Footprint: {x: 1, y: 1}
-    On: 0
-    Avoid: 124
-    Zone: 0
-    Facing: 0
-    Clearance: 0
-    Spacing: 1
-    Selection: 1
-    Pile:
-      Min: 1
-      Max: 3
-      Bias: 0
-    Jitter: 0
-    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: 
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  _layouts:
+  - {fileID: 11400000, guid: 00f0f0a0a52242b88e9e88c0112150f9, type: 2}
+  - {fileID: 11400000, guid: e8a66b50e29547a5a6dbbb991d375a2c, type: 2}
