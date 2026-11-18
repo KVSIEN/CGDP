@@ -6,16 +6,15 @@ namespace CGD.DevTools
 {
     // Builds the SimulatorLineup when the arena loads: one EnemySquad per squad, its enemies
     // standing round the squad's spot with the squad's patrol route. Put it on the Enemies
-    // object. With a lineup assigned, the agents placed in the scene by hand are set aside
-    // (a lineup says who is there, so nothing doubles); with none, the scene plays as placed.
-    // Runs after the NavMesh is built (RuntimeNavMesh) and before anything reads the agents
+    // object; with no lineup it spawns nothing (agents placed under the object by hand still
+    // play). Runs after the NavMesh is built (RuntimeNavMesh) and before anything reads the agents
     // under this object (SpectatorCamera, EnemyRespawner).
     [DefaultExecutionOrder(-900)]
     public class LineupSpawner : MonoBehaviour
     {
         private const float SnapReach = 3f;
 
-        [Tooltip("The setup to play. Empty = the agents placed in the scene")]
+        [Tooltip("The setup to play. Empty = nobody is spawned")]
         [SerializeField] private SimulatorLineup _lineup;
         [Tooltip("Parent of the patrol waypoints; a squad's Patrol names a group of them (Bio for Bio 1, Bio 2, …)")]
         [SerializeField] private Transform _waypoints;
@@ -27,24 +26,9 @@ namespace CGD.DevTools
         {
             if (_lineup == null) return;
 
-            SetAsidePlacedAgents();
             var names = new LineupNames();
             foreach (LineupSquad squad in _lineup.Squads)
                 if (squad != null && squad.Enabled && squad.Size > 0) Spawn(squad, names);
-        }
-
-        // Moved under an inactive object so they never wake, then discarded with it.
-        private void SetAsidePlacedAgents()
-        {
-            var shelf = new GameObject("Replaced by lineup");
-            shelf.SetActive(false);
-
-            for (int i = transform.childCount - 1; i >= 0; i--)
-            {
-                Transform child = transform.GetChild(i);
-                if (child.GetComponentInChildren<EnemyAI>(true) != null) child.SetParent(shelf.transform, false);
-            }
-            Destroy(shelf);
         }
 
         private void Spawn(LineupSquad squad, LineupNames names)
