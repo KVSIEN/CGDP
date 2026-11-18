@@ -49,7 +49,7 @@ MonoBehaviour:
   _openDuration: 0.4
   _openAngle: 90
   _interactable: 1
-  _noiseRadius: 5
+  _noiseRadius: 2
   _closeNoiseShare: 0.5
   _holdDuration: 0
   _key:

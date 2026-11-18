@@ -54,6 +54,8 @@ namespace CGD.Level
         [Header("Doors")]
         [Tooltip("The door on this faction's ordinary connections, at the end of the corridor its room holds (a Door prefab: origin at the doorway's centre on the floor, +Z out of the room). Empty = the build settings' door. Locks, secrets and one-way shortcuts keep theirs")]
         [SerializeField] private GameObject _doorPrefab;
+        [Tooltip("The door on a connection into a Stealth room: hand-operated, so it opens when you choose and makes next to no sound. Empty = the build settings' stealth door")]
+        [SerializeField] private GameObject _stealthDoorPrefab;
 
         [Header("Agents")]
         [Tooltip("Where its enemies start in its rooms, and which posts they hold instead of patrolling (RoomEnemyPlanner)")]
@@ -70,6 +72,7 @@ namespace CGD.Level
         public RoomTraitPriorities Priorities => _priorities;
         public PostPreference Posts => _posts;
         public GameObject DoorPrefab => _doorPrefab;
+        public GameObject StealthDoorPrefab => _stealthDoorPrefab;
 
         public float ShapeWeight(RoomShape shape)
         {

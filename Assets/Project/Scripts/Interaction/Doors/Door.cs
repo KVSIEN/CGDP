@@ -1,7 +1,6 @@
 using Unity.AI.Navigation;
 using UnityEngine;
 using CGD.Combat;
-using CGD.Stealth;
 
 namespace CGD.Interaction
 {
@@ -35,8 +34,11 @@ namespace CGD.Interaction
         [Tooltip("Leave the door out of the NavMesh so enemies path straight through it, as through an open doorway. For sensor doors, which open for them on arrival; never for a locked one")]
         [SerializeField] private bool _agentsPathThrough;
 
+        [Tooltip("How far it gives when forced open from the side (a DoorSensor's sneak squeeze): share of a full opening, 0 = can't be squeezed")]
+        [SerializeField, Range(0f, 1f)] private float _squeezeOpening = 0.35f;
+
         [Header("Noise")]
-        [Tooltip("How far the player opening it can be heard, standing or walking; crouching makes none (0 = always silent). Kept short, so it only matters to guards right by the door; powered and heavy doors are louder than a hinged one")]
+        [Tooltip("How far the player opening it can be heard (0 = silent). A property of the door, not of how you move: sensor doors run a motor and are loud, hand-operated ones nearly silent")]
         [SerializeField, Min(0f)] private float _noiseRadius = 6f;
         [Tooltip("Closing it after the player, as a share of that")]
         [SerializeField, Range(0f, 1f)] private float _closeNoiseShare = 0.5f;
@@ -55,6 +57,7 @@ namespace CGD.Interaction
         private bool        _isOpen;
         private bool        _isLocked;
         private float       _progress;
+        private bool        _squeezed;
         private DoorPanel[] _panels;
         private Quaternion  _closedRotation;
         private bool        _isBarred;
@@ -70,7 +73,7 @@ namespace CGD.Interaction
 
         private void Update()
         {
-            float target = _isOpen ? 1f : 0f;
+            float target = _isOpen ? 1f : _squeezed ? _squeezeOpening : 0f;
             if (_progress == target) return;
 
             _progress = Mathf.MoveTowards(_progress, target, Time.deltaTime / _openDuration);
@@ -126,14 +129,14 @@ namespace CGD.Interaction
         // Automatic opening (a DoorSensor) never gets past a key, a condition or a bar.
         public bool CanOpenAutomatically => !IsLocked && !_isBarred;
 
-        // A sensor's call. Opened or shut by the player standing or walking, a door makes noise (crouched, none); for anyone else it
-        // is silent, or guards walking their rounds would keep alerting each other.
-        public void SetOpen(bool open, GameObject by = null) => Change(open, by);
+        // Forced a little open and held there (silently), for something slipping through.
+        // Locked and barred doors can't be.
+        public void SetSqueezed(bool squeezed) => _squeezed = squeezed && _squeezeOpening > 0f && CanOpenAutomatically;
 
-        // Crouching through a door is the stealthy way: no sound at all.
-        private static bool IsSneaking(GameObject by) =>
-            by.GetComponentInParent<HealthManager>() is HealthManager health
-            && Stealthable.TryGet(health, out Stealthable stealth) && stealth.IsSneaking;
+        // A sensor's call. Opened or shut by the player, a door makes its own noise (a motor is
+        // loud, a hand-operated door nearly silent); for anyone else it is silent, or guards
+        // walking their rounds would keep alerting each other.
+        public void SetOpen(bool open, GameObject by = null) => Change(open, by);
 
         private void Change(bool open, GameObject by)
         {
@@ -142,7 +145,7 @@ namespace CGD.Interaction
             if (by == null || _noiseRadius <= 0f) return;
 
             DamageSource source = DamageSource.Of(by);
-            if (source.Team != Team.Player || IsSneaking(by)) return;
+            if (source.Team != Team.Player) return;
 
             // Closing behind you is quieter than opening it.
             Noise.Emit(transform.position, open ? _noiseRadius : _noiseRadius * _closeNoiseShare, source);

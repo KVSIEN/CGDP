@@ -47,6 +47,7 @@ MonoBehaviour:
     _walls: 1
     _linesOfFire: 0
   _doorPrefab: {fileID: 7000000000000301, guid: 547834c009c720de0409d7c83dbfb027, type: 3}
+  _stealthDoorPrefab: {fileID: 7000000000000168, guid: ed3b12a887db290eca9b8d7431481c2e, type: 3}
   _posts:
     _concealed: 4
     _overwatch: 1

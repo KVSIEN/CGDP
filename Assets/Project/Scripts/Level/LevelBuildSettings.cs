@@ -59,6 +59,8 @@ namespace CGD.Level
         [Header("Doors")]
         [Tooltip("Origin at the doorway's centre on the floor, +Z pointing out of the room. Optional for normal connections; a faction design's door takes its place in that faction's rooms")]
         [SerializeField] private GameObject _doorPrefab;
+        [Tooltip("Ordinary connections into a Stealth room (either end), where doors shouldn't open on their own: a hand-operated Door. A faction design's stealth door takes its place in that faction's rooms. Empty = the normal door")]
+        [SerializeField] private GameObject _stealthDoorPrefab;
         [Tooltip("Gate for Keycard locks (e.g. a Door with a Key set)")]
         [SerializeField] private GameObject _lockedDoorPrefab;
         [Tooltip("Gate for Terminal locks: a Door with a ConditionLock as its Condition. Empty = the locked door prefab")]
@@ -148,18 +150,28 @@ namespace CGD.Level
         // The holding faction's design as this room shows it (full strength without a faction influence).
         public FactionStyle StyleFor(LevelRoom room) => new(DesignFor(room.Faction), room.DesignStrength);
 
-        // The door on a connection. `gateRoom` is the room whose side of the corridor the door
+        // The door on a connection (`intoStealth`: one end is a Stealth room). `gateRoom` is the room whose side of the corridor the door
         // sits on: its faction's design may fit its own kind of door to an ordinary connection.
-        public GameObject DoorPrefabFor(MapConnection connection, LevelRoom gateRoom) => connection.Type switch
+        public GameObject DoorPrefabFor(MapConnection connection, LevelRoom gateRoom, bool intoStealth = false) => connection.Type switch
         {
             ConnectionType.Locked when connection.Lock == MapLockKind.Terminals && _terminalDoorPrefab != null => _terminalDoorPrefab,
             ConnectionType.Locked => _lockedDoorPrefab,
             ConnectionType.Secret => _secretDoorPrefab,
             _ when connection.OneWay && _oneWayDoorPrefab != null => _oneWayDoorPrefab,
-            _                     => FactionDoorFor(gateRoom) ?? _doorPrefab,
+            _ when intoStealth    => FirstSet(StealthDoorOf(gateRoom), _stealthDoorPrefab, FactionDoorOf(gateRoom), _doorPrefab),
+            _                     => FirstSet(FactionDoorOf(gateRoom), _doorPrefab),
         };
 
-        private GameObject FactionDoorFor(LevelRoom room) => room?.Faction == null ? null : DesignFor(room.Faction)?.DoorPrefab;
+        private GameObject FactionDoorOf(LevelRoom room) => DesignFor(room?.Faction)?.DoorPrefab;
+        private GameObject StealthDoorOf(LevelRoom room) => DesignFor(room?.Faction)?.StealthDoorPrefab;
+
+        // `??` skips Unity's null check, which an unassigned reference may fail in the editor.
+        private static GameObject FirstSet(params GameObject[] options)
+        {
+            foreach (GameObject option in options)
+                if (option != null) return option;
+            return null;
+        }
 
         public GameObject KeyPrefab      => _keyPrefab;
         // A door whose Condition is a ConditionLock (falls back to the keycard door).

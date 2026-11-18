@@ -46,6 +46,7 @@ MonoBehaviour:
   _ceilingMaterial: {fileID: 0}
   _ceilingLayer: 0
   _doorPrefab: {fileID: 7000000000000840, guid: 2942622fc78b642a551f1b6cdb884c86, type: 3}
+  _stealthDoorPrefab: {fileID: 7000000000000763, guid: feecb9b0eed90e55a422f5e3d14cb0cb, type: 3}
   _lockedDoorPrefab: {fileID: 4494289139160384286, guid: 7e0f49f9ae704307be0b4bb2b4bce5d4, type: 3}
   _terminalDoorPrefab: {fileID: 7310000000000000000, guid: 5a2f7c19e3d84b6aa0c4e9b12f6d8c37, type: 3}
   _secretDoorPrefab: {fileID: 662976687211467739, guid: 9a4e1d91dd2a463999905d9be9643e33, type: 3}

@@ -210,7 +210,7 @@ namespace CGD.Level
                 if (!doorway.HasGate) continue;
 
                 bool objectiveGated = ObjectiveDoorPrefab != null && ObjectiveGated.Contains(doorway.Connection);
-                GameObject prefab = objectiveGated ? ObjectiveDoorPrefab : _settings.DoorPrefabFor(doorway.Connection, doorway.Room);
+                GameObject prefab = objectiveGated ? ObjectiveDoorPrefab : _settings.DoorPrefabFor(doorway.Connection, doorway.Room, LeadsToStealthRoom(layout, doorway.Connection));
                 if (prefab == null) continue;
 
                 Pose pose = DoorwayPose(layout, doorway, parent);
@@ -223,6 +223,12 @@ namespace CGD.Level
                 if (doorway.Connection.OneWay) MakeOneWay(layout, doorway, door, pose.forward);
             }
         }
+
+        private static bool LeadsToStealthRoom(LevelLayout layout, MapConnection connection) =>
+            IsStealth(layout, connection.A) || IsStealth(layout, connection.B);
+
+        private static bool IsStealth(LevelLayout layout, int roomId) =>
+            layout.Rooms.TryGetValue(roomId, out LevelRoom room) && room.Node.Type == MapNodeType.Stealth;
 
         // Where a door goes: on the edge between the room tile and the corridor tile, on the
         // floor, +Z facing out of the room. World space.
