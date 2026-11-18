@@ -98,6 +98,8 @@ namespace CGD.Enemies
         internal EnemySearch       Search       { get; private set; }
         internal EnemyTactics      Tactics      { get; private set; }
         internal EnemyPost         Post         { get; private set; }
+        // The room the level placed it in (null for enemies placed by hand): see TerritoryDoctrine.
+        internal HomeZone          Home         { get; private set; }
         internal AlarmKnowledge    Alarms       { get; private set; }
         // The places it has learned by walking and looking: hidden spots, vantages, corridors.
         internal EnemyGround       Ground       { get; private set; }
@@ -305,6 +307,22 @@ namespace CGD.Enemies
         // For enemies spawned at runtime (level builder, dev console) instead of placed with a route.
         public void SetWaypoints(Transform[] waypoints) => _waypoints = waypoints;
 
+        // Ties the enemy to the room it was placed in (null frees it). Pooled enemies are freed on
+        // spawn, so whoever places one says again.
+        public void SetHome(HomeZone home) => Home = home;
+
+        // Where it will actually go when asked to go to `goal`: held to the edge of its home room's
+        // pursuit reach when its faction keeps its enemies near home.
+        internal Vector3 LimitToReach(Vector3 goal)
+        {
+            TerritoryDoctrine territory = Doctrine.Territory;
+            if (Home == null || !territory.IsBound) return goal;
+            return Home.Clamp(goal, territory.PursuitReach);
+        }
+
+        // Whether the point is inside its home room, give or take a margin. Always true without a home.
+        internal bool IsWithinHome(Vector3 point, float margin) => Home == null || Home.DistanceOutside(point) <= margin;
+
         // Says something from its type's bark set, if the level isn't too noisy (the director's
         // narration, scripted moments). False when nothing was said.
         public bool Bark(BarkKind kind) => Voice.Say(kind);
@@ -487,6 +505,7 @@ namespace CGD.Enemies
             Voice.Reset();
             Abilities.Reset();
             Post.Remember();
+            Home           = null;
             FallenAllies.Remove(this);
             Motion.StopTurning();
             Alarms.Forget();

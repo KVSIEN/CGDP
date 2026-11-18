@@ -23,6 +23,7 @@ namespace CGD.Enemies
         private const float SameGoal        = 0.75f;  // a destination this close to the last is the same one
         private const float RecheckInterval = 0.25f;  // a hazard opening across its path is noticed this soon
         private const float SnapDistance    = 1.5f;
+        private const float ReachSnapDistance = 4f;  // the edge of its reach may fall inside a wall
         private const int   MaxCorners      = 32;
 
         private readonly EnemyAI _ai;
@@ -52,6 +53,8 @@ namespace CGD.Enemies
         // Same contract as NavMeshAgent.SetDestination: false if no route could be requested.
         public bool SetDestination(Vector3 goal, RouteStyle style = RouteStyle.Direct)
         {
+            goal = WithinReach(goal);
+
             // Asked again for where it is already headed (nodes re-send it every tick): keep going round.
             if ((_detouring || _hopping) && style == _style && (goal - _goal).sqrMagnitude < SameGoal * SameGoal)
             {
@@ -63,6 +66,16 @@ namespace CGD.Enemies
             _style   = style;
             _hasGoal = true;
             return Route();
+        }
+
+        // A destination past its home room's pursuit reach is held to the edge of it, on the
+        // NavMesh, so every chase, search and flank stops there (a doorway standoff) rather than
+        // following a target through the ship.
+        private Vector3 WithinReach(Vector3 goal)
+        {
+            Vector3 limited = _ai.LimitToReach(goal);
+            if (limited == goal) return goal;
+            return NavMesh.SamplePosition(limited, out NavMeshHit hit, ReachSnapDistance, NavMesh.AllAreas) ? hit.position : limited;
         }
 
         // Stands still: drops the path and the destination behind it.

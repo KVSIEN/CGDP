@@ -23,6 +23,7 @@ namespace CGD.Enemies
         [SerializeField] private AftermathDoctrine  _aftermath  = new();
         [SerializeField] private TellDoctrine       _tells      = new();
         [SerializeField] private GroundDoctrine     _ground     = new();
+        [SerializeField] private TerritoryDoctrine  _territory  = new();
 
         public MoraleDoctrine     Morale     => _morale;
         public EscalationDoctrine Escalation => _escalation;
@@ -35,6 +36,7 @@ namespace CGD.Enemies
         public AftermathDoctrine  Aftermath  => _aftermath;
         public TellDoctrine       Tells      => _tells;
         public GroundDoctrine     Ground     => _ground;
+        public TerritoryDoctrine  Territory  => _territory;
 
         // What an enemy without a doctrine follows: every default, no differences.
         public static FactionDoctrine Neutral =>

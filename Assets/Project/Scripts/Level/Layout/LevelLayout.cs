@@ -65,6 +65,13 @@ namespace CGD.Level
 
         public Vector3 RoomCenterLocal(LevelRoom room) => new(room.Anchor.x * TileSize, 0f, room.Anchor.y * TileSize);
 
+        // The room's bounding rectangle on the floor plan (x, z), in the level's space.
+        public Rect RoomLocalRect(LevelRoom room)
+        {
+            RectInt bounds = room.Footprint.Bounds;
+            return Rect.MinMaxRect(bounds.xMin * TileSize, bounds.yMin * TileSize, bounds.xMax * TileSize, bounds.yMax * TileSize);
+        }
+
         // World-space footprint of everything walkable, for fitting the world map to the level.
         public Rect LocalBounds()
         {

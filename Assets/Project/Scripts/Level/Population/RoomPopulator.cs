@@ -189,6 +189,7 @@ namespace CGD.Level
                 RoomEnemyPlan plan = _enemyPlanner.Plan(room, props ?? System.Array.Empty<PlannedProp>(), count,
                                                         RoomEnemyPlanner.SeedFor(_seed, room).Stream(), TakenTiles(room));
                 var placed = new List<HealthManager>();
+                var home = new HomeZone(_layout.RoomLocalRect(room), _parent);
                 for (int i = 0; i < plan.Spawns.Count; i++)
                 {
                     PlannedSpawn spawn = plan.Spawns[i];
@@ -203,7 +204,10 @@ namespace CGD.Level
                     ISeedable.SeedAll(enemy, _seed.Derive("enemies").Derive(room.Node.Id).Derive(i));
                     // A pooled enemy keeps its last route unless told otherwise: guards get none.
                     if (enemy.TryGetComponent(out EnemyAI ai))
+                    {
                         ai.SetWaypoints(spawn.Holds ? System.Array.Empty<Transform>() : RouteOf(room, plan, spawn.Breach));
+                        ai.SetHome(home);
+                    }
                     if (enemy.TryGetComponent(out HealthManager health)) placed.Add(health);
                 }
                 _roomEnemies[room.Node.Id] = placed;
