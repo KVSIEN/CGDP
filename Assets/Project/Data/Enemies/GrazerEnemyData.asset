@@ -27,6 +27,7 @@ MonoBehaviour:
   Senses: {fileID: 11400000, guid: b4dbcf2c7fae4eebb839c7454d0c4a00, type: 2}
   Doctrine: {fileID: 11400000, guid: 812cac286b8841d19a371d5ec2916888, type: 2}
   BehaviorTree: {fileID: 11400000, guid: 0605d0139858419e9b12ef93802dd370, type: 2}
+  OutsidePacing: 1
   CombatType: 0
   Social: 0
   AttackRange: 1.8

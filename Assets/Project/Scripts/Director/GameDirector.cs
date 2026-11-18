@@ -104,8 +104,8 @@ namespace CGD.Director
                 return;
             }
 
-            // Animals are no threat to pace around: hunting or losing one raises no stress and is no combat.
-            if (report.Target.Team == Team.Prey) return;
+            // Wildlife and service bots are no threat to pace around: hurting or killing one raises no stress and is no combat.
+            if (report.Target is EnemyHealth { Data: { OutsidePacing: true } }) return;
 
             if (report.Source.Team == Team.Player) _lastCombatTime = Time.time;
             if (report.Killed && report.Target.Team != Team.Player) AddNearbyKillStress(report.Target.transform.position);

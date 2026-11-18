@@ -59,6 +59,9 @@ namespace CGD.Enemies
         [Tooltip("How its faction carries itself: what shakes its nerve, how it idles, what it gives away before a fight. Empty = a plain enemy")]
         public FactionDoctrine Doctrine;
 
+        [Tooltip("Wildlife and service bots: the director does not count it as a threat. Hurting or killing it adds no stress and is no combat, and the director never picks it to probe or to speak")]
+        public bool OutsidePacing;
+
         [Header("Behavior")]
         [Tooltip("Decides what the enemy does: patrolling, searching, fighting (edit it in CGD › AI › Behavior Tree Editor). " +
                  "Without one the enemy just stands there")]

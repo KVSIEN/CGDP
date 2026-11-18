@@ -29,6 +29,7 @@ MonoBehaviour:
   Doctrine: {fileID: 11400000, guid: 4a51cef27d724cf4887b8f42b3c2877d, type: 2}
   BehaviorTree: {fileID: 11400000, guid: a0dbd4eab120400697d2924f2e5af957, type: 2}
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
+  OutsidePacing: 1
   CombatType: 1
   Social: 1
   AttackRange: 1.2

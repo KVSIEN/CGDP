@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using CGD.Combat;
 using CGD.Enemies;
 
 namespace CGD.Director
@@ -15,7 +14,7 @@ namespace CGD.Director
 
         public NearbyEnemies(int maxColliders = 64) => _hits = new Collider[maxColliders];
 
-        // Active, living enemies (never prey) within the radius. The list is reused by the next call.
+        // Active, living enemies (never one outside pacing) within the radius. The list is reused by the next call.
         public IReadOnlyList<EnemyAI> Around(Vector3 center, float radius, LayerMask mask)
         {
             _found.Clear();
@@ -24,8 +23,8 @@ namespace CGD.Director
             {
                 EnemyAI enemy = _hits[i].GetComponentInParent<EnemyAI>();
                 if (enemy == null || !enemy.isActiveAndEnabled || enemy.State == EnemyAI.AiState.Dead) continue;
-                // Prey is wildlife, not the director's to send or to speak for.
-                if (enemy.Health.Team == Team.Prey) continue;
+                // Wildlife and service bots are not the director's to send or to speak for.
+                if (enemy.Data.OutsidePacing) continue;
                 if (!_found.Contains(enemy)) _found.Add(enemy);
             }
             return _found;
