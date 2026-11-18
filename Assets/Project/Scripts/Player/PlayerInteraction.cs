@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Core;
 using CGD.Input;
 using CGD.Interaction;
 
@@ -51,7 +52,17 @@ namespace CGD.Player
         private Camera             _camera;
         private readonly Plane[]   _frustum = new Plane[6];
 
-        private readonly Collider[]   _buffer    = new Collider[16];
+        // Room for everything round the player: the level's floor and walls, props, enemies and
+        // trigger zones all share the sphere with the one thing worth using, and a hit that
+        // doesn't fit is never considered at all.
+        private const int MaxOverlaps = 64;
+        // Past this many remembered colliders the destroyed ones are dropped.
+        private const int PruneAbove  = 512;
+
+        private readonly Collider[]   _buffer    = new Collider[MaxOverlaps];
+        // What each collider turned out to be (null: nothing to interact with), looked up once
+        // instead of every frame for every collider in reach.
+        private readonly Dictionary<Collider, IInteractable> _interactables = new();
         private readonly RaycastHit[] _losBuffer = new RaycastHit[8];
         private readonly List<IInteractionFocusListener> _focusListeners = new();
 
@@ -136,8 +147,8 @@ namespace CGD.Player
             for (int i = 0; i < count; i++)
             {
                 Collider col = _buffer[i];
-                if (!col.TryGetComponent<IInteractable>(out var candidate)) continue;
-                if (!candidate.CanInteract(gameObject)) continue;
+                IInteractable candidate = InteractableOn(col);
+                if (candidate == null || !candidate.CanInteract(gameObject)) continue;
 
                 Vector3 toTarget  = col.bounds.center - eyeOrigin;
                 float   mag       = toTarget.magnitude;
@@ -162,6 +173,20 @@ namespace CGD.Player
             _current         = best;
             _currentCollider = bestCollider;
         }
+
+        private IInteractable InteractableOn(Collider col)
+        {
+            if (_interactables.TryGetValue(col, out IInteractable known) && IsUsable(known)) return known;
+
+            if (_interactables.Count > PruneAbove) DestroyedKeys.Remove(_interactables);
+            col.TryGetComponent(out IInteractable found);
+            _interactables[col] = found;
+            return found;
+        }
+
+        // Nothing there counts as known; a component destroyed since it was found does not.
+        private static bool IsUsable(IInteractable interactable) =>
+            interactable == null || interactable is not UnityEngine.Object component || component != null;
 
         private void ClearTarget()
         {

@@ -127,6 +127,7 @@ namespace CGD.Input
         {
             _moveAction?.Disable();
             _lookAction?.Disable();
+            if (_actions == null) return;
             foreach (var a in _actions) a?.Disable();
         }
 
@@ -134,6 +135,7 @@ namespace CGD.Input
         {
             _moveAction?.Dispose();
             _lookAction?.Dispose();
+            if (_actions == null) return;
             foreach (var a in _actions) a?.Dispose();
         }
 
