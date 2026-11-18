@@ -25,8 +25,7 @@ namespace CGD.Factions
         [Tooltip("Morale lost per second for each feared hostile it senses in a fight")]
         [SerializeField, Min(0f)] private float _fearDrain = 0.15f;
 
-        public bool  TruceWhileCalm => _truceWhileCalm;
-        public float FearDrain      => _fearDrain;
+        public float FearDrain => _fearDrain;
 
         public FactionAttitude AttitudeOf(Team own, Team toward)
         {

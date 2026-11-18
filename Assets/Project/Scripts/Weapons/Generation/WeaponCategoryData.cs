@@ -88,8 +88,6 @@ namespace CGD.Weapons
         [Header("Reload")]
         public FloatRange ReloadTime          = new(2.2f, 3.0f);
         public FloatRange TacticalReloadTime  = new(1.7f, 2.2f);
-        // TacticalReloadTime is stored directly for WeaponData and can still be tuned via bonus.
-        public FloatRange TacticalReloadBonus = new(0.3f, 0.6f);
 
         [Header("Handling")]
         [Tooltip("What the Melee key does with this weapon in hand — a bash; its start parries. Empty = fists")]
