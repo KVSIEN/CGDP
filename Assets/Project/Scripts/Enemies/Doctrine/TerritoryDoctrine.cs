@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CGD.Enemies
 {
-    // How far a faction's enemies follow a target out of the room they were placed in. Past
+    // How far a faction's enemies follow a target out of the territory they were placed in. Past
     // that they hold at the edge (a doorway standoff) rather than chase on, and what they
     // can't reach they search for as usual and then give up. Only enemies that have a home
     // zone (placed by the level builder) are held; reinforcements and hand-placed enemies
@@ -11,9 +11,9 @@ namespace CGD.Enemies
     [Serializable]
     public sealed class TerritoryDoctrine
     {
-        [Tooltip("Its enemies stay near the room they were placed in. Off = they follow a target anywhere")]
+        [Tooltip("Its enemies stay within the territory (the rooms their faction holds) they were placed in. Off = they follow a target anywhere")]
         [SerializeField] private bool _bound = true;
-        [Tooltip("Metres past the room's walls it will follow a target before holding at the edge")]
+        [Tooltip("Metres past its territory's walls it will follow a target before holding at the edge")]
         [SerializeField, Min(0f)] private float _pursuitReach = 16f;
 
         public TerritoryDoctrine() { }

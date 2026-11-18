@@ -31,6 +31,8 @@ namespace CGD.Level
         private readonly RandomStream _random;
         private readonly RoomFurnisher _furnisher;
         private readonly RoomEnemyPlanner _enemyPlanner;
+        // Built on first use, once the doorways are known.
+        private TerritoryZones _territories;
 
         private const RoomTileTags KeepPropsOff = RoomTileTags.Walkway | RoomTileTags.Access;
 
@@ -189,7 +191,7 @@ namespace CGD.Level
                 RoomEnemyPlan plan = _enemyPlanner.Plan(room, props ?? System.Array.Empty<PlannedProp>(), count,
                                                         RoomEnemyPlanner.SeedFor(_seed, room).Stream(), TakenTiles(room));
                 var placed = new List<HealthManager>();
-                var home = new HomeZone(_layout.RoomLocalRect(room), _parent);
+                HomeZone home = (_territories ??= new TerritoryZones(_layout, _parent)).ZoneOf(room);
                 for (int i = 0; i < plan.Spawns.Count; i++)
                 {
                     PlannedSpawn spawn = plan.Spawns[i];

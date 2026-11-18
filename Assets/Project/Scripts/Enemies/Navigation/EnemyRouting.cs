@@ -68,7 +68,7 @@ namespace CGD.Enemies
             return Route();
         }
 
-        // A destination past its home room's pursuit reach is held to the edge of it, on the
+        // A destination past its home territory's pursuit reach is held to the edge of it, on the
         // NavMesh, so every chase, search and flank stops there (a doorway standoff) rather than
         // following a target through the ship.
         private Vector3 WithinReach(Vector3 goal)
