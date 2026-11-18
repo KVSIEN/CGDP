@@ -5,13 +5,16 @@ using CGD.Combat;
 namespace CGD.Level
 {
     // The enemies an encounter is waiting on. Each is forgotten when it dies, so a pooled
-    // enemy reused elsewhere later doesn't count again; Cleared fires when the last one goes.
+    // enemy reused elsewhere later doesn't count again, or when it is released (see
+    // SealFailsafe); Cleared fires when the last one goes.
     public class EnemyGroup
     {
         private readonly List<HealthManager> _alive = new();
         private readonly Dictionary<HealthManager, Action> _handlers = new();
 
         public int  Alive     => _alive.Count;
+        // The enemies still counted. Don't hold on to it: it changes as they die or are released.
+        public IReadOnlyList<HealthManager> Members => _alive;
         public bool IsCleared => _alive.Count == 0;
 
         public event Action Cleared;
@@ -30,6 +33,10 @@ namespace CGD.Level
         {
             foreach (HealthManager enemy in enemies) Add(enemy);
         }
+
+        // Stops waiting on an enemy that is still alive (one nobody can reach). Cleared fires if
+        // it was the last.
+        public void Release(HealthManager enemy) => Remove(enemy);
 
         private void Remove(HealthManager enemy)
         {

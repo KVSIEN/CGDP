@@ -30,6 +30,17 @@ namespace CGD.Level
         [Tooltip("A finished uplink downloads the ship's map: the whole world map is revealed")]
         [SerializeField] private bool _holdoutRevealsMap = true;
 
+        [Tooltip("While the uplink runs, how often it sends out a signal that draws hostiles in earshot to the terminal (seconds)")]
+        [SerializeField, Min(1f)] private float _holdoutPingInterval = 6f;
+        [Tooltip("How far the uplink's signal carries (metres)")]
+        [SerializeField, Min(1f)] private float _holdoutPingRadius = 30f;
+
+        [Header("Sealed rooms")]
+        [Tooltip("Seconds an enemy a sealed room is waiting on can stay out of reach (outside the room, off the NavMesh, no path to the player) before the room stops waiting on it")]
+        [SerializeField, Min(5f)] private float _strandedSeconds = 20f;
+        [Tooltip("Seconds a sealed room's fight may go with no kill before the room stops waiting on anyone and the doors open")]
+        [SerializeField, Min(30f)] private float _stallSeconds = 150f;
+
         [Header("Ambush & Rift")]
         [SerializeField, Min(1)] private int _ambushWaves = 2;
         [Tooltip("Waves alternate between the room's two realities; the last brings both")]
@@ -115,6 +126,11 @@ namespace CGD.Level
         public float HoldoutDuration     => _holdoutDuration;
         public float HoldoutWaveInterval => _holdoutWaveInterval;
         public bool  HoldoutRevealsMap   => _holdoutRevealsMap;
+        public float HoldoutPingInterval => _holdoutPingInterval;
+        public float HoldoutPingRadius   => _holdoutPingRadius;
+
+        public float StrandedSeconds => _strandedSeconds;
+        public float StallSeconds    => _stallSeconds;
 
         public int AmbushWaves => _ambushWaves;
         public int RiftWaves   => _riftWaves;

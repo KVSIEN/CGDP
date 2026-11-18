@@ -23,6 +23,10 @@ MonoBehaviour:
   _holdoutDuration: 75
   _holdoutWaveInterval: 18
   _holdoutRevealsMap: 1
+  _holdoutPingInterval: 6
+  _holdoutPingRadius: 30
+  _strandedSeconds: 20
+  _stallSeconds: 150
   _ambushWaves: 2
   _riftWaves: 3
   _stealthBonusLuck: 2

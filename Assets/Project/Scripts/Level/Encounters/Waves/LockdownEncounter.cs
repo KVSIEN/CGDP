@@ -6,7 +6,9 @@ namespace CGD.Level
 {
     // Lockdown: stepping in seals every doorway; the shutters open once every enemy in the
     // room is dead, and a reward cache drops. Enemies that wandered out before the seal are
-    // shut outside and don't count; an empty room calls in a wave instead.
+    // shut outside and don't count; an empty room calls in a wave instead. An enemy that
+    // can't be reached (or a fight that stalls) is let go of after a while, so the shutters
+    // can't stay down for good (RoomEncounter.Guard).
     public class LockdownEncounter : RoomEncounter
     {
         protected override void OnPlayerEntered()
@@ -17,6 +19,7 @@ namespace CGD.Level
             if (group.IsCleared) return;
 
             Context.Seal.Seal();
+            Guard(group);
             Notify("Lockdown — clear the room", NotificationStyle.Danger);
             group.Cleared += () =>
             {

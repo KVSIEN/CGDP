@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using CGD.Combat;
 using CGD.Core;
 using CGD.Feedback;
@@ -15,10 +16,28 @@ namespace CGD.Level
     public abstract class RoomEncounter : MonoBehaviour
     {
         private const float EntryCheckInterval = 0.2f;
+        private const float GuardInterval = 1f;
+        private const float NavMeshSearch = 2f;
 
         private bool  _entered;
         private float _nextEntryCheck;
         private int   _rewards;
+        private float _nextGuardCheck;
+        private NavMeshPath _path;
+        private readonly List<GuardedGroup> _guarded = new();
+
+        // A group the sealed room is waiting on, and the failsafe watching it.
+        private sealed class GuardedGroup
+        {
+            public GuardedGroup(EnemyGroup group, SealFailsafe<HealthManager> failsafe)
+            {
+                Group    = group;
+                Failsafe = failsafe;
+            }
+
+            public EnemyGroup Group { get; }
+            public SealFailsafe<HealthManager> Failsafe { get; }
+        }
 
         protected EncounterContext Context { get; private set; }
 
@@ -40,6 +59,7 @@ namespace CGD.Level
         {
             if (Context == null) return;
             Tick();
+            if (_guarded.Count > 0) TickGuards();
 
             if (_entered || Context.Player == null || Time.time < _nextEntryCheck) return;
             _nextEntryCheck = Time.time + EntryCheckInterval;
@@ -66,6 +86,7 @@ namespace CGD.Level
 
                 var group = new EnemyGroup();
                 group.AddRange(spawnWave(wave));
+                Guard(group);
                 wave++;
                 if (waves > 1) Notify($"Wave {wave}/{waves}", NotificationStyle.Warning);
 
@@ -73,6 +94,49 @@ namespace CGD.Level
                 else group.Cleared += Next;
             }
             Next();
+        }
+
+        // --- Sealed-room failsafe ----------------------------------------------------------
+
+        // Watches a group the sealed room waits on, so an enemy that can't be reached (or a
+        // fight that goes nowhere) can't keep the doors shut for good: see SealFailsafe and
+        // EncounterSettings › Sealed rooms. Call it once the group is filled.
+        protected void Guard(EnemyGroup group)
+        {
+            if (group.IsCleared) return;
+
+            var guarded = new GuardedGroup(group, new SealFailsafe<HealthManager>(Context.Settings.StrandedSeconds, Context.Settings.StallSeconds));
+            _guarded.Add(guarded);
+            group.Cleared += () => _guarded.Remove(guarded);
+        }
+
+        private void TickGuards()
+        {
+            if (Time.time < _nextGuardCheck) return;
+            _nextGuardCheck = Time.time + GuardInterval;
+            if (!Context.Seal.IsSealed) return;   // only a sealed room can trap anyone
+
+            for (int i = _guarded.Count - 1; i >= 0; i--)
+            {
+                if (i >= _guarded.Count) continue;   // a release below ended a group and started the next
+
+                GuardedGroup guarded = _guarded[i];
+                foreach (HealthManager enemy in guarded.Failsafe.Advance(GuardInterval, guarded.Group.Members, IsStranded))
+                    guarded.Group.Release(enemy);
+                if (guarded.Failsafe.Overridden) Notify("Override — the room lets go of what's left", NotificationStyle.Warning);
+            }
+        }
+
+        // Out of the room, off the NavMesh, or with no way to walk there from the player.
+        private bool IsStranded(HealthManager enemy)
+        {
+            Vector3 at = enemy.transform.position;
+            if (!Context.Floor.Contains(at)) return true;
+            if (Context.Player == null || !NavMesh.SamplePosition(Context.Player.position, out NavMeshHit from, NavMeshSearch, NavMesh.AllAreas)) return false;
+            if (!NavMesh.SamplePosition(at, out NavMeshHit to, NavMeshSearch, NavMesh.AllAreas)) return true;
+
+            _path ??= new NavMeshPath();
+            return !NavMesh.CalculatePath(from.position, to.position, NavMesh.AllAreas, _path) || _path.status != NavMeshPathStatus.PathComplete;
         }
 
         protected List<HealthManager> SpawnWave(bool fromSecondRoster = false) =>
