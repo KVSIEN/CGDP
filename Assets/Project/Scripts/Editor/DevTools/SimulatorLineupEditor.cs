@@ -220,7 +220,7 @@ namespace CGD.Editor
             if (_spawner == null) return EditorGUILayout.TextField("Patrol route", current);
 
             List<string> groups = LineupLayout.PatrolGroups(_spawner.Waypoints);
-            const string Hold = "(hold post)";
+            const string Hold = "(explore on its own)";
             var labels = new List<string> { Hold };
             labels.AddRange(groups);
 

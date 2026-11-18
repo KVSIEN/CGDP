@@ -6,14 +6,24 @@ namespace CGD.DevTools
 {
     // The ground the inspected agent has learned (EnemyGround): a square on every place it
     // knows, green for hidden, red for a vantage, orange for a tight spot, larger and brighter
-    // the more familiar it is; a cross where something happened that still puts it off.
+    // the more familiar it is; a cross where something happened that still puts it off. Under them,
+    // faint cells for the ground it has walked, fading as they go stale (what draws it back, see PatrolScoring).
     internal static class GroundOverlay
     {
         private const float GroundLift = 0.08f;
+        private const float WalkedFadeSeconds = 120f;
         private static readonly List<GroundPlace> Places = new();
+        private static readonly List<(Vector3 Centre, float Time)> Walked = new();
 
         public static void Draw(OverlayMesh mesh, EnemyInsight agent)
         {
+            agent.CopyWalkedGround(Walked);
+            foreach ((Vector3 centre, float time) in Walked)
+            {
+                float fresh = 1f - Mathf.Clamp01((Time.time - time) / WalkedFadeSeconds);
+                if (fresh > 0.05f) Square(mesh, centre + Vector3.up * GroundLift, PatrolCoverage.CellSize * 0.45f, OverlayPalette.Faded(OverlayPalette.Unknown, fresh));
+            }
+
             agent.CopyKnownPlaces(Places);
             foreach (GroundPlace place in Places)
             {

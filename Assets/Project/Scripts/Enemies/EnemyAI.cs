@@ -103,6 +103,8 @@ namespace CGD.Enemies
         internal AlarmKnowledge    Alarms       { get; private set; }
         // The places it has learned by walking and looking: hidden spots, vantages, corridors.
         internal EnemyGround       Ground       { get; private set; }
+        // Where it has walked, and where it explores next when its patrol leaves the choice to it.
+        internal EnemyExploration  Exploration  { get; private set; }
         internal EnemyAbilities    Abilities    { get; private set; }
         internal EnemyAmbush       Ambush       { get; private set; }
         internal EnemyMinions      Minions      { get; private set; }
@@ -165,6 +167,7 @@ namespace CGD.Enemies
             Post          = new EnemyPost(this);
             Alarms        = new AlarmKnowledge(this);
             Ground        = new EnemyGround(this, _obstacleMask);
+            Exploration   = new EnemyExploration(this);
             TryGetComponent(out _stealth);
             Ambush        = new EnemyAmbush(_stealth);
             Minions       = new EnemyMinions(this);
@@ -518,6 +521,7 @@ namespace CGD.Enemies
             Motion.StopTurning();
             Alarms.Forget();
             Ground.Forget();
+            Exploration.Forget();
             ReturnPending  = false;
             ReturnBody     = null;
             _engagedTarget = null;

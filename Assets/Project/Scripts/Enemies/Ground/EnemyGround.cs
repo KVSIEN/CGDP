@@ -63,10 +63,18 @@ namespace CGD.Enemies
         }
 
         // It was hurt where it stands.
-        public void OnHurt(float time) => _memory.MarkDanger(_ai.transform.position, time);
+        public void OnHurt(float time)
+        {
+            _memory.MarkDanger(_ai.transform.position, time);
+            _ai.Exploration.Invalidate();
+        }
 
         // It saw or heard an ally fall there.
-        public void OnAllyFell(Vector3 position, float time) => _memory.MarkDanger(position, time);
+        public void OnAllyFell(Vector3 position, float time)
+        {
+            _memory.MarkDanger(position, time);
+            _ai.Exploration.Invalidate();
+        }
 
         // Pooled and sent somewhere new: it knows nothing there yet.
         public void Forget()
@@ -92,6 +100,7 @@ namespace CGD.Enemies
         {
             _lastSample = time;
             _lastSpot   = spot;
+            _ai.Exploration.Visit(spot, time);
 
             Vector3 eye = spot + Vector3.up * EnemyEyes.Height;
             for (int i = 0; i < GroundReading.Rays; i++)
@@ -136,6 +145,7 @@ namespace CGD.Enemies
                 if (other == _ai || !EnemyRoster.IsKin(_ai, other)) continue;
                 if ((other.transform.position - self).sqrMagnitude > ShareRange * ShareRange) continue;
                 _memory.ShareWith(other.Ground.Memory, time);
+                _ai.Exploration.Coverage.ShareWith(other.Exploration.Coverage);
             }
         }
     }

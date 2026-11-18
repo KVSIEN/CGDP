@@ -20,7 +20,7 @@ namespace CGD.DevTools
         [Range(0f, 360f)] public float Facing;
         [Tooltip("Metres between members; they stand in a ring round Position")]
         [Min(0.5f)] public float Spread = 2.5f;
-        [Tooltip("Patrol route (a group of waypoints, e.g. Bio). Empty = they hold their post")]
+        [Tooltip("Patrol route (a group of waypoints, e.g. Bio). Empty = they explore on their own (or guard their post, where their faction's Patrol doctrine says not to explore)")]
         public string Patrol;
 
         public int Size

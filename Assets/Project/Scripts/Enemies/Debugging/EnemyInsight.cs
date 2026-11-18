@@ -63,6 +63,9 @@ namespace CGD.Enemies
 
         public void CopyKnownPlaces(List<GroundPlace> results) => _ai.Ground.CopyPlaces(results);
 
+        // The ground it has walked, a cell at a time with when it was last passed.
+        public void CopyWalkedGround(List<(Vector3 Centre, float Time)> results) => _ai.Exploration.Coverage.CopyTo(results);
+
         // Index in CoverMap.Active of the spot it holds, −1 for none.
         public int        ClaimedCover => _ai.Tactics.ClaimedCover;
         public bool       KnowsCover(int index) => _ai.Tactics.KnowsCover(index);
