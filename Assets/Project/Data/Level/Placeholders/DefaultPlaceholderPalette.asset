@@ -1,0 +1,111 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11f92702a73f4b41949b112e5c36c553, type: 3}
+  m_Name: DefaultPlaceholderPalette
+  m_EditorClassIdentifier: CGD.Editor::CGD.Editor.PlaceholderPalette
+  _swatches:
+  - Name: Anchor
+    Material: {fileID: 2100000, guid: d1a5903867c8f0a4a8a94c3fe36dad11, type: 2}
+    Use: The piece a place is built round: cashier cage, front desk, main machine housing
+  - Name: Wood
+    Material: {fileID: 2100000, guid: 9f74a13152dad544abedc7538eb3182c, type: 2}
+    Use: Wooden furniture, crates, counters, tables
+  - Name: Machinery
+    Material: {fileID: 2100000, guid: d76d5dba59c8a824a8170635648a356c, type: 2}
+    Use: Machines and moving parts, forklifts, hazard markings
+  - Name: Danger
+    Material: {fileID: 2100000, guid: a4b62a69d54e80347bd546999c6d4b9e, type: 2}
+    Use: Fuel, fire, alarms, valves: anything that hurts when hit
+  - Name: Plating
+    Material: {fileID: 2100000, guid: 981abf7a53e6a964fba6bc48555ec31a, type: 2}
+    Use: Cabinets, panels, plated housings, breaker boxes
+  - Name: Heavy Metal
+    Material: {fileID: 2100000, guid: 4084a843b9ef6af45a63b7163f9fbefb, type: 2}
+    Use: Heavy machinery, pipes, engines, bases
+  - Name: Light Metal
+    Material: {fileID: 2100000, guid: dfc08c90188302847afb04f628582097, type: 2}
+    Use: Poles, frames, rails, light fittings
+  - Name: Low Cover
+    Material: {fileID: 2100000, guid: 9fe0a856a63e8634ebc7077bc570ea68, type: 2}
+    Use: Low cover and slabs at floor level
+  - Name: Clean
+    Material: {fileID: 2100000, guid: 2ab8149ec4775284bada96c1b85b4a09, type: 2}
+    Use: Clean surfaces: tiles, beds, basins, lab benches
+  - Name: Screen
+    Material: {fileID: 2100000, guid: 3d9914e92c1db3f4caed885c92e0b7e9, type: 2}
+    Use: Screens, lights, clean water, live power
+  - Name: Deep Blue
+    Material: {fileID: 2100000, guid: 0f29e3c1c576f6641b9e474f6b194480, type: 2}
+    Use: Deep water, upholstery
+  - Name: Coolant
+    Material: {fileID: 2100000, guid: e18ded4b611aa8f4a9f0f261d2f29537, type: 2}
+    Use: Coolant, glass, chutes, radiator fins
+  - Name: Night Blue
+    Material: {fileID: 2100000, guid: f5ffb23c71776424f8f776c97d3fd190, type: 2}
+    Use: Dark cloth, night-side signage
+  - Name: Plant
+    Material: {fileID: 2100000, guid: 74117f645ca87544896e430b75e9a316, type: 2}
+    Use: Plants, felt, grown things
+  - Name: Waste
+    Material: {fileID: 2100000, guid: 6b38742730e330c488cc8d7964788813, type: 2}
+    Use: Waste, sludge, murky water, recycling
+  - Name: Moss Green
+    Material: {fileID: 2100000, guid: bce32739db90b6843ac7f0179bcaa6b7, type: 2}
+    Use: Dark foliage
+  - Name: Purple
+    Material: {fileID: 2100000, guid: 68d9464d0cd4fbf48a81abf378167c7f, type: 2}
+    Use: Art and signage
+  - Name: Magenta
+    Material: {fileID: 2100000, guid: 9618c6b42230db7408b3b734da21470a, type: 2}
+    Use: Neon and luxury accents
+  - Name: Pink
+    Material: {fileID: 2100000, guid: 5e88a93148f69984e968ecc92408960f, type: 2}
+    Use: Soft furnishings, children's rooms
+  - Name: Noir Wood
+    Material: {fileID: 2100000, guid: e073418e3e9547128517ca21d0918288, type: 2}
+    Use: First-class noir: dark wood
+  - Name: Noir Leather
+    Material: {fileID: 2100000, guid: 3ba50db0646d490ba82dd92c7c6852a4, type: 2}
+    Use: First-class noir: leather
+  - Name: Noir Lamp
+    Material: {fileID: 2100000, guid: 279b8b79f2ca48bfa7ec5607eb906a67, type: 2}
+    Use: First-class noir: lamp glow
+  - Name: Noir Steel
+    Material: {fileID: 2100000, guid: f9e48878804145febc90a7050167de37, type: 2}
+    Use: First-class noir: blackened steel
+  - Name: Tech Trim
+    Material: {fileID: 2100000, guid: a678cc6c96c4469cb18635efe507ee53, type: 2}
+    Use: TECH: housings
+  - Name: Tech Light
+    Material: {fileID: 2100000, guid: eeab0eff08d3435d98e452a61eb34004, type: 2}
+    Use: TECH: light strips
+  - Name: Tech Panel
+    Material: {fileID: 2100000, guid: 00993d16b7c14aa387d89f6f00e0ff0f, type: 2}
+    Use: TECH: panels
+  - Name: Bio Root
+    Material: {fileID: 2100000, guid: 09bc74c2abe648a68ab8737b5369e38e, type: 2}
+    Use: BIO: roots and trunks
+  - Name: Bio Glow
+    Material: {fileID: 2100000, guid: 47b35c9624784fab8663e978cd235fda, type: 2}
+    Use: BIO: glowing growth
+  - Name: Bio Moss
+    Material: {fileID: 2100000, guid: 10ca124bba3a4c30b3d5fd924b6c8327, type: 2}
+    Use: BIO: moss and ground growth
+  - Name: Bio Panel
+    Material: {fileID: 2100000, guid: ff2ad50f2896454aae37d19d3843bd9c, type: 2}
+    Use: BIO: overgrown panels
+  - Name: Foliage
+    Material: {fileID: 2100000, guid: 6b1f0c52a7d34e9c8f21d3a4b5c60718, type: 2}
+    Use: Bushes and hedges that hide
+  - Name: Shadow
+    Material: {fileID: 2100000, guid: 015b13894dc14725b46e6c5170dafc37, type: 2}
+    Use: Shadow pockets (ground cover)

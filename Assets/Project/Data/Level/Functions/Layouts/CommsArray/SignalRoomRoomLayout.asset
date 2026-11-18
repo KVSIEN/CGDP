@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 067aff8eb7e145a5ad54e525ff98bd15, type: 3}
+  m_Name: SignalRoomRoomLayout
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomLayout
+  _displayName: Signal Room
+  _weight: 1
+  _shapes:
+  - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
+  _cells: {x: 1, y: 1}
+  _size:
+    Min: 9
+    Max: 11
+    Bias: 0
+  _structure:
+  - {fileID: 11400000, guid: 580d20230d3144fa9f7423a767e06daa, type: 2}
+  _props:
+  - Prefabs:
+    - {fileID: 3592533658758260548, guid: aafafa6e6fc74289abd3c1cbf7a260c2, type: 3}
+    Count:
+      Min: 3
+      Max: 6
+      Bias: 0
+    ScaleByRoomSize: 1
+    Footprint: {x: 1, y: 1}
+    On: 0
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 1
+    Spacing: 0
+    Selection: 4
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: 
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  - Prefabs:
+    - {fileID: 8100000000000004001, guid: 9486df849fda48a9ae33f9df2b22ddb0, type: 3}
+    Count:
+      Min: 2
+      Max: 4
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 0
+    Spacing: 1
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: 
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  _sets: []

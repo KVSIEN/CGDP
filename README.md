@@ -57,7 +57,9 @@ Assets/
       Economy/              CurrencyDefinition, Wallet, PriceTable, Vendor, GambleMachine (+ GambleOdds); Shops/ — Shop (buy/sell/trade-in),
                             ShopCatalog, stock sources (ItemStock, RolledWeaponStock), listings
       Editor/               editor-only inspectors and tooling (CGD.Editor assembly), incl. Map/ (Map Graph window, style report),
-                            Rooms/ (Room Lab window: one room built on its own — RoomSampleBuilder, RoomSampleChecks, plan layers, seed variations; RoomFunction inspector),
+                            Rooms/ (Room Lab window: one room built on its own — RoomSampleBuilder, RoomSampleChecks, plan layers, seed variations;
+                              Authoring/ — RoomFunction and RoomLayout inspectors: New layout, Duplicate, RoomLayoutCheck over seeds;
+                              Placeholders/ — PlaceholderPalette, Placeholder Prop Builder window),
                             Enemies/ (New Enemy Type wizard, Enemy Roster window, EnemyData inspector + EnemyDataReview checks, KitNeed (kit pieces a tree casts from) + EnemyKitSection, sight gizmo),
                             BehaviorTrees/ (Behavior Tree Editor: window, side panel; Behaviors/ — reusable behaviors: Behavior Composer window,
                             BehaviorLibrary (+ BehaviorLibraryPanel), BehaviorPicker (searchable add list), BehaviorTrigger (when a behavior acts, live ✓/✗), BehaviorSituation (what-if), BehaviorSettingsDrawer (per-use / per-enemy values), BehaviorRowProblems, BehaviorEditing / BehaviorActions (save branch as behavior, new empty behavior, switch on/off, reorder); Canvas/ — GraphView, node, group and note views,
@@ -107,7 +109,7 @@ Assets/
                             Geometry/ — tiles → meshes: LevelGeometryBuilder, LevelWallBuilder, BoxMeshBuilder, DoorwaySignBuilder,
                             RuntimeNavMesh, GeneratedAssets; Population/ — RoomPopulator, RoomContentRule, RoomRoster, EnemyTierOdds, Posts/ (RoomPostMap, RoomEnemyPlanner: where enemies start, who guards and who patrols);
                             Shapes/ — RoomShape assets, RoomShapeRasterizer, RoomFootprint (tiles + door sockets)
-                            RoomOutline (curved walls); Functions/ — RoomFunction, RoomLayout (one arrangement of a place: shapes, size, structure, set pieces);
+                            RoomOutline (curved walls); Functions/ — RoomFunction, RoomLayout (one arrangement of a place: shapes, size, structure, set pieces), RoomPropSet (a shared kit);
                             Structure/ — RoomStructurePlanner, RoomStructure (tile tags, pillars, partitions, zones), CoverHeights (low / high cover bands), Rules/ (pillars, partitions, rows, remnants, office maze);
                             Landmarks/ — hand-built rooms; Props/ — RoomFurnisher (what a room is furnished with, shared by the level and the editor),
                             RoomPropPlanner (footprints, clearance, spread, cover, lattices, symmetry, clusters, prop groups, near/keyed placements, features that grow with the room; reports each placement's outcome), RoomDressing (cover and clutter per room type);

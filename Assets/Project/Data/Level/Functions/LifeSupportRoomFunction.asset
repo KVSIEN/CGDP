@@ -62,12 +62,16 @@ MonoBehaviour:
     OffRoute: 0
     MarksRoute: 0
     Members: []
-    Key: 
+    Key: Plant
     Near: 
     NearDistance: 2
     Grow: {x: 0, y: 0}
     Stretch: 0
     MinRoomTiles: 0
+  _sets:
+  - {fileID: 11400000, guid: 263d025daa3b4c3b82dd937aa504d9cd, type: 2}
   _layouts:
   - {fileID: 11400000, guid: 6facb588edef481580145ef37b688553, type: 2}
   - {fileID: 11400000, guid: 53f3b9ce8b604ef58518d80583fddd79, type: 2}
+  - {fileID: 11400000, guid: ab5f4dffefde41c58c09c52bcc077bd5, type: 2}
+  - {fileID: 11400000, guid: 40f73b4131f048909d282d6b4b73cdf3, type: 2}

@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782486c3ed6a422a9b324498ab198d59, type: 3}
+  m_Name: PowerDistributionRoomFunction
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
+  _displayName: Power Distribution
+  _category: 7
+  _weight: 0.8
+  _preferredSections:
+  - {fileID: 11400000, guid: 127b4364c57a4639989fe8ae021843f4, type: 2}
+  _sectionPreference: 3
+  _sides:
+  - 3
+  _shapes: []
+  _cells: {x: 1, y: 1}
+  _size:
+    Min: 0
+    Max: 0
+    Bias: 0
+  _wallHeight: 5
+  _chamfer: -1
+  _openCeiling: 0
+  _unique: 0
+  _landmark: {fileID: 0}
+  _structure:
+  - {fileID: 11400000, guid: 0779a8c9bfd943528d256e313c2460f9, type: 2}
+  _props:
+  - Prefabs:
+    - {fileID: 924212684105694158, guid: f9af342d432e4cb2a2865ac5a5ce546c, type: 3}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 0
+    Avoid: 124
+    Zone: 1
+    Facing: 1
+    Clearance: 1
+    Spacing: 1
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 1
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: Plant
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  _sets:
+  - {fileID: 11400000, guid: 9bcf43e25ad44ea0b722aff6d0c841b5, type: 2}
+  - {fileID: 11400000, guid: 9bdd8bcc17464040b3c03c9f7d151e96, type: 2}
+  _layouts:
+  - {fileID: 11400000, guid: d1ff962dc77c4bcc990ef75e1ac0e03e, type: 2}
+  - {fileID: 11400000, guid: 65b61e58a73a4bdfaf1dc7875634f0b0, type: 2}
+  - {fileID: 11400000, guid: cc6b27f1b9884068968d10af65e37aa2, type: 2}

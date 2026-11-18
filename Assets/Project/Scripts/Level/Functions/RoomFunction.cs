@@ -43,6 +43,8 @@ namespace CGD.Level
         [SerializeField] private RoomStructureRule[] _structure = Array.Empty<RoomStructureRule>();
         [Tooltip("Furnishings, placed in order after the structure (tables, crates, beds…). With layouts, these go into every layout, after its own set pieces: what makes the place itself (a casino's cashier cage)")]
         [SerializeField] private List<RoomPropPlacement> _props = new();
+        [Tooltip("Shared kits every room of this place gets, after its own props and its layout's (a control station facing the machine, a pipe run)")]
+        [SerializeField] private RoomPropSet[] _sets = Array.Empty<RoomPropSet>();
         [Tooltip("Ways this place can be arranged; each room picks one by weight. A layout overrides the shapes, cells, size and structure it sets and adds its own set pieces. Empty = one arrangement, the function's")]
         [SerializeField] private RoomLayout[] _layouts = Array.Empty<RoomLayout>();
 
@@ -59,6 +61,7 @@ namespace CGD.Level
         public IReadOnlyList<RoomShape>         Shapes    => _shapes;
         public IReadOnlyList<RoomStructureRule> Structure => _structure;
         public IReadOnlyList<RoomPropPlacement> Props     => _props;
+        public IReadOnlyList<RoomPropSet>       Sets      => _sets;
         public IReadOnlyList<RoomLayout>        Layouts   => _layouts;
 
         // A layout picked by weight, or null when the function has none. `pinned` (a map node's
@@ -81,6 +84,27 @@ namespace CGD.Level
 
         public IReadOnlyList<RoomStructureRule> StructureWith(RoomLayout layout) =>
             layout != null && HasAny(layout.Structure) ? layout.Structure : _structure;
+
+        // What a room of this function arranged by `layout` is furnished with, in order. With a
+        // layout: the function's anchor (its Required pieces, which the layout's set pieces may
+        // stand Near), then the layout's set pieces and sets, then the function's other props.
+        // Without one, the function's props in their own order. The function's sets come last.
+        public IEnumerable<RoomPropPlacement> PropsWith(RoomLayout layout)
+        {
+            if (layout == null)
+            {
+                foreach (RoomPropPlacement placement in _props) yield return placement;
+            }
+            else
+            {
+                foreach (RoomPropPlacement placement in _props)
+                    if (placement != null && placement.Required) yield return placement;
+                foreach (RoomPropPlacement placement in layout.Pieces) yield return placement;
+                foreach (RoomPropPlacement placement in _props)
+                    if (placement == null || !placement.Required) yield return placement;
+            }
+            foreach (RoomPropPlacement placement in RoomPropSet.PropsOf(_sets)) yield return placement;
+        }
 
         private static bool HasAny<T>(IReadOnlyList<T> items) where T : class
         {

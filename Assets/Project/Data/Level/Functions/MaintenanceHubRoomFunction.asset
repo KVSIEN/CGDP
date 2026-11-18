@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782486c3ed6a422a9b324498ab198d59, type: 3}
+  m_Name: MaintenanceHubRoomFunction
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
+  _displayName: Maintenance Hub
+  _category: 7
+  _weight: 0.9
+  _preferredSections:
+  - {fileID: 11400000, guid: 127b4364c57a4639989fe8ae021843f4, type: 2}
+  _sectionPreference: 3
+  _sides:
+  - 3
+  _shapes: []
+  _cells: {x: 1, y: 1}
+  _size:
+    Min: 7
+    Max: 10
+    Bias: 0
+  _wallHeight: 0
+  _chamfer: -1
+  _openCeiling: 0
+  _unique: 0
+  _landmark: {fileID: 0}
+  _structure:
+  - {fileID: 11400000, guid: 0779a8c9bfd943528d256e313c2460f9, type: 2}
+  _props:
+  - Prefabs:
+    - {fileID: 430417327299041732, guid: 46b0fe8aacfe4d598643054881e1fbdb, type: 3}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 1
+    Spacing: 1
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 1
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: Plant
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  _sets:
+  - {fileID: 11400000, guid: 9bcf43e25ad44ea0b722aff6d0c841b5, type: 2}
+  - {fileID: 11400000, guid: 263d025daa3b4c3b82dd937aa504d9cd, type: 2}
+  _layouts:
+  - {fileID: 11400000, guid: 373a6717d56d4f46b6a155adc43ad45d, type: 2}
+  - {fileID: 11400000, guid: e272ab0d2def42fc903fa421b680b456, type: 2}
+  - {fileID: 11400000, guid: a5f2f13ed914460a89b84c9b7c7f62e0, type: 2}

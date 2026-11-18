@@ -76,7 +76,9 @@ Structure is applied in two steps (`RoomStructurePlanner`):
 | Strip | `CornerPillars` | Promenade, Observation Deck, Escape Pod Bay |
 | Strip | none (fallback) | Junction |
 | Service | `ServiceCounter`, `CornerPillars` | Kitchen, Pharmacy |
-| Service | `CornerPillars` | Engine Room, Life Support, Workshop, Water Treatment, Morgue |
+| Service | `CornerPillars` | Engine Room, Life Support, Workshop, Water Treatment, Morgue, Power Distribution, Fuel Depot, Maintenance Hub |
+| Hall | `WidePillarGrid` | Waste Reclamation, Coolant Plant (and each layout its own: section 12) |
+| Ring | `ColumnRing` | Comms Array |
 
 Rooms left at *none* get the holding reality's fallback, or stay bare when no reality holds them.
 
@@ -257,6 +259,20 @@ placeholder inside the same prefab, so no rule or asset has to change.
 | Furniture | Brown, Grey 3 | Shelves, pews, beds (Phase 3) |
 | Machines | Yellow, Grey 4 | Turbines, pumps, conveyors (Phase 3) |
 | Concealment | Green (decor, no collider); VOID dark violet | Existing `ConcealmentPatch`, `GrassPatch`, `MossPatch`; `ShadowPocket` (Phase 5) |
+| Ship operations | Orange marks the place's main machine; Yellow machinery and hazard; Red fuel and danger; Blue 2 coolant; Green 2 waste; Cyan live power and screens; Grey 3/4 housings | `Transformer`, `Compactor`, `FuelTank`, `HeatExchanger`, `Pump`, `HazardBarrier` |
+
+The colours are one asset, `Data/Level/Placeholders/DefaultPlaceholderPalette`: each swatch
+names its role (Anchor, Machinery, Danger, Coolant, Waste, Screen…). Every part of every prop
+and structure piece uses one of its swatches (`PlaceholderKitTests`), so a new colour is added
+there first, with what it means.
+
+**Placeholder Prop Builder** (Window › CGD › Placeholder Prop Builder) makes a kit prop:
+up to three parts (box, cylinder or sphere), each a palette colour, sized in metres, shown from
+above against the footprint it will take with its front edge marked, and warned about when it
+sinks into the floor, reaches past its footprint or has nothing solid. *Start from* gives a
+wall cabinet, machine, tank or console sized to the footprint. *Rework prop* loads an existing
+prop; saving rebuilds it in place, so its root keeps its identity and everything that places it
+keeps working.
 
 Rules for placeholder prefabs:
 - **At most three primitives**, each in the colour of its role: a body and one or two
@@ -298,7 +314,7 @@ described in one line has no clear identity yet. Columns:
 - **Anchor**: the `Required` piece, placed before anything else.
 - **Plays as**: what a fight there should feel like before a reality changes it.
 
-The *Now* column says what the asset has today: S is its own structure, P is props, L layouts (section 12). Park and
+The *Now* column says what the asset has today: S is its own structure, P is props, L layouts, K shared kits (section 12). Park and
 Farm take the holding reality's structure unless a layout brings its own; Junction stays bare on purpose.
 
 | Room | Category | Side | Pattern | Anchor | Furniture | Plays as | Now |
@@ -328,17 +344,23 @@ Farm take the holding reality's structure unless a layout brings its own; Juncti
 | Security Office | Security | C | Cells | Checkpoint barrier | Desks, lockers | Checkpoint funnels in | S, P, L |
 | Armory | Security | C | Aisles | Weapon rack wall | Rack rows, crates | Narrow aisles, hard cover | S, P, L |
 | Barracks | Security | C | Aisles | — | Bunk rows, lockers | Rows across the room | S, P, L |
-| Engine Room | Engineering | C | Service | Turbine blocks | Pipes, catwalk rails | Narrow gaps, hazard in the centre | S, P, L |
+| Engine Room | Engineering | C | Service | Turbine block on a wall (*Plant*) | Control station, pipe run; nozzles, pumps, radiators, hazard cordon by layout | Narrow gaps, hazard in the centre | S, P, L, K |
 | Reactor Core | Engineering | C | Ring | Reactor | Consoles round it | Circle the core; no sight across | Landmark |
-| Life Support | Engineering | C | Service | Scrubber units on walls | Tanks, pipes | Cramped, machine noise | S, P, L |
+| Life Support | Engineering | C | Service | Scrubber on a wall (*Plant*) | Pipe run; tanks, pumps, scrubber ring, grow racks by layout | Cramped, machine noise | S, P, L, K |
 | Workshop | Engineering | C | Service | Workbench line | Tool racks, crates | Medium clutter | S, P, L |
-| Processing Plant | Engineering | C | Aisles | Conveyor line | Machines on a lattice | Production lines as lanes | S, P, L |
+| Processing Plant | Engineering | C | Aisles | Conveyor line (*Plant*) | Service corner; machines on a lattice, smelters by layout | Production lines as lanes | S, P, L, K |
+| Power Distribution | Engineering | C | Service | Transformer standing free (*Plant*) | Breakers, control station; breaker walls, capacitor rows, transformer ring by layout | Live panels round the walls, one big block in the middle | S, P, L, K |
+| Waste Reclamation | Engineering | C | Hall | Compactor on a wall (*Plant*) | Recycling bins by it, service corner; sorting belt, hoppers, incinerators by layout | Bins and machines as scattered hard cover | S, P, L, K |
+| Fuel Depot | Engineering | C | Service | Fuel tank on its side, back to a wall (*Plant*) | Fuel pumps by it, hazard cordon, pipe run; tank rows, bunkers, pump grid by layout | Long tanks make lanes; don't fight near them | S, P, L, K |
+| Coolant Plant | Engineering | C | Hall | Heat exchanger on a wall (*Plant*) | Pumps round it, pipe run, control station; radiator rows, pump grid, radiator ring by layout | Radiator rows block sight, pumps as waist cover | S, P, L, K |
+| Maintenance Hub | Engineering | C | Service | Tool rack on a wall (*Plant*) | Breakers, pipe run; crates, shelves, workbenches by layout | Small and cluttered; where the crawlways meet | S, P, L, K |
 | Bridge | Command | C | Ring | Captain's chair and command table | Console arc | Arc of consoles facing the front | S, P, L |
 | Control Room | Command | C | Aisles | Main screen wall | Console rows | Rows facing one wall | S, P, L |
+| Comms Array | Command | C | Ring | Transmitter mast standing free (*Plant*) | Breakers; console rows, signal racks, big screen by layout | Racks round the walls, the mast in the middle | S, P, L, K |
 | Offices | Command | C | Cells | — | Desks, cubicle walls (`OfficeMaze`) | Maze of short walls | S, P, L |
 | Hydroponics Bay | Agriculture | C | Aisles | — | Grow racks on a lattice | Lanes between racks | S, P, L |
 | Farm | Agriculture | C | Hall | — | Crop beds, irrigation | Low cover, long views | P, L |
-| Water Treatment | Agriculture | C | Service | Tanks | Pipes, pumps | Hard cover, narrow gaps | S, P, L |
+| Water Treatment | Agriculture | C | Service | Tank on a wall (*Plant*) | Pipe run; tank grid, filters, settling basins, pump grid by layout | Hard cover, narrow gaps; open water in the settling hall | S, P, L, K |
 | Laboratory | Science | C | Cells | Lab bench island | Benches, fume hoods on walls | Bench islands as cover | S, P, L |
 | Data Center | Science | C | Aisles | — | Server racks on a lattice | Narrow aisles of tall racks | S, P, L |
 | Library | Science | G1 | by layout | Front desk by the way in | Shelving, reading tables with chairs, carrels, sofas and lamps, card catalogue | Shelves block sight; reading area open | S, P, L |
@@ -535,11 +557,13 @@ Props go down in this order:
    card-table pits, the seat rows).
 3. The function's other props, the same in every layout (the pool's loungers round whatever
    water the layout put down).
-4. Everything after that, as before: side dressing, room type cover, faction props.
+4. The function's shared kits (*Sets*, below), the same in every layout. A layout's own
+   kits go down right after its set pieces.
+5. Everything after that, as before: side dressing, room type cover, faction props.
 
 A function with no layout places its props in their own order.
 
-Every generated place has two or three layouts. Junction stays bare on purpose, and the
+Every generated place has two to four layouts. Junction stays bare on purpose, and the
 Reactor Core is a hand-built landmark. Casino, Library and Pool are written out in full below
 as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/` hold the rest.
 
@@ -571,15 +595,21 @@ as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/`
 | Armory | **Rack Aisles** (8–10 tiles · ShelfRows); **Vault** (6–8 tiles · CornerPillars) |
 | Barracks | **Bunk Rows** (10–12 tiles · LowRows); **Bunk Bays** (2×1 · OfficeMaze) |
 | Workshop | **Fab Shop** (10–12 tiles · CornerPillars); **Assembly Bay** (2×1 · WidePillarGrid) |
-| Processing Plant | **Line Hall** (2×1 · LowRows); **Sorting Floor** (2×1 · WidePillarGrid) |
-| Life Support | **Scrubber Hall** (10–12 tiles · CornerPillars); **Plant Room** (9–11 tiles · DensePillarGrid) |
-| Engine Room | **Turbine Hall** (2×1 · CornerPillars); **Drive Gallery** (2×1 · LowRows) |
+| Processing Plant | **Line Hall** (2×1 · LowRows); **Sorting Floor** (2×1 · WidePillarGrid); **Smeltery** (2×1 · WidePillarGrid) |
+| Life Support | **Scrubber Hall** (10–12 tiles · CornerPillars); **Plant Room** (9–11 tiles · DensePillarGrid); **Atmosphere Processor** (10–12 tiles · ColumnRing); **Air Garden** (10–12 tiles · WidePillarGrid) |
+| Engine Room | **Turbine Hall** (2×1 · CornerPillars); **Drive Gallery** (2×1 · LowRows); **Thruster Bay** (2×1 · CornerPillars); **Drive Core** (2×1 · ColumnRing) |
+| Power Distribution | **Switchgear** (9–11 tiles · CornerPillars); **Capacitor Hall** (2×1 · LowRows); **Substation** (10–12 tiles · ColumnRing) |
+| Waste Reclamation | **Sorting Line** (2×1 · LowRows); **Compactor Bay** (10–12 tiles · CornerPillars); **Incinerator Hall** (2×1 · WidePillarGrid) |
+| Fuel Depot | **Tank Row** (2×1 · CornerPillars); **Pump Room** (9–11 tiles · DensePillarGrid); **Bunkers** (2×1 · CornerPillars) |
+| Coolant Plant | **Radiator Gallery** (2×1 · ShelfRows); **Pump Hall** (2×1 · WidePillarGrid); **Cryo Loop** (10–12 tiles · ColumnRing) |
+| Maintenance Hub | **Crawlway** (7–9 tiles · CornerPillars); **Parts Store** (8–10 tiles · ShelfRows); **Repair Bay** (9–11 tiles · CornerPillars) |
+| Comms Array | **Signal Room** (9–11 tiles · AcrossLowRows); **Antenna Gallery** (10–12 tiles · ColumnRing); **Relay Closet** (7–9 tiles · CornerPillars) |
 | Bridge | **Command Deck** (2×1 · ColumnRing); **Flight Bridge** (2×1 · AcrossLowRows) |
 | Control Room | **Operations** (9–11 tiles · AcrossLowRows); **Monitoring Ring** (10–12 tiles · ColumnRing) |
 | Offices | **Cubicles** (9–11 tiles · OfficeMaze); **Open Plan** (2×1 · WidePillarGrid) |
 | Hydroponics Bay | **Rack Rows** (2×1 · ShelfRows); **Grow Hall** (2×1 · WidePillarGrid) |
 | Farm | **Fields** (2×1 · the faction’s); **Orchard** (2×1 · the faction’s) |
-| Water Treatment | **Tank Farm** (2×1 · CornerPillars); **Filter Gallery** (2×1 · LowRows) |
+| Water Treatment | **Tank Farm** (2×1 · CornerPillars); **Filter Gallery** (2×1 · LowRows); **Settling Pools** (2×1 · CornerPillars); **Pump Station** (9–11 tiles · DensePillarGrid) |
 | Laboratory | **Wet Lab** (9–11 tiles · DividerWall); **Clean Rooms** (2×1 · OfficeMaze) |
 | Data Center | **Server Aisles** (8–10 tiles · ShelfRows); **Core Vault** (9–11 tiles · ColumnRing) |
 | Library | **Stacks** (10–12 tiles · ShelfRows); **Reading Hall** (2×1 · WidePillarGrid); **Rotunda** (10–12 tiles · ColumnRing) |
@@ -635,6 +665,52 @@ place recognisable at any size:
 - **Pieces for big rooms** (*Min Room Tiles*): left out of a smaller room (or Breach side). That
   is not reported as a shortfall.
 
+### Shared kits (prop sets)
+
+A `RoomPropSet` (`Data/Level/Functions/Sets/`) is a named list of placements that several
+places and layouts list under *Sets*, so a kit is tuned once and reads the same in every room
+that has it. A kit's pieces can stand *Near* a key the room set before them, so a kit can
+gather round whatever a place is built round.
+
+| Kit | What it puts down | Used by |
+|---|---|---|
+| **Control Station** | One or two consoles facing the *Plant* within 4 steps, each with its chair behind | Engine Room, Power Distribution, Coolant Plant; Life Support's Atmosphere Processor |
+| **Pipe Run** | Two to four pipe stacks in a line along a wall | Engine Room, Fuel Depot, Coolant Plant, Maintenance Hub, Life Support, Water Treatment |
+| **Hazard Cordon** | Two to four barriers within a step of the *Plant*, facing it (72+ tiles) | Fuel Depot; Engine Room's Drive Gallery and Drive Core, Power's Substation, Processing's Smeltery |
+| **Service Corner** | A tool rack on a wall, crates in a corner, perhaps a trolley | Waste Reclamation, Processing Plant |
+| **Breakers** | One to three breaker panels on the walls | Power Distribution, Maintenance Hub, Comms Array |
+
+### Ship operations
+
+The places that keep a colony ship flying, lit, breathing, watered and clean follow one
+convention, so kits and new layouts fit any of them:
+- **The main machine is keyed *Plant*.** Each place's Required piece (turbine, transformer,
+  compactor, fuel tank, heat exchanger, tool rack, mast, scrubber, tank, conveyor) has *Key*
+  `Plant`, and the kits stand *Near* it. A new operations place keys its machine the same way
+  and lists the kits it wants.
+- **Wall machines, floor machines.** A machine with a back (a compactor, an exchanger) goes
+  against a wall; one you walk round (a transformer, a mast) stands free in the largest open
+  area with a tile of floor round it.
+- **Three or more layouts each**, from a cramped one-cell room to a two-cell hall: rows (aisle
+  fights), a grid (scattered hard cover) and a ring or a bay (circling). The *Waist* shape (two
+  halls joined by a neck) and the *Comb* shape (bays off both sides of an aisle) are for these.
+
+`PropSetTests` holds them to it: every operations place keys its machine *Plant*, has a kit and
+three layouts, and nothing anywhere stands *Near* a key that isn't set before it.
+
+### Authoring helpers
+
+- **New layout**: on a place's Inspector, type a name and *Create*. The layout is made in
+  `Data/Level/Functions/Layouts/<Place>/<Name>RoomLayout.asset` and added to the place's list.
+  On a layout's Inspector, *Duplicate* makes a variant of it the same way.
+- **Check**: on a layout's Inspector, *Check* builds it over a run of seeds (4–48) through the
+  level's own pipeline and lists every piece it can get: where it comes from (anchor, set piece,
+  kit, place), how often it went down and how many of what it asked for. A piece that sometimes
+  goes missing is red; hover it for why. The verdict flags failed rooms, a missing Required
+  piece, floor cut off and a set piece that fits less than half the time, as `RoomLayoutTests`
+  would. On a place's Inspector, *Check layouts* does every layout at once, one line each.
+- **Placeholder props**: the Placeholder Prop Builder (section 7).
+
 ### Seeing it
 
 - The **Room Lab** has a *Layout* choice under *Place*. *Open in Room Lab* on a layout asset
@@ -647,6 +723,8 @@ place recognisable at any size:
 - A third layout for the places that have two, starting with the guest places seen most.
 - Let a faction prefer layouts: VOID the salon's tight cells, TECH the hall's long lanes. That
   could be a weight multiplier per layout on `FactionDesign`, like its shapes.
+- Let the check also report the room's traits per layout, so a layout can be tuned toward the
+  fight it should play as.
 - Placeholders are stretched boxes, so a pool's deck rim thickens with its size. Real art
   needs a basin that can be built to any footprint, or nine-sliced.
 
@@ -665,6 +743,7 @@ place recognisable at any size:
 | **9. Territory depth** | The holder's design blends toward neutral with the room's map influence: core rooms purest, frontier rooms at 0.4 (section 10); Room Lab *Influence* | **Done in code, not yet compiled or run** |
 | **10. Enemies learn their ground** | Each enemy learns hidden, vantage and tight places by walking and looking, with familiarity and danger, shares them with nearby kin, falls back to the best it knows and watches a known lane from its post (section 11) | **Done in code, not yet compiled or run** |
 | **11. Layouts and set pieces** | Places in several arrangements (`RoomLayout`: shapes, cells, size, structure, set pieces) over the function's own props; prop groups, keyed *Near* placements, features that grow with the room and stretch, pieces for big rooms only; every generated place with two or three layouts (Casino, Library and Pool first); the function's Required anchor before the layout's pieces; placeholders cut to at most three primitives; gallery room per layout; Room Lab and Map Graph layout pins (section 12) | **Done in code, not yet compiled or run** |
+| **12. Ship operations and authoring kit** | Power Distribution, Waste Reclamation, Fuel Depot, Coolant Plant, Maintenance Hub and Comms Array, each with three layouts; Engine Room, Life Support, Water Treatment and Processing Plant reworked to three or four; shared kits (`RoomPropSet`) round a machine keyed *Plant*; Waist and Comb shapes; 18 operations props; the placeholder palette and Prop Builder; New layout, Duplicate and Check in the Inspector (section 12) | **Done in code, not yet compiled or run** |
 
 ### Tuning (Phase 7)
 

@@ -59,17 +59,17 @@ MonoBehaviour:
     Stretch: 0
     MinRoomTiles: 0
   - Prefabs:
-    - {fileID: 6213749714869875365, guid: a2fa8ac58a7044dcaaee50c21f5a8fdf, type: 3}
+    - {fileID: 601784355023407280, guid: fc16afb7c8af495e8de58294433d6598, type: 3}
     Count:
-      Min: 2
-      Max: 4
+      Min: 1
+      Max: 2
       Bias: 0
     ScaleByRoomSize: 0
     Footprint: {x: 1, y: 1}
-    On: 1
+    On: 0
     Avoid: 124
     Zone: 0
-    Facing: 2
+    Facing: 6
     Clearance: 0
     Spacing: 1
     Selection: 1
@@ -87,8 +87,9 @@ MonoBehaviour:
     MarksRoute: 0
     Members: []
     Key: 
-    Near: 
+    Near: Plant
     NearDistance: 2
     Grow: {x: 0, y: 0}
     Stretch: 0
     MinRoomTiles: 0
+  _sets: []

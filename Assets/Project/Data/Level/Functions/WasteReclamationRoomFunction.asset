@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782486c3ed6a422a9b324498ab198d59, type: 3}
+  m_Name: WasteReclamationRoomFunction
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
+  _displayName: Waste Reclamation
+  _category: 7
+  _weight: 0.8
+  _preferredSections:
+  - {fileID: 11400000, guid: 127b4364c57a4639989fe8ae021843f4, type: 2}
+  _sectionPreference: 3
+  _sides:
+  - 3
+  _shapes: []
+  _cells: {x: 2, y: 1}
+  _size:
+    Min: 0
+    Max: 0
+    Bias: 0
+  _wallHeight: 6
+  _chamfer: -1
+  _openCeiling: 0
+  _unique: 0
+  _landmark: {fileID: 0}
+  _structure:
+  - {fileID: 11400000, guid: 6c99a485ddf44f11809d1c26d6d910dc, type: 2}
+  _props:
+  - Prefabs:
+    - {fileID: 733214970138945475, guid: 269255cdb01d48768bfb05240665b94d, type: 3}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 2, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 1
+    Spacing: 1
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 1
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: Plant
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  - Prefabs:
+    - {fileID: 938496126903206658, guid: 1a2ba1f28b034ea5a2c0436f6a57863c, type: 3}
+    Count:
+      Min: 2
+      Max: 4
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 0
+    Avoid: 124
+    Zone: 0
+    Facing: 1
+    Clearance: 0
+    Spacing: 1
+    Selection: 3
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: 
+    Near: Plant
+    NearDistance: 3
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  _sets:
+  - {fileID: 11400000, guid: 26f96a999287437c99af1534ca109180, type: 2}
+  _layouts:
+  - {fileID: 11400000, guid: 9c070ecb4ca3490db8ddf9467b05a05e, type: 2}
+  - {fileID: 11400000, guid: 2596e152f5ec46c393a2f4084e7bed47, type: 2}
+  - {fileID: 11400000, guid: 9a302f55897041668941612fe5ef95ab, type: 2}

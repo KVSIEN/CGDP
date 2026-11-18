@@ -61,12 +61,17 @@ MonoBehaviour:
     OffRoute: 0
     MarksRoute: 0
     Members: []
-    Key: Turbine
+    Key: Plant
     Near: 
     NearDistance: 2
     Grow: {x: 0, y: 0}
     Stretch: 0
     MinRoomTiles: 0
+  _sets:
+  - {fileID: 11400000, guid: 9bdd8bcc17464040b3c03c9f7d151e96, type: 2}
+  - {fileID: 11400000, guid: 263d025daa3b4c3b82dd937aa504d9cd, type: 2}
   _layouts:
   - {fileID: 11400000, guid: 43c5c83511bb479b939bc94100e0ba59, type: 2}
   - {fileID: 11400000, guid: 88d48920a148413ca7eec2848da9d527, type: 2}
+  - {fileID: 11400000, guid: a2918e4bab2e42e488b007e04a31a459, type: 2}
+  - {fileID: 11400000, guid: 200ad41bb9ae4b4ca2025da0152e699e, type: 2}

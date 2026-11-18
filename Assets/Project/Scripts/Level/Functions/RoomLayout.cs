@@ -28,12 +28,25 @@ namespace CGD.Level
         [SerializeField] private RoomStructureRule[] _structure = Array.Empty<RoomStructureRule>();
         [Tooltip("The layout's set pieces, placed before the function's own props: what this arrangement is built around (the pool basin, the card-table pits)")]
         [SerializeField] private List<RoomPropPlacement> _props = new();
+        [Tooltip("Shared kits placed after the set pieces (a control station, a pipe run), so every layout that lists one gets it the same way")]
+        [SerializeField] private RoomPropSet[] _sets = Array.Empty<RoomPropSet>();
 
         public string DisplayName => _displayName;
         public float  Weight      => _weight;
         public IReadOnlyList<RoomShape>         Shapes    => _shapes;
         public IReadOnlyList<RoomStructureRule> Structure => _structure;
         public IReadOnlyList<RoomPropPlacement> Props     => _props;
+        public IReadOnlyList<RoomPropSet>       Sets      => _sets;
+
+        // Everything this layout puts down: its own set pieces, then its sets'.
+        public IEnumerable<RoomPropPlacement> Pieces
+        {
+            get
+            {
+                foreach (RoomPropPlacement placement in _props) yield return placement;
+                foreach (RoomPropPlacement placement in RoomPropSet.PropsOf(_sets)) yield return placement;
+            }
+        }
 
         // Null when the layout keeps the function's cells.
         public Vector2Int? Cells => _cells.x > 0 && _cells.y > 0

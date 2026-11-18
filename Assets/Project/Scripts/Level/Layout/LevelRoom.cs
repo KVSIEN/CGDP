@@ -72,27 +72,9 @@ namespace CGD.Level
         public IReadOnlyList<RoomStructureRule> StructureRules =>
             Function != null ? Function.StructureWith(RoomLayout) : Array.Empty<RoomStructureRule>();
 
-        // With a layout: the function's anchor (its Required pieces, which the layout's set pieces
-        // may stand Near), then the layout's set pieces, then the function's other props. Without
-        // one, the function's props in their own order.
-        public IEnumerable<RoomPropPlacement> FunctionProps
-        {
-            get
-            {
-                if (Function == null) yield break;
-                if (RoomLayout == null)
-                {
-                    foreach (RoomPropPlacement placement in Function.Props) yield return placement;
-                    yield break;
-                }
-
-                foreach (RoomPropPlacement placement in Function.Props)
-                    if (placement != null && placement.Required) yield return placement;
-                foreach (RoomPropPlacement placement in RoomLayout.Props) yield return placement;
-                foreach (RoomPropPlacement placement in Function.Props)
-                    if (placement == null || !placement.Required) yield return placement;
-            }
-        }
+        // What this room is furnished with, in order (RoomFunction.PropsWith).
+        public IEnumerable<RoomPropPlacement> FunctionProps =>
+            Function != null ? Function.PropsWith(RoomLayout) : Array.Empty<RoomPropPlacement>();
 
         // Set once by LevelLayoutBuilder once the doorways are known (no chamfer cuts a doorway).
         public void AttachOutline(RoomOutlinePlan outline) => Outline = outline;
