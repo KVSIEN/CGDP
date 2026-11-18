@@ -131,9 +131,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fb64efebfad04b309771ce3e9f40849c, type: 2}
   - {fileID: 11400000, guid: f6d258d4797945309163ccd50f8fa897, type: 2}
   - {fileID: 11400000, guid: 2530ed7026df479e87cf9c5d4ab27f8d, type: 2}
-  - {fileID: 11400000, guid: 710c936ffd314ca3832bca9cd93d3148, type: 2}
-  - {fileID: 11400000, guid: 399837e30d614a279fca9c48175887bc, type: 2}
-  - {fileID: 11400000, guid: 72b896c4412344b28883ebf4c8a2f14b, type: 2}
   - {fileID: 11400000, guid: 1dc62d8147ee4f11b16d9b44b832f764, type: 2}
   _rooms:
   - Type: 0

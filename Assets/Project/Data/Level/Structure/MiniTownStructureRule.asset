@@ -19,6 +19,8 @@ MonoBehaviour:
     _weight: 1
   - _plan: {fileID: 11400000, guid: 382979b271a542c1aacaff8fe0ffe0ef, type: 2}
     _weight: 1
+  - _plan: {fileID: 11400000, guid: 0f92bd3ce4d8469a93544b49d60e68e1, type: 2}
+    _weight: 1
   _lotSize: {Min: 8, Max: 11, Bias: 0}
   _streetTiles: 2
   _margin: 2

@@ -752,18 +752,18 @@ three layouts, and nothing anywhere stands *Near* a key that isn't set before it
 
 ## 13. Buildings and towns (Phase 13)
 
-A place can be a whole building (a school, a hospital) or a town of buildings among open
-streets, made inside one room from the same pieces every room uses: inner walls, doorways and
-zones. Nothing changes in the map graph or the corridor router; a building is a room whose
-structure is a floor plan.
+A town is one room (the Town Square place) holding several buildings among open streets,
+made from the same pieces every room uses: inner walls, doorways and zones. Nothing changes in
+the map graph or the corridor router. A school, hospital or library met outside a town is the
+ordinary single-room place, a door in a corridor wall; the multi-room building plans exist only
+to fill a town's lots.
 
 | Piece | Role | Where |
 |---|---|---|
 | `BuildingPlan` | Data: hall width, the rooms wanted (place, count, width, placement) | `Data/Level/Buildings/` |
 | `BuildingLayoutPlanner` | Plain C#: tiles a lot with the hall and rooms, returns a `BuildingBlueprint` (rectangles, doors, front door, rooms that didn't fit) | `Scripts/Level/Buildings/` |
 | `BuildingBlueprintWriter` | Writes a blueprint into a `RoomStructure`: a wall between any two spaces, a lintel doorway at each door, each space registered with its place | same |
-| `BuildingStructureRule` | The room is the building | `Data/Level/Structure/` |
-| `TownStructureRule` | The room is streets with a grid of lots, each a walled building | same |
+| `TownStructureRule` | The room is streets with a grid of lots, each a walled, roofed building | `Data/Level/Structure/` |
 
 **Layout.** The hall runs in from the front door, `Entrance` rooms first beside it, then the
 required rooms, then the optional, each on whichever side has more frontage left; leftover
@@ -794,9 +794,12 @@ or an earlier structure are left as plazas.
   by a shell-walled blueprint; `LevelGeometryBuilder.BuildCeilings` roofs those tiles even
   when ceilings are off) and lit by `BuildingLightBuilder`. The town has no sun light or sky
   ambience yet, only the dome to look at.
-- The wings and the Town Square are in the build settings' place list at low weights (the
-  town is `_unique`), so the ordinary weighted pick gives a map a building or a town only
-  sometimes. Tune the weights from Room Sweep and map runs.
+- The Town Square is in the build settings' place list at a low weight and `_unique`, so the
+  ordinary weighted pick gives a map a town only sometimes. Tune the weight from Room Sweep
+  and map runs.
+- A standalone library, hospital or school is the ordinary room behind a door in a corridor
+  wall. A distinct frontage on the corridor side (a facade matching the place) is not built:
+  the doorway signs already name the place.
 - Not compiled or run in Unity (see the roadmap).
 
 ## Roadmap
@@ -815,7 +818,7 @@ or an earlier structure are left as plazas.
 | **10. Enemies learn their ground** | Each enemy learns hidden, vantage and tight places by walking and looking, with familiarity and danger, shares them with nearby kin, falls back to the best it knows and watches a known lane from its post (section 11) | **Done in code, not yet compiled or run** |
 | **11. Layouts and set pieces** | Places in several arrangements (`RoomLayout`: shapes, cells, size, structure, set pieces) over the function's own props; prop groups, keyed *Near* placements, features that grow with the room and stretch, pieces for big rooms only; every generated place with two or three layouts (Casino, Library and Pool first); the function's Required anchor before the layout's pieces; placeholders cut to at most three primitives; gallery room per layout; Room Lab and Map Graph layout pins (section 12) | **Done in code, not yet compiled or run** |
 | **12. Ship operations and authoring kit** | Power Distribution, Waste Reclamation, Fuel Depot, Coolant Plant, Maintenance Hub and Comms Array, each with three layouts; Engine Room, Life Support, Water Treatment and Processing Plant reworked to three or four; shared kits (`RoomPropSet`) round a machine keyed *Plant*; Waist and Comb shapes; 18 operations props; the placeholder palette and Prop Builder; New layout, Duplicate and Check in the Inspector (section 12) | **Done in code, not yet compiled or run** |
-| **13. Buildings and towns** | `BuildingPlan` floor plans carved into a room (hall, rooms, back room), each room its own zone and furnished by its own place; a town of walled buildings among open streets; School Wing, Hospital Wing, Town Square places; Room Lab *Spaces* (section 13) | **Done in code, not yet compiled or run** |
+| **13. Towns of buildings** | `BuildingPlan` floor plans (hall, rooms, back room) placed on a town's lots, each room its own zone and furnished by its own place; roofs, lights and a sky dome; the Town Square place; Room Lab *Spaces* (section 13) | **Done in code, not yet compiled or run** |
 
 ### Tuning (Phase 7)
 

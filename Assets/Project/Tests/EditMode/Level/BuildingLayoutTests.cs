@@ -8,9 +8,9 @@ using static CGD.Tests.RoomTestKit;
 
 namespace CGD.Tests
 {
-    // Buildings carved into a room: the plan tiles the whole lot, every room is reachable from
-    // the hall through its doorway, the walls leave the room whole, and a town keeps its streets
-    // open round buildings that are each their own zone.
+    // Buildings in a town: the plan tiles the whole lot, every room is reachable from the hall
+    // through its doorway, the walls leave the town whole, and the streets stay open round
+    // buildings that are each their own roofed zone.
     public class BuildingLayoutTests
     {
         private static BuildingPlan Plan(int hallTiles = 1, params BuildingSpaceSpec[] spaces)
@@ -217,27 +217,6 @@ namespace CGD.Tests
         }
 
         [Test]
-        public void ABuildingThatIsTheWholeRoomHasNoRoofOfItsOwn()
-        {
-            BuildingPlan plan = School();
-            var rule = ScriptableObject.CreateInstance<BuildingStructureRule>();
-            Set(rule, "_plan", plan);
-            try
-            {
-                RoomStructure room = Room(16, 12, new Vector2Int(0, 6));
-                rule.Apply(room, Stream(1));
-                room.AssignZones();
-                Assert.Greater(room.Spaces.Count, 3);
-                Assert.IsFalse(room.HasRoofedSpaces, "the room's own ceiling covers it");
-            }
-            finally
-            {
-                Object.DestroyImmediate(rule);
-                Object.DestroyImmediate(plan);
-            }
-        }
-
-        [Test]
         public void ALotTooSmallForThePlanGetsNoBuilding()
         {
             BuildingPlan plan = School();
@@ -247,38 +226,6 @@ namespace CGD.Tests
                 Assert.IsNull(new BuildingLayoutPlanner(plan).Plan(new RectInt(0, 0, 8, 3), Vector2Int.up, Stream(1)), "too shallow");
             }
             finally { Object.DestroyImmediate(plan); }
-        }
-
-        [Test]
-        public void ABuildingRoomIsWalledIntoOneZonePerSpaceAndStaysWhole()
-        {
-            BuildingPlan plan = School();
-            var rule = ScriptableObject.CreateInstance<BuildingStructureRule>();
-            Set(rule, "_plan", plan);
-            try
-            {
-                for (int seed = 0; seed < Seeds; seed++)
-                {
-                    RoomStructure room = Room(16, 12, new Vector2Int(0, 6), new Vector2Int(15, 3));
-                    rule.Apply(room, Stream(seed));
-                    room.AssignZones();
-
-                    Assert.Greater(room.Spaces.Count, 3, $"seed {seed}: no building");
-                    Assert.IsTrue(room.StaysConnected(System.Array.Empty<Vector2Int>()), $"seed {seed}: the walls cut the room");
-                    Assert.AreEqual(room.Spaces.Count, room.ZoneCount, $"seed {seed}: spaces and zones differ");
-
-                    var zones = new HashSet<int>();
-                    foreach (StructureSpace space in room.Spaces)
-                        Assert.IsTrue(zones.Add(room.ZoneOf(space.Tile)), $"seed {seed}: two spaces share a zone");
-                    foreach (Vector2Int entrance in room.Entrances)
-                        Assert.IsFalse(room.Has(entrance, RoomTileTags.Structure), $"seed {seed}: a doorway is built over");
-                }
-            }
-            finally
-            {
-                Object.DestroyImmediate(rule);
-                Object.DestroyImmediate(plan);
-            }
         }
 
         [Test]

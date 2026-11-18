@@ -6,10 +6,10 @@ namespace CGD.Level
     // A floor plan for a whole building: one hall running in from the front door, with rooms on
     // either side and, optionally, one big room across the far end. It says what the rooms are
     // (a school's classrooms, a hospital's wards), not where: BuildingLayoutPlanner places them
-    // inside whatever space it is given, so the same plan fills a small lot or a whole room.
+    // inside whatever lot it is given, so the same plan fills a small lot or a large one.
     //
-    // A plan is used by a BuildingStructureRule (the building is the room) or by a
-    // TownStructureRule (the building is one lot among streets).
+    // Plans exist for towns: a TownStructureRule puts one on each lot among its streets. A
+    // library, hospital or school met on its own is an ordinary single room of its place.
     [CreateAssetMenu(fileName = "BuildingPlan", menuName = "CGD/Level/Building Plan")]
     public class BuildingPlan : ScriptableObject
     {
