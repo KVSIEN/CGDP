@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce450f5037ef45358449e48afea096fb, type: 3}
+  m_Name: PreyLootTable
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Loot.LootTable
+  _guaranteed: []
+  _rolls:
+    Min: 2
+    Max: 2
+    Bias: 0
+  _pool:
+  - Kind: 0
+    Item: {fileID: 11400000, guid: 3a3a19c38f444c64ab5b60a305ff01ff, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 3
+      Bias: 0
+    Weight: 10
+  - Kind: 0
+    Item: {fileID: 11400000, guid: eaed1e3e46f7440d80d3e937e438e7fc, type: 2}
+    Table: {fileID: 0}
+    Prefab: {fileID: 0}
+    Count:
+      Min: 1
+      Max: 2
+      Bias: 0
+    Weight: 8
+  _nothingWeight: 3
+  _uniqueDraws: 1
+  _tierChecks: []

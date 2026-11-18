@@ -35,9 +35,12 @@ namespace CGD.Factions
             return _default;
         }
 
-        // Whether a calm `own` leaves `other` alone: only rival factions, never the player.
+        // Whether a calm `own` leaves `other` alone: only rival factions, never the player. Prey is
+        // food, not a faction: predators hunt it and it watches for them whether or not anything
+        // has started a fight.
         public bool KeepsTruce(Team own, Team other) =>
-            _truceWhileCalm && other != own && other != Team.Player && other != Team.None;
+            _truceWhileCalm && other != own && other != Team.Player && other != Team.None &&
+            own != Team.Prey && other != Team.Prey;
 
         // How much it wants to fight a hostile it has this attitude toward. 0 = it won't start that fight.
         public float TargetWeight(FactionAttitude attitude) => attitude switch

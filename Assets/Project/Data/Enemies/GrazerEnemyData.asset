@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fa9dd37a1333c94ba199e2bd61bbee3, type: 3}
+  m_Name: GrazerEnemyData
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
+  DisplayName: Grazer
+  Team: 6
+  MaxHealth: 70
+  Armor: 10
+  MaxShield: 0
+  ShieldRegenDelay: 5
+  ShieldRegenRate: 0
+  PatrolSpeed: 2
+  ChaseSpeed: 8.5
+  SightRange: 30
+  SightAngle: 300
+  HearingRadius: 20
+  Senses: {fileID: 11400000, guid: b4dbcf2c7fae4eebb839c7454d0c4a00, type: 2}
+  Doctrine: {fileID: 11400000, guid: 812cac286b8841d19a371d5ec2916888, type: 2}
+  BehaviorTree: {fileID: 11400000, guid: 0605d0139858419e9b12ef93802dd370, type: 2}
+  CombatType: 0
+  Social: 0
+  AttackRange: 1.8
+  AttackDamage: 12
+  AttackCooldown: 1.2
+  AttackWindup: 0.4
+  PreferredRange: 12
+  SpreadAngle: 3
+  BurstCount: 1
+  AlertDuration: 4

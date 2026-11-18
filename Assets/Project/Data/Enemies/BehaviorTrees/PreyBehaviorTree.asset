@@ -1,0 +1,158 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: PreyBehaviorTree
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 94d873b1a5554987bd1a37963ebe596b
+        _position: {x: 0, y: 0}
+        _comment: 'Prey: wanders and idles, bolts from a threat or a noise, rarely lashes out when cornered'
+        _children:
+        - 404df9eb14f64cc1bdc3e4efe159a721
+    - rid: 1001
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a4a3cebf67fc499a849b90c02adc10dc
+        _position: {x: -660, y: 600}
+        _comment: 
+    - rid: 1002
+      type: {class: Chance, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 69a1cb2fd060460c84bc291158428b8e
+        _position: {x: -660, y: 500}
+        _comment: 'Rarely'
+        _children:
+        - a4a3cebf67fc499a849b90c02adc10dc
+        _probability: 0.35
+    - rid: 1003
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4a85221849f94d7dac25c25b428d8daf
+        _position: {x: -660, y: 400}
+        _comment: 'Not every time it is cornered'
+        _children:
+        - 69a1cb2fd060460c84bc291158428b8e
+        _seconds: 6
+        _onlyAfterSuccess: 0
+    - rid: 1004
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: bdebe1f670c24679841a55126a9a7e51
+        _position: {x: -770, y: 400}
+        _comment: 'Cornered: it is on top of it'
+        _range: 0
+    - rid: 1005
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6edbaea2d9014ec7aa9d09c66d0de5a1
+        _position: {x: -880, y: 400}
+        _comment: 
+        _memory: 3
+    - rid: 1006
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6bad6b61fa664b279181692b65b0e8ec
+        _position: {x: -770, y: 300}
+        _comment: 'Feels threatened: lashes out, rarely'
+        _children:
+        - 6edbaea2d9014ec7aa9d09c66d0de5a1
+        - bdebe1f670c24679841a55126a9a7e51
+        - 4a85221849f94d7dac25c25b428d8daf
+        _abort: 1
+    - rid: 1007
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: fb02b6b5089d48fd91b57a87aa37c039
+        _position: {x: -330, y: 400}
+        _comment: 'Seen it, or been hit'
+        _memory: 6
+    - rid: 1008
+      type: {class: FleeFromDisturbance, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 54071b80f6b84fad81f627e311339ded
+        _position: {x: -220, y: 400}
+        _comment: 'Runs'
+        _distance: 18
+    - rid: 1009
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d7585fb9370b4bf7a33d5db62f311cdc
+        _position: {x: -275, y: 300}
+        _comment: 'Runs from a threat it knows about'
+        _children:
+        - fb02b6b5089d48fd91b57a87aa37c039
+        - 54071b80f6b84fad81f627e311339ded
+        _abort: 3
+    - rid: 1010
+      type: {class: IsSuspicious, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 939c8adf04d949f58e8aad55cd796bb0
+        _position: {x: 110, y: 400}
+        _comment: 'Heard or glimpsed something'
+    - rid: 1011
+      type: {class: FleeFromDisturbance, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f03006216ee6407fb5d9e9d79f947330
+        _position: {x: 220, y: 400}
+        _comment: 'Bolts from the sound'
+        _distance: 14
+    - rid: 1012
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e9168660ce344c3c8fa84fa5d1c473b6
+        _position: {x: 165, y: 300}
+        _comment: 'Spooked by a noise'
+        _children:
+        - 939c8adf04d949f58e8aad55cd796bb0
+        - f03006216ee6407fb5d9e9d79f947330
+        _abort: 3
+    - rid: 1013
+      type: {class: Patrol, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c1a8ab85f4e64b3a87ac365396194577
+        _position: {x: 450, y: 300}
+        _comment: 'Wanders, looks about, grazes, drinks'
+    - rid: 1014
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 404df9eb14f64cc1bdc3e4efe159a721
+        _position: {x: 0, y: 150}
+        _comment: 'Most urgent first'
+        _children:
+        - 6bad6b61fa664b279181692b65b0e8ec
+        - d7585fb9370b4bf7a33d5db62f311cdc
+        - e9168660ce344c3c8fa84fa5d1c473b6
+        - c1a8ab85f4e64b3a87ac365396194577
+        _abort: 0

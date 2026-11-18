@@ -27,5 +27,11 @@ MonoBehaviour:
   - From: 5
     Toward: 4
     Attitude: 2
+  - From: 3
+    Toward: 6
+    Attitude: 1
+  - From: 4
+    Toward: 6
+    Attitude: 2
   _huntWeight: 1.5
   _fearDrain: 0.15

@@ -23,7 +23,7 @@ namespace CGD.DevTools
             _text.Append("   ").Coloured(InspectorText.Muted, $"{resetKey} resets").Append('\n');
             _text.Append("<size=85%><color=").Append(InspectorText.Muted).Append(">Agent").Append(Columns).Append("</color></size>\n");
 
-            for (var team = Team.None; team <= Team.Void; team++) TeamRows(stats, agents, team, duration);
+            for (var team = Team.None; team <= Team.Prey; team++) TeamRows(stats, agents, team, duration);
             if (stats.Others.Hits > 0 || stats.Others.DamageTaken > 0f)
                 Row("Others (player…)", null, stats.Others, duration);
             return _text.ToString();

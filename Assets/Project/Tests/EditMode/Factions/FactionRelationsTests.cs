@@ -57,6 +57,13 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void Truce_NeverCoversPrey()
+        {
+            Assert.That(_relations.KeepsTruce(Team.Bio, Team.Prey), Is.False);
+            Assert.That(_relations.KeepsTruce(Team.Prey, Team.Bio), Is.False);
+        }
+
+        [Test]
         public void Truce_CanBeSwitchedOff()
         {
             var serialized = new SerializedObject(_relations);

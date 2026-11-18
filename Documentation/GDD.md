@@ -1463,7 +1463,7 @@ Nothing in BIO exists to fight the player. The player just happens to be in the 
 | **Predators** | Carnivores, territorial creatures, predatory plants | Stalk, ambush or patrol their territory. They do not care about the player specifically |
 | **Apex Predators** | Deeply mutated organisms evolving since the Incident | Dominant in their territory. The source of the best BIO resources and the most dangerous to harvest |
 
-**In the Prototype (Built):** the Scavenger (Prey tier) is BIO's tier 1 enemy.
+**In the Prototype (Built):** the Scavenger (Prey tier) is BIO's tier 1 enemy. The Grazer is the first true prey animal: a herbivore that wanders, grazes and drinks, bolts from noise and threats, rarely lashes out when cornered, heals when predators hit it and drops meat and hide.
 
 ### Gear
 

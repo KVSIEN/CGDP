@@ -16,6 +16,8 @@ MonoBehaviour:
   _draws:
   - Team: 3
     Appeal: 0.9
+  - Team: 6
+    Appeal: 0.9
   _duration: {Min: 8, Max: 16, Bias: 0}
   _capacity: 3
   _cooldown: 60

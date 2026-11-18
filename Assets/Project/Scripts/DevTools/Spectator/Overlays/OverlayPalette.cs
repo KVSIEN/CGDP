@@ -24,6 +24,7 @@ namespace CGD.DevTools
             Team.Bio    => new Color(0.45f, 1f, 0.4f),
             Team.Tech   => new Color(1f, 0.85f, 0.25f),
             Team.Void   => new Color(0.78f, 0.55f, 1f),
+            Team.Prey   => new Color(0.9f, 0.75f, 0.45f),
             Team.Player => Color.white,
             _                  => new Color(1f, 0.35f, 0.3f),
         };
