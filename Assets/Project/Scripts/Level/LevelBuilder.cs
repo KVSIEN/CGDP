@@ -248,7 +248,12 @@ namespace CGD.Level
             // Slightly above the floor so the player's capsule doesn't start inside it.
             Vector3 position = populator.RoomCenter(start) + Vector3.up;
             if (_spawnPoint != null) _spawnPoint.position = position;
-            if (_player     != null) _player.position     = position;
+            if (_player == null) return;
+
+            _player.position = position;
+            // The body keeps its own pose and, interpolated, writes it back over the transform:
+            // left at the scene's spot, it would pull the player back out of the level.
+            if (_player.TryGetComponent(out Rigidbody body)) body.position = position;
         }
 
         // The Exit room's content may bring its own exit; otherwise a plain pad is added.
