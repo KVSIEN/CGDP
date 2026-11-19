@@ -128,9 +128,10 @@ namespace CGD.Tests
             Assert.That(planner.Planned.Count, Is.EqualTo(3));
         }
 
-        // Every concealment placement the game ships says where it stands relative to the routes.
+        // Every concealment placement the game ships either says where it stands relative to the
+        // routes or is spread evenly over the room (BIO's overgrowth), so none piles up at random.
         [Test]
-        public void EveryShippedConcealmentPlacementFollowsTheRoutes()
+        public void EveryShippedConcealmentPlacementFollowsTheRoutesOrSpreads()
         {
             int checkedPlacements = 0;
             foreach (string guid in AssetDatabase.FindAssets("t:RoomDressing", new[] { "Assets/Project/Data/Level" }))
@@ -140,7 +141,9 @@ namespace CGD.Tests
                 {
                     if (!ConcealsAny(placement)) continue;
                     checkedPlacements++;
-                    Assert.That(placement.NearRoute > 0 || placement.OffRoute > 0, $"{dressing.name}: concealment with no route rule");
+                    bool followsRoutes = placement.NearRoute > 0 || placement.OffRoute > 0;
+                    Assert.That(followsRoutes || placement.Selection == PropSelection.Spread,
+                                $"{dressing.name}: concealment with no route rule that isn't spread evenly");
                 }
             }
             Assert.That(checkedPlacements, Is.GreaterThan(0));

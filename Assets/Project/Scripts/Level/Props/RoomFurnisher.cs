@@ -10,7 +10,8 @@ namespace CGD.Level
     // its side's dressing (a crew room's staff door), the room type's cover and clutter (and its
     // extra dressing), then the faction's own pieces — in a Breach room split into zones, each
     // side by its own faction. The side's design scales the faction's
-    // fill share and prop counts.
+    // fill share and prop counts. A pavilion standing in the room (an annex: a restroom hut, a
+    // kiosk) is furnished by its own place alone; everything else goes on the floor round it.
     // A hand-built landmark keeps its own interior. A fight room a faction design holds is
     // furnished the way that design's priorities ask (RoomTraitFit).
     //
@@ -80,15 +81,17 @@ namespace CGD.Level
             float fillShare = style.FillShare * (side != null ? side.FillShareScale : 1f);
             float propScale = style.PropScale * (side != null ? side.PropScale : 1f);
             var planner = new RoomPropPlanner(structure, room.Anchor, seed.Stream(), Mathf.Min(fillShare, MaxFillShare), propScale, concealment);
-            if (rule != null && rule.Offerings.Length > 0) planner.Add(RoomPropPlacement.Nook(rule.Offerings));
+            // Huts and kiosks standing in the room hold only their own furniture.
+            ICollection<int> floor = structure.ZonesOutsideAnnexes();
+            if (rule != null && rule.Offerings.Length > 0) planner.Add(RoomPropPlacement.Nook(rule.Offerings), zones: floor);
             if (room.Landmark == null)
             {
                 // A building's or a town's rooms are furnished by their own places; the place's own
-                // props would land in a hall or a street.
-                if (structure.Spaces.Count == 0) planner.Add(room.FunctionProps);
-                else AddSpaces(planner, structure);
-                if (side != null && side.Dressing != null) planner.Add(side.Dressing.Props);
-                AddRoomTypeDressing(planner, room, structure, rule, style, swaps);
+                // props would land in a hall or a street. Round annexes the room is still its place.
+                if (structure.Spaces.Count == 0 || floor != null) planner.Add(room.FunctionProps, zones: floor);
+                AddSpaces(planner, structure);
+                if (side != null && side.Dressing != null) planner.Add(side.Dressing.Props, zones: floor);
+                AddRoomTypeDressing(planner, room, structure, rule, style, swaps, floor);
             }
             return planner;
         }
@@ -112,25 +115,37 @@ namespace CGD.Level
         // into zones (BreachSplit) has each side dressed by its own faction: the cover in that
         // faction's pieces, then its props. Otherwise the holder's version covers the room and
         // both factions' props go anywhere. The holder's props come in at its strength; the
-        // breaching faction's always at full.
+        // breaching faction's always at full. `floor`: the zones outside annexes (null = all).
         private void AddRoomTypeDressing(RoomPropPlanner planner, LevelRoom room, RoomStructure structure, RoomContentRule rule,
-                                         FactionStyle style, bool swaps)
+                                         FactionStyle style, bool swaps, ICollection<int> floor)
         {
             FactionDesign design = style.Design;
             FactionDesign breachDesign = room.BreachFaction != null ? _settings.DesignFor(room.BreachFaction) : null;
             BreachSplit split = room.BreachFaction != null ? BreachSplit.Of(structure, room.BreachEntrances) : null;
-            ICollection<int> holderZones = split?.Zones(breachSide: false);
-            ICollection<int> breachZones = split?.Zones(breachSide: true);
+            ICollection<int> holderZones = Within(split?.Zones(breachSide: false), floor);
+            ICollection<int> breachZones = Within(split?.Zones(breachSide: true), floor);
 
             if (rule != null && rule.Dressing != null)
             {
                 planner.Add(Dressed(swaps ? design : null, rule.Dressing).Props, zones: holderZones);
                 if (split != null) planner.Add(Dressed(breachDesign, rule.Dressing).Props, zones: breachZones);
             }
-            if (rule != null && rule.ExtraDressing != null) planner.Add(rule.ExtraDressing.Props, exactConcealment: true);
+            if (rule != null && rule.ExtraDressing != null) planner.Add(rule.ExtraDressing.Props, exactConcealment: true, zones: floor);
 
             AddFactionProps(planner, design, holderZones, style.Strength);
             if (room.BreachFaction != null) AddFactionProps(planner, breachDesign, breachZones, 1f);
+        }
+
+        // The zones in both sets, where null means every zone.
+        private static ICollection<int> Within(ICollection<int> zones, ICollection<int> floor)
+        {
+            if (zones == null) return floor;
+            if (floor == null) return zones;
+
+            var both = new HashSet<int>();
+            foreach (int zone in zones)
+                if (floor.Contains(zone)) both.Add(zone);
+            return both;
         }
 
         private static RoomDressing Dressed(FactionDesign design, RoomDressing dressing) => design != null ? design.Dress(dressing) : dressing;

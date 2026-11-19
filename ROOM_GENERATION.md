@@ -145,7 +145,9 @@ whatever is placed has to keep every free tile reachable from every doorway
 8. **Concealment**: soft cover. It takes no floor and hides whoever stands in it. It goes
    off the walkway but within two steps of a route, so people actually pass it (*Near
    Route*), or, for VOID's shadow pockets, into dead ends at least three steps from any
-   route (*Off Route*). See *Routes* below.
+   route (*Off Route*). BIO is the exception: its reality is overgrown, so its patches
+   (3–5 per 64 tiles, scaled with the room) are spread evenly over the whole floor. See
+   *Routes* below.
 9. **Reality props and decor**: the holding faction's dressing, then the breach faction's.
 
 Big things go before small ones, and required things before optional ones, so clutter never
@@ -571,22 +573,22 @@ as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/`
 |---|---|
 | Quarters | **Suite** (9–11 tiles · DividerWall); **Twin Cabin** (7–9 tiles · CornerPillars); **Penthouse** (2×1 · CornerPillars) |
 | Cabin Row | **Cabin Corridor** (2×1 · OfficeMaze); **Dormitory** (10–12 tiles · LowRows) |
-| Commons | **Lounge** (11–12 tiles · CornerPillars); **Rec Room** (2×1 · WidePillarGrid); **Hearth** (10–12 tiles · ColumnRing) |
+| Commons | **Lounge** (11–12 tiles · CornerPillars); **Rec Room** (2×1 · WidePillarGrid, GuestPavilions); **Hearth** (10–12 tiles · ColumnRing) |
 | School | **Classroom** (9–11 tiles · CornerPillars); **Lecture Hall** (2×1 · AcrossLowRows); **Study Room** (8–10 tiles · CornerPillars) |
-| Park | **Garden** (2×1 · the faction’s); **Grove** (2×1 · the faction’s); **Plaza Garden** (10–12 tiles · CornerPillars) |
-| Gym | **Weight Room** (10–12 tiles · LowRows); **Fitness Hall** (2×1 · WidePillarGrid) |
+| Park | **Garden** (2×1 · the faction’s); **Grove** (2×1 · the faction’s); **Plaza Garden** (10–12 tiles · CornerPillars, HubRing) |
+| Gym | **Weight Room** (10–12 tiles · LowRows); **Fitness Hall** (2×1 · WidePillarGrid, GuestPavilions) |
 | Observation Deck | **Window Gallery** (2×1 · CornerPillars); **Star Lounge** (10–12 tiles · ColumnRing) |
 | Wellness Center | **Treatment Suites** (9–11 tiles · OfficeMaze); **Spa Lounge** (9–11 tiles · CornerPillars) |
-| Pool | **Lap Pool** (2×1 · CornerPillars); **Lagoon** (2×2 · CornerPillars); **Spa Terrace** (8–11 tiles · CornerPillars) |
+| Pool | **Lap Pool** (2×1 · CornerPillars, GuestPerimeterPavilions); **Lagoon** (2×2 · CornerPillars, GuestPerimeterPavilions); **Spa Terrace** (8–11 tiles · CornerPillars) |
 | Theatre | **Auditorium** (2×1 · AcrossLowRows); **Cabaret** (10–12 tiles · CornerPillars); **Amphitheatre** (2×1 · AcrossLowRows) |
 | Bar & Lounge | **Lounge Bar** (8–10 tiles · ServiceCounter); **Pub** (9–11 tiles · CornerPillars); **Cocktail Club** (9–11 tiles · ColumnRing) |
 | Casino | **Slot Hall** (2×1 · LowRows); **Table Pits** (10–12 tiles · ColumnRing, CornerPillars); **High-Roller Salon** (7–9 tiles · CornerPillars) |
-| Exhibit Hall | **Gallery** (10–12 tiles · WidePillarGrid); **Sculpture Court** (10–12 tiles · ColumnRing) |
-| Grand Atrium | **Fountain Court** (2×2 · ColumnRing, CornerPillars); **Galleria** (2×2 · WidePillarGrid) |
+| Exhibit Hall | **Gallery** (10–12 tiles · ThreeLanes); **Sculpture Court** (10–12 tiles · HubRing) |
+| Grand Atrium | **Fountain Court** (2×2 · CornerPillars, HubRing); **Galleria** (2×2 · LowThreeLanes) |
 | Restaurant | **Dining Room** (10–12 tiles · DividerWall); **Bistro** (8–10 tiles · DividerWall); **Banquet Hall** (2×1 · DividerWall) |
-| Food Court | **Food Hall** (2×1 · WidePillarGrid); **Kiosk Ring** (2×1 · ColumnRing) |
+| Food Court | **Food Hall** (2×1 · WidePillarGrid, GuestPavilions); **Kiosk Ring** (2×1 · ColumnRing) |
 | Kitchen | **Galley** (8–10 tiles · ServiceCounter, CornerPillars); **Line Kitchen** (9–11 tiles · LowRows) |
-| Promenade | **Arcade** (2×1 · CornerPillars); **Boulevard** (2×1 · WidePillarGrid) |
+| Promenade | **Arcade** (2×1 · CornerPillars); **Boulevard** (2×1 · LowThreeLanes) |
 | Medical Bay | **Surgery** (9–11 tiles · DividerWall); **Clinic Bays** (2×1 · OfficeMaze) |
 | Ward | **Long Ward** (2×1 · LowRows); **Bay Ward** (2×1 · OfficeMaze) |
 | Pharmacy | **Counter Shop** (6–8 tiles · ServiceCounter, CornerPillars); **Dispensary Aisles** (8–10 tiles · ShelfRows) |
@@ -594,20 +596,20 @@ as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/`
 | Security Office | **Checkpoint** (10–12 tiles · CheckpointBarrier); **Holding Cells** (10–12 tiles · OfficeMaze) |
 | Armory | **Rack Aisles** (8–10 tiles · ShelfRows); **Vault** (6–8 tiles · CornerPillars) |
 | Barracks | **Bunk Rows** (10–12 tiles · LowRows); **Bunk Bays** (2×1 · OfficeMaze) |
-| Workshop | **Fab Shop** (10–12 tiles · CornerPillars); **Assembly Bay** (2×1 · WidePillarGrid) |
-| Processing Plant | **Line Hall** (2×1 · LowRows); **Sorting Floor** (2×1 · WidePillarGrid); **Smeltery** (2×1 · WidePillarGrid) |
+| Workshop | **Fab Shop** (10–12 tiles · CornerPillars); **Assembly Bay** (2×1 · ThreeLanes) |
+| Processing Plant | **Line Hall** (2×1 · LowRows); **Sorting Floor** (2×1 · ThreeLanes); **Smeltery** (2×1 · WidePillarGrid) |
 | Life Support | **Scrubber Hall** (10–12 tiles · CornerPillars); **Plant Room** (9–11 tiles · DensePillarGrid); **Atmosphere Processor** (10–12 tiles · ColumnRing); **Air Garden** (10–12 tiles · WidePillarGrid) |
 | Engine Room | **Turbine Hall** (2×1 · CornerPillars); **Drive Gallery** (2×1 · LowRows); **Thruster Bay** (2×1 · CornerPillars); **Drive Core** (2×1 · ColumnRing) |
 | Power Distribution | **Switchgear** (9–11 tiles · CornerPillars); **Capacitor Hall** (2×1 · LowRows); **Substation** (10–12 tiles · ColumnRing) |
-| Waste Reclamation | **Sorting Line** (2×1 · LowRows); **Compactor Bay** (10–12 tiles · CornerPillars); **Incinerator Hall** (2×1 · WidePillarGrid) |
+| Waste Reclamation | **Sorting Line** (2×1 · LowRows); **Compactor Bay** (10–12 tiles · CornerPillars); **Incinerator Hall** (2×1 · WidePillarGrid, ServicePavilions) |
 | Fuel Depot | **Tank Row** (2×1 · CornerPillars); **Pump Room** (9–11 tiles · DensePillarGrid); **Bunkers** (2×1 · CornerPillars) |
 | Coolant Plant | **Radiator Gallery** (2×1 · ShelfRows); **Pump Hall** (2×1 · WidePillarGrid); **Cryo Loop** (10–12 tiles · ColumnRing) |
 | Maintenance Hub | **Crawlway** (7–9 tiles · CornerPillars); **Parts Store** (8–10 tiles · ShelfRows); **Repair Bay** (9–11 tiles · CornerPillars) |
 | Comms Array | **Signal Room** (9–11 tiles · AcrossLowRows); **Antenna Gallery** (10–12 tiles · ColumnRing); **Relay Closet** (7–9 tiles · CornerPillars) |
 | Bridge | **Command Deck** (2×1 · ColumnRing); **Flight Bridge** (2×1 · AcrossLowRows) |
 | Control Room | **Operations** (9–11 tiles · AcrossLowRows); **Monitoring Ring** (10–12 tiles · ColumnRing) |
-| Offices | **Cubicles** (9–11 tiles · OfficeMaze); **Open Plan** (2×1 · WidePillarGrid) |
-| Hydroponics Bay | **Rack Rows** (2×1 · ShelfRows); **Grow Hall** (2×1 · WidePillarGrid) |
+| Offices | **Cubicles** (9–11 tiles · OfficeMaze); **Open Plan** (2×1 · LowThreeLanes) |
+| Hydroponics Bay | **Rack Rows** (2×1 · ShelfRows); **Grow Hall** (2×1 · LowThreeLanes) |
 | Farm | **Fields** (2×1 · the faction’s); **Orchard** (2×1 · the faction’s) |
 | Water Treatment | **Tank Farm** (2×1 · CornerPillars); **Filter Gallery** (2×1 · LowRows); **Settling Pools** (2×1 · CornerPillars); **Pump Station** (9–11 tiles · DensePillarGrid) |
 | Laboratory | **Wet Lab** (9–11 tiles · DividerWall); **Clean Rooms** (2×1 · OfficeMaze) |
@@ -615,10 +617,10 @@ as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/`
 | Library | **Stacks** (10–12 tiles · ShelfRows); **Reading Hall** (2×1 · WidePillarGrid); **Rotunda** (10–12 tiles · ColumnRing) |
 | Chapel | **Nave** (9–11 tiles · AcrossLowRows); **Round Chapel** (9–11 tiles · ColumnRing) |
 | Shrine | **Alcove Shrine** (6–8 tiles · ColumnRing); **Garden Shrine** (7–9 tiles · CornerPillars) |
-| Lobby | **Reception Hall** (1×1 · WidePillarGrid, CornerPillars); **Waiting Lounge** (9–11 tiles · LowRows) |
-| Cargo Bay | **Container Yard** (2×1 · DensePillarGrid); **Loading Dock** (2×1 · WidePillarGrid) |
-| Docking Bay | **Airlock Hall** (1×1 · WidePillarGrid); **Fuel Dock** (1×1 · CornerPillars) |
-| Hangar | **Flight Deck** (2×2 · CornerPillars); **Maintenance Bay** (2×1 · CornerPillars) |
+| Lobby | **Reception Hall** (1×1 · CornerPillars, HubRing); **Waiting Lounge** (9–11 tiles · LowRows) |
+| Cargo Bay | **Container Yard** (2×1 · DensePillarGrid, ServicePavilions); **Loading Dock** (2×1 · ThreeLanes) |
+| Docking Bay | **Airlock Hall** (1×1 · WidePillarGrid, ServicePerimeterPavilions); **Fuel Dock** (1×1 · CornerPillars) |
+| Hangar | **Flight Deck** (2×2 · CornerPillars, ServicePerimeterPavilions); **Maintenance Bay** (2×1 · CornerPillars, ServicePavilions) |
 | Escape Pod Bay | **Pod Gallery** (8–10 tiles · CornerPillars); **Muster Station** (9–11 tiles · LowRows) |
 | Storage | **Shelf Aisles** (8–10 tiles · ShelfRows); **Crate Stacks** (8–10 tiles · WideShelfRows) |
 
@@ -632,8 +634,8 @@ as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/`
 | Library | **Stacks** | 10–12 | Rectangle, Long Hall, L | `ShelfRows` | Shelves lining the rows, study carrels on the walls, a reading nook off the routes |
 | | **Reading Hall** | 2×1 | Rectangle, Bays, Long Hall | `WidePillarGrid` | Shelves round every wall, reading tables on a 2×3 lattice, mirrored; lamps and rugs among them |
 | | **Rotunda** | 10–12 | Dome, Ring | `ColumnRing` | Shelves round the dome, reading tables, sofas facing the middle |
-| Pool | **Lap Pool** | 2×1 | Rectangle, Long Hall | `CornerPillars` | A basin 60% × 30% of the hall (it may cross the walkways), one or two jacuzzis by it |
-| | **Lagoon** | 2×2 | Dome, Rectangle, Cross | `CornerPillars` | A basin half the room each way, a children's pool (400+), a slide into the water (150+), jacuzzis, palms |
+| Pool | **Lap Pool** | 2×1 | Rectangle, Long Hall | `CornerPillars`, `GuestPerimeterPavilions` | A basin 60% × 30% of the hall (it may cross the walkways), one or two jacuzzis by it |
+| | **Lagoon** | 2×2 | Dome, Rectangle, Cross | `CornerPillars`, `GuestPerimeterPavilions` | A basin half the room each way, a children's pool (400+), a slide into the water (150+), jacuzzis, palms |
 | | **Spa Terrace** | 8–11 | Rectangle, Bays, Dome | `CornerPillars` | A plunge pool, two or three jacuzzis |
 
 What each place keeps in every layout:
@@ -810,6 +812,70 @@ or an earlier structure are left as plazas.
   room too small for a piece.
 - Not compiled or run in Unity (see the roadmap).
 
+## 14. Composition and props in sets (Phase 14)
+
+A room should read clearly from its floor plan alone, with even the plainest props. Two rules
+make that work:
+- **Composition comes from structure.** A big open room gets a known map pattern, not just a
+  grid of pillars.
+- **Props come in sets.** Every piece stands with the pieces it belongs to, or faces what it
+  serves. Nothing is strewn about singly at a random angle.
+
+### Composition patterns
+
+| Pattern | Rule | How it plays | Layouts |
+|---|---|---|---|
+| **Three lanes** | `ThreeLanes` (2.4 m), `LowThreeLanes` (1.1 m) | Two walls down the room: a wide, exposed middle lane and two flanking lanes, joined at the ends and through one or two crossings | Boulevard, Galleria, Open Plan, Grow Hall (low); Gallery, Loading Dock, Assembly Bay, Sorting Floor (high) |
+| **Hub** | `HubRing` (1.1 m rail) | A court round the centrepiece, a gap in each side, a loop round it: fights circle the court | Fountain Court, Sculpture Court, Reception Hall, Plaza Garden |
+| **Pavilions** | `GuestPavilions`, `ServicePavilions` (anywhere); `…PerimeterPavilions` (along the walls) | Walled blocks you walk round break a hall into pockets; along the walls they make alcoves off an open middle | Food Hall, Rec Room, Fitness Hall, Container Yard, Maintenance Bay, Incinerator Hall (anywhere); Lap Pool, Lagoon, Flight Deck, Airlock Hall (perimeter) |
+| **Two halves** | `DividerWall` (existing) | A main floor and a side room through two openings | Restaurant, Medical Bay, Laboratory and others (section 2) |
+
+Rules for authoring them:
+- **Lanes replace pillars.** A wall stays open beside a pillar, so a pillar grid would punch
+  holes all along the lane walls. A lane layout lists the lane rule *instead of* its grid.
+- **Pavilions go after pillars.** A pavilion only stands on open floor, with free floor all
+  round it and nothing solid in its margin. List it after the room's pillar rules, so no
+  pillar lands inside one.
+- **A pavilion is an annex.** It is walled in with one doorway facing the room's middle and
+  recorded as a space (`StructureSpace.Annex`). Its kind's place furnishes the inside alone: a
+  Restroom Block gets toilets and sinks, a Bar Hut a counter, a Store Shed shelves. The room's
+  own furniture, side dressing, cover, concealment and faction props go only on the floor round
+  it (`RoomStructure.ZonesOutsideAnnexes`). A room's set pieces, like a pool basin, never
+  straddle a pavilion's wall.
+- All three keep every walkway and doorway open, and their walls go in through
+  `TryAddPartition`, so the room stays one connected space. None of them divides zones, except
+  that each pavilion is a zone of its own.
+
+| Pavilion | Kinds (place) | Size |
+|---|---|---|
+| Guest | Restroom Block (Restroom), Bar Hut (Bar), Kiosk (Pharmacy) | 2×3–3×3, 3×3–3×4, 2×2–2×3 |
+| Service | Store Shed (Storage), Guard Booth (Security Office), Tool Shed (Workshop) | 2×3–3×3, 2×2–2×3, 2×3–3×3 |
+
+A room gets one or two, one for every 90 floor tiles at most, 2.6 m walls (high cover).
+
+### Props in sets
+
+The faction dressings, which every room a faction holds gets, are written as sets:
+
+| Reality | Sets |
+|---|---|
+| **VOID** | Office desks in a **row** along a wall (`Line`), each with a desk lamp half the time; filing cabinets in **runs**; a **sofa** against a wall on a rug, with a lamp; an **interrogation table** with two or three chairs pushed back, and a **street lamp** standing over it (*Near* `VoidTable`, facing it); a safe in a corner |
+| **TECH** | Server racks in mirrored **banks** along the walls (`Line`, keyed `TechRack`); an operator's **console** facing each bank with its chair behind (*Near* `TechRack`); a **sentry post** at each doorway behind its own barrier; production lines nose to tail |
+| **BIO** | **Undergrowth** gathered round each tree (*Near* `BioTree`); an overgrown **resting spot** against a wall (a bench between two bushes, with a lamp post 60% of the time); ground cover and evenly spread concealment |
+
+Keys used by dressings are prefixed with their reality (`VoidTable`, `TechRack`, `BioTree`), so
+they never meet a place's own keys (`Pool`, `Desk`, `Plant`).
+
+**Next.**
+- Give more places a composition pattern: Hangar's Maintenance Bay could take lanes, the
+  Casino's Slot Hall a hub, and a reality could prefer a pattern (TECH lanes, VOID pavilions).
+- A pavilion has no roof or lintel. Real art would want a hut kit (walls, a roof, a sign
+  naming the place over the door).
+- Cover dressings (barriers and crates) still go down one by one, chosen to cut firing lanes.
+  They could become set pieces too: a crate pile with a barrier in front.
+- Not yet compiled-and-run in Unity: the rules compile and their tests compile, and a preview
+  run outside the editor drew the expected plans.
+
 ## Roadmap
 
 | Phase | What | Status |
@@ -827,6 +893,7 @@ or an earlier structure are left as plazas.
 | **11. Layouts and set pieces** | Places in several arrangements (`RoomLayout`: shapes, cells, size, structure, set pieces) over the function's own props; prop groups, keyed *Near* placements, features that grow with the room and stretch, pieces for big rooms only; every generated place with two or three layouts (Casino, Library and Pool first); the function's Required anchor before the layout's pieces; placeholders cut to at most three primitives; gallery room per layout; Room Lab and Map Graph layout pins (section 12) | **Done in code, not yet compiled or run** |
 | **12. Ship operations and authoring kit** | Power Distribution, Waste Reclamation, Fuel Depot, Coolant Plant, Maintenance Hub and Comms Array, each with three layouts; Engine Room, Life Support, Water Treatment and Processing Plant reworked to three or four; shared kits (`RoomPropSet`) round a machine keyed *Plant*; Waist and Comb shapes; 18 operations props; the placeholder palette and Prop Builder; New layout, Duplicate and Check in the Inspector (section 12) | **Done in code, not yet compiled or run** |
 | **13. Buildings and towns** | `BuildingPlan` floor plans (hall, rooms, back room) as School, Hospital and Library Floor layouts and on a town's lots, each room its own zone and furnished by its own place; roofs, lights and a sky dome; the Town Square place; Room Lab *Spaces* (section 13) | **Done in code, not yet compiled or run** |
+| **14. Composition and props in sets** | Three Lanes, Hub Ring and Pavilion structure rules on the big open layouts; pavilions as annex spaces furnished by their own place, the room's props kept round them; VOID, TECH and BIO dressings rewritten as sets (section 14) | **Done in code and compiled; not yet run in Unity** |
 
 ### Tuning (Phase 7)
 

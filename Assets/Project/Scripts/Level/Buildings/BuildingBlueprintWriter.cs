@@ -71,7 +71,7 @@ namespace CGD.Level
 
         // The inner walls are walls to furnish against too: tiles beside one are Edge, and tiles
         // in a corner of a room Corner, as along the room's own walls (RoomStructurePlanner).
-        private static void TagWalls(RoomStructure structure, RectInt rect)
+        internal static void TagWalls(RoomStructure structure, RectInt rect)
         {
             foreach (Vector2Int tile in rect.allPositionsWithin)
             {
