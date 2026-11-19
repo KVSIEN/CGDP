@@ -42,6 +42,27 @@ namespace CGD.Level
             return text.ToString();
         }
 
+        // The overhead label a designer reads over a generated map: the room's id (for /room)
+        // and place, then its real room type in its map colour (an Ambush shows as one, with
+        // the room it poses as) and layout, then faction, tier, side, depth and breach —
+        // "#12 POOL / Combat · Lap Pool / BIO · Tier 2 · first class · core".
+        public static string Overview(LevelRoom room, TerritoryDepth depth)
+        {
+            MapNodeType type = room.Node.Type;
+            var text = new StringBuilder();
+            text.Append('#').Append(room.Node.Id).Append(' ').Append(Name(room).ToUpperInvariant()).Append("\n<size=60%>");
+            text.Append("<color=#").Append(ColorUtility.ToHtmlStringRGB(MapNodeColors.Of(type))).Append('>')
+                .Append(Spaced(type.ToString())).Append("</color>");
+            if (type.SignType() != type) text.Append(" (signed as ").Append(Spaced(type.SignType().ToString())).Append(')');
+            if (room.RoomLayout != null) text.Append(" · ").Append(room.RoomLayout.DisplayName);
+            text.Append('\n').Append(Details(room));
+            string side = SideName(room.Side);
+            if (side != null) text.Append(" · ").Append(side);
+            if (room.Faction != null && depth != null) text.Append(" · ").Append(depth.NameOf(room.DesignStrength));
+            if (room.BreachFaction != null) text.Append(" · breached by ").Append(Coloured(room.BreachFaction));
+            return text.Append("</size>").ToString();
+        }
+
         private static string Coloured(FactionDefinition faction) =>
             $"<color=#{ColorUtility.ToHtmlStringRGB(faction.Color)}>{faction.DisplayName}</color>";
 

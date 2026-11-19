@@ -61,6 +61,8 @@ namespace CGD.Level
         [SerializeField] private CoverMap _coverMap;
         [Tooltip("Name each room in the HUD feed (place, faction, tier) the first time the player walks in; in a gallery, every time, with its side, depth and fight type too. Needs a FeedbackPlayer in the scene")]
         [SerializeField] private bool _announceRooms = true;
+        [Tooltip("Outline every room along its wall tops in its room type's colour and label it from above (id, place, room type, layout, faction, tier), for reading a generated map in the Scene view. /overview in the dev console hides or shows it")]
+        [SerializeField] private bool _roomOverview = true;
 
         public Seed        Seed   { get; private set; }
         public MapGraph    Graph  { get; private set; }
@@ -121,6 +123,20 @@ namespace CGD.Level
             FitWorldMap();
             AnnounceRooms();
             AddRoomTravel(populator);
+            // Last, so neither the NavMesh nor the cover map ever sees it.
+            if (_roomOverview) AddOverviewCommand(new RoomOverviewBuilder(_settings, _assets).Build(Layout, transform));
+        }
+
+        // The dev console's /overview, wherever the player carries one: hides or shows the room labels and outlines.
+        private void AddOverviewCommand(GameObject overview)
+        {
+            if (overview == null || _player == null || !_player.TryGetComponent(out DevCommands commands)) return;
+            commands.Console.Register("overview", "", "Hide or show the room type outlines and labels above every room",
+                _ =>
+                {
+                    overview.SetActive(!overview.activeSelf);
+                    return overview.activeSelf ? "Room overview shown." : "Room overview hidden.";
+                });
         }
 
         private void AnnounceRooms()
