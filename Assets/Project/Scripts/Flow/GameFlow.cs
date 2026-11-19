@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using CGD.Core;
+using CGD.Difficulty;
 using CGD.Timing;
 
 namespace CGD.Flow

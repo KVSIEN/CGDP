@@ -22,5 +22,7 @@ namespace CGD.Weapons
         [Min(0.05f)] public float Reach = 1f;
         [Tooltip("How the held gun moves on each shot: 0 drives straight back (a Glock, a Vector), 1 flips the muzzle up (an M1911, a Desert Eagle)")]
         [Range(0f, 1f)] public float MuzzleFlip = WeaponData.BalancedMuzzleFlip;
+        [Tooltip("How the held gun's kick is spread across rise, yaw, roll, hop and pushback, as multipliers on the baseline (1 = baseline)")]
+        public KickWeights Kick = KickWeights.Identity;
     }
 }
