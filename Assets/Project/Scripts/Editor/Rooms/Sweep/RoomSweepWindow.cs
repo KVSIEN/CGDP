@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -5,7 +6,7 @@ namespace CGD.Editor
 {
     // Room Sweep (Room Lab › Sweep…): builds the Room Lab's recipe for every place and every
     // faction over a run of seeds (RoomSweep) and shows the summary (RoomSweepReport), with a
-    // button to copy it. For tuning the trait bands and Priority Tries; see
+    // button to copy it, and the rooms plotted on two measures per faction (ExpressiveRangePlot). For tuning the trait bands and Priority Tries; see
     // ROOM_GENERATION.md › Roadmap › Tuning.
     public class RoomSweepWindow : EditorWindow
     {
@@ -16,6 +17,9 @@ namespace CGD.Editor
         private RoomSweep _sweep;
         private string _report = "";
         private Vector2 _scroll;
+        private readonly ExpressiveRangePlot _plot = new();
+        // The rooms the report was written from, kept after Stop.
+        private IReadOnlyList<RoomSweepResult> _reported = System.Array.Empty<RoomSweepResult>();
 
         public static void Open(RoomLabRecipe recipe)
         {
@@ -24,6 +28,7 @@ namespace CGD.Editor
             window._recipe = recipe.Clone();
             window._sweep  = null;
             window._report = "";
+            window._reported = System.Array.Empty<RoomSweepResult>();
         }
 
         private void OnEnable()  => EditorApplication.update += Step;
@@ -32,8 +37,14 @@ namespace CGD.Editor
         private void Step()
         {
             if (_sweep == null || !_sweep.Step()) return;
-            if (_sweep.IsFinished) _report = RoomSweepReport.Write(_sweep);
+            if (_sweep.IsFinished) Report();
             Repaint();
+        }
+
+        private void Report()
+        {
+            _report   = RoomSweepReport.Write(_sweep);
+            _reported = _sweep.Results;
         }
 
         private void OnGUI()
@@ -53,15 +64,17 @@ namespace CGD.Editor
                 bool running = _sweep != null && !_sweep.IsFinished;
                 if (GUILayout.Button(running ? "Restart" : "Run"))
                 {
-                    _sweep  = new RoomSweep(_recipe, _seeds);
-                    _report = _sweep.IsFinished ? RoomSweepReport.Write(_sweep) : "";
+                    _sweep    = new RoomSweep(_recipe, _seeds);
+                    _report   = "";
+                    _reported = System.Array.Empty<RoomSweepResult>();
+                    if (_sweep.IsFinished) Report();
                 }
                 using (new EditorGUI.DisabledScope(!running))
                     if (GUILayout.Button("Stop"))
                     {
                         // Reports what was built so far.
-                        _report = RoomSweepReport.Write(_sweep);
-                        _sweep  = null;
+                        Report();
+                        _sweep = null;
                     }
                 using (new EditorGUI.DisabledScope(string.IsNullOrEmpty(_report)))
                     if (GUILayout.Button("Copy report")) EditorGUIUtility.systemCopyBuffer = _report;
@@ -75,6 +88,7 @@ namespace CGD.Editor
             }
 
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
+            _plot.Draw(_reported, position.width - 30f);
             EditorGUILayout.SelectableLabel(_report, EditorStyles.textArea, GUILayout.ExpandHeight(true),
                                             GUILayout.MinHeight(EditorStyles.textArea.CalcHeight(new GUIContent(_report), position.width - 30f)));
             EditorGUILayout.EndScrollView();

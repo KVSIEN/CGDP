@@ -961,7 +961,6 @@ doorway: a Start node stands past the first neighbour.
 
 - A reward room with a vestibule (Brogue): the Treasure room's chest in the goal behind a
   guarded choke, built as a layout with a divider whose opening faces the arrival.
-- Measure the flow in the Room Sweep (how often each place has a flank, a showcase in view)
   to tune `ThresholdShare`, `GoalShare` and the flank's lane width.
 - Foreshadowing across rooms (Dormans): a window or a gallery from which a later room's goal is
   seen before it is reached.
@@ -1010,7 +1009,16 @@ a run of seeds, and reports the results.
    Weigh it against level build time, since each try is another structure plan and furnishing.
 4. The **By place** table and *Worst fits* name the cards that don't fit their faction. Open
    them in the Room Lab with that place, faction and seed.
-5. Repeat for the other fight types (Elite, Ambush, Breach) once Combat reads right.
+5. Read the **Expressive range** (Smith & Whitehead's method: many rooms from the generator,
+   plotted on two measures; `ExpressiveRange`, `RoomFlowReading`):
+   - *Way round* and *Landmark seen* should be high in fight rooms. A low *Landmark seen*
+     means the places' Showcase anchors find no tile in view (crowded rooms, tall dividers).
+   - *Spread* is the share of the plot a faction's rooms reach. Under about 15% the faction
+     builds one room over and over: widen its shapes, structure or dressing counts.
+   - *How alike* compares two factions' plots. Above about 60% on the concealment × lane plot,
+     their rooms play the same and only their pieces differ: push their priorities or dressing
+     apart. The window draws the same plots for any two measures (*Across*, *Up*).
+6. Repeat for the other fight types (Elite, Ambush, Breach) once Combat reads right.
 
 The bands live in `RoomTraitMeasure` (code constants, because the Room Lab's checks and the
 generation steering must agree). *Priority Tries* lives in `LevelBuildSettings`.

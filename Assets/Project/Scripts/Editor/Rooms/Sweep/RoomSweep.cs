@@ -93,8 +93,39 @@ namespace CGD.Editor
             }
 
             string faction = sample.Room.Faction != null ? sample.Room.Faction.DisplayName : $"faction {job.Faction}";
+            RoomStructure structure = sample.Room.Structure;
             _results.Add(new RoomSweepResult(job.Place.DisplayName, faction, job.Seed, sample.Traits, sample.Design,
-                                             sample.Furnishing.Attempt, sample.Furnishing.Tries));
+                                             sample.Furnishing.Attempt, sample.Furnishing.Tries,
+                                             RoomFlowReading.Of(structure), ShowcaseSeen(structure, sample.Furnishing)));
+        }
+
+        // Any prop of a Showcase placement that went down and is in view of the way in.
+        // Planned props don't name their placement, so they are matched by prefab.
+        private static bool? ShowcaseSeen(RoomStructure structure, RoomFurnishing furnishing)
+        {
+            if (!structure.Arrival.HasValue) return null;
+
+            var prefabs = new HashSet<UnityEngine.GameObject>();
+            foreach (PropPlacementOutcome outcome in furnishing.Outcomes)
+                if (outcome.Placement != null && outcome.Placement.Selection == PropSelection.Showcase && outcome.Placed > 0)
+                    AddPrefabs(outcome.Placement, prefabs);
+            if (prefabs.Count == 0) return null;
+
+            var sight = new ArrivalSight(structure);
+            foreach (PlannedProp prop in furnishing.Props)
+                if (prefabs.Contains(prop.Prefab) && sight.Sees(prop.Tiles)) return true;
+            return false;
+        }
+
+        private static void AddPrefabs(RoomPropPlacement placement, HashSet<UnityEngine.GameObject> prefabs)
+        {
+            if (placement.Prefabs != null)
+                foreach (UnityEngine.GameObject prefab in placement.Prefabs)
+                    if (prefab != null) prefabs.Add(prefab);
+            if (!placement.HasMembers) return;
+            foreach (PropMember member in placement.Members)
+                foreach (UnityEngine.GameObject prefab in member.Prefabs)
+                    if (prefab != null) prefabs.Add(prefab);
         }
 
         private static List<RoomFunction> Places()

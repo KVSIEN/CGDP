@@ -106,6 +106,22 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void AnOpenHallIsReadFromTheDoorAndAWallHidesWhatIsBehindIt()
+        {
+            RoomFlowReading open = RoomFlowReading.Of(Hall());
+            Assert.That(open.HasArrival, Is.True);
+            Assert.That(open.Revealed, Is.EqualTo(1f));
+            Assert.That(open.Filled, Is.Zero);
+            Assert.That(open.Flank, Is.True);
+
+            RoomFlowReading walled = RoomFlowReading.Of(Hall(4));
+            Assert.That(walled.Revealed, Is.GreaterThan(0.4f).And.LessThan(0.8f));
+            Assert.That(walled.Flank, Is.False);
+
+            Assert.That(RoomFlowReading.Of(Room(Width, Height, WestDoor, EastDoor)).HasArrival, Is.False);
+        }
+
+        [Test]
         public void ACopyKeepsTheArrival() => Assert.That(Hall().Copy().Arrival, Is.EqualTo(WestDoor));
 
         [Test]

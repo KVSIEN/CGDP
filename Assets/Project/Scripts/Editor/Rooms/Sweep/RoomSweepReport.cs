@@ -9,11 +9,21 @@ namespace CGD.Editor
     // A sweep's results as Markdown, short enough to paste into a conversation: per faction,
     // how its rooms read on each trait against the bands (spread of levels and of the raw
     // scores behind them), how often they fit its priorities and which furnishing try was
-    // kept; per place and faction, the median scores; and the worst-fitting rooms by seed.
+    // kept; the expressive range (how the rooms play from the way in, how widely each faction's
+    // rooms spread and how alike the factions are); per place and faction, the median scores;
+    // and the worst-fitting rooms by seed.
     public static class RoomSweepReport
     {
         private const int WorstShown = 15;
         private static readonly RoomTrait[] Traits = { RoomTrait.Concealment, RoomTrait.Walls, RoomTrait.LinesOfFire };
+
+        // The two plots the report draws: a faction's trade between hiding and shooting, and
+        // between walls and what the doorway gives away.
+        public static readonly (RoomMeasure X, RoomMeasure Y)[] Plots =
+            { (RoomMeasure.Concealed, RoomMeasure.Lane), (RoomMeasure.Narrow, RoomMeasure.Revealed) };
+
+        // Densest last, for the text histograms.
+        private const string Shades = " .:-=+*#";
 
         public static string Write(RoomSweep sweep)
         {
@@ -30,6 +40,7 @@ namespace CGD.Editor
             text.AppendLine();
 
             WriteFactions(text, results);
+            WriteRange(text, results);
             WritePlaces(text, results);
             WriteWorst(text, results);
             return text.ToString();
@@ -58,6 +69,73 @@ namespace CGD.Editor
             }
             text.AppendLine();
         }
+
+        private static void WriteRange(StringBuilder text, IReadOnlyList<RoomSweepResult> results)
+        {
+            List<IGrouping<string, RoomSweepResult>> factions = results.GroupBy(r => r.Faction).ToList();
+            if (factions.Count == 0) return;
+
+            text.AppendLine("## Expressive range");
+            text.AppendLine("Way round: rooms with a flank past the main lane. Landmark seen: rooms whose Showcase piece is in view from the way in (of those with one). " +
+                            $"Spread: the share of the {ExpressiveRange.Bins}×{ExpressiveRange.Bins} plot a faction's rooms reach — low means one room built over and over.");
+            text.AppendLine();
+            text.Append("| Faction | Way round | Landmark seen | Seen from way in % | Filled % |");
+            foreach ((RoomMeasure x, RoomMeasure y) in Plots) text.Append($" Spread {Short(x)}×{Short(y)} |");
+            text.AppendLine();
+            text.AppendLine("|---|---|---|---|---|" + string.Concat(Plots.Select(_ => "---|")));
+            foreach (IGrouping<string, RoomSweepResult> faction in factions)
+            {
+                List<RoomSweepResult> rooms = faction.ToList();
+                List<RoomSweepResult> entered = rooms.Where(r => r.Flow.HasArrival).ToList();
+                List<RoomSweepResult> showcased = rooms.Where(r => r.ShowcaseSeen.HasValue).ToList();
+                text.Append($"| {faction.Key} | {Percent(rooms.Count(r => r.Flow.Flank) / (float)rooms.Count)} | ");
+                text.Append(showcased.Count > 0 ? $"{Percent(showcased.Count(r => r.ShowcaseSeen == true) / (float)showcased.Count)} | " : "— | ");
+                text.Append(entered.Count > 0 ? $"{Quartiles(entered.Select(r => r.Flow.Revealed * 100f))} | " : "— | ");
+                text.Append($"{Quartiles(rooms.Select(r => r.Flow.Filled * 100f))} |");
+                foreach ((RoomMeasure x, RoomMeasure y) in Plots) text.Append($" {Percent(new ExpressiveRange(rooms, x, y).Coverage)} |");
+                text.AppendLine();
+            }
+            text.AppendLine();
+
+            if (factions.Count > 1)
+            {
+                text.AppendLine("How alike two factions' rooms are on each plot (0% = never the same kind of room, 100% = the same spread):");
+                text.AppendLine();
+                for (int a = 0; a < factions.Count; a++)
+                    for (int b = a + 1; b < factions.Count; b++)
+                        text.AppendLine($"- {factions[a].Key} / {factions[b].Key}: " + string.Join(", ", Plots.Select(plot =>
+                            $"{Short(plot.X)}×{Short(plot.Y)} {Percent(ExpressiveRange.Overlap(new ExpressiveRange(factions[a], plot.X, plot.Y), new ExpressiveRange(factions[b], plot.X, plot.Y)))}")));
+                text.AppendLine();
+            }
+
+            foreach ((RoomMeasure x, RoomMeasure y) in Plots)
+            {
+                text.AppendLine($"{RoomMeasures.Name(y)} (up) against {RoomMeasures.Name(x)} (across), densest `{Shades[Shades.Length - 1]}`:");
+                text.AppendLine("```");
+                var ranges = factions.Select(f => (f.Key, Range: new ExpressiveRange(f, x, y))).ToList();
+                text.AppendLine(string.Join("   ", ranges.Select(r => Pad(r.Key, ExpressiveRange.Bins + 2))));
+                for (int row = ExpressiveRange.Bins - 1; row >= 0; row--)
+                    text.AppendLine(string.Join("   ", ranges.Select(r => "|" + Row(r.Range, row) + "|")));
+                text.AppendLine("```");
+            }
+            text.AppendLine();
+        }
+
+        private static string Row(ExpressiveRange range, int row)
+        {
+            var line = new StringBuilder();
+            for (int column = 0; column < ExpressiveRange.Bins; column++)
+            {
+                int count = range.Count(column, row);
+                int shade = count == 0 || range.Max == 0 ? 0 : 1 + (count - 1) * (Shades.Length - 2) / System.Math.Max(1, range.Max - 1);
+                line.Append(Shades[System.Math.Min(shade, Shades.Length - 1)]);
+            }
+            return line.ToString();
+        }
+
+        private static string Pad(string text, int width) => text.Length >= width ? text.Substring(0, width) : text.PadRight(width);
+
+        private static string Short(RoomMeasure measure) => measure.ToString().Substring(0, 1);
 
         private static void WritePlaces(StringBuilder text, IReadOnlyList<RoomSweepResult> results)
         {
