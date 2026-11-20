@@ -40,6 +40,8 @@ MonoBehaviour:
     Replacement: {fileID: 11400000, guid: 3b5de309888848f088a7b36996cf84b1, type: 2}
   - Original: {fileID: 11400000, guid: 6e0f3730e9fd4d41b2697f5f1ba34987, type: 2}
     Replacement: {fileID: 11400000, guid: 315c9a02d79842d6a155c2dc7357a637, type: 2}
+  - Original: {fileID: 11400000, guid: 7cc62ef6e91c48feb4437609514fe721, type: 2}
+    Replacement: {fileID: 11400000, guid: 98b38e342ee146cfb2b8047aa875200b, type: 2}
   _fillShare: 0.55
   _propScale: 1.4
   _priorities:

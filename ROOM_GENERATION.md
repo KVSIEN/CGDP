@@ -925,7 +925,7 @@ doorway), and this phase adds the room-wide structure on top.
 | **Band** | A placement option: Threshold, Past Threshold or Goal, every tile of the prop. Dropped when a Required piece is relaxed; any band is the whole room when the room has no arrival | `RoomPropPlacement` › *Band* |
 | **Offerings in the goal** | The offerings' nook is against a wall in the goal: the reward is what the fight stands between | `RoomPropPlacement.Nook` |
 | **Showcase** | A selection: of the spots seen from the arrival, one at random among the deepest quarter. Pillars, props and inner walls 1.6 m or taller block sight; low walls and seat rows are seen over. Nothing seen: anywhere | `PropSelection.Showcase`, `ArrivalSight` |
-| **Foothold** | Every fight room's threshold gets the build settings' *Foothold Dressing* (one or two barriers set across the line into the room), after the side's dressing and before the room type's cover | `LevelBuildSettings` › *Foothold Dressing* |
+| **Foothold** | Every fight room's threshold gets the build settings' *Foothold Dressing* (one or two barriers set across the line into the room), after the side's dressing and before the room type's cover. Each faction swaps it for its own: BIO a fallen log with a mossy crate or two beside it, TECH a mirrored pair of its barriers (a checkpoint), VOID overturned desks and a stack of crates. In a Breach room split into two sides whose way in is on the breach side, the breaching faction's version goes there, as the rest of that side's cover does | `LevelBuildSettings` › *Foothold Dressing*; `FactionDesign` › *Swaps* |
 | **Enemies past the threshold** | Nobody starts or patrols in the threshold while there is floor beyond it | `RoomEnemyPlanner` |
 | **Flank** | A fight room's structure and furnishing tries also score whether a second way leads from the threshold to the far end (below) | `RoomFlank`, `RoomTraitFit` tries |
 
@@ -959,8 +959,6 @@ doorway: a Start node stands past the first neighbour.
 
 ### Next
 
-- Swap the foothold per reality (a root mound for BIO, a shard for VOID, a checkpoint barrier
-  for TECH) with *Swaps* entries on each `FactionDesign`.
 - A reward room with a vestibule (Brogue): the Treasure room's chest in the goal behind a
   guarded choke, built as a layout with a divider whose opening faces the arrival.
 - Measure the flow in the Room Sweep (how often each place has a flank, a showcase in view)

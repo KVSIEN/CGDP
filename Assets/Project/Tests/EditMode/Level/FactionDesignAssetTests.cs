@@ -47,6 +47,24 @@ namespace CGD.Tests
             Assert.AreNotSame(loot, design.Dress(loot), $"{name} has no version of the loot dressing");
         }
 
+        // A fight room's foothold (ROOM_GENERATION.md, section 15) in each faction's own pieces,
+        // and only ever by the way in.
+        [TestCase("Tech")]
+        [TestCase("Bio")]
+        [TestCase("Void")]
+        public void EveryFactionHasItsOwnFoothold(string name)
+        {
+            RoomDressing foothold = Settings().FootholdDressing;
+            Assert.IsNotNull(foothold, "the level build settings have no foothold dressing");
+            var design = Load<FactionDesign>($"Assets/Project/Data/Level/Designs/{name}FactionDesign.asset");
+
+            RoomDressing own = design.Dress(foothold);
+            Assert.AreNotSame(foothold, own, $"{name} has no version of the foothold");
+            Assert.Greater(own.Props.Count, 0, $"{name}'s foothold places nothing");
+            foreach (RoomPropPlacement placement in own.Props)
+                Assert.AreEqual(RoomFlowBand.Threshold, placement.Band, $"{own.name} places something outside the threshold");
+        }
+
         [Test]
         public void EveryPlacedPropIsARealPrefabOfTheRightKind()
         {

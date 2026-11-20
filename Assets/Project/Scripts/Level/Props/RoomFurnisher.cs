@@ -93,7 +93,7 @@ namespace CGD.Level
                 if (structure.Spaces.Count == 0 || floor != null) planner.Add(room.FunctionProps, zones: floor);
                 AddSpaces(planner, structure);
                 if (side != null && side.Dressing != null) planner.Add(side.Dressing.Props, zones: floor);
-                AddFoothold(planner, structure, rule, style, swaps, floor);
+                AddFoothold(planner, room, structure, rule, style, swaps, floor);
                 AddRoomTypeDressing(planner, room, structure, rule, style, swaps, floor);
             }
             return planner;
@@ -115,13 +115,22 @@ namespace CGD.Level
         }
 
         // A fight room's threshold gets a piece of cover before the room type's cover takes the
-        // floor, so the way in is a foothold to read the room from, not open ground.
-        private void AddFoothold(RoomPropPlanner planner, RoomStructure structure, RoomContentRule rule, FactionStyle style,
-                                 bool swaps, ICollection<int> floor)
+        // floor, so the way in is a foothold to read the room from, not open ground. It comes in
+        // the pieces of whoever holds that side: in a Breach room split into zones whose way in
+        // is on the breach side, the breaching faction's, as the rest of that side's cover is.
+        private void AddFoothold(RoomPropPlanner planner, LevelRoom room, RoomStructure structure, RoomContentRule rule,
+                                 FactionStyle style, bool swaps, ICollection<int> floor)
         {
             RoomDressing foothold = _settings.FootholdDressing;
             if (foothold == null || !structure.Arrival.HasValue || !RoomTraitFit.IsFightRoom(rule)) return;
-            planner.Add(Dressed(swaps ? style.Design : null, foothold).Props, zones: floor);
+
+            BreachSplit split = room.BreachFaction != null ? BreachSplit.Of(structure, room.BreachEntrances) : null;
+            if (split != null && split.IsBreachZone(structure.ZoneOf(structure.Arrival.Value)))
+            {
+                planner.Add(Dressed(_settings.DesignFor(room.BreachFaction), foothold).Props, zones: Within(split.Zones(breachSide: true), floor));
+                return;
+            }
+            planner.Add(Dressed(swaps ? style.Design : null, foothold).Props, zones: Within(split?.Zones(breachSide: false), floor));
         }
 
         // The room type's cover and clutter, then the factions' own props. A Breach room split
