@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using CGD.Combat;
+using CGD.Core;
 using CGD.Weapons;
 
 namespace CGD.Enemies
@@ -14,8 +15,6 @@ namespace CGD.Enemies
     [RequireComponent(typeof(EnemyAI))]
     public class EnemyAttackVisuals : MonoBehaviour
     {
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-
         private const float MuzzleHeight  = 1.5f;   // where EnemyRangedCombat fires from…
         private const float MuzzleForward = 0.6f;   // …and how far in front
         private const float StrikeHeight  = 1.15f;
@@ -138,9 +137,7 @@ namespace CGD.Enemies
             trail.receiveShadows    = false;
             trail.emitting          = false;
 
-            var block = new MaterialPropertyBlock();
-            block.SetColor(BaseColorId, _strikeColor);
-            trail.SetPropertyBlock(block);
+            trail.SetTint(_strikeColor);
             return trail;
         }
     }

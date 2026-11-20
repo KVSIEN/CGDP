@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Core;
 
 namespace CGD.Enemies
 {
@@ -7,8 +8,6 @@ namespace CGD.Enemies
     // and out at either end. The most recent buff takes over the colour.
     internal sealed class BuffAura
     {
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-
         private const float PulseSpeed = 6f;     // radians per second
         private const float FadeTime   = 0.35f;
         private const float RingBoost  = 1.6f;   // the ring reads stronger than the shell
@@ -16,7 +15,6 @@ namespace CGD.Enemies
         private readonly Renderer      _shell;
         private readonly Renderer      _ring;
         private readonly TrailRenderer _trail;
-        private readonly MaterialPropertyBlock _block = new();
 
         private Color _color;
         private float _startedAt;
@@ -44,7 +42,7 @@ namespace CGD.Enemies
             if (_ring != null) _ring.enabled = _ringOn;
             if (_trail == null) return;
             _trail.emitting = _trailOn;
-            if (_trailOn) Tint(_trail, color);
+            if (_trailOn) _trail.SetTint(color);
         }
 
         public void Hide()
@@ -70,18 +68,11 @@ namespace CGD.Enemies
             float pulse = 0.75f + 0.25f * Mathf.Sin((now - _startedAt) * PulseSpeed);
             Color color = _color;
             color.a = _color.a * fade * pulse;
-            Tint(_shell, color);
+            _shell.SetTint(color);
 
             if (!_ringOn) return;
             color.a = Mathf.Min(1f, _color.a * RingBoost * fade);
-            Tint(_ring, color);
-        }
-
-        private void Tint(Renderer renderer, Color color)
-        {
-            renderer.GetPropertyBlock(_block);
-            _block.SetColor(BaseColorId, color);
-            renderer.SetPropertyBlock(_block);
+            _ring.SetTint(color);
         }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using CGD.Difficulty;
 using CGD.Settings;
 
 namespace CGD.UI
@@ -10,67 +9,29 @@ namespace CGD.UI
     // action lives on the Controls tab.
     public class AccessibilitySection
     {
-        private readonly Action _changed;
-
-        private readonly OptionCycler  _difficulty;
-        private readonly LabeledSlider _shake;
-        private readonly LabeledSlider _flash;
-        private readonly OptionCycler  _vignette;
-        private readonly OptionCycler  _damageIndicators;
-        private readonly OptionCycler  _buffering;
-        private readonly OptionCycler  _instantItemWheel;
-
-        private SettingsData _draft;
+        private readonly SettingsBinder _rows;
 
         public AccessibilitySection(RectTransform page, Action changed)
         {
-            _changed = changed;
-
             var layout = new SettingsPageLayout(page);
+            _rows = new SettingsBinder(layout, changed);
+
             layout.Header("Gameplay");
-            _difficulty = layout.Options("Difficulty", Enum.GetNames(typeof(DifficultyLevel)), i => Set(d => d.Difficulty = (DifficultyLevel)i));
+            _rows.Options("Difficulty", d => d.Difficulty, (d, v) => d.Difficulty = v);
 
             layout.Header("Comfort");
-            _shake    = layout.Slider("Camera Shake & Kicks", 0f, 1f, SettingsPageLayout.Percent, v => Set(d => d.CameraShake    = v));
-            _flash    = layout.Slider("Screen Flashes",       0f, 1f, SettingsPageLayout.Percent, v => Set(d => d.FlashIntensity = v));
-            _vignette = layout.Toggle("Low Health Vignette", on => Set(d => d.DamageVignette = on));
-            _damageIndicators = layout.Toggle("Damage Direction Arrows", on => Set(d => d.DamageIndicators = on));
+            _rows.Slider("Camera Shake & Kicks", 0f, 1f, SettingsPageLayout.Percent, d => d.CameraShake,    (d, v) => d.CameraShake    = v);
+            _rows.Slider("Screen Flashes",       0f, 1f, SettingsPageLayout.Percent, d => d.FlashIntensity, (d, v) => d.FlashIntensity = v);
+            _rows.Toggle("Low Health Vignette",     d => d.DamageVignette,   (d, on) => d.DamageVignette   = on);
+            _rows.Toggle("Damage Direction Arrows", d => d.DamageIndicators, (d, on) => d.DamageIndicators = on);
 
             layout.Header("Input");
-            _buffering        = layout.Toggle("Input Buffering", on => Set(d => d.InputBuffering = on));
-            _instantItemWheel = layout.Toggle("Hold Instant Item for Wheel", on => Set(d => d.InstantItemWheel = on));
+            _rows.Toggle("Input Buffering",             d => d.InputBuffering,   (d, on) => d.InputBuffering   = on);
+            _rows.Toggle("Hold Instant Item for Wheel", d => d.InstantItemWheel, (d, on) => d.InstantItemWheel = on);
         }
 
-        public void Load(SettingsData draft)
-        {
-            _draft = draft;
-            _difficulty.SetIndexWithoutNotify((int)draft.Difficulty);
-            _shake.SetValueWithoutNotify(draft.CameraShake);
-            _flash.SetValueWithoutNotify(draft.FlashIntensity);
-            _vignette.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(draft.DamageVignette));
-            _damageIndicators.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(draft.DamageIndicators));
-            _buffering.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(draft.InputBuffering));
-            _instantItemWheel.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(draft.InstantItemWheel));
-        }
+        public void Load(SettingsData draft) => _rows.Load(draft);
 
-        public void ResetToDefaults()
-        {
-            var defaults = new SettingsData();
-            _draft.Difficulty     = defaults.Difficulty;
-            _draft.CameraShake    = defaults.CameraShake;
-            _draft.FlashIntensity = defaults.FlashIntensity;
-            _draft.DamageVignette = defaults.DamageVignette;
-            _draft.DamageIndicators = defaults.DamageIndicators;
-            _draft.InputBuffering   = defaults.InputBuffering;
-            _draft.InstantItemWheel = defaults.InstantItemWheel;
-            Load(_draft);
-            _changed();
-        }
-
-        private void Set(Action<SettingsData> change)
-        {
-            change(_draft);
-            _changed();
-        }
+        public void ResetToDefaults() => _rows.ResetToDefaults();
     }
 }

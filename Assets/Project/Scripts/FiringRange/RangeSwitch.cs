@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Core;
 using CGD.Interaction;
 
 namespace CGD.FiringRange
@@ -7,8 +8,6 @@ namespace CGD.FiringRange
     [RequireComponent(typeof(Collider), typeof(Renderer))]
     public class RangeSwitch : MonoBehaviour, IInteractable
     {
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-
         [SerializeField] private RangeControl _range;
         [SerializeField] private RangeSetting _setting;
         [Tooltip("Tint of the switch, so each setting is recognisable at a glance")]
@@ -16,9 +15,7 @@ namespace CGD.FiringRange
 
         private void Awake()
         {
-            var block = new MaterialPropertyBlock();
-            block.SetColor(BaseColorId, _color);
-            GetComponent<Renderer>().SetPropertyBlock(block);
+            GetComponent<Renderer>().SetTint(_color);
         }
 
         public bool CanInteract(GameObject interactor) => _range != null;

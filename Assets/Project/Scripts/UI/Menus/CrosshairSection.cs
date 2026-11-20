@@ -29,103 +29,64 @@ namespace CGD.UI
         private static readonly string[] ArmLabels = { "All", "No Top", "No Bottom", "Horizontal", "Vertical", "None" };
 
         private readonly Action _changed;
+        private readonly SettingsBinder _rows;
         private readonly CrosshairView _preview;
-
-        private readonly OptionCycler  _arms;
-        private readonly LabeledSlider _lengthX;
-        private readonly LabeledSlider _thicknessX;
-        private readonly LabeledSlider _lengthY;
-        private readonly LabeledSlider _thicknessY;
-        private readonly LabeledSlider _gapX;
-        private readonly LabeledSlider _gapY;
-        private readonly OptionCycler  _dot;
-        private readonly LabeledSlider _dotWidth;
-        private readonly LabeledSlider _dotHeight;
-        private readonly LabeledSlider _opacity;
-        private readonly LabeledSlider _red;
-        private readonly LabeledSlider _green;
-        private readonly LabeledSlider _blue;
-        private readonly OptionCycler  _outline;
-        private readonly LabeledSlider _outlineSize;
-        private readonly LabeledSlider _spread;
-
-        private SettingsData _draft;
 
         public CrosshairSection(RectTransform page, Action changed)
         {
             _changed = changed;
 
             var left = new SettingsPageLayout(page, LeftColumn, LabelWidth, ControlWidth);
+            // Both columns write to the one binder, so every row loads together; each edit redraws the preview.
+            _rows = new SettingsBinder(left, () => { _preview.Apply(_rows.Draft.Crosshair); _changed(); });
             left.Header("Lines");
-            _arms       = left.Options("Arms", ArmLabels, i => Set(s => s.Arms = ArmPresets[i]));
-            _lengthX    = left.Slider("Length X",    0f, CrosshairStyle.MaxLength,    Whole, v => Set(s => s.HorizontalLength    = Mathf.Round(v)));
-            _thicknessX = left.Slider("Thickness X", 0f, CrosshairStyle.MaxThickness, Whole, v => Set(s => s.HorizontalThickness = Mathf.Round(v)));
-            _lengthY    = left.Slider("Length Y",    0f, CrosshairStyle.MaxLength,    Whole, v => Set(s => s.VerticalLength      = Mathf.Round(v)));
-            _thicknessY = left.Slider("Thickness Y", 0f, CrosshairStyle.MaxThickness, Whole, v => Set(s => s.VerticalThickness   = Mathf.Round(v)));
-            _gapX       = left.Slider("Gap X",       0f, CrosshairStyle.MaxGap,       Whole, v => Set(s => s.GapX                = Mathf.Round(v)));
-            _gapY       = left.Slider("Gap Y",       0f, CrosshairStyle.MaxGap,       Whole, v => Set(s => s.GapY                = Mathf.Round(v)));
+            _rows.Options("Arms", ArmLabels, ArmPresets, d => d.Crosshair.Arms, (d, v) => d.Crosshair.Arms = v);
+            WholeSlider(_rows, "Length X",    CrosshairStyle.MaxLength,    s => s.HorizontalLength,    (s, v) => s.HorizontalLength    = v);
+            WholeSlider(_rows, "Thickness X", CrosshairStyle.MaxThickness, s => s.HorizontalThickness, (s, v) => s.HorizontalThickness = v);
+            WholeSlider(_rows, "Length Y",    CrosshairStyle.MaxLength,    s => s.VerticalLength,      (s, v) => s.VerticalLength      = v);
+            WholeSlider(_rows, "Thickness Y", CrosshairStyle.MaxThickness, s => s.VerticalThickness,   (s, v) => s.VerticalThickness   = v);
+            WholeSlider(_rows, "Gap X",       CrosshairStyle.MaxGap,       s => s.GapX,                (s, v) => s.GapX                = v);
+            WholeSlider(_rows, "Gap Y",       CrosshairStyle.MaxGap,       s => s.GapY,                (s, v) => s.GapY                = v);
 
             left.Header("Center Dot");
-            _dot       = left.Toggle("Dot", on => Set(s => s.ShowDot = on));
-            _dotWidth  = left.Slider("Dot Width",  0f, CrosshairStyle.MaxDot, Whole, v => Set(s => s.DotWidth  = Mathf.Round(v)));
-            _dotHeight = left.Slider("Dot Height", 0f, CrosshairStyle.MaxDot, Whole, v => Set(s => s.DotHeight = Mathf.Round(v)));
+            _rows.Toggle("Dot", d => d.Crosshair.ShowDot, (d, on) => d.Crosshair.ShowDot = on);
+            WholeSlider(_rows, "Dot Width",  CrosshairStyle.MaxDot, s => s.DotWidth,  (s, v) => s.DotWidth  = v);
+            WholeSlider(_rows, "Dot Height", CrosshairStyle.MaxDot, s => s.DotHeight, (s, v) => s.DotHeight = v);
 
             var right = new SettingsPageLayout(page, RightColumn, LabelWidth, ControlWidth);
+            var rightRows = _rows.On(right);
             right.Header("Color");
-            _opacity = right.Slider("Opacity", 0.1f, 1f, SettingsPageLayout.Percent, v => Set(s => s.Opacity = v));
-            _red     = right.Slider("Red",   0f, 1f, Channel, v => Set(s => s.Tint = new Color(v, s.Tint.g, s.Tint.b)));
-            _green   = right.Slider("Green", 0f, 1f, Channel, v => Set(s => s.Tint = new Color(s.Tint.r, v, s.Tint.b)));
-            _blue    = right.Slider("Blue",  0f, 1f, Channel, v => Set(s => s.Tint = new Color(s.Tint.r, s.Tint.g, v)));
+            rightRows.Slider("Opacity", 0.1f, 1f, SettingsPageLayout.Percent, d => d.Crosshair.Opacity, (d, v) => d.Crosshair.Opacity = v);
+            rightRows.Slider("Red",   0f, 1f, Channel, d => d.Crosshair.Tint.r, (d, v) => d.Crosshair.Tint = new Color(v, d.Crosshair.Tint.g, d.Crosshair.Tint.b));
+            rightRows.Slider("Green", 0f, 1f, Channel, d => d.Crosshair.Tint.g, (d, v) => d.Crosshair.Tint = new Color(d.Crosshair.Tint.r, v, d.Crosshair.Tint.b));
+            rightRows.Slider("Blue",  0f, 1f, Channel, d => d.Crosshair.Tint.b, (d, v) => d.Crosshair.Tint = new Color(d.Crosshair.Tint.r, d.Crosshair.Tint.g, v));
 
             right.Header("Outline");
-            _outline     = right.Toggle("Outline", on => Set(s => s.Outline = on));
-            _outlineSize = right.Slider("Outline Size", 0f, CrosshairStyle.MaxOutline, Whole, v => Set(s => s.OutlineThickness = Mathf.Round(v)));
+            rightRows.Toggle("Outline", d => d.Crosshair.Outline, (d, on) => d.Crosshair.Outline = on);
+            WholeSlider(rightRows, "Outline Size", CrosshairStyle.MaxOutline, s => s.OutlineThickness, (s, v) => s.OutlineThickness = v);
 
             right.Header("Behavior");
-            _spread = right.Slider("Spread", 0f, CrosshairStyle.MaxSpread, SettingsPageLayout.Percent, v => Set(s => s.SpreadResponse = v));
+            rightRows.Slider("Spread", 0f, CrosshairStyle.MaxSpread, SettingsPageLayout.Percent,
+                d => d.Crosshair.SpreadResponse, (d, v) => d.Crosshair.SpreadResponse = v);
 
             _preview = BuildPreview(page, right.Cursor + new Vector2(0f, -8f));
+            _rows.Bind(d => _preview.Apply(d.Crosshair), reset: null);
         }
 
-        public void Load(SettingsData draft)
-        {
-            _draft = draft;
-            CrosshairStyle s = draft.Crosshair;
+        public void Load(SettingsData draft) => _rows.Load(draft);
 
-            _arms.SetIndexWithoutNotify(Mathf.Max(0, Array.IndexOf(ArmPresets, s.Arms)));
-            _lengthX.SetValueWithoutNotify(s.HorizontalLength);
-            _thicknessX.SetValueWithoutNotify(s.HorizontalThickness);
-            _lengthY.SetValueWithoutNotify(s.VerticalLength);
-            _thicknessY.SetValueWithoutNotify(s.VerticalThickness);
-            _gapX.SetValueWithoutNotify(s.GapX);
-            _gapY.SetValueWithoutNotify(s.GapY);
-            _dot.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(s.ShowDot));
-            _dotWidth.SetValueWithoutNotify(s.DotWidth);
-            _dotHeight.SetValueWithoutNotify(s.DotHeight);
-            _opacity.SetValueWithoutNotify(s.Opacity);
-            _red.SetValueWithoutNotify(s.Tint.r);
-            _green.SetValueWithoutNotify(s.Tint.g);
-            _blue.SetValueWithoutNotify(s.Tint.b);
-            _outline.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(s.Outline));
-            _outlineSize.SetValueWithoutNotify(s.OutlineThickness);
-            _spread.SetValueWithoutNotify(s.SpreadResponse);
-
-            _preview.Apply(s);
-        }
-
+        // The whole style goes back to its defaults, including what has no row (the outline colour).
         public void ResetToDefaults()
         {
-            _draft.Crosshair = new CrosshairStyle();
-            Load(_draft);
+            _rows.Draft.Crosshair = new CrosshairStyle();
+            _rows.Load(_rows.Draft);
             _changed();
         }
 
-        private void Set(Action<CrosshairStyle> change)
-        {
-            change(_draft.Crosshair);
-            _preview.Apply(_draft.Crosshair);
-            _changed();
-        }
+        // A crosshair size in whole pixels, down the given column.
+        private static void WholeSlider(SettingsBinder column, string label, float max,
+            Func<CrosshairStyle, float> get, Action<CrosshairStyle, float> set) =>
+            column.Slider(label, 0f, max, Whole, d => get(d.Crosshair), (d, v) => set(d.Crosshair, Mathf.Round(v)));
 
         private static string Whole(float value) => Mathf.RoundToInt(value).ToString();
 

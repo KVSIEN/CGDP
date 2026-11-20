@@ -19,12 +19,9 @@ namespace CGD.Enemies
     [RequireComponent(typeof(DeployableHealth))]
     public class SurveyBeacon : MonoBehaviour, IInteractable, IPoolable
     {
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-
         private readonly List<HealthManager> _found = new();
         private DeployableHealth _health;
         private Renderer _renderer;
-        private MaterialPropertyBlock _block;
         private SurveyBeaconAbility _settings;
         private Team _team;
         private float _age;
@@ -36,7 +33,6 @@ namespace CGD.Enemies
         {
             _health   = GetComponent<DeployableHealth>();
             _renderer = GetComponentInChildren<Renderer>();
-            _block    = new MaterialPropertyBlock();
             _health.OnDeath += OnBroken;
         }
 
@@ -126,9 +122,7 @@ namespace CGD.Enemies
         private void Tint(Color color)
         {
             if (_renderer == null) return;
-            _renderer.GetPropertyBlock(_block);
-            _block.SetColor(BaseColorId, color);
-            _renderer.SetPropertyBlock(_block);
+            _renderer.SetTint(color);
         }
 
         // --- Spoofing (the player's exploit) -------------------------------------------------

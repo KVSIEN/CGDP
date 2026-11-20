@@ -15,72 +15,50 @@ namespace CGD.UI
 
         private static readonly int[] FrameRateLimits = { 0, 30, 60, 120, 144, 165, 240 };
         private static readonly string[] FrameRateLabels = { "Unlimited", "30", "60", "120", "144", "165", "240" };
+        private static readonly AdsZoomMode[] AdsZooms = { AdsZoomMode.Gradual, AdsZoomMode.Snap };
         private static readonly string[] AdsZoomLabels = { "Gradual", "Snap" };
+        private static readonly AdsFovMode[] AdsFovs = { AdsFovMode.Independent, AdsFovMode.Affected };
         private static readonly string[] AdsFovLabels  = { "Independent", "Affected" };
 
-        private readonly Action _changed;
-
-        private readonly OptionCycler  _resolution;
-        private readonly OptionCycler  _windowMode;
-        private readonly OptionCycler  _quality;
-        private readonly OptionCycler  _vsync;
-        private readonly OptionCycler  _frameRate;
-        private readonly LabeledSlider _fov;
-        private readonly OptionCycler  _adsZoom;
-        private readonly OptionCycler  _adsFov;
-
+        private readonly SettingsBinder _rows;
+        private readonly OptionCycler _resolution;
         private readonly List<Vector2Int> _resolutions = new();
-        private SettingsData _draft;
 
         public VideoSection(RectTransform page, Action changed)
         {
-            _changed = changed;
-
             var layout = new SettingsPageLayout(page);
+            _rows = new SettingsBinder(layout, changed);
+
             layout.Header("Display");
-            _resolution = layout.Options("Resolution", Array.Empty<string>(), i => Set(d =>
+            // Resolution is kept on reset: there's no sensible default beyond "what the monitor has now".
+            _resolution = layout.Options("Resolution", Array.Empty<string>(), i => _rows.Change(d =>
             {
                 d.ResolutionWidth  = _resolutions[i].x;
                 d.ResolutionHeight = _resolutions[i].y;
             }));
-            _windowMode = layout.Options("Window Mode", WindowModeLabels, i => Set(d => d.WindowMode = WindowModes[i]));
-            _quality    = layout.Options("Quality", QualitySettings.names, i => Set(d => d.QualityLevel = i));
-            _vsync      = layout.Toggle("VSync", on => Set(d => d.VSync = on));
-            _frameRate  = layout.Options("Frame Rate Limit", FrameRateLabels, i => Set(d => d.FrameRateLimit = FrameRateLimits[i]));
+            _rows.Bind(LoadResolutions, reset: null);
+            _rows.Options("Window Mode", WindowModeLabels, WindowModes, d => d.WindowMode, (d, v) => d.WindowMode = v);
+            AddQuality(layout);
+            _rows.Toggle("VSync", d => d.VSync, (d, on) => d.VSync = on);
+            _rows.Options("Frame Rate Limit", FrameRateLabels, FrameRateLimits, d => d.FrameRateLimit, (d, v) => d.FrameRateLimit = v);
 
             layout.Header("Camera");
-            _fov = layout.Slider("Field of View", SettingsData.MinFieldOfView, SettingsData.MaxFieldOfView,
-                v => $"{Mathf.RoundToInt(v)}°", v => Set(d => d.FieldOfView = Mathf.Round(v)));
-            _adsZoom = layout.Options("ADS Zoom", AdsZoomLabels, i => Set(d => d.AdsZoom = (AdsZoomMode)i));
-            _adsFov  = layout.Options("ADS Field of View", AdsFovLabels, i => Set(d => d.AdsFov = (AdsFovMode)i));
+            _rows.Slider("Field of View", SettingsData.MinFieldOfView, SettingsData.MaxFieldOfView,
+                v => $"{Mathf.RoundToInt(v)}°", d => d.FieldOfView, (d, v) => d.FieldOfView = Mathf.Round(v));
+            _rows.Options("ADS Zoom",          AdsZoomLabels, AdsZooms, d => d.AdsZoom, (d, v) => d.AdsZoom = v);
+            _rows.Options("ADS Field of View", AdsFovLabels,  AdsFovs,  d => d.AdsFov,  (d, v) => d.AdsFov  = v);
         }
 
-        public void Load(SettingsData draft)
-        {
-            _draft = draft;
-            LoadResolutions(draft);
-            _windowMode.SetIndexWithoutNotify(Array.IndexOf(WindowModes, draft.WindowMode));
-            _quality.SetIndexWithoutNotify(draft.QualityLevel >= 0 ? draft.QualityLevel : QualitySettings.GetQualityLevel());
-            _vsync.SetIndexWithoutNotify(SettingsPageLayout.ToggleIndex(draft.VSync));
-            _frameRate.SetIndexWithoutNotify(Math.Max(0, Array.IndexOf(FrameRateLimits, draft.FrameRateLimit)));
-            _fov.SetValueWithoutNotify(draft.FieldOfView);
-            _adsZoom.SetIndexWithoutNotify((int)draft.AdsZoom);
-            _adsFov.SetIndexWithoutNotify((int)draft.AdsFov);
-        }
+        public void Load(SettingsData draft) => _rows.Load(draft);
 
-        public void ResetToDefaults()
+        public void ResetToDefaults() => _rows.ResetToDefaults();
+
+        // Unset (-1) shows the level the game is running at now, and reset puts it back to unset.
+        private void AddQuality(SettingsPageLayout layout)
         {
-            var defaults = new SettingsData();
-            _draft.WindowMode     = defaults.WindowMode;
-            _draft.QualityLevel   = defaults.QualityLevel;
-            _draft.VSync          = defaults.VSync;
-            _draft.FrameRateLimit = defaults.FrameRateLimit;
-            _draft.FieldOfView    = defaults.FieldOfView;
-            _draft.AdsZoom        = defaults.AdsZoom;
-            _draft.AdsFov         = defaults.AdsFov;
-            // Resolution stays: there's no sensible default beyond "what the monitor has now".
-            Load(_draft);
-            _changed();
+            OptionCycler quality = layout.Options("Quality", QualitySettings.names, i => _rows.Change(d => d.QualityLevel = i));
+            _rows.Bind(d => quality.SetIndexWithoutNotify(d.QualityLevel >= 0 ? d.QualityLevel : QualitySettings.GetQualityLevel()),
+                (defaults, draft) => draft.QualityLevel = defaults.QualityLevel);
         }
 
         // Screen.resolutions lists every refresh rate separately; the menu only picks a size.
@@ -102,12 +80,6 @@ namespace CGD.UI
             var labels = new string[_resolutions.Count];
             for (int i = 0; i < labels.Length; i++) labels[i] = $"{_resolutions[i].x} × {_resolutions[i].y}";
             _resolution.SetOptions(labels, _resolutions.IndexOf(current));
-        }
-
-        private void Set(Action<SettingsData> change)
-        {
-            change(_draft);
-            _changed();
         }
     }
 }

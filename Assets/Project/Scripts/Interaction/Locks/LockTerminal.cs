@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Core;
 
 namespace CGD.Interaction
 {
@@ -9,8 +10,6 @@ namespace CGD.Interaction
     [RequireComponent(typeof(Collider))]
     public class LockTerminal : MonoBehaviour, IInteractable
     {
-        private static readonly int ColorId = Shader.PropertyToID("_BaseColor");
-
         [SerializeField] private ConditionLock _lock;
         [SerializeField] private string _label = "Restore power";
         [SerializeField, Min(0f)] private float _holdDuration = 1.5f;
@@ -20,7 +19,6 @@ namespace CGD.Interaction
         [SerializeField] private Color _onColor  = new(0.3f, 1f, 0.4f);
 
         private bool _isOn;
-        private MaterialPropertyBlock _block;
 
         public float HoldDuration => _holdDuration;
         public bool  IsOn         => _isOn;
@@ -50,10 +48,7 @@ namespace CGD.Interaction
         private void ShowState()
         {
             if (_indicator == null) return;
-            _block ??= new MaterialPropertyBlock();
-            _indicator.GetPropertyBlock(_block);
-            _block.SetColor(ColorId, _isOn ? _onColor : _offColor);
-            _indicator.SetPropertyBlock(_block);
+            _indicator.SetTint(_isOn ? _onColor : _offColor);
         }
     }
 }

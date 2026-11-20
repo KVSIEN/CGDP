@@ -4,18 +4,15 @@ using CGD.Core;
 namespace CGD.Weapons
 {
     // A quick fireball: a sphere that swells to the blast radius while fading out, then returns
-    // to the pool. Needs a transparent material; the colour fades through the property block.
+    // to the pool. Needs a transparent material; the colour fades through its tint.
     [RequireComponent(typeof(Renderer))]
     public class ExplosionFlash : MonoBehaviour, IPoolable
     {
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-
         [SerializeField, Min(0.05f)] private float _duration = 0.35f;
         [Tooltip("Share of the blast radius the flash starts at")]
         [SerializeField, Range(0f, 1f)] private float _startScale = 0.3f;
 
         private Renderer _renderer;
-        private MaterialPropertyBlock _block;
         private Color _color;
         private float _radius;
         private float _age;
@@ -23,7 +20,6 @@ namespace CGD.Weapons
         private void Awake()
         {
             _renderer = GetComponent<Renderer>();
-            _block    = new MaterialPropertyBlock();
         }
 
         // A flash from the pool at `position`: what every blast, cast and impact effect uses.
@@ -60,9 +56,7 @@ namespace CGD.Weapons
 
             Color color = _color;
             color.a *= 1f - progress;
-            _renderer.GetPropertyBlock(_block);
-            _block.SetColor(BaseColorId, color);
-            _renderer.SetPropertyBlock(_block);
+            _renderer.SetTint(color);
         }
     }
 }

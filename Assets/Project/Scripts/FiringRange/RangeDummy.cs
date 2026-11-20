@@ -1,5 +1,6 @@
 using UnityEngine;
 using CGD.Combat;
+using CGD.Core;
 using CGD.Enemies;
 
 namespace CGD.FiringRange
@@ -11,8 +12,6 @@ namespace CGD.FiringRange
     [RequireComponent(typeof(EnemyHealth), typeof(TargetMover))]
     public class RangeDummy : MonoBehaviour
     {
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-
         [SerializeField] private Renderer _body;
         [Tooltip("The part that counts as a headshot")]
         [SerializeField] private Renderer _head;
@@ -25,7 +24,6 @@ namespace CGD.FiringRange
         private RespawnOnDeath _respawn;
         private StatusEffectController _statusEffects;
         private TargetMover _mover;
-        private MaterialPropertyBlock _block;
         private Color _bodyColor = Color.white;
         private float _flash;
 
@@ -50,8 +48,7 @@ namespace CGD.FiringRange
             _mover  = GetComponent<TargetMover>();
             TryGetComponent(out _respawn);
             TryGetComponent(out _statusEffects);
-            _block  = new MaterialPropertyBlock();
-            Paint(_head, _critColor);
+            _head.SetTint(_critColor);
         }
 
         private void OnEnable() => _health.OnHit += StartFlash;
@@ -68,8 +65,8 @@ namespace CGD.FiringRange
 
             _flash = Mathf.Max(0f, _flash - Time.deltaTime);
             float amount = _flash / _flashTime;
-            Paint(_body, Color.Lerp(_bodyColor, _flashColor, amount));
-            Paint(_head, Color.Lerp(_critColor, _flashColor, amount));
+            _body.SetTint(Color.Lerp(_bodyColor, _flashColor, amount));
+            _head.SetTint(Color.Lerp(_critColor, _flashColor, amount));
         }
 
         // Takes on the enemy's stats and shows its faction's colour.
@@ -77,14 +74,7 @@ namespace CGD.FiringRange
         {
             _health.UseData(enemy);
             _bodyColor = factionColor;
-            Paint(_body, factionColor);
-        }
-
-        private void Paint(Renderer target, Color color)
-        {
-            target.GetPropertyBlock(_block);
-            _block.SetColor(BaseColorId, color);
-            target.SetPropertyBlock(_block);
+            _body.SetTint(factionColor);
         }
     }
 }

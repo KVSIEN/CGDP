@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Core;
 
 namespace CGD.Weapons
 {
@@ -9,7 +10,6 @@ namespace CGD.Weapons
     {
         private const int RingSegments = 48;
         private const float SurfaceOffset = 0.02f; // lifts a bounce off the surface so the next step doesn't re-hit it
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
         [Tooltip("Unlit material for the arc and the ring; the colour comes from the grenade")]
         [SerializeField] private Material _material;
@@ -17,12 +17,10 @@ namespace CGD.Weapons
 
         private LineRenderer _arc;
         private LineRenderer _ring;
-        private MaterialPropertyBlock _block;
         private Vector3[] _points;
 
         private void Awake()
         {
-            _block = new MaterialPropertyBlock();
             _arc   = BuildLine("Arc", false);
             _ring  = BuildLine("BlastRing", true);
             Hide();
@@ -84,7 +82,7 @@ namespace CGD.Weapons
         {
             _arc.positionCount = count;
             _arc.SetPositions(_points);
-            Colour(_arc, color);
+            _arc.SetTint(color);
             _arc.enabled = true;
         }
 
@@ -104,7 +102,7 @@ namespace CGD.Weapons
                 float angle = i * Mathf.PI * 2f / RingSegments;
                 _ring.SetPosition(i, centre + onSurface * new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * radius);
             }
-            Colour(_ring, color);
+            _ring.SetTint(color);
             _ring.enabled = true;
         }
 
@@ -122,12 +120,6 @@ namespace CGD.Weapons
             line.receiveShadows    = false;
             if (loop) line.positionCount = RingSegments;
             return line;
-        }
-
-        private void Colour(LineRenderer line, Color color)
-        {
-            _block.SetColor(BaseColorId, color);
-            line.SetPropertyBlock(_block);
         }
     }
 }

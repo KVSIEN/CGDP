@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Core;
 
 namespace CGD.Interaction
 {
@@ -7,27 +8,22 @@ namespace CGD.Interaction
     // IInteractable (on its collider's GameObject).
     public class InteractionHighlight : MonoBehaviour, IInteractionFocusListener
     {
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-
         [Tooltip("Empty = every renderer on this object and its children")]
         [SerializeField] private Renderer[] _renderers;
         [SerializeField] private Color _highlightColor = new Color(1f, 0.85f, 0.35f, 1f);
         [SerializeField, Range(0f, 1f)] private float _strength = 0.45f;
 
-        private MaterialPropertyBlock _block;
         private Color[] _baseColors;
 
         private void Awake()
         {
             if (_renderers == null || _renderers.Length == 0)
                 _renderers = GetComponentsInChildren<Renderer>();
-
-            _block      = new MaterialPropertyBlock();
             _baseColors = new Color[_renderers.Length];
             for (int i = 0; i < _renderers.Length; i++)
             {
                 Material material = _renderers[i] != null ? _renderers[i].sharedMaterial : null;
-                _baseColors[i] = material != null && material.HasProperty(BaseColorId) ? material.GetColor(BaseColorId) : Color.white;
+                _baseColors[i] = material != null && material.HasProperty(RendererTint.BaseColorId) ? material.GetColor(RendererTint.BaseColorId) : Color.white;
             }
         }
 
@@ -42,12 +38,11 @@ namespace CGD.Interaction
 
                 if (!focused)
                 {
-                    r.SetPropertyBlock(null);
+                    r.ClearTint();
                     continue;
                 }
 
-                _block.SetColor(BaseColorId, Color.Lerp(_baseColors[i], _highlightColor, _strength));
-                r.SetPropertyBlock(_block);
+                r.SetTint(Color.Lerp(_baseColors[i], _highlightColor, _strength));
             }
         }
     }

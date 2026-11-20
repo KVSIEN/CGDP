@@ -11,8 +11,6 @@ namespace CGD.Weapons
     // object's own renderer stays as it is), and reset on every reuse from the pool.
     public class FlightEffects : MonoBehaviour, IPoolable
     {
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-
         [Tooltip("Transparent unlit material, tinted per effect (e.g. Materials/ExplosionFlash)")]
         [SerializeField] private Material _material;
         [Tooltip("Mesh each spark is drawn with (the built-in Sphere)")]
@@ -50,9 +48,8 @@ namespace CGD.Weapons
 
         private void Awake()
         {
-            MaterialPropertyBlock block = new();
-            if (_trailTime > 0f)      _trail  = CreateTrail(block);
-            if (_sparksPerMetre > 0f) _sparks = CreateSparks(block);
+            if (_trailTime > 0f)      _trail  = CreateTrail();
+            if (_sparksPerMetre > 0f) _sparks = CreateSparks();
             TryGetComponent(out _projectile);
         }
 
@@ -92,7 +89,7 @@ namespace CGD.Weapons
         }
 
         // A child of its own: an object can carry only one renderer, and the shot has its mesh.
-        private TrailRenderer CreateTrail(MaterialPropertyBlock block)
+        private TrailRenderer CreateTrail()
         {
             var trail = Child("Trail").AddComponent<TrailRenderer>();
             trail.sharedMaterial    = _material;
@@ -103,11 +100,11 @@ namespace CGD.Weapons
             trail.numCapVertices    = 2;
             trail.shadowCastingMode = ShadowCastingMode.Off;
             trail.receiveShadows    = false;
-            Tint(trail, _trailColor, block);
+            trail.SetTint(_trailColor);
             return trail;
         }
 
-        private ParticleSystem CreateSparks(MaterialPropertyBlock block)
+        private ParticleSystem CreateSparks()
         {
             var sparks = Child("Sparks").AddComponent<ParticleSystem>();
             sparks.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);   // it starts on its defaults
@@ -140,7 +137,7 @@ namespace CGD.Weapons
             renderer.sharedMaterial    = _material;
             renderer.shadowCastingMode = ShadowCastingMode.Off;
             renderer.receiveShadows    = false;
-            Tint(renderer, _sparkColor, block);
+            renderer.SetTint(_sparkColor);
 
             sparks.Play(true);
             return sparks;
@@ -151,13 +148,6 @@ namespace CGD.Weapons
             var child = new GameObject(childName);
             child.transform.SetParent(transform, false);
             return child;
-        }
-
-        private static void Tint(Renderer renderer, Color color, MaterialPropertyBlock block)
-        {
-            block.Clear();
-            block.SetColor(BaseColorId, color);
-            renderer.SetPropertyBlock(block);
         }
     }
 }

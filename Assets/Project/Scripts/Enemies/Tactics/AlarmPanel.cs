@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
+using CGD.Core;
 using CGD.Interaction;
 
 namespace CGD.Enemies
@@ -12,7 +13,6 @@ namespace CGD.Enemies
     public class AlarmPanel : MonoBehaviour, IInteractable
     {
         private static readonly List<AlarmPanel> Panels = new();
-        private static readonly int ColorId = Shader.PropertyToID("_BaseColor");
 
         [Tooltip("Metres: allies within this range hear the alarm")]
         [SerializeField, Min(1f)] private float _radius = 60f;
@@ -31,7 +31,6 @@ namespace CGD.Enemies
         [SerializeField] private Color _soundingColor = new(1f, 0.15f, 0.1f);
         [SerializeField] private Color _disabledColor = new(0.15f, 0.15f, 0.15f);
 
-        private MaterialPropertyBlock _block;
         private float _readyAt;
         private bool  _disabled;
 
@@ -90,10 +89,7 @@ namespace CGD.Enemies
         {
             if (_screen == null) return;
 
-            Color color = _disabled ? _disabledColor : Time.time < _readyAt ? _soundingColor : _armedColor;
-            _block ??= new MaterialPropertyBlock();
-            _block.SetColor(ColorId, color);
-            _screen.SetPropertyBlock(_block);
+            _screen.SetTint(_disabled ? _disabledColor : Time.time < _readyAt ? _soundingColor : _armedColor);
         }
     }
 }

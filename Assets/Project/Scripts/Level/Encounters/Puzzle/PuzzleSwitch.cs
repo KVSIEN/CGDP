@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using CGD.Core;
 using CGD.Interaction;
 
 namespace CGD.Level
@@ -9,8 +10,6 @@ namespace CGD.Level
     [RequireComponent(typeof(Collider))]
     public class PuzzleSwitch : MonoBehaviour, IInteractable
     {
-        private static readonly int ColorId = Shader.PropertyToID("_BaseColor");
-
         [SerializeField] private Renderer _indicator;
         [SerializeField] private Color _offColor = new(1f, 0.25f, 0.2f);
         [SerializeField] private Color _onColor  = new(0.3f, 1f, 0.4f);
@@ -20,7 +19,6 @@ namespace CGD.Level
         private string _label = "Calibrate";
         private int    _index;
         private bool   _locked;
-        private MaterialPropertyBlock _block;
 
         public float HoldDuration => _holdDuration;
 
@@ -34,10 +32,7 @@ namespace CGD.Level
         public void ShowState(bool on)
         {
             if (_indicator == null) return;
-            _block ??= new MaterialPropertyBlock();
-            _indicator.GetPropertyBlock(_block);
-            _block.SetColor(ColorId, on ? _onColor : _offColor);
-            _indicator.SetPropertyBlock(_block);
+            _indicator.SetTint(on ? _onColor : _offColor);
         }
 
         // A solved puzzle stays solved.

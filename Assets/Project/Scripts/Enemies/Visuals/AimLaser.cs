@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Core;
 
 namespace CGD.Enemies
 {
@@ -9,7 +10,6 @@ namespace CGD.Enemies
     [DisallowMultipleComponent]
     public class AimLaser : MonoBehaviour
     {
-        private static readonly int ColorId = Shader.PropertyToID("_BaseColor");
         private const float ChestHeight = 1.1f;
 
         [Tooltip("Material for the line (an unlit or additive one reads best)")]
@@ -24,13 +24,11 @@ namespace CGD.Enemies
 
         private EnemyAI _ai;
         private LineRenderer _line;
-        private MaterialPropertyBlock _block;
         private float _aimingFor;
 
         private void Awake()
         {
             _ai = GetComponent<EnemyAI>();
-            _block = new MaterialPropertyBlock();
 
             var holder = new GameObject("AimLaser");
             holder.transform.SetParent(transform, false);
@@ -63,8 +61,7 @@ namespace CGD.Enemies
             color.a *= Mathf.Lerp(_startOpacity, 1f, Mathf.Clamp01(_aimingFor / _aimTime));
             _line.startColor = color;
             _line.endColor   = color;
-            _block.SetColor(ColorId, color);
-            _line.SetPropertyBlock(_block);
+            _line.SetTint(color);
         }
 
         private void OnDisable()

@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using CGD.Core;
 
 namespace CGD.Enemies
 {
@@ -21,17 +22,13 @@ namespace CGD.Enemies
         [SerializeField] private Color _stunnedColor = new Color(0.3f, 0.6f, 1f);
         [SerializeField] private Color _deadColor    = new Color(0.15f, 0.15f, 0.15f);
 
-        private static readonly int ColorId = Shader.PropertyToID("_BaseColor");
-
         private EnemyAI _ai;
-        private MaterialPropertyBlock _mpb;
         private Color     _stateColor;
         private Coroutine _tell;
 
         private void Awake()
         {
             _ai  = GetComponent<EnemyAI>();
-            _mpb = new MaterialPropertyBlock();
         }
 
         private void OnEnable()
@@ -105,11 +102,8 @@ namespace CGD.Enemies
 
         private void Paint(Color color)
         {
-            _mpb.SetColor(ColorId, color);
-            foreach (var r in _renderers)
-            {
-                if (r != null) r.SetPropertyBlock(_mpb);
-            }
+            foreach (Renderer r in _renderers)
+                if (r != null) r.SetTint(color);
         }
     }
 }

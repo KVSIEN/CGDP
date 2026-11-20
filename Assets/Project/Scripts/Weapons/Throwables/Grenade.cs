@@ -23,7 +23,6 @@ namespace CGD.Weapons
         internal const float GroundNormalY = 0.6f;  // contacts flatter than ~53° count as ground
         internal const float StopSpeed     = 0.3f;  // below this on the ground it comes to rest
 
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly Collider[] HitBuffer = new Collider[64];
         private static readonly Dictionary<IDamageable, float> TargetFalloff = new();
         private static readonly HashSet<Rigidbody> Pushed = new();
@@ -33,7 +32,6 @@ namespace CGD.Weapons
         [SerializeField] private Renderer[] _body;
 
         private Rigidbody _rb;
-        private MaterialPropertyBlock _block;
         private GrenadeData _data;
         private DamageSource _source;
         private Vector3 _incoming; // velocity going into this physics step, before any contact changes it
@@ -78,7 +76,6 @@ namespace CGD.Weapons
         private void Awake()
         {
             _rb    = GetComponent<Rigidbody>();
-            _block = new MaterialPropertyBlock();
         }
 
         public void Init(GrenadeData data, DamageSource source)
@@ -163,9 +160,8 @@ namespace CGD.Weapons
 
         private void Tint(Color color)
         {
-            _block.SetColor(BaseColorId, color);
             foreach (Renderer part in _body)
-                part.SetPropertyBlock(_block);
+                part.SetTint(color);
         }
 
         private void Explode()

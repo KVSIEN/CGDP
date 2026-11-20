@@ -12,14 +12,12 @@ namespace CGD.Combat
     [RequireComponent(typeof(Renderer))]
     public class DamageZone : MonoBehaviour
     {
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly Collider[] HitBuffer = new Collider[32];
         private static readonly HashSet<HealthManager> HitThisTick = new();
 
         private readonly HashSet<HealthManager> _entered = new();
         private readonly HazardZone _hazard = new();
         private Renderer _renderer;
-        private MaterialPropertyBlock _block;
         private ZoneSettings _zone;
         private StatusEffectApplication[] _onHitEffects;
         private DamageSource _source;
@@ -32,7 +30,6 @@ namespace CGD.Combat
         private void Awake()
         {
             _renderer = GetComponent<Renderer>();
-            _block    = new MaterialPropertyBlock();
         }
 
         private void OnDisable() => Hazards.Remove(_hazard);
@@ -82,9 +79,7 @@ namespace CGD.Combat
         {
             Color color = _zone.Color;
             color.a *= GlowStrength() * Mathf.Clamp01(_zone.Duration - _age);
-            _renderer.GetPropertyBlock(_block);
-            _block.SetColor(BaseColorId, color);
-            _renderer.SetPropertyBlock(_block);
+            _renderer.SetTint(color);
         }
 
         private float GlowStrength() => _zone.Glow switch
