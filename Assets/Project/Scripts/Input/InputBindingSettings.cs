@@ -6,43 +6,50 @@ using CGD.Core;
 namespace CGD.Input
 {
     [CreateAssetMenu(fileName = "InputBindingSettings", menuName = "CGD/Input/Input Binding Settings")]
-    public class InputBindingSettings : ScriptableObject, IRestoredAfterPlayMode
+    public class InputBindingSettings : BindingTable<GameAction>, IRestoredAfterPlayMode
     {
         public List<ActionBinding> Bindings = new();
 
-        // Raised after the bindings were loaded, rebound or reset, so key hints can redraw.
-        // Listeners unsubscribe in OnDisable.
-        public event Action Changed;
+        protected override string SaveKey => "keybindings";
 
-        public void NotifyChanged() => Changed?.Invoke();
+        public override int Count => Bindings.Count;
 
-        // The short name of the control shown for an action: its primary binding, else the
-        // secondary one.
-        public string PromptFor(GameAction action)
+        public override GameAction ActionAt(int index) => Bindings[index].Action;
+
+        public override string PathAt(int index, bool primary) =>
+            primary ? Bindings[index].PrimaryPath : Bindings[index].SecondaryPath;
+
+        public override void SetPath(int index, bool primary, string path)
         {
-            if (!TryGet(action, out ActionBinding binding)) return InputPromptLabels.Unbound;
+            ActionBinding binding = Bindings[index];
+            if (primary) binding.PrimaryPath   = path;
+            else         binding.SecondaryPath = path;
+            Bindings[index] = binding;
+        }
 
-            string path = string.IsNullOrEmpty(binding.PrimaryPath) ? binding.SecondaryPath : binding.PrimaryPath;
-            return InputPromptLabels.Short(path);
+        public void SetMode(int index, InputActionMode mode)
+        {
+            ActionBinding binding = Bindings[index];
+            binding.Mode    = mode;
+            Bindings[index] = binding;
+        }
+
+        protected override string ModeAt(int index) => Bindings[index].Mode.ToString();
+
+        protected override void SetMode(int index, string mode)
+        {
+            if (Enum.TryParse(mode, out InputActionMode parsed)) SetMode(index, parsed);
         }
 
         public bool TryGet(GameAction action, out ActionBinding binding)
         {
-            for (int i = 0; i < Bindings.Count; i++)
-            {
-                if (Bindings[i].Action != action) continue;
-                binding = Bindings[i];
-                return true;
-            }
-            binding = default;
-            return false;
+            int index = IndexOf(action);
+            binding = index >= 0 ? Bindings[index] : default;
+            return index >= 0;
         }
 
-        [ContextMenu("Clear Saved Bindings (PlayerPrefs)")]
-        public void ClearSavedBindings() => SettingsSave.DeleteBindings();
-
         [ContextMenu("Reset to Defaults")]
-        public void ResetToDefaults()
+        public override void ResetToDefaults()
         {
             // Keyboard plus left/right mouse and the scroll wheel: extra mouse buttons aren't on every mouse.
             Bindings = new List<ActionBinding>

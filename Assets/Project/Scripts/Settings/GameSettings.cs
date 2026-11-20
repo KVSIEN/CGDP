@@ -11,6 +11,9 @@ namespace CGD.Settings
     public static class GameSettings
     {
         private const string Key = "game_settings";
+        // Where sensitivity was saved before it joined the other settings; read once, then removed.
+        private const string LegacyMouseKey   = "sens_mouse";
+        private const string LegacyGamepadKey = "sens_gamepad";
 
         private static SettingsData _current;
 
@@ -55,8 +58,23 @@ namespace CGD.Settings
 
         private static SettingsData Load()
         {
-            if (!PlayerPrefs.HasKey(Key)) return new SettingsData();
-            return JsonUtility.FromJson<SettingsData>(PlayerPrefs.GetString(Key)) ?? new SettingsData();
+            SettingsData data = PlayerPrefs.HasKey(Key)
+                ? JsonUtility.FromJson<SettingsData>(PlayerPrefs.GetString(Key)) ?? new SettingsData()
+                : new SettingsData();
+            TakeLegacySensitivity(data);
+            return data;
+        }
+
+        private static void TakeLegacySensitivity(SettingsData data)
+        {
+            if (!PlayerPrefs.HasKey(LegacyMouseKey) && !PlayerPrefs.HasKey(LegacyGamepadKey)) return;
+
+            data.MouseSensitivity   = PlayerPrefs.GetFloat(LegacyMouseKey,   data.MouseSensitivity);
+            data.GamepadSensitivity = PlayerPrefs.GetFloat(LegacyGamepadKey, data.GamepadSensitivity);
+            PlayerPrefs.DeleteKey(LegacyMouseKey);
+            PlayerPrefs.DeleteKey(LegacyGamepadKey);
+            PlayerPrefs.SetString(Key, JsonUtility.ToJson(data));
+            PlayerPrefs.Save();
         }
 
         private static void ApplyToEngine(SettingsData data)

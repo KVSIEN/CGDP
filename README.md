@@ -38,7 +38,7 @@ Assets/
                             Composites/, Decorators/, Actions/, Blackboard/ (flag, number and key nodes), Debugging/ (BtTrace)
       Audio/                audio pool, sound banks, surface lookup; mixer: AudioMixerController, AudioMixerSettings, MixState (+ request), GameplayMixStates
       CameraEffects/        shake, kicks, FOV punches, lag, view blends (CameraEffectsController), CameraImpulses
-      Combat/               Damage/, Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/, Hazards/ (HazardZone, DamageZone + ZoneSettings: the one lingering damage zone), Reflect/ (Reflector, ReflectProfile), Projectile, Stunnable, Noise
+      Combat/               Damage/ (incl. AreaHits — who a blast or burst reaches, once each, cover-aware), Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/, Hazards/ (HazardZone, DamageZone + ZoneSettings: the one lingering damage zone), Reflect/ (Reflector, ReflectProfile), Projectile, Stunnable, Noise
       Core/                 shared utilities (cooldowns, ranges, RendererTint — colouring a renderer without a material copy, Pooling/ — PrefabPool, IPoolable,
                             Random/ — Seed, RandomStream, SeedVariants; StateMachine/ — StateMachine<T>, IState)
       Crafting/             RecipeDefinition, Crafter (rules), CraftingStation
@@ -100,7 +100,7 @@ Assets/
       FiringRange/          the ShootingRange firing range: RangeControl (faction, tier, movement, distance, infinite ammo), RangeDummy (stats, colour), RangeSwitch (the buttons), TargetMover
       Flow/                 GameFlow, GameState/GameStateMachine, settings and UI commands
       Impacts/              ImpactEvents (hit broadcast), ImpactDatabase (effects per surface), ImpactSpawner, DecalPool
-      Input/                PlayerInputHandler and binding settings
+      Input/                PlayerInputHandler and binding settings; BindingTable + BindingRebinder (shared by the player's and the spectator's binding tables: lookups, prompts, saving, rebinding)
       Interaction/          IInteractable, doors, switches, EventInteractable, highlights, Pickups/,
                             Locks/ — ConditionLock (multi-condition door locks), LockProgress (rule), LockTerminal
       Items/                item definitions, inventory, equipment, quality rolls, stats;

@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using CGD.Input;
 using CGD.UI;
 
 namespace CGD.DevTools
 {
     // The spectator's settings (Escape): how the camera feels — look sensitivity, invert,
     // move speed, smoothing, label size — and every spectator control, rebindable in two
-    // slots like the player's keybinding menu (SpectatorRebinder), with controls used twice
+    // slots like the player's keybinding menu (BindingRebinder), with controls used twice
     // shown in orange. Preferences apply as they change and are saved when it closes.
     internal sealed class SpectatorSettingsPanel
     {
@@ -35,7 +36,7 @@ namespace CGD.DevTools
 
         private readonly SpectatorInputSettings _settings;
         private readonly SpectatorPreferences   _preferences;
-        private readonly SpectatorRebinder      _rebinder;
+        private readonly BindingRebinder<SpectatorAction> _rebinder;
         private readonly Action                 _preferencesChanged;
         private readonly GameObject             _root;
         private readonly List<Row>              _rows = new();
@@ -55,7 +56,7 @@ namespace CGD.DevTools
             _settings           = settings;
             _preferences        = preferences;
             _preferencesChanged = preferencesChanged;
-            _rebinder           = new SpectatorRebinder(input, settings);
+            _rebinder           = new BindingRebinder<SpectatorAction>(settings, input.Get, input.Rebuild);
             _rebinder.Changed  += RefreshRows;
 
             // Dims the view and catches clicks, so nothing behind the window is picked.
@@ -232,8 +233,8 @@ namespace CGD.DevTools
         private void Refresh(TextMeshProUGUI label, Image slot, SpectatorAction action, bool primary, string path)
         {
             bool listening = _rebinder.IsListeningTo(action, primary);
-            bool shared    = !listening && _rebinder.SharedWith(action, primary, path).Length > 0;
-            label.text  = listening ? "▪▪▪" : SpectatorRebinder.Label(path);
+            bool shared    = !listening && _rebinder.IsShared(action, primary, path);
+            label.text  = listening ? "▪▪▪" : BindingRebinder<SpectatorAction>.Label(path, omitDevice: true);
             label.color = shared ? SharedTextColor : Color.white;
             slot.color  = shared ? SlotSharedColor : SlotColor;
         }

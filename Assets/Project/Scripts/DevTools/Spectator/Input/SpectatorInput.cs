@@ -26,7 +26,7 @@ namespace CGD.DevTools
         {
             _settings = settings;
             _settings.EnsureComplete();
-            SpectatorSave.LoadBindings(_settings);
+            _settings.LoadSaved();
 
             _pointerDelta    = Value("Pointer Delta",    "<Pointer>/delta",    "Vector2");
             _pointerPosition = Value("Pointer Position", "<Pointer>/position", "Vector2");
@@ -63,7 +63,7 @@ namespace CGD.DevTools
         public bool IsHeld(SpectatorAction action)     => _enabled && (_actions[(int)action]?.IsPressed() ?? false);
         public bool WasPressed(SpectatorAction action) => _enabled && (_actions[(int)action]?.WasPressedThisFrame() ?? false);
 
-        // The action itself, for interactive rebinding (SpectatorRebinder).
+        // The action itself, for interactive rebinding (BindingRebinder).
         public InputAction Get(SpectatorAction action) => _actions[(int)action];
 
         public void SetEnabled(bool enabled)

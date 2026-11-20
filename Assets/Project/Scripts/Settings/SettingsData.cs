@@ -32,6 +32,10 @@ namespace CGD.Settings
         // Gameplay
         public DifficultyLevel Difficulty = DifficultyLevel.Normal;
 
+        // Look sensitivity: mouse in degrees per 10 counts, gamepad in degrees per second at full tilt.
+        public float MouseSensitivity   = 1.5f;
+        public float GamepadSensitivity = 120f;
+
         // Accessibility (0..1 scales)
         public float CameraShake    = 1f;
         public float FlashIntensity = 1f;
@@ -51,6 +55,10 @@ namespace CGD.Settings
 
         public const float MinFieldOfView = 60f;
         public const float MaxFieldOfView = 110f;
+        public const float MinMouseSensitivity   = 0.1f;
+        public const float MaxMouseSensitivity   = 10f;
+        public const float MinGamepadSensitivity = 10f;
+        public const float MaxGamepadSensitivity = 300f;
 
         // A copy the settings menu can edit without touching the live settings.
         public SettingsData Clone()

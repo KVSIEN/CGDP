@@ -64,7 +64,7 @@ namespace CGD.Input
             _waitingForDoubleClick = new bool[ActionCount];
 
             BuildAxisActions();
-            SettingsSave.LoadBindings(_bindings);
+            _bindings.LoadSaved();
             BuildActions();
             _bindings.NotifyChanged();
         }

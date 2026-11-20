@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
 using CGD.Stats;
@@ -36,8 +35,7 @@ namespace CGD.Abilities
         [Tooltip("Game seconds the self buff lasts")]
         [Min(0.1f)] public float SelfBuffDuration = 3f;
 
-        private static readonly Collider[] _hitBuffer = new Collider[32];
-        private static readonly HashSet<IDamageable> _damaged = new();
+        private static readonly AreaHits _area = new(32);
 
         public override bool CanExecute(AbilityContext ctx) => ctx.Health != null && ctx.Health.Shield >= MinShield;
 
@@ -52,17 +50,14 @@ namespace CGD.Abilities
 
             Vector3 center = ctx.CasterTransform.position;
             Vector3 origin = center + Vector3.up;
-            int count = Physics.OverlapSphereNonAlloc(origin, Radius, _hitBuffer, HitMask, QueryTriggerInteraction.Ignore);
+            _area.Gather(origin, Radius, HitMask);
 
             var hit = new DamageInfo(Scaled(spent * DamagePerShield, ctx), ArmorPenetration, DamageType,
                                      source: ctx.Source, onHitEffects: WithBonusEffects(OnHitEffects, ctx));
-            _damaged.Clear();
-            for (int i = 0; i < count; i++)
+            foreach (AreaHit area in _area.Hits)
             {
                 // Team filtering in HealthManager keeps the caster and its allies unharmed.
-                IDamageable target = Hitbox.FindDamageable(_hitBuffer[i]);
-                if (target == null || !_damaged.Add(target)) continue;
-
+                IDamageable target = area.Target;
                 target.TakeDamage(hit);
                 if (target is HealthManager health && health.transform != ctx.CasterTransform)
                     TryKnockBack(health, center, ctx.Source);

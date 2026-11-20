@@ -85,7 +85,7 @@ namespace CGD.DevTools
             if (_inputSettings == null)
             {
                 _inputSettings = ScriptableObject.CreateInstance<SpectatorInputSettings>();
-                _inputSettings.ResetBindings();
+                _inputSettings.ResetToDefaults();
             }
 
             _watchable     = new AgentRoster(_agents != null ? _agents.GetComponentsInChildren<EnemyAI>(true) : System.Array.Empty<EnemyAI>());

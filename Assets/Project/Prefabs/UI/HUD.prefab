@@ -112,7 +112,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3ffa40236e534f43bf02a1f2db82cd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SettingsMenu
-  _camera: {fileID: 0}
   _input: {fileID: 0}
   _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _hud: {fileID: 3862864632243694624}

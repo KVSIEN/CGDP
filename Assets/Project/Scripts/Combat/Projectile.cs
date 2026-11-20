@@ -10,8 +10,7 @@ namespace CGD.Combat
     public class Projectile : MonoBehaviour
     {
         private static readonly RaycastHit[] _hitBuffer = new RaycastHit[16];
-        private static readonly Collider[] _blastBuffer = new Collider[16];
-        private static readonly HashSet<IDamageable> _splashed = new();
+        private static readonly AreaHits _blast = new(16);
         private static readonly HitDistanceComparer _distanceComparer = new();
 
         private ProjectileLaunch _launch;
@@ -95,25 +94,12 @@ namespace CGD.Combat
         private void Splash(RaycastHit hit)
         {
             Vector3 center = hit.point + hit.normal * 0.1f;
-            int count = Physics.OverlapSphereNonAlloc(center, _launch.BlastRadius, _blastBuffer,
-                _launch.HitMask, QueryTriggerInteraction.Ignore);
+            _blast.Gather(center, _launch.BlastRadius, _launch.HitMask, coverMask: _launch.HitMask, ignore: _owner);
 
-            _splashed.Clear();
+            // The one it struck took the round itself.
             IDamageable direct = Hitbox.FindDamageable(hit.collider);
-            if (direct != null) _splashed.Add(direct);
-
-            for (int i = 0; i < count; i++)
-            {
-                Collider col = _blastBuffer[i];
-                if (_owner != null && col.transform.IsChildOf(_owner)) continue;
-
-                IDamageable target = Hitbox.FindDamageable(col);
-                if (target == null || !_splashed.Add(target)) continue;
-                if (Physics.Linecast(center, col.ClosestPoint(center), out RaycastHit block, _launch.HitMask, QueryTriggerInteraction.Ignore)
-                    && Hitbox.FindDamageable(block.collider) != target) continue;
-
-                target.TakeDamage(_launch.Damage);
-            }
+            foreach (AreaHit splash in _blast.Hits)
+                if (splash.Target != direct) splash.Target.TakeDamage(_launch.Damage);
         }
 
         private void Despawn() => PrefabPool.Release(gameObject);

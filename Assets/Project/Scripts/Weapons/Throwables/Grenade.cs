@@ -23,8 +23,7 @@ namespace CGD.Weapons
         internal const float GroundNormalY = 0.6f;  // contacts flatter than ~53° count as ground
         internal const float StopSpeed     = 0.3f;  // below this on the ground it comes to rest
 
-        private static readonly Collider[] HitBuffer = new Collider[64];
-        private static readonly Dictionary<IDamageable, float> TargetFalloff = new();
+        private static readonly AreaHits Blast = new();
         private static readonly HashSet<Rigidbody> Pushed = new();
         private static readonly List<Grenade> LiveGrenades = new();
 
@@ -167,12 +166,9 @@ namespace CGD.Weapons
         private void Explode()
         {
             Vector3 center = transform.position;
-            int count = Physics.OverlapSphereNonAlloc(center, _data.ExplosionRadius, HitBuffer,
-                _data.HitMask, QueryTriggerInteraction.Ignore);
-
-            CollectTargets(center, count);
+            Blast.Gather(center, _data.ExplosionRadius, _data.HitMask, _data.NeedsLineOfSight ? _data.BlockerMask : default);
             DamageTargets();
-            PushBodies(center, count);
+            PushBodies(center);
 
             _data.ExplosionSound.TryPlay(center);
             Noise.Emit(center, _data.NoiseRadius, _source);
@@ -184,54 +180,31 @@ namespace CGD.Weapons
             PrefabPool.Release(gameObject);
         }
 
-        // A target with several hitboxes in range is damaged once, through the one that hurts it most.
-        private void CollectTargets(Vector3 center, int count)
-        {
-            TargetFalloff.Clear();
-            for (int i = 0; i < count; i++)
-            {
-                IDamageable target = Hitbox.FindDamageable(HitBuffer[i]);
-                if (target == null) continue;
-
-                Vector3 point = HitBuffer[i].ClosestPoint(center);
-                float distance = Vector3.Distance(center, point);
-                if (distance > _data.ExplosionRadius) continue;
-                if (_data.NeedsLineOfSight && IsShielded(center, point, target)) continue;
-
-                float multiplier = Mathf.Lerp(1f, _data.EdgeDamage, distance / _data.ExplosionRadius);
-                if (TargetFalloff.TryGetValue(target, out float best) && best >= multiplier) continue;
-                TargetFalloff[target] = multiplier;
-            }
-        }
-
-        // Something solid between the blast and the target that isn't the target itself.
-        private bool IsShielded(Vector3 center, Vector3 point, IDamageable target) =>
-            Physics.Linecast(center, point, out RaycastHit hit, _data.BlockerMask, QueryTriggerInteraction.Ignore)
-            && Hitbox.FindDamageable(hit.collider) != target;
-
         // A blast that deals no damage still counts when it applies a status (a stun grenade).
         private bool HasEffects => _data.OnHitEffects != null && _data.OnHitEffects.Length > 0;
 
+        // A target is hit once, through its hitbox nearest the blast: full damage at the centre,
+        // EdgeDamage of it at the rim.
         private void DamageTargets()
         {
-            foreach (KeyValuePair<IDamageable, float> pair in TargetFalloff)
+            foreach (AreaHit hit in Blast.Hits)
             {
-                float damage = _data.ExplosionDamage * pair.Value;
+                float damage = _data.ExplosionDamage * Mathf.Lerp(1f, _data.EdgeDamage, hit.Distance / _data.ExplosionRadius);
                 if (damage <= 0f && !HasEffects) continue;
 
-                pair.Key.TakeDamage(new DamageInfo(damage, _data.ArmorPenetration, _data.DamageType,
+                hit.Target.TakeDamage(new DamageInfo(damage, _data.ArmorPenetration, _data.DamageType,
                     source: _source, onHitEffects: _data.OnHitEffects));
             }
         }
 
-        private void PushBodies(Vector3 center, int count)
+        private void PushBodies(Vector3 center)
         {
             if (_data.PushForce <= 0f) return;
 
             Pushed.Clear();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < Blast.ColliderCount; i++)
             {
-                Rigidbody body = HitBuffer[i].attachedRigidbody;
+                Rigidbody body = Blast.ColliderAt(i).attachedRigidbody;
                 if (body == null || body == _rb || body.isKinematic || !Pushed.Add(body)) continue;
                 body.AddExplosionForce(_data.PushForce, center, _data.ExplosionRadius, 0.3f, ForceMode.Impulse);
             }

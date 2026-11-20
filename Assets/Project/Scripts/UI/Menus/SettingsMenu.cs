@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using CGD.Core;
 using CGD.Flow;
 using CGD.Input;
-using CGD.Player;
 using CGD.Settings;
 
 namespace CGD.UI
@@ -15,13 +14,12 @@ namespace CGD.UI
     /// is in a non-gameplay state such as GameOver.
     /// Builds its own UGUI panel at runtime (same convention as the rest of the HUD via
     /// UIFactory) — requires a RectTransform under a Canvas, see SETUP.md.
-    /// Tabs: Controls (sensitivity, keybindings), Audio, Video, Crosshair and Accessibility. Audio,
-    /// video, crosshair and accessibility changes preview live and are saved when the menu closes.
+    /// Tabs: Controls (sensitivity, keybindings), Audio, Video, Crosshair and Accessibility. Every
+    /// setting but the keybindings previews live and is saved when the menu closes; rebinds save at once.
     /// </summary>
     [RequireComponent(typeof(RectTransform))]
     public class SettingsMenu : MonoBehaviour
     {
-        [SerializeField] private PlayerCamera        _camera;
         [SerializeField] private PlayerInputHandler  _input;
         [SerializeField] private InputBindingSettings _bindings;
         [SerializeField] private HUDManager          _hud;
@@ -58,8 +56,6 @@ namespace CGD.UI
             _panel.SetActive(false);
         }
 
-        private void Start() => _sensitivity.Load();
-
         private void Update()
         {
             // While rebinding, KeybindingSection owns Escape (tap = cancel, hold = clear).
@@ -93,8 +89,8 @@ namespace CGD.UI
             _hud.HideAll();
             CursorLock.Set(false);
 
-            _sensitivity.Load();
             _draft = GameSettings.Current.Clone();
+            _sensitivity.Load(_draft);
             _audio.Load(_draft);
             _video.Load(_draft);
             _crosshair.Load(_draft);
@@ -135,7 +131,7 @@ namespace CGD.UI
             BuildTabs(windowRt);
 
             var controls  = _pages[(int)Tab.Controls].GetComponent<RectTransform>();
-            _sensitivity  = new SensitivitySection(controls, _camera);
+            _sensitivity  = new SensitivitySection(controls, ApplyDraft);
             // The rebind overlay is parented to the panel (after the window) so it covers the whole window.
             _keybindings  = new KeybindingSection(controls, panelRt, _input, _bindings, W);
             _audio         = new AudioSection(Page(Tab.Audio), ApplyDraft);
@@ -189,7 +185,10 @@ namespace CGD.UI
         {
             switch (_activeTab)
             {
-                case Tab.Controls:      _keybindings.ResetToDefaults();   break;
+                case Tab.Controls:
+                    _sensitivity.ResetToDefaults();
+                    _keybindings.ResetToDefaults();
+                    break;
                 case Tab.Audio:         _audio.ResetToDefaults();         break;
                 case Tab.Video:         _video.ResetToDefaults();         break;
                 case Tab.Crosshair:     _crosshair.ResetToDefaults();     break;

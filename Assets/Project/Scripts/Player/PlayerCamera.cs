@@ -19,10 +19,6 @@ namespace CGD.Player
         [SerializeField] private Camera _camera;
         [SerializeField] private Renderer[] _firstPersonHideRenderers;
 
-        // Loaded from the player's saved settings; SetSensitivity changes them live.
-        private float _mouseSensitivity;
-        private float _gamepadSensitivity;
-
         // Zero until a weapon pushes a profile; Awake then falls back to the settings.
         private float _adsFOV;
         private float _adsSpeed;
@@ -85,12 +81,6 @@ namespace CGD.Player
 
         public Transform LockTarget => _lockTarget;
 
-        public void SetSensitivity(float mouse, float gamepad)
-        {
-            _mouseSensitivity   = mouse;
-            _gamepadSensitivity = gamepad;
-        }
-
         // Steers the aim toward target (at heightOffset above its pivot) until cleared.
         // Real aim, not a visual effect: shots follow it. Look input still adds on top.
         public void SetLockTarget(Transform target, float heightOffset)
@@ -125,7 +115,6 @@ namespace CGD.Player
             // A weapon may have equipped (SetAdsProfile) before this Awake ran.
             if (_adsFOV   <= 0f) _adsFOV   = _settings.AdsFov;
             if (_adsSpeed <= 0f) _adsSpeed = _settings.AdsSpeed;
-            SettingsSave.LoadSensitivity(out _mouseSensitivity, out _gamepadSensitivity);
 
             _yaw = _playerBody.eulerAngles.y;
             _currentYaw = _yaw;
@@ -235,7 +224,8 @@ namespace CGD.Player
         {
             Vector2 look = _input.LookInput;
             float sensScale = Mathf.Lerp(1f, _settings.AdsSensitivityMult, ZoomT);
-            float mult = (_input.IsGamepadLook ? _gamepadSensitivity * Time.deltaTime : _mouseSensitivity * 0.1f) * sensScale;
+            SettingsData settings = GameSettings.Current;
+            float mult = (_input.IsGamepadLook ? settings.GamepadSensitivity * Time.deltaTime : settings.MouseSensitivity * 0.1f) * sensScale;
 
             _yaw += look.x * mult;
             _pitch = Mathf.Clamp(_pitch - look.y * mult, _settings.MinPitch, _settings.MaxPitch);

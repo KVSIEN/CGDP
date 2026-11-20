@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using CGD.BehaviorTrees;
 using CGD.Combat;
@@ -32,16 +31,14 @@ namespace CGD.Enemies
 
         [NonSerialized] private bool  _armed;
         [NonSerialized] private float _blowsAt;
-        [NonSerialized] private Collider[] _hits;
-        [NonSerialized] private HashSet<IDamageable> _damaged;
+        [NonSerialized] private AreaHits _blast;
 
         public override string Summary => $"{_radius:0.#} m, {_damage:0} dmg";
 
         protected override void OnInitialize(BtContext context)
         {
             base.OnInitialize(context);
-            _hits    = new Collider[MaxHits];
-            _damaged = new HashSet<IDamageable>();
+            _blast = new AreaHits(MaxHits);
         }
 
         protected override void OnEnter(BtContext context) => _armed = false;
@@ -79,21 +76,9 @@ namespace CGD.Enemies
             if (_blast != null) PrefabPool.Spawn(_blast, center, Quaternion.identity);
             Noise.Emit(center, _noiseRadius, source);
 
-            int count = Physics.OverlapSphereNonAlloc(center, _radius, _hits, Ai.TargetMask, QueryTriggerInteraction.Ignore);
+            _blast.Gather(center, _radius, Ai.TargetMask, coverMask: Ai.ObstacleMask, ignore: Ai.transform);
             var hit = new DamageInfo(_damage, source: source);
-            _damaged.Clear();
-            for (int i = 0; i < count; i++)
-            {
-                Collider col = _hits[i];
-                if (col.transform.IsChildOf(Ai.transform)) continue;
-
-                IDamageable target = Hitbox.FindDamageable(col);
-                if (target == null || !_damaged.Add(target)) continue;
-                if (Physics.Linecast(center, col.ClosestPoint(center), out RaycastHit block, Ai.ObstacleMask, QueryTriggerInteraction.Ignore)
-                    && Hitbox.FindDamageable(block.collider) != target) continue;
-
-                target.TakeDamage(hit);
-            }
+            foreach (AreaHit target in _blast.Hits) target.Target.TakeDamage(hit);
 
             // Gone with the blast: a hit nothing can mitigate, from nobody.
             EnemyHealth self = Ai.Health;

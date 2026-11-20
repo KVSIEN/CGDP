@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Core;
@@ -9,10 +8,10 @@ namespace CGD.DevTools
     // The spectator camera's controls and its default feel. A binding table of its own rather
     // than GameAction entries: spectator mode only runs with the Player switched off, and its
     // natural keys (WASD, Q/E, Tab, 1–4…) overlap the player's on purpose, so in the player's
-    // table every one would show as a conflict. Same pattern as InputBindingSettings:
-    // rebindable in the spectator's own settings panel, saved to PlayerPrefs (SpectatorSave).
+    // table every one would show as a conflict. A BindingTable like InputBindingSettings:
+    // rebindable in the spectator's own settings panel, saved to PlayerPrefs under its own key.
     [CreateAssetMenu(fileName = "SpectatorInputSettings", menuName = "CGD/DevTools/Spectator Input Settings")]
-    public class SpectatorInputSettings : ScriptableObject, IRestoredAfterPlayMode
+    public class SpectatorInputSettings : BindingTable<SpectatorAction>, IRestoredAfterPlayMode
     {
         public List<SpectatorBinding> Bindings = new();
 
@@ -31,20 +30,29 @@ namespace CGD.DevTools
         [Tooltip("Degrees per second the right stick turns the camera at full tilt")]
         [Min(10f)] public float StickLookSpeed = 140f;
 
-        // Raised after bindings were loaded, rebound or reset, so hints can redraw.
-        public event Action Changed;
-
-        public void NotifyChanged() => Changed?.Invoke();
+        // Not "spectator_bindings": that key holds an older save format.
+        protected override string SaveKey => "spectator_controls";
 
         // Escape always opens the settings; that one row isn't rebindable.
         public static bool IsFixed(SpectatorAction action) => action == SpectatorAction.Settings;
 
-        // Short name of the control for an action: its primary binding, else its secondary.
-        public string PromptFor(SpectatorAction action)
+        public override bool IsRebindable(SpectatorAction action) => !IsFixed(action);
+
+        public override string LabelOf(SpectatorAction action) => SpectatorActionLabels.Of(action);
+
+        public override int Count => Bindings.Count;
+
+        public override SpectatorAction ActionAt(int index) => Bindings[index].Action;
+
+        public override string PathAt(int index, bool primary) =>
+            primary ? Bindings[index].PrimaryPath : Bindings[index].SecondaryPath;
+
+        public override void SetPath(int index, bool primary, string path)
         {
-            if (!TryGet(action, out SpectatorBinding binding)) return InputPromptLabels.Unbound;
-            string path = string.IsNullOrEmpty(binding.PrimaryPath) ? binding.SecondaryPath : binding.PrimaryPath;
-            return InputPromptLabels.Short(path);
+            SpectatorBinding binding = Bindings[index];
+            if (primary) binding.PrimaryPath   = path;
+            else         binding.SecondaryPath = path;
+            Bindings[index] = binding;
         }
 
         public bool TryGet(SpectatorAction action, out SpectatorBinding binding)
@@ -52,13 +60,6 @@ namespace CGD.DevTools
             int index = IndexOf(action);
             binding = index >= 0 ? Bindings[index] : default;
             return index >= 0;
-        }
-
-        public int IndexOf(SpectatorAction action)
-        {
-            for (int i = 0; i < Bindings.Count; i++)
-                if (Bindings[i].Action == action) return i;
-            return -1;
         }
 
         // Adds the default for any action the list lacks (an action added after the asset was
@@ -70,7 +71,7 @@ namespace CGD.DevTools
         }
 
         [ContextMenu("Reset Bindings to Defaults")]
-        public void ResetBindings() => Bindings = DefaultBindings();
+        public override void ResetToDefaults() => Bindings = DefaultBindings();
 
         // Keyboard and mouse first; gamepad in the secondary slot where it has an obvious button.
         // The sticks and triggers (move, look, up/down) always work on top of these.
@@ -118,6 +119,6 @@ namespace CGD.DevTools
         private static SpectatorBinding Bind(SpectatorAction action, string primary, string secondary = "") =>
             new() { Action = action, PrimaryPath = primary, SecondaryPath = secondary };
 
-        private void Reset() => ResetBindings();
+        private void Reset() => ResetToDefaults();
     }
 }

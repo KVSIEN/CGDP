@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using CGD.Combat;
 
@@ -19,27 +18,24 @@ namespace CGD.Abilities
         public DamageType DamageType = DamageType.Physical;
         public StatusEffectApplication[] OnHitEffects;
 
-        private static readonly Collider[] _hitBuffer = new Collider[32];
-        private static readonly HashSet<IDamageable> _damaged = new();
+        private static readonly AreaHits _area = new(32);
 
         public override void Execute(AbilityContext ctx)
         {
             Vector3 origin = ctx.CasterTransform.position;
-            int count = Physics.OverlapSphereNonAlloc(origin, Radius, _hitBuffer, HitMask, QueryTriggerInteraction.Ignore);
+            _area.Gather(origin, Radius, HitMask);
 
-            var hit = new DamageInfo(Scaled(Damage, ctx), ArmorPenetration, DamageType, source: ctx.Source,
-                                     onHitEffects: WithBonusEffects(OnHitEffects, ctx));
-            _damaged.Clear();
-
-            for (int i = 0; i < count; i++)
+            // Team filtering in HealthManager keeps the caster and allies unharmed.
+            if (Damage > 0f)
             {
-                Collider col = _hitBuffer[i];
+                var hit = new DamageInfo(Scaled(Damage, ctx), ArmorPenetration, DamageType, source: ctx.Source,
+                                         onHitEffects: WithBonusEffects(OnHitEffects, ctx));
+                foreach (AreaHit target in _area.Hits) target.Target.TakeDamage(hit);
+            }
 
-                // Team filtering in HealthManager keeps the caster and allies unharmed.
-                IDamageable target = Hitbox.FindDamageable(col);
-                if (Damage > 0f && target != null && _damaged.Add(target))
-                    target.TakeDamage(hit);
-
+            for (int i = 0; i < _area.ColliderCount; i++)
+            {
+                Collider col = _area.ColliderAt(i);
                 var rb = col.attachedRigidbody;
                 if (rb == null || rb.isKinematic || rb == ctx.CasterRigidbody) continue;
 

@@ -20,7 +20,7 @@ namespace CGD.UI
 
         private readonly PlayerInputHandler   _input;
         private readonly InputBindingSettings _bindings;
-        private readonly KeybindingRebinder   _rebinder;
+        private readonly BindingRebinder<GameAction> _rebinder;
 
         private GameObject _rebindOverlay;
         private TextMeshProUGUI _conflictText;
@@ -39,9 +39,8 @@ namespace CGD.UI
         {
             _input    = input;
             _bindings = bindings;
-            _rebinder = new KeybindingRebinder(input, bindings);
-            _rebinder.ActionChanged   += RefreshActionRow;
-            _rebinder.BindingsChanged += RefreshAllRows;
+            _rebinder = new BindingRebinder<GameAction>(bindings, input.GetInputAction, input.RebuildActions);
+            _rebinder.Changed += RefreshAllRows;
             Build(window, windowWidth);
             BuildRebindOverlay(overlayParent);
         }
@@ -51,29 +50,16 @@ namespace CGD.UI
             _rebinder.Tick(unscaledDeltaTime);
 
             // Stays up while a conflict warning is showing, with the prompt swapped for it.
-            bool conflict = _rebinder.HasConflictMessage;
+            bool conflict = _rebinder.HasMessage;
             _rebindOverlay.SetActive(IsListening || conflict);
             _promptText.gameObject.SetActive(IsListening);
             _conflictText.gameObject.SetActive(conflict);
-            if (conflict) _conflictText.text = _rebinder.ConflictMessage;
+            if (conflict) _conflictText.text = _rebinder.Message;
         }
 
-        public void CancelRebind() => _rebinder.CancelRebind();
+        public void CancelRebind() => _rebinder.Cancel();
 
         public void ResetToDefaults() => _rebinder.ResetToDefaults();
-
-        private void RefreshActionRow(GameAction action)
-        {
-            int row = RowIndexOf(action);
-            if (row >= 0) RefreshRow(row);
-        }
-
-        private int RowIndexOf(GameAction action)
-        {
-            for (int i = 0; i < _bindings.Bindings.Count; i++)
-                if (_bindings.Bindings[i].Action == action) return i;
-            return -1;
-        }
 
         private void Build(RectTransform window, float windowWidth)
         {
@@ -234,8 +220,8 @@ namespace CGD.UI
             bool waitPri = _rebinder.IsListeningTo(b.Action, true);
             bool waitSec = _rebinder.IsListeningTo(b.Action, false);
 
-            _primaryLabels[rowIndex].text   = waitPri ? "▪▪▪" : KeybindingRebinder.BindingLabel(b.PrimaryPath);
-            _secondaryLabels[rowIndex].text = waitSec ? "▪▪▪" : KeybindingRebinder.BindingLabel(b.SecondaryPath);
+            _primaryLabels[rowIndex].text   = waitPri ? "▪▪▪" : BindingRebinder<GameAction>.Label(b.PrimaryPath);
+            _secondaryLabels[rowIndex].text = waitSec ? "▪▪▪" : BindingRebinder<GameAction>.Label(b.SecondaryPath);
 
             // Controls shared with another action are shown in orange in both places they appear.
             ApplySlotStyle(rowIndex, true,  _rebinder.IsShared(b.Action, true,  b.PrimaryPath));
@@ -258,11 +244,10 @@ namespace CGD.UI
 
         private void OnModeClicked(int rowIndex, int modeIndex)
         {
-            var b = _bindings.Bindings[rowIndex];
-            b.Mode = (InputActionMode)modeIndex;
-            _bindings.Bindings[rowIndex] = b;
-            _input.SetMode(b.Action, b.Mode);
-            SettingsSave.SaveBindings(_bindings);
+            var mode = (InputActionMode)modeIndex;
+            _bindings.SetMode(rowIndex, mode);
+            _input.SetMode(_bindings.ActionAt(rowIndex), mode);
+            _bindings.Save();
             RefreshRow(rowIndex);
         }
     }

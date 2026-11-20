@@ -287,7 +287,7 @@
 ## Settings Menu
 - Built with the same runtime UGUI/TextMeshPro system as the rest of the HUD (not legacy IMGUI) — consistent styling and resolution scaling with everything else
 - Press Escape at any time to open or close the settings menu
-- Mouse and gamepad sensitivity sliders with live preview; changes are applied and saved on confirmation
+- Mouse and gamepad sensitivity sliders that apply as you drag them, like the other settings, and are saved when the menu closes; Reset Defaults on the Controls tab also resets them
 - Full keybinding editor — every action shows its primary and secondary slot; click a slot then press any key, mouse, or gamepad button to rebind it
 - While a slot is listening, tapping Escape cancels and leaves the binding as it was; holding Escape clears the slot so it is unbound
 - Duplicate binding warning — the same key, mouse button or gamepad button can be bound to several actions; when that happens a brief orange notice names the other actions, and every slot sharing a control stays highlighted orange in the keybinding list until one of them is changed
