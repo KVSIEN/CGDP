@@ -45,7 +45,7 @@ MonoBehaviour:
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
-  - Timeline: {fileID: 11400000, guid: 0832b2716a0a4e478f874a89d313df11, type: 2}
+  - Timeline: {fileID: 11400000, guid: 4cf9ccdf322e42b8a16e52f2da5e0f56, type: 2}
     Damage: 0.9
     ArmorPenetration: 0
     DamageType: 0
