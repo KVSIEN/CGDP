@@ -151,6 +151,15 @@ MonoBehaviour:
   - rid: 1163
   - rid: 1164
   - rid: 1165
+  - rid: 1166
+  - rid: 1167
+  - rid: 1168
+  - rid: 1169
+  - rid: 1170
+  - rid: 1171
+  - rid: 1172
+  - rid: 1173
+  - rid: 1174
   references:
     version: 2
     RefIds:
@@ -220,6 +229,7 @@ MonoBehaviour:
         - 0563f3ddfd0547058c325a9527215791
         - d12b7193a2414ef0a78ca184901b5908
         - 95da2a10e67d4af7829fe9b4c197119a
+        - f140415539004778952d6181b5ea096c
         - 675b5a1e36e94ec98d5df56a48a0b53a
         - c4736511dc764bce89be0efb64cea50a
         - ee06be27f963487eb2f4bfaa9ecd6f6a
@@ -1403,3 +1413,76 @@ MonoBehaviour:
         _maxRange: 0
         _requireClearShot: 0
         _leadMovingTarget: 0
+    - rid: 1166
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f140415539004778952d6181b5ea096c
+        _position: {x: 300, y: 4500}
+        _comment: 'Acid Spew (every 10 s): the target in view between 5 and 18 m: spit a ball of acid at it that bursts on impact (poison) and leaves a poison pool, then carry on the hunt. Aborts lower priority'
+        _children:
+        - 32d69ca4566c46d794f76ac970c9fac0
+        - 9bedf444f6ee4cba8342a551c80226ad
+        - 2ddbb0feedd14681b2a5d102e6818b15
+        - 9a76d92df1f94c8187cd640e0bae0791
+        - 0411af711567456b90ad9cb0a2286cf8
+        _abort: 2
+    - rid: 1167
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 32d69ca4566c46d794f76ac970c9fac0
+        _position: {x: -140, y: 4650}
+        _comment: 
+    - rid: 1168
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9bedf444f6ee4cba8342a551c80226ad
+        _position: {x: 80, y: 4650}
+        _comment: 
+    - rid: 1169
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2ddbb0feedd14681b2a5d102e6818b15
+        _position: {x: 300, y: 4650}
+        _comment: 
+        _children:
+        - e26d75d9670d4b98822e3a9e0662143a
+    - rid: 1170
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e26d75d9670d4b98822e3a9e0662143a
+        _position: {x: 300, y: 4800}
+        _comment: 
+        _range: 5
+    - rid: 1171
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9a76d92df1f94c8187cd640e0bae0791
+        _position: {x: 520, y: 4650}
+        _comment: 
+        _range: 18
+    - rid: 1172
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0411af711567456b90ad9cb0a2286cf8
+        _position: {x: 740, y: 4650}
+        _comment: 
+        _children:
+        - 42698ee1000d468183cef61016d83efa
+        _seconds: 10
+        _onlyAfterSuccess: 0
+    - rid: 1173
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 42698ee1000d468183cef61016d83efa
+        _position: {x: 740, y: 4800}
+        _comment: 
+        _children:
+        - 3b6cfa24c7384d50944438c37fb47590
+    - rid: 1174
+      type: {class: ThrowGrenade, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3b6cfa24c7384d50944438c37fb47590
+        _position: {x: 740, y: 4950}
+        _comment: 
+        _grenade: {fileID: 11400000, guid: 80247cf6a7b34c5b9bef3246502a8cba, type: 2}
+        _minDistance: 5

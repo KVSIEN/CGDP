@@ -117,6 +117,11 @@ MonoBehaviour:
   - rid: 1127
   - rid: 1128
   - rid: 1129
+  - rid: 1144
+  - rid: 1145
+  - rid: 1146
+  - rid: 1147
+  - rid: 1148
   references:
     version: 2
     RefIds:
@@ -289,6 +294,7 @@ MonoBehaviour:
         _comment: 
         _children:
         - 10dbd8bf49838f2cc46a6f08b36249eb
+        - f5fa0851ae2a4522aa4dad83a24787f4
         - fc992154563a4a3fb31b729aaa7fc4b5
         - d4099671484a45ea81d33d45ebb4332d
         - 279e267b49594a7ebc5a39bc5e2c42c5
@@ -1195,5 +1201,48 @@ MonoBehaviour:
         _ability: {fileID: 0}
         _aim: 0
         _maxRange: 10
+        _requireClearShot: 0
+        _leadMovingTarget: 0
+    - rid: 1144
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f5fa0851ae2a4522aa4dad83a24787f4
+        _position: {x: -200, y: 900}
+        _comment: 'Someone within 3 m with Void Slash ready: rake them with a short slash of chaos (true damage: armour does nothing against it) before getting away. Aborts lower priority'
+        _children:
+        - f8dd44db2d174992b8353e7230de161a
+        - 13083586287c41c3ada08d7ed00cd2b1
+        - 2cc876c6eb1342b19d253e7ac14bcf19
+        - 6cb9f6dba3f6493587e81e1df759a86b
+        _abort: 2
+    - rid: 1145
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f8dd44db2d174992b8353e7230de161a
+        _position: {x: -530, y: 1050}
+        _comment: 
+    - rid: 1146
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 13083586287c41c3ada08d7ed00cd2b1
+        _position: {x: -310, y: 1050}
+        _comment: 
+        _range: 3
+    - rid: 1147
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2cc876c6eb1342b19d253e7ac14bcf19
+        _position: {x: -90, y: 1050}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 4595800f973c4fd99a47dec10af7fa99, type: 2}
+    - rid: 1148
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6cb9f6dba3f6493587e81e1df759a86b
+        _position: {x: 130, y: 1050}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 4595800f973c4fd99a47dec10af7fa99, type: 2}
+        _aim: 0
+        _maxRange: 3.5
         _requireClearShot: 0
         _leadMovingTarget: 0

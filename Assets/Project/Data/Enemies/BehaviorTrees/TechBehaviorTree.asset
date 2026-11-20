@@ -138,6 +138,12 @@ MonoBehaviour:
   - rid: 1127
   - rid: 1128
   - rid: 1129
+  - rid: 1130
+  - rid: 1131
+  - rid: 1132
+  - rid: 1133
+  - rid: 1134
+  - rid: 1135
   references:
     version: 2
     RefIds:
@@ -282,6 +288,7 @@ MonoBehaviour:
         - 4f8e09eb1126b9b1252ee23998860e2e
         - 1a60567584b9cb095c3a32da1981cb39
         - e2a1b2c3d4e5f60718293a4b5c6d7010
+        - 40b8b38fef3b422c892842f32110b364
         - 005f4c77603840d4ab6a10fa5550053b
         - 223bb24576d84dd29211ebc63a235095
         - 47dd9f0899c0475d9ee88439d3e2f8ce
@@ -1259,3 +1266,53 @@ MonoBehaviour:
         _comment:
         _tree: {fileID: 11400000, guid: 349fdad4c6fc980e0b6e6898e5dc2bcf, type: 2}
         _off: 0
+    - rid: 1130
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 40b8b38fef3b422c892842f32110b364
+        _position: {x: -780, y: 900}
+        _comment: 'Someone in view within 8 m with Shotgun Blast ready: blast them with a cone of pellets (each may set them alight), then the too-close branch below falls back. Aborts lower priority'
+        _children:
+        - c116da51b9c74b07b632c4b4653ea956
+        - 96bc65dad06b4db6bf2d1fa296b53abc
+        - fecfd6d2d5204b37ab532b8a5635045a
+        - 8d4f91afacbe470daafc900a298bc21c
+        - c1e928141d404fdcbd9c2bd405d8effe
+        _abort: 2
+    - rid: 1131
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c116da51b9c74b07b632c4b4653ea956
+        _position: {x: -1220, y: 1050}
+        _comment: 
+    - rid: 1132
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 96bc65dad06b4db6bf2d1fa296b53abc
+        _position: {x: -1000, y: 1050}
+        _comment: 
+    - rid: 1133
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: fecfd6d2d5204b37ab532b8a5635045a
+        _position: {x: -780, y: 1050}
+        _comment: 
+        _range: 8
+    - rid: 1134
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8d4f91afacbe470daafc900a298bc21c
+        _position: {x: -560, y: 1050}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6a61898781e24703bdb5b2d8eeb21098, type: 2}
+    - rid: 1135
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c1e928141d404fdcbd9c2bd405d8effe
+        _position: {x: -340, y: 1050}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6a61898781e24703bdb5b2d8eeb21098, type: 2}
+        _aim: 0
+        _maxRange: 9
+        _requireClearShot: 1
+        _leadMovingTarget: 0

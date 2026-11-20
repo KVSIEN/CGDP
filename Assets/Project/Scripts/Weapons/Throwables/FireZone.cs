@@ -5,10 +5,11 @@ using CGD.Core;
 
 namespace CGD.Weapons
 {
-    // Ground that keeps burning where an incendiary went off: a flat glowing disc the size of the
-    // blast that hurts and ignites everything standing in it, then goes out. The grenade that
-    // spawned it passes its owner (so the thrower's team stays safe) and its data; the burn
-    // applied is that grenade's On Hit effects. Pooled; needs a transparent material.
+    // Ground that keeps hurting where a grenade went off: a flat glowing disc the size of the
+    // blast that damages everything standing in it and applies the grenade's On Hit effects
+    // (an incendiary's burn, Bio's Acid Spew poison), then fades. The grenade that spawned it
+    // passes its owner (so the thrower's team stays safe) and its data. Pooled; needs a
+    // transparent material.
     [RequireComponent(typeof(Renderer))]
     public class FireZone : MonoBehaviour
     {

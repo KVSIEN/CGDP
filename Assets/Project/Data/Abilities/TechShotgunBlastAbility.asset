@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14e2c5902c604f7189109eae480579e0, type: 3}
+  m_Name: TechShotgunBlastAbility
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.PelletBlastAbility
+  DisplayName: Shotgun Blast
+  SlotColor: {r: 1, g: 0.6, b: 0.15, a: 1}
+  Cooldown: 7
+  MaxCharges: 1
+  CastTime: 0.35
+  PelletPrefab: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+  PelletCount: 8
+  SpreadAngle: 8
+  DamagePerPellet: 5
+  ArmorPenetration: 0
+  DamageType: 0
+  Speed: 45
+  Range: 14
+  HitRadius: 0.1
+  OnHitEffects:
+  - Effect: {fileID: 11400000, guid: bf6df1793c34595468cf4ced8ff665bc, type: 2}
+    Chance: 0.1
+    Potency: 3
+    Duration: 0
+  SpawnOffset: 0.8
