@@ -9,6 +9,12 @@ namespace CGD.Enemies
     //   approach    go to where it believes the thing is — the guess, not the truth
     //   look around stand and scan, then check a few spots nearby, leaning the way a lost
     //               target seemed to be heading; merely curious enemies check fewer
+    // A hunting enemy instead reasons about where the target could have got to by now: an
+    // occupancy map (OccupancySearch) spreads the chance of where it is over the floor round
+    // where it was lost, along the ways it could have gone, and clears what the enemy sees on
+    // the way. Each next spot is the likeliest place it hasn't looked, hiding places counting
+    // extra; a squad shares one map and splits the spots up; it gives up once nothing likely
+    // is left. Without a NavMesh round the lead it falls back to the few spots.
     // Something new on the way (another noise, a glimpse) makes it glance over and re-route.
     // Every pause, spot and count is randomised within the PerceptionProfile's ranges, so two
     // searches never play out the same.
@@ -26,11 +32,24 @@ namespace CGD.Enemies
         // Glances prefer directions that stay open this far.
         private const float OpenLookDistance = 4f;
         private const int   LookTries        = 5;
+        // Hunting: how often it checks which likely cells it can see, how many of the likeliest
+        // it checks, how far round itself it sees anyway, where someone would be seen (a little
+        // under a crouching chest, so low cover still hides them), and how much more a hiding
+        // place counts than open floor.
+        private const float ClearEvery       = 0.25f;
+        private const int   CellsChecked     = 10;
+        private const float SeesAround       = 1.5f;
+        private const float TargetHeight     = 0.9f;
+        private const float HidingFavour     = 2f;
 
         private enum Phase { Notice, Approach, LookAround, Done }
 
         private readonly EnemyAI       _ai;
         private readonly List<Vector3> _spots = new();
+        private readonly List<int>     _likely = new();
+
+        private OccupancySearch _hunt;
+        private float           _nextClear;
 
         private Phase   _phase = Phase.Done;
         private float   _timer;
@@ -50,6 +69,7 @@ namespace CGD.Enemies
             _timeLimit = (timeLimit > 0f ? timeLimit : _ai.Data.AlertDuration) * (IsHunting ? HuntTimeFactor : 1f)
                        * EnemyPacing.Current.SearchScale;
             _ai.Perception.ConsumeLead();
+            JoinHunt();
             StartNotice(fresh: true);
         }
 
@@ -59,8 +79,13 @@ namespace CGD.Enemies
             if (_phase == Phase.Done) return true;
 
             _elapsed += deltaTime;
-            if (_ai.Perception.ConsumeLead()) StartNotice(fresh: false);
+            if (_ai.Perception.ConsumeLead())
+            {
+                JoinHunt();
+                StartNotice(fresh: false);
+            }
             if (_elapsed >= _timeLimit) return Finish();
+            if (_hunt != null && _phase != Phase.Notice) Watch();
 
             switch (_phase)
             {
@@ -76,6 +101,7 @@ namespace CGD.Enemies
             if (_phase == Phase.Done) return;
             _phase = Phase.Done;
             _ai.Agent.isStopped = false;
+            LeaveHunt();
         }
 
         private PerceptionProfile Profile => _ai.Perception.Profile;
@@ -143,6 +169,14 @@ namespace CGD.Enemies
             }
             if (_timer > 0f) return;
 
+            if (_hunt != null)
+            {
+                Watch(force: true);
+                if (_hunt.TryNext(_ai, _ai.transform.position, out Vector3 next)) GoTo(next);
+                else Finish();
+                return;
+            }
+
             if (_spotIndex < 0) PlanSpots();
             _spotIndex++;
             if (_spotIndex >= _spots.Count) Finish();
@@ -153,7 +187,76 @@ namespace CGD.Enemies
         {
             _phase = Phase.Done;
             _ai.Agent.isStopped = false;
+            LeaveHunt();
             return true;
+        }
+
+        // --- Hunting on the occupancy map ------------------------------------------
+
+        // A hunting enemy joins its squad's map when this lead is part of the same hunt, follows
+        // a lead that moved, or starts a map of its own; a curious one has none.
+        private void JoinHunt()
+        {
+            if (!IsHunting)
+            {
+                LeaveHunt();
+                return;
+            }
+
+            Vector3 lost = _ai.Perception.LastKnownPosition, heading = _ai.Perception.SearchDirection;
+            EnemySquad squad = _ai.Squad;
+            OccupancySearch hunt = squad != null ? squad.SharedSearch : _hunt;
+            if (hunt != null && hunt.Covers(lost) && !hunt.IsExhausted) hunt.Follow(lost, heading, Time.time);
+            else
+            {
+                hunt = OccupancySearch.Start(lost, heading, Profile.SearchRadius, Time.time);
+                FavourHidingPlaces(hunt, lost);
+                if (squad != null) squad.SharedSearch = hunt;
+            }
+            if (_hunt != null && _hunt != hunt) _hunt.Release(_ai);
+            _hunt = hunt.IsValid ? hunt : null;
+            _nextClear = 0f;
+        }
+
+        private void LeaveHunt()
+        {
+            _hunt?.Release(_ai);
+            _hunt = null;
+        }
+
+        // Known cover screened from this enemy near the lead: where someone hiding would be.
+        private void FavourHidingPlaces(OccupancySearch hunt, Vector3 lost)
+        {
+            _spots.Clear();
+            _ai.Tactics.HidingSpots(lost, Profile.SearchRadius * OccupancySearch.RadiusScale, _spots, 16);
+            foreach (Vector3 spot in _spots) hunt.Map.Favour(spot, HidingFavour);
+            _spots.Clear();
+        }
+
+        // Lets the chance spread for the time passed and clears the likely cells it can see:
+        // round itself, and the likeliest few in its view with a clear line to them.
+        private void Watch(bool force = false)
+        {
+            _hunt.Advance(Time.time);
+            if (!force && Time.time < _nextClear) return;
+            _nextClear = Time.time + ClearEvery;
+
+            Vector3 position = _ai.transform.position;
+            OccupancyMap map = _hunt.Map;
+            map.ClearAround(position, SeesAround);
+
+            Vector3 eye = position + Vector3.up * EnemyEyes.Height;
+            float halfAngle = _ai.Data.SightAngle * 0.5f;
+            float range = _ai.Data.SightRange;
+            map.Likeliest(_likely, CellsChecked);
+            foreach (int cell in _likely)
+            {
+                Vector3 target = map.Grid.Center(cell) + Vector3.up * TargetHeight;
+                Vector3 toTarget = target - eye;
+                var flat = new Vector3(toTarget.x, 0f, toTarget.z);
+                if (flat.magnitude > range || Vector3.Angle(_ai.transform.forward, flat) > halfAngle) continue;
+                if (!Physics.Linecast(eye, target, _ai.ObstacleMask, QueryTriggerInteraction.Ignore)) map.Clear(cell);
+            }
         }
 
         // --- Where to go and look ---------------------------------------------------

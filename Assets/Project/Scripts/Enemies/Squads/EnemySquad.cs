@@ -21,6 +21,9 @@ namespace CGD.Enemies
 
         public IReadOnlyList<EnemyAI> Members => _members;
         public EnemyAI Leader => _leader;
+        // The hunt its members share once they lose a target (OccupancySearch): what one sees
+        // is searched for all.
+        internal OccupancySearch SharedSearch { get; set; }
 
         private void Awake()
         {
