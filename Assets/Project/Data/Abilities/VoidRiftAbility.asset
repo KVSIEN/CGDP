@@ -29,6 +29,6 @@ MonoBehaviour:
   DamageType: 1
   ArmorPenetration: 0
   OnHitEffects:
-  - Effect: {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
+  - Effect: {fileID: 11400000, guid: b50232d06a0546fdbb18573d1525a428, type: 2}
     Chance: 1
   ShieldSiphon: 0.75

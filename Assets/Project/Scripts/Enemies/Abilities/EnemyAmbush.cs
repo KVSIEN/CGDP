@@ -1,5 +1,6 @@
 using UnityEngine;
 using CGD.Abilities;
+using CGD.Combat;
 using CGD.Stealth;
 
 namespace CGD.Enemies
@@ -12,6 +13,7 @@ namespace CGD.Enemies
 
         private float _multiplier = 1f;
         private float _expiresAt;
+        private StatusEffectApplication[] _onHitEffects;
 
         public EnemyAmbush(Stealthable stealth) => _stealth = stealth;
 
@@ -20,21 +22,29 @@ namespace CGD.Enemies
         // Seconds the armed strike has left; 0 when not armed.
         public float SecondsLeft => IsArmed ? _expiresAt - Time.time : 0f;
 
-        public void Arm(float damageMultiplier, float seconds)
+        public void Arm(float damageMultiplier, float seconds, StatusEffectApplication[] onHitEffects)
         {
-            _multiplier = damageMultiplier;
-            _expiresAt  = Time.time + seconds;
+            _multiplier   = damageMultiplier;
+            _expiresAt    = Time.time + seconds;
+            _onHitEffects = onHitEffects;
         }
 
-        // The damage multiplier for the attack landing now (1 = not armed), spending the ambush.
-        public float Consume()
+        // The damage multiplier for the attack landing now (1 = not armed) and the extra on-hit
+        // effects it carries (null when not armed), spending the ambush.
+        public float Consume(out StatusEffectApplication[] onHitEffects)
         {
-            float multiplier = IsArmed ? _multiplier : 1f;
+            bool armed = IsArmed;
+            float multiplier = armed ? _multiplier : 1f;
+            onHitEffects = armed ? _onHitEffects : null;
             Disarm();
             if (multiplier > 1f && _stealth != null) _stealth.EndCloak();
             return multiplier;
         }
 
-        public void Disarm() => _multiplier = 1f;
+        public void Disarm()
+        {
+            _multiplier   = 1f;
+            _onHitEffects = null;
+        }
     }
 }

@@ -1,10 +1,12 @@
 using UnityEngine;
+using CGD.Combat;
 using CGD.Stats;
 
 namespace CGD.Abilities
 {
     // Slips out of sight, heals faster while hidden, and makes the next attack — which also
-    // ends the cloak — hit for extra damage. Enemies only (it needs an ambush to arm).
+    // ends the cloak — hit for extra damage and carry its own on-hit effects (Bio's bleed).
+    // Enemies only (it needs an ambush to arm).
     [CreateAssetMenu(fileName = "AmbushAbility", menuName = "CGD/Abilities/Ambush")]
     public class AmbushAbility : Ability
     {
@@ -14,6 +16,8 @@ namespace CGD.Abilities
         public StatModifierPreset Buff;
         [Tooltip("The first attack out of hiding deals this many times its damage")]
         [Min(1f)] public float DamageMultiplier = 2.5f;
+        [Tooltip("Applied by that first attack to everyone it hits (e.g. a bleed)")]
+        public StatusEffectApplication[] OnHitEffects;
 
         public override float EffectDuration => Duration;
 
@@ -26,7 +30,7 @@ namespace CGD.Abilities
         {
             ctx.Stealth.Cloak(Duration, breaksOnAttack: true);
             if (Buff != null && ctx.Stats != null) ctx.Stats.AddTimed(Buff, Duration);
-            ctx.Ambush.Arm(DamageMultiplier, Duration);
+            ctx.Ambush.Arm(DamageMultiplier, Duration, OnHitEffects);
         }
     }
 }

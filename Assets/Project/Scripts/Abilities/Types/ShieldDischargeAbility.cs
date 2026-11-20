@@ -6,8 +6,8 @@ using CGD.Stats;
 namespace CGD.Abilities
 {
     // Spends the whole shield in a burst round the caster: everything hostile nearby takes
-    // damage in proportion to the shield given up, any status effect listed (a slow), and is
-    // thrown back out of reach, while the caster gets a burst of speed (SelfBuff) — a
+    // damage in proportion to the shield given up, any status effect listed (a slow, a shock),
+    // and is thrown back out of reach, while the caster gets a burst of speed (SelfBuff) — a
     // disengage that buys room to fall back.
     // Can't be cast with less than MinShield left.
     [CreateAssetMenu(fileName = "ShieldDischargeAbility", menuName = "CGD/Abilities/Shield Discharge")]
@@ -20,7 +20,7 @@ namespace CGD.Abilities
         [Min(0f)] public float DamagePerShield = 1.25f;
         public DamageType DamageType = DamageType.Lightning;
         [Range(0f, 1f)] public float ArmorPenetration = 0f;
-        [Tooltip("Applied to everyone hit (a slow)")]
+        [Tooltip("Applied to everyone hit (Tech's slow and shock)")]
         public StatusEffectApplication[] OnHitEffects;
         public LayerMask HitMask = ~0;
 

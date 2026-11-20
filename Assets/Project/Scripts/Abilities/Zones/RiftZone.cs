@@ -6,8 +6,8 @@ using CGD.Core;
 namespace CGD.Abilities
 {
     // The ground a Rift ability opened: a flat glowing disc the size of its radius that hurts
-    // everything hostile standing in it once per tick, slows it, and pays the caster back in
-    // shield, then closes. Pooled; needs a transparent material.
+    // everything hostile standing in it once per tick, chills it (its on-hit effects: Cryo), and
+    // pays the caster back in shield, then closes. Pooled; needs a transparent material.
     [RequireComponent(typeof(Renderer))]
     public class RiftZone : MonoBehaviour
     {

@@ -10,8 +10,9 @@ namespace CGD.Enemies
 {
     // An enemy's melee swing: a wind-up, then one blow on everything in reach in front of it,
     // then a cooldown before the next. Attack speed (the FireRate stat, e.g. Bio's Surge)
-    // shortens wind-up and cooldown alike; an armed Ambush multiplies the blow. Swinging gives
-    // a hiding enemy away. Reads its EnemyData each swing: rolled affixes swap it after Awake.
+    // shortens wind-up and cooldown alike; an armed Ambush multiplies the blow and adds its own
+    // on-hit effects (Bio's bleed). Swinging gives a hiding enemy away. Reads its EnemyData each
+    // swing: rolled affixes swap it after Awake.
     internal sealed class EnemyMelee
     {
         private static readonly Collider[] HitBuffer = new Collider[16];
@@ -84,9 +85,10 @@ namespace CGD.Enemies
             int count = Physics.OverlapSphereNonAlloc(center, range * 0.6f, HitBuffer, _targetMask, QueryTriggerInteraction.Ignore);
 
             float damage = _stats != null ? _stats.Apply(ItemStat.Damage, data.AttackDamage) : data.AttackDamage;
-            damage *= _ai.Ambush.Consume();
+            damage *= _ai.Ambush.Consume(out StatusEffectApplication[] ambushEffects);
             _ai.Reveal();
-            var info = new DamageInfo(damage, source: _source, onHitEffects: data.MeleeEffects);
+            var info = new DamageInfo(damage, source: _source,
+                onHitEffects: StatusEffectApplication.Combine(data.MeleeEffects, ambushEffects));
 
             _hits.Clear();
             for (int i = 0; i < count; i++)

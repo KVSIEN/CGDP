@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 104e074f46d546cbae3c2a88ad11f6f5, type: 3}
+  m_Name: TechShockEffect
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.ShockEffect
+  DisplayName: Shocked
+  Icon: {fileID: 0}
+  Color: {r: 1, g: 0.95, b: 0.45, a: 1}
+  Duration: 3
+  TickInterval: 0.75
+  Stacking: 0
+  MaxStacks: 1
+  DecayOneStackAtATime: 0
+  JoltDamageFraction: 0.15
+  JoltStun: 0.25

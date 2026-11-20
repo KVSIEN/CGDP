@@ -20,3 +20,6 @@ MonoBehaviour:
   Duration: 7
   Buff: {fileID: 11400000, guid: d0a1b2c3d4e5f60718293a4b5c6d7e01, type: 2}
   DamageMultiplier: 2.5
+  OnHitEffects:
+  - Effect: {fileID: 11400000, guid: c46876db955c4fbbbe68dc2ad622cf28, type: 2}
+    Chance: 1

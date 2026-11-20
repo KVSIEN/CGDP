@@ -6,8 +6,8 @@ using CGD.Targeting;
 namespace CGD.Abilities
 {
     // Opens a rift on the ground where the caster is aiming: a zone that wears everything hostile
-    // inside it down tick by tick (and slows it), while the caster takes a share of the damage back
-    // as shield. Enemies only: it needs the point they aim at.
+    // inside it down tick by tick (and chills it with Cryo), while the caster takes a share of the
+    // damage back as shield. Enemies only: it needs the point they aim at.
     [CreateAssetMenu(fileName = "RiftAbility", menuName = "CGD/Abilities/Rift")]
     public class RiftAbility : Ability
     {
@@ -27,7 +27,7 @@ namespace CGD.Abilities
         [Min(0f)] public float DamagePerTick = 4f;
         public DamageType DamageType = DamageType.True;
         [Range(0f, 1f)] public float ArmorPenetration = 0f;
-        [Tooltip("Applied to everyone hit (a slow)")]
+        [Tooltip("Applied to everyone hit (Void's Cryo chill)")]
         public StatusEffectApplication[] OnHitEffects;
         [Tooltip("Share of the damage actually dealt that comes back to the caster as shield")]
         [Range(0f, 2f)] public float ShieldSiphon = 0.75f;

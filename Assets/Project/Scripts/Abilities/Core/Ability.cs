@@ -58,15 +58,7 @@ namespace CGD.Abilities
         // Damage and on-hit effects after resource scaling (ctx.Power and ctx.BonusEffects).
         protected static float Scaled(float damage, AbilityContext ctx) => damage * ctx.Power;
 
-        protected static StatusEffectApplication[] WithBonusEffects(StatusEffectApplication[] own, AbilityContext ctx)
-        {
-            if (ctx.BonusEffects == null || ctx.BonusEffects.Length == 0) return own;
-            if (own == null || own.Length == 0) return ctx.BonusEffects;
-
-            var all = new StatusEffectApplication[own.Length + ctx.BonusEffects.Length];
-            own.CopyTo(all, 0);
-            ctx.BonusEffects.CopyTo(all, own.Length);
-            return all;
-        }
+        protected static StatusEffectApplication[] WithBonusEffects(StatusEffectApplication[] own, AbilityContext ctx) =>
+            StatusEffectApplication.Combine(own, ctx.BonusEffects);
     }
 }
