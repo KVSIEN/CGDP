@@ -23,7 +23,10 @@ MonoBehaviour:
       Count: 8
     - Item: {fileID: 11400000, guid: 128aacf710814a3196756bafe930ae2d, type: 2}
       Count: 1
-    Bonus: {fileID: 11400000, guid: 4f40df29c83d37ece2e41f1050e1f91c, type: 2}
+    Bonus:
+    - Stat: 18
+      Op: 0
+      Value: 10
   - Summary: +15 armor
     Cost:
     - Item: {fileID: 11400000, guid: 6de4f16914e84c22bcc6ca80c7f4047d, type: 2}
@@ -32,4 +35,7 @@ MonoBehaviour:
       Count: 15
     - Item: {fileID: 11400000, guid: 128aacf710814a3196756bafe930ae2d, type: 2}
       Count: 2
-    Bonus: {fileID: 11400000, guid: d56bc7d6481368c2fa603d3888142a30, type: 2}
+    Bonus:
+    - Stat: 18
+      Op: 0
+      Value: 15

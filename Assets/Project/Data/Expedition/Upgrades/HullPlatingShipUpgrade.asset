@@ -21,18 +21,27 @@ MonoBehaviour:
       Count: 250
     - Item: {fileID: 11400000, guid: 38dc2ecd5c694b6d95bec2842742160a, type: 2}
       Count: 5
-    Bonus: {fileID: 11400000, guid: 13007602c064a162b19b6e6edba783f9, type: 2}
+    Bonus:
+    - Stat: 17
+      Op: 0
+      Value: 20
   - Summary: +20 max health
     Cost:
     - Item: {fileID: 11400000, guid: 6de4f16914e84c22bcc6ca80c7f4047d, type: 2}
       Count: 600
     - Item: {fileID: 11400000, guid: 38dc2ecd5c694b6d95bec2842742160a, type: 2}
       Count: 10
-    Bonus: {fileID: 11400000, guid: 468de670539a525778813db8aab74ff4, type: 2}
+    Bonus:
+    - Stat: 17
+      Op: 0
+      Value: 20
   - Summary: +30 max health
     Cost:
     - Item: {fileID: 11400000, guid: 6de4f16914e84c22bcc6ca80c7f4047d, type: 2}
       Count: 1200
     - Item: {fileID: 11400000, guid: 38dc2ecd5c694b6d95bec2842742160a, type: 2}
       Count: 20
-    Bonus: {fileID: 11400000, guid: 1351bebe7d0e8c665fe27bf37fd842e1, type: 2}
+    Bonus:
+    - Stat: 17
+      Op: 0
+      Value: 30

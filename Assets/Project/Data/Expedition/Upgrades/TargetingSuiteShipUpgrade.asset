@@ -21,18 +21,27 @@ MonoBehaviour:
       Count: 500
     - Item: {fileID: 11400000, guid: 128aacf710814a3196756bafe930ae2d, type: 2}
       Count: 2
-    Bonus: {fileID: 11400000, guid: 1707f824f04600b613735c5060fc1661, type: 2}
+    Bonus:
+    - Stat: 1
+      Op: 1
+      Value: 0.05
   - Summary: +5% damage
     Cost:
     - Item: {fileID: 11400000, guid: 6de4f16914e84c22bcc6ca80c7f4047d, type: 2}
       Count: 1100
     - Item: {fileID: 11400000, guid: 128aacf710814a3196756bafe930ae2d, type: 2}
       Count: 4
-    Bonus: {fileID: 11400000, guid: 25d22393c62eae06f3f6af8eddab0b63, type: 2}
+    Bonus:
+    - Stat: 1
+      Op: 1
+      Value: 0.05
   - Summary: +10% damage
     Cost:
     - Item: {fileID: 11400000, guid: 6de4f16914e84c22bcc6ca80c7f4047d, type: 2}
       Count: 2000
     - Item: {fileID: 11400000, guid: 128aacf710814a3196756bafe930ae2d, type: 2}
       Count: 8
-    Bonus: {fileID: 11400000, guid: 1c46ffddce8d1293a46f954255713af1, type: 2}
+    Bonus:
+    - Stat: 1
+      Op: 1
+      Value: 0.1

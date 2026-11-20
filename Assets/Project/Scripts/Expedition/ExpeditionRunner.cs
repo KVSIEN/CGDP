@@ -74,7 +74,7 @@ namespace CGD.Expedition
             Ledger.Upgrades.CollectBonuses(_upgrades, _bonuses);
             if (_bonuses.Count == 0) return;
 
-            foreach (ShipUpgradeLevel level in _bonuses) _stats.AddPreset(level.Bonus);
+            foreach (ShipUpgradeLevel level in _bonuses) _stats.AddPermanent(level.Bonus, level);
             if (_health != null) _health.Heal(_health.MaxHealth);
         }
 

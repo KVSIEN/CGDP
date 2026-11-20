@@ -21,11 +21,17 @@ MonoBehaviour:
       Count: 450
     - Item: {fileID: 11400000, guid: 128aacf710814a3196756bafe930ae2d, type: 2}
       Count: 3
-    Bonus: {fileID: 11400000, guid: 9d0f4933862fa2637367f8c60e692cfa, type: 2}
+    Bonus:
+    - Stat: 20
+      Op: 0
+      Value: 0.08
   - Summary: -8% ability cooldowns
     Cost:
     - Item: {fileID: 11400000, guid: 6de4f16914e84c22bcc6ca80c7f4047d, type: 2}
       Count: 1000
     - Item: {fileID: 11400000, guid: 128aacf710814a3196756bafe930ae2d, type: 2}
       Count: 6
-    Bonus: {fileID: 11400000, guid: 25b29ee9f7b616375ff89a0750ba6adb, type: 2}
+    Bonus:
+    - Stat: 20
+      Op: 0
+      Value: 0.08

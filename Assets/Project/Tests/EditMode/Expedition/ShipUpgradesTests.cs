@@ -16,8 +16,8 @@ namespace CGD.Tests
     {
         private string             _directory;
         private ResourceDefinition _scrap;
-        private StatModifierPreset _bonusOne;
-        private StatModifierPreset _bonusTwo;
+        private readonly StatModifier[] _bonusOne = { new(ItemStat.Health, StatModifierOp.Additive, 20f) };
+        private readonly StatModifier[] _bonusTwo = { new(ItemStat.Health, StatModifierOp.Additive, 20f) };
         private ShipUpgrade        _hull;
         private ShipUpgradeCatalog _upgrades;
         private ItemCatalog        _items;
@@ -27,8 +27,6 @@ namespace CGD.Tests
         {
             _directory = Path.Combine(Path.GetTempPath(), "cgd-upgrade-tests-" + System.Guid.NewGuid().ToString("N"));
             _scrap    = ScriptableObject.CreateInstance<ResourceDefinition>();
-            _bonusOne = ScriptableObject.CreateInstance<StatModifierPreset>();
-            _bonusTwo = ScriptableObject.CreateInstance<StatModifierPreset>();
             _hull     = ScriptableObject.CreateInstance<ShipUpgrade>();
             _hull.SetUp("hull",
                 new ShipUpgradeLevel { Cost = new[] { new ItemAmount(_scrap, 5) }, Bonus = _bonusOne },
@@ -44,8 +42,6 @@ namespace CGD.Tests
         {
             if (Directory.Exists(_directory)) Directory.Delete(_directory, recursive: true);
             Object.DestroyImmediate(_scrap);
-            Object.DestroyImmediate(_bonusOne);
-            Object.DestroyImmediate(_bonusTwo);
             Object.DestroyImmediate(_hull);
             Object.DestroyImmediate(_upgrades);
             Object.DestroyImmediate(_items);

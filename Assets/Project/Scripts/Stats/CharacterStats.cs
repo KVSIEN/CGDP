@@ -77,11 +77,18 @@ namespace CGD.Stats
         // Permanent until RemoveFrom(preset).
         public void AddPreset(StatModifierPreset preset)
         {
-            if (preset == null) return;
+            if (preset != null) AddPermanent(preset.Modifiers, preset);
+        }
 
-            foreach (StatModifier modifier in preset.Modifiers)
+        // Permanent until RemoveFrom(source). Each source counts separately, so two equal
+        // groups from different sources (two levels of a ship upgrade) both apply.
+        public void AddPermanent(StatModifier[] modifiers, object source)
+        {
+            if (modifiers == null) return;
+
+            foreach (StatModifier modifier in modifiers)
                 if (modifier.Stat != ItemStat.None)
-                    _modifiers.Add(modifier.Stat, new Modifier(modifier.Op, modifier.Value, preset));
+                    _modifiers.Add(modifier.Stat, new Modifier(modifier.Op, modifier.Value, source));
         }
 
         // The whole preset for `seconds` of game time; End() the handle to cancel early.

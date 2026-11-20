@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using CGD.Crafting;
-using CGD.Stats;
+using CGD.Items;
 
 namespace CGD.Expedition
 {
@@ -15,6 +15,6 @@ namespace CGD.Expedition
         [Tooltip("Taken from the ship's hold when the level is bought")]
         public ItemAmount[] Cost = Array.Empty<ItemAmount>();
         [Tooltip("Added to the player's stats at the start of every run")]
-        public StatModifierPreset Bonus;
+        public StatModifier[] Bonus = Array.Empty<StatModifier>();
     }
 }
