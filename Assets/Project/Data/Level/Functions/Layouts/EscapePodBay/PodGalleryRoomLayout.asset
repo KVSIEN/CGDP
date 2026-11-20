@@ -61,6 +61,7 @@ MonoBehaviour:
     MinRoomTiles: 0
   - Prefabs:
     - {fileID: 6690596464837188276, guid: 75ee3fbd35214e96915a6891ac2dbb89, type: 3}
+    Activity: {fileID: 11400000, guid: 5d0a818be1ad45ea8d811c13941dc61e, type: 2}
     Count:
       Min: 2
       Max: 3

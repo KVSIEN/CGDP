@@ -36,6 +36,7 @@ MonoBehaviour:
   _props:
   - Prefabs:
     - {fileID: 733214970138945475, guid: 269255cdb01d48768bfb05240665b94d, type: 3}
+    Activity: {fileID: 11400000, guid: 343e0ce247b4467c9bdfa08a72236ac6, type: 2}
     Count:
       Min: 1
       Max: 1
@@ -70,6 +71,7 @@ MonoBehaviour:
     MinRoomTiles: 0
   - Prefabs:
     - {fileID: 938496126903206658, guid: 1a2ba1f28b034ea5a2c0436f6a57863c, type: 3}
+    Activity: {fileID: 11400000, guid: 5d0a818be1ad45ea8d811c13941dc61e, type: 2}
     Count:
       Min: 2
       Max: 4

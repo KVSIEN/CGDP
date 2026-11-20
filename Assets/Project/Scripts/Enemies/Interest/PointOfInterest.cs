@@ -36,6 +36,15 @@ namespace CGD.Enemies
 
         private void Awake() => _holders = new EnemyAI[_kind != null ? _kind.Capacity : 0];
 
+        // For one added at runtime (a generated room's furniture, PropActivity): its kind and
+        // where its users stand.
+        internal void Configure(InterestKind kind, Transform[] spots)
+        {
+            _kind    = kind;
+            _spots   = spots;
+            _holders = new EnemyAI[kind != null ? kind.Capacity : 0];
+        }
+
         private void OnEnable()  => ActivePoints.Add(this);
 
         private void OnDisable()

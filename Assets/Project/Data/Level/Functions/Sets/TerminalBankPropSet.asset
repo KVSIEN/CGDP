@@ -16,6 +16,7 @@ MonoBehaviour:
   _props:
   - Prefabs:
     - {fileID: 3592533658758260548, guid: aafafa6e6fc74289abd3c1cbf7a260c2, type: 3}
+    Activity: {fileID: 11400000, guid: 4cb702c7376d4ba59f1662a9cbdc867b, type: 2}
     Count:
       Min: 1
       Max: 2

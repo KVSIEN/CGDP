@@ -293,7 +293,8 @@ namespace CGD.Level
             {
                 Vector2 stretch = placement.Stretch ? (Vector2)size : Vector2.one;
                 if (placement.Prefabs != null && placement.Prefabs.Length > 0)
-                    _planned.Add(new PlannedProp(_random.Pick(placement.Prefabs), position, yaw, candidate.Rect, placement.Decor, stretch));
+                    _planned.Add(new PlannedProp(_random.Pick(placement.Prefabs), position, yaw, candidate.Rect, placement.Decor, stretch,
+                                                 placement.Decor ? null : placement.Activity));
                 if (placement.HasMembers) EmitMembers(placement, position, yaw, candidate.Rect);
                 return;
             }

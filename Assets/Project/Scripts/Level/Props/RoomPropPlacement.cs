@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using CGD.Core;
+using CGD.Enemies;
 
 namespace CGD.Level
 {
@@ -68,6 +69,10 @@ namespace CGD.Level
         public Vector2 Grow;
         [Tooltip("The prefab is scaled across and front to back to the footprint it gets (build it for one 1×1 tile): one basin prefab fits every pool. Members keep their size")]
         public bool Stretch;
+
+        [Header("Use")]
+        [Tooltip("Something idle enemies come and do at each one placed, standing at its front (+Z): operating a console, rummaging a locker, lounging on a sofa. The kind says which factions are drawn and how long they stay. Not given to a group's members or a pile. Empty = nothing")]
+        public InterestKind Activity;
         [Tooltip("Only placed in a room with at least this many floor tiles (in a Breach room's side, that side's): the second pool, the roulette pit, the stage. 0 = any room")]
         [Min(0)] public int MinRoomTiles;
 

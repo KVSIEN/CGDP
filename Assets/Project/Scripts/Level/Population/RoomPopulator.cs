@@ -74,6 +74,8 @@ namespace CGD.Level
                     Vector3 local = new Vector3(prop.Position.x, 0f, prop.Position.y) * _layout.TileSize;
                     GameObject placed = Place(room, prop.Prefab, _parent.TransformPoint(local), _parent.rotation * Quaternion.Euler(0f, prop.Yaw, 0f));
                     if (prop.Stretch != Vector2.one) placed.transform.localScale = Vector3.Scale(placed.transform.localScale, new Vector3(prop.Stretch.x, 1f, prop.Stretch.y));
+                    // After any stretch, so its places to stand stay where they were put.
+                    PropActivity.Attach(placed, prop, _layout.TileSize);
                 }
 
                 if (rule != null && rule.Centerpiece != null)

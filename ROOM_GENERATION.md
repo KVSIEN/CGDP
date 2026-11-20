@@ -307,6 +307,10 @@ These are how each card becomes a function's `_props` list:
 - **Already furnished** places keep their props: Restaurant, Quarters, Park, Grand
   Atrium, Cargo Bay, Docking Bay and Storage. Lobby gains its reception desk. Casino, Library
   and Pool are furnished by layout (section 12).
+- **Something to do.** A piece idle enemies would use gets an *Activity* (`InterestKind`):
+  consoles are operated, machines serviced, storage rummaged, planting fed at, seats and
+  beds lounged on. The kind says which factions come (TECH operates and services, VOID
+  rummages and lounges, BIO feeds), so the same room is lived in differently by each holder.
 - **Sets, not scatter.** Pieces that belong together are one placement with *Members* (a table
   and its chairs), and pieces that serve another stand *Near* it (section 12).
 
