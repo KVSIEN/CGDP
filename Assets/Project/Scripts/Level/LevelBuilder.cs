@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.AI.Navigation;
 using CGD.Core;
 using CGD.DevTools;
+using CGD.Director;
 using CGD.Enemies;
 using CGD.Feedback;
 using CGD.Interaction;
@@ -59,6 +60,8 @@ namespace CGD.Level
         [SerializeField] private bool _blueprintMap = true;
         [Tooltip("Optional — the scene's cover spots, found as soon as the NavMesh is built instead of when the first enemy looks for cover mid-fight")]
         [SerializeField] private CoverMap _coverMap;
+        [Tooltip("Optional — the director's reinforcements, given the level's route so groups arrive in rooms ahead of the player in the build-up and behind them at the peak")]
+        [SerializeField] private ReinforcementSpawner _reinforcements;
         [Tooltip("Name each room in the HUD feed (place, faction, tier) the first time the player walks in; in a gallery, every time, with its side, depth and fight type too. Needs a FeedbackPlayer in the scene")]
         [SerializeField] private bool _announceRooms = true;
         [Tooltip("Outline every room along its wall tops in its room type's colour and label it from above (id, place, room type, layout, faction, tier), for reading a generated map in the Scene view. /overview in the dev console hides or shows it")]
@@ -113,6 +116,7 @@ namespace CGD.Level
             // Hundreds of probes on a big level: done here, during the load, not on the frame an
             // enemy first wants cover.
             if (_coverMap != null) _coverMap.Rebuild();
+            if (_reinforcements != null) _reinforcements.FollowRoute(new LevelRoute(Layout, Graph, transform));
             populator.SpawnEnemies();
             populator.SpawnFauna();
             new RoomEncounterBuilder(_encounters, Layout, Graph, transform, populator, _player, _worldMap,

@@ -13,7 +13,10 @@ namespace CGD.Director
     // NavMesh, with a way to reach them — and comes looking for the player, announced by a
     // sound from where it arrived. During the fade and the calm nothing arrives and the
     // timer waits, so the first group after a calm comes a full interval into the build-up.
-    // Higher director Pressure brings bigger groups, sooner.
+    // Higher director Pressure brings bigger groups, sooner. In a generated level it follows
+    // the route (FollowRoute; Left 4 Dead's flow): during the build-up groups arrive in a room
+    // ahead, so the fight is in the way of where the player is going, and at the peak in a
+    // room behind, so it pushes them on.
     public class ReinforcementSpawner : MonoBehaviour
     {
         private const float GroupSpread = 1.5f;
@@ -30,6 +33,10 @@ namespace CGD.Director
         private Seed            _seed;
         private CooldownTimer   _nextGroup;
         private int             _spawned;
+        private IRouteSpots     _route;
+
+        // Called by the level once it is built; null goes back to anywhere around the player.
+        public void FollowRoute(IRouteSpots route) => _route = _settings != null && _settings.FollowRoute ? route : null;
 
         private void Awake()
         {
@@ -67,7 +74,9 @@ namespace CGD.Director
             int size  = Mathf.Max(1, Mathf.RoundToInt(_settings.GroupSize.Evaluate(_random) * _director.Pressure));
             int count = Mathf.Min(size, _settings.MaxAlive - _alive.Count);
             if (count <= 0) return;
-            if (!_spots.TryFind(_player.position, _settings.Distance, _settings.SpotAttempts, SpotVisibility.Hidden, out Vector3 spot)) return;
+            RouteSide side = _director.Phase == PacingPhase.BuildUp ? RouteSide.Ahead : RouteSide.Behind;
+            if (!_spots.TryFind(_player.position, _settings.Distance, _settings.SpotAttempts, SpotVisibility.Hidden, _route, side,
+                                _settings.RouteRooms, out Vector3 spot)) return;
 
             // One kind per group: the factions are hostile to each other, so a mixed group would
             // turn on itself the moment it arrived.

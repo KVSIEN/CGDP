@@ -19,8 +19,14 @@ namespace CGD.Director
         [SerializeField, Min(1)] private int _maxAlive = 6;
         [Tooltip("How far from the player (straight line) a group arrives")]
         [SerializeField] private FloatRange _distance = new(18f, 30f);
-        [Tooltip("Spots tried per group before it is skipped (out of sight, on the NavMesh, with a path to the player)")]
+        [Tooltip("Spots tried per group before it is skipped (out of sight, on the NavMesh, with a path to the player); with a route, as many again in the rooms along it first")]
         [SerializeField, Min(1)] private int _spotAttempts = 10;
+
+        [Header("Route")]
+        [Tooltip("In a generated level, groups arrive in a room ahead of the player toward the exit during the build-up, and in one behind them at the peak, before anywhere else around them")]
+        [SerializeField] private bool _followRoute = true;
+        [Tooltip("How many rooms along the route, each way, a group may arrive in")]
+        [SerializeField, Min(1)] private int _routeRooms = 2;
 
         [Header("Arrival cue")]
         [Tooltip("Played where a group arrives, so the player hears where it comes from. Optional")]
@@ -35,6 +41,8 @@ namespace CGD.Director
         public int          MaxAlive       => _maxAlive;
         public FloatRange   Distance       => _distance;
         public int          SpotAttempts   => _spotAttempts;
+        public bool         FollowRoute    => _followRoute;
+        public int          RouteRooms     => _routeRooms;
         public AudioClip    ArrivalSound   => _arrivalSound;
         public float        ArrivalVolume  => _arrivalVolume;
         public string       ArrivalMessage => _arrivalMessage;
