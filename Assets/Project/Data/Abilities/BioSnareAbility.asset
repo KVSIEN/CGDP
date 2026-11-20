@@ -9,23 +9,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e7de4e5d01d452c92c5bbc47a455cd2, type: 3}
+  m_Script: {fileID: 11500000, guid: b51695d0e0964d0094e7ce097f927b52, type: 3}
   m_Name: BioSnareAbility
-  m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.SnareAbility
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.ZoneAbility
   DisplayName: Barbed Snare
   SlotColor: {r: 0.35, g: 0.75, b: 0.2, a: 1}
   Cooldown: 14
   MaxCharges: 1
   CastTime: 0.5
-  ZonePrefab: {fileID: 7200000000000000001, guid: 7d323a39c1c04ecea8063000ddeb3b76, type: 3}
-  Radius: 3
-  Duration: 5
-  TickInterval: 0.5
-  Color: {r: 0.35, g: 0.75, b: 0.2, a: 0.5}
+  ZonePrefab: {fileID: 7100000000000000001, guid: cda61e22cff245f28419d5aa6ec25518, type: 3}
+  NeedsAimPoint: 0
+  Zone:
+    Radius: 3
+    Duration: 5
+    TickInterval: 0.5
+    DamagePerTick: 1
+    DamageType: 1
+    ArmorPenetration: 0
+    Color: {r: 0.35, g: 0.75, b: 0.2, a: 0.5}
+    Glow: 0
+    EntryNoiseRadius: 18
+    ShieldSiphon: 0
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  DamagePerTick: 1
   OnHitEffects:
   - Effect: {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
     Chance: 1
@@ -35,4 +42,3 @@ MonoBehaviour:
     Chance: 1
     Potency: 0.6
     Duration: 6
-  EntryNoiseRadius: 18

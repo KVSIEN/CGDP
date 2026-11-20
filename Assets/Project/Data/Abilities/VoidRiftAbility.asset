@@ -11,26 +11,30 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b51695d0e0964d0094e7ce097f927b52, type: 3}
   m_Name: VoidRiftAbility
-  m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.RiftAbility
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.ZoneAbility
   DisplayName: Void Rift
   SlotColor: {r: 0.43, g: 0.38, b: 0.85, a: 1}
   Cooldown: 14
   MaxCharges: 1
   CastTime: 0.6
-  ZonePrefab: {fileID: 7200000000000000001, guid: 2a9d23ae06094289a923e99d532ff926, type: 3}
-  Radius: 4
-  Duration: 6
-  TickInterval: 0.5
-  Color: {r: 0.55, g: 0.25, b: 1, a: 0.5}
+  ZonePrefab: {fileID: 7100000000000000001, guid: cda61e22cff245f28419d5aa6ec25518, type: 3}
+  NeedsAimPoint: 1
+  Zone:
+    Radius: 4
+    Duration: 6
+    TickInterval: 0.5
+    DamagePerTick: 4
+    DamageType: 1
+    ArmorPenetration: 0
+    Color: {r: 0.55, g: 0.25, b: 1, a: 0.5}
+    Glow: 2
+    EntryNoiseRadius: 0
+    ShieldSiphon: 0.75
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  DamagePerTick: 4
-  DamageType: 1
-  ArmorPenetration: 0
   OnHitEffects:
   - Effect: {fileID: 11400000, guid: b50232d06a0546fdbb18573d1525a428, type: 2}
     Chance: 1
     Potency: 1
     Duration: 0
-  ShieldSiphon: 0.75

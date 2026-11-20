@@ -244,7 +244,8 @@ namespace CGD.Weapons
         private void SpawnZone(Vector3 center)
         {
             GameObject zone = PrefabPool.Spawn(_data.LingeringZone, center, Quaternion.identity);
-            if (zone.TryGetComponent(out DamageZone damageZone)) damageZone.Begin(_source, _data);
+            if (zone.TryGetComponent(out DamageZone damageZone))
+                damageZone.Begin(_data.Zone, _data.ZoneRadiusOrBlast, _source, _data.HitMask, _data.OnHitEffects);
         }
     }
 }

@@ -102,4 +102,4 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 511395c794c84a1a940821ac34f5ae03, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.DamageZone
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.DamageZone

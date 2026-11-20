@@ -74,19 +74,11 @@ namespace CGD.Weapons
 
         [Header("Aftermath")]
         [Tooltip("Optional — a pooled prefab left where it goes off: a smoke cloud (ConcealmentZone + PooledLifetime) " +
-                 "or the shared DamageZone, which takes its size, timing, damage and colour from the Zone fields below")]
+                 "or the shared DamageZone, which does what the Zone settings below say")]
         [FormerlySerializedAs("SmokeCloudPrefab")]
         public GameObject LingeringZone;
-        [Tooltip("Damage zone only: radius in metres (0 = the explosion radius)")]
-        [Min(0f)] public float ZoneRadius = 0f;
-        [Tooltip("Damage zone only: seconds it lasts")]
-        [Min(0.5f)] public float ZoneDuration = 6f;
-        [Tooltip("Damage zone only: seconds between hits on everything standing in it")]
-        [Min(0.1f)] public float ZoneTickInterval = 0.5f;
-        [Tooltip("Damage zone only: damage of each hit; each also applies the On Hit effects below")]
-        [Min(0f)] public float ZoneTickDamage = 5f;
-        [Tooltip("Damage zone only: tint of the ground; alpha sets how see-through it is")]
-        public Color ZoneColor = new(1f, 0.4f, 0.1f, 0.5f);
+        [Tooltip("Damage zone only: what it does; its hits apply the On Hit effects below, and a Radius of 0 uses the explosion radius")]
+        public ZoneSettings Zone = new() { Radius = 0f, Glow = ZoneGlow.Flicker };
         [Tooltip("Optional — a pooled prefab with an ExplosionFlash, spawned at the blast")]
         public GameObject ExplosionEffect;
         public Color FlashColor = new(1f, 0.6f, 0.15f, 0.8f);
@@ -123,7 +115,7 @@ namespace CGD.Weapons
             return direction * speed + throwerVelocity * InheritVelocity;
         }
 
-        public float ZoneRadiusOrBlast => ZoneRadius > 0f ? ZoneRadius : ExplosionRadius;
+        public float ZoneRadiusOrBlast => Zone.Radius > 0f ? Zone.Radius : ExplosionRadius;
 
         // The pull on the grenade in flight.
         public Vector3 Gravity => Physics.gravity * GravityScale;

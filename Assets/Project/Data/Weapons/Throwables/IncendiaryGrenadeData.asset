@@ -39,11 +39,17 @@ MonoBehaviour:
   PushForce: 0
   NoiseRadius: 40
   LingeringZone: {fileID: 7100000000000000001, guid: cda61e22cff245f28419d5aa6ec25518, type: 3}
-  ZoneRadius: 0
-  ZoneDuration: 6
-  ZoneTickInterval: 0.5
-  ZoneTickDamage: 5
-  ZoneColor: {r: 1, g: 0.4, b: 0.1, a: 0.5}
+  Zone:
+    Radius: 0
+    Duration: 6
+    TickInterval: 0.5
+    DamagePerTick: 5
+    DamageType: 0
+    ArmorPenetration: 0
+    Color: {r: 1, g: 0.4, b: 0.1, a: 0.5}
+    Glow: 1
+    EntryNoiseRadius: 0
+    ShieldSiphon: 0
   ExplosionEffect: {fileID: 7000000000000000001, guid: d3520984238c41a78a4ca49a0a007f9f, type: 3}
   FlashColor: {r: 1, g: 0.35, b: 0.05, a: 0.85}
   CameraTrauma: 0.4

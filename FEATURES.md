@@ -437,11 +437,11 @@
   - **SwingHitEvent** — a blade-shaped hit volume that swings through a list of keyed poses over its frames (slashes, chops, thrusts, wind-ups); sweeps through the space it crosses so fast swings can't skip a target, resolves hitbox regions, and hits each target once; angles, reach and thickness are set on the event, and it can follow the aim or an animated weapon's socket
   - **SpawnProjectileEvent** — spawns a projectile prefab via PrefabPool
   - **BeamEvent** — continuous raycast or SphereCast forward each tick (no dedup, intentional per-tick damage)
-  - **SpawnZoneEvent** — spawns a persistent zone prefab (trap or lingering AOE) at a resolved position
+  - **SpawnZoneEvent** — leaves a lingering damaging patch of ground at a resolved position, tuned on the event like any other zone (size, life, tick damage, colour, status effects)
   - **ForceEvent** — applies a force impulse to the caster or hit targets
   - **SoundEvent** — plays a SoundBank at the action origin
 - Each event can resolve its position in one of three coordinate spaces: CameraRelative (melee default), WorldOffset (ground-targeted), or WorldAbsolute
-- PersistentZone MonoBehaviour self-manages lifetime, periodic overlap checks, and pool release; supports one-shot traps (damages once then releases) and lingering AOEs (damages periodically until expired)
+- Every lingering zone in the game — grenade fire and acid, Void's Rift, Bio's Snare, timeline zones — behaves the same way: it hits everything hostile in it once per tick, glows (steady, flickering or pulsing) and fades over its last second, and characters see it as ground to step out of. A zone can also make a noise when someone first steps in, or pay some of its damage back to its caster as shield
 - Events can use a shared dedup set (one hit per target across the entire timeline) or per-event dedup (each event tracks its own targets independently)
 
 ## Grenades

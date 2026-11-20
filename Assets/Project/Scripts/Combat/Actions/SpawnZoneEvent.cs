@@ -4,15 +4,21 @@ using CGD.Core;
 
 namespace CGD.Combat
 {
+    // Leaves a lingering patch of harmful ground (the shared DamageZone prefab) at a resolved
+    // position, hitting the layers the action hits and tuned by its own Zone settings.
     [Serializable]
     public class SpawnZoneEvent : IActionEvent
     {
         [SerializeField] private int _startFrame;
 
         [Header("Zone")]
+        [Tooltip("Pooled prefab with a DamageZone (Prefabs/VFX/DamageZone)")]
         [SerializeField] private GameObject _prefab;
         [SerializeField] private ActionSpace _space = ActionSpace.WorldOffset;
         [SerializeField] private Vector3 _offset;
+        [SerializeField] private ZoneSettings _zone = new();
+        [Tooltip("Applied on every tick to everyone hostile inside")]
+        [SerializeField] private StatusEffectApplication[] _onHitEffects;
 
         public int StartFrame => _startFrame;
         public int EndFrame => -1;
@@ -25,8 +31,8 @@ namespace CGD.Combat
             Quaternion rot = Quaternion.LookRotation(ctx.Forward, ctx.Up);
             var go = PrefabPool.Spawn(_prefab, position, rot);
 
-            if (go.TryGetComponent(out PersistentZone zone))
-                zone.Init(ctx.Source, ctx.HitMask);
+            if (go.TryGetComponent(out DamageZone zone))
+                zone.Begin(_zone, _zone.Radius, ctx.Source, ctx.HitMask, _onHitEffects);
         }
 
         public void OnTick(ActionContext ctx) { }

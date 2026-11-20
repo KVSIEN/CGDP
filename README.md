@@ -28,7 +28,7 @@ Assets/
     Scenes/                 ShootingRange.unity, MapGenerator.unity (generated level), RoomGallery.unity (every room place and prop), AISimulator.unity (behavior tree arena)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            Core/ (Ability base, AbilityContext, cooldowns and charges, Surge, resource costs, PlayerAbilities — the player's slots,
-                            TimelineAbilityRunner, caster interfaces), Types/ (one class per kind of ability, incl. TargetedAbility), Zones/ (Rift, Snare)
+                            TimelineAbilityRunner, caster interfaces), Types/ (one class per kind of ability, incl. TargetedAbility and ZoneAbility)
       Artifacts/            offhand artifacts: ArtifactDefinition/Instance (rolled stats, passives, perks), OffhandBehavior (+ OffhandUse state) with
                             Cast, Ward and Channel behaviors; add a new artifact kind by subclassing OffhandBehavior and OffhandUse
       Animation/            Animator parameter bridge (AnimatorBridge, AnimatorParams), PlayerAnimator, EnemyAnimator, ViewmodelAnimator (per-weapon override controllers), Ragdoll;
@@ -38,7 +38,7 @@ Assets/
                             Composites/, Decorators/, Actions/, Blackboard/ (flag, number and key nodes), Debugging/ (BtTrace)
       Audio/                audio pool, sound banks, surface lookup; mixer: AudioMixerController, AudioMixerSettings, MixState (+ request), GameplayMixStates
       CameraEffects/        shake, kicks, FOV punches, lag, view blends (CameraEffectsController), CameraImpulses
-      Combat/               Damage/, Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/, Reflect/ (Reflector, ReflectProfile), Projectile, Stunnable, Noise
+      Combat/               Damage/, Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/, Hazards/ (HazardZone, DamageZone + ZoneSettings: the one lingering damage zone), Reflect/ (Reflector, ReflectProfile), Projectile, Stunnable, Noise
       Core/                 shared utilities (cooldowns, ranges, Pooling/ — PrefabPool, IPoolable,
                             Random/ — Seed, RandomStream, SeedVariants; StateMachine/ — StateMachine<T>, IState)
       Crafting/             RecipeDefinition, Crafter (rules), CraftingStation
