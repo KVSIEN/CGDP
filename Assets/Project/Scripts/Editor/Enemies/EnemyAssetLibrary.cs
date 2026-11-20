@@ -27,14 +27,16 @@ namespace CGD.Editor
             return all;
         }
 
-        // Every prefab with an enemy brain on its root, e.g. as templates for a new type.
+        // Every prefab with an enemy brain and its Enemy Data on its root, e.g. as templates for a
+        // new type. The body bases the enemies are variants of (EnemyBase, <Faction>EnemyBase) have
+        // no data, so they're left out: they aren't enemies anyone can spawn.
         public static List<GameObject> AllEnemyPrefabs()
         {
             var all = new List<GameObject>();
             foreach (string guid in AssetDatabase.FindAssets("t:Prefab", new[] { PrefabFolder }))
             {
                 var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(guid));
-                if (prefab != null && prefab.TryGetComponent(out EnemyAI _)) all.Add(prefab);
+                if (prefab != null && prefab.TryGetComponent(out EnemyAI ai) && ai.Data != null) all.Add(prefab);
             }
             return all;
         }

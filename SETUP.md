@@ -293,6 +293,18 @@ Enemy              [NavMeshAgent, EnemyAI, EnemyHealth, EnemyHealthBar, Stunnabl
   Head / Body / Limbs   [Collider, Hitbox]?
 ```
 
+**Faction enemy prefabs are variants, not copies** (`Prefabs/Characters/Enemies/`):
+
+```
+Bases/EnemyBase          the shared body: every component, the Body and Head hitboxes, a Visor and
+                         three Decoration children; no Enemy Data
+  Bases/BioEnemyBase     Bio look (green, MossBack / Pod1 / Pod2)      → BioTier2, BioTier3, Scavenger
+  Bases/TechEnemyBase    Tech look (blue, WaistLight / Antenna / Tip)  → TechTier2, TechTier3, MaintenanceBot, CleanerBot
+  Bases/VoidEnemyBase    Void look (purple, FrostRing / Crack / Shard) → VoidTier2, VoidTier3, Husk
+```
+
+Each enemy overrides only its name, its `EnemyData` (on `EnemyAI` and `EnemyHealth`) and its root scale (Tier 2 ×1.15, Tier 3 ×1.3); CleanerBot also shrinks the body to a small bot. Change a component or a faction's look on the base so every enemy built on it follows; give a new enemy of an existing faction a variant of its faction base (the Enemy Type Creator makes a variant of whichever enemy it starts from). The bases have no data, so the enemy pickers (Enemy Type Creator, Simulator Lineup) leave them out. The AITest agents and Grazer are still separate prefabs.
+
 | Component | Assign | Notes |
 |---|---|---|
 | **EnemyAI** | `_data` = an `EnemyData`, `_waypoints`?, `_targetMask`, `_obstacleMask` | Needs a NavMesh (baked, or `RuntimeNavMesh`). Finds targets by team. Runs the data's behavior tree if it has one. Where it starts is its **post**: without `_waypoints` it guards there, and it returns there after searches. |
