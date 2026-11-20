@@ -62,10 +62,20 @@ namespace CGD.Level
             return sizes;
         }
 
-        // A single tile that needs no particular side up can take any angle.
+        // Only loose clutter on a single tile takes any angle. Anything turned with intent (toward
+        // the centre, toward what it stands near) snaps to the nearest quarter turn, so benches,
+        // cases and seats stand square to the room instead of at odd angles.
         internal static bool HasFreeYaw(RoomPropPlacement placement, Vector2Int size) =>
-            size == Vector2Int.one && placement.Clearance == 0 && !placement.Symmetric
-            && placement.Facing is not (PropFacing.AgainstWall or PropFacing.AcrossSightline or PropFacing.AlongRoom);
+            size == Vector2Int.one && placement.Clearance == 0 && !placement.Symmetric && placement.Facing == PropFacing.Random;
+
+        // How far a spot is from where a Centred placement fills outward from: what it stands
+        // Near when it has a Near, otherwise the room's middle.
+        internal float FocusDistance(RectInt rect, RoomPropPlacement placement)
+        {
+            if (placement.StandsNear && TryNearest(rect, placement.Near, int.MaxValue, out RectInt target))
+                return TileDistance(rect, target) + (rect.center - target.center).magnitude * 0.01f;
+            return (rect.center - _anchor).magnitude;
+        }
 
         // `zones`: only spots wholly inside these zones (null = anywhere in the room).
         internal List<PropCandidate> Candidates(RoomPropPlacement placement, Vector2Int size, ICollection<int> zones = null)

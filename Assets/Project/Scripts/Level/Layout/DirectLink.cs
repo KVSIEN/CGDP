@@ -17,5 +17,8 @@ namespace CGD.Level
         // The floor tiles of the connection's A and B rooms that the doorways stand on.
         public Vector2Int InsideA { get; }
         public Vector2Int InsideB { get; }
+
+        // The same link after both its rooms moved by `offset`.
+        public DirectLink Translated(Vector2Int offset) => new(Tile + offset, InsideA + offset, InsideB + offset);
     }
 }

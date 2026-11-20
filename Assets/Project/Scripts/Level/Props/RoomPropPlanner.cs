@@ -38,7 +38,6 @@ namespace CGD.Level
         private static readonly Vector2[] Quarters = { new(-1f, -1f), new(1f, -1f), new(-1f, 1f), new(1f, 1f) };
 
         private readonly RoomStructure _structure;
-        private readonly Vector2 _anchor;
         private readonly RandomStream _random;
         private readonly int _fillCap;
         private readonly float _countScale;
@@ -62,7 +61,6 @@ namespace CGD.Level
                                float countScale = 1f, float concealmentScale = 1f)
         {
             _structure  = structure;
-            _anchor     = anchor;
             _random     = random;
             _fillCap    = Mathf.FloorToInt(structure.Footprint.Count * Mathf.Clamp01(fillShare));
             _countScale = Mathf.Max(0f, countScale);
@@ -103,21 +101,52 @@ namespace CGD.Level
             // A piece for bigger rooms is left out of a small one: not a shortfall.
             if (placement.MinRoomTiles > 0 && FloorTiles(zones) < placement.MinRoomTiles) return 0;
 
-            int count = Scaled(placement, RollCount(placement, zones), exactConcealment, countScale);
-            if (count <= 0) return 0;
+            int asked = 0, placed = 0;
+            bool hitFillCap = false, relaxed = false;
+            foreach (ICollection<int> area in Areas(placement, zones))
+            {
+                int count = Scaled(placement, RollCount(placement, area), exactConcealment, countScale);
+                if (count <= 0) continue;
 
+                asked += count;
+                placed += PlaceIn(placement, count, area, ref hitFillCap, ref relaxed);
+            }
+            if (asked > 0) _outcomes.Add(new PropPlacementOutcome(placement, asked, placed, hitFillCap, relaxed));
+            return placed;
+        }
+
+        // Where a placement's count applies: the zones it was given as one area, or with Each
+        // Zone, every zone it may use on its own (each cabin of a row, each bay of a ward).
+        private IEnumerable<ICollection<int>> Areas(RoomPropPlacement placement, ICollection<int> zones)
+        {
+            if (!placement.EachZone)
+            {
+                yield return zones;
+                yield break;
+            }
+            for (int zone = 0; zone < _structure.ZoneCount; zone++)
+            {
+                if (zones != null && !zones.Contains(zone)) continue;
+                if (placement.Zone == PropZone.Largest && zone != _structure.LargestZone) continue;
+                if (placement.Zone == PropZone.Others && zone == _structure.LargestZone) continue;
+                yield return new[] { zone };
+            }
+        }
+
+        // Puts down up to `count` in one area; a Required placement that finds no spot is
+        // loosened until it does.
+        private int PlaceIn(RoomPropPlacement placement, int count, ICollection<int> zones, ref bool hitFillCap, ref bool relaxed)
+        {
             _hitFillCap = false;
             var own = new List<RectInt>();
             int placed = Fill(placement, count, required: false, zones, own);
-            bool hitFillCap = _hitFillCap;
-            bool relaxed = false;
+            hitFillCap |= _hitFillCap;
             for (int level = 1; placed == 0 && placement.Required && level <= 2; level++)
             {
                 placed  = Fill(placement.Relaxed(level), 1, required: true, zones, own);
-                relaxed = placed > 0;
+                relaxed |= placed > 0;
             }
             Remember(placement.Key, own);
-            _outcomes.Add(new PropPlacementOutcome(placement, count, placed, hitFillCap, relaxed));
             return placed;
         }
 
@@ -282,7 +311,7 @@ namespace CGD.Level
             bool single = size == Vector2Int.one;
             Vector2 centre = candidate.Rect.center;
             Vector2 forward = candidate.Forward;
-            float yaw = YawFor(candidate, placement, size, centre);
+            float yaw = YawFor(candidate, placement, size);
 
             int pile = single && !placement.HasMembers ? Mathf.Clamp(placement.Pile.Evaluate(_random), 1, MaxPile) : 1;
             Vector2 position = centre;
@@ -325,22 +354,9 @@ namespace CGD.Level
             }
         }
 
-        private float YawFor(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, Vector2 centre)
-        {
-            if (!PropPlacementRules.HasFreeYaw(placement, size)) return candidate.Rotation * 90f;
-
-            switch (placement.Facing)
-            {
-                case PropFacing.Square:
-                    return _random.Range(0, 4) * 90f;
-                case PropFacing.TowardCentre when (_anchor - centre).sqrMagnitude > 0.01f:
-                    return Yaw(_anchor - centre);
-                case PropFacing.TowardNear when _rules.TryNearest(candidate.Rect, placement.Near, int.MaxValue, out RectInt target):
-                    return Yaw(target.center - centre);
-                default:
-                    return _random.Range(0f, 360f);
-            }
-        }
+        // Loose clutter takes any angle; everything else its candidate's quarter turn.
+        private float YawFor(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size) =>
+            PropPlacementRules.HasFreeYaw(placement, size) ? _random.Range(0f, 360f) : candidate.Rotation * 90f;
 
         // Along the wall for wall props, any way for the rest.
         private Vector2 Jitter(RoomPropPlacement placement, Vector2 forward)
@@ -350,8 +366,5 @@ namespace CGD.Level
                 return new Vector2(Mathf.Abs(forward.y), Mathf.Abs(forward.x)) * _random.Range(-reach, reach);
             return new Vector2(_random.Range(-reach, reach), _random.Range(-reach, reach));
         }
-
-        // Unity yaw: 0° faces +Z (tile +y), 90° faces +X.
-        private static float Yaw(Vector2 forward) => Mathf.Atan2(forward.x, forward.y) * Mathf.Rad2Deg;
     }
 }

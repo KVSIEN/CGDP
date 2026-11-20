@@ -9,5 +9,6 @@ namespace CGD.Level
         Cluster,  // next to what is already placed, with the odd new patch: thickets, drifts and heaps instead of even spacing
         Line,     // along what is already placed, down the room's long axis: machines nose to tail in rows
         Showcase, // in plain view of the doorway a player arrives by, toward the far end: the landmark seen on the way in
+        Centred,  // the free spot nearest the room's middle (or what it stands Near), so a count fills a compact, ordered block outward: on a Lattice, rows and columns with no gaps
     }
 }

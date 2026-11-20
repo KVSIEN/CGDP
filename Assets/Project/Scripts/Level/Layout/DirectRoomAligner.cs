@@ -4,25 +4,29 @@ using CGD.Map;
 
 namespace CGD.Level
 {
-    // Moves rooms so that the two ends of a direct connection touch: one room is shifted
-    // until a doorway of each opens onto the same tile, leaving a single tile between them.
-    // A room is shifted at most once and never after another room has been fitted to it,
-    // so earlier fits stay valid. A pair that can't be fitted (too far apart, or in the way
-    // of another room) keeps its ordinary hallway and a warning says so.
+    // Moves rooms so that the two ends of a direct connection touch: one side is shifted until
+    // a doorway of each opens onto the same tile, leaving a single tile between them. Rooms
+    // already fitted together form a group that moves as one, so every earlier fit stays valid
+    // and a chain or a ring of rooms can be fitted door to door. Two rooms of the same group
+    // are only linked when their doorways already face each other. A pair that can't be fitted
+    // (too far apart, or in the way of another room) keeps its ordinary hallway and a warning
+    // says so.
     public class DirectRoomAligner
     {
-        // Rooms need at least this many empty tiles between them, doorway tile excepted.
+        // Empty tiles kept between the two rooms a direct door joins (the doorway tile).
         private const int Clearance = 1;
+        // Empty tiles kept from every other room: a hallway and the wall on each side of it.
+        private const int CorridorClearance = 3;
 
         private readonly int _maxShift;
 
-        // maxShift: furthest a room may move, in tiles (Manhattan).
+        // maxShift: furthest a group may move, in tiles (Manhattan).
         public DirectRoomAligner(int maxShift) => _maxShift = maxShift;
 
         public Dictionary<MapConnection, DirectLink> Align(MapGraph graph, LevelLayout layout)
         {
-            var links   = new Dictionary<MapConnection, DirectLink>();
-            var settled = new HashSet<int>();
+            var links  = new Dictionary<MapConnection, DirectLink>();
+            var groups = new Dictionary<int, HashSet<int>>();   // room id → the rooms fitted with it (shared set)
 
             foreach (MapConnection connection in graph.Connections)
             {
@@ -30,42 +34,63 @@ namespace CGD.Level
                 if (!layout.Rooms.TryGetValue(connection.A, out LevelRoom a) ||
                     !layout.Rooms.TryGetValue(connection.B, out LevelRoom b)) continue;
 
-                // Prefer moving B; A moves only when B is already fitted to something else.
-                bool moveB = !settled.Contains(b.Node.Id);
-                if (!moveB && settled.Contains(a.Node.Id))
+                HashSet<int> groupA = GroupOf(groups, a), groupB = GroupOf(groups, b);
+                if (groupA == groupB)
                 {
-                    Warn(layout, a, b, "both rooms are already fitted to others");
+                    if (TryFit(layout, a, b, groupB, maxShift: 0, out Fit inPlace)) links[connection] = inPlace.Link(fixedIsA: true);
+                    else Warn(layout, a, b, "they are already fitted to rooms that hold them apart");
                     continue;
                 }
 
-                LevelRoom fixedRoom = moveB ? a : b, mover = moveB ? b : a;
-                if (!TryFit(layout, fixedRoom, mover, out Vector2Int offset, out DoorSocket fixedSocket, out DoorSocket moverSocket))
+                // The smaller group moves, so the least of the level shifts.
+                bool moveB = groupB.Count <= groupA.Count;
+                if (!TryMove(layout, a, b, moveB ? groupB : groupA, moveB, links, out Fit fit))
                 {
-                    Warn(layout, a, b, "no doorways line up without crowding another room");
-                    continue;
+                    moveB = !moveB;
+                    if (!TryMove(layout, a, b, moveB ? groupB : groupA, moveB, links, out fit))
+                    {
+                        Warn(layout, a, b, "no doorways line up without crowding another room");
+                        continue;
+                    }
                 }
 
-                layout.MoveRoom(mover, offset);
-                settled.Add(fixedRoom.Node.Id);
-                settled.Add(mover.Node.Id);
-
-                Vector2Int moverInside = moverSocket.Inside + offset;
-                links[connection] = moveB
-                    ? new DirectLink(fixedSocket.Outside, fixedSocket.Inside, moverInside)
-                    : new DirectLink(fixedSocket.Outside, moverInside, fixedSocket.Inside);
+                links[connection] = fit.Link(fixedIsA: moveB);
+                groupA.UnionWith(groupB);
+                foreach (int id in groupB) groups[id] = groupA;
             }
             return links;
         }
 
-        // The shortest shift that puts one doorway of `mover` face to face with one of `fixedRoom`.
-        private bool TryFit(LevelLayout layout, LevelRoom fixedRoom, LevelRoom mover, out Vector2Int bestOffset,
-                            out DoorSocket bestFixed, out DoorSocket bestMover)
+        private static HashSet<int> GroupOf(Dictionary<int, HashSet<int>> groups, LevelRoom room)
         {
-            bestOffset = default;
-            bestFixed  = default;
-            bestMover  = default;
-            int bestShift = int.MaxValue;
+            if (!groups.TryGetValue(room.Node.Id, out HashSet<int> group))
+                groups[room.Node.Id] = group = new HashSet<int> { room.Node.Id };
+            return group;
+        }
 
+        // Shifts the mover's whole group (and the links inside it) so the pair's doorways meet.
+        private bool TryMove(LevelLayout layout, LevelRoom a, LevelRoom b, HashSet<int> moving, bool moveB,
+                             Dictionary<MapConnection, DirectLink> links, out Fit fit)
+        {
+            LevelRoom fixedRoom = moveB ? a : b, mover = moveB ? b : a;
+            if (!TryFit(layout, fixedRoom, mover, moving, _maxShift, out fit)) return false;
+            if (fit.Offset == Vector2Int.zero) return true;
+
+            var rooms = new List<LevelRoom>(moving.Count);
+            foreach (int id in moving) rooms.Add(layout.Rooms[id]);
+            layout.MoveRooms(rooms, fit.Offset);
+            var shifted = new List<MapConnection>();
+            foreach (MapConnection linked in links.Keys)
+                if (moving.Contains(linked.A)) shifted.Add(linked);
+            foreach (MapConnection linked in shifted) links[linked] = links[linked].Translated(fit.Offset);
+            return true;
+        }
+
+        // The shortest shift of `moving` that puts one doorway of `mover` face to face with one
+        // of `fixedRoom`. Offsets are applied to `mover`'s current sockets.
+        private static bool TryFit(LevelLayout layout, LevelRoom fixedRoom, LevelRoom mover, HashSet<int> moving, int maxShift, out Fit best)
+        {
+            var fits = new List<(int shift, int order, Fit fit)>();
             foreach (DoorSocket f in fixedRoom.Footprint.Sockets)
                 foreach (DoorSocket m in mover.Footprint.Sockets)
                 {
@@ -73,35 +98,82 @@ namespace CGD.Level
 
                     Vector2Int offset = f.Outside - m.Outside;
                     int shift = Mathf.Abs(offset.x) + Mathf.Abs(offset.y);
-                    if (shift >= bestShift || shift > _maxShift) continue;
+                    if (shift > maxShift) continue;
 
                     // The mover must end up on the side the doorway faces.
                     Vector2 toMover = mover.Center + (Vector2)offset - fixedRoom.Center;
                     if (Vector2.Dot(toMover, f.Outward) <= 0f) continue;
-                    if (!IsClear(layout, mover, offset)) continue;
-
-                    bestShift  = shift;
-                    bestOffset = offset;
-                    bestFixed  = f;
-                    bestMover  = m;
+                    fits.Add((shift, fits.Count, new Fit(offset, f.Outside, f.Inside, m.Inside + offset)));
                 }
-            return bestShift != int.MaxValue;
+
+            // Equal shifts keep the sockets' order, so a seed lays out the same.
+            fits.Sort((x, y) => x.shift != y.shift ? x.shift.CompareTo(y.shift) : x.order.CompareTo(y.order));
+            foreach ((int _, int _, Fit fit) in fits)
+                if (IsClear(layout, moving, fixedRoom, fit.Offset))
+                {
+                    best = fit;
+                    return true;
+                }
+            best = default;
+            return false;
         }
 
-        // No tile of the shifted room may come within Clearance tiles of another room.
-        private static bool IsClear(LevelLayout layout, LevelRoom mover, Vector2Int offset)
+        // The shifted rooms keep Clearance from the room they are joined to and a corridor's width
+        // from every other room outside them, so the hallways still to be routed can pass.
+        private static bool IsClear(LevelLayout layout, HashSet<int> moving, LevelRoom fixedRoom, Vector2Int offset)
         {
-            foreach (Vector2Int tile in mover.Footprint.Tiles)
-                for (int dx = -Clearance; dx <= Clearance; dx++)
-                    for (int dy = -Clearance; dy <= Clearance; dy++)
-                    {
-                        LevelRoom other = layout.RoomAt(tile + offset + new Vector2Int(dx, dy));
-                        if (other != null && other != mover) return false;
-                    }
+            foreach (int id in moving)
+            {
+                RoomFootprint footprint = layout.Rooms[id].Footprint;
+                foreach (Vector2Int tile in footprint.Tiles)
+                {
+                    if (!IsEdge(footprint, tile)) continue;
+                    for (int dx = -CorridorClearance; dx <= CorridorClearance; dx++)
+                        for (int dy = -CorridorClearance; dy <= CorridorClearance; dy++)
+                        {
+                            LevelRoom other = layout.RoomAt(tile + offset + new Vector2Int(dx, dy));
+                            if (other == null || moving.Contains(other.Node.Id)) continue;
+                            int reach = other.Node.Id == fixedRoom.Node.Id ? Clearance : CorridorClearance;
+                            if (Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dy)) <= reach) return false;
+                        }
+                }
+            }
             return true;
+        }
+
+        // A tile with a neighbour, corners included, outside the room: only these can come near another.
+        private static bool IsEdge(RoomFootprint footprint, Vector2Int tile)
+        {
+            for (int dx = -1; dx <= 1; dx++)
+                for (int dy = -1; dy <= 1; dy++)
+                    if (!footprint.Contains(tile + new Vector2Int(dx, dy))) return true;
+            return false;
         }
 
         private static void Warn(LevelLayout layout, LevelRoom a, LevelRoom b, string reason) =>
             layout.Warnings.Add($"Direct door {a.Node.Type} #{a.Node.Id} – {b.Node.Type} #{b.Node.Id} built as a hallway: {reason}.");
+
+        // Where a pair's doorways meet once the mover has shifted by Offset: the shared tile, and
+        // the floor tile of each room it opens from.
+        private readonly struct Fit
+        {
+            public Fit(Vector2Int offset, Vector2Int tile, Vector2Int insideFixed, Vector2Int insideMover)
+            {
+                Offset      = offset;
+                Tile        = tile;
+                InsideFixed = insideFixed;
+                InsideMover = insideMover;
+            }
+
+            public Vector2Int Offset      { get; }
+            public Vector2Int Tile        { get; }
+            public Vector2Int InsideFixed { get; }
+            public Vector2Int InsideMover { get; }
+
+            // The link in the connection's A, B order.
+            public DirectLink Link(bool fixedIsA) => fixedIsA
+                ? new DirectLink(Tile, InsideFixed, InsideMover)
+                : new DirectLink(Tile, InsideMover, InsideFixed);
+        }
     }
 }

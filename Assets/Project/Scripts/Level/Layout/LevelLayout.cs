@@ -41,15 +41,17 @@ namespace CGD.Level
             }
         }
 
-        // Shifts a room that is already placed, before any corridor is built.
-        public void MoveRoom(LevelRoom room, Vector2Int offset)
+        // Shifts rooms that are already placed, together, before any corridor is built. All are
+        // lifted before any is put down, so rooms moving into each other's old tiles stay whole.
+        public void MoveRooms(IReadOnlyList<LevelRoom> rooms, Vector2Int offset)
         {
-            foreach (Vector2Int tile in room.Footprint.Tiles)
-            {
-                _walkable.Remove(tile);
-                _roomTiles.Remove(tile);
-            }
-            AddRoom(room.Translated(offset));
+            foreach (LevelRoom room in rooms)
+                foreach (Vector2Int tile in room.Footprint.Tiles)
+                {
+                    _walkable.Remove(tile);
+                    _roomTiles.Remove(tile);
+                }
+            foreach (LevelRoom room in rooms) AddRoom(room.Translated(offset));
         }
 
         // The tiles of each connection's corridor.

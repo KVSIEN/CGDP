@@ -5,8 +5,8 @@ using CGD.Core;
 namespace CGD.Level
 {
     // Picks which candidate spot a placement tries next, by its PropSelection: anywhere,
-    // spread out, in patches, in a row, across the longest open sightline, or in view of the
-    // way in. Candidates that
+    // spread out, in patches, in a row, across the longest open sightline, in view of the
+    // way in, or packed outward from the middle. Candidates that
     // have stopped being placeable are dropped from the pool on the way.
     internal sealed class PropSelector
     {
@@ -53,8 +53,30 @@ namespace CGD.Level
             PropSelection.Cluster => SelectCluster(placement, pool, own),
             PropSelection.Line   => SelectLine(placement, pool, own),
             PropSelection.Showcase => SelectShowcase(placement, pool, own),
+            PropSelection.Centred => SelectCentred(placement, pool, own),
             _                    => SelectRandom(placement, pool, own),
         };
+
+        // The free spot nearest the room's middle, or what the placement stands Near: each pick
+        // grows the same block outward, so a count fills rows and columns with no gaps instead
+        // of scattering. Equally near spots are taken in the shuffled pool's order.
+        private int SelectCentred(RoomPropPlacement placement, List<PropCandidate> pool, List<RectInt> own)
+        {
+            DropUnplaceable(placement, pool, own);
+
+            int best = -1;
+            float bestDistance = float.MaxValue;
+            for (int i = 0; i < pool.Count; i++)
+            {
+                if (!_rules.Eligible(pool[i], placement)) continue;
+
+                float distance = _rules.FocusDistance(pool[i].Rect, placement);
+                if (distance >= bestDistance - 0.001f) continue;
+                best = i;
+                bestDistance = distance;
+            }
+            return best;
+        }
 
         // A spot seen from the doorway a player arrives by, toward the far end: of those seen,
         // one at random from the deepest quarter, so the room's landmark is the first thing in

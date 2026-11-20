@@ -252,7 +252,7 @@ namespace CGD.Tests
                     Assert.Greater(room.Partitions.Count, 12, $"seed {seed}: no office walls");
                     Assert.Greater(room.Openings.Count, 3, $"seed {seed}: no doorways");
                     Assert.IsTrue(room.StaysConnected(System.Array.Empty<Vector2Int>()), $"seed {seed}: part of the maze is cut off");
-                    Assert.AreEqual(1, room.ZoneCount, $"seed {seed}: office walls split the room into zones");
+                    Assert.Greater(room.ZoneCount, 1, $"seed {seed}: the offices aren't zones of their own");
                     foreach (PartitionEdge opening in room.Openings)
                         Assert.IsFalse(room.IsPartitioned(opening.Tile, opening.Other), $"seed {seed}: a doorway has a wall in it");
                 }

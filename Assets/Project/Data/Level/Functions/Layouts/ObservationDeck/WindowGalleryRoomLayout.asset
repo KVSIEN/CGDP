@@ -28,10 +28,10 @@ MonoBehaviour:
   - Prefabs:
     - {fileID: 4492462149717228501, guid: 4d499d28a50f47f388f02a980c77ddf5, type: 3}
     Count:
-      Min: 2
-      Max: 4
+      Min: 4
+      Max: 6
       Bias: 0
-    ScaleByRoomSize: 0
+    ScaleByRoomSize: 1
     Footprint: {x: 1, y: 1}
     On: 1
     Avoid: 124
@@ -39,15 +39,15 @@ MonoBehaviour:
     Facing: 2
     Clearance: 1
     Spacing: 1
-    Selection: 4
+    Selection: 6
     Pile:
       Min: 1
       Max: 1
       Bias: 0
     Jitter: 0
     Required: 0
-    Lattice: {x: 0, y: 0}
-    Symmetric: 0
+    Lattice: {x: 3, y: 3}
+    Symmetric: 1
     Decor: 0
     NearRoute: 0
     OffRoute: 0
@@ -63,10 +63,10 @@ MonoBehaviour:
     - {fileID: 174689818534657366, guid: ae7e0963ed9e418cbba020b4b8023758, type: 3}
     Activity: {fileID: 11400000, guid: 7094f214361d4e419b86597f60799031, type: 2}
     Count:
-      Min: 2
-      Max: 4
+      Min: 3
+      Max: 6
       Bias: 0
-    ScaleByRoomSize: 0
+    ScaleByRoomSize: 1
     Footprint: {x: 1, y: 1}
     On: 0
     Avoid: 124
@@ -74,7 +74,7 @@ MonoBehaviour:
     Facing: 6
     Clearance: 0
     Spacing: 1
-    Selection: 1
+    Selection: 6
     Pile:
       Min: 1
       Max: 1
@@ -98,12 +98,12 @@ MonoBehaviour:
     - {fileID: 126843052005683991, guid: d07f3118f7ae4dbf92f6c478e7a8da78, type: 3}
     Activity: {fileID: 11400000, guid: 25d0720e9217471bb77b24e450249459, type: 2}
     Count:
-      Min: 1
-      Max: 2
+      Min: 2
+      Max: 4
       Bias: 0
     ScaleByRoomSize: 0
     Footprint: {x: 1, y: 1}
-    On: 1
+    On: 2
     Avoid: 124
     Zone: 0
     Facing: 1

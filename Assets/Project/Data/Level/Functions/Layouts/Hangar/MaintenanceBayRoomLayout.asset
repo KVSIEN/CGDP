@@ -107,10 +107,10 @@ MonoBehaviour:
     On: 0
     Avoid: 124
     Zone: 0
-    Facing: 0
+    Facing: 1
     Clearance: 0
     Spacing: 1
-    Selection: 0
+    Selection: 6
     Pile:
       Min: 1
       Max: 1

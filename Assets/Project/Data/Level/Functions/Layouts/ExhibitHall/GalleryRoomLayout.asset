@@ -40,7 +40,7 @@ MonoBehaviour:
     Facing: 1
     Clearance: 0
     Spacing: 1
-    Selection: 1
+    Selection: 6
     Pile:
       Min: 1
       Max: 1
@@ -75,7 +75,7 @@ MonoBehaviour:
     Facing: 6
     Clearance: 0
     Spacing: 1
-    Selection: 1
+    Selection: 6
     Pile:
       Min: 1
       Max: 1
@@ -109,16 +109,16 @@ MonoBehaviour:
     Zone: 0
     Facing: 1
     Clearance: 0
-    Spacing: 2
-    Selection: 1
+    Spacing: 1
+    Selection: 6
     Pile:
       Min: 1
       Max: 1
       Bias: 0
     Jitter: 0
     Required: 0
-    Lattice: {x: 0, y: 0}
-    Symmetric: 0
+    Lattice: {x: 3, y: 3}
+    Symmetric: 1
     Decor: 0
     NearRoute: 0
     OffRoute: 0

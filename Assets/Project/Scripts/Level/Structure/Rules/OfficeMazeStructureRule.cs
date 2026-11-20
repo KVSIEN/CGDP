@@ -6,7 +6,7 @@ namespace CGD.Level
 {
     // An office floor: narrow halls running the length of the room with rows of offices on
     // either side, each office with its own doorway onto a hall, split off from its neighbours by
-    // full-height walls. Every wall leaves the room walkable (walls over a route or beside a
+    // full-height walls, and a zone of its own. Every wall leaves the room walkable (walls over a route or beside a
     // doorway become doorways instead, and one that would cut the room in two is dropped), and
     // each doorway gets a lintel over it. Rooms too small for halls and offices are left alone.
     [CreateAssetMenu(fileName = "OfficeMazeStructureRule", menuName = "CGD/Level/Structure/Office Maze")]
@@ -118,36 +118,28 @@ namespace CGD.Level
             if (row <= 0 || !HasBothSides(structure, tileAt, from, to, row)) return;
 
             int doorway = door ? random.Range(from, to) : -1;
-            var walls = new List<PartitionEdge>();
-            var openings = new List<PartitionEdge>();
+            var wall = new Wall();
             for (int along = from; along < to; along++)
             {
                 Vector2Int a = tileAt(along, row - 1);
                 Vector2Int b = tileAt(along, row);
-                if (!structure.Contains(a) || !structure.Contains(b)) continue;
-
-                bool opening = along == doorway || structure.EdgeMustStayOpen(a, b);
-                (opening ? openings : walls).Add(new PartitionEdge(a, b, opening ? _doorHeight : 0f, dividesZones: false));
+                if (structure.Contains(a) && structure.Contains(b)) wall.Add(structure, a, b, along == doorway, _doorHeight);
             }
-            Commit(structure, walls, openings);
+            wall.Commit(structure);
         }
 
         // The wall between this office and the next, from the hall side to the far side.
         private void WallBetweenOffices(RoomStructure structure, System.Func<int, int, Vector2Int> tileAt, int along, Block block, RandomStream random)
         {
             int doorway = random.Chance(_suiteChance) ? random.Range(block.Start, block.End) : -1;
-            var walls = new List<PartitionEdge>();
-            var openings = new List<PartitionEdge>();
+            var wall = new Wall();
             for (int row = block.Start; row < block.End; row++)
             {
                 Vector2Int a = tileAt(along - 1, row);
                 Vector2Int b = tileAt(along, row);
-                if (!structure.Contains(a) || !structure.Contains(b)) continue;
-
-                bool opening = row == doorway || structure.EdgeMustStayOpen(a, b);
-                (opening ? openings : walls).Add(new PartitionEdge(a, b, opening ? _doorHeight : 0f, dividesZones: false));
+                if (structure.Contains(a) && structure.Contains(b)) wall.Add(structure, a, b, row == doorway, _doorHeight);
             }
-            Commit(structure, walls, openings);
+            wall.Commit(structure);
         }
 
         private static bool HasBothSides(RoomStructure structure, System.Func<int, int, Vector2Int> tileAt, int from, int to, int row)
@@ -157,11 +149,30 @@ namespace CGD.Level
             return false;
         }
 
-        // Doorways only where the walls beside them were accepted.
-        private static void Commit(RoomStructure structure, List<PartitionEdge> walls, List<PartitionEdge> openings)
+        // One run of wall and the openings in it. An office's own doorway keeps the office a zone
+        // of its own, so it is furnished as one (a bunk in every cabin, a desk in every cubicle).
+        // A gap left where a route crosses joins what it crosses, so the halls and the offices the
+        // routes run through stay the room's main space.
+        private sealed class Wall
         {
-            if (walls.Count == 0 || !structure.TryAddPartition(walls)) return;
-            foreach (PartitionEdge opening in openings) structure.AddOpening(opening);
+            private readonly List<PartitionEdge> _walls = new();
+            private readonly List<PartitionEdge> _doors = new();
+            private readonly List<PartitionEdge> _gaps  = new();
+
+            public void Add(RoomStructure structure, Vector2Int a, Vector2Int b, bool door, float doorHeight)
+            {
+                if (structure.EdgeMustStayOpen(a, b)) _gaps.Add(new PartitionEdge(a, b, doorHeight, dividesZones: false));
+                else if (door) _doors.Add(new PartitionEdge(a, b, doorHeight, dividesZones: false));
+                else _walls.Add(new PartitionEdge(a, b, 0f, dividesZones: false));
+            }
+
+            // Doorways only where the walls beside them were accepted.
+            public void Commit(RoomStructure structure)
+            {
+                if (_walls.Count == 0 || !structure.TryAddPartition(_walls)) return;
+                foreach (PartitionEdge door in _doors) structure.AddOpening(door, separatesZones: true);
+                foreach (PartitionEdge gap in _gaps) structure.AddOpening(gap);
+            }
         }
     }
 }

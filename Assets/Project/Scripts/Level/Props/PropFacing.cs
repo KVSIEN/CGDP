@@ -1,8 +1,9 @@
 namespace CGD.Level
 {
+    // Every facing but Random keeps a prop square to the room (a multiple of 90°).
     public enum PropFacing
     {
-        Random,
+        Random,        // any angle for a single tile: loose clutter only
         Square,        // turned a multiple of 90°, lined up with the room
         AgainstWall,   // pushed against a wall (or inner wall) and facing away from it
         TowardCentre,

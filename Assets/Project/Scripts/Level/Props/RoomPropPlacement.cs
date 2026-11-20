@@ -29,6 +29,8 @@ namespace CGD.Level
         [Tooltip("Never on tiles with any of these tags (floor already taken by a pillar, prop or reserved access is always avoided)")]
         public RoomTileTags Avoid = RoomTileTags.Walkway | RoomTileTags.NearDoor | RoomTileTags.Centre | RoomTileTags.Structure | RoomTileTags.Prop;
         public PropZone Zone;
+        [Tooltip("Count is for each zone it may use, not for the room: a bunk and a locker in every cabin, a bed in every bay. Zone still says which (Others = every cell but the main space); counts that scale by room size read each zone's floor")]
+        public bool EachZone;
         public PropFacing Facing;
         [Tooltip("Free floor kept in front of it, in tiles, so it can be walked up to (a harvest node, a cache, a console). Nothing else is put there. A random facing becomes square. 0 = none")]
         [Min(0)] public int Clearance;

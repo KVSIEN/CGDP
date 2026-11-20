@@ -74,7 +74,7 @@ MonoBehaviour:
     Facing: 6
     Clearance: 0
     Spacing: 1
-    Selection: 1
+    Selection: 6
     Pile:
       Min: 1
       Max: 1
@@ -109,7 +109,7 @@ MonoBehaviour:
     Facing: 2
     Clearance: 0
     Spacing: 1
-    Selection: 0
+    Selection: 6
     Pile:
       Min: 1
       Max: 1

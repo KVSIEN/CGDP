@@ -978,6 +978,65 @@ doorway: a Start node stands past the first neighbour.
 - Not run in Unity yet: compiled with the whole project against reference assemblies, and the
   flow tests run in a console harness (see the roadmap).
 
+## 16. Order in the furnishing (Phase 16)
+
+Play-testing showed rooms that were furnished but read as unplanned: benches and display cases at
+odd angles and uneven intervals, a sculpture court's cases pushed out to the walls, cabin rows
+with empty cabins, a hangar whose one shuttle was a speck. Three causes, three rules:
+
+- **Square to the room.** A single-tile piece turned *Toward Centre* or *Toward Near* used to
+  take the exact angle to its target. Now every facing but *Random* is a quarter turn
+  (`PropPlacementRules.HasFreeYaw`), and *Random* is for loose clutter only.
+- **Packed, not scattered.** *Spread* is blue noise: it puts each piece as far from the others
+  as it can, which is right for clutter and cover but reads as "random intervals" for
+  furniture. The new selection **Centred** (`PropSelection.Centred`) takes the free spot
+  nearest the room's middle, or nearest what the placement stands *Near*, so a count grows
+  one block outward. On a *Lattice* that is rows and columns with no holes, and with
+  *Symmetric* it is mirrored. Every placement that stands *Near* something or sits on a lattice
+  and picked *Random* or *Spread* now uses it: benches beside cases, scopes and trees,
+  loungers along the water, pumps round the *Plant*, candles round the altar, consoles facing
+  a rack, and ranks of tables, cases, machines, desks, tanks and trees.
+- **One set per cell.** *Each Zone* (`RoomPropPlacement.EachZone`) makes *Count* apply to every
+  zone the placement may use (*Zone* still says which). The Office Maze now seals each office's
+  doorway as a zone boundary, so its offices are zones of their own. Before, the whole maze was
+  one zone, and every *Others* placement in a maze layout (bunks, beds, desks, lab benches)
+  found no floor at all.
+
+| Room | Before | Now |
+|---|---|---|
+| Cabin Row › Cabin Corridor | 4–8 bunks spread over the room's only zone (none placed) | a bunk and a locker in every cabin |
+| Cubicles, Clinic Bays, Bay Ward, Bunk Bays, Bunk Comb, Holding Cells, Clean Rooms, Treatment Suites | the cell furniture found no floor | one or two per cell |
+| Exhibit Hall › Sculpture Court | 3–5 cases spread to the edges, any angle | 6–8 (×room size) on a 2×2 lattice, mirrored, packed round the court, facing in |
+| Exhibit Hall › Gallery | planters at uneven intervals | planters on a 3×3 lattice along the walls, mirrored |
+| Observation Deck › Window Gallery | 2–4 scopes, benches at odd angles | 4–6 (×room size) scopes evenly along both long walls, a bench squarely behind each, planters in the corners |
+| Hangar › Flight Deck | one 2×2 shuttle in a hall of 1,000+ tiles, crates at any angle | rows of parked shuttles (2–3 ×room size, 4×4 lattice, mirrored, 200+ tiles) down the middle, crates and trolleys square beside them |
+| Pool | water in the floor's own cyan; the rim stretched to 2 m | glossy deep-blue water (*Water* swatch, `PoolWater`) in pools and jacuzzis; a thinner rim |
+
+Seeds lay out differently from before: square facings no longer draw a random angle, and the
+Centred placements choose differently.
+
+### Direct doors
+
+Most rooms used to meet through hallways. A direct door needs the two rooms moved side by side,
+and the aligner gave up whenever both rooms had already been fitted to others. Now rooms
+already fitted together are one group that moves as a block (`DirectRoomAligner`), so chains
+and pairs of pairs fit. A moved group keeps a hallway's width (3 tiles) from every room except
+the one it joins, so the hallways still to be routed have room to pass. The ready-made map
+layouts' *Direct Door Chance* went from 0.2–0.3 to 0.45–0.55, and Linear, which had none, to 0.4.
+
+### Next
+
+- Many wall placements still use *Spread* along the walls. A lattice on *Edge* placements gives
+  them an even rhythm, but cuts their candidates, so it is applied place by place (the gallery's
+  planters, the deck's scopes) after a Room Lab check, not across the board.
+- Faction dressings land in every room the faction holds, whatever the place: TECH production
+  lines run through a hangar, VOID desks stand on an observation deck. Letting a place veto
+  dressing that doesn't belong (or a dressing name the places it suits) would keep a place's
+  identity in the strongest territory.
+- A real hangar wants a shuttle that fills its pad: a placeholder built to stretch, or several
+  sizes of ship.
+- Not yet looked at in play; compiled, and the EditMode tests were run in a headless copy of the project.
+
 ## Roadmap
 
 | Phase | What | Status |
@@ -997,6 +1056,7 @@ doorway: a Start node stands past the first neighbour.
 | **13. Buildings and towns** | `BuildingPlan` floor plans (hall, rooms, back room) as School, Hospital and Library Floor layouts and on a town's lots, each room its own zone and furnished by its own place; roofs, lights and a sky dome; the Town Square place; Room Lab *Spaces* (section 13) | **Done in code, not yet compiled or run** |
 | **14. Composition and props in sets** | Three Lanes, Hub Ring and Pavilion structure rules on the big open layouts; pavilions as annex spaces furnished by their own place, the room's props kept round them; VOID, TECH and BIO dressings rewritten as sets (section 14) | **Done in code and compiled; not yet run in Unity** |
 | **15. Room flow** | Doorways lead back, onward or level; each room's arrival, threshold and goal; the *Band* placement option, offerings in the goal, *Showcase* anchors seen on arrival, a foothold in fight rooms' thresholds, enemies past the threshold, the flank scored in fight rooms' tries; Room Lab *Flow* layer (section 15) | **Done in code and compiled; flow tests run in a console harness; not yet run in Unity** |
+| **16. Order in the furnishing** | Quarter turns for everything but clutter; *Centred* selection; *Each Zone* counts and Office Maze offices as zones; retuned Exhibit Hall, Observation Deck, Hangar, Pool and the maze layouts; pool water; direct doors fitted in groups and more of them (section 16) | **Done in code and compiled; EditMode tests run headless; not yet looked at in play** |
 
 ### Tuning (Phase 7)
 
