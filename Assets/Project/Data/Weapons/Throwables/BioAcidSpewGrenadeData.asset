@@ -38,7 +38,12 @@ MonoBehaviour:
     m_Bits: 1
   PushForce: 0
   NoiseRadius: 25
-  LingeringZone: {fileID: 7100000000000000001, guid: 0917e28cffde4748a055b138b0744966, type: 3}
+  LingeringZone: {fileID: 7100000000000000001, guid: cda61e22cff245f28419d5aa6ec25518, type: 3}
+  ZoneRadius: 0
+  ZoneDuration: 5
+  ZoneTickInterval: 0.5
+  ZoneTickDamage: 3
+  ZoneColor: {r: 0.45, g: 0.9, b: 0.15, a: 0.5}
   ExplosionEffect: {fileID: 7000000000000000001, guid: d3520984238c41a78a4ca49a0a007f9f, type: 3}
   FlashColor: {r: 0.4, g: 0.9, b: 0.2, a: 0.85}
   CameraTrauma: 0.2
