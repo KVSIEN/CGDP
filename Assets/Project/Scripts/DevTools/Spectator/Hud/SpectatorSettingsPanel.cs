@@ -20,11 +20,9 @@ namespace CGD.DevTools
         private const float ControlX     = 240f;
         private const float ControlWidth = 440f;
 
-        private static readonly Color WindowColor    = new(0.07f, 0.08f, 0.12f, 0.97f);
         private static readonly Color SlotColor      = new(0.16f, 0.16f, 0.22f, 0.95f);
         private static readonly Color SlotSharedColor = new(0.65f, 0.32f, 0.05f, 0.95f);
         private static readonly Color SharedTextColor = new(1f, 0.75f, 0.35f, 1f);
-        private static readonly Color MutedText      = new(0.6f, 0.63f, 0.7f, 1f);
 
         private sealed class Row
         {
@@ -67,12 +65,7 @@ namespace CGD.DevTools
             UIFactory.Stretch(backdrop.rectTransform);
             _root = backdrop.gameObject;
 
-            Image window = UIFactory.MakeImage("Window", backdrop.rectTransform);
-            window.color = WindowColor;
-            window.raycastTarget = true;
-            RectTransform rect = window.rectTransform;
-            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.sizeDelta = new Vector2(WindowWidth, WindowHeight);
+            RectTransform rect = SpectatorWindow.Centred("Window", backdrop.rectTransform, new Vector2(WindowWidth, WindowHeight));
 
             BuildView(rect);
             BuildControls(rect);
@@ -124,7 +117,7 @@ namespace CGD.DevTools
             TextMeshProUGUI title = MakeLabel("Title", window, "Spectator settings", 22f, TextAlignmentOptions.MidlineLeft);
             UIFactory.Place(title.rectTransform, new Vector2(20f, -14f), new Vector2(400f, 30f));
             TextMeshProUGUI note = MakeLabel("Note", window, "Changes apply at once and are kept for next time", 13f, TextAlignmentOptions.MidlineRight);
-            note.color = MutedText;
+            note.color = SpectatorWindow.MutedText;
             UIFactory.Place(note.rectTransform, new Vector2(WindowWidth - 380f, -18f), new Vector2(360f, 24f));
 
             float y = -58f;
@@ -267,7 +260,7 @@ namespace CGD.DevTools
         private static void Column(RectTransform window, string label, float x, float y)
         {
             TextMeshProUGUI text = MakeLabel("Column " + label, window, label, 12f, TextAlignmentOptions.MidlineLeft);
-            text.color = MutedText;
+            text.color = SpectatorWindow.MutedText;
             UIFactory.Place(text.rectTransform, new Vector2(x, y), new Vector2(200f, 20f));
         }
 

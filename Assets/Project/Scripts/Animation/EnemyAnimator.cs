@@ -51,13 +51,8 @@ namespace CGD.Animation
         {
             if (!_bridge.IsActive) return;
 
-            float dt = Time.deltaTime;
             Vector3 velocity = _agent != null && _agent.enabled ? _agent.velocity : Vector3.zero;
-            Vector3 local    = _animator.transform.InverseTransformDirection(new Vector3(velocity.x, 0f, velocity.z));
-
-            _bridge.SetFloat(AnimatorParams.Speed,        local.magnitude, _locomotionDamping, dt);
-            _bridge.SetFloat(AnimatorParams.ForwardSpeed, local.z,         _locomotionDamping, dt);
-            _bridge.SetFloat(AnimatorParams.StrafeSpeed,  local.x,         _locomotionDamping, dt);
+            _bridge.SetLocomotion(velocity, _locomotionDamping, Time.deltaTime);
             _bridge.SetBool(AnimatorParams.Grounded, true);
 
             var state = _ai.State;

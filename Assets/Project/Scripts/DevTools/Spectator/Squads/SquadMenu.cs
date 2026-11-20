@@ -17,9 +17,6 @@ namespace CGD.DevTools
         private const float Header    = 56f;
         private const float Footer    = 20f;
 
-        private static readonly Color WindowColor = new(0.07f, 0.08f, 0.12f, 0.96f);
-        private static readonly Color MutedText   = new(0.6f, 0.63f, 0.7f, 1f);
-
         private readonly SquadSizer        _sizer;
         private readonly Action<string>    _toast;
         private readonly GameObject        _root;
@@ -31,19 +28,14 @@ namespace CGD.DevTools
             _toast  = toast;
             _counts = new TextMeshProUGUI[sizer.Teams.Count];
 
-            Image window = UIFactory.MakeImage("Squad Sizes", canvas);
-            window.color = WindowColor;
-            window.raycastTarget = true;
-            RectTransform rect = window.rectTransform;
-            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.sizeDelta = new Vector2(Width, Header + Mathf.Max(1, _counts.Length) * RowHeight + Footer);
-            _root = window.gameObject;
+            RectTransform rect = SpectatorWindow.Centred("Squad Sizes", canvas, new Vector2(Width, Header + Mathf.Max(1, _counts.Length) * RowHeight + Footer));
+            _root = rect.gameObject;
 
-            Label(rect, "Title", "Squad sizes", 22f, new Vector2(20f, -14f), new Vector2(200f, 30f));
-            TextMeshProUGUI hint = Label(rect, "Hint", $"click - / +  ·  {closeKey} closes", 13f,
-                                         new Vector2(Width - 220f, -18f), new Vector2(200f, 24f));
+            SpectatorWindow.Label(rect, "Title", "Squad sizes", 22f, new Vector2(20f, -14f), new Vector2(200f, 30f));
+            TextMeshProUGUI hint = SpectatorWindow.Label(rect, "Hint", $"click - / +  ·  {closeKey} closes", 13f,
+                                                         new Vector2(Width - 220f, -18f), new Vector2(200f, 24f));
             hint.alignment = TextAlignmentOptions.MidlineRight;
-            hint.color = MutedText;
+            hint.color = SpectatorWindow.MutedText;
 
             for (int i = 0; i < _counts.Length; i++)
                 BuildRow(rect, i, sizer.Teams[i]);
@@ -64,7 +56,7 @@ namespace CGD.DevTools
         {
             float y = -Header - index * RowHeight;
 
-            TextMeshProUGUI name = Label(rect, "Faction " + team, team.ToString(), 20f, new Vector2(20f, y), new Vector2(160f, 36f));
+            TextMeshProUGUI name = SpectatorWindow.Label(rect, "Faction " + team, team.ToString(), 20f, new Vector2(20f, y), new Vector2(160f, 36f));
             name.color = _sizer.ColorOf(team);
 
             Button minus = UIFactory.MakeButton("Fewer " + team, rect, "-", out TextMeshProUGUI minusLabel);
@@ -72,7 +64,7 @@ namespace CGD.DevTools
             UIFactory.Place(minus.GetComponent<RectTransform>(), new Vector2(200f, y), new Vector2(40f, 36f));
             minus.onClick.AddListener(() => Change(team, -1));
 
-            TextMeshProUGUI count = Label(rect, "Count " + team, "", 20f, new Vector2(246f, y), new Vector2(90f, 36f));
+            TextMeshProUGUI count = SpectatorWindow.Label(rect, "Count " + team, "", 20f, new Vector2(246f, y), new Vector2(90f, 36f));
             count.alignment = TextAlignmentOptions.Center;
             _counts[index] = count;
 
@@ -98,16 +90,6 @@ namespace CGD.DevTools
                 Team team = _sizer.Teams[i];
                 _counts[i].text = $"{_sizer.Active(team)} / {_sizer.Capacity(team)}";
             }
-        }
-
-        private static TextMeshProUGUI Label(RectTransform parent, string name, string value, float size, Vector2 position, Vector2 extent)
-        {
-            TextMeshProUGUI text = UIFactory.MakeText(name, parent);
-            text.text      = value;
-            text.fontSize  = size;
-            text.alignment = TextAlignmentOptions.MidlineLeft;
-            UIFactory.Place(text.rectTransform, position, extent);
-            return text;
         }
     }
 }

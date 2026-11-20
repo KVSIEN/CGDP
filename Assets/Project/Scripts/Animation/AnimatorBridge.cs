@@ -26,6 +26,18 @@ namespace CGD.Animation
             if (Has(id)) _animator.SetFloat(id, value, dampTime, deltaTime);
         }
 
+        // The locomotion blend inputs (Speed, ForwardSpeed, StrafeSpeed) from a world-space
+        // velocity, measured flat and in the model's own facing so strafing reads as strafing.
+        public void SetLocomotion(Vector3 velocity, float dampTime, float deltaTime)
+        {
+            if (!IsActive) return;
+
+            Vector3 local = _animator.transform.InverseTransformDirection(new Vector3(velocity.x, 0f, velocity.z));
+            SetFloat(AnimatorParams.Speed,        local.magnitude, dampTime, deltaTime);
+            SetFloat(AnimatorParams.ForwardSpeed, local.z,         dampTime, deltaTime);
+            SetFloat(AnimatorParams.StrafeSpeed,  local.x,         dampTime, deltaTime);
+        }
+
         public void SetFloat(int id, float value)
         {
             if (Has(id)) _animator.SetFloat(id, value);

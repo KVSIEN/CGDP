@@ -70,11 +70,7 @@ namespace CGD.Animation
         private void UpdateLocomotion(float dt)
         {
             Vector3 velocity = _movement.Velocity;
-            Vector3 local    = _animator.transform.InverseTransformDirection(new Vector3(velocity.x, 0f, velocity.z));
-
-            _bridge.SetFloat(AnimatorParams.Speed,        local.magnitude, _locomotionDamping, dt);
-            _bridge.SetFloat(AnimatorParams.ForwardSpeed, local.z,         _locomotionDamping, dt);
-            _bridge.SetFloat(AnimatorParams.StrafeSpeed,  local.x,         _locomotionDamping, dt);
+            _bridge.SetLocomotion(velocity, _locomotionDamping, dt);
             _bridge.SetFloat(AnimatorParams.VerticalSpeed, velocity.y);
 
             _bridge.SetBool(AnimatorParams.Grounded,  _movement.IsGrounded);
