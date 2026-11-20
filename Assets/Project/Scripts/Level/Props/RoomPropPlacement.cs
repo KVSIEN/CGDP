@@ -52,6 +52,8 @@ namespace CGD.Level
         [Min(0)] public int OffRoute;
         [Tooltip("People come and go through it (a service door): the floor in front of it counts as a route for the placements after it")]
         public bool MarksRoute;
+        [Tooltip("Only in this part of the room's flow, every tile of it: Threshold (just inside the doorway a player arrives by), Past Threshold, or Goal (the far end). A room no doorway leads back into takes every tile")]
+        public RoomFlowBand Band;
 
         [Header("Groups, relations and size")]
         [Tooltip("Pieces set around each one placed, on its tiles: chairs round a card table, stools along a bar. With members, Prefabs may be left empty: then the members are the whole group")]
@@ -70,12 +72,15 @@ namespace CGD.Level
         [Min(0)] public int MinRoomTiles;
 
         // The spot for something to find and use (a resource node, an ammo cache): against a
-        // wall, off the routes and doorways, with floor in front and away from what is placed.
+        // wall at the far end of the room from the way in, off the routes and doorways, with
+        // floor in front and away from what is placed. The reward is what the room's fight
+        // stands between.
         public static RoomPropPlacement Nook(GameObject[] prefabs) => new()
         {
             Prefabs   = prefabs,
             Count     = new IntRange(1, 1),
             On        = RoomTileTags.Edge,
+            Band      = RoomFlowBand.Goal,
             Facing    = PropFacing.AgainstWall,
             Clearance = 1,
             Selection = PropSelection.Spread,
@@ -96,8 +101,8 @@ namespace CGD.Level
         }
 
         // The same placement with its picky rules dropped, to find any spot at all. Level 1 gives
-        // up where (tags, zone, routes, what it stands near), which way and growing with the
-        // room; level 2 also the floor in front.
+        // up where (tags, zone, routes, flow band, what it stands near), which way and growing
+        // with the room; level 2 also the floor in front.
         public RoomPropPlacement Relaxed(int level)
         {
             var copy = (RoomPropPlacement)MemberwiseClone();
@@ -109,6 +114,7 @@ namespace CGD.Level
             copy.Symmetric = false;
             copy.NearRoute = 0;
             copy.OffRoute  = 0;
+            copy.Band      = RoomFlowBand.Any;
             copy.Near      = null;
             copy.Grow      = Vector2.zero;
             if (copy.Facing is PropFacing.AgainstWall or PropFacing.AcrossSightline or PropFacing.AlongRoom or PropFacing.TowardNear)

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace CGD.Level
 {
     // Where a RoomPropPlacement may put a prop in one room: the candidate spots (tiles and
-    // facing) that suit its tags, zone, walls, lattice, distance from the routes and from what
+    // facing) that suit its tags, zone, flow band, walls, lattice, distance from the routes and from what
     // it stands near, and whether a spot is still placeable now that other props have taken
     // floor. RoomPropPlanner chooses among them.
     internal sealed class PropPlacementRules
@@ -97,6 +97,7 @@ namespace CGD.Level
                     if (zones != null && !zones.Contains(_structure.ZoneOf(tile))) return false;
                     if (placement.Zone == PropZone.Largest && _structure.ZoneOf(tile) != _mainZone) return false;
                     if (placement.Zone == PropZone.Others  && _structure.ZoneOf(tile) == _mainZone) return false;
+                    if (!RoomFlowPlanner.InBand(_structure, tile, placement.Band)) return false;
                     if (_structure.Has(tile, placement.On)) matchesOn = true;
 
                     if (x + 1 < rect.xMax && _structure.IsPartitioned(tile, tile + Vector2Int.right)) return false;

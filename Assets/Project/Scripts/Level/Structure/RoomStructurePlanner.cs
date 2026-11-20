@@ -10,6 +10,7 @@ namespace CGD.Level
     // layout brings some; the faction's where neither has any) and then the faction's
     // additions, then works out the zones their
     // inner walls make. A Breach room left in one piece gets the breach faction's divider.
+    // Last, the room's flow from the doorway a player arrives by (RoomFlowPlanner).
     // A landmark room brings its own interior: its furniture tiles are marked instead.
     public class RoomStructurePlanner
     {
@@ -47,6 +48,9 @@ namespace CGD.Level
                 breachDivider.Apply(structure, random);
                 structure.AssignZones();
             }
+
+            Vector2Int? arrival = RoomFlowPlanner.ArrivalOf(room, doorways);
+            if (arrival.HasValue) RoomFlowPlanner.Mark(structure, arrival.Value);
             return structure;
         }
 

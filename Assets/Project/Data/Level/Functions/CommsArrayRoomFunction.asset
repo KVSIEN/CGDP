@@ -47,7 +47,7 @@ MonoBehaviour:
     Facing: 1
     Clearance: 1
     Spacing: 1
-    Selection: 1
+    Selection: 5
     Pile:
       Min: 1
       Max: 1

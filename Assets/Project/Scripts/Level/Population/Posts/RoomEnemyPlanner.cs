@@ -8,7 +8,8 @@ namespace CGD.Level
     // faction favours (FactionDesign › Posts, read from the furnished room by RoomPostMap), a
     // few tiles apart, holding the post or patrolling its side's loop. In a Breach room split
     // by zone, each faction starts and patrols on its own side. Plain floor where a room has
-    // no design or no tile of the favoured kinds.
+    // no design or no tile of the favoured kinds. Nobody starts or patrols in the threshold
+    // just inside the way in (RoomFlowPlanner) while there is floor beyond it.
     //
     // Pure planning, like RoomFurnisher: the level (RoomPopulator) spawns from the plan, and
     // the Room Lab draws the same plan from the same seed.
@@ -53,8 +54,10 @@ namespace CGD.Level
             RoomPostMap posts = structure != null ? new RoomPostMap(structure, props) : null;
             BreachSplit split = room.BreachFaction != null ? BreachSplit.Of(structure, room.BreachEntrances) : null;
 
-            List<Vector2Int> holderSide = SideOf(floor, structure, split, breachSide: false);
-            List<Vector2Int> breachSide = split != null ? SideOf(floor, structure, split, breachSide: true) : holderSide;
+            // The way in is the player's foothold: enemies start and patrol past it while the room allows.
+            List<Vector2Int> inside = PastThreshold(floor, structure);
+            List<Vector2Int> holderSide = SideOf(inside, structure, split, breachSide: false);
+            List<Vector2Int> breachSide = split != null ? SideOf(inside, structure, split, breachSide: true) : holderSide;
 
             var spawns = new List<PlannedSpawn>(count);
             var chosen = new List<Vector2Int>(count);
@@ -86,6 +89,16 @@ namespace CGD.Level
                     if (room.Footprint.IsInterior(tile, m) && (room.Structure == null || !room.Structure.Has(tile, NeverSpawnOn)))
                         tiles.Add(tile);
             return tiles;
+        }
+
+        // The tiles beyond the room's threshold (RoomFlowPlanner); all of them when none are.
+        private static List<Vector2Int> PastThreshold(List<Vector2Int> floor, RoomStructure structure)
+        {
+            if (structure == null || !structure.Arrival.HasValue) return floor;
+            var inside = new List<Vector2Int>(floor.Count);
+            foreach (Vector2Int tile in floor)
+                if (!structure.Has(tile, RoomTileTags.Threshold)) inside.Add(tile);
+            return inside.Count > 0 ? inside : floor;
         }
 
         private static List<Vector2Int> SideOf(List<Vector2Int> floor, RoomStructure structure, BreachSplit split, bool breachSide)

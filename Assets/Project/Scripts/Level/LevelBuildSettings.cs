@@ -118,6 +118,8 @@ namespace CGD.Level
         [SerializeField, Min(0)] private int _spawnMarginTiles = 1;
         [Tooltip("Fight rooms a faction design holds are built from this many seeds — structure, then furnishing — keeping the one closest to the faction's priorities. 1 = no steering")]
         [SerializeField, Range(1, 8)] private int _priorityTries = 4;
+        [Tooltip("Cover put just inside the doorway a fight room is entered by (its threshold, RoomFlowPlanner), so a player arrives at a foothold rather than in the open. A faction design may swap it like any dressing. Empty = none")]
+        [SerializeField] private RoomDressing _footholdDressing;
         [Tooltip("How strongly a faction's design shows in a room, from how firmly the map's faction painter holds it: full in the core of a territory, thinner on its frontier")]
         [SerializeField] private TerritoryDepth _territoryDepth = new();
 
@@ -169,6 +171,7 @@ namespace CGD.Level
         public int   SpawnMarginTiles => _spawnMarginTiles;
         public int   MinRoomWidthTiles => _minRoomWidthTiles;
         public int   PriorityTries  => _priorityTries;
+        public RoomDressing FootholdDressing => _footholdDressing;
         public TerritoryDepth TerritoryDepth => _territoryDepth;
 
         // The holding faction's design as this room shows it (full strength without a faction influence).

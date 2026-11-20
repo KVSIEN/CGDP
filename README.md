@@ -118,6 +118,7 @@ Assets/
                             RoomPropPlanner (footprints, clearance, spread, cover, lattices, symmetry, clusters, prop groups, near/keyed placements, features that grow with the room; reports each placement's outcome), RoomDressing (cover and clutter per room type);
                             Design/ — FactionDesign (each faction's floor plans, structure, props and crowding), FactionStyle + TerritoryDepth (the design at a room's strength), ShipSideDesign, BreachSplit,
                             Traits/ (RoomTraitMeasure, RoomTraitFit: what fight rooms offer and how generation steers toward it);
+                            Flow/ — RoomFlowPlanner (the way in, threshold and goal of each room), RoomFlank (a second way round), ArrivalSight (what is seen on entering);
                             Gallery/ — RoomGallerySettings and RoomGalleryGraph (the RoomGallery scene's walk-through of every place)
                             Objectives/ — map objectives: templates, MapObjectivePlanner, MapObjectiveRunner;
                             Encounters/ — encounter rooms: Core/ (RoomEncounter, RoomEncounterBuilder, EncounterContext/Settings,

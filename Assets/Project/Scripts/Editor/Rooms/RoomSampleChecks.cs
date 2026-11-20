@@ -106,11 +106,17 @@ namespace CGD.Editor
             }
         }
 
-        // A fight room is checked against its faction's priorities; without a faction design,
-        // only for the plain hazard of a long open lane with nothing beside it to fight from.
+        // A fight room is checked for a flank (RoomFlank) and against its faction's priorities;
+        // without a faction design, only for the plain hazard of a long open lane with nothing
+        // beside it to fight from.
         private static void CheckPriorities(RoomSample sample, List<RoomIssue> issues)
         {
             if (!IsFightRoom(sample)) return;
+
+            if (!RoomFlank.Has(sample.Room.Structure))
+                issues.Add(new RoomIssue(RoomIssue.Severity.Info,
+                    "No flank: the only way from the threshold to the far end is one lane through the middle (Flow layer). " +
+                    "Structure with two openings, or rows running toward the far end, gives a way round."));
 
             RoomTraitReading traits = sample.Traits;
             if (sample.Design == null)

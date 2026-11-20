@@ -5,7 +5,8 @@ using CGD.Core;
 namespace CGD.Level
 {
     // Picks which candidate spot a placement tries next, by its PropSelection: anywhere,
-    // spread out, in patches, in a row, or across the longest open sightline. Candidates that
+    // spread out, in patches, in a row, across the longest open sightline, or in view of the
+    // way in. Candidates that
     // have stopped being placeable are dropped from the pool on the way.
     internal sealed class PropSelector
     {
@@ -19,19 +20,26 @@ namespace CGD.Level
         // Cover only goes where it breaks an open stretch at least this many tiles long.
         private const int CoverMinRun = 4;
 
+        // Showcase picks among the spots seen from the arrival at least this share as far in as the farthest.
+        private const float ShowcaseDepthShare = 0.75f;
+
         private readonly PropPlacementRules _rules;
         private readonly SightlineMap _sight;
         private readonly RandomStream _random;
         private readonly RectInt _bounds;
+        private readonly RoomStructure _structure;
         // The middle of everything placed, for Spread.
         private readonly List<Vector2> _centres = new();
+        // Made on the first Showcase: few placements use it.
+        private ArrivalSight _arrivalSight;
 
-        public PropSelector(PropPlacementRules rules, SightlineMap sight, RandomStream random, RectInt bounds)
+        public PropSelector(PropPlacementRules rules, SightlineMap sight, RandomStream random, RoomStructure structure)
         {
-            _rules  = rules;
-            _sight  = sight;
-            _random = random;
-            _bounds = bounds;
+            _rules     = rules;
+            _sight     = sight;
+            _random    = random;
+            _structure = structure;
+            _bounds    = structure.Footprint.Bounds;
         }
 
         public void NotePlaced(Vector2 centre) => _centres.Add(centre);
@@ -44,8 +52,36 @@ namespace CGD.Level
             PropSelection.Cover  => SelectCover(placement, pool, own),
             PropSelection.Cluster => SelectCluster(placement, pool, own),
             PropSelection.Line   => SelectLine(placement, pool, own),
+            PropSelection.Showcase => SelectShowcase(placement, pool, own),
             _                    => SelectRandom(placement, pool, own),
         };
+
+        // A spot seen from the doorway a player arrives by, toward the far end: of those seen,
+        // one at random from the deepest quarter, so the room's landmark is the first thing in
+        // view without always taking the same corner. Nothing seen (or no arrival): anywhere.
+        private int SelectShowcase(RoomPropPlacement placement, List<PropCandidate> pool, List<RectInt> own)
+        {
+            if (!_structure.Arrival.HasValue) return SelectRandom(placement, pool, own);
+
+            DropUnplaceable(placement, pool, own);
+            _arrivalSight ??= new ArrivalSight(_structure);
+            Vector2 arrival = _structure.Arrival.Value + Vector2.one * 0.5f;
+
+            var seen = new List<int>();
+            float deepest = 0f;
+            for (int i = 0; i < pool.Count; i++)
+            {
+                if (!_rules.Eligible(pool[i], placement) || !_arrivalSight.Sees(pool[i].Rect)) continue;
+                seen.Add(i);
+                deepest = Mathf.Max(deepest, Vector2.Distance(pool[i].Rect.center, arrival));
+            }
+            if (seen.Count == 0) return SelectRandom(placement, pool, own);
+
+            var deep = new List<int>();
+            foreach (int i in seen)
+                if (Vector2.Distance(pool[i].Rect.center, arrival) >= deepest * ShowcaseDepthShare) deep.Add(i);
+            return deep[_random.Range(0, deep.Count)];
+        }
 
         // The pool is shuffled, so its last usable entry is a random one.
         private int SelectRandom(RoomPropPlacement placement, List<PropCandidate> pool, List<RectInt> own)

@@ -7,7 +7,8 @@ namespace CGD.Level
     // Plans what a room is furnished with, most important first, as each placement takes floor
     // the next can't have: what a player comes for (offerings), the function's furniture (its
     // layout's set pieces first), then
-    // its side's dressing (a crew room's staff door), the room type's cover and clutter (and its
+    // its side's dressing (a crew room's staff door), a fight room's foothold just inside the way
+    // in, the room type's cover and clutter (and its
     // extra dressing), then the faction's own pieces — in a Breach room split into zones, each
     // side by its own faction. The side's design scales the faction's
     // fill share and prop counts. A pavilion standing in the room (an annex: a restroom hut, a
@@ -59,7 +60,8 @@ namespace CGD.Level
             {
                 RoomStructure trial = room.Structure.Copy();
                 RoomPropPlanner planner = Plan(room, trial, rule, style, swaps, RoomTraitFit.Try(seed, attempt));
-                int miss = RoomTraitFit.Miss(planner.Traits, style.Design.Priorities);
+                // Furniture can close a flank the structure left open.
+                int miss = RoomTraitFit.Miss(planner.Traits, style.Design.Priorities) + RoomFlank.Miss(trial);
                 if (miss >= bestMiss) continue;
                 bestFloor   = trial;
                 best        = planner;
@@ -91,6 +93,7 @@ namespace CGD.Level
                 if (structure.Spaces.Count == 0 || floor != null) planner.Add(room.FunctionProps, zones: floor);
                 AddSpaces(planner, structure);
                 if (side != null && side.Dressing != null) planner.Add(side.Dressing.Props, zones: floor);
+                AddFoothold(planner, structure, rule, style, swaps, floor);
                 AddRoomTypeDressing(planner, room, structure, rule, style, swaps, floor);
             }
             return planner;
@@ -109,6 +112,16 @@ namespace CGD.Level
                 foreach (RoomPropPlacement placement in space.Function.PropsWith(space.Layout))
                     planner.Add(placement?.ForSingleZone(), zones: zone);
             }
+        }
+
+        // A fight room's threshold gets a piece of cover before the room type's cover takes the
+        // floor, so the way in is a foothold to read the room from, not open ground.
+        private void AddFoothold(RoomPropPlanner planner, RoomStructure structure, RoomContentRule rule, FactionStyle style,
+                                 bool swaps, ICollection<int> floor)
+        {
+            RoomDressing foothold = _settings.FootholdDressing;
+            if (foothold == null || !structure.Arrival.HasValue || !RoomTraitFit.IsFightRoom(rule)) return;
+            planner.Add(Dressed(swaps ? style.Design : null, foothold).Props, zones: floor);
         }
 
         // The room type's cover and clutter, then the factions' own props. A Breach room split

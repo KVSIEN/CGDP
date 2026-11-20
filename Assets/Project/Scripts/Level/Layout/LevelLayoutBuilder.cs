@@ -11,7 +11,7 @@ namespace CGD.Level
     //      facing the other, routed around every room.
     //   3. With the doorways fixed, each room's structure (walkways, pillars, dividers) is
     //      planned by RoomStructurePlanner — for a faction's fight room, the best of a few
-    //      tries at its priorities (RoomTraitFit).
+    //      tries at its priorities (RoomTraitFit) and its flank (RoomFlank).
     // Corridors keep a wall's width apart so two connections never merge into one — the
     // level has exactly the routes the graph has. When that's impossible (crossing
     // shortcuts) the corridors cross and a warning says so.
@@ -82,7 +82,8 @@ namespace CGD.Level
         }
 
         // A fight room a faction design holds keeps the try whose walls and lines of fire come
-        // closest to the faction's priorities (RoomTraitFit); any other room has one try.
+        // closest to the faction's priorities (RoomTraitFit), and that leaves a flank (RoomFlank);
+        // any other room has one try.
         private static RoomStructure BestStructure(RoomStructurePlanner planner, LevelRoom room, LevelLayout layout, Seed seed,
                                                    FactionDesign design, RoomStructureRule breachDivider, float strength, int tries)
         {
@@ -94,7 +95,7 @@ namespace CGD.Level
                 if (tries == 1) return structure;
 
                 int miss = RoomTraitFit.Miss(RoomTraitMeasure.Measure(structure, System.Array.Empty<PlannedProp>()), design.Priorities,
-                                             countConcealment: false);
+                                             countConcealment: false) + RoomFlank.Miss(structure);
                 if (miss >= bestMiss) continue;
                 best     = structure;
                 bestMiss = miss;
@@ -191,13 +192,22 @@ namespace CGD.Level
             }
         }
 
-        // A connection's doorways: the gate (or door) goes on the end nearer Start.
+        // A connection's doorways: the gate (or door) goes on the end nearer Start, and each end
+        // knows whether it leads back toward Start or onward.
         private static void AddDoorways(LevelLayout layout, MapGraphAnalysis analysis, MapConnection connection,
             LevelRoom a, Vector2Int insideA, Vector2Int outsideA, LevelRoom b, Vector2Int insideB, Vector2Int outsideB)
         {
             bool gateAtA = analysis.Progress(a.Node.Id) <= analysis.Progress(b.Node.Id);
-            layout.Doorways.Add(new LevelDoorway(a, connection, insideA, outsideA, gateAtA));
-            layout.Doorways.Add(new LevelDoorway(b, connection, insideB, outsideB, !gateAtA));
+            int depthA = analysis.Depth(a.Node.Id), depthB = analysis.Depth(b.Node.Id);
+            layout.Doorways.Add(new LevelDoorway(a, connection, insideA, outsideA, gateAtA, DirectionOf(depthA, depthB)));
+            layout.Doorways.Add(new LevelDoorway(b, connection, insideB, outsideB, !gateAtA, DirectionOf(depthB, depthA)));
+        }
+
+        private static DoorwayDirection DirectionOf(int ownDepth, int otherDepth)
+        {
+            if (ownDepth == MapGraphAnalysis.Unreachable || otherDepth == MapGraphAnalysis.Unreachable) return DoorwayDirection.Level;
+            if (otherDepth < ownDepth) return DoorwayDirection.Back;
+            return otherDepth > ownDepth ? DoorwayDirection.Onward : DoorwayDirection.Level;
         }
 
         private readonly struct Door

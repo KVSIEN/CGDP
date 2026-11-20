@@ -9,7 +9,8 @@ namespace CGD.Editor
     // Builds a RoomLabRecipe into a RoomSample through the level's own pipeline, so what the
     // Room Lab shows is what a level gets:
     //   - Recipe: a one-room map graph — the room plus a small neighbour on each side that
-    //     should have a doorway — laid out by LevelLayoutBuilder. Only the room is furnished.
+    //     should have a doorway, and a Start past the first so the room is entered from there —
+    //     laid out by LevelLayoutBuilder. Only the room is furnished.
     //   - MapRoom: the whole saved graph laid out with its own seed, as LevelBuilder does when
     //     its seed is left empty, then the chosen node's room.
     // Furnishing uses LevelBuilder's seed layers (seed → "contents" → RoomFurnisher).
@@ -83,7 +84,19 @@ namespace CGD.Editor
             if (recipe.DoorEast)  AddNeighbour(graph, room, new Vector2(NeighbourCells, 0f));
             if (recipe.DoorSouth) AddNeighbour(graph, room, new Vector2(0f, NeighbourCells));
             if (recipe.DoorWest)  AddNeighbour(graph, room, new Vector2(-NeighbourCells, 0f));
+            AddStartBeyondFirst(graph, room);
             return graph;
+        }
+
+        // A Start past the first neighbour, so the room is entered from that side as in a map:
+        // its doorway there leads back toward Start (the room's way in, RoomFlowPlanner) and the
+        // others lead onward.
+        private static void AddStartBeyondFirst(MapGraph graph, MapNode room)
+        {
+            if (graph.Nodes.Count < 2) return;
+            MapNode first = graph.Nodes[1];
+            MapNode start = graph.AddNode(MapNodeType.Start, first.Position + (first.Position - room.Position));
+            graph.Connect(first.Id, start.Id);
         }
 
         // A Breach room's first neighbour belongs to the breaching faction, so the breach

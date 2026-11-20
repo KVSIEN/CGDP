@@ -28,6 +28,9 @@ namespace CGD.Editor
         private static readonly Color Choke     = new(1f, 0.6f, 0.15f, 0.45f);
         private static readonly Color DeadEnd   = new(0.6f, 0.35f, 0.95f, 0.45f);
         private static readonly Color Route     = new(0.3f, 0.7f, 1f, 0.25f);
+        private static readonly Color Threshold = new(0.3f, 0.95f, 0.75f, 0.45f);
+        private static readonly Color Goal      = new(1f, 0.8f, 0.25f, 0.5f);
+        private static readonly Color Arrival   = new(0.3f, 1f, 0.6f, 1f);
         private static readonly Color HolderSide = new(1f, 1f, 1f, 0.95f);
         private static readonly Color BreachSide = new(1f, 0.35f, 0.85f, 0.95f);
 
@@ -83,11 +86,23 @@ namespace CGD.Editor
                     RoomLabLayer.Zones      => structure.ZoneCount > 1 ? ZoneColor(structure.ZoneOf(tile)) : (Color?)null,
                     RoomLabLayer.Sightlines => SightColor(sample, tile),
                     RoomLabLayer.Posts      => PostColor(sample.Posts.KindsAt(tile)),
+                    RoomLabLayer.Flow       => FlowColor(structure.TagsAt(tile)),
                     _                       => null,
                 };
                 if (color.HasValue) EditorGUI.DrawRect(TileRect(image, tile), color.Value);
             }
             if (Layer == RoomLabLayer.Posts) DrawEnemies(image, sample);
+            if (Layer == RoomLabLayer.Flow && structure.Arrival.HasValue)
+                Outline(image, new RectInt(structure.Arrival.Value, Vector2Int.one), Arrival, 3f);
+        }
+
+        // The threshold and the goal; the contest between them is left plain.
+        private static Color? FlowColor(RoomTileTags tags)
+        {
+            if ((tags & (RoomTileTags.Structure | RoomTileTags.Prop)) != 0) return null;
+            if ((tags & RoomTileTags.Threshold) != 0) return Threshold;
+            if ((tags & RoomTileTags.Goal)      != 0) return Goal;
+            return null;
         }
 
         // The kind that matters most to the factions: hiding, then firing positions, then the rest.
@@ -228,6 +243,8 @@ namespace CGD.Editor
             if ((tags & RoomTileTags.Access)    != 0) parts.Add("access (floor kept free to use something)");
             if ((tags & RoomTileTags.Corner)    != 0) parts.Add("corner");
             else if ((tags & RoomTileTags.Edge) != 0) parts.Add("against a wall");
+            if ((tags & RoomTileTags.Threshold) != 0) parts.Add("threshold (just inside the way in)");
+            if ((tags & RoomTileTags.Goal)      != 0) parts.Add("goal (the far end)");
             return string.Join(", ", parts);
         }
 
@@ -246,9 +263,17 @@ namespace CGD.Editor
                 RoomLabLayer.Zones      => sample.Room.Structure.ZoneCount > 1 ? $"{sample.Room.Structure.ZoneCount} zones split by inner walls" : "One zone: no inner walls split this room",
                 RoomLabLayer.Sightlines => $"green short sightlines → red {RoomSampleChecks.ExposedLaneTiles * sample.Settings.TileSize:0} m+ open lanes",
                 RoomLabLayer.Posts      => "green concealed · red overwatch · violet dead end · orange choke · blue route · ring guard, dot patrol (pink: breach side)",
+                RoomLabLayer.Flow       => FlowLegend(sample.Room.Structure),
                 _                       => "sand furniture · dark pillars · cyan outline doorway",
             };
             GUI.Label(rect, legend + " · hover a tile for details", EditorStyles.whiteMiniLabel);
+        }
+
+        private static string FlowLegend(RoomStructure structure)
+        {
+            if (!structure.Arrival.HasValue) return "No doorway leads back toward Start: this room has no flow";
+            string flank = RoomFlank.Has(structure) ? "a flank goes round the main lane" : "no flank: one lane through the middle";
+            return $"green outline the way in · teal threshold · gold goal · {flank}";
         }
 
         // --- Geometry -------------------------------------------------------------------

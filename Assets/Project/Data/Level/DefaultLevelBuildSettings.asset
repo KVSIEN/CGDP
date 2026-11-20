@@ -357,6 +357,7 @@ MonoBehaviour:
   _minRoomWidthTiles: 2
   _spawnMarginTiles: 1
   _priorityTries: 4
+  _footholdDressing: {fileID: 11400000, guid: 7cc62ef6e91c48feb4437609514fe721, type: 2}
   _territoryDepth:
     _coreInfluence: 0.7
     _frontierInfluence: 0.35

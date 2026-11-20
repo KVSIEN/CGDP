@@ -136,9 +136,11 @@ whatever is placed has to keep every free tile reachable from every doorway
 1. **Outline**: floor plan, size and bevels. The reality scales size and biases the shape.
 2. **Doorways and walkways**: tagged first and kept clear (`Walkway`, `NearDoor`, `Centre`).
 3. **Structure**: the pattern's inner walls and pillars, or the reality's when the function has none.
-4. **Offerings**: what the player comes for (a cache or resource node), placed in a nook.
+   Then the room's **flow** from the doorway it is entered by: the threshold and the goal (section 15).
+4. **Offerings**: what the player comes for (a cache or resource node), placed in a nook in the goal.
 5. **Anchor**: the one or two `Required` pieces that say what the room is (bar counter, reactor, operating table).
 6. **Furniture**: the function's own props, placed by tile tag, zone, lattice and facing.
+   Then the side's dressing, and a fight room's **foothold** in its threshold (section 15).
 7. **Cover**: the room type's dressing, in the reality's own pieces (`DressingSwap`).
    Hard cover blocks movement and sight; low cover blocks movement only. Cover set
    *along* a lane makes a firing line, cover set *across* it breaks the lane up.
@@ -876,6 +878,98 @@ they never meet a place's own keys (`Pool`, `Desk`, `Plant`).
 - Not yet compiled-and-run in Unity: the rules compile and their tests compile, and a preview
   run outside the editor drew the expected plans.
 
+## 15. Room flow (Phase 15)
+
+Everything above gives a room an identity: what it is, who it is for, who holds it. What it
+lacked was a **direction**. Every doorway was alike, walkways ran from each one to the centre,
+and nothing knew which way a player comes in, so a room had no beginning, middle or end. This
+phase gives every room one, from ideas that recur wherever designers write about rooms that
+generate well:
+- **Encounter beats.** Level designers read a combat space in the order it is met: a threshold
+  where the player gets a first look from a foothold, a contested middle, and a goal beyond it.
+  An arena is anchored by a landmark seen on the way in (Disney's *weenie*; the Level Design
+  Book's arenas "anchored by a large landmark with multiple entrances and exits").
+- **Cycles, at room scale.** Cyclic dungeon generation (Joris Dormans, *Unexplored*) builds maps
+  from loops rather than trees. The map already does that (loops, shortcuts, locks and keys:
+  `FEATURES.md` › Map Graph Generation). Inside one room the same rule reads as combat design's
+  "loops keep players and enemies from running into dead ends": a second way round cover.
+- **Rewards behind the fight.** Brogue's *machines* put a reward room behind a guarded
+  vestibule; the general rule is that what the player comes for lies past the encounter, not
+  beside the door.
+
+Wave function collapse was looked at and left out. Its strength is local adjacency (what may
+sit next to what), which `RoomPropPlacement` already expresses with tags, sets, *Near* and
+facing, while its known weakness is global coherence: the room-wide shape of a fight. The
+claim-and-check planner keeps what WFC can't express (every free tile reachable from every
+doorway), and this phase adds the room-wide structure on top.
+
+### The way in and the bands
+
+- **Direction.** Each doorway knows whether it leads **back** toward Start, **onward**, or
+  neither (a loop between rooms equally deep), from the map depth of the two rooms it joins
+  (`LevelDoorway.Direction`).
+- **Arrival.** A room is entered by a doorway leading back, an ordinary or locked passage before
+  a shortcut or secret one (`RoomFlowPlanner.ArrivalOf`). The Start room, and any room in a graph
+  with no Start, has none: nothing in this section changes it.
+- **Bands.** After the structure, every tile gets its steps from the arrival over the floor plan
+  (round inner walls and pillars, not props, so the bands hold still while the room is
+  furnished). Up to a quarter of the way to the farthest tile (at least two steps) is the
+  **threshold** (`RoomTileTags.Threshold`); from 65% on is the **goal** (`RoomTileTags.Goal`); the
+  contest lies between. Steps go round walls, so the floor just behind a divider is goal, not
+  threshold, however near it is as the crow flies.
+
+### What reads the flow
+
+| Rule | What it does | Where |
+|---|---|---|
+| **Band** | A placement option: Threshold, Past Threshold or Goal, every tile of the prop. Dropped when a Required piece is relaxed; any band is the whole room when the room has no arrival | `RoomPropPlacement` › *Band* |
+| **Offerings in the goal** | The offerings' nook is against a wall in the goal: the reward is what the fight stands between | `RoomPropPlacement.Nook` |
+| **Showcase** | A selection: of the spots seen from the arrival, one at random among the deepest quarter. Pillars, props and inner walls 1.6 m or taller block sight; low walls and seat rows are seen over. Nothing seen: anywhere | `PropSelection.Showcase`, `ArrivalSight` |
+| **Foothold** | Every fight room's threshold gets the build settings' *Foothold Dressing* (one or two barriers set across the line into the room), after the side's dressing and before the room type's cover | `LevelBuildSettings` › *Foothold Dressing* |
+| **Enemies past the threshold** | Nobody starts or patrols in the threshold while there is floor beyond it | `RoomEnemyPlanner` |
+| **Flank** | A fight room's structure and furnishing tries also score whether a second way leads from the threshold to the far end (below) | `RoomFlank`, `RoomTraitFit` tries |
+
+**Showcase anchors.** The Required anchor is the room's identity, so these places show theirs
+on arrival: Theatre (stage), Chapel and Shrine (altar), Bar (counter), Bridge (command table),
+Control Room (main screen), Hangar (shuttle), Exhibit Hall (display), Escape Pod Bay (pods), and
+the *Plant* of Engine Room, Life Support, Power Distribution, Waste Reclamation, Fuel Depot,
+Coolant Plant, Maintenance Hub, Comms Array and Water Treatment. Library and Lobby keep their
+desks *by the way in* (*Near Route*); Processing Plant's conveyor keeps its *Line*.
+
+### The flank
+
+The main lane is the shortest way from the arrival to the far end: the farthest other doorway
+in the goal, or in a dead-end room the farthest goal tile. The lane is closed three tiles wide
+through the contest (the threshold and goal stay open, so a way round may leave and rejoin it
+there); if the far end can still be reached, the room has a flank. Props count as in the way.
+- An open hall has one; a divider with one opening doesn't; a divider with two openings far
+  apart does; rows running toward the far end do; rows across it do when they have more than
+  one gap.
+- Rooms under 48 floor tiles aren't judged.
+- In the tries, a missing flank counts as one level off the priorities. As before, try 0 is
+  kept unless another try fits strictly better, and only fight rooms held by a faction design
+  get tries. A Strip room that can never have a flank keeps try 0.
+
+### Seeing it
+
+The Room Lab's **Flow** layer paints the threshold (teal) and the goal (gold), outlines the way
+in, and its legend says whether a flank goes round; a fight room without one is listed as an
+Info issue. The tile readout names the band. A Lab recipe room is entered from its first
+doorway: a Start node stands past the first neighbour.
+
+### Next
+
+- Swap the foothold per reality (a root mound for BIO, a shard for VOID, a checkpoint barrier
+  for TECH) with *Swaps* entries on each `FactionDesign`.
+- A reward room with a vestibule (Brogue): the Treasure room's chest in the goal behind a
+  guarded choke, built as a layout with a divider whose opening faces the arrival.
+- Measure the flow in the Room Sweep (how often each place has a flank, a showcase in view)
+  to tune `ThresholdShare`, `GoalShare` and the flank's lane width.
+- Foreshadowing across rooms (Dormans): a window or a gallery from which a later room's goal is
+  seen before it is reached.
+- Not run in Unity yet: compiled with the whole project against reference assemblies, and the
+  flow tests run in a console harness (see the roadmap).
+
 ## Roadmap
 
 | Phase | What | Status |
@@ -894,6 +988,7 @@ they never meet a place's own keys (`Pool`, `Desk`, `Plant`).
 | **12. Ship operations and authoring kit** | Power Distribution, Waste Reclamation, Fuel Depot, Coolant Plant, Maintenance Hub and Comms Array, each with three layouts; Engine Room, Life Support, Water Treatment and Processing Plant reworked to three or four; shared kits (`RoomPropSet`) round a machine keyed *Plant*; Waist and Comb shapes; 18 operations props; the placeholder palette and Prop Builder; New layout, Duplicate and Check in the Inspector (section 12) | **Done in code, not yet compiled or run** |
 | **13. Buildings and towns** | `BuildingPlan` floor plans (hall, rooms, back room) as School, Hospital and Library Floor layouts and on a town's lots, each room its own zone and furnished by its own place; roofs, lights and a sky dome; the Town Square place; Room Lab *Spaces* (section 13) | **Done in code, not yet compiled or run** |
 | **14. Composition and props in sets** | Three Lanes, Hub Ring and Pavilion structure rules on the big open layouts; pavilions as annex spaces furnished by their own place, the room's props kept round them; VOID, TECH and BIO dressings rewritten as sets (section 14) | **Done in code and compiled; not yet run in Unity** |
+| **15. Room flow** | Doorways lead back, onward or level; each room's arrival, threshold and goal; the *Band* placement option, offerings in the goal, *Showcase* anchors seen on arrival, a foothold in fight rooms' thresholds, enemies past the threshold, the flank scored in fight rooms' tries; Room Lab *Flow* layer (section 15) | **Done in code and compiled; flow tests run in a console harness; not yet run in Unity** |
 
 ### Tuning (Phase 7)
 

@@ -75,7 +75,7 @@ namespace CGD.Level
             _sight    = new SightlineMap(structure);
             _routes   = new RouteMap(structure);
             _rules    = new PropPlacementRules(structure, anchor, _sight, _routes, _keyed);
-            _selector = new PropSelector(_rules, _sight, random, _bounds);
+            _selector = new PropSelector(_rules, _sight, random, structure);
         }
 
         public IReadOnlyList<PlannedProp> Planned => _planned;

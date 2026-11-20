@@ -78,6 +78,9 @@ namespace CGD.Level
         public IReadOnlyList<StructureSpace> Spaces => _spaces;
         // Rooms a building's plan asked for that its floor had no space for (the Room Lab says so).
         public IReadOnlyList<string> LeftOut => _leftOut;
+        // The floor tile inside the doorway a player comes in by (RoomFlowPlanner): null when no
+        // doorway leads back toward Start (the Start room itself), so nothing reads the room's flow.
+        public Vector2Int? Arrival { get; private set; }
         public int ZoneCount { get; private set; } = 1;
         // The zone with the most floor (0 when the room is one zone).
         public int LargestZone { get; private set; }
@@ -100,6 +103,7 @@ namespace CGD.Level
             System.Array.Copy(_wallEast, copy._wallEast, _wallEast.Length);
             System.Array.Copy(_wallNorth, copy._wallNorth, _wallNorth.Length);
             copy._blockedCount = _blockedCount;
+            copy.Arrival       = Arrival;
             copy.ZoneCount     = ZoneCount;
             copy.LargestZone   = LargestZone;
             copy.TakeFloorFrom(this);
@@ -137,6 +141,13 @@ namespace CGD.Level
         public void AddEntrance(Vector2Int tile)
         {
             if (!_entrances.Contains(tile)) _entrances.Add(tile);
+        }
+
+        // One of the entrances, set once the structure is built (RoomFlowPlanner.Mark).
+        public void SetArrival(Vector2Int entrance)
+        {
+            if (!_entrances.Contains(entrance)) throw new System.ArgumentException("The arrival must be one of the room's entrances.", nameof(entrance));
+            Arrival = entrance;
         }
 
         // Which part of the room a tile is in, once inner walls have split it (0 when none).
