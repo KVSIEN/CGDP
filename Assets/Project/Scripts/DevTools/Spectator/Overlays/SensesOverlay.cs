@@ -4,10 +4,10 @@ using CGD.Enemies;
 
 namespace CGD.DevTools
 {
-    // What an agent senses and believes: its sight cone and hearing range on the ground in
-    // its awareness colour, a solid red line to a target it senses (a solid orange one to where
-    // it assumes the enemy last was once out of sight, with a cross there and a faint line on to
-    // where it really is), grey lines to the other hostiles it senses but isn't targeting
+    // What an agent senses and believes, all in its faction's shades (OverlayPalette.ForAwareness):
+    // its sight cone and hearing range on the ground, a solid line in its darkest shade to a target
+    // it senses (a solid line in its searching shade to where it assumes the enemy last was once out
+    // of sight, with a cross there and a faint line on to where it really is), grey lines to the other hostiles it senses but isn't targeting
     // (brighter the more its priorities favour them; dashed if only heard), and an arrow toward
     // fire it is under.
     internal static class SensesOverlay
@@ -18,7 +18,7 @@ namespace CGD.DevTools
         public static void Draw(OverlayMesh mesh, EnemyInsight agent, bool detailed)
         {
             Vector3 feet  = agent.Ai.transform.position + Vector3.up * GroundLift;
-            Color   aware = AwarenessColors.Of(agent.Awareness);
+            Color   aware = OverlayPalette.ForAwareness(agent.Team, agent.Awareness);
 
             mesh.Arc(feet, agent.Forward, agent.SightAngle, agent.SightRange,
                      OverlayPalette.Faded(aware, detailed ? 0.95f : 0.55f), detailed ? 2.5f : 1.5f);
@@ -36,19 +36,21 @@ namespace CGD.DevTools
             Vector3 eye = agent.Eye;
             if (target != null && agent.IsSensingTarget)
             {
-                mesh.Line(eye, target.transform.position + Vector3.up * ChestHeight, AwarenessColors.Engaged, 3f);
+                mesh.Line(eye, target.transform.position + Vector3.up * ChestHeight, OverlayPalette.ForTarget(agent.Team), 3f);
                 return;
             }
 
-            // Out of sight: a solid orange line to where it assumes the enemy last was, even once it has
+            // Out of sight: a solid line to where it assumes the enemy last was, even once it has
             // let go of its target and is only working from that belief.
             Vector3 belief;
-            if (target != null)         belief = agent.TargetPosition;
-            else if (agent.BeliefActive) belief = agent.BeliefLastSeen;
+            float   fade = 1f;
+            if (target != null)               belief = agent.TargetPosition;
+            else if (agent.BeliefRemembered)  { belief = agent.BeliefLastSeen; fade = 0.4f + 0.6f * agent.BeliefConfidence; }
             else return;
 
-            mesh.Line(eye, belief + Vector3.up * ChestHeight, OverlayPalette.Belief, 2.5f);
-            mesh.Cross(belief + Vector3.up * GroundLift, 0.9f, OverlayPalette.Belief, 3f);
+            Color assumed = OverlayPalette.Faded(OverlayPalette.ForBelief(agent.Team), fade);
+            mesh.Line(eye, belief + Vector3.up * ChestHeight, assumed, 2.5f);
+            mesh.Cross(belief + Vector3.up * GroundLift, 0.9f, assumed, 3f);
             if (target != null)
                 mesh.Dashed(belief + Vector3.up * GroundLift, target.transform.position + Vector3.up * GroundLift,
                             OverlayPalette.Truth, 1f, 0.25f);

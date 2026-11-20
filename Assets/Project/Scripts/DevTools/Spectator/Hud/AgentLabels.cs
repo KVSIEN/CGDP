@@ -115,7 +115,8 @@ namespace CGD.DevTools
             string shield = health.MaxShield > 0f ? $" <color=#7fc8ff>+{health.Shield:0}</color>" : "";
             string step   = ai.Step == EngageStep.None ? "" : $" · {ai.Step}";
             HealthManager target = ai.Perception.Target;
-            string belief = target != null ? $"{ai.Awareness} → {target.DisplayName}" : ai.Awareness.ToString();
+            string state  = $"<color={OverlayPalette.Hex(OverlayPalette.ForAwareness(health.Team, ai.Awareness))}>{ai.Awareness}</color>";
+            string belief = target != null ? $"{state} → {target.DisplayName}" : state;
             return $"{number}<b>{health.DisplayName}</b>  {health.Health:0}{shield}\n{ai.State}{step}{StealthTag(label.Stealth)}\n<size=85%>{belief}</size>";
         }
 

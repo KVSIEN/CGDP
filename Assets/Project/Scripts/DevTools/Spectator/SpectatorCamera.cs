@@ -15,8 +15,9 @@ namespace CGD.DevTools
     //             inspector shows it; hold the right mouse to orbit, scroll to get closer
     //   arena     0: back to the placed overview; WASD pans it, scroll zooms
     //   free      F, or just steer away (move while watching, look while in the overview)
-    //   inspect   the watched agent stays inspected when the camera leaves it; I pages
-    //             through its overview, blackboard and decisions; click empty ground to stop
+    //   inspect   the watched agent is inspected while the camera is on it; leaving it (steering
+    //             away, F, 0) goes back to the overview of every agent; I pages through its
+    //             overview, blackboard and decisions; click empty ground to stop
     //   overlays  V senses, C cover, N paths & plans, drawn in the Game view
     //   match     M shows the match stats, Backspace resets them; B lists the scenario
     //             presets (_scenarios), R restarts the last one
@@ -256,6 +257,7 @@ namespace CGD.DevTools
         private void ShowOverview()
         {
             _followed = -1;
+            Inspect(-1);
             _controller.ShowOverview();
             Toast("Whole arena");
             _nextHud = 0f;
@@ -264,6 +266,7 @@ namespace CGD.DevTools
         private void FlyFree(string message)
         {
             _followed = -1;
+            Inspect(-1);
             _controller.FlyFree();
             Toast(message);
             _nextHud = 0f;
@@ -306,8 +309,7 @@ namespace CGD.DevTools
             Watch(at);
         }
 
-        // Stays on through overview and free flight, so overlays and the panel can be watched
-        // from anywhere. −1 = nobody.
+        // −1 = nobody.
         private void Inspect(int index)
         {
             _inspected = index;
@@ -371,6 +373,7 @@ namespace CGD.DevTools
             if (before != _controller.Mode)
             {
                 _followed = -1;
+                Inspect(-1);   // steered away: back to the overlays and labels of every agent
                 Toast($"Free camera  ·  {Prompt(SpectatorAction.Overview)} for the whole arena");
                 _nextHud = 0f;
             }

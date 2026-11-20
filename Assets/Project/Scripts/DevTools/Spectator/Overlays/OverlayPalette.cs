@@ -30,6 +30,35 @@ namespace CGD.DevTools
             _                  => new Color(1f, 0.35f, 0.3f),
         };
 
+        // A faction's three shades for what its agents are up to — light while neutral (unaware or
+        // suspicious), normal while searching, dark while actively targeting — so whose cone, line or
+        // label it is reads at a glance: VOID light blue → purple → deep indigo, TECH yellow → amber →
+        // burnt orange, BIO mint → emerald → dark forest green. Teams without a palette use the generic
+        // awareness colours.
+        public static Color ForAwareness(Team team, AwarenessLevel level)
+        {
+            switch (team)
+            {
+                case Team.Void: return Shade(level, new Color(0.62f, 0.78f, 1f),    new Color(0.68f, 0.42f, 1f),   new Color(0.32f, 0.22f, 0.9f));
+                case Team.Tech: return Shade(level, new Color(1f, 0.95f, 0.45f),    new Color(1f, 0.7f, 0.12f),    new Color(0.85f, 0.27f, 0f));
+                case Team.Bio:  return Shade(level, new Color(0.62f, 1f, 0.8f),     new Color(0.1f, 0.85f, 0.45f), new Color(0.04f, 0.42f, 0.14f));
+                default:        return AwarenessColors.Of(level);
+            }
+        }
+
+        // The shade for where it assumes an unseen enemy is: its searching colour.
+        public static Color ForBelief(Team team) => ForAwareness(team, AwarenessLevel.Searching);
+
+        // The shade for the line to the enemy it is actively targeting.
+        public static Color ForTarget(Team team) => ForAwareness(team, AwarenessLevel.Engaged);
+
+        private static Color Shade(AwarenessLevel level, Color neutral, Color searching, Color engaged) => level switch
+        {
+            AwarenessLevel.Searching => searching,
+            AwarenessLevel.Engaged   => engaged,
+            _                        => neutral,
+        };
+
         public static Color ForPlan(TacticalPlan plan) => plan switch
         {
             TacticalPlan.Flank  => new Color(1f, 0.6f, 0.2f),

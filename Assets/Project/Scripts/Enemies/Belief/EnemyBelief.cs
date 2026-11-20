@@ -53,6 +53,9 @@ namespace CGD.Enemies
             _obstacleMask = obstacleMask;
         }
 
+        // It still remembers where it last saw the target, even with no spot left to search
+        // (IsActive needs one): fading over the same lifetime.
+        public bool    IsRemembered => _lost && Confidence > ActiveAbove;
         public bool    IsActive    => _lost && Confidence > ActiveAbove && _spots.Count > 0;
         public float   Confidence  => _lost ? _peak * Mathf.Clamp01(1f - (Time.time - _lostAt) / Lifetime) : 0f;
         public Vector3 LastSeen    => _lastSeen;

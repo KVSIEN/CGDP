@@ -17,10 +17,11 @@ namespace CGD.DevTools
             if (!agent.BeliefActive) return;
 
             float confidence = agent.BeliefConfidence;
+            Color assumed = OverlayPalette.ForBelief(agent.Team);
             Vector3 seen = agent.BeliefLastSeen + Vector3.up * GroundLift;
-            mesh.Cross(seen, 1.2f, OverlayPalette.Faded(OverlayPalette.Threat, confidence), 3f);
+            mesh.Cross(seen, 1.2f, OverlayPalette.Faded(assumed, confidence), 3f);
             if (agent.BeliefHeading != Vector3.zero)
-                mesh.Arrow(seen, seen + agent.BeliefHeading * 3f, OverlayPalette.Faded(OverlayPalette.Threat, confidence), 2.5f);
+                mesh.Arrow(seen, seen + agent.BeliefHeading * 3f, OverlayPalette.Faded(assumed, confidence), 2.5f);
 
             foreach (BeliefSpot spot in agent.BeliefSpots)
             {
@@ -28,7 +29,7 @@ namespace CGD.DevTools
                 if (spot.Checked) mesh.Cross(foot, 0.25f, OverlayPalette.Truth, 1.5f);
                 else if (spot.Weight >= MinShown)
                 {
-                    Color colour = spot.Concealed ? OverlayPalette.Concealed : OverlayPalette.Belief;
+                    Color colour = spot.Concealed ? OverlayPalette.Concealed : assumed;
                     mesh.Circle(foot, 0.3f + 0.9f * spot.Weight, OverlayPalette.Faded(colour, Mathf.Clamp01(0.3f + spot.Weight)), 2f);
                 }
             }

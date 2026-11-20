@@ -54,6 +54,8 @@ namespace CGD.Enemies
         // --- Belief about an unseen target ------------------------------------------
 
         public bool    BeliefActive     => _ai.Belief.IsActive;
+        // Still holds the last place it saw the target, though it may have nowhere left to look.
+        public bool    BeliefRemembered => _ai.Belief.IsRemembered;
         public float   BeliefConfidence => _ai.Belief.Confidence;
         public Vector3 BeliefLastSeen   => _ai.Belief.LastSeen;
         public Vector3 BeliefHeading    => _ai.Belief.Heading;
