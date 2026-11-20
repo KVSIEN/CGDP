@@ -36,7 +36,7 @@ MonoBehaviour:
   AttackDamage: 12
   AttackCooldown: 1
   RangedAttackCooldown: 1.8
-  RangedAttackDamage: 34
+  RangedAttackDamage: 25
   AttackWindup: 0.6
   DamageNumberColor: {r: 0.78, g: 0.55, b: 1, a: 1}
   PreferredRange: 13

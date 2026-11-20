@@ -33,7 +33,7 @@ MonoBehaviour:
   CombatType: 1
   Social: 1
   AttackRange: 1.6
-  AttackDamage: 9
+  AttackDamage: 8
   AttackCooldown: 1.5
   AttackWindup: 0.45
   DamageNumberColor: {r: 1, g: 0.85, b: 0.25, a: 1}

@@ -30,7 +30,7 @@ MonoBehaviour:
   ArmTime: 0.15
   FuseBlinkColor: {r: 1, g: 0.95, b: 0.4, a: 1}
   ExplosionRadius: 5
-  ExplosionDamage: 80
+  ExplosionDamage: 60
   EdgeDamage: 0.1
   ArmorPenetration: 0
   DamageType: 0
