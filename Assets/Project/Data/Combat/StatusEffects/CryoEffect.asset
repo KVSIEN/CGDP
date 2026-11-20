@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f943203b2c551d849960846b86bd150e, type: 3}
-  m_Name: VoidRiftCryoEffect
+  m_Name: CryoEffect
   m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.IceEffect
   DisplayName: Cryo
   Icon: {fileID: 0}
@@ -21,6 +21,7 @@ MonoBehaviour:
   MaxStacks: 4
   DecayOneStackAtATime: 1
   SlowPerStack: 0.15
+  MaxSlow: 1
   ArmorReductionPerStack: 0.05
   StunDuration: 0
   StunArmorReductionBonus: 0

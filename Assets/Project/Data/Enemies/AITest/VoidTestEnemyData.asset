@@ -52,6 +52,8 @@ MonoBehaviour:
   ShotEffects:
   - Effect: {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
     Chance: 1
+    Potency: 1.5
+    Duration: 0
   Grenade: {fileID: 0}
   Signature: {fileID: 11400000, guid: 7a1a948ba1764738b81386388a5aa1e3, type: 2}
   Escape: {fileID: 11400000, guid: 6b185f0aede34efba5d90e883f4efcb6, type: 2}

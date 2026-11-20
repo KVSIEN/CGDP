@@ -28,4 +28,6 @@ MonoBehaviour:
   OnHitEffects:
   - Effect: {fileID: 11400000, guid: 117ab2ebb728f4c46ab77e8c72b19978, type: 2}
     Chance: 1
+    Potency: 1
+    Duration: 0
   CloudPrefab: {fileID: 1261393525805050153, guid: 827e3d5493f241db90bb6e66790662c5, type: 3}

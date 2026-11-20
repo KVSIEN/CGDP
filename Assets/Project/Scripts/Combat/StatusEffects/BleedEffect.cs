@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace CGD.Combat
 {
-    // Bleed Damage (per tick) = (Raw Damage × RawDamageFraction) + (Target Max Health × MaxHealthFraction).
+    // Bleed Damage (per tick) = ((Raw Damage × RawDamageFraction) + (Target Max Health × MaxHealthFraction)) × Potency.
     // Ignores armor entirely (DamageType.True). Uses Refresh stacking, so reapplying just
     // refreshes duration and magnitude.
     [CreateAssetMenu(fileName = "BleedEffect", menuName = "CGD/Combat/Status Effects/Bleed")]
@@ -16,7 +16,8 @@ namespace CGD.Combat
 
         public override void Tick(StatusEffectController target, int stacks, float magnitude)
         {
-            float damage = magnitude * RawDamageFraction + target.Damageable.MaxHealth * MaxHealthFraction;
+            float damage = (magnitude * RawDamageFraction + target.Damageable.MaxHealth * MaxHealthFraction)
+                           * target.PotencyOf(this);
             target.Damageable.TakeDamage(new DamageInfo(damage, type: DamageType.True, instigator: target.InstigatorOf(this)));
         }
     }

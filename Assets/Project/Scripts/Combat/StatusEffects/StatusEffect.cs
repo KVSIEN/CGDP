@@ -11,7 +11,7 @@ namespace CGD.Combat
         public Color  Color = Color.white;
 
         [Header("Duration & Stacking")]
-        [Tooltip("Seconds the effect (or, for Independent, each stack) lasts")]
+        [Tooltip("Seconds the effect (or, for Independent, each stack) lasts, unless the source sets its own")]
         public float Duration = 5f;
         [Tooltip("Seconds between each Tick() call while active")]
         public float TickInterval = 1f;
@@ -22,15 +22,17 @@ namespace CGD.Combat
         public bool DecayOneStackAtATime = false;
 
         // Called when a hit applies this effect. Default: add a stack. Override for
-        // effects that do something on application (e.g. Lightning chaining).
-        public virtual void Apply(StatusEffectController target, in DamageInfo hit) =>
-            target.AddStack(this, hit.RawDamage, hit.Credited);
+        // effects that do something on application (e.g. Lightning chaining). `dose` is how
+        // strong and long the source makes it; use dose.DurationOf(this), not Duration.
+        public virtual void Apply(StatusEffectController target, in DamageInfo hit, StatusDose dose) =>
+            target.AddStack(this, hit.RawDamage, hit.Credited, dose);
 
         // Called once per TickInterval while the effect is active. `stacks` is the
         // current stack count (1..MaxStacks) — implementations decide what stacking
         // means for them (bigger hits, extra chains, deeper debuffs, etc). `magnitude`
         // is the raw damage of the hit that (most recently) applied this effect, for
-        // effects whose own damage derives from it (Bleed, Poison, Fire).
+        // effects whose own damage derives from it (Bleed, Poison, Fire). How strong the
+        // source made it is target.PotencyOf(this): scale whatever the effect does by it.
         public abstract void Tick(StatusEffectController target, int stacks, float magnitude);
 
         // Called once when the effect is fully removed (last stack gone). Override

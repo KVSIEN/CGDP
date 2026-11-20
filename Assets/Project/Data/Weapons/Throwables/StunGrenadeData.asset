@@ -46,6 +46,8 @@ MonoBehaviour:
   OnHitEffects:
   - Effect: {fileID: 11400000, guid: 08bf468d3b2f45d9ad32072e84f26f5a, type: 2}
     Chance: 1
+    Potency: 1
+    Duration: 0
   ThrowSound: {fileID: 0}
   ExplosionSound: {fileID: 0}
   TrajectorySteps: 60

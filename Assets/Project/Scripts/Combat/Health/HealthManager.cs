@@ -304,7 +304,7 @@ namespace CGD.Combat
             foreach (StatusEffectApplication application in info.OnHitEffects)
             {
                 if (application.Effect != null && UnityEngine.Random.value < application.Chance * chanceScale)
-                    _statusEffects.Apply(application.Effect, carried);
+                    _statusEffects.Apply(application.Effect, carried, application.Dose);
             }
         }
     }

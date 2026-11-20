@@ -18,6 +18,8 @@ namespace CGD.Combat
             public float TickTimer;
             public float Magnitude; // raw damage of the hit that (most recently) applied this effect
             public DamageSource Instigator; // who (most recently) applied it: its ticks count for them
+            public float Potency;  // how strong the source that (most recently) applied it makes it
+            public float Duration; // how long that source makes it (or each stack) last
             public readonly List<float> StackTimers = new(); // Independent stacking only
         }
 
@@ -110,7 +112,7 @@ namespace CGD.Combat
             if (effect.Stacking == StatusStacking.Stack && effect.DecayOneStackAtATime && active.Stacks > 1)
             {
                 active.Stacks--;
-                active.RemainingDuration = effect.Duration;
+                active.RemainingDuration = active.Duration;
                 return false;
             }
             return true;
@@ -119,15 +121,18 @@ namespace CGD.Combat
         public bool IsImmuneTo(StatusEffect effect) =>
             _immunities != null && System.Array.IndexOf(_immunities, effect) >= 0;
 
-        // Entry point for hits: lets the effect decide what applying it means.
-        public void Apply(StatusEffect effect, in DamageInfo hit)
+        // Entry point for hits: lets the effect decide what applying it means. The dose is how
+        // strong and long the source makes it (the asset as tuned when left out).
+        public void Apply(StatusEffect effect, in DamageInfo hit) => Apply(effect, hit, StatusDose.Full);
+
+        public void Apply(StatusEffect effect, in DamageInfo hit, StatusDose dose)
         {
-            if (!IsImmuneTo(effect)) effect.Apply(this, hit);
+            if (!IsImmuneTo(effect)) effect.Apply(this, hit, dose);
         }
 
-        // Adds (or refreshes) a stack according to the effect's Stacking mode and
-        // updates magnitude and instigator to the new hit's.
-        public void AddStack(StatusEffect effect, float magnitude, DamageSource instigator = default)
+        // Adds (or refreshes) a stack according to the effect's Stacking mode and updates
+        // magnitude, instigator and dose to the new hit's: the latest source sets the strength.
+        public void AddStack(StatusEffect effect, float magnitude, DamageSource instigator, StatusDose dose)
         {
             if (IsImmuneTo(effect)) return;
 
@@ -139,7 +144,9 @@ namespace CGD.Combat
 
             active.Magnitude         = magnitude;
             active.Instigator        = instigator;
-            active.RemainingDuration = effect.Duration;
+            active.Potency           = dose.Potency;
+            active.Duration          = dose.DurationOf(effect);
+            active.RemainingDuration = active.Duration;
 
             switch (effect.Stacking)
             {
@@ -152,29 +159,33 @@ namespace CGD.Combat
                     break;
 
                 case StatusStacking.Independent:
-                    AddIndependentStack(active.StackTimers, effect);
+                    AddIndependentStack(active.StackTimers, effect, active.Duration);
                     active.Stacks = active.StackTimers.Count;
                     break;
             }
         }
 
-        private static void AddIndependentStack(List<float> timers, StatusEffect effect)
+        private static void AddIndependentStack(List<float> timers, StatusEffect effect, float duration)
         {
             if (timers.Count < Mathf.Max(1, effect.MaxStacks))
             {
-                timers.Add(effect.Duration);
+                timers.Add(duration);
                 return;
             }
 
             int shortest = 0;
             for (int i = 1; i < timers.Count; i++)
                 if (timers[i] < timers[shortest]) shortest = i;
-            timers[shortest] = effect.Duration;
+            timers[shortest] = duration;
         }
 
         // Who most recently applied `effect` (default if it isn't active), for damage ticks to credit.
         public DamageSource InstigatorOf(StatusEffect effect) =>
             _active.TryGetValue(effect, out ActiveEffect active) ? active.Instigator : default;
+
+        // How strong the source that most recently applied `effect` made it (1 = as tuned, 0 if it isn't active).
+        public float PotencyOf(StatusEffect effect) =>
+            _active.TryGetValue(effect, out ActiveEffect active) ? active.Potency : 0f;
 
         // Current stack count for `effect`, or 0 if it isn't active.
         public int GetStacks(StatusEffect effect)
@@ -193,7 +204,7 @@ namespace CGD.Combat
                 float remaining = effect.Stacking == StatusStacking.Independent
                     ? LongestTimer(active.StackTimers)
                     : active.RemainingDuration;
-                float ratio = effect.Duration > 0f ? Mathf.Clamp01(remaining / effect.Duration) : 0f;
+                float ratio = active.Duration > 0f ? Mathf.Clamp01(remaining / active.Duration) : 0f;
                 results.Add(new ActiveStatus(effect, active.Stacks, ratio));
             }
         }

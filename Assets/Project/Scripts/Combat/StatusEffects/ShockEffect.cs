@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace CGD.Combat
 {
-    // Shock Damage (per jolt) = Raw Damage × JoltDamageFraction × Stacks, dealt as Lightning (so
+    // Shock Damage (per jolt) = Raw Damage × JoltDamageFraction × Stacks × Potency, dealt as Lightning (so
     // it bites harder into shields). Every jolt also stuns the target for a split second, cutting
     // off whatever it was doing — a swing, a cast, a sprint. Tick() is the jolt.
     [CreateAssetMenu(fileName = "ShockEffect", menuName = "CGD/Combat/Status Effects/Shock")]
@@ -18,7 +18,7 @@ namespace CGD.Combat
         {
             if (JoltStun > 0f && target.Stunnable != null) target.Stunnable.ApplyStun(JoltStun);
 
-            float damage = magnitude * JoltDamageFraction * stacks;
+            float damage = magnitude * JoltDamageFraction * stacks * target.PotencyOf(this);
             if (damage > 0f)
                 target.Damageable.TakeDamage(new DamageInfo(damage, type: DamageType.Lightning, instigator: target.InstigatorOf(this)));
         }

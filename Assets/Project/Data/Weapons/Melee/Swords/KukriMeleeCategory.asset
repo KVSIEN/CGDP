@@ -44,6 +44,8 @@ MonoBehaviour:
     OnHitEffects:
     - Effect: {fileID: 11400000, guid: f2a43b1c8de76a84490042e6d8d13b50, type: 2}
       Chance: 0.3
+      Potency: 1
+      Duration: 0
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
@@ -64,6 +66,8 @@ MonoBehaviour:
     OnHitEffects:
     - Effect: {fileID: 11400000, guid: f2a43b1c8de76a84490042e6d8d13b50, type: 2}
       Chance: 0.3
+      Potency: 1
+      Duration: 0
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
@@ -84,6 +88,8 @@ MonoBehaviour:
     OnHitEffects:
     - Effect: {fileID: 11400000, guid: f2a43b1c8de76a84490042e6d8d13b50, type: 2}
       Chance: 0.3
+      Potency: 1
+      Duration: 0
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}
@@ -105,6 +111,8 @@ MonoBehaviour:
     OnHitEffects:
     - Effect: {fileID: 11400000, guid: f2a43b1c8de76a84490042e6d8d13b50, type: 2}
       Chance: 0.6
+      Potency: 1
+      Duration: 0
     SwingSound: {fileID: 0}
     HitSound: {fileID: 0}
     DebugColor: {r: 1, g: 1, b: 1, a: 1}

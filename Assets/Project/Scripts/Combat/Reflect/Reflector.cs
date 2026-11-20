@@ -159,7 +159,7 @@ namespace CGD.Combat
             foreach (StatusEffectApplication application in profile.AttackerEffects)
             {
                 if (application.Effect != null && Random.value < application.Chance)
-                    effects.Apply(application.Effect, reflected);
+                    effects.Apply(application.Effect, reflected, application.Dose);
             }
         }
 

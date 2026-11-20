@@ -28,17 +28,18 @@ namespace CGD.Combat
 
         // The hit that applied Lightning already damaged the target. Chain count equals
         // the target's resulting stack count; each hop deals ChainFalloff less than the
-        // previous and never strikes the same character twice in one cast.
-        public override void Apply(StatusEffectController target, in DamageInfo hit)
+        // previous and never strikes the same character twice in one cast. Potency scales the
+        // chain's damage.
+        public override void Apply(StatusEffectController target, in DamageInfo hit, StatusDose dose)
         {
-            target.AddStack(this, hit.RawDamage);
+            target.AddStack(this, hit.RawDamage, default, dose);
             int hops = target.GetStacks(this);
 
             _visited.Clear();
             if (target.TryGetComponent(out HealthManager first)) _visited.Add(first);
 
             Vector3 origin = target.transform.position;
-            float   damage = hit.RawDamage;
+            float   damage = hit.RawDamage * dose.Potency;
 
             for (int i = 0; i < hops; i++)
             {
@@ -47,17 +48,17 @@ namespace CGD.Combat
                 if (next == null) break;
 
                 _visited.Add(next);
-                Strike(next, damage, hit.Source);
+                Strike(next, damage, hit.Source, dose);
                 origin = next.transform.position;
             }
         }
 
-        private void Strike(HealthManager target, float damage, DamageSource source)
+        private void Strike(HealthManager target, float damage, DamageSource source, StatusDose dose)
         {
             target.TakeDamage(new DamageInfo(damage, type: DamageType.Lightning, source: source));
 
             if (target.TryGetComponent(out StatusEffectController controller))
-                controller.AddStack(this, damage);
+                controller.AddStack(this, damage, default, dose);
         }
 
         private HealthManager FindNearestUnvisited(Vector3 origin, Team team)

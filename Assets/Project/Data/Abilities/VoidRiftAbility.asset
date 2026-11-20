@@ -31,4 +31,6 @@ MonoBehaviour:
   OnHitEffects:
   - Effect: {fileID: 11400000, guid: b50232d06a0546fdbb18573d1525a428, type: 2}
     Chance: 1
+    Potency: 1
+    Duration: 0
   ShieldSiphon: 0.75

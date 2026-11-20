@@ -22,8 +22,12 @@ MonoBehaviour:
   ArmorPenetration: 0
   DamageType: 2
   OnHitEffects:
-  - Effect: {fileID: 11400000, guid: ea47afc7fb87499aad5fc54d37ace8ed, type: 2}
+  - Effect: {fileID: 11400000, guid: 08bf468d3b2f45d9ad32072e84f26f5a, type: 2}
     Chance: 1
-  - Effect: {fileID: 11400000, guid: d0a1b2c3d4e5f60718293a4b5c6d7e03, type: 2}
+    Potency: 1
+    Duration: 1
+  - Effect: {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
     Chance: 1
+    Potency: 3
+    Duration: 4
   Heal: 0

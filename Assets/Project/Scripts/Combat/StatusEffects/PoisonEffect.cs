@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace CGD.Combat
 {
-    // Poison Damage (per tick) = Effective Damage × (StackMultiplier ^ (Stacks − 1)).
+    // Poison Damage (per tick) = Effective Damage × (StackMultiplier ^ (Stacks − 1)) × Potency.
     // Effective Damage is the originating hit's raw damage resolved through the
     // target's armor once; the exponential stack scaling is applied on top and
     // delivered via DamageType.True so it isn't mitigated a second time.
@@ -17,7 +17,7 @@ namespace CGD.Combat
         public override void Tick(StatusEffectController target, int stacks, float magnitude)
         {
             float effectiveDamage = new DamageInfo(magnitude).ResolveDamage(target.Damageable.Armor);
-            float damage = effectiveDamage * Mathf.Pow(StackMultiplier, stacks - 1);
+            float damage = effectiveDamage * Mathf.Pow(StackMultiplier, stacks - 1) * target.PotencyOf(this);
             target.Damageable.TakeDamage(new DamageInfo(damage, type: DamageType.True, instigator: target.InstigatorOf(this)));
         }
     }

@@ -23,10 +23,14 @@ MonoBehaviour:
   DamageType: 2
   ArmorPenetration: 0
   OnHitEffects:
-  - Effect: {fileID: 11400000, guid: d0a1b2c3d4e5f60718293a4b5c6d7e03, type: 2}
+  - Effect: {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
     Chance: 1
+    Potency: 3
+    Duration: 4
   - Effect: {fileID: 11400000, guid: e995a22b6eaa4691a3d4e40dee5f9174, type: 2}
     Chance: 1
+    Potency: 1
+    Duration: 0
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295

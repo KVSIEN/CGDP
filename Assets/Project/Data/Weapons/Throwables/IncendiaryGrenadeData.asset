@@ -44,8 +44,10 @@ MonoBehaviour:
   CameraTrauma: 0.4
   ShakeRadius: 15
   OnHitEffects:
-  - Effect: {fileID: 11400000, guid: 173514ae86ec45a4892c6100378667d1, type: 2}
+  - Effect: {fileID: 11400000, guid: bf6df1793c34595468cf4ced8ff665bc, type: 2}
     Chance: 1
+    Potency: 5
+    Duration: 3
   ThrowSound: {fileID: 0}
   ExplosionSound: {fileID: 0}
   TrajectorySteps: 60

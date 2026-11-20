@@ -21,6 +21,7 @@ MonoBehaviour:
   MaxStacks: 5
   DecayOneStackAtATime: 1
   SlowPerStack: 0.05
+  MaxSlow: 1
   ArmorReductionPerStack: 0.02
   StunDuration: 2
   StunArmorReductionBonus: 0.1

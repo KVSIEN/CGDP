@@ -80,7 +80,10 @@
 - Fires a change event so the HUD reacts immediately without polling
 
 ## Status Effects
-- Weapons, melee attacks and grenades can each list on-hit status effects, each with its own chance to apply per hit
+- Weapons, melee attacks, grenades and abilities can each list on-hit status effects, each with its own chance to apply per hit, and its own strength and duration: one Bleed (or Slow, Stun, Fire...) is shared by everything that causes it, a light cut bleeding less and for less long than a deep one
+- A character has one of each effect at a time: a second source of the same effect (a snare's bleed on top of an ambush's) refreshes it at the newer source's strength rather than adding a second one
+- **Slow** — each stack slows the target, up to 60% at most however many sources pile on; stacks wear off one at a time
+- **Stun** / **Daze** — a stun stops the target outright; a daze slows it hard and eases off
 - **Bleed** — damage over time that ignores armor; reapplying refreshes it
 - **Poison** — stacks up to 5; each stack makes the ticks much stronger
 - **Fire** — damage over time based on the hit that applied it, still reduced by armor
@@ -89,7 +92,7 @@
 - **Lightning** — jumps from the target to nearby characters on the same side, weaker with each jump; more stacks mean more jumps
 - **Shock** — jolts the target every so often for a little lightning damage (extra against shields) and a split-second stun that cuts off whatever it was doing; reapplying refreshes it
 - **Cryo** — a chill (an Ice variant without the freeze): each stack slows and makes the target more brittle — armour counts for less against every hit it takes; stacks wear off one at a time
-- Slow-only chills (a snare, Tech's static slow, Void's bolt) never cancel a Cryo's armour loss when they land on the same target or wear off
+- A Slow never cancels a Cryo's (or Ice's) armour loss when they land on the same target or wear off
 - Every faction agent and the player can be hit by all of them, and the player sees them on the status HUD
 - Each effect chooses how repeat hits stack: refresh the timer, add stacks on one timer, or give every stack its own timer
 - Characters can be made immune to specific effects

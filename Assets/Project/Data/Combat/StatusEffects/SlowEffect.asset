@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f943203b2c551d849960846b86bd150e, type: 3}
-  m_Name: BioSnareSlowEffect
+  m_Name: SlowEffect
   m_EditorClassIdentifier: CGD.Runtime::CGD.Combat.IceEffect
-  DisplayName: Snared
+  DisplayName: Slowed
   Icon: {fileID: 0}
-  Color: {r: 0.35, g: 0.75, b: 0.2, a: 1}
-  Duration: 1.5
+  Color: {r: 0.6, g: 0.65, b: 0.75, a: 1}
+  Duration: 3
   TickInterval: 0.25
   Stacking: 1
   MaxStacks: 4
   DecayOneStackAtATime: 1
   SlowPerStack: 0.1
+  MaxSlow: 0.6
   ArmorReductionPerStack: 0
   StunDuration: 0
   StunArmorReductionBonus: 0
