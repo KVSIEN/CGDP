@@ -62,6 +62,9 @@ namespace CGD.Tests
         [TestCase("Behaviors/Fight/Opportunist")]
         [TestCase("Behaviors/Fight/Kiter")]
         [TestCase("Behaviors/Reactions/Avenger")]
+        [TestCase("Behaviors/Fight/HiddenAmbush")]
+        [TestCase("Behaviors/Fight/HiddenScan")]
+        [TestCase("Behaviors/Fight/HiddenHaunt")]
         public void TreeHasNoErrors(string name)
         {
             BehaviorTreeAsset tree = Load(name);
@@ -133,6 +136,24 @@ namespace CGD.Tests
 
             Assert.IsTrue(nodes.Contains(typeof(Peek)), "pops out of cover to strike");
             Assert.IsTrue(nodes.Contains(typeof(CreepUnwatched)), "only closes in while unwatched");
+        }
+
+        [Test]
+        public void EachFactionHasItsOwnWayOfLyingInWaitWhenHidden()
+        {
+            Assert.IsTrue(EnemyTreeContents.NodeTypes(Load("BioBehaviorTree")).IsSupersetOf(new[] { typeof(IsHidden), typeof(AmbushFromCover) }), "Bio ambushes from cover");
+            Assert.IsTrue(EnemyTreeContents.NodeTypes(Load("TechBehaviorTree")).IsSupersetOf(new[] { typeof(IsHidden), typeof(ScanFromCover) }), "Tech scans from cover");
+            Assert.IsTrue(EnemyTreeContents.NodeTypes(Load("VoidBehaviorTree")).IsSupersetOf(new[] { typeof(IsHidden), typeof(HauntFromCover) }), "Void haunts from cover");
+        }
+
+        [Test]
+        public void EachFactionAgentCarriesItsSpecial()
+        {
+            foreach (string name in new[] { "BioTestEnemyData", "TechTestEnemyData", "VoidTestEnemyData" })
+            {
+                var data = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/AITest/{name}.asset");
+                Assert.IsNotNull(data.Special, $"{name} has no Special ability");
+            }
         }
 
         [Test]

@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Enemies;
+using CGD.Stealth;
 
 namespace CGD.DevTools
 {
     // The ground the inspected agent has learned (EnemyGround): a square on every place it
-    // knows, green for hidden, red for a vantage, orange for a tight spot, larger and brighter
+    // knows (a bush it knows is outlined as the whole patch it remembers), green for hidden, red for a vantage, orange for a tight spot, larger and brighter
     // the more familiar it is; a cross where something happened that still puts it off. Under them,
     // faint cells for the ground it has walked, fading as they go stale (what draws it back, see PatrolScoring).
     internal static class GroundOverlay
@@ -31,9 +32,27 @@ namespace CGD.DevTools
                 if (place.Danger > 0.1f) mesh.Cross(foot, 0.6f, OverlayPalette.Faded(OverlayPalette.Threat, place.Danger), 2f);
                 if (place.Traits == PlaceTraits.None) continue;
 
-                float size = 0.25f + 0.6f * place.Familiarity;
-                Square(mesh, foot, size, OverlayPalette.Faded(ColourOf(place.Traits), Mathf.Clamp01(0.25f + place.Familiarity)));
+                Color colour = OverlayPalette.Faded(ColourOf(place.Traits), Mathf.Clamp01(0.25f + place.Familiarity));
+                if (place.Area.HasValue)
+                {
+                    Outline(mesh, place.Area.Value, GroundLift, colour);   // a bush it knows: the whole patch
+                    continue;
+                }
+                Square(mesh, foot, 0.25f + 0.6f * place.Familiarity, colour);
             }
+        }
+
+        // The patch of ground a known bush covers, as the rectangle the agent remembers.
+        private static void Outline(OverlayMesh mesh, BushFootprint area, float lift, Color colour)
+        {
+            Vector2 h = area.HalfSize;
+            Vector3 up = Vector3.up * lift;
+            Vector3 a = area.PointAt(-h.x, -h.y) + up, b = area.PointAt(h.x, -h.y) + up;
+            Vector3 c = area.PointAt(h.x, h.y) + up,   d = area.PointAt(-h.x, h.y) + up;
+            mesh.Line(a, b, colour, 2f);
+            mesh.Line(b, c, colour, 2f);
+            mesh.Line(c, d, colour, 2f);
+            mesh.Line(d, a, colour, 2f);
         }
 
         // Squares, so learned places read apart from the belief's rings.

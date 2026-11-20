@@ -1,0 +1,120 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: HiddenAmbush
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 760a8b82d927026299a416b1c03ef514
+        _position: {x: 275, y: 0}
+        _comment: 'Bio lying in wait in a bush: still, eyes on the target, until it walks close or turns its back (Ambush From Cover). Then it arms its Ambush (Escape slot) and springs: a short committed charge and strike. Fails if given away or the target never comes. Put it behind Is Hidden.'
+        _children:
+        - a851b8903eb122eb25d6306f0cb15763
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a851b8903eb122eb25d6306f0cb15763
+        _position: {x: 275, y: 150}
+        _comment: 'Wait in cover, arm the ambush, spring'
+        _children:
+        - b0bb3dc25958569c6fc09e2c893b880f
+        - 3c40a5cceaa500b559da45833405258d
+        - 9750e0ec7a3d48221cd6cd0f3db34d26
+        _abort: 0
+    - rid: 1002
+      type: {class: AmbushFromCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b0bb3dc25958569c6fc09e2c893b880f
+        _position: {x: 0, y: 300}
+        _comment: 'Still in the bush, watching it come'
+        _patience: {Min: 6, Max: 10, Bias: 0}
+        _springRange: 5
+        _openingRange: 12
+    - rid: 1003
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 3c40a5cceaa500b559da45833405258d
+        _position: {x: 220, y: 300}
+        _comment: 'Arm the ambush (cloak, regen, a harder first blow); fine if it cannot'
+        _children:
+        - a606b70908788b4da40a683c48714b92
+        _succeed: 1
+    - rid: 1004
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a606b70908788b4da40a683c48714b92
+        _position: {x: 220, y: 450}
+        _comment:
+        _slot: 2
+        _ability: {fileID: 0}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 0
+    - rid: 1005
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 9750e0ec7a3d48221cd6cd0f3db34d26
+        _position: {x: 550, y: 300}
+        _comment: 'Spring: a committed charge and strike, at most 4 s'
+        _children:
+        - eee94081bec3f2896f9d63dd048faac6
+        _succeed: 1
+    - rid: 1006
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: eee94081bec3f2896f9d63dd048faac6
+        _position: {x: 550, y: 450}
+        _comment:
+        _children:
+        - a26b981dcddc3e839991d3c23efe345f
+        _seconds: 4
+    - rid: 1007
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a26b981dcddc3e839991d3c23efe345f
+        _position: {x: 550, y: 600}
+        _comment:
+        _children:
+        - 383eae756d53a8e16db5069271dc668c
+        - 2a517658b0877f24a4ac89b8b5bdb9cc
+        _abort: 0
+    - rid: 1008
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 383eae756d53a8e16db5069271dc668c
+        _position: {x: 440, y: 750}
+        _comment:
+        _stopDistance: 0
+    - rid: 1009
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2a517658b0877f24a4ac89b8b5bdb9cc
+        _position: {x: 660, y: 750}
+        _comment:

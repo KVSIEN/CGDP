@@ -2,13 +2,17 @@ using UnityEngine;
 
 namespace CGD.Enemies
 {
-    // Falling back to regroup, behind the Regroup node: run to the best place it knows (its
-    // faction's kind of ground, EnemyGround) or high cover from the (believed) threat, or home
-    // to its post, then hold there facing the threat.
+    // Falling back to regroup, behind the Regroup node: run to where its doctrine says (MoraleDoctrine
+    // › Retreat To) — a bush away from the threat, its kin, the best place it knows (its faction's
+    // kind of ground, EnemyGround) or high cover from the (believed) threat, or home to its post —
+    // then hold there facing the threat.
     internal static class RetreatStep
     {
         // Kin it rallies on stand this far from it when it arrives.
         private const float KinStandOff = 2.5f;
+        // A bush to regroup in: at least this far from the threat, at most this far to run.
+        private const float BushFromThreat = 9f;
+        private const float BushMaxRun     = 25f;
 
         public static void Begin(EnemyAI ai)
         {
@@ -16,11 +20,21 @@ namespace CGD.Enemies
             RetreatDestination to = ai.Doctrine.Morale.RetreatTo;
 
             if (to == RetreatDestination.Kin && TryFindRally(ai, out Vector3 rally)) destination = rally;
+            else if (to == RetreatDestination.Concealment && TryFindBush(ai, out Vector3 bush)) destination = bush;
             else if (to != RetreatDestination.Den && TryFindKnownGround(ai, out Vector3 ground)) destination = ground;
             else if (to != RetreatDestination.Den && TryFindCover(ai, out Vector3 cover)) destination = cover;
 
             ai.Agent.isStopped = false;
             ai.Routing.SetDestination(destination);
+        }
+
+        // A bush to lie low in, away from the (believed) threat.
+        private static bool TryFindBush(EnemyAI ai, out Vector3 bush)
+        {
+            bush = default;
+            var perception = ai.Perception;
+            return perception.Target != null &&
+                   HidingBush.TryPick(ai, perception.TargetPosition, BushFromThreat, BushMaxRun, out bush);
         }
 
         // The best place it has learned for its faction (GroundDoctrine), away from the threat.

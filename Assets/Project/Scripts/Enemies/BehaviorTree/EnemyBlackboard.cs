@@ -23,6 +23,14 @@ namespace CGD.Enemies
         public const string HostilesClose = "HostilesClose";
         [AgentBlackboardKey(BlackboardValueType.Float, "Metres per second its target is moving while sensed; unset with none")]
         public const string TargetSpeed = "TargetSpeed";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Seconds its armed ambush strike (Ambush ability) has left; 0 when not armed")]
+        public const string AmbushLeft = "AmbushLeft";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Seconds left of the buff from its Boost ability (Surge, Fortify…); 0 when not boosted")]
+        public const string BoostLeft = "BoostLeft";
+        [AgentBlackboardKey(BlackboardValueType.Bool, "True while it is hidden in cover (a bush, smoke) or cloaked, and nothing has given it away")]
+        public const string Hidden = "Hidden";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Seconds it has been hidden without a break; 0 when not hidden")]
+        public const string HiddenFor = "HiddenFor";
         [AgentBlackboardKey(BlackboardValueType.Float, "0–1, 1 = steady; low = shaken")]
         public const string Morale = "Morale";
         [AgentBlackboardKey(BlackboardValueType.Float, "0–1, 1 = certain of a hostile")]
@@ -73,6 +81,10 @@ namespace CGD.Enemies
             float hazard = CGD.Combat.Hazards.DamagePerSecondAt(ai.transform.position, health);
             blackboard.SetFloat(HazardDanger, hazard / UnityEngine.Mathf.Max(1f, health.Health + health.Shield));
             blackboard.SetFloat(HostilesClose, HostilesWithin(ai, CloseRange));
+            blackboard.SetFloat(AmbushLeft, ai.Ambush.SecondsLeft);
+            blackboard.SetFloat(BoostLeft, ai.Data.Boost != null ? ai.Abilities.EffectLeft(ai.Data.Boost) : 0f);
+            blackboard.SetBool(Hidden, ai.Concealment.IsHidden);
+            blackboard.SetFloat(HiddenFor, ai.Concealment.HiddenFor);
             blackboard.SetFloat(Morale, ai.Morale.Value);
             blackboard.SetFloat(Awareness, ai.Perception.Awareness);
             blackboard.SetBool(Cautious, ai.Perception.IsCautious);

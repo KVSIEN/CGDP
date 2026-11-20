@@ -22,11 +22,15 @@ namespace CGD.Abilities
 
         [Header("Healing")]
         [Min(0f)] public float Heal = 0f;
+        [Tooltip("Share of the damage dealt that comes back to the caster as health (a siphon). 1 = all of it; above 1 heals more than it took. 0 = none")]
+        [Min(0f)] public float SelfHealShare = 0f;
 
         // Assets are shared, but abilities execute one at a time on the main thread.
         private readonly TargetSet _targets = new();
 
         public override bool CanExecute(AbilityContext ctx) => Select(ctx) > 0;
+
+        public override bool ChecksAim => Targeting != null;
 
         public override void Execute(AbilityContext ctx)
         {
@@ -35,11 +39,23 @@ namespace CGD.Abilities
             var hit = new DamageInfo(Scaled(Damage, ctx), ArmorPenetration, DamageType, source: ctx.Source,
                                      onHitEffects: WithBonusEffects(OnHitEffects, ctx));
 
+            float dealt = 0f;
             foreach (HealthManager target in _targets.Targets)
             {
-                if (Damage > 0f) target.TakeDamage(hit);
+                if (Damage > 0f) dealt += DamageTaken(target, hit);
                 if (Heal   > 0f && !target.IsDead) target.Heal(Heal);
             }
+
+            if (SelfHealShare > 0f && dealt > 0f && ctx.Health != null && !ctx.Health.IsDead)
+                ctx.Health.Heal(dealt * SelfHealShare);
+        }
+
+        // What the hit actually took off the target (after armor, and only what it had left).
+        private static float DamageTaken(HealthManager target, in DamageInfo hit)
+        {
+            float before = target.Health + target.Shield;
+            target.TakeDamage(hit);
+            return Mathf.Max(0f, before - (target.Health + target.Shield));
         }
 
         // Team filtering in HealthManager would already make damage to allies a no-op; this

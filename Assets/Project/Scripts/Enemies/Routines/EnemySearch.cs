@@ -68,6 +68,8 @@ namespace CGD.Enemies
             _elapsed   = 0f;
             _timeLimit = (timeLimit > 0f ? timeLimit : _ai.Data.AlertDuration) * (IsHunting ? HuntTimeFactor : 1f)
                        * EnemyPacing.Current.SearchScale;
+            // A hunt that follows a fight lasts as long as the enemy stays in it.
+            if (IsHunting) _timeLimit = Mathf.Max(_timeLimit, _ai.Perception.CombatSecondsLeft);
             _ai.Perception.ConsumeLead();
             JoinHunt();
             StartNotice(fresh: true);

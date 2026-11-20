@@ -31,7 +31,7 @@ namespace CGD.Enemies
 
         public int Alive => _minions.Count;
 
-        public void Summon(GameObject prefab, int count, Vector3 around, float lifetime)
+        public void Summon(GameObject prefab, int count, Vector3 around, float lifetime, float focusSeconds = 0f)
         {
             if (prefab == null) return;
 
@@ -45,7 +45,7 @@ namespace CGD.Enemies
                 if (!body.TryGetComponent(out EnemyHealth health)) continue;
 
                 if (body.TryGetComponent(out ISummoned summoned)) summoned.SummonedBy(_ai);
-                SendHunting(body);
+                SendHunting(body, focusSeconds);
                 _minions.Add(new Minion { Body = body, Health = health, ExpiresAt = Time.time + lifetime, DiedAt = -1f });
             }
         }
@@ -78,12 +78,15 @@ namespace CGD.Enemies
             _minions.Clear();
         }
 
-        // Straight to where the summoner's quarry is (or last was), so they hunt rather than wait to notice.
-        private void SendHunting(GameObject body)
+        // After the summoner's quarry, so they hunt rather than wait to notice: for a while handed
+        // the target itself, else just sent to where it is (or last was).
+        private void SendHunting(GameObject body, float focusSeconds)
         {
-            if (!body.TryGetComponent(out EnemyAI minion) || _ai.Perception.Target == null) return;
+            HealthManager quarry = _ai.Perception.Target;
+            if (!body.TryGetComponent(out EnemyAI minion) || quarry == null) return;
 
-            minion.AlertTo(_ai.Perception.TargetPosition, DamageSource.Of(_ai.gameObject));
+            if (focusSeconds > 0f && !EnemyPerception.IsGone(quarry)) minion.Perception.TakeOrders(quarry, focusSeconds);
+            else minion.AlertTo(_ai.Perception.TargetPosition, DamageSource.Of(_ai.gameObject));
         }
     }
 }

@@ -252,15 +252,13 @@ namespace CGD.Enemies
             if (_spots.Count > 0) Refresh(now);
         }
 
-        // Bushes and smoke near the last sighting are hiding places too, cover or no cover.
+        // Bushes it knows of near the last sighting are hiding places too, cover or no cover: a
+        // bush the target could be anywhere in is a spot at its middle, however far it reaches.
         private void AddConcealment()
         {
-            IReadOnlyList<ConcealmentZone> zones = ConcealmentZone.Active;
-            for (int i = 0; i < zones.Count; i++)
-            {
-                Vector3 centre = zones[i].GroundCenter;
-                if ((centre - _lastSeen).sqrMagnitude <= SpotRadius * SpotRadius) AddSpot(centre);
-            }
+            IReadOnlyList<BushMemory.KnownBush> known = _ai.Ground.Bushes.Bushes;
+            for (int i = 0; i < known.Count; i++)
+                if (known[i].Zone != null && known[i].Area.DistanceTo(_lastSeen) <= SpotRadius) AddSpot(known[i].Area.Centre);
         }
 
         private void AddSpot(Vector3 position) => _spots.Add(new BeliefSpot

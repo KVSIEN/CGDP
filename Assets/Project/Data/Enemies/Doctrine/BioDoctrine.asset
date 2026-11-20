@@ -27,7 +27,7 @@ MonoBehaviour:
     _brokenShieldDrain: 0
     _retreatBelowScale: 0.7
     _rallyAboveScale: 1
-    _retreatTo: 2
+    _retreatTo: 3
     _retreatSpeedScale: 1
   _escalation:
     _calloutRadiusScale: 1.6

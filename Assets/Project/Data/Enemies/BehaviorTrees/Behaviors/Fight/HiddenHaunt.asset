@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: HiddenHaunt
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5d4c489d195e5a4b1d867dd6e4c25314
+        _position: {x: 275, y: 0}
+        _comment: 'Void lying in wait in cover: stares at the target and makes noises beyond it to turn its head (Haunt From Cover). The moment the target looks away within reach it siphons it (Special slot), or lunges if the Siphon is not ready. Fails if given away or the target never looks away. Put it behind Is Hidden.'
+        _children:
+        - a4457b605c8af82a80c45f0a1d89d4b8
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a4457b605c8af82a80c45f0a1d89d4b8
+        _position: {x: 275, y: 150}
+        _comment: 'Haunt from cover, then strike'
+        _children:
+        - b644aba5921ad0390f025b4326eaaaa1
+        - 039d188f78cb592776dcb7de7d757e91
+        _abort: 0
+    - rid: 1002
+      type: {class: HauntFromCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b644aba5921ad0390f025b4326eaaaa1
+        _position: {x: 0, y: 300}
+        _comment:
+        _patience: {Min: 6, Max: 10, Bias: 0}
+        _strikeRange: 8
+        _watchedAngle: 35
+        _noiseEvery: {Min: 2.5, Max: 4, Bias: 0}
+        _noiseBeyond: 5
+        _noiseRadius: 14
+    - rid: 1003
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 039d188f78cb592776dcb7de7d757e91
+        _position: {x: 550, y: 300}
+        _comment: 'Siphon it if ready, else a short lunge'
+        _children:
+        - 66fede6636bb26701bc645762904a119
+        _succeed: 1
+    - rid: 1004
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 66fede6636bb26701bc645762904a119
+        _position: {x: 550, y: 450}
+        _comment:
+        _children:
+        - 6a728371a0141173a0f3f4b2289ff1be
+        - 2408a7c1566050331612bdb363f7163d
+        _abort: 0
+    - rid: 1005
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6a728371a0141173a0f3f4b2289ff1be
+        _position: {x: 330, y: 600}
+        _comment:
+        _children:
+        - 97a346aff29126af3c1aba0323b8f35d
+        - 78dc665c76488d06b4286120a93c9d05
+        _abort: 0
+    - rid: 1006
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 97a346aff29126af3c1aba0323b8f35d
+        _position: {x: 220, y: 750}
+        _comment:
+        _slot: 6
+        _ability: {fileID: 0}
+    - rid: 1007
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 78dc665c76488d06b4286120a93c9d05
+        _position: {x: 440, y: 750}
+        _comment:
+        _slot: 6
+        _ability: {fileID: 0}
+        _aim: 0
+        _maxRange: 10
+        _requireClearShot: 0
+        _leadMovingTarget: 0
+    - rid: 1008
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2408a7c1566050331612bdb363f7163d
+        _position: {x: 770, y: 600}
+        _comment:
+        _children:
+        - 97cce370e13ebd4dce47976896f375a2
+        _seconds: 3
+    - rid: 1009
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 97cce370e13ebd4dce47976896f375a2
+        _position: {x: 770, y: 750}
+        _comment:
+        _children:
+        - 102ad11b7effdda1e7a4744c26b8cd2d
+        - 6a16fff54154ec216292ac544b435299
+        _abort: 0
+    - rid: 1010
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 102ad11b7effdda1e7a4744c26b8cd2d
+        _position: {x: 660, y: 900}
+        _comment:
+        _stopDistance: 0
+    - rid: 1011
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6a16fff54154ec216292ac544b435299
+        _position: {x: 880, y: 900}
+        _comment:

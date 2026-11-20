@@ -10,6 +10,8 @@ namespace CGD.Enemies
     // way it faces, and being shoved. Facing is ours rather than the NavMeshAgent's: it follows
     // the walk by default, but a node can hold the gaze elsewhere, and the turn is spread over
     // the frames so it stays smooth when a calm enemy's tree ticks only a few times a second.
+    // While it walks with its gaze uncommitted (following the path, or only keeping an eye on its
+    // target) it also glances about now and then (EnemyGlance).
     internal sealed class EnemyMotion
     {
         private const float TurnSpeed = 540f;
@@ -27,6 +29,9 @@ namespace CGD.Enemies
         // Turning toward a point, spread over the frames until the tree's next tick.
         private Vector3 _facePoint;
         private float   _faceTimeLeft;
+        // A gaze that only keeps watch (KeepEyesOnTarget) gives way to a glance; a committed one doesn't.
+        private bool    _faceIsSoft;
+        private readonly EnemyGlance _glance;
 
         public EnemyMotion(EnemyAI ai, NavMeshAgent agent, Stunnable stunnable, CharacterStats stats)
         {
@@ -35,6 +40,7 @@ namespace CGD.Enemies
             _agent     = agent;
             _stunnable = stunnable;
             _stats     = stats;
+            _glance    = new EnemyGlance(ai);
             _agent.updateRotation = false;
         }
 
@@ -78,6 +84,7 @@ namespace CGD.Enemies
         {
             _facePoint    = position;
             _faceTimeLeft = deltaTime;
+            _faceIsSoft   = false;
         }
 
         // Repositioning without losing the objective: keeps the target (or where it was last known)
@@ -85,7 +92,10 @@ namespace CGD.Enemies
         public void KeepEyesOnTarget(float deltaTime)
         {
             EnemyPerception perception = _ai.Perception;
-            if (perception.Target != null) FaceTowards(perception.TargetPosition, deltaTime);
+            if (perception.Target == null) return;
+
+            FaceTowards(perception.TargetPosition, deltaTime);
+            _faceIsSoft = true;
         }
 
         // Drops any turn still in progress (death, respawn).
@@ -102,12 +112,22 @@ namespace CGD.Enemies
 
         private void TickFacing(float deltaTime)
         {
-            Vector3 flat;
-            float   step = deltaTime;
-            if (_faceTimeLeft > 0f)
+            bool  turning = _faceTimeLeft > 0f;
+            float step    = deltaTime;
+            if (turning)
             {
                 step = Mathf.Min(deltaTime, _faceTimeLeft);
                 _faceTimeLeft -= step;
+            }
+
+            Vector3 flat;
+            if (_glance.TryGetLook(!turning || _faceIsSoft, Time.time, out Vector3 look))
+            {
+                step = deltaTime;
+                flat = look - _self.position;
+            }
+            else if (turning)
+            {
                 flat = _facePoint - _self.position;
             }
             else if (_agent.enabled && _agent.isOnNavMesh && !_agent.isStopped)

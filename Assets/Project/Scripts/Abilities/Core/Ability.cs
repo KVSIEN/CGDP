@@ -43,6 +43,11 @@ namespace CGD.Abilities
 
         public abstract void Execute(AbilityContext ctx);
 
+        // Whether CanExecute depends on where the caster is aiming (a cone or a ray of targets in
+        // front of it). An enemy turns its aim to its target before asking, so the answer is
+        // about the target and not about wherever it last aimed.
+        public virtual bool ChecksAim => false;
+
         // Seconds what it leaves on the caster lasts (a buff), for effects that show it; 0 = nothing lasting.
         public virtual float EffectDuration => 0f;
 

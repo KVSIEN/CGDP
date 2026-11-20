@@ -9,5 +9,7 @@ namespace CGD.Enemies
         Kin,
         // Its post: home ground, where it recovers.
         Den,
+        // A bush away from the threat, to lie low in unseen; cover as above if none is in reach.
+        Concealment,
     }
 }

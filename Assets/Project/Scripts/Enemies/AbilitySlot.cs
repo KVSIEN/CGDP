@@ -17,5 +17,7 @@ namespace CGD.Enemies
         Boost,
         // What it does for an ally (a Repair, a heal on allies…).
         Support,
+        // Its faction's own trick (Tech's Bash, Bio's Primal Roar, Void's Siphon).
+        Special,
     }
 }

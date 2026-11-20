@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
 using CGD.Combat;
+using CGD.Stealth;
 
 namespace CGD.Enemies
 {
@@ -24,6 +25,7 @@ namespace CGD.Enemies
         private const float WaypointReached = 1f;
         private const float SameGoal        = 0.75f;  // a destination this close to the last is the same one
         private const float RecheckInterval = 0.25f;  // a hazard opening across its path is noticed this soon
+        private const float LegRerouteInterval = 0.1f;   // re-planning a leg that runs into a hazard, at most this often
         private const float SnapDistance    = 1.5f;
         private const float ReachSnapDistance = 4f;  // the edge of its reach may fall inside a wall
         private const int   MaxCorners      = 32;
@@ -33,7 +35,15 @@ namespace CGD.Enemies
         private readonly NavMeshPath _path = new();
         private readonly Vector3[] _corners = new Vector3[MaxCorners];
         private readonly Func<Vector3, bool> _walkable;
+        private readonly Func<Vector3, bool> _clearWalk;
         private readonly List<Vector3> _bushes = new();
+        private readonly List<BushFootprint> _areas = new();
+        private readonly NavMeshPath _legPath = new();
+        private readonly Vector3[] _legCorners = new Vector3[MaxCorners];
+
+        private HazardZone _lastZone;    // the zone it last went round, and by which waypoint:
+        private Vector3    _lastRound;   // re-planning keeps to the same side
+        private Vector3    _planFrom;
 
         private Vector3 _goal;
         private Vector3 _waypoint;
@@ -42,11 +52,13 @@ namespace CGD.Enemies
         private bool    _hopping;     // heading for a bush on the way
         private RouteStyle _style;
         private float   _nextCheck;
+        private float   _nextLegRoute;
 
         public EnemyRouting(EnemyAI ai)
         {
             _ai       = ai;
             _walkable = IsWalkable;
+            _clearWalk = IsClearWalk;
         }
 
         private NavMeshAgent  Agent  => _ai.Agent;
@@ -81,6 +93,14 @@ namespace CGD.Enemies
             return NavMesh.SamplePosition(limited, out NavMeshHit hit, ReachSnapDistance, NavMesh.AllAreas) ? hit.position : limited;
         }
 
+        // Where it was last sent (and false once it has stopped or forgotten): all a body that is
+        // not following the NavMesh (intangible) needs to know about the way.
+        public bool TryGetGoal(out Vector3 goal)
+        {
+            goal = _goal;
+            return _hasGoal;
+        }
+
         // Stands still: drops the path and the destination behind it.
         public void Stop()
         {
@@ -91,7 +111,8 @@ namespace CGD.Enemies
         // Forgets the destination without touching the agent (death, respawn).
         public void Clear()
         {
-            _hasGoal = false;
+            _hasGoal  = false;
+            _lastZone = null;
             SetWaypoint(detour: false, hop: false);
         }
 
@@ -119,12 +140,32 @@ namespace CGD.Enemies
             {
                 bool reached = Flat(Agent.transform.position - _waypoint).sqrMagnitude < WaypointReached * WaypointReached;
                 if (reached || !Hazards.AnyHurting(Self)) Reroute();
+                else if (LegEntersHazard(time)) Route();
                 return;
             }
 
-            if (time < _nextCheck || !Hazards.AnyHurting(Self)) return;
+            if (!Hazards.AnyHurting(Self)) return;
+            if (LegEntersHazard(time))
+            {
+                Route();
+                return;
+            }
+
+            if (time < _nextCheck) return;
             _nextCheck = time + RecheckInterval;
             if (Agent.hasPath && !Agent.pathPending && Agent.remainingDistance > WaypointReached) Route();
+        }
+
+        // The stretch of path it is walking right now runs into a hazard that opened (or that the
+        // NavMesh's own bends led it to). Checked every frame, a leg at a time, so it turns
+        // aside before the edge instead of finding out a quarter second later, inside.
+        private bool LegEntersHazard(float time)
+        {
+            if (time < _nextLegRoute || !Agent.hasPath || Agent.pathPending) return false;
+            if (!Hazards.TryFindCrossing(Agent.transform.position, Agent.steeringTarget, Self, Margin * 0.5f, out _)) return false;
+
+            _nextLegRoute = time + LegRerouteInterval;
+            return true;
         }
 
         private void Reroute()
@@ -181,8 +222,11 @@ namespace CGD.Enemies
             float detour = _ai.Data.BushDetour;
             if (detour <= 0f) return false;
 
-            BushHops.CollectCenters(_bushes);
-            if (!BushHops.TryPick(Agent.transform.position, _goal, detour, _bushes, out Vector3 center)) return false;
+            // Only the bushes it knows of, each as the patch it covers.
+            _ai.Ground.Bushes.CopyAreas(_areas);
+            Vector3 from = Agent.transform.position;
+            BushHops.CollectPassPoints(from, _goal, _areas, _bushes);
+            if (!BushHops.TryPick(from, _goal, detour, _bushes, out Vector3 center)) return false;
             if (!NavMesh.SamplePosition(center, out NavMeshHit hit, SnapDistance, NavMesh.AllAreas)) return false;
 
             bush = hit.position;
@@ -222,10 +266,16 @@ namespace CGD.Enemies
             for (int i = 0; i + 1 < count; i++)
             {
                 if (!Hazards.TryFindCrossing(_corners[i], _corners[i + 1], Self, Margin * 0.5f, out HazardZone zone)) continue;
-                if (!Hazards.TryFindWayRound(zone, _corners[i], _corners[i + 1], Self, Margin, _walkable, out Vector3 round)) return false;
+                // The way to the waypoint is itself walked on the NavMesh, which may bend it back
+                // through the zone round a wall, so a waypoint is only used if that way is clear too.
+                _planFrom = _corners[i];
+                Vector3? side = ReferenceEquals(zone, _lastZone) ? _lastRound : null;
+                if (!Hazards.TryFindWayRound(zone, _corners[i], _corners[i + 1], Self, Margin, _clearWalk, side, out Vector3 round)) return false;
                 if (!NavMesh.SamplePosition(round, out NavMeshHit hit, SnapDistance, NavMesh.AllAreas)) return false;
 
-                waypoint = hit.position;
+                _lastZone  = zone;
+                _lastRound = hit.position;
+                waypoint   = hit.position;
                 return true;
             }
             return false;
@@ -259,6 +309,18 @@ namespace CGD.Enemies
         private bool IsWalkable(Vector3 spot) =>
             NavMesh.SamplePosition(spot, out NavMeshHit hit, SnapDistance, NavMesh.AllAreas) &&
             Hazards.DamagePerSecondAt(hit.position, Self) <= 0f;
+
+        // A spot it can walk to from where it planned the route without crossing a hazard on the way.
+        private bool IsClearWalk(Vector3 spot)
+        {
+            if (!IsWalkable(spot)) return false;
+            if (!NavMesh.CalculatePath(_planFrom, spot, NavMesh.AllAreas, _legPath) || _legPath.status == NavMeshPathStatus.PathInvalid) return false;
+
+            int count = _legPath.GetCornersNonAlloc(_legCorners);
+            for (int i = 0; i + 1 < count; i++)
+                if (Hazards.TryFindCrossing(_legCorners[i], _legCorners[i + 1], Self, Margin * 0.5f, out _)) return false;
+            return true;
+        }
 
         private static Vector3 Flat(Vector3 vector) => new(vector.x, 0f, vector.z);
     }

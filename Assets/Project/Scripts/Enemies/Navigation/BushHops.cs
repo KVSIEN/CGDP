@@ -7,8 +7,9 @@ namespace CGD.Enemies
     // Picks the next bush to pass through on the way somewhere, so a sneaking enemy travels
     // from cover to cover instead of across the open: the nearest bush that brings it closer to
     // where it is going without lengthening the walk by more than its allowance. Asked again at
-    // each bush, so a route is a chain of such hops ending at the destination. Flat distances
-    // only — the NavMesh decides the actual path between hops.
+    // each bush, so a route is a chain of such hops ending at the destination. A hop is a point
+    // of the bush's footprint (BushApproach.PassPoint), so a bush on the line is crossed, not
+    // detoured to its middle. Flat distances only — the NavMesh decides the actual path between hops.
     public static class BushHops
     {
         // Routes shorter than this go straight: not worth a detour.
@@ -47,13 +48,14 @@ namespace CGD.Enemies
         public static bool Hides(ConcealmentZone zone) =>
             zone != null && zone.Kind == ConcealmentKind.Bush && !zone.RequiresCrouch;
 
-        // The ground centre of every such bush, into `centers` (cleared first).
-        public static void CollectCenters(List<Vector3> centers)
+        // Where to pass through each of these bushes on the way from → goal (into `points`, cleared
+        // first): out the far side of one the walk crosses, else the nearest part of it. Not the
+        // middle — it goes in at the edge it meets and carries on across.
+        public static void CollectPassPoints(Vector3 from, Vector3 goal, IReadOnlyList<BushFootprint> areas, List<Vector3> points)
         {
-            centers.Clear();
-            IReadOnlyList<ConcealmentZone> zones = ConcealmentZone.Active;
-            for (int i = 0; i < zones.Count; i++)
-                if (Hides(zones[i])) centers.Add(zones[i].GroundCenter);
+            points.Clear();
+            for (int i = 0; i < areas.Count; i++)
+                points.Add(BushApproach.PassPoint(from, goal, areas[i]));
         }
 
         private static float Flat(Vector3 v) => new Vector2(v.x, v.z).magnitude;

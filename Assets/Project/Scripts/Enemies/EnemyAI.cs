@@ -110,6 +110,10 @@ namespace CGD.Enemies
         internal EnemyInterest     Interest     { get; private set; }
         internal EnemyAbilities    Abilities    { get; private set; }
         internal EnemyAmbush       Ambush       { get; private set; }
+        // Whether it is hidden in cover (or cloaked) right now, and since when.
+        internal EnemyConcealment  Concealment  { get; private set; }
+        // Its ability to walk through walls and take no harm for a while (Echo).
+        internal EnemyIntangibility Intangibility { get; private set; }
         internal EnemyMinions      Minions      { get; private set; }
         internal EnemyBelief       Belief       { get; private set; }
         internal GrenadeThrower    Grenades     { get; private set; }
@@ -175,6 +179,8 @@ namespace CGD.Enemies
             Interest      = new EnemyInterest(this);
             TryGetComponent(out _stealth);
             Ambush        = new EnemyAmbush(_stealth);
+            Concealment   = new EnemyConcealment(_stealth);
+            Intangibility = new EnemyIntangibility(this);
             Minions       = new EnemyMinions(this);
             Belief        = new EnemyBelief(this, _obstacleMask);
             Abilities     = new EnemyAbilities(this, _damageSource, _stealth, Minions);
@@ -243,6 +249,7 @@ namespace CGD.Enemies
             float dt = Time.deltaTime;
             EnemyCoordination.Tick(Time.time);
             Minions.Tick(Time.time);
+            Concealment.Tick(Time.time);
 
             // A stun freezes attacks and senses as well as movement.
             if (!_stunnable.IsStunned)
@@ -265,6 +272,7 @@ namespace CGD.Enemies
             // A hop over low cover is finished even by a stunned enemy: it can't hang in the air.
             Vault.Tick(dt);
             Motion.Tick(dt);
+            Intangibility.Tick(dt);
         }
 
         // A stun pauses the tree where it is, so the enemy resumes what it was doing.
@@ -477,6 +485,7 @@ namespace CGD.Enemies
 
         private void OnDeath()
         {
+            Intangibility.Reset();
             Minions.DismissAll();
             Belief.Clear();
             Reflexes.Cancel();
@@ -511,6 +520,8 @@ namespace CGD.Enemies
             Melee.Reset();
             RangedCombat.Reset();
             Ambush.Disarm();
+            Intangibility.Reset();
+            Concealment.Reset();
             Minions.DismissAll();
             Search.Cancel();
             Tactics.Reset();

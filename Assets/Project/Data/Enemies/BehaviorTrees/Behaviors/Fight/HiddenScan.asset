@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: HiddenScan
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 9dc596476eb69a9ea60dfc62e16e1052
+        _position: {x: 0, y: 0}
+        _comment: 'Tech lying in wait in cover: sweeps its gaze over the target''s area (Scan From Cover) and, if it picked the target out, tells its kin where it is. Fails if it saw nothing or was given away. Put it behind Is Hidden.'
+        _children:
+        - 12bc0e5ec08e8ee99869fa30743319ec
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 12bc0e5ec08e8ee99869fa30743319ec
+        _position: {x: 0, y: 150}
+        _comment: 'Sweep the area from cover, pass on what it saw'
+        _children:
+        - 17711a118d8225ad7aa1006b87adbb86
+        _abort: 0
+    - rid: 1002
+      type: {class: ScanFromCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 17711a118d8225ad7aa1006b87adbb86
+        _position: {x: 0, y: 300}
+        _comment:
+        _patience: {Min: 4, Max: 6, Bias: 0}
+        _sweepAngle: 65
+        _sweepPeriod: 2.8

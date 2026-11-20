@@ -31,6 +31,9 @@ namespace CGD.Enemies
         private const float FlankDetourLimit   = 3f;
         private const float AdvanceMinGain     = 3f;
         private const float WatchedSidePenalty = 1.5f;
+        private const float OtherThreatPenalty    = 0.6f;   // per other seen hostile with a line on a cover spot
+        private const float MaxOtherThreatPenalty = 1.5f;
+        private const float OtherThreatApart      = 3f;     // closer than this to the main threat, cover from one is cover from both
         // Phase Shift: reappear at least this far away, checking at most this many spots.
         private const float UnseenMinJump = 5f;
         private const int   UnseenChecks  = 12;
@@ -418,8 +421,11 @@ namespace CGD.Enemies
             float threatDistance = Vector3.Distance(cover.Position, threat);
             if (threatDistance < MinThreatDistance) return false;
 
+            // Cover in a burning or scratching patch is no cover.
+            if (Hazards.DamagePerSecondAt(cover.Position, _ai.Health) > 0f) return false;
+
             float travel = Vector3.Distance(cover.Position, _ai.transform.position);
-            score = -1.5f * travel / CoverSearchRadius + Random.value * 0.3f;
+            score = -1.5f * travel / CoverSearchRadius + Random.value * 0.3f - ExposureToOthers(cover, threat);
 
             switch (use)
             {
@@ -445,6 +451,25 @@ namespace CGD.Enemies
                     return true;
             }
             return false;
+        }
+
+        // What a spot costs for the hostiles it sees besides the one it is taking cover from: each
+        // that can see the spot over the obstacle (it doesn't face them) is a second line of fire.
+        private float ExposureToOthers(CoverPoint cover, Vector3 primaryThreat)
+        {
+            float exposure = 0f;
+            var weighed = _ai.Perception.Weighed;
+            for (int i = 0; i < weighed.Count; i++)
+            {
+                WeighedHostile other = weighed[i];
+                if (!other.Seen || other.Hostile == null || other.Hostile.IsDead || other.Hostile == _ai.Perception.Target) continue;
+
+                Vector3 position = other.Hostile.transform.position;
+                if ((position - primaryThreat).sqrMagnitude < OtherThreatApart * OtherThreatApart) continue;   // same side: already covered
+                if (Vector3.Distance(position, cover.Position) > _ai.Data.SightRange) continue;
+                if (!cover.Faces(position, FacingDot)) exposure += OtherThreatPenalty;
+            }
+            return Mathf.Min(exposure, MaxOtherThreatPenalty);
         }
 
         private void Keep(int index, float score)

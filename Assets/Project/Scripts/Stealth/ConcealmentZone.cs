@@ -5,7 +5,8 @@ using Unity.AI.Navigation;
 namespace CGD.Stealth
 {
     // Cover a character can hide in: a bush, tall grass, a smoke cloud. Needs a Box,
-    // Sphere or Capsule collider (set to trigger) giving its shape. Smoke also blocks
+    // Sphere or Capsule collider (set to trigger) giving its shape — a box's rectangle is the
+    // patch of ground characters remember it by (Footprint), so size it to the foliage. Smoke also blocks
     // sight lines that pass through it. Active zones register themselves, so a smoke
     // grenade's pooled cloud works the moment it spawns.
     [RequireComponent(typeof(Collider))]
@@ -26,6 +27,9 @@ namespace CGD.Stealth
         public ConcealmentKind Kind           => _kind;
         public bool            BlocksSight    => _blocksSight;
         public bool            RequiresCrouch => _requiresCrouch;
+        // A wall to the eye: nobody outside sees through it or into it. Smoke, and any bush that
+        // hides a standing character (crouch-only grass is too low to).
+        public bool            BlocksView     => _blocksSight || (_kind == ConcealmentKind.Bush && !_requiresCrouch);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics() => _active.Clear();
@@ -54,6 +58,26 @@ namespace CGD.Stealth
             }
         }
 
+        // The whole patch of ground it covers (a box collider's own rectangle, other shapes by their
+        // bounds), recomputed on each call so a zone that moves stays right.
+        public BushFootprint Footprint
+        {
+            get
+            {
+                Bounds bounds = _collider.bounds;
+                var ground = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
+                if (_collider is not BoxCollider box)
+                    return new BushFootprint(ground, new Vector2(bounds.extents.x, bounds.extents.z), Vector3.right);
+
+                Transform t = box.transform;
+                Vector3 scale = t.lossyScale;
+                Vector3 centre = t.TransformPoint(box.center);
+                ground = new Vector3(centre.x, bounds.min.y, centre.z);
+                var half = new Vector2(Mathf.Abs(box.size.x * scale.x), Mathf.Abs(box.size.z * scale.z)) * 0.5f;
+                return new BushFootprint(ground, half, t.right);
+            }
+        }
+
         // Primitive colliders only: ClosestPoint returns the point itself when it's inside.
         public bool Contains(Vector3 point) => (_collider.ClosestPoint(point) - point).sqrMagnitude < 0.0001f;
 
@@ -77,8 +101,8 @@ namespace CGD.Stealth
             return false;
         }
 
-        // A sight-blocking zone lies between the points and doesn't contain either end
-        // (standing inside smoke is handled by the shared-cover rule instead).
+        // A sight-blocking zone (smoke, a bush) lies between the points and doesn't contain either
+        // end: from inside one it can be seen out of and into, from outside never through.
         public static bool BlocksLine(Vector3 from, Vector3 to)
         {
             Vector3 delta    = to - from;
@@ -89,7 +113,7 @@ namespace CGD.Stealth
             for (int i = 0; i < _active.Count; i++)
             {
                 ConcealmentZone zone = _active[i];
-                if (!zone._blocksSight || zone.Contains(from) || zone.Contains(to)) continue;
+                if (!zone.BlocksView || zone.Contains(from) || zone.Contains(to)) continue;
                 if (zone._collider.bounds.IntersectRay(ray, out float hit) && hit <= distance) return true;
             }
             return false;

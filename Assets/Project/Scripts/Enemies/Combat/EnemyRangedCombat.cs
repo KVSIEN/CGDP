@@ -20,6 +20,9 @@ namespace CGD.Enemies
         // A shot that stops this close to where it was aimed counts as reaching it (cover the
         // target crouches behind); any earlier and it is a shot into a wall.
         private const float ClearShotSlack = 2.5f;
+        // A blast bursting on scenery still reaches a target within its radius less its body, but never less than this.
+        private const float MinBlastSlack     = 0.5f;
+        private const float TargetBodyRadius  = 0.5f;
 
         private readonly EnemyAI      _ai;
         private readonly DamageSource _source;
@@ -190,7 +193,20 @@ namespace CGD.Enemies
         // Whether a shot at this point would reach it rather than hit scenery on the way —
         // a wall in front of the shooter, a corner the target is round.
         public bool HasClearShot(Vector3 aimPoint) =>
-            SightLines.ReachesWithin(_ai.transform.position + Vector3.up * EnemyEyes.Height, aimPoint, ClearShotSlack, _obstacleMask);
+            SightLines.ReachesWithin(_ai.transform.position + Vector3.up * EnemyEyes.Height, aimPoint, ShotSlack(), _obstacleMask, ShotWidth());
+
+        // How wide its shot flies: a projectile has a body, a hitscan shot none.
+        private float ShotWidth() => HasProjectile() ? _ai.Data.ShotRadius : 0f;
+
+        // How short of its aim point a shot may burst on scenery and still count: a blast reaches a target
+        // standing that close to the impact (less its body), but a shot that dies further off is wasted on the wall.
+        private float ShotSlack()
+        {
+            float blast = HasProjectile() ? _ai.Data.ShotBlastRadius : 0f;
+            return blast > 0f ? Mathf.Min(ClearShotSlack, Mathf.Max(MinBlastSlack, blast - TargetBodyRadius)) : ClearShotSlack;
+        }
+
+        private bool HasProjectile() => _ai.Data.ShotProjectile != null && _ai.Data.ShotProjectile.TryGetComponent(out Projectile _);
 
         // False when the shot isn't taken because scenery blocks it.
         private bool FireOneShot()
@@ -203,7 +219,7 @@ namespace CGD.Enemies
             // Aims where it believes the target is: dead on while it sees it, a guess when not.
             // A projectile takes time to arrive, so it aims ahead of a target it sees moving.
             Vector3 targetCenter = _ai.Perception.TargetPosition + Vector3.up;
-            bool    projectile   = data.ShotProjectile != null && data.ShotProjectile.TryGetComponent(out Projectile _);
+            bool    projectile   = HasProjectile();
             if (projectile)
             {
                 float flightTime = Vector3.Distance(eyePos, targetCenter) / data.ShotSpeed;
@@ -216,7 +232,7 @@ namespace CGD.Enemies
 
             // Checks the shot as it will really fly (lead and spread included), not just the line to the target.
             float reach = Vector3.Distance(eyePos, targetCenter);
-            if (!SightLines.ReachesWithin(eyePos, eyePos + dir * reach, ClearShotSlack, _obstacleMask)) return false;
+            if (!SightLines.ReachesWithin(eyePos, eyePos + dir * reach, ShotSlack(), _obstacleMask, ShotWidth())) return false;
 
             SoundBank fireSound = data.RangedAttackSound != null ? data.RangedAttackSound : data.AttackSound;
             fireSound.TryPlay(_ai.transform.position);

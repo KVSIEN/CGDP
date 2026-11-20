@@ -5,10 +5,11 @@ using CGD.Enemies;
 namespace CGD.DevTools
 {
     // What an agent senses and believes: its sight cone and hearing range on the ground in
-    // its awareness colour, a solid line to a target it senses (dashed to where it only
-    // believes one is, with a cross there and a faint line on to where it really is), lines
-    // to the other hostiles it weighed (brighter the more its priorities favour them;
-    // dashed if only heard), and an arrow toward fire it is under.
+    // its awareness colour, a solid red line to a target it senses (a solid orange one to where
+    // it assumes the enemy last was once out of sight, with a cross there and a faint line on to
+    // where it really is), grey lines to the other hostiles it senses but isn't targeting
+    // (brighter the more its priorities favour them; dashed if only heard), and an arrow toward
+    // fire it is under.
     internal static class SensesOverlay
     {
         private const float GroundLift  = 0.06f;
@@ -24,7 +25,7 @@ namespace CGD.DevTools
             mesh.Circle(feet, agent.HearingRadius, OverlayPalette.Faded(aware, 0.3f), 1f);
 
             Target(mesh, agent, feet);
-            if (detailed) Weighed(mesh, agent);
+            Weighed(mesh, agent);
             if (agent.IsUnderFire)
                 mesh.Arrow(feet + Vector3.up, feet + Vector3.up + agent.ThreatDirection * 3f, OverlayPalette.Threat, 3f);
         }
@@ -32,20 +33,25 @@ namespace CGD.DevTools
         private static void Target(OverlayMesh mesh, EnemyInsight agent, Vector3 feet)
         {
             HealthManager target = agent.Target;
-            if (target == null) return;
-
             Vector3 eye = agent.Eye;
-            if (agent.IsSensingTarget)
+            if (target != null && agent.IsSensingTarget)
             {
                 mesh.Line(eye, target.transform.position + Vector3.up * ChestHeight, AwarenessColors.Engaged, 3f);
                 return;
             }
 
-            Vector3 belief = agent.TargetPosition;
-            mesh.Dashed(eye, belief + Vector3.up * ChestHeight, OverlayPalette.Belief, 2.5f);
+            // Out of sight: a solid orange line to where it assumes the enemy last was, even once it has
+            // let go of its target and is only working from that belief.
+            Vector3 belief;
+            if (target != null)         belief = agent.TargetPosition;
+            else if (agent.BeliefActive) belief = agent.BeliefLastSeen;
+            else return;
+
+            mesh.Line(eye, belief + Vector3.up * ChestHeight, OverlayPalette.Belief, 2.5f);
             mesh.Cross(belief + Vector3.up * GroundLift, 0.9f, OverlayPalette.Belief, 3f);
-            mesh.Dashed(belief + Vector3.up * GroundLift, target.transform.position + Vector3.up * GroundLift,
-                        OverlayPalette.Truth, 1f, 0.25f);
+            if (target != null)
+                mesh.Dashed(belief + Vector3.up * GroundLift, target.transform.position + Vector3.up * GroundLift,
+                            OverlayPalette.Truth, 1f, 0.25f);
         }
 
         private static void Weighed(OverlayMesh mesh, EnemyInsight agent)
@@ -58,7 +64,7 @@ namespace CGD.DevTools
             foreach (WeighedHostile hostile in agent.Weighed)
             {
                 if (hostile.Hostile == null || hostile.Hostile == agent.Target || !hostile.Sensed) continue;
-                Color   color = OverlayPalette.Faded(OverlayPalette.ForTeam(hostile.Hostile.Team), 0.25f + 0.65f * hostile.Weight / heaviest);
+                Color   color = OverlayPalette.Faded(OverlayPalette.Bystander, 0.4f + 0.6f * hostile.Weight / heaviest);
                 Vector3 chest = hostile.Hostile.transform.position + Vector3.up * ChestHeight;
                 if (hostile.Seen) mesh.Line(eye, chest, color, 1.5f);
                 else mesh.Dashed(eye, chest, color, 1.5f);

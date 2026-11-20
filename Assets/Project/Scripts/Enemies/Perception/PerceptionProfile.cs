@@ -60,6 +60,8 @@ namespace CGD.Enemies
         [SerializeField, Range(0.05f, 0.95f)] private float _suspiciousThreshold = 0.3f;
         [Tooltip("Awareness lost per second with nothing to go on (from full: seconds of searching ≈ 0.7 / this)")]
         [SerializeField, Min(0.01f)] private float _decayRate = 0.08f;
+        [Tooltip("Seconds it stays in the fight after losing sight of a target it was engaged with: awareness holds (no calming down) while it flanks, closes in or searches. If it hasn't found anything by then it starts to calm down")]
+        [SerializeField, Min(0f)] private float _combatMemory = 30f;
         [Tooltip("Seconds ahead it guesses a lost target kept moving the way it was seen going")]
         [SerializeField] private FloatRange _prediction = new(0.4f, 1.4f);
         [Tooltip("Share of that guess for a target seen strafing: it tends to stop or reverse rather than keep going")]
@@ -131,6 +133,7 @@ namespace CGD.Enemies
         public float HitError             => _hitError;
         public float SuspiciousThreshold  => _suspiciousThreshold;
         public float DecayRate            => _decayRate;
+        public float CombatMemory         => _combatMemory;
         public FloatRange Prediction      => _prediction;
         public float StrafePrediction     => _strafePrediction;
         public float BackpedalPrediction  => _backpedalPrediction;

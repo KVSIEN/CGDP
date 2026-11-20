@@ -136,16 +136,17 @@ namespace CGD.Enemies
         // plus a bonus for the cover; it keeps circling the same way round.
         private void ConsiderBushes(Vector3 self, Vector3 target, ref float best, ref Vector3 bestSpot)
         {
-            IReadOnlyList<ConcealmentZone> zones = ConcealmentZone.Active;
-            for (int i = 0; i < zones.Count; i++)
+            IReadOnlyList<BushMemory.KnownBush> known = Ai.Ground.Bushes.Bushes;
+            for (int i = 0; i < known.Count; i++)
             {
-                if (!BushHops.Hides(zones[i])) continue;
+                if (known[i].Zone == null) continue;
 
-                Vector3 center = zones[i].GroundCenter;
-                float   fromTarget = Flat(center - target).magnitude;
+                // Where it would settle in it, coming from where it is: a little way in from the edge it meets.
+                Vector3 inside = BushApproach.RestSpot(self, known[i].Area);
+                float   fromTarget = Flat(inside - target).magnitude;
                 if (fromTarget < _distance.Min - BushBand || fromTarget > _distance.Max + BushBand) continue;
-                if (Flat(center - self).sqrMagnitude < MinMove * MinMove) continue;
-                if (!ReachableSpot.TryFind(self, center, SnapDistance, PathSlack, 1f, Ai.Health, out Vector3 spot)) continue;
+                if (known[i].Area.Contains(self) || Flat(inside - self).sqrMagnitude < MinMove * MinMove) continue;
+                if (!ReachableSpot.TryFind(self, inside, SnapDistance, PathSlack, 1f, Ai.Health, out Vector3 spot)) continue;
 
                 float turn  = Vector3.SignedAngle(Flat(self - target), Flat(spot - target), Vector3.up);
                 float score = UnityEngine.Random.value * Chance + InBush + HiddenScore(spot) +

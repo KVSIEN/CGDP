@@ -109,13 +109,18 @@ namespace CGD.Stealth
         public void Reveal(float seconds) => _status.OnNoise(seconds);
 
         // Whether an observer at this position can detect the character right now. While
-        // not Hidden this is always true — normal sight and hearing rules then decide.
+        // not Hidden this is always true — normal sight and hearing rules then decide. Hidden
+        // in cover, only an observer inside the same cover sees it (from outside the cover is a
+        // wall, however close); only attacking, shooting or casting shows it (Revealed). A
+        // cloak is thinner: anyone within a few metres still sees through it.
         public bool IsExposedTo(Vector3 observer)
         {
             if (!IsHidden) return true;
 
             Vector3 self = transform.position;
             bool sharedCover = ConcealmentZone.Share(observer, self);
+            if (!IsCloaked) return sharedCover;
+
             float range = _settings.RevealRange(sharedCover, IsCrouching, IsSprinting);
             return (observer - self).sqrMagnitude <= range * range;
         }

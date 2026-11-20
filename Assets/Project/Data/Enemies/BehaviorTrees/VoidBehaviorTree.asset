@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
   _nodes:
   - rid: 1000
+  - rid: 1140
+  - rid: 1141
+  - rid: 1142
+  - rid: 1143
   - rid: 1001
   - rid: 1002
   - rid: 1003
@@ -39,8 +43,6 @@ MonoBehaviour:
   - rid: 1023
   - rid: 1024
   - rid: 1025
-  - rid: 1026
-  - rid: 1027
   - rid: 1028
   - rid: 1029
   - rid: 1030
@@ -49,11 +51,6 @@ MonoBehaviour:
   - rid: 1033
   - rid: 1034
   - rid: 1035
-  - rid: 1036
-  - rid: 1037
-  - rid: 1038
-  - rid: 1039
-  - rid: 1040
   - rid: 1041
   - rid: 1042
   - rid: 1043
@@ -79,13 +76,6 @@ MonoBehaviour:
   - rid: 1064
   - rid: 1065
   - rid: 1066
-  - rid: 1067
-  - rid: 1068
-  - rid: 1069
-  - rid: 1070
-  - rid: 1071
-  - rid: 1072
-  - rid: 1073
   - rid: 1074
   - rid: 1079
   - rid: 1080
@@ -96,21 +86,12 @@ MonoBehaviour:
   - rid: 1085
   - rid: 1086
   - rid: 1087
-  - rid: 1088
   - rid: 1089
   - rid: 1090
   - rid: 1091
   - rid: 1092
   - rid: 1093
   - rid: 1094
-  - rid: 1095
-  - rid: 1096
-  - rid: 1097
-  - rid: 1098
-  - rid: 1099
-  - rid: 1100
-  - rid: 1101
-  - rid: 1102
   - rid: 1103
   - rid: 1104
   - rid: 1105
@@ -122,8 +103,20 @@ MonoBehaviour:
   - rid: 1111
   - rid: 1112
   - rid: 1113
-  - rid: 1114
-  - rid: 1115
+  - rid: 1116
+  - rid: 1117
+  - rid: 1118
+  - rid: 1119
+  - rid: 1120
+  - rid: 1121
+  - rid: 1122
+  - rid: 1123
+  - rid: 1124
+  - rid: 1125
+  - rid: 1126
+  - rid: 1127
+  - rid: 1128
+  - rid: 1129
   references:
     version: 2
     RefIds:
@@ -135,6 +128,36 @@ MonoBehaviour:
         _comment: 
         _children:
         - 9a9f27c62a1e41beab256143d05e7042
+    - rid: 1140
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5d3f0b6a8c2e4f17a9b4c1e6d7a20f38
+        _position: {x: 0, y: 0}
+        _comment: Not already within control range: flank to get there, then cast and hold range instead of flanking again
+        _children:
+        - 9e41c7d2b5a84a30b6f2d8c3e0a17b55
+    - rid: 1141
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9e41c7d2b5a84a30b6f2d8c3e0a17b55
+        _position: {x: 0, y: 0}
+        _comment: 
+        _range: 18
+    - rid: 1142
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2b8a6e91c4d74f05837e1a0d5c9f6b42
+        _position: {x: 0, y: 0}
+        _comment: Not already within control range: flank to get there, then cast and hold range instead of flanking again
+        _children:
+        - c7d15f3a0e6b4928a4b8f2e19d3c60a7
+    - rid: 1143
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c7d15f3a0e6b4928a4b8f2e19d3c60a7
+        _position: {x: 0, y: 0}
+        _comment: 
+        _range: 18
     - rid: 1001
       type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -201,6 +224,7 @@ MonoBehaviour:
         _position: {x: -2488, y: 750}
         _comment: 
         _children:
+        - f5dd22428dba43d88a947045136a33d7
         - cd50881722294eed98ea7284f2ce01a3
         - c25abb3952e349f6a9493d890be0dba6
         _abort: 0
@@ -264,15 +288,13 @@ MonoBehaviour:
         _position: {x: 647, y: 450}
         _comment: 
         _children:
-        - 0753e076b6f34572ab0d11f28f48f49e
+        - 10dbd8bf49838f2cc46a6f08b36249eb
+        - fc992154563a4a3fb31b729aaa7fc4b5
         - d4099671484a45ea81d33d45ebb4332d
         - 279e267b49594a7ebc5a39bc5e2c42c5
         - 01611ae078d04342a6ff83f5940a365c
         - f9499f0e9aac46d883a898c8f92589f2
         - ded1ebec8c9f4bffa2ad1af180f690a0
-        - 3e8a3abee9c749bb9d2fb7c199164a2f
-        - 35e74da142be4072bb585616c99e0021
-        - 71598e06f3c24e7e87880fd410af2cc8
         - a1c0de01b2d34e5f8a9b0c1d2e3f4a51
         - 039c8196783b4c3b98b4b9a7a3c3d94b
         - d6dfe96b4ee54521aa270c17ef26fd2e
@@ -334,7 +356,6 @@ MonoBehaviour:
         - 9dc7c5bc46774f269108f3eec5e47bf8
         - f6aa5773fb932348bc9b3d9cf8190929
         - 0cc861b217b64051b93df49e1a467a83
-        - d07a7fa151914c4f8de982d1a8b35294
         _abort: 2
     - rid: 1022
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
@@ -365,23 +386,6 @@ MonoBehaviour:
         _aim: 0
         _maxRange: 20
         _requireClearShot: 0
-    - rid: 1026
-      type: {class: Chance, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: d07a7fa151914c4f8de982d1a8b35294
-        _position: {x: 42, y: 750}
-        _comment: 
-        _children:
-        - d3d8f2e86b1b4df89787c847f938e1af
-        _probability: 0.5
-    - rid: 1027
-      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: d3d8f2e86b1b4df89787c847f938e1af
-        _position: {x: 42, y: 900}
-        _comment: 
-        _use: 1
-        _giveUpAfter: 4
     - rid: 1028
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -449,48 +453,6 @@ MonoBehaviour:
         _position: {x: 922, y: 1050}
         _comment: 
         _distance: 6
-    - rid: 1036
-      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: 71598e06f3c24e7e87880fd410af2cc8
-        _position: {x: 1912, y: 600}
-        _comment: 'Now and then (every 10 s or more, half the time): shift to a new angle on the target, by the least visible route'
-        _children:
-        - 1c2f704b8e6741bda55fae0b8fb99234
-        - 2f42d69319e94c34ad15f13814598ebe
-        _abort: 0
-    - rid: 1037
-      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 1c2f704b8e6741bda55fae0b8fb99234
-        _position: {x: 1802, y: 750}
-        _comment: 
-    - rid: 1038
-      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: 2f42d69319e94c34ad15f13814598ebe
-        _position: {x: 2022, y: 750}
-        _comment: 
-        _children:
-        - a1c0de0fb2d34e5f8a9b0c1d2e3f4a5f
-        _seconds: 10
-        _onlyAfterSuccess: 0
-    - rid: 1039
-      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 10c1820f6e57471b876cc674f325ae35
-        _position: {x: 2022, y: 900}
-        _comment: 
-        _children:
-        - cb5ae4016d314b35b6a24d67d32050f7
-    - rid: 1040
-      type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: cb5ae4016d314b35b6a24d67d32050f7
-        _position: {x: 2022, y: 1050}
-        _comment: 
-        _standOff: 0
-        _giveUpAfter: 6
     - rid: 1041
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -626,6 +588,7 @@ MonoBehaviour:
         _comment: 'Target busy fighting someone else: slip round behind it while its back is turned (Flank keeps off the side it faces)'
         _children:
         - 9260e93d01b94854acc60d647b43e701
+        - 5d3f0b6a8c2e4f17a9b4c1e6d7a20f38
         - b9b5a2cf81174a389ebd1c01a8c76289
         - b53794047e1640289fb57eacf22c0946
         _abort: 2
@@ -674,10 +637,9 @@ MonoBehaviour:
       data:
         _guid: a1c0de01b2d34e5f8a9b0c1d2e3f4a51
         _position: {x: 1500, y: 600}
-        _comment: 'Engage: weighs backing off to shoot, diving in to stab and skirmishing right now'
+        _comment: 'Engage: weighs backing off and skirmishing right now (a control mage keeps its range and casts, it does not dive in)'
         _children:
         - a1c0de02b2d34e5f8a9b0c1d2e3f4a52
-        - a1c0de04b2d34e5f8a9b0c1d2e3f4a54
         - a1c0de06b2d34e5f8a9b0c1d2e3f4a56
         - a1c0de0cb2d34e5f8a9b0c1d2e3f4a5c
         _reconsiderEvery: 1
@@ -756,120 +718,6 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         _weight: 1
-    - rid: 1067
-      type: {class: Score, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: a1c0de04b2d34e5f8a9b0c1d2e3f4a54
-        _position: {x: 1500, y: 750}
-        _comment: 'Melee dive: worth more the closer it is and the weaker the target'
-        _children:
-        - a1c0de05b2d34e5f8a9b0c1d2e3f4a55
-        _key: TargetDistance
-        _min: 15
-        _max: 2
-        _curve: 
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 0
-            inSlope: 1
-            outSlope: 1
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 1
-            inSlope: 1
-            outSlope: 1
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        _weight: 1.5
-        _biasKey: Aggression
-    - rid: 1068
-      type: {class: Score, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: a1c0de05b2d34e5f8a9b0c1d2e3f4a55
-        _position: {x: 1500, y: 900}
-        _comment: 
-        _children:
-        - a1c0de07b2d34e5f8a9b0c1d2e3f4a57
-        _key: TargetHealth
-        _min: 1
-        _max: 0
-        _curve: 
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 0.55
-            inSlope: 0.45
-            outSlope: 0.45
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 1
-            inSlope: 0.45
-            outSlope: 0.45
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        _weight: 1
-    - rid: 1069
-      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: a1c0de07b2d34e5f8a9b0c1d2e3f4a57
-        _position: {x: 1500, y: 1050}
-        _comment: 'Dive in and stab; gives up if it cannot get there in time'
-        _children:
-        - a1c0de08b2d34e5f8a9b0c1d2e3f4a58
-        _abort: 0
-    - rid: 1070
-      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: a1c0de08b2d34e5f8a9b0c1d2e3f4a58
-        _position: {x: 1500, y: 1200}
-        _comment: 
-        _children:
-        - a1c0de09b2d34e5f8a9b0c1d2e3f4a59
-        _seconds: 6
-    - rid: 1071
-      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: a1c0de09b2d34e5f8a9b0c1d2e3f4a59
-        _position: {x: 1500, y: 1350}
-        _comment: 
-        _children:
-        - a1c0de0ab2d34e5f8a9b0c1d2e3f4a5a
-        - a1c0de0bb2d34e5f8a9b0c1d2e3f4a5b
-        _abort: 0
-    - rid: 1072
-      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: a1c0de0ab2d34e5f8a9b0c1d2e3f4a5a
-        _position: {x: 1390, y: 1500}
-        _comment: 
-        _stopDistance: 0
-    - rid: 1073
-      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: a1c0de0bb2d34e5f8a9b0c1d2e3f4a5b
-        _position: {x: 1610, y: 1500}
-        _comment: 
     - rid: 1074
       type: {class: Score, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -1011,15 +859,6 @@ MonoBehaviour:
         _position: {x: 1900, y: 1050}
         _comment:
         _ability: {fileID: 11400000, guid: 6b185f0aede34efba5d90e883f4efcb6, type: 2}
-    - rid: 1088
-      type: {class: Chance, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: a1c0de0fb2d34e5f8a9b0c1d2e3f4a5f
-        _position: {x: 2022, y: 825}
-        _comment:
-        _children:
-        - 10c1820f6e57471b876cc674f325ae35
-        _probability: 0.5
     - rid: 1089
       type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -1112,73 +951,6 @@ MonoBehaviour:
         _position: {x: -3280, y: 450}
         _comment: 
         _giveUpAfter: 3
-    - rid: 1095
-      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: 0753e076b6f34572ab0d11f28f48f49e
-        _position: {x: -1108, y: 3000}
-        _comment: 'The target flinched (whipped round, or shot at one of its echoes) within 16 m: in for the kill while it is turned the wrong way (3 s at most)'
-        _children:
-        - d5587f97fb6d44a3b286d534c0790f30
-        - 44a4dd6c2b044b4eb50c7a449cb42976
-        - 5b6a4869a7fd42ffa98e22d5a3c96007
-        - 94cad067e5ad44f1a407f4a75124c55f
-        _abort: 2
-    - rid: 1096
-      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: d5587f97fb6d44a3b286d534c0790f30
-        _position: {x: -1438, y: 3150}
-        _comment: 
-    - rid: 1097
-      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: 44a4dd6c2b044b4eb50c7a449cb42976
-        _position: {x: -1218, y: 3150}
-        _comment: 
-        _key: TargetFlinch
-        _comparison: 4
-        _value: 0.5
-        _ifMissing: 0
-    - rid: 1098
-      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 5b6a4869a7fd42ffa98e22d5a3c96007
-        _position: {x: -998, y: 3150}
-        _comment: 
-        _range: 16
-    - rid: 1099
-      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: 94cad067e5ad44f1a407f4a75124c55f
-        _position: {x: -118, y: 3150}
-        _comment: 
-        _children:
-        - 59543e4f1c754c9d9af9c63d8c789a39
-        _seconds: 3
-    - rid: 1100
-      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: 59543e4f1c754c9d9af9c63d8c789a39
-        _position: {x: -118, y: 3300}
-        _comment: 
-        _children:
-        - 68b69adbb8b741afb750fbd0e0bb1693
-        - 03417a47cd054a60ad85f0b37485c65b
-        _abort: 0
-    - rid: 1101
-      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 68b69adbb8b741afb750fbd0e0bb1693
-        _position: {x: -228, y: 3450}
-        _comment: 
-        _stopDistance: 0
-    - rid: 1102
-      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 03417a47cd054a60ad85f0b37485c65b
-        _position: {x: -8, y: 3450}
-        _comment: 
     - rid: 1103
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -1249,6 +1021,7 @@ MonoBehaviour:
         _comment: 'Coven: given the flank role by its encounter (everyone but the deepest, who presses on), work round to the target''s side by the least visible route, at most every 7 s'
         _children:
         - 02975a87b88d4034a513250d7afa4681
+        - 2b8a6e91c4d74f05837e1a0d5c9f6b42
         - c12cb3073047404b89960f227526e267
         _abort: 0
     - rid: 1110
@@ -1284,19 +1057,143 @@ MonoBehaviour:
         _comment: 
         _standOff: 0
         _giveUpAfter: 6
-    - rid: 1114
-      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+    - rid: 1116
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 3e8a3abee9c749bb9d2fb7c199164a2f
-        _position: {x: 1472, y: 600}
-        _comment: 'Far off: it only comes closer while you are not looking, and freezes, staring, when you are'
-        _tree: {fileID: 11400000, guid: 5d8bb4b18b794a99b02462ef1426f121, type: 2}
-        _off: 0
-    - rid: 1115
-      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+        _guid: fc992154563a4a3fb31b729aaa7fc4b5
+        _position: {x: -1300, y: 600}
+        _comment: 'Phase Shift ready and it is taking a beating (shield mostly gone, being hit hard or shot at, hurt, crowded): vanish to unseen cover before it dies, whatever else it is doing'
+        _children:
+        - c8fbc216e4214a8eaba1bf7ce12e3ca5
+        - c907a5c508c740919e58fc74dc132e45
+        - daa9fba70b794e32bf65af9538ecef21
+        - c32b8f3280f54addb6db11efd4d9d295
+        _abort: 2
+    - rid: 1117
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 35e74da142be4072bb585616c99e0021
-        _position: {x: 1692, y: 600}
-        _comment: 'Peekaboo: hide, wait, dart out and strike, duck back; three times, then a new hiding place. The branches below are what it falls back on when there is no cover to play it from'
-        _tree: {fileID: 11400000, guid: 0db1ad346a7e4ee885b59956c172d088, type: 2}
-        _off: 0
+        _guid: c8fbc216e4214a8eaba1bf7ce12e3ca5
+        _position: {x: -1630, y: 750}
+        _comment: 
+    - rid: 1118
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c907a5c508c740919e58fc74dc132e45
+        _position: {x: -1410, y: 750}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6b185f0aede34efba5d90e883f4efcb6, type: 2}
+    - rid: 1119
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: daa9fba70b794e32bf65af9538ecef21
+        _position: {x: -1190, y: 750}
+        _comment: 'Mostly the shield being gone and taking damage fast; being hurt on its own is reason enough'
+        _reasons:
+        - _key: ShieldMissing
+          _from: 0.3
+          _to: 0.9
+          _weight: 0.5
+        - _key: RecentDamage
+          _from: 0
+          _to: 0.2
+          _weight: 0.6
+        - _key: Health
+          _from: 0.9
+          _to: 0.4
+          _weight: 1
+        - _key: UnderFire
+          _from: 0
+          _to: 1
+          _weight: 0.2
+        - _key: HostilesClose
+          _from: 1
+          _to: 3
+          _weight: 0.3
+        _patience: 0
+    - rid: 1120
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c32b8f3280f54addb6db11efd4d9d295
+        _position: {x: -970, y: 750}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6b185f0aede34efba5d90e883f4efcb6, type: 2}
+        _aim: 0
+        _maxRange: 0
+    - rid: 1121
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f5dd22428dba43d88a947045136a33d7
+        _position: {x: -2708, y: 900}
+        _comment: 
+        _children:
+        - e818e6e8be284c8e825df754e6fe239c
+        - 6e5bf629dc8a4ceaa577b9bbb06e0b6d
+        _abort: 0
+    - rid: 1122
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e818e6e8be284c8e825df754e6fe239c
+        _position: {x: -2818, y: 1050}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6b185f0aede34efba5d90e883f4efcb6, type: 2}
+    - rid: 1123
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6e5bf629dc8a4ceaa577b9bbb06e0b6d
+        _position: {x: -2598, y: 1050}
+        _comment: 
+        _ability: {fileID: 11400000, guid: 6b185f0aede34efba5d90e883f4efcb6, type: 2}
+        _aim: 0
+        _maxRange: 0
+    - rid: 1124
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 10dbd8bf49838f2cc46a6f08b36249eb
+        _position: {x: 440, y: 0}
+        _comment: 'Siphon ready and the target in view within 9 m: a short channel, then a cone that drains everyone in front of it and heals it for more than it took. Aborts lower priority'
+        _children:
+        - 53ac35f4292da6ddb2873cbaab36d4d3
+        - ea59a0e24920186e439484dff18f0348
+        - 07e6737e7cccfcc6642d645dae80fa44
+        - 8be753800f951706591fe5d7e22edc34
+        - 6f954e4d8bea6cf91308118b23b77342
+        _abort: 2
+    - rid: 1125
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 53ac35f4292da6ddb2873cbaab36d4d3
+        _position: {x: 0, y: 150}
+        _comment:
+    - rid: 1126
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ea59a0e24920186e439484dff18f0348
+        _position: {x: 220, y: 150}
+        _comment:
+        _slot: 6
+        _ability: {fileID: 0}
+    - rid: 1127
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 07e6737e7cccfcc6642d645dae80fa44
+        _position: {x: 440, y: 150}
+        _comment:
+        _range: 9
+    - rid: 1128
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8be753800f951706591fe5d7e22edc34
+        _position: {x: 660, y: 150}
+        _comment:
+    - rid: 1129
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6f954e4d8bea6cf91308118b23b77342
+        _position: {x: 880, y: 150}
+        _comment:
+        _slot: 6
+        _ability: {fileID: 0}
+        _aim: 0
+        _maxRange: 10
+        _requireClearShot: 0
+        _leadMovingTarget: 0

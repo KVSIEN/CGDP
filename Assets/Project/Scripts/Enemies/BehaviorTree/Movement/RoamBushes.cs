@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using CGD.BehaviorTrees;
-using CGD.Stealth;
 
 namespace CGD.Enemies
 {
     // A calm enemy's roam from bush to bush round its post instead of walking a fixed route:
-    // picks a bush within reach (rarely the one it just left), sneaks there through any bushes
-    // on the way, and stops in it for a beat of its faction's idle routine (a Bio creature
+    // picks a bush it knows within reach (rarely the one it just left), sneaks there through any
+    // bushes on the way, goes in at the edge it meets and stops a little way into it for a beat of its faction's idle routine (a Bio creature
     // sniffs and rests) before moving on. Never finishes while there are bushes to roam; fails
     // when there are none within reach, so a Patrol after it takes over.
     [Serializable]
@@ -25,9 +24,9 @@ namespace CGD.Enemies
         [Tooltip("Metres around its post it roams")]
         [SerializeField, Min(2f)] private float _radius = 25f;
 
-        [NonSerialized] private ConcealmentZone _heading;
-        [NonSerialized] private ConcealmentZone _last;
-        [NonSerialized] private ConcealmentZone _beforeLast;
+        [NonSerialized] private BushMemory.KnownBush _heading;
+        [NonSerialized] private BushMemory.KnownBush _last;
+        [NonSerialized] private BushMemory.KnownBush _beforeLast;
 
         public override string Summary => $"Within {_radius:0} m";
 
@@ -80,44 +79,46 @@ namespace CGD.Enemies
         // recently visited the likelier, and heads for it.
         private bool PickNext()
         {
-            IReadOnlyList<ConcealmentZone> zones = ConcealmentZone.Active;
+            IReadOnlyList<BushMemory.KnownBush> known = Ai.Ground.Bushes.Bushes;
             Vector3 self = Ai.transform.position;
 
             float total = 0f;
-            for (int i = 0; i < zones.Count; i++) total += Weight(zones[i], self);
+            for (int i = 0; i < known.Count; i++) total += Weight(known[i], self);
             if (total <= 0f) return false;
 
             float pick = UnityEngine.Random.value * total;
-            for (int i = 0; i < zones.Count; i++)
+            for (int i = 0; i < known.Count; i++)
             {
-                float weight = Weight(zones[i], self);
+                float weight = Weight(known[i], self);
                 if (weight <= 0f) continue;
                 pick -= weight;
                 if (pick > 0f) continue;
-                return HeadFor(zones[i]);
+                return HeadFor(known[i], self);
             }
             return false;
         }
 
-        private float Weight(ConcealmentZone zone, Vector3 self)
+        private float Weight(BushMemory.KnownBush bush, Vector3 self)
         {
-            if (!BushHops.Hides(zone) || zone == _last) return 0f;
+            if (bush.Zone == null || bush == _last) return 0f;
 
-            Vector3 center = zone.GroundCenter;
+            Vector3 center = bush.Area.Centre;
             if (!Ai.Post.IsNear(center, _radius)) return 0f;
 
             Vector3 offset = center - self;
             offset.y = 0f;
             float weight = 1f / (1f + offset.magnitude / NearbyFalloff);
-            return zone == _beforeLast ? weight * RecentWeight : weight;
+            return bush == _beforeLast ? weight * RecentWeight : weight;
         }
 
-        private bool HeadFor(ConcealmentZone zone)
+        // To a spot a little way into the bush from the side it comes at it, not its middle.
+        private bool HeadFor(BushMemory.KnownBush bush, Vector3 self)
         {
-            if (!NavMesh.SamplePosition(zone.GroundCenter, out NavMeshHit hit, SnapDistance, NavMesh.AllAreas)) return false;
+            Vector3 rest = BushApproach.RestSpot(self, bush.Area);
+            if (!NavMesh.SamplePosition(rest, out NavMeshHit hit, SnapDistance, NavMesh.AllAreas)) return false;
             if (!Ai.Routing.SetDestination(hit.position, RouteStyle.ThroughBushes)) return false;
 
-            _heading = zone;
+            _heading = bush;
             Ai.Agent.isStopped = false;
             return true;
         }

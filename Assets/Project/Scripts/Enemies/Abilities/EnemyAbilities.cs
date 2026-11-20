@@ -11,7 +11,8 @@ namespace CGD.Enemies
     // attacks, buffs, heals) the way the player does: an AbilityContext with its body, its
     // health, its damage source and an aim point at its eyes that turns toward whatever it
     // aims at. Abilities that need a player-only part (dash, reflect, stealth) can't run;
-    // Phase Shift (finds hidden cover and calls up minions) and Rift (lands on the aim point) only run on enemies.
+    // Phase Shift (finds hidden cover and calls up minions), Rift (lands on the aim point), Echo
+    // (turns intangible) and Primal Roar's reveal of hostiles only run on enemies.
     // Each ability keeps its own cooldown per enemy; meter costs and charges don't apply.
     internal sealed class EnemyAbilities
     {
@@ -52,6 +53,8 @@ namespace CGD.Enemies
                 Stealth         = stealth,
                 Ambush          = ai.Ambush,
                 Summoner        = summoner,
+                Scout           = ai.Perception,
+                Phasing         = ai.Intangibility,
             };
             // An enemy always aims somewhere, so abilities that land on the aim point (Rift) are
             // usable from the start. Each cast re-aims it at its target as it goes off (AimAt);
@@ -67,7 +70,10 @@ namespace CGD.Enemies
         {
             if (ability == null) return false;
             Remember(ability);
-            return !IsCasting && Time.time >= ReadyAt(ability) && ability.CanExecute(_context);
+            if (IsCasting || Time.time < ReadyAt(ability)) return false;
+
+            if (ability.ChecksAim && _ai.Perception.Target != null) AimAt(_ai.Perception.TargetPosition + Vector3.up);
+            return ability.CanExecute(_context);
         }
 
         public float CooldownLeft(Ability ability) => Mathf.Max(0f, ReadyAt(ability) - Time.time);

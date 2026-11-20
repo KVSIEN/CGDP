@@ -207,7 +207,9 @@ namespace CGD.Player
             SetSlot(slot, _wheelItems[option]);
         }
 
-        public int CountOf(int slot) => _slots[slot] != null ? _inventory.Inventory.CountOf(_slots[slot]) : 0;
+        // 0 before Awake: PlayerInventory.Awake grants starting stacks, which can refresh the HUD
+        // before this component has resolved its inventory.
+        public int CountOf(int slot) => _slots[slot] != null && _inventory != null ? _inventory.Inventory.CountOf(_slots[slot]) : 0;
 
         public bool TryUse(ConsumableDefinition item)
         {

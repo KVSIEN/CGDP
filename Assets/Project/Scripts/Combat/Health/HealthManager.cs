@@ -92,10 +92,16 @@ namespace CGD.Combat
             if (_stats != null) _stats.Modifiers.Changed -= OnStatChanged;
         }
 
-        // Gear and buffs that add shield capacity take effect at once, keeping what's charged.
+        // Gear and buffs that add shield capacity take effect at once, keeping what's charged. Extra
+        // health a buff granted is gone with it: health never stays above the (lowered) maximum.
         private void OnStatChanged(ItemStat stat)
         {
             if (stat == ItemStat.Shield) _shield.SetMax(MaxShield, keepRatio: false);
+            else if (stat == ItemStat.Health && !IsDead && _currentHealth > MaxHealth)
+            {
+                _currentHealth = Mathf.Max(1f, MaxHealth);
+                OnChanged?.Invoke();
+            }
         }
 
         protected virtual void Update()

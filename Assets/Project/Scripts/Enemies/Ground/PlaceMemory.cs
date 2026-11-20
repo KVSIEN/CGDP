@@ -63,9 +63,14 @@ namespace CGD.Enemies
         // The best place to fall back to from `from`, away from `threat`: worth most to the
         // faction, most familiar, least dangerous, nearest. Within reach, not near the threat
         // and no closer to it than where it stands.
-        public bool TryBest(GroundDoctrine doctrine, Vector3 from, Vector3 threat, float time, out Vector3 point)
+        public bool TryBest(GroundDoctrine doctrine, Vector3 from, Vector3 threat, float time, out Vector3 point) =>
+            TryBest(doctrine, from, threat, time, out point, out _);
+
+        // As above, and how well the place scored (so it can be weighed against other options).
+        public bool TryBest(GroundDoctrine doctrine, Vector3 from, Vector3 threat, float time, out Vector3 point, out float score)
         {
             point = default;
+            score = 0f;
             float best = 0f;
             float fromThreat = Flat(from - threat).magnitude;
             foreach (Place place in _places.Values)
@@ -79,11 +84,12 @@ namespace CGD.Enemies
 
                 // Fresh danger takes away its worth (all of it at aversion 1), not just a fixed amount.
                 float trust = Mathf.Max(0f, 1f - doctrine.DangerAversion * DangerOf(place, time));
-                float score = value * place.Familiarity * trust - distance / FallBackReach;
-                if (score <= best) continue;
-                best  = score;
+                float worth = value * place.Familiarity * trust - distance / FallBackReach;
+                if (worth <= best) continue;
+                best  = worth;
                 point = place.Position;
             }
+            score = best;
             return best > 0f;
         }
 

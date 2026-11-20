@@ -35,6 +35,10 @@ namespace CGD.Abilities
         public IAmbushStrike         Ambush;
         // Enemies only: calls up minions where it stands (Phase Shift).
         public IMinionSummoner       Summoner;
+        // Enemies only: learns where every hostile around is (Primal Roar).
+        public IHostileRevealer      Scout;
+        // Enemies only: turns the caster intangible (Echo).
+        public IIntangibility        Phasing;
 
         // Enemies only: the point the caster is aiming at (its target), for abilities that land
         // there (Rift). The player aims along AimTransform instead.

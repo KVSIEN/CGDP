@@ -18,4 +18,4 @@ MonoBehaviour:
   MaxCharges: 1
   CastTime: 0.15
   Buff: {fileID: 11400000, guid: 0e0e5593fab042dcb6fd8ef985d6344f, type: 2}
-  Duration: 6
+  Duration: 8

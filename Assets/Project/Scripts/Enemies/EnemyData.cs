@@ -143,6 +143,8 @@ namespace CGD.Enemies
         public Ability Boost;
         [Tooltip("What it does for allies (a Repair: a heal on allies around it), for Support Ally and ability nodes set to the Support slot. Empty = none")]
         public Ability Support;
+        [Tooltip("Its faction's own trick (Bash, Primal Roar, Siphon), for ability nodes set to the Special slot. Empty = none")]
+        public Ability Special;
 
         [Header("Alert")]
         [Tooltip("Longest it spends investigating something before it gives up and goes back to patrol (2.5× when hunting a hostile it knows is about).")]
@@ -163,6 +165,7 @@ namespace CGD.Enemies
             AbilitySlot.Summon    => Summon,
             AbilitySlot.Boost     => Boost,
             AbilitySlot.Support   => Support,
+            AbilitySlot.Special   => Special,
             _                     => null,
         };
 

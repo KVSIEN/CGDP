@@ -14,14 +14,19 @@ namespace CGD.Enemies
         // Whether something fired or thrown along from → to gets within `slack` metres of `to`
         // before scenery stops it. Characters in the way don't count as scenery: a shot into
         // one is a hit, not a wasted shot. A wall right in front of the shooter fails this
-        // whatever lies behind it.
-        public static bool ReachesWithin(Vector3 from, Vector3 to, float slack, LayerMask mask)
+        // whatever lies behind it. `radius` is how wide the shot is.
+        public static bool ReachesWithin(Vector3 from, Vector3 to, float slack, LayerMask mask, float radius = 0f)
         {
             Vector3 line   = to - from;
             float   length = line.magnitude;
             if (length < 0.001f) return true;
 
-            if (!Physics.Raycast(from, line / length, out RaycastHit hit, length, mask, QueryTriggerInteraction.Ignore)) return true;
+            // A fat shot (a bolt with a body) is swept as wide as it flies, so it can't clip the edge of a wall or half cover a thin ray would slip past.
+            Vector3 direction = line / length;
+            bool blocked = radius > 0f
+                ? Physics.SphereCast(from, radius, direction, out RaycastHit hit, length, mask, QueryTriggerInteraction.Ignore)
+                : Physics.Raycast(from, direction, out hit, length, mask, QueryTriggerInteraction.Ignore);
+            if (!blocked) return true;
             if (hit.distance >= length - Mathf.Min(slack, length * 0.5f)) return true;
             return Hitbox.FindDamageable(hit.collider) != null;
         }

@@ -13,6 +13,8 @@ namespace CGD.Combat
     {
         private readonly Dictionary<object, float> _slows = new();
         private readonly HashSet<object> _holds = new();
+        private readonly Dictionary<object, FadingSlow> _fading = new();
+        private readonly List<object> _fadeKeys = new();
         private float _speedMultiplier = 1f;
         private CooldownTimer _stunTimer;
         private HealthManager _health;
@@ -67,9 +69,20 @@ namespace CGD.Combat
             if (_slows.Remove(source)) Recalculate();
         }
 
+        // A daze: slowed to `multiplier` at once, easing back to full speed over `duration` seconds.
+        // Calling again with the same source starts it over.
+        public void SetFadingSlow(object source, float multiplier, float duration)
+        {
+            if (duration <= 0f) return;
+
+            _fading[source] = new FadingSlow(Mathf.Clamp01(multiplier), duration);
+            Recalculate();
+        }
+
         public void Clear()
         {
             _slows.Clear();
+            _fading.Clear();
             _holds.Clear();
             _speedMultiplier = 1f;
             _pushLeft = 0f;
@@ -81,6 +94,40 @@ namespace CGD.Combat
             _speedMultiplier = 1f;
             foreach (float multiplier in _slows.Values)
                 _speedMultiplier = Mathf.Min(_speedMultiplier, multiplier);
+            foreach (FadingSlow fading in _fading.Values)
+                _speedMultiplier = Mathf.Min(_speedMultiplier, fading.Current);
+        }
+
+        private void TickFading(float deltaTime)
+        {
+            _fadeKeys.Clear();
+            _fadeKeys.AddRange(_fading.Keys);
+            foreach (object source in _fadeKeys)
+            {
+                FadingSlow fading = _fading[source].Advanced(deltaTime);
+                if (fading.IsOver) _fading.Remove(source);
+                else               _fading[source] = fading;
+            }
+            Recalculate();
+        }
+
+        private readonly struct FadingSlow
+        {
+            private readonly float _start;
+            private readonly float _duration;
+            private readonly float _elapsed;
+
+            public FadingSlow(float start, float duration, float elapsed = 0f)
+            {
+                _start    = start;
+                _duration = duration;
+                _elapsed  = elapsed;
+            }
+
+            public bool  IsOver  => _elapsed >= _duration;
+            public float Current => Mathf.Lerp(_start, 1f, _elapsed / _duration);
+
+            public FadingSlow Advanced(float deltaTime) => new(_start, _duration, _elapsed + deltaTime);
         }
 
         private void Awake()
@@ -96,6 +143,7 @@ namespace CGD.Combat
         private void Update()
         {
             _stunTimer.Tick(Time.deltaTime);
+            if (_fading.Count > 0) TickFading(Time.deltaTime);
             if (_pushLeft > 0f) _pushLeft = Mathf.Max(0f, _pushLeft - Time.deltaTime);
         }
     }

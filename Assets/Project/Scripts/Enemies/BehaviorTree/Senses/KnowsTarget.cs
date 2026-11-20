@@ -5,11 +5,15 @@ using CGD.BehaviorTrees;
 namespace CGD.Enemies
 {
     // Succeeds while it senses its target, or lost track of it only moments ago — long enough
-    // to keep a flank going around a corner without the fight dropping to a search.
+    // to keep a flank going around a corner without the fight dropping to a search. The enemy's
+    // combat memory (PerceptionProfile) stretches that to half its length at least.
     [Serializable]
     [BtNodeInfo("Enemy/Senses/Knows Target", "Succeeds while it senses its target, or lost it only moments ago.")]
     public sealed class KnowsTarget : EnemyCondition
     {
+        // Share of the perception profile's combat memory it always counts, so a fight outlasts a short memory set here.
+        private const float CombatMemoryShare = 0.5f;
+
         [Tooltip("Seconds after losing sight that still count")]
         [SerializeField, Min(0f)] private float _memory = 4f;
 
@@ -20,7 +24,7 @@ namespace CGD.Enemies
             var perception = Ai.Perception;
             if (perception.IsTargetDetected) return true;
             return perception.Target != null && perception.Level != AwarenessLevel.Unaware &&
-                   perception.TimeSinceSensed <= _memory;
+                   perception.TimeSinceSensed <= Mathf.Max(_memory, perception.CombatMemory * CombatMemoryShare);
         }
     }
 }

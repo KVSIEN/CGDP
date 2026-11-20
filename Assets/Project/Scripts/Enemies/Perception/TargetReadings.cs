@@ -54,12 +54,6 @@ namespace CGD.Enemies
             _body.Read(perception.TargetFacing, _ai.transform.position - target.transform.position, IsReloading(target), now);
         }
 
-        // One of this enemy's decoys was shot: if its target fired, that was a flinch.
-        public void NoteDecoyShot(HealthManager shooter)
-        {
-            if (shooter != null && shooter == _ai.Perception.Target) _body.NoteFlinch(Time.time);
-        }
-
         public void Forget()
         {
             _tracked = null;

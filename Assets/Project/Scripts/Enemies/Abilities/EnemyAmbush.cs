@@ -17,6 +17,9 @@ namespace CGD.Enemies
 
         public bool IsArmed => _multiplier > 1f && Time.time < _expiresAt;
 
+        // Seconds the armed strike has left; 0 when not armed.
+        public float SecondsLeft => IsArmed ? _expiresAt - Time.time : 0f;
+
         public void Arm(float damageMultiplier, float seconds)
         {
             _multiplier = damageMultiplier;

@@ -58,6 +58,7 @@ MonoBehaviour:
   Summon: {fileID: 11400000, guid: 522b7d1c7987496d91198a25661e0849, type: 2}
   Boost: {fileID: 0}
   Support: {fileID: 0}
+  Special: {fileID: 11400000, guid: 9b43a3ba6d3f30efe172662135876f4a, type: 2}
   AlertDuration: 8
   AttackSound: {fileID: 0}
   RangedAttackSound: {fileID: 0}

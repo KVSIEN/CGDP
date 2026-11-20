@@ -10,7 +10,8 @@ namespace CGD.Combat
     {
         private const int   ExitDirections  = 12;
         private const float ExitMargin      = 1f;   // metres past the edge, so it is clearly out
-        private const int   RoundDirections = 16;
+        private const int   RoundDirections = 24;
+        private const float SamePreferenceFactor = 0.75f;   // the side it already chose counts as this much shorter
 
         private static readonly List<HazardZone> Open = new();
 
@@ -73,12 +74,15 @@ namespace CGD.Combat
 
         // A point `margin` clear of `zone`'s edge to go round it by on the way from → to: the one
         // giving the shortest two straight legs that cross no zone hurting `victim` and that
-        // `usable` accepts (e.g. on the NavMesh). False if there is no way round.
+        // `usable` accepts (e.g. on the NavMesh). False if there is no way round. Going round the
+        // same side as `sidePreference` (a waypoint round this zone chosen before) counts as
+        // shorter, so a route re-planned on the move doesn't flip to the far side and cut back across.
         public static bool TryFindWayRound(HazardZone zone, Vector3 from, Vector3 to, HealthManager victim, float margin,
-                                           Func<Vector3, bool> usable, out Vector3 waypoint)
+                                           Func<Vector3, bool> usable, Vector3? sidePreference, out Vector3 waypoint)
         {
             waypoint = default;
             float best = float.MaxValue;
+            Vector3 preferredSide = sidePreference.HasValue ? FlatOffset(sidePreference.Value, zone.Center) : Vector3.zero;
             // Legs are checked a little inside the waypoint ring, or every leg would graze it.
             float legMargin = margin * 0.5f;
             for (int i = 0; i < RoundDirections; i++)
@@ -88,6 +92,7 @@ namespace CGD.Combat
                 candidate.y = from.y;
 
                 float length = Vector3.Distance(from, candidate) + Vector3.Distance(candidate, to);
+                if (Vector3.Dot(FlatOffset(candidate, zone.Center), preferredSide) > 0f) length *= SamePreferenceFactor;
                 if (length >= best || DamagePerSecondAt(candidate, victim) > 0f) continue;
                 if (TryFindCrossing(from, candidate, victim, legMargin, out _) ||
                     TryFindCrossing(candidate, to, victim, legMargin, out _) || !usable(candidate)) continue;
@@ -97,6 +102,8 @@ namespace CGD.Combat
             }
             return best < float.MaxValue;
         }
+
+        private static Vector3 FlatOffset(Vector3 point, Vector3 center) => new(point.x - center.x, 0f, point.z - center.z);
 
         // The nearest spot just past the edge of the zones hurting `victim` at `position` that is
         // clear of all of them and that `usable` accepts (e.g. on the NavMesh). False if none.

@@ -12,7 +12,7 @@ namespace CGD.Tests
             public int Calls, LastCount;
             public int Alive { get; set; }
 
-            public void Summon(GameObject prefab, int count, Vector3 around, float lifetime)
+            public void Summon(GameObject prefab, int count, Vector3 around, float lifetime, float focusSeconds = 0f)
             {
                 Calls++;
                 LastCount = count;

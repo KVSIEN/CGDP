@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Abilities;
 using CGD.Combat;
 using CGD.Factions;
 using CGD.Impacts;
@@ -32,7 +33,7 @@ namespace CGD.Enemies
     //
     // Cost: senses are sampled every PerceptionProfile.SenseInterval (staggered per enemy)
     // with at most a few raycasts per candidate; noises and hits are pushed in as they happen.
-    public class EnemyPerception
+    public class EnemyPerception : IHostileRevealer
     {
         private const int   MaxCandidates   = 3;
         private const float IdleSampleScale = 2f;     // sample this much less often with nobody around
@@ -70,6 +71,7 @@ namespace CGD.Enemies
         private bool    _hasLead;
         private bool    _hunting;   // it knows a hostile is about, not just that something seemed off
         private float   _cautiousUntil = float.NegativeInfinity;
+        private float   _combatUntil   = float.NegativeInfinity;
         private float   _underFireAt   = float.NegativeInfinity;
         private float   _warnedAt      = float.NegativeInfinity;
         private HealthManager _lastAttacker;
@@ -86,6 +88,18 @@ namespace CGD.Enemies
         // Whom it has sworn to get, and until when.
         private HealthManager _vendetta;
         private float         _vendettaUntil = float.NegativeInfinity;
+        // It tells its kin where its target is, as when it first engaged (a callout, by its social style).
+        public void ShareSighting()
+        {
+            if (IsSensing) _callouts.Spotted(Target.transform.position);
+        }
+
+        // Whom its summoner sent it after, and until when (minions called up mid-fight).
+        private HealthManager _ordered;
+        private float         _orderedUntil = float.NegativeInfinity;
+        // Every hostile a roar showed it, and until when: it knows where each is, however hidden.
+        private readonly List<HealthManager> _revealed = new();
+        private float _revealedUntil = float.NegativeInfinity;
 
         // What a look at one candidate turned up.
         private struct Stimulus
@@ -176,6 +190,11 @@ namespace CGD.Enemies
         // On edge after a search that found nothing: quicker to notice, slower to settle.
         public bool IsCautious => _clock < _cautiousUntil;
 
+        // Seconds it will still stay in the fight without sight of its target (0 once it starts to calm down).
+        public float CombatSecondsLeft => Mathf.Max(0f, _combatUntil - _clock);
+        // How long after losing sight of a target it was engaged with it stays in the fight.
+        public float CombatMemory => _profile.CombatMemory;
+
         // Shot at moments ago — hit, a bullet cracking past, or a target it sees aiming at it.
         public bool    IsUnderFire     => _clock - _underFireAt <= UnderFireMemory;
         // The warning signs alone, without being hit: a bullet cracking past or a target it sees
@@ -257,6 +276,96 @@ namespace CGD.Enemies
             _fellAt         = float.NegativeInfinity;
             _vendetta       = null;
             _vendettaUntil  = float.NegativeInfinity;
+            _ordered        = null;
+            _orderedUntil   = float.NegativeInfinity;
+            _revealed.Clear();
+            _revealedUntil  = float.NegativeInfinity;
+        }
+
+        // --- Orders from its summoner ------------------------------------------------
+
+        // Its summoner hands it its own target: for `seconds` that is its target, ahead of anyone
+        // else short of a hostile right on top of it, and it knows where it is (the summoner keeps
+        // it posted), so it engages at once. Then it chooses for itself as usual.
+        public void TakeOrders(HealthManager target, float seconds)
+        {
+            if (IsGone(target) || seconds <= 0f) return;
+
+            _ordered      = target;
+            _orderedUntil = _clock + seconds;
+            FollowOrders(target);
+            UpdateLevel();
+        }
+
+        private HealthManager Ordered => (_clock < _orderedUntil && !IsGone(_ordered) ? _ordered : null) ?? RevealedFocus();
+
+        // --- Revealed hostiles (Primal Roar) ------------------------------------------
+
+        // Told where every hostile around is, in its own territory, for `seconds`: whatever hides
+        // them, it senses each as if standing in plain view, and fights the nearest (or whichever
+        // it was already on). Returns how many it now knows of.
+        public int RevealHostiles(float radius, float seconds)
+        {
+            _revealed.Clear();
+            if (seconds <= 0f) return 0;
+
+            TargetQuery.Sphere(_self.position, radius, _hostiles, _revealed);
+            for (int i = _revealed.Count - 1; i >= 0; i--)
+            {
+                HealthManager hostile = _revealed[i];
+                if (IsGone(hostile) || !_owner.IsWithinHome(hostile.transform.position, 0f) || !WantsToFight(hostile))
+                    _revealed.RemoveAt(i);
+            }
+            if (_revealed.Count == 0) return 0;
+
+            _revealedUntil = _clock + seconds;
+            HealthManager focus = RevealedFocus();
+            if (focus == null) return 0;
+
+            FollowOrders(focus);
+            UpdateLevel();
+            return _revealed.Count;
+        }
+
+        // Its current target if the roar showed it and it still stands, otherwise the nearest of those shown.
+        private HealthManager RevealedFocus()
+        {
+            if (_clock >= _revealedUntil) return null;
+
+            HealthManager nearest = null;
+            float nearestSqr = float.MaxValue;
+            foreach (HealthManager hostile in _revealed)
+            {
+                if (IsGone(hostile)) continue;
+                if (hostile == Target) return hostile;
+
+                float sqr = (hostile.transform.position - _self.position).sqrMagnitude;
+                if (sqr >= nearestSqr) continue;
+                nearest = hostile;
+                nearestSqr = sqr;
+            }
+            return nearest;
+        }
+
+        private bool WantsToFight(HealthManager hostile) =>
+            _data.Relations == null || _data.Relations.TargetWeight(AttitudeToward(hostile.Team)) > 0f;
+
+        private void FollowOrders(HealthManager target)
+        {
+            if (target != Target)
+            {
+                Target = target;
+                _sighting.Forget();
+            }
+
+            Vector3 position = target.transform.position;
+            _sighting.Record(position, target.transform.forward, _clock);
+            _lastSensedAt     = _clock;
+            LastKnownPosition = position;
+            LookPosition      = position;
+            TargetHealthShare = StrengthLeft(target);
+            _hunting = true;
+            _meter.Fill();
         }
 
         // --- Fallen allies and vendettas ---------------------------------------------
@@ -295,6 +404,7 @@ namespace CGD.Enemies
             Target   = null;
             _hunting = false;
             _hasLead = false;
+            _combatUntil = float.NegativeInfinity;
             _lastSensedAt = float.NegativeInfinity;
             SearchDirection = Vector3.zero;
             _sighting.Forget();
@@ -462,8 +572,17 @@ namespace CGD.Enemies
 
             NoticeFallen();
 
+            HealthManager ordered = Ordered;
+            bool touchedByAnother = best != null && best != ordered && bestStimulus.Instant;
+            if (ordered != null && !touchedByAnother)
+            {
+                FollowOrders(ordered);
+                UpdateLevel();
+                return;
+            }
+
             // Calms down only once there's nothing at all — not while a target is just behind a pillar.
-            if (best == null)            { if (!IsSensing) _meter.Decay(_profile.DecayRate * elapsed); }
+            if (best == null)            { if (!IsSensing && CombatSecondsLeft <= 0f) _meter.Decay(_profile.DecayRate * elapsed); }
             else if (bestStimulus.Seen)  Observe(best, bestStimulus, elapsed);
             else                         HearFootsteps(best, bestStimulus, elapsed);
 
@@ -505,7 +624,9 @@ namespace CGD.Enemies
         private Stimulus Sense(HealthManager candidate)
         {
             float distance = Vector3.Distance(candidate.transform.position, _self.position);
-            if (distance <= _profile.TouchRadius) return new Stimulus { Seen = true, Instant = true };
+            // Bumping into it gives it away, unless it is hidden from this observer (in a bush it is not inside).
+            bool hiddenFromHere = Stealthable.TryGet(candidate, out Stealthable stealth) && !stealth.IsExposedTo(_self.position);
+            if (distance <= _profile.TouchRadius && !hiddenFromHere) return new Stimulus { Seen = true, Instant = true };
 
             if (_senses.CanSee(candidate, out float sightGain, out bool instant))
                 return new Stimulus { Seen = true, Instant = instant, Gain = sightGain * _attention };
@@ -671,6 +792,7 @@ namespace CGD.Enemies
             SearchDirection   = _sighting.Heading;
             LookPosition      = _sighting.Position;
             _hasLead          = true;
+            _combatUntil      = _clock + _profile.CombatMemory;
         }
 
         // Losing its nerve: tells its kin where the trouble is.

@@ -325,7 +325,7 @@ namespace CGD.Tests
         public void FactionsFallBackAndRaiseTheAlarmInTheirOwnWay()
         {
             Assert.AreEqual(RetreatDestination.Kin,   Doctrine("Tech").Morale.RetreatTo);
-            Assert.AreEqual(RetreatDestination.Den,   Doctrine("Bio").Morale.RetreatTo);
+            Assert.AreEqual(RetreatDestination.Concealment, Doctrine("Bio").Morale.RetreatTo);
             Assert.AreEqual(RetreatDestination.Cover, Doctrine("Void").Morale.RetreatTo);
             Assert.Less(Doctrine("Void").Morale.RetreatSpeedScale, 1f);
 

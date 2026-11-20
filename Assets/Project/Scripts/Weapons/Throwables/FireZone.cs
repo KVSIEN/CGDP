@@ -23,6 +23,7 @@ namespace CGD.Weapons
         [SerializeField, Min(0f)] private float _tickDamage = 5f;
         [SerializeField] private Color _color = new(1f, 0.4f, 0.1f, 0.5f);
 
+        private readonly HazardZone _hazard = new();
         private Renderer _renderer;
         private MaterialPropertyBlock _block;
         private GrenadeData _data;
@@ -36,7 +37,10 @@ namespace CGD.Weapons
             _block    = new MaterialPropertyBlock();
         }
 
+        private void OnDisable() => Hazards.Remove(_hazard);
+
         // Sized by the grenade's blast radius; the mesh is a unit cylinder, so its scale is the diameter.
+        // Listed in Hazards while it burns, so characters keep out of it.
         public void Begin(DamageSource source, GrenadeData data)
         {
             _source   = source;
@@ -44,6 +48,9 @@ namespace CGD.Weapons
             _age      = 0f;
             _nextBurn = 0f;
             transform.localScale = new Vector3(data.ExplosionRadius * 2f, 0.02f, data.ExplosionRadius * 2f);
+
+            _hazard.Place(transform.position, data.ExplosionRadius, _tickDamage / _interval, source);
+            Hazards.Add(_hazard);
         }
 
         private void Update()
@@ -54,6 +61,7 @@ namespace CGD.Weapons
             if (_age >= _duration)
             {
                 _data = null;
+                Hazards.Remove(_hazard);
                 PrefabPool.Release(gameObject);
                 return;
             }

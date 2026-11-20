@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CGD.Map;
 using Unity.AI.Navigation;
+using CGD.Enemies;
 using CGD.Factions;
 using CGD.Interaction;
 
@@ -61,6 +62,7 @@ namespace CGD.Level
                 CreatePart($"RoomFloors_{faction.name}", floors, TintedFloor(faction), parent);
             CreatePart("CorridorFloors", corridorFloors, _settings.CorridorFloorMaterial, parent);
             GameObject wallBoxes = CreatePart("Walls", walls, _settings.WallMaterial, parent);
+            if (wallBoxes != null) wallBoxes.AddComponent<BoundaryWall>();
             if (_settings.WallKit != null)
             {
                 if (wallBoxes != null) wallBoxes.GetComponent<MeshRenderer>().enabled = false;

@@ -23,6 +23,8 @@ namespace CGD.Abilities
         [Min(0)] public int MinionCount = 2;
         [Tooltip("Game seconds before they dissolve")]
         [Min(1f)] public float MinionLifetime = 15f;
+        [Tooltip("Game seconds the minions go after the caster's own target, knowing where it is, before choosing for themselves")]
+        [Min(0f)] public float MinionFocusSeconds = 5f;
 
         public override float EffectDuration => Buff != null ? Duration : 0f;
 
@@ -40,7 +42,7 @@ namespace CGD.Abilities
             if (!ctx.Relocator.TryRelocateUnseen(MaxDistance)) return;
 
             if (MinionPrefab != null && ctx.Summoner != null)
-                ctx.Summoner.Summon(MinionPrefab, MinionCount, ctx.CasterTransform.position, MinionLifetime);
+                ctx.Summoner.Summon(MinionPrefab, MinionCount, ctx.CasterTransform.position, MinionLifetime, MinionFocusSeconds);
             if (Buff != null && ctx.Stats != null) ctx.Stats.AddTimed(Buff, Duration);
         }
     }

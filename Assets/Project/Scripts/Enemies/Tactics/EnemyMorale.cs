@@ -103,11 +103,12 @@ namespace CGD.Enemies
             return count;
         }
 
-        // A faction it flees (FactionRelations) wears its nerve down for as long as it senses one.
+        // A faction it flees (FactionRelations) wears its nerve down for as long as it senses one
+        // in a fight. Calm, it is left to recover, or it could never rally while one is about.
         private float FearPerSecond()
         {
             FactionRelations relations = _ai.Data.Relations;
-            if (relations == null || relations.FearDrain <= 0f) return 0f;
+            if (relations == null || relations.FearDrain <= 0f || !InFight) return 0f;
 
             var weighed = _ai.Perception.Weighed;
             int feared = 0;

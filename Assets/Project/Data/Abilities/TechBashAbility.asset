@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f19d124a4964eb7b2689bdea871554e, type: 3}
+  m_Name: TechBashAbility
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.TargetedAbility
+  DisplayName: Weapon Bash
+  SlotColor: {r: 1, g: 0.85, b: 0.25, a: 1}
+  Cooldown: 8
+  MaxCharges: 1
+  CastTime: 0.3
+  Targeting: {fileID: 11400000, guid: 82f27a5502c831decf2b68d1fe55d67f, type: 2}
+  Damage: 20
+  ArmorPenetration: 0.1
+  DamageType: 0
+  OnHitEffects:
+  - Effect: {fileID: 11400000, guid: 7a6e27d3ec99acc4bc2e482e4e8e9660, type: 2}
+    Chance: 1
+  Heal: 0
+  SelfHealShare: 0

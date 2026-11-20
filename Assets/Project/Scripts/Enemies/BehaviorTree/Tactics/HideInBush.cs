@@ -1,15 +1,13 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using CGD.BehaviorTrees;
-using CGD.Combat;
 using CGD.Core;
-using CGD.Stealth;
 
 namespace CGD.Enemies
 {
     // Breaks off and goes to ground in a bush: runs (straight, not through other bushes) to one
-    // a good way from its target and not past it, then lies still inside, eyes on where the
+    // it knows a good way from its target and not past it — going round to the side that keeps
+    // the bush between them, then in to the far side of it — then lies still inside, eyes on where the
     // target is, for a while. A bush hides it from sight, so it comes out of this knowing where
     // the target is while the target has lost it — the moment to start stalking again.
     // Succeeds once it has lain low for the hold time; fails when there is no such bush within
@@ -19,10 +17,6 @@ namespace CGD.Enemies
     public sealed class HideInBush : EnemyAction
     {
         private const float ArrivalDistance = 0.8f;
-        private const float SnapDistance    = 2f;
-        private const float PathSlack       = 1.8f;  // a run this many times the straight line is the long way round
-        private const float TowardTarget    = -0.2f; // bushes further this way toward the target than this are out
-        private const float Chance          = 2f;    // metres of random preference, so it doesn't always pick the same bush
 
         [Tooltip("Metres the bush must be from the target")]
         [SerializeField, Min(0f)] private float _minFromTarget = 9f;
@@ -37,6 +31,8 @@ namespace CGD.Enemies
 
         [NonSerialized] private bool        _holding;
         [NonSerialized] private float       _until;
+        [NonSerialized] private bool        _goingRound;   // still on the way to the point outside the bush
+        [NonSerialized] private Vector3     _spot;
 
         public override string Summary => $"{_minFromTarget:0}+ m from target, {_hold.Min:0.#}–{_hold.Max:0.#} s";
 
@@ -44,11 +40,13 @@ namespace CGD.Enemies
         {
             _holding = false;
             _until   = context.Time + _giveUpAfter;
-            if (!TryPickBush(out Vector3 bush) || !Ai.Routing.SetDestination(bush))
+            if (!HidingBush.TryPickRoute(Ai, Ai.Perception.TargetPosition, _minFromTarget, _maxRun, out BushRoute route) || !Ai.Routing.SetDestination(route.First))
             {
                 _until = float.NegativeInfinity;   // nowhere to go: fail on the first tick
                 return;
             }
+            _spot      = route.Spot;
+            _goingRound = route.HasVia;
             Ai.Agent.isStopped = false;
         }
 
@@ -61,6 +59,14 @@ namespace CGD.Enemies
             Ai.ReportStep(EngageStep.MoveToCover);
             Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed * _speed);
             if (!HasArrived(Ai.Agent, ArrivalDistance)) return BtStatus.Running;
+
+            if (_goingRound)
+            {
+                // Round the outside: now in, to where it lies.
+                _goingRound = false;
+                Ai.Routing.SetDestination(_spot);
+                return BtStatus.Running;
+            }
 
             Ai.Routing.Stop();
             _holding = true;
@@ -75,38 +81,5 @@ namespace CGD.Enemies
             Ai.Motion.KeepEyesOnTarget(context.DeltaTime);
             return context.Time >= _until ? BtStatus.Success : BtStatus.Running;
         }
-
-        // The bush that puts most distance between it and the target for the least running,
-        // not on the target's side of it, reachable without a long way round.
-        private bool TryPickBush(out Vector3 bush)
-        {
-            bush = default;
-            Vector3 self   = Ai.transform.position;
-            Vector3 target = Ai.Perception.TargetPosition;
-            Vector3 away   = Flat(self - target).normalized;
-
-            float best = float.NegativeInfinity;
-            IReadOnlyList<ConcealmentZone> zones = ConcealmentZone.Active;
-            for (int i = 0; i < zones.Count; i++)
-            {
-                if (!BushHops.Hides(zones[i]) || zones[i].Contains(self)) continue;
-
-                Vector3 center  = zones[i].GroundCenter;
-                Vector3 toBush  = Flat(center - self);
-                float   run     = toBush.magnitude;
-                float   fromTarget = Flat(center - target).magnitude;
-                if (run > _maxRun || fromTarget < _minFromTarget) continue;
-                if (run > 0.01f && away.sqrMagnitude > 0.01f && Vector3.Dot(toBush / run, away) < TowardTarget) continue;
-
-                float score = fromTarget - run * 0.5f + UnityEngine.Random.value * Chance;
-                if (score <= best || !ReachableSpot.TryFind(self, center, SnapDistance, PathSlack, 2f, Ai.Health, out Vector3 spot)) continue;
-
-                best = score;
-                bush = spot;
-            }
-            return best > float.NegativeInfinity;
-        }
-
-        private static Vector3 Flat(Vector3 vector) => new(vector.x, 0f, vector.z);
     }
 }

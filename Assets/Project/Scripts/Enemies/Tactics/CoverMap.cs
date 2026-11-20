@@ -144,8 +144,14 @@ namespace CGD.Enemies
             Add(new CoverPoint(spot, facing, high));
         }
 
-        private bool HitsObstacle(Vector3 spot, Vector3 direction, float height, float length) =>
-            Physics.Raycast(spot + Vector3.up * height, direction, length, _obstacleMask, QueryTriggerInteraction.Ignore);
+        // Whether something cover-worthy stands that way: a wall that only encloses the level
+        // (BoundaryWall) doesn't count.
+        private bool HitsObstacle(Vector3 spot, Vector3 direction, float height, float length)
+        {
+            if (!Physics.Raycast(spot + Vector3.up * height, direction, out RaycastHit hit, length, _obstacleMask, QueryTriggerInteraction.Ignore))
+                return false;
+            return hit.collider.GetComponentInParent<BoundaryWall>() == null;
+        }
 
         private bool IsNearExisting(Vector3 spot)
         {

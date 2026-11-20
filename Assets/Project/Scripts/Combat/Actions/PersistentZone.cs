@@ -32,6 +32,10 @@ namespace CGD.Combat
 
         private readonly HashSet<IDamageable> _hitPerTick = new();
 
+        private readonly HazardZone _hazard = new();
+
+        private void OnDisable() => Hazards.Remove(_hazard);
+
         public void Init(DamageSource source, LayerMask hitMask)
         {
             _source = source;
@@ -39,6 +43,11 @@ namespace CGD.Combat
             _lifeTimer = _lifetime;
             _tickTimer = 0f;
             _initialized = true;
+
+            // A lingering area is ground to keep out of; a trap is hidden, so nobody knows to.
+            if (_triggerOnce) return;
+            _hazard.Place(transform.position, _radius, _damage / Mathf.Max(0.1f, _tickInterval), source);
+            Hazards.Add(_hazard);
         }
 
         private void Update()
@@ -89,6 +98,7 @@ namespace CGD.Combat
         private void Release()
         {
             _initialized = false;
+            Hazards.Remove(_hazard);
             PrefabPool.Release(gameObject);
         }
     }

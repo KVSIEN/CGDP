@@ -15,7 +15,6 @@ MonoBehaviour:
   _nodes:
   - rid: 1000
   - rid: 1001
-  - rid: 1002
   - rid: 1003
   - rid: 1004
   - rid: 1005
@@ -120,6 +119,38 @@ MonoBehaviour:
   - rid: 1131
   - rid: 1132
   - rid: 1133
+  - rid: 1134
+  - rid: 1135
+  - rid: 1136
+  - rid: 1137
+  - rid: 1138
+  - rid: 1139
+  - rid: 1140
+  - rid: 1141
+  - rid: 1142
+  - rid: 1143
+  - rid: 1144
+  - rid: 1145
+  - rid: 1146
+  - rid: 1147
+  - rid: 1148
+  - rid: 1149
+  - rid: 1150
+  - rid: 1151
+  - rid: 1152
+  - rid: 1153
+  - rid: 1154
+  - rid: 1155
+  - rid: 1156
+  - rid: 1157
+  - rid: 1158
+  - rid: 1159
+  - rid: 1160
+  - rid: 1161
+  - rid: 1162
+  - rid: 1163
+  - rid: 1164
+  - rid: 1165
   references:
     version: 2
     RefIds:
@@ -139,20 +170,13 @@ MonoBehaviour:
         _comment: 'Most urgent first: branches that abort lower priority interrupt whatever runs to their right'
         _children:
         - 4fb3a5417be539c772efe9cedb336448
-        - d0824b37061c4cec9d9f55b271ec3098
+        - 2c36e141ce1b43a39787f011c46cfd8d
         - 630b80e8cc974ea982793e670e2c149d
         - 56abf79eec294040afc52f36ffed73e9
         - 9609f52a3296435c9d9df0317b79d196
         - ab1218ba19f64f6b8d70923e46a21bcc
         - a6cf5ba10c184f2398441c4efdc470ec
         _abort: 0
-    - rid: 1002
-      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: d0824b37061c4cec9d9f55b271ec3098
-        _position: {x: -2200, y: 300}
-        _comment: 
-        _tree: {fileID: 11400000, guid: c151eafdbc6045c197de5b66618945af, type: 2}
     - rid: 1003
       type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -184,6 +208,10 @@ MonoBehaviour:
         _position: {x: 275, y: 450}
         _comment: 
         _children:
+        - af973d235a414fc38b6fc848f1b753be
+        - 03db531643367d6e057faecadda71648
+        - cf5e60dd312246b89d5ffaa50a7e8097
+        - ce87ea148bdaa33a9ef63de3a670323f
         - ff1af1ccaa2d4168b1284aeb6d7329d8
         - 54b29e8d5ce840e6a9b4fe8b992a76fe
         - 8525a0dd07764968836142bf0a1aa5a3
@@ -1100,3 +1128,278 @@ MonoBehaviour:
         _comment: 'The hunt: stalk it from bush to bush, rush in, break off to a bush and lie low, stalk again. The branches below only run when it can''t: nothing to stalk, or it lost sight of it after stalking'
         _tree: {fileID: 11400000, guid: 0775db7493e442ab921957297ef112ac, type: 2}
         _off: 0
+    - rid: 1134
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: af973d235a414fc38b6fc848f1b753be
+        _position: {x: -4400, y: 1200}
+        _comment: 'Ambush armed and its regen has had its time (at most 4 s of the strike left): break cover and go for the empowered strike before it runs out, whatever it was doing to recover'
+        _children:
+        - 333a62943c694c34a065ab8fba75b6c5
+        - b79853a76f53408a8444d8e7faf1e43d
+        - 0011ebdda72e4ce19d4c78dbf1359eaa
+        - 20943c76e23e4c679ae80acdbba88a7f
+        _abort: 3
+    - rid: 1135
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 333a62943c694c34a065ab8fba75b6c5
+        _position: {x: -4730, y: 1350}
+        _comment: 
+    - rid: 1136
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b79853a76f53408a8444d8e7faf1e43d
+        _position: {x: -4510, y: 1350}
+        _comment: 
+        _key: AmbushLeft
+        _comparison: 5
+        _value: 0
+        _ifMissing: 0
+    - rid: 1137
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0011ebdda72e4ce19d4c78dbf1359eaa
+        _position: {x: -4290, y: 1350}
+        _comment: 
+        _key: AmbushLeft
+        _comparison: 1
+        _value: 4
+        _ifMissing: 0
+    - rid: 1138
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 20943c76e23e4c679ae80acdbba88a7f
+        _position: {x: -4070, y: 1350}
+        _comment: 
+        _children:
+        - 0ced9951f58942dcab7bdecec2d26f96
+        _seconds: 4
+    - rid: 1139
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0ced9951f58942dcab7bdecec2d26f96
+        _position: {x: -4070, y: 1500}
+        _comment: 
+        _children:
+        - 7c8827c505084f43bf4e43a052d87f84
+        - f4f5b357c7854f91b2204e1ce38e63b2
+        _abort: 0
+    - rid: 1140
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7c8827c505084f43bf4e43a052d87f84
+        _position: {x: -4180, y: 1650}
+        _comment: 
+        _stopDistance: 0
+    - rid: 1141
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f4f5b357c7854f91b2204e1ce38e63b2
+        _position: {x: -3960, y: 1650}
+        _comment: 
+    - rid: 1142
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2c36e141ce1b43a39787f011c46cfd8d
+        _position: {x: -2200, y: 300}
+        _comment: 'Morale broken (allies down, badly hurt, Void in the fight) and not surging: fall back into a bush away from the threat and regroup until steady. Surging, it fights on whatever its nerve says'
+        _children:
+        - d127442eed0448f281e582809f984a3f
+        - 01f35ff44acf4a41a577e71d3d824905
+        - facd4a04573145db9bec6e68c099c547
+        - ee48360306f34a76a349f19bb138723f
+        _abort: 2
+    - rid: 1143
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d127442eed0448f281e582809f984a3f
+        _position: {x: -2530, y: 450}
+        _comment: 
+        _memory: 6
+    - rid: 1144
+      type: {class: IsShaken, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 01f35ff44acf4a41a577e71d3d824905
+        _position: {x: -2310, y: 450}
+        _comment: 
+    - rid: 1145
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: facd4a04573145db9bec6e68c099c547
+        _position: {x: -2090, y: 450}
+        _comment: 
+        _key: BoostLeft
+        _comparison: 1
+        _value: 0
+        _ifMissing: 1
+    - rid: 1146
+      type: {class: Regroup, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ee48360306f34a76a349f19bb138723f
+        _position: {x: -1870, y: 450}
+        _comment: 
+    - rid: 1147
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: cf5e60dd312246b89d5ffaa50a7e8097
+        _position: {x: -4400, y: 2000}
+        _comment: 'Berserk while Surge lasts (faster, attacks faster, heals off every hit): run the target down and keep hitting it, no stalking, breaking off or going to ground'
+        _children:
+        - ac36a2f737b041578e3d9463bda60cb2
+        - c7901d55dce74a8fbe19971bf3a0b6d4
+        - eeb963c9b2ee4c69b033790907768af2
+        _abort: 3
+    - rid: 1148
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ac36a2f737b041578e3d9463bda60cb2
+        _position: {x: -4620, y: 2150}
+        _comment: 
+    - rid: 1149
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c7901d55dce74a8fbe19971bf3a0b6d4
+        _position: {x: -4400, y: 2150}
+        _comment: 
+        _key: BoostLeft
+        _comparison: 5
+        _value: 0
+        _ifMissing: 0
+    - rid: 1150
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: eeb963c9b2ee4c69b033790907768af2
+        _position: {x: -4180, y: 2150}
+        _comment: 
+        _children:
+        - e8bbd30ca46f4a1f97d6ee4442ae78f3
+        - 28793b0f7ee54716b096b9a2a89a92af
+        _abort: 0
+    - rid: 1151
+      type: {class: ChaseTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e8bbd30ca46f4a1f97d6ee4442ae78f3
+        _position: {x: -4290, y: 2300}
+        _comment: 
+        _stopDistance: 0
+    - rid: 1152
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 28793b0f7ee54716b096b9a2a89a92af
+        _position: {x: -4070, y: 2300}
+        _comment: 
+    - rid: 1153
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 03db531643367d6e057faecadda71648
+        _position: {x: 220, y: 0}
+        _comment: 'Hidden in a bush with a target to deal with: lie in wait for it (Ambush From Cover), arm the Ambush and spring when it comes close or turns away. Aborts lower priority; not again for 15 s'
+        _children:
+        - a6ec7070cfb19f2f0717630e46210eb5
+        - e389948e5284719242608102859455a8
+        - 55f6429d56bcbc9b2e6d07ad437292f2
+        _abort: 2
+    - rid: 1154
+      type: {class: IsHidden, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a6ec7070cfb19f2f0717630e46210eb5
+        _position: {x: 0, y: 150}
+        _comment:
+        _forAtLeast: 0.5
+    - rid: 1155
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e389948e5284719242608102859455a8
+        _position: {x: 220, y: 150}
+        _comment:
+    - rid: 1156
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 55f6429d56bcbc9b2e6d07ad437292f2
+        _position: {x: 440, y: 150}
+        _comment: 'Not again for a while'
+        _children:
+        - 4a6dd609a104070abd303aa0232a258f
+        _seconds: 15
+        _onlyAfterSuccess: 0
+    - rid: 1157
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4a6dd609a104070abd303aa0232a258f
+        _position: {x: 440, y: 300}
+        _comment:
+        _tree: {fileID: 11400000, guid: 7f98ca6ee129322dbbd2337ac2e9d74c, type: 2}
+        _off: 0
+    - rid: 1158
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ce87ea148bdaa33a9ef63de3a670323f
+        _position: {x: 550, y: 0}
+        _comment: 'Primal Roar ready and a reason: the target went to ground (a bush, behind cover), it is hurt, or it is outnumbered. The roar shows it where every hostile in the room is, hidden or not, and makes it tougher and stronger for 8 s'
+        _children:
+        - e3015042c3ed2314735d826923d7e15b
+        - 72911d79ea9e91aac2fc451050c5ea84
+        - af0155fba3d126a099d471f9b1a67411
+        - 5983f090e692f10e391ac1b1cf6aa543
+        _abort: 2
+    - rid: 1159
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e3015042c3ed2314735d826923d7e15b
+        _position: {x: 0, y: 150}
+        _comment:
+    - rid: 1160
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 72911d79ea9e91aac2fc451050c5ea84
+        _position: {x: 220, y: 150}
+        _comment:
+        _slot: 6
+        _ability: {fileID: 0}
+    - rid: 1161
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: af0155fba3d126a099d471f9b1a67411
+        _position: {x: 660, y: 150}
+        _comment: 'Any one of the reasons'
+        _children:
+        - eb4a6c1555dfb3de0ee74c27211d3fd0
+        - 70f4a706ca09ec3ea626407ccd5ef0fd
+        - 7b1e4bbaec70e0bc4513361ebd6d3822
+        _abort: 0
+    - rid: 1162
+      type: {class: TargetHiding, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: eb4a6c1555dfb3de0ee74c27211d3fd0
+        _position: {x: 440, y: 300}
+        _comment:
+    - rid: 1163
+      type: {class: HealthBelow, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 70f4a706ca09ec3ea626407ccd5ef0fd
+        _position: {x: 660, y: 300}
+        _comment:
+        _fraction: 0.6
+    - rid: 1164
+      type: {class: CompareNumber, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7b1e4bbaec70e0bc4513361ebd6d3822
+        _position: {x: 880, y: 300}
+        _comment: 'Two or more hostiles close'
+        _key: HostilesClose
+        _comparison: 4
+        _value: 2
+        _ifMissing: 0
+    - rid: 1165
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5983f090e692f10e391ac1b1cf6aa543
+        _position: {x: 1100, y: 150}
+        _comment:
+        _slot: 6
+        _ability: {fileID: 0}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 0
