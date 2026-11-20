@@ -92,6 +92,7 @@ namespace CGD.Enemies
         internal EnemyRouting      Routing      { get; private set; }
         // Speed, facing and knockback.
         internal EnemyMotion       Motion       { get; private set; }
+        internal EnemyVault        Vault        { get; private set; }
         internal EnemyPerception   Perception   { get; private set; }
         internal EnemyRangedCombat RangedCombat { get; private set; }
         internal EnemyMelee        Melee        { get; private set; }
@@ -157,6 +158,7 @@ namespace CGD.Enemies
             TryGetComponent(out _stats);
             Routing       = new EnemyRouting(this);
             Motion        = new EnemyMotion(this, Agent, _stunnable, _stats);
+            Vault         = new EnemyVault(Agent, transform);
             Perception    = new EnemyPerception(this, _data, _targetMask, _obstacleMask, _health.Team);
             Tells         = new EnemyTells(this);
             Idle          = new EnemyIdleLife(this);
@@ -260,6 +262,8 @@ namespace CGD.Enemies
 
             if (_tree != null) TickTree(dt);
             Routing.Tick(Time.time);
+            // A hop over low cover is finished even by a stunned enemy: it can't hang in the air.
+            Vault.Tick(dt);
             Motion.Tick(dt);
         }
 

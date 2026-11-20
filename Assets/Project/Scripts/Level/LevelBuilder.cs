@@ -60,6 +60,8 @@ namespace CGD.Level
         [SerializeField] private bool _blueprintMap = true;
         [Tooltip("Optional — the scene's cover spots, found as soon as the NavMesh is built instead of when the first enemy looks for cover mid-fight")]
         [SerializeField] private CoverMap _coverMap;
+        [Tooltip("Once the NavMesh is built, let enemies hop the low cover (low inner walls, barriers, counters) where it saves them a walk round")]
+        [SerializeField] private bool _vaultLowCover = true;
         [Tooltip("Optional — the director's reinforcements, given the level's route so groups arrive in rooms ahead of the player in the build-up and behind them at the peak")]
         [SerializeField] private ReinforcementSpawner _reinforcements;
         [Tooltip("Name each room in the HUD feed (place, faction, tier) the first time the player walks in; in a gallery, every time, with its side, depth and fight type too. Needs a FeedbackPlayer in the scene")]
@@ -113,6 +115,7 @@ namespace CGD.Level
             ApplyLootLuck();
 
             if (_navMesh != null) _navMesh.BuildNavMesh();
+            if (_navMesh != null && _vaultLowCover) new VaultLinkBuilder().Build(Layout, transform, populator.Furniture, _navMesh.agentTypeID);
             // Hundreds of probes on a big level: done here, during the load, not on the frame an
             // enemy first wants cover.
             if (_coverMap != null) _coverMap.Rebuild();

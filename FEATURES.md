@@ -526,6 +526,7 @@
 - **Flanking**: now and then an enemy circles round to your side instead of charging straight at you, taking the route you're least likely to see. It heads for where it believes you are, so moving while it's out of sight can leave it flanking an empty spot
 - **Flanks end once they pay off**: a ranged enemy that has circled for at least a second and a half and now has you in view, in range and with a clear shot stops flanking and starts shooting, instead of finishing the walk
 - **Eyes on the target while repositioning**: when flanking, moving between cover, falling back or retreating, an enemy keeps facing you (or where it last knew you were) and sidesteps or backpedals instead of turning its back, so it keeps seeing what it is dealing with. Anywhere else it still faces the way it walks
+- **Hopping low cover**: in a generated level, enemies hop low walls, counters and barriers instead of walking all the way round — a quick hop up and over, a little slower than walking — wherever going round would take much longer. So low cover protects you from shots but not from being reached: a flanker can come straight over the divider you're crouched behind. They still walk round a lone crate, and never climb full-height walls
 - **Searching cover**: an enemy hunting you favours the cover near where it lost you that would hide someone from it, before sweeping the rest of the area
 - Cover follows whatever is built: the scan runs on the NavMesh, so generated levels get cover too
 

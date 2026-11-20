@@ -174,6 +174,13 @@ no spot drops both rules when it is relaxed, along with its tags and zone. Becau
 service door is placed with the side dressing, before the room type's concealment, a crew
 Stealth room's patch can gather by the staff door.
 
+**Over low cover.** Enemies are not bound to the routes: once the NavMesh is built, every
+straight run of low inner wall (low cover, `CoverHeights`) gets a link across its middle, a
+few tiles wide at most (`VaultLinkPlanner`), and so does low, thin furniture such as barriers
+and counters (`VaultLinkBuilder`). A link is kept only where walking round is at least 2.5×
+the hop, and enemies take it with a hop (`EnemyVault`). A divider of low walls is therefore
+cover from fire but not a barrier to a flank; only full-height walls shape where enemies can go.
+
 ## 5. Realities
 
 | | BIO | VOID | TECH |

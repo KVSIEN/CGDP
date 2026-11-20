@@ -42,6 +42,7 @@ namespace CGD.Level
         private readonly Dictionary<int, HashSet<Vector2Int>> _takenTiles = new();
         // What each room was furnished with, for its enemies' posts.
         private readonly Dictionary<int, IReadOnlyList<PlannedProp>> _props = new();
+        private readonly List<GameObject> _furniture = new();
         // Enemies placed in each room at build time, for the room's encounter.
         private readonly Dictionary<int, List<HealthManager>> _roomEnemies = new();
         // Patrol loops per room and side (a Breach room's second faction walks its own).
@@ -60,6 +61,10 @@ namespace CGD.Level
             _enemyPlanner = new RoomEnemyPlanner(settings);
         }
 
+        // Every solid piece PlaceProps put down (not decorations), for what reads the furnished
+        // level afterwards (VaultLinkBuilder).
+        public IReadOnlyList<GameObject> Furniture => _furniture;
+
         public void PlaceProps()
         {
             foreach (LevelRoom room in _layout.Rooms.Values)
@@ -76,6 +81,7 @@ namespace CGD.Level
                     if (prop.Stretch != Vector2.one) placed.transform.localScale = Vector3.Scale(placed.transform.localScale, new Vector3(prop.Stretch.x, 1f, prop.Stretch.y));
                     // After any stretch, so its places to stand stay where they were put.
                     PropActivity.Attach(placed, prop, _layout.TileSize);
+                    if (!prop.Decor) _furniture.Add(placed);
                 }
 
                 if (rule != null && rule.Centerpiece != null)
