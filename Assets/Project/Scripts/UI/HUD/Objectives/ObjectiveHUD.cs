@@ -68,9 +68,7 @@ namespace CGD.UI
 
         private static TextMeshProUGUI MakeLabel(string name, RectTransform parent, float size, TextAlignmentOptions align, Vector2 min, Vector2 max)
         {
-            TextMeshProUGUI text = UIFactory.MakeText(name, parent);
-            text.fontSize  = size;
-            text.alignment = align;
+            TextMeshProUGUI text = UIFactory.MakeLabel(name, parent, "", size, align);
             RectTransform rt = text.rectTransform;
             rt.anchorMin = new Vector2(0f, 1f);
             rt.anchorMax = new Vector2(1f, 1f);

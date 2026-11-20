@@ -106,9 +106,7 @@ namespace CGD.UI
                 UIFactory.Stretch(overlay.rectTransform);
                 _cooldownOverlay[i] = overlay;
 
-                var charges = UIFactory.MakeText("Charges_" + i, bg.rectTransform);
-                charges.fontSize  = 12f;
-                charges.alignment = TextAlignmentOptions.BottomRight;
+                var charges = UIFactory.MakeLabel("Charges_" + i, bg.rectTransform, "", 12f, TextAlignmentOptions.BottomRight);
                 UIFactory.Stretch(charges.rectTransform);
                 charges.rectTransform.offsetMax = new Vector2(-3f, 0f);
                 _chargeLabels[i] = charges;

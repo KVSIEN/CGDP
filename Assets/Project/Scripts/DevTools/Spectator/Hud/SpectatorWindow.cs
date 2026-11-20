@@ -27,10 +27,7 @@ namespace CGD.DevTools
         // Left-aligned text placed at `position` (from the window's top left) and `extent` in size.
         public static TextMeshProUGUI Label(RectTransform parent, string name, string value, float size, Vector2 position, Vector2 extent)
         {
-            TextMeshProUGUI text = UIFactory.MakeText(name, parent);
-            text.text      = value;
-            text.fontSize  = size;
-            text.alignment = TextAlignmentOptions.MidlineLeft;
+            TextMeshProUGUI text = UIFactory.MakeLabel(name, parent, value, size, TextAlignmentOptions.MidlineLeft);
             UIFactory.Place(text.rectTransform, position, extent);
             return text;
         }

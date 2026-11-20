@@ -23,8 +23,7 @@ namespace CGD.UI
             _slider.minValue = min;
             _slider.maxValue = max;
 
-            _valueText = UIFactory.MakeText("Value", parent);
-            _valueText.fontSize = 12f;
+            _valueText = UIFactory.MakeLabel("Value", parent, "", 12f);
             UIFactory.Place(_valueText.rectTransform, pos + new Vector2(width - ValueWidth, 0f), new Vector2(ValueWidth, 20f));
 
             _slider.onValueChanged.AddListener(v =>

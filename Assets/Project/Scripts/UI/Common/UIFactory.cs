@@ -28,6 +28,18 @@ namespace CGD.UI
             return text;
         }
 
+        // A text with its words and size set up front; alignment is left as TextMeshPro's default
+        // unless one is given.
+        public static TextMeshProUGUI MakeLabel(string name, RectTransform parent, string text, float size,
+                                                TextAlignmentOptions? alignment = null)
+        {
+            TextMeshProUGUI label = MakeText(name, parent);
+            label.text     = text;
+            label.fontSize = size;
+            if (alignment.HasValue) label.alignment = alignment.Value;
+            return label;
+        }
+
         // Stretched to fill its parent — map layers, render-texture views.
         public static RawImage MakeRawImage(string name, RectTransform parent, int layer = -1)
         {

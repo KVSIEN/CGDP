@@ -137,9 +137,7 @@ namespace CGD.UI
                 rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 1f);
                 rt.sizeDelta = new Vector2(width, height);
 
-                _text = UIFactory.MakeText("Text", rt);
-                _text.fontSize  = 15f;
-                _text.alignment = TextAlignmentOptions.Center;
+                _text = UIFactory.MakeLabel("Text", rt, "", 15f, TextAlignmentOptions.Center);
                 UIFactory.Stretch(_text.rectTransform);
             }
 

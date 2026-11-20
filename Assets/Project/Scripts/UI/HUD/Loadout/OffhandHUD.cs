@@ -104,8 +104,7 @@ namespace CGD.UI
 
         private TextMeshProUGUI Label(string name, float size, TextAlignmentOptions alignment, float alpha)
         {
-            TextMeshProUGUI label = UIFactory.MakeText(name, _bg.rectTransform);
-            label.fontSize  = size;
+            TextMeshProUGUI label = UIFactory.MakeLabel(name, _bg.rectTransform, "", size);
             label.color     = new Color(1f, 1f, 1f, alpha);
             label.alignment = alignment;
             UIFactory.Stretch(label.rectTransform);

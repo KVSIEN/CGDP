@@ -139,9 +139,7 @@ namespace CGD.DevTools
 
         private static TextMeshProUGUI MakeLabel(string name, RectTransform parent, float size, TextAlignmentOptions alignment)
         {
-            TextMeshProUGUI text = UIFactory.MakeText(name, parent);
-            text.fontSize  = size;
-            text.alignment = alignment;
+            TextMeshProUGUI text = UIFactory.MakeLabel(name, parent, "", size, alignment);
             text.richText  = true;
             return text;
         }

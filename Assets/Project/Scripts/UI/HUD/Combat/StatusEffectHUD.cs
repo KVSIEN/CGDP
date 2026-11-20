@@ -91,14 +91,10 @@ namespace CGD.UI
             overlay.color = Theme.Overlay;
             UIFactory.Stretch(overlay.rectTransform);
 
-            var nameText = UIFactory.MakeText("Name", tileRt);
-            nameText.fontSize  = 9f;
-            nameText.alignment = TextAlignmentOptions.Center;
+            var nameText = UIFactory.MakeLabel("Name", tileRt, "", 9f, TextAlignmentOptions.Center);
             UIFactory.Stretch(nameText.rectTransform);
 
-            var stackText = UIFactory.MakeText("Stacks", tileRt);
-            stackText.fontSize  = 10f;
-            stackText.alignment = TextAlignmentOptions.BottomRight;
+            var stackText = UIFactory.MakeLabel("Stacks", tileRt, "", 10f, TextAlignmentOptions.BottomRight);
             UIFactory.Stretch(stackText.rectTransform);
             stackText.rectTransform.offsetMax = new Vector2(-2f, 0f);
 

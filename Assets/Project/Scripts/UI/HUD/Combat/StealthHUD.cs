@@ -24,8 +24,7 @@ namespace CGD.UI
             self.anchoredPosition = new Vector2(0f, -_offsetBelowCentre);
             self.sizeDelta = new Vector2(200f, 24f);
 
-            _label = UIFactory.MakeText("Stealth", self);
-            _label.fontSize  = 14f;
+            _label = UIFactory.MakeLabel("Stealth", self, "", 14f);
             _label.fontStyle = FontStyles.Bold;
             _label.alignment = TextAlignmentOptions.Center;
             UIFactory.Stretch(_label.rectTransform);

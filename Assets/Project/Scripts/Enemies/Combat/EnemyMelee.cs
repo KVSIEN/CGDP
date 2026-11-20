@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using CGD.Audio;
 using CGD.Combat;
@@ -15,13 +14,12 @@ namespace CGD.Enemies
     // swing: rolled affixes swap it after Awake.
     internal sealed class EnemyMelee
     {
-        private static readonly Collider[] HitBuffer = new Collider[16];
+        private static readonly AreaHits Reach = new(16);
 
         private readonly EnemyAI _ai;
         private readonly DamageSource _source;
         private readonly LayerMask _targetMask;
         private readonly CharacterStats _stats;
-        private readonly HashSet<HealthManager> _hits = new();
 
         private CooldownTimer _cooldown;
         private float _windupLeft;
@@ -82,7 +80,7 @@ namespace CGD.Enemies
 
             float   range  = data.AttackRange;
             Vector3 center = self.position + Vector3.up + self.forward * (range * 0.5f);
-            int count = Physics.OverlapSphereNonAlloc(center, range * 0.6f, HitBuffer, _targetMask, QueryTriggerInteraction.Ignore);
+            Reach.Gather(center, range * 0.6f, _targetMask, ignore: self);
 
             float damage = _stats != null ? _stats.Apply(ItemStat.Damage, data.AttackDamage) : data.AttackDamage;
             damage *= _ai.Ambush.Consume(out StatusEffectApplication[] ambushEffects);
@@ -90,13 +88,8 @@ namespace CGD.Enemies
             var info = new DamageInfo(damage, source: _source,
                 onHitEffects: StatusEffectApplication.Combine(data.MeleeEffects, ambushEffects));
 
-            _hits.Clear();
-            for (int i = 0; i < count; i++)
-            {
-                if (Hitbox.FindDamageable(HitBuffer[i]) is not HealthManager target) continue;
-                if (target == _ai.Health || !_hits.Add(target)) continue;
-                target.TakeDamage(info);
-            }
+            foreach (AreaHit hit in Reach.Hits)
+                if (hit.Target is HealthManager target && target != _ai.Health) target.TakeDamage(info);
         }
     }
 }

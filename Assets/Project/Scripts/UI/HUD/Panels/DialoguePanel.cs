@@ -24,9 +24,7 @@ namespace CGD.UI
 
         protected override void Build(RectTransform content)
         {
-            _line = UIFactory.MakeText("Line", content);
-            _line.fontSize  = 15f;
-            _line.alignment = TextAlignmentOptions.TopLeft;
+            _line = UIFactory.MakeLabel("Line", content, "", 15f, TextAlignmentOptions.TopLeft);
             RectTransform lineRt = _line.rectTransform;
             lineRt.anchorMin = new Vector2(0f, 1f);
             lineRt.anchorMax = Vector2.one;

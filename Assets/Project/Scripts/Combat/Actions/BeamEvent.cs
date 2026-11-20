@@ -6,7 +6,7 @@ namespace CGD.Combat
     [Serializable]
     public class BeamEvent : IActionEvent
     {
-        private static readonly RaycastHit[] CastBuffer = new RaycastHit[16];
+        private static readonly ShapeHits Shapes = new();
 
         [SerializeField] private int _startFrame;
         [SerializeField] private int _endFrame = 10;
@@ -34,32 +34,11 @@ namespace CGD.Combat
                 _damagePerTick, _armorPenetration, _damageType,
                 _criticalMultiplier, ctx.Source, _onHitEffects));
 
-            int count;
-            if (_radius > 0f)
-            {
-                count = Physics.SphereCastNonAlloc(
-                    ctx.Origin, _radius, ctx.Forward, CastBuffer,
-                    _range, ctx.HitMask, QueryTriggerInteraction.Ignore);
-            }
-            else
-            {
-                count = Physics.RaycastNonAlloc(
-                    ctx.Origin, ctx.Forward, CastBuffer,
-                    _range, ctx.HitMask, QueryTriggerInteraction.Ignore);
-            }
-
-            for (int i = 0; i < count; i++)
-            {
-                Collider col = CastBuffer[i].collider;
-                if (col.transform.root == ctx.SourceRoot) continue;
-
-                Vector3 point = CastBuffer[i].point;
-                if (point == Vector3.zero)
-                    point = col.ClosestPoint(ctx.SourceRoot.position);
-
-                Hitbox.ApplyHit(col, info, point);
-                ctx.HitAnything = true;
-            }
+            // Each target once a tick, however many of its hitboxes the beam crosses.
+            Shapes.Clear();
+            Shapes.Cast(ctx.Origin, ctx.Forward, _radius, _range, ctx.HitMask, ctx.SourceRoot);
+            foreach (ShapeHit hit in Shapes.Hits) Hitbox.ApplyHit(hit.Collider, info, hit.Point);
+            if (Shapes.Hits.Count > 0) ctx.HitAnything = true;
 
             if (ctx.DebugDraw)
                 Debug.DrawRay(ctx.Origin, ctx.Forward * _range, Color.magenta, ctx.DebugDuration);

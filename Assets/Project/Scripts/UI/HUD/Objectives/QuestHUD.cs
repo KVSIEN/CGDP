@@ -34,9 +34,7 @@ namespace CGD.UI
             _background.color = Theme.Panel;
             UIFactory.Stretch(_background.rectTransform);
 
-            _label = UIFactory.MakeText("Quests", rt);
-            _label.fontSize  = 14f;
-            _label.alignment = TextAlignmentOptions.TopLeft;
+            _label = UIFactory.MakeLabel("Quests", rt, "", 14f, TextAlignmentOptions.TopLeft);
             _label.richText  = true;
             UIFactory.Stretch(_label.rectTransform);
             _label.rectTransform.offsetMin = new Vector2(10f, 8f);

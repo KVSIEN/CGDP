@@ -66,9 +66,7 @@ namespace CGD.UI
             self.sizeDelta = Vector2.one * (_radius * 2f + _tileSize.x);
             self.anchoredPosition = Vector2.zero;
 
-            _title = UIFactory.MakeText("Title", self);
-            _title.fontSize  = 16f;
-            _title.alignment = TextAlignmentOptions.Center;
+            _title = UIFactory.MakeLabel("Title", self, "", 16f, TextAlignmentOptions.Center);
             UIFactory.Place(_title.rectTransform, Vector2.zero, new Vector2(_tileSize.x, 30f));
             CentreAnchor(_title.rectTransform);
 
@@ -85,9 +83,7 @@ namespace CGD.UI
                 CentreAnchor(tile.rectTransform);
                 tile.rectTransform.sizeDelta = _tileSize;
 
-                TextMeshProUGUI label = UIFactory.MakeText("Label", tile.rectTransform);
-                label.fontSize  = 13f;
-                label.alignment = TextAlignmentOptions.Center;
+                TextMeshProUGUI label = UIFactory.MakeLabel("Label", tile.rectTransform, "", 13f, TextAlignmentOptions.Center);
                 UIFactory.Stretch(label.rectTransform);
 
                 _tileRoots.Add(tile.rectTransform);

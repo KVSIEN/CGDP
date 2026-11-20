@@ -216,8 +216,8 @@ The remaining HUD elements (crosshair, quests, objective, interact prompt, hit m
 | **VelocityHUD** | `_movement` = PlayerMovement | |
 | **InteractHUD** | `_interaction` = PlayerInteraction | |
 | **WeaponPickupHUD** | `_interaction` = PlayerInteraction | Shows when aiming at a weapon pickup. |
-| **InventoryHUD** | `_input` = Player, `_loadout` = PlayerWeaponLoadout | Opens with I. |
-| **ItemInventoryHUD** | `_input` = Player, `_inventory` = PlayerInventory | Opens with I. `_inventory` is required. |
+| **InventoryHUD** | `_input` = Player, `_loadout` = PlayerWeaponLoadout, `_companion` = ItemInventory (in the HUD prefab) | Opens with I and owns that key; opens and closes its companion with it. |
+| **ItemInventoryHUD** | `_inventory` = PlayerInventory | Opens and closes with InventoryHUD (its `_companion`); has no key of its own. `_inventory` is required. |
 | **QuestHUD** | `_tracker` = QuestTracker | See [Quests](#quests). |
 | **MinimapHUD** | `_area` = WorldMapArea, `_viewer` = Main Camera | See [Map](#map--minimap). |
 | **WorldMapHUD** | `_input` = Player, `_area` = WorldMapArea, `_viewer` = Main Camera | Opens with M. |

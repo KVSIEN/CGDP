@@ -7,8 +7,7 @@ namespace CGD.Combat
     [Serializable]
     public class ShapeHitEvent : IActionEvent
     {
-        private static readonly RaycastHit[] CastBuffer = new RaycastHit[16];
-        private static readonly Collider[] OverlapBuffer = new Collider[16];
+        private static readonly ShapeHits Shapes = new();
 
         [SerializeField] private int _startFrame;
         [SerializeField] private int _endFrame = -1;
@@ -52,22 +51,36 @@ namespace CGD.Combat
         public void OnTick(ActionContext ctx)
         {
             ResolveOriginAndForward(ctx, out Vector3 origin, out Vector3 forward, out Vector3 up);
+            HashSet<IDamageable> dedup = _useSharedDedup ? ctx.SharedHits : ctx.EventHits[ctx.CurrentEventIndex];
 
+            Shapes.Clear();
             switch (_shape)
             {
                 case HitShape.SphereCast:
-                    TickSphereCast(ctx, origin, forward);
+                    Shapes.Cast(origin, forward, _radius, _range, ctx.HitMask, ctx.SourceRoot, dedup);
+                    if (ctx.DebugDraw) Debug.DrawRay(origin, forward * _range, Color.red, ctx.DebugDuration);
                     break;
+
                 case HitShape.Arc:
-                    TickArc(ctx, origin, forward, up);
+                    Shapes.Fan(origin, forward, up, _arcDeg, _rayCount, _radius, _range, ctx.HitMask, ctx.SourceRoot, dedup);
+                    if (ctx.DebugDraw) DrawArc(ctx, origin, forward, up);
                     break;
+
                 case HitShape.Sphere:
-                    TickSphere(ctx, origin, forward);
+                    Vector3 sphereCenter = origin + forward * _range;
+                    Shapes.Sphere(sphereCenter, _radius, ctx.Origin, ctx.HitMask, ctx.SourceRoot, dedup);
+                    if (ctx.DebugDraw) DebugDrawUtil.Sphere(sphereCenter, _radius, Color.cyan, ctx.DebugDuration);
                     break;
+
                 case HitShape.Box:
-                    TickBox(ctx, origin, forward);
+                    Vector3 boxCenter = origin + forward * _range;
+                    Quaternion orientation = Quaternion.LookRotation(forward, ctx.Up);
+                    Shapes.Box(boxCenter, _halfExtents, orientation, ctx.Origin, ctx.HitMask, ctx.SourceRoot, dedup);
+                    if (ctx.DebugDraw) DebugDrawUtil.Box(boxCenter, _halfExtents, orientation, Color.green, ctx.DebugDuration);
                     break;
             }
+
+            ApplyHits(ctx);
         }
 
         private void ResolveOriginAndForward(ActionContext ctx,
@@ -104,139 +117,27 @@ namespace CGD.Combat
             }
         }
 
-        private DamageInfo BuildDamageInfo(ActionContext ctx)
+        private void ApplyHits(ActionContext ctx)
         {
-            return ctx.Prepare(new DamageInfo(
+            if (Shapes.Hits.Count == 0) return;
+
+            DamageInfo info = ctx.Prepare(new DamageInfo(
                 _damage, _armorPenetration, _damageType,
                 _criticalMultiplier, ctx.Source, _onHitEffects));
+
+            foreach (ShapeHit hit in Shapes.Hits)
+            {
+                if (_usePointHit) Hitbox.ApplyHit(hit.Collider, info, hit.Point);
+                else              hit.Target.TakeDamage(info);
+            }
+            ctx.HitAnything = true;
         }
 
-        private HashSet<IDamageable> GetDedup(ActionContext ctx)
+        private void DrawArc(ActionContext ctx, Vector3 origin, Vector3 forward, Vector3 up)
         {
-            return _useSharedDedup ? ctx.SharedHits : ctx.EventHits[ctx.CurrentEventIndex];
-        }
-
-        private void TickSphereCast(ActionContext ctx, Vector3 origin, Vector3 forward)
-        {
-            int count = Physics.SphereCastNonAlloc(
-                origin, _radius, forward, CastBuffer,
-                _range, ctx.HitMask, QueryTriggerInteraction.Ignore);
-
-            ProcessCastHits(ctx, count);
-
-            if (ctx.DebugDraw)
-                Debug.DrawRay(origin, forward * _range, Color.red, ctx.DebugDuration);
-        }
-
-        private void TickArc(ActionContext ctx, Vector3 origin, Vector3 forward, Vector3 up)
-        {
-            float halfArc = _arcDeg * 0.5f;
             int rays = Mathf.Max(_rayCount, 2);
-
-            for (int r = 0; r < rays; r++)
-            {
-                float t = (float)r / (rays - 1);
-                float angle = Mathf.Lerp(-halfArc, halfArc, t);
-                Vector3 dir = Quaternion.AngleAxis(angle, up) * forward;
-
-                int count = Physics.SphereCastNonAlloc(
-                    origin, _radius, dir, CastBuffer,
-                    _range, ctx.HitMask, QueryTriggerInteraction.Ignore);
-
-                ProcessCastHits(ctx, count);
-
-                if (ctx.DebugDraw)
-                    Debug.DrawRay(origin, dir * _range, Color.yellow, ctx.DebugDuration);
-            }
+            for (int i = 0; i < rays; i++)
+                Debug.DrawRay(origin, ShapeHits.FanDirection(forward, up, _arcDeg, rays, i) * _range, Color.yellow, ctx.DebugDuration);
         }
-
-        private void TickSphere(ActionContext ctx, Vector3 origin, Vector3 forward)
-        {
-            Vector3 center = origin + forward * _range;
-
-            int count = Physics.OverlapSphereNonAlloc(
-                center, _radius, OverlapBuffer,
-                ctx.HitMask, QueryTriggerInteraction.Ignore);
-
-            ProcessOverlapHits(ctx, count);
-
-            if (ctx.DebugDraw)
-                DebugDrawUtil.Sphere(center, _radius, Color.cyan, ctx.DebugDuration);
-        }
-
-        private void TickBox(ActionContext ctx, Vector3 origin, Vector3 forward)
-        {
-            Vector3 center = origin + forward * _range;
-            Quaternion orientation = Quaternion.LookRotation(forward, ctx.Up);
-
-            int count = Physics.OverlapBoxNonAlloc(
-                center, _halfExtents, OverlapBuffer,
-                orientation, ctx.HitMask, QueryTriggerInteraction.Ignore);
-
-            ProcessOverlapHits(ctx, count);
-
-            if (ctx.DebugDraw)
-                DebugDrawUtil.Box(center, _halfExtents, orientation, Color.green, ctx.DebugDuration);
-        }
-
-        private void ProcessCastHits(ActionContext ctx, int count)
-        {
-            DamageInfo info = BuildDamageInfo(ctx);
-            HashSet<IDamageable> dedup = GetDedup(ctx);
-
-            for (int i = 0; i < count; i++)
-            {
-                Collider col = CastBuffer[i].collider;
-                if (col.transform.root == ctx.SourceRoot) continue;
-
-                if (_usePointHit)
-                {
-                    IDamageable target = Hitbox.FindDamageable(col);
-                    if (target == null || !dedup.Add(target)) continue;
-
-                    Vector3 point = CastBuffer[i].point;
-                    if (point == Vector3.zero)
-                        point = col.ClosestPoint(ctx.SourceRoot.position);
-
-                    Hitbox.ApplyHit(col, info, point);
-                }
-                else
-                {
-                    IDamageable target = Hitbox.FindDamageable(col);
-                    if (target == null || !dedup.Add(target)) continue;
-                    target.TakeDamage(info);
-                }
-
-                ctx.HitAnything = true;
-            }
-        }
-
-        private void ProcessOverlapHits(ActionContext ctx, int count)
-        {
-            DamageInfo info = BuildDamageInfo(ctx);
-            HashSet<IDamageable> dedup = GetDedup(ctx);
-
-            for (int i = 0; i < count; i++)
-            {
-                Collider col = OverlapBuffer[i];
-                if (col.transform.root == ctx.SourceRoot) continue;
-
-                IDamageable target = Hitbox.FindDamageable(col);
-                if (target == null || !dedup.Add(target)) continue;
-
-                if (_usePointHit)
-                {
-                    Vector3 point = col.ClosestPoint(ctx.Origin);
-                    Hitbox.ApplyHit(col, info, point);
-                }
-                else
-                {
-                    target.TakeDamage(info);
-                }
-
-                ctx.HitAnything = true;
-            }
-        }
-
     }
 }

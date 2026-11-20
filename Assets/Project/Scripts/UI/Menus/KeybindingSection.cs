@@ -63,9 +63,7 @@ namespace CGD.UI
 
         private void Build(RectTransform window, float windowWidth)
         {
-            var header = UIFactory.MakeText("KeybindingsHeader", window);
-            header.text = "── Keybindings ──";
-            header.fontSize = 13f;
+            var header = UIFactory.MakeLabel("KeybindingsHeader", window, "── Keybindings ──", 13f);
             UIFactory.Place(header.rectTransform, new Vector2(10f, -132f), new Vector2(580f, 20f));
 
             MakeColumnHeader(window, "Action",    10f,  135f);
@@ -92,9 +90,7 @@ namespace CGD.UI
 
         private static void MakeColumnHeader(RectTransform window, string label, float x, float width)
         {
-            var text = UIFactory.MakeText("Header_" + label, window);
-            text.text = label;
-            text.fontSize = 12f;
+            var text = UIFactory.MakeLabel("Header_" + label, window, label, 12f);
             UIFactory.Place(text.rectTransform, new Vector2(x, -154f), new Vector2(width, 20f));
         }
 
@@ -130,10 +126,7 @@ namespace CGD.UI
         {
             var b = _bindings.Bindings[rowIndex];
 
-            var label = UIFactory.MakeText("Action_" + rowIndex, content);
-            label.text = b.Action.ToString();
-            label.fontSize = 12f;
-            label.alignment = TextAlignmentOptions.MidlineLeft;
+            var label = UIFactory.MakeLabel("Action_" + rowIndex, content, b.Action.ToString(), 12f, TextAlignmentOptions.MidlineLeft);
             UIFactory.Place(label.rectTransform, new Vector2(0f, -rowY), new Vector2(140f, 24f));
 
             var primaryBtn = UIFactory.MakeButton("Primary_" + rowIndex, content, "", out var primaryLabel);
@@ -196,8 +189,7 @@ namespace CGD.UI
             promptText.rectTransform.anchoredPosition = new Vector2(0f, 14f);
             promptText.rectTransform.sizeDelta = new Vector2(410f, 60f);
 
-            _conflictText = UIFactory.MakeText("ConflictMessage", cardRt);
-            _conflictText.fontSize = 14f;
+            _conflictText = UIFactory.MakeLabel("ConflictMessage", cardRt, "", 14f);
             _conflictText.color = SharedTextColor;
             _conflictText.alignment = TextAlignmentOptions.Center;
             _conflictText.rectTransform.anchorMin = _conflictText.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);

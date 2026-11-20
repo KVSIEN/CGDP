@@ -53,9 +53,7 @@ namespace CGD.UI
             windowRt.anchorMin = windowRt.anchorMax = windowRt.pivot = new Vector2(0.5f, 0.5f);
             windowRt.sizeDelta = WindowSize;
 
-            _title = UIFactory.MakeText("Title", windowRt);
-            _title.text      = Title;
-            _title.fontSize  = 18f;
+            _title = UIFactory.MakeLabel("Title", windowRt, Title, 18f);
             _title.fontStyle = FontStyles.Bold;
             _title.alignment = TextAlignmentOptions.MidlineLeft;
             UIFactory.Place(_title.rectTransform, new Vector2(14f, 0f), new Vector2(WindowSize.x - 60f, TitleHeight));
@@ -108,9 +106,7 @@ namespace CGD.UI
         private void Apply(bool open)
         {
             IsVisible = open;
-            _group.alpha          = open ? 1f : 0f;
-            _group.blocksRaycasts = open;
-            _group.interactable   = open;
+            _group.SetVisible(open);
 
             if (open)
             {

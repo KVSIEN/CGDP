@@ -13,6 +13,8 @@ namespace CGD.UI
     {
         [SerializeField] private PlayerInputHandler  _input;
         [SerializeField] private PlayerWeaponLoadout _loadout;
+        [Tooltip("Another panel that opens and closes with this one on the Inventory key (the item list). Optional")]
+        [SerializeField] private HUDElement _companion;
 
         [Header("Layout")]
         [SerializeField] private float _panelWidth = 300f;
@@ -65,7 +67,7 @@ namespace CGD.UI
             _cg = GetComponent<CanvasGroup>();
             BuildPanel();
             BuildActiveBar();
-            SetPanelAlpha(false);
+            _cg.SetVisible(false);
             // IsVisible starts true in HUDElement — sync it
             IsVisible = false;
         }
@@ -104,20 +106,17 @@ namespace CGD.UI
         public override void Show()
         {
             IsVisible = true;
-            SetPanelAlpha(true);
+            _cg.SetVisible(true);
             LockInput(true);
+            if (_companion != null) _companion.Show();
         }
 
         public override void Hide()
         {
             IsVisible = false;
-            SetPanelAlpha(false);
+            _cg.SetVisible(false);
             LockInput(false);
-        }
-
-        public override void Toggle()
-        {
-            if (IsVisible) Hide(); else Show();
+            if (_companion != null) _companion.Hide();
         }
 
         public override void Refresh() { }
@@ -128,13 +127,6 @@ namespace CGD.UI
                 _input.InputEnabled = !inventoryOpen;
 
             CursorLock.Set(!inventoryOpen);
-        }
-
-        private void SetPanelAlpha(bool visible)
-        {
-            _cg.alpha          = visible ? 1f : 0f;
-            _cg.blocksRaycasts = visible;
-            _cg.interactable   = visible;
         }
 
         private void BuildPanel()
@@ -155,9 +147,7 @@ namespace CGD.UI
             panelBg.color = Theme.Window;
             UIFactory.Stretch(panelBg.rectTransform);
 
-            var title = UIFactory.MakeText("Title", rt);
-            title.text      = "LOADOUT";
-            title.fontSize  = 13f;
+            var title = UIFactory.MakeLabel("Title", rt, "LOADOUT", 13f);
             title.fontStyle = FontStyles.Bold;
             title.color     = Theme.TextPrimary;
             title.alignment = TextAlignmentOptions.MidlineLeft;
@@ -194,9 +184,7 @@ namespace CGD.UI
                 key.rectTransform.sizeDelta        = new Vector2(22f, 0f);
                 UIFactory.ShrinkToFit(key, 7f);
 
-                var name = UIFactory.MakeText("Name_" + i, bg.rectTransform);
-                name.text      = "— Empty —";
-                name.fontSize  = 13f;
+                var name = UIFactory.MakeLabel("Name_" + i, bg.rectTransform, "— Empty —", 13f);
                 name.color     = Theme.TextPrimary;
                 name.alignment = TextAlignmentOptions.MidlineLeft;
                 name.rectTransform.anchorMin        = new Vector2(0f, 0f);
@@ -246,8 +234,7 @@ namespace CGD.UI
             }
 
             float nameX = 6f + SlotCount * (boxSize + boxGap) + 6f;
-            _activeBarText = UIFactory.MakeText("WeaponName", barRt);
-            _activeBarText.fontSize  = 12f;
+            _activeBarText = UIFactory.MakeLabel("WeaponName", barRt, "", 12f);
             _activeBarText.color     = Theme.TextPrimary;
             _activeBarText.alignment = TextAlignmentOptions.MidlineLeft;
             _activeBarText.rectTransform.anchorMin = Vector2.zero;

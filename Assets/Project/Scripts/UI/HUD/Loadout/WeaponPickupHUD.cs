@@ -56,7 +56,7 @@ namespace CGD.UI
             _cg            = GetComponent<CanvasGroup>();
             _rectTransform = GetComponent<RectTransform>();
             BuildPanel();
-            SetAlpha(false);
+            _cg.SetVisible(false, interactive: false);
             IsVisible = false;
         }
 
@@ -227,16 +227,14 @@ namespace CGD.UI
 
             float y = -_padding;
 
-            _nameText = UIFactory.MakeText("Name", _rectTransform);
-            _nameText.fontSize  = 16f;
+            _nameText = UIFactory.MakeLabel("Name", _rectTransform, "", 16f);
             _nameText.fontStyle = FontStyles.Bold;
             _nameText.color     = Theme.TextPrimary;
             _nameText.alignment = TextAlignmentOptions.MidlineLeft;
             PlaceRow(_nameText.rectTransform, y, headerHeight);
             y -= headerHeight;
 
-            _subtitleText = UIFactory.MakeText("Subtitle", _rectTransform);
-            _subtitleText.fontSize  = 11f;
+            _subtitleText = UIFactory.MakeLabel("Subtitle", _rectTransform, "", 11f);
             _subtitleText.fontStyle = FontStyles.Bold;
             _subtitleText.color     = TierColors.Of(ItemTier.Common);
             _subtitleText.alignment = TextAlignmentOptions.MidlineLeft;
@@ -258,8 +256,7 @@ namespace CGD.UI
             PlaceRow(rule2.rectTransform, y, ruleHeight);
             y -= ruleHeight + footerGap;
 
-            _footerText = UIFactory.MakeText("Footer", _rectTransform);
-            _footerText.fontSize  = 11f;
+            _footerText = UIFactory.MakeLabel("Footer", _rectTransform, "", 11f);
             _footerText.color     = Theme.TextSecondary;
             _footerText.alignment = TextAlignmentOptions.MidlineLeft;
             PlaceRow(_footerText.rectTransform, y, footerHeight);
@@ -274,8 +271,7 @@ namespace CGD.UI
             {
                 float y = topY - i * _rowHeight;
 
-                var key = UIFactory.MakeText($"Key_{xOffset}_{i}", _rectTransform);
-                key.fontSize  = 12f;
+                var key = UIFactory.MakeLabel($"Key_{xOffset}_{i}", _rectTransform, "", 12f);
                 key.color     = Theme.TextMuted;
                 key.alignment = TextAlignmentOptions.MidlineLeft;
                 key.rectTransform.anchorMin        = new Vector2(0f, 1f);
@@ -285,8 +281,7 @@ namespace CGD.UI
                 key.rectTransform.sizeDelta        = new Vector2(keyWidth, _rowHeight);
                 keys[i] = key;
 
-                var val = UIFactory.MakeText($"Val_{xOffset}_{i}", _rectTransform);
-                val.fontSize  = 12f;
+                var val = UIFactory.MakeLabel($"Val_{xOffset}_{i}", _rectTransform, "", 12f);
                 val.color     = Theme.TextPrimary;
                 val.alignment = TextAlignmentOptions.MidlineRight;
                 val.rectTransform.anchorMin        = new Vector2(0f, 1f);
@@ -310,21 +305,14 @@ namespace CGD.UI
         private void ShowInternal()
         {
             IsVisible = true;
-            SetAlpha(true);
+            _cg.SetVisible(true, interactive: false);
         }
 
         private void HideInternal()
         {
             IsVisible = false;
-            SetAlpha(false);
+            _cg.SetVisible(false, interactive: false);
             _shownWeapon = null;
-        }
-
-        private void SetAlpha(bool visible)
-        {
-            _cg.alpha          = visible ? 1f : 0f;
-            _cg.blocksRaycasts = false; // never intercepts clicks — read-only tooltip
-            _cg.interactable   = false;
         }
     }
 }

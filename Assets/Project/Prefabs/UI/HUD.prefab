@@ -696,7 +696,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.UI.ItemInventoryHUD
   _theme: {fileID: 11400000, guid: d7e79ab877e14a69a835e686871be119, type: 2}
   _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
-  _input: {fileID: 0}
   _inventory: {fileID: 0}
   _panelWidth: 320
   _panelHeight: 380
@@ -1366,6 +1365,7 @@ MonoBehaviour:
   _bindings: {fileID: 11400000, guid: 9479d62b8cd465c458fe63f43e4c9ba5, type: 2}
   _input: {fileID: 0}
   _loadout: {fileID: 0}
+  _companion: {fileID: 6224729264924575914}
   _panelWidth: 300
   _rowHeight: 52
   _rowGap: 6

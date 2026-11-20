@@ -12,8 +12,7 @@ namespace CGD.Combat
     [RequireComponent(typeof(Renderer))]
     public class DamageZone : MonoBehaviour
     {
-        private static readonly Collider[] HitBuffer = new Collider[32];
-        private static readonly HashSet<HealthManager> HitThisTick = new();
+        private static readonly AreaHits Area = new(32);
 
         private readonly HashSet<HealthManager> _entered = new();
         private readonly HazardZone _hazard = new();
@@ -92,17 +91,14 @@ namespace CGD.Combat
         // Each character in the zone is hit once per tick, however many hitboxes it has there.
         private void Tick()
         {
-            int count = Physics.OverlapSphereNonAlloc(transform.position, _radius, HitBuffer,
-                _hitMask, QueryTriggerInteraction.Ignore);
+            Area.Gather(transform.position, _radius, _hitMask);
             var hit = new DamageInfo(_zone.DamagePerTick, _zone.ArmorPenetration, _zone.DamageType,
                 source: _source, onHitEffects: _onHitEffects);
 
-            HitThisTick.Clear();
             float siphoned = 0f;
-            for (int i = 0; i < count; i++)
+            foreach (AreaHit area in Area.Hits)
             {
-                if (Hitbox.FindDamageable(HitBuffer[i]) is not HealthManager target) continue;
-                if (!target.CanBeDamagedBy(_source) || !HitThisTick.Add(target)) continue;
+                if (area.Target is not HealthManager target || !target.CanBeDamagedBy(_source)) continue;
 
                 float before = target.Health + target.Shield;
                 target.TakeDamage(hit);

@@ -30,9 +30,7 @@ namespace CGD.UI
         public void Header(string title)
         {
             if (_y < -20f) _y -= 8f;
-            var text = UIFactory.MakeText(title + "Header", _page);
-            text.text     = $"── {title} ──";
-            text.fontSize = 13f;
+            var text = UIFactory.MakeLabel(title + "Header", _page, $"── {title} ──", 13f);
             UIFactory.Place(text.rectTransform, new Vector2(_left, _y), new Vector2(_labelWidth + _controlWidth, 20f));
             _y -= RowHeight;
         }
@@ -62,9 +60,7 @@ namespace CGD.UI
 
         private Vector2 ControlPosition(string label)
         {
-            var text = UIFactory.MakeText(label + "Label", _page);
-            text.text     = label;
-            text.fontSize = 12f;
+            var text = UIFactory.MakeLabel(label + "Label", _page, label, 12f);
             UIFactory.Place(text.rectTransform, new Vector2(_left, _y), new Vector2(_labelWidth, 20f));
             return new Vector2(_left + _labelWidth, _y);
         }

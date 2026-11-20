@@ -21,7 +21,7 @@ namespace CGD.Combat
         [Tooltip("Layers to search for chain targets")]
         public LayerMask EnemyMask = ~0;
 
-        private static readonly Collider[] _hitBuffer = new Collider[32];
+        private static readonly AreaHits _nearby = new(32);
         private readonly HashSet<HealthManager> _visited = new();
 
         public override void Tick(StatusEffectController target, int stacks, float magnitude) { }
@@ -63,14 +63,14 @@ namespace CGD.Combat
 
         private HealthManager FindNearestUnvisited(Vector3 origin, Team team)
         {
-            int count = Physics.OverlapSphereNonAlloc(origin, ChainRadius, _hitBuffer, EnemyMask, QueryTriggerInteraction.Ignore);
+            _nearby.Gather(origin, ChainRadius, EnemyMask);
 
             HealthManager nearest = null;
             float nearestSqrDist = float.MaxValue;
 
-            for (int i = 0; i < count; i++)
+            foreach (AreaHit hit in _nearby.Hits)
             {
-                if (Hitbox.FindDamageable(_hitBuffer[i]) is not HealthManager candidate) continue;
+                if (hit.Target is not HealthManager candidate) continue;
                 if (candidate.Team != team || candidate.IsDead || _visited.Contains(candidate)) continue;
 
                 float sqrDist = (candidate.transform.position - origin).sqrMagnitude;

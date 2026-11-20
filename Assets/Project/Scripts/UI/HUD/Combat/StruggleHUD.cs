@@ -43,8 +43,7 @@ namespace CGD.UI
             _panel     = background.gameObject;
             _panelRect = background.rectTransform;
 
-            _text = UIFactory.MakeText("Text", _panelRect);
-            _text.fontSize  = 16f;
+            _text = UIFactory.MakeLabel("Text", _panelRect, "", 16f);
             _text.fontStyle = FontStyles.Bold;
             _text.color     = Theme.TextPrimary;
             _text.alignment = TextAlignmentOptions.Center;

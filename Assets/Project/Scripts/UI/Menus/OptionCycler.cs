@@ -24,9 +24,7 @@ namespace CGD.UI
             UIFactory.Place(prev.GetComponent<RectTransform>(), pos, new Vector2(ArrowWidth, 20f));
             prev.onClick.AddListener(() => Step(-1));
 
-            _valueText = UIFactory.MakeText("Value", parent);
-            _valueText.fontSize  = 12f;
-            _valueText.alignment = TextAlignmentOptions.Center;
+            _valueText = UIFactory.MakeLabel("Value", parent, "", 12f, TextAlignmentOptions.Center);
             UIFactory.Place(_valueText.rectTransform, pos + new Vector2(ArrowWidth, 0f), new Vector2(width - ArrowWidth * 2f, 20f));
 
             var next = UIFactory.MakeButton("Next", parent, ">", out _);

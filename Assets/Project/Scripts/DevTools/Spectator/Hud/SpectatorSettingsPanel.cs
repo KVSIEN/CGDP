@@ -115,9 +115,9 @@ namespace CGD.DevTools
 
         private void BuildView(RectTransform window)
         {
-            TextMeshProUGUI title = MakeLabel("Title", window, "Spectator settings", 22f, TextAlignmentOptions.MidlineLeft);
+            TextMeshProUGUI title = UIFactory.MakeLabel("Title", window, "Spectator settings", 22f, TextAlignmentOptions.MidlineLeft);
             UIFactory.Place(title.rectTransform, new Vector2(20f, -14f), new Vector2(400f, 30f));
-            TextMeshProUGUI note = MakeLabel("Note", window, "Changes apply at once and are kept for next time", 13f, TextAlignmentOptions.MidlineRight);
+            TextMeshProUGUI note = UIFactory.MakeLabel("Note", window, "Changes apply at once and are kept for next time", 13f, TextAlignmentOptions.MidlineRight);
             note.color = SpectatorWindow.MutedText;
             UIFactory.Place(note.rectTransform, new Vector2(WindowWidth - 380f, -18f), new Vector2(360f, 24f));
 
@@ -139,7 +139,7 @@ namespace CGD.DevTools
         private void BuildControls(RectTransform window)
         {
             const float Top = -232f;
-            TextMeshProUGUI header = MakeLabel("Controls", window, "── Controls ──   click a slot, then press the new key or button", 13f, TextAlignmentOptions.MidlineLeft);
+            TextMeshProUGUI header = UIFactory.MakeLabel("Controls", window, "── Controls ──   click a slot, then press the new key or button", 13f, TextAlignmentOptions.MidlineLeft);
             UIFactory.Place(header.rectTransform, new Vector2(20f, Top), new Vector2(680f, 20f));
             Column(window, "Action", 20f, Top - 22f);
             Column(window, "Primary", ControlX, Top - 22f);
@@ -152,7 +152,7 @@ namespace CGD.DevTools
 
         private void BuildRow(RectTransform content, SpectatorAction action, float y)
         {
-            TextMeshProUGUI label = MakeLabel("Action " + action, content, SpectatorActionLabels.Of(action), 13f, TextAlignmentOptions.MidlineLeft);
+            TextMeshProUGUI label = UIFactory.MakeLabel("Action " + action, content, SpectatorActionLabels.Of(action), 13f, TextAlignmentOptions.MidlineLeft);
             UIFactory.Place(label.rectTransform, new Vector2(0f, y), new Vector2(LabelWidth, 24f));
 
             var row = new Row { Action = action };
@@ -198,12 +198,12 @@ namespace CGD.DevTools
             card.rectTransform.anchorMin = card.rectTransform.anchorMax = card.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             card.rectTransform.sizeDelta = new Vector2(460f, 130f);
 
-            _prompt = MakeLabel("Prompt", card.rectTransform,
+            _prompt = UIFactory.MakeLabel("Prompt", card.rectTransform,
                 "Press any key, mouse or gamepad button\n<size=13><color=#9AA0B0>Tap Escape to cancel  ·  Hold Escape to clear the slot</color></size>",
                 17f, TextAlignmentOptions.Center);
             UIFactory.Stretch(_prompt.rectTransform);
 
-            _message = MakeLabel("Message", card.rectTransform, "", 15f, TextAlignmentOptions.Center);
+            _message = UIFactory.MakeLabel("Message", card.rectTransform, "", 15f, TextAlignmentOptions.Center);
             _message.color = SharedTextColor;
             UIFactory.Stretch(_message.rectTransform);
             _overlay.SetActive(false);
@@ -254,13 +254,13 @@ namespace CGD.DevTools
 
         private static void RowLabel(RectTransform window, string label, float y)
         {
-            TextMeshProUGUI text = MakeLabel("Label " + label, window, label, 14f, TextAlignmentOptions.MidlineLeft);
+            TextMeshProUGUI text = UIFactory.MakeLabel("Label " + label, window, label, 14f, TextAlignmentOptions.MidlineLeft);
             UIFactory.Place(text.rectTransform, new Vector2(20f, y), new Vector2(LabelWidth, 22f));
         }
 
         private static void Column(RectTransform window, string label, float x, float y)
         {
-            TextMeshProUGUI text = MakeLabel("Column " + label, window, label, 12f, TextAlignmentOptions.MidlineLeft);
+            TextMeshProUGUI text = UIFactory.MakeLabel("Column " + label, window, label, 12f, TextAlignmentOptions.MidlineLeft);
             text.color = SpectatorWindow.MutedText;
             UIFactory.Place(text.rectTransform, new Vector2(x, y), new Vector2(200f, 20f));
         }
@@ -272,14 +272,6 @@ namespace CGD.DevTools
             button.onClick.AddListener(clicked);
         }
 
-        private static TextMeshProUGUI MakeLabel(string name, RectTransform parent, string value, float size, TextAlignmentOptions alignment)
-        {
-            TextMeshProUGUI text = UIFactory.MakeText(name, parent);
-            text.text      = value;
-            text.fontSize  = size;
-            text.alignment = alignment;
-            return text;
-        }
 
         private static RectTransform ScrollView(RectTransform parent, Vector2 position, Vector2 size, float contentHeight)
         {

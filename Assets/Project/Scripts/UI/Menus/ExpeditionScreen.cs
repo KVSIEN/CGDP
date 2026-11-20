@@ -192,19 +192,15 @@ namespace CGD.UI
             windowRt.anchorMin = windowRt.anchorMax = windowRt.pivot = new Vector2(0.5f, 0.5f);
             windowRt.sizeDelta = WindowSize;
 
-            _title = UIFactory.MakeText("Title", windowRt);
-            _title.fontSize  = 30f;
+            _title = UIFactory.MakeLabel("Title", windowRt, "", 30f);
             _title.fontStyle = FontStyles.Bold;
             _title.alignment = TextAlignmentOptions.Center;
             UIFactory.Place(_title.rectTransform, new Vector2(0f, -14f), new Vector2(WindowSize.x, 40f));
 
-            _summary = UIFactory.MakeText("Summary", windowRt);
-            _summary.fontSize  = 16f;
-            _summary.alignment = TextAlignmentOptions.Center;
+            _summary = UIFactory.MakeLabel("Summary", windowRt, "", 16f, TextAlignmentOptions.Center);
             UIFactory.Place(_summary.rectTransform, new Vector2(0f, -58f), new Vector2(WindowSize.x, 28f));
 
-            _runStats = UIFactory.MakeText("RunStats", windowRt);
-            _runStats.fontSize  = 14f;
+            _runStats = UIFactory.MakeLabel("RunStats", windowRt, "", 14f);
             _runStats.color     = new Color(0.7f, 0.7f, 0.75f);
             _runStats.alignment = TextAlignmentOptions.Center;
             UIFactory.Place(_runStats.rectTransform, new Vector2(0f, -84f), new Vector2(WindowSize.x, 22f));

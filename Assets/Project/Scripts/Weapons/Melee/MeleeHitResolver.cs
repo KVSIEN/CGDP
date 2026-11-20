@@ -7,13 +7,11 @@ namespace CGD.Weapons
 {
     // Runs hit detection every physics tick during the Active phase of a melee
     // swing. Tracks which targets have already been hit this swing so each
-    // entity is damaged at most once. Thrust and Sweep use SphereCasts for
-    // point-of-contact resolution (hitbox regions, headshots). Slam uses
-    // OverlapSphere for area damage.
+    // entity is damaged at most once. Thrust and Sweep cast for point-of-contact
+    // resolution (hitbox regions, headshots); Slam is area damage around the impact point.
     public class MeleeHitResolver
     {
-        private static readonly RaycastHit[] CastBuffer = new RaycastHit[16];
-        private static readonly Collider[]   OverlapBuffer = new Collider[16];
+        private static readonly ShapeHits Shapes = new();
 
         private readonly HashSet<IDamageable> _hitThisSwing = new();
 
@@ -43,106 +41,48 @@ namespace CGD.Weapons
         {
             if (!_active) return;
 
+            Shapes.Clear();
             switch (_step.HitShape)
             {
                 case MeleeHitShape.Thrust:
-                    TickThrust(origin, forward, debugDraw, debugDuration);
+                    Shapes.Cast(origin, forward, _step.Radius, _range, _mask, _sourceRoot, _hitThisSwing);
+                    ApplyPointHits();
+                    if (debugDraw) Debug.DrawRay(origin, forward * _range, _step.DebugColor, debugDuration);
                     break;
+
                 case MeleeHitShape.Sweep:
-                    TickSweep(origin, forward, up, debugDraw, debugDuration);
+                    Shapes.Fan(origin, forward, up, _step.SweepArcDeg, _step.SweepRays, _step.Radius, _range, _mask, _sourceRoot, _hitThisSwing);
+                    ApplyPointHits();
+                    if (debugDraw) DrawFan(origin, forward, up, debugDuration);
                     break;
+
                 case MeleeHitShape.Slam:
-                    TickSlam(origin, forward, debugDraw, debugDuration);
+                    Vector3 center = origin + forward * _range;
+                    Shapes.Sphere(center, _step.Radius, origin, _mask, _sourceRoot, _hitThisSwing);
+                    foreach (ShapeHit hit in Shapes.Hits) hit.Target.TakeDamage(_info);
+                    if (Shapes.Hits.Count > 0) HitAnything = true;
+                    if (debugDraw) DebugDrawUtil.Sphere(center, _step.Radius, _step.DebugColor, debugDuration);
                     break;
             }
         }
 
         public void End() => _active = false;
 
-        private void TickThrust(Vector3 origin, Vector3 forward, bool debug, float debugDur)
+        private void ApplyPointHits()
         {
-            int count = Physics.SphereCastNonAlloc(
-                origin, _step.Radius, forward, CastBuffer,
-                _range, _mask, QueryTriggerInteraction.Ignore);
-
-            ProcessCastHits(count);
-
-            if (debug)
-                Debug.DrawRay(origin, forward * _range, _step.DebugColor, debugDur);
-        }
-
-        private void TickSweep(Vector3 origin, Vector3 forward, Vector3 up,
-            bool debug, float debugDur)
-        {
-            float halfArc = _step.SweepArcDeg * 0.5f;
-            int rays = Mathf.Max(_step.SweepRays, 2);
-
-            for (int r = 0; r < rays; r++)
+            foreach (ShapeHit hit in Shapes.Hits)
             {
-                float t     = (float)r / (rays - 1);
-                float angle = Mathf.Lerp(-halfArc, halfArc, t);
-                Vector3 dir = Quaternion.AngleAxis(angle, up) * forward;
-
-                int count = Physics.SphereCastNonAlloc(
-                    origin, _step.Radius, dir, CastBuffer,
-                    _range, _mask, QueryTriggerInteraction.Ignore);
-
-                ProcessCastHits(count);
-
-                if (debug)
-                    Debug.DrawRay(origin, dir * _range, _step.DebugColor, debugDur);
-            }
-        }
-
-        private void TickSlam(Vector3 origin, Vector3 forward, bool debug, float debugDur)
-        {
-            Vector3 center = origin + forward * _range;
-
-            int count = Physics.OverlapSphereNonAlloc(
-                center, _step.Radius, OverlapBuffer,
-                _mask, QueryTriggerInteraction.Ignore);
-
-            for (int i = 0; i < count; i++)
-            {
-                if (OverlapBuffer[i].transform.root == _sourceRoot) continue;
-
-                IDamageable target = Hitbox.FindDamageable(OverlapBuffer[i]);
-                if (target != null && _hitThisSwing.Add(target))
-                {
-                    target.TakeDamage(_info);
-                    HitAnything = true;
-                }
-            }
-
-            if (debug)
-                DebugDrawUtil.Sphere(center, _step.Radius, _step.DebugColor, debugDur);
-        }
-
-        private void ProcessCastHits(int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                Collider col = CastBuffer[i].collider;
-                if (col.transform.root == _sourceRoot) continue;
-
-                IDamageable target = Hitbox.FindDamageable(col);
-                if (target == null || !_hitThisSwing.Add(target)) continue;
-
-                Vector3 point  = CastBuffer[i].point;
-                Vector3 normal = CastBuffer[i].normal;
-                // SphereCast reports zero when the sphere starts overlapping — use the
-                // collider's closest surface point as a reasonable fallback.
-                if (point == Vector3.zero)
-                {
-                    point  = col.ClosestPoint(_sourceRoot.position);
-                    normal = _sourceRoot.position - point;
-                }
-
-                Hitbox.ApplyHit(col, _info, point);
-                if (normal.sqrMagnitude > 0.0001f) ImpactEvents.Report(point, normal.normalized, col, ImpactKind.Melee);
+                Hitbox.ApplyHit(hit.Collider, _info, hit.Point);
+                if (hit.Normal.sqrMagnitude > 0.0001f) ImpactEvents.Report(hit.Point, hit.Normal.normalized, hit.Collider, ImpactKind.Melee);
                 HitAnything = true;
             }
         }
 
+        private void DrawFan(Vector3 origin, Vector3 forward, Vector3 up, float duration)
+        {
+            int rays = Mathf.Max(_step.SweepRays, 2);
+            for (int i = 0; i < rays; i++)
+                Debug.DrawRay(origin, ShapeHits.FanDirection(forward, up, _step.SweepArcDeg, rays, i) * _range, _step.DebugColor, duration);
+        }
     }
 }

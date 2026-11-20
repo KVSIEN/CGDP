@@ -1,15 +1,14 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using CGD.Core;
-using CGD.Input;
 using CGD.Items;
 using CGD.Player;
 
 namespace CGD.UI
 {
     // Basic inventory panel: capacity + weight readout at the top, a flat list of
-    // items below. Toggles on the Inventory action alongside the weapon-loadout HUD.
+    // items below. Opens and closes with the weapon-loadout panel (InventoryHUD's companion),
+    // which owns the Inventory key.
     //
     // Stackable items are aggregated by definition — a player who is carrying two
     // internal LightRounds stacks of 999 and 201 sees a single "Light Rounds 1200"
@@ -19,7 +18,6 @@ namespace CGD.UI
     [RequireComponent(typeof(CanvasGroup))]
     public class ItemInventoryHUD : HUDElement
     {
-        [SerializeField] private PlayerInputHandler _input;
         [SerializeField] private PlayerInventory    _inventory;
 
         [Header("Layout")]
@@ -48,7 +46,7 @@ namespace CGD.UI
             _cg = GetComponent<CanvasGroup>();
 
             BuildPanel();
-            SetAlpha(false);
+            _cg.SetVisible(false);
             IsVisible = false;
         }
 
@@ -62,32 +60,19 @@ namespace CGD.UI
             if (_inventory != null) _inventory.Inventory.Changed -= Refresh;
         }
 
-        private void Update()
-        {
-            // WasPressedRaw bypasses InputEnabled so the key works even while the
-            // panel or a paired modal has locked input.
-            if (_input != null && _input.WasPressedRaw(GameAction.Inventory))
-                Toggle();
-        }
-
         public override bool ShowWithHud => false;
 
         public override void Show()
         {
             IsVisible = true;
-            SetAlpha(true);
+            _cg.SetVisible(true);
             Refresh();
         }
 
         public override void Hide()
         {
             IsVisible = false;
-            SetAlpha(false);
-        }
-
-        public override void Toggle()
-        {
-            if (IsVisible) Hide(); else Show();
+            _cg.SetVisible(false);
         }
 
         public override void Refresh()
@@ -196,24 +181,20 @@ namespace CGD.UI
 
             float y = -_padding;
 
-            var title = UIFactory.MakeText("Title", rt);
-            title.text      = "INVENTORY";
-            title.fontSize  = 13f;
+            var title = UIFactory.MakeLabel("Title", rt, "INVENTORY", 13f);
             title.fontStyle = FontStyles.Bold;
             title.color     = Theme.TextPrimary;
             title.alignment = TextAlignmentOptions.MidlineLeft;
             PlaceRow(title.rectTransform, y, 20f);
             y -= 24f;
 
-            _slotsText = UIFactory.MakeText("SlotsText", rt);
-            _slotsText.fontSize  = 12f;
+            _slotsText = UIFactory.MakeLabel("SlotsText", rt, "", 12f);
             _slotsText.color     = Theme.TextMuted;
             _slotsText.alignment = TextAlignmentOptions.MidlineLeft;
             PlaceRow(_slotsText.rectTransform, y, 18f);
             y -= 18f;
 
-            _weightText = UIFactory.MakeText("WeightText", rt);
-            _weightText.fontSize  = 12f;
+            _weightText = UIFactory.MakeLabel("WeightText", rt, "", 12f);
             _weightText.color     = Theme.TextMuted;
             _weightText.alignment = TextAlignmentOptions.MidlineLeft;
             PlaceRow(_weightText.rectTransform, y, 18f);
@@ -247,13 +228,5 @@ namespace CGD.UI
             rowRt.anchoredPosition = new Vector2(0f, y);
             rowRt.sizeDelta        = new Vector2(-_padding * 2f, height);
         }
-
-        private void SetAlpha(bool visible)
-        {
-            _cg.alpha          = visible ? 1f : 0f;
-            _cg.blocksRaycasts = visible;
-            _cg.interactable   = visible;
-        }
-
     }
 }

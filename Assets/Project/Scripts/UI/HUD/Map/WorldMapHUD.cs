@@ -84,8 +84,7 @@ namespace CGD.UI
             if (open && _area == null) return;
 
             IsVisible = open;
-            _group.alpha          = open ? 1f : 0f;
-            _group.blocksRaycasts = open;
+            _group.SetVisible(open);
             if (_input != null) _input.InputEnabled = !open;
 
             if (_pauseWhileOpen)

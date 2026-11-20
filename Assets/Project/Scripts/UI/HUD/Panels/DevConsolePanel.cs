@@ -40,16 +40,12 @@ namespace CGD.UI
 
         protected override void Build(RectTransform content)
         {
-            _output = UIFactory.MakeText("Output", content);
-            _output.fontSize  = 13f;
-            _output.alignment = TextAlignmentOptions.BottomLeft;
+            _output = UIFactory.MakeLabel("Output", content, "", 13f, TextAlignmentOptions.BottomLeft);
             _output.richText  = false;
             UIFactory.Stretch(_output.rectTransform);
             _output.rectTransform.offsetMin = new Vector2(0f, InputHeight + HintHeight + 6f);
 
-            _hint = UIFactory.MakeText("Hint", content);
-            _hint.fontSize         = 12f;
-            _hint.alignment        = TextAlignmentOptions.BottomLeft;
+            _hint = UIFactory.MakeLabel("Hint", content, "", 12f, TextAlignmentOptions.BottomLeft);
             _hint.color            = new Color(0.62f, 0.76f, 0.95f);
             _hint.richText         = false;
             _hint.overflowMode     = TextOverflowModes.Truncate;
