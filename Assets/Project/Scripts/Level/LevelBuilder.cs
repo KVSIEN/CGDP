@@ -62,6 +62,9 @@ namespace CGD.Level
         [SerializeField] private CoverMap _coverMap;
         [Tooltip("Once the NavMesh is built, let enemies hop the low cover (low inner walls, barriers, counters) where it saves them a walk round")]
         [SerializeField] private bool _vaultLowCover = true;
+        [Tooltip("Optional — the camera the player sees through. With it, the furniture of rooms it can't see into through a doorway stops being drawn (RoomCuller), while Cull Hidden Rooms is on; /cull in the dev console switches it, to compare while profiling")]
+        [SerializeField] private Camera _cullingCamera;
+        [SerializeField] private bool _cullHiddenRooms;
         [Tooltip("Optional — the director's reinforcements, given the level's route so groups arrive in rooms ahead of the player in the build-up and behind them at the peak")]
         [SerializeField] private ReinforcementSpawner _reinforcements;
         [Tooltip("Name each room in the HUD feed (place, faction, tier) the first time the player walks in; in a gallery, every time, with its side, depth and fight type too. Needs a FeedbackPlayer in the scene")]
@@ -130,6 +133,7 @@ namespace CGD.Level
             FitWorldMap();
             AnnounceRooms();
             AddRoomTravel(populator);
+            AddRoomCulling(populator);
             // Last, so neither the NavMesh nor the cover map ever sees it.
             if (_roomOverview) AddOverviewCommand(new RoomOverviewBuilder(_settings, _assets).Build(Layout, transform));
         }
@@ -153,6 +157,23 @@ namespace CGD.Level
             var announcer = gameObject.AddComponent<RoomArrivalAnnouncer>();
             if (_gallery != null) announcer.BeginGallery(Layout, transform, _player, _settings.TerritoryDepth);
             else                  announcer.Begin(Layout, transform, _player);
+        }
+
+        // Not on by default: worth it only where profiling shows the rooms' props cost (RoomCuller).
+        private void AddRoomCulling(RoomPopulator populator)
+        {
+            if (_cullingCamera == null) return;
+
+            var culler = gameObject.AddComponent<RoomCuller>();
+            culler.Begin(Layout, transform, _cullingCamera, _player, populator.RoomObjects);
+            culler.enabled = _cullHiddenRooms;
+            if (_player == null || !_player.TryGetComponent(out DevCommands commands)) return;
+            commands.Console.Register("cull", "", "Switch drawing only the rooms the camera can see into on or off",
+                _ =>
+                {
+                    culler.enabled = !culler.enabled;
+                    return culler.enabled ? "Hidden rooms' furniture is no longer drawn." : "Every room is drawn.";
+                });
         }
 
         // The dev console's /room, wherever the player carries one.

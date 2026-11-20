@@ -70,11 +70,12 @@ Assets/
                             BehaviorTree/ (enemy tree nodes: Senses/, Movement/, Combat/, Tactics/, Squad/, Pacing/, Voice/;
                             EnemyAction/EnemyCondition base nodes, EnemyBlackboard keys, TreeTickRate),
                             Routines/ (multi-frame routines nodes call: EnemySearch, ReturnStep, RetreatStep, RaiseAlarmStep),
-                            Combat/ (EnemyMelee, EnemyRangedCombat), Navigation/ (EnemyRouting: hazard-aware paths; EnemyMotion: speed, facing, knockback; EnemyPost: guarding, return point),
+                            Combat/ (EnemyMelee, EnemyRangedCombat), Navigation/ (EnemyRouting: hazard-aware paths; EnemyMotion: speed, facing, knockback; EnemyPost: guarding, return point; EnemyVault: hopping low cover),
                             Abilities/ (EnemyAbilities: casting Ability assets; GrenadeThrower, ThrowArc; ambush, minions, phase shift, survey beacon),
                             Perception/ (EnemyPerception: awareness, targets, memory; EnemySenses: sight and hearing checks; AwarenessMeter, PerceptionProfile;
                             CalloutSender: what it tells its kin; HostileFocus: who is busy fighting someone else),
                             Belief/ (EnemyBelief, BeliefModel: where an unseen target likely went),
+                            Search/ (OccupancySearch, OccupancyMap, OccupancyGrid: where a lost target could have got to, shared by a squad),
                             Ground/ (EnemyGround, PlaceMemory: hidden spots, vantages and corridors it has learned by walking and looking),
                             Interest/ (PointOfInterest: grass, a recharging station; InterestKind: who it draws and what it does for them; EnemyInterest),
                             Exploration/ (EnemyExploration: where it goes next when its patrol leaves the choice to it; PatrolCoverage: where it has walked; PatrolScoring),
@@ -118,7 +119,9 @@ Assets/
                             RoomPropPlanner (footprints, clearance, spread, cover, lattices, symmetry, clusters, prop groups, near/keyed placements, features that grow with the room; reports each placement's outcome), RoomDressing (cover and clutter per room type);
                             Design/ — FactionDesign (each faction's floor plans, structure, props and crowding), FactionStyle + TerritoryDepth (the design at a room's strength), ShipSideDesign, BreachSplit,
                             Traits/ (RoomTraitMeasure, RoomTraitFit: what fight rooms offer and how generation steers toward it);
-                            Flow/ — RoomFlowPlanner (the way in, threshold and goal of each room), RoomFlank (a second way round), ArrivalSight (what is seen on entering);
+                            Flow/ — RoomFlowPlanner (the way in, threshold and goal of each room), RoomFlank (a second way round), ArrivalSight (what is seen on entering), RoomFlowReading (how a room plays from its way in);
+                            Navigation/ — VaultLinkPlanner, VaultLinkBuilder, VaultLinks (NavMesh links over low cover);
+                            Culling/ — RoomPortals, RoomCuller (drawing only the rooms the camera can see into);
                             Gallery/ — RoomGallerySettings and RoomGalleryGraph (the RoomGallery scene's walk-through of every place)
                             Objectives/ — map objectives: templates, MapObjectivePlanner, MapObjectiveRunner;
                             Encounters/ — encounter rooms: Core/ (RoomEncounter, RoomEncounterBuilder, EncounterContext/Settings,

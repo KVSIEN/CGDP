@@ -43,6 +43,7 @@ namespace CGD.Level
         // What each room was furnished with, for its enemies' posts.
         private readonly Dictionary<int, IReadOnlyList<PlannedProp>> _props = new();
         private readonly List<GameObject> _furniture = new();
+        private readonly Dictionary<int, List<GameObject>> _roomObjects = new();
         // Enemies placed in each room at build time, for the room's encounter.
         private readonly Dictionary<int, List<HealthManager>> _roomEnemies = new();
         // Patrol loops per room and side (a Breach room's second faction walks its own).
@@ -64,6 +65,10 @@ namespace CGD.Level
         // Every solid piece PlaceProps put down (not decorations), for what reads the furnished
         // level afterwards (VaultLinkBuilder).
         public IReadOnlyList<GameObject> Furniture => _furniture;
+
+        // What was placed in each room (its furniture, centrepiece, containers and nodes), by
+        // room id, for what draws rooms on and off (RoomCuller).
+        public IReadOnlyDictionary<int, List<GameObject>> RoomObjects => _roomObjects;
 
         public void PlaceProps()
         {
@@ -95,6 +100,8 @@ namespace CGD.Level
         {
             GameObject placed = Object.Instantiate(prefab, position, rotation, _parent);
             int tier = room.Node.EffectiveTier;
+            if (!_roomObjects.TryGetValue(room.Node.Id, out List<GameObject> objects)) _roomObjects[room.Node.Id] = objects = new List<GameObject>();
+            objects.Add(placed);
 
             _placedCount.TryGetValue(room.Node.Id, out int index);
             _placedCount[room.Node.Id] = index + 1;
