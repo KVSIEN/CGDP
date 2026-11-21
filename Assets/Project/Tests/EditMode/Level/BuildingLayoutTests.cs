@@ -56,7 +56,7 @@ namespace CGD.Tests
             try
             {
                 for (int seed = 0; seed < Seeds; seed++)
-                    foreach (Vector2Int front in BuildingLayoutPlanner.Fronts)
+                    foreach (Vector2Int front in GridSides.All)
                     {
                         var lot = new RectInt(3, 5, 14, 11);
                         BuildingBlueprint blueprint = new BuildingLayoutPlanner(plan).Plan(lot, front, Stream(seed));
