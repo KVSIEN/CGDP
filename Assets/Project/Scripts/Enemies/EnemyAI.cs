@@ -114,7 +114,7 @@ namespace CGD.Enemies
         internal EnemyConcealment  Concealment  { get; private set; }
         // Its ability to walk through walls and take no harm for a while (Echo).
         internal EnemyIntangibility Intangibility { get; private set; }
-        // Its burst straight ahead under its own power (Thruster Dash).
+        // Its dashes under its own power (Thruster Dash, Smoke Screen, Venom Bite).
         internal EnemyDash         Dash         { get; private set; }
         internal EnemyMinions      Minions      { get; private set; }
         internal EnemyBelief       Belief       { get; private set; }

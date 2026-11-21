@@ -149,6 +149,16 @@ MonoBehaviour:
   - rid: 1138
   - rid: 1139
   - rid: 1140
+  - rid: 1141
+  - rid: 1142
+  - rid: 1143
+  - rid: 1144
+  - rid: 1145
+  - rid: 1146
+  - rid: 1147
+  - rid: 1148
+  - rid: 1149
+  - rid: 1150
   references:
     version: 2
     RefIds:
@@ -295,6 +305,7 @@ MonoBehaviour:
         - e2a1b2c3d4e5f60718293a4b5c6d7010
         - 40b8b38fef3b422c892842f32110b364
         - dda02ffca7b7463a8c24bbdfe375a81c
+        - 56c179d24c064c998207505f4413309c
         - 005f4c77603840d4ab6a10fa5550053b
         - 223bb24576d84dd29211ebc63a235095
         - 47dd9f0899c0475d9ee88439d3e2f8ce
@@ -1367,3 +1378,108 @@ MonoBehaviour:
         _maxRange: 6
         _requireClearShot: 0
         _leadMovingTarget: 0
+    - rid: 1141
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e5115974080a46eb9943a10f51706ed5
+        _position: {x: 2240, y: 3150}
+        _comment: 
+    - rid: 1142
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f29550256f024193b79ace622a261a4e
+        _position: {x: 2460, y: 3150}
+        _comment: 
+    - rid: 1143
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 872698a958d14df89e39793b611fa612
+        _position: {x: 2680, y: 3150}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: fc10c446355e4e3c9f5108ad1dc3c3da, type: 2}
+    - rid: 1144
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8cdce8cec92e4e21b27ce628399a6292
+        _position: {x: 2900, y: 3150}
+        _comment: 'Pressed while watched: shield worn down, taking damage, shot at, hurt'
+        _reasons:
+        - _key: ShieldMissing
+          _from: 0.3
+          _to: 1
+          _weight: 0.5
+        - _key: RecentDamage
+          _from: 0
+          _to: 0.25
+          _weight: 0.4
+        - _key: UnderFire
+          _from: 0
+          _to: 1
+          _weight: 0.3
+        - _key: Health
+          _from: 1
+          _to: 0.5
+          _weight: 0.3
+        _patience: 25
+    - rid: 1145
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 0c2346c338b5479ab9558b1e9f9b29ee
+        _position: {x: 3120, y: 3150}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: fc10c446355e4e3c9f5108ad1dc3c3da, type: 2}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 0
+    - rid: 1146
+      type: {class: FallBack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b12e7dd00460453589feb4e37ace9512
+        _position: {x: 3230, y: 3450}
+        _comment: 
+        _giveUpAfter: 6
+    - rid: 1147
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3e9d5950380240658c9c3a8bc76e0801
+        _position: {x: 3450, y: 3450}
+        _comment: 
+        _use: 1
+        _giveUpAfter: 5
+        _stopAtPreferredRange: 0
+    - rid: 1148
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 95e6cca0338a41bea1e693630b60487c
+        _position: {x: 3340, y: 3300}
+        _comment: 
+        _children:
+        - b12e7dd00460453589feb4e37ace9512
+        - 3e9d5950380240658c9c3a8bc76e0801
+        _abort: 0
+    - rid: 1149
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 56ed65a5d3734c7eae4b80d613e3d9f3
+        _position: {x: 3340, y: 3150}
+        _comment: 'Unseen in the smoke: on to cover it knows screens it, else any high cover'
+        _children:
+        - 95e6cca0338a41bea1e693630b60487c
+        _succeed: 1
+    - rid: 1150
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 56c179d24c064c998207505f4413309c
+        _position: {x: 2900, y: 3000}
+        _comment: 'Smoke Screen ready, the target watching it and reason to break contact (shield worn down, taking damage, shot at, hurt): burst a smoke cloud where it stands and dash half way to its edge in any direction, so the target loses it in the smoke, then fall back to cover unseen. Aborts lower priority'
+        _children:
+        - e5115974080a46eb9943a10f51706ed5
+        - f29550256f024193b79ace622a261a4e
+        - 872698a958d14df89e39793b611fa612
+        - 8cdce8cec92e4e21b27ce628399a6292
+        - 0c2346c338b5479ab9558b1e9f9b29ee
+        - 56ed65a5d3734c7eae4b80d613e3d9f3
+        _abort: 2

@@ -34,8 +34,8 @@ namespace CGD.Abilities
 
         public override void Execute(AbilityContext ctx)
         {
-            if (ctx.Dasher == null) return;
-            ctx.Dasher.Begin(Distance, Duration, Spacing, point => DropPatch(point, ctx));
+            if (ctx.Dasher == null || ctx.CasterTransform == null) return;
+            ctx.Dasher.Begin(ctx.CasterTransform.forward, Distance, Duration, Spacing, point => DropPatch(point, ctx));
         }
 
         private void DropPatch(Vector3 point, AbilityContext ctx)

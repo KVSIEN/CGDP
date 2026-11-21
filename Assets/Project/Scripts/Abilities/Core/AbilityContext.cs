@@ -39,7 +39,7 @@ namespace CGD.Abilities
         public IHostileRevealer      Scout;
         // Enemies only: turns the caster intangible (Echo).
         public IIntangibility        Phasing;
-        // Enemies only: dashes straight ahead (Thruster Dash).
+        // Enemies only: dashes in a straight line (Thruster Dash, Smoke Screen, Venom Bite).
         public IDasher               Dasher;
 
         // Enemies only: the point the caster is aiming at (its target), for abilities that land

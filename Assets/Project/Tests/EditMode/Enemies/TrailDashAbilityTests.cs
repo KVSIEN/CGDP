@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 using UnityEngine;
 using CGD.Abilities;
@@ -6,27 +5,13 @@ using CGD.Combat;
 
 namespace CGD.Tests
 {
-    // Thruster Dash: dashes through the caster's dasher, with its own distance, time and trail
-    // spacing, and only when the caster can dash and isn't already.
+    // Thruster Dash: dashes through the caster's dasher the way the caster faces, with its own
+    // distance, time and trail spacing, and only when the caster can dash and isn't already.
     public class TrailDashAbilityTests
     {
-        private sealed class FakeDasher : IDasher
-        {
-            public bool  IsDashing { get; set; }
-            public int   Asked;
-            public float Distance, Seconds, Spacing;
-
-            public void Begin(float distance, float seconds, float spacing, Action<Vector3> passed)
-            {
-                Asked++;
-                Distance = distance;
-                Seconds  = seconds;
-                Spacing  = spacing;
-            }
-        }
-
         private TrailDashAbility _ability;
         private GameObject       _zone;
+        private GameObject       _caster;
 
         [SetUp]
         public void SetUp()
@@ -37,6 +22,8 @@ namespace CGD.Tests
             _ability.Distance   = 7f;
             _ability.Duration   = 0.3f;
             _ability.Spacing    = 1.2f;
+            _caster = new GameObject("Caster");
+            _caster.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
         }
 
         [TearDown]
@@ -44,6 +31,7 @@ namespace CGD.Tests
         {
             UnityEngine.Object.DestroyImmediate(_ability);
             UnityEngine.Object.DestroyImmediate(_zone);
+            UnityEngine.Object.DestroyImmediate(_caster);
         }
 
         [Test]
@@ -55,12 +43,13 @@ namespace CGD.Tests
         }
 
         [Test]
-        public void DashesItsOwnDistanceTimeAndSpacing()
+        public void DashesTheWayItFacesWithItsOwnDistanceTimeAndSpacing()
         {
             var dasher = new FakeDasher();
-            _ability.Execute(new AbilityContext { Dasher = dasher });
+            _ability.Execute(new AbilityContext { Dasher = dasher, CasterTransform = _caster.transform });
 
             Assert.AreEqual(1, dasher.Asked);
+            Assert.That(Vector3.Distance(Vector3.right, dasher.Direction), Is.LessThan(0.001f));
             Assert.AreEqual(7f, dasher.Distance);
             Assert.AreEqual(0.3f, dasher.Seconds);
             Assert.AreEqual(1.2f, dasher.Spacing);

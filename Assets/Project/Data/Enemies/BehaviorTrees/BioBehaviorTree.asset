@@ -178,6 +178,14 @@ MonoBehaviour:
   - rid: 1190
   - rid: 1191
   - rid: 1192
+  - rid: 1193
+  - rid: 1194
+  - rid: 1195
+  - rid: 1196
+  - rid: 1197
+  - rid: 1198
+  - rid: 1199
+  - rid: 1200
   references:
     version: 2
     RefIds:
@@ -242,6 +250,7 @@ MonoBehaviour:
         - ff1af1ccaa2d4168b1284aeb6d7329d8
         - 54b29e8d5ce840e6a9b4fe8b992a76fe
         - 8525a0dd07764968836142bf0a1aa5a3
+        - d4782472ccb0455188b4d0d90e7285ac
         - 7601b626f6624f499b5702e68f9dcd45
         - f140415539004778952d6181b5ea096c
         - 9e66ff5e9f544c629c6546ca8112e52b
@@ -1658,3 +1667,71 @@ MonoBehaviour:
         _position: {x: 300, y: 4350}
         _comment: 
         _range: 5
+    - rid: 1193
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 49887be0096a46c09cb5f32a44b2396d
+        _position: {x: -360, y: 3450}
+        _comment: 
+    - rid: 1194
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4e29dbb76cf84b95a972bd968d774622
+        _position: {x: -140, y: 3450}
+        _comment: 
+    - rid: 1195
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 30ce518ee46747b8b88a29a61f4298b9
+        _position: {x: 80, y: 3600}
+        _comment: 
+        _range: 3
+    - rid: 1196
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5a3774226d7a4b9385e7cb38e9c474d8
+        _position: {x: 80, y: 3450}
+        _comment: 
+        _children:
+        - 30ce518ee46747b8b88a29a61f4298b9
+    - rid: 1197
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4588704cd8f74ccf832d9b72f5ee0fa0
+        _position: {x: 300, y: 3450}
+        _comment: 
+        _range: 7
+    - rid: 1198
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4826fcc81e28489c8c3a8c7026ac7ef4
+        _position: {x: 520, y: 3450}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: eecc727c06d4487aa5f6da4db0c3e71a, type: 2}
+    - rid: 1199
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4177425dca4c446da37a2ecf7754b26a
+        _position: {x: 740, y: 3450}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: eecc727c06d4487aa5f6da4db0c3e71a, type: 2}
+        _aim: 0
+        _maxRange: 7
+        _requireClearShot: 1
+        _leadMovingTarget: 1
+    - rid: 1200
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d4782472ccb0455188b4d0d90e7285ac
+        _position: {x: 300, y: 3300}
+        _comment: 'Venom Bite (every 8 s): the target in view between 3 and 7 m with Venom Bite ready: crouch for a moment, then lunge at it and bite where it lands (damage and poison). Cuts into the stalk and the rush, the moment the target comes into lunging range. Aborts lower priority'
+        _children:
+        - 49887be0096a46c09cb5f32a44b2396d
+        - 4e29dbb76cf84b95a972bd968d774622
+        - 5a3774226d7a4b9385e7cb38e9c474d8
+        - 4588704cd8f74ccf832d9b72f5ee0fa0
+        - 4826fcc81e28489c8c3a8c7026ac7ef4
+        - 4177425dca4c446da37a2ecf7754b26a
+        _abort: 2

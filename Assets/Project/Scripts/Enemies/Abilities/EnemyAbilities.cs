@@ -12,7 +12,7 @@ namespace CGD.Enemies
     // health, its damage source and an aim point at its eyes that turns toward whatever it
     // aims at. Abilities that need a player-only part (dash, reflect, stealth) can't run;
     // Phase Shift (finds hidden cover and calls up minions), Rift (lands on the aim point), Echo
-    // (turns intangible), Thruster Dash (dashes on its own) and Primal Roar's reveal of hostiles
+    // (turns intangible), Thruster Dash, Smoke Screen and Venom Bite (dash on their own) and Primal Roar's reveal of hostiles
     // only run on enemies.
     // Each ability keeps its own cooldown per enemy; meter costs and charges don't apply.
     internal sealed class EnemyAbilities

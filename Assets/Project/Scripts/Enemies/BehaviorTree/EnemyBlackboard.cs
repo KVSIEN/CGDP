@@ -39,6 +39,8 @@ namespace CGD.Enemies
         public const string TargetDistance = "TargetDistance";
         [AgentBlackboardKey(BlackboardValueType.Float, "0–1 of its target's health and shield when last seen; unset with no target")]
         public const string TargetHealth = "TargetHealth";
+        [AgentBlackboardKey(BlackboardValueType.Float, "Its target's armour right now (100 = TECH's own); unset with no target")]
+        public const string TargetArmor = "TargetArmor";
         [AgentBlackboardKey(BlackboardValueType.Bool, "True while on edge after a search that found nothing")]
         public const string Cautious = "Cautious";
         [AgentBlackboardKey(BlackboardValueType.Float, "Director's phase: 0 build-up, 1 peak, 2 fade, 3 calm (no director = 0)")]
@@ -106,6 +108,7 @@ namespace CGD.Enemies
             {
                 blackboard.SetFloat(TargetDistance, UnityEngine.Vector3.Distance(ai.transform.position, perception.TargetPosition));
                 blackboard.SetFloat(TargetHealth, perception.TargetHealthShare);
+                blackboard.SetFloat(TargetArmor, perception.Target.Armor);
                 blackboard.SetFloat(TargetSpeed, perception.TargetVelocity.magnitude);
                 blackboard.SetFloat(TargetExposed, ai.Readings.IsExposed ? 1f : 0f);
                 blackboard.SetFloat(TargetWatching, ai.Readings.Watching);
@@ -115,6 +118,7 @@ namespace CGD.Enemies
             {
                 blackboard.Remove(TargetDistance);
                 blackboard.Remove(TargetHealth);
+                blackboard.Remove(TargetArmor);
                 blackboard.Remove(TargetSpeed);
                 blackboard.Remove(TargetExposed);
                 blackboard.Remove(TargetWatching);

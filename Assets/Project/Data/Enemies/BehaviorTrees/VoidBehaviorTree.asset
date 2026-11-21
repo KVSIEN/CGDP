@@ -141,6 +141,12 @@ MonoBehaviour:
   - rid: 1165
   - rid: 1166
   - rid: 1167
+  - rid: 1168
+  - rid: 1169
+  - rid: 1170
+  - rid: 1171
+  - rid: 1172
+  - rid: 1173
   references:
     version: 2
     RefIds:
@@ -317,6 +323,7 @@ MonoBehaviour:
         - fc992154563a4a3fb31b729aaa7fc4b5
         - d4099671484a45ea81d33d45ebb4332d
         - 279e267b49594a7ebc5a39bc5e2c42c5
+        - b2ced7445af0471cb37c5c3245ae394d
         - bf5eabf6ae7541c190f914778cc1d797
         - 8fa39f7422414cc78935bcfdb3f7fbb3
         - 01611ae078d04342a6ff83f5940a365c
@@ -1424,3 +1431,68 @@ MonoBehaviour:
         _position: {x: -398, y: 2650}
         _comment: 
         _range: 6
+    - rid: 1168
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d1d79eb186ed4acaae85202b1cc0e4ac
+        _position: {x: -1058, y: 2950}
+        _comment: 
+    - rid: 1169
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ef2cefab7b834edab92ff9d647726616
+        _position: {x: -838, y: 2950}
+        _comment: 
+    - rid: 1170
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: eb76a92857bf4655b5e8691c7202da26
+        _position: {x: -618, y: 2950}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: cb52b5774bcb4d4fae591ff72062504b, type: 2}
+    - rid: 1171
+      type: {class: Motive, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: fcb583f291b94e599869de63cbfc8ad1
+        _position: {x: -398, y: 2950}
+        _comment: 'Unmaking pays off on an armoured target (armour does nothing against Entropy), a target in range of its bolts, and one worth finishing'
+        _reasons:
+        - _key: TargetArmor
+          _from: 0
+          _to: 100
+          _weight: 0.6
+        - _key: TargetDistance
+          _from: 22
+          _to: 10
+          _weight: 0.3
+        - _key: TargetHealth
+          _from: 1
+          _to: 0.5
+          _weight: 0.2
+        _patience: 25
+    - rid: 1172
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f4f58819e78841069ef899585d1530b5
+        _position: {x: -178, y: 2950}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: cb52b5774bcb4d4fae591ff72062504b, type: 2}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 0
+    - rid: 1173
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b2ced7445af0471cb37c5c3245ae394d
+        _position: {x: -398, y: 2800}
+        _comment: 'Unmaking ready, the target in view and reason to (mostly an armoured target, also one in range or worth finishing): for 8 s half of every hit it deals lands as Entropy, which armour does nothing against, then carry on. Aborts lower priority'
+        _children:
+        - d1d79eb186ed4acaae85202b1cc0e4ac
+        - ef2cefab7b834edab92ff9d647726616
+        - eb76a92857bf4655b5e8691c7202da26
+        - fcb583f291b94e599869de63cbfc8ad1
+        - f4f58819e78841069ef899585d1530b5
+        _abort: 2

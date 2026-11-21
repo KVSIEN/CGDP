@@ -798,7 +798,7 @@ At 5 stacks the target is **stunned** for a set time (TBD), fully immobilized, a
 
 Things coming undone. Entropy is dealt on the hit itself, not over time, and armor does nothing against it. Shields still absorb it.
 
-**In the Prototype (Built):** VOID's Void Slash deals Entropy damage.
+**In the Prototype (Built):** VOID's Void Slash deals Entropy damage, and its Unmaking buff turns half of every hit it deals into Entropy for 8 s.
 
 **TBD.** Bleed also bypasses armor. What sets Entropy apart from it (for example a bonus against shields, VOID's top defense, or a link with Ice stacks) is not decided.
 

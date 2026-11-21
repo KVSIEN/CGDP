@@ -249,7 +249,7 @@ namespace CGD.Combat
             LastHitPoint  = point;
             OnHit?.Invoke(info);
 
-            float resolved = info.ResolveDamage(Armor * (1f - _armorReductionPercent)) * multiplier;
+            float resolved = info.ResolveDamage(Armor * (1f - _armorReductionPercent), EntropyShareOf(info.Source)) * multiplier;
             float amount   = resolved;
             foreach (IDamageInterceptor interceptor in _interceptors)
                 amount = Mathf.Max(0f, interceptor.Intercept(info, amount, point));
@@ -288,6 +288,13 @@ namespace CGD.Combat
 
             if (!deflected) ApplyOnHitEffects(info);
         }
+
+        // The attacker's Entropy Share (a VOID buff), read as the hit lands so a shot fired before
+        // the buff ends still carries it. Sourceless hits (status ticks, hazards) have none.
+        private static float EntropyShareOf(DamageSource source) =>
+            source.Owner != null && CharacterStats.TryGet(source.Owner, out CharacterStats attacker)
+                ? Mathf.Clamp01(attacker.Apply(ItemStat.EntropyShare, 0f))
+                : 0f;
 
         private void ApplyOnHitEffects(in DamageInfo info)
         {
