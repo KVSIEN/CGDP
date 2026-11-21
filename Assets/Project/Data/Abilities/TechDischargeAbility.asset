@@ -34,6 +34,9 @@ MonoBehaviour:
   HitMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  CoverMask:
+    serializedVersion: 2
+    m_Bits: 1
   KnockbackSpeed: 14
   KnockbackDuration: 0.4
   SelfBuff: {fileID: 11400000, guid: 9b2bc76c741a44468cca757692a0bd87, type: 2}

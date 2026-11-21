@@ -8,7 +8,8 @@ namespace CGD.Abilities
     // damage in proportion to the shield given up, any status effect listed (a slow, a shock),
     // and is thrown back out of reach, while the caster gets a burst of speed (SelfBuff) — a
     // disengage that buys room to fall back.
-    // Can't be cast with less than MinShield left.
+    // Walls stop it (CoverMask): what is wholly behind one is spared, what still shows round
+    // its edge or over its top is hit. Can't be cast with less than MinShield left.
     [CreateAssetMenu(fileName = "ShieldDischargeAbility", menuName = "CGD/Abilities/Shield Discharge")]
     public class ShieldDischargeAbility : Ability
     {
@@ -22,6 +23,8 @@ namespace CGD.Abilities
         [Tooltip("Applied to everyone hit (Tech's slow and shock)")]
         public StatusEffectApplication[] OnHitEffects;
         public LayerMask HitMask = ~0;
+        [Tooltip("Scenery that blocks it: a target wholly behind a wall is spared, one partly round it is still hit. Nothing = it reaches through walls")]
+        public LayerMask CoverMask = 1;
 
         [Header("Knockback")]
         [Tooltip("m/s: how hard everyone hit is thrown away from the caster (eases out over the push). 0 = no knockback")]
@@ -50,7 +53,7 @@ namespace CGD.Abilities
 
             Vector3 center = ctx.CasterTransform.position;
             Vector3 origin = center + Vector3.up;
-            _area.Gather(origin, Radius, HitMask);
+            _area.Gather(origin, Radius, HitMask, CoverMask);
 
             var hit = new DamageInfo(Scaled(spent * DamagePerShield, ctx), ArmorPenetration, DamageType,
                                      source: ctx.Source, onHitEffects: WithBonusEffects(OnHitEffects, ctx));
