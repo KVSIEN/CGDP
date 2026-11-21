@@ -126,7 +126,7 @@ namespace CGD.Enemies
 
         // `subject` is the character (or body) the line ends on, which never blocks its own view.
         public bool IsClear(Vector3 from, Vector3 to, Transform subject) =>
-            !ConcealmentZone.BlocksLine(from, to) && SightLines.IsClear(from, to, _obstacleMask, subject);
+            SightLines.CanSee(from, to, _obstacleMask, subject);
 
         // Chest and head of the target's body (its collider), so cover at chest height but
         // below the head doesn't hide a standing target — and does hide a crouching one.

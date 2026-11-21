@@ -4,7 +4,6 @@ using UnityEngine;
 using CGD.BehaviorTrees;
 using CGD.Combat;
 using CGD.Core;
-using CGD.Stealth;
 
 namespace CGD.Enemies
 {
@@ -28,7 +27,6 @@ namespace CGD.Enemies
         private const float PathSlack       = 2f;    // a walk this many times the straight line isn't a step round
         private const float ArrivalDistance = 0.6f;
         private const float MoveGiveUp      = 3f;
-        private const float ChestHeight     = 1.1f;
         private const float Unseen          = 3f;    // score for each hostile that can't see the spot
         private const float KeepCircling    = 1f;    // score for carrying on round the same way
         private const float Chance          = 0.5f;  // random score, so the circuit varies
@@ -168,13 +166,11 @@ namespace CGD.Enemies
                 if (hostile == null || hostile.IsDead) continue;
 
                 Vector3 eye = hostile.transform.position + Vector3.up * EnemyEyes.Height;
-                if (!CanSee(eye, spot + Vector3.up * ChestHeight, hostile.transform)) score += Unseen;
+                if (!SightLines.CanSee(eye, spot + Vector3.up * EnemyEyes.ChestHeight, Ai.ObstacleMask, hostile.transform)) score += Unseen;
             }
             return score;
         }
 
-        private bool CanSee(Vector3 eye, Vector3 spot, Transform watcher) =>
-            !ConcealmentZone.BlocksLine(eye, spot) && SightLines.IsClear(eye, spot, Ai.ObstacleMask, watcher);
 
         private static Vector3 Flat(Vector3 vector) => new(vector.x, 0f, vector.z);
     }

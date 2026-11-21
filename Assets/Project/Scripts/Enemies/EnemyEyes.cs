@@ -6,5 +6,9 @@ namespace CGD.Enemies
     internal static class EnemyEyes
     {
         public const float Height = 1.5f;
+
+        // Where a line of sight aims at a character's body: its chest, so cover up to the waist
+        // doesn't hide it.
+        public const float ChestHeight = 1.1f;
     }
 }

@@ -14,7 +14,6 @@ namespace CGD.Enemies
     [BtNodeInfo("Enemy/Senses/Target Hiding", "Succeeds while its target was lost moments ago in a bush or behind cover from here.")]
     public sealed class TargetHiding : EnemyCondition
     {
-        private const float ChestHeight = 1.1f;
         private const float GrassHeight = 0.5f;   // a crouching target's middle, for low cover it hides in
 
         [Tooltip("Seconds since it last sensed the target that still count as knowing where it hides")]
@@ -38,7 +37,7 @@ namespace CGD.Enemies
             if (!_behindCover) return false;
 
             Vector3 eye = Ai.transform.position + Vector3.up * EnemyEyes.Height;
-            return !SightLines.IsClear(eye, spot + Vector3.up * ChestHeight, Ai.ObstacleMask, perception.Target.transform);
+            return !SightLines.IsClear(eye, spot + Vector3.up * EnemyEyes.ChestHeight, Ai.ObstacleMask, perception.Target.transform);
         }
 
         private static bool InBush(Vector3 spot) => ConcealmentZone.AnyContains(spot + Vector3.up * GrassHeight, crouching: true);

@@ -19,7 +19,6 @@ namespace CGD.Enemies
         private const int   Candidates      = 8;
         private const float SnapDistance    = 1f;
         private const float ArrivalDistance = 0.5f;
-        private const float ChestHeight     = 1.1f;
 
         private enum Phase { Out, Exposed, Back }
 
@@ -115,7 +114,7 @@ namespace CGD.Enemies
 
             Vector3 forward = toTarget.normalized;
             Vector3 side    = Vector3.Cross(Vector3.up, forward);
-            Vector3 chest   = Ai.Perception.TargetPosition + Vector3.up * ChestHeight;
+            Vector3 chest   = Ai.Perception.TargetPosition + Vector3.up * EnemyEyes.ChestHeight;
             float   first   = UnityEngine.Random.value < 0.5f ? 1f : -1f;   // which side it tries first varies
 
             for (int i = 0; i < Candidates; i++)

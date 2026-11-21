@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using CGD.BehaviorTrees;
 using CGD.Combat;
-using CGD.Stealth;
 
 namespace CGD.Enemies
 {
@@ -19,7 +18,6 @@ namespace CGD.Enemies
     public sealed class StealthDash : EnemyAction
     {
         private const int   Directions   = 12;
-        private const float ChestHeight  = 1.1f;
         private const float Unseen       = 3f;    // score for each hostile that can't see the spot
         private const float Unexpected   = 1.5f;  // score for going against its heading
         private const float Retreating   = 1f;    // score for ending further from the hostiles
@@ -113,7 +111,7 @@ namespace CGD.Enemies
                 if (hostile == null || hostile.IsDead) continue;
 
                 Vector3 eye = hostile.transform.position + Vector3.up * EnemyEyes.Height;
-                if (!CanSee(eye, spot + Vector3.up * ChestHeight, hostile.transform)) score += Unseen;
+                if (!SightLines.CanSee(eye, spot + Vector3.up * EnemyEyes.ChestHeight, Ai.ObstacleMask, hostile.transform)) score += Unseen;
 
                 float before = Flat(from - hostile.transform.position).magnitude;
                 float after  = Flat(spot - hostile.transform.position).magnitude;
@@ -122,8 +120,6 @@ namespace CGD.Enemies
             return score;
         }
 
-        private bool CanSee(Vector3 eye, Vector3 spot, Transform watcher) =>
-            !ConcealmentZone.BlocksLine(eye, spot) && SightLines.IsClear(eye, spot, Ai.ObstacleMask, watcher);
 
         // Towards the nearest hostile around, or where fire last came from; zero with neither.
         private Vector3 ThreatDirection(Vector3 from, IReadOnlyList<HealthManager> hostiles)

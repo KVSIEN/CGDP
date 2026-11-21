@@ -10,7 +10,6 @@ namespace CGD.Enemies
     [DisallowMultipleComponent]
     public class AimLaser : MonoBehaviour
     {
-        private const float ChestHeight = 1.1f;
 
         [Tooltip("Material for the line (an unlit or additive one reads best)")]
         [SerializeField] private Material _material;
@@ -54,7 +53,7 @@ namespace CGD.Enemies
 
             _aimingFor += Time.deltaTime;
             _line.SetPosition(0, transform.position + Vector3.up * EnemyEyes.Height);
-            _line.SetPosition(1, _ai.Perception.TargetPosition + Vector3.up * ChestHeight);
+            _line.SetPosition(1, _ai.Perception.TargetPosition + Vector3.up * EnemyEyes.ChestHeight);
 
             Color color = _color;
             color.a *= Mathf.Lerp(_startOpacity, 1f, Mathf.Clamp01(_aimingFor / _aimTime));

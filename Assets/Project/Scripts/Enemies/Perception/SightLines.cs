@@ -1,4 +1,5 @@
 using CGD.Combat;
+using CGD.Stealth;
 using UnityEngine;
 
 namespace CGD.Enemies
@@ -30,6 +31,11 @@ namespace CGD.Enemies
             if (hit.distance >= length - Mathf.Min(slack, length * 0.5f)) return true;
             return Hitbox.FindDamageable(hit.collider) != null;
         }
+
+        // Whether eyes at `from` see `to`: no concealment (smoke, foliage) in the way and nothing
+        // on mask but `subject`, the character the line ends on.
+        public static bool CanSee(Vector3 from, Vector3 to, LayerMask mask, Transform subject) =>
+            !ConcealmentZone.BlocksLine(from, to) && IsClear(from, to, mask, subject);
 
         // Nothing on mask blocks from → to, except colliders belonging to `ignore` (and its children).
         public static bool IsClear(Vector3 from, Vector3 to, LayerMask mask, Transform ignore)
