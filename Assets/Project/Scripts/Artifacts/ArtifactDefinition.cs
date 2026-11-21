@@ -1,8 +1,6 @@
 using UnityEngine;
 using CGD.Core;
 using CGD.Items;
-using CGD.Stats;
-using CGD.Weapons;
 
 namespace CGD.Artifacts
 {
