@@ -149,6 +149,8 @@ Next steps not started yet.
 
 - Bio's Barbed Snare branch has the same placement problem Acid Spew and Bone Spike had: it sits below the `StalkRushHide` subtree, so it only runs when the hunt can't. Moving it up changes how often BIO snares, so that is a design call. Decide whether it should interrupt the stalk (abort lower priority) or open a round of the hunt (no abort, like Acid Spew).
 
+- Field style on ScriptableObjects: about 78 data assets expose `public` fields (e.g. `ActionTimeline`, `StatusEffect`, `ReflectProfile`), most of them alongside `[SerializeField] private` ones, against CLAUDE.md's preference. MonoBehaviours already follow it. Moving them over means `[SerializeField] private` + a read-only property, with `[FormerlySerializedAs]` on each renamed field so assets keep their values, and checking the assets in Unity. Decide whether that's worth doing, or document public fields on plain data assets as the accepted convention.
+
 ### Shared-system candidates
 Repeated code found in audits that could share one system but wasn't merged yet. Each entry says what stands in the way (see CLAUDE.md, Shared systems).
 Looked at and left apart on purpose: the spawners' random yaw (whole-degree and fractional draws, so merging would change seeded spawns), the two map layout builders (three shared one-line accessors), the HUD key-label subscriptions (a two-line null-checked subscribe each, and a base OnEnable would be hidden by the subclasses'), `Repeat`/`RepeatUntil` and `DespawnOnDeath`/`RespawnOnDeath` (different behaviour round the same few lines).
