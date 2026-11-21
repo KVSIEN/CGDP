@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.Rendering;
+using CGD.Core;
 using CGD.Abilities;
 using CGD.Stealth;
 using CGD.Weapons;
@@ -136,39 +136,10 @@ namespace CGD.Enemies
 
         private static Vector3 Chest(Vector3 feet) => feet + Vector3.up * ChestHeight;
 
-        // A child with only a mesh and the effect material: no collider, so it never blocks
-        // sight, shots or movement.
-        private Renderer CreatePart(string partName, Mesh mesh, Transform parent, Vector3 localPosition, Vector3 localScale)
-        {
-            var part = new GameObject(partName);
-            part.transform.SetParent(parent, false);
-            part.transform.localPosition = localPosition;
-            part.transform.localScale    = localScale;
-            part.AddComponent<MeshFilter>().sharedMesh = mesh;
+        private Renderer CreatePart(string partName, Mesh mesh, Transform parent, Vector3 localPosition, Vector3 localScale) =>
+            EffectParts.MeshPart(partName, parent, mesh, _material, localPosition, localScale);
 
-            var renderer = part.AddComponent<MeshRenderer>();
-            renderer.sharedMaterial    = _material;
-            renderer.shadowCastingMode = ShadowCastingMode.Off;
-            renderer.receiveShadows    = false;
-            return renderer;
-        }
-
-        private TrailRenderer CreateTrail()
-        {
-            var part = new GameObject("Ability Trail");
-            part.transform.SetParent(transform, false);
-            part.transform.localPosition = Vector3.up * ChestHeight;
-
-            var trail = part.AddComponent<TrailRenderer>();
-            trail.sharedMaterial    = _material;
-            trail.time              = TrailTime;
-            trail.widthMultiplier   = TrailWidth;
-            trail.widthCurve        = AnimationCurve.Linear(0f, 1f, 1f, 0f);
-            trail.minVertexDistance = 0.1f;
-            trail.shadowCastingMode = ShadowCastingMode.Off;
-            trail.receiveShadows    = false;
-            trail.emitting          = false;
-            return trail;
-        }
+        private TrailRenderer CreateTrail() =>
+            EffectParts.Trail("Ability Trail", transform, Vector3.up * ChestHeight, _material, TrailTime, TrailWidth, 0.1f);
     }
 }

@@ -22,10 +22,7 @@ namespace CGD.Combat
         private const int MaxSubSteps = 6;
         private const float SubStepSpacing = 1.5f; // × radius: neighbouring capsules always overlap
 
-        private static readonly Collider[]   OverlapBuffer = new Collider[32];
-        private static readonly IDamageable[] TargetBuffer = new IDamageable[32];
-        private static readonly float[]      ScoreBuffer   = new float[32];
-        private static readonly Vector3[]    PointBuffer   = new Vector3[32];
+        private static readonly ShapeHits Shapes = new(32);
 
         [Header("Frames")]
         [SerializeField] private int _startFrame;
@@ -93,20 +90,19 @@ namespace CGD.Combat
             {
                 float progress = i / (float)steps;
                 SwingBlade blade = BladeAt(trail.Blend(progress), Mathf.Lerp(prevFrame, frame, progress), scale);
-                int count = Physics.OverlapCapsuleNonAlloc(
-                    blade.Near, blade.Far, _radius, OverlapBuffer,
-                    ctx.HitMask, QueryTriggerInteraction.Ignore);
+                Shapes.Clear();
+                Shapes.Capsule(blade.Near, blade.Far, _radius, ctx.HitMask, ctx.SourceRoot, dedup);
 
                 if (ctx.DebugDraw)
                     DebugDrawUtil.Capsule(blade.Near, blade.Far, _radius, Color.magenta, ctx.DebugDuration);
 
-                if (count == 0) continue;
+                if (Shapes.Hits.Count == 0) continue;
                 if (!hasInfo)
                 {
                     info = BuildDamageInfo(ctx);
                     hasInfo = true;
                 }
-                ApplyHits(ctx, blade, count, info, dedup);
+                ApplyHits(ctx, info);
             }
         }
 
@@ -123,55 +119,16 @@ namespace CGD.Combat
                 _damage, _armorPenetration, _damageType,
                 _criticalMultiplier, ctx.Source, _onHitEffects));
 
-        // Damages each new target once. When several of a target's hitboxes overlap the blade,
-        // the one the blade's axis runs deepest into takes the hit, so the region struck
-        // doesn't depend on physics query order.
-        private static void ApplyHits(ActionContext ctx, SwingBlade blade, int count,
-                                      DamageInfo info, HashSet<IDamageable> dedup)
+        // Each target once, through the hitbox the blade runs deepest into (ShapeHits.Capsule).
+        private static void ApplyHits(ActionContext ctx, DamageInfo info)
         {
-            for (int i = 0; i < count; i++)
+            foreach (ShapeHit hit in Shapes.Hits)
             {
-                Collider col = OverlapBuffer[i];
-                TargetBuffer[i] = col.transform.root == ctx.SourceRoot ? null : Hitbox.FindDamageable(col);
-                if (TargetBuffer[i] == null) continue;
-
-                Vector3 onAxis = ClosestOnSegment(blade.Near, blade.Far, col.bounds.center);
-                PointBuffer[i] = col.ClosestPoint(onAxis);
-                ScoreBuffer[i] = (PointBuffer[i] - onAxis).sqrMagnitude;
+                Vector3 normal = hit.Normal.sqrMagnitude > 0.0001f ? hit.Normal.normalized : -ctx.Forward;
+                Hitbox.ApplyHit(hit.Collider, info, hit.Point);
+                ImpactEvents.Report(hit.Point, normal, hit.Collider, ImpactKind.Melee);
             }
-
-            for (int i = 0; i < count; i++)
-            {
-                IDamageable target = TargetBuffer[i];
-                if (target == null || dedup.Contains(target)) continue;
-
-                int best = i;
-                for (int j = i + 1; j < count; j++)
-                    if (TargetBuffer[j] == target && ScoreBuffer[j] < ScoreBuffer[best]) best = j;
-
-                dedup.Add(target);
-                Collider hit = OverlapBuffer[best];
-                Vector3 point = PointBuffer[best];
-
-                Hitbox.ApplyHit(hit, info, point);
-                ImpactEvents.Report(point, SurfaceNormal(ctx, blade, point), hit, ImpactKind.Melee);
-                ctx.HitAnything = true;
-            }
-        }
-
-        private static Vector3 SurfaceNormal(ActionContext ctx, SwingBlade blade, Vector3 point)
-        {
-            Vector3 away = ClosestOnSegment(blade.Near, blade.Far, point) - point;
-            if (away.sqrMagnitude > 0.0001f) return away.normalized;
-            return -ctx.Forward;
-        }
-
-        private static Vector3 ClosestOnSegment(Vector3 a, Vector3 b, Vector3 p)
-        {
-            Vector3 ab = b - a;
-            float lengthSqr = ab.sqrMagnitude;
-            if (lengthSqr < 0.0001f) return a;
-            return a + ab * Mathf.Clamp01(Vector3.Dot(p - a, ab) / lengthSqr);
+            ctx.HitAnything = true;
         }
     }
 }

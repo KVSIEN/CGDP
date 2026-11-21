@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Rendering;
 using CGD.Combat;
 using CGD.Core;
 
@@ -91,15 +90,9 @@ namespace CGD.Weapons
         // A child of its own: an object can carry only one renderer, and the shot has its mesh.
         private TrailRenderer CreateTrail()
         {
-            var trail = Child("Trail").AddComponent<TrailRenderer>();
-            trail.sharedMaterial    = _material;
-            trail.time              = _trailTime;
-            trail.widthMultiplier   = _trailWidth;
-            trail.widthCurve        = AnimationCurve.Linear(0f, 1f, 1f, 0f);
-            trail.minVertexDistance = 0.05f;
-            trail.numCapVertices    = 2;
-            trail.shadowCastingMode = ShadowCastingMode.Off;
-            trail.receiveShadows    = false;
+            TrailRenderer trail = EffectParts.Trail("Trail", transform, Vector3.zero, _material, _trailTime, _trailWidth, 0.05f);
+            trail.numCapVertices = 2;
+            trail.emitting       = true;
             trail.SetTint(_trailColor);
             return trail;
         }
@@ -135,8 +128,7 @@ namespace CGD.Weapons
             renderer.renderMode        = ParticleSystemRenderMode.Mesh;
             renderer.mesh              = _sparkMesh;
             renderer.sharedMaterial    = _material;
-            renderer.shadowCastingMode = ShadowCastingMode.Off;
-            renderer.receiveShadows    = false;
+            EffectParts.NoShadows(renderer);
             renderer.SetTint(_sparkColor);
 
             sparks.Play(true);

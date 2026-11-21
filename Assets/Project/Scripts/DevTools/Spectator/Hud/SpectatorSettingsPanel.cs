@@ -1,17 +1,14 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using CGD.Input;
 using CGD.UI;
 
 namespace CGD.DevTools
 {
     // The spectator's settings (Escape): how the camera feels — look sensitivity, invert,
     // move speed, smoothing, label size — and every spectator control, rebindable in two
-    // slots like the player's keybinding menu (BindingRebinder), with controls used twice
-    // shown in orange. Preferences apply as they change and are saved when it closes.
+    // slots through the same BindingListView as the player's keybinding menu. Preferences apply as they change and are saved when it closes.
     internal sealed class SpectatorSettingsPanel
     {
         private const float WindowWidth  = 720f;
@@ -21,34 +18,17 @@ namespace CGD.DevTools
         private const float ControlX     = 240f;
         private const float ControlWidth = 440f;
 
-        private static readonly Color SlotColor      = new(0.16f, 0.16f, 0.22f, 0.95f);
-        private static readonly Color SlotSharedColor = new(0.65f, 0.32f, 0.05f, 0.95f);
-        private static readonly Color SharedTextColor = new(1f, 0.75f, 0.35f, 1f);
-
-        private sealed class Row
-        {
-            public SpectatorAction  Action;
-            public TextMeshProUGUI  Primary;
-            public TextMeshProUGUI  Secondary;
-            public Image            PrimarySlot;
-            public Image            SecondarySlot;
-        }
-
         private readonly SpectatorInputSettings _settings;
         private readonly SpectatorPreferences   _preferences;
-        private readonly BindingRebinder<SpectatorAction> _rebinder;
+        private readonly BindingListView<SpectatorAction> _slots;
         private readonly Action                 _preferencesChanged;
         private readonly GameObject             _root;
-        private readonly List<Row>              _rows = new();
 
         private LabeledSlider _sensitivity;
         private OptionCycler  _invert;
         private LabeledSlider _speed;
         private LabeledSlider _smoothing;
         private LabeledSlider _labelSize;
-        private GameObject      _overlay;
-        private TextMeshProUGUI _prompt;
-        private TextMeshProUGUI _message;
 
         public SpectatorSettingsPanel(RectTransform canvas, SpectatorInputSettings settings, SpectatorInput input,
                                       SpectatorPreferences preferences, Action preferencesChanged)
@@ -56,8 +36,7 @@ namespace CGD.DevTools
             _settings           = settings;
             _preferences        = preferences;
             _preferencesChanged = preferencesChanged;
-            _rebinder           = new BindingRebinder<SpectatorAction>(settings, input.Get, input.Rebuild);
-            _rebinder.Changed  += RefreshRows;
+            _slots              = new BindingListView<SpectatorAction>(settings, input.Get, input.Rebuild, omitDevice: true);
 
             // Dims the view and catches clicks, so nothing behind the window is picked.
             Image backdrop = UIFactory.MakeImage("Spectator Settings", canvas);
@@ -71,12 +50,12 @@ namespace CGD.DevTools
             BuildView(rect);
             BuildControls(rect);
             BuildButtons(rect);
-            BuildOverlay(rect);
+            _slots.BuildOverlay(rect, new Vector2(460f, 130f));
             _root.SetActive(false);
         }
 
         public bool IsOpen      => _root.activeSelf;
-        public bool IsRebinding => _rebinder.IsListening;
+        public bool IsRebinding => _slots.IsListening;
 
         public void Toggle()
         {
@@ -87,14 +66,14 @@ namespace CGD.DevTools
         public void Open()
         {
             RefreshValues();
-            RefreshRows();
+            _slots.Refresh();
             _root.SetActive(true);
         }
 
         public void Close()
         {
             if (!IsOpen) return;
-            _rebinder.Cancel();
+            _slots.Cancel();
             _root.SetActive(false);
             SpectatorSave.SavePreferences(_preferences);
         }
@@ -102,13 +81,7 @@ namespace CGD.DevTools
         public void Tick(float unscaledDeltaTime)
         {
             if (!IsOpen) return;
-            _rebinder.Tick(unscaledDeltaTime);
-
-            bool message = _rebinder.HasMessage;
-            _overlay.SetActive(_rebinder.IsListening || message);
-            _prompt.gameObject.SetActive(_rebinder.IsListening);
-            _message.gameObject.SetActive(message);
-            if (message) _message.text = _rebinder.Message;
+            _slots.Tick(unscaledDeltaTime);
         }
 
         // --- Building -----------------------------------------------------------------
@@ -146,7 +119,8 @@ namespace CGD.DevTools
             Column(window, "Secondary", ControlX + 225f, Top - 22f);
 
             int count = _settings.Bindings.Count;
-            RectTransform content = ScrollView(window, new Vector2(20f, Top - 44f), new Vector2(WindowWidth - 40f, 300f), count * RowHeight);
+            RectTransform content = UIFactory.MakeScrollList("Controls Scroll", window, new Vector2(20f, Top - 44f),
+                new Vector2(WindowWidth - 40f, 300f), WindowWidth - 60f, count * RowHeight, scrollSensitivity: 20f);
             for (int i = 0; i < count; i++) BuildRow(content, _settings.Bindings[i].Action, -i * RowHeight);
         }
 
@@ -155,27 +129,14 @@ namespace CGD.DevTools
             TextMeshProUGUI label = UIFactory.MakeLabel("Action " + action, content, SpectatorActionLabels.Of(action), 13f, TextAlignmentOptions.MidlineLeft);
             UIFactory.Place(label.rectTransform, new Vector2(0f, y), new Vector2(LabelWidth, 24f));
 
-            var row = new Row { Action = action };
-            bool fixedRow = SpectatorInputSettings.IsFixed(action);
-            row.PrimarySlot   = Slot(content, action, true,  new Vector2(ControlX - 20f, y), fixedRow, out row.Primary);
-            row.SecondarySlot = Slot(content, action, false, new Vector2(ControlX + 205f, y), fixedRow, out row.Secondary);
-            _rows.Add(row);
-        }
-
-        private Image Slot(RectTransform content, SpectatorAction action, bool primary, Vector2 position, bool fixedRow, out TextMeshProUGUI label)
-        {
-            Button button = UIFactory.MakeButton((primary ? "Primary " : "Secondary ") + action, content, "", out label);
-            label.fontSize = 13f;
-            UIFactory.Place(button.GetComponent<RectTransform>(), position, new Vector2(215f, 24f));
-            button.interactable = !fixedRow;
-            if (!fixedRow) button.onClick.AddListener(() => _rebinder.StartListening(action, primary));
-            return (Image)button.targetGraphic;
+            _slots.AddSlot(content, action, true,  new Vector2(ControlX - 20f, y),  new Vector2(215f, 24f)).fontSize = 13f;
+            _slots.AddSlot(content, action, false, new Vector2(ControlX + 205f, y), new Vector2(215f, 24f)).fontSize = 13f;
         }
 
         private void BuildButtons(RectTransform window)
         {
             float y = -WindowHeight + 52f;
-            AddButton(window, "Reset controls", new Vector2(20f, y), () => _rebinder.ResetToDefaults());
+            AddButton(window, "Reset controls", new Vector2(20f, y), () => _slots.ResetToDefaults());
             AddButton(window, "Reset view settings", new Vector2(220f, y), () =>
             {
                 _preferences.ResetView(_settings);
@@ -183,30 +144,6 @@ namespace CGD.DevTools
                 Changed();
             });
             AddButton(window, "Close   (Esc)", new Vector2(WindowWidth - 200f, y), Close);
-        }
-
-        private void BuildOverlay(RectTransform window)
-        {
-            Image overlay = UIFactory.MakeImage("Rebind Overlay", window);
-            overlay.color = new Color(0f, 0f, 0f, 0.8f);
-            overlay.raycastTarget = true;   // no clicks on the list while it listens
-            UIFactory.Stretch(overlay.rectTransform);
-            _overlay = overlay.gameObject;
-
-            Image card = UIFactory.MakeImage("Card", overlay.rectTransform);
-            card.color = new Color(0.1f, 0.1f, 0.15f, 1f);
-            card.rectTransform.anchorMin = card.rectTransform.anchorMax = card.rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            card.rectTransform.sizeDelta = new Vector2(460f, 130f);
-
-            _prompt = UIFactory.MakeLabel("Prompt", card.rectTransform,
-                "Press any key, mouse or gamepad button\n<size=13><color=#9AA0B0>Tap Escape to cancel  ·  Hold Escape to clear the slot</color></size>",
-                17f, TextAlignmentOptions.Center);
-            UIFactory.Stretch(_prompt.rectTransform);
-
-            _message = UIFactory.MakeLabel("Message", card.rectTransform, "", 15f, TextAlignmentOptions.Center);
-            _message.color = SharedTextColor;
-            UIFactory.Stretch(_message.rectTransform);
-            _overlay.SetActive(false);
         }
 
         // --- Refreshing ---------------------------------------------------------------
@@ -218,25 +155,6 @@ namespace CGD.DevTools
             _speed.SetValueWithoutNotify(_preferences.MoveSpeed);
             _smoothing.SetValueWithoutNotify(_preferences.Smoothing);
             _labelSize.SetValueWithoutNotify(_preferences.LabelScale);
-        }
-
-        private void RefreshRows()
-        {
-            foreach (Row row in _rows)
-            {
-                if (!_settings.TryGet(row.Action, out SpectatorBinding binding)) continue;
-                Refresh(row.Primary, row.PrimarySlot, row.Action, true, binding.PrimaryPath);
-                Refresh(row.Secondary, row.SecondarySlot, row.Action, false, binding.SecondaryPath);
-            }
-        }
-
-        private void Refresh(TextMeshProUGUI label, Image slot, SpectatorAction action, bool primary, string path)
-        {
-            bool listening = _rebinder.IsListeningTo(action, primary);
-            bool shared    = !listening && _rebinder.IsShared(action, primary, path);
-            label.text  = listening ? "▪▪▪" : BindingRebinder<SpectatorAction>.Label(path, omitDevice: true);
-            label.color = shared ? SharedTextColor : Color.white;
-            slot.color  = shared ? SlotSharedColor : SlotColor;
         }
 
         private void Changed() => _preferencesChanged?.Invoke();
@@ -270,33 +188,6 @@ namespace CGD.DevTools
             Button button = UIFactory.MakeButton(label, window, label, out _);
             UIFactory.Place(button.GetComponent<RectTransform>(), position, new Vector2(180f, 32f));
             button.onClick.AddListener(clicked);
-        }
-
-
-        private static RectTransform ScrollView(RectTransform parent, Vector2 position, Vector2 size, float contentHeight)
-        {
-            var view = new GameObject("Controls Scroll", typeof(RectTransform), typeof(Image), typeof(Mask), typeof(ScrollRect));
-            view.transform.SetParent(parent, false);
-            var viewRect = (RectTransform)view.transform;
-            UIFactory.Place(viewRect, position, size);
-            view.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.03f);
-            view.GetComponent<Mask>().showMaskGraphic = false;
-
-            var content = new GameObject("Content", typeof(RectTransform));
-            content.transform.SetParent(viewRect, false);
-            var contentRect = (RectTransform)content.transform;
-            contentRect.anchorMin = contentRect.anchorMax = contentRect.pivot = new Vector2(0f, 1f);
-            contentRect.anchoredPosition = Vector2.zero;
-            contentRect.sizeDelta = new Vector2(size.x - 20f, contentHeight);
-
-            var scroll = view.GetComponent<ScrollRect>();
-            scroll.content      = contentRect;
-            scroll.viewport     = viewRect;
-            scroll.horizontal   = false;
-            scroll.vertical     = true;
-            scroll.movementType = ScrollRect.MovementType.Clamped;
-            scroll.scrollSensitivity = 20f;
-            return contentRect;
         }
     }
 }

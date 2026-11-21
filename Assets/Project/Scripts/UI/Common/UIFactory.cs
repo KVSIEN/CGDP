@@ -40,6 +40,35 @@ namespace CGD.UI
             return label;
         }
 
+        // A vertically scrolling list placed like Place (top-left anchored); returns the content
+        // to add rows to, `contentWidth` × `contentHeight`, top-left anchored too.
+        public static RectTransform MakeScrollList(string name, RectTransform parent, Vector2 position, Vector2 size,
+                                                   float contentWidth, float contentHeight, float scrollSensitivity = 1f)
+        {
+            var view = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Mask), typeof(ScrollRect));
+            view.transform.SetParent(parent, false);
+            var viewRect = (RectTransform)view.transform;
+            Place(viewRect, position, size);
+            view.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.03f);
+            view.GetComponent<Mask>().showMaskGraphic = false;
+
+            var content = new GameObject("Content", typeof(RectTransform));
+            content.transform.SetParent(viewRect, false);
+            var contentRect = (RectTransform)content.transform;
+            contentRect.anchorMin = contentRect.anchorMax = contentRect.pivot = new Vector2(0f, 1f);
+            contentRect.anchoredPosition = Vector2.zero;
+            contentRect.sizeDelta = new Vector2(contentWidth, contentHeight);
+
+            var scroll = view.GetComponent<ScrollRect>();
+            scroll.content           = contentRect;
+            scroll.viewport          = viewRect;
+            scroll.horizontal        = false;
+            scroll.vertical          = true;
+            scroll.movementType      = ScrollRect.MovementType.Clamped;
+            scroll.scrollSensitivity = scrollSensitivity;
+            return contentRect;
+        }
+
         // Stretched to fill its parent — map layers, render-texture views.
         public static RawImage MakeRawImage(string name, RectTransform parent, int layer = -1)
         {

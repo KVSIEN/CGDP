@@ -81,25 +81,13 @@ namespace CGD.Enemies
         private float   _lastAttackedAt = float.NegativeInfinity;
         private readonly HashSet<EnemyAI> _bodiesSeen = new();
 
-        // The last ally it saw or heard fall, and its killer, until it avenges it (Avenge Ally).
-        private HealthManager _fallKiller;
-        private Vector3       _fallSpot;
-        private float         _fellAt = float.NegativeInfinity;
-        // Whom it has sworn to get, and until when.
-        private HealthManager _vendetta;
-        private float         _vendettaUntil = float.NegativeInfinity;
+        // Its summoner's orders, a roar's reveals, a fallen ally's killer and its vendetta.
+        private readonly HostileDirectives _directives = new();
         // It tells its kin where its target is, as when it first engaged (a callout, by its social style).
         public void ShareSighting()
         {
             if (IsSensing) _callouts.Spotted(Target.transform.position);
         }
-
-        // Whom its summoner sent it after, and until when (minions called up mid-fight).
-        private HealthManager _ordered;
-        private float         _orderedUntil = float.NegativeInfinity;
-        // Every hostile a roar showed it, and until when: it knows where each is, however hidden.
-        private readonly List<HealthManager> _revealed = new();
-        private float _revealedUntil = float.NegativeInfinity;
 
         // What a look at one candidate turned up.
         private struct Stimulus
@@ -272,14 +260,7 @@ namespace CGD.Enemies
             _weighed.Clear();
             _lastAttacker   = null;
             _lastAttackedAt = float.NegativeInfinity;
-            _fallKiller     = null;
-            _fellAt         = float.NegativeInfinity;
-            _vendetta       = null;
-            _vendettaUntil  = float.NegativeInfinity;
-            _ordered        = null;
-            _orderedUntil   = float.NegativeInfinity;
-            _revealed.Clear();
-            _revealedUntil  = float.NegativeInfinity;
+            _directives.Clear();
         }
 
         // --- Orders from its summoner ------------------------------------------------
@@ -291,13 +272,12 @@ namespace CGD.Enemies
         {
             if (IsGone(target) || seconds <= 0f) return;
 
-            _ordered      = target;
-            _orderedUntil = _clock + seconds;
+            _directives.Order(target, _clock + seconds);
             FollowOrders(target);
             UpdateLevel();
         }
 
-        private HealthManager Ordered => (_clock < _orderedUntil && !IsGone(_ordered) ? _ordered : null) ?? RevealedFocus();
+        private HealthManager Ordered => _directives.Ordered(_clock, Target, _self.position);
 
         // --- Revealed hostiles (Primal Roar) ------------------------------------------
 
@@ -306,45 +286,26 @@ namespace CGD.Enemies
         // it was already on). Returns how many it now knows of.
         public int RevealHostiles(float radius, float seconds)
         {
-            _revealed.Clear();
+            List<HealthManager> revealed = _directives.Revealed;
+            revealed.Clear();
             if (seconds <= 0f) return 0;
 
-            TargetQuery.Sphere(_self.position, radius, _hostiles, _revealed);
-            for (int i = _revealed.Count - 1; i >= 0; i--)
+            TargetQuery.Sphere(_self.position, radius, _hostiles, revealed);
+            for (int i = revealed.Count - 1; i >= 0; i--)
             {
-                HealthManager hostile = _revealed[i];
+                HealthManager hostile = revealed[i];
                 if (IsGone(hostile) || !_owner.IsWithinHome(hostile.transform.position, 0f) || !WantsToFight(hostile))
-                    _revealed.RemoveAt(i);
+                    revealed.RemoveAt(i);
             }
-            if (_revealed.Count == 0) return 0;
+            if (revealed.Count == 0) return 0;
 
-            _revealedUntil = _clock + seconds;
-            HealthManager focus = RevealedFocus();
+            _directives.Reveal(_clock + seconds);
+            HealthManager focus = _directives.RevealedFocus(_clock, Target, _self.position);
             if (focus == null) return 0;
 
             FollowOrders(focus);
             UpdateLevel();
-            return _revealed.Count;
-        }
-
-        // Its current target if the roar showed it and it still stands, otherwise the nearest of those shown.
-        private HealthManager RevealedFocus()
-        {
-            if (_clock >= _revealedUntil) return null;
-
-            HealthManager nearest = null;
-            float nearestSqr = float.MaxValue;
-            foreach (HealthManager hostile in _revealed)
-            {
-                if (IsGone(hostile)) continue;
-                if (hostile == Target) return hostile;
-
-                float sqr = (hostile.transform.position - _self.position).sqrMagnitude;
-                if (sqr >= nearestSqr) continue;
-                nearest = hostile;
-                nearestSqr = sqr;
-            }
-            return nearest;
+            return revealed.Count;
         }
 
         private bool WantsToFight(HealthManager hostile) =>
@@ -374,29 +335,24 @@ namespace CGD.Enemies
         // it hasn't avenged yet.
         public bool HasUnavengedFall(float within, float radius, out HealthManager killer)
         {
-            killer = _fallKiller;
-            if (IsGone(killer) || _clock - _fellAt > within) return false;
-            return (_fallSpot - _self.position).sqrMagnitude <= radius * radius;
+            return _directives.HasUnavengedFall(_clock, within, _self.position, radius, out killer);
         }
 
         // Swears to get the killer of the ally it last saw fall: makes it its target for `seconds`,
         // strongly preferred over anyone else in its senses, and heads for where the ally fell.
         public void Avenge(float seconds)
         {
-            if (IsGone(_fallKiller)) return;
+            if (!_directives.TrySwear(_clock + seconds, out HealthManager killer, out Vector3 fallSpot)) return;
 
-            _vendetta      = _fallKiller;
-            _vendettaUntil = _clock + seconds;
-            _fallKiller    = null;
-            Target   = _vendetta;
+            Target   = killer;
             _hunting = true;
             _meter.RaiseToSuspicious(0.2f);
-            Lead(_fallSpot);
+            Lead(fallSpot);
             UpdateLevel();
         }
 
         // Whom it is out to get right now (null when nobody).
-        public HealthManager Vendetta => _clock < _vendettaUntil && !IsGone(_vendetta) ? _vendetta : null;
+        public HealthManager Vendetta => _directives.Vendetta(_clock);
 
         // Calms down completely and forgets its target.
         public void LoseTarget()
@@ -726,9 +682,7 @@ namespace CGD.Enemies
             _owner.Ground.OnAllyFell(fallen.Position, Time.time);
             if (!IsGone(fallen.Killer) && fallen.Killer.Team != _team)
             {
-                _fallKiller = fallen.Killer;
-                _fallSpot   = fallen.Position;
-                _fellAt     = _clock;
+                _directives.SawFall(fallen.Killer, fallen.Position, _clock);
             }
             _owner.Morale.OnAllyDown(fallen.Body);
             if (_owner.Doctrine.Escalation.ReportsFallenKin) _callouts.ReportBody(fallen.Position);

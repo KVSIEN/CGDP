@@ -39,7 +39,7 @@ Assets/
       Audio/                audio pool, sound banks, surface lookup; mixer: AudioMixerController, AudioMixerSettings, MixState (+ request), GameplayMixStates
       CameraEffects/        shake, kicks, FOV punches, lag, view blends (CameraEffectsController), CameraImpulses
       Combat/               Damage/ (incl. AreaHits — who a blast or burst reaches, once each, cover-aware), Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/ (action timelines; ShapeHits — the cast, fan, sphere and box hit shapes melee and timelines strike with), Hazards/ (HazardZone, DamageZone + ZoneSettings: the one lingering damage zone), Reflect/ (Reflector, ReflectProfile), Projectile, Stunnable, Noise
-      Core/                 shared utilities (cooldowns, ranges, RendererTint — colouring a renderer without a material copy, Pooling/ — PrefabPool, IPoolable,
+      Core/                 shared utilities (cooldowns, ranges, RendererTint — colouring a renderer without a material copy, EffectParts — trails and mesh pieces effects build in code, Pooling/ — PrefabPool, IPoolable,
                             Random/ — Seed, RandomStream, SeedVariants; StateMachine/ — StateMachine<T>, IState)
       Crafting/             RecipeDefinition, Crafter (rules), CraftingStation
       DevTools/             dev console: DevConsole (commands), DevCommands (cheats), DevCatalog;
@@ -73,7 +73,7 @@ Assets/
                             Combat/ (EnemyMelee, EnemyRangedCombat), Navigation/ (EnemyRouting: hazard-aware paths; EnemyMotion: speed, facing, knockback; EnemyPost: guarding, return point; EnemyVault: hopping low cover),
                             Abilities/ (EnemyAbilities: casting Ability assets; GrenadeThrower, ThrowArc; ambush, minions, phase shift, survey beacon),
                             Perception/ (EnemyPerception: awareness, targets, memory; EnemySenses: sight and hearing checks; AwarenessMeter, PerceptionProfile;
-                            CalloutSender: what it tells its kin; HostileFocus: who is busy fighting someone else),
+                            CalloutSender: what it tells its kin; HostileFocus: who is busy fighting someone else; HostileDirectives: whom it was pointed at — summoner orders, roar reveals, vendettas),
                             Belief/ (EnemyBelief, BeliefModel: where an unseen target likely went),
                             Search/ (OccupancySearch, OccupancyMap, OccupancyGrid: where a lost target could have got to, shared by a squad),
                             Ground/ (EnemyGround, PlaceMemory: hidden spots, vantages and corridors it has learned by walking and looking),
@@ -141,7 +141,7 @@ Assets/
       Telemetry/            RunStats (what one run did), LifetimeStats + TelemetryStore (totals on disk), RunStatsRecorder (feeds them from combat and quest events)
       Targeting/            TargetQuery, TargetFilter and TargetSelector assets (Selectors/)
       Timing/               GameClock (fixed ticks, pause, time scale, scheduling) and GameTime
-      UI/                   Common/ (UIFactory — incl. MakeLabel; CanvasGroupExtensions.SetVisible), HUD/ (HUDManager, HUDElement; Combat/ — crosshair, hit and damage feedback, status, stealth;
+      UI/                   Common/ (UIFactory — incl. MakeLabel, MakeScrollList; CanvasGroupExtensions.SetVisible), HUD/ (HUDManager, HUDElement; Combat/ — crosshair, hit and damage feedback, status, stealth;
                             Loadout/ — weapons, abilities, items, inventory; Player/ — meters, stats, dodge, speed, interact prompt;
                             Map/ — minimap, world map; Objectives/ — objectives, quests, notifications; Panels/ — modal panels), Menus/, World/ (popups, enemy bars)
       Weapons/              WeaponItem (what a loadout slot holds), WeaponCategory (firearm or melee, rolls WeaponItems), IOffhand (what an offhand item implements), Ranged/, FireBehaviors/, Generation/, Melee/ (controller, guard, melee categories and generator), Shields/, Throwables/

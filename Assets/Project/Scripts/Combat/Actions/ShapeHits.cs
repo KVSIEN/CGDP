@@ -4,7 +4,7 @@ using UnityEngine;
 namespace CGD.Combat
 {
     // The hit shapes melee swings and action timelines strike with — a cast, a fan of casts, a
-    // sphere, a box — and what each touched. Every query skips the attacker's own body, keeps
+    // sphere, a box, a blade capsule — and what each touched. Every query skips the attacker's own body, keeps
     // only damageables, and lists each target once between Clear calls (and never one already
     // in `alreadyHit`, which the query adds it to, so a swing hits a target once across ticks).
     // Damage is the caller's: a point hit through Hitbox.ApplyHit, or an area hit.
@@ -13,6 +13,10 @@ namespace CGD.Combat
     {
         private readonly RaycastHit[] _casts;
         private readonly Collider[]   _overlaps;
+        // Per overlap, for the capsule's pick of each target's best hitbox.
+        private readonly IDamageable[] _targets;
+        private readonly Vector3[]     _points;
+        private readonly float[]       _depths;
         private readonly List<ShapeHit> _hits = new();
         private readonly HashSet<IDamageable> _listed = new();
 
@@ -20,6 +24,9 @@ namespace CGD.Combat
         {
             _casts    = new RaycastHit[capacity];
             _overlaps = new Collider[capacity];
+            _targets  = new IDamageable[capacity];
+            _points   = new Vector3[capacity];
+            _depths   = new float[capacity];
         }
 
         public IReadOnlyList<ShapeHit> Hits => _hits;
@@ -87,6 +94,48 @@ namespace CGD.Combat
         {
             int count = Physics.OverlapBoxNonAlloc(center, halfExtents, _overlaps, orientation, mask, QueryTriggerInteraction.Ignore);
             AddOverlaps(count, pointFrom, source, alreadyHit);
+        }
+
+        // A blade from `near` to `far`. When several of a target's hitboxes overlap it, the one the
+        // blade's axis runs deepest into is the contact, so the region struck doesn't depend on
+        // physics query order. Normals point from the contact back to the blade's axis.
+        public void Capsule(Vector3 near, Vector3 far, float radius, LayerMask mask,
+                            Transform source, HashSet<IDamageable> alreadyHit = null)
+        {
+            int count = Physics.OverlapCapsuleNonAlloc(near, far, radius, _overlaps, mask, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < count; i++)
+            {
+                Collider collider = _overlaps[i];
+                _targets[i] = source != null && collider.transform.root == source ? null : Hitbox.FindDamageable(collider);
+                if (_targets[i] == null) continue;
+
+                Vector3 onAxis = ClosestOnSegment(near, far, collider.bounds.center);
+                _points[i] = collider.ClosestPoint(onAxis);
+                _depths[i] = (_points[i] - onAxis).sqrMagnitude;
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                IDamageable target = _targets[i];
+                if (target == null || _listed.Contains(target) || (alreadyHit != null && alreadyHit.Contains(target))) continue;
+
+                int best = i;
+                for (int j = i + 1; j < count; j++)
+                    if (_targets[j] == target && _depths[j] < _depths[best]) best = j;
+
+                _listed.Add(target);
+                alreadyHit?.Add(target);
+                Vector3 point = _points[best];
+                _hits.Add(new ShapeHit(_overlaps[best], target, point, ClosestOnSegment(near, far, point) - point));
+            }
+        }
+
+        public static Vector3 ClosestOnSegment(Vector3 a, Vector3 b, Vector3 p)
+        {
+            Vector3 ab = b - a;
+            float lengthSqr = ab.sqrMagnitude;
+            if (lengthSqr < 0.0001f) return a;
+            return a + ab * Mathf.Clamp01(Vector3.Dot(p - a, ab) / lengthSqr);
         }
 
         private void AddOverlaps(int count, Vector3 pointFrom, Transform source, HashSet<IDamageable> alreadyHit)

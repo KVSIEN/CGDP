@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Rendering;
 using CGD.Combat;
 using CGD.Core;
 using CGD.Weapons;
@@ -123,20 +122,7 @@ namespace CGD.Enemies
         // At the arm's tip, so the trail traces the thrust.
         private TrailRenderer CreateClaw()
         {
-            var tip = new GameObject("Claw Trail");
-            tip.transform.SetParent(_arm, false);
-            tip.transform.localPosition = Vector3.forward * 0.5f;
-
-            var trail = tip.AddComponent<TrailRenderer>();
-            trail.sharedMaterial    = _material;
-            trail.time              = 0.15f;
-            trail.widthMultiplier   = 0.3f;
-            trail.widthCurve        = AnimationCurve.Linear(0f, 1f, 1f, 0f);
-            trail.minVertexDistance = 0.03f;
-            trail.shadowCastingMode = ShadowCastingMode.Off;
-            trail.receiveShadows    = false;
-            trail.emitting          = false;
-
+            TrailRenderer trail = EffectParts.Trail("Claw Trail", _arm, Vector3.forward * 0.5f, _material, 0.15f, 0.3f, 0.03f);
             trail.SetTint(_strikeColor);
             return trail;
         }
