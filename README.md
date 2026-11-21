@@ -39,7 +39,7 @@ Assets/
       Audio/                audio pool, sound banks, surface lookup; mixer: AudioMixerController, AudioMixerSettings, MixState (+ request), GameplayMixStates
       CameraEffects/        shake, kicks, FOV punches, lag, view blends (CameraEffectsController), CameraImpulses
       Combat/               Damage/ (incl. AreaHits — who a blast or burst reaches, once each; spares only what scenery wholly hides), Health/ (HealthManager, SimpleHealth — no-shield health for props, deployables and objectives — Hitbox, Destructible), StatusEffects/, Actions/ (action timelines; ShapeHits — the cast, fan, sphere and box hit shapes melee and timelines strike with), Hazards/ (HazardZone, DamageZone + ZoneSettings: the one lingering damage zone), Reflect/ (Reflector, ReflectProfile), Projectile, Stunnable, Noise
-      Core/                 shared utilities (cooldowns, ranges, RendererTint — colouring a renderer without a material copy, EffectParts — trails and mesh pieces effects build in code, Pooling/ — PrefabPool, IPoolable,
+      Core/                 shared utilities (cooldowns, ranges, WeightedChoice — the unseeded one-pass weighted pick, RendererTint — colouring a renderer without a material copy, EffectParts — trails and mesh pieces effects build in code, Pooling/ — PrefabPool, IPoolable,
                             Random/ — Seed, RandomStream, SeedVariants; StateMachine/ — StateMachine<T>, IState)
       Crafting/             RecipeDefinition, Crafter (rules), CraftingStation
       DevTools/             dev console: DevConsole (commands), DevCommands (cheats), DevCatalog;
