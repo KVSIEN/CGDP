@@ -116,8 +116,7 @@ namespace CGD.Weapons
             line.loop              = loop;
             line.widthMultiplier   = _lineWidth;
             line.sharedMaterial    = _material;
-            line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            line.receiveShadows    = false;
+            EffectParts.NoShadows(line);
             if (loop) line.positionCount = RingSegments;
             return line;
         }

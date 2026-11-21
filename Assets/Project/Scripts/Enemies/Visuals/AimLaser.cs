@@ -38,8 +38,7 @@ namespace CGD.Enemies
             _line.useWorldSpace     = true;
             _line.startWidth        = _width;
             _line.endWidth          = _width;
-            _line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            _line.receiveShadows    = false;
+            EffectParts.NoShadows(_line);
             _line.enabled           = false;
         }
 

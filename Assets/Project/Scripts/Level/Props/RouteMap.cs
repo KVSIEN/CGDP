@@ -12,8 +12,6 @@ namespace CGD.Level
     {
         public const int Unreached = int.MaxValue;
 
-        private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-
         private readonly RoomStructure _structure;
         private readonly RectInt _bounds;
         private readonly HashSet<Vector2Int> _marked = new();
@@ -76,7 +74,7 @@ namespace CGD.Level
             {
                 Vector2Int tile = open.Dequeue();
                 int next = _distance[IndexOf(tile)] + 1;
-                foreach (Vector2Int side in Sides)
+                foreach (Vector2Int side in GridSides.All)
                 {
                     Vector2Int neighbour = tile + side;
                     if (!_structure.Contains(neighbour) || _distance[IndexOf(neighbour)] != Unreached) continue;

@@ -15,8 +15,6 @@ namespace CGD.Level
         private const float TurnCost = 1.5f;
         private const int   Headings = 5;   // four directions, plus "no direction yet" for the first step
 
-        private static readonly Vector2Int[] Directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-
         private readonly RectInt _bounds;
         private readonly float[] _cost;
         private readonly int[]   _cameFrom;
@@ -55,9 +53,9 @@ namespace CGD.Level
                 if (tile == goal) return Reconstruct(state);
 
                 float here = _cost[state];
-                for (int d = 0; d < Directions.Length; d++)
+                for (int d = 0; d < GridSides.All.Length; d++)
                 {
-                    Vector2Int next = tile + Directions[d];
+                    Vector2Int next = tile + GridSides.All[d];
                     if (!_bounds.Contains(next)) continue;
                     if (next != goal && !isPassable(next)) continue;
 

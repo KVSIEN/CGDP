@@ -6,7 +6,6 @@ namespace CGD.Level
     // (0 = +Z, the tile's +y; each step turns toward +X).
     internal readonly struct PropCandidate
     {
-        private static readonly Vector2Int[] Cardinals = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
 
         public PropCandidate(RectInt rect, int rotation)
         {
@@ -16,6 +15,6 @@ namespace CGD.Level
 
         public RectInt    Rect     { get; }
         public int        Rotation { get; }
-        public Vector2Int Forward  => Cardinals[Rotation];
+        public Vector2Int Forward  => GridSides.All[Rotation];
     }
 }

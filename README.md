@@ -108,7 +108,7 @@ Assets/
       Level/                map graph → level: LevelBuilder (scene entry point), LevelBuildSettings, LevelExit,
                             RoomLabel (room names), RoomArrivalAnnouncer;
                             Layout/ — the level as tiles: LevelLayoutBuilder, RoomPlacer (cells, multi-cell rooms), CorridorRouter,
-                            DirectRoomAligner, LevelLayout/LevelRoom/LevelDoorway, LevelWallPlan, LevelBlueprint (floor-plan drawing);
+                            DirectRoomAligner, LevelLayout/LevelRoom/LevelDoorway, LevelWallPlan, LevelBlueprint (floor-plan drawing), GridSides (the four tile neighbours, in generation order);
                             Geometry/ — tiles → meshes: LevelGeometryBuilder, LevelWallBuilder, BoxMeshBuilder, DoorwaySignBuilder,
                             RuntimeNavMesh, GeneratedAssets; Population/ — RoomPopulator, RoomContentRule, RoomRoster, EnemyTierOdds, Posts/ (RoomPostMap, RoomEnemyPlanner: where enemies start, who guards and who patrols);
                             Shapes/ — RoomShape assets, RoomShapeRasterizer, RoomFootprint (tiles + door sockets)

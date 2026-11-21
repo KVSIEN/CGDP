@@ -70,7 +70,7 @@ namespace CGD.Director
         {
             if (_settings.Enemies.Length == 0) return;
 
-            _alive.RemoveAll(IsGone);
+            _alive.RemoveAll(EnemyPerception.IsGone);
             int size  = Mathf.Max(1, Mathf.RoundToInt(_settings.GroupSize.Evaluate(_random) * _director.Pressure));
             int count = Mathf.Min(size, _settings.MaxAlive - _alive.Count);
             if (count <= 0) return;
@@ -101,8 +101,5 @@ namespace CGD.Director
             if (!string.IsNullOrEmpty(_settings.ArrivalMessage))
                 FeedbackBus.Notify(_settings.ArrivalMessage, NotificationStyle.Warning);
         }
-
-        // Pooled enemies are released (inactive) some time after they die.
-        private static bool IsGone(HealthManager enemy) => enemy == null || enemy.IsDead || !enemy.gameObject.activeInHierarchy;
     }
 }

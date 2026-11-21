@@ -19,8 +19,6 @@ namespace CGD.Level
         // Spots looked at for each pavilion, best first by its placement, before giving up.
         private const int SpotsTried = 16;
 
-        private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-
         [Tooltip("What a pavilion can be, one picked by weight for each")]
         [SerializeField] private PavilionKind[] _kinds = Array.Empty<PavilionKind>();
         [Tooltip("How many a room big enough gets")]
@@ -95,7 +93,7 @@ namespace CGD.Level
             foreach (Vector2Int tile in ring.allPositionsWithin)
             {
                 if (!structure.Contains(tile) || structure.Has(tile, RoomTileTags.Structure)) return false;
-                foreach (Vector2Int side in Sides)
+                foreach (Vector2Int side in GridSides.All)
                     if (ring.Contains(tile + side) && structure.IsPartitioned(tile, tile + side)) return false;
             }
 
@@ -115,7 +113,7 @@ namespace CGD.Level
             float height = CoverHeights.Readable(_wallHeight);
             var walls = new List<PartitionEdge>();
             foreach (Vector2Int tile in rect.allPositionsWithin)
-                foreach (Vector2Int side in Sides)
+                foreach (Vector2Int side in GridSides.All)
                 {
                     Vector2Int outside = tile + side;
                     if (rect.Contains(outside)) continue;
@@ -137,7 +135,7 @@ namespace CGD.Level
         private static bool TryDoor(RoomStructure structure, RectInt rect, out PartitionEdge door)
         {
             Vector2 toAnchor = structure.Footprint.Anchor - rect.center;
-            var sides = new List<Vector2Int>(Sides);
+            var sides = new List<Vector2Int>(GridSides.All);
             sides.Sort((a, b) => Vector2.Dot(b, toAnchor).CompareTo(Vector2.Dot(a, toAnchor)));
 
             foreach (Vector2Int side in sides)

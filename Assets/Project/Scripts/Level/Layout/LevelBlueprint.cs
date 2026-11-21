@@ -98,7 +98,7 @@ namespace CGD.Level
         {
             if (room.Structure == null) return;
             foreach (Vector2Int tile in room.Footprint.Tiles)
-                foreach (Vector2Int side in Sides)
+                foreach (Vector2Int side in GridSides.All)
                     if (room.Structure.IsPartitioned(tile, tile + side))
                         canvas.FillEdge(tile, side, Wall, thickness: 1);
         }
@@ -129,8 +129,6 @@ namespace CGD.Level
             }
             return min.x > max.x ? new RectInt(0, 0, 1, 1) : new RectInt(min, max - min + Vector2Int.one);
         }
-
-        private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
 
         private sealed class Canvas
         {

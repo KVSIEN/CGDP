@@ -23,13 +23,12 @@ namespace CGD.Level
         private const int Min = BuildingPlan.MinRoomTiles;
 
         // The sides a front door can be on: it faces this way.
-        public static readonly Vector2Int[] Fronts = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
 
         private readonly BuildingPlan _plan;
 
         public BuildingLayoutPlanner(BuildingPlan plan) => _plan = plan;
 
-        // `front`: the side of `lot` the front door is on (one of Fronts). Null when the lot is
+        // `front`: the side of `lot` the front door is on (one of GridSides.All). Null when the lot is
         // too small for the plan or the plan has no rooms to line the hall with.
         public BuildingBlueprint Plan(RectInt lot, Vector2Int front, RandomStream random)
         {

@@ -8,8 +8,6 @@ namespace CGD.Level
     // block of floor.
     public static class RoomFootprintValidator
     {
-        private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-
         public static bool IsValid(RoomFootprint footprint, int minWidth) =>
             footprint.Count > 0 && IsConnected(footprint) && IsWideEnough(footprint, minWidth);
 
@@ -24,7 +22,7 @@ namespace CGD.Level
             while (open.Count > 0)
             {
                 Vector2Int tile = open.Pop();
-                foreach (Vector2Int side in Sides)
+                foreach (Vector2Int side in GridSides.All)
                 {
                     Vector2Int next = tile + side;
                     if (footprint.Contains(next) && reached.Add(next)) open.Push(next);

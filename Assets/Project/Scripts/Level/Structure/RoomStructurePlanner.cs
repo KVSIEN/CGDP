@@ -14,8 +14,6 @@ namespace CGD.Level
     // A landmark room brings its own interior: its furniture tiles are marked instead.
     public class RoomStructurePlanner
     {
-        private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-
         // `factionRules`: the building style of the room's faction, applied only where the room's
         // function brings no structure of its own, so a restaurant keeps its kitchen wall.
         // `factionAdditions`: applied to every room the faction holds, after either.
@@ -137,7 +135,7 @@ namespace CGD.Level
                 Vector2Int tile = open.Dequeue();
                 Vector2Int heading = tile - cameFrom[tile];
                 if (heading != Vector2Int.zero) TryStep(tile, heading);
-                foreach (Vector2Int side in Sides) TryStep(tile, side);
+                foreach (Vector2Int side in GridSides.All) TryStep(tile, side);
 
                 void TryStep(Vector2Int current, Vector2Int dir)
                 {

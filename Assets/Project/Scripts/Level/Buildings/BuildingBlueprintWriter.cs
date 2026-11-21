@@ -34,7 +34,7 @@ namespace CGD.Level
                 Vector2Int tile = entry.Key;
                 if (!structure.Contains(tile)) continue;
 
-                foreach (Vector2Int side in BuildingLayoutPlanner.Fronts)
+                foreach (Vector2Int side in GridSides.All)
                 {
                     Vector2Int next = tile + side;
                     bool inside = owner.TryGetValue(next, out int nextOwner);

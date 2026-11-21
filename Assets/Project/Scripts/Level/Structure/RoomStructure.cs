@@ -18,8 +18,6 @@ namespace CGD.Level
         // What nothing new may be put on.
         private const RoomTileTags Taken = Solid | RoomTileTags.Access;
 
-        private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-
         private readonly List<StructurePillar> _pillars = new();
         private readonly List<PartitionEdge> _partitions = new();
         private readonly List<PartitionEdge> _openings = new();
@@ -221,7 +219,7 @@ namespace CGD.Level
             while (open.Count > 0)
             {
                 Vector2Int tile = open.Pop();
-                foreach (Vector2Int side in Sides)
+                foreach (Vector2Int side in GridSides.All)
                 {
                     Vector2Int next = tile + side;
                     if (!Contains(next)) continue;
@@ -404,7 +402,7 @@ namespace CGD.Level
                 {
                     Vector2Int tile = open.Pop();
                     if (assign) _zones[IndexOf(tile)] = zones;
-                    foreach (Vector2Int side in Sides)
+                    foreach (Vector2Int side in GridSides.All)
                     {
                         Vector2Int next = tile + side;
                         if (!Contains(next) || seen.Contains(next)) continue;

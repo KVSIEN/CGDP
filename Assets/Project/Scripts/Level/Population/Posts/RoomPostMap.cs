@@ -14,7 +14,6 @@ namespace CGD.Level
         public const int RouteSteps         = 1;
 
         private const RoomTileTags Solid = RoomTileTags.Structure | RoomTileTags.Prop;
-        private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
 
         private readonly RoomStructure _structure;
         private readonly SightlineMap _sight;
@@ -80,7 +79,7 @@ namespace CGD.Level
         // A pillar, a prop or an inner wall right next to the tile (the room's own walls don't count).
         private bool HasCoverBeside(Vector2Int tile)
         {
-            foreach (Vector2Int side in Sides)
+            foreach (Vector2Int side in GridSides.All)
             {
                 Vector2Int next = tile + side;
                 if (_structure.IsPartitioned(tile, next)) return true;

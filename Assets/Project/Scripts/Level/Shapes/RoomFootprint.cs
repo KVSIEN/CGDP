@@ -7,8 +7,6 @@ namespace CGD.Level
     // Immutable; built by RoomShapeRasterizer (or as a plain rectangle).
     public class RoomFootprint
     {
-        private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-
         private readonly HashSet<Vector2Int> _lookup;
         private readonly List<Vector2Int> _tiles;
         private readonly List<DoorSocket> _sockets = new();
@@ -126,7 +124,7 @@ namespace CGD.Level
             HashSet<Vector2Int> outside = OutsideTiles();
 
             foreach (Vector2Int tile in _tiles)
-                foreach (Vector2Int side in Sides)
+                foreach (Vector2Int side in GridSides.All)
                 {
                     Vector2Int front = tile + side;
                     if (!outside.Contains(front) || !outside.Contains(front + side)) continue;
@@ -160,7 +158,7 @@ namespace CGD.Level
             while (open.Count > 0)
             {
                 Vector2Int tile = open.Pop();
-                foreach (Vector2Int side in Sides)
+                foreach (Vector2Int side in GridSides.All)
                 {
                     Vector2Int next = tile + side;
                     if (!area.Contains(next) || _lookup.Contains(next) || !reached.Add(next)) continue;

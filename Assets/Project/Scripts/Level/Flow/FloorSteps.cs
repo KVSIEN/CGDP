@@ -10,8 +10,6 @@ namespace CGD.Level
     {
         public const int Unreached = int.MaxValue;
 
-        private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-
         private readonly RectInt _bounds;
         private readonly int[] _steps;
 
@@ -31,7 +29,7 @@ namespace CGD.Level
             {
                 Vector2Int tile = open.Dequeue();
                 int next = _steps[IndexOf(tile)] + 1;
-                foreach (Vector2Int side in Sides)
+                foreach (Vector2Int side in GridSides.All)
                 {
                     Vector2Int neighbour = tile + side;
                     if (!structure.Contains(neighbour) || _steps[IndexOf(neighbour)] != Unreached) continue;
@@ -70,7 +68,7 @@ namespace CGD.Level
 
         private bool TryStepBack(Vector2Int tile, RoomStructure structure, out Vector2Int previous)
         {
-            foreach (Vector2Int side in Sides)
+            foreach (Vector2Int side in GridSides.All)
             {
                 previous = tile + side;
                 if (At(previous) == At(tile) - 1 && !structure.IsPartitioned(tile, previous)) return true;

@@ -109,22 +109,10 @@ namespace CGD.Level
             MapNode boss  = _graph.FindFirst(MapNodeType.Boss);
             if (start == null) return;
 
-            var seen  = new HashSet<int> { start.Id };
-            var queue = new Queue<int>();
-            queue.Enqueue(start.Id);
-            while (queue.Count > 0)
-            {
-                int id = queue.Dequeue();
-                foreach (MapConnection connection in _graph.Connections)
-                {
-                    if (!connection.Connects(id) || connection.Type == ConnectionType.Secret) continue;
-                    int other = connection.Other(id);
-                    if ((boss != null && other == boss.Id) || !seen.Add(other)) continue;
-                    queue.Enqueue(other);
-                }
-            }
+            Dictionary<int, int> reachable = MapGraphSearch.Distances(_graph, start.Id,
+                c => c.Type != ConnectionType.Secret && (boss == null || !c.Connects(boss.Id)));
 
-            foreach (int id in seen)
+            foreach (int id in reachable.Keys)
                 if (_graph.TryGetNode(id, out MapNode node) && IsEligible(node.Type)) _candidates.Add(node);
             _candidates.Sort((a, b) => a.Id.CompareTo(b.Id)); // stable order, so a seed always plans the same
         }

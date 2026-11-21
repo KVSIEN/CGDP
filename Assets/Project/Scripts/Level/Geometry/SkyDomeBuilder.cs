@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Core;
 using Unity.AI.Navigation;
 
 namespace CGD.Level
@@ -55,8 +56,7 @@ namespace CGD.Level
             go.GetComponent<MeshFilter>().sharedMesh = mesh;
             var renderer = go.GetComponent<MeshRenderer>();
             renderer.sharedMaterial    = sky;
-            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            renderer.receiveShadows    = false;
+            EffectParts.NoShadows(renderer);
             go.AddComponent<NavMeshModifier>().ignoreFromBuild = true;
         }
 

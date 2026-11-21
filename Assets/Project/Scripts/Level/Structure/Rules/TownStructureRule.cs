@@ -84,7 +84,7 @@ namespace CGD.Level
             if (plan == null) return false;
 
             var planner = new BuildingLayoutPlanner(plan);
-            var fronts = new List<Vector2Int>(BuildingLayoutPlanner.Fronts);
+            var fronts = new List<Vector2Int>(GridSides.All);
             random.Shuffle(fronts);
             foreach (Vector2Int front in fronts)
             {
