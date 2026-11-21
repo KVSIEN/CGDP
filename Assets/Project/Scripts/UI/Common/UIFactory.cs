@@ -70,6 +70,24 @@ namespace CGD.UI
         }
 
         // Stretched to fill its parent — map layers, render-texture views.
+        // A world-space canvas under `parent`, `size` canvas units at `scale` metres per unit.
+        public static Canvas MakeWorldCanvas(string name, Transform parent, Vector2 size, Vector3 localPosition, float scale)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+
+            var canvas = go.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.WorldSpace;
+
+            // Placed only after switching to WorldSpace: a new Canvas starts in overlay mode,
+            // which drives (and overwrites) its RectTransform.
+            var rt = (RectTransform)canvas.transform;
+            rt.sizeDelta     = size;
+            rt.localPosition = localPosition;
+            rt.localScale    = Vector3.one * scale;
+            return canvas;
+        }
+
         public static RawImage MakeRawImage(string name, RectTransform parent, int layer = -1)
         {
             var go = new GameObject(name, typeof(RectTransform), typeof(RawImage));

@@ -177,17 +177,8 @@ namespace CGD.UI
 
         private void Build()
         {
-            var go = new GameObject("AwarenessCanvas");
-            go.transform.SetParent(transform, false);
-
-            _canvas = go.AddComponent<Canvas>();
-            _canvas.renderMode = RenderMode.WorldSpace;
-
-            // Placed only after switching to WorldSpace (see EnemyHealthBar).
+            _canvas = UIFactory.MakeWorldCanvas("AwarenessCanvas", transform, new Vector2(60f, 60f), _worldOffset, CanvasScale);
             var rt = (RectTransform)_canvas.transform;
-            rt.sizeDelta     = new Vector2(60f, 60f);
-            rt.localPosition = _worldOffset;
-            rt.localScale    = Vector3.one * CanvasScale;
 
             _mark = UIFactory.MakeText("Mark", rt);
             UIFactory.Stretch(_mark.rectTransform);

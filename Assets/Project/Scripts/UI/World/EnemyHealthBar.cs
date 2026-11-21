@@ -55,20 +55,10 @@ namespace CGD.UI
 
         private void BuildCanvas()
         {
-            var go = new GameObject("HealthBarCanvas");
-            go.transform.SetParent(transform, false);
-
-            _canvas = go.AddComponent<Canvas>();
-            _canvas.renderMode = RenderMode.WorldSpace;
-
-            // Placed only after switching to WorldSpace: a new Canvas starts in overlay
-            // mode, which drives (and overwrites) its RectTransform.
+            _canvas = UIFactory.MakeWorldCanvas("HealthBarCanvas", transform, new Vector2(200f, 20f), _worldOffset, BarScale);
             var rt = (RectTransform)_canvas.transform;
-            rt.sizeDelta     = new Vector2(200f, 20f);
-            rt.localPosition = _worldOffset;
-            rt.localScale    = Vector3.one * BarScale;
 
-            _group = go.AddComponent<CanvasGroup>();
+            _group = _canvas.gameObject.AddComponent<CanvasGroup>();
 
             _health = BuildFill(rt, _bgColor, _fillColor);
 
