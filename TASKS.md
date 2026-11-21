@@ -141,6 +141,17 @@ Next steps not started yet.
 - Room generation, next steps (starship rooms):
   - Interior lighting for the ceilings of ordinary rooms (town buildings are lit already); sun and sky ambience for the town and parks under their domes
 
+### Shared-system candidates
+Repeated code found in audits that could share one system but wasn't merged yet. Each entry says what stands in the way (see CLAUDE.md, Shared systems).
+- Seeded weighted index picks: `LootTable.Draw` and its tier pick, `MapFactionPainter.PickIndex`, `MapCategoryPainter`, `MapTypeAssigner`, `RoomEnemyPlanner` and `RandomStream.PickWeighted`. They consume random numbers differently (`Value * total` against `Range(0, total)`) and fall back differently when the roll runs past the end, so one helper must reproduce each exactly or every seed changes. Needs a same-seed map and loot comparison in Unity.
+- Unseeded AI weighted picks: `EnemyInterest`, `RoamBushes`, `EnemyIdleLife`, `EnemyBelief` and `WeightedRandomSelector`. Each filters candidates its own way, and a callback-based helper would allocate every pick; a small struct accumulator (Add weight, then Pick) would fit all five.
+- `EnemyPerception` (about 770 lines): the incoming noise, hit and callout handlers and body discovery (`NoticeFallen`, `DiscoverBody`) could move into their own classes, as `HostileDirectives` did. Needs the AI tested in Unity as it goes.
+- Spawning: the random-yaw, spawn and seed steps in `ReinforcementSpawner`, `EncounterSpawner` and `RoomPopulator`.
+- Enemy behaviour tree nodes: `FallBack`, `Flank` and `TakeCover` share their "move there, give up at a deadline" tick; `AdvanceFacing` and `CreepUnwatched` their target and offset setup; `AbilityReady` and `UseAbility` their slot resolution. A shared base node or helper on `EnemyAction` would hold each once.
+- HUD: the world-space canvas setup in `EnemyAwarenessIndicator` and `EnemyHealthBar`; the key-label refresh subscription in `InventoryHUD`, `OffhandHUD` and the other slot HUDs (`HUDElement` could own it).
+- Player components (`MeleeController`, `WeaponController`, `PlayerAbilities`, `PlayerItemSlots`, `ThrowableController`) each look up the same sibling components in Awake. A shared player context would remove that, but it is a design decision (how the components reach each other).
+- `MapLayoutBuilder` and `MapOrganicLayoutBuilder` repeat the same context fields and accessors; a shared base or context type would hold them.
+
 ## Done
 Completed work is described in [FEATURES.md](FEATURES.md); full task history is in git.
 

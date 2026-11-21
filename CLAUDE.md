@@ -26,7 +26,9 @@ Before making changes:
 - Reuse existing systems before creating new ones.
 - Match the surrounding codebase unless it is clearly problematic.
 - Prefer extending existing abstractions over introducing parallel systems.
-- Keep changes localized when possible.
+- Look past the file you are changing: check whether the same problem or pattern exists
+  elsewhere, and whether the change belongs in a shared system rather than in one place.
+- Keep each change coherent: one purpose per commit, so it can be reviewed and reverted on its own.
 
 Avoid introducing unnecessary complexity.
 
@@ -291,7 +293,35 @@ When modifying existing code:
 - remove dead code
 - improve naming when safe
 
-Do not perform unrelated refactors unless requested.
+## Improvements beyond the task
+
+The quality of the whole project matters more than a minimal diff. Problems you come across
+outside the task are worth fixing; handle them by size:
+
+- Small and safe (a bug, dead code, a duplicate next to what you are changing, a misleading
+  name or comment): fix it in the same change.
+- Larger (restructuring a system, merging duplicates across features): do it in its own commit,
+  separate from the feature work.
+- Not safe to do now (it needs Unity to verify, or a design decision only the owner can make):
+  list it in TASKS.md instead.
+
+Always report what you improved beyond the request. Ask first when an improvement would change
+gameplay behaviour or tuning, serialized data, or seeded generation output. When a lot of
+unverified work has piled up (see TASKS.md, Verify in the editor), say so and suggest verifying
+it before adding more.
+
+## Shared systems
+
+- Before adding a component, data type, helper or manager, search for an existing one that does
+  the same job, and extend it rather than writing a parallel version.
+- When the same logic exists, or is about to exist, in two or more places, extract it into one
+  shared system and move those places onto it.
+- Only merge code that means the same thing. Keep copies apart when they differ in behaviour,
+  ordering, seeded random draws or serialized data, even if they look alike.
+- Duplication that can't be merged right away goes under "Shared-system candidates" in TASKS.md,
+  with the files involved and what stands in the way.
+- A shared system keeps existing serialized field names and assets working (or migrates them),
+  and keeps seeded generation output unchanged unless changing it is the intent.
 
 Do not add packages, editor tooling, gizmos, or logging unless requested.
 
