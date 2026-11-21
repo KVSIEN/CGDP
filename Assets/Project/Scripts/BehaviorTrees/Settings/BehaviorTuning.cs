@@ -26,30 +26,15 @@ namespace CGD.BehaviorTrees
         public bool                        IsOff    => _off;
         public IReadOnlyList<SettingValue> Values   => _values;
 
-        public bool TryGetValue(string setting, out float value)
-        {
-            foreach (SettingValue entry in _values)
-            {
-                if (entry.Name != setting) continue;
-                value = entry.Value;
-                return true;
-            }
-            value = 0f;
-            return false;
-        }
+        public bool TryGetValue(string setting, out float value) => SettingValue.TryFind(_values, setting, out value);
 
         // Nothing left to say: no switch, no values (the editor drops such entries).
         internal bool IsEmpty => !_off && _values.Count == 0;
 
         internal void SetOff(bool off) => _off = off;
 
-        internal void SetValue(string setting, float value)
-        {
-            ClearValue(setting);
-            _values.Add(new SettingValue(setting, value));
-        }
-
-        internal void ClearValue(string setting) => _values.RemoveAll(entry => entry.Name == setting);
+        internal void SetValue(string setting, float value) => SettingValue.Set(_values, setting, value);
+        internal void ClearValue(string setting) => SettingValue.Clear(_values, setting);
 
         public static BehaviorTuning Find(IReadOnlyList<BehaviorTuning> tunings, BehaviorTreeAsset behavior)
         {

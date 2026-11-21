@@ -80,10 +80,7 @@ namespace CGD.UI
             _healthFill = UIFactory.MakeImage("HealthFill", barBg.rectTransform);
             _healthFill.color = Theme.Health;
             _fullHealthColor  = Theme.Health;
-            var fillRt = _healthFill.rectTransform;
-            fillRt.anchorMin = Vector2.zero;
-            fillRt.anchorMax = Vector2.one;
-            fillRt.offsetMin = fillRt.offsetMax = Vector2.zero;
+            UIFactory.Stretch(_healthFill.rectTransform);
 
             y -= _barHeight + 6f;
 

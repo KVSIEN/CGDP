@@ -42,12 +42,8 @@ namespace CGD.UI
 
         private void PositionPanel()
         {
-            var rt           = GetComponent<RectTransform>();
-            rt.anchorMin     = new Vector2(0.5f, 0f);
-            rt.anchorMax     = new Vector2(0.5f, 0f);
-            rt.pivot         = new Vector2(0.5f, 0f);
-            rt.anchoredPosition = new Vector2(0f, _screenPaddingBottom);
-            rt.sizeDelta     = new Vector2(SlotCount * _slotSize + (SlotCount - 1) * _slotGap, _slotSize);
+            UIFactory.Pin(GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0f, _screenPaddingBottom),
+                          new Vector2(SlotCount * _slotSize + (SlotCount - 1) * _slotGap, _slotSize));
         }
 
         private void BuildSlots()
@@ -76,9 +72,7 @@ namespace CGD.UI
 
                 size = slot.SizeOr(size);
                 RectTransform rt = slot.Root;
-                rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
-                rt.sizeDelta = size;
-                rt.anchoredPosition = new Vector2((i - (SlotCount - 1) * 0.5f) * (size.x + _slotGap), 0f);
+                UIFactory.Pin(rt, new Vector2(0.5f, 0.5f), new Vector2((i - (SlotCount - 1) * 0.5f) * (size.x + _slotGap), 0f), size);
             }
 
             self.sizeDelta = new Vector2(SlotCount * size.x + (SlotCount - 1) * _slotGap, size.y);

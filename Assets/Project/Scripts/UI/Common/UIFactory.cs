@@ -108,12 +108,27 @@ namespace CGD.UI
                 corner.y > 0.5f ? -padding.y : padding.y);
         }
 
-        public static void Place(RectTransform rt, Vector2 pos, Vector2 size)
+        // Top-left anchored and pivoted: the layout most built panels lay their parts out in.
+        public static void Place(RectTransform rt, Vector2 pos, Vector2 size) => Pin(rt, new Vector2(0f, 1f), pos, size);
+
+        // Anchored and pivoted on the same point of the parent ((0.5, 0.5) its centre, (0.5, 0)
+        // its bottom edge's middle…), offset by `pos` from there.
+        public static void Pin(RectTransform rt, Vector2 anchor, Vector2 pos, Vector2 size)
         {
-            rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f);
-            rt.pivot = new Vector2(0f, 1f);
+            rt.anchorMin = rt.anchorMax = rt.pivot = anchor;
             rt.anchoredPosition = pos;
             rt.sizeDelta = size;
+        }
+
+        // A row hanging from `y` below the parent's top, the parent's full width less `inset`
+        // on each side.
+        public static void PlaceRow(RectTransform rt, float y, float height, float inset = 0f)
+        {
+            rt.anchorMin = new Vector2(0f, 1f);
+            rt.anchorMax = Vector2.one;
+            rt.pivot = new Vector2(0.5f, 1f);
+            rt.anchoredPosition = new Vector2(0f, y);
+            rt.sizeDelta = new Vector2(-inset * 2f, height);
         }
 
         // Button with a background Image (also its targetGraphic) and a centered text label.

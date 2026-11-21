@@ -145,10 +145,7 @@ namespace CGD.UI
             y -= _barHeight + _rowSpacing;
 
             var fill = UIFactory.MakeImage(id + "Fill", barBg.rectTransform);
-            var fillRt = fill.rectTransform;
-            fillRt.anchorMin = Vector2.zero;
-            fillRt.anchorMax = Vector2.one;
-            fillRt.offsetMin = fillRt.offsetMax = Vector2.zero;
+            UIFactory.Stretch(fill.rectTransform);
 
             return new Row { Meter = meter, Fill = fill, Label = label };
         }

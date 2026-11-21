@@ -30,9 +30,7 @@ namespace CGD.UI
         private void Awake()
         {
             var self = GetComponent<RectTransform>();
-            self.anchorMin = self.anchorMax = self.pivot = new Vector2(0.5f, 1f);
-            self.anchoredPosition = new Vector2(0f, -_topPadding);
-            self.sizeDelta = new Vector2(_width, 0f);
+            UIFactory.Pin(self, new Vector2(0.5f, 1f), new Vector2(0f, -_topPadding), new Vector2(_width, 0f));
 
             // The panel's content hides on its own; this object stays active so the HUD can
             // still show and hide it with the rest.
@@ -40,9 +38,7 @@ namespace CGD.UI
             rootImage.color = Theme.Panel;
             _root = rootImage.gameObject;
             var rootRect = rootImage.rectTransform;
-            rootRect.anchorMin = rootRect.anchorMax = rootRect.pivot = new Vector2(0.5f, 1f);
-            rootRect.anchoredPosition = Vector2.zero;
-            rootRect.sizeDelta = new Vector2(_width, 66f + _barHeight);
+            UIFactory.Pin(rootRect, new Vector2(0.5f, 1f), Vector2.zero, new Vector2(_width, 66f + _barHeight));
 
             _title  = MakeLabel("Title", rootRect, 18f, TextAlignmentOptions.TopLeft, new Vector2(10f, -6f), new Vector2(-90f, -30f));
             _title.fontStyle = FontStyles.Bold;

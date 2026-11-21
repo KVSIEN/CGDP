@@ -87,9 +87,7 @@ namespace CGD.DevTools
             // Hint (bottom)
             _hint = MakeLabel("Hint", Root, 15f, TextAlignmentOptions.Bottom);
             RectTransform hint = _hint.rectTransform;
-            hint.anchorMin = hint.anchorMax = hint.pivot = new Vector2(0.5f, 0f);
-            hint.anchoredPosition = new Vector2(0f, 16f);
-            hint.sizeDelta = new Vector2(1200f, 28f);
+            UIFactory.Pin(hint, new Vector2(0.5f, 0f), new Vector2(0f, 16f), new Vector2(1200f, 28f));
             _hint.color = new Color(1f, 1f, 1f, 0.75f);
         }
 

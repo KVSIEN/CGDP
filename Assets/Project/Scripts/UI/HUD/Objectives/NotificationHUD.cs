@@ -30,9 +30,7 @@ namespace CGD.UI
         private void Awake()
         {
             var self = GetComponent<RectTransform>();
-            self.anchorMin = self.anchorMax = self.pivot = new Vector2(0.5f, 1f);
-            self.anchoredPosition = new Vector2(0f, -_topPadding);
-            self.sizeDelta = new Vector2(_rowWidth, 0f);
+            UIFactory.Pin(self, new Vector2(0.5f, 1f), new Vector2(0f, -_topPadding), new Vector2(_rowWidth, 0f));
 
             // With a skin, the skin is one row: `Text` (coloured by the message's style); a row
             // brings its own background. Rows are stacked by Row Height and Row Gap, so set
@@ -120,8 +118,7 @@ namespace CGD.UI
                 if (!skin.Accept()) return null;
 
                 RectTransform rt = skin.Root;
-                rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 1f);
-                rt.sizeDelta = skin.SizeOr(new Vector2(width, height));
+                UIFactory.Pin(rt, new Vector2(0.5f, 1f), Vector2.zero, skin.SizeOr(new Vector2(width, height)));
                 return new Row(rt, text);
             }
 
@@ -134,8 +131,7 @@ namespace CGD.UI
                 _group.alpha = 0f;
 
                 RectTransform rt = _rect;
-                rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 1f);
-                rt.sizeDelta = new Vector2(width, height);
+                UIFactory.Pin(rt, new Vector2(0.5f, 1f), Vector2.zero, new Vector2(width, height));
 
                 _text = UIFactory.MakeLabel("Text", rt, "", 15f, TextAlignmentOptions.Center);
                 UIFactory.Stretch(_text.rectTransform);

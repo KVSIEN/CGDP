@@ -31,12 +31,9 @@ namespace CGD.UI
 
         private void Awake()
         {
-            var rt              = GetComponent<RectTransform>();
-            rt.anchorMin        = new Vector2(0.5f, 0f);
-            rt.anchorMax        = new Vector2(0.5f, 0f);
-            rt.pivot            = new Vector2(0.5f, 0f);
-            rt.anchoredPosition = new Vector2(0f, _screenPaddingBottom);
-            rt.sizeDelta        = new Vector2(_maxTiles * (_tileSize + _tileGap) - _tileGap, _tileSize);
+            var rt = GetComponent<RectTransform>();
+            UIFactory.Pin(rt, new Vector2(0.5f, 0f), new Vector2(0f, _screenPaddingBottom),
+                          new Vector2(_maxTiles * (_tileSize + _tileGap) - _tileGap, _tileSize));
 
             _roots    = new GameObject[_maxTiles];
             _tiles    = new Image[_maxTiles];
@@ -65,9 +62,7 @@ namespace CGD.UI
 
             Vector2 size = tile.SizeOr(Vector2.one * _tileSize);
             RectTransform rt = tile.Root;
-            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0f, 0.5f);
-            rt.sizeDelta = size;
-            rt.anchoredPosition = new Vector2(index * (size.x + _tileGap), 0f);
+            UIFactory.Pin(rt, new Vector2(0f, 0.5f), new Vector2(index * (size.x + _tileGap), 0f), size);
             parent.sizeDelta = new Vector2(_maxTiles * (size.x + _tileGap) - _tileGap, size.y);
 
             _roots[index]    = rt.gameObject;
@@ -83,9 +78,7 @@ namespace CGD.UI
         {
             var tile = UIFactory.MakeImage("Status_" + index, parent);
             var tileRt = tile.rectTransform;
-            tileRt.anchorMin = tileRt.anchorMax = tileRt.pivot = new Vector2(0f, 0.5f);
-            tileRt.anchoredPosition = new Vector2(index * (_tileSize + _tileGap), 0f);
-            tileRt.sizeDelta = Vector2.one * _tileSize;
+            UIFactory.Pin(tileRt, new Vector2(0f, 0.5f), new Vector2(index * (_tileSize + _tileGap), 0f), Vector2.one * _tileSize);
 
             var overlay = UIFactory.MakeImage("Remaining", tileRt);
             overlay.color = Theme.Overlay;

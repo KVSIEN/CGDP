@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.AI;
 using CGD.BehaviorTrees;
 
 namespace CGD.Enemies
@@ -22,18 +21,9 @@ namespace CGD.Enemies
         protected override void OnEnter(BtContext context)
         {
             _hasDestination = false;
-            var target = Ai.Perception.Target;
-            if (target == null) return;
+            if (Ai.Perception.Target == null) return;
 
-            Vector3 away = Ai.transform.position - Ai.Perception.TargetPosition;
-            away.y = 0f;
-            Vector3 direction = away.sqrMagnitude > 0.01f ? away.normalized : -Ai.transform.forward;
-            Vector3 goal      = Ai.transform.position + direction * _distance;
-
-            if (!NavMesh.SamplePosition(goal, out var hit, _distance * 0.5f, NavMesh.AllAreas)) return;
-
-            Ai.Agent.isStopped = false;
-            _hasDestination = Ai.Routing.SetDestination(hit.position);
+            _hasDestination = Ai.Routing.RunFrom(Ai.Perception.TargetPosition, _distance);
         }
 
         protected override BtStatus OnTick(BtContext context)

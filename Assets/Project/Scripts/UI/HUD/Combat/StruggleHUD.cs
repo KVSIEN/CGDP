@@ -33,9 +33,7 @@ namespace CGD.UI
         private void Awake()
         {
             var self = (RectTransform)transform;
-            self.anchorMin = self.anchorMax = self.pivot = new Vector2(0.5f, 0.5f);
-            self.anchoredPosition = new Vector2(0f, -_offsetBelowCentre);
-            self.sizeDelta = _size;
+            UIFactory.Pin(self, new Vector2(0.5f, 0.5f), new Vector2(0f, -_offsetBelowCentre), _size);
 
             Image background = UIFactory.MakeImage("Panel", self);
             background.color = Theme.Window;

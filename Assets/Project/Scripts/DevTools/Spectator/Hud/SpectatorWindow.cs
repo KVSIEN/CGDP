@@ -19,8 +19,7 @@ namespace CGD.DevTools
             window.color = Background;
             window.raycastTarget = true;
             RectTransform rect = window.rectTransform;
-            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.sizeDelta = size;
+            UIFactory.Pin(rect, new Vector2(0.5f, 0.5f), Vector2.zero, size);
             return rect;
         }
 

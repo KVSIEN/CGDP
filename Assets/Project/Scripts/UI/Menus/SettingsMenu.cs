@@ -124,9 +124,7 @@ namespace CGD.UI
             windowGO.transform.SetParent(panelRt, false);
             windowGO.GetComponent<Image>().color = new Color(0.08f, 0.08f, 0.1f, 0.97f);
             var windowRt = windowGO.GetComponent<RectTransform>();
-            windowRt.anchorMin = windowRt.anchorMax = windowRt.pivot = new Vector2(0.5f, 0.5f);
-            windowRt.anchoredPosition = Vector2.zero;
-            windowRt.sizeDelta = new Vector2(W, H);
+            UIFactory.Pin(windowRt, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(W, H));
 
             BuildTabs(windowRt);
 

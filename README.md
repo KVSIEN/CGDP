@@ -38,7 +38,7 @@ Assets/
                             Composites/, Decorators/, Actions/, Blackboard/ (flag, number and key nodes), Debugging/ (BtTrace)
       Audio/                audio pool, sound banks, surface lookup; mixer: AudioMixerController, AudioMixerSettings, MixState (+ request), GameplayMixStates
       CameraEffects/        shake, kicks, FOV punches, lag, view blends (CameraEffectsController), CameraImpulses
-      Combat/               Damage/ (incl. AreaHits — who a blast or burst reaches, once each, cover-aware), Health/ (HealthManager, Hitbox, Destructible), StatusEffects/, Actions/ (action timelines; ShapeHits — the cast, fan, sphere and box hit shapes melee and timelines strike with), Hazards/ (HazardZone, DamageZone + ZoneSettings: the one lingering damage zone), Reflect/ (Reflector, ReflectProfile), Projectile, Stunnable, Noise
+      Combat/               Damage/ (incl. AreaHits — who a blast or burst reaches, once each, cover-aware), Health/ (HealthManager, SimpleHealth — no-shield health for props, deployables and objectives — Hitbox, Destructible), StatusEffects/, Actions/ (action timelines; ShapeHits — the cast, fan, sphere and box hit shapes melee and timelines strike with), Hazards/ (HazardZone, DamageZone + ZoneSettings: the one lingering damage zone), Reflect/ (Reflector, ReflectProfile), Projectile, Stunnable, Noise
       Core/                 shared utilities (cooldowns, ranges, RendererTint — colouring a renderer without a material copy, EffectParts — trails and mesh pieces effects build in code, Pooling/ — PrefabPool, IPoolable,
                             Random/ — Seed, RandomStream, SeedVariants; StateMachine/ — StateMachine<T>, IState)
       Crafting/             RecipeDefinition, Crafter (rules), CraftingStation
@@ -141,7 +141,7 @@ Assets/
       Telemetry/            RunStats (what one run did), LifetimeStats + TelemetryStore (totals on disk), RunStatsRecorder (feeds them from combat and quest events)
       Targeting/            TargetQuery, TargetFilter and TargetSelector assets (Selectors/)
       Timing/               GameClock (fixed ticks, pause, time scale, scheduling) and GameTime
-      UI/                   Common/ (UIFactory — incl. MakeLabel, MakeScrollList; CanvasGroupExtensions.SetVisible), HUD/ (HUDManager, HUDElement; Combat/ — crosshair, hit and damage feedback, status, stealth;
+      UI/                   Common/ (UIFactory — incl. MakeLabel, MakeScrollList, Pin, PlaceRow; CanvasGroupExtensions.SetVisible), HUD/ (HUDManager, HUDElement; Combat/ — crosshair, hit and damage feedback, status, stealth;
                             Loadout/ — weapons, abilities, items, inventory; Player/ — meters, stats, dodge, speed, interact prompt;
                             Map/ — minimap, world map; Objectives/ — objectives, quests, notifications; Panels/ — modal panels), Menus/, World/ (popups, enemy bars)
       Weapons/              WeaponItem (what a loadout slot holds), WeaponCategory (firearm or melee, rolls WeaponItems), IOffhand (what an offhand item implements), Ranged/, FireBehaviors/, Generation/, Melee/ (controller, guard, melee categories and generator), Shields/, Throwables/

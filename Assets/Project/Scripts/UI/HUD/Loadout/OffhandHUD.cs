@@ -56,12 +56,9 @@ namespace CGD.UI
 
         private void Awake()
         {
-            var rt              = GetComponent<RectTransform>();
-            rt.anchorMin        = new Vector2(0.5f, 0f);
-            rt.anchorMax        = new Vector2(0.5f, 0f);
-            rt.pivot            = new Vector2(0.5f, 0f);
-            rt.anchoredPosition = new Vector2(-_offsetFromCenter, _screenPaddingBottom);
-            rt.sizeDelta        = Vector2.one * _slotSize;
+            var rt = GetComponent<RectTransform>();
+            UIFactory.Pin(rt, new Vector2(0.5f, 0f),
+                          new Vector2(-_offsetFromCenter, _screenPaddingBottom), Vector2.one * _slotSize);
 
             SkinParts skin = UseSkin();
             if (skin != null)

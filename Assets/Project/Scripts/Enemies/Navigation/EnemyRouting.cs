@@ -83,6 +83,22 @@ namespace CGD.Enemies
             return Route();
         }
 
+        // Heads `distance` straight away from `from` (backward when standing on it), to the
+        // NavMesh within half that. False when there is no ground there to run to.
+        public bool RunFrom(Vector3 from, float distance)
+        {
+            Vector3 self = _ai.transform.position;
+            Vector3 away = self - from;
+            away.y = 0f;
+            Vector3 direction = away.sqrMagnitude > 0.01f ? away.normalized : -_ai.transform.forward;
+
+            if (!NavMesh.SamplePosition(self + direction * distance, out NavMeshHit hit, distance * 0.5f, NavMesh.AllAreas))
+                return false;
+
+            Agent.isStopped = false;
+            return SetDestination(hit.position);
+        }
+
         // A destination past its home territory's pursuit reach is held to the edge of it, on the
         // NavMesh, so every chase, search and flank stops there (a doorway standoff) rather than
         // following a target through the ship.

@@ -56,17 +56,13 @@ namespace CGD.UI
             var pivotGo = new GameObject("Pivot_" + index, typeof(RectTransform));
             pivotGo.transform.SetParent(parent, false);
             var pivot = (RectTransform)pivotGo.transform;
-            pivot.anchorMin = pivot.anchorMax = pivot.pivot = new Vector2(0.5f, 0.5f);
-            pivot.anchoredPosition = Vector2.zero;
-            pivot.sizeDelta = Vector2.zero;
+            UIFactory.Pin(pivot, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
 
             Image arrow = UIFactory.MakeImage("Arrow", pivot);
             arrow.sprite = _sprite != null ? _sprite : ProceduralSprites.Arrow;
             arrow.color = Color.clear;
             RectTransform rt = arrow.rectTransform;
-            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = new Vector2(0f, _radius);
-            rt.sizeDelta = _size;
+            UIFactory.Pin(rt, new Vector2(0.5f, 0.5f), new Vector2(0f, _radius), _size);
 
             pivotGo.SetActive(false);
             _pivots[index] = pivot;

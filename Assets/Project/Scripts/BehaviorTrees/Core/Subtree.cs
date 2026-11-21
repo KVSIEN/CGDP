@@ -45,25 +45,10 @@ namespace CGD.BehaviorTrees
         internal void SetTree(BehaviorTreeAsset tree) => _tree = tree;
         internal void SetOn(bool on) => _off = !on;
 
-        internal void SetValue(string setting, float value)
-        {
-            ClearValue(setting);
-            _values.Add(new SettingValue(setting, value));
-        }
+        internal void SetValue(string setting, float value) => SettingValue.Set(_values, setting, value);
+        internal void ClearValue(string setting) => SettingValue.Clear(_values, setting);
 
-        internal void ClearValue(string setting) => _values.RemoveAll(entry => entry.Name == setting);
-
-        public bool TryGetValue(string setting, out float value)
-        {
-            foreach (SettingValue entry in _values)
-            {
-                if (entry.Name != setting) continue;
-                value = entry.Value;
-                return true;
-            }
-            value = 0f;
-            return false;
-        }
+        public bool TryGetValue(string setting, out float value) => SettingValue.TryFind(_values, setting, out value);
 
         // Copies share the authored list until the editor changes it, so a duplicate gets its own.
         internal override BtNode Duplicate()

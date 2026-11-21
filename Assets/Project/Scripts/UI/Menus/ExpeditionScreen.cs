@@ -189,8 +189,7 @@ namespace CGD.UI
             Image window = UIFactory.MakeImage("Window", dim.rectTransform);
             window.color = new Color(0.08f, 0.08f, 0.1f, 0.97f);
             RectTransform windowRt = window.rectTransform;
-            windowRt.anchorMin = windowRt.anchorMax = windowRt.pivot = new Vector2(0.5f, 0.5f);
-            windowRt.sizeDelta = WindowSize;
+            UIFactory.Pin(windowRt, new Vector2(0.5f, 0.5f), Vector2.zero, WindowSize);
 
             _title = UIFactory.MakeLabel("Title", windowRt, "", 30f);
             _title.fontStyle = FontStyles.Bold;

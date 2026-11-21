@@ -203,9 +203,7 @@ namespace CGD.UI
             barGO.transform.SetParent(transform.parent, false);
 
             var barRt = barGO.GetComponent<RectTransform>();
-            barRt.anchorMin = barRt.anchorMax = barRt.pivot = new Vector2(0f, 0f);
-            barRt.anchoredPosition = new Vector2(20f, 20f);
-            barRt.sizeDelta = new Vector2(240f, 36f);
+            UIFactory.Pin(barRt, new Vector2(0f, 0f), new Vector2(20f, 20f), new Vector2(240f, 36f));
 
             var bg = UIFactory.MakeImage("Bg", barRt);
             bg.color = Theme.Window;

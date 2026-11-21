@@ -85,9 +85,7 @@ namespace CGD.FiringRange
             var panel = UIFactory.MakeImage("Panel", (RectTransform)canvasObject.transform);
             panel.color = new Color(0f, 0f, 0f, 0.55f);
             RectTransform rect = panel.rectTransform;
-            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0f, 0.5f);
-            rect.anchoredPosition = new Vector2(_edgePadding, 0f);
-            rect.sizeDelta = _size;
+            UIFactory.Pin(rect, new Vector2(0f, 0.5f), new Vector2(_edgePadding, 0f), _size);
 
             _text = UIFactory.MakeText("Text", panel.rectTransform);
             UIFactory.Stretch(_text.rectTransform);

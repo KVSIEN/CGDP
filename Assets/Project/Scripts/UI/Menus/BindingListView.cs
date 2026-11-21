@@ -84,8 +84,7 @@ namespace CGD.UI
             // Opaque so the prompt never blends into the rows behind it.
             Image card = UIFactory.MakeImage("Card", overlay.rectTransform);
             card.color = new Color(0.1f, 0.1f, 0.15f, 1f);
-            card.rectTransform.anchorMin = card.rectTransform.anchorMax = card.rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            card.rectTransform.sizeDelta = cardSize;
+            UIFactory.Pin(card.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, cardSize);
 
             _prompt = UIFactory.MakeLabel("Prompt", card.rectTransform, Prompt, 17f, TextAlignmentOptions.Center);
             UIFactory.Stretch(_prompt.rectTransform);

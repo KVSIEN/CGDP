@@ -20,9 +20,7 @@ namespace CGD.UI
         private void Awake()
         {
             var self = GetComponent<RectTransform>();
-            self.anchorMin = self.anchorMax = self.pivot = new Vector2(0.5f, 0.5f);
-            self.anchoredPosition = new Vector2(0f, -_offsetBelowCentre);
-            self.sizeDelta = new Vector2(200f, 24f);
+            UIFactory.Pin(self, new Vector2(0.5f, 0.5f), new Vector2(0f, -_offsetBelowCentre), new Vector2(200f, 24f));
 
             _label = UIFactory.MakeLabel("Stealth", self, "", 14f);
             _label.fontStyle = FontStyles.Bold;

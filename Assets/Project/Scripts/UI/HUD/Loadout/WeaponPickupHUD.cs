@@ -293,14 +293,7 @@ namespace CGD.UI
             }
         }
 
-        private void PlaceRow(RectTransform rowRt, float y, float height)
-        {
-            rowRt.anchorMin        = new Vector2(0f, 1f);
-            rowRt.anchorMax        = new Vector2(1f, 1f);
-            rowRt.pivot            = new Vector2(0.5f, 1f);
-            rowRt.anchoredPosition = new Vector2(0f, y);
-            rowRt.sizeDelta        = new Vector2(-_padding * 2f, height);
-        }
+        private void PlaceRow(RectTransform rowRt, float y, float height) => UIFactory.PlaceRow(rowRt, y, height, _padding);
 
         private void ShowInternal()
         {

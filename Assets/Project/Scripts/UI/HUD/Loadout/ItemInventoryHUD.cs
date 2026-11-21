@@ -202,31 +202,16 @@ namespace CGD.UI
 
             var rule = UIFactory.MakeImage("Rule", rt);
             rule.color = Theme.Rule;
-            rule.rectTransform.anchorMin = new Vector2(0f, 1f);
-            rule.rectTransform.anchorMax = new Vector2(1f, 1f);
-            rule.rectTransform.pivot     = new Vector2(0.5f, 1f);
-            rule.rectTransform.anchoredPosition = new Vector2(0f, y);
-            rule.rectTransform.sizeDelta        = new Vector2(-_padding * 2f, 1f);
+            PlaceRow(rule.rectTransform, y, 1f);
             y -= 8f;
 
             var listGO = new GameObject("List", typeof(RectTransform));
             listGO.transform.SetParent(rt, false);
             _listRoot = listGO.GetComponent<RectTransform>();
-            _listRoot.anchorMin        = new Vector2(0f, 1f);
-            _listRoot.anchorMax        = new Vector2(1f, 1f);
-            _listRoot.pivot            = new Vector2(0.5f, 1f);
-            _listRoot.anchoredPosition = new Vector2(0f, y);
-            _listAvailableHeight       = _panelHeight + y - _padding;
-            _listRoot.sizeDelta        = new Vector2(-_padding * 2f, _listAvailableHeight);
+            _listAvailableHeight = _panelHeight + y - _padding;
+            PlaceRow(_listRoot, y, _listAvailableHeight);
         }
 
-        private void PlaceRow(RectTransform rowRt, float y, float height)
-        {
-            rowRt.anchorMin        = new Vector2(0f, 1f);
-            rowRt.anchorMax        = new Vector2(1f, 1f);
-            rowRt.pivot            = new Vector2(0.5f, 1f);
-            rowRt.anchoredPosition = new Vector2(0f, y);
-            rowRt.sizeDelta        = new Vector2(-_padding * 2f, height);
-        }
+        private void PlaceRow(RectTransform rowRt, float y, float height) => UIFactory.PlaceRow(rowRt, y, height, _padding);
     }
 }
