@@ -710,7 +710,7 @@ Every item also has a 25% chance of one extra perk.
 
 * Each point of armor helps less than the last. 100 armor halves damage.
 * Penetration effects multiply, so stacking them is efficient.
-* Only Bleed and Poison deal damage that ignores a defensive layer.
+* Only Bleed, Poison and Entropy deal damage that ignores a defensive layer.
 
 ### Defensive Layers
 
@@ -751,6 +751,7 @@ Design targets for tuning, measured as shots to kill a 100 health low tier enemy
 | **Fire** | Damage over time | Nothing | No | Steady damage | Medium armor |
 | **Lightning** | Damage and chain | Nothing | Yes | +50% against shields, chains | Groups, shields |
 | **Ice** | Debuff and control | Nothing | Up to 5 | Slow, armor shred, stun | Setup, heavy armor |
+| **Entropy** | Direct damage | Armor | No | Armor does nothing against it | Heavy armor |
 
 ### Bleed
 
@@ -790,6 +791,16 @@ Fire DPS% is set per weapon or skill. Reduced by armor. Reapplying resets the du
 | **5 (max)** | 25% | 10% |
 
 At 5 stacks the target is **stunned** for a set time (TBD), fully immobilized, and loses another 10% armor (20% in total). Stacks decay after a few seconds without a new stack, and reapplying refreshes them. Early stacks are weak, the payoff comes at the stun.
+
+### Entropy
+
+> Damage = Raw Damage, armor ignored
+
+Things coming undone. Entropy is dealt on the hit itself, not over time, and armor does nothing against it. Shields still absorb it.
+
+**In the Prototype (Built):** VOID's Void Slash deals Entropy damage.
+
+**TBD.** Bleed also bypasses armor. What sets Entropy apart from it (for example a bonus against shields, VOID's top defense, or a link with Ice stacks) is not decided.
 
 ## Stealth
 
@@ -906,8 +917,8 @@ The player learns to read which reality holds a space and to anticipate shifts:
 
 | Reality | Defense priority | Affinity | Effect | Counters |
 |---------|------------------|----------|--------|----------|
-| **TECH** | Armor > Shields > Health | Lightning | Breaks shields | VOID |
-| **VOID** | Shields > Health > Armor | Ice | Breaks armor | TECH |
+| **TECH** | Armor > Shields > Health | Fire and Lightning | Breaks shields. Lightning overloads shields, Fire burns steadily | VOID |
+| **VOID** | Shields > Health > Armor | Ice and Entropy | Breaks armor. Ice shreds armor, Entropy ignores it | TECH |
 | **BIO** | Health > Armor > Shields | Bleed and Poison | Attrition. Bleed bypasses armor, Poison bypasses shields | No hard counter |
 
 The priorities apply to a reality's gear and its enemies alike: a TECH enemy has heavy armor to crack, a BIO creature has a deep health pool, a VOID entity hides behind wards. TECH and VOID are a direct counter pair, so those fights reward knowing the matchup. BIO sits outside the pair and wears anything down over time, so its fights reward endurance.
@@ -1365,7 +1376,7 @@ Each reality defines how everything works in its territory: gear, combat, resour
 | **Modifications** | Engineering: power, computing, materials | Living: symbiotic, parasitic, evolutionary | Exposure: connection, sacrifice, curses, rituals |
 | **Weapons** | Mostly ranged | Mostly melee | Relics and antique firearms |
 | **Defense** | Armor > Shields > Health | Health > Armor > Shields | Shields > Health > Armor |
-| **Affinity** | Lightning | Bleed and Poison | Ice |
+| **Affinity** | Fire and Lightning | Bleed and Poison | Ice and Entropy |
 | **Signature** | Override | Hunt | Bargain |
 | **Player role** | Intruder in a police state | Part of the food chain | At a sensory disadvantage |
 
@@ -1385,6 +1396,7 @@ Every stat and status effect has a source in each reality. The mechanics are the
 | **Fire** | Incendiary rounds, thermite, plasma | Fire breathing organisms, volatile biological reactions like the bombardier beetle | Soulfire, hellfire |
 | **Lightning** | Tesla coils, tasers, magnetics, EMP | Bioelectric organs, like electric eels scaled up | Arcane energy, rift surges |
 | **Ice** | Cryogenics, coolant weapons | Endothermic organisms, numbing neurotoxins | Chilling dread, shivering fear, freezing presence |
+| **Entropy** | Disassembler fields, decay rounds, overloaded reactor cores | Necrosis, rot, accelerated aging | Rift tears, unmaking, the slow erasure of things |
 
 ## TECH
 
@@ -1731,7 +1743,7 @@ Where two realities meet, their families blend.
 * **Reality color is for the world.** Lighting, emissives, materials, decals and map chips. HUD status keeps its own meanings (health, damage, status effects), and a reality color never means good or bad.
 * **Never color alone.** Each reality also has a shape language and a symbol, so it reads without color. Proposed symbols: a gear or circuit for TECH, a leaf or spiral for BIO, an eye or crack for VOID.
 * **Greyscale test.** A screenshot in greyscale should still tell TECH, BIO and VOID rooms apart: bright, middle, dark.
-* **Watch the collisions.** TECH's alarm red sits close to Bleed and low health, so red stays a rare TECH accent and orange leads. BIO's lichen is near Poison, which is BIO's own affinity, but the health bar keeps a distinct green. VOID's cold glow matches Ice, its affinity.
+* **Watch the collisions.** TECH's alarm red sits close to Bleed and low health, so red stays a rare TECH accent and orange leads. BIO's lichen is near Poison, which is BIO's own affinity, but the health bar keeps a distinct green. VOID's cold glow matches Ice, one of its affinities.
 
 ### Camera and Perspective
 
