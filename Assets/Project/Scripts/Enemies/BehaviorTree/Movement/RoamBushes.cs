@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Core;
 using UnityEngine.AI;
 using CGD.BehaviorTrees;
 
@@ -82,20 +83,9 @@ namespace CGD.Enemies
             IReadOnlyList<BushMemory.KnownBush> known = Ai.Ground.Bushes.Bushes;
             Vector3 self = Ai.transform.position;
 
-            float total = 0f;
-            for (int i = 0; i < known.Count; i++) total += Weight(known[i], self);
-            if (total <= 0f) return false;
-
-            float pick = UnityEngine.Random.value * total;
-            for (int i = 0; i < known.Count; i++)
-            {
-                float weight = Weight(known[i], self);
-                if (weight <= 0f) continue;
-                pick -= weight;
-                if (pick > 0f) continue;
-                return HeadFor(known[i], self);
-            }
-            return false;
+            var choice = new WeightedChoice<BushMemory.KnownBush>();
+            for (int i = 0; i < known.Count; i++) choice.Offer(known[i], Weight(known[i], self));
+            return choice.HasPick && HeadFor(choice.Picked, self);
         }
 
         private float Weight(BushMemory.KnownBush bush, Vector3 self)

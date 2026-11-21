@@ -1,4 +1,5 @@
 using UnityEngine;
+using CGD.Core;
 using UnityEngine.AI;
 
 namespace CGD.Enemies
@@ -201,19 +202,10 @@ namespace CGD.Enemies
                 return null;
             }
 
-            float total = 0f;
+            var choice = new WeightedChoice<IdleBeat>();
             foreach (IdleBeat beat in beats)
-                if (beat != null && (allowWalk || beat.WalkRadius <= 0f)) total += beat.Weight;
-            if (total <= 0f) return null;
-
-            float roll = Random.value * total;
-            foreach (IdleBeat beat in beats)
-            {
-                if (beat == null || (!allowWalk && beat.WalkRadius > 0f)) continue;
-                roll -= beat.Weight;
-                if (roll <= 0f) return beat;
-            }
-            return null;
+                if (beat != null && (allowWalk || beat.WalkRadius <= 0f)) choice.Offer(beat, beat.Weight);
+            return choice.Picked;
         }
 
         private void StartBeat(IdleBeat beat, Quaternion facing, float time)

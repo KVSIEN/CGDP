@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Core;
 
 namespace CGD.Enemies
 {
@@ -13,7 +14,6 @@ namespace CGD.Enemies
     {
         private readonly EnemyAI _ai;
         private readonly Dictionary<PointOfInterest, float> _backAt = new();
-        private readonly List<(PointOfInterest Point, float Weight)> _options = new();
         private readonly List<GroundPlace> _places = new();
 
         private PointOfInterest _claimed;
@@ -38,27 +38,13 @@ namespace CGD.Enemies
 
             Vector3 self = _ai.transform.position;
             _ai.Ground.CopyPlaces(_places);
-            _options.Clear();
-            float total = 0f;
+            var choice = new WeightedChoice<PointOfInterest>();
             foreach (PointOfInterest point in PointOfInterest.Active)
-            {
-                float weight = WeightOf(point, self, time);
-                if (weight <= 0f) continue;
-                _options.Add((point, weight));
-                total += weight;
-            }
-            if (total <= 0f) return false;
+                choice.Offer(point, WeightOf(point, self, time));
+            if (!choice.HasPick || !choice.Picked.TryClaim(_ai, out spot)) return false;
 
-            float roll = Random.value * total;
-            foreach ((PointOfInterest point, float weight) in _options)
-            {
-                roll -= weight;
-                if (roll > 0f) continue;
-                if (!point.TryClaim(_ai, out spot)) return false;
-                _claimed = point;
-                return true;
-            }
-            return false;
+            _claimed = choice.Picked;
+            return true;
         }
 
         // It is there: it stays for as long as the kind says.

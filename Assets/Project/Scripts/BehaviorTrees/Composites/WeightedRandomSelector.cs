@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using CGD.Core;
 
 namespace CGD.BehaviorTrees
 {
@@ -42,20 +43,11 @@ namespace CGD.BehaviorTrees
             // Weighted draw without replacement: each pick takes its weight out of the pool.
             for (int n = 0; n < candidates; n++)
             {
-                float total = 0f;
-                foreach (float weight in _remaining) total += weight;
+                var choice = new WeightedChoice<int>();
+                for (int i = 0; i < _remaining.Length; i++) choice.Offer(i, _remaining[i]);
 
-                float roll = UnityEngine.Random.value * total;
-                int   pick = -1;
-                for (int i = 0; i < _remaining.Length; i++)
-                {
-                    if (_remaining[i] <= 0f) continue;
-                    pick = i;
-                    roll -= _remaining[i];
-                    if (roll <= 0f) break;
-                }
-                _order[_count++] = pick;
-                _remaining[pick] = 0f;
+                _order[_count++] = choice.Picked;
+                _remaining[choice.Picked] = 0f;
             }
         }
 

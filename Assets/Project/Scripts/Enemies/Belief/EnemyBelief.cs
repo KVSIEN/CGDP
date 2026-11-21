@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Core;
 using CGD.Combat;
 using CGD.Stealth;
 
@@ -133,20 +134,12 @@ namespace CGD.Enemies
             spot = default;
             if (!IsActive) return false;
 
-            float total = 0f;
+            var choice = new WeightedChoice<BeliefSpot>();
             foreach (BeliefSpot candidate in _spots)
-                if (!candidate.Checked && candidate.Weight >= MinWeight) total += candidate.Weight;
-            if (total <= 0f) return false;
+                if (!candidate.Checked && candidate.Weight >= MinWeight) choice.Offer(candidate, candidate.Weight);
 
-            float roll = Random.value * total;
-            foreach (BeliefSpot candidate in _spots)
-            {
-                if (candidate.Checked || candidate.Weight < MinWeight) continue;
-                spot = candidate;
-                roll -= candidate.Weight;
-                if (roll <= 0f) break;
-            }
-            return true;
+            spot = choice.Picked;
+            return choice.HasPick;
         }
 
         // A cover spot near it from which it can see the most likely places at once, so it can hold
