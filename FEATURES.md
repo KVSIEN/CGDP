@@ -20,6 +20,7 @@
 - A dodge pressed just before it's ready (end of cooldown, landing) still comes out
 - Being stunned or starting a mantle cancels a dodge
 - The HUD dodge indicator names the current move (STEP, ROLL, BOOST, DASH), turns green while committed and refills during the cooldown
+- **During a dodge**: you can jump out of any ground dodge (the roll, sidestep, boost and long dash keep your height, so the jump carries on with the dodge's speed); the air dash holds you level, so there is nothing to jump from. While a dodge is committed (green) you can't shoot, cast, use items or throw; in its uncommitted moments you can. Melee and the offhand always wait for the dodge to end
 - A stun or a mantle stops a dodge but not its cooldown, which keeps refilling
 - You can't run and gun: aiming down sights (or raising a guard) or firing stops a sprint, and with Sprint held it stays stopped until you press Sprint again — so holding Sprint through a fight never breaks into a run (cancelling your reload) the moment you stop shooting. A toggled sprint is simply switched off
 - Pressing Sprint while crouched (toggle crouch) stands you up and runs, once there's room to stand
