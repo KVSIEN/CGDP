@@ -11,9 +11,9 @@ namespace CGD.Tests
         [TestCase(PlayerActionKind.Melee,   true)]
         [TestCase(PlayerActionKind.Ability, true)]
         [TestCase(PlayerActionKind.Item,    true)]
+        [TestCase(PlayerActionKind.Throw,   true)]
         [TestCase(PlayerActionKind.Fire,    false)]
         [TestCase(PlayerActionKind.Reload,  false)]
-        [TestCase(PlayerActionKind.Throw,   false)]
         [TestCase(PlayerActionKind.Offhand, false)]
         [TestCase(PlayerActionKind.Dodge,   false)]   // a dodge interrupts through PlayerInterrupts instead
         public void CancelsReload(PlayerActionKind kind, bool cancels) =>
@@ -21,11 +21,11 @@ namespace CGD.Tests
 
         [TestCase(PlayerActionKind.Ability, true)]
         [TestCase(PlayerActionKind.Item,    true)]
+        [TestCase(PlayerActionKind.Throw,   true)]
+        [TestCase(PlayerActionKind.Offhand, true)]
         [TestCase(PlayerActionKind.Melee,   false)]
         [TestCase(PlayerActionKind.Fire,    false)]
         [TestCase(PlayerActionKind.Reload,  false)]
-        [TestCase(PlayerActionKind.Throw,   false)]
-        [TestCase(PlayerActionKind.Offhand, false)]
         [TestCase(PlayerActionKind.Dodge,   false)]
         public void WeavesIntoCombo(PlayerActionKind kind, bool weaves) =>
             Assert.That(PlayerActionRules.WeavesIntoCombo(kind), Is.EqualTo(weaves));

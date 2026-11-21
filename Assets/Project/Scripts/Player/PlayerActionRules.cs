@@ -9,10 +9,11 @@ namespace CGD.Player
         // Starting one of these takes the hands off a reload: lost before its commit point,
         // done early after it.
         public static bool CancelsReload(PlayerActionKind kind) =>
-            kind is PlayerActionKind.Melee or PlayerActionKind.Ability or PlayerActionKind.Item;
+            kind is PlayerActionKind.Melee or PlayerActionKind.Ability or PlayerActionKind.Item or PlayerActionKind.Throw;
 
-        // Finishing one of these between melee swings keeps the combo going (a weave).
+        // Finishing one of these between melee swings keeps the combo going (a weave): its
+        // timer carries on instead of the next swing starting the combo over.
         public static bool WeavesIntoCombo(PlayerActionKind kind) =>
-            kind is PlayerActionKind.Ability or PlayerActionKind.Item;
+            kind is PlayerActionKind.Ability or PlayerActionKind.Item or PlayerActionKind.Throw or PlayerActionKind.Offhand;
     }
 }

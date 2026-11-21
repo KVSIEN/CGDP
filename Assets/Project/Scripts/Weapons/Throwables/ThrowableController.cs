@@ -66,11 +66,13 @@ namespace CGD.Weapons
             }
             if (throwable == null || throwable.Grenade == null || !_inventory.Inventory.Has(throwable, 1)) return false;
 
+            // Announced before the gun is put away, so a reload gives way as it does to any other
+            // action (finished early past its commit point) instead of just being dropped.
+            _channel.ReportStarted(PlayerActionKind.Throw);
             Readied = throwable;
             StopAiming();
             if (_weapon != null) _weapon.SetHolstered(true);
             ReadiedChanged?.Invoke();
-            _channel.ReportStarted(PlayerActionKind.Throw);
             return true;
         }
 

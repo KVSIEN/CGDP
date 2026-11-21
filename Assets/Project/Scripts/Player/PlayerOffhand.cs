@@ -106,7 +106,10 @@ namespace CGD.Player
             bool pressed = _input.WasPressed(GameAction.AimDownSights);
             if (_use.Mode == OffhandUseMode.Tap)
             {
-                if (pressed && _use.Begin(_context)) _channel.ReportStarted(PlayerActionKind.Offhand);
+                if (!pressed || !_use.Begin(_context)) return;
+
+                _channel.ReportStarted(PlayerActionKind.Offhand);
+                _channel.ReportCompleted(PlayerActionKind.Offhand);
                 return;
             }
 
@@ -118,7 +121,7 @@ namespace CGD.Player
             if (!_holding) return;
 
             if (!_input.IsHeld(GameAction.AimDownSights) || !_use.Hold(_context))
-                StopUse();
+                StopUse(completed: true);
         }
 
         private bool CanAct() =>
@@ -131,13 +134,15 @@ namespace CGD.Player
             _context.Potency   = _artifact != null ? _artifact.Potency : 1f;
         }
 
-        // Ends whatever the use is doing (a hold, a cast in progress).
-        private void StopUse()
+        // Ends whatever the use is doing (a hold, a cast in progress). `completed`: let go or run
+        // its course, rather than cut off (a stun, a swap), which is what counts as using it.
+        private void StopUse(bool completed = false)
         {
             if (_use == null) return;
 
             FillFrame();
             _use.End(_context);
+            if (completed && _holding) _channel.ReportCompleted(PlayerActionKind.Offhand);
             _holding = false;
         }
 
