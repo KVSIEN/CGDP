@@ -168,6 +168,16 @@ MonoBehaviour:
   - rid: 1180
   - rid: 1181
   - rid: 1182
+  - rid: 1183
+  - rid: 1184
+  - rid: 1185
+  - rid: 1186
+  - rid: 1187
+  - rid: 1188
+  - rid: 1189
+  - rid: 1190
+  - rid: 1191
+  - rid: 1192
   references:
     version: 2
     RefIds:
@@ -232,13 +242,14 @@ MonoBehaviour:
         - ff1af1ccaa2d4168b1284aeb6d7329d8
         - 54b29e8d5ce840e6a9b4fe8b992a76fe
         - 8525a0dd07764968836142bf0a1aa5a3
+        - 7601b626f6624f499b5702e68f9dcd45
+        - f140415539004778952d6181b5ea096c
+        - 9e66ff5e9f544c629c6546ca8112e52b
         - 7b5417a2541c49f8a5fdeb3d44029aa6
         - dfc2d59965ab4c20b4e02b569892bea5
         - 0563f3ddfd0547058c325a9527215791
         - d12b7193a2414ef0a78ca184901b5908
         - 95da2a10e67d4af7829fe9b4c197119a
-        - f140415539004778952d6181b5ea096c
-        - 9e66ff5e9f544c629c6546ca8112e52b
         - 675b5a1e36e94ec98d5df56a48a0b53a
         - c4736511dc764bce89be0efb64cea50a
         - ee06be27f963487eb2f4bfaa9ecd6f6a
@@ -1427,14 +1438,14 @@ MonoBehaviour:
       data:
         _guid: f140415539004778952d6181b5ea096c
         _position: {x: 300, y: 4500}
-        _comment: 'Acid Spew (every 10 s): the target in view between 5 and 18 m: spit a ball of acid at it that bursts on impact (poison) and leaves a poison pool, then carry on the hunt. Aborts lower priority'
+        _comment: 'Acid Spew (every 10 s): the target in view between 5 and 18 m: spit a ball of acid at it that bursts on impact (poison) and leaves a poison pool, then carry on the hunt. Ahead of the hunt but without aborting it: it opens each round of the hunt (stalk, rush, hide) instead of cutting into a rush'
         _children:
         - 32d69ca4566c46d794f76ac970c9fac0
         - 9bedf444f6ee4cba8342a551c80226ad
         - 2ddbb0feedd14681b2a5d102e6818b15
         - 9a76d92df1f94c8187cd640e0bae0791
         - 0411af711567456b90ad9cb0a2286cf8
-        _abort: 2
+        _abort: 0
     - rid: 1167
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
@@ -1500,7 +1511,7 @@ MonoBehaviour:
       data:
         _guid: 9e66ff5e9f544c629c6546ca8112e52b
         _position: {x: 300, y: 5100}
-        _comment: 'Bone Spike (every 9 s): the target in view between 4 and 20 m with Bone Spike ready: fire a spike at it that passes through up to three in its way (and the target), making each bleed, then carry on the hunt. Aborts lower priority'
+        _comment: 'Bone Spike (every 9 s): the target in view between 4 and 20 m with Bone Spike ready: fire a spike at it that passes through up to three in its way (and the target), making each bleed, then carry on the hunt. Ahead of the hunt but without aborting it, like Acid Spew'
         _children:
         - f8d8dfd638bf434a9896029484668e3f
         - 2260a5bedd7c4988b473a4befa81b8f2
@@ -1508,7 +1519,7 @@ MonoBehaviour:
         - c6e1676068a94d12aae8fa40cf1f3ab2
         - b8cba786a25c4efb8a8a9fcba8322a75
         - c46976bcaefa4a4fb15c419f5dd83f85
-        _abort: 2
+        _abort: 0
     - rid: 1176
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
@@ -1563,3 +1574,87 @@ MonoBehaviour:
         _comment: 
         _slot: 0
         _ability: {fileID: 11400000, guid: 1b873e80776a43a88f048dcec57c515a, type: 2}
+    - rid: 1183
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7601b626f6624f499b5702e68f9dcd45
+        _position: {x: 300, y: 3900}
+        _comment: 'Acid on its hiding place (every 10 s): the target ducked into a bush or behind cover moments ago, within 18 m: spit acid onto where it went to ground, so the poison pool drives it out into the open (not within 5 m). Interrupts the hunt (it would only stalk an empty bush)'
+        _children:
+        - b49b2bf1ef074dcba1a95151f4c456c5
+        - 62bd07aef4594436bcfa67cb567d9d20
+        - 26978cb1a25e4be9955b4a677959f7be
+        - 53eaab0abca64a27b1bb3c872208a014
+        - 7ec860953bd441059f9c29498c9e7ef0
+        _abort: 2
+    - rid: 1184
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b49b2bf1ef074dcba1a95151f4c456c5
+        _position: {x: -30, y: 4050}
+        _comment: 
+        _children:
+        - c8d0d3536faa4a20ba70f379b6b6b948
+    - rid: 1185
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c8d0d3536faa4a20ba70f379b6b6b948
+        _position: {x: -30, y: 4200}
+        _comment: 
+    - rid: 1186
+      type: {class: TargetHiding, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 62bd07aef4594436bcfa67cb567d9d20
+        _position: {x: 190, y: 4050}
+        _comment: 
+        _within: 6
+        _inBushes: 1
+        _behindCover: 1
+    - rid: 1187
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 53eaab0abca64a27b1bb3c872208a014
+        _position: {x: 410, y: 4050}
+        _comment: 
+        _range: 18
+    - rid: 1188
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7ec860953bd441059f9c29498c9e7ef0
+        _position: {x: 630, y: 4050}
+        _comment: 
+        _children:
+        - 82c0da205d8642a693359addf4ef358b
+        _seconds: 10
+        _onlyAfterSuccess: 0
+    - rid: 1189
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 82c0da205d8642a693359addf4ef358b
+        _position: {x: 630, y: 4200}
+        _comment: 
+        _children:
+        - 8a9f724ed54747bfa4fdc174fee0a544
+    - rid: 1190
+      type: {class: ThrowGrenade, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8a9f724ed54747bfa4fdc174fee0a544
+        _position: {x: 630, y: 4350}
+        _comment: 
+        _grenade: {fileID: 11400000, guid: 80247cf6a7b34c5b9bef3246502a8cba, type: 2}
+        _minDistance: 5
+    - rid: 1191
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 26978cb1a25e4be9955b4a677959f7be
+        _position: {x: 300, y: 4200}
+        _comment: 
+        _children:
+        - 744453efc137462894eee96ea48f36fa
+    - rid: 1192
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 744453efc137462894eee96ea48f36fa
+        _position: {x: 300, y: 4350}
+        _comment: 
+        _range: 5

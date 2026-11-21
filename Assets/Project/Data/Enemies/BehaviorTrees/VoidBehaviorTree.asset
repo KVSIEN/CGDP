@@ -129,6 +129,18 @@ MonoBehaviour:
   - rid: 1153
   - rid: 1154
   - rid: 1155
+  - rid: 1156
+  - rid: 1157
+  - rid: 1158
+  - rid: 1159
+  - rid: 1160
+  - rid: 1161
+  - rid: 1162
+  - rid: 1163
+  - rid: 1164
+  - rid: 1165
+  - rid: 1166
+  - rid: 1167
   references:
     version: 2
     RefIds:
@@ -306,6 +318,7 @@ MonoBehaviour:
         - d4099671484a45ea81d33d45ebb4332d
         - 279e267b49594a7ebc5a39bc5e2c42c5
         - bf5eabf6ae7541c190f914778cc1d797
+        - 8fa39f7422414cc78935bcfdb3f7fbb3
         - 01611ae078d04342a6ff83f5940a365c
         - f9499f0e9aac46d883a898c8f92589f2
         - ded1ebec8c9f4bffa2ad1af180f690a0
@@ -1263,6 +1276,7 @@ MonoBehaviour:
         _children:
         - b4096f8e5f544d09b0cef5a39e277b14
         - 3439a93e1a5c4db68324e97ba67907b3
+        - f3f9282f32aa4c5c96b03938fe0d2a33
         - 9b19169614c5478ebabf0247a130a956
         - 81fd88a2ac30428fa19788a3f5576af3
         _abort: 2
@@ -1311,3 +1325,102 @@ MonoBehaviour:
         _comment: 
         _grenade: {fileID: 11400000, guid: cd020a88f8cb490eaf190a07345f3a5e, type: 2}
         _minDistance: 6
+    - rid: 1156
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8fa39f7422414cc78935bcfdb3f7fbb3
+        _position: {x: -398, y: 2200}
+        _comment: 'Frost on its hiding place (every 12 s): the target ducked into a bush or behind cover moments ago, between 6 and 20 m: lob a frost charge onto where it went to ground, so it comes out chilled (or sits in the second, harder freeze). Aborts lower priority'
+        _children:
+        - 24aa98a9755446e68b715d9fff03ea36
+        - cac6e0414d4340ce882f460538db83aa
+        - 52df2492508849f588494b4258b93701
+        - 69930d1bc6584c6cb60150d9b0813020
+        - e6443171a8f147bdb7779790f67e0137
+        _abort: 2
+    - rid: 1157
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 24aa98a9755446e68b715d9fff03ea36
+        _position: {x: -728, y: 2350}
+        _comment: 
+        _children:
+        - aff9b00929d0407b971a04f9f847ed32
+    - rid: 1158
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: aff9b00929d0407b971a04f9f847ed32
+        _position: {x: -728, y: 2500}
+        _comment: 
+    - rid: 1159
+      type: {class: TargetHiding, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: cac6e0414d4340ce882f460538db83aa
+        _position: {x: -508, y: 2350}
+        _comment: 
+        _within: 6
+        _inBushes: 1
+        _behindCover: 1
+    - rid: 1160
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 69930d1bc6584c6cb60150d9b0813020
+        _position: {x: -288, y: 2350}
+        _comment: 
+        _range: 20
+    - rid: 1161
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e6443171a8f147bdb7779790f67e0137
+        _position: {x: -68, y: 2350}
+        _comment: 
+        _children:
+        - b6a9e9ddef8749ccb886a8e890cc41c7
+        _seconds: 12
+        _onlyAfterSuccess: 0
+    - rid: 1162
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b6a9e9ddef8749ccb886a8e890cc41c7
+        _position: {x: -68, y: 2500}
+        _comment: 
+        _children:
+        - 26772888b4dc47528c61539d371fa509
+    - rid: 1163
+      type: {class: ThrowGrenade, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 26772888b4dc47528c61539d371fa509
+        _position: {x: -68, y: 2650}
+        _comment: 
+        _grenade: {fileID: 11400000, guid: cd020a88f8cb490eaf190a07345f3a5e, type: 2}
+        _minDistance: 6
+    - rid: 1164
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f3f9282f32aa4c5c96b03938fe0d2a33
+        _position: {x: -178, y: 1650}
+        _comment: 
+        _children:
+        - c370017e44494cdeb5cd8c75cf1d79b9
+    - rid: 1165
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c370017e44494cdeb5cd8c75cf1d79b9
+        _position: {x: -178, y: 1800}
+        _comment: 
+        _range: 6
+    - rid: 1166
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 52df2492508849f588494b4258b93701
+        _position: {x: -398, y: 2500}
+        _comment: 
+        _children:
+        - 1998d15d62f94f208dbcf5fdcf7db83c
+    - rid: 1167
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1998d15d62f94f208dbcf5fdcf7db83c
+        _position: {x: -398, y: 2650}
+        _comment: 
+        _range: 6
