@@ -7,5 +7,8 @@ namespace CGD.Enemies
         Target,
         // Straight ahead.
         Forward,
+        // Directly away from where it believes its target is: it turns its back to cast (a
+        // forward dash used to get away).
+        Away,
     }
 }

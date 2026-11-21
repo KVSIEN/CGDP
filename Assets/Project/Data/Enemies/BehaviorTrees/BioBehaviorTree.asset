@@ -160,6 +160,14 @@ MonoBehaviour:
   - rid: 1172
   - rid: 1173
   - rid: 1174
+  - rid: 1175
+  - rid: 1176
+  - rid: 1177
+  - rid: 1178
+  - rid: 1179
+  - rid: 1180
+  - rid: 1181
+  - rid: 1182
   references:
     version: 2
     RefIds:
@@ -230,6 +238,7 @@ MonoBehaviour:
         - d12b7193a2414ef0a78ca184901b5908
         - 95da2a10e67d4af7829fe9b4c197119a
         - f140415539004778952d6181b5ea096c
+        - 9e66ff5e9f544c629c6546ca8112e52b
         - 675b5a1e36e94ec98d5df56a48a0b53a
         - c4736511dc764bce89be0efb64cea50a
         - ee06be27f963487eb2f4bfaa9ecd6f6a
@@ -1486,3 +1495,71 @@ MonoBehaviour:
         _comment: 
         _grenade: {fileID: 11400000, guid: 80247cf6a7b34c5b9bef3246502a8cba, type: 2}
         _minDistance: 5
+    - rid: 1175
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 9e66ff5e9f544c629c6546ca8112e52b
+        _position: {x: 300, y: 5100}
+        _comment: 'Bone Spike (every 9 s): the target in view between 4 and 20 m with Bone Spike ready: fire a spike at it that passes through up to three in its way (and the target), making each bleed, then carry on the hunt. Aborts lower priority'
+        _children:
+        - f8d8dfd638bf434a9896029484668e3f
+        - 2260a5bedd7c4988b473a4befa81b8f2
+        - a57557af99c64944925ed5174e93f00f
+        - c6e1676068a94d12aae8fa40cf1f3ab2
+        - b8cba786a25c4efb8a8a9fcba8322a75
+        - c46976bcaefa4a4fb15c419f5dd83f85
+        _abort: 2
+    - rid: 1176
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f8d8dfd638bf434a9896029484668e3f
+        _position: {x: -140, y: 5250}
+        _comment: 
+    - rid: 1177
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2260a5bedd7c4988b473a4befa81b8f2
+        _position: {x: 80, y: 5250}
+        _comment: 
+    - rid: 1178
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a57557af99c64944925ed5174e93f00f
+        _position: {x: 300, y: 5250}
+        _comment: 
+        _children:
+        - 5009d27668e34006915f818ff69aaa30
+    - rid: 1179
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c6e1676068a94d12aae8fa40cf1f3ab2
+        _position: {x: 520, y: 5250}
+        _comment: 
+        _range: 20
+    - rid: 1180
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5009d27668e34006915f818ff69aaa30
+        _position: {x: 300, y: 5400}
+        _comment: 
+        _range: 4
+    - rid: 1181
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c46976bcaefa4a4fb15c419f5dd83f85
+        _position: {x: 740, y: 5250}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: 1b873e80776a43a88f048dcec57c515a, type: 2}
+        _aim: 0
+        _maxRange: 21
+        _requireClearShot: 1
+        _leadMovingTarget: 1
+    - rid: 1182
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b8cba786a25c4efb8a8a9fcba8322a75
+        _position: {x: 520, y: 5250}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: 1b873e80776a43a88f048dcec57c515a, type: 2}

@@ -12,7 +12,9 @@ namespace CGD.Weapons
     // grenade bounces and slows itself from its GrenadeData — and, optionally, the renderers to
     // tint and blink as the fuse burns down.
     // ThrowableController.Throw() calls Init() right after spawning; the thrower's team is
-    // immune to the explosion. Everything about the grenade comes from its GrenadeData.
+    // immune to the explosion. Everything about the grenade comes from its GrenadeData,
+    // including a second blast: it then holds still where the first went off and burns its
+    // fuse again before going off once more.
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(Collider))]
     public class Grenade : MonoBehaviour
@@ -35,6 +37,9 @@ namespace CGD.Weapons
         private DamageSource _source;
         private Vector3 _incoming; // velocity going into this physics step, before any contact changes it
         private float _age;
+        private float _fuse;            // seconds this fuse burns: the throw's, then the second blast's delay
+        private bool _secondBlastDue;
+        private bool _holding;          // between the two blasts: still, and no more bouncing
         private bool _initialized;
         private bool _blinking;
 
@@ -49,7 +54,7 @@ namespace CGD.Weapons
         public Team    ThrowerTeam => _source.Team;
         public float   BlastRadius => _data != null ? _data.ExplosionRadius : 0f;
         // Seconds until it goes off (for an impact fuse, the longest it can still fly).
-        public float   FuseLeft    => _initialized ? Mathf.Max(0f, _data.FuseTime - _age) : 0f;
+        public float   FuseLeft    => _initialized ? Mathf.Max(0f, _fuse - _age) : 0f;
 
         // Whether its blast would reach a point, give or take a margin: inside the radius, and
         // not behind a wall if the blast needs a line. `ignore` is the body that stands there,
@@ -82,6 +87,9 @@ namespace CGD.Weapons
             _data = data;
             _source = source;
             _age = 0f;
+            _fuse = data.FuseTime;
+            _secondBlastDue = data.SecondBlast.Enabled;
+            _holding = false;
             _initialized = true;
             _blinking = false;
             _incoming = _rb.linearVelocity;
@@ -91,7 +99,7 @@ namespace CGD.Weapons
         // The Rigidbody's own gravity covers 1×; the rest of the grenade's gravity is added here.
         private void FixedUpdate()
         {
-            if (!_initialized) return;
+            if (!_initialized || _holding) return;
             _rb.AddForce(Physics.gravity * (_data.GravityScale - 1f), ForceMode.Acceleration);
             _incoming = _rb.linearVelocity;
         }
@@ -101,7 +109,7 @@ namespace CGD.Weapons
             if (!_initialized) return;
 
             _age += Time.deltaTime;
-            if (_age >= _data.FuseTime)
+            if (_age >= _fuse)
             {
                 Explode();
                 return;
@@ -116,7 +124,7 @@ namespace CGD.Weapons
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (!_initialized) return;
+            if (!_initialized || _holding) return;
             if (_data.Fuse == FuseMode.OnImpact && _age >= _data.ArmTime)
             {
                 Explode();
@@ -127,7 +135,7 @@ namespace CGD.Weapons
 
         private void OnCollisionStay(Collision collision)
         {
-            if (!_initialized || collision.contactCount == 0) return;
+            if (!_initialized || _holding || collision.contactCount == 0) return;
             if (collision.GetContact(0).normal.y >= GroundNormalY) ApplyGroundDrag();
         }
 
@@ -152,7 +160,7 @@ namespace CGD.Weapons
         // Blinks faster the closer the fuse is to running out.
         private bool BlinkOn()
         {
-            float left = 1f - _age / _data.FuseTime;
+            float left = 1f - _age / _fuse;
             float period = Mathf.Lerp(FastestBlink, SlowestBlink, left);
             return _age % period < period * 0.35f;
         }
@@ -165,35 +173,61 @@ namespace CGD.Weapons
 
         private void Explode()
         {
+            if (_holding) GoOff(_data.SecondBlast.Damage, _data.SecondBlast.OnHitEffects);
+            else          GoOff(_data.ExplosionDamage, _data.OnHitEffects);
+
+            if (_secondBlastDue)
+            {
+                HoldForSecondBlast();
+                return;
+            }
+
+            if (_data.LingeringZone != null) SpawnZone(transform.position);
+            _initialized = false;
+            // Back to a free body before the pool hands it out again: throwers set its velocity before Init.
+            _holding = false;
+            _rb.isKinematic = false;
+            PrefabPool.Release(gameObject);
+        }
+
+        private void GoOff(float damage, StatusEffectApplication[] effects)
+        {
             Vector3 center = transform.position;
             Blast.Gather(center, _data.ExplosionRadius, _data.HitMask, _data.NeedsLineOfSight ? _data.BlockerMask : default);
-            DamageTargets();
+            DamageTargets(damage, effects);
             PushBodies(center);
 
             _data.ExplosionSound.TryPlay(center);
             Noise.Emit(center, _data.NoiseRadius, _source);
             CameraImpulses.Emit(center, _data.ShakeRadius, _data.CameraTrauma);
-            if (_data.LingeringZone != null) SpawnZone(center);
             ExplosionFlash.Spawn(_data.ExplosionEffect, center, _data.ExplosionRadius, _data.FlashColor);
-
-            _initialized = false;
-            PrefabPool.Release(gameObject);
         }
 
-        // A blast that deals no damage still counts when it applies a status (a stun grenade).
-        private bool HasEffects => _data.OnHitEffects != null && _data.OnHitEffects.Length > 0;
+        // Stays exactly where the first blast went off, its fuse burning again for the second.
+        private void HoldForSecondBlast()
+        {
+            _secondBlastDue = false;
+            _holding = true;
+            _rb.linearVelocity  = Vector3.zero;
+            _rb.angularVelocity = Vector3.zero;
+            _rb.isKinematic = true;
+            _age  = 0f;
+            _fuse = _data.SecondBlast.Delay;
+        }
 
         // A target is hit once, through its hitbox nearest the blast: full damage at the centre,
-        // EdgeDamage of it at the rim.
-        private void DamageTargets()
+        // EdgeDamage of it at the rim. A blast that deals no damage still counts when it applies
+        // a status (a stun grenade).
+        private void DamageTargets(float centerDamage, StatusEffectApplication[] effects)
         {
+            bool hasEffects = effects != null && effects.Length > 0;
             foreach (AreaHit hit in Blast.Hits)
             {
-                float damage = _data.ExplosionDamage * Mathf.Lerp(1f, _data.EdgeDamage, hit.Distance / _data.ExplosionRadius);
-                if (damage <= 0f && !HasEffects) continue;
+                float damage = centerDamage * Mathf.Lerp(1f, _data.EdgeDamage, hit.Distance / _data.ExplosionRadius);
+                if (damage <= 0f && !hasEffects) continue;
 
                 hit.Target.TakeDamage(new DamageInfo(damage, _data.ArmorPenetration, _data.DamageType,
-                    source: _source, onHitEffects: _data.OnHitEffects));
+                    source: _source, onHitEffects: effects));
             }
         }
 

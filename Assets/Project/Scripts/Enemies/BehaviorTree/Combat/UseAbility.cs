@@ -71,6 +71,8 @@ namespace CGD.Enemies
                 return true;
             }
 
+            if (_aim == AbilityAim.Away) return TryAwayPoint(out point);
+
             Vector3 ground = Ai.Perception.TargetPosition;
             if (_leadMovingTarget && _resolved != null)
                 ground = Ai.Foresight.LeadAim(ground, Ai.Perception.TargetVelocity, _resolved.CastTime);
@@ -78,9 +80,23 @@ namespace CGD.Enemies
             return Ai.Perception.Target != null;
         }
 
+        private bool TryAwayPoint(out Vector3 point)
+        {
+            Vector3 self = Ai.transform.position;
+            Vector3 away = self - Ai.Perception.TargetPosition;
+            away.y = 0f;
+            away = away.sqrMagnitude > 0.0001f ? away.normalized : -Ai.transform.forward;
+            point = self + Vector3.up * 1.5f + away * 5f;
+            return Ai.Perception.Target != null;
+        }
+
         private bool HasClearShot(Vector3 point) => !_requireClearShot || Ai.RangedCombat.HasClearShot(point);
 
+        // Range is measured to the target, even for a cast pointed away from it.
         private bool InRange(Vector3 point) =>
-            _maxRange <= 0f || (point - Ai.transform.position).sqrMagnitude <= _maxRange * _maxRange;
+            _maxRange <= 0f || (RangeCheckPoint(point) - Ai.transform.position).sqrMagnitude <= _maxRange * _maxRange;
+
+        private Vector3 RangeCheckPoint(Vector3 aimPoint) =>
+            _aim == AbilityAim.Away ? Ai.Perception.TargetPosition : aimPoint;
     }
 }

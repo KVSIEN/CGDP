@@ -19,9 +19,13 @@ namespace CGD.Combat
         private float         _distance;
         private Transform     _owner;
         private TrailRenderer _trail;
+        private int           _piercesLeft;
+        // Who it has already passed through this flight: hit once each, then ignored.
+        private readonly List<IDamageable> _pierced = new();
 
         // It struck something, at this point with this surface normal — for effects on the shot
-        // itself (a burst where it lands). Raised just before it returns to the pool.
+        // itself (a burst where it lands). Raised for each target it passes through, and for the
+        // last hit just before it returns to the pool.
         public event System.Action<Vector3, Vector3> Impacted;
 
         private void Awake()
@@ -32,7 +36,8 @@ namespace CGD.Combat
         }
 
         // Starts a flight. The projectile passes through its own shooter and any trigger
-        // colliders, and stops on the first non-trigger it hits.
+        // colliders, and stops on the first non-trigger it hits — or, with Pierce, carries on
+        // through that many targets first.
         public void Launch(in ProjectileLaunch launch)
         {
             _launch    = launch;
@@ -40,6 +45,8 @@ namespace CGD.Combat
             _age       = 0f;
             _distance  = launch.DistanceTravelled;
             _owner     = OwnerBody(launch.Damage.Source.Owner);
+            _piercesLeft = launch.Pierce;
+            _pierced.Clear();
 
             // A pooled instance still holds the trail of its last flight, which would
             // otherwise streak across the map from wherever that round died.
@@ -71,15 +78,27 @@ namespace CGD.Combat
             bool spent = length >= remaining;
             if (spent && length > 0f) step *= remaining / length;
 
-            if (TrySweep(transform.position, step, out RaycastHit hit))
+            // Each target it passes through is struck in turn along this step, until something stops it.
+            Vector3 start = transform.position;
+            Vector3 rest  = step;
+            while (TrySweep(start, rest, out RaycastHit hit))
             {
-                float scale = _launch.Falloff.Evaluate(_distance + hit.distance);
+                float scale = _launch.Falloff.Evaluate(_distance + (step.magnitude - rest.magnitude) + hit.distance);
                 Hitbox.ApplyHit(hit.collider, _launch.Damage.WithDamageScale(scale), hit.point);
                 ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet, _launch.Damage.Source);
-                if (_launch.BlastRadius > 0f) Splash(hit);
+
+                if (!TryPassThrough(hit.collider))
+                {
+                    if (_launch.BlastRadius > 0f) Splash(hit);
+                    Impacted?.Invoke(hit.point, hit.normal);
+                    Despawn();
+                    return;
+                }
+
                 Impacted?.Invoke(hit.point, hit.normal);
-                Despawn();
-                return;
+                Vector3 direction = rest.normalized;
+                start += direction * hit.distance;
+                rest  -= direction * hit.distance;
             }
 
             transform.position += step;
@@ -100,6 +119,26 @@ namespace CGD.Combat
             IDamageable direct = Hitbox.FindDamageable(hit.collider);
             foreach (AreaHit splash in _blast.Hits)
                 if (splash.Target != direct) splash.Target.TakeDamage(_launch.Damage);
+        }
+
+        // A target (not scenery) with pierces left: it carries on, and won't strike that target again.
+        private bool TryPassThrough(Collider struck)
+        {
+            if (_piercesLeft <= 0) return false;
+
+            IDamageable target = Hitbox.FindDamageable(struck);
+            if (target == null) return false;
+
+            _pierced.Add(target);
+            _piercesLeft--;
+            return true;
+        }
+
+        private bool AlreadyPierced(Collider collider)
+        {
+            if (_pierced.Count == 0) return false;
+            IDamageable target = Hitbox.FindDamageable(collider);
+            return target != null && _pierced.Contains(target);
         }
 
         private void Despawn() => PrefabPool.Release(gameObject);
@@ -140,6 +179,8 @@ namespace CGD.Combat
             for (int i = 0; i < count; i++)
             {
                 if (_owner != null && _hitBuffer[i].collider.transform.IsChildOf(_owner))
+                    continue;
+                if (AlreadyPierced(_hitBuffer[i].collider))
                     continue;
                 hit = _hitBuffer[i];
                 // A sphere that starts inside something reports no point: use where it was.

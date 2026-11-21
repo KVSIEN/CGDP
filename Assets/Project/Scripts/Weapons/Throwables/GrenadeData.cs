@@ -72,8 +72,12 @@ namespace CGD.Weapons
         [Tooltip("How far away enemies hear it (0 = silent)")]
         public float NoiseRadius = 50f;
 
+        [Header("Second Blast")]
+        [Tooltip("Optional: it goes off again where it lies, a moment after the first blast")]
+        public GrenadeSecondBlast SecondBlast = new();
+
         [Header("Aftermath")]
-        [Tooltip("Optional — a pooled prefab left where it goes off: a smoke cloud (ConcealmentZone + PooledLifetime) " +
+        [Tooltip("Optional — a pooled prefab left where it goes off (after the second blast, if it has one): a smoke cloud (ConcealmentZone + PooledLifetime) " +
                  "or the shared DamageZone, which does what the Zone settings below say")]
         [FormerlySerializedAs("SmokeCloudPrefab")]
         public GameObject LingeringZone;

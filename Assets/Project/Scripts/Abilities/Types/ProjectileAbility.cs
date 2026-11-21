@@ -21,6 +21,8 @@ namespace CGD.Abilities
         [Min(0f)] public float HitRadius = 0f;
         [Tooltip("Metres: everyone this close to where it lands is hurt (and affected) too. 0 = none")]
         [Min(0f)] public float BlastRadius = 0f;
+        [Tooltip("Targets it passes through, hurting and affecting each, before the next one stops it (0 = the first stops it). Walls always stop it")]
+        [Min(0)] public int Pierce = 0;
         public StatusEffectApplication[] OnHitEffects;
 
         // Distance in front of the camera to spawn — prevents clipping through geometry directly ahead
@@ -49,6 +51,7 @@ namespace CGD.Abilities
                 Falloff     = DamageFalloff.None,
                 HitRadius   = HitRadius,
                 BlastRadius = BlastRadius,
+                Pierce      = Pierce,
             });
         }
     }

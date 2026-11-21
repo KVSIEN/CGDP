@@ -114,6 +114,8 @@ namespace CGD.Enemies
         internal EnemyConcealment  Concealment  { get; private set; }
         // Its ability to walk through walls and take no harm for a while (Echo).
         internal EnemyIntangibility Intangibility { get; private set; }
+        // Its burst straight ahead under its own power (Thruster Dash).
+        internal EnemyDash         Dash         { get; private set; }
         internal EnemyMinions      Minions      { get; private set; }
         internal EnemyBelief       Belief       { get; private set; }
         internal GrenadeThrower    Grenades     { get; private set; }
@@ -181,6 +183,7 @@ namespace CGD.Enemies
             Ambush        = new EnemyAmbush(_stealth);
             Concealment   = new EnemyConcealment(_stealth);
             Intangibility = new EnemyIntangibility(this);
+            Dash          = new EnemyDash(this);
             Minions       = new EnemyMinions(this);
             Belief        = new EnemyBelief(this, _obstacleMask);
             Abilities     = new EnemyAbilities(this, _damageSource, _stealth, Minions);
@@ -273,6 +276,7 @@ namespace CGD.Enemies
             Vault.Tick(dt);
             Motion.Tick(dt);
             Intangibility.Tick(dt);
+            Dash.Tick(dt);
         }
 
         // A stun pauses the tree where it is, so the enemy resumes what it was doing.
@@ -291,6 +295,9 @@ namespace CGD.Enemies
                 Agent.isStopped = false;
                 ReportState(_stateBeforeStun);
             }
+
+            // A dash runs its course before the tree decides anything else.
+            if (Dash.IsDashing) return;
 
             // Getting out of a grenade's way takes the tree's place until it is clear.
             if (Reflexes.Tick(dt, Time.time)) return;
@@ -486,6 +493,7 @@ namespace CGD.Enemies
         private void OnDeath()
         {
             Intangibility.Reset();
+            Dash.Reset();
             Minions.DismissAll();
             Belief.Clear();
             Reflexes.Cancel();
@@ -521,6 +529,7 @@ namespace CGD.Enemies
             RangedCombat.Reset();
             Ambush.Disarm();
             Intangibility.Reset();
+            Dash.Reset();
             Concealment.Reset();
             Minions.DismissAll();
             Search.Cancel();

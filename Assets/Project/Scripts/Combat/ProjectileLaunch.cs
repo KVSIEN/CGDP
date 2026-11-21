@@ -16,6 +16,8 @@ namespace CGD.Combat
         public float         HitRadius;
         // Metres around the impact point where everyone else is hurt too, by the same damage (0 = none).
         public float         BlastRadius;
+        // Targets it passes through, hurting each, before the next one stops it (0 = the first stops it). Scenery always does.
+        public int           Pierce;
         public DamageFalloff Falloff;
         // Metres already resolved before the projectile spawned, so falloff and max range stay
         // continuous across a shot that began life as a hitscan.

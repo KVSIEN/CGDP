@@ -144,6 +144,11 @@ MonoBehaviour:
   - rid: 1133
   - rid: 1134
   - rid: 1135
+  - rid: 1136
+  - rid: 1137
+  - rid: 1138
+  - rid: 1139
+  - rid: 1140
   references:
     version: 2
     RefIds:
@@ -289,6 +294,7 @@ MonoBehaviour:
         - 1a60567584b9cb095c3a32da1981cb39
         - e2a1b2c3d4e5f60718293a4b5c6d7010
         - 40b8b38fef3b422c892842f32110b364
+        - dda02ffca7b7463a8c24bbdfe375a81c
         - 005f4c77603840d4ab6a10fa5550053b
         - 223bb24576d84dd29211ebc63a235095
         - 47dd9f0899c0475d9ee88439d3e2f8ce
@@ -1315,4 +1321,49 @@ MonoBehaviour:
         _aim: 0
         _maxRange: 9
         _requireClearShot: 1
+        _leadMovingTarget: 0
+    - rid: 1136
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: dda02ffca7b7463a8c24bbdfe375a81c
+        _position: {x: -780, y: 1250}
+        _comment: 'Thruster Dash (every 10 s): someone within 6 m with Thruster Dash ready: turn its back on them and dash 7 m away, leaving a strip of burning floor between them. The dash only goes the way it faces, so the turn is the tell. Aborts lower priority'
+        _children:
+        - d45442ff5d8842ae99c20512b2df432b
+        - 63d348b1144b4606b7bc6fcf3c1a9f6e
+        - 70446bab3edd47e7a6ebfc33d5fe6d8a
+        - 01326e9a19b043daab04c56d8ee47de6
+        _abort: 2
+    - rid: 1137
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d45442ff5d8842ae99c20512b2df432b
+        _position: {x: -1110, y: 1400}
+        _comment: 
+    - rid: 1138
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 63d348b1144b4606b7bc6fcf3c1a9f6e
+        _position: {x: -890, y: 1400}
+        _comment: 
+        _range: 6
+    - rid: 1139
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 70446bab3edd47e7a6ebfc33d5fe6d8a
+        _position: {x: -670, y: 1400}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: e01bbf6538644fc5963356db64f309bf, type: 2}
+    - rid: 1140
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 01326e9a19b043daab04c56d8ee47de6
+        _position: {x: -450, y: 1400}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: e01bbf6538644fc5963356db64f309bf, type: 2}
+        _aim: 2
+        _maxRange: 6
+        _requireClearShot: 0
         _leadMovingTarget: 0

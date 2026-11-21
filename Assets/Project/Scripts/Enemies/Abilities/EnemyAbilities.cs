@@ -12,7 +12,8 @@ namespace CGD.Enemies
     // health, its damage source and an aim point at its eyes that turns toward whatever it
     // aims at. Abilities that need a player-only part (dash, reflect, stealth) can't run;
     // Phase Shift (finds hidden cover and calls up minions), Rift (lands on the aim point), Echo
-    // (turns intangible) and Primal Roar's reveal of hostiles only run on enemies.
+    // (turns intangible), Thruster Dash (dashes on its own) and Primal Roar's reveal of hostiles
+    // only run on enemies.
     // Each ability keeps its own cooldown per enemy; meter costs and charges don't apply.
     internal sealed class EnemyAbilities
     {
@@ -55,6 +56,7 @@ namespace CGD.Enemies
                 Summoner        = summoner,
                 Scout           = ai.Perception,
                 Phasing         = ai.Intangibility,
+                Dasher          = ai.Dash,
             };
             // An enemy always aims somewhere, so abilities that land on the aim point (Rift) are
             // usable from the start. Each cast re-aims it at its target as it goes off (AimAt);
