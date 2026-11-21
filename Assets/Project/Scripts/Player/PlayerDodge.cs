@@ -34,6 +34,7 @@ namespace CGD.Player
         private PlayerInputHandler _input;
         private MeterSet _meters;
         private HealthManager _health;
+        private PlayerActionChannel _channel;
 
         private CooldownTimer _cooldown;
         private float _buffered;
@@ -78,6 +79,7 @@ namespace CGD.Player
             _input    = GetComponent<PlayerInputHandler>();
             TryGetComponent(out _meters);
             TryGetComponent(out _health);
+            _channel  = PlayerActionChannel.On(gameObject);
             _motion.Ended += cooldown =>
             {
                 if (!_fromAbility) _cooldown.Start(cooldown);
@@ -180,7 +182,10 @@ namespace CGD.Player
             if (!_movement.IsGrounded) _airDodgesUsed++;
             _fromAbility = fromAbility;
             _motion.Start(move.Stages, direction);
-            if (!fromAbility) Dodged?.Invoke();
+            if (fromAbility) return;
+
+            Dodged?.Invoke();
+            _channel.ReportStarted(PlayerActionKind.Dodge);
         }
 
         private bool TryGetDirection(DodgeDefinition move, out Vector2 direction)

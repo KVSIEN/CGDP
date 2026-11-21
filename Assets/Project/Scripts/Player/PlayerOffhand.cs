@@ -33,6 +33,7 @@ namespace CGD.Player
         private MeleeController     _melee;
         private CombatActions       _actions;
         private HealthManager       _health;
+        private PlayerActionChannel _channel;
         private CharacterStats      _stats;
 
         private ArtifactInstance _artifact;
@@ -61,6 +62,7 @@ namespace CGD.Player
             TryGetComponent(out _dodge);
             TryGetComponent(out _melee);
             TryGetComponent(out _actions);
+            _channel = PlayerActionChannel.On(gameObject);
             TryGetComponent(out _health);
             _stats = GetComponentInParent<CharacterStats>();
 
@@ -104,11 +106,15 @@ namespace CGD.Player
             bool pressed = _input.WasPressed(GameAction.AimDownSights);
             if (_use.Mode == OffhandUseMode.Tap)
             {
-                if (pressed) _use.Begin(_context);
+                if (pressed && _use.Begin(_context)) _channel.ReportStarted(PlayerActionKind.Offhand);
                 return;
             }
 
-            if (pressed && !_holding) _holding = _use.Begin(_context);
+            if (pressed && !_holding)
+            {
+                _holding = _use.Begin(_context);
+                if (_holding) _channel.ReportStarted(PlayerActionKind.Offhand);
+            }
             if (!_holding) return;
 
             if (!_input.IsHeld(GameAction.AimDownSights) || !_use.Hold(_context))

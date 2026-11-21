@@ -45,6 +45,7 @@ namespace CGD.Abilities
         private PlayerMovement _movement;
         private MeterSet _meters;
         private CombatActions _actions;
+        private PlayerActionChannel _channel;
         private CharacterStats _stats;
         private AbilityState[] _states;
         private InputBuffer[] _buffers;
@@ -68,6 +69,7 @@ namespace CGD.Abilities
             _movement  = GetComponent<PlayerMovement>();
             TryGetComponent(out _meters);
             TryGetComponent(out _actions);
+            _channel   = PlayerActionChannel.On(gameObject);
             _stats     = GetComponentInParent<CharacterStats>();
             _states    = new AbilityState[_slots.Length];
             _buffers   = new InputBuffer[_slots.Length];
@@ -139,7 +141,7 @@ namespace CGD.Abilities
                 if (!ability.CanExecute(_ctx))         continue;
 
                 _buffers[i].Clear();
-                AbilityStarted?.Invoke(ability);
+                ReportStarted(ability);
 
                 if (ability.CastTime > 0f)
                 {
@@ -155,8 +157,17 @@ namespace CGD.Abilities
         }
 
         // Tells perks, melee combos and reloads about a cast made outside the four slots (a held tome).
-        public void ReportStarted(Ability ability) => AbilityStarted?.Invoke(ability);
-        public void ReportUsed(Ability ability)    => AbilityUsed?.Invoke(ability);
+        public void ReportStarted(Ability ability)
+        {
+            AbilityStarted?.Invoke(ability);
+            _channel.ReportStarted(PlayerActionKind.Ability);
+        }
+
+        public void ReportUsed(Ability ability)
+        {
+            AbilityUsed?.Invoke(ability);
+            _channel.ReportCompleted(PlayerActionKind.Ability);
+        }
 
         // Charges available in a slot (0 for an empty slot).
         public int GetCharges(int slot) => _states[slot] != null ? _states[slot].Charges : 0;
@@ -217,7 +228,7 @@ namespace CGD.Abilities
 
             state.Prepare(_ctx, surgeSpent);
             state.Ability.Execute(_ctx);
-            AbilityUsed?.Invoke(state.Ability);
+            ReportUsed(state.Ability);
             state.Spend(AbilityState.CooldownOf(state.Ability, _stats));
         }
 

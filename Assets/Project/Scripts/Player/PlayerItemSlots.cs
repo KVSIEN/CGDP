@@ -47,6 +47,7 @@ namespace CGD.Player
         private CharacterStats         _stats;
         private MeterSet               _meters;
         private ThrowableController    _throwing;
+        private PlayerActionChannel    _channel;
         private SlotKeyWheel           _keys;
 
         // The wheel's choices for the slot being held: null = empty, then each item.
@@ -85,6 +86,7 @@ namespace CGD.Player
             TryGetComponent(out _stats);
             TryGetComponent(out _meters);
             TryGetComponent(out _throwing);
+            _channel   = PlayerActionChannel.On(gameObject);
             if (_slots.Length != SlotCount) Array.Resize(ref _slots, SlotCount);
             _keys = new SlotKeyWheel(_input, _wheel, SlotActions, "Item");
             for (int i = 0; i < SlotCount; i++) _buffers[i] = new InputBuffer();
@@ -220,6 +222,7 @@ namespace CGD.Player
             _using     = item;
             _remaining = item.CastTime;
             UseStarted?.Invoke(item);
+            _channel.ReportStarted(PlayerActionKind.Item);
             if (_remaining <= 0f) Finish();
             return true;
         }
@@ -248,6 +251,7 @@ namespace CGD.Player
             Apply(item);
             if (item.IsInstant) _sharedCooldown.Start(item.SharedCooldown);
             UseEnded?.Invoke(item, true);
+            _channel.ReportCompleted(PlayerActionKind.Item);
         }
 
         private void Apply(ConsumableDefinition item)

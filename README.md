@@ -132,7 +132,7 @@ Assets/
       Map/                  map graph data (Graph/: MapGraph, MapNode, analysis) and Generation/ (MapGenerator and its settings at the root; Layout/ — layout settings, grid, path, branches, loops, organic growth and the builders; Content/ — content settings, node type rules, guarantees, pacing, sections, type/intensity/tier passes; Categories/ — ship-space categories and their painter; Gates/ — locks and secrets; Factions/ — faction mixes and painter; RunModifiers/ — run modifiers and tuning; Analysis/ — validator, style report, style learner)
       Meters/               generic resources (stamina, mana, oxygen…): Meter, MeterSet, MeterCost, MeterZone
       Perks/                gear perks (passive and triggered), perk pools, PerkDispatcher
-      Player/               movement, camera, lock-on, health, lifecycle, player audio; Dodge/ (DodgeDefinition stages, DodgeMotion)
+      Player/               movement, camera, lock-on, health, lifecycle, player audio, PlayerActionChannel + PlayerActionRules (how the player's actions interrupt and weave into each other); Dodge/ (DodgeDefinition stages, DodgeMotion)
       Quests/               quest/objective definitions, QuestLog, QuestTracker, QuestEvents, signals
       Saving/               SaveFile (one JSON save on disk, safe writes)
       Settings/             GameSettings (audio, video, accessibility preferences) and SettingsData

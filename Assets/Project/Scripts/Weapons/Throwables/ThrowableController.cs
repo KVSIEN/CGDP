@@ -28,6 +28,7 @@ namespace CGD.Weapons
         private PlayerInventory    _inventory;
         private PlayerMovement     _movement;
         private WeaponController   _weapon;
+        private PlayerActionChannel _channel;
         private Collider           _ownerCollider;
         private DamageSource       _damageSource;
         private bool               _aiming;
@@ -48,6 +49,7 @@ namespace CGD.Weapons
             _inventory = GetComponent<PlayerInventory>();
             TryGetComponent(out _movement);
             TryGetComponent(out _weapon);
+            _channel   = PlayerActionChannel.On(gameObject);
             _ownerCollider = GetComponent<Collider>();
             _damageSource  = DamageSource.Of(gameObject);
         }
@@ -68,6 +70,7 @@ namespace CGD.Weapons
             StopAiming();
             if (_weapon != null) _weapon.SetHolstered(true);
             ReadiedChanged?.Invoke();
+            _channel.ReportStarted(PlayerActionKind.Throw);
             return true;
         }
 
@@ -156,6 +159,7 @@ namespace CGD.Weapons
 
             data.ThrowSound.TryPlay(transform.position);
             Thrown?.Invoke();
+            _channel.ReportCompleted(PlayerActionKind.Throw);
 
             if (!_keepReadyAfterThrow || !_inventory.Inventory.Has(throwable, 1)) PutAway();
         }

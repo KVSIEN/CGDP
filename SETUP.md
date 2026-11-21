@@ -126,6 +126,7 @@ Player             [PlayerInputHandler, PlayerHealth, PlayerMovement, PlayerDodg
 | **PlayerFootsteps** | `_surfaces` = `Audio/DefaultSurfaceDatabase`, `_animationCues`? = the body's AnimationEventRelay (steps then follow the clips' `Footstep` cues instead of the timed intervals) | A collider can carry an optional **SurfaceTag** (`_walk` / `_sprint` / `_crouch` = `SoundBank`s) to override the database's footsteps for that surface. |
 | **PlayerAudio** | `_health` = PlayerHealth, `_hurtSound`?, `_deathSound`? | |
 | **MeterSet** | `_definitions` = meters from `Data/Meters/` (the Player prefab has `StaminaMeter`) | Needed before any stamina/mana cost can be paid; melee swings and blocks spend stamina from it. |
+| **PlayerActionChannel** | — | Nothing to add or wire: the player's action components (weapon, melee, abilities, item slots, throwables, offhand, dodge) add it to their own object when they start. They announce their actions on it and listen for the ones that interrupt them (a reload cancelled by a melee attack, an ability or an item; a melee combo weaving round an ability or item). Those components must stay on the same object. |
 | **CombatActions** | — | Counts the player's combat actions (hits, kills, parries) that fill ability Surge. Parries count when a `MeleeController` is on the same object. Without it Surge abilities never fill. |
 
 **Meter costs** — set `SprintCost` on `PlayerMovementSettings`, `_cost` on a dodge, or `Cost` on an ability.

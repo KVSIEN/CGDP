@@ -1,9 +1,7 @@
 using System;
 using UnityEngine;
-using CGD.Abilities;
 using CGD.Combat;
 using CGD.Input;
-using CGD.Items;
 using CGD.Meters;
 using CGD.Player;
 using CGD.Settings;
@@ -55,8 +53,7 @@ namespace CGD.Weapons
         private PlayerInputHandler _input;
         private PlayerMovement     _movement;
         private PlayerDodge        _dodge;
-        private PlayerAbilities    _abilities;
-        private PlayerItemSlots    _items;
+        private PlayerActionChannel _channel;
         private Reflector          _reflector;
         private MeterSet           _meters;
         private MeleeSwing         _swing;
@@ -100,8 +97,7 @@ namespace CGD.Weapons
             _movement        = GetComponent<PlayerMovement>();
             TryGetComponent(out _meters);
             TryGetComponent(out _dodge);
-            TryGetComponent(out _abilities);
-            TryGetComponent(out _items);
+            _channel = PlayerActionChannel.On(gameObject);
             TryGetComponent(out _reflector);
             _swing = new MeleeSwing(transform, _camera, GetComponentInParent<CharacterStats>(), DamageSource.Of(gameObject),
                                     _weaponSocket, _debugDraw, _debugDuration);
@@ -112,14 +108,12 @@ namespace CGD.Weapons
 
         private void OnEnable()
         {
-            if (_abilities != null) _abilities.AbilityUsed += OnAbilityUsed;
-            if (_items     != null) _items.UseEnded         += OnItemUsed;
+            _channel.Completed += OnActionCompleted;
         }
 
         private void OnDisable()
         {
-            if (_abilities != null) _abilities.AbilityUsed -= OnAbilityUsed;
-            if (_items     != null) _items.UseEnded         -= OnItemUsed;
+            _channel.Completed -= OnActionCompleted;
         }
 
         // Called by the loadout when the active slot changes (null = an empty slot).
@@ -251,12 +245,10 @@ namespace CGD.Weapons
             if (ReadSwing(_offInput,  Hand.Off,  out heavy)      && buffering) _offInput.Queue(Time.time, heavy);
         }
 
-        private void OnAbilityUsed(Ability ability) => WeaveAction();
-
-        // A consumable used mid-combo weaves like an ability; a cancelled channel doesn't.
-        private void OnItemUsed(ConsumableDefinition item, bool completed)
+        // An ability or consumable used mid-combo weaves; a cancelled channel reports nothing.
+        private void OnActionCompleted(PlayerActionKind kind)
         {
-            if (completed) WeaveAction();
+            if (PlayerActionRules.WeavesIntoCombo(kind)) WeaveAction();
         }
 
         // An ability or consumable between steps. Before a swing's cancel window the swing
@@ -373,6 +365,7 @@ namespace CGD.Weapons
             // Kills are credited to the swinging weapon, or for a bash to the gun in hand.
             _swing.Begin(data, weapon, weapon != null ? weapon : _inHand, step, bash);
             AttackStarted?.Invoke(index);
+            _channel.ReportStarted(PlayerActionKind.Melee);
         }
 
         // Stamina is optional on melee: unlike MeterCost.TryPay, a character without the

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using CGD.Abilities;
 using CGD.Audio;
 using CGD.CameraEffects;
 using CGD.Combat;
@@ -51,9 +50,7 @@ namespace CGD.Weapons
         private CharacterStats _stats;
         private PlayerMovement _movement;
         private PlayerDodge    _dodge;
-        private PlayerAbilities _abilities;
-        private PlayerItemSlots _items;
-        private MeleeController _melee;
+        private PlayerActionChannel _channel;
         private DamageSource   _ownerSource;
         // The owner plus the weapon in hand, so kills are credited to that weapon's perks.
         private DamageSource   _damageSource;
@@ -112,31 +109,33 @@ namespace CGD.Weapons
         {
             _movement     = GetComponent<PlayerMovement>();
             TryGetComponent(out _dodge);
-            TryGetComponent(out _abilities);
-            TryGetComponent(out _items);
-            TryGetComponent(out _melee);
+            _channel = PlayerActionChannel.On(gameObject);
             _ownerSource  = DamageSource.Of(gameObject);
             _damageSource = _ownerSource;
             if (_inventory == null) _inventory = GetComponentInParent<PlayerInventory>();
             _stats = GetComponentInParent<CharacterStats>();
 
             _reloader = new WeaponReloader(_inventory, _stats, _muzzle != null ? _muzzle : transform, NotifyAmmoChanged);
-            _reloader.Started   += () => ReloadStarted?.Invoke();
-            _reloader.Committed += () => Reloaded?.Invoke();
+            _reloader.Started   += () =>
+            {
+                ReloadStarted?.Invoke();
+                _channel.ReportStarted(PlayerActionKind.Reload);
+            };
+            _reloader.Committed += () =>
+            {
+                Reloaded?.Invoke();
+                _channel.ReportCompleted(PlayerActionKind.Reload);
+            };
 
             // Keep HUD reserve count in sync with shared pool.
             if (_inventory != null) _inventory.Inventory.Changed += NotifyAmmoChanged;
-            if (_abilities != null) _abilities.AbilityStarted   += OnAbilityStarted;
-            if (_items     != null) _items.UseStarted           += OnItemUseStarted;
-            if (_melee     != null) _melee.AttackStarted        += OnMeleeAttackStarted;
+            _channel.Started += OnActionStarted;
         }
 
         private void OnDestroy()
         {
             if (_inventory != null) _inventory.Inventory.Changed -= NotifyAmmoChanged;
-            if (_abilities != null) _abilities.AbilityStarted   -= OnAbilityStarted;
-            if (_items     != null) _items.UseStarted           -= OnItemUseStarted;
-            if (_melee     != null) _melee.AttackStarted        -= OnMeleeAttackStarted;
+            _channel.Started -= OnActionStarted;
         }
 
         // Using an ability or a consumable, or starting a melee attack (the gun's bash), takes
@@ -144,13 +143,9 @@ namespace CGD.Weapons
         // early after it. A reload in steps keeps every step already loaded. So a shell loaded,
         // then a bash, cancels the rest of the reload and keeps the shell. The weapon still
         // waits for the ability or item, so these mostly just save the time.
-        private void OnAbilityStarted(Ability ability) => CancelReloadByAction();
-        private void OnItemUseStarted(ConsumableDefinition item) => CancelReloadByAction();
-        private void OnMeleeAttackStarted(int attack) => CancelReloadByAction();
-
-        private void CancelReloadByAction()
+        private void OnActionStarted(PlayerActionKind kind)
         {
-            if (_reloader.IsReloading) InterruptReload();
+            if (PlayerActionRules.CancelsReload(kind) && _reloader.IsReloading) InterruptReload();
         }
 
         private void OnDisable()
@@ -328,6 +323,7 @@ namespace CGD.Weapons
             D.FireSound.TryPlay(SoundPos);
             Noise.Emit(transform.position, D.NoiseRadius, _damageSource);
             Fired?.Invoke();
+            _channel.ReportStarted(PlayerActionKind.Fire);
         }
 
         private IEnumerator FireBurst()
