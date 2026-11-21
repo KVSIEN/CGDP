@@ -28,7 +28,7 @@ namespace CGD.Enemies
         protected override void OnInitialize(BtContext context)
         {
             base.OnInitialize(context);
-            _resolved = _slot == AbilitySlot.Own ? _ability : Ai.Data.KitAbility(_slot);
+            _resolved = Ai.Data.KitAbility(_slot, _ability);
             Ai.Abilities.Register(_resolved);
         }
 

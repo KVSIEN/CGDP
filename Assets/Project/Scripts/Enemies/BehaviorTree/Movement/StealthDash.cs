@@ -41,8 +41,7 @@ namespace CGD.Enemies
         protected override void OnEnter(BtContext context)
         {
             _endsAt = context.Time + _maxTime;
-            _moving = TryPickSpot(out Vector3 destination) && Ai.Routing.SetDestination(destination);
-            if (_moving) Ai.Agent.isStopped = false;
+            _moving = TryPickSpot(out Vector3 destination) && MoveTo(destination);
         }
 
         protected override BtStatus OnTick(BtContext context)

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using UnityEngine.AI;
 using CGD.BehaviorTrees;
 
@@ -14,6 +15,15 @@ namespace CGD.Enemies
         {
             Ai = context.Agent as EnemyAI
                  ?? throw new InvalidOperationException($"{GetType().Name} needs an EnemyAI to drive, not {context.Agent?.GetType().Name ?? "nothing"}.");
+        }
+
+        // Sends it on its way: routed there and moving. False (and left as it was) when no route
+        // could be requested.
+        protected bool MoveTo(Vector3 destination, RouteStyle style = RouteStyle.Direct)
+        {
+            if (!Ai.Routing.SetDestination(destination, style)) return false;
+            Ai.Agent.isStopped = false;
+            return true;
         }
 
         protected static bool HasArrived(NavMeshAgent agent, float distance) =>

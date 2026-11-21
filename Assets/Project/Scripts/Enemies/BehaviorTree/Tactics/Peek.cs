@@ -49,8 +49,7 @@ namespace CGD.Enemies
             _fired     = false;
             _phase     = Phase.Out;
             _givesUpAt = context.Time + _giveUpAfter;
-            _ready     = TryFindPeekSpot(out Vector3 spot) && Ai.Routing.SetDestination(spot);
-            if (_ready) Ai.Agent.isStopped = false;
+            _ready     = TryFindPeekSpot(out Vector3 spot) && MoveTo(spot);
         }
 
         protected override void OnExit(BtContext context) => Ai.Agent.isStopped = false;

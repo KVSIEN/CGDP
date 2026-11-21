@@ -25,8 +25,7 @@ namespace CGD.Enemies
             _givesUpAt = context.Time + _giveUpAfter;
             _moving = Ai.Perception.Target != null &&
                       Ai.Tactics.TryFallBack(Ai.Perception.TargetPosition, out Vector3 destination) &&
-                      Ai.Routing.SetDestination(destination);
-            if (_moving) Ai.Agent.isStopped = false;
+                      MoveTo(destination);
         }
 
         protected override BtStatus OnTick(BtContext context)

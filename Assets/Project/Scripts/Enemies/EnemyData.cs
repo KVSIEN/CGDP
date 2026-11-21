@@ -169,6 +169,9 @@ namespace CGD.Enemies
             _                     => null,
         };
 
+        // What a behavior node that names a slot casts: its own ability for Own, else the kit's.
+        public Ability KitAbility(AbilitySlot slot, Ability own) => slot == AbilitySlot.Own ? own : KitAbility(slot);
+
         public float EffectiveHealth => (MaxHealth + MaxShield) * (1f + Mathf.Max(0f, Armor) / 100f);
 
         // Damage per second of non-stop attacking at base speed (no buffs, every hit landing), for
