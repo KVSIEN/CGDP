@@ -10,6 +10,9 @@ namespace CGD.Core
         [Tooltip("Seconds before release. 0 = release once all particles have finished.")]
         [SerializeField, Min(0f)] private float _lifetime;
 
+        // Seconds it lasts before release (0 = until its particles finish), for effects that fade out with it.
+        public float Lifetime => _lifetime;
+
         private ParticleSystem _particles;
         private float          _age;
 

@@ -803,7 +803,7 @@ All presets are in `Data/Feedback/`.
 | **StealthAbility** | add `Abilities/StealthAbility` to a PlayerAbilities slot | Needs Stealthable. |
 
 - Enemies need **no** changes — `EnemyPerception` checks stealth automatically. An enemy only hides if its prefab has a **Stealthable** (the three AISimulator agent prefabs and the minion variant do; `_settings` can stay empty for the defaults). It reads its NavMeshAgent where the player would use PlayerMovement (for footsteps and standing still), and its attacks, grenades and abilities call `Reveal()` (abilities whose `GivesAway` is false — Stealth, Ambush — don't).
-- `SmokeCloud` has no visual yet: add a Particle System (and a matching collider radius, default 4 m).
+- `SmokeCloud` shows as a clump of grey puffs (**SmokeCloudVisual** on its root: `_material` = `Art/Materials/VFX/ExplosionFlash`, `_color` grey at 0.55 alpha, `_puffs` 12), built at runtime from its Sphere Collider (radius 4 m, centre 1 m up) and faded out over the last 2.5 s of its `PooledLifetime`. Swap in a Particle System later if wanted (keep the collider radius).
 
 ## Camera Effects & Lock-On
 
