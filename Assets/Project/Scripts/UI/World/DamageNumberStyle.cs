@@ -47,5 +47,6 @@ namespace CGD.UI
         public const float GainTallySeconds = 0.5f;
         public static readonly Color HealColor   = new Color(0.35f, 0.95f, 0.40f, 1f);
         public static readonly Color ShieldColor = new Color(0.35f, 0.70f, 1.00f, 1f);
+        public static readonly Color PlatingColor = new Color(0.78f, 0.80f, 0.86f, 1f);
     }
 }

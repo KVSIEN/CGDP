@@ -20,12 +20,14 @@ namespace CGD.Enemies
         private const float RecentDamageHalfLife = 1.5f;   // seconds for the recent-damage share to halve
 
         private bool  _hasStats;
+        private StatusEffectController _status;
         private float _recentDamage;
         private float _recentDamageAt;
 
         // Health and shield gained but not shown yet, and when they next are (-1: nothing pending).
         private float _pendingHeal;
         private float _pendingShield;
+        private float _pendingPlating;
         private float _showGainsAt = -1f;
 
         // How hard it is being hit right now: health and shield lost lately, as a share of both
@@ -46,6 +48,8 @@ namespace CGD.Enemies
         public override float MaxHealth => WithModifiers(ItemStat.Health, _data.MaxHealth) * GameDifficulty.EnemyHealth;
         public override float Armor     => WithModifiers(ItemStat.Armor, _data.Armor);
         public override float MaxShield => WithModifiers(ItemStat.Shield, _data.MaxShield) * GameDifficulty.EnemyHealth;
+        public override float MaxPlating   => WithModifiers(ItemStat.Plating, _data.MaxPlating) * GameDifficulty.EnemyHealth;
+        public override float PlatingArmor => _data.PlatingArmor;
         protected override float ShieldRegenDelay => _data.ShieldRegenDelay;
         protected override float ShieldRegenRate  => _data.ShieldRegenRate;
 
@@ -57,6 +61,13 @@ namespace CGD.Enemies
             OnDeath += ReportKill;
             OnChanged += RefreshHealthBar;
             _hasStats = TryGetComponent<CharacterStats>(out _);
+            TryGetComponent(out _status);
+            ApplyImmunities();
+        }
+
+        private void ApplyImmunities()
+        {
+            if (_status != null) _status.SetExtraImmunities(_data.StatusImmunities);
         }
 
         // Lifesteal (from buffs on this enemy, e.g. Bio's Surge): a share of the damage it deals
@@ -82,7 +93,7 @@ namespace CGD.Enemies
 
         private void RefreshHealthBar()
         {
-            if (_healthBar != null) _healthBar.Refresh(Health, MaxHealth, Shield, MaxShield);
+            if (_healthBar != null) _healthBar.Refresh(HealthReading.Of(this));
         }
 
         // Kill objectives count enemies by their EnemyData.
@@ -90,17 +101,18 @@ namespace CGD.Enemies
 
         protected override void OnDamageTaken(float amount, Vector3 point, bool isCritical)
         {
-            _recentDamage   = RecentDamageShare + amount / Mathf.Max(1f, MaxHealth + MaxShield);
+            _recentDamage   = RecentDamageShare + amount / Mathf.Max(1f, MaxHealth + MaxShield + MaxPlating);
             _recentDamageAt = Time.time;
             DamageNumbers.Spawn(amount, point + _popupOffset, isCritical, DealerColor(LastHitSource));
-            if (_healthBar != null) _healthBar.ShowDamage(Health, MaxHealth, Shield, MaxShield);
+            if (_healthBar != null) _healthBar.ShowDamage(HealthReading.Of(this));
         }
 
-        protected override void OnRestored(float health, float shield)
+        protected override void OnRestored(float health, float shield, float plating)
         {
             if (_showGainsAt < 0f) _showGainsAt = Time.time + DamageNumberStyle.GainTallySeconds;
-            _pendingHeal   += health;
-            _pendingShield += shield;
+            _pendingHeal    += health;
+            _pendingShield  += shield;
+            _pendingPlating += plating;
         }
 
         protected override void Update()
@@ -114,9 +126,10 @@ namespace CGD.Enemies
         private void ShowGains()
         {
             Vector3 point = DefaultHitPoint + _popupOffset;
-            _pendingHeal   = ShowGain(_pendingHeal, point, DamageNumberStyle.HealColor);
-            _pendingShield = ShowGain(_pendingShield, point, DamageNumberStyle.ShieldColor);
-            _showGainsAt   = _pendingHeal > 0f || _pendingShield > 0f
+            _pendingHeal    = ShowGain(_pendingHeal, point, DamageNumberStyle.HealColor);
+            _pendingShield  = ShowGain(_pendingShield, point, DamageNumberStyle.ShieldColor);
+            _pendingPlating = ShowGain(_pendingPlating, point, DamageNumberStyle.PlatingColor);
+            _showGainsAt    = _pendingHeal > 0f || _pendingShield > 0f || _pendingPlating > 0f
                 ? Time.time + DamageNumberStyle.GainTallySeconds
                 : -1f;
         }
@@ -138,6 +151,7 @@ namespace CGD.Enemies
         public void UseData(EnemyData data)
         {
             _data = data;
+            ApplyImmunities();
             RefillToMax();
         }
 
@@ -147,6 +161,7 @@ namespace CGD.Enemies
             _recentDamage  = 0f;
             _pendingHeal   = 0f;
             _pendingShield = 0f;
+            _pendingPlating = 0f;
             _showGainsAt   = -1f;
             if (IsDead) Revive();
         }

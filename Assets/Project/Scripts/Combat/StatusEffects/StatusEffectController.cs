@@ -26,6 +26,7 @@ namespace CGD.Combat
         [Tooltip("Effects this character ignores")]
         [SerializeField] private StatusEffect[] _immunities;
 
+        private StatusEffect[] _extraImmunities;
         private HealthManager _health;
         private readonly Dictionary<StatusEffect, ActiveEffect> _active = new();
         private readonly List<StatusEffect> _expiredBuffer = new();
@@ -119,7 +120,12 @@ namespace CGD.Combat
         }
 
         public bool IsImmuneTo(StatusEffect effect) =>
-            _immunities != null && System.Array.IndexOf(_immunities, effect) >= 0;
+            (_immunities != null && System.Array.IndexOf(_immunities, effect) >= 0) ||
+            (_extraImmunities != null && System.Array.IndexOf(_extraImmunities, effect) >= 0);
+
+        // Immunities its character's data gives it (a TECH machine doesn't bleed), on top of the
+        // ones set on this component.
+        public void SetExtraImmunities(StatusEffect[] immunities) => _extraImmunities = immunities;
 
         // Entry point for hits: lets the effect decide what applying it means. The dose is how
         // strong and long the source makes it (the asset as tuned when left out).

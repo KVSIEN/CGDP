@@ -7,10 +7,10 @@ using CGD.Combat;
 namespace CGD.Enemies
 {
     // A field engineer's or medic's job: finds the ally of its own side close by that most needs
-    // it — the least left of what its ability restores (health, shield or both), counting double what it is losing right now, so an
+    // it — the least left of what its ability restores (health, shield, plating or all of them), counting double what it is losing right now, so an
     // ally under fire comes before one merely worn down — goes to it and uses its Support ability
-    // (EnemyData › Kit › Support: Field Repair heals, Shield Projector tops up shields, Mending
-    // Spores heals and cleanses) once in reach. While its ally faces a threat it comes in on the
+    // (EnemyData › Kit › Support: Field Repair restores plating, Shield Projector tops up shields,
+    // Mending Spores heals, regrows bone plating and cleanses) once in reach. While its ally faces a threat it comes in on the
     // ally's far side, using the ally as cover rather than walking into the line of fire.
     // Succeeds when the ability went off; fails when nobody needs it, the ability isn't ready,
     // or it can't get there in time.
@@ -20,7 +20,7 @@ namespace CGD.Enemies
     {
         [Tooltip("Metres it looks for allies in")]
         [SerializeField, Min(1f)] private float _searchRadius = 20f;
-        [Tooltip("Helps allies with at most this share left of what its ability restores (health, shield, or both together)")]
+        [Tooltip("Helps allies with at most this share left of what its ability restores (health, shield, plating, or those together)")]
         [SerializeField, Range(0.05f, 1f)] private float _threshold = 0.7f;
         [Tooltip("How much more it favours an ally taking a beating right now: its recent losses (as a share of its maximum) " +
                  "count this many times over against what it has left. 0 = only what it has left matters")]
@@ -36,6 +36,7 @@ namespace CGD.Enemies
         // What its ability gives back, so it only goes to allies short of that.
         [NonSerialized] private bool    _countsHealth;
         [NonSerialized] private bool    _countsShield;
+        [NonSerialized] private bool    _countsPlating;
         [NonSerialized] private EnemyAI _ally;
         [NonSerialized] private bool    _casting;
         [NonSerialized] private float   _givesUpAt;
@@ -49,8 +50,9 @@ namespace CGD.Enemies
             Ai.Abilities.Register(_support);
             // A Targeted ability says what it restores; anything else (a Rally) helps either way.
             var targeted  = _support as TargetedAbility;
-            _countsShield = targeted == null || targeted.Shield > 0f;
-            _countsHealth = targeted == null || targeted.Heal > 0f || !_countsShield;
+            _countsShield  = targeted == null || targeted.Shield > 0f;
+            _countsPlating = targeted == null || targeted.Plating > 0f;
+            _countsHealth  = targeted == null || targeted.Heal > 0f || (!_countsShield && !_countsPlating);
         }
 
         protected override void OnEnter(BtContext context)
@@ -122,6 +124,7 @@ namespace CGD.Enemies
                 float have = 0f, max = 0f;
                 if (_countsHealth) { have += health.Health; max += health.MaxHealth; }
                 if (_countsShield) { have += health.Shield; max += health.MaxShield; }
+                if (_countsPlating) { have += health.Plating; max += health.MaxPlating; }
                 float share = max > 0f ? have / max : 1f;
                 share -= health.RecentDamageShare * _underFireWeight;
                 if (share > lowest) continue;

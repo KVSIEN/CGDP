@@ -112,12 +112,13 @@ namespace CGD.DevTools
             EnemyHealth health = label.Health;
 
             string number = index < 9 ? $"<color=#FFD24A>{index + 1}</color>  " : "";
-            string shield = health.MaxShield > 0f ? $" <color=#7fc8ff>+{health.Shield:0}</color>" : "";
+            string shield  = health.MaxShield > 0f ? $" <color=#7fc8ff>+{health.Shield:0}</color>" : "";
+            string plating = health.MaxPlating > 0f && !health.LivesOnPlating ? $" <color=#c8ccd8>+{health.Plating:0}</color>" : "";
             string step   = ai.Step == EngageStep.None ? "" : $" · {ai.Step}";
             HealthManager target = ai.Perception.Target;
             string state  = $"<color={OverlayPalette.Hex(OverlayPalette.ForAwareness(health.Team, ai.Awareness))}>{ai.Awareness}</color>";
             string belief = target != null ? $"{state} → {target.DisplayName}" : state;
-            return $"{number}<b>{health.DisplayName}</b>  {health.Health:0}{shield}\n{ai.State}{step}{StealthTag(label.Stealth)}\n<size=85%>{belief}</size>";
+            return $"{number}<b>{health.DisplayName}</b>  {health.Vital:0}{plating}{shield}\n{ai.State}{step}{StealthTag(label.Stealth)}\n<size=85%>{belief}</size>";
         }
 
         // Concealed agents fade to a ghost in the Game view; the label says why, and whether it is

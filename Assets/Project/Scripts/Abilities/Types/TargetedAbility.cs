@@ -5,7 +5,7 @@ using CGD.Targeting;
 namespace CGD.Abilities
 {
     // Damages and/or helps whatever its TargetSelector picks: a cone blast on enemies, a
-    // heal, a shield top-up or a cleanse on allies around the caster, a strike on the enemy under
+    // heal, a shield top-up, a plating repair or a cleanse on allies around the caster, a strike on the enemy under
     // the crosshair. Not used when it wouldn't affect anyone (no enemies in reach, allies all
     // at full health and shield, nothing to cleanse), so the charge and cost are kept.
     [CreateAssetMenu(fileName = "TargetedAbility", menuName = "CGD/Abilities/Targeted")]
@@ -26,6 +26,8 @@ namespace CGD.Abilities
         [Min(0f)] public float SelfHealShare = 0f;
         [Tooltip("Shield given back to each target, up to its maximum (a shield projector). 0 = none")]
         [Min(0f)] public float Shield = 0f;
+        [Tooltip("Plating repaired on each target, up to its maximum (a field repair, regrown bone). 0 = none")]
+        [Min(0f)] public float Plating = 0f;
         [Tooltip("On: also clears every status effect on each target (burns, bleeds, poison, chills, slows)")]
         public bool Cleanse;
 
@@ -50,6 +52,7 @@ namespace CGD.Abilities
                 if (target.IsDead) continue;
                 if (Heal   > 0f) target.Heal(Heal);
                 if (Shield > 0f) target.RestoreShield(Shield);
+                if (Plating > 0f) target.RestorePlating(Plating);
                 if (Cleanse && target.TryGetComponent(out StatusEffectController status)) status.Clear();
             }
 
@@ -60,9 +63,9 @@ namespace CGD.Abilities
         // What the hit actually took off the target (after armor, and only what it had left).
         private static float DamageTaken(HealthManager target, in DamageInfo hit)
         {
-            float before = target.Health + target.Shield;
+            float before = target.Health + target.Shield + target.Plating;
             target.TakeDamage(hit);
-            return Mathf.Max(0f, before - (target.Health + target.Shield));
+            return Mathf.Max(0f, before - (target.Health + target.Shield + target.Plating));
         }
 
         // Team filtering in HealthManager would already make damage to allies a no-op; this
@@ -71,6 +74,7 @@ namespace CGD.Abilities
             (Damage > 0f && target.CanBeDamagedBy(ctx.Source)) ||
             (Heal   > 0f && target.Health < target.MaxHealth) ||
             (Shield > 0f && target.Shield < target.MaxShield) ||
+            (Plating > 0f && target.Plating < target.MaxPlating) ||
             (Cleanse && target.TryGetComponent(out StatusEffectController status) && status.HasAny);
 
         private int Select(AbilityContext ctx)

@@ -44,5 +44,7 @@ namespace CGD.Items
         // Share of every hit the character deals that lands as Entropy (armour does nothing
         // against it), 0..1 (base 0). Read by the target as the hit resolves.
         EntropyShare      = 27,
+        // Armour plating capacity (flat), the layer between shield and health that only repair restores.
+        Plating           = 28,
     }
 }

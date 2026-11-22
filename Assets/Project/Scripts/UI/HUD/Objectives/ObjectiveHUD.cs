@@ -114,7 +114,7 @@ namespace CGD.UI
             _bar.gameObject.SetActive(health != null);
             if (health == null) return;
 
-            float fraction = health.MaxHealth > 0f ? Mathf.Clamp01(health.Health / health.MaxHealth) : 0f;
+            float fraction = health.MaxVital > 0f ? Mathf.Clamp01(health.Vital / health.MaxVital) : 0f;
             _barFillRect.anchorMax = new Vector2(fraction, 1f);
         }
     }

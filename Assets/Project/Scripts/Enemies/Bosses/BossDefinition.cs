@@ -58,7 +58,8 @@ namespace CGD.Enemies
         public EnemyData CreateData(EnemyData enemy)
         {
             EnemyData boss = Instantiate(enemy);
-            boss.MaxHealth *= _healthMultiplier;
+            boss.MaxHealth  *= _healthMultiplier;
+            boss.MaxPlating *= _healthMultiplier;
             boss.Armor     += _armorBonus;
             boss.MaxShield += _shieldBonus;
             return boss;

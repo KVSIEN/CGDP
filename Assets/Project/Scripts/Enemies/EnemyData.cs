@@ -22,8 +22,15 @@ namespace CGD.Enemies
         [Range(1, 3)] public int Tier = 1;
 
         [Header("Health")]
+        [Tooltip("0 = no health at all: it lives on its plating and dies when that runs out (TECH)")]
         public float MaxHealth = 100f;
         public float Armor     = 0f;
+
+        [Header("Plating")]
+        [Tooltip("Armour plating (a TECH hull, a BIO's bone plates): between shield and health, never recovers by itself, only by repair (a Restore Plating ability)")]
+        [Min(0f)] public float MaxPlating = 0f;
+        [Tooltip("Armour the plates add, on top of Armor, against hits that land on them")]
+        [Min(0f)] public float PlatingArmor = 0f;
 
         [Header("Shield")]
         public float MaxShield = 0f;
@@ -85,6 +92,8 @@ namespace CGD.Enemies
         [Min(0f)] public float RangedAttackCooldown = 0f;
         [Tooltip("Damage of each ranged shot. 0 = the attack damage (a hybrid can shoot harder or softer than it stabs)")]
         [Min(0f)] public float RangedAttackDamage = 0f;
+        [Tooltip("Status effects it shrugs off (a TECH machine doesn't bleed)")]
+        public StatusEffect[] StatusImmunities;
         [Tooltip("Status effects every melee hit applies (an Infector's infestation, a venomous bite). Empty = none")]
         public StatusEffectApplication[] MeleeEffects;
         [Tooltip("Seconds between starting an attack and the hit landing (melee only)")]
@@ -154,9 +163,10 @@ namespace CGD.Enemies
         public SoundBank AttackSound;
         public SoundBank RangedAttackSound;
 
-        // Raw damage it takes to kill from full: shield and health together, both behind
-        // armor (Effective Damage = Raw × 100 / (100 + Armor), GDD › Damage Calculation).
-        // Low-tier enemies sit around 100; each reality spreads it differently.
+        // Raw damage it takes to kill from full: shield, plating and health together, all behind
+        // armor and plating behind its own plating armor too (Effective Damage = Raw × 100 /
+        // (100 + Armor), GDD › Damage Calculation). Low-tier enemies sit around 100; each reality
+        // spreads it differently.
         // The kit ability in a slot (null for Own or an empty slot).
         public Ability KitAbility(AbilitySlot slot) => slot switch
         {
@@ -172,7 +182,9 @@ namespace CGD.Enemies
         // What a behavior node that names a slot casts: its own ability for Own, else the kit's.
         public Ability KitAbility(AbilitySlot slot, Ability own) => slot == AbilitySlot.Own ? own : KitAbility(slot);
 
-        public float EffectiveHealth => (MaxHealth + MaxShield) * (1f + Mathf.Max(0f, Armor) / 100f);
+        public float EffectiveHealth =>
+            (MaxHealth + MaxShield) * (1f + Mathf.Max(0f, Armor) / 100f) +
+            MaxPlating * (1f + (Mathf.Max(0f, Armor) + PlatingArmor) / 100f);
 
         // Damage per second of non-stop attacking at base speed (no buffs, every hit landing), for
         // comparing enemy types: a melee swing every wind-up + cooldown...

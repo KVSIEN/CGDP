@@ -600,8 +600,8 @@ namespace CGD.Enemies
 
         private static float StrengthLeft(HealthManager candidate)
         {
-            float full = candidate.MaxHealth + candidate.MaxShield;
-            return full > 0f ? Mathf.Clamp01((candidate.Health + candidate.Shield) / full) : 1f;
+            float full = candidate.MaxHealth + candidate.MaxShield + candidate.MaxPlating;
+            return full > 0f ? Mathf.Clamp01((candidate.Health + candidate.Shield + candidate.Plating) / full) : 1f;
         }
 
         private void Observe(HealthManager target, Stimulus stimulus, float elapsed)

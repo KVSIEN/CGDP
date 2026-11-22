@@ -7,8 +7,12 @@ using CGD.Stats;
 namespace CGD.Combat
 {
     // Parent of a character's Hitboxes and the single place damage is resolved:
-    // region multiplier → armor → interceptors (a raised guard) → shield → health.
+    // region multiplier → armor → interceptors (a raised guard) → shield → plating → health.
     // Subclasses only supply their stats.
+    // Plating (armour plating, a BIO's bone plates) never recovers by itself, only by repair
+    // (RestorePlating); hits on it are resisted with Plating Armor on top of Armor (PlatingLayer).
+    // A character lives on its health — or, with no health at all (TECH), on its plating: it
+    // dies when that vital pool runs out.
     [DisallowMultipleComponent]
     public abstract class HealthManager : MonoBehaviour, IDamageable
     {
@@ -16,6 +20,7 @@ namespace CGD.Combat
         [SerializeField] private HitboxProfile _hitboxProfile;
 
         private float _currentHealth;
+        private float _plating;
         private Meter _shield;
         private float _armorReductionPercent;
         private StatusEffectController _statusEffects;
@@ -29,6 +34,10 @@ namespace CGD.Combat
         public abstract float MaxShield { get; }
         protected abstract float ShieldRegenDelay { get; }
         protected abstract float ShieldRegenRate  { get; }
+        // Plating capacity; 0 = none.
+        public virtual float MaxPlating   => 0f;
+        // Armour the plates add against what lands on them.
+        public virtual float PlatingArmor => 0f;
 
         protected virtual float   StartingHealth  => MaxHealth;
         // Feedback position for damage without a hit point, e.g. status effect ticks.
@@ -50,9 +59,16 @@ namespace CGD.Combat
         // at full that came from this team — kill credit for loot.
         public float DamageShareOf(Team team) => _contribution.ShareOf(team);
 
-        public float Health => _currentHealth;
-        public float Shield => _shield.Current;
-        public bool  IsDead => _currentHealth <= 0f;
+        public float Health  => _currentHealth;
+        public float Shield  => _shield.Current;
+        public float Plating => _plating;
+
+        // No health of its own: its plating is what keeps it alive.
+        public bool  LivesOnPlating => MaxHealth <= 0f && MaxPlating > 0f;
+        // The pool it lives on (health, or plating), for anything that asks how hurt it is.
+        public float Vital    => LivesOnPlating ? _plating : _currentHealth;
+        public float MaxVital => LivesOnPlating ? MaxPlating : MaxHealth;
+        public bool  IsDead   => Vital <= 0f;
 
         // The latest hit that got through (team and invulnerability checks) — lets death
         // reactions such as a ragdoll fall away from whoever landed it.
@@ -67,6 +83,7 @@ namespace CGD.Combat
 
         public event Action        OnChanged;
         public event Action        OnDeath;
+        // Damage to the pool it lives on (health, or plating): what staggers and shakes it.
         public event Action<float> OnDamaged;
         // Every hit this character accepts (after team filtering), with its source.
         public event Action<DamageInfo> OnHit;
@@ -97,6 +114,11 @@ namespace CGD.Combat
         private void OnStatChanged(ItemStat stat)
         {
             if (stat == ItemStat.Shield) _shield.SetMax(MaxShield, keepRatio: false);
+            else if (stat == ItemStat.Plating && !IsDead && _plating > MaxPlating)
+            {
+                _plating = LivesOnPlating ? Mathf.Max(1f, MaxPlating) : MaxPlating;
+                OnChanged?.Invoke();
+            }
             else if (stat == ItemStat.Health && !IsDead && _currentHealth > MaxHealth)
             {
                 _currentHealth = Mathf.Max(1f, MaxHealth);
@@ -119,7 +141,7 @@ namespace CGD.Combat
 
             float bonus = WithModifiers(ItemStat.ShieldRegenRate, ShieldRegenRate) - ShieldRegenRate;
             if (bonus > 0f) _shield.Restore(bonus * deltaTime);
-            if (_shield.Current > before) OnRestored(0f, _shield.Current - before);
+            if (_shield.Current > before) OnRestored(0f, _shield.Current - before, 0f);
             return true;
         }
 
@@ -134,7 +156,7 @@ namespace CGD.Combat
             float before = _currentHealth;
             _currentHealth = Mathf.Min(_currentHealth + regen * deltaTime, MaxHealth);
             OnChanged?.Invoke();
-            OnRestored(_currentHealth - before, 0f);
+            OnRestored(_currentHealth - before, 0f, 0f);
         }
 
         public void TakeDamage(DamageInfo info) =>
@@ -159,7 +181,21 @@ namespace CGD.Combat
             if (_currentHealth <= before) return;
 
             OnHealed?.Invoke(_currentHealth - before);
-            OnRestored(_currentHealth - before, 0f);
+            OnRestored(_currentHealth - before, 0f, 0f);
+        }
+
+        // Repairs plating (a field repair, regrown bone), up to its maximum. Nothing to repair
+        // on a character without plating, or a dead one.
+        public void RestorePlating(float amount)
+        {
+            if (IsDead || amount <= 0f) return;
+
+            float before = _plating;
+            _plating = Mathf.Min(_plating + amount, MaxPlating);
+            if (_plating <= before) return;
+
+            OnChanged?.Invoke();
+            OnRestored(0f, 0f, _plating - before);
         }
 
         // Gives up up to this much shield on purpose (a discharge) and returns how much it was.
@@ -184,17 +220,22 @@ namespace CGD.Combat
             float before = _shield.Current;
             _shield.Restore(amount);
             OnChanged?.Invoke();
-            if (_shield.Current > before) OnRestored(0f, _shield.Current - before);
+            if (_shield.Current > before) OnRestored(0f, _shield.Current - before, 0f);
         }
 
         // Sets health and shield straight to these shares of their maxima, without a hit (test
-        // scenarios: "start wounded", "start with the shield broken"). Health stays above 0;
-        // a lowered shield waits out its regen delay, as after a hit.
+        // scenarios: "start wounded", "start with the shield broken"). The health share also
+        // sets plating. The pool it lives on stays above 0; a lowered shield waits out its regen
+        // delay, as after a hit.
         public void SetShares(float health, float shield)
         {
             if (IsDead) return;
 
-            _currentHealth = Mathf.Clamp(MaxHealth * Mathf.Clamp01(health), Mathf.Min(1f, MaxHealth), MaxHealth);
+            health = Mathf.Clamp01(health);
+            _currentHealth = Mathf.Clamp(MaxHealth * health, Mathf.Min(1f, MaxHealth), MaxHealth);
+            _plating       = LivesOnPlating
+                ? Mathf.Clamp(MaxPlating * health, Mathf.Min(1f, MaxPlating), MaxPlating)
+                : MaxPlating * health;
             float target = MaxShield * Mathf.Clamp01(shield);
             if (target < _shield.Current)
             {
@@ -224,6 +265,7 @@ namespace CGD.Combat
         private void ResetHealth()
         {
             _currentHealth = StartingHealth;
+            _plating       = MaxPlating;
             _shield.Fill();
             _contribution.Clear();
             OnChanged?.Invoke();
@@ -232,9 +274,9 @@ namespace CGD.Combat
         // Every hit that lands, shield and health together; called after health and shield are updated.
         protected virtual void OnDamageTaken(float amount, Vector3 point, bool isCritical) { }
 
-        // Health and shield actually gained, from any source: heals, regeneration, a siphon.
-        // Not raised by Revive, refills or test scenarios setting them directly.
-        protected virtual void OnRestored(float health, float shield) { }
+        // Health, shield and plating actually gained, from any source: heals, regeneration, a
+        // siphon, a repair. Not raised by Revive, refills or test scenarios setting them directly.
+        protected virtual void OnRestored(float health, float shield, float plating) { }
 
         // A base value with this character's stat modifiers (buffs, difficulty) applied,
         // for subclasses' MaxHealth/Armor. Unchanged when there's no CharacterStats.
@@ -249,14 +291,17 @@ namespace CGD.Combat
             LastHitPoint  = point;
             OnHit?.Invoke(info);
 
-            float resolved = info.ResolveDamage(Armor * (1f - _armorReductionPercent), EntropyShareOf(info.Source)) * multiplier;
+            float armor    = Armor * (1f - _armorReductionPercent);
+            float entropy  = EntropyShareOf(info.Source);
+            float resolved = info.ResolveDamage(armor, entropy) * multiplier;
             float amount   = resolved;
             foreach (IDamageInterceptor interceptor in _interceptors)
                 amount = Mathf.Max(0f, interceptor.Intercept(info, amount, point));
             // A hit an interceptor stopped outright (a parry) carries no status effects either.
             bool deflected = resolved > 0f && amount <= 0f;
             float dealt  = amount;
-            float before = _currentHealth + _shield.Current;
+            float before = Pools;
+            float vitalBefore = Vital;
             _shield.SuppressRegen();
 
             if (!_shield.IsEmpty)
@@ -269,13 +314,17 @@ namespace CGD.Combat
                 amount -= absorbed / shieldMult;
             }
 
-            if (amount > 0f)
+            if (amount > 0f && _plating > 0f)
             {
-                _currentHealth = Mathf.Max(_currentHealth - amount, 0f);
-                OnDamaged?.Invoke(amount);
+                float platedShare = PlatingLayer.PlatedShare(info, armor, PlatingArmor * (1f - _armorReductionPercent), entropy);
+                amount = PlatingLayer.Absorb(amount, _plating, platedShare, out float absorbed);
+                _plating -= absorbed;
             }
 
-            _contribution.Record(info.Credited.Team, before - _currentHealth - _shield.Current);
+            if (amount > 0f) _currentHealth = Mathf.Max(_currentHealth - amount, 0f);
+            if (Vital < vitalBefore) OnDamaged?.Invoke(vitalBefore - Vital);
+
+            _contribution.Record(info.Credited.Team, before - Pools);
             OnChanged?.Invoke();
             // Damage the shield soaked up counts too, so hits on a shielded enemy still show a number.
             if (dealt > 0f) OnDamageTaken(dealt, point, isCritical);
@@ -288,6 +337,8 @@ namespace CGD.Combat
 
             if (!deflected) ApplyOnHitEffects(info);
         }
+
+        private float Pools => _currentHealth + _shield.Current + _plating;
 
         // The attacker's Entropy Share (a VOID buff), read as the hit lands so a shot fired before
         // the buff ends still carries it. Sourceless hits (status ticks, hazards) have none.

@@ -35,7 +35,7 @@ namespace CGD.Editor
             if (data == null) return lines;
 
             HashSet<Type> nodes = EnemyTreeContents.NodeTypes(data.BehaviorTree, data.BehaviorTuning);
-            lines.Add($"Toughness: {data.EffectiveHealth:0} raw damage to kill ({data.MaxHealth:0} health + {data.MaxShield:0} shield, {data.Armor:0} armour).");
+            lines.Add($"Toughness: {data.EffectiveHealth:0} raw damage to kill ({data.MaxHealth:0} health + {data.MaxPlating:0} plating (+{data.PlatingArmor:0} armour) + {data.MaxShield:0} shield, {data.Armor:0} armour).");
 
             if (MeleeAttacks(data, nodes))
                 lines.Add($"Melee: {data.AttackDamage:0.#} per hit, about {data.MeleeDamagePerSecond:0.#} damage/s " +
@@ -65,7 +65,7 @@ namespace CGD.Editor
             }
 
             HashSet<Type> nodes = EnemyTreeContents.NodeTypes(data.BehaviorTree, data.BehaviorTuning);
-            if (data.MaxHealth <= 0f)
+            if (data.MaxHealth <= 0f && data.MaxPlating <= 0f)
                 issues.Add(new Issue(BtIssueSeverity.Error, "Max Health is 0: it dies the moment it spawns."));
 
             if (!EnemyTreeContents.UsesAny(nodes, AttackNodes))

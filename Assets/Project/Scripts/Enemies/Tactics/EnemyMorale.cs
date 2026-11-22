@@ -62,7 +62,7 @@ namespace CGD.Enemies
         public void OnDamaged()
         {
             var health = _ai.Health;
-            if (_hurtCounted || health.MaxHealth <= 0f || health.Health / health.MaxHealth > LowHealth) return;
+            if (_hurtCounted || health.MaxVital <= 0f || health.Vital / health.MaxVital > LowHealth) return;
 
             _hurtCounted = true;
             Value = Mathf.Max(0f, Value - Doctrine.HurtLoss(Profile.MoraleLossHurt));

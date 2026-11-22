@@ -23,6 +23,8 @@ namespace CGD.Enemies
         public void ApplyTo(EnemyData data)
         {
             data.MaxHealth    *= HealthMultiplier;
+            // More of what keeps it alive: a TECH machine, with no health, gets more plating.
+            if (data.MaxHealth <= 0f) data.MaxPlating *= HealthMultiplier;
             data.Armor        += ArmorBonus;
             data.MaxShield    += ShieldBonus;
             data.AttackDamage *= DamageMultiplier;

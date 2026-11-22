@@ -479,7 +479,7 @@ namespace CGD.Enemies
             Morale.OnDamaged();
             Ground.OnHurt(Time.time);
             if (_health.IsDead || Time.time < _nextStaggerAt) return;
-            if (amount < _health.MaxHealth * _data.StaggerThreshold) return;
+            if (amount < _health.MaxVital * _data.StaggerThreshold) return;
 
             _nextStaggerAt = Time.time + _data.StaggerCooldown;
             Stagger(_data.StaggerDuration);

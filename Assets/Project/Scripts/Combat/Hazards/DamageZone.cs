@@ -100,9 +100,9 @@ namespace CGD.Combat
             {
                 if (area.Target is not HealthManager target || !target.CanBeDamagedBy(_source)) continue;
 
-                float before = target.Health + target.Shield;
+                float before = target.Health + target.Shield + target.Plating;
                 target.TakeDamage(hit);
-                siphoned += Mathf.Max(0f, before - (target.Health + target.Shield));
+                siphoned += Mathf.Max(0f, before - (target.Health + target.Shield + target.Plating));
 
                 if (_zone.EntryNoiseRadius > 0f && _entered.Add(target))
                     Noise.Emit(target.transform.position, _zone.EntryNoiseRadius, _source);

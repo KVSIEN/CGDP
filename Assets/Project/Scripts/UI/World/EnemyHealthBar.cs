@@ -4,7 +4,7 @@ using TMPro;
 
 namespace CGD.UI
 {
-    // The health (and shield) bar floating over an enemy. By default it appears when the enemy
+    // The health (and shield, and plating) bar floating over an enemy. By default it appears when the enemy
     // is hit and fades out after a moment; "always visible" keeps it up with its numbers, for
     // targets whose state is the thing being looked at (the firing range's dummies).
     public class EnemyHealthBar : MonoBehaviour
@@ -18,6 +18,8 @@ namespace CGD.UI
         [SerializeField] private Color   _fillColor   = new Color(0.2f, 0.85f, 0.2f, 1f);
         [SerializeField] private Color   _bgColor     = new Color(0.85f, 0.15f, 0.1f, 1f);
         [SerializeField] private Color   _shieldColor = new Color(0.35f, 0.65f, 1f, 1f);
+        [Tooltip("Armour plating: the main bar of a character that lives on its plating, else a strip under it")]
+        [SerializeField] private Color   _platingColor = new Color(0.72f, 0.74f, 0.8f, 1f);
 
         [Header("Damage trail")]
         [Tooltip("Colour of the band that shows what a hit just took off")]
@@ -39,6 +41,9 @@ namespace CGD.UI
         private TrailingFill    _health;
         private TrailingFill    _shield;
         private RectTransform   _shieldBar;
+        private TrailingFill    _plating;
+        private RectTransform   _platingBar;
+        private Image           _healthFront;
         private TextMeshProUGUI _numbers;
         private CanvasGroup     _group;
         private Camera          _cam;
@@ -60,9 +65,10 @@ namespace CGD.UI
 
             _group = _canvas.gameObject.AddComponent<CanvasGroup>();
 
-            _health = BuildFill(rt, _bgColor, _fillColor);
+            _health = BuildFill(rt, _bgColor, _fillColor, out _healthFront);
 
             BuildShieldBar(rt);
+            BuildPlatingBar(rt);
             if (_showNumbers) BuildNumbers(rt);
         }
 
@@ -77,16 +83,31 @@ namespace CGD.UI
             _shieldBar.anchoredPosition = new Vector2(0f, 2f);
             _shieldBar.sizeDelta = new Vector2(0f, 8f);
 
-            _shield = BuildFill(_shieldBar, new Color(0f, 0f, 0f, 0.6f), _shieldColor);
+            _shield = BuildFill(_shieldBar, new Color(0f, 0f, 0f, 0.6f), _shieldColor, out _);
             _shieldBar.gameObject.SetActive(false);
         }
 
+        // A thinner strip under the health bar; only shown for plates over health (bone plating).
+        private void BuildPlatingBar(RectTransform parent)
+        {
+            _platingBar = new GameObject("Plating", typeof(RectTransform)).GetComponent<RectTransform>();
+            _platingBar.SetParent(parent, false);
+            _platingBar.anchorMin = new Vector2(0f, 0f);
+            _platingBar.anchorMax = new Vector2(1f, 0f);
+            _platingBar.pivot     = new Vector2(0.5f, 1f);
+            _platingBar.anchoredPosition = new Vector2(0f, -2f);
+            _platingBar.sizeDelta = new Vector2(0f, 6f);
+
+            _plating = BuildFill(_platingBar, new Color(0f, 0f, 0f, 0.6f), _platingColor, out _);
+            _platingBar.gameObject.SetActive(false);
+        }
+
         // Background, then the damage trail, then the fill on top.
-        private TrailingFill BuildFill(RectTransform parent, Color background, Color fill)
+        private TrailingFill BuildFill(RectTransform parent, Color background, Color fill, out Image front)
         {
             CreateStretchImage(parent, "BG", background);
             Image trail = CreateStretchImage(parent, "Trail", _trailColor);
-            Image front = CreateStretchImage(parent, "Fill", fill);
+            front = CreateStretchImage(parent, "Fill", fill);
             return new TrailingFill(front.rectTransform, trail.rectTransform, _trailHold, _trailSpeed);
         }
 
@@ -96,7 +117,7 @@ namespace CGD.UI
             _numbers.rectTransform.anchorMin = new Vector2(0f, 0f);
             _numbers.rectTransform.anchorMax = new Vector2(1f, 0f);
             _numbers.rectTransform.pivot     = new Vector2(0.5f, 1f);
-            _numbers.rectTransform.anchoredPosition = new Vector2(0f, -2f);
+            _numbers.rectTransform.anchoredPosition = new Vector2(0f, -10f);
             _numbers.rectTransform.sizeDelta = new Vector2(0f, 24f);
             _numbers.fontSize  = 20f;
             _numbers.alignment = TextAlignmentOptions.Center;
@@ -113,27 +134,39 @@ namespace CGD.UI
         }
 
         // Brings the bar up (and starts its fade-out timer) after a hit.
-        public void ShowDamage(float health, float maxHealth, float shield, float maxShield)
+        public void ShowDamage(in HealthReading reading)
         {
-            Refresh(health, maxHealth, shield, maxShield);
+            Refresh(reading);
             _punchTimer = PunchTime;
             Reveal();
         }
 
         // Updates the fills without bringing the bar up, e.g. as a shield regenerates.
-        public void Refresh(float health, float maxHealth, float shield, float maxShield)
+        public void Refresh(in HealthReading reading)
         {
             if (_health == null) return;
 
-            _health.Set(maxHealth > 0f ? health / maxHealth : 0f);
-            _shieldBar.gameObject.SetActive(maxShield > 0f);
-            _shield.Set(maxShield > 0f ? shield / maxShield : 0f);
+            _healthFront.color = reading.LivesOnPlating ? _platingColor : _fillColor;
+            _health.Set(reading.MaxVital > 0f ? reading.Vital / reading.MaxVital : 0f);
+            _shieldBar.gameObject.SetActive(reading.MaxShield > 0f);
+            _shield.Set(reading.MaxShield > 0f ? reading.Shield / reading.MaxShield : 0f);
+            _platingBar.gameObject.SetActive(reading.HasPlatingStrip);
+            _plating.Set(reading.HasPlatingStrip ? reading.Plating / reading.MaxPlating : 0f);
 
-            if (_numbers != null)
-                _numbers.text = maxShield > 0f
-                    ? $"{health:0} / {maxHealth:0}   <color=#{ColorUtility.ToHtmlStringRGB(_shieldColor)}>{shield:0} / {maxShield:0}</color>"
-                    : $"{health:0} / {maxHealth:0}";
+            if (_numbers != null) _numbers.text = Numbers(reading);
         }
+
+        private string Numbers(in HealthReading reading)
+        {
+            string text = reading.LivesOnPlating
+                ? Tinted($"{reading.Plating:0} / {reading.MaxPlating:0}", _platingColor)
+                : $"{reading.Health:0} / {reading.MaxHealth:0}";
+            if (reading.HasPlatingStrip) text += "   " + Tinted($"{reading.Plating:0} / {reading.MaxPlating:0}", _platingColor);
+            if (reading.MaxShield > 0f)  text += "   " + Tinted($"{reading.Shield:0} / {reading.MaxShield:0}", _shieldColor);
+            return text;
+        }
+
+        private static string Tinted(string text, Color color) => $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{text}</color>";
 
         private void Reveal()
         {
@@ -162,6 +195,7 @@ namespace CGD.UI
 
             _health.Tick(Time.deltaTime);
             _shield.Tick(Time.deltaTime);
+            _plating.Tick(Time.deltaTime);
             Punch();
 
             if (_alwaysVisible) return;

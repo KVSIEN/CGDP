@@ -172,7 +172,7 @@ namespace CGD.Enemies
                 isRanged:    member.Data.CombatType == EnemyCombatType.Ranged,
                 distance:    fromTarget.magnitude,
                 offAxis:     offAxis,
-                healthShare: health.MaxHealth > 0f ? health.Health / health.MaxHealth : 0f,
+                healthShare: health.MaxVital > 0f ? health.Vital / health.MaxVital : 0f,
                 shieldShare: health.MaxShield > 0f ? health.Shield / health.MaxShield : 0f,
                 tier:        member.Data.Tier,
                 inCover:     member.Tactics.IsInCover(targetPosition),

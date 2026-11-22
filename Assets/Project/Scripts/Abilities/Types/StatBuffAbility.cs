@@ -14,6 +14,9 @@ namespace CGD.Abilities
         [Tooltip("Shield capacity the buff adds (Shield stat) comes charged, rather than empty to recharge. " +
                  "It is gone again when the buff ends")]
         public bool ChargeAddedShield;
+        [Tooltip("Plating capacity the buff adds (Plating stat) comes fitted, rather than empty to be repaired. " +
+                 "It is gone again when the buff ends")]
+        public bool ChargeAddedPlating;
 
         public override bool CanExecute(AbilityContext ctx) => Buff != null && ctx.Stats != null;
 
@@ -23,9 +26,11 @@ namespace CGD.Abilities
         {
             if (ctx.Stats == null) return;
 
-            float shieldBefore = ctx.Health != null ? ctx.Health.MaxShield : 0f;
+            float shieldBefore  = ctx.Health != null ? ctx.Health.MaxShield : 0f;
+            float platingBefore = ctx.Health != null ? ctx.Health.MaxPlating : 0f;
             ctx.Stats.AddTimed(Buff, Duration);
-            if (ChargeAddedShield && ctx.Health != null) ctx.Health.RestoreShield(ctx.Health.MaxShield - shieldBefore);
+            if (ChargeAddedShield  && ctx.Health != null) ctx.Health.RestoreShield(ctx.Health.MaxShield - shieldBefore);
+            if (ChargeAddedPlating && ctx.Health != null) ctx.Health.RestorePlating(ctx.Health.MaxPlating - platingBefore);
         }
     }
 }

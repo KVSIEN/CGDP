@@ -105,6 +105,8 @@ namespace CGD.UI
             UIFill.Horizontal(_healthFill, ratio);
             _healthFill.color = Color.Lerp(Theme.HealthLow, _fullHealthColor, ratio);
             _healthText.text = $"HP  {Mathf.CeilToInt(_playerHealth.Health)} / {Mathf.CeilToInt(_playerHealth.MaxHealth)}";
+            if (_playerHealth.MaxPlating > 0f)
+                _healthText.text += $"   PLATE  {Mathf.CeilToInt(_playerHealth.Plating)} / {Mathf.CeilToInt(_playerHealth.MaxPlating)}";
         }
     }
 }

@@ -76,12 +76,12 @@ namespace CGD.Enemies
         {
             var health = ai.Health;
             ai.Readings.Update(UnityEngine.Time.time);
-            blackboard.SetFloat(Health, health.MaxHealth > 0f ? health.Health / health.MaxHealth : 0f);
+            blackboard.SetFloat(Health, health.MaxVital > 0f ? health.Vital / health.MaxVital : 0f);
             blackboard.SetFloat(ShieldMissing, health.MaxShield > 0f ? 1f - UnityEngine.Mathf.Clamp01(health.Shield / health.MaxShield) : 0f);
             blackboard.SetFloat(RecentDamage, health.RecentDamageShare);
             blackboard.SetFloat(UnderFire, ai.Perception.IsUnderFire ? 1f : 0f);
             float hazard = CGD.Combat.Hazards.DamagePerSecondAt(ai.transform.position, health);
-            blackboard.SetFloat(HazardDanger, hazard / UnityEngine.Mathf.Max(1f, health.Health + health.Shield));
+            blackboard.SetFloat(HazardDanger, hazard / UnityEngine.Mathf.Max(1f, health.Health + health.Shield + health.Plating));
             blackboard.SetFloat(HostilesClose, HostilesWithin(ai, CloseRange));
             blackboard.SetFloat(AmbushLeft, ai.Ambush.SecondsLeft);
             blackboard.SetFloat(BoostLeft, ai.Data.Boost != null ? ai.Abilities.EffectLeft(ai.Data.Boost) : 0f);

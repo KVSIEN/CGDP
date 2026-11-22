@@ -17,6 +17,12 @@ namespace CGD.Player
         [Header("Armor")]
         [SerializeField] private float _armor = 0f;
 
+        [Header("Plating")]
+        [Tooltip("Armour plating without gear or abilities (they add the Plating stat). Only repair restores it")]
+        [SerializeField, Min(0f)] private float _maxPlating = 0f;
+        [Tooltip("Armour the plates add against hits that land on them")]
+        [SerializeField, Min(0f)] private float _platingArmor = 50f;
+
         [Header("Shield")]
         [SerializeField] private float _maxShield = 0f;
         [Tooltip("Seconds without taking damage before shield starts regenerating")]
@@ -27,6 +33,8 @@ namespace CGD.Player
         public override float MaxHealth => WithModifiers(ItemStat.Health, _maxHealth);
         public override float Armor     => WithModifiers(ItemStat.Armor, _armor);
         public override float MaxShield => WithModifiers(ItemStat.Shield, _maxShield);
+        public override float MaxPlating   => WithModifiers(ItemStat.Plating, _maxPlating);
+        public override float PlatingArmor => _platingArmor;
         protected override float ShieldRegenDelay => _shieldRegenDelay;
         protected override float ShieldRegenRate  => _shieldRegenRate;
         protected override float StartingHealth   => _health;

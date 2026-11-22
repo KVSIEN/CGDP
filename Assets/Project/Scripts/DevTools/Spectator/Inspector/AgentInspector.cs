@@ -66,6 +66,8 @@ namespace CGD.DevTools
 
             _text.Append("<color=").Append(InspectorText.Muted).Append(">Health</color><pos=34%>")
                  .Append(health.Health.ToString("0")).Append(" / ").Append(health.MaxHealth.ToString("0"));
+            if (health.MaxPlating > 0f)
+                _text.Append("   ").Coloured(InspectorText.Armor, $"plating {health.Plating:0} / {health.MaxPlating:0}");
             if (health.MaxShield > 0f)
                 _text.Append("   ").Coloured(InspectorText.Shield, $"shield {health.Shield:0} / {health.MaxShield:0}");
             if (health.Armor > 0f)

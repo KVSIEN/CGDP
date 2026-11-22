@@ -82,7 +82,7 @@ namespace CGD.Enemies
 
             // Gone with the blast: a hit nothing can mitigate, from nobody.
             EnemyHealth self = Ai.Health;
-            self.TakeDamage(new DamageInfo((self.MaxHealth + self.MaxShield) * 10f + 1000f, type: DamageType.True));
+            self.TakeDamage(new DamageInfo((self.MaxHealth + self.MaxShield + self.MaxPlating) * 10f + 1000f, type: DamageType.True));
         }
     }
 }

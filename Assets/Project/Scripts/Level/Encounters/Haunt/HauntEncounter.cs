@@ -118,7 +118,7 @@ namespace CGD.Level
                 HealthManager entity = _entity;
                 Release(entity);
                 _entity = null;
-                entity.TakeDamage(new DamageInfo((entity.MaxHealth + entity.MaxShield) * 10f + 1000f, type: DamageType.True));
+                entity.TakeDamage(new DamageInfo((entity.MaxHealth + entity.MaxShield + entity.MaxPlating) * 10f + 1000f, type: DamageType.True));
             }
 
             ObjectiveFeed.Clear(_status);

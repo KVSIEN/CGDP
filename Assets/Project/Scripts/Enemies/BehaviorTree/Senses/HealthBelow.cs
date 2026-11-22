@@ -5,7 +5,7 @@ using CGD.BehaviorTrees;
 namespace CGD.Enemies
 {
     [Serializable]
-    [BtNodeInfo("Enemy/Senses/Health Below", "Succeeds while health (shield not counted) is at or below the fraction.")]
+    [BtNodeInfo("Enemy/Senses/Health Below", "Succeeds while health (shield not counted; plating for one that has no health) is at or below the fraction.")]
     public sealed class HealthBelow : EnemyCondition
     {
         [SerializeField, Range(0f, 1f)] private float _fraction = 0.3f;
@@ -15,7 +15,7 @@ namespace CGD.Enemies
         protected override bool Check(BtContext context)
         {
             var health = Ai.Health;
-            return health.MaxHealth > 0f && health.Health / health.MaxHealth <= _fraction;
+            return health.MaxVital > 0f && health.Vital / health.MaxVital <= _fraction;
         }
     }
 }

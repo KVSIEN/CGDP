@@ -89,10 +89,10 @@ namespace CGD.Level
 
         private void CheckPhase()
         {
-            if (_boss.IsDead || _boss.MaxHealth <= 0f) return;
+            if (_boss.IsDead || _boss.MaxVital <= 0f) return;
 
             int before = _progress.Current;
-            if (_progress.Advance(_boss.Health / _boss.MaxHealth) == 0) return;
+            if (_progress.Advance(_boss.Vital / _boss.MaxVital) == 0) return;
 
             for (int i = before; i < _progress.Current; i++) BeginPhase(_phases[i]);
             ShowPhase();
