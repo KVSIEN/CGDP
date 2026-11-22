@@ -31,14 +31,14 @@ namespace CGD.Enemies
 
         [NonSerialized] private bool  _armed;
         [NonSerialized] private float _blowsAt;
-        [NonSerialized] private AreaHits _blast;
+        [NonSerialized] private AreaHits _hits;
 
         public override string Summary => $"{_radius:0.#} m, {_damage:0} dmg";
 
         protected override void OnInitialize(BtContext context)
         {
             base.OnInitialize(context);
-            _blast = new AreaHits(MaxHits);
+            _hits = new AreaHits(MaxHits);
         }
 
         protected override void OnEnter(BtContext context) => _armed = false;
@@ -76,9 +76,9 @@ namespace CGD.Enemies
             if (_blast != null) PrefabPool.Spawn(_blast, center, Quaternion.identity);
             Noise.Emit(center, _noiseRadius, source);
 
-            _blast.Gather(center, _radius, Ai.TargetMask, coverMask: Ai.ObstacleMask, ignore: Ai.transform);
+            _hits.Gather(center, _radius, Ai.TargetMask, coverMask: Ai.ObstacleMask, ignore: Ai.transform);
             var hit = new DamageInfo(_damage, source: source);
-            foreach (AreaHit target in _blast.Hits) target.Target.TakeDamage(hit);
+            foreach (AreaHit target in _hits.Hits) target.Target.TakeDamage(hit);
 
             // Gone with the blast: a hit nothing can mitigate, from nobody.
             EnemyHealth self = Ai.Health;
