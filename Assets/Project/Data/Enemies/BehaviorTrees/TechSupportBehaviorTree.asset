@@ -93,6 +93,10 @@ MonoBehaviour:
   - rid: 1117
   - rid: 1118
   - rid: 1119
+  - rid: 1120
+  - rid: 1121
+  - rid: 1122
+  - rid: 1123
   _groups: []
   _notes: []
   references:
@@ -488,7 +492,7 @@ MonoBehaviour:
       data:
         _guid: 5f8e5f99d0f941bbab022deee822d606
         _position: {x: 1682, y: 600}
-        _comment: 'Hold the line: shield up between the threat and its allies (3 m ahead of the ally nearest the threat, facing it), allies firing through it from behind'
+        _comment: 'Position for the job, re-decided every 3 s: shield up between the threat and its allies while they are being hit, otherwise in cover facing the threat within reach of them'
         _children:
         - 56c4b98d0acc44ef96cd24a32e810ae0
         - 3c3e91ca2dff4416ba4ca09921ceb759
@@ -515,7 +519,7 @@ MonoBehaviour:
         _position: {x: 1847, y: 900}
         _comment: 
         _children:
-        - 240e50acc5dc45de9733716778f04c3c
+        - 2cb6908ba27f48aaaa469ee2272b53db
         _seconds: 3
     - rid: 1045
       type: {class: TakeSupportPosition, ns: CGD.Enemies, asm: CGD.Runtime}
@@ -535,7 +539,7 @@ MonoBehaviour:
       data:
         _guid: 9a30703386bd4d26b8966854d34cd8d8
         _position: {x: 2177, y: 600}
-        _comment: 'Lost sight: hold the line, shield up, while its allies look'
+        _comment: 'Lost sight: wait in cover, within reach of its allies, while they look'
         _children:
         - 751f5375a8474292abf9ce8dff6984dc
         _succeed: 1
@@ -556,7 +560,7 @@ MonoBehaviour:
         _comment: 
         _allyRadius: 20
         _reach: 10
-        _line: 1
+        _line: 0
         _fromLine: 3
         _searchRadius: 8
         _replanEvery: 2
@@ -833,4 +837,45 @@ MonoBehaviour:
         _children:
         - dfd81bb3efbe4252a88e204d2b18b489
         - a6c124423f254448954ec5664f9d8a6e
+        _abort: 0
+    - rid: 1120
+      type: {class: KinUnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 484ffff1da8f454eab8fc4caae8e74c0
+        _position: {x: 0, y: 0}
+        _comment: 
+        _radius: 25
+        _minLoss: 0.05
+    - rid: 1121
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7cf24e6e96c74c9b99c1d8ff33bf9d62
+        _position: {x: 0, y: 0}
+        _comment: Allies are taking fire: step up and put the shield between the threat and them
+        _children:
+        - 484ffff1da8f454eab8fc4caae8e74c0
+        - 240e50acc5dc45de9733716778f04c3c
+        _abort: 0
+    - rid: 1122
+      type: {class: TakeSupportPosition, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 525355a5b8c44770a81f7c65c7e6513c
+        _position: {x: 0, y: 0}
+        _comment: Quiet: wait in cover facing the threat, within reach of its allies
+        _allyRadius: 20
+        _reach: 10
+        _line: 0
+        _fromLine: 3
+        _searchRadius: 10
+        _replanEvery: 3
+        _speed: 1
+    - rid: 1123
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2cb6908ba27f48aaaa469ee2272b53db
+        _position: {x: 0, y: 0}
+        _comment: Block while allies are being hit, otherwise take cover
+        _children:
+        - 7cf24e6e96c74c9b99c1d8ff33bf9d62
+        - 525355a5b8c44770a81f7c65c7e6513c
         _abort: 0
