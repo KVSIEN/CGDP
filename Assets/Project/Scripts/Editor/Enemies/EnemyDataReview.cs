@@ -45,7 +45,8 @@ namespace CGD.Editor
             {
                 string shots = data.ShotGrenade != null ? "lobbed mortar rounds" : data.ShotProjectile != null ? $"projectiles at {data.ShotSpeed:0} m/s" : "hitscan";
                 lines.Add($"Ranged: about {data.RangedDamagePerSecond:0.#} damage/s, prefers {data.PreferredRange:0} m " +
-                          $"({Math.Max(1, data.BurstCount)}-shot bursts, {data.SpreadAngle:0.#}° spread, {shots}).");
+                          $"({Math.Max(1, data.BurstCount)}-shot bursts, {data.SpreadAngle:0.#}° spread, {shots}" +
+                          (data.BurstWindup > 0f || data.BurstRecovery > 0f ? $"; {data.BurstWindup:0.##} s wind-up, {data.BurstRecovery:0.##} s recovery" : "") + ").");
             }
 
             lines.Add($"Senses: sees {data.SightRange:0} m in a {data.SightAngle:0}° cone, hears footsteps within {data.HearingRadius:0} m.");

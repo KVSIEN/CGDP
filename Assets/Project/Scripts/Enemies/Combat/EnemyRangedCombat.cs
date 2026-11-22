@@ -35,6 +35,11 @@ namespace CGD.Enemies
         private CooldownTimer _fireCooldown;
         private int   _burstRemaining;
         private float _burstTimer;
+        private float _windupRemaining;
+        private float _recoveryRemaining;
+        // Set when the enemy's data gives its bursts a wind-up or recovery: the whole cycle then
+        // shuts out abilities, not just the recovery.
+        private bool  _lockedCycle;
         private float _strafeTimer;
         private int   _strafeDir = 1;
         private bool  _hasShooterToken;
@@ -48,7 +53,12 @@ namespace CGD.Enemies
         }
 
         public bool IsBursting => _burstRemaining > 0;
-        public bool CanFire    => !IsBursting && _fireCooldown.IsReady && !_ai.Tells.IsCommitting;
+        // Winding down after the last shot.
+        public bool IsRecovering => _recoveryRemaining > 0f;
+        public bool CanFire    => !IsBursting && !IsRecovering && _fireCooldown.IsReady && !_ai.Tells.IsCommitting;
+        // Mid-cycle for an enemy whose bursts have a wind-up or recovery: it may reposition and plan,
+        // but casts nothing (abilities, grenades) until the cycle is over.
+        public bool LocksAbilities => IsRecovering || (_lockedCycle && IsBursting);
 
         // Called every unstunned frame by EnemyAI, so cooldowns and bursts carry on whoever is deciding.
         public void Tick(float deltaTime)
@@ -99,7 +109,7 @@ namespace CGD.Enemies
             return SightLines.IsClear(eyePos, aimAt, _obstacleMask, target != null ? target.transform : null);
         }
 
-        // Fires the first shot of a burst now; the rest follow every BurstInterval.
+        // Starts a burst: the first shot comes now, or after BurstWindup; the rest follow every BurstInterval.
         public bool TryStartBurst()
         {
             if (!CanFire) return false;
@@ -112,28 +122,49 @@ namespace CGD.Enemies
             if (!_hasShooterToken) return false;
 
             EnemyData data = _ai.Data;
+            _lockedCycle    = data.BurstWindup > 0f || data.BurstRecovery > 0f;
             _burstRemaining = Mathf.Max(1, data.BurstCount);
-            // A blocked first shot isn't taken at all: no cooldown spent, no token held.
-            if (!FireOneShot())
+            if (data.BurstWindup > 0f)
             {
-                CancelBurst();
-                return false;
+                _windupRemaining = data.BurstWindup;
+                return true;
             }
+
+            // A blocked first shot isn't taken at all: no cooldown spent, no token held.
+            if (FireFirstShot()) return true;
+            CancelBurst();
+            return false;
+        }
+
+        private bool FireFirstShot()
+        {
+            if (!FireOneShot()) return false;
+
+            EnemyData data = _ai.Data;
             _fireCooldown.Start(data.RangedAttackCooldown > 0f ? data.RangedAttackCooldown : data.AttackCooldown);
-            _burstRemaining--;
-            _burstTimer = data.BurstInterval;
+            AfterShot();
             return true;
         }
 
+        private void AfterShot()
+        {
+            _burstRemaining--;
+            _burstTimer = _ai.Data.BurstInterval;
+            if (_burstRemaining <= 0) _recoveryRemaining = _ai.Data.BurstRecovery;
+        }
+
+        // An interrupted burst keeps any recovery already under way: only Reset clears that.
         public void CancelBurst()
         {
-            _burstRemaining = 0;
+            _burstRemaining  = 0;
+            _windupRemaining = 0f;
             ReleaseToken();
         }
 
         public void Reset()
         {
             CancelBurst();
+            _recoveryRemaining = 0f;
             _fireCooldown.Reset();
         }
 
@@ -145,7 +176,18 @@ namespace CGD.Enemies
 
         private void TickBurst(float deltaTime)
         {
+            if (_recoveryRemaining > 0f) _recoveryRemaining -= deltaTime;
             if (_burstRemaining <= 0) return;
+
+            if (_windupRemaining > 0f)
+            {
+                _windupRemaining -= deltaTime;
+                if (_windupRemaining > 0f) return;
+
+                // The target may have slipped out of the line of fire while it charged: no shot, no cooldown.
+                if (!FireFirstShot()) CancelBurst();
+                return;
+            }
 
             _burstTimer -= deltaTime;
             if (_burstTimer > 0f) return;
@@ -156,8 +198,7 @@ namespace CGD.Enemies
                 CancelBurst();
                 return;
             }
-            _burstRemaining--;
-            _burstTimer = _ai.Data.BurstInterval;
+            AfterShot();
         }
 
         private void Retreat(Vector3 toTargetDir, float distance, float tolerance)

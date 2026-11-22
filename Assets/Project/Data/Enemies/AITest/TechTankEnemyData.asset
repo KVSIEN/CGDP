@@ -42,7 +42,9 @@ MonoBehaviour:
   PreferredRange: 35
   SpreadAngle: 7
   BurstCount: 3
-  BurstInterval: 0.25
+  BurstInterval: 0.5
+  BurstWindup: 0.8
+  BurstRecovery: 1
   StrafeInterval: 2
   StrafeDistance: 3
   ShotProjectile: {fileID: 0}

@@ -78,7 +78,7 @@ namespace CGD.Enemies
         {
             if (ability == null) return false;
             Remember(ability);
-            if (IsCasting || IsJammed || Time.time < ReadyAt(ability)) return false;
+            if (IsCasting || IsJammed || _ai.RangedCombat.LocksAbilities || Time.time < ReadyAt(ability)) return false;
 
             if (ability.ChecksAim && _ai.Perception.Target != null) AimAt(_ai.Perception.TargetPosition + Vector3.up);
             return ability.CanExecute(_context);

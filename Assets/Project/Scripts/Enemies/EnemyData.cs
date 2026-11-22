@@ -110,6 +110,10 @@ namespace CGD.Enemies
         public int   BurstCount     = 1;
         [Tooltip("Delay in seconds between shots within a burst")]
         public float BurstInterval  = 0.1f;
+        [Tooltip("Seconds it stands and charges before a burst's first shot (a cast time). While winding up and recovering it casts no abilities or grenades. 0 = fires at once")]
+        [Min(0f)] public float BurstWindup   = 0f;
+        [Tooltip("Seconds after a burst's last shot before it may cast anything again — free to reposition and plan. 0 = none")]
+        [Min(0f)] public float BurstRecovery = 0f;
         [Tooltip("How often the enemy picks a new strafe direction (seconds)")]
         public float StrafeInterval = 2f;
         [Tooltip("How far sideways the enemy strafes at preferred range")]
@@ -192,8 +196,8 @@ namespace CGD.Enemies
         // comparing enemy types: a melee swing every wind-up + cooldown...
         public float MeleeDamagePerSecond => AttackDamage / Mathf.Max(0.01f, AttackWindup + AttackCooldown);
 
-        // ...and a ranged burst every cooldown (counted from the burst's first shot), or every
-        // burst's length if the shots take longer than that.
+        // ...and a ranged burst every wind-up plus cooldown (counted from the burst's first shot), or
+        // every burst's length (shots and recovery) if that takes longer.
         public float RangedDamagePerSecond
         {
             get
@@ -201,7 +205,7 @@ namespace CGD.Enemies
                 int   shots    = Mathf.Max(1, BurstCount);
                 float damage   = RangedAttackDamage > 0f ? RangedAttackDamage : AttackDamage;
                 float cooldown = RangedAttackCooldown > 0f ? RangedAttackCooldown : AttackCooldown;
-                float cycle    = Mathf.Max(cooldown, (shots - 1) * BurstInterval);
+                float cycle    = BurstWindup + Mathf.Max(cooldown, (shots - 1) * BurstInterval + BurstRecovery);
                 return damage * shots / Mathf.Max(0.01f, cycle);
             }
         }

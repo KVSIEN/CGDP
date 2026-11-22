@@ -53,7 +53,7 @@ namespace CGD.Enemies
         // `targetVelocity` is how the target was seen moving (zero if unseen or still).
         public bool TryBegin(GrenadeData grenade, Vector3 target, Vector3 targetVelocity)
         {
-            if (IsThrowing || grenade == null || grenade.GrenadePrefab == null) return false;
+            if (IsThrowing || _ai.RangedCombat.LocksAbilities || grenade == null || grenade.GrenadePrefab == null) return false;
 
             Vector3 aim = Lead(grenade, target, targetVelocity);
             if (!TryPlan(grenade, aim, out _hand, out _velocity)) return false;
