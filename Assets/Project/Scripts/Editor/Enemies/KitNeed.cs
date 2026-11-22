@@ -61,6 +61,7 @@ namespace CGD.Editor
         {
             UseAbility use     when use.Slot   != AbilitySlot.Own => For(use.Slot),
             AbilityReady ready when ready.Slot != AbilitySlot.Own => For(ready.Slot),
+            LayTrap lay        when lay.Slot   != AbilitySlot.Own => For(lay.Slot),
             ThrowGrenade { UsesKit: true }                        => Grenade,
             SupportAlly                                           => For(AbilitySlot.Support),
             _                                                     => null,

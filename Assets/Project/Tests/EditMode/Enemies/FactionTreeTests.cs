@@ -90,6 +90,7 @@ namespace CGD.Tests
                     {
                         UseAbility use     => use.Slot == AbilitySlot.Own && use.Named != null,
                         AbilityReady ready => ready.Slot == AbilitySlot.Own && ready.Named != null,
+                        LayTrap lay        => lay.Slot == AbilitySlot.Own && lay.Named != null,
                         ThrowGrenade throwing => !throwing.UsesKit,
                         _ => false,
                     };

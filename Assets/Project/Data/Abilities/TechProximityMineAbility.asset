@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64ed609d30494a91b2796acfbac60646, type: 3}
+  m_Name: TechProximityMineAbility
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.TrapAbility
+  DisplayName: Proximity Mine
+  SlotColor: {r: 1, g: 0.35, b: 0.15, a: 1}
+  Cooldown: 7
+  MaxCharges: 1
+  CastTime: 0.6
+  TrapPrefab: {fileID: 7400000000000000001, guid: c22388d4659340eeb12c95ca8004e55f, type: 3}
+  MaxDeployDistance: 10
+  MaxActive: 3
+  Settings:
+    ArmDelay: 1.2
+    TriggerRadius: 1.5
+    Fuse: 0.5
+    Lifetime: 45
+    BlastRadius: 3
+    Damage: 40
+    DamageType: 0
+    ArmorPenetration: 0
+    NoiseRadius: 20
+    GoesOffWhenShot: 1
+    Color: {r: 1, g: 0.25, b: 0.1, a: 1}
+    Flash: {fileID: 7000000000000000001, guid: d3520984238c41a78a4ca49a0a007f9f, type: 3}
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  OnHitEffects: []

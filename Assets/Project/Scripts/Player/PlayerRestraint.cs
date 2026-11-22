@@ -5,13 +5,13 @@ using CGD.Input;
 
 namespace CGD.Player
 {
-    // Placeholder for being held in place: something calls Restrain (a trap, an enemy's grab, a
-    // dev command) and the player can't move or dodge until they break free by tapping Interact,
-    // or it lets go by itself. Interacting with things is off meanwhile. Does not yet stop
-    // shooting or abilities, or deal damage while held — add those when a real grab exists.
+    // Being held in place: something calls Restrain (a jaw trap or tether through the Restrain
+    // status effect, a dev command) and the player can't move or dodge until they break free by
+    // tapping Interact, or it lets go by itself. Interacting with things is off meanwhile. Does
+    // not stop shooting or abilities, or deal damage while held — whatever holds the player adds that.
     [RequireComponent(typeof(PlayerInputHandler))]
     [RequireComponent(typeof(Stunnable))]
-    public class PlayerRestraint : MonoBehaviour
+    public class PlayerRestraint : MonoBehaviour, IRestrainable
     {
         [Header("Defaults for Restrain()")]
         [SerializeField, Min(1)] private int _tapsRequired = 8;
@@ -60,6 +60,9 @@ namespace CGD.Player
             _stunnable.AddHold(this);
             Changed?.Invoke();
         }
+
+        void IRestrainable.Restrain(string label, int tapsRequired, float maxSeconds) =>
+            Restrain(label, tapsRequired, maxSeconds: maxSeconds);
 
         public void Release()
         {

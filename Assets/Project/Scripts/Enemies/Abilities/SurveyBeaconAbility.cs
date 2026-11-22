@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.AI;
 using CGD.Abilities;
 using CGD.Core;
 
@@ -50,18 +49,8 @@ namespace CGD.Enemies
 
         public override void Execute(AbilityContext ctx)
         {
-            Transform caster = ctx.CasterTransform;
-            Vector3 toward = ctx.HasAimPoint ? ctx.AimPoint - caster.position : caster.forward * MaxDeployDistance;
-            toward.y = 0f;
-            Vector3 spot = caster.position + Vector3.ClampMagnitude(toward, MaxDeployDistance) + Vector3.up;
-
-            GameObject beacon = PrefabPool.Spawn(BeaconPrefab, OnFloor(spot, caster.position), Quaternion.identity);
+            GameObject beacon = PrefabPool.Spawn(BeaconPrefab, DeploySpot.Toward(ctx, MaxDeployDistance), Quaternion.identity);
             if (beacon.TryGetComponent(out SurveyBeacon survey)) survey.Deploy(this, ctx.Health.Team);
         }
-
-        // On walkable floor near the spot (never inside a wall or on someone's head); at the
-        // caster's feet when there is none.
-        private static Vector3 OnFloor(Vector3 spot, Vector3 fallback) =>
-            NavMesh.SamplePosition(spot, out NavMeshHit hit, 3f, NavMesh.AllAreas) ? hit.position : fallback;
     }
 }

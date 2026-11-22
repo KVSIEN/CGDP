@@ -1,0 +1,262 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: Trapper
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  - rid: 1020
+  - rid: 1021
+  - rid: 1022
+  - rid: 1023
+  - rid: 1024
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 37a879c984f840689ec7fb4f91174f0e
+        _position: {x: 0, y: 0}
+        _comment: 'A trapper (mine-layer bot, snare-setter — any faction): whenever its Signature (a Trap ability: Proximity Mine, Jaw Trap) is ready it lays a trap a few metres out between itself and its target, never on top of another of its own, so a field builds up in front of it; backs off when the target comes within 6 m, so following means crossing that field; shoots from cover in between; and where it loses the target it leaves a trap on the spot and watches. Its traps are live a second after landing, blink, and are shot apart. Kit: Signature (a Trap ability).'
+        _children:
+        - 5f7db8e7d24943639261e960e41dadbb
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5f7db8e7d24943639261e960e41dadbb
+        _position: {x: 0, y: 150}
+        _comment: 'Back off when pressed; lay traps in the way; shoot from cover; trap where it lost the target'
+        _children:
+        - 7b2edc62d7294eddb6d7502091a7811e
+        - a2bcd1f578794e8aa8d8fd45f7fa73cd
+        - 0e4fb6b51f0d44899587f8014e8d2d23
+        - 2dc82b17bc094d4cbf1674ccdcb186b9
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7b2edc62d7294eddb6d7502091a7811e
+        _position: {x: -330, y: 300}
+        _comment: 'Within 6 m: back off, so the target has to cross its traps to follow'
+        _children:
+        - 9a41b502c31b4e66a37646b999a133af
+        - 6bac5c600a464efda459762e230a68c2
+        - 475392cd22f74dc4acc5945c7b7eb20e
+        _abort: 2
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9a41b502c31b4e66a37646b999a133af
+        _position: {x: -550, y: 450}
+        _comment: 
+    - rid: 1004
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6bac5c600a464efda459762e230a68c2
+        _position: {x: -330, y: 450}
+        _comment: 
+        _range: 6
+    - rid: 1005
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 475392cd22f74dc4acc5945c7b7eb20e
+        _position: {x: -110, y: 450}
+        _comment: 
+        _children:
+        - 66fbcbef44a449bdb6f81aa08241f8ac
+        _seconds: 3
+        _onlyAfterSuccess: 0
+    - rid: 1006
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 66fbcbef44a449bdb6f81aa08241f8ac
+        _position: {x: -110, y: 600}
+        _comment: 
+        _children:
+        - a5c7d5e24a4b4adbab60dbebbfb1b17f
+        - c33967eccaca4efab163d5309b37060a
+        _abort: 0
+    - rid: 1007
+      type: {class: FallBack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a5c7d5e24a4b4adbab60dbebbfb1b17f
+        _position: {x: -220, y: 750}
+        _comment: 
+        _giveUpAfter: 8
+    - rid: 1008
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c33967eccaca4efab163d5309b37060a
+        _position: {x: 0, y: 750}
+        _comment: 
+        _distance: 10
+    - rid: 1009
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a2bcd1f578794e8aa8d8fd45f7fa73cd
+        _position: {x: -110, y: 300}
+        _comment: 'Its Signature ready: a trap in the way between them'
+        _children:
+        - 2d098275df9d44a68fece294270127be
+        - 7df64910981e40148aaa972a87a89940
+        _abort: 0
+    - rid: 1010
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2d098275df9d44a68fece294270127be
+        _position: {x: -220, y: 450}
+        _comment: 
+        _memory: 6
+    - rid: 1011
+      type: {class: LayTrap, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7df64910981e40148aaa972a87a89940
+        _position: {x: 0, y: 450}
+        _comment: 
+        _slot: 1
+        _ability: {fileID: 0}
+        _placement: 0
+        _ahead: 4
+        _spacing: 3
+    - rid: 1012
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0e4fb6b51f0d44899587f8014e8d2d23
+        _position: {x: 110, y: 300}
+        _comment: 'Otherwise: shoot from cover'
+        _children:
+        - 785e4df987c94b5f9559d632d6ee7d8f
+        - 44debfc44e1f43c8af683e3321bb0f90
+        - 4d864047fd6b4777bcceaec1830064b0
+        - 5bc80a4754864ee7a1d5e559a0460eec
+        _abort: 0
+    - rid: 1013
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 785e4df987c94b5f9559d632d6ee7d8f
+        _position: {x: -220, y: 450}
+        _comment: 
+    - rid: 1014
+      type: {class: IsRanged, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 44debfc44e1f43c8af683e3321bb0f90
+        _position: {x: 0, y: 450}
+        _comment: 
+    - rid: 1015
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4d864047fd6b4777bcceaec1830064b0
+        _position: {x: 220, y: 450}
+        _comment: 
+        _use: 0
+        _giveUpAfter: 6
+        _stopAtPreferredRange: 0
+    - rid: 1016
+      type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5bc80a4754864ee7a1d5e559a0460eec
+        _position: {x: 440, y: 450}
+        _comment: 
+        _children:
+        - 7945d11d268244388b0f446a34e8f55c
+        - a079d8c36a7f46b6891e851c13716a16
+        _policy: 1
+    - rid: 1017
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7945d11d268244388b0f446a34e8f55c
+        _position: {x: 330, y: 600}
+        _comment: 
+        _children:
+        - 768e501b1a4f4afe9fc8066be791625e
+        _count: 0
+        _stopOnFailure: 1
+    - rid: 1018
+      type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 768e501b1a4f4afe9fc8066be791625e
+        _position: {x: 330, y: 750}
+        _comment: 
+    - rid: 1019
+      type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a079d8c36a7f46b6891e851c13716a16
+        _position: {x: 550, y: 600}
+        _comment: 
+        _seconds: {Min: 2.5, Max: 3.5, Bias: 0}
+    - rid: 1020
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2dc82b17bc094d4cbf1674ccdcb186b9
+        _position: {x: 330, y: 300}
+        _comment: 'Lost it: a trap where it went, then watch the angle'
+        _children:
+        - 1e89307c12a84a009e12f88403a26df1
+        - bcf99c5228ba4d3786dcff9de2d2d254
+        - 5020ba8d480c4b9f9cee19953de70df4
+        _abort: 0
+    - rid: 1021
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1e89307c12a84a009e12f88403a26df1
+        _position: {x: 110, y: 450}
+        _comment: 
+        _memory: 10
+    - rid: 1022
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: bcf99c5228ba4d3786dcff9de2d2d254
+        _position: {x: 330, y: 450}
+        _comment: 
+        _children:
+        - 99a95ea1394a4843b70d6fb3ffe93ce5
+        _succeed: 1
+    - rid: 1023
+      type: {class: LayTrap, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 99a95ea1394a4843b70d6fb3ffe93ce5
+        _position: {x: 330, y: 600}
+        _comment: 
+        _slot: 1
+        _ability: {fileID: 0}
+        _placement: 1
+        _ahead: 4
+        _spacing: 4
+    - rid: 1024
+      type: {class: Overwatch, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5020ba8d480c4b9f9cee19953de70df4
+        _position: {x: 550, y: 450}
+        _comment: 
+        _seconds: {Min: 2, Max: 3, Bias: 0}
