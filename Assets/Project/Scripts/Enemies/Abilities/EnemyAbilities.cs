@@ -70,6 +70,8 @@ namespace CGD.Enemies
         // A Jam status effect is on: nothing can be cast.
         public bool IsJammed => _status != null && _status.Any<JamEffect>();
         public Ability Casting => _casting;
+        // Where abilities go off from and point: turned to the target just before each one does.
+        public Transform Aim => _aim;
         public IReadOnlyList<Ability> Known => _known;
 
         public bool IsReady(Ability ability)

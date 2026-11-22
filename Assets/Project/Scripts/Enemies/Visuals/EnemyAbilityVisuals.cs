@@ -2,6 +2,7 @@ using UnityEngine;
 using CGD.Core;
 using CGD.Abilities;
 using CGD.Stealth;
+using CGD.Targeting;
 using CGD.Weapons;
 
 namespace CGD.Enemies
@@ -10,14 +11,18 @@ namespace CGD.Enemies
     // an ability goes off and a pulsing shell (plus a ring at the feet or a trail) for as long
     // as its buff lasts (AbilityLook per ability); a burst where it vanished and where it
     // reappears after a Phase Shift; and a small pulse each time it heals off a hit
-    // (lifesteal). Built at runtime from one transparent material, so prefabs only assign it.
+    // (lifesteal); and streams (pooled, Prefabs/VFX/ConeSprayPuff) fanned across a cone
+    // ability's cone as it goes off, the size of what it hits. Built at runtime from one transparent material, so prefabs only assign it.
     [RequireComponent(typeof(EnemyAI))]
     public class EnemyAbilityVisuals : MonoBehaviour
     {
-        private const float ChestHeight   = 1.1f;
-        private const float HealPulseGap  = 0.3f;   // seconds between heal pulses, however often it heals
-        private const float TrailTime     = 0.3f;
-        private const float TrailWidth    = 0.7f;
+        private const float ChestHeight     = 1.1f;
+        private const float HealPulseGap    = 0.3f;  // seconds between heal pulses, however often it heals
+        private const float TrailTime       = 0.3f;
+        private const float TrailWidth      = 0.7f;
+        private const float MuzzleAhead     = 0.4f;  // metres in front of the eyes the streams start, clear of the head
+        private const float StreamOverlap   = 1.3f;  // streams a little wider than their slice, so the cone has no gaps
+        private const float WidestHalfAngle = 80f;   // degrees: wider cones are drawn this wide at their reach
 
         [Tooltip("Transparent unlit material, tinted per effect (e.g. ExplosionFlash)")]
         [SerializeField] private Material _material;
@@ -29,6 +34,8 @@ namespace CGD.Enemies
         [SerializeField] private Transform _model;
         [Tooltip("Pooled prefab with an ExplosionFlash (Prefabs/VFX/ExplosionFlash)")]
         [SerializeField] private GameObject _flash;
+        [Tooltip("Pooled prefab with a ConeSprayPuff (Prefabs/VFX/ConeSprayPuff), for looks with Cone Streams. Empty = none")]
+        [SerializeField] private GameObject _coneStream;
         [SerializeField] private AbilityLook[] _looks = System.Array.Empty<AbilityLook>();
 
         [Header("Cloak")]
@@ -98,6 +105,7 @@ namespace CGD.Enemies
             if (!TryGetLook(ability, out AbilityLook look)) return;
 
             if (look.CastFlash > 0f) Flash(Chest(transform.position), look.CastFlash, look.Color);
+            if (look.ConeStreams > 0) SprayCone(ability, look.ConeStreams, look.Color);
             if (ability.EffectDuration > 0f) _aura.Show(look.Color, ability.EffectDuration, look.GroundRing, look.Trail, Time.time);
         }
 
@@ -113,6 +121,26 @@ namespace CGD.Enemies
             if (_healFlash <= 0f || Time.time < _nextHealPulse) return;
             _nextHealPulse = Time.time + HealPulseGap;
             Flash(Chest(transform.position), _healFlash, _healColor);
+        }
+
+        // Fans the streams out evenly across the cone the ability just hit, each down the middle
+        // of its own slice, from the aim the cone was taken from.
+        private void SprayCone(Ability ability, int streams, Color color)
+        {
+            if (_coneStream == null || ability is not TargetedAbility { Targeting: ConeTargetSelector cone }) return;
+
+            Transform aim   = _ai.Abilities.Aim;
+            Vector3 origin  = aim.position + aim.forward * MuzzleAhead;
+            float slice     = cone.Angle / streams;
+            float halfAngle = Mathf.Min(cone.Angle * 0.5f, WidestHalfAngle);
+            float width     = 2f * cone.Range * Mathf.Tan(halfAngle * Mathf.Deg2Rad) / streams * StreamOverlap;
+
+            for (int i = 0; i < streams; i++)
+            {
+                float yaw = -cone.Angle * 0.5f + slice * (i + 0.5f);
+                Vector3 direction = Quaternion.AngleAxis(yaw, aim.up) * aim.forward;
+                ConeSprayPuff.Spawn(_coneStream, origin, direction, cone.Range - MuzzleAhead, width, color);
+            }
         }
 
         private void Flash(Vector3 position, float radius, Color color)

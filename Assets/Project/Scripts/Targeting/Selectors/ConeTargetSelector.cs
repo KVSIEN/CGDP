@@ -11,6 +11,10 @@ namespace CGD.Targeting
         [Tooltip("Full cone angle in degrees — 90 means 45° either side of the aim")]
         [SerializeField, Range(1f, 360f)] private float _angle = 60f;
 
+        // The cone's shape, for effects that draw it.
+        public float Range => _range;
+        public float Angle => _angle;
+
         protected override void Collect(in TargetingRequest request, in TargetFilter filter, TargetSet result) =>
             TargetQuery.Cone(request.Origin, request.Direction, _range, _angle, filter, result.Targets);
     }
