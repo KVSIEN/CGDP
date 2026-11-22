@@ -21,6 +21,7 @@ namespace CGD.Enemies
         private readonly EnemyAI _ai;
         private readonly Transform _aim;
         private readonly AbilityContext _context;
+        private readonly StatusEffectController _status;
         private readonly Dictionary<Ability, float> _readyAt = new();
         private readonly Dictionary<Ability, float> _effectEndsAt = new();
         // Every ability its tree has asked about so far, in the order it first did (for the
@@ -40,6 +41,7 @@ namespace CGD.Enemies
 
             ai.TryGetComponent(out CharacterStats stats);
             ai.TryGetComponent(out TimelineAbilityRunner timeline);
+            ai.TryGetComponent(out _status);
             _context = new AbilityContext
             {
                 CasterTransform = ai.transform,
@@ -65,6 +67,8 @@ namespace CGD.Enemies
         }
 
         public bool IsCasting => _casting != null;
+        // A Jam status effect is on: nothing can be cast.
+        public bool IsJammed => _status != null && _status.Any<JamEffect>();
         public Ability Casting => _casting;
         public IReadOnlyList<Ability> Known => _known;
 
@@ -72,7 +76,7 @@ namespace CGD.Enemies
         {
             if (ability == null) return false;
             Remember(ability);
-            if (IsCasting || Time.time < ReadyAt(ability)) return false;
+            if (IsCasting || IsJammed || Time.time < ReadyAt(ability)) return false;
 
             if (ability.ChecksAim && _ai.Perception.Target != null) AimAt(_ai.Perception.TargetPosition + Vector3.up);
             return ability.CanExecute(_context);
@@ -99,6 +103,13 @@ namespace CGD.Enemies
         public bool TickCast(Vector3 aimAt, float deltaTime)
         {
             if (_casting == null) return true;
+
+            // Jammed mid-cast: it fizzles, and the ability is not spent.
+            if (IsJammed)
+            {
+                _casting = null;
+                return true;
+            }
 
             _castAimAt = aimAt;
             _ai.Motion.FaceTowards(aimAt, deltaTime);

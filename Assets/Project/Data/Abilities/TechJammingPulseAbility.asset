@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f19d124a4964eb7b2689bdea871554e, type: 3}
+  m_Name: TechJammingPulseAbility
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.TargetedAbility
+  DisplayName: Jamming Pulse
+  SlotColor: {r: 0.4, g: 0.9, b: 1, a: 1}
+  Cooldown: 12
+  MaxCharges: 1
+  CastTime: 0.6
+  Targeting: {fileID: 11400000, guid: def0be0d6b774558be726eaebe4f5b53, type: 2}
+  Damage: 4
+  ArmorPenetration: 0
+  DamageType: 2
+  OnHitEffects:
+  - Effect: {fileID: 11400000, guid: d1809effc49a49b183b294ca8d62b86d, type: 2}
+    Chance: 1
+    Potency: 1
+    Duration: 4
+  Heal: 0
+  SelfHealShare: 0
+  Shield: 0
+  Cleanse: 0

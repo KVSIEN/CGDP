@@ -40,6 +40,8 @@ namespace CGD.Abilities
         public AbilityContext Context => _ctx;
         public int  CastingSlot => _castingSlot;
         public bool IsCasting   => _castingSlot >= 0;
+        // A Jam status effect is on: no ability can be started, and one being cast fizzles.
+        public bool IsJammed    => _status != null && _status.Any<JamEffect>();
 
         private PlayerInputHandler _input;
         private PlayerMovement _movement;
@@ -47,6 +49,7 @@ namespace CGD.Abilities
         private CombatActions _actions;
         private PlayerActionChannel _channel;
         private CharacterStats _stats;
+        private StatusEffectController _status;
         private AbilityState[] _states;
         private InputBuffer[] _buffers;
         private AbilityContext _ctx;
@@ -71,6 +74,7 @@ namespace CGD.Abilities
             TryGetComponent(out _actions);
             _channel   = PlayerActionChannel.On(gameObject);
             _stats     = GetComponentInParent<CharacterStats>();
+            _status    = GetComponentInParent<StatusEffectController>();
             _states    = new AbilityState[_slots.Length];
             _buffers   = new InputBuffer[_slots.Length];
             for (int i = 0; i < _slots.Length; i++)
@@ -129,6 +133,7 @@ namespace CGD.Abilities
                 TickCast(Time.deltaTime);
                 return;
             }
+            if (IsJammed) return;
 
             for (int i = 0; i < _slots.Length; i++)
             {
@@ -206,7 +211,7 @@ namespace CGD.Abilities
 
         private void TickCast(float deltaTime)
         {
-            if (!_movement.CanAct)
+            if (!_movement.CanAct || IsJammed)
             {
                 _castingSlot = -1;
                 return;

@@ -195,6 +195,14 @@ namespace CGD.Combat
 
         public bool HasAny => _active.Count > 0;
 
+        // Whether an effect of kind T is on, whichever asset it is (a Jam, say).
+        public bool Any<T>() where T : StatusEffect
+        {
+            foreach (StatusEffect effect in _active.Keys)
+                if (effect is T) return true;
+            return false;
+        }
+
         // Fills `results` with the active effects (cleared first; no allocations once warmed up).
         public void GetActive(List<ActiveStatus> results)
         {
