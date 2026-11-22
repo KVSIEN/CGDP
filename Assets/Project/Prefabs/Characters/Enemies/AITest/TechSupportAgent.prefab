@@ -179,6 +179,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5494927797007602772, guid: 331f913c861f4c698489702343d4cdb4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1000000000000000041}
+    - targetCorrespondingSourceObject: {fileID: 5494927797007602772, guid: 331f913c861f4c698489702343d4cdb4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1000000000000000042}
   m_SourcePrefab: {fileID: 100100000, guid: 331f913c861f4c698489702343d4cdb4, type: 3}
 --- !u!1 &1000000000000000001 stripped
 GameObject:
@@ -202,3 +205,29 @@ MonoBehaviour:
   _width: 0.025
   _startOpacity: 0.3
   _aimTime: 1
+--- !u!114 &1000000000000000042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e0ae882f53e4674808275b4083f0c78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.FrontalShield
+  _halfArc: 70
+  _reduction: 0.8
+  _stopsLightning: 0
+  _durability: 300
+  _downSeconds: 6
+  _breakStagger: 1.2
+  _visual: {fileID: 0}
+  _barrierSize: {x: 1.8, y: 2, z: 0.1}
+  _barrierDistance: 0.9
+  _barrierMaterial: {fileID: 2100000, guid: 02fa666fd24349c89c44682a27da8621, type: 2}
+  _barrierColor: {r: 0.35, g: 0.75, b: 1, a: 0.3}
+  _lowerFor:
+  - {fileID: 11400000, guid: 2ea5eb789a8b4fcbba9c4c4cbab11d55, type: 2}
+  - {fileID: 11400000, guid: 8335c870c5344d5fa19007cc3752fffc, type: 2}

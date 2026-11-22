@@ -49,7 +49,7 @@ MonoBehaviour:
   ShotSpeed: 26
   RaisesAlarm: 0
   Grenade: {fileID: 11400000, guid: 18271d81f56c4cd78f9b87c2b6ff2141, type: 2}
-  Signature: {fileID: 11400000, guid: 8aac060c7e1d470fbb093db46ee4b163, type: 2}
+  Signature: {fileID: 0}
   Escape: {fileID: 0}
   Summon: {fileID: 0}
   Boost: {fileID: 11400000, guid: a5f1c95821024a6a955fd89337201a09, type: 2}

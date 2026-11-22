@@ -56,6 +56,20 @@ MonoBehaviour:
   - rid: 1040
   - rid: 1041
   - rid: 1042
+  - rid: 1043
+  - rid: 1044
+  - rid: 1045
+  - rid: 1046
+  - rid: 1047
+  - rid: 1048
+  - rid: 1049
+  - rid: 1050
+  - rid: 1051
+  - rid: 1052
+  - rid: 1053
+  - rid: 1054
+  - rid: 1055
+  - rid: 1056
   _groups: []
   _notes: []
   references:
@@ -66,123 +80,124 @@ MonoBehaviour:
       data:
         _guid: ee7696869a6d413ead9ebb2c4d141e61
         _position: {x: 0, y: 0}
-        _comment: 'TECH support agent (paladin): a field engineer that tanks for its squad. Heavily plated and shielded, it holds the front of the line about 2 m ahead of the ally nearest the threat, in cover facing it when it knows some, and never falls back: it bashes away anything that rushes it (Special: Weapon Bash), Fortifies when it takes fire (Boost: +60 armour, +30 shield), throws a Barrier Field over two or more allies fighting near it (Signature: +60 armour), and breaks off to restore whoever is losing its shield or plating (Support: Field Restoration, +30 shield and +15 plating each). Calm, it follows its leader and repairs anyone still worn down. Kit: Support (Field Restoration), Signature (Barrier Field), Boost (Fortify), Special (Weapon Bash).'
+        _comment: 'TECH support agent (shield wall): a field engineer built round a front-facing barrier. Its Frontal Shield stands a one-way wall in front of it: hostile fire from the front stops on it, while its own and its allies'' shots from behind pass through. It holds the front of the line about 2 m ahead of the ally nearest the threat, facing it, and never falls back while the shield holds: it bashes away anything that rushes it (Special: Weapon Bash) and Fortifies when it takes fire (Boost). To repair it lowers the shield: it pops a Smoke Screen where it stands, then casts Field Restoration (Support: +30 shield and +15 plating to everyone within 8 m, itself included), on itself when worn down or after walking to an ally that is. With the shield broken it smokes and drops back behind its allies until it is up again. Calm, it follows its leader and repairs anyone still worn down. Kit: Support (Field Restoration), Boost (Fortify), Special (Weapon Bash); Smoke Screen (TechSmokeCoverAbility) is set on the tree; the shield is on the prefab (Frontal Shield with a barrier).'
         _children:
-        - 28ed0d32f8844f06a6374e9d976a3cae
+        - 41e3d4fde8b74f69babb7b62161be33f
     - rid: 1001
       type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 28ed0d32f8844f06a6374e9d976a3cae
+        _guid: 41e3d4fde8b74f69babb7b62161be33f
         _position: {x: 0, y: 150}
         _comment: 'Most urgent first'
         _children:
-        - 31ff570fad744f748d97cb2f4479bd66
-        - 74bd2857aa614f218a4882bde4d62866
-        - b74ae9f35948409fa905ad188f8ea54b
-        - 49f1110d63084369b5c40c69487fd274
-        - 6608702a7b15422b92356250c83afb2f
-        - db8b8db5ad5c4e298e8ad4c927b1f3b2
+        - 062592589aa8434ca1596073cdcb182e
+        - ccd1ad8711324fcb87ae595dba744283
+        - 5117a919dabf489a8640e2d181349535
+        - 9ea344e64b0c4310a0bdb8e50d3eddeb
+        - e0360f1eeb564d498c63103e1656fb5b
+        - ecb92a727c3d455594999408329c5bb6
         _abort: 0
     - rid: 1002
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 31ff570fad744f748d97cb2f4479bd66
-        _position: {x: -2707, y: 300}
+        _guid: 062592589aa8434ca1596073cdcb182e
+        _position: {x: -3433, y: 300}
         _comment: 'Standing in a hostile zone: step out'
         _children:
-        - 2195971ebc37401793e8d2467e9262c3
-        - abae5c846ff1473d9b0406c662f2a388
+        - b3a1173f03ae48a5bdf4fda3401487f2
+        - a51b2b7bb01b4544966ac4110f30e8f3
         _abort: 2
     - rid: 1003
       type: {class: InHazard, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 2195971ebc37401793e8d2467e9262c3
-        _position: {x: -2817, y: 450}
+        _guid: b3a1173f03ae48a5bdf4fda3401487f2
+        _position: {x: -3543, y: 450}
         _comment: 
     - rid: 1004
       type: {class: LeaveHazard, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: abae5c846ff1473d9b0406c662f2a388
-        _position: {x: -2597, y: 450}
+        _guid: a51b2b7bb01b4544966ac4110f30e8f3
+        _position: {x: -3323, y: 450}
         _comment: 
         _giveUpAfter: 3
     - rid: 1005
       type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 74bd2857aa614f218a4882bde4d62866
-        _position: {x: -2377, y: 300}
+        _guid: ccd1ad8711324fcb87ae595dba744283
+        _position: {x: -3103, y: 300}
         _comment: 
         _tree: {fileID: 11400000, guid: c151eafdbc6045c197de5b66618945af, type: 2}
         _off: 0
     - rid: 1006
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: b74ae9f35948409fa905ad188f8ea54b
-        _position: {x: -980, y: 300}
-        _comment: 'Fight while it knows where the target is: it stands between the threat and its allies'
+        _guid: 5117a919dabf489a8640e2d181349535
+        _position: {x: -1312, y: 300}
+        _comment: 'Fight while it knows where the target is: its shield stands between the threat and its allies'
         _children:
-        - 7e21dfbc5d7848d3aac7dcf9aac2bae8
-        - c48ffebfbf414e959e31e8caf9fe8b4f
+        - d0bbd4a856dc4bbe923919c2c93a8b21
+        - ad1777cfdea94ae781760e4f387919c6
         _abort: 2
     - rid: 1007
       type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 7e21dfbc5d7848d3aac7dcf9aac2bae8
-        _position: {x: -2157, y: 450}
+        _guid: d0bbd4a856dc4bbe923919c2c93a8b21
+        _position: {x: -2883, y: 450}
         _comment: 
         _memory: 8
     - rid: 1008
       type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: c48ffebfbf414e959e31e8caf9fe8b4f
-        _position: {x: 198, y: 450}
-        _comment: 'Bash back what rushes it; fortify under fire; barrier the squad; restore the one losing shield or plating; otherwise hold the front'
+        _guid: ad1777cfdea94ae781760e4f387919c6
+        _position: {x: 259, y: 450}
+        _comment: 'Bash back what rushes it; fall back while its shield is broken; smoke and repair itself or an ally; otherwise hold the shield wall at the front'
         _children:
-        - 714dee4717ed4836948556a3a1a6fc07
-        - d0980d3e153241d8b64675cd83c353f8
-        - ec7d872bf1f541358f2e903b6bcfcbc1
-        - f13b0d7b476942b3a97eb6fa349c6bb1
-        - a95d54589780486aa6ea14682cbe8609
-        - 35ecdd2b426f49dfb7c061a57900ab94
+        - 8b41c41c2ece4a7994acd84f8c0e7fd9
+        - 4a03a4b134ca46678284e21b7431cfe4
+        - 10aad5f5754a4c55834f89a7f3e005d0
+        - 6ae5931d201344c29e74c084f4beff56
+        - 33ef000ecfec40d7b5dec7f7a5e3a9f0
+        - 5f8e5f99d0f941bbab022deee822d606
+        - 9a30703386bd4d26b8966854d34cd8d8
         _abort: 0
     - rid: 1009
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 714dee4717ed4836948556a3a1a6fc07
-        _position: {x: -1607, y: 600}
+        _guid: 8b41c41c2ece4a7994acd84f8c0e7fd9
+        _position: {x: -2333, y: 600}
         _comment: 'Rushed within 3.5 m: Weapon Bash (its Special) and hold its ground'
         _children:
-        - 619f420791274529ad8450cb9a1f4991
-        - 2a83bdd78ef24648a94ec964f3b8526a
-        - ac346582ff5f4273a56168300f64ce15
-        - 40e24f419b444d6bb1669ac70ca326d3
+        - 510663994d5343b9af037a99d0c69143
+        - 6977750cb19e4a50bd1dd00c6958fe86
+        - 8ed4f0434d1143479f7418e0668793c0
+        - 95395c5a58064a1c862b8742a9c97894
         _abort: 2
     - rid: 1010
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 619f420791274529ad8450cb9a1f4991
-        _position: {x: -1937, y: 750}
+        _guid: 510663994d5343b9af037a99d0c69143
+        _position: {x: -2663, y: 750}
         _comment: 
     - rid: 1011
       type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 2a83bdd78ef24648a94ec964f3b8526a
-        _position: {x: -1717, y: 750}
+        _guid: 6977750cb19e4a50bd1dd00c6958fe86
+        _position: {x: -2443, y: 750}
         _comment: 
         _range: 3.5
     - rid: 1012
       type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: ac346582ff5f4273a56168300f64ce15
-        _position: {x: -1497, y: 750}
+        _guid: 8ed4f0434d1143479f7418e0668793c0
+        _position: {x: -2223, y: 750}
         _comment: 
         _slot: 6
         _ability: {fileID: 0}
     - rid: 1013
       type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 40e24f419b444d6bb1669ac70ca326d3
-        _position: {x: -1277, y: 750}
+        _guid: 95395c5a58064a1c862b8742a9c97894
+        _position: {x: -2003, y: 750}
         _comment: 
         _slot: 6
         _ability: {fileID: 0}
@@ -193,41 +208,223 @@ MonoBehaviour:
     - rid: 1014
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: d0980d3e153241d8b64675cd83c353f8
-        _position: {x: -727, y: 600}
-        _comment: 'Taking fire on the line: Fortify (its Boost: +60 armour, +30 shield, slower)'
+        _guid: 4a03a4b134ca46678284e21b7431cfe4
+        _position: {x: -1453, y: 600}
+        _comment: 'Shield broken: smoke screen, then drop back behind its allies until the shield is back up'
         _children:
-        - 4ca31ff0e91e4049880be49ef53598cf
-        - 583c73ae97024c80aecb2024e886e906
-        - 12519420aecf494794fa3adb25703309
-        - e1571df46eda4e1cbb1b457c68e503b3
+        - d1e62f920c2b446691e7eabbdde4bd7e
+        - f0cf8c59be94487f8024cb86ede663a3
+        - c892115dcbfe4560b04db47f8c007d96
         _abort: 2
     - rid: 1015
-      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      type: {class: FrontalShieldDown, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 4ca31ff0e91e4049880be49ef53598cf
-        _position: {x: -1057, y: 750}
+        _guid: d1e62f920c2b446691e7eabbdde4bd7e
+        _position: {x: -1783, y: 750}
         _comment: 
     - rid: 1016
-      type: {class: UnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 583c73ae97024c80aecb2024e886e906
-        _position: {x: -837, y: 750}
+        _guid: f0cf8c59be94487f8024cb86ede663a3
+        _position: {x: -1453, y: 750}
         _comment: 
-        _warningsOnly: 0
+        _children:
+        - 48c8c8dee23741d2bef7f85c71a5a185
+        _succeed: 1
     - rid: 1017
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 48c8c8dee23741d2bef7f85c71a5a185
+        _position: {x: -1453, y: 900}
+        _comment: 
+        _children:
+        - ef12cc084d6e4248bff11bbcbab6e899
+        - d5eff8737b414427a76b21d6c9fa72c7
+        _abort: 0
+    - rid: 1018
       type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 12519420aecf494794fa3adb25703309
-        _position: {x: -617, y: 750}
+        _guid: ef12cc084d6e4248bff11bbcbab6e899
+        _position: {x: -1563, y: 1050}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: 8335c870c5344d5fa19007cc3752fffc, type: 2}
+    - rid: 1019
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d5eff8737b414427a76b21d6c9fa72c7
+        _position: {x: -1343, y: 1050}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: 8335c870c5344d5fa19007cc3752fffc, type: 2}
+        _aim: 1
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 0
+    - rid: 1020
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c892115dcbfe4560b04db47f8c007d96
+        _position: {x: -1123, y: 750}
+        _comment: 
+        _children:
+        - 26291758ef584eb4871cb2b2cca79477
+        _succeed: 1
+    - rid: 1021
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 26291758ef584eb4871cb2b2cca79477
+        _position: {x: -1123, y: 900}
+        _comment: 
+        _children:
+        - 5f185fe99cd8498aa8cea6acf4568930
+        _seconds: 3
+    - rid: 1022
+      type: {class: TakeSupportPosition, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5f185fe99cd8498aa8cea6acf4568930
+        _position: {x: -1123, y: 1050}
+        _comment: 
+        _allyRadius: 20
+        _reach: 10
+        _line: 0
+        _fromLine: 3
+        _searchRadius: 8
+        _replanEvery: 2
+        _speed: 1
+    - rid: 1023
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 10aad5f5754a4c55834f89a7f3e005d0
+        _position: {x: -298, y: 600}
+        _comment: 'Worn down itself: smoke screen, then lower the shield and restore its own shield and plating (Field Restoration)'
+        _children:
+        - 4ae0128cfe8148e2b25b17f9073456ab
+        - 3dc752a855ed4eb1b9828513f90c90b0
+        - f74b5b93cced4097a81dfbdec7ff30e0
+        - 1e08d3d54c5a448d934391d54934c7cb
+        _abort: 2
+    - rid: 1024
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4ae0128cfe8148e2b25b17f9073456ab
+        _position: {x: -793, y: 750}
+        _comment: 
+        _children:
+        - 221db6293e7545a48690bb76d6207d98
+        - 5ad9678c9b71492dbb04c284bee6ba29
+        _abort: 0
+    - rid: 1025
+      type: {class: HealthBelow, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 221db6293e7545a48690bb76d6207d98
+        _position: {x: -903, y: 900}
+        _comment: 
+        _fraction: 0.5
+    - rid: 1026
+      type: {class: ShieldBelow, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5ad9678c9b71492dbb04c284bee6ba29
+        _position: {x: -683, y: 900}
+        _comment: 
+        _fraction: 0.3
+    - rid: 1027
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3dc752a855ed4eb1b9828513f90c90b0
+        _position: {x: -463, y: 750}
+        _comment: 
+        _slot: 5
+        _ability: {fileID: 0}
+    - rid: 1028
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f74b5b93cced4097a81dfbdec7ff30e0
+        _position: {x: -133, y: 750}
+        _comment: 
+        _children:
+        - 6e7d3078a0d54195ae653590d2d9fa07
+        _succeed: 1
+    - rid: 1029
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6e7d3078a0d54195ae653590d2d9fa07
+        _position: {x: -133, y: 900}
+        _comment: 
+        _children:
+        - 9b1bc2c921ca4d11b42fa65a6d498536
+        - bcb23f4144154447a71d04ba0613a001
+        _abort: 0
+    - rid: 1030
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9b1bc2c921ca4d11b42fa65a6d498536
+        _position: {x: -243, y: 1050}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: 8335c870c5344d5fa19007cc3752fffc, type: 2}
+    - rid: 1031
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: bcb23f4144154447a71d04ba0613a001
+        _position: {x: -23, y: 1050}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: 8335c870c5344d5fa19007cc3752fffc, type: 2}
+        _aim: 1
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 0
+    - rid: 1032
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1e08d3d54c5a448d934391d54934c7cb
+        _position: {x: 197, y: 750}
+        _comment: 
+        _slot: 5
+        _ability: {fileID: 0}
+        _aim: 1
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 0
+    - rid: 1033
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6ae5931d201344c29e74c084f4beff56
+        _position: {x: 747, y: 600}
+        _comment: 'Taking fire on the line: Fortify behind the shield (its Boost: +60 armour, +30 shield, slower)'
+        _children:
+        - a06f6f6e090c4475a97a12c22895d089
+        - e845b4d4508146488e09d672a62fa174
+        - d0de000a0a914b6987320549cae51d66
+        - 39a7626ba34a4c60a5536c4047ad6375
+        _abort: 2
+    - rid: 1034
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a06f6f6e090c4475a97a12c22895d089
+        _position: {x: 417, y: 750}
+        _comment: 
+    - rid: 1035
+      type: {class: UnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e845b4d4508146488e09d672a62fa174
+        _position: {x: 637, y: 750}
+        _comment: 
+        _warningsOnly: 0
+    - rid: 1036
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d0de000a0a914b6987320549cae51d66
+        _position: {x: 857, y: 750}
         _comment: 
         _slot: 4
         _ability: {fileID: 0}
-    - rid: 1018
+    - rid: 1037
       type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: e1571df46eda4e1cbb1b457c68e503b3
-        _position: {x: -397, y: 750}
+        _guid: 39a7626ba34a4c60a5536c4047ad6375
+        _position: {x: 1077, y: 750}
         _comment: 
         _slot: 4
         _ability: {fileID: 0}
@@ -235,66 +432,20 @@ MonoBehaviour:
         _maxRange: 0
         _requireClearShot: 0
         _leadMovingTarget: 0
-    - rid: 1019
+    - rid: 1038
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: ec7d872bf1f541358f2e903b6bcfcbc1
-        _position: {x: 153, y: 600}
-        _comment: 'Two or more kin fighting near it: Barrier Field over them (+60 armour, 6 s)'
+        _guid: 33ef000ecfec40d7b5dec7f7a5e3a9f0
+        _position: {x: 1297, y: 600}
+        _comment: 'An ally losing its shield or plating: go to it, smoke screen, lower the shield and restore it (Field Restoration: +30 shield, +15 plating)'
         _children:
-        - dc4fa4f20c894d9096d496617cc7c654
-        - ae56ce8a73aa4fea8ce93540bc24c4bc
-        - ba819b70671346e0ad3f4de03ec6f54c
-        - c716fac55052491b87c8ef231870b23e
-        _abort: 2
-    - rid: 1020
-      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: dc4fa4f20c894d9096d496617cc7c654
-        _position: {x: -177, y: 750}
-        _comment: 
-    - rid: 1021
-      type: {class: KinNear, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: ae56ce8a73aa4fea8ce93540bc24c4bc
-        _position: {x: 43, y: 750}
-        _comment: 
-        _radius: 10
-        _atLeast: 2
-    - rid: 1022
-      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: ba819b70671346e0ad3f4de03ec6f54c
-        _position: {x: 263, y: 750}
-        _comment: 
-        _slot: 1
-        _ability: {fileID: 0}
-    - rid: 1023
-      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: c716fac55052491b87c8ef231870b23e
-        _position: {x: 483, y: 750}
-        _comment: 
-        _slot: 1
-        _ability: {fileID: 0}
-        _aim: 0
-        _maxRange: 0
-        _requireClearShot: 0
-        _leadMovingTarget: 0
-    - rid: 1024
-      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: f13b0d7b476942b3a97eb6fa349c6bb1
-        _position: {x: 703, y: 600}
-        _comment: 'An ally losing its shield or plating: go restore it (Field Restoration: +30 shield, +15 plating)'
-        _children:
-        - 16580cbf961b4912bf135356110d4868
+        - 4ec35a40bfe9464ba12f56d97bb78bab
         _abort: 0
-    - rid: 1025
+    - rid: 1039
       type: {class: SupportAlly, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 16580cbf961b4912bf135356110d4868
-        _position: {x: 703, y: 750}
+        _guid: 4ec35a40bfe9464ba12f56d97bb78bab
+        _position: {x: 1297, y: 750}
         _comment: 
         _searchRadius: 18
         _threshold: 0.65
@@ -302,55 +453,57 @@ MonoBehaviour:
         _castRange: 6
         _speed: 1
         _giveUpAfter: 5
-    - rid: 1026
+        _coverSlot: 0
+        _cover: {fileID: 11400000, guid: 8335c870c5344d5fa19007cc3752fffc, type: 2}
+    - rid: 1040
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: a95d54589780486aa6ea14682cbe8609
-        _position: {x: 1088, y: 600}
-        _comment: 'Hold the front of the line (2 m ahead of the ally nearest the threat, in cover facing it if there is some) and shoot from there'
+        _guid: 5f8e5f99d0f941bbab022deee822d606
+        _position: {x: 1682, y: 600}
+        _comment: 'Shield up at the front of the line (2 m ahead of the ally nearest the threat, facing it), allies firing through it from behind'
         _children:
-        - c493bfa674a246afb4d649f4ef660720
-        - 231c86df5dab4a6eb8aae486b3a239eb
+        - 56c4b98d0acc44ef96cd24a32e810ae0
+        - 3c3e91ca2dff4416ba4ca09921ceb759
         _abort: 0
-    - rid: 1027
+    - rid: 1041
       type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: c493bfa674a246afb4d649f4ef660720
-        _position: {x: 923, y: 750}
+        _guid: 56c4b98d0acc44ef96cd24a32e810ae0
+        _position: {x: 1517, y: 750}
         _comment: 
-    - rid: 1028
+    - rid: 1042
       type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 231c86df5dab4a6eb8aae486b3a239eb
-        _position: {x: 1253, y: 750}
+        _guid: 3c3e91ca2dff4416ba4ca09921ceb759
+        _position: {x: 1847, y: 750}
         _comment: 
         _children:
-        - 39d34e44b536474e84b6268f5f272dc0
+        - e75fed688c02448db934b877ee450c5c
         _succeed: 1
-    - rid: 1029
+    - rid: 1043
       type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 39d34e44b536474e84b6268f5f272dc0
-        _position: {x: 1253, y: 900}
+        _guid: e75fed688c02448db934b877ee450c5c
+        _position: {x: 1847, y: 900}
         _comment: 
         _children:
-        - a3659a15d4fe4961b4cede17a3ff14d5
+        - b46dfa0c08774336bb3c823f316be836
         _seconds: 3
-    - rid: 1030
+    - rid: 1044
       type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: a3659a15d4fe4961b4cede17a3ff14d5
-        _position: {x: 1253, y: 1050}
+        _guid: b46dfa0c08774336bb3c823f316be836
+        _position: {x: 1847, y: 1050}
         _comment: 
         _children:
-        - 5cae7de278b04e18a1cde5e09eda6d8b
-        - 8b7bd60175df4cd283c4eec81c556378
+        - 240e50acc5dc45de9733716778f04c3c
+        - 6061f4c2dd07433589d9998e74ee93a1
         _policy: 0
-    - rid: 1031
+    - rid: 1045
       type: {class: TakeSupportPosition, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 5cae7de278b04e18a1cde5e09eda6d8b
-        _position: {x: 1143, y: 1200}
+        _guid: 240e50acc5dc45de9733716778f04c3c
+        _position: {x: 1737, y: 1200}
         _comment: 
         _allyRadius: 20
         _reach: 10
@@ -359,45 +512,45 @@ MonoBehaviour:
         _searchRadius: 8
         _replanEvery: 2
         _speed: 1
-    - rid: 1032
+    - rid: 1046
       type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 8b7bd60175df4cd283c4eec81c556378
-        _position: {x: 1363, y: 1200}
+        _guid: 6061f4c2dd07433589d9998e74ee93a1
+        _position: {x: 1957, y: 1200}
         _comment: 
         _children:
-        - 2e2fc939f8a1416890b30d7802189543
+        - 11559c82cbbb4e3584f54301f5641f98
         _count: 0
         _stopOnFailure: 1
-    - rid: 1033
+    - rid: 1047
       type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 2e2fc939f8a1416890b30d7802189543
-        _position: {x: 1363, y: 1350}
+        _guid: 11559c82cbbb4e3584f54301f5641f98
+        _position: {x: 1957, y: 1350}
         _comment: 
-    - rid: 1034
+    - rid: 1048
       type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 35ecdd2b426f49dfb7c061a57900ab94
-        _position: {x: 1583, y: 600}
-        _comment: 'Lost sight: hold the line while its allies look'
+        _guid: 9a30703386bd4d26b8966854d34cd8d8
+        _position: {x: 2177, y: 600}
+        _comment: 'Lost sight: hold the line, shield up, while its allies look'
         _children:
-        - d47b921e415d494dbea455a8efde198f
+        - 751f5375a8474292abf9ce8dff6984dc
         _succeed: 1
-    - rid: 1035
+    - rid: 1049
       type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: d47b921e415d494dbea455a8efde198f
-        _position: {x: 1583, y: 750}
+        _guid: 751f5375a8474292abf9ce8dff6984dc
+        _position: {x: 2177, y: 750}
         _comment: 
         _children:
-        - 9346447c86e14597a422d14fe8364acf
+        - 4ae4ff6a145748e18054f7d2524e5ac6
         _seconds: 3
-    - rid: 1036
+    - rid: 1050
       type: {class: TakeSupportPosition, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 9346447c86e14597a422d14fe8364acf
-        _position: {x: 1583, y: 900}
+        _guid: 4ae4ff6a145748e18054f7d2524e5ac6
+        _position: {x: 2177, y: 900}
         _comment: 
         _allyRadius: 20
         _reach: 10
@@ -406,20 +559,20 @@ MonoBehaviour:
         _searchRadius: 8
         _replanEvery: 2
         _speed: 1
-    - rid: 1037
+    - rid: 1051
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 49f1110d63084369b5c40c69487fd274
-        _position: {x: 1803, y: 300}
+        _guid: 9ea344e64b0c4310a0bdb8e50d3eddeb
+        _position: {x: 2397, y: 300}
         _comment: 'Quiet again: patch up whoever is still hurt'
         _children:
-        - ba7f3fff515b40c59ef4920f273c89c3
+        - dede040e03c94c3aa7c638c08deae133
         _abort: 0
-    - rid: 1038
+    - rid: 1052
       type: {class: SupportAlly, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: ba7f3fff515b40c59ef4920f273c89c3
-        _position: {x: 1803, y: 450}
+        _guid: dede040e03c94c3aa7c638c08deae133
+        _position: {x: 2397, y: 450}
         _comment: 
         _searchRadius: 20
         _threshold: 0.95
@@ -427,36 +580,36 @@ MonoBehaviour:
         _castRange: 6
         _speed: 1
         _giveUpAfter: 8
-    - rid: 1039
+    - rid: 1053
       type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 6608702a7b15422b92356250c83afb2f
-        _position: {x: 2023, y: 300}
+        _guid: e0360f1eeb564d498c63103e1656fb5b
+        _position: {x: 2617, y: 300}
         _comment: 'Calm: keep close behind its squad''s leader (checking for anyone hurt every few seconds)'
         _children:
-        - b8095caa95d54033bd698a027e71e7cc
+        - 1023a63916fe4984998b1e501bf1edeb
         _succeed: 1
-    - rid: 1040
+    - rid: 1054
       type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: b8095caa95d54033bd698a027e71e7cc
-        _position: {x: 2023, y: 450}
+        _guid: 1023a63916fe4984998b1e501bf1edeb
+        _position: {x: 2617, y: 450}
         _comment: 
         _children:
-        - c14bcb52bd21419c8250824ccc88480a
+        - cd190f00cf0a429a8fd807e9968419b3
         _seconds: 4
-    - rid: 1041
+    - rid: 1055
       type: {class: FollowLeader, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: c14bcb52bd21419c8250824ccc88480a
-        _position: {x: 2023, y: 600}
+        _guid: cd190f00cf0a429a8fd807e9968419b3
+        _position: {x: 2617, y: 600}
         _comment: 
         _distance: 3
-    - rid: 1042
+    - rid: 1056
       type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: db8b8db5ad5c4e298e8ad4c927b1f3b2
-        _position: {x: 2243, y: 300}
+        _guid: ecb92a727c3d455594999408329c5bb6
+        _position: {x: 2837, y: 300}
         _comment: 'No squad to follow (or it leads): the usual routine'
         _tree: {fileID: 11400000, guid: cba441f48fd34dec9c15d7d0c6903346, type: 2}
         _off: 0

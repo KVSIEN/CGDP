@@ -16,7 +16,7 @@ MonoBehaviour:
   SlotColor: {r: 0.4, g: 0.95, b: 0.85, a: 1}
   Cooldown: 7
   MaxCharges: 1
-  CastTime: 0.6
+  CastTime: 1
   Targeting: {fileID: 11400000, guid: 78bb3d22653a4d64a372c764c4158a02, type: 2}
   Damage: 0
   ArmorPenetration: 0
