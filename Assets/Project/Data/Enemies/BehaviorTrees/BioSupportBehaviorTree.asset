@@ -1,0 +1,476 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: BioSupportBehaviorTree
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  - rid: 1020
+  - rid: 1021
+  - rid: 1022
+  - rid: 1023
+  - rid: 1024
+  - rid: 1025
+  - rid: 1026
+  - rid: 1027
+  - rid: 1028
+  - rid: 1029
+  - rid: 1030
+  - rid: 1031
+  - rid: 1032
+  - rid: 1033
+  - rid: 1034
+  - rid: 1035
+  - rid: 1036
+  - rid: 1037
+  - rid: 1038
+  - rid: 1039
+  - rid: 1040
+  - rid: 1041
+  - rid: 1042
+  - rid: 1043
+  - rid: 1044
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 1ba0f3f01fc94390837d21d85118d87a
+        _position: {x: 0, y: 0}
+        _comment: 'BIO support agent (mender): a pack''s healer that stays just behind the pack. In a fight it holds the spot that reaches the most allies with its Mending Spores (8 m: heals and clears burns, bleeds and poison), about 3 m behind the ally nearest the threat, in cover when it knows some, keeping up as the pack surges forward. It breaks off to mend whoever is being mauled or worn down (Support), roars the pack on (Signature: Rallying Roar) when two or more fight near it, bites anything that reaches it, and when cornered vanishes with its Escape (Ambush) or into a bush. Calm, it follows its leader and mends anyone still hurt. Kit: Support (Mending Spores), Signature (Rallying Roar), Escape (Ambush).'
+        _children:
+        - 5d09698eddce415ca7a5a6d16158f743
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5d09698eddce415ca7a5a6d16158f743
+        _position: {x: 0, y: 150}
+        _comment: 'Most urgent first'
+        _children:
+        - be8dee6960c8412293e3f479be9f1b8a
+        - 0c4d63c125e94bf182129337f6d73c54
+        - acb1984cf5614d6997036204ef92b5fb
+        - 4fcc3832a7484876b8f6e5dd6ab5630b
+        - 70a1e6a32f304f9482a59f362e4ea090
+        - f9b830a18f564095bc4f2b76944ebedf
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: be8dee6960c8412293e3f479be9f1b8a
+        _position: {x: -550, y: 300}
+        _comment: 'Standing in a hostile zone: step out'
+        _children:
+        - a515347ebffd4f578e2204541291636c
+        - 0883d5fce9b542c48d783df1b5b5403a
+        _abort: 2
+    - rid: 1003
+      type: {class: InHazard, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a515347ebffd4f578e2204541291636c
+        _position: {x: -660, y: 450}
+        _comment: 
+    - rid: 1004
+      type: {class: LeaveHazard, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 0883d5fce9b542c48d783df1b5b5403a
+        _position: {x: -440, y: 450}
+        _comment: 
+        _giveUpAfter: 3
+    - rid: 1005
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0c4d63c125e94bf182129337f6d73c54
+        _position: {x: -330, y: 300}
+        _comment: 
+        _tree: {fileID: 11400000, guid: c151eafdbc6045c197de5b66618945af, type: 2}
+        _off: 0
+    - rid: 1006
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: acb1984cf5614d6997036204ef92b5fb
+        _position: {x: -110, y: 300}
+        _comment: 'Fight while it knows where the target is: everything in it is about helping its allies'
+        _children:
+        - 7c533cf4028c4820815a32a06bdc5d9d
+        - 6d0c9502387b4bdc83624ccd61204d3d
+        _abort: 2
+    - rid: 1007
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7c533cf4028c4820815a32a06bdc5d9d
+        _position: {x: -220, y: 450}
+        _comment: 
+        _memory: 8
+    - rid: 1008
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6d0c9502387b4bdc83624ccd61204d3d
+        _position: {x: 0, y: 450}
+        _comment: 'Vanish when cornered; bite what reaches it; roar; mend the one being mauled; otherwise keep just behind the pack'
+        _children:
+        - 5e71241570fd4bbaa3c901ff9a1b026c
+        - ca66775c364045a9940f188660c1f5ab
+        - d9f65cbad48c430182ba8dbc16aa64d5
+        - 3d8fe11c5be4459abcfb316439bcd04f
+        - 90c6aad8ed3644e793861de95235440c
+        - 98ff8c74032b40138d0842b53c47cca6
+        _abort: 0
+    - rid: 1009
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5e71241570fd4bbaa3c901ff9a1b026c
+        _position: {x: -550, y: 600}
+        _comment: 'Cornered within 5 m: vanish (its Escape), else into a bush, else run'
+        _children:
+        - a452e927983640fe98e580660f7dc9b5
+        - 39ad7659c14d444bb894dc32d6346fb9
+        - 40adce835f034abc81ae3220b9835053
+        _abort: 2
+    - rid: 1010
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a452e927983640fe98e580660f7dc9b5
+        _position: {x: -770, y: 750}
+        _comment: 
+    - rid: 1011
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 39ad7659c14d444bb894dc32d6346fb9
+        _position: {x: -550, y: 750}
+        _comment: 
+        _range: 5
+    - rid: 1012
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 40adce835f034abc81ae3220b9835053
+        _position: {x: -330, y: 750}
+        _comment: 
+        _children:
+        - 67aeaf3ecd8e4d02bb5720190b283832
+        _seconds: 5
+        _onlyAfterSuccess: 0
+    - rid: 1013
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 67aeaf3ecd8e4d02bb5720190b283832
+        _position: {x: -330, y: 900}
+        _comment: 
+        _children:
+        - 2ed5131b325a49d9b411fa971ab0beb6
+        - 7d3d214fe8694b36a9597d879a927303
+        - d6b4e108d57c4cf19667f40a1a7b2226
+        _abort: 0
+    - rid: 1014
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2ed5131b325a49d9b411fa971ab0beb6
+        _position: {x: -550, y: 1050}
+        _comment: 
+        _children:
+        - f482cb7193454ad2b975da306edb5b6e
+        - 827d251db03a4078a8de6ea2e33b250b
+        _abort: 0
+    - rid: 1015
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f482cb7193454ad2b975da306edb5b6e
+        _position: {x: -660, y: 1200}
+        _comment: 
+        _slot: 2
+        _ability: {fileID: 0}
+    - rid: 1016
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 827d251db03a4078a8de6ea2e33b250b
+        _position: {x: -440, y: 1200}
+        _comment: 
+        _slot: 2
+        _ability: {fileID: 0}
+        _aim: 2
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 0
+    - rid: 1017
+      type: {class: HideInBush, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7d3d214fe8694b36a9597d879a927303
+        _position: {x: -330, y: 1050}
+        _comment: 
+        _minFromTarget: 8
+        _maxRun: 20
+        _hold: {Min: 1.5, Max: 2.5, Bias: 0}
+        _speed: 1.2
+        _giveUpAfter: 5
+    - rid: 1018
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d6b4e108d57c4cf19667f40a1a7b2226
+        _position: {x: -110, y: 1050}
+        _comment: 
+        _distance: 10
+    - rid: 1019
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ca66775c364045a9940f188660c1f5ab
+        _position: {x: -330, y: 600}
+        _comment: 'Something in reach: bite it'
+        _children:
+        - 863e773919284966a1ffde938e5469fa
+        - d9936aeed10e4976b1e5faf49cc13058
+        - 48cb6b2d94cd4021ad97eae2576fe023
+        - 854386d02e35430f948623313716b9c5
+        _abort: 1
+    - rid: 1020
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 863e773919284966a1ffde938e5469fa
+        _position: {x: -660, y: 750}
+        _comment: 
+    - rid: 1021
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d9936aeed10e4976b1e5faf49cc13058
+        _position: {x: -440, y: 750}
+        _comment: 
+        _range: 0
+    - rid: 1022
+      type: {class: TakesMeleeTurn, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 48cb6b2d94cd4021ad97eae2576fe023
+        _position: {x: -220, y: 750}
+        _comment: 
+    - rid: 1023
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 854386d02e35430f948623313716b9c5
+        _position: {x: 0, y: 750}
+        _comment: 
+    - rid: 1024
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d9f65cbad48c430182ba8dbc16aa64d5
+        _position: {x: -110, y: 600}
+        _comment: 'Two or more kin fighting near it: roar them on'
+        _children:
+        - 59a4bf50e9d04fbea2af058b06044f71
+        - b95f5b478c4140d690d58beea33f2fc7
+        - 317e4af539a64bfdab7de9b45263fe8e
+        - ba1fc00c544549b186fecbcedc56a925
+        _abort: 2
+    - rid: 1025
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 59a4bf50e9d04fbea2af058b06044f71
+        _position: {x: -440, y: 750}
+        _comment: 
+    - rid: 1026
+      type: {class: KinNear, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b95f5b478c4140d690d58beea33f2fc7
+        _position: {x: -220, y: 750}
+        _comment: 
+        _radius: 12
+        _atLeast: 2
+    - rid: 1027
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 317e4af539a64bfdab7de9b45263fe8e
+        _position: {x: 0, y: 750}
+        _comment: 
+        _slot: 1
+        _ability: {fileID: 0}
+    - rid: 1028
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ba1fc00c544549b186fecbcedc56a925
+        _position: {x: 220, y: 750}
+        _comment: 
+        _slot: 1
+        _ability: {fileID: 0}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 0
+    - rid: 1029
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 3d8fe11c5be4459abcfb316439bcd04f
+        _position: {x: 110, y: 600}
+        _comment: 'An ally being mauled or worn down: go mend it (from its far side)'
+        _children:
+        - d205feef83094ce2978e2a179e71a6fd
+        _abort: 0
+    - rid: 1030
+      type: {class: SupportAlly, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d205feef83094ce2978e2a179e71a6fd
+        _position: {x: 110, y: 750}
+        _comment: 
+        _searchRadius: 18
+        _threshold: 0.65
+        _underFireWeight: 1.5
+        _castRange: 5
+        _speed: 1
+        _giveUpAfter: 5
+    - rid: 1031
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 90c6aad8ed3644e793861de95235440c
+        _position: {x: 330, y: 600}
+        _comment: 'Hold the spot just behind the pack that reaches the most of it'
+        _children:
+        - e0014b9139ea4978a917a9ee88a8b6a3
+        - 0a1782dd71ed4fe69448e3ad262a14c4
+        _abort: 0
+    - rid: 1032
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e0014b9139ea4978a917a9ee88a8b6a3
+        _position: {x: 220, y: 750}
+        _comment: 
+    - rid: 1033
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0a1782dd71ed4fe69448e3ad262a14c4
+        _position: {x: 440, y: 750}
+        _comment: 
+        _children:
+        - 1d431b47bac543cd94538e2d5505877c
+        _succeed: 1
+    - rid: 1034
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 1d431b47bac543cd94538e2d5505877c
+        _position: {x: 440, y: 900}
+        _comment: 
+        _children:
+        - db09f25b2d104abfa6dfb4053de99b7e
+        _seconds: 4
+    - rid: 1035
+      type: {class: TakeSupportPosition, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: db09f25b2d104abfa6dfb4053de99b7e
+        _position: {x: 440, y: 1050}
+        _comment: 
+        _allyRadius: 20
+        _reach: 8
+        _standBack: 3
+        _searchRadius: 8
+        _replanEvery: 2
+        _speed: 1.1
+    - rid: 1036
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 98ff8c74032b40138d0842b53c47cca6
+        _position: {x: 550, y: 600}
+        _comment: 'Lost sight: stay behind the pack while it hunts'
+        _children:
+        - b19efef5a6e340bda103c36e269fa401
+        _succeed: 1
+    - rid: 1037
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b19efef5a6e340bda103c36e269fa401
+        _position: {x: 550, y: 750}
+        _comment: 
+        _children:
+        - 98d85f910add4ed882bc58e8b8e8b480
+        _seconds: 4
+    - rid: 1038
+      type: {class: TakeSupportPosition, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 98d85f910add4ed882bc58e8b8e8b480
+        _position: {x: 550, y: 900}
+        _comment: 
+        _allyRadius: 20
+        _reach: 8
+        _standBack: 3
+        _searchRadius: 8
+        _replanEvery: 2
+        _speed: 1
+    - rid: 1039
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4fcc3832a7484876b8f6e5dd6ab5630b
+        _position: {x: 110, y: 300}
+        _comment: 'Quiet again: patch up whoever is still hurt'
+        _children:
+        - f4483b81c67d4f27bb5c471590a9b5e9
+        _abort: 0
+    - rid: 1040
+      type: {class: SupportAlly, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f4483b81c67d4f27bb5c471590a9b5e9
+        _position: {x: 110, y: 450}
+        _comment: 
+        _searchRadius: 20
+        _threshold: 0.9
+        _underFireWeight: 0
+        _castRange: 5
+        _speed: 1
+        _giveUpAfter: 8
+    - rid: 1041
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 70a1e6a32f304f9482a59f362e4ea090
+        _position: {x: 330, y: 300}
+        _comment: 'Calm: keep close behind its squad''s leader (checking for anyone hurt every few seconds)'
+        _children:
+        - b867c7953820454cb4e22dfb43df8092
+        _succeed: 1
+    - rid: 1042
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b867c7953820454cb4e22dfb43df8092
+        _position: {x: 330, y: 450}
+        _comment: 
+        _children:
+        - 072ab9d10c4b47b79bb708b6e1b7b58e
+        _seconds: 4
+    - rid: 1043
+      type: {class: FollowLeader, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 072ab9d10c4b47b79bb708b6e1b7b58e
+        _position: {x: 330, y: 600}
+        _comment: 
+        _distance: 4
+    - rid: 1044
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f9b830a18f564095bc4f2b76944ebedf
+        _position: {x: 550, y: 300}
+        _comment: 'No squad to follow (or it leads): the usual routine'
+        _tree: {fileID: 11400000, guid: cba441f48fd34dec9c15d7d0c6903346, type: 2}
+        _off: 0

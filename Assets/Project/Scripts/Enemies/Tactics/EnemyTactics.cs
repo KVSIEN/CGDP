@@ -358,6 +358,21 @@ namespace CGD.Enemies
             return false;
         }
 
+        // Known cover spots within `radius` of `center` that no ally holds (its own included).
+        public void FreeKnownCover(Vector3 center, float radius, List<int> results)
+        {
+            _knowledge.Known(center, radius, results);
+            CoverMap map = _knowledge.Map;
+            if (map == null) return;
+            for (int i = results.Count - 1; i >= 0; i--)
+                if (map.IsTakenByOther(results[i], _ai)) results.RemoveAt(i);
+        }
+
+        // The spot at `index`, and whether its obstacle stands between it and the threat.
+        public CoverPoint CoverAt(int index) => _knowledge.Map[index];
+
+        public bool CoverFaces(int index, Vector3 threat) => _knowledge.Map[index].Faces(threat, FacingDot);
+
         // Swaps whatever cover it holds for this spot. False if an ally took it meanwhile.
         public bool TryClaimCover(int index, out Vector3 position)
         {

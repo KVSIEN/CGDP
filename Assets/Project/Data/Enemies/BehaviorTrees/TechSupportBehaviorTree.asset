@@ -1,0 +1,445 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: TechSupportBehaviorTree
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  - rid: 1020
+  - rid: 1021
+  - rid: 1022
+  - rid: 1023
+  - rid: 1024
+  - rid: 1025
+  - rid: 1026
+  - rid: 1027
+  - rid: 1028
+  - rid: 1029
+  - rid: 1030
+  - rid: 1031
+  - rid: 1032
+  - rid: 1033
+  - rid: 1034
+  - rid: 1035
+  - rid: 1036
+  - rid: 1037
+  - rid: 1038
+  - rid: 1039
+  - rid: 1040
+  - rid: 1041
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ee7696869a6d413ead9ebb2c4d141e61
+        _position: {x: 0, y: 0}
+        _comment: 'TECH support agent (field engineer): keeps its squad''s shields up from the back. In a fight it holds the spot that reaches the most allies with its Shield Projector (8 m), behind the ally nearest the threat by about 5 m and in cover facing the threat, high cover first, and plans again every 2 s as the line moves; it shoots from there. It breaks off to top up whoever is being hit or worn down (Support), throws a Barrier Field (Signature: +60 armour) over the squad when two or more fight near it, shelters behind a shield-bearer when one is about, and falls back toward its line when pressed. Calm, it follows its leader and patches up anyone still hurt. Kit: Support (Shield Projector), Signature (Barrier Field).'
+        _children:
+        - 7d9f1c0b1b3f48e18481ee573d306a07
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7d9f1c0b1b3f48e18481ee573d306a07
+        _position: {x: 0, y: 150}
+        _comment: 'Most urgent first'
+        _children:
+        - 0efcf0aeab9247cb8d615bef39c2f61e
+        - fbd82240b54b49d39173281ad6aec0a2
+        - 597a38d0472845dfa117966e02f9ed5d
+        - 9be46531d48b45fa92472df4a1c607fa
+        - f9235ff1c45440a2b6a1f243879cb589
+        - b0d8383db33741bd9738d844db2f3a8e
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0efcf0aeab9247cb8d615bef39c2f61e
+        _position: {x: -550, y: 300}
+        _comment: 'Standing in a hostile zone: step out'
+        _children:
+        - bc21fa872ae84e22830de8f464ac5c58
+        - 7652094e211c495c88e7468b5e9b2f9f
+        _abort: 2
+    - rid: 1003
+      type: {class: InHazard, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: bc21fa872ae84e22830de8f464ac5c58
+        _position: {x: -660, y: 450}
+        _comment: 
+    - rid: 1004
+      type: {class: LeaveHazard, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 7652094e211c495c88e7468b5e9b2f9f
+        _position: {x: -440, y: 450}
+        _comment: 
+        _giveUpAfter: 3
+    - rid: 1005
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: fbd82240b54b49d39173281ad6aec0a2
+        _position: {x: -330, y: 300}
+        _comment: 
+        _tree: {fileID: 11400000, guid: c151eafdbc6045c197de5b66618945af, type: 2}
+        _off: 0
+    - rid: 1006
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 597a38d0472845dfa117966e02f9ed5d
+        _position: {x: -110, y: 300}
+        _comment: 'Fight while it knows where the target is: everything in it is about helping its allies'
+        _children:
+        - 3a509e6a8f2f471584beb7e2e297bc2d
+        - 43650ba3ae064e2c8108c58a73f902f9
+        _abort: 2
+    - rid: 1007
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3a509e6a8f2f471584beb7e2e297bc2d
+        _position: {x: -220, y: 450}
+        _comment: 
+        _memory: 8
+    - rid: 1008
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 43650ba3ae064e2c8108c58a73f902f9
+        _position: {x: 0, y: 450}
+        _comment: 'Back off when pressed; shield the squad; top up the one under fire; otherwise hold the spot that covers everyone'
+        _children:
+        - ecaea13555a240c580d748297efa3945
+        - 1d02cb815dff42bcabeb7639aa12a5c0
+        - f828fb01b5c04dbfbdc1dd3d748e90af
+        - f9ef36f424024c868d4d5cf058ddccf7
+        - 6d11da630dc844b1b9896adfbd5e0e62
+        - c3cba650506349c9ac312620f11a4bf1
+        _abort: 0
+    - rid: 1009
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ecaea13555a240c580d748297efa3945
+        _position: {x: -550, y: 600}
+        _comment: 'Pressed within 7 m: fall back, behind its allies'' line if it can'
+        _children:
+        - 62893df14efc43c19d02fac03e9d961a
+        - dd2b995444c84c6487da61f41ec0e37f
+        - 7ff0457096414cab96bcc40d27d55457
+        _abort: 2
+    - rid: 1010
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 62893df14efc43c19d02fac03e9d961a
+        _position: {x: -770, y: 750}
+        _comment: 
+    - rid: 1011
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: dd2b995444c84c6487da61f41ec0e37f
+        _position: {x: -550, y: 750}
+        _comment: 
+        _range: 7
+    - rid: 1012
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7ff0457096414cab96bcc40d27d55457
+        _position: {x: -330, y: 750}
+        _comment: 
+        _children:
+        - 221201c3c0d441d8bb5a9380cbf1e2d1
+        _seconds: 3
+        _onlyAfterSuccess: 0
+    - rid: 1013
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 221201c3c0d441d8bb5a9380cbf1e2d1
+        _position: {x: -330, y: 900}
+        _comment: 
+        _children:
+        - 2c538f0cf09a4bc8aa1adbfce76d41e3
+        - edc29d60e2b94db1bd639df38b8919b4
+        - de3518cb1ac94816ab307009b0b29155
+        _abort: 0
+    - rid: 1014
+      type: {class: FallBack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2c538f0cf09a4bc8aa1adbfce76d41e3
+        _position: {x: -550, y: 1050}
+        _comment: 
+        _giveUpAfter: 6
+    - rid: 1015
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: edc29d60e2b94db1bd639df38b8919b4
+        _position: {x: -330, y: 1050}
+        _comment: 
+        _use: 1
+        _giveUpAfter: 5
+        _stopAtPreferredRange: 0
+    - rid: 1016
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: de3518cb1ac94816ab307009b0b29155
+        _position: {x: -110, y: 1050}
+        _comment: 
+        _distance: 10
+    - rid: 1017
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 1d02cb815dff42bcabeb7639aa12a5c0
+        _position: {x: -330, y: 600}
+        _comment: 'Two or more kin fighting near it: Barrier Field over them'
+        _children:
+        - 401c3a0fccf646be8d38c3f80362e25b
+        - cbf48778bd764d5ca75ea36ec907f494
+        - a1e03b8da006451d8bc7df27ac9fa392
+        - b7b026aa4c234ff8961e5a52028f840f
+        _abort: 2
+    - rid: 1018
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 401c3a0fccf646be8d38c3f80362e25b
+        _position: {x: -660, y: 750}
+        _comment: 
+    - rid: 1019
+      type: {class: KinNear, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: cbf48778bd764d5ca75ea36ec907f494
+        _position: {x: -440, y: 750}
+        _comment: 
+        _radius: 10
+        _atLeast: 2
+    - rid: 1020
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a1e03b8da006451d8bc7df27ac9fa392
+        _position: {x: -220, y: 750}
+        _comment: 
+        _slot: 1
+        _ability: {fileID: 0}
+    - rid: 1021
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b7b026aa4c234ff8961e5a52028f840f
+        _position: {x: 0, y: 750}
+        _comment: 
+        _slot: 1
+        _ability: {fileID: 0}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 0
+    - rid: 1022
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f828fb01b5c04dbfbdc1dd3d748e90af
+        _position: {x: -110, y: 600}
+        _comment: 'An ally being hit or worn down: go top its shield up (from its far side)'
+        _children:
+        - 349fb9ade2e44b10bb5ddaafc0792760
+        _abort: 0
+    - rid: 1023
+      type: {class: SupportAlly, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 349fb9ade2e44b10bb5ddaafc0792760
+        _position: {x: -110, y: 750}
+        _comment: 
+        _searchRadius: 18
+        _threshold: 0.6
+        _underFireWeight: 1.5
+        _castRange: 6
+        _speed: 1
+        _giveUpAfter: 5
+    - rid: 1024
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f9ef36f424024c868d4d5cf058ddccf7
+        _position: {x: 110, y: 600}
+        _comment: 'A shield-bearer of its own near: keep behind it and fire past its shoulder'
+        _tree: {fileID: 11400000, guid: d5ec40267c0d4d5f9e22d87de08d4fb1, type: 2}
+        _off: 0
+    - rid: 1025
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6d11da630dc844b1b9896adfbd5e0e62
+        _position: {x: 330, y: 600}
+        _comment: 'Hold the support position (reach the most allies, 5 m behind the line, in cover) and shoot from it'
+        _children:
+        - 215c552949ff4670b2d7a22b2f7ed345
+        - 222283efaaad43e0a29976f9f4ed67c2
+        _abort: 0
+    - rid: 1026
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 215c552949ff4670b2d7a22b2f7ed345
+        _position: {x: 220, y: 750}
+        _comment: 
+    - rid: 1027
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 222283efaaad43e0a29976f9f4ed67c2
+        _position: {x: 440, y: 750}
+        _comment: 
+        _children:
+        - f37c6b8f14994ae184a6cc1f5d4de674
+        _succeed: 1
+    - rid: 1028
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f37c6b8f14994ae184a6cc1f5d4de674
+        _position: {x: 440, y: 900}
+        _comment: 
+        _children:
+        - ac21b2d1651a45f6b0f5fbcca739c5cb
+        _seconds: 4
+    - rid: 1029
+      type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ac21b2d1651a45f6b0f5fbcca739c5cb
+        _position: {x: 440, y: 1050}
+        _comment: 
+        _children:
+        - fd107b2eb75049b98ab5340d47110c68
+        - 7172a4c6b5d641488a0b673beae52983
+        _policy: 0
+    - rid: 1030
+      type: {class: TakeSupportPosition, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: fd107b2eb75049b98ab5340d47110c68
+        _position: {x: 330, y: 1200}
+        _comment: 
+        _allyRadius: 20
+        _reach: 8
+        _standBack: 5
+        _searchRadius: 10
+        _replanEvery: 2
+        _speed: 1
+    - rid: 1031
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7172a4c6b5d641488a0b673beae52983
+        _position: {x: 550, y: 1200}
+        _comment: 
+        _children:
+        - 18109c93de804dec80728d6c870530d6
+        _count: 0
+        _stopOnFailure: 1
+    - rid: 1032
+      type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 18109c93de804dec80728d6c870530d6
+        _position: {x: 550, y: 1350}
+        _comment: 
+    - rid: 1033
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c3cba650506349c9ac312620f11a4bf1
+        _position: {x: 550, y: 600}
+        _comment: 'Lost sight: keep the position behind its allies while they look'
+        _children:
+        - ad06fd1d68294370abb3f7ee219ae0ed
+        _succeed: 1
+    - rid: 1034
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ad06fd1d68294370abb3f7ee219ae0ed
+        _position: {x: 550, y: 750}
+        _comment: 
+        _children:
+        - 2f40d41f75a145ebac74bca907deaa35
+        _seconds: 4
+    - rid: 1035
+      type: {class: TakeSupportPosition, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2f40d41f75a145ebac74bca907deaa35
+        _position: {x: 550, y: 900}
+        _comment: 
+        _allyRadius: 20
+        _reach: 8
+        _standBack: 5
+        _searchRadius: 10
+        _replanEvery: 2
+        _speed: 1
+    - rid: 1036
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 9be46531d48b45fa92472df4a1c607fa
+        _position: {x: 110, y: 300}
+        _comment: 'Quiet again: patch up whoever is still hurt'
+        _children:
+        - f1de051c38c64af9a4b6193f8e7ee446
+        _abort: 0
+    - rid: 1037
+      type: {class: SupportAlly, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f1de051c38c64af9a4b6193f8e7ee446
+        _position: {x: 110, y: 450}
+        _comment: 
+        _searchRadius: 20
+        _threshold: 0.95
+        _underFireWeight: 0
+        _castRange: 6
+        _speed: 1
+        _giveUpAfter: 8
+    - rid: 1038
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f9235ff1c45440a2b6a1f243879cb589
+        _position: {x: 330, y: 300}
+        _comment: 'Calm: keep close behind its squad''s leader (checking for anyone hurt every few seconds)'
+        _children:
+        - 2c62698728e243fa8b0f22498be12e4f
+        _succeed: 1
+    - rid: 1039
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2c62698728e243fa8b0f22498be12e4f
+        _position: {x: 330, y: 450}
+        _comment: 
+        _children:
+        - aca8583d741348a3bed7278eaab75d63
+        _seconds: 4
+    - rid: 1040
+      type: {class: FollowLeader, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: aca8583d741348a3bed7278eaab75d63
+        _position: {x: 330, y: 600}
+        _comment: 
+        _distance: 4
+    - rid: 1041
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b0d8383db33741bd9738d844db2f3a8e
+        _position: {x: 550, y: 300}
+        _comment: 'No squad to follow (or it leads): the usual routine'
+        _tree: {fileID: 11400000, guid: cba441f48fd34dec9c15d7d0c6903346, type: 2}
+        _off: 0

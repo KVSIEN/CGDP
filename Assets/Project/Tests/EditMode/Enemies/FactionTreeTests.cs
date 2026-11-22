@@ -102,11 +102,35 @@ namespace CGD.Tests
         [Test]
         public void AITestAgentsCarryTheKitTheirTreesUse()
         {
-            foreach (string name in new[] { "BioTestEnemyData", "TechTestEnemyData", "VoidTestEnemyData" })
+            foreach (string name in new[] { "BioTestEnemyData", "TechTestEnemyData", "VoidTestEnemyData",
+                                             "BioSupportEnemyData", "TechSupportEnemyData", "VoidSupportEnemyData" })
             {
                 var data = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/AITest/{name}.asset");
                 foreach (EnemyDataReview.Issue issue in EnemyDataReview.Check(data))
                     Assert.IsFalse(issue.Message.Contains("kit"), $"{name}: {issue.Message}");
+            }
+        }
+
+        [Test]
+        public void EachFactionsSupportAgentPositionsToHelpItsAllies()
+        {
+            foreach (string faction in new[] { "Bio", "Tech", "Void" })
+            {
+                HashSet<Type> nodes = EnemyTreeContents.NodeTypes(Load(faction + "SupportBehaviorTree"));
+                Assert.IsTrue(nodes.Contains(typeof(TakeSupportPosition)), $"{faction}: holds the spot that reaches its allies");
+                Assert.IsTrue(nodes.Contains(typeof(SupportAlly)), $"{faction}: goes to the ally that needs it");
+            }
+        }
+
+        // The faction agents are where every behavior gets tried out; support agents stay focused.
+        [Test]
+        public void FactionAgentTreesStayTheFullestPerFaction()
+        {
+            foreach (string faction in new[] { "Bio", "Tech", "Void" })
+            {
+                int agent   = EnemyTreeContents.NodeTypes(Load(faction + "BehaviorTree")).Count;
+                int support = EnemyTreeContents.NodeTypes(Load(faction + "SupportBehaviorTree")).Count;
+                Assert.Greater(agent, support, $"{faction}: the agent tree should use more kinds of node than the support tree");
             }
         }
 
