@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using CGD.Abilities;
 using CGD.Combat;
 
 namespace CGD.Enemies
@@ -9,6 +11,11 @@ namespace CGD.Enemies
     // goes through it (it shorts the shield out) unless Stops Lightning is on.
     // With a Durability it can also be broken by focused fire: the bearer reels for a moment and
     // fights without it until it comes back up, the other answer to a shield wall.
+    // With a Barrier Size it also stands a one-way wall of force in front of the bearer
+    // (ShieldBarrier): hostile fire from the front stops on it, so allies behind are covered too,
+    // while shots fired from behind (the bearer's, its allies') pass through. What the wall stops
+    // wears its Durability down. The bearer lowers the shield while it casts any of its Lower For
+    // abilities (both hands busy: a repair, a smoke screen) and raises it again once done.
     [DisallowMultipleComponent]
     public class FrontalShield : MonoBehaviour, IDamageInterceptor
     {
@@ -28,15 +35,39 @@ namespace CGD.Enemies
         [Tooltip("Optional: the shield's model, hidden while it is down")]
         [SerializeField] private GameObject _visual;
 
+        [Header("Barrier")]
+        [Tooltip("Width, height and depth in metres of the one-way wall it stands in front of itself, covering allies behind. " +
+                 "Zero = no wall, the shield only protects the bearer")]
+        [SerializeField] private Vector3 _barrierSize;
+        [Tooltip("Metres in front of the bearer's centre the wall stands")]
+        [SerializeField, Min(0.3f)] private float _barrierDistance = 0.9f;
+        [Tooltip("Material the wall is drawn with (a transparent one); none = no visible wall")]
+        [SerializeField] private Material _barrierMaterial;
+        [SerializeField] private Color _barrierColor = new(0.35f, 0.75f, 1f, 0.3f);
+
+        [Header("Lowering")]
+        [Tooltip("Abilities it lowers the shield to cast (a repair, a smoke screen): down from the start of the cast until it goes off")]
+        [SerializeField] private List<Ability> _lowerFor = new();
+
         private ShieldDurability _state;
         private HealthManager    _health;
         private EnemyAI          _ai;
         private Stunnable        _stunnable;
+        private GameObject       _barrier;
 
         // Before guards and reflectors: the shield takes the blow first.
         public int Order => -10;
 
-        public bool IsUp => _state == null || _state.IsUp(Time.time);
+        public bool IsUp => !IsLowered && !IsBroken;
+
+        // Stands a one-way wall in front of it, not only a guard for itself.
+        internal bool HasBarrier => _barrierSize.x > 0f && _barrierSize.y > 0f;
+
+        // Broken by focused fire and not back up yet.
+        public bool IsBroken => _state != null && !_state.IsUp(Time.time);
+
+        // Put down for a cast that needs both hands.
+        public bool IsLowered => _ai != null && _ai.Abilities != null && _ai.Abilities.IsCasting && _lowerFor.Contains(_ai.Abilities.Casting);
 
         private void Awake()
         {
@@ -44,6 +75,7 @@ namespace CGD.Enemies
             TryGetComponent(out _ai);
             TryGetComponent(out _stunnable);
             if (TryGetComponent(out _health)) _health.OnRevived += Restore;
+            if (HasBarrier) BuildBarrier();
         }
 
         private void OnDestroy()
@@ -51,10 +83,45 @@ namespace CGD.Enemies
             if (_health != null) _health.OnRevived -= Restore;
         }
 
-        // Brings the model back once a broken shield is up again.
+        // Shows the model and wall while the shield is up: back once a broken shield recovers or a
+        // lowering cast is done.
         private void Update()
         {
-            if (_visual != null && _visual.activeSelf != IsUp) _visual.SetActive(IsUp);
+            bool up = IsUp;
+            if (_visual  != null && _visual.activeSelf  != up) _visual.SetActive(up);
+            if (_barrier != null && _barrier.activeSelf != up) _barrier.SetActive(up);
+        }
+
+        // A thin box in front of the bearer, on the Ignore Raycast layer so sight and cover checks
+        // (which look at the default layer) see through it, while shots (which hit every layer) stop on it.
+        private void BuildBarrier()
+        {
+            _barrier = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            _barrier.name  = "ShieldBarrier";
+            _barrier.layer = LayerMask.NameToLayer("Ignore Raycast");
+            Transform wall = _barrier.transform;
+            wall.SetParent(transform, false);
+            wall.localPosition = new Vector3(0f, _barrierSize.y * 0.5f, _barrierDistance);
+            wall.localRotation = Quaternion.identity;
+            wall.localScale    = new Vector3(_barrierSize.x, _barrierSize.y, Mathf.Max(0.05f, _barrierSize.z));
+
+            var renderer = _barrier.GetComponent<MeshRenderer>();
+            if (_barrierMaterial == null) renderer.enabled = false;
+            else
+            {
+                renderer.sharedMaterial    = _barrierMaterial;
+                renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                var tint = new MaterialPropertyBlock();
+                tint.SetColor("_BaseColor", _barrierColor);
+                renderer.SetPropertyBlock(tint);
+            }
+
+            _barrier.AddComponent<ShieldBarrier>().Absorbed += OnBarrierHit;
+        }
+
+        private void OnBarrierHit(float damage)
+        {
+            if (_state.Absorb(damage, Time.time)) Break();
         }
 
         public float Intercept(in DamageInfo info, float amount, Vector3 point)
@@ -80,7 +147,8 @@ namespace CGD.Enemies
 
         private void Break()
         {
-            if (_visual != null) _visual.SetActive(false);
+            if (_visual  != null) _visual.SetActive(false);
+            if (_barrier != null) _barrier.SetActive(false);
             if (_breakStagger > 0f)
             {
                 if (_ai != null) _ai.Stagger(_breakStagger);
@@ -91,7 +159,8 @@ namespace CGD.Enemies
         private void Restore()
         {
             _state.Restore();
-            if (_visual != null) _visual.SetActive(true);
+            if (_visual  != null) _visual.SetActive(true);
+            if (_barrier != null) _barrier.SetActive(true);
         }
 
         // From the hit point if it has one, otherwise from where the attacker stands.

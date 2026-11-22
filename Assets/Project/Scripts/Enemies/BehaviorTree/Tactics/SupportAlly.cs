@@ -12,8 +12,9 @@ namespace CGD.Enemies
     // (EnemyData › Kit › Support: Field Repair restores plating, Shield Projector tops up shields,
     // Mending Spores heals, regrows bone plating and cleanses) once in reach. While its ally faces a threat it comes in on the
     // ally's far side, using the ally as cover rather than walking into the line of fire.
-    // Succeeds when the ability went off; fails when nobody needs it, the ability isn't ready,
-    // or it can't get there in time.
+    // With a Cover ability it casts that first once in reach (a smoke screen to repair under),
+    // then its Support. Succeeds when the ability went off; fails when nobody needs it, the
+    // ability isn't ready, or it can't get there in time.
     [Serializable]
     [BtNodeInfo("Enemy/Tactics/Support Ally", "Goes to the most damaged ally nearby and uses its Support ability on it. Fails when nobody needs help or it isn't ready.")]
     public sealed class SupportAlly : EnemyAction
@@ -31,8 +32,14 @@ namespace CGD.Enemies
         [SerializeField, Range(0.2f, 1.5f)] private float _speed = 1f;
         [Tooltip("Seconds to reach the ally before giving up")]
         [SerializeField, Min(0.5f)] private float _giveUpAfter = 6f;
+        [Tooltip("Optional: cast first once in reach, then the Support (a smoke screen to work under), when it is ready. " +
+                 "Own: the Cover Ability below (none = no cover). Other slots: that slot of the enemy's kit")]
+        [SerializeField] private AbilitySlot _coverSlot;
+        [SerializeField] private Ability _cover;
 
         [NonSerialized] private Ability _support;
+        [NonSerialized] private Ability _coverAbility;
+        [NonSerialized] private bool    _covering;
         // What its ability gives back, so it only goes to allies short of that.
         [NonSerialized] private bool    _countsHealth;
         [NonSerialized] private bool    _countsShield;
@@ -48,6 +55,8 @@ namespace CGD.Enemies
             base.OnInitialize(context);
             _support = Ai.Data.Support;
             Ai.Abilities.Register(_support);
+            _coverAbility = Ai.Data.KitAbility(_coverSlot, _cover);
+            if (_coverAbility != null) Ai.Abilities.Register(_coverAbility);
             // A Targeted ability says what it restores; anything else (a Rally) helps either way.
             var targeted  = _support as TargetedAbility;
             _countsShield  = targeted == null || targeted.Shield > 0f;
@@ -58,6 +67,7 @@ namespace CGD.Enemies
         protected override void OnEnter(BtContext context)
         {
             _casting   = false;
+            _covering  = false;
             _givesUpAt = context.Time + _giveUpAfter;
             _ally      = Ai.Abilities.IsReady(_support) ? MostInNeed() : null;
             if (_ally != null) Ai.Agent.isStopped = false;
@@ -72,6 +82,16 @@ namespace CGD.Enemies
             if (_ally == null || _ally.Health.IsDead) return BtStatus.Failure;
 
             Vector3 at = _ally.transform.position;
+            if (_covering)
+            {
+                Ai.ReportStep(EngageStep.Cast);
+                Ai.Agent.isStopped = true;
+                if (!Ai.Abilities.TickCast(at, context.DeltaTime)) return BtStatus.Running;
+                _covering = false;
+                _casting  = Ai.Abilities.TryBegin(_support, at);
+                return _casting ? BtStatus.Running : BtStatus.Failure;
+            }
+
             if (_casting)
             {
                 Ai.ReportStep(EngageStep.Cast);
@@ -90,6 +110,8 @@ namespace CGD.Enemies
             }
 
             Ai.Routing.Stop();
+            _covering = _coverAbility != null && Ai.Abilities.TryBegin(_coverAbility, at);
+            if (_covering) return BtStatus.Running;
             _casting = Ai.Abilities.TryBegin(_support, at);
             return _casting ? BtStatus.Running : BtStatus.Failure;
         }

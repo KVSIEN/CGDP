@@ -62,8 +62,7 @@ namespace CGD.Weapons
             }
 
             float range  = MaxRangeOf(ctx);
-            bool  didHit = Physics.Raycast(ctx.Origin, direction, out RaycastHit hit,
-                range, ctx.Data.HitMask, QueryTriggerInteraction.Ignore);
+            bool  didHit = ShotRay.Cast(ctx.Origin, direction, out RaycastHit hit, range, ctx.Data.HitMask);
 
             if (ctx.DebugDraw)
             {
@@ -93,6 +92,7 @@ namespace CGD.Weapons
             for (int i = 0; i < count; i++)
             {
                 RaycastHit  hit    = PierceHits[i];
+                if (ShieldBarrier.PassesThrough(hit.collider, direction)) continue;
                 IDamageable target = Hitbox.FindDamageable(hit.collider);
                 if (target != null && PiercedTargets.Contains(target)) continue;
 
@@ -145,8 +145,7 @@ namespace CGD.Weapons
             float instantRange = Mathf.Min(shot.Speed * shot.InstantHitTime, maxRange);
 
             if (instantRange > 0f &&
-                Physics.Raycast(ctx.Origin, direction, out RaycastHit hit,
-                                instantRange, ctx.Data.HitMask, QueryTriggerInteraction.Ignore))
+                ShotRay.Cast(ctx.Origin, direction, out RaycastHit hit, instantRange, ctx.Data.HitMask))
             {
                 ApplyHitDamage(hit, ctx);
                 return;

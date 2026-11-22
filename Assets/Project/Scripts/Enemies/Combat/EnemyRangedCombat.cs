@@ -253,7 +253,7 @@ namespace CGD.Enemies
                 return true;
             }
 
-            if (Physics.Raycast(eyePos, dir, out var hit, data.SightRange, ~0, QueryTriggerInteraction.Ignore))
+            if (ShotRay.Cast(eyePos, dir, out var hit, data.SightRange, ~0))
             {
                 Hitbox.ApplyHit(hit.collider, info, hit.point);
                 ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet, _source);

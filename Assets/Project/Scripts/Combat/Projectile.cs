@@ -161,7 +161,8 @@ namespace CGD.Combat
         }
 
         // Casts along the intended step and returns the first hit that is not the shooter,
-        // ignoring trigger volumes so pickups and interaction zones don't stop the round.
+        // ignoring trigger volumes so pickups and interaction zones don't stop the round, and
+        // flying on through a one-way barrier it was fired from behind.
         private bool TrySweep(Vector3 start, Vector3 step, out RaycastHit hit)
         {
             hit = default;
@@ -181,6 +182,8 @@ namespace CGD.Combat
                 if (_owner != null && _hitBuffer[i].collider.transform.IsChildOf(_owner))
                     continue;
                 if (AlreadyPierced(_hitBuffer[i].collider))
+                    continue;
+                if (ShieldBarrier.PassesThrough(_hitBuffer[i].collider, step))
                     continue;
                 hit = _hitBuffer[i];
                 // A sphere that starts inside something reports no point: use where it was.
