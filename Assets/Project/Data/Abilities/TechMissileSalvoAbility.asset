@@ -19,7 +19,7 @@ MonoBehaviour:
   CastTime: 0.7
   ProjectilePrefab: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
   Damage: 22
-  Speed: 18
+  Speed: 24
   Lifetime: 2.5
   Gravity: 0
   HitRadius: 0.3

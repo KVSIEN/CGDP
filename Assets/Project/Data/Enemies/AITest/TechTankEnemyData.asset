@@ -23,7 +23,7 @@ MonoBehaviour:
   ShieldRegenRate: 12
   PatrolSpeed: 1
   ChaseSpeed: 2.2
-  SightRange: 60
+  SightRange: 70
   SightAngle: 120
   HearingRadius: 10
   Senses: {fileID: 11400000, guid: 251b916bd85e47ba8781cb4c02764333, type: 2}
@@ -39,14 +39,14 @@ MonoBehaviour:
   AttackCooldown: 1.8
   AttackWindup: 0.45
   DamageNumberColor: {r: 1, g: 0.7, b: 0.2, a: 1}
-  PreferredRange: 16
-  SpreadAngle: 2.5
+  PreferredRange: 30
+  SpreadAngle: 1.5
   BurstCount: 2
   BurstInterval: 0.35
   StrafeInterval: 2
   StrafeDistance: 3
   ShotProjectile: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
-  ShotSpeed: 18
+  ShotSpeed: 26
   RaisesAlarm: 0
   Grenade: {fileID: 11400000, guid: 18271d81f56c4cd78f9b87c2b6ff2141, type: 2}
   Signature: {fileID: 11400000, guid: bc948f8fed1e44cab59764b0f3f129b1, type: 2}
