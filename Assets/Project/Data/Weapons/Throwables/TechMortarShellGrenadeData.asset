@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TechMortarShellGrenadeData
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.GrenadeData
   GrenadeName: Mortar Shell
-  GrenadePrefab: {fileID: 3424364988567009664, guid: c8e0536b0a0b4b25a700caada6e78853, type: 3}
+  GrenadePrefab: {fileID: 2100000000000000001, guid: 6d075b19d0114ec0bd917edd3d9a438d, type: 3}
   BodyColor: {r: 0.85, g: 0.72, b: 0.25, a: 1}
   RangeMode: 1
   MinThrowSpeed: 12

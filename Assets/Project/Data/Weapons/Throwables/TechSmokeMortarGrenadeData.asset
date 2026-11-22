@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TechSmokeMortarGrenadeData
   m_EditorClassIdentifier: CGD.Runtime::CGD.Weapons.GrenadeData
   GrenadeName: Smoke Mortar
-  GrenadePrefab: {fileID: 3424364988567009664, guid: 79be582424e8357498037e5240babdf2, type: 3}
+  GrenadePrefab: {fileID: 2100000000000000001, guid: 6d075b19d0114ec0bd917edd3d9a438d, type: 3}
   BodyColor: {r: 0.55, g: 0.58, b: 0.6, a: 1}
   MinThrowSpeed: 12
   MaxThrowSpeed: 32

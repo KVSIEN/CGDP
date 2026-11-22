@@ -445,7 +445,7 @@
   - **ForceEvent** — applies a force impulse to the caster or hit targets
   - **SoundEvent** — plays a SoundBank at the action origin
 - Each event can resolve its position in one of three coordinate spaces: CameraRelative (melee default), WorldOffset (ground-targeted), or WorldAbsolute
-- Every lingering zone in the game — grenade fire and acid, Void's Rift, Bio's Snare, timeline zones — behaves the same way: it hits everything hostile in it once per tick, glows (steady, flickering or pulsing) and fades over its last second, and characters see it as ground to step out of. A zone can also make a noise when someone first steps in, or pay some of its damage back to its caster as shield
+- Every lingering zone in the game — grenade fire and acid, Void's Rift, Bio's Snare, timeline zones — behaves the same way: it hits everything hostile in it once per tick, glows with the same slow pulse as Void's siphoning Rift, half see-through in its own colour, and fades over its last second, and characters see it as ground to step out of. A zone can also make a noise when someone first steps in, or pay some of its damage back to its caster as shield
 - Events can use a shared dedup set (one hit per target across the entire timeline) or per-event dedup (each event tracks its own targets independently)
 
 ## Grenades
@@ -766,6 +766,7 @@ Making and tuning enemies without code — every tool is under **CGD › AI**:
 - **Take Support Position** (a node for any supporter): holds the spot that reaches the most allies with its help, behind their line from the threat — or, set to hold the *Front*, just ahead of it, between the threat and its allies — in cover facing it when it knows some, and plans again every few seconds as the fight moves
 - **Kin In Trouble** (a condition for any enemy) and **Mark Cover For Kin** (a node): one of its kin close by is worn down and falling back — the cue to cover its retreat — and the spot just in front of it, toward the enemy, to cover
 - **Throw Grenade** can land on a marked spot instead of on the target (smoke on a squadmate's retreat)
+- Tech's heavier rounds look the part: Shotgun Blast pellets are small capsules, while Missile Salvo rockets and the siege's mortar shells (explosive and smoke) are big capsules that fly nose first
 - **Smoke Mortar** and **Flamethrower** (the Tech siege's): a long lob that bursts into a smoke cloud where it lands, and a 9 m, 45° cone of flame (8 and burning, every second); each burst shows as faint orange streams fanned across the whole cone
 - **Soak Aura** (for any character): a share of every hit an ally of its side takes within its radius goes to it instead — how a tank protects its team. The nearest one takes it, and tanks never soak for each other
 - **Tank abilities**: *Missile Salvo* (a slow rocket that bursts 3 m wide for 22), *Mortar Shell* (an enemy grenade: a long, high lob that goes off where it lands, 4.5 m), *Frost Slam* (15 and three stacks of Ice and two of Slow to everyone within 4.5 m), *Frost Lash* (an icy cone: 18 and two stacks of Ice), *Glacial Shell* (+120 shield, charged at once, and +30% status resistance for 8 s), *Plague Cloud* (a poison cloud 5 m wide) and *Regrowth* (15 health a second for 8 s)

@@ -23,7 +23,7 @@ MonoBehaviour:
     ShowArea: 0
     GroundRing: 0
     Trail: 0
-  ProjectilePrefab: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+  ProjectilePrefab: {fileID: 2100000000000000001, guid: 134315cc9e5340b8add0a813ae9f4853, type: 3}
   Damage: 22
   Speed: 24
   Lifetime: 2.5

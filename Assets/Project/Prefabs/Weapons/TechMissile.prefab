@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &497049319063027712
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: m_Name
+      value: TechMissile
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000011, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000011, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000011, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _trailWidth
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _trailTime
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _sparksPerMetre
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _sparkSize
+      value: 0.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _impactRadius
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _trailColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _trailColor.g
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _trailColor.b
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _trailColor.a
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _sparkColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _sparkColor.g
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _sparkColor.b
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _sparkColor.a
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _impactColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _impactColor.g
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _impactColor.b
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000000000000000099, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+      propertyPath: _impactColor.a
+      value: 0.85
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+--- !u!1 &2100000000000000001 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+  m_PrefabInstance: {fileID: 497049319063027712}
+  m_PrefabAsset: {fileID: 0}

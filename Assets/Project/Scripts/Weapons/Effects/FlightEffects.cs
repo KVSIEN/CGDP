@@ -6,7 +6,8 @@ namespace CGD.Weapons
 {
     // What a shot or a thrown grenade leaves behind as it flies: a fading trail, a stream of
     // small glowing sparks dropped along its path, and — for a Projectile — a burst where it
-    // lands. Built at runtime from one transparent unlit material tinted per effect (the
+    // lands. Optionally turns a body child to point the way it flies (a mortar shell on a
+    // grenade, whose rotation is frozen). Built at runtime from one transparent unlit material tinted per effect (the
     // object's own renderer stays as it is), and reset on every reuse from the pool.
     public class FlightEffects : MonoBehaviour, IPoolable
     {
@@ -35,15 +36,23 @@ namespace CGD.Weapons
         [Tooltip("Positive drifts sparks down, negative floats them up")]
         [SerializeField] private float _sparkGravity = 0.3f;
 
+        [Header("Body")]
+        [Tooltip("Turned so its long (Y) axis points along the flight, as a built-in Capsule's: a shell or rocket body on an object that doesn't turn itself (a grenade's rotation is frozen). Empty = left as it is")]
+        [SerializeField] private Transform _faceFlight;
+
         [Header("Impact (shots only)")]
         [Tooltip("Pooled prefab with an ExplosionFlash (Prefabs/VFX/ExplosionFlash). Empty = none")]
         [SerializeField] private GameObject _impactFlash;
         [SerializeField] private Color _impactColor = new(1f, 0.85f, 0.3f, 0.8f);
         [SerializeField, Min(0f)] private float _impactRadius = 0.5f;
 
+        // Lays a capsule's long Y axis along the forward Z that LookRotation aims.
+        private static readonly Quaternion LongAxisForward = Quaternion.Euler(90f, 0f, 0f);
+
         private TrailRenderer  _trail;
         private ParticleSystem _sparks;
         private Projectile     _projectile;
+        private Vector3        _lastPosition;
 
         private void Awake()
         {
@@ -65,6 +74,7 @@ namespace CGD.Weapons
         // A reused object would otherwise streak or spark from wherever its last flight ended.
         public void OnSpawned()
         {
+            _lastPosition = transform.position;
             if (_trail != null)
             {
                 _trail.Clear();
@@ -79,6 +89,17 @@ namespace CGD.Weapons
         {
             if (_trail != null) _trail.emitting = false;
             if (_sparks != null) _sparks.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        }
+
+        private void LateUpdate()
+        {
+            if (_faceFlight == null) return;
+
+            Vector3 position = transform.position;
+            Vector3 moved    = position - _lastPosition;
+            _lastPosition    = position;
+            // Resting or barely moving: keep the last heading rather than spin on jitter.
+            if (moved.sqrMagnitude > 0.0001f) _faceFlight.rotation = Quaternion.LookRotation(moved) * LongAxisForward;
         }
 
         private void OnImpacted(Vector3 point, Vector3 normal)
