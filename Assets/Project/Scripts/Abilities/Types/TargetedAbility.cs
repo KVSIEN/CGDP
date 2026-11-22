@@ -4,7 +4,7 @@ using CGD.Targeting;
 
 namespace CGD.Abilities
 {
-    // Damages, shoves and/or helps whatever its TargetSelector picks: a cone blast on enemies, a
+    // Damages and/or helps whatever its TargetSelector picks: a cone blast on enemies, a
     // heal, a shield top-up, a plating repair or a cleanse on allies around the caster, a strike on the enemy under
     // the crosshair. Not used when it wouldn't affect anyone (no enemies in reach, allies all
     // at full health and shield, nothing to cleanse), so the charge and cost are kept.
@@ -31,12 +31,6 @@ namespace CGD.Abilities
         [Tooltip("On: also clears every status effect on each target (burns, bleeds, poison, chills, slows)")]
         public bool Cleanse;
 
-        [Header("Knockback")]
-        [Tooltip("Metres a second each hostile target is shoved straight away from the caster (a flamethrower's blast). 0 = none")]
-        [Min(0f)] public float KnockbackSpeed = 0f;
-        [Tooltip("Seconds the shove lasts; the target can't act against it meanwhile")]
-        [Min(0f)] public float KnockbackDuration = 0.3f;
-
         // Assets are shared, but abilities execute one at a time on the main thread.
         private readonly TargetSet _targets = new();
 
@@ -56,7 +50,6 @@ namespace CGD.Abilities
             {
                 if (Damage > 0f) dealt += DamageTaken(target, hit);
                 if (target.IsDead) continue;
-                Stunnable.PushAway(target, ctx.CasterTransform.position, ctx.Source, KnockbackSpeed, KnockbackDuration);
                 if (Heal   > 0f) target.Heal(Heal);
                 if (Shield > 0f) target.RestoreShield(Shield);
                 if (Plating > 0f) target.RestorePlating(Plating);

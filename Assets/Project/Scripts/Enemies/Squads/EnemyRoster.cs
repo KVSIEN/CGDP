@@ -56,6 +56,28 @@ namespace CGD.Enemies
             return count;
         }
 
+        // The nearest of its kin within the radius that is worn down to `healthShare` or below
+        // (plating for one that lives on it) and, if asked, falling back: one whose retreat needs covering.
+        public static bool TryKinInTrouble(EnemyAI asker, float radius, float healthShare, bool onlyRetreating, out EnemyAI kin)
+        {
+            kin = null;
+            float bestSq = radius * radius;
+            foreach (EnemyAI other in Members)
+            {
+                if (!IsKin(asker, other) || other.Health == null) continue;
+                if (onlyRetreating && other.State != EnemyAI.AiState.Retreat) continue;
+
+                EnemyHealth health = other.Health;
+                if (health.MaxVital <= 0f || health.Vital / health.MaxVital > healthShare) continue;
+
+                float sq = (other.transform.position - asker.transform.position).sqrMagnitude;
+                if (sq > bestSq) continue;
+                bestSq = sq;
+                kin    = other;
+            }
+            return kin != null;
+        }
+
         public static bool TryNearestKin(EnemyAI asker, out EnemyAI nearest)
         {
             nearest = null;

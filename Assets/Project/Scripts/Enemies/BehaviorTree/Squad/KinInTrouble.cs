@@ -19,20 +19,7 @@ namespace CGD.Enemies
 
         public override string Summary => $"≤ {_health:P0} within {_radius:0.#} m{(_onlyRetreating ? ", retreating" : "")}";
 
-        protected override bool Check(BtContext context)
-        {
-            var all = EnemyRoster.All;
-            for (int i = 0; i < all.Count; i++)
-            {
-                EnemyAI other = all[i];
-                if (!EnemyRoster.IsKin(Ai, other) || other.Health == null) continue;
-                if ((other.transform.position - Ai.transform.position).sqrMagnitude > _radius * _radius) continue;
-                if (_onlyRetreating && other.State != EnemyAI.AiState.Retreat) continue;
-
-                EnemyHealth health = other.Health;
-                if (health.MaxVital > 0f && health.Vital / health.MaxVital <= _health) return true;
-            }
-            return false;
-        }
+        protected override bool Check(BtContext context) =>
+            EnemyRoster.TryKinInTrouble(Ai, _radius, _health, _onlyRetreating, out _);
     }
 }
