@@ -25,4 +25,5 @@ MonoBehaviour:
   Heal: 20
   SelfHealShare: 0
   Shield: 0
+  Plating: 8
   Cleanse: 1
