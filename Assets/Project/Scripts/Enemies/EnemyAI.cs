@@ -482,11 +482,20 @@ namespace CGD.Enemies
             if (amount < _health.MaxHealth * _data.StaggerThreshold) return;
 
             _nextStaggerAt = Time.time + _data.StaggerCooldown;
+            Stagger(_data.StaggerDuration);
+        }
+
+        // Knocked off balance (a heavy hit, its shield breaking): a short stun that spoils
+        // whatever it was winding up.
+        internal void Stagger(float duration)
+        {
+            if (_health.IsDead) return;
+
             Melee.Interrupt();
             RangedCombat.CancelBurst();
             Abilities.Cancel();
             Grenades.Cancel();
-            _stunnable.ApplyStun(_data.StaggerDuration);
+            _stunnable.ApplyStun(duration);
             Staggered?.Invoke();
         }
 

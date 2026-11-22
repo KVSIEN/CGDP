@@ -29,6 +29,9 @@ MonoBehaviour:
   - rid: 1013
   - rid: 1014
   - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
   _groups: []
   _notes: []
   references:
@@ -39,7 +42,7 @@ MonoBehaviour:
       data:
         _guid: 64b31246bc8f438b82cce5f40eee251f
         _position: {x: 0, y: 0}
-        _comment: 'A shield-bearer (riot bot, carapace, tower shield — any faction): advances slowly, always facing its target, to mid range, then holds there facing it and firing, giving its squad cover; bashes anything in reach. Give its prefab a Frontal Shield (most damage from the front is stopped), so the answer is to flank it.'
+        _comment: 'A shield-bearer (riot bot, carapace, tower shield — any faction): advances slowly, always facing its target, to mid range, then holds there facing it and firing, giving its squad cover; bashes anything in reach. Give its prefab a Frontal Shield (most damage from the front is stopped), so the answer is to flank it. A shield with a Durability can also be broken by focused fire: it reels, then backs off to cover until the shield is up again.'
         _children:
         - f7ac4e96d5854807b7709f186ca97de3
     - rid: 1001
@@ -47,9 +50,10 @@ MonoBehaviour:
       data:
         _guid: f7ac4e96d5854807b7709f186ca97de3
         _position: {x: 0, y: 150}
-        _comment: 'Bash in reach; otherwise advance and hold, shield first'
+        _comment: 'Bash in reach; shield broken: back off to cover until it is up; otherwise advance and hold, shield first'
         _children:
         - c227c0bd1fca49aea4b8b3d50d637c91
+        - f8044b0ddccb449e9b344385f8582aa1
         - 0e84eb61cac14ed183d734c535b88669
         - e2cf30aa2dc44790b192ed9edf3e0c86
         _abort: 0
@@ -167,3 +171,26 @@ MonoBehaviour:
         _stopDistance: 3
         _speed: 0.4
         _holdOnArrival: 0
+    - rid: 1016
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f8044b0ddccb449e9b344385f8582aa1
+        _position: {x: -60, y: 300}
+        _comment: 'Shield broken: back off to cover until it is up again'
+        _children:
+        - 2f6536e5d9b7419095562cc0d7277f31
+        - 76e8050bcc8d4b4b92bd5f11154bf642
+        _abort: 3
+    - rid: 1017
+      type: {class: FrontalShieldDown, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2f6536e5d9b7419095562cc0d7277f31
+        _position: {x: -170, y: 450}
+        _comment:
+    - rid: 1018
+      type: {class: FallBack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 76e8050bcc8d4b4b92bd5f11154bf642
+        _position: {x: 50, y: 450}
+        _comment:
+        _giveUpAfter: 6

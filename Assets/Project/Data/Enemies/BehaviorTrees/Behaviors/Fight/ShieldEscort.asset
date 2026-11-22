@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: ShieldEscort
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5bd3d9159c594c94a3c4d240b9f0ad8d
+        _position: {x: 0, y: 0}
+        _comment: 'A shield-bearer''s escort (any faction): while an ally of its own side with a Frontal Shield up is near, it keeps behind that bearer and a step to one side, firing past its shoulder, and follows it as it advances. Once the shield breaks or the bearer falls the behavior fails, so put it above the fight behaviors it should fall back to (cover, flanking). Pairs with a Bulwark.'
+        _children:
+        - e15f7db2e375480c9192bc8bc1eaa09d
+    - rid: 1001
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e15f7db2e375480c9192bc8bc1eaa09d
+        _position: {x: 0, y: 150}
+        _comment: 'Ranged, with a shield-bearer of its own near'
+        _children:
+        - 0196dddee427463cb1f754690f26e3da
+        - 81d3bfab14b74edd9356c94b2d7ff938
+        - 19cce2c15ecf403d9ec8eac6b5ed582a
+        _abort: 0
+    - rid: 1002
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 0196dddee427463cb1f754690f26e3da
+        _position: {x: -220, y: 300}
+        _comment: 
+    - rid: 1003
+      type: {class: IsRanged, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 81d3bfab14b74edd9356c94b2d7ff938
+        _position: {x: 0, y: 300}
+        _comment: 
+    - rid: 1004
+      type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 19cce2c15ecf403d9ec8eac6b5ed582a
+        _position: {x: 220, y: 300}
+        _comment: 'Keep behind the bearer and fire past its shoulder'
+        _children:
+        - 700a2790b4b74d878563e9628d0e6936
+        - ae1917339a1940a08f49ad4c00068ec4
+        _policy: 0
+    - rid: 1005
+      type: {class: ShelterBehindShield, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 700a2790b4b74d878563e9628d0e6936
+        _position: {x: 110, y: 450}
+        _comment: 
+        _searchRadius: 18
+        _behind: 2
+        _side: 1.1
+        _speed: 1
+    - rid: 1006
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ae1917339a1940a08f49ad4c00068ec4
+        _position: {x: 330, y: 450}
+        _comment: 
+        _children:
+        - 0e4889206e0245bda3c0953fbdc4033f
+        _count: 0
+        _stopOnFailure: 1
+    - rid: 1007
+      type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 0e4889206e0245bda3c0953fbdc4033f
+        _position: {x: 330, y: 600}
+        _comment: 
