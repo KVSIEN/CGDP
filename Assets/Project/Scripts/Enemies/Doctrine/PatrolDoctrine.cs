@@ -7,7 +7,7 @@ namespace CGD.Enemies
     // they explore the ground near their post, and with one they now and then step off it to
     // somewhere their experience points to. Where they go is drawn by ground they have not
     // seen lately and by places they know are good (GroundDoctrine's values), and pushed off by
-    // places where blood was spilt.
+    // places where blood was spilt; each faction also has its own taste in where to look (Style).
     [Serializable]
     public sealed class PatrolDoctrine
     {
@@ -25,11 +25,14 @@ namespace CGD.Enemies
         [SerializeField] private RouteStyle _walk = RouteStyle.ThroughBushes;
         [Tooltip("Each time it chooses where to go: the chance it heads for something it likes instead (a PointOfInterest within reach), to spend a while with it")]
         [SerializeField, Range(0f, 1f)] private float _interestChance = 0.35f;
+        [Tooltip("Where it likes to explore, on top of unseen ground: Roam (anywhere, nearer first), Expand (short hops round what it knows, its range growing as it learns), Outskirts (the edges of its range, along walls) or Inside (the open middle and round concealment it knows)")]
+        [SerializeField] private ExploreStyle _style = ExploreStyle.Roam;
 
         public PatrolDoctrine() { }
 
         public PatrolDoctrine(bool exploreWithoutRoute, float routeDrift, float range, float curiosity, float forgetAfter,
-                              RouteStyle walk = RouteStyle.ThroughBushes, float interestChance = 0.35f)
+                              RouteStyle walk = RouteStyle.ThroughBushes, float interestChance = 0.35f,
+                              ExploreStyle style = ExploreStyle.Roam)
         {
             _exploreWithoutRoute = exploreWithoutRoute;
             _routeDrift          = routeDrift;
@@ -38,6 +41,7 @@ namespace CGD.Enemies
             _forgetAfter         = forgetAfter;
             _walk                = walk;
             _interestChance      = interestChance;
+            _style               = style;
         }
 
         public bool  ExploreWithoutRoute => _exploreWithoutRoute;
@@ -47,5 +51,6 @@ namespace CGD.Enemies
         public float ForgetAfter         => _forgetAfter;
         public RouteStyle Walk           => _walk;
         public float InterestChance      => _interestChance;
+        public ExploreStyle Style        => _style;
     }
 }

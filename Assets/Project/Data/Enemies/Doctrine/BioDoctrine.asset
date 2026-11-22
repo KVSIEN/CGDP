@@ -166,3 +166,4 @@ MonoBehaviour:
     _curiosity: 0.7
     _forgetAfter: 120
     _walk: 1
+    _style: 3

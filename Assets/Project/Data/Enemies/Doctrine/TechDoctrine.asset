@@ -58,8 +58,8 @@ MonoBehaviour:
       _walkRadius: 0
       _bark: 0
     _order: 0
-    _waypointStopChance: 1
-    _haltsPerMinute: 0
+    _waypointStopChance: 0.5
+    _haltsPerMinute: 1
     _sweepSpeed: 40
     _patrolSpeedScale: 1
     _paceDrift: 0
@@ -177,6 +177,7 @@ MonoBehaviour:
     _exploreWithoutRoute: 1
     _routeDrift: 0.25
     _range: 20
-    _curiosity: 0.3
+    _curiosity: 0.8
     _forgetAfter: 120
-    _walk: 2
+    _walk: 0
+    _style: 1
