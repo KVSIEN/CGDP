@@ -143,6 +143,7 @@ Difficulty, balance, boss and ship upgrades, telemetry, save, audio, the Directo
 - Ship save, in the editor (written without compiling or playing): let Unity import, check `Items/DefaultItemCatalog` lists 53 items and that creating a new item asset adds it; run `ShipPersistenceTests`; tick *Save In Editor* on the GameFlow prefab's ExpeditionSession, extract with gear in `MapGenerator`, stop and play again and check the ship screen still shows it (`/save` for the file path). In Play mode check `/list items` and `/list weapons` show every item and weapon category (Bow, Crossbow, Arrows, Security Keycard and Data Core are new to the console). Next: save meta-progression (unlocks, quest history) next to the ship once those exist
 
 ### Backlog
+- Medics reviving fallen allies: needs a revive path for enemies (`HealthManager.Revive` plus `EnemyAI.OnSpawned`'s reset) that cancels `DespawnOnDeath`'s pending release and stands the ragdoll back up, so it has to be tried in the editor first
 - Jammed: grey out the ability bar while it lasts (today only the status tile says why abilities don't fire)
 - Trappers: lay traps ahead of time on their patrol (doorways, corridor mouths, the room's entrances once the alarm is up) rather than only in a fight; rival factions' agents currently steer round hostile traps they have never seen, because every trap is listed as a hazard — list a trap for a rival only once it has seen it
 Next steps not started yet.
