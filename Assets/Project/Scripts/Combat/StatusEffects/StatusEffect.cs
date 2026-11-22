@@ -35,6 +35,10 @@ namespace CGD.Combat
         // source made it is target.PotencyOf(this): scale whatever the effect does by it.
         public abstract void Tick(StatusEffectController target, int stacks, float magnitude);
 
+        // Only applied by a hit that took some health (a bleed: nothing to bleed while a shield
+        // or plates soak the whole hit). Other effects land whatever layer the hit met.
+        public virtual bool NeedsHealthHit => false;
+
         // Called once when the effect is fully removed (last stack gone). Override
         // to clean up any external state Tick() pushed onto the target (movement
         // slow, armor reduction, etc). Default no-op — plain damage-over-time

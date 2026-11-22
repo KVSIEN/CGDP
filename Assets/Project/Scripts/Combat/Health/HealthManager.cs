@@ -301,10 +301,11 @@ namespace CGD.Combat
             bool deflected = resolved > 0f && amount <= 0f;
             float dealt  = amount;
             float before = Pools;
-            float vitalBefore = Vital;
+            float vitalBefore  = Vital;
+            float healthBefore = _currentHealth;
             _shield.SuppressRegen();
 
-            if (!_shield.IsEmpty)
+            if (!_shield.IsEmpty && !info.BypassesShield)
             {
                 // Lightning hits the shield harder; the extra bite is undone before
                 // computing what carries over so only the shield portion is boosted.
@@ -337,7 +338,7 @@ namespace CGD.Combat
                 return;
             }
 
-            if (!deflected) ApplyOnHitEffects(info);
+            if (!deflected) ApplyOnHitEffects(info, reachedHealth: _currentHealth < healthBefore);
         }
 
         private float Pools => _currentHealth + _shield.Current + _plating;
@@ -349,7 +350,8 @@ namespace CGD.Combat
                 ? Mathf.Clamp01(attacker.Apply(ItemStat.EntropyShare, 0f))
                 : 0f;
 
-        private void ApplyOnHitEffects(in DamageInfo info)
+        // `reachedHealth`: the hit took some health, which a bleed needs to take hold.
+        private void ApplyOnHitEffects(in DamageInfo info, bool reachedHealth)
         {
             if (_statusEffects == null || info.OnHitEffects == null) return;
 
@@ -363,7 +365,8 @@ namespace CGD.Combat
 
             foreach (StatusEffectApplication application in info.OnHitEffects)
             {
-                if (application.Effect != null && UnityEngine.Random.value < application.Chance * chanceScale)
+                if (application.Effect == null || (application.Effect.NeedsHealthHit && !reachedHealth)) continue;
+                if (UnityEngine.Random.value < application.Chance * chanceScale)
                     _statusEffects.Apply(application.Effect, carried, application.Dose);
             }
         }

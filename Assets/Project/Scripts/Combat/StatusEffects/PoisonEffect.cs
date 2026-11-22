@@ -5,7 +5,8 @@ namespace CGD.Combat
     // Poison Damage (per tick) = Effective Damage × (StackMultiplier ^ (Stacks − 1)) × Potency.
     // Effective Damage is the originating hit's raw damage resolved through the
     // target's armor once; the exponential stack scaling is applied on top and
-    // delivered via DamageType.True so it isn't mitigated a second time.
+    // delivered via DamageType.True so it isn't mitigated a second time. It passes through a
+    // shield untouched, into plating (it corrodes a TECH hull) and health.
     // Uses Stack stacking; set MaxStacks on the asset to cap it (e.g. 5).
     [CreateAssetMenu(fileName = "PoisonEffect", menuName = "CGD/Combat/Status Effects/Poison")]
     public class PoisonEffect : StatusEffect
@@ -18,7 +19,7 @@ namespace CGD.Combat
         {
             float effectiveDamage = new DamageInfo(magnitude).ResolveDamage(target.Damageable.Armor);
             float damage = effectiveDamage * Mathf.Pow(StackMultiplier, stacks - 1) * target.PotencyOf(this);
-            target.Damageable.TakeDamage(new DamageInfo(damage, type: DamageType.True, instigator: target.InstigatorOf(this)));
+            target.Damageable.TakeDamage(new DamageInfo(damage, type: DamageType.True, instigator: target.InstigatorOf(this), bypassesShield: true));
         }
     }
 }
