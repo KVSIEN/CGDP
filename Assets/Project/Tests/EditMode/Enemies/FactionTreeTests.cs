@@ -18,7 +18,7 @@ namespace CGD.Tests
         [TestCase("TechBehaviorTree")]
         [TestCase("VoidBehaviorTree")]
         [TestCase("BioTankBehaviorTree")]
-        [TestCase("TechTankBehaviorTree")]
+        [TestCase("TechSiegeBehaviorTree")]
         [TestCase("VoidTankBehaviorTree")]
         [TestCase("Behaviors/Idle/BushRoamRoutine")]
         [TestCase("Behaviors/Fight/StalkRushHide")]
@@ -107,7 +107,7 @@ namespace CGD.Tests
         {
             foreach (string name in new[] { "BioTestEnemyData", "TechTestEnemyData", "VoidTestEnemyData",
                                              "BioSupportEnemyData", "TechSupportEnemyData", "VoidSupportEnemyData",
-                                             "BioTankEnemyData", "TechTankEnemyData", "VoidTankEnemyData" })
+                                             "BioTankEnemyData", "TechSiegeEnemyData", "VoidTankEnemyData" })
             {
                 var data = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/AITest/{name}.asset");
                 foreach (EnemyDataReview.Issue issue in EnemyDataReview.Check(data))
@@ -157,12 +157,27 @@ namespace CGD.Tests
             return lines;
         }
 
+        // Tech has no tank: its siege sentinel holds a post far behind its squad and denies the
+        // enemy cover — mortaring where it hides, firing into the spot, watching for it to break cover.
+        [Test]
+        public void TechSiegeIsASentinelThatDeniesCover()
+        {
+            HashSet<Type> nodes = EnemyTreeContents.NodeTypes(Load("TechSiegeBehaviorTree"));
+            Assert.IsTrue(nodes.Contains(typeof(TargetHiding)), "notices a target going to ground");
+            Assert.IsTrue(nodes.Contains(typeof(ThrowGrenade)) && nodes.Contains(typeof(Suppress)) && nodes.Contains(typeof(Overwatch)),
+                          "shells the spot, fires into it and watches it");
+            CollectionAssert.AreEquivalent(new[] { SupportLine.Behind }, Lines("TechSiegeBehaviorTree"), "posts itself behind its squad");
+
+            var prefab = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/Project/Prefabs/Characters/Enemies/AITest/TechSiegeAgent.prefab");
+            Assert.IsFalse(prefab.TryGetComponent(out CGD.Combat.SoakAura _), "it is no tank: it soaks nothing for its squad");
+        }
+
         // A tank is the frontline sponge: far harder to kill and slower than its faction's agent,
         // and it takes part of the hits on the allies round it.
         [Test]
         public void EachFactionsTankIsBuiltToSoak()
         {
-            foreach (string faction in new[] { "Bio", "Tech", "Void" })
+            foreach (string faction in new[] { "Bio", "Void" })
             {
                 var tank  = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/AITest/{faction}TankEnemyData.asset");
                 var agent = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/AITest/{faction}TestEnemyData.asset");

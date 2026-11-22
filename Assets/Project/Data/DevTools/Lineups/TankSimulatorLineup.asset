@@ -29,11 +29,11 @@ MonoBehaviour:
   - Name: Tech Union
     Enabled: 1
     Members:
-    - Prefab: {fileID: 1000000000000000001, guid: 050ebccdc68b4c94b6cbff854402cdb2, type: 3}
-      Count: 1
     - Prefab: {fileID: 1000000000000000001, guid: 7e7e2db0155b42e0a04c013d4ea42691, type: 3}
       Count: 2
     - Prefab: {fileID: 1000000000000000001, guid: edefa7e8ed104b0180432dd541187886, type: 3}
+      Count: 1
+    - Prefab: {fileID: 1000000000000000001, guid: 050ebccdc68b4c94b6cbff854402cdb2, type: 3}
       Count: 1
     Position: {x: 0, y: 0, z: 16}
     Facing: 0
