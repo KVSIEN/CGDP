@@ -16,11 +16,11 @@ MonoBehaviour:
   Team: 4
   MaxHealth: 0
   Armor: 100
-  MaxPlating: 16
+  MaxPlating: 40
   PlatingArmor: 50
-  MaxShield: 30
+  MaxShield: 50
   ShieldRegenDelay: 4
-  ShieldRegenRate: 12
+  ShieldRegenRate: 15
   PatrolSpeed: 1.5
   ChaseSpeed: 3.5
   SightRange: 60
@@ -53,7 +53,7 @@ MonoBehaviour:
   Escape: {fileID: 0}
   Summon: {fileID: 0}
   Boost: {fileID: 11400000, guid: a5f1c95821024a6a955fd89337201a09, type: 2}
-  Support: {fileID: 11400000, guid: 97e40c0af76245c4bac7bc9c854670a1, type: 2}
+  Support: {fileID: 11400000, guid: 2ea5eb789a8b4fcbba9c4c4cbab11d55, type: 2}
   Special: {fileID: 11400000, guid: 90ac477e22c91c4d8058bf99fe1ef744, type: 2}
   AlertDuration: 6
   AttackSound: {fileID: 0}

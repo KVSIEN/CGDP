@@ -7,15 +7,16 @@ using CGD.BehaviorTrees;
 namespace CGD.Enemies
 {
     // A supporter's place in a fight: where it can reach the most allies of its own side with its
-    // help, behind the ally nearest the threat instead of out in front of the line, in cover that
-    // faces the threat if it knows some. It weighs the known free cover round the ideal spot (just
-    // behind its allies' centre, away from the threat) and that spot itself (see SupportSpot),
+    // help, behind the ally nearest the threat instead of out in front of the line (or, set to
+    // hold the Front, just ahead of it, between the threat and its allies), in cover that faces
+    // the threat if it knows some. It weighs the known free cover round the ideal spot (on the
+    // line from the threat through its allies' centre) and that spot itself (see SupportSpot),
     // claims the best cover, and goes there facing the threat. It plans again every few seconds
     // as the fight moves, so it keeps up with an advancing or retreating line. Never finishes
     // while it has allies near; fails without any. Pair it in a Parallel with what it does from
     // there (Shoot Burst, a Repeat of its abilities).
     [Serializable]
-    [BtNodeInfo("Enemy/Tactics/Take Support Position", "Holds the spot that reaches the most allies, behind their line from the threat, in cover facing it if it knows some. Plans again as the fight moves. Fails with no allies near.")]
+    [BtNodeInfo("Enemy/Tactics/Take Support Position", "Holds the spot that reaches the most allies, behind their line from the threat (or holding its front), in cover facing it if it knows some. Plans again as the fight moves. Fails with no allies near.")]
     public sealed class TakeSupportPosition : EnemyAction
     {
         private const float InPlace = 0.8f;
@@ -27,8 +28,10 @@ namespace CGD.Enemies
         [SerializeField, Min(1f)] private float _allyRadius = 20f;
         [Tooltip("Metres its help reaches (keep it at its Support ability's radius): it wants as many allies as possible within this")]
         [SerializeField, Min(1f)] private float _reach = 8f;
-        [Tooltip("Metres behind the ally nearest the threat that it would ideally stand")]
-        [SerializeField, Min(0f)] private float _standBack = 4f;
+        [Tooltip("Behind: stays behind its allies' line (a medic, a warden). Front: holds the line out in front of them (a shield-bearer)")]
+        [SerializeField] private SupportLine _line;
+        [Tooltip("Metres from the ally nearest the threat that it would ideally stand: behind it, or in front of it when holding the Front")]
+        [SerializeField, Min(0f)] private float _fromLine = 4f;
         [Tooltip("Metres round its ideal spot it looks for cover")]
         [SerializeField, Min(1f)] private float _searchRadius = 10f;
         [Tooltip("Seconds between plans")]
@@ -39,7 +42,10 @@ namespace CGD.Enemies
         [NonSerialized] private Vector3 _goal;
         [NonSerialized] private float   _replanAt;
 
-        public override string Summary => $"Reach {_reach:0.#} m, {_standBack:0.#} m behind the line";
+        public override string Summary =>
+            $"Reach {_reach:0.#} m, {_fromLine:0.#} m {(_line == SupportLine.Front ? "ahead of" : "behind")} the line";
+
+        internal SupportLine Line => _line;
 
         internal override bool NeverFinishes => true;
 
@@ -80,9 +86,9 @@ namespace CGD.Enemies
 
             EnemyPerception perception = Ai.Perception;
             bool hasThreat = perception.Target != null;
-            var situation = new SupportSituation(Allies, perception.TargetPosition, hasThreat, _reach);
+            var situation = new SupportSituation(Allies, perception.TargetPosition, hasThreat, _reach, _line);
             Vector3 self  = Ai.transform.position;
-            Vector3 ideal = SupportSpot.Ideal(situation, _standBack);
+            Vector3 ideal = SupportSpot.Ideal(situation, _fromLine);
             if (NavMesh.SamplePosition(ideal, out NavMeshHit hit, 3f, NavMesh.AllAreas)) ideal = hit.position;
 
             int     bestCover = -1;

@@ -2,26 +2,28 @@ using UnityEngine;
 
 namespace CGD.Enemies
 {
-    // How good a spot is for a supporter (a medic, a shield projector, a warden): within reach of
-    // as many allies as possible, behind the ally nearest the threat rather than in front of the
-    // line, behind cover that faces the threat, not standing on an ally's toes, and not a long
-    // walk away. Plain logic, so the weighing can be tested and tuned without the editor.
+    // How good a spot is for a supporter (a medic, a warden, a shield-bearer): within reach of
+    // as many allies as possible, on its side of the line — behind the ally nearest the threat,
+    // or in front of it when it holds the line (SupportLine) — behind cover that faces the threat,
+    // not standing on an ally's toes, and not a long walk away. Plain logic, so the weighing can
+    // be tested and tuned without the editor.
     public static class SupportSpot
     {
         public const float PerAllyInReach  = 10f;
-        public const float AheadOfLine     = 15f;   // per metre closer to the threat than the line
+        public const float WrongSideOfLine = 15f;   // per metre on the wrong side of the line
         public const float FacingCover     = 8f;
         public const float HighCover       = 4f;
         public const float Crowding        = 6f;
         public const float PerMetreWalked  = 0.3f;
         public const float PersonalSpace   = 1.5f;
-        // Metres behind the front ally that still count as in line with it.
+        // Metres on the wrong side of the front ally that still count as in line with it.
         public const float LineSlack       = 1f;
 
-        // Where it would ideally stand: behind its allies' centre, away from the threat, far
-        // enough back to be `standBack` metres behind the front ally but never further from the
-        // centre than most of its reach. With no threat, the allies' centre.
-        public static Vector3 Ideal(in SupportSituation situation, float standBack)
+        // Where it would ideally stand: on the line from the threat through its allies' centre,
+        // `distance` metres behind the front ally (or in front of it, holding the line), but never
+        // past the centre on the wrong side nor further from it than most of its reach. With no
+        // threat, the allies' centre.
+        public static Vector3 Ideal(in SupportSituation situation, float distance)
         {
             if (!situation.HasThreat) return situation.Centroid;
 
@@ -29,9 +31,11 @@ namespace CGD.Enemies
             if (away.sqrMagnitude < 0.0001f) return situation.Centroid;
             away.Normalize();
 
-            float wanted   = situation.FrontDistance + standBack;
-            float centre   = FlatDistance(situation.Centroid, situation.Threat);
-            float pastMid  = Mathf.Clamp(wanted - centre, 0f, situation.Reach * 0.8f);
+            bool  behind  = situation.Line == SupportLine.Behind;
+            float wanted  = situation.FrontDistance + (behind ? distance : -distance);
+            float centre  = FlatDistance(situation.Centroid, situation.Threat);
+            float most    = situation.Reach * 0.8f;
+            float pastMid = Mathf.Clamp(wanted - centre, behind ? 0f : -most, behind ? most : 0f);
             return situation.Centroid + away * pastMid;
         }
 
@@ -51,8 +55,11 @@ namespace CGD.Enemies
 
             if (situation.HasThreat)
             {
-                float ahead = situation.FrontDistance + LineSlack - FlatDistance(spot, situation.Threat);
-                if (ahead > 0f) score -= ahead * AheadOfLine;
+                float toThreat = FlatDistance(spot, situation.Threat);
+                float wrongSide = situation.Line == SupportLine.Behind
+                    ? situation.FrontDistance + LineSlack - toThreat
+                    : toThreat - (situation.FrontDistance + LineSlack);
+                if (wrongSide > 0f) score -= wrongSide * WrongSideOfLine;
                 if (facesThreat) score += FacingCover + (isHigh ? HighCover : 0f);
             }
 

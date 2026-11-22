@@ -4,50 +4,60 @@ using CGD.BehaviorTrees;
 
 namespace CGD.Enemies
 {
-    // A bodyguard's place: picks the ally of its own side it protects — the highest tier within
-    // reach (a boss, a broodmother, an engineer), ties going to the same one for every guard —
-    // and keeps between it and the threat, a couple of metres out in front of it, facing the
-    // threat. With no threat it stays close to its ward. Never finishes while the ward lives;
-    // fails when there is nobody to guard. Pair it in a Parallel with Shoot Burst.
+    // A bodyguard's place: picks the ally of its own side it keeps by — the highest tier within
+    // reach (a boss, a broodmother, an engineer), ties going to the same one for every guard, or
+    // the one nearest the threat, leading the hunt — and keeps between it and the threat, a
+    // couple of metres out in front of it, or at its shoulder so it closes in alongside (a pack
+    // follower running with its predator), facing the threat. With no threat it stays close to
+    // its ward. Never finishes while the ward lives; fails when there is nobody to guard. Pair it
+    // in a Parallel with Shoot Burst.
     [Serializable]
-    [BtNodeInfo("Enemy/Tactics/Guard Ally", "Keeps between its highest-tier ally nearby and the threat, facing the threat. Runs while the ward lives.")]
+    [BtNodeInfo("Enemy/Tactics/Guard Ally", "Keeps between its ward (highest-tier ally, or the one leading the hunt) and the threat, or at its flank, facing the threat. Runs while the ward lives.")]
     public sealed class GuardAlly : EnemyAction
     {
         private const float InPlace = 0.8f;
 
         [Tooltip("Metres it looks for a ward in")]
         [SerializeField, Min(1f)] private float _searchRadius = 25f;
-        [Tooltip("Metres in front of the ward, toward the threat, that it stands")]
+        [Tooltip("Highest Tier: its most important ally (a bodyguard). Lead Hunter: the ally nearest the threat (a pack follower)")]
+        [SerializeField] private GuardWard _ward;
+        [Tooltip("In Front: between the ward and the threat. At Flank: at the ward's shoulder, a little behind, closing in alongside it")]
+        [SerializeField] private GuardPlace _place;
+        [Tooltip("Metres from the ward that it stands: in front of it toward the threat, or out to its side")]
         [SerializeField, Min(0.5f)] private float _standOff = 2.5f;
         [Tooltip("Metres it lets its ward get from it when there is no threat")]
         [SerializeField, Min(1f)] private float _leash = 5f;
         [Tooltip("Speed, as a share of chase speed")]
         [SerializeField, Range(0.2f, 1.5f)] private float _speed = 1f;
 
-        [NonSerialized] private EnemyAI _ward;
+        [NonSerialized] private EnemyAI _guarded;
+        // Which shoulder it keeps to (+1 right, -1 left of the ward facing the threat), picked on
+        // entry so it doesn't swap sides as the ward turns.
+        [NonSerialized] private float   _side;
 
-        public override string Summary => $"{_standOff:0.#} m in front";
+        public override string Summary =>
+            $"{(_ward == GuardWard.LeadHunter ? "Lead hunter" : "Highest tier")}, {_standOff:0.#} m {(_place == GuardPlace.AtFlank ? "at flank" : "in front")}";
 
         internal override bool NeverFinishes => true;
 
         protected override void OnEnter(BtContext context)
         {
-            _ward = PickWard();
+            _guarded = PickWard();
+            _side    = _guarded != null ? SideOf(_guarded.transform.position) : 1f;
             Ai.Agent.isStopped = false;
         }
 
         protected override BtStatus OnTick(BtContext context)
         {
-            if (_ward == null || _ward.Health.IsDead || !_ward.isActiveAndEnabled) return BtStatus.Failure;
+            if (_guarded == null || _guarded.Health.IsDead || !_guarded.isActiveAndEnabled) return BtStatus.Failure;
 
-            Vector3 ward = _ward.transform.position;
+            Vector3 ward = _guarded.transform.position;
             EnemyPerception perception = Ai.Perception;
             Vector3 spot;
             if (perception.Target != null)
             {
                 Vector3 threat = perception.TargetPosition;
-                Vector3 toThreat = Flat(threat - ward);
-                spot = toThreat.sqrMagnitude > 0.01f ? ward + toThreat.normalized * _standOff : ward;
+                spot = Place(ward, threat);
                 Ai.ReportState(EnemyAI.AiState.Chase);
                 Ai.ReportStep(EngageStep.Hold);
                 Ai.Motion.FaceTowards(threat, context.DeltaTime);
@@ -68,18 +78,52 @@ namespace CGD.Enemies
             return BtStatus.Running;
         }
 
-        // The highest tier ally of its team within reach; among equals, the same one for everyone
-        // (the lowest instance id), so a pair of guards doesn't end up guarding each other.
+        // Where to stand by the ward with a threat about: in front of it toward the threat, or at
+        // its shoulder half a stand-off behind.
+        private Vector3 Place(Vector3 ward, Vector3 threat)
+        {
+            Vector3 toThreat = Flat(threat - ward);
+            if (toThreat.sqrMagnitude < 0.01f) return ward;
+            toThreat.Normalize();
+
+            if (_place == GuardPlace.InFront) return ward + toThreat * _standOff;
+            Vector3 right = Vector3.Cross(Vector3.up, toThreat);
+            return ward + right * (_side * _standOff) - toThreat * (_standOff * 0.5f);
+        }
+
+        // The shoulder it is already nearer, as seen from the ward facing the threat.
+        private float SideOf(Vector3 ward)
+        {
+            Vector3 toThreat = Ai.Perception.Target != null ? Flat(Ai.Perception.TargetPosition - ward) : _guarded.transform.forward;
+            Vector3 right = Vector3.Cross(Vector3.up, toThreat);
+            return Vector3.Dot(Flat(Ai.transform.position - ward), right) >= 0f ? 1f : -1f;
+        }
+
+        // The ally of its team within reach it keeps by: the highest tier (among equals, the same one
+        // for everyone — the lowest instance id — so a pair of guards doesn't end up guarding each
+        // other), or the one nearest the threat when it follows the lead hunter and knows a threat.
         private EnemyAI PickWard()
         {
+            bool byThreat = _ward == GuardWard.LeadHunter && Ai.Perception.Target != null;
+            Vector3 threat = Ai.Perception.TargetPosition;
             EnemyAI best = null;
+            float bestToThreat = float.MaxValue;
             var all = EnemyRoster.All;
             for (int i = 0; i < all.Count; i++)
             {
                 EnemyAI other = all[i];
                 if (other == Ai || other.Health == null || other.Health.IsDead || other.Health.Team != Ai.Health.Team) continue;
                 if (Flat(other.transform.position - Ai.transform.position).sqrMagnitude > _searchRadius * _searchRadius) continue;
-                if (best == null || Better(other, best)) best = other;
+                if (!byThreat)
+                {
+                    if (best == null || Better(other, best)) best = other;
+                    continue;
+                }
+
+                float toThreat = Flat(other.transform.position - threat).sqrMagnitude;
+                if (toThreat >= bestToThreat) continue;
+                bestToThreat = toThreat;
+                best         = other;
             }
             return best;
         }

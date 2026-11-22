@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
   DisplayName: Bio Support
   Team: 3
-  MaxHealth: 61
+  MaxHealth: 80
   Armor: 25
-  MaxPlating: 16
+  MaxPlating: 24
   PlatingArmor: 25
   MaxShield: 0
   ShieldRegenDelay: 5

@@ -22,7 +22,7 @@ MonoBehaviour:
   ArmorPenetration: 0
   DamageType: 0
   OnHitEffects: []
-  Heal: 0
+  Heal: 15
   SelfHealShare: 0
   Shield: 35
   Cleanse: 0

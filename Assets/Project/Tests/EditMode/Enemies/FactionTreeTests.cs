@@ -122,6 +122,29 @@ namespace CGD.Tests
             }
         }
 
+        // Each support agent plays its own role: the Void enchanter keeps behind the line, the
+        // Tech paladin holds its front, the Bio pack mender runs with the ally leading the hunt.
+        [Test]
+        public void SupportAgentsKeepToTheirSideOfTheLine()
+        {
+            Assert.IsTrue(UsesOnlyLine("VoidSupportBehaviorTree", SupportLine.Behind), "Void: casts from behind its allies");
+            Assert.IsTrue(UsesOnlyLine("TechSupportBehaviorTree", SupportLine.Front), "Tech: holds the front of the line");
+            Assert.IsTrue(EnemyTreeContents.NodeTypes(Load("BioSupportBehaviorTree")).Contains(typeof(GuardAlly)),
+                          "Bio: runs at the shoulder of its predator");
+        }
+
+        private static bool UsesOnlyLine(string tree, SupportLine line)
+        {
+            bool any = false;
+            foreach (BtNode node in EnemyTreeContents.Nodes(Load(tree)))
+            {
+                if (node is not TakeSupportPosition position) continue;
+                if (position.Line != line) return false;
+                any = true;
+            }
+            return any;
+        }
+
         // The faction agents are where every behavior gets tried out; support agents stay focused.
         [Test]
         public void FactionAgentTreesStayTheFullestPerFaction()

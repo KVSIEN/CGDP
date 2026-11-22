@@ -5,7 +5,8 @@ using CGD.Enemies;
 
 namespace CGD.Tests
 {
-    // Where a supporter wants to stand: reaching its allies, behind their line, in cover.
+    // Where a supporter wants to stand: reaching its allies, behind their line (or holding its
+    // front), in cover.
     public class SupportSpotTests
     {
         // Two allies side by side at z = 0, the threat 10 m in front of them at z = 10.
@@ -13,6 +14,7 @@ namespace CGD.Tests
         private static readonly Vector3 Threat = new(0f, 0f, 10f);
 
         private static SupportSituation Fight(float reach = 8f) => new(Line, Threat, true, reach);
+        private static SupportSituation HoldingTheLine(float reach = 8f) => new(Line, Threat, true, reach, SupportLine.Front);
 
         [Test]
         public void TheFrontIsTheAllyNearestTheThreat()
@@ -82,6 +84,31 @@ namespace CGD.Tests
         {
             Vector3 spot = new(0f, 0f, -3f);
             Assert.Greater(SupportSpot.Score(spot, false, false, 0f, Fight()), SupportSpot.Score(spot, false, false, 10f, Fight()));
+        }
+
+        [Test]
+        public void HoldingTheLineItsIdealSpotIsInFrontOfIt()
+        {
+            Vector3 ideal = SupportSpot.Ideal(HoldingTheLine(), 2f);
+            // 2 m nearer the threat than the front ally, who is √101 m from it.
+            float expected = 10f - (Mathf.Sqrt(101f) - 2f);
+            Assert.AreEqual(expected, ideal.z, 0.001f);
+            Assert.AreEqual(0f, ideal.x, 0.001f);
+        }
+
+        [Test]
+        public void HoldingTheLineItNeverStandsFurtherOutThanMostOfItsReach()
+        {
+            Vector3 ideal = SupportSpot.Ideal(HoldingTheLine(reach: 5f), 20f);
+            Assert.AreEqual(4f, ideal.z, 0.001f, "0.8 of a 5 m reach");
+        }
+
+        [Test]
+        public void HoldingTheLineInFrontOfItBeatsBehindIt()
+        {
+            float inFront = SupportSpot.Score(new Vector3(0f, 0f, 2f), false, false, 0f, HoldingTheLine());
+            float behind  = SupportSpot.Score(new Vector3(0f, 0f, -3f), false, false, 0f, HoldingTheLine());
+            Assert.Greater(inFront, behind);
         }
     }
 }
