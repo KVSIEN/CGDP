@@ -17,6 +17,9 @@ namespace CGD.Tests
         [TestCase("BioBehaviorTree")]
         [TestCase("TechBehaviorTree")]
         [TestCase("VoidBehaviorTree")]
+        [TestCase("BioTankBehaviorTree")]
+        [TestCase("TechTankBehaviorTree")]
+        [TestCase("VoidTankBehaviorTree")]
         [TestCase("Behaviors/Idle/BushRoamRoutine")]
         [TestCase("Behaviors/Fight/StalkRushHide")]
         [TestCase("Behaviors/Fight/FlushOut")]
@@ -103,7 +106,8 @@ namespace CGD.Tests
         public void AITestAgentsCarryTheKitTheirTreesUse()
         {
             foreach (string name in new[] { "BioTestEnemyData", "TechTestEnemyData", "VoidTestEnemyData",
-                                             "BioSupportEnemyData", "TechSupportEnemyData", "VoidSupportEnemyData" })
+                                             "BioSupportEnemyData", "TechSupportEnemyData", "VoidSupportEnemyData",
+                                             "BioTankEnemyData", "TechTankEnemyData", "VoidTankEnemyData" })
             {
                 var data = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/AITest/{name}.asset");
                 foreach (EnemyDataReview.Issue issue in EnemyDataReview.Check(data))
@@ -151,6 +155,25 @@ namespace CGD.Tests
             foreach (BtNode node in EnemyTreeContents.Nodes(Load(tree)))
                 if (node is TakeSupportPosition position) lines.Add(position.Line);
             return lines;
+        }
+
+        // A tank is the frontline sponge: far harder to kill and slower than its faction's agent,
+        // and it takes part of the hits on the allies round it.
+        [Test]
+        public void EachFactionsTankIsBuiltToSoak()
+        {
+            foreach (string faction in new[] { "Bio", "Tech", "Void" })
+            {
+                var tank  = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/AITest/{faction}TankEnemyData.asset");
+                var agent = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/AITest/{faction}TestEnemyData.asset");
+                Assert.Greater(tank.EffectiveHealth, agent.EffectiveHealth * 2f, $"{faction}: at least twice as hard to kill as its agent");
+                Assert.Less(tank.ChaseSpeed, agent.ChaseSpeed, $"{faction}: slower than its agent");
+                Assert.AreSame(tank.BehaviorTree, Load(faction + "TankBehaviorTree"), $"{faction}: runs its tank tree");
+
+                var prefab = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>($"Assets/Project/Prefabs/Characters/Enemies/AITest/{faction}TankAgent.prefab");
+                Assert.IsTrue(prefab.TryGetComponent(out CGD.Combat.SoakAura soak) && soak.Share > 0f, $"{faction}: its prefab soaks for its allies");
+                Assert.IsTrue(prefab.TryGetComponent(out EnemyAI ai) && ai.Data == tank, $"{faction}: its prefab uses the tank data");
+            }
         }
 
         // The faction agents are where every behavior gets tried out; support agents stay focused.

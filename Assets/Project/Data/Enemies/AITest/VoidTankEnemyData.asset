@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fa9dd37a1333c94ba199e2bd61bbee3, type: 3}
+  m_Name: VoidTankEnemyData
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
+  DisplayName: Void Tank
+  Team: 5
+  MaxHealth: 60
+  Armor: 30
+  MaxShield: 320
+  ShieldRegenDelay: 4
+  ShieldRegenRate: 30
+  PatrolSpeed: 1.4
+  ChaseSpeed: 3
+  SightRange: 60
+  SightAngle: 110
+  HearingRadius: 12
+  Senses: {fileID: 11400000, guid: 68d72b2fee444c769b2a6753111afb2e, type: 2}
+  Relations: {fileID: 11400000, guid: 9c155ca7d04f48f79a7c98afa50b6c27, type: 2}
+  TargetPriorities: {fileID: 11400000, guid: 792f742e9d8d46afb0dde3fc7260fdaf, type: 2}
+  Doctrine: {fileID: 11400000, guid: 2e48b4ed96f54c088acaa912a76338ae, type: 2}
+  BehaviorTree: {fileID: 11400000, guid: 2230d392674d46d8b1e12c93456ee008, type: 2}
+  Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
+  CombatType: 0
+  Social: 1
+  AttackRange: 2
+  AttackDamage: 16
+  AttackCooldown: 1.4
+  RangedAttackCooldown: 1.8
+  RangedAttackDamage: 25
+  AttackWindup: 0.5
+  DamageNumberColor: {r: 0.55, g: 0.8, b: 1, a: 1}
+  PreferredRange: 13
+  SpreadAngle: 3
+  BurstCount: 1
+  BurstInterval: 0.2
+  StrafeInterval: 1.5
+  StrafeDistance: 4
+  ShotProjectile: {fileID: 2000000000000000001, guid: 3c5eb489a8194290a25b01c4d17cb91c, type: 3}
+  ShotSpeed: 20
+  ShotRadius: 0.4
+  ShotBlastRadius: 1.6
+  ShotEffects:
+  - Effect: {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
+    Chance: 1
+    Potency: 1.5
+    Duration: 0
+  Grenade: {fileID: 11400000, guid: cd020a88f8cb490eaf190a07345f3a5e, type: 2}
+  Signature: {fileID: 11400000, guid: f1d9ad631c6144d38e25d92d2f2ea94a, type: 2}
+  Escape: {fileID: 0}
+  Summon: {fileID: 0}
+  Boost: {fileID: 11400000, guid: 13de22858d3c472f8cadaed2a46a8307, type: 2}
+  Support: {fileID: 0}
+  Special: {fileID: 11400000, guid: 2c188a93502c4385812f9bc8e06d9afd, type: 2}
+  AlertDuration: 8
+  AttackSound: {fileID: 0}
+  RangedAttackSound: {fileID: 0}
+  StatusImmunities:
+  - {fileID: 11400000, guid: af0a6691caf9e4540b84b76580c8227f, type: 2}
+  - {fileID: 11400000, guid: b50232d06a0546fdbb18573d1525a428, type: 2}
+  - {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
+  MeleeEffects:
+  - Effect: {fileID: 11400000, guid: af0a6691caf9e4540b84b76580c8227f, type: 2}
+    Chance: 1
+    Potency: 1
+    Duration: 0

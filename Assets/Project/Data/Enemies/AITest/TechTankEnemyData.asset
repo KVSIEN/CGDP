@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fa9dd37a1333c94ba199e2bd61bbee3, type: 3}
+  m_Name: TechTankEnemyData
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
+  DisplayName: Tech Tank
+  Team: 4
+  MaxHealth: 0
+  Armor: 160
+  MaxPlating: 120
+  PlatingArmor: 60
+  MaxShield: 60
+  ShieldRegenDelay: 5
+  ShieldRegenRate: 12
+  PatrolSpeed: 1
+  ChaseSpeed: 2.2
+  SightRange: 60
+  SightAngle: 120
+  HearingRadius: 10
+  Senses: {fileID: 11400000, guid: 251b916bd85e47ba8781cb4c02764333, type: 2}
+  Relations: {fileID: 11400000, guid: 9c155ca7d04f48f79a7c98afa50b6c27, type: 2}
+  TargetPriorities: {fileID: 11400000, guid: 46ee83ed83df41e1a115adf56016f655, type: 2}
+  Doctrine: {fileID: 11400000, guid: 5a8228b7000940fb8101a853e95b701e, type: 2}
+  BehaviorTree: {fileID: 11400000, guid: 486cc42c66434e6287b7e58da74d92ac, type: 2}
+  Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
+  CombatType: 1
+  Social: 1
+  AttackRange: 1.6
+  AttackDamage: 10
+  AttackCooldown: 1.8
+  AttackWindup: 0.45
+  DamageNumberColor: {r: 1, g: 0.7, b: 0.2, a: 1}
+  PreferredRange: 16
+  SpreadAngle: 2.5
+  BurstCount: 2
+  BurstInterval: 0.35
+  StrafeInterval: 2
+  StrafeDistance: 3
+  ShotProjectile: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+  ShotSpeed: 18
+  RaisesAlarm: 0
+  Grenade: {fileID: 11400000, guid: 18271d81f56c4cd78f9b87c2b6ff2141, type: 2}
+  Signature: {fileID: 11400000, guid: bc948f8fed1e44cab59764b0f3f129b1, type: 2}
+  Escape: {fileID: 0}
+  Summon: {fileID: 0}
+  Boost: {fileID: 11400000, guid: a5f1c95821024a6a955fd89337201a09, type: 2}
+  Support: {fileID: 0}
+  Special: {fileID: 11400000, guid: 90ac477e22c91c4d8058bf99fe1ef744, type: 2}
+  RangedAttackCooldown: 2.6
+  RangedAttackDamage: 14
+  ShotRadius: 0.25
+  ShotBlastRadius: 1.5
+  AlertDuration: 6
+  AttackSound: {fileID: 0}
+  RangedAttackSound: {fileID: 0}
+  StatusImmunities:
+  - {fileID: 11400000, guid: f2a43b1c8de76a84490042e6d8d13b50, type: 2}
+  - {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
