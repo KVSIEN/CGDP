@@ -23,6 +23,7 @@ MonoBehaviour:
     ShowArea: 0
     GroundRing: 0
     Trail: 0
+    Pose: 1
   Buff: {fileID: 11400000, guid: bafa58022b4d4446886e56b5c8e89795, type: 2}
   Duration: 8
   ChargeAddedShield: 1

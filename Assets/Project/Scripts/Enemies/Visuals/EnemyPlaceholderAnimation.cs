@@ -1,10 +1,12 @@
 using UnityEngine;
+using CGD.Abilities;
 
 namespace CGD.Enemies
 {
     // Stand-in for animation on enemies without a rig (the capsule test agents), so what they
     // do reads at a glance: an arm that pulls back through a melee wind-up and thrusts out as
-    // the hit lands, held up while an ability is being cast; the whole model toppling over
+    // the hit lands, held up while an ability is being cast (or, for a spell, raised upright like
+    // a wand, its tip bobbing as it pulses — see AbilityLook.Pose); the whole model toppling over
     // on death, standing straight back up when the enemy is revived; and growing back in
     // from nothing where it reappears after a Phase Shift.
     [RequireComponent(typeof(EnemyAI))]
@@ -15,6 +17,13 @@ namespace CGD.Enemies
         private const float FallTime    = 0.35f;
         private const float CastPulse   = 10f;   // radians per second the casting arm pulses at
         private const float ReappearTime = 0.35f;
+        private const float WandTilt     = 15f;   // degrees the raised wand leans forward, toward what it casts at
+        private const float WandSway     = 6f;    // degrees it rocks either way as the spell builds
+        private const float WandSwaySpeed = 4f;   // radians per second it rocks at
+        private const float WandDrawBack = 0.1f;  // metres it is pulled in from the arm's rest, to its side rather than out in front (not into the body)
+
+        // The arm is a bar along its forward axis; this stands it on end (forward turned to up).
+        private static readonly Quaternion Upright = Quaternion.Euler(-90f, 0f, 0f);
 
         private static readonly Quaternion Fallen = Quaternion.Euler(90f, 0f, 0f);
 
@@ -35,6 +44,7 @@ namespace CGD.Enemies
         private EnemyHealth _health;
         private Vector3     _armRest;
         private Vector3     _armScale;
+        private Quaternion  _armRotation;
         private Vector3     _modelRest;
         private Vector3     _modelScale = Vector3.one;
         private float       _reappearClock = -1f;   // seconds since it reappeared; < 0 = not reappearing
@@ -54,6 +64,7 @@ namespace CGD.Enemies
 
             _armRest  = _arm.localPosition;
             _armScale = _arm.localScale;
+            _armRotation = _arm.localRotation;
             _arm.gameObject.SetActive(false);
         }
 
@@ -126,7 +137,8 @@ namespace CGD.Enemies
             if (_ai.Abilities != null && _ai.Abilities.IsCasting)
             {
                 float pulse = 1f + 0.25f * Mathf.Sin(Time.time * CastPulse);
-                ShowArm(_armRest + Vector3.up * _castLift, _armScale * pulse);
+                if (_ai.Abilities.Casting.Look.Pose == CastPose.Wand) ShowWand(pulse);
+                else ShowArm(_armRest + Vector3.up * _castLift, _armScale * pulse);
                 return;
             }
 
@@ -159,11 +171,24 @@ namespace CGD.Enemies
             ShowArm(_armRest + Vector3.forward * forward, _armScale);
         }
 
-        private void ShowArm(Vector3 localPosition, Vector3 localScale)
+        private void ShowArm(Vector3 localPosition, Vector3 localScale, Quaternion? localRotation = null)
         {
             _arm.gameObject.SetActive(true);
             _arm.localPosition = localPosition;
+            _arm.localRotation = localRotation ?? _armRotation;
             _arm.localScale    = localScale;
+        }
+
+        // A spell: the bar held upright at its side like a raised wand, leaning a little toward
+        // the target and rocking as the spell builds; only its thickness pulses, so the wand keeps
+        // its length.
+        private void ShowWand(float pulse)
+        {
+            float sway = WandSway * Mathf.Sin(Time.time * WandSwaySpeed);
+            Quaternion lean = Quaternion.Euler(WandTilt + sway, 0f, 0f);
+            Vector3 at = _armRest + Vector3.up * _castLift + Vector3.back * WandDrawBack;
+            Vector3 scale = new(_armScale.x * pulse, _armScale.y * pulse, _armScale.z);
+            ShowArm(at, scale, lean * Upright * _armRotation);
         }
     }
 }
