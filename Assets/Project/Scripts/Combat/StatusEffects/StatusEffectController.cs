@@ -193,6 +193,8 @@ namespace CGD.Combat
             return _active.TryGetValue(effect, out ActiveEffect active) ? active.Stacks : 0;
         }
 
+        public bool HasAny => _active.Count > 0;
+
         // Fills `results` with the active effects (cleared first; no allocations once warmed up).
         public void GetActive(List<ActiveStatus> results)
         {

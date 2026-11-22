@@ -1,0 +1,286 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: Medic
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  - rid: 1004
+  - rid: 1005
+  - rid: 1006
+  - rid: 1007
+  - rid: 1008
+  - rid: 1009
+  - rid: 1010
+  - rid: 1011
+  - rid: 1012
+  - rid: 1013
+  - rid: 1014
+  - rid: 1015
+  - rid: 1016
+  - rid: 1017
+  - rid: 1018
+  - rid: 1019
+  - rid: 1020
+  - rid: 1021
+  - rid: 1022
+  - rid: 1023
+  - rid: 1024
+  - rid: 1025
+  - rid: 1026
+  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d067627442b9439e825d2f413ae7a452
+        _position: {x: 0, y: 0}
+        _comment: 'A combat medic (field medic bot, healer, mender — any faction): keeps out of reach, goes to whichever ally of its own side is worst off or being hit hardest and uses its Support on it (a heal, a shield top-up, a cleanse), coming in on the ally''s far side from the threat. With two or more kin fighting near it, it casts its Signature for the team (a Barrier Field: armour for everyone near). Otherwise it shoots from cover. Kill it first. Kit: Support and Signature.'
+        _children:
+        - 3cb9c82e282641abae36e23be1d4733f
+    - rid: 1001
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 3cb9c82e282641abae36e23be1d4733f
+        _position: {x: 0, y: 150}
+        _comment: 'Back off when pressed; mend whoever needs it most; shield the team; otherwise fight from cover'
+        _children:
+        - 0f802a77b8ad4fdab534dd153a94b484
+        - fe4f254108434271a6a7229edd3c8af5
+        - fdb894b412194623a6076b1daa4dbd03
+        - 178b4b9324a94e25b1317d78dba2dd69
+        - 5af5f320b75c45cfbe01c54343e955b9
+        _abort: 0
+    - rid: 1002
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0f802a77b8ad4fdab534dd153a94b484
+        _position: {x: -440, y: 300}
+        _comment: 'Within 8 m: back off'
+        _children:
+        - 4e5290ef00864c4981fa6302a61eb1f2
+        - 1c329a7488fb4aa69e6ac97491e4e416
+        - 4588c0f962dd4b2b87688ebdfc73d544
+        _abort: 2
+    - rid: 1003
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4e5290ef00864c4981fa6302a61eb1f2
+        _position: {x: -660, y: 450}
+        _comment: 
+    - rid: 1004
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1c329a7488fb4aa69e6ac97491e4e416
+        _position: {x: -440, y: 450}
+        _comment: 
+        _range: 8
+    - rid: 1005
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 4588c0f962dd4b2b87688ebdfc73d544
+        _position: {x: -220, y: 450}
+        _comment: 
+        _children:
+        - 0c88c350d00f423b89aae5730000e88f
+        _seconds: 4
+        _onlyAfterSuccess: 0
+    - rid: 1006
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0c88c350d00f423b89aae5730000e88f
+        _position: {x: -220, y: 600}
+        _comment: 
+        _children:
+        - 3ac30afd2f96462f91b73fbf552c26de
+        - f3e750c5447b49ce98c0789ea4be7877
+        - a9ad67b1d8dd4da39a1a08360b74ef38
+        _abort: 0
+    - rid: 1007
+      type: {class: FallBack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3ac30afd2f96462f91b73fbf552c26de
+        _position: {x: -440, y: 750}
+        _comment: 
+        _giveUpAfter: 8
+    - rid: 1008
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f3e750c5447b49ce98c0789ea4be7877
+        _position: {x: -220, y: 750}
+        _comment: 
+        _use: 1
+        _giveUpAfter: 5
+        _stopAtPreferredRange: 0
+    - rid: 1009
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a9ad67b1d8dd4da39a1a08360b74ef38
+        _position: {x: 0, y: 750}
+        _comment: 
+        _distance: 12
+    - rid: 1010
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: fe4f254108434271a6a7229edd3c8af5
+        _position: {x: -220, y: 300}
+        _comment: 'An ally needs it (its Support)'
+        _children:
+        - ea26215768604bb5b13796be576b3275
+        _abort: 0
+    - rid: 1011
+      type: {class: SupportAlly, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ea26215768604bb5b13796be576b3275
+        _position: {x: -220, y: 450}
+        _comment: 
+        _searchRadius: 20
+        _threshold: 0.7
+        _underFireWeight: 1
+        _castRange: 4
+        _speed: 1
+        _giveUpAfter: 6
+    - rid: 1012
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: fdb894b412194623a6076b1daa4dbd03
+        _position: {x: 0, y: 300}
+        _comment: 'Two or more kin fighting near it: its Signature for the team (a Barrier Field)'
+        _children:
+        - 98bd936346204fba88543cff2234072e
+        - 24d26d088f764dcab2f2427d8eeb723a
+        - 944e43dfe53b4862a151ce4bd72984b5
+        - 8e095434868c4985a7d8b0afb7f8b55a
+        _abort: 0
+    - rid: 1013
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 98bd936346204fba88543cff2234072e
+        _position: {x: -330, y: 450}
+        _comment: 
+    - rid: 1014
+      type: {class: KinNear, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 24d26d088f764dcab2f2427d8eeb723a
+        _position: {x: -110, y: 450}
+        _comment: 
+        _radius: 10
+        _atLeast: 2
+    - rid: 1015
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 944e43dfe53b4862a151ce4bd72984b5
+        _position: {x: 110, y: 450}
+        _comment: 
+        _slot: 1
+        _ability: {fileID: 0}
+    - rid: 1016
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8e095434868c4985a7d8b0afb7f8b55a
+        _position: {x: 330, y: 450}
+        _comment: 
+        _slot: 1
+        _ability: {fileID: 0}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 0
+    - rid: 1017
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 178b4b9324a94e25b1317d78dba2dd69
+        _position: {x: 220, y: 300}
+        _comment: 'Otherwise: shoot from cover'
+        _children:
+        - ae27dac37edd49ca9ac01226caa675b6
+        - dbb182fdffb147889f656bc055c95648
+        - 964d70bf05f946fe93e488ce21afcfb2
+        _abort: 0
+    - rid: 1018
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ae27dac37edd49ca9ac01226caa675b6
+        _position: {x: 0, y: 450}
+        _comment: 
+    - rid: 1019
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: dbb182fdffb147889f656bc055c95648
+        _position: {x: 220, y: 450}
+        _comment: 
+        _use: 0
+        _giveUpAfter: 6
+        _stopAtPreferredRange: 0
+    - rid: 1020
+      type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 964d70bf05f946fe93e488ce21afcfb2
+        _position: {x: 440, y: 450}
+        _comment: 
+        _children:
+        - 6ed9d18285b842e68e0b939fd4a53683
+        - 508e8280f5424571bb76ab25f007291d
+        _policy: 1
+    - rid: 1021
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6ed9d18285b842e68e0b939fd4a53683
+        _position: {x: 330, y: 600}
+        _comment: 
+        _children:
+        - f3e459e40581464a9095d4d4c5875ce8
+        _count: 0
+        _stopOnFailure: 1
+    - rid: 1022
+      type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f3e459e40581464a9095d4d4c5875ce8
+        _position: {x: 330, y: 750}
+        _comment: 
+    - rid: 1023
+      type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 508e8280f5424571bb76ab25f007291d
+        _position: {x: 550, y: 600}
+        _comment: 
+        _seconds: {Min: 3, Max: 4, Bias: 0}
+    - rid: 1024
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5af5f320b75c45cfbe01c54343e955b9
+        _position: {x: 440, y: 300}
+        _comment: 'Lost it: watch the angle it went'
+        _children:
+        - cd67578b95e64f968e75787edf822876
+        - e3927fc5ba2a40a19734e27339143e3a
+        _abort: 0
+    - rid: 1025
+      type: {class: KnowsTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: cd67578b95e64f968e75787edf822876
+        _position: {x: 330, y: 450}
+        _comment: 
+        _memory: 8
+    - rid: 1026
+      type: {class: Overwatch, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e3927fc5ba2a40a19734e27339143e3a
+        _position: {x: 550, y: 450}
+        _comment: 
+        _seconds: {Min: 2, Max: 3, Bias: 0}
