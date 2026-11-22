@@ -63,20 +63,8 @@ namespace CGD.Abilities
                 IDamageable target = area.Target;
                 target.TakeDamage(hit);
                 if (target is HealthManager health && health.transform != ctx.CasterTransform)
-                    TryKnockBack(health, center, ctx.Source);
+                    Stunnable.PushAway(health, center, ctx.Source, KnockbackSpeed, KnockbackDuration);
             }
-        }
-
-        private void TryKnockBack(HealthManager target, Vector3 center, DamageSource source)
-        {
-            if (KnockbackSpeed <= 0f || target.IsDead || !target.CanBeDamagedBy(source)) return;
-            if (!target.TryGetComponent(out Stunnable stunnable)) return;
-
-            Vector3 away = target.transform.position - center;
-            away.y = 0f;
-            // Standing right on the caster (likely facing it): straight backwards.
-            if (away.sqrMagnitude < 0.0001f) away = -target.transform.forward;
-            stunnable.Knockback(away.normalized * KnockbackSpeed, KnockbackDuration);
         }
     }
 }

@@ -44,6 +44,19 @@ namespace CGD.Combat
             ApplyStun(duration);
         }
 
+        // Shoves a hostile target straight away from `from` (a blast's centre, the caster), if it
+        // can be shoved and is one `source` may hurt. Standing right on `from`, straight backwards.
+        public static void PushAway(HealthManager target, Vector3 from, DamageSource source, float speed, float duration)
+        {
+            if (speed <= 0f || target == null || target.IsDead || !target.CanBeDamagedBy(source)) return;
+            if (!target.TryGetComponent(out Stunnable stunnable)) return;
+
+            Vector3 away = target.transform.position - from;
+            away.y = 0f;
+            if (away.sqrMagnitude < 0.0001f) away = -target.transform.forward;
+            stunnable.Knockback(away.normalized * speed, duration);
+        }
+
         // Stunned by a timer, or for as long as something holds the character in place (a grab
         // that lasts until the player breaks free).
         public bool IsStunned => !_stunTimer.IsReady || _holds.Count > 0;
