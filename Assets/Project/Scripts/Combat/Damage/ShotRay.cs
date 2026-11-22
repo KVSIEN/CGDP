@@ -21,7 +21,7 @@ namespace CGD.Combat
             System.Array.Sort(Hits, 0, count, ByDistance);
             for (int i = 0; i < count; i++)
             {
-                if (ShieldBarrier.PassesThrough(Hits[i].collider, direction)) continue;
+                if (ShieldBarrier.PassesThrough(Hits[i].collider, direction, origin)) continue;
                 hit = Hits[i];
                 return true;
             }

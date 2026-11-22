@@ -57,5 +57,25 @@ namespace CGD.Tests
             Hitbox.ApplyHit(_barrier.GetComponent<Collider>(), new DamageInfo(30f), _barrier.transform.position);
             Assert.AreEqual(30f, stopped, 0.001f);
         }
+
+        [Test]
+        public void ADomeStopsAShotFromOutsideAndLetsOneFromInsideOut()
+        {
+            // The cube barrier is not wanted here: a dome at the origin shelters the target inside it.
+            Object.DestroyImmediate(_barrier);
+            _barrier = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            _barrier.transform.localScale = Vector3.one * 8f;
+            _barrier.AddComponent<ShieldBarrier>().MakeDome(4f);
+            _target.transform.position = new Vector3(0f, 0f, 10f);
+            Physics.SyncTransforms();
+
+            // From outside, toward the dome: stops on it.
+            Assert.IsTrue(ShotRay.Cast(new Vector3(0f, 0f, 20f), Vector3.back, out RaycastHit hit, 30f, ~0));
+            Assert.AreEqual(_barrier, hit.collider.gameObject);
+
+            // From its centre, out toward the target: flies on through.
+            Assert.IsTrue(ShotRay.Cast(Vector3.zero, Vector3.forward, out hit, 30f, ~0));
+            Assert.AreEqual(_target, hit.collider.gameObject);
+        }
     }
 }

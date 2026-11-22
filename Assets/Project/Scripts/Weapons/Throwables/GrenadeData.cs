@@ -83,6 +83,18 @@ namespace CGD.Weapons
         public GameObject LingeringZone;
         [Tooltip("Damage zone only: what it does; its hits apply the On Hit effects below, and a Radius of 0 uses the explosion radius")]
         public ZoneSettings Zone = new() { Radius = 0f, Glow = ZoneGlow.Pulse };
+        [Header("Barrier Dome")]
+        [Tooltip("Metres. A dome of force left where it goes off: hostile shots from outside stop on it, shots from inside pass. 0 = none")]
+        [Min(0f)] public float DomeRadius = 0f;
+        [Tooltip("Seconds the dome stands")]
+        [Min(0.5f)] public float DomeSeconds = 8f;
+        [Tooltip("Damage the dome can stop before it collapses (0 = it only ends with its time)")]
+        [Min(0f)] public float DomeDurability = 300f;
+        [Tooltip("A transparent material to draw it with; none = invisible")]
+        public Material DomeMaterial;
+        public Color DomeColor = new(0.35f, 0.75f, 1f, 0.25f);
+
+        [Header("Effects")]
         [Tooltip("Optional — a pooled prefab with an ExplosionFlash, spawned at the blast")]
         public GameObject ExplosionEffect;
         public Color FlashColor = new(1f, 0.6f, 0.15f, 0.8f);

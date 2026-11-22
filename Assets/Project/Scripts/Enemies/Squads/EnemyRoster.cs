@@ -78,6 +78,46 @@ namespace CGD.Enemies
             return kin != null;
         }
 
+        // The kin within the radius taking the most fire right now (its recent losses as a share of its
+        // maximum), if any has lost at least `minShare`: whoever most needs a barrier over it.
+        public static bool TryKinUnderFire(EnemyAI asker, float radius, float minShare, out EnemyAI kin)
+        {
+            kin = null;
+            float radiusSq = radius * radius;
+            float worst    = minShare;
+            foreach (EnemyAI other in Members)
+            {
+                if (!IsKin(asker, other) || other.Health == null) continue;
+                if ((other.transform.position - asker.transform.position).sqrMagnitude > radiusSq) continue;
+
+                float share = other.Health.RecentDamageShare;
+                if (share < worst) continue;
+                worst = share;
+                kin   = other;
+            }
+            return kin != null;
+        }
+
+        // The kin within the radius of the asker that stands nearest `point` (the threat: the front of the line).
+        public static bool TryKinNearest(EnemyAI asker, float radius, Vector3 point, out EnemyAI kin)
+        {
+            kin = null;
+            float radiusSq = radius * radius;
+            float nearest  = float.MaxValue;
+            foreach (EnemyAI other in Members)
+            {
+                if (!IsKin(asker, other)) continue;
+                if ((other.transform.position - asker.transform.position).sqrMagnitude > radiusSq) continue;
+
+                Vector3 offset = other.transform.position - point;
+                offset.y = 0f;
+                if (offset.sqrMagnitude >= nearest) continue;
+                nearest = offset.sqrMagnitude;
+                kin     = other;
+            }
+            return kin != null;
+        }
+
         // Where the nearest of its kin within the radius that is fighting right now has its target:
         // what a squadmate sees that the asker may not. False when no kin nearby has a target.
         public static bool TryKinTarget(EnemyAI asker, float radius, out Vector3 position)

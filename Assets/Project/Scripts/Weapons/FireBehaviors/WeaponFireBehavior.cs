@@ -92,7 +92,7 @@ namespace CGD.Weapons
             for (int i = 0; i < count; i++)
             {
                 RaycastHit  hit    = PierceHits[i];
-                if (ShieldBarrier.PassesThrough(hit.collider, direction)) continue;
+                if (ShieldBarrier.PassesThrough(hit.collider, direction, ctx.Origin)) continue;
                 IDamageable target = Hitbox.FindDamageable(hit.collider);
                 if (target != null && PiercedTargets.Contains(target)) continue;
 

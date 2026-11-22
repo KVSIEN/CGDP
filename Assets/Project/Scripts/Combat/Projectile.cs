@@ -183,7 +183,7 @@ namespace CGD.Combat
                     continue;
                 if (AlreadyPierced(_hitBuffer[i].collider))
                     continue;
-                if (ShieldBarrier.PassesThrough(_hitBuffer[i].collider, step))
+                if (ShieldBarrier.PassesThrough(_hitBuffer[i].collider, step, start))
                     continue;
                 hit = _hitBuffer[i];
                 // A sphere that starts inside something reports no point: use where it was.

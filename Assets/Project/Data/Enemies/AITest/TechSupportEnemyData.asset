@@ -32,12 +32,17 @@ MonoBehaviour:
   Doctrine: {fileID: 11400000, guid: 5a8228b7000940fb8101a853e95b701e, type: 2}
   BehaviorTree: {fileID: 11400000, guid: e1296f0376024874b9bfd8013b7e9916, type: 2}
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
-  CombatType: 1
+  CombatType: 0
   Social: 1
-  AttackRange: 1.6
-  AttackDamage: 8
-  AttackCooldown: 1.5
+  AttackRange: 2.2
+  AttackDamage: 9
+  AttackCooldown: 1.2
   AttackWindup: 0.45
+  MeleeEffects:
+  - Effect: {fileID: 11400000, guid: bf6df1793c34595468cf4ced8ff665bc, type: 2}
+    Chance: 1
+    Potency: 1
+    Duration: 0
   DamageNumberColor: {r: 1, g: 0.85, b: 0.25, a: 1}
   PreferredRange: 20
   SpreadAngle: 1.5
@@ -45,10 +50,10 @@ MonoBehaviour:
   BurstInterval: 0.12
   StrafeInterval: 2
   StrafeDistance: 3
-  ShotProjectile: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+  ShotProjectile: {fileID: 0}
   ShotSpeed: 26
   RaisesAlarm: 0
-  Grenade: {fileID: 11400000, guid: 18271d81f56c4cd78f9b87c2b6ff2141, type: 2}
+  Grenade: {fileID: 11400000, guid: 796c0578307b4a94bf024e8feab54c5c, type: 2}
   Signature: {fileID: 0}
   Escape: {fileID: 0}
   Summon: {fileID: 0}

@@ -183,6 +183,8 @@ namespace CGD.Weapons
             }
 
             if (_data.LingeringZone != null) SpawnZone(transform.position);
+            if (_data.DomeRadius > 0f)
+                ShieldDome.Raise(transform.position, _data.DomeRadius, _data.DomeSeconds, _data.DomeDurability, _data.DomeMaterial, _data.DomeColor);
             _initialized = false;
             // Back to a free body before the pool hands it out again: throwers set its velocity before Init.
             _holding = false;

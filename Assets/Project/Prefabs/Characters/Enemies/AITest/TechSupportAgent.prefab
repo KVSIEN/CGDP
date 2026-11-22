@@ -136,8 +136,8 @@ MonoBehaviour:
   _downSeconds: 6
   _breakStagger: 1.2
   _visual: {fileID: 0}
-  _barrierSize: {x: 1.8, y: 2, z: 0.1}
-  _barrierDistance: 0.9
+  _barrierSize: {x: 3.2, y: 2.2, z: 0.1}
+  _barrierDistance: 1.2
   _barrierMaterial: {fileID: 2100000, guid: 02fa666fd24349c89c44682a27da8621, type: 2}
   _barrierColor: {r: 0.35, g: 0.75, b: 1, a: 0.3}
   _lowerFor:
