@@ -4,6 +4,8 @@ using CGD.Audio;
 using CGD.Combat;
 using CGD.Core;
 using CGD.Impacts;
+using CGD.Items;
+using CGD.Stats;
 using CGD.Weapons;
 
 namespace CGD.Enemies
@@ -27,6 +29,8 @@ namespace CGD.Enemies
         private readonly EnemyAI      _ai;
         private readonly DamageSource _source;
         private readonly LayerMask    _obstacleMask;
+        // Its damage buffs (a rallying roar, an enchantment) count for its shots as for its strikes.
+        private readonly CharacterStats _stats;
 
         private CooldownTimer _fireCooldown;
         private int   _burstRemaining;
@@ -35,11 +39,12 @@ namespace CGD.Enemies
         private int   _strafeDir = 1;
         private bool  _hasShooterToken;
 
-        public EnemyRangedCombat(EnemyAI ai, DamageSource source, LayerMask obstacleMask)
+        public EnemyRangedCombat(EnemyAI ai, DamageSource source, LayerMask obstacleMask, CharacterStats stats)
         {
             _ai           = ai;
             _source       = source;
             _obstacleMask = obstacleMask;
+            _stats        = stats;
         }
 
         public bool IsBursting => _burstRemaining > 0;
@@ -238,7 +243,9 @@ namespace CGD.Enemies
             fireSound.TryPlay(_ai.transform.position);
             _ai.NotifyFired();
 
-            var info = new DamageInfo(data.RangedAttackDamage > 0f ? data.RangedAttackDamage : data.AttackDamage, source: _source,
+            float damage = data.RangedAttackDamage > 0f ? data.RangedAttackDamage : data.AttackDamage;
+            if (_stats != null) damage = _stats.Apply(ItemStat.Damage, damage);
+            var info = new DamageInfo(damage, source: _source,
                                   onHitEffects: data.ShotEffects);
             if (projectile)
             {

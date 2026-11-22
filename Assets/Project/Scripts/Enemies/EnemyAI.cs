@@ -170,7 +170,7 @@ namespace CGD.Enemies
             Idle          = new EnemyIdleLife(this);
             Foresight     = new EnemyForesight(this);
             Reflexes      = new EnemyReflexes(this);
-            RangedCombat  = new EnemyRangedCombat(this, _damageSource, _obstacleMask);
+            RangedCombat  = new EnemyRangedCombat(this, _damageSource, _obstacleMask, _stats);
             Melee         = new EnemyMelee(this, _damageSource, _targetMask, _stats);
             Search        = new EnemySearch(this);
             Tactics       = new EnemyTactics(this, _obstacleMask);
