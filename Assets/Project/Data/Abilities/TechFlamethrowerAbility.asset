@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f19d124a4964eb7b2689bdea871554e, type: 3}
+  m_Name: TechFlamethrowerAbility
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.TargetedAbility
+  DisplayName: Flamethrower
+  SlotColor: {r: 1, g: 0.45, b: 0.1, a: 1}
+  Cooldown: 1
+  MaxCharges: 1
+  CastTime: 0.15
+  Targeting: {fileID: 11400000, guid: 25d09fc6692046eeb663569e4eaa88bb, type: 2}
+  Damage: 8
+  ArmorPenetration: 0
+  DamageType: 0
+  OnHitEffects:
+  - Effect: {fileID: 11400000, guid: bf6df1793c34595468cf4ced8ff665bc, type: 2}
+    Chance: 1
+    Potency: 1
+    Duration: 0
+  Heal: 0
+  SelfHealShare: 0
+  KnockbackSpeed: 6
+  KnockbackDuration: 0.2
