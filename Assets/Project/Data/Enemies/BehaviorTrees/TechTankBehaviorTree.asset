@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
-  m_Name: TechSiegeBehaviorTree
+  m_Name: TechTankBehaviorTree
   m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
   _nodes:
   - rid: 1000
@@ -48,11 +48,6 @@ MonoBehaviour:
   - rid: 1032
   - rid: 1033
   - rid: 1034
-  - rid: 1035
-  - rid: 1036
-  - rid: 1037
-  - rid: 1038
-  - rid: 1039
   - rid: 1040
   - rid: 1041
   - rid: 1042
@@ -75,14 +70,6 @@ MonoBehaviour:
   - rid: 1059
   - rid: 1060
   - rid: 1061
-  - rid: 1062
-  - rid: 1063
-  - rid: 1064
-  - rid: 1065
-  - rid: 1066
-  - rid: 1067
-  - rid: 1068
-  - rid: 1069
   - rid: 1070
   - rid: 1071
   - rid: 1072
@@ -92,7 +79,16 @@ MonoBehaviour:
   - rid: 1076
   - rid: 1077
   - rid: 1078
-  _groups: []
+  - rid: 1079
+  - rid: 1080
+  - rid: 1081
+  - rid: 1082
+  - rid: 1083
+  - rid: 1085
+  - rid: 1086
+  - rid: 1087
+  - rid: 1088
+  - rid: 1089  _groups: []
   _notes: []
   references:
     version: 2
@@ -102,7 +98,7 @@ MonoBehaviour:
       data:
         _guid: ee7696869a6d413ead9ebb2c4d141e61
         _position: {x: 0, y: 0}
-        _comment: 'TECH siege (sentinel): not a tank but the squad''s siege engine, a slow, heavily plated machine that holds its own post well behind the other Tech, 12 m behind the ally nearest the threat in high cover, and makes cover useless to the enemy. When a target ducks behind cover or into a bush it shells the spot with a Mortar Shell every 5 s (no line of sight needed), pours suppressing fire into it between shells and watches it for the target breaking cover; a target in the open gets a Missile Salvo (Signature) to drive it back into hiding where the mortar finds it. When a squadmate is worn down and falling back it covers the retreat: a Smoke Mortar lands just in front of the squadmate, between it and the enemy, then the siege leaves its post, pushes up into the smoke and holds it for 10 s, zoning the enemy off with a Flamethrower (anything within 9 m burns) and suppressing what stays out of reach (every 25 s at most). Otherwise it covers the field from its post with suppressing fire. It grenades anything within 12 m and bashes what reaches it (Special). Kit: Signature (Missile Salvo), Special (Weapon Bash), Grenade (Tech Grenade); the Mortar Shell, Smoke Mortar and Flamethrower are set on the tree.'
+        _comment: 'TECH siege (sentinel): not a tank but the squad''s siege engine, a slow, heavily plated machine that holds its own post well behind the other Tech, 12 m behind the ally nearest the threat in high cover, and makes cover useless to the enemy. When a target ducks behind cover or into a bush it shells the spot with a Mortar Shell every 5 s (no line of sight needed), pours suppressing fire into it between shells and watches it for the target breaking cover; a target in the open gets a Rocket (Signature) to drive it back into hiding where the mortar finds it. When a squadmate is worn down and falling back it covers the retreat: a Smoke Mortar lands just in front of the squadmate, between it and the enemy, then the siege leaves its post, pushes up into the smoke and holds it for 10 s, zoning the enemy off with a Flamethrower (anything within 9 m burns) and suppressing what stays out of reach (every 25 s at most). Otherwise it covers the field from its post with suppressing fire. It grenades anything within 12 m and bashes what reaches it (Special). Kit: Signature (Rocket), Special (Weapon Bash), Grenade (Tech Grenade); the Mortar Shell, Smoke Mortar and Flamethrower are set on the tree.'
         _children:
         - 223ff6ed9e754768b53109e721a0d4ab
     - rid: 1001
@@ -114,8 +110,11 @@ MonoBehaviour:
         _children:
         - ed1301a54bee45fa8bc71816a2928b47
         - dfdd027f23934f488bdabe63ac32c1bb
+        - ccfa5224d7834d0b35629f5eda1f0593
         - d55cbbe6f2f64949aee965712adcafbd
-        - 3b5958ab9973473ab357d0d7ed78dd1b
+        - 755bca2b640d43d3bc66aeb5221d2f26
+        - c1b2c3d4e5f60718293a4b5c6d7e8f01
+        - 0f74f11579924486aee4ca35d947ac69
         - f3ed8caa544141edb8c660d7e1b8ac5a
         _abort: 0
     - rid: 1002
@@ -175,11 +174,10 @@ MonoBehaviour:
         _children:
         - 99caad9b362f404aa757930effe808bf
         - c9b0f9c4b69b44648bd8727ff08130af
-        - ec8e155a4cad440e848d58a2e7f8d11b
         - 31d4b24755704f8c8684a2eb4cd71a7e
         - 5aa5ec88dc3b4f829fb4724c7086fd73
         - 50c2a1dcfc324e05b167bf19d8b99e7a
-        - 50a6c3a8baa34d0aa5fd2d0f6be79923
+        - f42c9f26b578fab9c0c29a4050c11df1
         - 286e7018167b4a9ea2339f21b58526e2
         _abort: 0
     - rid: 1009
@@ -422,48 +420,6 @@ MonoBehaviour:
         _maxRange: 0
         _requireClearShot: 0
         _leadMovingTarget: 0
-    - rid: 1035
-      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: ec8e155a4cad440e848d58a2e7f8d11b
-        _position: {x: 96, y: 600}
-        _comment: 'Something got within 12 m of its post: its kit grenade to drive it off'
-        _children:
-        - 63b480dd42074481a641a1b8a9e2b7bc
-        - ffe359274cf94f9a978fd7eb8be11100
-        - ae522bc64f90423095d532b19c4c2467
-        _abort: 2
-    - rid: 1036
-      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 63b480dd42074481a641a1b8a9e2b7bc
-        _position: {x: -124, y: 750}
-        _comment: 
-    - rid: 1037
-      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: ffe359274cf94f9a978fd7eb8be11100
-        _position: {x: 96, y: 750}
-        _comment: 
-        _range: 12
-    - rid: 1038
-      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: ae522bc64f90423095d532b19c4c2467
-        _position: {x: 316, y: 750}
-        _comment: 
-        _children:
-        - 9f61c8a610494b1da79551743aedb3b0
-        _seconds: 10
-        _onlyAfterSuccess: 0
-    - rid: 1039
-      type: {class: ThrowGrenade, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 9f61c8a610494b1da79551743aedb3b0
-        _position: {x: 316, y: 900}
-        _comment: 
-        _grenade: {fileID: 0}
-        _minDistance: 5
     - rid: 1040
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -542,7 +498,7 @@ MonoBehaviour:
       data:
         _guid: 5aa5ec88dc3b4f829fb4724c7086fd73
         _position: {x: 1746, y: 600}
-        _comment: 'Target in the open within 60 m: Missile Salvo (its Signature), so it has to run for cover'
+        _comment: 'Target in the open within 60 m: Rocket (its Signature), so it has to run for cover'
         _children:
         - 13e8d8e3d61245c0b8fc7a14a9908a4b
         - 854b4473e09940c19636ba6ff8bfb7b3
@@ -664,73 +620,6 @@ MonoBehaviour:
         _position: {x: 2956, y: 1350}
         _comment: 
         _maxBlindTime: 5
-    - rid: 1062
-      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: 50a6c3a8baa34d0aa5fd2d0f6be79923
-        _position: {x: 3341, y: 600}
-        _comment: 'No squad: hold its long range (about 35 m) and suppress'
-        _children:
-        - 4903a43e06ed48ae8ff9272f4173b93d
-        - 4aa6b02a782b4a32b212972d6d121452
-        _abort: 0
-    - rid: 1063
-      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 4903a43e06ed48ae8ff9272f4173b93d
-        _position: {x: 3176, y: 750}
-        _comment: 
-    - rid: 1064
-      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: 4aa6b02a782b4a32b212972d6d121452
-        _position: {x: 3506, y: 750}
-        _comment: 
-        _children:
-        - e1f5cd11317f44c4b4b9ae38e700f03f
-        _succeed: 1
-    - rid: 1065
-      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: e1f5cd11317f44c4b4b9ae38e700f03f
-        _position: {x: 3506, y: 900}
-        _comment: 
-        _children:
-        - 054689ca5ca84ed38416c01d86f5733e
-        _seconds: 3
-    - rid: 1066
-      type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: 054689ca5ca84ed38416c01d86f5733e
-        _position: {x: 3506, y: 1050}
-        _comment: 
-        _children:
-        - 40a2aace04704fa99bdd7a7b3611e3de
-        - a4a498dcc20a4236b352af68e8b1a1e1
-        _policy: 0
-    - rid: 1067
-      type: {class: HoldRange, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 40a2aace04704fa99bdd7a7b3611e3de
-        _position: {x: 3396, y: 1200}
-        _comment: 
-    - rid: 1068
-      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: a4a498dcc20a4236b352af68e8b1a1e1
-        _position: {x: 3616, y: 1200}
-        _comment: 
-        _children:
-        - 4470f3ac95754f34ac611122b322bbd8
-        _count: 0
-        _stopOnFailure: 1
-    - rid: 1069
-      type: {class: Suppress, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 4470f3ac95754f34ac611122b322bbd8
-        _position: {x: 3616, y: 1350}
-        _comment: 
-        _maxBlindTime: 5
     - rid: 1070
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -778,8 +667,8 @@ MonoBehaviour:
       type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: 3b5958ab9973473ab357d0d7ed78dd1b
-        _position: {x: 4276, y: 300}
-        _comment: 'Calm, in a squad it doesn''t lead: keep with the leader'
+        _position: {x: 4386, y: 450}
+        _comment: 
         _children:
         - 1dd2e46612ef4f1ba00811683c83ab57
         _succeed: 1
@@ -787,7 +676,7 @@ MonoBehaviour:
       type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: 1dd2e46612ef4f1ba00811683c83ab57
-        _position: {x: 4276, y: 450}
+        _position: {x: 4386, y: 600}
         _comment: 
         _children:
         - a2c5d70fbe004d61abfed4a0f945f80c
@@ -796,7 +685,7 @@ MonoBehaviour:
       type: {class: FollowLeader, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: a2c5d70fbe004d61abfed4a0f945f80c
-        _position: {x: 4276, y: 600}
+        _position: {x: 4386, y: 750}
         _comment: 
         _distance: 3
     - rid: 1078
@@ -806,4 +695,89 @@ MonoBehaviour:
         _position: {x: 4496, y: 300}
         _comment: 'Otherwise (it usually leads): the usual routine'
         _tree: {fileID: 11400000, guid: cba441f48fd34dec9c15d7d0c6903346, type: 2}
+        _off: 0
+    - rid: 1079
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 0f74f11579924486aee4ca35d947ac69
+        _position: {x: 4276, y: 300}
+        _comment: 'Calm, in a squad it doesn''t lead: keep with the leader'
+        _children:
+        - a8442c2a0d184457ae1eb8e2b76e81f4
+        - 3b5958ab9973473ab357d0d7ed78dd1b
+        _abort: 0
+    - rid: 1080
+      type: {class: HasLeader, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a8442c2a0d184457ae1eb8e2b76e81f4
+        _position: {x: 4166, y: 450}
+        _comment: 
+        _fartherThan: 15
+    - rid: 1081
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c1b2c3d4e5f60718293a4b5c6d7e8f01
+        _position: {x: 2300, y: 450}
+        _comment: 'A squadmate is fighting something it hasn''t seen yet: go and join the fight'
+        _children:
+        - c1b2c3d4e5f60718293a4b5c6d7e8f02
+        _succeed: 1
+    - rid: 1082
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c1b2c3d4e5f60718293a4b5c6d7e8f02
+        _position: {x: 2300, y: 600}
+        _comment: 
+        _children:
+        - c1b2c3d4e5f60718293a4b5c6d7e8f03
+        _seconds: 4
+    - rid: 1083
+      type: {class: JoinFight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c1b2c3d4e5f60718293a4b5c6d7e8f03
+        _position: {x: 2300, y: 750}
+        _comment: 
+        _radius: 40
+        _stopDistance: 15
+        _speed: 1
+    - rid: 1085
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f42c9f26b578fab9c0c29a4050c11df1
+        _position: {x: 0, y: 0}
+        _comment: 'Lost sight, or nothing for its own role to do: the Tech way (TechStance, as TechBehaviorTree does it)'
+        _tree: {fileID: 11400000, guid: b7d3a05e92c14f68a1e4d8c0572f93b6, type: 2}
+        _off: 0
+    - rid: 1086
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 755bca2b640d43d3bc66aeb5221d2f26
+        _position: {x: 4100, y: 1400}
+        _comment: 'Memory has run out but the belief has not: keep working through the likely places before falling back to the routine'
+        _children:
+        - 4e88b4c2e36e40779bf422a983e01c34
+        - 655611f936a44c8a90ae9daaa6e195b0
+        _abort: 2
+    - rid: 1087
+      type: {class: HasBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4e88b4c2e36e40779bf422a983e01c34
+        _position: {x: 3660, y: 1500}
+        _comment: 
+    - rid: 1088
+      type: {class: PursueBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 655611f936a44c8a90ae9daaa6e195b0
+        _position: {x: 3880, y: 1500}
+        _comment: 
+        _style: 1
+        _look: 3
+        _giveUpAfter: 12
+    - rid: 1089
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ccfa5224d7834d0b35629f5eda1f0593
+        _position: {x: 0, y: 0}
+        _comment: 
+        _tree: {fileID: 11400000, guid: 7ab5900d0c634e3682dad12bcbb34b95, type: 2}
         _off: 0

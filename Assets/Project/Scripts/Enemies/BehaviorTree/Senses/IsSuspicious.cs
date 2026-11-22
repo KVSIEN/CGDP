@@ -9,12 +9,6 @@ namespace CGD.Enemies
     [BtNodeInfo("Enemy/Senses/Is Suspicious", "Succeeds while it is suspicious or hunting (noticed something, was hit, lost its target).")]
     public sealed class IsSuspicious : EnemyCondition
     {
-        protected override bool Check(BtContext context)
-        {
-            var perception = Ai.Perception;
-            return perception.HasLead
-                || perception.Level == AwarenessLevel.Suspicious
-                || perception.Level == AwarenessLevel.Searching;
-        }
+        protected override bool Check(BtContext context) => Ai.Perception.IsSuspicious;
     }
 }

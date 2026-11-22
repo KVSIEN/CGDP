@@ -82,7 +82,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 92da3868d5ad4411851cb99e0cef9fe4, type: 2}
     - target: {fileID: 5494927797007602772, guid: 331f913c861f4c698489702343d4cdb4, type: 3}
       propertyPath: m_Name
-      value: TechSiegeAgent
+      value: TechTankAgent
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

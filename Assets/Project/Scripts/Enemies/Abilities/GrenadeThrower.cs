@@ -64,6 +64,22 @@ namespace CGD.Enemies
             return true;
         }
 
+        // One round of a mortar volley: lobbed at once (no wind-up, the caller paces the rounds) at
+        // where the target is believed to be, off by up to `scatter` metres so it falls round it
+        // rather than on it. False when no throw within the grenade's speeds goes off near the spot.
+        public bool TryLob(GrenadeData grenade, Vector3 target, Vector3 targetVelocity, float scatter)
+        {
+            if (grenade == null || grenade.GrenadePrefab == null) return false;
+
+            Vector3 aim = Lead(grenade, target, targetVelocity);
+            Vector2 off = Random.insideUnitCircle * scatter;
+            aim += new Vector3(off.x, 0f, off.y);
+            if (!TryPlan(grenade, aim, out Vector3 hand, out Vector3 velocity)) return false;
+
+            Throw(grenade, hand, velocity);
+            return true;
+        }
+
         // True once thrown (or given up).
         public bool Tick(float deltaTime)
         {
@@ -73,19 +89,19 @@ namespace CGD.Enemies
             _ai.Motion.FaceTowards(_aimAt, deltaTime);
             if (Time.time < _throwAt) return false;
 
-            if (IsHandClear(_hand)) Throw(_pending);
+            if (IsHandClear(_hand)) Throw(_pending, _hand, _velocity);
             _pending = null;
             return true;
         }
 
         public void Cancel() => _pending = null;
 
-        private void Throw(GrenadeData data)
+        private void Throw(GrenadeData data, Vector3 hand, Vector3 velocity)
         {
-            GameObject grenade = PrefabPool.Spawn(data.GrenadePrefab, _hand, Quaternion.identity);
+            GameObject grenade = PrefabPool.Spawn(data.GrenadePrefab, hand, Quaternion.identity);
             if (grenade.TryGetComponent(out Rigidbody body))
             {
-                body.linearVelocity  = _velocity;
+                body.linearVelocity  = velocity;
                 body.angularVelocity = Vector3.zero;
             }
             if (grenade.TryGetComponent(out Collider collider) && _ai.TryGetComponent(out Collider own))

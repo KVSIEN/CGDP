@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9fa9dd37a1333c94ba199e2bd61bbee3, type: 3}
-  m_Name: TechSiegeEnemyData
+  m_Name: TechTankEnemyData
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
-  DisplayName: Tech Siege
+  DisplayName: Tech Tank
   Team: 4
   MaxHealth: 0
   Armor: 160
@@ -40,15 +40,16 @@ MonoBehaviour:
   AttackWindup: 0.45
   DamageNumberColor: {r: 1, g: 0.7, b: 0.2, a: 1}
   PreferredRange: 35
-  SpreadAngle: 1.5
-  BurstCount: 2
-  BurstInterval: 0.35
+  SpreadAngle: 7
+  BurstCount: 3
+  BurstInterval: 0.25
   StrafeInterval: 2
   StrafeDistance: 3
-  ShotProjectile: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+  ShotProjectile: {fileID: 0}
+  ShotGrenade: {fileID: 11400000, guid: 2c8f5a1e6d3b4790a4e7b0c2d9f18365, type: 2}
   ShotSpeed: 26
   RaisesAlarm: 0
-  Grenade: {fileID: 11400000, guid: 18271d81f56c4cd78f9b87c2b6ff2141, type: 2}
+  Grenade: {fileID: 0}
   Signature: {fileID: 11400000, guid: bc948f8fed1e44cab59764b0f3f129b1, type: 2}
   Escape: {fileID: 0}
   Summon: {fileID: 0}
@@ -57,8 +58,8 @@ MonoBehaviour:
   Special: {fileID: 11400000, guid: 90ac477e22c91c4d8058bf99fe1ef744, type: 2}
   RangedAttackCooldown: 2.6
   RangedAttackDamage: 14
-  ShotRadius: 0.25
-  ShotBlastRadius: 1.5
+  ShotRadius: 0
+  ShotBlastRadius: 0
   AlertDuration: 6
   AttackSound: {fileID: 0}
   RangedAttackSound: {fileID: 0}

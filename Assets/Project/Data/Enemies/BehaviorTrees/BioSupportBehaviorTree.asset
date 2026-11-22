@@ -68,7 +68,20 @@ MonoBehaviour:
   - rid: 1052
   - rid: 1053
   - rid: 1054
-  _groups: []
+  - rid: 1055
+  - rid: 1056
+  - rid: 1057
+  - rid: 1058
+  - rid: 1059
+  - rid: 1060
+  - rid: 1061
+  - rid: 1062
+  - rid: 1063
+  - rid: 1064
+  - rid: 1065
+  - rid: 1066
+  - rid: 1067
+  - rid: 1068  _groups: []
   _notes: []
   references:
     version: 2
@@ -90,9 +103,12 @@ MonoBehaviour:
         _children:
         - 06d1d92527b742e28a5f051bc5befbaf
         - f96a87f26ef048708977076e1020eb37
+        - 2684429248ff856466b507f70a4d735f
         - 2fccb2aadbee4939a0c3199f05644969
+        - 9609f52a3296435c9d9df0317b79d196
+        - ab1218ba19f64f6b8d70923e46a21bcc
         - 3f0f14a124ec46d2affd1b5983bcc2c2
-        - eeb0af4a55004d73a5b99c4f5365bfd7
+        - f7c52f46011f4193a5a076c47a1f1381
         - 45ac5457b1c54cc3a4c489c8228bb6bc
         _abort: 0
     - rid: 1002
@@ -157,6 +173,7 @@ MonoBehaviour:
         - 8d684faab72a4bc484fe36312a6d1a2b
         - 476470c111d84d53b59e144017ef3d5a
         - 5f5149e60e834d7897acff3793384932
+        - 7843987ede0089c12156555de88f0100
         - cf270f2d4dca42a6b790f5b8bcbdb5e5
         _abort: 0
     - rid: 1009
@@ -537,8 +554,8 @@ MonoBehaviour:
       type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: eeb0af4a55004d73a5b99c4f5365bfd7
-        _position: {x: 2802, y: 300}
-        _comment: 'Calm: keep close behind its squad''s leader (checking for anyone hurt every few seconds)'
+        _position: {x: 2912, y: 450}
+        _comment: 
         _children:
         - 75932c94737b4596a8bce8ffc08bea9f
         _succeed: 1
@@ -546,7 +563,7 @@ MonoBehaviour:
       type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
         _guid: 75932c94737b4596a8bce8ffc08bea9f
-        _position: {x: 2802, y: 450}
+        _position: {x: 2912, y: 600}
         _comment: 
         _children:
         - c0945a2ada474df2a4fdfb1cfded6482
@@ -555,7 +572,7 @@ MonoBehaviour:
       type: {class: FollowLeader, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: c0945a2ada474df2a4fdfb1cfded6482
-        _position: {x: 2802, y: 600}
+        _position: {x: 2912, y: 750}
         _comment: 
         _distance: 3
     - rid: 1054
@@ -563,6 +580,124 @@ MonoBehaviour:
       data:
         _guid: 45ac5457b1c54cc3a4c489c8228bb6bc
         _position: {x: 3022, y: 300}
-        _comment: 'No squad to follow (or it leads): the usual routine'
-        _tree: {fileID: 11400000, guid: cba441f48fd34dec9c15d7d0c6903346, type: 2}
+        _comment: 'Otherwise: the Bio routine, roaming from bush to bush (BushRoamRoutine, as BioBehaviorTree)'
+        _tree: {fileID: 11400000, guid: 449cb9aa6da94adab852d5a683dc7a4d, type: 2}
         _off: 0
+    - rid: 1055
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f7c52f46011f4193a5a076c47a1f1381
+        _position: {x: 2802, y: 300}
+        _comment: 'Calm: keep close behind its squad''s leader (checking for anyone hurt every few seconds)'
+        _children:
+        - 4c8bca8c6ecb40ea82c7b4495e28e6d6
+        - eeb0af4a55004d73a5b99c4f5365bfd7
+        _abort: 0
+    - rid: 1056
+      type: {class: HasLeader, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4c8bca8c6ecb40ea82c7b4495e28e6d6
+        _position: {x: 2692, y: 450}
+        _comment: 
+        _fartherThan: 15
+    - rid: 1057
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 7843987ede0089c12156555de88f0100
+        _position: {x: 0, y: 0}
+        _comment: 'No allies within 20 m to support: fight the Bio way (BioStance, as BioBehaviorTree does it)'
+        _children:
+        - fcd5d75905d853110f9fcbe4c7ac2c9f
+        - 1a149dd319e3a1fbab1ad7bef4277b5f
+        _abort: 0
+    - rid: 1058
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: fcd5d75905d853110f9fcbe4c7ac2c9f
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - 8a43122e6077d5aa18ac0119b81ec099
+    - rid: 1059
+      type: {class: KinNear, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8a43122e6077d5aa18ac0119b81ec099
+        _position: {x: 0, y: 0}
+        _comment: 
+        _radius: 20
+        _atLeast: 1
+    - rid: 1060
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 1a149dd319e3a1fbab1ad7bef4277b5f
+        _position: {x: 0, y: 0}
+        _comment: 
+        _tree: {fileID: 11400000, guid: 4c7e2a9f1d3b4e85a6f0c2d8b1e93a57, type: 2}
+        _off: 0
+    - rid: 1061
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 9609f52a3296435c9d9df0317b79d196
+        _position: {x: 4100, y: 1400}
+        _comment: 'Memory has run out but the belief has not: keep working through the likely places before falling back to the routine'
+        _children:
+        - c1eaf0e2076b4514bb20465fd9b8ddfe
+        - 2349a3a496764645932bae3a7491bb26
+        _abort: 2
+    - rid: 1062
+      type: {class: HasBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c1eaf0e2076b4514bb20465fd9b8ddfe
+        _position: {x: 3660, y: 1500}
+        _comment: 
+    - rid: 1063
+      type: {class: PursueBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2349a3a496764645932bae3a7491bb26
+        _position: {x: 3880, y: 1500}
+        _comment: 
+        _style: 0
+        _look: 0.8
+        _giveUpAfter: 8
+    - rid: 1064
+      type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2684429248ff856466b507f70a4d735f
+        _position: {x: 0, y: 0}
+        _comment: 
+        _tree: {fileID: 11400000, guid: 7ab5900d0c634e3682dad12bcbb34b95, type: 2}
+        _off: 0
+    - rid: 1065
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ab1218ba19f64f6b8d70923e46a21bcc
+        _position: {x: 6080, y: 1600}
+        _comment: 'Nothing to hunt: drift back to the herd instead of wandering off alone'
+        _children:
+        - 73875ee8b0b94295bbc2a22a0b9fb393
+        - 4cb886f56d764597aa8b438e2ac8c35d
+        _abort: 0
+    - rid: 1066
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 73875ee8b0b94295bbc2a22a0b9fb393
+        _position: {x: 5640, y: 1700}
+        _comment: 
+        _children:
+        - 1c504d1a647a49a782d5f066bda1ae42
+    - rid: 1067
+      type: {class: KinNear, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1c504d1a647a49a782d5f066bda1ae42
+        _position: {x: 5420, y: 1700}
+        _comment: 
+        _radius: 20
+        _atLeast: 1
+    - rid: 1068
+      type: {class: JoinHerd, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4cb886f56d764597aa8b438e2ac8c35d
+        _position: {x: 5860, y: 1700}
+        _comment: 
+        _within: 8
+        _giveUpAfter: 15

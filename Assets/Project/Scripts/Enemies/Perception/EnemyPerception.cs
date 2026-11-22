@@ -137,6 +137,8 @@ namespace CGD.Enemies
 
         // Engaged: certain of a hostile and sensing it right now.
         public bool IsTargetDetected => Level == AwarenessLevel.Engaged;
+        // Something is worth looking into: a lead on where something was, or suspicion rising or a search under way.
+        public bool IsSuspicious => HasLead || Level == AwarenessLevel.Suspicious || Level == AwarenessLevel.Searching;
         public bool IsSensing        => Target != null && _clock - _lastSensedAt <= SightLossGrace();
         // Seconds since it last actually sensed its target (infinity if never).
         public float TimeSinceSensed => _clock - _lastSensedAt;

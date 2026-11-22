@@ -15,8 +15,6 @@ namespace CGD.Enemies
     [BtNodeInfo("Enemy/Tactics/Guard Ally", "Keeps between its ward (highest-tier ally, or the one leading the hunt) and the threat, or at its flank, facing the threat. Runs while the ward lives.")]
     public sealed class GuardAlly : EnemyAction
     {
-        private const float InPlace = 0.8f;
-
         [Tooltip("Metres it looks for a ward in")]
         [SerializeField, Min(1f)] private float _searchRadius = 25f;
         [Tooltip("Highest Tier: its most important ally (a bodyguard). Lead Hunter: the ally nearest the threat (a pack follower)")]
@@ -31,6 +29,8 @@ namespace CGD.Enemies
         [SerializeField, Range(0.2f, 1.5f)] private float _speed = 1f;
 
         [NonSerialized] private EnemyAI _guarded;
+        [NonSerialized] private StationKeeper _station;
+        [NonSerialized] private bool _following;
         // Which shoulder it keeps to (+1 right, -1 left of the ward facing the threat), picked on
         // entry so it doesn't swap sides as the ward turns.
         [NonSerialized] private float   _side;
@@ -44,6 +44,9 @@ namespace CGD.Enemies
         {
             _guarded = PickWard();
             _side    = _guarded != null ? SideOf(_guarded.transform.position) : 1f;
+            _station ??= new StationKeeper(retarget: 2f, arrive: 0.8f, depart: 2f);
+            _station.Reset();
+            _following = false;
             Ai.Agent.isStopped = false;
         }
 
@@ -65,7 +68,11 @@ namespace CGD.Enemies
             else
             {
                 spot = ward;
-                if (Flat(ward - Ai.transform.position).sqrMagnitude <= _leash * _leash)
+                // Falls behind past the leash, then closes right up before it stops again, rather
+                // than starting and stopping at the edge of it as the ward shuffles about.
+                float gap = Flat(ward - Ai.transform.position).magnitude;
+                _following = _following ? gap > _leash * 0.4f : gap > _leash;
+                if (!_following)
                 {
                     Ai.Routing.Stop();
                     return BtStatus.Running;
@@ -73,7 +80,8 @@ namespace CGD.Enemies
             }
 
             Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed * _speed);
-            if (Flat(spot - Ai.transform.position).sqrMagnitude > InPlace * InPlace) Ai.Routing.SetDestination(spot);
+            _station.Update(spot, Ai.transform.position);
+            if (_station.Moving) Ai.Routing.SetDestination(_station.Goal);
             else Ai.Routing.Stop();
             return BtStatus.Running;
         }

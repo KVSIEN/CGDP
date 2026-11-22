@@ -43,7 +43,7 @@ namespace CGD.Editor
 
             if (Shoots(data, nodes))
             {
-                string shots = data.ShotProjectile != null ? $"projectiles at {data.ShotSpeed:0} m/s" : "hitscan";
+                string shots = data.ShotGrenade != null ? "lobbed mortar rounds" : data.ShotProjectile != null ? $"projectiles at {data.ShotSpeed:0} m/s" : "hitscan";
                 lines.Add($"Ranged: about {data.RangedDamagePerSecond:0.#} damage/s, prefers {data.PreferredRange:0} m " +
                           $"({Math.Max(1, data.BurstCount)}-shot bursts, {data.SpreadAngle:0.#}° spread, {shots}).");
             }

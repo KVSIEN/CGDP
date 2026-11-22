@@ -12,15 +12,15 @@ namespace CGD.Enemies
     // the threat if it knows some. It weighs the known free cover round the ideal spot (on the
     // line from the threat through its allies' centre) and that spot itself (see SupportSpot),
     // claims the best cover, and goes there facing the threat. It plans again every few seconds
-    // as the fight moves, so it keeps up with an advancing or retreating line. Never finishes
-    // while it has allies near; fails without any. Pair it in a Parallel with what it does from
+    // as the fight moves, but only changes its mind about where to stand once the ideal spot has
+    // moved a few metres (see StationKeeper), so it drifts after a moving squad instead of
+    // twitching after every step. Never finishes while it has allies near; fails without any.
+    // Pair it in a Parallel with what it does from
     // there (Shoot Burst, a Repeat of its abilities).
     [Serializable]
     [BtNodeInfo("Enemy/Tactics/Take Support Position", "Holds the spot that reaches the most allies, behind their line from the threat (or holding its front), in cover facing it if it knows some. Plans again as the fight moves. Fails with no allies near.")]
     public sealed class TakeSupportPosition : EnemyAction
     {
-        private const float InPlace = 0.8f;
-
         private static readonly List<Vector3> Allies     = new();
         private static readonly List<int>     Candidates = new();
 
@@ -39,7 +39,8 @@ namespace CGD.Enemies
         [Tooltip("Speed getting there, as a share of chase speed")]
         [SerializeField, Range(0.2f, 1.5f)] private float _speed = 1f;
 
-        [NonSerialized] private Vector3 _goal;
+        [NonSerialized] private StationKeeper _station;
+        [NonSerialized] private Vector3 _spot;
         [NonSerialized] private float   _replanAt;
 
         public override string Summary =>
@@ -52,7 +53,9 @@ namespace CGD.Enemies
         protected override void OnEnter(BtContext context)
         {
             _replanAt = 0f;
-            _goal     = Ai.transform.position;
+            _spot     = Ai.transform.position;
+            _station ??= new StationKeeper();
+            _station.Reset();
             Ai.Agent.isStopped = false;
         }
 
@@ -69,11 +72,10 @@ namespace CGD.Enemies
             Ai.ReportState(hasThreat ? EnemyAI.AiState.Chase : EnemyAI.AiState.Patrol);
             Ai.ReportStep(EngageStep.Hold);
             if (hasThreat) Ai.Motion.FaceTowards(perception.TargetPosition, context.DeltaTime);
-
             Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed * _speed);
-            Vector3 offset = _goal - Ai.transform.position;
-            offset.y = 0f;
-            if (offset.sqrMagnitude > InPlace * InPlace) Ai.Routing.SetDestination(_goal);
+
+            _station.Update(_spot, Ai.transform.position);
+            if (_station.Moving) Ai.Routing.SetDestination(_station.Goal);
             else Ai.Routing.Stop();
             return BtStatus.Running;
         }
@@ -112,7 +114,7 @@ namespace CGD.Enemies
 
             if (bestCover >= 0 && tactics.TryClaimCover(bestCover, out Vector3 claimed)) best = claimed;
             else if (bestCover >= 0) best = ideal;
-            _goal = best;
+            _spot = best;
             return true;
         }
 

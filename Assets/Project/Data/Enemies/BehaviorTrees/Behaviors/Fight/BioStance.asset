@@ -1,0 +1,242 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: BioStance
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1
+  - rid: 2
+  - rid: 3
+  - rid: 4
+  - rid: 5
+  - rid: 6
+  - rid: 7
+  - rid: 8
+  - rid: 9
+  - rid: 10
+  - rid: 11
+  - rid: 12
+  - rid: 13
+  - rid: 14
+  - rid: 15
+  - rid: 16
+  - rid: 17
+  - rid: 18
+  - rid: 19
+  - rid: 20
+  - rid: 21
+  - rid: 22
+  - rid: 23
+  - rid: 24  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: aef1aa362cd8f09b7f5d917f76e597a0
+        _position: {x: 0, y: 0}
+        _comment: 'The BIO way of holding a fight, as BioBehaviorTree does it, for the Bio tank and support once their own role has nothing to do: cut off from the herd it rejoins it; given the flank role it circles to the prey''s side; lost sight, it runs down where the prey most likely went; with nothing better, it goes to ground behind full cover and lies in wait facing where it vanished. Fails with nothing to do.'
+        _children:
+        - 32ffdf49d1e3995257defaf5fe1bf5e8
+    - rid: 2
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 32ffdf49d1e3995257defaf5fe1bf5e8
+        _position: {x: 0, y: 150}
+        _comment: 'Rejoin the herd; flank on the squad''s word; pursue the belief; lie in wait'
+        _children:
+        - 675b5a1e36e94ec98d5df56a48a0b53a
+        - c4736511dc764bce89be0efb64cea50a
+        - 5b6193cc0451411e99e01f9be2be6b1b
+        - 5517d53b78384b379a344a759b74eb1c
+        _abort: 0
+    - rid: 3
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5517d53b78384b379a344a759b74eb1c
+        _position: {x: 3300, y: 600}
+        _comment: 'Lost its prey and nothing better to do: go to ground behind full cover and lie in wait facing where it vanished (pounces if it shows within 8 m)'
+        _children:
+        - 2474a41540084d718ac9427588e9d46d
+        - fdbc7f259b904fe0ab3869ad5dea908d
+        - 0284c39309c74f8a98dd8ee96d51d9c3
+        _abort: 0
+    - rid: 4
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2474a41540084d718ac9427588e9d46d
+        _position: {x: 3080, y: 750}
+        _comment: 
+        _children:
+        - 3da8c5aa801642308160f01f4b15353d
+    - rid: 5
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3da8c5aa801642308160f01f4b15353d
+        _position: {x: 3080, y: 900}
+        _comment: 
+    - rid: 6
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: fdbc7f259b904fe0ab3869ad5dea908d
+        _position: {x: 3300, y: 750}
+        _comment: 
+        _children:
+        - bcccc941b7e243c8868abc8bc6b5fe66
+        _succeed: 1
+    - rid: 7
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: bcccc941b7e243c8868abc8bc6b5fe66
+        _position: {x: 3300, y: 900}
+        _comment: 
+        _children:
+        - c12480bba68242198a517137f3383040
+        - b5a6dd04814e4b11b447a7d4a175ac19
+        _abort: 0
+    - rid: 8
+      type: {class: InCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c12480bba68242198a517137f3383040
+        _position: {x: 3190, y: 1050}
+        _comment: 
+    - rid: 9
+      type: {class: TakeCover, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b5a6dd04814e4b11b447a7d4a175ac19
+        _position: {x: 3410, y: 1050}
+        _comment: 
+        _use: 1
+        _giveUpAfter: 4
+    - rid: 10
+      type: {class: Overwatch, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 0284c39309c74f8a98dd8ee96d51d9c3
+        _position: {x: 3520, y: 750}
+        _comment: 
+        _seconds: {Min: 3, Max: 5, Bias: 0}
+    - rid: 11
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5b6193cc0451411e99e01f9be2be6b1b
+        _position: {x: 3440, y: 1400}
+        _comment: 'Lost sight: follow up on where it most likely went (Sweep: straight to the likeliest place, check it, on to the next) instead of reverting to a search'
+        _children:
+        - 658e3ce589564ccdab43c99abc80e47d
+        - aaa88c7325624903a7e6aca5dbba750c
+        _abort: 0
+    - rid: 12
+      type: {class: HasBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 658e3ce589564ccdab43c99abc80e47d
+        _position: {x: 3000, y: 1500}
+        _comment: 
+    - rid: 13
+      type: {class: PursueBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: aaa88c7325624903a7e6aca5dbba750c
+        _position: {x: 3220, y: 1500}
+        _comment: 
+        _style: 0
+        _look: 0.8
+        _giveUpAfter: 8
+    - rid: 14
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c4736511dc764bce89be0efb64cea50a
+        _position: {x: 5200, y: 1600}
+        _comment: 'Pack hunting: when its squad gives it the flank role it circles to the target''s side while the others go straight in'
+        _children:
+        - 12343260eb324c59b0e0146628f85330
+        - 8af35ec5d5824d3fa894636fd975b7e2
+        - 22201d0f46e14f8aa566058e3ad920a9
+        _abort: 0
+    - rid: 15
+      type: {class: HasSquadRole, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 12343260eb324c59b0e0146628f85330
+        _position: {x: 4100, y: 1700}
+        _comment: 
+        _role: 2
+    - rid: 16
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8af35ec5d5824d3fa894636fd975b7e2
+        _position: {x: 4540, y: 1700}
+        _comment: 
+        _children:
+        - 046caaad519547c8b09dbb22b69a4ea2
+    - rid: 17
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 046caaad519547c8b09dbb22b69a4ea2
+        _position: {x: 4320, y: 1700}
+        _comment: 
+        _range: 8
+    - rid: 18
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 22201d0f46e14f8aa566058e3ad920a9
+        _position: {x: 4980, y: 1700}
+        _comment: 
+        _children:
+        - 5ad5c81814e44b91b34cc792d189495f
+    - rid: 19
+      type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 5ad5c81814e44b91b34cc792d189495f
+        _position: {x: 4760, y: 1700}
+        _comment: 
+        _giveUpAfter: 8
+    - rid: 20
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 675b5a1e36e94ec98d5df56a48a0b53a
+        _position: {x: 3880, y: 1600}
+        _comment: 'Cut off from the herd (nothing of its kin within 25 m, but some exist): rejoin them before pouncing; alone, it carries on as before'
+        _children:
+        - d125e6c111da4bfd9664ce2dec823b5b
+        - 2f087df73ee24db189a9e9d7f1d71c0f
+        - a13704a409cd4db7a4498abebfd4b7ab
+        _abort: 2
+    - rid: 21
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: d125e6c111da4bfd9664ce2dec823b5b
+        _position: {x: 3000, y: 1700}
+        _comment: 
+    - rid: 22
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2f087df73ee24db189a9e9d7f1d71c0f
+        _position: {x: 3440, y: 1700}
+        _comment: 
+        _children:
+        - 35b8e25a54d940ab9ce7784ef6584c47
+    - rid: 23
+      type: {class: KinNear, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 35b8e25a54d940ab9ce7784ef6584c47
+        _position: {x: 3220, y: 1700}
+        _comment: 
+        _radius: 25
+        _atLeast: 1
+    - rid: 24
+      type: {class: JoinHerd, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a13704a409cd4db7a4498abebfd4b7ab
+        _position: {x: 3660, y: 1700}
+        _comment: 
+        _within: 8
+        _giveUpAfter: 12

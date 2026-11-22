@@ -116,6 +116,8 @@ namespace CGD.Enemies
         public float StrafeDistance  = 4f;
         [Tooltip("Prefab with a Projectile component: shots fly as visible, dodgeable rounds. Empty = instant hitscan")]
         public GameObject ShotProjectile;
+        [Tooltip("Each shot of a burst is this grenade lobbed at the target instead (a mortar volley): the grenade carries the damage, blast and fuse, Spread Angle becomes how far off it falls. Overrides Shot Projectile. Empty = off")]
+        public GrenadeData ShotGrenade;
         [Tooltip("Metres per second a projectile shot flies at")]
         [Min(1f)] public float ShotSpeed = 30f;
         [Tooltip("Metres: thickness of a projectile shot, so near misses still hit. 0 = a thin ray")]

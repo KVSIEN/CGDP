@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: faa9983020782b24cb8ab6f046d7e3a6, type: 3}
-  m_Name: TechMissileSalvoAbility
+  m_Name: TechRocketAbility
   m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.ProjectileAbility
-  DisplayName: Missile Salvo
+  DisplayName: Rocket
   SlotColor: {r: 1, g: 0.55, b: 0.2, a: 1}
   Cooldown: 7
   MaxCharges: 1
@@ -25,7 +25,7 @@ MonoBehaviour:
     Trail: 0
   ProjectilePrefab: {fileID: 2100000000000000001, guid: 134315cc9e5340b8add0a813ae9f4853, type: 3}
   Damage: 22
-  Speed: 24
+  Speed: 20
   Lifetime: 2.5
   Gravity: 0
   HitRadius: 0.3

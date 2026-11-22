@@ -18,7 +18,7 @@ namespace CGD.Tests
         [TestCase("TechBehaviorTree")]
         [TestCase("VoidBehaviorTree")]
         [TestCase("BioTankBehaviorTree")]
-        [TestCase("TechSiegeBehaviorTree")]
+        [TestCase("TechTankBehaviorTree")]
         [TestCase("VoidTankBehaviorTree")]
         [TestCase("Behaviors/Idle/BushRoamRoutine")]
         [TestCase("Behaviors/Fight/StalkRushHide")]
@@ -107,7 +107,7 @@ namespace CGD.Tests
         {
             foreach (string name in new[] { "BioTestEnemyData", "TechTestEnemyData", "VoidTestEnemyData",
                                              "BioSupportEnemyData", "TechSupportEnemyData", "VoidSupportEnemyData",
-                                             "BioTankEnemyData", "TechSiegeEnemyData", "VoidTankEnemyData" })
+                                             "BioTankEnemyData", "TechTankEnemyData", "VoidTankEnemyData" })
             {
                 var data = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/AITest/{name}.asset");
                 foreach (EnemyDataReview.Issue issue in EnemyDataReview.Check(data))
@@ -160,18 +160,38 @@ namespace CGD.Tests
         // Tech has no tank: its siege sentinel holds a post far behind its squad and denies the
         // enemy cover — mortaring where it hides, firing into the spot, watching for it to break cover.
         [Test]
-        public void TechSiegeIsASentinelThatDeniesCover()
+        public void TechTankIsASentinelThatDeniesCover()
         {
-            HashSet<Type> nodes = EnemyTreeContents.NodeTypes(Load("TechSiegeBehaviorTree"));
+            HashSet<Type> nodes = EnemyTreeContents.NodeTypes(Load("TechTankBehaviorTree"));
             Assert.IsTrue(nodes.Contains(typeof(TargetHiding)), "notices a target going to ground");
             Assert.IsTrue(nodes.Contains(typeof(ThrowGrenade)) && nodes.Contains(typeof(Suppress)) && nodes.Contains(typeof(Overwatch)),
                           "shells the spot, fires into it and watches it");
-            CollectionAssert.AreEquivalent(new[] { SupportLine.Behind }, Lines("TechSiegeBehaviorTree"), "posts itself behind its squad");
+            CollectionAssert.AreEquivalent(new[] { SupportLine.Behind }, Lines("TechTankBehaviorTree"), "posts itself behind its squad");
             Assert.IsTrue(nodes.Contains(typeof(KinInTrouble)) && nodes.Contains(typeof(MarkCoverForKin)) && nodes.Contains(typeof(MoveTo)),
                           "covers a squadmate falling back: smoke in front of it, then pushes up into the smoke");
 
-            var prefab = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/Project/Prefabs/Characters/Enemies/AITest/TechSiegeAgent.prefab");
+            var prefab = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/Project/Prefabs/Characters/Enemies/AITest/TechTankAgent.prefab");
             Assert.IsFalse(prefab.TryGetComponent(out CGD.Combat.SoakAura _), "it is no tank: it soaks nothing for its squad");
+
+            var data = AssetDatabase.LoadAssetAtPath<EnemyData>("Assets/Project/Data/Enemies/AITest/TechTankEnemyData.asset");
+            Assert.IsNotNull(data.ShotGrenade, "its basic attack is a volley of mortar rounds");
+            Assert.IsNull(data.Grenade, "it carries no ordinary grenade");
+        }
+
+        // Tanks and supports play their own role first, but fill the gaps the way their faction's
+        // agent fights (its <Faction>Stance): lost sight, they work through where the target most
+        // likely went; Bio keeps to the herd, Void flanks and skirmishes, Tech fights from cover.
+        [TestCase("Bio", typeof(JoinHerd))]
+        [TestCase("Void", typeof(Flank))]
+        [TestCase("Tech", typeof(TakeCover))]
+        public void TanksAndSupportsFightInTheirFactionsManner(string faction, Type factionMove)
+        {
+            foreach (string role in new[] { "Tank", "Support" })
+            {
+                HashSet<Type> nodes = EnemyTreeContents.NodeTypes(Load(faction + role + "BehaviorTree"));
+                Assert.IsTrue(nodes.Contains(typeof(PursueBelief)), $"{faction} {role}: follows up on where a lost target went");
+                Assert.IsTrue(nodes.Contains(factionMove), $"{faction} {role}: {factionMove.Name}, as its faction's agent does");
+            }
         }
 
         // A tank is the frontline sponge: far harder to kill and slower than its faction's agent,

@@ -78,6 +78,26 @@ namespace CGD.Enemies
             return kin != null;
         }
 
+        // Where the nearest of its kin within the radius that is fighting right now has its target:
+        // what a squadmate sees that the asker may not. False when no kin nearby has a target.
+        public static bool TryKinTarget(EnemyAI asker, float radius, out Vector3 position)
+        {
+            position = default;
+            bool found = false;
+            float bestSq = radius * radius;
+            foreach (EnemyAI other in Members)
+            {
+                if (!IsKin(asker, other) || !other.Perception.IsSensing) continue;
+
+                float sq = (other.transform.position - asker.transform.position).sqrMagnitude;
+                if (sq > bestSq) continue;
+                bestSq   = sq;
+                position = other.Perception.TargetPosition;
+                found    = true;
+            }
+            return found;
+        }
+
         public static bool TryNearestKin(EnemyAI asker, out EnemyAI nearest)
         {
             nearest = null;

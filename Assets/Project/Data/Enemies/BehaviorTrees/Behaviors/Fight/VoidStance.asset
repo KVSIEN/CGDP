@@ -1,0 +1,413 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c4dc4aec084757a22301d3f773797d, type: 3}
+  m_Name: VoidStance
+  m_EditorClassIdentifier: CGD.Runtime::CGD.BehaviorTrees.BehaviorTreeAsset
+  _nodes:
+  - rid: 1
+  - rid: 2
+  - rid: 3
+  - rid: 4
+  - rid: 5
+  - rid: 6
+  - rid: 7
+  - rid: 8
+  - rid: 9
+  - rid: 10
+  - rid: 11
+  - rid: 12
+  - rid: 13
+  - rid: 14
+  - rid: 15
+  - rid: 16
+  - rid: 17
+  - rid: 18
+  - rid: 19
+  - rid: 20
+  - rid: 21
+  - rid: 22
+  - rid: 23
+  - rid: 24
+  - rid: 25
+  - rid: 26
+  - rid: 27
+  - rid: 28
+  - rid: 29
+  - rid: 30
+  - rid: 31
+  - rid: 32
+  - rid: 33
+  - rid: 34
+  - rid: 35
+  - rid: 36
+  - rid: 37
+  - rid: 38
+  - rid: 39
+  - rid: 40
+  - rid: 41
+  - rid: 42  _groups: []
+  _notes: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1
+      type: {class: BtRoot, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 1f790dc21b7da2a81c95eee0c15a4b6a
+        _position: {x: 0, y: 0}
+        _comment: 'The VOID way of holding a fight, as VoidBehaviorTree does it, for the Void tank and support once their own role has nothing to do: a target busy with someone else gets slipped round behind; given the flank role it works round to the target''s side; too close it slips round or backs off; otherwise it skirmishes at medium range, strafing and shooting; lost sight it haunts the likeliest places, comes at the last known position from the side, or holds still and watches. Fails with nothing to do.'
+        _children:
+        - b6597d00623e07941ee619494d27ca19
+    - rid: 2
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b6597d00623e07941ee619494d27ca19
+        _position: {x: 0, y: 150}
+        _comment: 'Slip behind; flank on the coven''s word; back off; skirmish; haunt the belief; come from the side; watch'
+        _children:
+        - f9499f0e9aac46d883a898c8f92589f2
+        - ded1ebec8c9f4bffa2ad1af180f690a0
+        - f7008344489d46409d8635bce84652be
+        - 5ec74dc1c24c4700ae091fdb30f74c46
+        - 039c8196783b4c3b98b4b9a7a3c3d94b
+        - d6dfe96b4ee54521aa270c17ef26fd2e
+        - 1919301eaec6418794d0f0cea17a5494
+        _abort: 0
+    - rid: 3
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 1919301eaec6418794d0f0cea17a5494
+        _position: {x: 3670, y: 600}
+        _comment: 'Out of sight between flanks: hold still and watch for it rather than drop out of the fight'
+        _children:
+        - 03b13f3096454e24b91f6dfd50439eed
+        - 482900fcd5df48219b556dd600e94812
+        _abort: 0
+    - rid: 4
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 03b13f3096454e24b91f6dfd50439eed
+        _position: {x: 3560, y: 750}
+        _comment: 
+        _children:
+        - 41be48ef59d24035bb09347f97b6c043
+    - rid: 5
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 41be48ef59d24035bb09347f97b6c043
+        _position: {x: 3560, y: 900}
+        _comment: 
+    - rid: 6
+      type: {class: Overwatch, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 482900fcd5df48219b556dd600e94812
+        _position: {x: 3780, y: 750}
+        _comment: 
+        _seconds: {Min: 1, Max: 1.5, Bias: 0}
+    - rid: 7
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: d6dfe96b4ee54521aa270c17ef26fd2e
+        _position: {x: 3122, y: 600}
+        _comment: 'Lost sight: come at the last known position from the side'
+        _children:
+        - 49898d685d5f46e5bb2095e66aee1c45
+        _seconds: 4
+        _onlyAfterSuccess: 0
+    - rid: 8
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 49898d685d5f46e5bb2095e66aee1c45
+        _position: {x: 3122, y: 750}
+        _comment: 
+        _children:
+        - b5f6365af1f34bd9a69c9f830d6f8e23
+    - rid: 9
+      type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b5f6365af1f34bd9a69c9f830d6f8e23
+        _position: {x: 3122, y: 900}
+        _comment: 
+        _standOff: 0
+        _giveUpAfter: 7
+    - rid: 10
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 039c8196783b4c3b98b4b9a7a3c3d94b
+        _position: {x: 3440, y: 1400}
+        _comment: 'Lost sight: follow up on where it most likely went (Haunt: a place picked at random in proportion to how likely it is) instead of reverting to a search'
+        _children:
+        - a3d6b9d267e74708876e8a7c6d6e3606
+        - a4e8a2e6254240e0b9bf7d7091f79c6c
+        _abort: 0
+    - rid: 11
+      type: {class: HasBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a3d6b9d267e74708876e8a7c6d6e3606
+        _position: {x: 3000, y: 1500}
+        _comment: 
+    - rid: 12
+      type: {class: PursueBelief, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a4e8a2e6254240e0b9bf7d7091f79c6c
+        _position: {x: 3220, y: 1500}
+        _comment: 
+        _style: 2
+        _look: 1.2
+        _giveUpAfter: 8
+    - rid: 13
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5ec74dc1c24c4700ae091fdb30f74c46
+        _position: {x: 2462, y: 600}
+        _comment: 'Skirmish: hold medium range, strafing, and fire shards'
+        _children:
+        - 25c0f01b358c4db8b31bba4a11517a20
+        - 936e41cbaa734db7859b7ed60d0c7fb3
+        _abort: 1
+    - rid: 14
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 25c0f01b358c4db8b31bba4a11517a20
+        _position: {x: 2242, y: 750}
+        _comment: 
+    - rid: 15
+      type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 936e41cbaa734db7859b7ed60d0c7fb3
+        _position: {x: 2682, y: 750}
+        _comment: 
+        _children:
+        - 4f939834ddc64fb69830e75d2c5f63e9
+        - a21f337e29f34649a5096d6381bca2f8
+        - b9d1b3a6fa0141949e7d74d271e30a24
+        _policy: 1
+    - rid: 16
+      type: {class: HoldRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4f939834ddc64fb69830e75d2c5f63e9
+        _position: {x: 2462, y: 900}
+        _comment: 
+    - rid: 17
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a21f337e29f34649a5096d6381bca2f8
+        _position: {x: 2682, y: 900}
+        _comment: 
+        _children:
+        - 8a5dbbbf67664917ae8c1bc39d4f38e6
+        _count: 0
+        _stopOnFailure: 1
+    - rid: 18
+      type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8a5dbbbf67664917ae8c1bc39d4f38e6
+        _position: {x: 2682, y: 1050}
+        _comment: 
+    - rid: 19
+      type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b9d1b3a6fa0141949e7d74d271e30a24
+        _position: {x: 2902, y: 900}
+        _comment: 
+        _seconds: {Min: 3, Max: 4, Bias: 0}
+    - rid: 20
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f7008344489d46409d8635bce84652be
+        _position: {x: 537, y: 600}
+        _comment: 'Too close: Phase Shift away, or slip round to its side at medium range, or back off'
+        _children:
+        - fa70b73e47e446ad98854269b7039add
+        - b2a0c29059c6463ebe01caa4e0d51afd
+        - 46f663cb70b04a5f8fa3a5b9389c07df
+        _abort: 1
+    - rid: 21
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: fa70b73e47e446ad98854269b7039add
+        _position: {x: 262, y: 750}
+        _comment: 
+    - rid: 22
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b2a0c29059c6463ebe01caa4e0d51afd
+        _position: {x: 482, y: 750}
+        _comment: 
+        _range: 5
+    - rid: 23
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 46f663cb70b04a5f8fa3a5b9389c07df
+        _position: {x: 812, y: 750}
+        _comment: 
+        _children:
+        - eda5b73e9c5f4005948d2a0b342273eb
+        _seconds: 3
+        _onlyAfterSuccess: 0
+    - rid: 24
+      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: eda5b73e9c5f4005948d2a0b342273eb
+        _position: {x: 812, y: 900}
+        _comment: 
+        _children:
+        - a8f4b6a777f4416994ebc7cbf6470852
+        - adf3baa31c1b49728f5478ed81d4a13f
+        _abort: 0
+    - rid: 25
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a8f4b6a777f4416994ebc7cbf6470852
+        _position: {x: 702, y: 1050}
+        _comment: 
+        _children:
+        - 4b04f854d17e40da82a2db29f7684baa
+    - rid: 26
+      type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4b04f854d17e40da82a2db29f7684baa
+        _position: {x: 702, y: 1200}
+        _comment: 
+        _standOff: 0
+        _giveUpAfter: 5
+    - rid: 27
+      type: {class: Flee, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: adf3baa31c1b49728f5478ed81d4a13f
+        _position: {x: 922, y: 1050}
+        _comment: 
+        _distance: 6
+    - rid: 28
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ded1ebec8c9f4bffa2ad1af180f690a0
+        _position: {x: 1692, y: 600}
+        _comment: 'Coven: given the flank role by its encounter (everyone but the deepest, who presses on), work round to the target''s side by the least visible route, at most every 7 s'
+        _children:
+        - 02975a87b88d4034a513250d7afa4681
+        - 2b8a6e91c4d74f05837e1a0d5c9f6b42
+        - c12cb3073047404b89960f227526e267
+        _abort: 0
+    - rid: 29
+      type: {class: HasSquadRole, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 02975a87b88d4034a513250d7afa4681
+        _position: {x: 1582, y: 750}
+        _comment: 
+        _role: 2
+    - rid: 30
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2b8a6e91c4d74f05837e1a0d5c9f6b42
+        _position: {x: 0, y: 0}
+        _comment: Not already within control range: flank to get there, then cast and hold range instead of flanking again
+        _children:
+        - c7d15f3a0e6b4928a4b8f2e19d3c60a7
+    - rid: 31
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c7d15f3a0e6b4928a4b8f2e19d3c60a7
+        _position: {x: 0, y: 0}
+        _comment: 
+        _range: 18
+    - rid: 32
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c12cb3073047404b89960f227526e267
+        _position: {x: 1802, y: 750}
+        _comment: 
+        _children:
+        - 769c4b37b0a34c65ba22655fe1deaf63
+        _seconds: 7
+        _onlyAfterSuccess: 0
+    - rid: 33
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 769c4b37b0a34c65ba22655fe1deaf63
+        _position: {x: 1802, y: 900}
+        _comment: 
+        _children:
+        - 3ef4617fd96a4de0924c4a17b0d09142
+    - rid: 34
+      type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3ef4617fd96a4de0924c4a17b0d09142
+        _position: {x: 1802, y: 1050}
+        _comment: 
+        _standOff: 0
+        _giveUpAfter: 6
+    - rid: 35
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f9499f0e9aac46d883a898c8f92589f2
+        _position: {x: 1362, y: 600}
+        _comment: 'Target busy fighting someone else: slip round behind it while its back is turned (Flank keeps off the side it faces)'
+        _children:
+        - 9260e93d01b94854acc60d647b43e701
+        - 5d3f0b6a8c2e4f17a9b4c1e6d7a20f38
+        - b9b5a2cf81174a389ebd1c01a8c76289
+        - b53794047e1640289fb57eacf22c0946
+        _abort: 2
+    - rid: 36
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9260e93d01b94854acc60d647b43e701
+        _position: {x: 1142, y: 750}
+        _comment: 
+    - rid: 37
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 5d3f0b6a8c2e4f17a9b4c1e6d7a20f38
+        _position: {x: 0, y: 0}
+        _comment: Not already within control range: flank to get there, then cast and hold range instead of flanking again
+        _children:
+        - 9e41c7d2b5a84a30b6f2d8c3e0a17b55
+    - rid: 38
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9e41c7d2b5a84a30b6f2d8c3e0a17b55
+        _position: {x: 0, y: 0}
+        _comment: 
+        _range: 18
+    - rid: 39
+      type: {class: TargetDistracted, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b9b5a2cf81174a389ebd1c01a8c76289
+        _position: {x: 1362, y: 750}
+        _comment: 
+    - rid: 40
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b53794047e1640289fb57eacf22c0946
+        _position: {x: 1582, y: 750}
+        _comment: 
+        _children:
+        - 4018699ac5a849a893f1889d6e9cd065
+        _seconds: 4
+        _onlyAfterSuccess: 0
+    - rid: 41
+      type: {class: DirectorPermit, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4018699ac5a849a893f1889d6e9cd065
+        _position: {x: 1582, y: 900}
+        _comment: 
+        _children:
+        - 1a9b611682144f29845aadbeaad50436
+    - rid: 42
+      type: {class: Flank, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 1a9b611682144f29845aadbeaad50436
+        _position: {x: 1582, y: 1050}
+        _comment: 
+        _standOff: 0
+        _giveUpAfter: 6

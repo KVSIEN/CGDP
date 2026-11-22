@@ -9,7 +9,8 @@ namespace CGD.Enemies
     // after a short walk, maybe saying something — worked through while it stands watch and at
     // stops along its route; how it walks; and how it spends the quiet after a fight. The
     // post, the Patrol node and the return step ask it; it never decides anything about a
-    // fight. Without beats it does what a plain enemy does: random glances, a steady walk.
+    // fight. Without beats it does what a plain enemy does: random glances, a steady walk. Every
+    // look is kept to the open part of its arc (OpenView), so it never stares into a nearby wall.
     internal sealed class EnemyIdleLife
     {
         private const float RoamArrival     = 0.6f;
@@ -19,6 +20,8 @@ namespace CGD.Enemies
         // Glances round a body while it stands over it, either side of the way to it.
         private const float BodyGlanceArc   = 30f;
         private const float OnEdgeGlanceScale = 0.5f;
+        // Degrees either side of straight behind it that a look over its shoulder may turn to find open ground.
+        private const float AwayArc         = 90f;
 
         private enum Walk { None, Going, Performing }
 
@@ -32,6 +35,9 @@ namespace CGD.Enemies
         private float      _beatEnd;
         private Quaternion _beatFacing;
         private float      _lookAngle;
+        // The open part of the beat's arc (see OpenView): its looks stay inside it, off nearby walls.
+        private float      _arcCentre;
+        private float      _arcHalf;
         private float      _nextLook;
         private int        _cycleIndex = -1;
 
@@ -43,6 +49,9 @@ namespace CGD.Enemies
         // With no beats: plain random glances.
         private float      _plainNextLook;
         private float      _plainAngle;
+
+        // How far it can see along each direction of an arc, while fitting a look to the open part of it.
+        private readonly float[] _reaches = new float[OpenView.Samples];
 
         // Standing over a body or the spot a search ended.
         private float      _aftermathStart;
@@ -218,11 +227,12 @@ namespace CGD.Enemies
             _beatEnd    = time + Mathf.Max(0.1f, length);
             _beatFacing = facing;
             _nextLook   = time;
-            _lookAngle  = Random.Range(-HalfArc(beat), HalfArc(beat));
+            FitView(facing, HalfArc(beat), out _arcCentre, out _arcHalf);
+            _lookAngle  = beat.Gaze == GazePattern.Away ? AwayAngle(facing) : _arcCentre + Random.Range(-_arcHalf, _arcHalf);
 
             // A stare or a turned back is a jump, not a turn — but the very first beat just turns.
             if (_hadBeat && beat.Gaze is GazePattern.Fixate or GazePattern.Away)
-                _ai.Motion.SnapFacing(PointAt(facing, beat.Gaze == GazePattern.Away ? 180f : _lookAngle));
+                _ai.Motion.SnapFacing(PointAt(facing, _lookAngle));
             _hadBeat = true;
 
             if (beat.Bark != BarkKind.None) _ai.Bark(beat.Bark);
@@ -235,16 +245,14 @@ namespace CGD.Enemies
             switch (beat.Gaze)
             {
                 case GazePattern.Sweep:
-                    angle = SweepAngle(time + deltaTime - _beatStart, HalfArc(beat));
+                    angle = _arcCentre + SweepAngle(time + deltaTime - _beatStart, _arcHalf);
                     break;
                 case GazePattern.Fixate:
+                case GazePattern.Away:
                     angle = _lookAngle;
                     break;
-                case GazePattern.Away:
-                    angle = 180f;
-                    break;
                 case GazePattern.Hold:
-                    angle = 0f;
+                    angle = _arcCentre;
                     break;
                 default:
                     if (time >= _nextLook)
@@ -254,7 +262,7 @@ namespace CGD.Enemies
                             : _ai.Perception.Profile.GuardLookInterval.EvaluateClamped();
                         if (_ai.Perception.IsCautious) interval *= OnEdgeGlanceScale;
                         _nextLook  = time + interval;
-                        _lookAngle = Random.Range(-HalfArc(beat), HalfArc(beat));
+                        _lookAngle = _arcCentre + Random.Range(-_arcHalf, _arcHalf);
                     }
                     angle = _lookAngle;
                     break;
@@ -268,12 +276,39 @@ namespace CGD.Enemies
         // aims a tick ahead so the turn is under way before the point arrives.
         private float SweepAngle(float elapsed, float halfArc)
         {
+            if (halfArc < 1f) return 0f;
             float speed = Style.SweepSpeed * (_ai.Perception.IsCautious ? Style.EdgeSweepScale : 1f);
             return Mathf.PingPong(elapsed * speed + halfArc, 2f * halfArc) - halfArc;
         }
 
         private Vector3 PointAt(Quaternion facing, float angle) =>
             _ai.transform.position + facing * Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+
+        // The open part of the arc `half` degrees either side of `facing`, as seen from its eyes:
+        // a look into a wall a step away is no look at all.
+        private void FitView(Quaternion facing, float half, out float centre, out float fitHalf)
+        {
+            Vector3   eye  = _ai.transform.position + Vector3.up * EnemyEyes.Height;
+            LayerMask mask = _ai.ObstacleMask;
+            for (int i = 0; i < _reaches.Length; i++)
+            {
+                Vector3 direction = facing * Quaternion.Euler(0f, OpenView.AngleOf(i, _reaches.Length, half), 0f) * Vector3.forward;
+                _reaches[i] = Physics.Raycast(eye, direction, out RaycastHit hit, OpenView.MinReach, mask, QueryTriggerInteraction.Ignore)
+                    ? hit.distance : OpenView.MinReach;
+            }
+            OpenView.Fit(_reaches, half, OpenView.MinReach, out centre, out fitHalf);
+        }
+
+        // A look over its shoulder: behind it, or the nearest open way round if a wall is there.
+        private float AwayAngle(Quaternion facing)
+        {
+            FitView(facing * Quaternion.Euler(0f, 180f, 0f), AwayArc, out float centre, out _);
+            return 180f + centre;
+        }
+
+        // Looks about at random from where it stands, for a follower waiting on its squad: glances up to the
+        // look angle either side of `facing`, as often as the profile says (twice as often when on edge).
+        public void Glance(Quaternion facing, float deltaTime, float time) => PlainGaze(facing, deltaTime, time);
 
         // A plain enemy's idle: a random glance every so often, twice as often when on edge.
         private void PlainGaze(Quaternion facing, float deltaTime, float time)
@@ -284,7 +319,8 @@ namespace CGD.Enemies
                 float interval = profile.GuardLookInterval.EvaluateClamped();
                 if (_ai.Perception.IsCautious) interval *= OnEdgeGlanceScale;
                 _plainNextLook = time + interval;
-                _plainAngle    = Random.Range(-profile.GuardLookAngle, profile.GuardLookAngle);
+                FitView(facing, profile.GuardLookAngle, out float centre, out float half);
+                _plainAngle    = centre + Random.Range(-half, half);
             }
             _ai.Motion.FaceTowards(PointAt(facing, _plainAngle), deltaTime);
         }

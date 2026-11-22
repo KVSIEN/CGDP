@@ -447,7 +447,7 @@ namespace CGD.Tests
         }
 
         [Test]
-        public void TechSiegesFromItsLeadsFireAndPinsDownWhileItReforms()
+        public void TechTanksFromItsLeadsFireAndPinsDownWhileItReforms()
         {
             EncounterDoctrine tech = Doctrine("Tech").Encounter;
             RoleSlot[] steady  = tech.RolesFor(EncounterPosture.Steady);

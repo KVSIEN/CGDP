@@ -219,6 +219,7 @@ namespace CGD.Enemies
             EnemyData data   = _ai.Data;
             var       target = _ai.Perception.Target;
             if (target == null) return false;
+            if (data.ShotGrenade != null) return LobGrenade(data);
 
             Vector3 eyePos       = _ai.transform.position + Vector3.up * EnemyEyes.Height;
             // Aims where it believes the target is: dead on while it sees it, a guess when not.
@@ -259,6 +260,18 @@ namespace CGD.Enemies
                 ImpactEvents.Report(hit.point, hit.normal, hit.collider, ImpactKind.Bullet, _source);
             }
             return true;
+        }
+
+        // A mortar round: the grenade goes up and comes down on where the target is believed to be,
+        // as far off as the Spread Angle would carry a straight shot at that distance. False when
+        // the lob can't be made (out of throwing range, a wall in the way).
+        private bool LobGrenade(EnemyData data)
+        {
+            EnemyPerception perception = _ai.Perception;
+            Vector3 spot    = perception.TargetPosition;
+            float   scatter = Vector3.Distance(_ai.transform.position, spot) * Mathf.Tan(data.SpreadAngle * Mathf.Deg2Rad);
+            // The throw plays its own sound and notifies the enemy it threw.
+            return _ai.Grenades.TryLob(data.ShotGrenade, spot, perception.TargetVelocity, scatter);
         }
 
         // Starts just outside its own body (the projectile ignores the shooter anyway) and
