@@ -82,7 +82,7 @@ namespace CGD.Weapons
         [FormerlySerializedAs("SmokeCloudPrefab")]
         public GameObject LingeringZone;
         [Tooltip("Damage zone only: what it does; its hits apply the On Hit effects below, and a Radius of 0 uses the explosion radius")]
-        public ZoneSettings Zone = new() { Radius = 0f, Glow = ZoneGlow.Flicker };
+        public ZoneSettings Zone = new() { Radius = 0f, Glow = ZoneGlow.Pulse };
         [Tooltip("Optional — a pooled prefab with an ExplosionFlash, spawned at the blast")]
         public GameObject ExplosionEffect;
         public Color FlashColor = new(1f, 0.6f, 0.15f, 0.8f);

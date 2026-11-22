@@ -47,7 +47,7 @@ MonoBehaviour:
     DamageType: 0
     ArmorPenetration: 0
     Color: {r: 0.45, g: 0.9, b: 0.15, a: 0.5}
-    Glow: 1
+    Glow: 2
     EntryNoiseRadius: 0
     ShieldSiphon: 0
   ExplosionEffect: {fileID: 7000000000000000001, guid: d3520984238c41a78a4ca49a0a007f9f, type: 3}

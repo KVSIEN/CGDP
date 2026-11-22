@@ -33,7 +33,7 @@ MonoBehaviour:
     DamageType: 1
     ArmorPenetration: 0
     Color: {r: 0.35, g: 0.75, b: 0.2, a: 0.5}
-    Glow: 0
+    Glow: 2
     EntryNoiseRadius: 18
     ShieldSiphon: 0
   HitMask:

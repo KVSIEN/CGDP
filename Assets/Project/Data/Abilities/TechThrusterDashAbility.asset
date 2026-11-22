@@ -34,8 +34,8 @@ MonoBehaviour:
     DamagePerTick: 3
     DamageType: 0
     ArmorPenetration: 0
-    Color: {r: 1, g: 0.45, b: 0.1, a: 0.55}
-    Glow: 1
+    Color: {r: 1, g: 0.45, b: 0.1, a: 0.5}
+    Glow: 2
     EntryNoiseRadius: 0
     ShieldSiphon: 0
   HitMask:

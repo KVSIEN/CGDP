@@ -27,7 +27,7 @@ namespace CGD.Combat
         [Header("Look")]
         [Tooltip("Tint of the ground; alpha sets how see-through it is")]
         public Color Color = new(1f, 0.4f, 0.1f, 0.5f);
-        public ZoneGlow Glow = ZoneGlow.Steady;
+        public ZoneGlow Glow = ZoneGlow.Pulse;
 
         [Header("Extras")]
         [Tooltip("Metres the noise of a hostile first stepping in carries, so the owner's kin hear the trap spring (0 = silent)")]

@@ -24,7 +24,7 @@ namespace CGD.Abilities
         [Tooltip("Metres between the patches it leaves; with a patch Radius above half of this they join up")]
         [Min(0.25f)] public float Spacing = 1.5f;
         [Tooltip("Each patch along the trail")]
-        public ZoneSettings Zone = new() { Radius = 1.1f, Duration = 4f, Glow = ZoneGlow.Flicker };
+        public ZoneSettings Zone = new() { Radius = 1.1f, Duration = 4f, Glow = ZoneGlow.Pulse };
         public LayerMask HitMask = ~0;
         [Tooltip("Applied on every tick to everyone hostile standing in the trail (Fire)")]
         public StatusEffectApplication[] OnHitEffects;
