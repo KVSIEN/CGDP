@@ -21,5 +21,5 @@ MonoBehaviour:
   _obstacleMask:
     serializedVersion: 2
     m_Bits: 1
-  _range: 7
+  _range: 9
   _angle: 45

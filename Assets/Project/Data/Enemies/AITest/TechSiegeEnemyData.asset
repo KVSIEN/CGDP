@@ -52,7 +52,7 @@ MonoBehaviour:
   Signature: {fileID: 11400000, guid: bc948f8fed1e44cab59764b0f3f129b1, type: 2}
   Escape: {fileID: 0}
   Summon: {fileID: 0}
-  Boost: {fileID: 11400000, guid: a5f1c95821024a6a955fd89337201a09, type: 2}
+  Boost: {fileID: 0}
   Support: {fileID: 0}
   Special: {fileID: 11400000, guid: 90ac477e22c91c4d8058bf99fe1ef744, type: 2}
   RangedAttackCooldown: 2.6

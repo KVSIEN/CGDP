@@ -167,8 +167,8 @@ namespace CGD.Tests
             Assert.IsTrue(nodes.Contains(typeof(ThrowGrenade)) && nodes.Contains(typeof(Suppress)) && nodes.Contains(typeof(Overwatch)),
                           "shells the spot, fires into it and watches it");
             CollectionAssert.AreEquivalent(new[] { SupportLine.Behind }, Lines("TechSiegeBehaviorTree"), "posts itself behind its squad");
-            Assert.IsTrue(nodes.Contains(typeof(KinInTrouble)) && nodes.Contains(typeof(AdvanceFacing)),
-                          "covers a squadmate falling back by pushing forward");
+            Assert.IsTrue(nodes.Contains(typeof(KinInTrouble)) && nodes.Contains(typeof(MarkCoverForKin)) && nodes.Contains(typeof(MoveTo)),
+                          "covers a squadmate falling back: smoke in front of it, then pushes up into the smoke");
 
             var prefab = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/Project/Prefabs/Characters/Enemies/AITest/TechSiegeAgent.prefab");
             Assert.IsFalse(prefab.TryGetComponent(out CGD.Combat.SoakAura _), "it is no tank: it soaks nothing for its squad");

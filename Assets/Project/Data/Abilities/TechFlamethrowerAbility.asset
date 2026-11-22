@@ -28,5 +28,3 @@ MonoBehaviour:
     Duration: 0
   Heal: 0
   SelfHealShare: 0
-  KnockbackSpeed: 6
-  KnockbackDuration: 0.2
