@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
   DisplayName: Void Agent
   Team: 5
-  MaxHealth: 40
+  MaxHealth: 25
   Armor: 0
-  MaxShield: 60
+  MaxShield: 75
   ShieldRegenDelay: 2.5
   ShieldRegenRate: 20
   PatrolSpeed: 2

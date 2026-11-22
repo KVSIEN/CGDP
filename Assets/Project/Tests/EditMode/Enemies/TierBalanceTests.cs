@@ -29,6 +29,33 @@ namespace CGD.Tests
                 Assert.AreEqual(100f, Load(faction.Tier1).EffectiveHealth, 100f * Tolerance, faction.Faction);
         }
 
+        // What each faction lives on: TECH on plating (no health), BIO on health with bone plating
+        // over it, VOID on a ward (shield) with a little health under it.
+        [Test]
+        public void EachFactionKeepsItsOwnPrimaryPool()
+        {
+            foreach (string name in new[] { "MaintenanceBotEnemyData", "AITest/TechTestEnemyData", "AITest/TechSupportEnemyData" })
+            {
+                EnemyData tech = Load(name);
+                Assert.AreEqual(0f, tech.MaxHealth, name);
+                Assert.Greater(tech.MaxPlating, 0f, name);
+            }
+            foreach (string name in new[] { "ScavengerEnemyData", "AITest/BioTestEnemyData", "AITest/BioSupportEnemyData" })
+            {
+                EnemyData bio = Load(name);
+                Assert.Greater(bio.MaxHealth, bio.MaxPlating, name);
+                Assert.Greater(bio.MaxPlating, 0f, name);
+                Assert.AreEqual(0f, bio.MaxShield, name);
+            }
+            foreach (string name in new[] { "HuskEnemyData", "AITest/VoidTestEnemyData", "AITest/VoidSupportEnemyData" })
+            {
+                EnemyData @void = Load(name);
+                Assert.GreaterOrEqual(@void.MaxShield, 2f * @void.MaxHealth, name + ": the ward is most of it");
+                Assert.Greater(@void.MaxHealth, 0f, name);
+                Assert.AreEqual(0f, @void.MaxPlating, name);
+            }
+        }
+
         [Test]
         public void TierOneEnemiesAreMarkedTierOne()
         {

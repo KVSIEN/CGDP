@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
   DisplayName: Husk
   Team: 5
-  MaxHealth: 45
+  MaxHealth: 25
   Armor: 0
-  MaxShield: 55
+  MaxShield: 75
   ShieldRegenDelay: 3
   ShieldRegenRate: 15
   PatrolSpeed: 1.2
