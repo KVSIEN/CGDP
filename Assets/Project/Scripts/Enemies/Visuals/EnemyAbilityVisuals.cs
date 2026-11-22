@@ -7,12 +7,13 @@ using CGD.Weapons;
 
 namespace CGD.Enemies
 {
-    // Placeholder effects for what an enemy's abilities do, until real VFX exist: a flash as
-    // an ability goes off and a pulsing shell (plus a ring at the feet or a trail) for as long
-    // as its buff lasts (AbilityLook per ability); a burst where it vanished and where it
-    // reappears after a Phase Shift; and a small pulse each time it heals off a hit
-    // (lifesteal); and streams (pooled, Prefabs/VFX/ConeSprayPuff) fanned across a cone
-    // ability's cone as it goes off, the size of what it hits. Built at runtime from one transparent material, so prefabs only assign it.
+    // Placeholder effects for what an enemy's abilities do, until real VFX exist, each as the
+    // ability's own Look sets it: a flash as it goes off; its hitbox as it hits (streams fanned
+    // across a cone, a burst filling the sphere round it); and a pulsing shell (plus a ring at
+    // the feet or a trail) for as long as its buff lasts. Also a burst where it vanished and
+    // where it reappears after a Phase Shift, and a small pulse each time it heals off a hit
+    // (lifesteal). Shell, ring and trail are built at runtime from one transparent material;
+    // flashes and streams come from the pool.
     [RequireComponent(typeof(EnemyAI))]
     public class EnemyAbilityVisuals : MonoBehaviour
     {
@@ -21,6 +22,9 @@ namespace CGD.Enemies
         private const float TrailTime       = 0.3f;
         private const float TrailWidth      = 0.7f;
         private const float MuzzleAhead     = 0.4f;  // metres in front of the eyes the streams start, clear of the head
+        private const float StreamSpacing   = 6.5f;  // degrees of cone per stream…
+        private const int   MinStreams      = 3;     // …within these bounds
+        private const int   MaxStreams      = 12;
         private const float StreamOverlap   = 1.3f;  // streams a little wider than their slice, so the cone has no gaps
         private const float WidestHalfAngle = 80f;   // degrees: wider cones are drawn this wide at their reach
 
@@ -34,9 +38,8 @@ namespace CGD.Enemies
         [SerializeField] private Transform _model;
         [Tooltip("Pooled prefab with an ExplosionFlash (Prefabs/VFX/ExplosionFlash)")]
         [SerializeField] private GameObject _flash;
-        [Tooltip("Pooled prefab with a ConeSprayPuff (Prefabs/VFX/ConeSprayPuff), for looks with Cone Streams. Empty = none")]
+        [Tooltip("Pooled prefab with a ConeSprayPuff (Prefabs/VFX/ConeSprayPuff), for cone hitboxes. Empty = cones aren't drawn")]
         [SerializeField] private GameObject _coneStream;
-        [SerializeField] private AbilityLook[] _looks = System.Array.Empty<AbilityLook>();
 
         [Header("Cloak")]
         [Tooltip("How visible the body stays while the agent is cloaked (0 = invisible)")]
@@ -67,13 +70,12 @@ namespace CGD.Enemies
             TryGetComponent(out _stealth);
             if (_stealth != null) _cloakFade = new CloakFade(GetComponentsInChildren<Renderer>(), _cloakedOpacity);
 
+            // Built up front, hidden: which abilities it ends up with isn't known yet (a tree can
+            // name its own), and hidden parts cost nothing.
             Transform parent = _model != null ? _model : transform;
             Renderer shell = CreatePart("Ability Shell", _shellMesh, parent, Vector3.up, new Vector3(1.2f, 1.1f, 1.2f));
-            Renderer ring  = NeedsAny(look => look.GroundRing)
-                ? CreatePart("Ability Ring", _ringMesh, parent, Vector3.up * 0.03f, new Vector3(2.4f, 0.01f, 2.4f))
-                : null;
-            TrailRenderer trail = NeedsAny(look => look.Trail) ? CreateTrail() : null;
-            _aura = new BuffAura(shell, ring, trail);
+            Renderer ring  = CreatePart("Ability Ring", _ringMesh, parent, Vector3.up * 0.03f, new Vector3(2.4f, 0.01f, 2.4f));
+            _aura = new BuffAura(shell, ring, CreateTrail());
         }
 
         private void OnEnable()
@@ -102,11 +104,43 @@ namespace CGD.Enemies
 
         private void OnAbilityUsed(Ability ability)
         {
-            if (!TryGetLook(ability, out AbilityLook look)) return;
+            AbilityLook look = ability.Look;
+            if (!look.IsSet) return;
 
             if (look.CastFlash > 0f) Flash(Chest(transform.position), look.CastFlash, look.Color);
-            if (look.ConeStreams > 0) SprayCone(ability, look.ConeStreams, look.Color);
+            if (look.ShowArea) DrawArea(ability.Area, look.Color);
             if (ability.EffectDuration > 0f) _aura.Show(look.Color, ability.EffectDuration, look.GroundRing, look.Trail, Time.time);
+        }
+
+        private void DrawArea(in TargetArea area, Color color)
+        {
+            switch (area.Shape)
+            {
+                case TargetArea.Kind.AroundCaster: Flash(Chest(transform.position), area.Radius, color); break;
+                case TargetArea.Kind.Cone:         SprayCone(area, color); break;
+            }
+        }
+
+        // Fans streams out evenly across the cone, each down the middle of its own slice, from
+        // the aim the cone was just taken from, out to its reach.
+        private void SprayCone(in TargetArea cone, Color color)
+        {
+            if (_coneStream == null) return;
+
+            Transform aim   = _ai.Abilities.Aim;
+            Vector3 origin  = aim.position + aim.forward * MuzzleAhead;
+            int streams     = Mathf.Clamp(Mathf.RoundToInt(cone.Angle / StreamSpacing), MinStreams, MaxStreams);
+            float slice     = cone.Angle / streams;
+            float halfAngle = Mathf.Min(cone.Angle * 0.5f, WidestHalfAngle);
+            float width     = 2f * cone.Radius * Mathf.Tan(halfAngle * Mathf.Deg2Rad) / streams * StreamOverlap;
+            float reach     = Mathf.Max(0.5f, cone.Radius - MuzzleAhead);
+
+            for (int i = 0; i < streams; i++)
+            {
+                float yaw = -cone.Angle * 0.5f + slice * (i + 0.5f);
+                Vector3 direction = Quaternion.AngleAxis(yaw, aim.up) * aim.forward;
+                ConeSprayPuff.Spawn(_coneStream, origin, direction, reach, width, color);
+            }
         }
 
         private void OnRelocated(Vector3 from)
@@ -123,44 +157,10 @@ namespace CGD.Enemies
             Flash(Chest(transform.position), _healFlash, _healColor);
         }
 
-        // Fans the streams out evenly across the cone the ability just hit, each down the middle
-        // of its own slice, from the aim the cone was taken from.
-        private void SprayCone(Ability ability, int streams, Color color)
-        {
-            if (_coneStream == null || ability is not TargetedAbility { Targeting: ConeTargetSelector cone }) return;
-
-            Transform aim   = _ai.Abilities.Aim;
-            Vector3 origin  = aim.position + aim.forward * MuzzleAhead;
-            float slice     = cone.Angle / streams;
-            float halfAngle = Mathf.Min(cone.Angle * 0.5f, WidestHalfAngle);
-            float width     = 2f * cone.Range * Mathf.Tan(halfAngle * Mathf.Deg2Rad) / streams * StreamOverlap;
-
-            for (int i = 0; i < streams; i++)
-            {
-                float yaw = -cone.Angle * 0.5f + slice * (i + 0.5f);
-                Vector3 direction = Quaternion.AngleAxis(yaw, aim.up) * aim.forward;
-                ConeSprayPuff.Spawn(_coneStream, origin, direction, cone.Range - MuzzleAhead, width, color);
-            }
-        }
-
         private void Flash(Vector3 position, float radius, Color color)
         {
             ExplosionFlash.Spawn(_flash, position, radius, color);
         }
-
-        private bool TryGetLook(Ability ability, out AbilityLook look)
-        {
-            foreach (AbilityLook candidate in _looks)
-            {
-                if (candidate.Ability != ability) continue;
-                look = candidate;
-                return true;
-            }
-            look = default;
-            return false;
-        }
-
-        private bool NeedsAny(System.Predicate<AbilityLook> wants) => System.Array.Exists(_looks, wants);
 
         private static Vector3 Chest(Vector3 feet) => feet + Vector3.up * ChestHeight;
 

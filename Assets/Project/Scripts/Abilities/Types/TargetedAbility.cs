@@ -38,6 +38,8 @@ namespace CGD.Abilities
 
         public override bool ChecksAim => Targeting != null;
 
+        public override TargetArea Area => Targeting != null ? Targeting.Area : TargetArea.None;
+
         public override void Execute(AbilityContext ctx)
         {
             if (Select(ctx) == 0) return;

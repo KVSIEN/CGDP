@@ -17,6 +17,12 @@ MonoBehaviour:
   Cooldown: 25
   MaxCharges: 1
   CastTime: 0.8
+  Look:
+    Color: {r: 1, g: 0.85, b: 0.2, a: 0.4}
+    CastFlash: 0.6
+    ShowArea: 0
+    GroundRing: 0
+    Trail: 0
   BeaconPrefab: {fileID: 7300000000000000001, guid: 08973d3393db441faf4d1ca3058b71d5, type: 3}
   MaxDeployDistance: 14
   Lifetime: 15

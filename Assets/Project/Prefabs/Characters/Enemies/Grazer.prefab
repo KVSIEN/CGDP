@@ -20,10 +20,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1.1
       objectReference: {fileID: 0}
-    - target: {fileID: 3487521419191096562, guid: 331f913c861f4c698489702343d4cdb4, type: 3}
-      propertyPath: _looks.Array.size
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5752674142844420818, guid: 331f913c861f4c698489702343d4cdb4, type: 3}
       propertyPath: _arm
       value: 

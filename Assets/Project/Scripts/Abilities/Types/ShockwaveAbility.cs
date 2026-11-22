@@ -1,5 +1,6 @@
 using UnityEngine;
 using CGD.Combat;
+using CGD.Targeting;
 
 namespace CGD.Abilities
 {
@@ -26,6 +27,8 @@ namespace CGD.Abilities
         private const float BurstHeight = 1f;
 
         private static readonly AreaHits _area = new(32);
+
+        public override TargetArea Area => TargetArea.AroundCaster(Radius);
 
         public override void Execute(AbilityContext ctx)
         {

@@ -17,6 +17,12 @@ MonoBehaviour:
   Cooldown: 14
   MaxCharges: 1
   CastTime: 0.6
+  Look:
+    Color: {r: 0.6, g: 0.3, b: 1, a: 0.5}
+    CastFlash: 0.8
+    ShowArea: 0
+    GroundRing: 0
+    Trail: 0
   ZonePrefab: {fileID: 7100000000000000001, guid: cda61e22cff245f28419d5aa6ec25518, type: 3}
   NeedsAimPoint: 1
   Zone:

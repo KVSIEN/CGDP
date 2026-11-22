@@ -1,6 +1,7 @@
 using UnityEngine;
 using CGD.Combat;
 using CGD.Meters;
+using CGD.Targeting;
 
 namespace CGD.Abilities
 {
@@ -37,6 +38,10 @@ namespace CGD.Abilities
         [Tooltip("Delay between pressing the key and the ability firing (0 = instant). Cancelled if the player is stunned, mantling or rolling.")]
         [Min(0f)] public float CastTime = 0f;
 
+        [Header("Look")]
+        [Tooltip("How it shows when an enemy uses it, on every enemy that has it (placeholder effects)")]
+        public AbilityLook Look;
+
         // Whether using the ability now would do anything. Returning false keeps the
         // charge (e.g. Heal at full health). Checked when pressed and again after casting.
         public virtual bool CanExecute(AbilityContext ctx) => true;
@@ -47,6 +52,10 @@ namespace CGD.Abilities
         // front of it). An enemy turns its aim to its target before asking, so the answer is
         // about the target and not about wherever it last aimed.
         public virtual bool ChecksAim => false;
+
+        // What it hits, for effects that draw its hitbox (AbilityLook.ShowArea). None unless it
+        // hits a fixed shape round the caster or in front of it.
+        public virtual TargetArea Area => TargetArea.None;
 
         // Seconds what it leaves on the caster lasts (a buff), for effects that show it; 0 = nothing lasting.
         public virtual float EffectDuration => 0f;

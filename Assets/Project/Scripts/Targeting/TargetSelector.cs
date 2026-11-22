@@ -31,6 +31,9 @@ namespace CGD.Targeting
             result.Targets.RemoveRange(_maxTargets, result.Count - _maxTargets);
         }
 
+        // The shape it picks from, for effects that draw it. None unless it has a fixed one.
+        public virtual TargetArea Area => TargetArea.None;
+
         protected abstract void Collect(in TargetingRequest request, in TargetFilter filter, TargetSet result);
 
         protected TargetFilter Filter(in TargetingRequest request) =>

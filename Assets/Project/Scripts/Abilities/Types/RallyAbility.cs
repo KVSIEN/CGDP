@@ -22,6 +22,8 @@ namespace CGD.Abilities
 
         public override float EffectDuration => Duration;
 
+        public override TargetArea Area => TargetArea.AroundCaster(Radius);
+
         public override bool CanExecute(AbilityContext ctx) => Buff != null && ctx.Health != null;
 
         public override void Execute(AbilityContext ctx)

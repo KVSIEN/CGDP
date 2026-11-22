@@ -22,6 +22,10 @@ namespace CGD.Targeting
         [SerializeField, Min(0f)] private float _aimRange = 25f;
         [SerializeField] private LayerMask _groundMask = 1; // Default layer
 
+        // Only a sphere round the caster has a fixed place to draw.
+        public override TargetArea Area =>
+            _center == AreaCenter.Caster ? TargetArea.AroundCaster(_radius) : TargetArea.None;
+
         protected override void Collect(in TargetingRequest request, in TargetFilter filter, TargetSet result)
         {
             Vector3 center = _center == AreaCenter.AimedGround
