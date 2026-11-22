@@ -17,6 +17,12 @@ MonoBehaviour:
   Cooldown: 7
   MaxCharges: 1
   CastTime: 0.7
+  Look:
+    Color: {r: 1, g: 0.55, b: 0.15, a: 0.5}
+    CastFlash: 1
+    ShowArea: 0
+    GroundRing: 0
+    Trail: 0
   ProjectilePrefab: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
   Damage: 22
   Speed: 24

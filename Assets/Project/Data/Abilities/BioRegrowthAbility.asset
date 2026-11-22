@@ -17,6 +17,12 @@ MonoBehaviour:
   Cooldown: 18
   MaxCharges: 1
   CastTime: 0.6
+  Look:
+    Color: {r: 0.3, g: 1, b: 0.4, a: 0.25}
+    CastFlash: 1
+    ShowArea: 0
+    GroundRing: 0
+    Trail: 0
   Buff: {fileID: 11400000, guid: 3dea6f05b9ee4304a38d9ce5e4b39317, type: 2}
   Duration: 8
   ChargeAddedShield: 0

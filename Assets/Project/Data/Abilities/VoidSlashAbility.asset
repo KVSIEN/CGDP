@@ -17,6 +17,12 @@ MonoBehaviour:
   Cooldown: 6
   MaxCharges: 1
   CastTime: 0.3
+  Look:
+    Color: {r: 0.6, g: 0.3, b: 1, a: 0.25}
+    CastFlash: 0
+    ShowArea: 1
+    GroundRing: 0
+    Trail: 0
   Targeting: {fileID: 11400000, guid: 963d8b1fc67a4e95ae0286d0d66bc7bc, type: 2}
   Damage: 30
   ArmorPenetration: 0

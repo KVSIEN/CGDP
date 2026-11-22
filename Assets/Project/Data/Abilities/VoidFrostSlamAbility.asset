@@ -17,6 +17,12 @@ MonoBehaviour:
   Cooldown: 9
   MaxCharges: 1
   CastTime: 0.6
+  Look:
+    Color: {r: 0.55, g: 0.85, b: 1, a: 0.3}
+    CastFlash: 0
+    ShowArea: 1
+    GroundRing: 0
+    Trail: 0
   Radius: 4.5
   Force: 6
   HitMask:

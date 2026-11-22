@@ -17,6 +17,12 @@ MonoBehaviour:
   Cooldown: 14
   MaxCharges: 1
   CastTime: 1
+  Look:
+    Color: {r: 0.35, g: 1, b: 0.3, a: 0.4}
+    CastFlash: 1.4
+    ShowArea: 0
+    GroundRing: 0
+    Trail: 0
   MinionPrefab: {fileID: 1000000000000000001, guid: bfe6de7e6f0d4f79b48f0124095137b6, type: 3}
   Count: 3
   Lifetime: 30
