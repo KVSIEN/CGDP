@@ -15,10 +15,8 @@ MonoBehaviour:
   DisplayName: Bio Tier 2
   Team: 3
   Tier: 2
-  MaxHealth: 141
+  MaxHealth: 185
   Armor: 35
-  MaxPlating: 37
-  PlatingArmor: 25
   MaxShield: 0
   ShieldRegenDelay: 5
   ShieldRegenRate: 0

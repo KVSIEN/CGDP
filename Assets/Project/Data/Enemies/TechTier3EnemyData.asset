@@ -15,10 +15,8 @@ MonoBehaviour:
   DisplayName: Tech Tier 3
   Team: 4
   Tier: 3
-  MaxHealth: 0
+  MaxHealth: 130
   Armor: 75
-  MaxPlating: 101
-  PlatingArmor: 50
   MaxShield: 156
   ShieldRegenDelay: 4
   ShieldRegenRate: 12
@@ -46,5 +44,3 @@ MonoBehaviour:
   AlertDuration: 6
   AttackSound: {fileID: 0}
   RangedAttackSound: {fileID: 0}
-  StatusImmunities:
-  - {fileID: 11400000, guid: f2a43b1c8de76a84490042e6d8d13b50, type: 2}
