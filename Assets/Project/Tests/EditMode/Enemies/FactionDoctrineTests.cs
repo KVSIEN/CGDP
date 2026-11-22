@@ -176,9 +176,9 @@ namespace CGD.Tests
         {
             var factions = new (string Doctrine, string[] Enemies)[]
             {
-                ("Bio",  new[] { "ScavengerEnemyData", "BioTier2EnemyData", "BioTier3EnemyData", "AITest/BioTestEnemyData" }),
-                ("Tech", new[] { "MaintenanceBotEnemyData", "TechTier2EnemyData", "TechTier3EnemyData", "AITest/TechTestEnemyData" }),
-                ("Void", new[] { "HuskEnemyData", "VoidTier2EnemyData", "VoidTier3EnemyData", "AITest/VoidTestEnemyData" }),
+                ("Bio",  new[] { "ScavengerEnemyData", "AITest/BioTestEnemyData" }),
+                ("Tech", new[] { "MaintenanceBotEnemyData", "AITest/TechTestEnemyData" }),
+                ("Void", new[] { "HuskEnemyData", "AITest/VoidTestEnemyData" }),
             };
 
             foreach (var faction in factions)

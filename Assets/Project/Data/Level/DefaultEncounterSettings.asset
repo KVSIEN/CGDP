@@ -52,7 +52,7 @@ MonoBehaviour:
   _spawnerCap: 5
   _spawnerActivationRange: 25
   _spawnerEnemyLoot: 0
-  _hauntEntityPrefab: {fileID: 2643170897715678307, guid: 98d900a9a35c4b06b5dff96763f2d09e, type: 3}
+  _hauntEntityPrefab: {fileID: 2643170897715678307, guid: dd6d1969e3e145ed9d3851f294495994, type: 3}
   _hauntAnchorPrefab: {fileID: 351109822756810307, guid: 90396b66a26f42348e94043d1dd47bce, type: 3}
   _hauntAnchors: 3
   _hauntBanishSeconds: 25

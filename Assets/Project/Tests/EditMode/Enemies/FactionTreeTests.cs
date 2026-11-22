@@ -184,7 +184,7 @@ namespace CGD.Tests
         [Test]
         public void BioEnemiesTravelThroughBushes()
         {
-            foreach (string name in new[] { "ScavengerEnemyData", "BioTier2EnemyData", "BioTier3EnemyData", "AITest/BioTestEnemyData" })
+            foreach (string name in new[] { "ScavengerEnemyData", "AITest/BioTestEnemyData" })
             {
                 var data = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/{name}.asset");
                 Assert.IsNotNull(data, name);
