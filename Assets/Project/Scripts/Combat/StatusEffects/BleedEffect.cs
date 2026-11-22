@@ -3,7 +3,8 @@ using UnityEngine;
 namespace CGD.Combat
 {
     // Bleed Damage (per tick) = ((Raw Damage × RawDamageFraction) + (Target Max Health × MaxHealthFraction)) × Potency.
-    // Ignores armor entirely (DamageType.True). Uses Refresh stacking, so reapplying just
+    // Ignores armor entirely (DamageType.True) and runs under armour plating (bone) straight
+    // to health. Uses Refresh stacking, so reapplying just
     // refreshes duration and magnitude.
     [CreateAssetMenu(fileName = "BleedEffect", menuName = "CGD/Combat/Status Effects/Bleed")]
     public class BleedEffect : StatusEffect
@@ -18,7 +19,7 @@ namespace CGD.Combat
         {
             float damage = (magnitude * RawDamageFraction + target.Damageable.MaxHealth * MaxHealthFraction)
                            * target.PotencyOf(this);
-            target.Damageable.TakeDamage(new DamageInfo(damage, type: DamageType.True, instigator: target.InstigatorOf(this)));
+            target.Damageable.TakeDamage(new DamageInfo(damage, type: DamageType.True, instigator: target.InstigatorOf(this), bypassesPlating: true));
         }
     }
 }

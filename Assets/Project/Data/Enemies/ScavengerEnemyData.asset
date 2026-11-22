@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
   DisplayName: Scavenger
   Team: 3
-  MaxHealth: 80
+  MaxHealth: 61
   Armor: 25
+  MaxPlating: 16
+  PlatingArmor: 25
   MaxShield: 0
   ShieldRegenDelay: 5
   ShieldRegenRate: 0

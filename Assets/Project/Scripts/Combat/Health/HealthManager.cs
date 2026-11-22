@@ -314,7 +314,9 @@ namespace CGD.Combat
                 amount -= absorbed / shieldMult;
             }
 
-            if (amount > 0f && _plating > 0f)
+            // A bleed runs under the plates — unless the plates are all there is to bleed.
+            bool skipsPlating = info.BypassesPlating && !LivesOnPlating;
+            if (amount > 0f && _plating > 0f && !skipsPlating)
             {
                 float platedShare = PlatingLayer.PlatedShare(info, armor, PlatingArmor * (1f - _armorReductionPercent), entropy);
                 amount = PlatingLayer.Absorb(amount, _plating, platedShare, out float absorbed);

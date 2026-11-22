@@ -26,10 +26,14 @@ namespace CGD.Combat
         // from. Only kill credit reads it: the hit itself still comes from no one, so ticks
         // don't give the burner away or trigger their on-hit perks.
         public readonly DamageSource Instigator;
+        // Goes under armour plating straight to health (a bleed: it runs beneath the bones).
+        // A character that lives on its plating takes it on the plating all the same.
+        public readonly bool BypassesPlating;
 
         public DamageInfo(float rawDamage, float armorPenetration = 0f, DamageType type = DamageType.Physical,
             float criticalMultiplier = 1f, DamageSource source = default, StatusEffectApplication[] onHitEffects = null,
-            bool isReflected = false, HitBonuses bonuses = default, DamageSource instigator = default)
+            bool isReflected = false, HitBonuses bonuses = default, DamageSource instigator = default,
+            bool bypassesPlating = false)
         {
             RawDamage          = rawDamage;
             ArmorPenetration   = Mathf.Clamp01(armorPenetration);
@@ -40,6 +44,7 @@ namespace CGD.Combat
             IsReflected        = isReflected;
             Bonuses            = bonuses;
             Instigator         = instigator;
+            BypassesPlating    = bypassesPlating;
         }
 
         // Whom the damage counts for: the hit's source, or else whoever instigated it.
@@ -49,10 +54,10 @@ namespace CGD.Combat
         // its multiplier after the DamageInfo was built, such as a projectile that resolves
         // range falloff at the moment of impact.
         public DamageInfo WithDamageScale(float scale) =>
-            new(RawDamage * scale, ArmorPenetration, Type, CriticalMultiplier, Source, OnHitEffects, IsReflected, Bonuses, Instigator);
+            new(RawDamage * scale, ArmorPenetration, Type, CriticalMultiplier, Source, OnHitEffects, IsReflected, Bonuses, Instigator, BypassesPlating);
 
         public DamageInfo AsReflected() =>
-            new(RawDamage, ArmorPenetration, Type, CriticalMultiplier, Source, OnHitEffects, true, Bonuses, Instigator);
+            new(RawDamage, ArmorPenetration, Type, CriticalMultiplier, Source, OnHitEffects, true, Bonuses, Instigator, BypassesPlating);
 
         // Effective Armor = Armor × (1 − Armor Penetration%)
         // Effective Damage = Raw Damage × (100 / (100 + Effective Armor))
