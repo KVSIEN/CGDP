@@ -286,6 +286,8 @@ namespace CGD.Combat
         private void ApplyDamage(DamageInfo info, float multiplier, Vector3 point, bool isCritical)
         {
             if (IsDead || IsInvulnerable || _invulnerabilityHolds > 0 || !CanBeDamagedBy(info.Source)) return;
+            // A tank of its side close by takes part of the blow (SoakAura).
+            multiplier *= SoakAura.Redirect(this, info, multiplier);
 
             LastHitSource = info.Source;
             LastHitPoint  = point;
