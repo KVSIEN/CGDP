@@ -20,6 +20,8 @@ namespace CGD.Enemies
         [Tooltip("At the stop distance, hold there facing the target instead of finishing (pair it in a Parallel with Shoot Burst)")]
         [SerializeField] private bool _holdOnArrival;
 
+        [Tooltip("Walks the way its faction sneaks (Void keeps to walls, Bio slips through bushes) instead of the shortest way")]
+        [SerializeField] private bool _sneak;
         public override string Summary => (_holdOnArrival ? "Holds at " : "Until ") + $"{_stopDistance:0.#} m";
 
         internal override bool NeverFinishes => _holdOnArrival;
@@ -47,7 +49,7 @@ namespace CGD.Enemies
             Ai.ReportStep(EngageStep.Approach);
             Ai.Agent.isStopped = false;
             Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed * _speed);
-            Ai.Routing.SetDestination(target);
+            Ai.Routing.SetDestination(target, WalkStyle(_sneak));
             Ai.Motion.FaceTowards(target, context.DeltaTime);
             return BtStatus.Running;
         }

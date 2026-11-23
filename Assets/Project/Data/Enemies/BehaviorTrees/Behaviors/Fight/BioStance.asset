@@ -36,7 +36,8 @@ MonoBehaviour:
   - rid: 21
   - rid: 22
   - rid: 23
-  - rid: 24  _groups: []
+  - rid: 24
+  _groups: []
   _notes: []
   references:
     version: 2

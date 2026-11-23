@@ -88,7 +88,8 @@ MonoBehaviour:
   - rid: 1086
   - rid: 1087
   - rid: 1088
-  - rid: 1089  _groups: []
+  - rid: 1089
+  _groups: []
   _notes: []
   references:
     version: 2

@@ -73,7 +73,8 @@ MonoBehaviour:
   - rid: 1057
   - rid: 1058
   - rid: 1059
-  - rid: 1060  _groups: []
+  - rid: 1060
+  _groups: []
   _notes: []
   references:
     version: 2
@@ -452,6 +453,7 @@ MonoBehaviour:
         _stopDistance: 3
         _speed: 0.6
         _holdOnArrival: 0
+        _sneak: 1
     - rid: 1043
       type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -529,6 +531,7 @@ MonoBehaviour:
         _radius: 40
         _stopDistance: 15
         _speed: 1
+        _sneak: 1
     - rid: 1052
       type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:

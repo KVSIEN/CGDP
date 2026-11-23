@@ -70,7 +70,8 @@ MonoBehaviour:
   - rid: 1054
   - rid: 1055
   - rid: 1056
-  - rid: 1057  _groups: []
+  - rid: 1057
+  _groups: []
   _notes: []
   references:
     version: 2
@@ -419,6 +420,7 @@ MonoBehaviour:
         _searchRadius: 12
         _replanEvery: 2
         _speed: 1
+        _sneak: 1
     - rid: 1037
       type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -466,6 +468,7 @@ MonoBehaviour:
         _searchRadius: 12
         _replanEvery: 2
         _speed: 1
+        _sneak: 1
     - rid: 1042
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:

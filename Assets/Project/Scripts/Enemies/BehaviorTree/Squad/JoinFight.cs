@@ -19,6 +19,9 @@ namespace CGD.Enemies
         [Tooltip("Speed, as a share of chase speed")]
         [SerializeField, Range(0.2f, 1.5f)] private float _speed = 1f;
 
+        [Tooltip("Walks the way its faction sneaks (Void keeps to walls, Bio slips through bushes) instead of the shortest way")]
+        [SerializeField] private bool _sneak;
+
         [NonSerialized] private StationKeeper _station;
 
         public override string Summary => $"Within {_radius:0.#} m, stops {_stopDistance:0.#} m short";
@@ -44,7 +47,7 @@ namespace CGD.Enemies
 
             Ai.ReportState(EnemyAI.AiState.Chase);
             Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed * _speed);
-            if (_station.Moving) Ai.Routing.SetDestination(_station.Goal);
+            if (_station.Moving) Ai.Routing.SetDestination(_station.Goal, WalkStyle(_sneak));
             else
             {
                 Ai.Routing.Stop();

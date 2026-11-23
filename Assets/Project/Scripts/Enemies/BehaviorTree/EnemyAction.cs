@@ -26,6 +26,10 @@ namespace CGD.Enemies
             return true;
         }
 
+        // How it walks when told to sneak: the way its faction moves unseen (Void along walls, Bio
+        // through bushes, Tech and the rest the plain shortest way), from its doctrine.
+        protected RouteStyle WalkStyle(bool sneak) => sneak ? Ai.Doctrine.Patrol.Walk : RouteStyle.Direct;
+
         protected static bool HasArrived(NavMeshAgent agent, float distance) =>
             !agent.pathPending && agent.hasPath && agent.remainingDistance < distance;
     }

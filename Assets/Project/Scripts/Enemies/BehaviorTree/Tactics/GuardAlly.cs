@@ -33,6 +33,9 @@ namespace CGD.Enemies
         [SerializeField, Range(0.2f, 1.5f)] private float _speed = 1f;
 
         [NonSerialized] private EnemyAI _guarded;
+        [Tooltip("Walks the way its faction sneaks (Void keeps to walls, Bio slips through bushes) instead of the shortest way")]
+        [SerializeField] private bool _sneak;
+
         [NonSerialized] private StationKeeper _station;
         [NonSerialized] private bool _following;
         // Which shoulder it keeps to (+1 right, -1 left of the ward facing the threat), picked on
@@ -89,7 +92,7 @@ namespace CGD.Enemies
 
             Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed * _speed);
             _station.Update(spot, Ai.transform.position);
-            if (_station.Moving) Ai.Routing.SetDestination(_station.Goal);
+            if (_station.Moving) Ai.Routing.SetDestination(_station.Goal, WalkStyle(_sneak));
             else Ai.Routing.Stop();
             return BtStatus.Running;
         }
