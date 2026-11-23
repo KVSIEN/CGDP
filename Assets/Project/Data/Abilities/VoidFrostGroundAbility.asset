@@ -24,10 +24,10 @@ MonoBehaviour:
     GroundRing: 0
     Trail: 0
   ZonePrefab: {fileID: 7100000000000000001, guid: cda61e22cff245f28419d5aa6ec25518, type: 3}
-  Length: 9
-  NearRadius: 1.5
-  FarRadius: 3.5
-  Patches: 4
+  Length: 18
+  NearRadius: 2.5
+  FarRadius: 7
+  Patches: 6
   Zone:
     Radius: 3
     Duration: 6
@@ -35,7 +35,7 @@ MonoBehaviour:
     DamagePerTick: 2
     DamageType: 0
     ArmorPenetration: 0
-    Color: {r: 0.6, g: 0.88, b: 1, a: 0.55}
+    Color: {r: 0.6, g: 0.88, b: 1, a: 0.25}
     Glow: 0
     EntryNoiseRadius: 0
     ShieldSiphon: 0
