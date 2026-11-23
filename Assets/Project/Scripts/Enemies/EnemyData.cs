@@ -116,6 +116,9 @@ namespace CGD.Enemies
         [Min(0f)] public float BurstWindup   = 0f;
         [Tooltip("Seconds after a burst's last shot before it may cast anything again — free to reposition and plan. 0 = none")]
         [Min(0f)] public float BurstRecovery = 0f;
+        [Tooltip("A basic attack made of several bursts in turn (a bullet burst, then mortar strikes, then a missile), each with its own shots, spread, wind-up and recovery. " +
+                 "Between steps it casts nothing. The Ranged Attack Cooldown runs after the last step. Empty = single bursts from the fields above (Burst Count to Shot Grenade)")]
+        public RangedStep[] RangedCombo;
         [Tooltip("How often the enemy picks a new strafe direction (seconds)")]
         public float StrafeInterval = 2f;
         [Tooltip("How far sideways the enemy strafes at preferred range")]
@@ -233,17 +236,63 @@ namespace CGD.Enemies
         }
 
         // ...and a ranged burst every wind-up plus cooldown (counted from the burst's first shot), or
-        // every burst's length (shots and recovery) if that takes longer.
+        // every burst's length (shots and recovery) if that takes longer. A combo runs its steps
+        // back to back (each waits out the one before's recovery), then the cooldown.
         public float RangedDamagePerSecond
         {
             get
             {
-                int   shots    = Mathf.Max(1, BurstCount);
-                float damage   = RangedAttackDamage > 0f ? RangedAttackDamage : AttackDamage;
                 float cooldown = RangedAttackCooldown > 0f ? RangedAttackCooldown : AttackCooldown;
-                float cycle    = BurstWindup + Mathf.Max(cooldown, (shots - 1) * BurstInterval + BurstRecovery);
-                return damage * shots / Mathf.Max(0.01f, cycle);
+                if (!HasRangedCombo)
+                {
+                    int   shots = Mathf.Max(1, BurstCount);
+                    float cycle = BurstWindup + Mathf.Max(cooldown, (shots - 1) * BurstInterval + BurstRecovery);
+                    return BaseRangedDamage * shots / Mathf.Max(0.01f, cycle);
+                }
+
+                float damage = 0f, time = 0f;
+                for (int i = 0; i < RangedCombo.Length; i++)
+                {
+                    RangedStep step = RangedCombo[i];
+                    int shots = Mathf.Max(1, step.Shots);
+                    damage += StepDamage(step) * shots;
+                    time   += step.Windup + (shots - 1) * step.Interval;
+                    // The last step's recovery overlaps the cooldown that follows it.
+                    time   += i < RangedCombo.Length - 1 ? step.Recovery : Mathf.Max(cooldown, step.Recovery);
+                }
+                return damage / Mathf.Max(0.01f, time);
             }
         }
+
+        public bool HasRangedCombo => RangedCombo != null && RangedCombo.Length > 0;
+
+        public int RangedStepCount => HasRangedCombo ? RangedCombo.Length : 1;
+
+        // A step of its basic ranged attack: its combo's, or for an enemy without one, the single
+        // burst its Ranged Combat fields describe.
+        public RangedStep RangedStepAt(int index)
+        {
+            if (HasRangedCombo) return RangedCombo[Mathf.Clamp(index, 0, RangedCombo.Length - 1)];
+            return new RangedStep
+            {
+                Name        = "Burst",
+                Shots       = BurstCount,
+                Interval    = BurstInterval,
+                Windup      = BurstWindup,
+                Recovery    = BurstRecovery,
+                SpreadAngle = SpreadAngle,
+                Damage      = BaseRangedDamage,
+                Grenade     = ShotGrenade,
+                Projectile  = ShotProjectile,
+                ShotSpeed   = ShotSpeed,
+                ShotRadius  = ShotRadius,
+                BlastRadius = ShotBlastRadius,
+            };
+        }
+
+        // Damage of one hitscan or projectile shot of a step.
+        public float StepDamage(RangedStep step) => step.Damage > 0f ? step.Damage : BaseRangedDamage;
+
+        private float BaseRangedDamage => RangedAttackDamage > 0f ? RangedAttackDamage : AttackDamage;
     }
 }

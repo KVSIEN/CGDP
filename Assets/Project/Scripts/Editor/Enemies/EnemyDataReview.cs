@@ -41,7 +41,17 @@ namespace CGD.Editor
                 lines.Add($"Melee: {data.AttackDamage * data.MeleeDamageShare:0.#} per swing, about {data.MeleeDamagePerSecond:0.#} damage/s " +
                           $"(reach {data.AttackRange:0.#} m, {data.MeleeWindupTime:0.##} s of wind-up{(data.MeleeCombo is { Length: > 1 } ? $" over a {data.MeleeCombo.Length}-blow combo" : "")}).");
 
-            if (Shoots(data, nodes))
+            if (Shoots(data, nodes) && data.HasRangedCombo)
+            {
+                var steps = new List<string>();
+                foreach (RangedStep step in data.RangedCombo)
+                {
+                    string kind = step.Grenade != null ? "lobbed" : step.Projectile != null ? "projectile" : "hitscan";
+                    steps.Add($"{step.Name}: {Math.Max(1, step.Shots)} {kind}, {step.SpreadAngle:0.#}°, {step.Windup:0.##} s wind-up, {step.Recovery:0.##} s recovery{(step.FiresOnTheMove ? ", on the move" : "")}");
+                }
+                lines.Add($"Ranged: about {data.RangedDamagePerSecond:0.#} damage/s, prefers {data.PreferredRange:0} m, a {data.RangedCombo.Length}-step combo ({string.Join("; ", steps)}).");
+            }
+            else if (Shoots(data, nodes))
             {
                 string shots = data.ShotGrenade != null ? "lobbed mortar rounds" : data.ShotProjectile != null ? $"projectiles at {data.ShotSpeed:0} m/s" : "hitscan";
                 lines.Add($"Ranged: about {data.RangedDamagePerSecond:0.#} damage/s, prefers {data.PreferredRange:0} m " +

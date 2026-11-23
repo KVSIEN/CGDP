@@ -30,10 +30,11 @@ namespace CGD.Enemies
             if (!_fired && perception.TimeSinceSensed > _maxBlindTime) return BtStatus.Failure;
 
             Ai.ReportStep(EngageStep.Suppress);
-            Ai.Agent.isStopped = true;
+            var combat = Ai.RangedCombat;
+            // A step fired on the move leaves the walking to whatever it runs beside (a Take Support Position).
+            if (combat.PlantsToFire) Ai.Agent.isStopped = true;
             Ai.Motion.FaceTowards(perception.TargetPosition, context.DeltaTime);
 
-            var combat = Ai.RangedCombat;
             // Pinning a target down means hitting its cover, not the wall in front of the shooter.
             if (!_fired && !combat.HasClearShot(perception.TargetPosition + Vector3.up)) return BtStatus.Failure;
             if (!_fired) _fired = combat.TryStartBurst();

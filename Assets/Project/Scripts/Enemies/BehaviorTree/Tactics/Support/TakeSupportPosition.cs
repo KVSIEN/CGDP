@@ -14,7 +14,8 @@ namespace CGD.Enemies
     // claims the best cover, and goes there facing the threat. It plans again every few seconds
     // as the fight moves, but only changes its mind about where to stand once the ideal spot has
     // moved a few metres (see StationKeeper), so it drifts after a moving squad instead of
-    // twitching after every step. Never finishes while it has allies near; fails without any.
+    // twitching after every step. Never finishes while it has allies near (unless set to Finish On
+    // Arrival: one committed move, then success); fails without any.
     // Pair it in a Parallel with what it does from
     // there (Shoot Burst, a Repeat of its abilities).
     [Serializable]
@@ -41,6 +42,8 @@ namespace CGD.Enemies
 
         [Tooltip("Walks the way its faction sneaks (Void keeps to walls, Bio slips through bushes) instead of the shortest way")]
         [SerializeField] private bool _sneak;
+        [Tooltip("Commits to one move: succeeds once it has reached the spot it picked (set Replan Every long so it doesn't change its mind on the way) instead of holding the station for good")]
+        [SerializeField] private bool _finishOnArrival;
 
         [NonSerialized] private StationKeeper _station;
         [NonSerialized] private Vector3 _spot;
@@ -51,7 +54,7 @@ namespace CGD.Enemies
 
         internal SupportLine Line => _line;
 
-        internal override bool NeverFinishes => true;
+        internal override bool NeverFinishes => !_finishOnArrival;
 
         protected override void OnEnter(BtContext context)
         {
@@ -78,9 +81,14 @@ namespace CGD.Enemies
             Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed * _speed);
 
             _station.Update(_spot, Ai.transform.position);
-            if (_station.Moving) Ai.Routing.SetDestination(_station.Goal, WalkStyle(_sneak));
-            else Ai.Routing.Stop();
-            return BtStatus.Running;
+            if (_station.Moving)
+            {
+                Ai.Routing.SetDestination(_station.Goal, WalkStyle(_sneak));
+                return BtStatus.Running;
+            }
+
+            Ai.Routing.Stop();
+            return _finishOnArrival ? BtStatus.Success : BtStatus.Running;
         }
 
         // Picks the best spot and claims it if it is cover. False when no ally is near.

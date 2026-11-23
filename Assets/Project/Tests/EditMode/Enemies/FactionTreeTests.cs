@@ -156,26 +156,29 @@ namespace CGD.Tests
             return lines;
         }
 
-        // Tech's tank is a long-range siege engine: it holds a post behind its squad, soaks for the
-        // allies round it and denies the enemy cover — mortaring where it hides, firing into the
-        // spot, watching for it to break cover.
+        // Tech has no tank: its siege sentinel, stripped back to its basic attack for now, holds a
+        // post just behind its squad, soaks for the allies round it and fires a three-step combo,
+        // weaving its shots between repositioning moves.
         [Test]
-        public void TechTankIsASiegeTankThatDeniesCover()
+        public void TechTankIsASentinelWithOnlyItsBasicAttack()
         {
             HashSet<Type> nodes = EnemyTreeContents.NodeTypes(Load("TechTankBehaviorTree"));
-            Assert.IsTrue(nodes.Contains(typeof(TargetHiding)), "notices a target going to ground");
-            Assert.IsTrue(nodes.Contains(typeof(ThrowGrenade)) && nodes.Contains(typeof(Suppress)) && nodes.Contains(typeof(Overwatch)),
-                          "shells the spot, fires into it and watches it");
+            Assert.IsTrue(nodes.Contains(typeof(Suppress)), "fires its combo from its post");
+            Assert.IsFalse(nodes.Contains(typeof(UseAbility)) || nodes.Contains(typeof(ThrowGrenade)), "casts no abilities and throws no grenades");
             CollectionAssert.AreEquivalent(new[] { SupportLine.Behind }, Lines("TechTankBehaviorTree"), "posts itself behind its squad");
-            Assert.IsTrue(nodes.Contains(typeof(KinInTrouble)) && nodes.Contains(typeof(MarkCoverForKin)) && nodes.Contains(typeof(MoveTo)),
-                          "covers a squadmate falling back: smoke in front of it, then pushes up into the smoke");
 
             var prefab = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/Project/Prefabs/Characters/Enemies/AITest/TechTankAgent.prefab");
             Assert.IsTrue(prefab.TryGetComponent(out CGD.Combat.SoakAura soak) && soak.Share > 0f, "it soaks for its squad like the other tanks");
 
             var data = AssetDatabase.LoadAssetAtPath<EnemyData>("Assets/Project/Data/Enemies/AITest/TechTankEnemyData.asset");
-            Assert.IsNotNull(data.ShotGrenade, "its basic attack is a volley of mortar rounds");
+            Assert.AreEqual(3, data.RangedCombo?.Length ?? 0, "its basic attack is a three-step combo");
+            Assert.IsTrue(data.RangedCombo[0].Grenade == null && data.RangedCombo[0].Shots == 5, "a burst of five bullets");
+            Assert.IsTrue(data.RangedCombo[1].Grenade != null && data.RangedCombo[1].Shots == 3, "then three mortar strikes");
+            Assert.IsTrue(data.RangedCombo[2].Projectile != null && data.RangedCombo[2].BlastRadius > 0f, "then a missile blast");
+            Assert.IsTrue(nodes.Contains(typeof(RecoveringFromBurst)), "repositions between the steps");
             Assert.IsNull(data.Grenade, "it carries no ordinary grenade");
+            foreach (AbilitySlot slot in Enum.GetValues(typeof(AbilitySlot)))
+                Assert.IsNull(data.KitAbility(slot), $"no {slot} ability");
         }
 
         // Tanks and supports play their own role first, but fill the gaps the way their faction's
