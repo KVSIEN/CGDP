@@ -79,6 +79,11 @@ MonoBehaviour:
   - rid: 1063
   - rid: 1064
   - rid: 1065
+  - rid: 1066
+  - rid: 1067
+  - rid: 1068
+  - rid: 1069
+  - rid: 1070
   _groups: []
   _notes: []
   references:
@@ -89,7 +94,7 @@ MonoBehaviour:
       data:
         _guid: e9b60be26b8542d0919a12d5354aec80
         _position: {x: 0, y: 0}
-        _comment: 'VOID tank (frost colossus): a slow melee wall that lives behind a massive shield. From a distance it slips round to the enemy''s side by the least visible route, keeping to the walls, then walks in on it ahead of its coven, every strike leaving Ice (stacks slow and soften armour; five freeze), and slams the ground when anything is within 4.5 m (Signature: Frost Slam, ice and slow round it), lashes an icy cone at close range (Special: Frost Lash), throws a Frost Charge at a target closing in (Grenade), and when its shield runs low hardens it again (Boost: Glacial Shell). Immune to ice, cryo and slows. Its Soak Aura takes 30% of every hit on an ally within 8 m. Kit: Signature (Frost Slam), Special (Frost Lash), Boost (Glacial Shell), Grenade (Frost Charge).'
+        _comment: 'VOID tank (frost colossus): a slow melee wall that lives behind a massive shield. From a distance it slips round to the enemy''s side by the least visible route, keeping to the walls, then walks in on it ahead of its coven, every strike leaving Ice (stacks slow and soften armour; five freeze), and slams the ground when anything is within 4.5 m (Signature: Frost Slam, ice and slow round it), lashes an icy cone at close range (Special: Frost Lash), freezes the ground in a cone ahead of it within 9 m so everyone on it is slowed (Frost Ground, which it ignores itself), throws a Frost Charge at a target closing in (Grenade), and when its shield runs low hardens it again (Boost: Glacial Shell). Immune to ice, cryo and slows. Its Soak Aura takes 30% of every hit on an ally within 8 m. Kit: Signature (Frost Slam), Special (Frost Lash), Boost (Glacial Shell), Grenade (Frost Charge).'
         _children:
         - a4f9a3493046458c95d5fa49fe96a19b
     - rid: 1001
@@ -161,11 +166,12 @@ MonoBehaviour:
       data:
         _guid: 3776fe31cc9a419c9bd41891f9725075
         _position: {x: 668, y: 450}
-        _comment: 'Slam, shell up, lash, strike, frost charge; otherwise slip round to its side, then walk in'
+        _comment: 'Slam, shell up, lash, frost ground, strike, frost charge; otherwise slip round to its side, then walk in'
         _children:
         - a24064506ea64e2eb14a8b038bc76033
         - 2603469348744a97a99fa035ca2734c7
         - 6623320dece443df9bee48467a879d00
+        - 2265ef00475345ca96bb7e7064cdd83c
         - 7a41e2e65991404684b304e51d292f30
         - c9d3aeab55884292948688baa07adabf
         - 5683e2f4affd467f91ffa2f0d778aade
@@ -660,3 +666,48 @@ MonoBehaviour:
         _comment: 
         _standOff: 0
         _giveUpAfter: 6
+    - rid: 1066
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2265ef00475345ca96bb7e7064cdd83c
+        _position: {x: 900, y: 600}
+        _comment: 'Within 9 m: Frost Ground (freezes the ground in a cone ahead of it, slowing everyone who stands on it; it cannot be slowed itself)'
+        _children:
+        - 8f821951366a4921aad39730e2925c25
+        - f31d23a96a5f4ce3ad4da45322303ac0
+        - b96195bcee3d429bb7e824a3dc9d0d2b
+        - 3970cfe6f46d40efa7613d3c3173c93f
+        _abort: 0
+    - rid: 1067
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8f821951366a4921aad39730e2925c25
+        _position: {x: 820, y: 750}
+        _comment: 
+    - rid: 1068
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f31d23a96a5f4ce3ad4da45322303ac0
+        _position: {x: 920, y: 750}
+        _comment: 
+        _range: 9
+    - rid: 1069
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b96195bcee3d429bb7e824a3dc9d0d2b
+        _position: {x: 1020, y: 750}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: b62571267a834598b99c6ef86fc12455, type: 2}
+    - rid: 1070
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3970cfe6f46d40efa7613d3c3173c93f
+        _position: {x: 1120, y: 750}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: b62571267a834598b99c6ef86fc12455, type: 2}
+        _aim: 0
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 0

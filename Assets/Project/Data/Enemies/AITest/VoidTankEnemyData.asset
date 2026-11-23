@@ -84,6 +84,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: af0a6691caf9e4540b84b76580c8227f, type: 2}
   - {fileID: 11400000, guid: b50232d06a0546fdbb18573d1525a428, type: 2}
   - {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
+  - {fileID: 11400000, guid: 7a6e27d3ec99acc4bc2e482e4e8e9660, type: 2}
   MeleeEffects:
   - Effect: {fileID: 11400000, guid: af0a6691caf9e4540b84b76580c8227f, type: 2}
     Chance: 1
