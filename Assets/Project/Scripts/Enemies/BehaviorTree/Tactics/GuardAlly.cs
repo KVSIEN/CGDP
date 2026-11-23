@@ -9,8 +9,10 @@ namespace CGD.Enemies
     // the one nearest the threat, leading the hunt — and keeps between it and the threat, a
     // couple of metres out in front of it, or at its shoulder so it closes in alongside (a pack
     // follower running with its predator), facing the threat. With no threat it stays close to
-    // its ward. Never finishes while the ward lives; fails when there is nobody to guard. Pair it
-    // in a Parallel with Shoot Burst.
+    // its ward. It keeps a loose station — it only moves once it has drifted well clear of its
+    // spot — and keeps the same ward and shoulder from one run to the next, so it doesn't shuffle
+    // as the ward, the threat or the node's restarts shift things. Never finishes while the ward
+    // lives; fails when there is nobody to guard. Pair it in a Parallel with Shoot Burst.
     [Serializable]
     [BtNodeInfo("Enemy/Tactics/Guard Ally", "Keeps between its ward (highest-tier ally, or the one leading the hunt) and the threat, or at its flank, facing the threat. Runs while the ward lives.")]
     public sealed class GuardAlly : EnemyAction
@@ -25,6 +27,8 @@ namespace CGD.Enemies
         [SerializeField, Min(0.5f)] private float _standOff = 2.5f;
         [Tooltip("Metres it lets its ward get from it when there is no threat")]
         [SerializeField, Min(1f)] private float _leash = 5f;
+        [Tooltip("How loosely it keeps its station: 1 re-plans and sets off after a metre or two of drift, higher lets its ward and the threat move about more before it bothers")]
+        [SerializeField, Range(1f, 3f)] private float _slack = 1f;
         [Tooltip("Speed, as a share of chase speed")]
         [SerializeField, Range(0.2f, 1.5f)] private float _speed = 1f;
 
@@ -35,6 +39,9 @@ namespace CGD.Enemies
         // entry so it doesn't swap sides as the ward turns.
         [NonSerialized] private float   _side;
 
+        // The lead hunter changes only when another ally is this much nearer the threat.
+        private const float SwitchWardMargin = 6f;
+
         public override string Summary =>
             $"{(_ward == GuardWard.LeadHunter ? "Lead hunter" : "Highest tier")}, {_standOff:0.#} m {(_place == GuardPlace.AtFlank ? "at flank" : "in front")}";
 
@@ -42,9 +49,10 @@ namespace CGD.Enemies
 
         protected override void OnEnter(BtContext context)
         {
-            _guarded = PickWard();
-            _side    = _guarded != null ? SideOf(_guarded.transform.position) : 1f;
-            _station ??= new StationKeeper(retarget: 2f, arrive: 0.8f, depart: 2f);
+            EnemyAI previous = _guarded;
+            _guarded = PickWard(previous);
+            if (_guarded != previous) _side = _guarded != null ? SideOf(_guarded.transform.position) : 1f;
+            _station ??= new StationKeeper(retarget: 2f * _slack, arrive: 0.8f * _slack, depart: 2f * _slack);
             _station.Reset();
             _following = false;
             Ai.Agent.isStopped = false;
@@ -110,7 +118,7 @@ namespace CGD.Enemies
         // The ally of its team within reach it keeps by: the highest tier (among equals, the same one
         // for everyone — the lowest instance id — so a pair of guards doesn't end up guarding each
         // other), or the one nearest the threat when it follows the lead hunter and knows a threat.
-        private EnemyAI PickWard()
+        private EnemyAI PickWard(EnemyAI current)
         {
             bool byThreat = _ward == GuardWard.LeadHunter && Ai.Perception.Target != null;
             Vector3 threat = Ai.Perception.TargetPosition;
@@ -133,7 +141,18 @@ namespace CGD.Enemies
                 bestToThreat = toThreat;
                 best         = other;
             }
-            return best;
+            return byThreat && StillWorthKeeping(current, best, threat) ? current : best;
+        }
+
+        // The ward it already has, unless another is clearly nearer the threat now.
+        private bool StillWorthKeeping(EnemyAI current, EnemyAI best, Vector3 threat)
+        {
+            if (current == null || best == null || current == best || current.Health == null || current.Health.IsDead || !current.isActiveAndEnabled) return false;
+            if (Flat(current.transform.position - Ai.transform.position).sqrMagnitude > _searchRadius * _searchRadius) return false;
+
+            float currentToThreat = Flat(current.transform.position - threat).magnitude;
+            float bestToThreat    = Flat(best.transform.position - threat).magnitude;
+            return currentToThreat - bestToThreat < SwitchWardMargin;
         }
 
         private static bool Better(EnemyAI a, EnemyAI b)
