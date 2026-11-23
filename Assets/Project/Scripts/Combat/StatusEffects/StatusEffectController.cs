@@ -200,6 +200,19 @@ namespace CGD.Combat
 
         public bool HasAny => _active.Count > 0;
 
+        // The share (0..1) of each hit this character takes that lands as true damage, from the curses
+        // on it. Read by HealthManager as every hit resolves.
+        public float TrueDamageShare
+        {
+            get
+            {
+                float share = 0f;
+                foreach (var pair in _active)
+                    if (pair.Key is CurseEffect curse) share += curse.ShareOf(pair.Value.Stacks, pair.Value.Potency);
+                return Mathf.Clamp01(share);
+            }
+        }
+
         // Whether an effect of kind T is on, whichever asset it is (a Jam, say).
         public bool Any<T>() where T : StatusEffect
         {

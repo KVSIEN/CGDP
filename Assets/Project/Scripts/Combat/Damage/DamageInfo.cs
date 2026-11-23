@@ -64,15 +64,15 @@ namespace CGD.Combat
 
         // Effective Armor = Armor × (1 − Armor Penetration%)
         // Effective Damage = Raw Damage × (100 / (100 + Effective Armor))
-        // `entropyShare` (0..1, the attacker's Entropy Share) is the part of the hit that lands
-        // as Entropy: armour does nothing against it, as with True damage.
-        public float ResolveDamage(float armor, float entropyShare = 0f)
+        // `trueShare` (0..1, the Curse on the target) is the part of the hit that lands as true
+        // damage: armour does nothing against it.
+        public float ResolveDamage(float armor, float trueShare = 0f)
         {
             if (Type == DamageType.True) return RawDamage;
 
-            float entropy        = RawDamage * Mathf.Clamp01(entropyShare);
+            float cursed         = RawDamage * Mathf.Clamp01(trueShare);
             float effectiveArmor = Mathf.Max(0f, armor) * (1f - ArmorPenetration);
-            return entropy + (RawDamage - entropy) * (100f / (100f + effectiveArmor));
+            return cursed + (RawDamage - cursed) * (100f / (100f + effectiveArmor));
         }
     }
 }

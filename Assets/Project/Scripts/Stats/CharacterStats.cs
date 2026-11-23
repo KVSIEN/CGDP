@@ -18,10 +18,6 @@ namespace CGD.Stats
     [DisallowMultipleComponent]
     public class CharacterStats : MonoBehaviour, ITickable
     {
-        // The stats of each active character, by its GameObject: how a target reads the
-        // attacker's stats from a hit's DamageSource (Entropy Share) without a lookup per hit.
-        private static readonly Dictionary<GameObject, CharacterStats> _byOwner = new();
-
         [Tooltip("Always applied, e.g. a difficulty preset for enemies")]
         [SerializeField] private StatModifierPreset[] _presets = System.Array.Empty<StatModifierPreset>();
 
@@ -38,11 +34,6 @@ namespace CGD.Stats
                 return _modifiers;
             }
         }
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics() => _byOwner.Clear();
-
-        public static bool TryGet(GameObject owner, out CharacterStats stats) => _byOwner.TryGetValue(owner, out stats);
 
         // Other components may read stats from their own Awake, before ours has run.
         private void EnsureInitialized()
@@ -69,13 +60,11 @@ namespace CGD.Stats
 
         private void OnEnable()
         {
-            _byOwner[gameObject] = this;
             GameTime.Instance.Clock.Register(this);
         }
 
         private void OnDisable()
         {
-            if (_byOwner.TryGetValue(gameObject, out CharacterStats registered) && registered == this) _byOwner.Remove(gameObject);
             if (GameTime.Exists) GameTime.Instance.Clock.Unregister(this);
         }
 

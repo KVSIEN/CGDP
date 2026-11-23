@@ -3,8 +3,8 @@ using CGD.Combat;
 
 namespace CGD.Tests
 {
-    // An attacker's Entropy Share (VOID's Unmaking) lets that part of a hit through armour.
-    public class EntropyShareTests
+    // The share of a hit a Curse turns into true damage lets that part through armour.
+    public class CurseShareTests
     {
         [Test]
         public void ItsShareIgnoresArmourAndTheRestIsMitigated()

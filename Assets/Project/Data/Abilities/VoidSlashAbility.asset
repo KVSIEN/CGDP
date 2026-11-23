@@ -27,6 +27,15 @@ MonoBehaviour:
   Damage: 30
   ArmorPenetration: 0
   DamageType: 1
-  OnHitEffects: []
+  OnHitEffects:
+  - Effect: {fileID: 11400000, guid: 8f59ecfe6ac14bc382573d3960838518, type: 2}
+    Chance: 1
+    Potency: 1
+    Duration: 0
+  - Effect: {fileID: 11400000, guid: 8f59ecfe6ac14bc382573d3960838518, type: 2}
+    Chance: 1
+    Potency: 1
+    Duration: 0
+
   Heal: 0
   SelfHealShare: 0

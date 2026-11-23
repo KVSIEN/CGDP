@@ -41,9 +41,6 @@ namespace CGD.Items
         ProjectileSpeed   = 25,
         // Extra shots per trigger pull: 1 = always one more, 0.5 = one more half the time.
         Multishot         = 26,
-        // Share of every hit the character deals that lands as Entropy (armour does nothing
-        // against it), 0..1 (base 0). Read by the target as the hit resolves.
-        EntropyShare      = 27,
         // Armour plating capacity (flat), the layer between shield and health that only repair restores.
         Plating           = 28,
     }

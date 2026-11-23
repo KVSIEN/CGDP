@@ -1236,7 +1236,7 @@ MonoBehaviour:
       data:
         _guid: f5fa0851ae2a4522aa4dad83a24787f4
         _position: {x: -200, y: 900}
-        _comment: 'Someone within 3 m with Void Slash ready: rake them with a short slash of entropy (true damage: armour does nothing against it) before getting away. Aborts lower priority'
+        _comment: 'Someone within 3 m with Void Slash ready: rake them with a short slash of true damage (armour does nothing against it) that curses them, before getting away. Aborts lower priority'
         _children:
         - f8dd44db2d174992b8353e7230de161a
         - 13083586287c41c3ada08d7ed00cd2b1
@@ -1456,7 +1456,7 @@ MonoBehaviour:
       data:
         _guid: fcb583f291b94e599869de63cbfc8ad1
         _position: {x: -398, y: 2950}
-        _comment: 'Unmaking pays off on an armoured target (armour does nothing against Entropy), a target in range of its bolts, and one worth finishing'
+        _comment: 'Curse pays off on an armoured target (a curse turns part of every hit on it into true damage, which armour does nothing against), a target in range of its bolts, and one worth finishing'
         _reasons:
         - _key: TargetArmor
           _from: 0
@@ -1488,7 +1488,7 @@ MonoBehaviour:
       data:
         _guid: b2ced7445af0471cb37c5c3245ae394d
         _position: {x: -398, y: 2800}
-        _comment: 'Unmaking ready, the target in view and reason to (mostly an armoured target, also one in range or worth finishing): for 8 s half of every hit it deals lands as Entropy, which armour does nothing against, then carry on. Aborts lower priority'
+        _comment: 'Curse ready, the target in view and reason to (mostly an armoured target, also one in range or worth finishing): lay three stacks of Curse on it (a share of every hit it takes then lands as true damage, whoever deals it), then carry on. Aborts lower priority'
         _children:
         - d1d79eb186ed4acaae85202b1cc0e4ac
         - ef2cefab7b834edab92ff9d647726616

@@ -10,12 +10,12 @@ namespace CGD.Combat
     {
         // The share of a hit, as resolved at `armor`, that is left once the plates' extra armour
         // has had its say too (1 = no extra armour, or a hit armour does nothing against).
-        public static float PlatedShare(in DamageInfo info, float armor, float platingArmor, float entropyShare)
+        public static float PlatedShare(in DamageInfo info, float armor, float platingArmor, float trueShare)
         {
             if (platingArmor <= 0f) return 1f;
 
-            float bare = info.ResolveDamage(armor, entropyShare);
-            return bare > 0f ? info.ResolveDamage(armor + platingArmor, entropyShare) / bare : 1f;
+            float bare = info.ResolveDamage(armor, trueShare);
+            return bare > 0f ? info.ResolveDamage(armor + platingArmor, trueShare) / bare : 1f;
         }
 
         // Takes what the plates can out of `amount` (damage at the character's own armour).

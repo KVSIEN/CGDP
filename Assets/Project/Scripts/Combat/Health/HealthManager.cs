@@ -294,8 +294,8 @@ namespace CGD.Combat
             OnHit?.Invoke(info);
 
             float armor    = Armor * (1f - _armorReductionPercent);
-            float entropy  = EntropyShareOf(info.Source);
-            float resolved = info.ResolveDamage(armor, entropy) * multiplier;
+            float trueShare = _statusEffects != null ? _statusEffects.TrueDamageShare : 0f;
+            float resolved  = info.ResolveDamage(armor, trueShare) * multiplier;
             float amount   = resolved;
             foreach (IDamageInterceptor interceptor in _interceptors)
                 amount = Mathf.Max(0f, interceptor.Intercept(info, amount, point));
@@ -321,7 +321,7 @@ namespace CGD.Combat
             bool skipsPlating = info.BypassesPlating && !LivesOnPlating;
             if (amount > 0f && _plating > 0f && !skipsPlating)
             {
-                float platedShare = PlatingLayer.PlatedShare(info, armor, PlatingArmor * (1f - _armorReductionPercent), entropy);
+                float platedShare = PlatingLayer.PlatedShare(info, armor, PlatingArmor * (1f - _armorReductionPercent), trueShare);
                 amount = PlatingLayer.Absorb(amount, _plating, platedShare, out float absorbed);
                 _plating -= absorbed;
             }
@@ -344,13 +344,6 @@ namespace CGD.Combat
         }
 
         private float Pools => _currentHealth + _shield.Current + _plating;
-
-        // The attacker's Entropy Share (a VOID buff), read as the hit lands so a shot fired before
-        // the buff ends still carries it. Sourceless hits (status ticks, hazards) have none.
-        private static float EntropyShareOf(DamageSource source) =>
-            source.Owner != null && CharacterStats.TryGet(source.Owner, out CharacterStats attacker)
-                ? Mathf.Clamp01(attacker.Apply(ItemStat.EntropyShare, 0f))
-                : 0f;
 
         // `reachedHealth`: the hit took some health, which a bleed needs to take hold.
         private void ApplyOnHitEffects(in DamageInfo info, bool reachedHealth)
