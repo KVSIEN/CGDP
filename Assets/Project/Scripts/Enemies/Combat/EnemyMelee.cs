@@ -101,7 +101,7 @@ namespace CGD.Enemies
             data.AttackSound.TryPlay(self.position);
 
             Vector3 center = self.position + Vector3.up + self.forward * blow.Reach;
-            Reach.Gather(center, blow.Radius, _targetMask, ignore: self);
+            Reach.Gather(center, blow.Radius, _targetMask, ignore: self, shelterFrom: self.position + Vector3.up);
 
             float damage = (_stats != null ? _stats.Apply(ItemStat.Damage, data.AttackDamage) : data.AttackDamage) * blow.DamageShare;
             damage *= _ai.Ambush.Consume(out StatusEffectApplication[] ambushEffects);
