@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
   DisplayName: Tech Tank
   Team: 4
+  AnchorRadius: 14
   MaxHealth: 0
   Armor: 160
   MaxPlating: 120

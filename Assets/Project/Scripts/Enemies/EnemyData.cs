@@ -21,6 +21,10 @@ namespace CGD.Enemies
         [Tooltip("1 = rank and file; higher tiers are tougher and roll more random affixes (see EnemyAffixPool)")]
         [Range(1, 3)] public int Tier = 1;
 
+        [Tooltip("Above 0, this enemy anchors its squad: the rest of its team keep within about this many metres of it " +
+                 "(cover is chosen near it, and the Anchor Tether and Return To Anchor nodes pull strays back). 0 = not an anchor")]
+        [Min(0f)] public float AnchorRadius = 0f;
+
         [Header("Health")]
         [Tooltip("0 = no health at all: it lives on its plating and dies when that runs out (TECH)")]
         public float MaxHealth = 100f;

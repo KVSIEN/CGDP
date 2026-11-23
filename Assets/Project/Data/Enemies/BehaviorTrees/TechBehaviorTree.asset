@@ -159,6 +159,16 @@ MonoBehaviour:
   - rid: 1148
   - rid: 1149
   - rid: 1150
+  - rid: 1151
+  - rid: 1152
+  - rid: 1153
+  - rid: 1154
+  - rid: 1155
+  - rid: 1156
+  - rid: 1157
+  - rid: 1158
+  - rid: 1159
+  - rid: 1160
   references:
     version: 2
     RefIds:
@@ -183,6 +193,8 @@ MonoBehaviour:
         - 556ec30074cc4cbe8a65570413ee7380
         - 831a9c6fc43940d5bfcbafca8f6e7067
         - 755bca2b640d43d3bc66aeb5221d2f26
+        - 549b33e73bfc4932b2f1243acbe6e394
+        - b496f69753ed4c7dbebdaca5eac12a8e
         - 14383440b1974f3a8390906a545a0478
         _abort: 0
     - rid: 1002
@@ -308,6 +320,7 @@ MonoBehaviour:
         - 56c179d24c064c998207505f4413309c
         - 005f4c77603840d4ab6a10fa5550053b
         - 223bb24576d84dd29211ebc63a235095
+        - f20c54c6a24340bd98f8bae8a42abd9f
         - 47dd9f0899c0475d9ee88439d3e2f8ce
         - 97e380fa678d412082ad0d2bab96eef0
         - d0af4340b2804db3ab7aeb7b81c5bae1
@@ -1484,3 +1497,91 @@ MonoBehaviour:
         - 0c2346c338b5479ab9558b1e9f9b29ee
         - 56ed65a5d3734c7eae4b80d613e3d9f3
         _abort: 2
+    - rid: 1151
+      type: {class: AnchorTether, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9d2b2af71d3d4f0cb5a061201dcc407f
+        _position: {x: 0, y: 0}
+        _comment: 
+        _state: 0
+        _slack: 4
+    - rid: 1152
+      type: {class: ReturnToAnchor, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4422427b163d410b85cc8bd1d4107111
+        _position: {x: 0, y: 0}
+        _comment: 
+        _settleShare: 0.6
+        _speed: 1
+        _giveUpAfter: 8
+    - rid: 1153
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f20c54c6a24340bd98f8bae8a42abd9f
+        _position: {x: 0, y: 0}
+        _comment: "Strayed beyond its siege tank's reach: close up on it, so the squad holds one area round the tank. Skipped when the squad has no anchor"
+        _children:
+        - 9d2b2af71d3d4f0cb5a061201dcc407f
+        - 4422427b163d410b85cc8bd1d4107111
+        _abort: 0
+    - rid: 1154
+      type: {class: HasLeader, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 3d71315e75924f7c8ea3c22dd9ffb446
+        _position: {x: 0, y: 0}
+        _comment: 
+    - rid: 1155
+      type: {class: AnchorTether, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6ac8405b6ed74927ae837eab62d25504
+        _position: {x: 0, y: 0}
+        _comment: 
+        _state: 0
+        _slack: 0
+    - rid: 1156
+      type: {class: ReturnToAnchor, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9c4215ef3aaa4f5bbc8fd4a05901643b
+        _position: {x: 0, y: 0}
+        _comment: 
+        _settleShare: 0.6
+        _speed: 1
+        _giveUpAfter: 8
+    - rid: 1157
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 549b33e73bfc4932b2f1243acbe6e394
+        _position: {x: 0, y: 0}
+        _comment: 'Calm, in a squad someone else leads: stay round the siege tank while exploring nearby'
+        _children:
+        - 3d71315e75924f7c8ea3c22dd9ffb446
+        - 6ac8405b6ed74927ae837eab62d25504
+        - 9c4215ef3aaa4f5bbc8fd4a05901643b
+        _abort: 0
+    - rid: 1158
+      type: {class: AnchorTether, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 644769435e2d42e3a3e79ed89262963d
+        _position: {x: 0, y: 0}
+        _comment: 
+        _state: 0
+        _slack: 8
+    - rid: 1159
+      type: {class: ReturnToAnchor, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 4a53038f77f84970a4a4d305ab4fa83e
+        _position: {x: 0, y: 0}
+        _comment: 
+        _settleShare: 0.6
+        _speed: 1
+        _giveUpAfter: 8
+    - rid: 1160
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: b496f69753ed4c7dbebdaca5eac12a8e
+        _position: {x: 0, y: 0}
+        _comment: 'Calm, leading the squad: range a little further than the others, so the tank has ground to follow into'
+        _children:
+        - 644769435e2d42e3a3e79ed89262963d
+        - 4a53038f77f84970a4a4d305ab4fa83e
+        _abort: 0

@@ -57,6 +57,9 @@ namespace CGD.Enemies
         private readonly List<(int index, float score)> _unseen = new();
 
         private int   _claimed = -1;
+        // The squad's anchor (a siege tank) for the cover choice in progress; none when AnchorRadius is 0.
+        private Vector3 _anchorAt;
+        private float   _anchorRadius;
         private bool  _hasMeleeTurn;
         private int   _strikes;
         private float _turnRestUntil;
@@ -188,6 +191,8 @@ namespace CGD.Enemies
             if (map == null) return false;
 
             _knowledge.Known(_ai.transform.position, CoverSearchRadius, _nearby);
+            _anchorRadius = EnemyRoster.TryAnchorOf(_ai, out EnemyAI anchor, out float radius) ? radius : 0f;
+            if (_anchorRadius > 0f) _anchorAt = anchor.transform.position;
             for (int i = 0; i < _best.Length; i++) _best[i] = (-1, float.MinValue);
 
             foreach (int index in _nearby)
@@ -441,6 +446,9 @@ namespace CGD.Enemies
 
             float travel = Vector3.Distance(cover.Position, _ai.transform.position);
             score = -1.5f * travel / CoverSearchRadius + Random.value * 0.3f - ExposureToOthers(cover, threat);
+            // A squad with an anchor fights round it: cover beyond its reach is worth less the further out it is.
+            if (_anchorRadius > 0f)
+                score -= 3f * Mathf.Max(0f, Vector3.Distance(cover.Position, _anchorAt) - _anchorRadius) / _anchorRadius;
 
             switch (use)
             {

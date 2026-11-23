@@ -172,6 +172,21 @@ namespace CGD.Tests
             return lines;
         }
 
+        // The Tech squad holds one area round its tank: the tank anchors it, its agents and support
+        // are called back when they stray, and the tank creeps its post forward on its own.
+        [Test]
+        public void TechSquadHoldsRoundItsSiegeTank()
+        {
+            var tank = AssetDatabase.LoadAssetAtPath<EnemyData>("Assets/Project/Data/Enemies/AITest/TechTankEnemyData.asset");
+            Assert.Greater(tank.AnchorRadius, 0f, "the siege tank anchors its squad");
+            foreach (string tree in new[] { "TechBehaviorTree", "TechSupportBehaviorTree" })
+            {
+                HashSet<Type> nodes = EnemyTreeContents.NodeTypes(Load(tree));
+                Assert.IsTrue(nodes.Contains(typeof(AnchorTether)) && nodes.Contains(typeof(ReturnToAnchor)), $"{tree}: closes up on the tank when it strays");
+            }
+            Assert.IsTrue(EnemyTreeContents.NodeTypes(Load("TechTankBehaviorTree")).Contains(typeof(TakeCover)), "the tank bounds its post forward");
+        }
+
         // Tech's tank is a long-range siege engine: it holds a post behind its squad, soaks for the
         // allies round it and denies the enemy cover — mortaring where it hides, firing into the
         // spot, watching for it to break cover.

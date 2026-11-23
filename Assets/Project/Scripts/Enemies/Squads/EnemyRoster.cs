@@ -10,6 +10,8 @@ namespace CGD.Enemies
     // most, so it just walks the list.
     internal static class EnemyRoster
     {
+        private const float AnchorSearch = 80f;
+
         private static readonly List<EnemyAI> Members = new();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -142,6 +144,26 @@ namespace CGD.Enemies
                 found    = true;
             }
             return found;
+        }
+
+        // The nearest living teammate that anchors the squad (EnemyData › Anchor Radius) within
+        // AnchorSearch metres, and how far from it the squad keeps. False when it has none.
+        public static bool TryAnchorOf(EnemyAI asker, out EnemyAI anchor, out float radius)
+        {
+            anchor = null;
+            radius = 0f;
+            float bestSq = AnchorSearch * AnchorSearch;
+            foreach (EnemyAI other in Members)
+            {
+                if (other.Data.AnchorRadius <= 0f || !IsTeammate(asker, other)) continue;
+
+                float sq = (other.transform.position - asker.transform.position).sqrMagnitude;
+                if (sq > bestSq) continue;
+                bestSq = sq;
+                anchor = other;
+                radius = other.Data.AnchorRadius;
+            }
+            return anchor != null;
         }
 
         public static bool TryNearestKin(EnemyAI asker, out EnemyAI nearest)
