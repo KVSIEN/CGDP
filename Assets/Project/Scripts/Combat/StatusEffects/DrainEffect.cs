@@ -10,7 +10,7 @@ namespace CGD.Combat
     public class DrainEffect : StatusEffect
     {
         [Header("Drain")]
-        [Tooltip("Damage taken per tick at Potency 1 (true damage, so armour does not blunt it)")]
+        [Tooltip("Damage taken per tick at Potency 1 (ordinary damage: armour, plating and shield soak it first)")]
         [Min(0f)] public float DamagePerTick = 6f;
         [Tooltip("Share of the damage actually taken that heals whoever applied it")]
         [Range(0f, 2f)] public float LifestealShare = 0.6f;
@@ -21,7 +21,7 @@ namespace CGD.Combat
 
             DamageSource source = target.InstigatorOf(this);
             float before = target.Damageable is HealthManager health ? health.Health + health.Shield + health.Plating : 0f;
-            target.Damageable.TakeDamage(new DamageInfo(DamagePerTick * target.PotencyOf(this), type: DamageType.True, instigator: source));
+            target.Damageable.TakeDamage(new DamageInfo(DamagePerTick * target.PotencyOf(this), instigator: source));
             if (target.Damageable is not HealthManager after) return;
 
             float taken = Mathf.Max(0f, before - (after.Health + after.Shield + after.Plating));

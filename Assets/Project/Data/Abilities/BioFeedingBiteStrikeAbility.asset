@@ -25,10 +25,14 @@ MonoBehaviour:
   - Effect: {fileID: 11400000, guid: d3c73b5c46ee4bab989283ad0c7e88c7, type: 2}
     Chance: 1
     Potency: 1
-    Duration: 4
+    Duration: 3
   - Effect: {fileID: 11400000, guid: 2e540cc1f44b4111baecd0fdb88be16d, type: 2}
     Chance: 1
     Potency: 1
-    Duration: 4
+    Duration: 3
+  - Effect: {fileID: 11400000, guid: f2a43b1c8de76a84490042e6d8d13b50, type: 2}
+    Chance: 1
+    Potency: 0.5
+    Duration: 6
   Heal: 0
   SelfHealShare: 0.6

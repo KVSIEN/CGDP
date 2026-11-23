@@ -15,10 +15,10 @@ MonoBehaviour:
   DisplayName: Drained
   Icon: {fileID: 0}
   Color: {r: 0.7, g: 0.15, b: 0.2, a: 1}
-  Duration: 4
+  Duration: 3
   TickInterval: 0.5
   Stacking: 0
   MaxStacks: 1
   DecayOneStackAtATime: 0
-  DamagePerTick: 4
+  DamagePerTick: 5
   LifestealShare: 0.6

@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: Latched
   Icon: {fileID: 0}
   Color: {r: 0.85, g: 0.6, b: 0.3, a: 1}
-  Duration: 4
+  Duration: 3
   TickInterval: 1
   Stacking: 0
   MaxStacks: 1
