@@ -62,7 +62,6 @@ MonoBehaviour:
   - rid: 1046
   - rid: 1047
   - rid: 1048
-  - rid: 1049
   - rid: 1050
   - rid: 1051
   - rid: 1052
@@ -124,7 +123,7 @@ MonoBehaviour:
         - ce5f24a2cf1340f9b2ebfa1309e09940
         - 9609f52a3296435c9d9df0317b79d196
         - ab1218ba19f64f6b8d70923e46a21bcc
-        - b1b2c3d4e5f60718293a4b5c6d7e8f01
+        - b1b2c3d4e5f60718293a4b5c6d7e8f02
         - 4561948b6c954ae3a835d63f2854df7e
         - d4fce6a9919e4df98b491d13cde3ba2d
         _abort: 0
@@ -504,7 +503,7 @@ MonoBehaviour:
         _guid: 4003efde7a3141eb873af0fcca7702d3
         _position: {x: 2860, y: 750}
         _comment: 
-        _distance: 3
+        _distance: 6
     - rid: 1046
       type: {class: Subtree, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -529,16 +528,7 @@ MonoBehaviour:
         _guid: 40694e34c9e4448e8471326377f52a9d
         _position: {x: 2640, y: 450}
         _comment: 
-        _fartherThan: 15
-    - rid: 1049
-      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: b1b2c3d4e5f60718293a4b5c6d7e8f01
-        _position: {x: 2300, y: 450}
-        _comment: 'A squadmate is fighting something it hasn''t seen yet: go and join the fight'
-        _children:
-        - b1b2c3d4e5f60718293a4b5c6d7e8f02
-        _succeed: 1
+        _fartherThan: 8
     - rid: 1050
       type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:

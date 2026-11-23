@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
   DisplayName: Void Tank
   Team: 5
+  AnchorRadius: 20
   MaxHealth: 60
   Armor: 30
   MaxShield: 360

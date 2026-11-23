@@ -147,6 +147,9 @@ MonoBehaviour:
   - rid: 1171
   - rid: 1172
   - rid: 1173
+  - rid: 1174
+  - rid: 1175
+  - rid: 1176
   references:
     version: 2
     RefIds:
@@ -203,6 +206,7 @@ MonoBehaviour:
         - 5ffaf5dbe05343eaa7f0e1bee6050e62
         - 49f5f34150784cb38b70e28d3737a911
         - 41f25c18d7d04d0dbd0edf6592ca0dee
+        - 58e15da819064759aa03e3e69568dc82
         - 2420e13ecef54098819bd2fb503ee662
         _abort: 0
     - rid: 1002
@@ -1499,3 +1503,32 @@ MonoBehaviour:
         - fcb583f291b94e599869de63cbfc8ad1
         - f4f58819e78841069ef899585d1530b5
         _abort: 2
+    - rid: 1174
+      type: {class: AnchorTether, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ce48535f5ec04405b91f5e8d040893d3
+        _position: {x: 0, y: 0}
+        _comment: 
+        _state: 0
+        _radiusShare: 0.7
+        _slack: 0
+    - rid: 1175
+      type: {class: ReturnToAnchor, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ceaa9239e7c44d359fd08f4bed4081e2
+        _position: {x: 0, y: 0}
+        _comment: 
+        _settleShare: 0.5
+        _speed: 1
+        _sneak: 1
+        _giveUpAfter: 10
+    - rid: 1176
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 58e15da819064759aa03e3e69568dc82
+        _position: {x: 0, y: 0}
+        _comment: 'Calm: keep with the coven round its frost colossus, closing up when it strays; the pack moves at its pace, keeping to the walls'
+        _children:
+        - ce48535f5ec04405b91f5e8d040893d3
+        - ceaa9239e7c44d359fd08f4bed4081e2
+        _abort: 0

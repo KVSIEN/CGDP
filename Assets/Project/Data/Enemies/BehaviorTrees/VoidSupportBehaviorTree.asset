@@ -80,6 +80,8 @@ MonoBehaviour:
   - rid: 1064
   - rid: 1065
   - rid: 1066
+  - rid: 1067
+  - rid: 1068
   _groups: []
   _notes: []
   references:
@@ -106,7 +108,8 @@ MonoBehaviour:
         - bb05af6013fe490197a744c729fe8106
         - 41f25c18d7d04d0dbd0edf6592ca0dee
         - 93f42b72a7fc460198765e63daf9e826
-        - e0f224b10b624283abddbdd14e97f0e4
+        - a1d06411aa8341acbabbecd6d152321b
+        - 8ea63a73405f4ac3bb47fa2e620bdbb9
         - 1b6c73080d4f4e0eb40024cc29f2ad24
         - 56e06540f4bd4feda0e02601cb30649d
         _abort: 0
@@ -687,11 +690,31 @@ MonoBehaviour:
         - ab23c4a28c2c4bc1877ef063ec79ab21
         _seconds: 4
     - rid: 1066
-      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      type: {class: AnchorTether, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: e0f224b10b624283abddbdd14e97f0e4
+        _guid: 372987df84e44f0687a1d225fb5b7e5b
         _position: {x: 0, y: 0}
-        _comment: "A squadmate is fighting something it hasn't seen yet: go and join the fight, stopping at its own range"
+        _comment: 
+        _state: 0
+        _radiusShare: 0.7
+        _slack: 0
+    - rid: 1067
+      type: {class: ReturnToAnchor, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f487a892b9a14b61a22a4defc4766ac0
+        _position: {x: 0, y: 0}
+        _comment: 
+        _settleShare: 0.5
+        _speed: 1
+        _sneak: 1
+        _giveUpAfter: 10
+    - rid: 1068
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8ea63a73405f4ac3bb47fa2e620bdbb9
+        _position: {x: 0, y: 0}
+        _comment: 'Calm: keep with the coven round its frost colossus, closing up when it strays; the pack moves at its pace, keeping to the walls'
         _children:
-        - a1d06411aa8341acbabbecd6d152321b
-        _succeed: 1
+        - 372987df84e44f0687a1d225fb5b7e5b
+        - f487a892b9a14b61a22a4defc4766ac0
+        _abort: 0

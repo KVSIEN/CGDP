@@ -99,7 +99,6 @@ MonoBehaviour:
   - rid: 1123
   - rid: 1124
   - rid: 1125
-  - rid: 1126
   - rid: 1127
   - rid: 1128
   - rid: 1129
@@ -129,7 +128,7 @@ MonoBehaviour:
         - 5117a919dabf489a8640e2d181349535
         - 755bca2b640d43d3bc66aeb5221d2f26
         - 9ea344e64b0c4310a0bdb8e50d3eddeb
-        - 3556ad6c856f48cf84f38c46706dac4d
+        - 020a9fdfe3b74856bc5a480b3d1f9524
         - 5584313faa4a4d5f99346d35060704f2
         - 4aff8ecef6fa4108a28d686b50db183a
         - ecb92a727c3d455594999408329c5bb6
@@ -906,15 +905,6 @@ MonoBehaviour:
         _children:
         - 32d9bc233ec44ddda7968e53fe76b6ad
         _seconds: 4
-    - rid: 1126
-      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
-      data:
-        _guid: 3556ad6c856f48cf84f38c46706dac4d
-        _position: {x: 0, y: 0}
-        _comment: "A squadmate is fighting something it hasn't seen yet: go and join the fight, stopping at its own range"
-        _children:
-        - 020a9fdfe3b74856bc5a480b3d1f9524
-        _succeed: 1
     - rid: 1127
       type: {class: AnchorTether, ns: CGD.Enemies, asm: CGD.Runtime}
       data:

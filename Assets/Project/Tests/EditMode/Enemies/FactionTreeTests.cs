@@ -187,6 +187,45 @@ namespace CGD.Tests
             Assert.IsTrue(EnemyTreeContents.NodeTypes(Load("TechTankBehaviorTree")).Contains(typeof(TakeCover)), "the tank bounds its post forward");
         }
 
+        // Bio's herd and Void's coven gather round their tank too, but loosely, and walk the way
+        // their faction does (through bushes, along walls) when they close up on it.
+        [TestCase("Bio", 22f)]
+        [TestCase("Void", 20f)]
+        public void BioAndVoidSquadsGatherRoundTheirTank(string faction, float radius)
+        {
+            var tank = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/AITest/{faction}TankEnemyData.asset");
+            Assert.AreEqual(radius, tank.AnchorRadius, $"{faction}: the tank anchors its pack");
+            foreach (string tree in new[] { faction + "BehaviorTree", faction + "SupportBehaviorTree" })
+            {
+                bool sneaks = false;
+                foreach (BtNode node in EnemyTreeContents.Nodes(Load(tree)))
+                    if (node is ReturnToAnchor back) sneaks = back.Sneak;
+                Assert.IsTrue(sneaks, $"{tree}: closes up on the tank the faction's way");
+            }
+        }
+
+        // Join Fight fails when nobody nearby is fighting; wrapped in Force Result it would report
+        // success and keep a tank or support from ever reaching the follow-leader and routine
+        // branches after it.
+        [TestCase("TechTankBehaviorTree")]
+        [TestCase("BioTankBehaviorTree")]
+        [TestCase("VoidTankBehaviorTree")]
+        [TestCase("TechSupportBehaviorTree")]
+        [TestCase("BioSupportBehaviorTree")]
+        [TestCase("VoidSupportBehaviorTree")]
+        public void JoinFightLeavesRoomForTheCalmBranchesAfterIt(string name)
+        {
+            BehaviorTreeAsset tree = Load(name);
+            foreach (BtNode node in EnemyTreeContents.Nodes(tree))
+            {
+                if (node is not ForceResult forced) continue;
+                foreach (string guid in forced.ChildGuids)
+                    if (tree.FindNode(guid) is TimeLimit limit)
+                        foreach (string inner in limit.ChildGuids)
+                            Assert.IsFalse(tree.FindNode(inner) is JoinFight, $"{name}: Join Fight is not wrapped in Force Result");
+            }
+        }
+
         // Tech's tank is a long-range siege engine: it holds a post behind its squad, soaks for the
         // allies round it and denies the enemy cover — mortaring where it hides, firing into the
         // spot, watching for it to break cover.

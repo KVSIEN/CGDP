@@ -86,6 +86,8 @@ MonoBehaviour:
   - rid: 1144
   - rid: 1145
   - rid: 1146
+  - rid: 1147
+  - rid: 1148
   _groups: []
   _notes: []
   references:
@@ -113,7 +115,8 @@ MonoBehaviour:
         - 9609f52a3296435c9d9df0317b79d196
         - ab1218ba19f64f6b8d70923e46a21bcc
         - 3f0f14a124ec46d2affd1b5983bcc2c2
-        - f1ad75c4963d4db09fce36f6d7fb709d
+        - cfe1b6a8b5f148e7b76592ac3fca61c1
+        - abf30fe0eeb44dfea1c583fe082008b3
         - f7c52f46011f4193a5a076c47a1f1381
         - 45ac5457b1c54cc3a4c489c8228bb6bc
         _abort: 0
@@ -747,11 +750,31 @@ MonoBehaviour:
         - fa3413c2e6ad48aabfa493f8794c92b8
         _seconds: 4
     - rid: 1146
-      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      type: {class: AnchorTether, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: f1ad75c4963d4db09fce36f6d7fb709d
+        _guid: 727d388e695743de9a338166ff831f9d
         _position: {x: 0, y: 0}
-        _comment: "A squadmate is fighting something it hasn't seen yet: go and join the fight, stopping at its own range"
+        _comment: 
+        _state: 0
+        _radiusShare: 0.7
+        _slack: 0
+    - rid: 1147
+      type: {class: ReturnToAnchor, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ebbfbd512a6e48cf879d6730f989530b
+        _position: {x: 0, y: 0}
+        _comment: 
+        _settleShare: 0.5
+        _speed: 1
+        _sneak: 1
+        _giveUpAfter: 10
+    - rid: 1148
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: abf30fe0eeb44dfea1c583fe082008b3
+        _position: {x: 0, y: 0}
+        _comment: 'Calm: keep with the herd round its plague hulk, closing up when it strays; the pack moves at its pace, slipping through the bushes'
         _children:
-        - cfe1b6a8b5f148e7b76592ac3fca61c1
-        _succeed: 1
+        - 727d388e695743de9a338166ff831f9d
+        - ebbfbd512a6e48cf879d6730f989530b
+        _abort: 0

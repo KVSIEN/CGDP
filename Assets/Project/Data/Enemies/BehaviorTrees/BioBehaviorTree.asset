@@ -186,6 +186,9 @@ MonoBehaviour:
   - rid: 1198
   - rid: 1199
   - rid: 1200
+  - rid: 1201
+  - rid: 1202
+  - rid: 1203
   references:
     version: 2
     RefIds:
@@ -209,6 +212,7 @@ MonoBehaviour:
         - 630b80e8cc974ea982793e670e2c149d
         - 56abf79eec294040afc52f36ffed73e9
         - 9609f52a3296435c9d9df0317b79d196
+        - 998a571f9e9848a99077cd214530b086
         - ab1218ba19f64f6b8d70923e46a21bcc
         - a6cf5ba10c184f2398441c4efdc470ec
         _abort: 0
@@ -1735,3 +1739,32 @@ MonoBehaviour:
         - 4826fcc81e28489c8c3a8c7026ac7ef4
         - 4177425dca4c446da37a2ecf7754b26a
         _abort: 2
+    - rid: 1201
+      type: {class: AnchorTether, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 618a74401e5c4ebbbbd9be9142515b6c
+        _position: {x: 0, y: 0}
+        _comment: 
+        _state: 0
+        _radiusShare: 0.7
+        _slack: 0
+    - rid: 1202
+      type: {class: ReturnToAnchor, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: cf95b1b9cc514215a86cb8f0bcc98c69
+        _position: {x: 0, y: 0}
+        _comment: 
+        _settleShare: 0.5
+        _speed: 1
+        _sneak: 1
+        _giveUpAfter: 10
+    - rid: 1203
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 998a571f9e9848a99077cd214530b086
+        _position: {x: 0, y: 0}
+        _comment: 'Calm: keep with the herd round its plague hulk, closing up when it strays; the pack moves at its pace, slipping through the bushes'
+        _children:
+        - 618a74401e5c4ebbbbd9be9142515b6c
+        - cf95b1b9cc514215a86cb8f0bcc98c69
+        _abort: 0

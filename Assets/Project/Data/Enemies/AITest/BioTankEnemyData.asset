@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
   DisplayName: Bio Tank
   Team: 3
+  AnchorRadius: 22
   MaxHealth: 330
   Armor: 45
   MaxPlating: 40

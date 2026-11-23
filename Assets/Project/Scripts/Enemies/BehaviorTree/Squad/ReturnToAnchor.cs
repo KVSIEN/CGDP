@@ -15,10 +15,14 @@ namespace CGD.Enemies
         [SerializeField, Range(0.2f, 1f)] private float _settleShare = 0.6f;
         [Tooltip("Speed, as a share of chase speed")]
         [SerializeField, Range(0.2f, 1.5f)] private float _speed = 1f;
+        [Tooltip("Walks the way its faction sneaks (Void keeps to walls, Bio slips through bushes) instead of the shortest way")]
+        [SerializeField] private bool _sneak;
         [Tooltip("Seconds to get back before giving up")]
         [SerializeField, Min(1f)] private float _giveUpAfter = 8f;
 
         [NonSerialized] private float _givesUpAt;
+
+        internal bool Sneak => _sneak;
 
         public override string Summary => $"Within {_settleShare:P0} of its radius";
 
@@ -43,7 +47,7 @@ namespace CGD.Enemies
             Ai.ReportState(hasThreat ? EnemyAI.AiState.Chase : EnemyAI.AiState.Patrol);
             if (hasThreat) Ai.Motion.KeepEyesOnTarget(context.DeltaTime);
             Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed * _speed);
-            Ai.Routing.SetDestination(at);
+            Ai.Routing.SetDestination(at, WalkStyle(_sneak));
             return BtStatus.Running;
         }
 
