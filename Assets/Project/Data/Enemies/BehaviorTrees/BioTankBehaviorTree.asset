@@ -83,7 +83,7 @@ MonoBehaviour:
       data:
         _guid: 1ba0f3f01fc94390837d21d85118d87a
         _position: {x: 0, y: 0}
-        _comment: 'BIO tank (plague hulk): a slow mass of flesh with a huge health pool that fights at mid to close range with poison. It presses in ahead of the pack to about 7 m, spitting poison, throws Acid Spew into the enemy''s path (Grenade), chokes everything within 5 m in a Plague Cloud (Signature) and strikes with a poisoned blow in reach; below 60% health it regrows (Boost: Regrowth, 15 health a second for 8 s). Immune to poison. Its Soak Aura takes 30% of every hit on an ally within 8 m. Kit: Signature (Plague Cloud), Boost (Regrowth), Grenade (Acid Spew).'
+        _comment: 'BIO tank (plague hulk): a slow mass of flesh with a huge health pool that fights at mid range with poison. It holds about 11 m off, strafing and spitting poison bolts that leave a poison pool where they land, lobs Acid Spew pools into the enemy''s path (Grenade), and when something gets within 5 m chokes it in a Plague Cloud (Signature) and strikes with a poisoned blow in reach; below 60% health it regrows (Boost: Regrowth, 15 health a second for 8 s). Immune to poison. Its Soak Aura takes 30% of every hit on an ally within 8 m. Kit: Signature (Plague Cloud), Boost (Regrowth), Grenade (Acid Spew).'
         _children:
         - ac40c7e214cc4e37a5f193faca53f966
     - rid: 1001
@@ -347,7 +347,7 @@ MonoBehaviour:
       data:
         _guid: 5f15a1927c3e41aca300373e01b8db6c
         _position: {x: 1815, y: 600}
-        _comment: 'Press in to 7 m, facing it, spitting poison as it comes'
+        _comment: 'Hold mid range (about 11 m), strafing and spitting poison that leaves a pool where it lands'
         _children:
         - 8759f6c52f5041dbad0675322cfcd72b
         - 1e1d563e39f94882bd0ae790cf0ff37b
@@ -387,14 +387,11 @@ MonoBehaviour:
         - 350b9f3711b84fec871d1b6f241352e3
         _policy: 0
     - rid: 1035
-      type: {class: AdvanceFacing, ns: CGD.Enemies, asm: CGD.Runtime}
+      type: {class: HoldRange, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
         _guid: a2389ebf4c6a480baa9a09de4c758d5b
         _position: {x: 1870, y: 1200}
-        _comment: 
-        _stopDistance: 7
-        _speed: 0.7
-        _holdOnArrival: 1
+        _comment: 'Keeps its mid-range distance, backing off when pressed, strafing'
     - rid: 1036
       type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:

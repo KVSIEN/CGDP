@@ -130,6 +130,10 @@ namespace CGD.Enemies
         [Min(0f)] public float ShotBlastRadius = 0f;
         [Tooltip("Status effects every ranged hit applies (Void's slow)")]
         public StatusEffectApplication[] ShotEffects;
+        [Tooltip("Prefab with a DamageZone (Prefabs/VFX/DamageZone): a projectile shot leaves a patch of harmful ground where it lands. Empty = none")]
+        public GameObject ShotZonePrefab;
+        [Tooltip("What that patch does (radius, how long it lasts, damage per tick, look). A radius of 0 = no patch. It applies the Shot Effects too")]
+        public ZoneSettings ShotZone = new() { Radius = 0f };
 
         [Header("Group & Reactions")]
         [Tooltip("It won't step in to strike while this many allies (itself included) are already in melee with the same target — it circles instead")]

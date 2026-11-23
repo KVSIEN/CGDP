@@ -90,6 +90,7 @@ namespace CGD.Combat
                 if (!TryPassThrough(hit.collider))
                 {
                     if (_launch.BlastRadius > 0f) Splash(hit);
+                    LeaveZone(hit);
                     Impacted?.Invoke(hit.point, hit.normal);
                     Despawn();
                     return;
@@ -119,6 +120,21 @@ namespace CGD.Combat
             IDamageable direct = Hitbox.FindDamageable(hit.collider);
             foreach (AreaHit splash in _blast.Hits)
                 if (splash.Target != direct) splash.Target.TakeDamage(_launch.Damage);
+        }
+
+        // The patch of ground it leaves where it landed (a poison spit's pool), sat on the floor below
+        // the impact so a round that hits a wall or a body still leaves it underfoot.
+        private void LeaveZone(RaycastHit hit)
+        {
+            if (_launch.ZonePrefab == null || _launch.Zone == null || _launch.Zone.Radius <= 0f) return;
+
+            Vector3 centre = hit.point;
+            if (Physics.Raycast(hit.point + Vector3.up * 0.5f, Vector3.down, out RaycastHit ground, 3f, _launch.HitMask, QueryTriggerInteraction.Ignore))
+                centre = ground.point;
+
+            GameObject go = PrefabPool.Spawn(_launch.ZonePrefab, centre + Vector3.up * 0.02f, Quaternion.identity);
+            if (go.TryGetComponent(out DamageZone zone))
+                zone.Begin(_launch.Zone, _launch.Zone.Radius, _launch.Damage.Source, _launch.HitMask, _launch.Damage.OnHitEffects);
         }
 
         // A target (not scenery) with pierces left: it carries on, and won't strike that target again.

@@ -40,10 +40,12 @@ MonoBehaviour:
   AttackCooldown: 1.3
   AttackWindup: 0.45
   DamageNumberColor: {r: 0.45, g: 1, b: 0.4, a: 1}
-  PreferredRange: 9
+  PreferredRange: 11
   SpreadAngle: 3
-  BurstCount: 1
-  BurstInterval: 0.2
+  BurstCount: 2
+  BurstInterval: 0.6
+  BurstWindup: 0.5
+  BurstRecovery: 0.8
   StrafeInterval: 2
   StrafeDistance: 4
   Grenade: {fileID: 11400000, guid: 80247cf6a7b34c5b9bef3246502a8cba, type: 2}
@@ -54,9 +56,9 @@ MonoBehaviour:
   Support: {fileID: 0}
   Special: {fileID: 0}
   RangedAttackCooldown: 2
-  RangedAttackDamage: 6
+  RangedAttackDamage: 8
   ShotProjectile: {fileID: 2000000000000000001, guid: 1f82aa2a1a6b413195cb1a35090a7c59, type: 3}
-  ShotSpeed: 18
+  ShotSpeed: 16
   ShotRadius: 0.3
   ShotBlastRadius: 1.2
   AlertDuration: 4
@@ -74,3 +76,15 @@ MonoBehaviour:
     Chance: 1
     Potency: 1
     Duration: 0
+  ShotZonePrefab: {fileID: 7100000000000000001, guid: cda61e22cff245f28419d5aa6ec25518, type: 3}
+  ShotZone:
+    Radius: 2.2
+    Duration: 6
+    TickInterval: 0.5
+    DamagePerTick: 2
+    DamageType: 0
+    ArmorPenetration: 0
+    Color: {r: 0.45, g: 0.9, b: 0.15, a: 0.5}
+    Glow: 2
+    EntryNoiseRadius: 0
+    ShieldSiphon: 0

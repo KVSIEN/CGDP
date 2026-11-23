@@ -22,5 +22,9 @@ namespace CGD.Combat
         // Metres already resolved before the projectile spawned, so falloff and max range stay
         // continuous across a shot that began life as a hitscan.
         public float         DistanceTravelled;
+        // A lingering patch (the shared DamageZone prefab) it leaves where it lands, hitting what the
+        // round hits and applying the round's own status effects. Null prefab or zero radius = none.
+        public GameObject    ZonePrefab;
+        public ZoneSettings  Zone;
     }
 }

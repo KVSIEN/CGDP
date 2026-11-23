@@ -330,6 +330,8 @@ namespace CGD.Enemies
                 Falloff     = DamageFalloff.None,
                 HitRadius   = data.ShotRadius,
                 BlastRadius = data.ShotBlastRadius,
+                ZonePrefab  = data.ShotZonePrefab,
+                Zone        = data.ShotZone,
             });
         }
     }
