@@ -126,15 +126,14 @@ namespace CGD.Tests
             }
         }
 
-        // Each support agent plays its own role: the Void enchanter keeps behind the line, the
-        // Tech shield wall holds its front, the Bio pack mender runs with the ally leading the hunt.
+        // Each support agent plays its own role: the Void enchanter and the Bio spore mender keep
+        // behind the line, the Tech shield wall holds its front.
         [Test]
         public void SupportAgentsKeepToTheirSideOfTheLine()
         {
             CollectionAssert.AreEquivalent(new[] { SupportLine.Behind }, Lines("VoidSupportBehaviorTree"), "Void: casts from behind its allies");
             CollectionAssert.Contains(Lines("TechSupportBehaviorTree"), SupportLine.Front, "Tech: holds the front of the line");
-            Assert.IsTrue(EnemyTreeContents.NodeTypes(Load("BioSupportBehaviorTree")).Contains(typeof(GuardAlly)),
-                          "Bio: runs at the shoulder of its predator");
+            CollectionAssert.AreEquivalent(new[] { SupportLine.Behind }, Lines("BioSupportBehaviorTree"), "Bio: mends and spits from far behind its pack");
         }
 
         // The Tech shield wall's tree is built round its Frontal Shield: the prefab must carry one
@@ -157,10 +156,11 @@ namespace CGD.Tests
             return lines;
         }
 
-        // Tech has no tank: its siege sentinel holds a post far behind its squad and denies the
-        // enemy cover — mortaring where it hides, firing into the spot, watching for it to break cover.
+        // Tech's tank is a long-range siege engine: it holds a post behind its squad, soaks for the
+        // allies round it and denies the enemy cover — mortaring where it hides, firing into the
+        // spot, watching for it to break cover.
         [Test]
-        public void TechTankIsASentinelThatDeniesCover()
+        public void TechTankIsASiegeTankThatDeniesCover()
         {
             HashSet<Type> nodes = EnemyTreeContents.NodeTypes(Load("TechTankBehaviorTree"));
             Assert.IsTrue(nodes.Contains(typeof(TargetHiding)), "notices a target going to ground");
@@ -171,7 +171,7 @@ namespace CGD.Tests
                           "covers a squadmate falling back: smoke in front of it, then pushes up into the smoke");
 
             var prefab = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/Project/Prefabs/Characters/Enemies/AITest/TechTankAgent.prefab");
-            Assert.IsFalse(prefab.TryGetComponent(out CGD.Combat.SoakAura _), "it is no tank: it soaks nothing for its squad");
+            Assert.IsTrue(prefab.TryGetComponent(out CGD.Combat.SoakAura soak) && soak.Share > 0f, "it soaks for its squad like the other tanks");
 
             var data = AssetDatabase.LoadAssetAtPath<EnemyData>("Assets/Project/Data/Enemies/AITest/TechTankEnemyData.asset");
             Assert.IsNotNull(data.ShotGrenade, "its basic attack is a volley of mortar rounds");
@@ -199,7 +199,7 @@ namespace CGD.Tests
         [Test]
         public void EachFactionsTankIsBuiltToSoak()
         {
-            foreach (string faction in new[] { "Bio", "Void" })
+            foreach (string faction in new[] { "Bio", "Tech", "Void" })
             {
                 var tank  = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/AITest/{faction}TankEnemyData.asset");
                 var agent = AssetDatabase.LoadAssetAtPath<EnemyData>($"Assets/Project/Data/Enemies/AITest/{faction}TestEnemyData.asset");

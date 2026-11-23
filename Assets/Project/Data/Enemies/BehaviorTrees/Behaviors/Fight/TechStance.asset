@@ -58,7 +58,7 @@ MonoBehaviour:
       data:
         _guid: 3f6a1c92d7e84b05a9c3e18b2d40f7a1
         _position: {x: 0, y: 0}
-        _comment: 'The TECH way of holding a fight, as the TechBehaviorTree agent does it: too close (within 9 m) it falls back to cover at long range (or just backs off); otherwise it fires from long-range cover for 4-6 s, then moves to a fresh spot, or with no cover keeps its distance and shoots on the move. Lost sight, it works through where the target most likely went (Overwatch from a vantage), or stays in cover watching the angle it vanished at. Shared by the Tech tank and support for when their own role has nothing to do. Fails with nothing to do. Its basic attack is whatever Shoot Burst fires for that enemy.'
+        _comment: 'The TECH way of holding a fight, as the TechBehaviorTree agent does it: too close (within 45% of its engagement range) it falls back to cover at its own range (or just backs off); otherwise it fires from cover at its own range for 4-6 s, then moves to a fresh spot, or with no cover keeps its distance and shoots on the move. Lost sight, it works through where the target most likely went (Overwatch from a vantage), or stays in cover watching the angle it vanished at. Shared by the Tech tank and support for when their own role has nothing to do. Fails with nothing to do. Its basic attack is whatever Shoot Burst fires for that enemy.'
         _children:
         - 8c2e5b17a40d4f93b6d1e7a3c95f0b28
     - rid: 1001
@@ -66,7 +66,7 @@ MonoBehaviour:
       data:
         _guid: 8c2e5b17a40d4f93b6d1e7a3c95f0b28
         _position: {x: 0, y: 150}
-        _comment: 'Too close: back off; otherwise fight from long range; lost sight: work the belief, or hold cover and watch'
+        _comment: 'Too close: back off; otherwise fight at its own range; lost sight: work the belief, or hold cover and watch'
         _children:
         - 005f4c77603840d4ab6a10fa5550053b
         - 9b4f8aa4e67d4a628908272ba7c56088
@@ -78,7 +78,7 @@ MonoBehaviour:
       data:
         _guid: 005f4c77603840d4ab6a10fa5550053b
         _position: {x: -673, y: 600}
-        _comment: 'Too close: fall back to cover at long range (or just back off)'
+        _comment: 'Too close: fall back to cover at its own range (or just back off)'
         _children:
         - 84b47a33a5a14534ab1f52e1fac3d94f
         - 3831caab7dc64ceab02bf3fa0f9c4122
@@ -96,7 +96,8 @@ MonoBehaviour:
         _guid: 3831caab7dc64ceab02bf3fa0f9c4122
         _position: {x: -728, y: 750}
         _comment: 
-        _range: 9
+        _engagementShare: 0.45
+        _range: 0
     - rid: 1019
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -138,7 +139,7 @@ MonoBehaviour:
       data:
         _guid: 9b4f8aa4e67d4a628908272ba7c56088
         _position: {x: 743, y: 600}
-        _comment: 'Fight at long range while the target is in view'
+        _comment: 'Fight at its own range while the target is in view'
         _children:
         - e7bdae1e32ae4eefabc2f33e4c080aeb
         - 7a9ce025ed594f578bae91436ce454ba
@@ -164,7 +165,7 @@ MonoBehaviour:
       data:
         _guid: 0dcb9e1a1434443e8a350124861abab2
         _position: {x: 757, y: 900}
-        _comment: 'Snipe from long-range cover for a few seconds, then move to a fresh spot'
+        _comment: 'Fire from cover at its own range for a few seconds, then move to a fresh spot'
         _children:
         - aade74b43eb54047be5ceee03baafe8a
         - d250116f6dce443191ace95be4c55457

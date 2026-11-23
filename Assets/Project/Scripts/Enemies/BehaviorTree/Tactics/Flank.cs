@@ -67,7 +67,7 @@ namespace CGD.Enemies
         private float StandOff()
         {
             if (_standOff > 0f) return _standOff;
-            return Ai.Data.CombatType == EnemyCombatType.Ranged ? Ai.Data.PreferredRange : Ai.Data.AttackRange + 2f;
+            return Ai.Data.EngagementRange;
         }
     }
 }

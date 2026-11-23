@@ -323,7 +323,7 @@ MonoBehaviour:
       data:
         _guid: 005f4c77603840d4ab6a10fa5550053b
         _position: {x: -673, y: 600}
-        _comment: 'Too close: fall back to cover at long range (or just back off)'
+        _comment: 'Too close: fall back to cover at its mid range (or just back off)'
         _children:
         - 84b47a33a5a14534ab1f52e1fac3d94f
         - 3831caab7dc64ceab02bf3fa0f9c4122
@@ -341,7 +341,8 @@ MonoBehaviour:
         _guid: 3831caab7dc64ceab02bf3fa0f9c4122
         _position: {x: -728, y: 750}
         _comment: 
-        _range: 9
+        _engagementShare: 0.45
+        _range: 0
     - rid: 1019
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -383,7 +384,7 @@ MonoBehaviour:
       data:
         _guid: 9b4f8aa4e67d4a628908272ba7c56088
         _position: {x: 743, y: 600}
-        _comment: 'Fight at long range while the target is in view'
+        _comment: 'Fight at mid range while the target is in view'
         _children:
         - e7bdae1e32ae4eefabc2f33e4c080aeb
         - 7a9ce025ed594f578bae91436ce454ba
@@ -409,7 +410,7 @@ MonoBehaviour:
       data:
         _guid: 0dcb9e1a1434443e8a350124861abab2
         _position: {x: 757, y: 900}
-        _comment: 'Snipe from long-range cover for a few seconds, then move to a fresh spot'
+        _comment: 'Fire from mid-range cover for a few seconds, then move to a fresh spot'
         _children:
         - aade74b43eb54047be5ceee03baafe8a
         - d250116f6dce443191ace95be4c55457
@@ -794,7 +795,7 @@ MonoBehaviour:
       data:
         _guid: 5c502daf1ea14baba9dc6effcd00e012
         _position: {x: 3440, y: 800}
-        _comment: 'Reposition: back out to long-range cover (or just away) while the slow holds'
+        _comment: 'Reposition: back out to mid-range cover (or just away) while the slow holds'
         _children:
         - 97693323498940e580f4f56b10d03ce5
         - 8364c6d28c8e4a1b9edc7b1172bfdd76
@@ -950,8 +951,8 @@ MonoBehaviour:
           _to: 0.8
           _weight: 0.3
         - _key: TargetDistance
-          _from: 30
-          _to: 12
+          _from: 20
+          _to: 8
           _weight: 0.3
         - _key: HostilesClose
           _from: 0
@@ -1038,7 +1039,7 @@ MonoBehaviour:
       data:
         _guid: 47dd9f0899c0475d9ee88439d3e2f8ce
         _position: {x: 150, y: 600}
-        _comment: 'Very far back (target over 32 m off): defensive or not, push up and take ground — a bound to cover closer in (never nearer than its preferred range), or a short advance in the open if it knows none. At most every 10 s, so it fights between bounds; aborts lower priority, so it breaks off suppressing from the back line'
+        _comment: 'Very far back (target over 21 m off): defensive or not, push up and take ground — a bound to cover closer in (never nearer than its preferred range), or a short advance in the open if it knows none. At most every 10 s, so it fights between bounds; aborts lower priority, so it breaks off suppressing from the back line'
         _children:
         - c815cea5f46e41eab9611e63568decb8
         - 5e92b4dbf96449e8bd9267db3752eefd
@@ -1057,7 +1058,7 @@ MonoBehaviour:
         _guid: 28485e44d5684379bd273b30cba7e63a
         _position: {x: 40, y: 900}
         _comment:
-        _range: 32
+        _range: 21
     - rid: 1104
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -1102,7 +1103,7 @@ MonoBehaviour:
         _guid: 2a89718b4fe143668999ae26038c27c9
         _position: {x: 370, y: 1200}
         _comment:
-        _stopDistance: 26
+        _stopDistance: 17
     - rid: 1109
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:

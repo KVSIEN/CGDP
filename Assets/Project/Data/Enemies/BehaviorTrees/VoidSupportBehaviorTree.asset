@@ -87,7 +87,7 @@ MonoBehaviour:
       data:
         _guid: e9b60be26b8542d0919a12d5354aec80
         _position: {x: 0, y: 0}
-        _comment: 'VOID support agent (voodoo enchanter): a backline caster that wins fights through its allies from far back. It keeps about 12 m behind the ally nearest the threat, out of the line of fire, and spends the fight enchanting and cursing: Void Empowerment over every ally within 12 m (+25% damage, shields recharge 50% faster for 6 s), Void Ward on whoever is being hit or worn down (Support: +35 shield and +15 health), Curse on the target (Signature: true damage and three stacks of Curse) and a Curse Totem planted on it (Grenade: a destructible totem whose zone curses everyone in it every second). Its basic attack is a low true-damage bolt with a chance to add a Curse stack, only to fill the time between casts. When something gets within 7 m it phases out (Escape: Wrong Echo, walking through walls untouched for 5 s). Calm, it follows its leader and mends anyone still worn down. Kit: Support (Void Ward), Signature (Curse), Escape (Wrong Echo), Boost (Void Empowerment), Grenade (Curse Totem).'
+        _comment: 'VOID support agent (voodoo enchanter): a mid-range caster that wins fights through its allies. It keeps about 8 m behind the ally nearest the threat (some 13 m from its target, behind its tank and ahead of its long-range attackers), and spends the fight enchanting and cursing: Void Empowerment over every ally within 12 m (+25% damage, shields recharge 50% faster for 6 s), Void Ward on whoever is being hit or worn down (Support: +30 shield and +12 health), Curse on the target (Signature: true damage and three stacks of Curse) and a Curse Totem planted on it (Grenade: a destructible totem whose zone curses everyone in it every second). Its basic attack is a low true-damage bolt with a chance to add a Curse stack, only to fill the time between casts. When something gets within 7 m it phases out (Escape: Wrong Echo, walking through walls untouched for 5 s). Calm, it follows its leader and mends anyone still worn down. Kit: Support (Void Ward), Signature (Curse), Escape (Wrong Echo), Boost (Void Empowerment), Grenade (Curse Totem).'
         _children:
         - c2d1f5dbd566459bbda90d756e1aefb9
     - rid: 1001
@@ -367,7 +367,7 @@ MonoBehaviour:
         _slot: 1
         _ability: {fileID: 0}
         _aim: 0
-        _maxRange: 20
+        _maxRange: 16
         _requireClearShot: 0
         _leadMovingTarget: 1
     - rid: 1031
@@ -423,7 +423,7 @@ MonoBehaviour:
         _allyRadius: 20
         _reach: 10
         _line: 0
-        _fromLine: 12
+        _fromLine: 8
         _searchRadius: 12
         _replanEvery: 2
         _speed: 1
@@ -471,7 +471,7 @@ MonoBehaviour:
         _allyRadius: 20
         _reach: 10
         _line: 0
-        _fromLine: 12
+        _fromLine: 8
         _searchRadius: 12
         _replanEvery: 2
         _speed: 1
@@ -644,7 +644,7 @@ MonoBehaviour:
         _guid: 9cd5f47d43984f79bd265062024ae54d
         _position: {x: -200, y: 750}
         _comment: 
-        _range: 22
+        _range: 18
     - rid: 1062
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:

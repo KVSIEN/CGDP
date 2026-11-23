@@ -33,15 +33,15 @@ MonoBehaviour:
   Doctrine: {fileID: 11400000, guid: 559ccb4d46ee4faa98dab5b30fb205cc, type: 2}
   BehaviorTree: {fileID: 11400000, guid: 20a05ee15ff945c9a71852b1d91d63cc, type: 2}
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
-  CombatType: 0
+  CombatType: 1
   Social: 3
   AttackRange: 1.4
   AttackDamage: 12
   AttackCooldown: 0.9
   AttackWindup: 0.25
   DamageNumberColor: {r: 0.45, g: 1, b: 0.4, a: 1}
-  PreferredRange: 12
-  SpreadAngle: 3
+  PreferredRange: 24
+  SpreadAngle: 2
   BurstCount: 1
   BurstInterval: 0.1
   StrafeInterval: 2
@@ -55,4 +55,10 @@ MonoBehaviour:
   Special: {fileID: 11400000, guid: a622bdb8e981e91a1c553245267382ef, type: 2}
   AlertDuration: 4
   AttackSound: {fileID: 0}
+  RangedAttackCooldown: 1.8
+  RangedAttackDamage: 14
+  ShotProjectile: {fileID: 2000000000000000001, guid: 1f82aa2a1a6b413195cb1a35090a7c59, type: 3}
+  ShotSpeed: 18
+  ShotRadius: 0.3
+  ShotBlastRadius: 0
   RangedAttackSound: {fileID: 0}

@@ -107,7 +107,7 @@ MonoBehaviour:
       data:
         _guid: ee7696869a6d413ead9ebb2c4d141e61
         _position: {x: 0, y: 0}
-        _comment: 'TECH support agent (shield wall): a field engineer built round a front-facing barrier. Its Frontal Shield stands a one-way wall in front of it: hostile fire from the front stops on it, while its own and its allies'' shots from behind pass through. It holds the line between the threat and its allies, about 3 m ahead of the ally nearest the threat, facing the threat, and never falls back while the shield holds. Its attack is defensive: its blowtorch (the tool it repairs allies with) sears whatever reaches it (within 2.6 m), after a Weapon Bash (Special) shoves back what rushes it. Every 14 s it throws its Barrier Dome (kit Grenade) onto the squadmate taking the most fire. Fortifies when it takes fire (Boost). To repair it lowers the shield: a Smoke Screen where it stands, then Field Restoration (Support) on itself when worn down or on an ally in need. With no allies near it keeps to cover and only sears what reaches it.'
+        _comment: 'TECH support agent (shield wall): a field engineer built round a front-facing barrier. Its Frontal Shield stands a one-way wall in front of it: hostile fire from the front stops on it, while its own and its allies'' shots from behind pass through. It holds the line between the threat and its allies, about 8 m ahead of the ally nearest the threat (close range, in front of its mid-range attackers), facing the threat, and never falls back while the shield holds. Its attack is defensive: its blowtorch (the tool it repairs allies with) sears whatever reaches it (within 2.6 m), after a Weapon Bash (Special) shoves back what rushes it. Every 14 s it throws its Barrier Dome (kit Grenade) onto the squadmate taking the most fire. Fortifies when it takes fire (Boost). To repair it lowers the shield: a Smoke Screen where it stands, then Field Restoration (Support) on itself when worn down or on an ally in need. With no allies near it keeps to cover and only sears what reaches it.'
         _children:
         - 41e3d4fde8b74f69babb7b62161be33f
     - rid: 1001
@@ -530,7 +530,7 @@ MonoBehaviour:
         _allyRadius: 20
         _reach: 10
         _line: 1
-        _fromLine: 3
+        _fromLine: 8
         _searchRadius: 8
         _replanEvery: 2
         _speed: 1

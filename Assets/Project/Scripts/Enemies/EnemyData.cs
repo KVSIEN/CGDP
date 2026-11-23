@@ -196,6 +196,11 @@ namespace CGD.Enemies
         // What a behavior node that names a slot casts: its own ability for Own, else the kit's.
         public Ability KitAbility(AbilitySlot slot, Ability own) => slot == AbilitySlot.Own ? own : KitAbility(slot);
 
+        // The distance it fights its target from: where a ranged enemy holds, or just past where a
+        // melee one swings. Falls into one of the CombatRange bands.
+        public float EngagementRange => CombatType == EnemyCombatType.Ranged ? PreferredRange : AttackRange + 2f;
+        public CombatRange Range => CombatRanges.Of(EngagementRange);
+
         public float EffectiveHealth =>
             (MaxHealth + MaxShield) * (1f + Mathf.Max(0f, Armor) / 100f) +
             MaxPlating * (1f + (Mathf.Max(0f, Armor) + PlatingArmor) / 100f);

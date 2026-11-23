@@ -23,7 +23,7 @@ MonoBehaviour:
     ShowArea: 1
     GroundRing: 0
     Trail: 0
-  Targeting: {fileID: 11400000, guid: 78bb3d22653a4d64a372c764c4158a02, type: 2}
+  Targeting: {fileID: 11400000, guid: b57fb39d621c48908cdb7fd86e576a76, type: 2}
   Damage: 0
   ArmorPenetration: 0
   DamageType: 0

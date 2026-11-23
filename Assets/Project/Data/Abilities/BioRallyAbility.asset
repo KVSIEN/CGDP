@@ -25,4 +25,4 @@ MonoBehaviour:
     Trail: 0
   Buff: {fileID: 11400000, guid: 0e0e5593fab042dcb6fd8ef985d6344f, type: 2}
   Duration: 6
-  Radius: 15
+  Radius: 22

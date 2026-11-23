@@ -44,7 +44,7 @@ MonoBehaviour:
     Potency: 1
     Duration: 0
   DamageNumberColor: {r: 1, g: 0.85, b: 0.25, a: 1}
-  PreferredRange: 20
+  PreferredRange: 5
   SpreadAngle: 1.5
   BurstCount: 3
   BurstInterval: 0.12

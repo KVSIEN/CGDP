@@ -170,7 +170,7 @@ MonoBehaviour:
       data:
         _guid: 5ec74dc1c24c4700ae091fdb30f74c46
         _position: {x: 2462, y: 600}
-        _comment: 'Skirmish: hold medium range, strafing, and fire shards'
+        _comment: 'Skirmish: hold its own range, strafing, and fire shards'
         _children:
         - 25c0f01b358c4db8b31bba4a11517a20
         - 936e41cbaa734db7859b7ed60d0c7fb3
@@ -226,7 +226,7 @@ MonoBehaviour:
       data:
         _guid: f7008344489d46409d8635bce84652be
         _position: {x: 537, y: 600}
-        _comment: 'Too close: Phase Shift away, or slip round to its side at medium range, or back off'
+        _comment: 'Too close: Phase Shift away, or slip round to its side at its own range, or back off'
         _children:
         - fa70b73e47e446ad98854269b7039add
         - b2a0c29059c6463ebe01caa4e0d51afd
@@ -244,7 +244,8 @@ MonoBehaviour:
         _guid: b2a0c29059c6463ebe01caa4e0d51afd
         _position: {x: 482, y: 750}
         _comment: 
-        _range: 5
+        _engagementShare: 0.4
+        _range: 0
     - rid: 23
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -320,7 +321,8 @@ MonoBehaviour:
         _guid: c7d15f3a0e6b4928a4b8f2e19d3c60a7
         _position: {x: 0, y: 0}
         _comment: 
-        _range: 18
+        _engagementShare: 1.4
+        _range: 0
     - rid: 32
       type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
@@ -379,7 +381,8 @@ MonoBehaviour:
         _guid: 9e41c7d2b5a84a30b6f2d8c3e0a17b55
         _position: {x: 0, y: 0}
         _comment: 
-        _range: 18
+        _engagementShare: 1.4
+        _range: 0
     - rid: 39
       type: {class: TargetDistracted, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
