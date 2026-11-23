@@ -74,6 +74,13 @@ MonoBehaviour:
   - rid: 1058
   - rid: 1059
   - rid: 1060
+  - rid: 1061
+  - rid: 1062
+  - rid: 1063
+  - rid: 1064
+  - rid: 1065
+  - rid: 1066
+  - rid: 1067
   _groups: []
   _notes: []
   references:
@@ -84,7 +91,7 @@ MonoBehaviour:
       data:
         _guid: 1ba0f3f01fc94390837d21d85118d87a
         _position: {x: 0, y: 0}
-        _comment: 'BIO tank (plague hulk): a slow mass of flesh with a huge health pool that fights at mid range with poison. It holds about 11 m off, strafing and spitting poison bolts that leave a poison pool where they land, lobs Acid Spew pools into the enemy''s path (Grenade), and when something gets within 5 m chokes it in a Plague Cloud (Signature) and strikes with a poisoned blow in reach; below 60% health it regrows (Boost: Regrowth, 15 health a second for 8 s). Immune to poison. Its Soak Aura takes 30% of every hit on an ally within 8 m. Kit: Signature (Plague Cloud), Boost (Regrowth), Grenade (Acid Spew).'
+        _comment: 'BIO tank (plague hulk): a slow mass of flesh with a huge health pool that fights at mid range with poison. It stalks in through the bushes, then holds about 11 m off, strafing and spitting poison bolts that leave a poison pool where they land, lobs Acid Spew pools into the enemy''s path (Grenade), and when something gets within 5 m chokes it in a Plague Cloud (Signature) and strikes with a poisoned blow in reach; below 60% health it regrows (Boost: Regrowth, 15 health a second for 8 s). Immune to poison. Its Soak Aura takes 30% of every hit on an ally within 8 m. Kit: Signature (Plague Cloud), Boost (Regrowth), Grenade (Acid Spew).'
         _children:
         - ac40c7e214cc4e37a5f193faca53f966
     - rid: 1001
@@ -157,12 +164,13 @@ MonoBehaviour:
       data:
         _guid: b0e129d660554611b14b312500127f78
         _position: {x: 559, y: 450}
-        _comment: 'Regrow when hurt; plague cloud up close; strike; acid at mid range; otherwise press in spitting'
+        _comment: 'Regrow when hurt; plague cloud up close; strike; acid at mid range; otherwise stalk in and spit'
         _children:
         - 70d840d5bcdc4ac4a577b44b8f530ae6
         - d0340c889b074d15bbc6e2271042d1fd
         - 2d3a83ee80a742c6b0b8c464a6d04d48
         - 05a1ddde285243d1936a8f22108cded1
+        - a1100bbe2e1446fb8b883ebae0a7d47d
         - 5f15a1927c3e41aca300373e01b8db6c
         - 26de5ebeafb21fd19c6e1d66c6b3e3b9
         - 2c4dd7f7cacd453e9a0ec1b35b67948d
@@ -607,3 +615,63 @@ MonoBehaviour:
         _comment: 
         _within: 8
         _giveUpAfter: 15
+    - rid: 1061
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a1100bbe2e1446fb8b883ebae0a7d47d
+        _position: {x: -120, y: 600}
+        _comment: 'Still far off: stalk in through the bushes, unhurried, to its spitting range'
+        _children:
+        - 22cab7afdd8040808f5fa5a68841080c
+        - 380c78392cee4a659fc7fca05b721059
+        - c7c8614130df4bd8a0fc3f8fc2cf3a02
+        _abort: 0
+    - rid: 1062
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 22cab7afdd8040808f5fa5a68841080c
+        _position: {x: -220, y: 750}
+        _comment: 
+    - rid: 1063
+      type: {class: Inverter, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 380c78392cee4a659fc7fca05b721059
+        _position: {x: -120, y: 750}
+        _comment: 
+        _children:
+        - c18e7a5e1eb7476f8636ea77ec3b802e
+    - rid: 1064
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c18e7a5e1eb7476f8636ea77ec3b802e
+        _position: {x: -120, y: 900}
+        _comment: 
+        _range: 14
+    - rid: 1065
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c7c8614130df4bd8a0fc3f8fc2cf3a02
+        _position: {x: -20, y: 750}
+        _comment: 
+        _children:
+        - 8d6fb320363c48f19564fba3587f1520
+        _succeed: 1
+    - rid: 1066
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8d6fb320363c48f19564fba3587f1520
+        _position: {x: -20, y: 900}
+        _comment: 
+        _children:
+        - cd4093bcf64348a6a9831a722680a6b3
+        _seconds: 4
+    - rid: 1067
+      type: {class: AdvanceFacing, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: cd4093bcf64348a6a9831a722680a6b3
+        _position: {x: -20, y: 1050}
+        _comment: 
+        _stopDistance: 12
+        _speed: 0.7
+        _holdOnArrival: 0
+        _sneak: 1
