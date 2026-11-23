@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.TargetedAbility
   DisplayName: Mending Spores
   SlotColor: {r: 0.55, g: 0.9, b: 0.35, a: 1}
-  Cooldown: 10
+  Cooldown: 7
   MaxCharges: 1
   CastTime: 0.8
   Look:
@@ -28,8 +28,8 @@ MonoBehaviour:
   ArmorPenetration: 0
   DamageType: 0
   OnHitEffects: []
-  Heal: 20
+  Heal: 30
   SelfHealShare: 0
   Shield: 0
-  Plating: 8
+  Plating: 12
   Cleanse: 1

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.RallyAbility
   DisplayName: Void Empowerment
   SlotColor: {r: 0.7, g: 0.45, b: 1, a: 1}
-  Cooldown: 14
+  Cooldown: 18
   MaxCharges: 1
   CastTime: 0.8
   Look:

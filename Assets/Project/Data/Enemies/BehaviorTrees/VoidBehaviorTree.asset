@@ -163,7 +163,7 @@ MonoBehaviour:
       data:
         _guid: 5d3f0b6a8c2e4f17a9b4c1e6d7a20f38
         _position: {x: 0, y: 0}
-        _comment: Not already within control range: flank to get there, then cast and hold range instead of flanking again
+        _comment: 'Not already within control range: flank to get there, then cast and hold range instead of flanking again'
         _children:
         - 9e41c7d2b5a84a30b6f2d8c3e0a17b55
     - rid: 1141
@@ -178,7 +178,7 @@ MonoBehaviour:
       data:
         _guid: 2b8a6e91c4d74f05837e1a0d5c9f6b42
         _position: {x: 0, y: 0}
-        _comment: Not already within control range: flank to get there, then cast and hold range instead of flanking again
+        _comment: 'Not already within control range: flank to get there, then cast and hold range instead of flanking again'
         _children:
         - c7d15f3a0e6b4928a4b8f2e19d3c60a7
     - rid: 1143

@@ -35,7 +35,7 @@ MonoBehaviour:
   CombatType: 0
   Social: 1
   AttackRange: 2.2
-  AttackDamage: 9
+  AttackDamage: 12
   AttackCooldown: 1.2
   AttackWindup: 0.45
   MeleeEffects:

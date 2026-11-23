@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
   DisplayName: Bio Tank
   Team: 3
-  MaxHealth: 420
+  MaxHealth: 330
   Armor: 45
   MaxPlating: 40
   PlatingArmor: 25
@@ -22,7 +22,7 @@ MonoBehaviour:
   ShieldRegenDelay: 5
   ShieldRegenRate: 0
   PatrolSpeed: 1.6
-  ChaseSpeed: 3.2
+  ChaseSpeed: 3.6
   BushDetour: 0.6
   SightRange: 60
   SightAngle: 140
@@ -56,7 +56,7 @@ MonoBehaviour:
   Support: {fileID: 0}
   Special: {fileID: 0}
   RangedAttackCooldown: 2
-  RangedAttackDamage: 8
+  RangedAttackDamage: 12
   ShotProjectile: {fileID: 2000000000000000001, guid: 1f82aa2a1a6b413195cb1a35090a7c59, type: 3}
   ShotSpeed: 16
   ShotRadius: 0.3
@@ -81,7 +81,7 @@ MonoBehaviour:
     Radius: 2.2
     Duration: 6
     TickInterval: 0.5
-    DamagePerTick: 2
+    DamagePerTick: 3
     DamageType: 0
     ArmorPenetration: 0
     Color: {r: 0.45, g: 0.9, b: 0.15, a: 0.5}

@@ -30,6 +30,6 @@ MonoBehaviour:
   OnHitEffects: []
   Heal: 0
   SelfHealShare: 0
-  Shield: 30
-  Plating: 15
+  Shield: 28
+  Plating: 14
   Cleanse: 0

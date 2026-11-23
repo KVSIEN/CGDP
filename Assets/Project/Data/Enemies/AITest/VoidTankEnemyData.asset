@@ -16,11 +16,11 @@ MonoBehaviour:
   Team: 5
   MaxHealth: 60
   Armor: 30
-  MaxShield: 320
-  ShieldRegenDelay: 4
-  ShieldRegenRate: 30
+  MaxShield: 360
+  ShieldRegenDelay: 5
+  ShieldRegenRate: 20
   PatrolSpeed: 1.4
-  ChaseSpeed: 3
+  ChaseSpeed: 2.8
   SightRange: 60
   SightAngle: 110
   HearingRadius: 12

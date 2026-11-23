@@ -130,8 +130,7 @@ namespace CGD.Enemies
             for (int i = 0; i < all.Count; i++)
             {
                 EnemyAI other = all[i];
-                if (other == Ai || other.Health == null || other.Health.IsDead || other.Health.Team != Ai.Health.Team) continue;
-                if (!other.isActiveAndEnabled) continue;
+                if (!EnemyRoster.IsTeammate(Ai, other)) continue;
 
                 Vector3 at = other.transform.position;
                 Vector3 offset = at - self;

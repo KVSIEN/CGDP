@@ -176,13 +176,13 @@ MonoBehaviour:
       data:
         _guid: 85130e497c5940f1a96943f06c2e88e2
         _position: {x: 422, y: 450}
-        _comment: 'Slip away only when badly hurt; bite what is in reach; roar; mend the one being mauled; join the kill; otherwise run with its predator'
+        _comment: 'Slip away only when badly hurt; roar the pack on; mend the one being mauled; then bite what is in reach; join the kill; otherwise run with its predator'
         _children:
         - 92f10806e3b04db486ab52c04048ebd0
-        - 3d7150f99b444a7dabb40c70dc8bc2b4
-        - abdb0d5aad2443b393f38f258a91dbec
         - 4f8bf8380d354e7eb406ff61446bc859
         - b0a96d80ed2b45929eafaf3f91089bbd
+        - 3d7150f99b444a7dabb40c70dc8bc2b4
+        - abdb0d5aad2443b393f38f258a91dbec
         - c884f55d38974224b6787fe368e9fe9e
         - 476470c111d84d53b59e144017ef3d5a
         - 7843987ede0089c12156555de88f0100
@@ -664,7 +664,7 @@ MonoBehaviour:
       data:
         _guid: d62e923940ca470f942020211faf2ec5
         _position: {x: 0, y: 0}
-        _comment: Stand with its ally: at its shoulder, only moving once it has drifted well clear
+        _comment: 'Stand with its ally: at its shoulder, only moving once it has drifted well clear'
         _children:
         - 2671337bcb5041ab83d947c98086fbc9
         _succeed: 1
@@ -713,7 +713,7 @@ MonoBehaviour:
       data:
         _guid: c3db53618059458084aa158351f932eb
         _position: {x: 0, y: 0}
-        _comment: Engage the enemy for its ally: run at the target and bite it while the ally fights (only while it is above half health)
+        _comment: 'Engage the enemy for its ally: run at the target and bite it while the ally fights (only while it is above half health)'
         _children:
         - c48ee9cd37284fe88432b4a52312e53f
         - bef5a208862347a8982a93d7d23562a5
@@ -749,7 +749,7 @@ MonoBehaviour:
       data:
         _guid: c884f55d38974224b6787fe368e9fe9e
         _position: {x: 0, y: 0}
-        _comment: Engage support: either stands with its ally or engages the enemy for it, deciding anew every few seconds rather than by distance
+        _comment: 'Engage support: either stands with its ally or engages the enemy for it, deciding anew every few seconds rather than by distance'
         _children:
         - f05d285568f84c4896a8b4398419f519
         - 5737369522024b8bbab9af137c456e25
@@ -806,7 +806,7 @@ MonoBehaviour:
       data:
         _guid: 3d7150f99b444a7dabb40c70dc8bc2b4
         _position: {x: 0, y: 0}
-        _comment: Feeding Bite (its own ability): lunge in, latch onto the target and hold it, draining health into itself, until the target breaks free or it lets go
+        _comment: 'Feeding Bite (its own ability): lunge in, latch onto the target and hold it, draining health into itself, until the target breaks free or it lets go'
         _children:
         - 497e491c2ed74c269c6ae3a92cc5ea6c
         - 2365dcf6c15947569917c57d214f3498

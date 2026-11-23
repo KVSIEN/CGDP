@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using CGD.Abilities;
 using CGD.BehaviorTrees;
-using CGD.Combat;
 
 namespace CGD.Enemies
 {
@@ -134,12 +133,11 @@ namespace CGD.Enemies
         {
             EnemyAI best = null;
             float lowest = _threshold;
-            Team team = Ai.Health.Team;
             var all = EnemyRoster.All;
             for (int i = 0; i < all.Count; i++)
             {
                 EnemyAI other = all[i];
-                if (other == Ai || other.Health == null || other.Health.IsDead || other.Health.Team != team) continue;
+                if (!EnemyRoster.IsTeammate(Ai, other)) continue;
                 if ((other.transform.position - Ai.transform.position).sqrMagnitude > _searchRadius * _searchRadius) continue;
 
                 EnemyHealth health = other.Health;

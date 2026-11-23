@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.EnemyData
   DisplayName: Bio Support
   Team: 3
-  MaxHealth: 80
+  MaxHealth: 120
   Armor: 25
   MaxPlating: 24
   PlatingArmor: 25
@@ -36,8 +36,8 @@ MonoBehaviour:
   CombatType: 0
   Social: 3
   AttackRange: 1.4
-  AttackDamage: 20
-  AttackCooldown: 0.7
+  AttackDamage: 12
+  AttackCooldown: 0.9
   AttackWindup: 0.25
   DamageNumberColor: {r: 0.45, g: 1, b: 0.4, a: 1}
   PreferredRange: 12

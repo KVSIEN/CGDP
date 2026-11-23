@@ -24,6 +24,12 @@ namespace CGD.Enemies
 
         public static IReadOnlyList<EnemyAI> All => Members;
 
+        // A living enemy on exactly the asker's own team (pacts don't count: this is for who it
+        // supports, guards and shelters behind, not whom it won't attack).
+        public static bool IsTeammate(EnemyAI asker, EnemyAI other) =>
+            other != asker && other.isActiveAndEnabled && other.Health != null && !other.Health.IsDead &&
+            other.Health.Team == asker.Health.Team;
+
         public static bool IsKin(EnemyAI asker, EnemyAI other)
         {
             if (other == asker || other.State == EnemyAI.AiState.Dead) return false;

@@ -693,7 +693,7 @@ MonoBehaviour:
       data:
         _guid: 8698bf1bc2c44f19b46c385ff14990c0
         _position: {x: 0, y: 0}
-        _comment: Something reached it (within 2.6 m): its blowtorch (the basic attack) sears it; this is a defence, never an opening
+        _comment: 'Something reached it (within 2.6 m): its blowtorch (the basic attack) sears it; this is a defence, never an opening'
         _children:
         - 37c2a96500e84f0f982b1c3dec60207b
         - 55929ef57b87498d9035ff5ce6c76cd6
@@ -748,7 +748,7 @@ MonoBehaviour:
       data:
         _guid: cb0e4f6ed6b24a76a0dc473d00fc21e1
         _position: {x: 0, y: 0}
-        _comment: A threat in view: throw the kit grenade (a Barrier Dome) onto the squadmate taking the most fire (else the one nearest the threat), every 14 s at most
+        _comment: 'A threat in view: throw the kit grenade (a Barrier Dome) onto the squadmate taking the most fire (else the one nearest the threat), every 14 s at most'
         _children:
         - e935e1d7a1e249198365800184350e82
         - 52e2470a55a74e8484d34a6381c4a358
@@ -833,7 +833,7 @@ MonoBehaviour:
       data:
         _guid: e23c90da588746f688eb14d22700f7cb
         _position: {x: 0, y: 0}
-        _comment: No allies within 20 m to hold the line with: it keeps to cover and only sears what reaches it
+        _comment: 'No allies within 20 m to hold the line with: it keeps to cover and only sears what reaches it'
         _children:
         - dfd81bb3efbe4252a88e204d2b18b489
         - a6c124423f254448954ec5664f9d8a6e
@@ -851,7 +851,7 @@ MonoBehaviour:
       data:
         _guid: 7cf24e6e96c74c9b99c1d8ff33bf9d62
         _position: {x: 0, y: 0}
-        _comment: Allies are taking fire: step up and put the shield between the threat and them
+        _comment: 'Allies are taking fire: step up and put the shield between the threat and them'
         _children:
         - 484ffff1da8f454eab8fc4caae8e74c0
         - 240e50acc5dc45de9733716778f04c3c
@@ -861,7 +861,7 @@ MonoBehaviour:
       data:
         _guid: 525355a5b8c44770a81f7c65c7e6513c
         _position: {x: 0, y: 0}
-        _comment: Quiet: wait in cover facing the threat, within reach of its allies
+        _comment: 'Quiet: wait in cover facing the threat, within reach of its allies'
         _allyRadius: 20
         _reach: 10
         _line: 0

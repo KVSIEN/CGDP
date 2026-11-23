@@ -99,7 +99,7 @@ MonoBehaviour:
       data:
         _guid: ee7696869a6d413ead9ebb2c4d141e61
         _position: {x: 0, y: 0}
-        _comment: 'TECH siege (sentinel): not a tank but the squad''s siege engine, a slow, heavily plated machine that holds its own post well behind the other Tech, 12 m behind the ally nearest the threat in high cover, and makes cover useless to the enemy. When a target ducks behind cover or into a bush it shells the spot with a Mortar Shell every 5 s (no line of sight needed), pours suppressing fire into it between shells and watches it for the target breaking cover; a target in the open gets a Rocket (Signature) to drive it back into hiding where the mortar finds it. When a squadmate is worn down and falling back it covers the retreat: a Smoke Mortar lands just in front of the squadmate, between it and the enemy, then the siege leaves its post, pushes up into the smoke and holds it for 10 s, zoning the enemy off with a Flamethrower (anything within 9 m burns) and suppressing what stays out of reach (every 25 s at most). Otherwise it covers the field from its post with suppressing fire. It grenades anything within 12 m and bashes what reaches it (Special). Kit: Signature (Rocket), Special (Weapon Bash), Grenade (Tech Grenade); the Mortar Shell, Smoke Mortar and Flamethrower are set on the tree.'
+        _comment: 'TECH siege (sentinel): not a tank but the squad''s siege engine, a slow, heavily plated machine that holds its own post behind the other Tech, 6 m behind the ally nearest the threat in high cover, close enough that its Soak Aura takes 30% of every hit its allies within 8 m suffer onto its plating, and makes cover useless to the enemy. When a target ducks behind cover or into a bush it shells the spot with a Mortar Shell every 5 s (no line of sight needed), pours suppressing fire into it between shells and watches it for the target breaking cover; a target in the open gets a Rocket (Signature) to drive it back into hiding where the mortar finds it. When a squadmate is worn down and falling back it covers the retreat: a Smoke Mortar lands just in front of the squadmate, between it and the enemy, then the siege leaves its post, pushes up into the smoke and holds it for 10 s, zoning the enemy off with a Flamethrower (anything within 9 m burns) and suppressing what stays out of reach (every 25 s at most). Otherwise it covers the field from its post with suppressing fire. It grenades anything within 12 m and bashes what reaches it (Special). Kit: Signature (Rocket), Special (Weapon Bash), Grenade (Tech Grenade); the Mortar Shell, Smoke Mortar and Flamethrower are set on the tree.'
         _children:
         - 223ff6ed9e754768b53109e721a0d4ab
     - rid: 1001
@@ -543,7 +543,7 @@ MonoBehaviour:
       data:
         _guid: 50c2a1dcfc324e05b167bf19d8b99e7a
         _position: {x: 2552, y: 600}
-        _comment: 'Its post: well behind the rest of the squad (12 m behind the ally nearest the threat, in high cover facing it), covering the field with suppressing fire'
+        _comment: 'Its post: behind the front of the squad (6 m behind the ally nearest the threat, in high cover facing it, within 8 m of as many allies as it can so it soaks for them), covering the field with suppressing fire'
         _children:
         - 9fa9749d03ee4198a29ca2ae2263e1a7
         - 9fd547d7841d4059b4ee86cb74ad93b6
@@ -598,9 +598,9 @@ MonoBehaviour:
         _position: {x: 2736, y: 1200}
         _comment: 
         _allyRadius: 30
-        _reach: 16
+        _reach: 10
         _line: 0
-        _fromLine: 12
+        _fromLine: 6
         _searchRadius: 12
         _replanEvery: 3
         _speed: 1

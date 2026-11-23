@@ -75,7 +75,7 @@ namespace CGD.Enemies
             for (int i = 0; i < all.Count; i++)
             {
                 EnemyAI other = all[i];
-                if (other == Ai || other.Health == null || other.Health.IsDead || other.Health.Team != Ai.Health.Team) continue;
+                if (!EnemyRoster.IsTeammate(Ai, other)) continue;
 
                 float sq = Flat(other.transform.position - Ai.transform.position).sqrMagnitude;
                 if (sq > bestSq || !other.TryGetComponent(out FrontalShield candidate) || !candidate.IsUp) continue;
