@@ -82,6 +82,26 @@ namespace CGD.Enemies
         public float   CooldownLeft(Ability ability) => _ai.Abilities.CooldownLeft(ability);
         public float   EffectLeft(Ability ability)   => _ai.Abilities.EffectLeft(ability);
 
+        // Each grenade its tree throws, listed like its abilities (a grenade used by several nodes
+        // shows once, with the longest wait).
+        public void CopyGrenades(List<GrenadeStatus> results)
+        {
+            results.Clear();
+            if (_ai.Tree == null) return;
+
+            float time = _ai.Tree.Context.Time;
+            foreach (ThrowGrenade node in _ai.Grenades.Nodes)
+            {
+                string name = node.GrenadeName;
+                if (name == null) continue;
+
+                var status = new GrenadeStatus(name, node.CooldownLeft(time), node.IsThrowing);
+                int at = results.FindIndex(existing => existing.Name == name);
+                if (at < 0) results.Add(status);
+                else results[at] = results[at].Merge(status);
+            }
+        }
+
         // The rows the Behavior Tree Editor's agent status shows (state, awareness, target…).
         public void DescribeStatus(List<(string Label, string Value)> rows) => EnemyStatusReport.Describe(_ai, rows);
     }

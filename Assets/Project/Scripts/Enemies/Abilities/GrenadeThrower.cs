@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Audio;
 using CGD.Combat;
@@ -35,6 +36,10 @@ namespace CGD.Enemies
         private readonly DamageSource _source;
         private readonly LayerMask    _obstacleMask;
 
+        // The Throw Grenade nodes of its tree, so the spectator's inspector can list its grenades
+        // with their cooldowns like its abilities.
+        private readonly List<ThrowGrenade> _nodes = new();
+
         private GrenadeData _pending;
         private Vector3     _aimAt;
         private Vector3     _hand;
@@ -49,6 +54,12 @@ namespace CGD.Enemies
         }
 
         public bool IsThrowing => _pending != null;
+        public IReadOnlyList<ThrowGrenade> Nodes => _nodes;
+
+        public void Register(ThrowGrenade node)
+        {
+            if (!_nodes.Contains(node)) _nodes.Add(node);
+        }
 
         // `targetVelocity` is how the target was seen moving (zero if unseen or still).
         public bool TryBegin(GrenadeData grenade, Vector3 target, Vector3 targetVelocity)

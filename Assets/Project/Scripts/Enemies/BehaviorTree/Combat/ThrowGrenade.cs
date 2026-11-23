@@ -33,6 +33,25 @@ namespace CGD.Enemies
 
         private GrenadeData Grenade => _grenade != null ? _grenade : Ai.Data.Grenade;
 
+        // Seconds until the Cooldown decorators directly above it let it throw again (0 when none, or over).
+        internal float CooldownLeft(float time)
+        {
+            float left = 0f;
+            for (BtNode node = Parent; node is BtDecorator; node = node.Parent)
+                if (node is Cooldown cooldown) left = Mathf.Max(left, cooldown.RemainingAt(time));
+            return left;
+        }
+
+        internal string GrenadeName => Grenade != null ? Grenade.GrenadeName : null;
+        internal bool IsThrowing => _throwing && IsRunning;
+
+        // Resolved once the tree is built: rolled affixes swap in their data before that.
+        protected override void OnInitialize(BtContext context)
+        {
+            base.OnInitialize(context);
+            Ai.Grenades.Register(this);
+        }
+
         protected override void OnEnter(BtContext context)
         {
             var perception = Ai.Perception;

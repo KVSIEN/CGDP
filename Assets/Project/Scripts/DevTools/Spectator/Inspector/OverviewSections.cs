@@ -12,11 +12,15 @@ namespace CGD.DevTools
         private const int MaxRunningLines = 16;
         private const int CommentLength   = 26;
 
-        // Each ability its tree has asked about: casting, its buff running, cooling down or ready.
+        private static readonly List<GrenadeStatus> Grenades = new();
+
+        // Each ability its tree has asked about, and each grenade it throws: casting, its buff
+        // running, cooling down or ready.
         public static void Abilities(StringBuilder text, EnemyInsight insight)
         {
             IReadOnlyList<Ability> abilities = insight.Abilities;
-            if (abilities.Count == 0) return;
+            insight.CopyGrenades(Grenades);
+            if (abilities.Count == 0 && Grenades.Count == 0) return;
 
             text.Heading("Abilities");
             foreach (Ability ability in abilities)
@@ -28,6 +32,15 @@ namespace CGD.DevTools
                 else if (cooldown <= 0f)        text.Coloured(InspectorText.Good, "ready");
                 else                            text.Append("cooldown ").Seconds(cooldown);
                 if (effect > 0f) text.Append("   <color=").Append(InspectorText.Good).Append(">active ").Seconds(effect).Append("</color>");
+                text.Append('\n');
+            }
+
+            foreach (GrenadeStatus grenade in Grenades)
+            {
+                text.Append("<color=").Append(InspectorText.Muted).Append('>').Append(grenade.Name).Append("</color><pos=34%>");
+                if (grenade.Throwing)                text.Coloured(InspectorText.Warn, "casting");
+                else if (grenade.CooldownLeft <= 0f) text.Coloured(InspectorText.Good, "ready");
+                else                                 text.Append("cooldown ").Seconds(grenade.CooldownLeft);
                 text.Append('\n');
             }
         }

@@ -23,6 +23,8 @@ namespace CGD.BehaviorTrees
         internal override bool CheckCondition(BtContext context) =>
             context.Time >= _readyAt && (Child == null || !Child.IsConditional || Child.CheckCondition(context));
 
+        internal float RemainingAt(float time) => Mathf.Max(0f, _readyAt - time);
+
         protected override void OnReset() => _readyAt = 0f;
 
         protected override BtStatus OnTick(BtContext context)

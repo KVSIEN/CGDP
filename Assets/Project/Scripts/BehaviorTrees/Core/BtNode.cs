@@ -28,6 +28,8 @@ namespace CGD.BehaviorTrees
         internal Vector2 Position { get => _position; set => _position = value; }
 
         public bool     IsRunning  => _started;
+        // The node above this one in the running tree (null for the root); set when the tree is built.
+        protected internal BtNode Parent { get; internal set; }
         // Debugging: the last status and the tick it was reported on (see BtContext.TickCount).
         public BtStatus LastStatus { get; private set; }
         public int      LastTick   { get; private set; } = -1;

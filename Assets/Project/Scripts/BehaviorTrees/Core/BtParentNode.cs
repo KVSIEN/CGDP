@@ -57,7 +57,11 @@ namespace CGD.BehaviorTrees
         {
             _childNodes = new List<BtNode>(_children.Count);
             foreach (string guid in _children)
-                if (copiesByGuid.TryGetValue(guid, out BtNode child)) _childNodes.Add(child);
+            {
+                if (!copiesByGuid.TryGetValue(guid, out BtNode child)) continue;
+                child.Parent = this;
+                _childNodes.Add(child);
+            }
         }
     }
 }
