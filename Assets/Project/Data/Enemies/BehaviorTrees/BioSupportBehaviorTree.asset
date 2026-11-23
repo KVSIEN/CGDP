@@ -86,6 +86,13 @@ MonoBehaviour:
   - rid: 1109
   - rid: 1110
   - rid: 1111
+  - rid: 1120
+  - rid: 1121
+  - rid: 1122
+  - rid: 1123
+  - rid: 1124
+  - rid: 1125
+  - rid: 1126
   _groups: []
   _notes: []
   references:
@@ -96,7 +103,7 @@ MonoBehaviour:
       data:
         _guid: 1ba0f3f01fc94390837d21d85118d87a
         _position: {x: 0, y: 0}
-        _comment: 'BIO support agent (pack mender): engage support that hunts as the pack''s second animal. It runs at the shoulder of the ally leading the hunt (the one nearest the prey), closes in alongside it and joins the kill once the prey is within 5 m, biting whatever is in reach. Between bites it roars the pack on (Signature: Rallying Roar) and mends whoever is being mauled (Support: Mending Spores, 8 m: heals, regrows bone plating, clears burns, bleeds and poison). Only when badly hurt and cornered does it vanish (Escape: Ambush) or slip into a bush. Calm, it follows its leader and mends anyone still hurt. Kit: Support (Mending Spores), Signature (Rallying Roar), Escape (Ambush).'
+        _comment: 'BIO support agent (pack mender): engage support that hunts as the pack''s second animal. It runs at the shoulder of the ally leading the hunt (the one nearest the prey), closes in alongside it and joins the kill once the prey is within 5 m, biting whatever is in reach. Between bites it roars the pack on (Signature: Rallying Roar) and mends whoever is being mauled (Support: Mending Spores, 8 m: heals, regrows bone plating, clears burns, bleeds and poison). Within 7 m it also lunges in with a Feeding Bite: it latches onto its target, holding it (the player must tap Interact to shake it off) and draining health into itself. Only when badly hurt and cornered does it vanish (Escape: Ambush) or slip into a bush. Calm, it follows its leader and mends anyone still hurt. Kit: Support (Mending Spores), Signature (Rallying Roar), Escape (Ambush).'
         _children:
         - b79eccccd36842159d0bf949c8ee649d
     - rid: 1001
@@ -172,6 +179,7 @@ MonoBehaviour:
         _comment: 'Slip away only when badly hurt; bite what is in reach; roar; mend the one being mauled; join the kill; otherwise run with its predator'
         _children:
         - 92f10806e3b04db486ab52c04048ebd0
+        - 3d7150f99b444a7dabb40c70dc8bc2b4
         - abdb0d5aad2443b393f38f258a91dbec
         - 4f8bf8380d354e7eb406ff61446bc859
         - b0a96d80ed2b45929eafaf3f91089bbd
@@ -745,4 +753,64 @@ MonoBehaviour:
         - f05d285568f84c4896a8b4398419f519
         - 5737369522024b8bbab9af137c456e25
         - c95c870e688641c094817f34bdfa3c66
+        _abort: 0
+    - rid: 1120
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 497e491c2ed74c269c6ae3a92cc5ea6c
+        _position: {x: 0, y: 0}
+        _comment: 
+    - rid: 1121
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 2365dcf6c15947569917c57d214f3498
+        _position: {x: 0, y: 0}
+        _comment: 
+        _range: 7
+    - rid: 1122
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 989398b0113e434d88544e2577d3e307
+        _position: {x: 0, y: 0}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: d072b72767fa411abb5f956747fa704d, type: 2}
+    - rid: 1123
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: af70bd1c71f346349415f5b405389852
+        _position: {x: 0, y: 0}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: d072b72767fa411abb5f956747fa704d, type: 2}
+        _aim: 0
+        _maxRange: 7
+        _requireClearShot: 0
+        _leadMovingTarget: 1
+    - rid: 1124
+      type: {class: StopMoving, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: e355f7d4219e4305a92f27c2c5b72e48
+        _position: {x: 0, y: 0}
+        _comment: 
+    - rid: 1125
+      type: {class: Wait, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 3729282b04174da2a38bf97d0e95dc4d
+        _position: {x: 0, y: 0}
+        _comment: 
+        _seconds: {Min: 2.5, Max: 2.5, Bias: 0}
+    - rid: 1126
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 3d7150f99b444a7dabb40c70dc8bc2b4
+        _position: {x: 0, y: 0}
+        _comment: Feeding Bite (its own ability): lunge in, latch onto the target and hold it, draining health into itself, until the target breaks free or it lets go
+        _children:
+        - 497e491c2ed74c269c6ae3a92cc5ea6c
+        - 2365dcf6c15947569917c57d214f3498
+        - 989398b0113e434d88544e2577d3e307
+        - af70bd1c71f346349415f5b405389852
+        - e355f7d4219e4305a92f27c2c5b72e48
+        - 3729282b04174da2a38bf97d0e95dc4d
         _abort: 0

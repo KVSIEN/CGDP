@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f19d124a4964eb7b2689bdea871554e, type: 3}
+  m_Name: BioFeedingBiteStrikeAbility
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Abilities.TargetedAbility
+  DisplayName: Feeding Bite (strike)
+  SlotColor: {r: 0.45, g: 0.85, b: 0.3, a: 1}
+  Cooldown: 0
+  MaxCharges: 1
+  CastTime: 0
+  Targeting: {fileID: 11400000, guid: 8f76754a390f4bcda203e4ed856f9efd, type: 2}
+  Damage: 14
+  ArmorPenetration: 0
+  DamageType: 0
+  OnHitEffects:
+  - Effect: {fileID: 11400000, guid: d3c73b5c46ee4bab989283ad0c7e88c7, type: 2}
+    Chance: 1
+    Potency: 1
+    Duration: 4
+  - Effect: {fileID: 11400000, guid: 2e540cc1f44b4111baecd0fdb88be16d, type: 2}
+    Chance: 1
+    Potency: 1
+    Duration: 4
+  Heal: 0
+  SelfHealShare: 0.6
