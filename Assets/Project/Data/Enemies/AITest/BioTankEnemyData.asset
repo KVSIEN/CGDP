@@ -76,9 +76,9 @@ MonoBehaviour:
     Chance: 1
     Potency: 1
     Duration: 0
-  ShotZonePrefab: {fileID: 7100000000000000001, guid: cda61e22cff245f28419d5aa6ec25518, type: 3}
+  ShotZonePrefab: {fileID: 0}
   ShotZone:
-    Radius: 2.2
+    Radius: 0
     Duration: 6
     TickInterval: 0.5
     DamagePerTick: 3
