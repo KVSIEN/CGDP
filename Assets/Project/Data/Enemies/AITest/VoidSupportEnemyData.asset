@@ -36,10 +36,10 @@ MonoBehaviour:
   AttackDamage: 12
   AttackCooldown: 1
   RangedAttackCooldown: 1.8
-  RangedAttackDamage: 25
+  RangedAttackDamage: 9
   AttackWindup: 0.6
   DamageNumberColor: {r: 0.78, g: 0.55, b: 1, a: 1}
-  PreferredRange: 13
+  PreferredRange: 19
   SpreadAngle: 3
   BurstCount: 1
   BurstInterval: 0.2
@@ -50,17 +50,18 @@ MonoBehaviour:
   ShotRadius: 0.4
   ShotBlastRadius: 1.6
   ShotEffects:
-  - Effect: {fileID: 11400000, guid: ab35a62d143e4a45b9c91538377131e6, type: 2}
-    Chance: 1
-    Potency: 1.5
+  - Effect: {fileID: 11400000, guid: 8f59ecfe6ac14bc382573d3960838518, type: 2}
+    Chance: 0.3
+    Potency: 1
     Duration: 0
-  Grenade: {fileID: 0}
-  Signature: {fileID: 11400000, guid: 7d6fd7a4097d4f76afec94c6150fa7c5, type: 2}
-  Escape: {fileID: 11400000, guid: 6b185f0aede34efba5d90e883f4efcb6, type: 2}
-  Summon: {fileID: 11400000, guid: 522b7d1c7987496d91198a25661e0849, type: 2}
-  Boost: {fileID: 11400000, guid: cb52b5774bcb4d4fae591ff72062504b, type: 2}
+  ShotDamageType: 1
+  Grenade: {fileID: 11400000, guid: 79255874e32b43b09b84422d255918e8, type: 2}
+  Signature: {fileID: 11400000, guid: 8f59ecfe6ac14bc382573d3960838518, type: 2}
+  Escape: {fileID: 11400000, guid: d21ef9a3e5ed46ebbb3b7cf0ee9cead6, type: 2}
+  Summon: {fileID: 0}
+  Boost: {fileID: 11400000, guid: f03bf576978345aca1b28aa56cafc7c2, type: 2}
   Support: {fileID: 11400000, guid: e9db9e84818d42d084a12ebbb67b5579, type: 2}
-  Special: {fileID: 11400000, guid: 9b43a3ba6d3f30efe172662135876f4a, type: 2}
+  Special: {fileID: 0}
   AlertDuration: 8
   AttackSound: {fileID: 0}
   RangedAttackSound: {fileID: 0}

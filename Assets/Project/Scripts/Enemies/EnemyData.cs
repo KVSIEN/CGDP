@@ -132,6 +132,8 @@ namespace CGD.Enemies
         [Min(0f)] public float ShotBlastRadius = 0f;
         [Tooltip("Status effects every ranged hit applies (Void's slow)")]
         public StatusEffectApplication[] ShotEffects;
+        [Tooltip("What kind of damage each ranged shot deals (True = armour does nothing against it, a curse's bolt)")]
+        public DamageType ShotDamageType = DamageType.Physical;
         [Tooltip("Prefab with a DamageZone (Prefabs/VFX/DamageZone): a projectile shot leaves a patch of harmful ground where it lands. Empty = none")]
         public GameObject ShotZonePrefab;
         [Tooltip("What that patch does (radius, how long it lasts, damage per tick, look). A radius of 0 = no patch. It applies the Shot Effects too")]

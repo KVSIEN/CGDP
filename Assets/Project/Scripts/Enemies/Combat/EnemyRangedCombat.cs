@@ -287,7 +287,7 @@ namespace CGD.Enemies
 
             float damage = data.RangedAttackDamage > 0f ? data.RangedAttackDamage : data.AttackDamage;
             if (_stats != null) damage = _stats.Apply(ItemStat.Damage, damage);
-            var info = new DamageInfo(damage, source: _source,
+            var info = new DamageInfo(damage, type: data.ShotDamageType, source: _source,
                                   onHitEffects: data.ShotEffects);
             if (projectile)
             {

@@ -94,6 +94,11 @@ namespace CGD.Weapons
         public Material DomeMaterial;
         public Color DomeColor = new(0.35f, 0.75f, 1f, 0.25f);
 
+        [Header("Totem")]
+        [Tooltip("Health of a destructible totem left where it goes off, standing in the lingering zone: the zone lasts as long as it does (up to the zone's Duration) and anyone can shoot it down. Needs Lingering Zone. 0 = no totem, the zone just lingers")]
+        [Min(0f)] public float TotemHealth = 0f;
+        public Color TotemColor = new(0.55f, 0.25f, 0.85f, 1f);
+
         [Header("Effects")]
         [Tooltip("Optional — a pooled prefab with an ExplosionFlash, spawned at the blast")]
         public GameObject ExplosionEffect;

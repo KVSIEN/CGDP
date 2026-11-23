@@ -54,6 +54,16 @@ namespace CGD.Combat
             Hazards.Add(_hazard);
         }
 
+        // Ends the patch early (the totem it belongs to fell).
+        public void End()
+        {
+            if (_zone == null) return;
+
+            _zone = null;
+            Hazards.Remove(_hazard);
+            PrefabPool.Release(gameObject);
+        }
+
         private void Update()
         {
             if (_zone == null) return;
@@ -61,9 +71,7 @@ namespace CGD.Combat
             _age += Time.deltaTime;
             if (_age >= _zone.Duration)
             {
-                _zone = null;
-                Hazards.Remove(_hazard);
-                PrefabPool.Release(gameObject);
+                End();
                 return;
             }
 

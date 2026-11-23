@@ -71,6 +71,12 @@ MonoBehaviour:
   - rid: 1055
   - rid: 1056
   - rid: 1057
+  - rid: 1058
+  - rid: 1059
+  - rid: 1060
+  - rid: 1061
+  - rid: 1062
+  - rid: 1063
   _groups: []
   _notes: []
   references:
@@ -81,7 +87,7 @@ MonoBehaviour:
       data:
         _guid: e9b60be26b8542d0919a12d5354aec80
         _position: {x: 0, y: 0}
-        _comment: 'VOID support agent (enchanter): a backline caster that wins fights through its allies. It keeps about 8 m behind the ally nearest the threat, out of the line of fire, and spends the fight casting: Void Empowerment over every ally within 12 m (+25% damage, shields recharge 50% faster for 6 s), Void Ward on whoever is being hit or worn down (Support: +35 shield and +15 health), and a Null Field on the target (Signature: no abilities and slowed inside). It only shoots to fill the time between casts, and phases out (Escape: Phase Shift) when something gets within 7 m. Calm, it follows its leader and mends anyone still worn down. Kit: Support (Void Ward), Signature (Null Field), Escape (Phase Shift); Void Empowerment is set on the tree.'
+        _comment: 'VOID support agent (voodoo enchanter): a backline caster that wins fights through its allies from far back. It keeps about 12 m behind the ally nearest the threat, out of the line of fire, and spends the fight enchanting and cursing: Void Empowerment over every ally within 12 m (+25% damage, shields recharge 50% faster for 6 s), Void Ward on whoever is being hit or worn down (Support: +35 shield and +15 health), Curse on the target (Signature: true damage and three stacks of Curse) and a Curse Totem planted on it (Grenade: a destructible totem whose zone curses everyone in it every second). Its basic attack is a low true-damage bolt with a chance to add a Curse stack, only to fill the time between casts. When something gets within 7 m it phases out (Escape: Wrong Echo, walking through walls untouched for 5 s). Calm, it follows its leader and mends anyone still worn down. Kit: Support (Void Ward), Signature (Curse), Escape (Wrong Echo), Boost (Void Empowerment), Grenade (Curse Totem).'
         _children:
         - c2d1f5dbd566459bbda90d756e1aefb9
     - rid: 1001
@@ -159,6 +165,7 @@ MonoBehaviour:
         - b76a8a2472974194a27028a70783edc7
         - d9cace6f49c2405ea554de1558c4a9de
         - 904a05adffe4437f98a0451357636739
+        - 8c1ffe4d184d499e942782a39d0e729b
         - 7dc57dc803704039b1f05cbb726f7573
         - 518bda27248527d76098d0e039d77f48
         - 887ea0f6b47d4e74b948390639698eaf
@@ -324,7 +331,7 @@ MonoBehaviour:
       data:
         _guid: 904a05adffe4437f98a0451357636739
         _position: {x: 571, y: 600}
-        _comment: 'The target in sight: Null Field on it, so it fights the coven without its abilities'
+        _comment: 'The target in sight: Curse it (its Signature: a bolt of true damage and three stacks of Curse, so everything its allies hit it with lands harder)'
         _children:
         - 5b9d53eea7b34ff28e6f8bd4dd84be7c
         - d3d30374715c4ebcaacb5dc57369977a
@@ -416,7 +423,7 @@ MonoBehaviour:
         _allyRadius: 20
         _reach: 10
         _line: 0
-        _fromLine: 8
+        _fromLine: 12
         _searchRadius: 12
         _replanEvery: 2
         _speed: 1
@@ -464,7 +471,7 @@ MonoBehaviour:
         _allyRadius: 20
         _reach: 10
         _line: 0
-        _fromLine: 8
+        _fromLine: 12
         _searchRadius: 12
         _replanEvery: 2
         _speed: 1
@@ -607,3 +614,52 @@ MonoBehaviour:
         _comment: 
         _tree: {fileID: 11400000, guid: 7ab5900d0c634e3682dad12bcbb34b95, type: 2}
         _off: 0
+    - rid: 1058
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8c1ffe4d184d499e942782a39d0e729b
+        _position: {x: -300, y: 600}
+        _comment: 'A threat in view within 22 m: plant a Curse Totem on it (the kit grenade: a destructible totem whose zone curses everyone in it every second)'
+        _children:
+        - 9e5e7f45671144ec833bff894090e161
+        - 390c51fa847749dbace55f9f06414545
+        - 9cd5f47d43984f79bd265062024ae54d
+        - ef1ef53da87948aba45a715df9cbdcbc
+        _abort: 0
+    - rid: 1059
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9e5e7f45671144ec833bff894090e161
+        _position: {x: -400, y: 750}
+        _comment: 
+    - rid: 1060
+      type: {class: TargetInSight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 390c51fa847749dbace55f9f06414545
+        _position: {x: -300, y: 750}
+        _comment: 
+    - rid: 1061
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9cd5f47d43984f79bd265062024ae54d
+        _position: {x: -200, y: 750}
+        _comment: 
+        _range: 22
+    - rid: 1062
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: ef1ef53da87948aba45a715df9cbdcbc
+        _position: {x: -100, y: 750}
+        _comment: 
+        _children:
+        - 0ff208473fa14b25892ca94b1c5eb9bd
+        _seconds: 14
+        _onlyAfterSuccess: 0
+    - rid: 1063
+      type: {class: ThrowGrenade, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 0ff208473fa14b25892ca94b1c5eb9bd
+        _position: {x: -100, y: 900}
+        _comment: 
+        _grenade: {fileID: 0}
+        _minDistance: 6

@@ -248,6 +248,13 @@ namespace CGD.Weapons
 
         private void SpawnZone(Vector3 center)
         {
+            if (_data.TotemHealth > 0f)
+            {
+                CurseTotem.Raise(center, _data.TotemHealth, _data.TotemColor, _data.LingeringZone, _data.Zone,
+                    _data.ZoneRadiusOrBlast, _source, _data.HitMask, _data.OnHitEffects);
+                return;
+            }
+
             GameObject zone = PrefabPool.Spawn(_data.LingeringZone, center, Quaternion.identity);
             if (zone.TryGetComponent(out DamageZone damageZone))
                 damageZone.Begin(_data.Zone, _data.ZoneRadiusOrBlast, _source, _data.HitMask, _data.OnHitEffects);
