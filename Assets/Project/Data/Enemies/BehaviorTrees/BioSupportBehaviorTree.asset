@@ -83,6 +83,9 @@ MonoBehaviour:
   - rid: 1141
   - rid: 1142
   - rid: 1143
+  - rid: 1144
+  - rid: 1145
+  - rid: 1146
   _groups: []
   _notes: []
   references:
@@ -110,6 +113,7 @@ MonoBehaviour:
         - 9609f52a3296435c9d9df0317b79d196
         - ab1218ba19f64f6b8d70923e46a21bcc
         - 3f0f14a124ec46d2affd1b5983bcc2c2
+        - f1ad75c4963d4db09fce36f6d7fb709d
         - f7c52f46011f4193a5a076c47a1f1381
         - 45ac5457b1c54cc3a4c489c8228bb6bc
         _abort: 0
@@ -723,3 +727,31 @@ MonoBehaviour:
         _comment: 
         _radius: 30
         _atLeast: 1
+    - rid: 1144
+      type: {class: JoinFight, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: fa3413c2e6ad48aabfa493f8794c92b8
+        _position: {x: 0, y: 0}
+        _comment: 
+        _radius: 40
+        _stopDistance: 24
+        _speed: 1
+        _sneak: 1
+    - rid: 1145
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: cfe1b6a8b5f148e7b76592ac3fca61c1
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - fa3413c2e6ad48aabfa493f8794c92b8
+        _seconds: 4
+    - rid: 1146
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f1ad75c4963d4db09fce36f6d7fb709d
+        _position: {x: 0, y: 0}
+        _comment: "A squadmate is fighting something it hasn't seen yet: go and join the fight, stopping at its own range"
+        _children:
+        - cfe1b6a8b5f148e7b76592ac3fca61c1
+        _succeed: 1

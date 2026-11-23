@@ -81,6 +81,23 @@ MonoBehaviour:
   - rid: 1065
   - rid: 1066
   - rid: 1067
+  - rid: 1068
+  - rid: 1069
+  - rid: 1070
+  - rid: 1071
+  - rid: 1072
+  - rid: 1073
+  - rid: 1074
+  - rid: 1075
+  - rid: 1076
+  - rid: 1077
+  - rid: 1078
+  - rid: 1079
+  - rid: 1080
+  - rid: 1081
+  - rid: 1082
+  - rid: 1083
+  - rid: 1084
   _groups: []
   _notes: []
   references:
@@ -169,6 +186,7 @@ MonoBehaviour:
         - 70d840d5bcdc4ac4a577b44b8f530ae6
         - d0340c889b074d15bbc6e2271042d1fd
         - 2d3a83ee80a742c6b0b8c464a6d04d48
+        - fbcf4b4906f34f009af6d5202f2170ea
         - 05a1ddde285243d1936a8f22108cded1
         - a1100bbe2e1446fb8b883ebae0a7d47d
         - 5f15a1927c3e41aca300373e01b8db6c
@@ -675,3 +693,156 @@ MonoBehaviour:
         _speed: 0.7
         _holdOnArrival: 0
         _sneak: 1
+    - rid: 1068
+      type: {class: KinInTrouble, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: fbeb3df3e70249cf895df1f52698c56a
+        _position: {x: 0, y: 0}
+        _comment: 
+        _radius: 35
+        _health: 0.4
+        _onlyRetreating: 1
+    - rid: 1069
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a69b71413d8548978bd80638add03f67
+        _position: {x: 0, y: 0}
+        _comment: 
+    - rid: 1070
+      type: {class: MarkCoverForKin, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 16e730a7491e40f8b9dbc303169b8a64
+        _position: {x: 0, y: 0}
+        _comment: 'Pick the spot: 3 m in front of the squadmate, toward the enemy'
+        _radius: 35
+        _health: 0.4
+        _onlyRetreating: 1
+        _ahead: 3
+        _key: CoverSpot
+    - rid: 1071
+      type: {class: ThrowGrenade, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: f5735044271b4224a949960de8c200f0
+        _position: {x: 0, y: 0}
+        _comment: 
+        _minDistance: 3
+        _atKey: CoverSpot
+    - rid: 1072
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 92e250fc8af64e31b00a2af22a53ccaf
+        _position: {x: 0, y: 0}
+        _comment: 'Acid Spew onto the spot: a poison pool between the retreating squad and the enemy'
+        _children:
+        - f5735044271b4224a949960de8c200f0
+        _succeed: 1
+    - rid: 1073
+      type: {class: MoveTo, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: b5b5cb416ae04a35b894bf37cb998917
+        _position: {x: 0, y: 0}
+        _comment: 
+        _key: CoverSpot
+        _run: 0
+        _arrivalDistance: 1.5
+    - rid: 1074
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e91dd76ccf81445da607c21c3fb51c03
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - b5b5cb416ae04a35b894bf37cb998917
+        _seconds: 8
+    - rid: 1075
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: f1c4629d4e2d4025be851eb138f6ca41
+        _position: {x: 0, y: 0}
+        _comment: 'Step into the gap'
+        _children:
+        - e91dd76ccf81445da607c21c3fb51c03
+        _succeed: 1
+    - rid: 1076
+      type: {class: HoldRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: a8d8c41213fb448a9a7fd5844bda3c3d
+        _position: {x: 0, y: 0}
+        _comment: 'Keeps its mid-range distance, strafing'
+    - rid: 1077
+      type: {class: ShootBurst, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c358217ea7b54f35b063d33efc61f227
+        _position: {x: 0, y: 0}
+        _comment: 
+    - rid: 1078
+      type: {class: Repeat, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: e749ec53577d43ff880a7c73ae26168f
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - c358217ea7b54f35b063d33efc61f227
+        _count: 0
+        _stopOnFailure: 1
+    - rid: 1079
+      type: {class: Parallel, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: bfe02b3fa81c477c83e026486d5e61d3
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - a8d8c41213fb448a9a7fd5844bda3c3d
+        - e749ec53577d43ff880a7c73ae26168f
+        _policy: 0
+    - rid: 1080
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 277c096ee2c149a9af1967d52b47c428
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - bfe02b3fa81c477c83e026486d5e61d3
+        _seconds: 6
+    - rid: 1081
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 705ad999687847cc99d3de9e65d33a96
+        _position: {x: 0, y: 0}
+        _comment: 'Hold the gap, spitting poison at whatever follows'
+        _children:
+        - 277c096ee2c149a9af1967d52b47c428
+        _succeed: 1
+    - rid: 1082
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 37d9e742028b4f30a0c379461796dc1c
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - 16e730a7491e40f8b9dbc303169b8a64
+        - 92e250fc8af64e31b00a2af22a53ccaf
+        - f1c4629d4e2d4025be851eb138f6ca41
+        - 705ad999687847cc99d3de9e65d33a96
+        _abort: 0
+    - rid: 1083
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 66a6a216642c40d1a0ed5760ef77acc9
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - 37d9e742028b4f30a0c379461796dc1c
+        _seconds: 20
+        _onlyAfterSuccess: 0
+    - rid: 1084
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: fbcf4b4906f34f009af6d5202f2170ea
+        _position: {x: 0, y: 0}
+        _comment: 'A squadmate worn down (40% or less) and falling back: spew acid between it and the enemy, step into the gap and hold it with poison fire (every 20 s at most)'
+        _children:
+        - fbeb3df3e70249cf895df1f52698c56a
+        - a69b71413d8548978bd80638add03f67
+        - 66a6a216642c40d1a0ed5760ef77acc9
+        _abort: 2

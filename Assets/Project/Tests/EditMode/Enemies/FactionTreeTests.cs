@@ -126,6 +126,22 @@ namespace CGD.Tests
             }
         }
 
+        // Supports go to their squad's fight like tanks do, and the Bio and Void tanks cover a
+        // retreating squadmate the way the Tech tank does, each in its faction's manner.
+        [Test]
+        public void SupportsJoinTheFightAndTanksCoverARetreat()
+        {
+            foreach (string faction in new[] { "Bio", "Tech", "Void" })
+                Assert.IsTrue(EnemyTreeContents.NodeTypes(Load(faction + "SupportBehaviorTree")).Contains(typeof(JoinFight)),
+                    $"{faction} support: walks up to its squad's fight");
+            foreach (string faction in new[] { "Bio", "Tech", "Void" })
+            {
+                HashSet<Type> nodes = EnemyTreeContents.NodeTypes(Load(faction + "TankBehaviorTree"));
+                Assert.IsTrue(nodes.Contains(typeof(KinInTrouble)) && nodes.Contains(typeof(MarkCoverForKin)),
+                    $"{faction} tank: covers a squadmate falling back");
+            }
+        }
+
         // Each support agent plays its own role: the Void enchanter and the Bio spore mender keep
         // behind the line, the Tech shield wall holds its front.
         [Test]

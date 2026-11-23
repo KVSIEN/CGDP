@@ -84,6 +84,20 @@ MonoBehaviour:
   - rid: 1068
   - rid: 1069
   - rid: 1070
+  - rid: 1071
+  - rid: 1072
+  - rid: 1073
+  - rid: 1074
+  - rid: 1075
+  - rid: 1076
+  - rid: 1077
+  - rid: 1078
+  - rid: 1079
+  - rid: 1080
+  - rid: 1081
+  - rid: 1082
+  - rid: 1083
+  - rid: 1084
   _groups: []
   _notes: []
   references:
@@ -173,6 +187,7 @@ MonoBehaviour:
         - 6623320dece443df9bee48467a879d00
         - 2265ef00475345ca96bb7e7064cdd83c
         - 7a41e2e65991404684b304e51d292f30
+        - 63fc8736c7354cadbeb14f4ee220a1db
         - c9d3aeab55884292948688baa07adabf
         - 5683e2f4affd467f91ffa2f0d778aade
         - bb272734f4974e57a4ce39546eaea910
@@ -711,3 +726,134 @@ MonoBehaviour:
         _maxRange: 0
         _requireClearShot: 0
         _leadMovingTarget: 0
+    - rid: 1071
+      type: {class: KinInTrouble, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 90717dafcd75434da31f47303e42d7f4
+        _position: {x: 0, y: 0}
+        _comment: 
+        _radius: 35
+        _health: 0.4
+        _onlyRetreating: 1
+    - rid: 1072
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 37dfa6b2ab524ebebfa15d216c38428f
+        _position: {x: 0, y: 0}
+        _comment: 
+    - rid: 1073
+      type: {class: MarkCoverForKin, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 6b325441c5e14c5db98aabb103a9a88d
+        _position: {x: 0, y: 0}
+        _comment: 'Pick the spot: 3 m in front of the squadmate, toward the enemy'
+        _radius: 35
+        _health: 0.4
+        _onlyRetreating: 1
+        _ahead: 3
+        _key: CoverSpot
+    - rid: 1074
+      type: {class: ThrowGrenade, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 358be66d09c64b0f8d433554c3891afa
+        _position: {x: 0, y: 0}
+        _comment: 
+        _minDistance: 3
+        _atKey: CoverSpot
+    - rid: 1075
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: fe8f496bac494cdbb252ed34045461d6
+        _position: {x: 0, y: 0}
+        _comment: 'Frost Charge onto the spot: slows whatever chases the retreating squad'
+        _children:
+        - 358be66d09c64b0f8d433554c3891afa
+        _succeed: 1
+    - rid: 1076
+      type: {class: MoveTo, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: daee4cf0d6434de38584d1e5f3218b9c
+        _position: {x: 0, y: 0}
+        _comment: 
+        _key: CoverSpot
+        _run: 0
+        _arrivalDistance: 1.5
+    - rid: 1077
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 2d522fc931b847dab5bb00506c774f38
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - daee4cf0d6434de38584d1e5f3218b9c
+        _seconds: 8
+    - rid: 1078
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 8b4f2b81a3a847f2a31bbe83cdd27168
+        _position: {x: 0, y: 0}
+        _comment: 'Step into the gap'
+        _children:
+        - 2d522fc931b847dab5bb00506c774f38
+        _succeed: 1
+    - rid: 1079
+      type: {class: AdvanceFacing, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 8b566284bf2b43b5b99416b5c30573f0
+        _position: {x: 0, y: 0}
+        _comment: 
+        _stopDistance: 1.5
+        _speed: 0.7
+        _holdOnArrival: 1
+        _sneak: 0
+    - rid: 1080
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: a2457e336c754eb8b13d338fb4e693f8
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - 8b566284bf2b43b5b99416b5c30573f0
+        _seconds: 6
+    - rid: 1081
+      type: {class: ForceResult, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: c46c9b94a0144f11a156e3e55cea8832
+        _position: {x: 0, y: 0}
+        _comment: 'Walk in on whatever follows, facing it, and hold the gap'
+        _children:
+        - a2457e336c754eb8b13d338fb4e693f8
+        _succeed: 1
+    - rid: 1082
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 1a8320bed1b34546991b1ca2ac177478
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - 6b325441c5e14c5db98aabb103a9a88d
+        - fe8f496bac494cdbb252ed34045461d6
+        - 8b4f2b81a3a847f2a31bbe83cdd27168
+        - c46c9b94a0144f11a156e3e55cea8832
+        _abort: 0
+    - rid: 1083
+      type: {class: Cooldown, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6c833f28147947b7a65a42425f6908d8
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - 1a8320bed1b34546991b1ca2ac177478
+        _seconds: 20
+        _onlyAfterSuccess: 0
+    - rid: 1084
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 63fc8736c7354cadbeb14f4ee220a1db
+        _position: {x: 0, y: 0}
+        _comment: 'A squadmate worn down (40% or less) and falling back: a Frost Charge onto the gap between it and the enemy, then walk in on the enemy and hold the gap (every 20 s at most)'
+        _children:
+        - 90717dafcd75434da31f47303e42d7f4
+        - 37dfa6b2ab524ebebfa15d216c38428f
+        - 6c833f28147947b7a65a42425f6908d8
+        _abort: 2
