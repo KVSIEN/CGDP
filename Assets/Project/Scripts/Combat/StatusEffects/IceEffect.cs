@@ -3,7 +3,8 @@ using UnityEngine;
 namespace CGD.Combat
 {
     // Pure debuff: slow + armor reduction per stack (both × Potency), stun at max stacks (Ice,
-    // Cryo, the plain Slow).
+    // Cryo, the plain Slow). The freeze thaws the stacks and is followed by a grace in which
+    // build-up can't freeze again (StunGrace).
     // Stateless — Tick() recomputes from stack count, safe on shared assets.
     // The target has one armor reduction, so only assets that reduce armor touch it: a
     // slow-only chill landing alongside a Cryo would otherwise wipe the Cryo's reduction.
@@ -19,6 +20,8 @@ namespace CGD.Combat
         public float ArmorReductionPerStack = 0.02f;
         [Tooltip("Seconds the target is stunned for once it reaches MaxStacks")]
         public float StunDuration = 3f;
+        [Tooltip("Seconds after a freeze ends during which build-up cannot freeze the target again (it is still slowed). Stops a fast hitter chain-stunning someone. 0 = no grace")]
+        [Min(0f)] public float StunGrace = 4f;
         [Tooltip("Extra armor reduction applied while stunned, on top of the per-stack total")]
         public float StunArmorReductionBonus = 0.10f;
 
@@ -30,8 +33,13 @@ namespace CGD.Combat
             float potency = target.PotencyOf(this);
             Stunnable stunnable = target.Stunnable;
 
-            if (clampedStacks >= MaxStacks && stunnable != null && !stunnable.IsStunned)
-                stunnable.ApplyStun(StunDuration);
+            // A freeze thaws the build-up: it starts from nothing again, and for the grace that follows
+            // the stacks may fill but won't freeze.
+            if (clampedStacks >= MaxStacks && stunnable != null && !stunnable.IsStunned &&
+                stunnable.TryStunFromBuildup(StunDuration, StunGrace))
+            {
+                target.Remove(this);
+            }
 
             bool stunned = stunnable != null && stunnable.IsStunned;
 

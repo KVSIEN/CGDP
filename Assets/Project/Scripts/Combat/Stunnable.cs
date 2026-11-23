@@ -16,6 +16,7 @@ namespace CGD.Combat
         private readonly Dictionary<object, FadingSlow> _fading = new();
         private readonly List<object> _fadeKeys = new();
         private float _speedMultiplier = 1f;
+        private float _buildupStunImmuneUntil;
         private CooldownTimer _stunTimer;
         private HealthManager _health;
 
@@ -57,6 +58,18 @@ namespace CGD.Combat
             if (duration > _stunTimer.Remaining) _stunTimer.Start(duration);
         }
 
+        // Stuns from a status build-up (Ice reaching its last stack) — refused while the grace after
+        // the previous one runs, so a heavy hitter can't chain freezes and lock a target down for
+        // good. True if it stunned. The grace counts from the end of the stun.
+        public bool TryStunFromBuildup(float duration, float grace)
+        {
+            if (Time.time < _buildupStunImmuneUntil) return false;
+
+            ApplyStun(duration);
+            _buildupStunImmuneUntil = Time.time + duration + grace;
+            return true;
+        }
+
         // multiplier: 0 = stopped, 1 = no slow. Calling again with the same source replaces its slow.
         public void SetSlow(object source, float multiplier)
         {
@@ -87,6 +100,7 @@ namespace CGD.Combat
             _speedMultiplier = 1f;
             _pushLeft = 0f;
             _stunTimer.Reset();
+            _buildupStunImmuneUntil = 0f;
         }
 
         private void Recalculate()

@@ -38,8 +38,8 @@ namespace CGD.Editor
             lines.Add($"Toughness: {data.EffectiveHealth:0} raw damage to kill ({data.MaxHealth:0} health + {data.MaxPlating:0} plating (+{data.PlatingArmor:0} armour) + {data.MaxShield:0} shield, {data.Armor:0} armour).");
 
             if (MeleeAttacks(data, nodes))
-                lines.Add($"Melee: {data.AttackDamage:0.#} per hit, about {data.MeleeDamagePerSecond:0.#} damage/s " +
-                          $"(reach {data.AttackRange:0.#} m, {data.AttackWindup:0.##} s wind-up).");
+                lines.Add($"Melee: {data.AttackDamage * data.MeleeDamageShare:0.#} per swing, about {data.MeleeDamagePerSecond:0.#} damage/s " +
+                          $"(reach {data.AttackRange:0.#} m, {data.MeleeWindupTime:0.##} s of wind-up{(data.MeleeCombo is { Length: > 1 } ? $" over a {data.MeleeCombo.Length}-blow combo" : "")}).");
 
             if (Shoots(data, nodes))
             {

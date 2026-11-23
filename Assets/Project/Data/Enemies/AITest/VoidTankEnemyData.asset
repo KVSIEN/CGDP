@@ -32,12 +32,28 @@ MonoBehaviour:
   Voice: {fileID: 11400000, guid: 20e1169ea97c4db5853bc8db5cf71545, type: 2}
   CombatType: 0
   Social: 1
-  AttackRange: 2
-  AttackDamage: 16
-  AttackCooldown: 1.4
+  AttackRange: 2.5
+  AttackDamage: 22
+  AttackCooldown: 2.2
   RangedAttackCooldown: 1.8
   RangedAttackDamage: 25
   AttackWindup: 0.5
+  MeleeCombo:
+  - Windup: 0.9
+    DamageShare: 0.8
+    Reach: 1.4
+    Radius: 1.6
+    AppliesEffects: 0
+  - Windup: 0.8
+    DamageShare: 0.8
+    Reach: 1.2
+    Radius: 2.2
+    AppliesEffects: 1
+  - Windup: 1.3
+    DamageShare: 1.6
+    Reach: 1.8
+    Radius: 3
+    AppliesEffects: 1
   DamageNumberColor: {r: 0.55, g: 0.8, b: 1, a: 1}
   PreferredRange: 13
   SpreadAngle: 3

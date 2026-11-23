@@ -86,8 +86,7 @@ namespace CGD.Combat
 
             foreach (StatusEffect effect in _expiredBuffer)
             {
-                _active.Remove(effect);
-                effect.OnRemoved(this);
+                if (_active.Remove(effect)) effect.OnRemoved(this);
             }
             _expiredBuffer.Clear();
         }
@@ -231,6 +230,21 @@ namespace CGD.Combat
             foreach (float t in timers)
                 if (t > longest) longest = t;
             return longest;
+        }
+
+        // Ends `effect` outright, whatever stacks it has (Ice thawing once it has frozen its target).
+        // Safe from inside the effect's own Tick: the removal waits until the tick pass is over.
+        public void Remove(StatusEffect effect)
+        {
+            if (!_active.ContainsKey(effect)) return;
+
+            if (_ticking)
+            {
+                if (!_expiredBuffer.Contains(effect)) _expiredBuffer.Add(effect);
+                return;
+            }
+            _active.Remove(effect);
+            effect.OnRemoved(this);
         }
 
         public void Clear()

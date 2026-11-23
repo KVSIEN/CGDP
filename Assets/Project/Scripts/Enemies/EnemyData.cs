@@ -96,8 +96,10 @@ namespace CGD.Enemies
         public StatusEffect[] StatusImmunities;
         [Tooltip("Status effects every melee hit applies (an Infector's infestation, a venomous bite). Empty = none")]
         public StatusEffectApplication[] MeleeEffects;
-        [Tooltip("Seconds between starting an attack and the hit landing (melee only)")]
+        [Tooltip("Seconds between starting an attack and the hit landing (melee only). Ignored when a Melee Combo is set")]
         public float AttackWindup   = 0.35f;
+        [Tooltip("A melee swing made of several blows in turn (an ice mace's three heavy hits), each with its own wind-up, damage share and area. Empty = one blow as above. Attack Cooldown runs after the last")]
+        public MeleeBlow[] MeleeCombo;
         [Tooltip("Colour of the damage numbers on whatever this enemy hurts, to tell attackers apart (rival factions). Clear = the usual white")]
         public Color DamageNumberColor = Color.clear;
 
@@ -198,7 +200,30 @@ namespace CGD.Enemies
 
         // Damage per second of non-stop attacking at base speed (no buffs, every hit landing), for
         // comparing enemy types: a melee swing every wind-up + cooldown...
-        public float MeleeDamagePerSecond => AttackDamage / Mathf.Max(0.01f, AttackWindup + AttackCooldown);
+        public float MeleeDamagePerSecond => AttackDamage * MeleeDamageShare / Mathf.Max(0.01f, MeleeWindupTime + AttackCooldown);
+
+        // The whole swing's damage as a multiple of Attack Damage, and the time it spends winding up.
+        public float MeleeDamageShare
+        {
+            get
+            {
+                if (MeleeCombo == null || MeleeCombo.Length == 0) return 1f;
+                float share = 0f;
+                foreach (MeleeBlow blow in MeleeCombo) share += blow.DamageShare;
+                return share;
+            }
+        }
+
+        public float MeleeWindupTime
+        {
+            get
+            {
+                if (MeleeCombo == null || MeleeCombo.Length == 0) return AttackWindup;
+                float time = 0f;
+                foreach (MeleeBlow blow in MeleeCombo) time += blow.Windup;
+                return time;
+            }
+        }
 
         // ...and a ranged burst every wind-up plus cooldown (counted from the burst's first shot), or
         // every burst's length (shots and recovery) if that takes longer.

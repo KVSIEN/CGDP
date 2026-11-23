@@ -89,7 +89,7 @@ MonoBehaviour:
       data:
         _guid: e9b60be26b8542d0919a12d5354aec80
         _position: {x: 0, y: 0}
-        _comment: 'VOID tank (frost colossus): a slow melee wall that lives behind a massive shield. From a distance it slips round to the enemy's side by the least visible route, keeping to the walls, then walks in on it ahead of its coven, every strike leaving Ice (stacks slow and soften armour; five freeze), and slams the ground when anything is within 4.5 m (Signature: Frost Slam, ice and slow round it), lashes an icy cone at close range (Special: Frost Lash), throws a Frost Charge at a target closing in (Grenade), and when its shield runs low hardens it again (Boost: Glacial Shell). Immune to ice, cryo and slows. Its Soak Aura takes 30% of every hit on an ally within 8 m. Kit: Signature (Frost Slam), Special (Frost Lash), Boost (Glacial Shell), Grenade (Frost Charge).'
+        _comment: 'VOID tank (frost colossus): a slow melee wall that lives behind a massive shield. From a distance it slips round to the enemy''s side by the least visible route, keeping to the walls, then walks in on it ahead of its coven, every strike leaving Ice (stacks slow and soften armour; five freeze), and slams the ground when anything is within 4.5 m (Signature: Frost Slam, ice and slow round it), lashes an icy cone at close range (Special: Frost Lash), throws a Frost Charge at a target closing in (Grenade), and when its shield runs low hardens it again (Boost: Glacial Shell). Immune to ice, cryo and slows. Its Soak Aura takes 30% of every hit on an ally within 8 m. Kit: Signature (Frost Slam), Special (Frost Lash), Boost (Glacial Shell), Grenade (Frost Charge).'
         _children:
         - a4f9a3493046458c95d5fa49fe96a19b
     - rid: 1001

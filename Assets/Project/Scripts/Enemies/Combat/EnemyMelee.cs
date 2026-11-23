@@ -7,8 +7,9 @@ using CGD.Stats;
 
 namespace CGD.Enemies
 {
-    // An enemy's melee swing: a wind-up, then one blow on everything in reach in front of it,
-    // then a cooldown before the next. Attack speed (the FireRate stat, e.g. Bio's Surge)
+    // An enemy's melee swing: a wind-up, then one blow on everything in reach in front of it
+    // (or, with a Melee Combo, a run of blows each with its own wind-up and area), then a
+    // cooldown before the next. Attack speed (the FireRate stat, e.g. Bio's Surge)
     // shortens wind-up and cooldown alike; an armed Ambush multiplies the blow and adds its own
     // on-hit effects (Bio's bleed). Swinging gives a hiding enemy away. Reads its EnemyData each
     // swing: rolled affixes swap it after Awake.
@@ -23,6 +24,7 @@ namespace CGD.Enemies
 
         private CooldownTimer _cooldown;
         private float _windupLeft;
+        private int   _blow;   // which blow of the combo it is winding up
 
         public EnemyMelee(EnemyAI ai, DamageSource source, LayerMask targetMask, CharacterStats stats)
         {
@@ -43,8 +45,9 @@ namespace CGD.Enemies
             EnemyData data = _ai.Data;
             float swing = 1f / AttackSpeed;
             IsAttacking = true;
-            _windupLeft = data.AttackWindup * swing;
-            _cooldown.Start((data.AttackWindup + data.AttackCooldown) * swing);
+            _blow       = 0;
+            _windupLeft = BlowAt(data, 0).Windup * swing;
+            _cooldown.Start((data.MeleeWindupTime + data.AttackCooldown) * swing);
             return true;
         }
 
@@ -56,9 +59,14 @@ namespace CGD.Enemies
             _windupLeft -= deltaTime;
             if (_windupLeft > 0f) return;
 
-            IsAttacking = false;
-            Strike();
+            EnemyData data = _ai.Data;
+            Strike(BlowAt(data, _blow), data);
             _ai.Tactics.OnStrike();
+
+            // The next blow of the combo winds up on the time the last one overshot by.
+            int blows = data.MeleeCombo?.Length ?? 0;
+            if (++_blow < blows) _windupLeft += BlowAt(data, _blow).Windup / AttackSpeed;
+            else                 IsAttacking = false;
         }
 
         // A stagger or death cuts the swing off; the cooldown it started still runs.
@@ -72,21 +80,34 @@ namespace CGD.Enemies
 
         private float AttackSpeed => _stats != null ? Mathf.Max(0.1f, _stats.Apply(ItemStat.FireRate, 1f)) : 1f;
 
-        private void Strike()
+        // The combo's blow, or the single plain blow an enemy without one makes.
+        private static MeleeBlow BlowAt(EnemyData data, int index)
         {
-            EnemyData data = _ai.Data;
+            if (data.MeleeCombo != null && data.MeleeCombo.Length > 0) return data.MeleeCombo[index];
+
+            return new MeleeBlow
+            {
+                Windup         = data.AttackWindup,
+                DamageShare    = 1f,
+                Reach          = data.AttackRange * 0.5f,
+                Radius         = data.AttackRange * 0.6f,
+                AppliesEffects = true,
+            };
+        }
+
+        private void Strike(MeleeBlow blow, EnemyData data)
+        {
             Transform self = _ai.transform;
             data.AttackSound.TryPlay(self.position);
 
-            float   range  = data.AttackRange;
-            Vector3 center = self.position + Vector3.up + self.forward * (range * 0.5f);
-            Reach.Gather(center, range * 0.6f, _targetMask, ignore: self);
+            Vector3 center = self.position + Vector3.up + self.forward * blow.Reach;
+            Reach.Gather(center, blow.Radius, _targetMask, ignore: self);
 
-            float damage = _stats != null ? _stats.Apply(ItemStat.Damage, data.AttackDamage) : data.AttackDamage;
+            float damage = (_stats != null ? _stats.Apply(ItemStat.Damage, data.AttackDamage) : data.AttackDamage) * blow.DamageShare;
             damage *= _ai.Ambush.Consume(out StatusEffectApplication[] ambushEffects);
             _ai.Reveal();
             var info = new DamageInfo(damage, source: _source,
-                onHitEffects: StatusEffectApplication.Combine(data.MeleeEffects, ambushEffects));
+                onHitEffects: blow.AppliesEffects ? StatusEffectApplication.Combine(data.MeleeEffects, ambushEffects) : ambushEffects);
 
             foreach (AreaHit hit in Reach.Hits)
                 if (hit.Target is HealthManager target && target != _ai.Health) target.TakeDamage(info);
