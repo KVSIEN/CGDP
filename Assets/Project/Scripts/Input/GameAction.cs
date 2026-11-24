@@ -35,5 +35,6 @@ namespace CGD.Input
         NextWeapon,     // cycles to the next filled weapon slot (scroll down)
         PreviousWeapon, // cycles to the previous filled weapon slot (scroll up)
         LastWeapon,     // swaps back to the weapon used before the current one (unbound by default)
+        RoomGenerator,  // opens the room generator's controls (RoomGenerator scene only)
     }
 }

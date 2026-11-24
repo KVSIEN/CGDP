@@ -45,6 +45,25 @@ namespace CGD.Editor
 
         public RoomLabRecipe Clone() => (RoomLabRecipe)MemberwiseClone();
 
+        // The made-up room alone, for RoomRecipeGraph.
+        public RoomRecipe ToRoomRecipe() => new()
+        {
+            Type          = Type,
+            Place         = Place,
+            Layout        = Layout,
+            Category      = Category,
+            Faction       = Faction,
+            BreachFaction = BreachFaction,
+            Influence     = Influence,
+            Section       = Section,
+            Tier          = Tier,
+            Intensity     = Intensity,
+            DoorNorth     = DoorNorth,
+            DoorEast      = DoorEast,
+            DoorSouth     = DoorSouth,
+            DoorWest      = DoorWest,
+        };
+
         // A recipe for the room a map graph node becomes, so it can be tried on its own with
         // other doorways, places or seeds. Doorways keep the sides the node's neighbours lie on.
         public static RoomLabRecipe FromMapNode(MapGraphAsset graph, MapNode node, LevelBuildSettings settings)

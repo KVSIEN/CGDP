@@ -11,7 +11,7 @@ runtime-built HUD.
 - [ROOM_GENERATION.md](ROOM_GENERATION.md) — room generation rules, room cards and their roadmap
 - [CLAUDE.md](CLAUDE.md) — coding guidelines
 
-Open `Assets/Project/Scenes/ShootingRange.unity` to play, `MapGenerator.unity` for a freshly generated level, `RoomGallery.unity` to walk through one room of every place, or `AISimulator.unity` to try enemies driven by behavior trees.
+Open `Assets/Project/Scenes/ShootingRange.unity` to play, `MapGenerator.unity` for a freshly generated level, `RoomGallery.unity` to walk through one room of every place, `RoomGenerator.unity` to build one room from chosen or random settings, or `AISimulator.unity` to try enemies driven by behavior trees.
 
 ## Project layout
 
@@ -25,7 +25,7 @@ Assets/
       Impacts/  Input/  Items/  Level/  Loot/  Map/  Meters/  Perks/  Player/  Quests/  Stats/  Stealth/  Targeting/  Timing/  UI/  Weapons/
       (generic starting points are named Default<Type>, e.g. DefaultEnemyData)
     Prefabs/                Characters (+ Enemies/ — tier-1 capsule enemies), Environment (Props/, Landmarks/, Level/ — doors (keycard, terminal, puzzle), secret wall, keycard, terminal, hub workbench, encounter pieces (shutter, reward cache, loot pickups, puzzle switch, rift core, gamble station, escape pod); WallKit/ — placeholder wall art), Pickups, Systems (GameFlow, GameManager, EventSystem, Global Volume), UI, VFX, Weapons
-    Scenes/                 ShootingRange.unity, MapGenerator.unity (generated level), RoomGallery.unity (every room place and prop), AISimulator.unity (behavior tree arena)
+    Scenes/                 ShootingRange.unity, MapGenerator.unity (generated level), RoomGallery.unity (every room place and prop), RoomGenerator.unity (one room from chosen or random settings), AISimulator.unity (behavior tree arena)
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            Core/ (Ability base, AbilityContext, cooldowns and charges, Surge, resource costs, PlayerAbilities — the player's slots,
                             TimelineAbilityRunner, caster interfaces), Types/ (one class per kind of ability, incl. TargetedAbility and ZoneAbility)
@@ -122,7 +122,8 @@ Assets/
                             Flow/ — RoomFlowPlanner (the way in, threshold and goal of each room), RoomFlank (a second way round), ArrivalSight (what is seen on entering), RoomFlowReading (how a room plays from its way in);
                             Navigation/ — VaultLinkPlanner, VaultLinkBuilder, VaultLinks (NavMesh links over low cover);
                             Culling/ — RoomPortals, RoomCuller (drawing only the rooms the camera can see into);
-                            Gallery/ — RoomGallerySettings and RoomGalleryGraph (the RoomGallery scene's walk-through of every place)
+                            Gallery/ — RoomGallerySettings and RoomGalleryGraph (the RoomGallery scene's walk-through of every place),
+                            RoomGenerator/ — RoomRecipe and RoomRecipeGraph (one made-up room as a map graph, shared with the Room Lab), RoomChoice, RoomGenerator and RoomGeneratorPanel (the RoomGenerator scene)
                             Objectives/ — map objectives: templates, MapObjectivePlanner, MapObjectiveRunner;
                             Encounters/ — encounter rooms: Core/ (RoomEncounter, RoomEncounterBuilder, EncounterContext/Settings,
                             RoomShutter/RoomSeal, EncounterSpawner, rules: RoomArea, EnemyGroup, WaveSchedule); one folder per kind:

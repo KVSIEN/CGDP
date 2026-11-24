@@ -8,18 +8,14 @@ namespace CGD.Editor
 {
     // Builds a RoomLabRecipe into a RoomSample through the level's own pipeline, so what the
     // Room Lab shows is what a level gets:
-    //   - Recipe: a one-room map graph — the room plus a small neighbour on each side that
-    //     should have a doorway, and a Start past the first so the room is entered from there —
-    //     laid out by LevelLayoutBuilder. Only the room is furnished.
+    //   - Recipe: a one-room map graph (RoomRecipeGraph) laid out by LevelLayoutBuilder.
+    //     Only the room is furnished.
     //   - MapRoom: the whole saved graph laid out with its own seed, as LevelBuilder does when
     //     its seed is left empty, then the chosen node's room.
     // Furnishing uses LevelBuilder's seed layers (seed → "contents" → RoomFurnisher).
     public static class RoomSampleBuilder
     {
-        // Neighbours stand this many cells away: far enough that a two-cell room and a
-        // two-cell neighbour never claim the same cell.
-        private const int NeighbourCells = 3;
-        private const int RoomId = 0;
+        private const int RoomId = RoomRecipeGraph.RoomId;
 
         public static RoomSample Build(RoomLabRecipe recipe) => Build(recipe, recipe.Seed);
 
@@ -32,7 +28,7 @@ namespace CGD.Editor
 
         private static RoomSample BuildRecipe(RoomLabRecipe recipe, string seedText)
         {
-            MapGraph graph = OneRoomGraph(recipe);
+            MapGraph graph = RoomRecipeGraph.Build(recipe.ToRoomRecipe());
             Seed seed = Seed.Parse(seedText);
             LevelLayout layout = new LevelLayoutBuilder(recipe.BuildSettings).Build(graph, Vector2.one, seed, recipe.Content);
             return Finish(layout, RoomId, recipe.BuildSettings, seed, seedText, recipe.DoorCount);
@@ -62,51 +58,6 @@ namespace CGD.Editor
             RoomEnemyPlan enemies = new RoomEnemyPlanner(settings).Plan(room, furnishing.Props, count,
                                                                         RoomEnemyPlanner.SeedFor(contents, room).Stream());
             return new RoomSample(layout, room, furnishing, enemies, settings, seedText, doorsWanted, WarningsAbout(layout, room));
-        }
-
-        // The recipe's room at the origin and one Junction per doorway side; the corridor to
-        // each comes out of the wall facing it.
-        private static MapGraph OneRoomGraph(RoomLabRecipe recipe)
-        {
-            var graph = new MapGraph();
-            MapNode room = graph.AddNode(recipe.Type, Vector2.zero);
-            room.Place         = recipe.Place;
-            room.Layout        = recipe.Layout;
-            room.Category      = recipe.Category;
-            room.Tier          = recipe.Tier;
-            room.Intensity     = recipe.Intensity;
-            room.SetFaction(recipe.Faction, recipe.Influence);
-            room.BreachFaction = recipe.Type.HasSecondFaction() ? recipe.BreachFaction : MapNode.NoFaction;
-            room.Section       = recipe.Section;
-
-            // Node positions are in cells here (spacing 1); the editor's y grows downward.
-            if (recipe.DoorNorth) AddNeighbour(graph, room, new Vector2(0f, -NeighbourCells));
-            if (recipe.DoorEast)  AddNeighbour(graph, room, new Vector2(NeighbourCells, 0f));
-            if (recipe.DoorSouth) AddNeighbour(graph, room, new Vector2(0f, NeighbourCells));
-            if (recipe.DoorWest)  AddNeighbour(graph, room, new Vector2(-NeighbourCells, 0f));
-            AddStartBeyondFirst(graph, room);
-            return graph;
-        }
-
-        // A Start past the first neighbour, so the room is entered from that side as in a map:
-        // its doorway there leads back toward Start (the room's way in, RoomFlowPlanner) and the
-        // others lead onward.
-        private static void AddStartBeyondFirst(MapGraph graph, MapNode room)
-        {
-            if (graph.Nodes.Count < 2) return;
-            MapNode first = graph.Nodes[1];
-            MapNode start = graph.AddNode(MapNodeType.Start, first.Position + (first.Position - room.Position));
-            graph.Connect(first.Id, start.Id);
-        }
-
-        // A Breach room's first neighbour belongs to the breaching faction, so the breach
-        // comes in through that doorway as it would from the faction's territory.
-        private static void AddNeighbour(MapGraph graph, MapNode room, Vector2 position)
-        {
-            bool first = graph.Nodes.Count == 1;
-            MapNode neighbour = graph.AddNode(MapNodeType.Junction, position);
-            if (first && room.HasBreachFaction) neighbour.SetFaction(room.BreachFaction, 1f);
-            graph.Connect(room.Id, neighbour.Id);
         }
 
         // Layout warnings name rooms as "<Type> #<id>".

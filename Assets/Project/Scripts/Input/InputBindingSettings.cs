@@ -87,6 +87,7 @@ namespace CGD.Input
                 new() { Action = GameAction.NextWeapon,        PrimaryPath = "<Mouse>/scroll/down",  Mode = InputActionMode.Pressed },
                 new() { Action = GameAction.PreviousWeapon,    PrimaryPath = "<Mouse>/scroll/up",    Mode = InputActionMode.Pressed },
                 new() { Action = GameAction.LastWeapon,        PrimaryPath = "",                     Mode = InputActionMode.Pressed },
+                new() { Action = GameAction.RoomGenerator,     PrimaryPath = "<Keyboard>/f2",        Mode = InputActionMode.Pressed },
             };
         }
     }
