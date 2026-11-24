@@ -14,6 +14,18 @@ namespace CGD.Tests
             new("Place", "Faction", "seed", new RoomTraitReading(concealed, 0f, lane, default, false), null, 0, 1, default, null);
 
         [Test]
+        public void RoomsPlotByWhatCanBeSeenToo()
+        {
+            var sight = new RoomSightReading(0.5f, 0.1f, RoomVisibility.DefaultRange * 2f);
+            var room = new RoomSweepResult("Place", "Faction", "seed", default, null, 0, 1, default, null, sight);
+
+            Assert.That(RoomMeasures.TryGet(room, RoomMeasure.Exposure, out float exposure), Is.True);
+            Assert.That(exposure, Is.EqualTo(0.5f));
+            Assert.That(RoomMeasures.TryGet(room, RoomMeasure.Sightline, out float sightline), Is.True);
+            Assert.That(sightline, Is.EqualTo(1f), "a sightline past the range plots at the top");
+        }
+
+        [Test]
         public void RoomsLandInTheCellsTheirMeasuresPutThemIn()
         {
             var range = new ExpressiveRange(new[] { Room(0.05f, 0), Room(0.95f, RoomMeasures.LaneCap * 3), Room(0.05f, 1) },

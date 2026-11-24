@@ -86,7 +86,7 @@ namespace CGD.Level
             if (!_structure.Arrival.HasValue) return SelectRandom(placement, pool, own);
 
             DropUnplaceable(placement, pool, own);
-            _arrivalSight ??= new ArrivalSight(_structure);
+            _arrivalSight ??= new ArrivalSight(_structure, _sight.Blocking);
             Vector2 arrival = _structure.Arrival.Value + Vector2.one * 0.5f;
 
             var seen = new List<int>();

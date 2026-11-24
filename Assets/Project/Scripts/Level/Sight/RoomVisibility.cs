@@ -76,66 +76,23 @@ namespace CGD.Level
         {
             var tiles = _structure.Footprint.Tiles;
             bool everything = changed.xMin <= _bounds.xMin && changed.yMin <= _bounds.yMin && changed.xMax >= _bounds.xMax && changed.yMax >= _bounds.yMax;
+            var open = new bool[tiles.Count];
+            for (int i = 0; i < tiles.Count; i++) open[i] = !_blocking.BlocksTile(tiles[i]);
+
             for (int i = 0; i < tiles.Count; i++)
             {
                 Vector2Int a = tiles[i];
-                bool aOpen = !_blocking.BlocksTile(a);
-                if (changed.Contains(a)) Set(IndexOf(a), IndexOf(a), aOpen);
+                if (changed.Contains(a)) Set(IndexOf(a), IndexOf(a), open[i]);
 
                 for (int j = i + 1; j < tiles.Count; j++)
                 {
                     Vector2Int b = tiles[j];
                     if (!everything && !Touches(a, b, changed)) continue;
 
-                    Set(IndexOf(a), IndexOf(b), aOpen && InRange(a, b) && LineIsClear(a, b));
+                    Set(IndexOf(a), IndexOf(b), open[i] && open[j] && InRange(a, b) && _blocking.CanSee(a, b));
                 }
             }
         }
-
-        // Whether a straight line from the middle of one tile to the middle of another crosses
-        // only open floor. The tiles themselves must be open. Walks the tiles the line passes
-        // through; where it leaves a tile exactly through a corner, the diagonal step is open if
-        // either way round the corner is.
-        internal bool LineIsClear(Vector2Int from, Vector2Int to)
-        {
-            if (_blocking.BlocksTile(from) || _blocking.BlocksTile(to)) return false;
-
-            int nx = Mathf.Abs(to.x - from.x), ny = Mathf.Abs(to.y - from.y);
-            int stepX = to.x >= from.x ? 1 : -1, stepY = to.y >= from.y ? 1 : -1;
-            Vector2Int tile = from;
-            int doneX = 0, doneY = 0;
-            while (doneX < nx || doneY < ny)
-            {
-                // Which edge the line crosses first: a vertical one at (doneX + ½) / nx of the way,
-                // or a horizontal one at (doneY + ½) / ny. Both at once is a corner.
-                long order = (1L + 2 * doneX) * ny - (1L + 2 * doneY) * nx;
-                Vector2Int next;
-                if (order == 0)
-                {
-                    next = new Vector2Int(tile.x + stepX, tile.y + stepY);
-                    if (!CanCutCorner(tile, next)) return false;
-                    doneX++;
-                    doneY++;
-                }
-                else
-                {
-                    bool acrossX = order < 0;
-                    next = acrossX ? new Vector2Int(tile.x + stepX, tile.y) : new Vector2Int(tile.x, tile.y + stepY);
-                    if (acrossX) doneX++; else doneY++;
-                    if (_blocking.BlocksEdge(tile, next)) return false;
-                }
-                if (_blocking.BlocksTile(next)) return false;
-                tile = next;
-            }
-            return true;
-        }
-
-        // A diagonal step is open if one of the two tiles beside it is open and no tall wall is crossed getting through it.
-        private bool CanCutCorner(Vector2Int from, Vector2Int to) =>
-            OpenVia(from, new Vector2Int(to.x, from.y), to) || OpenVia(from, new Vector2Int(from.x, to.y), to);
-
-        private bool OpenVia(Vector2Int from, Vector2Int via, Vector2Int to) =>
-            !_blocking.BlocksTile(via) && !_blocking.BlocksEdge(from, via) && !_blocking.BlocksEdge(via, to);
 
         private bool InRange(Vector2Int a, Vector2Int b) => Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y)) <= _range;
 

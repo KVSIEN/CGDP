@@ -3,12 +3,12 @@ using CGD.Level;
 namespace CGD.Editor
 {
     // One room a sweep built: which place, held by which faction, from which seed, what it
-    // measured (its traits and how it plays from the way in), and how far that is from what
-    // the faction wants.
+    // measured (its traits, how it plays from the way in and how far it can be seen across),
+    // and how far that is from what the faction wants.
     public sealed class RoomSweepResult
     {
         public RoomSweepResult(string place, string faction, string seed, RoomTraitReading traits, FactionDesign design,
-                               int attempt, int tries, RoomFlowReading flow, bool? showcaseSeen)
+                               int attempt, int tries, RoomFlowReading flow, bool? showcaseSeen, RoomSightReading sight = default)
         {
             Place    = place;
             Faction  = faction;
@@ -19,6 +19,7 @@ namespace CGD.Editor
             Tries    = tries;
             Flow     = flow;
             ShowcaseSeen = showcaseSeen;
+            Sight    = sight;
             Miss     = design != null ? RoomTraitFit.Miss(traits, design.Priorities) : -1;
         }
 
@@ -32,6 +33,8 @@ namespace CGD.Editor
         public int              Attempt { get; }
         public int              Tries   { get; }
         public RoomFlowReading  Flow    { get; }
+        // How far and how widely a person sees in it, in every direction (RoomVisibility).
+        public RoomSightReading Sight   { get; }
         // Whether the place's defining piece (a Showcase placement) can be seen from the way
         // in; null when the place has none or the room has no way in.
         public bool?            ShowcaseSeen { get; }

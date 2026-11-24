@@ -1125,3 +1125,47 @@ at influence 0.35 (frontier) and 0.525 (held, strength 0.7), then a core Combat,
 Breach room (section 10). Each room's placard in the HUD feed names its side, depth and fight
 type, and the dev console's `/room` jumps between rooms. The scene's Prop Yard (outside the level, seen in the Scene
 view) holds one of every placeholder column and prop.
+
+## 17. Sight (phases 0–5 of the better-sightline plan)
+
+Every reading of sight in a room goes through one rule and, where it needs more than a single
+line, one structure. Before, the runs along rows and columns, the line from the way in and the
+posts each had their own idea of what blocks sight, and they disagreed over low walls.
+
+| Piece | Does | Used by |
+|---|---|---|
+| `SightBlocking` | What stops sight: the room's walls, tiles taken by a pillar or prop, inner walls as tall as the eye (1.6 m). `CanSee(from, to)` traces one line between two tiles' middles | Everything below |
+| `SightlineMap` | The open run along each row and column, kept current as props go down. Cheap: used while furnishing | Cover selection, lanes, walls, posts, the Lab |
+| `ArrivalSight` | What is seen from the way in: `CanSee` from the arrival to each tile | Showcase, `RoomFlowReading` (Revealed), the sweep |
+| `RoomVisibility` | Who sees whom, in every direction: a bit matrix over the open tiles. `Area(tile)` (tiles seen), `Reach(tile)` (farthest seen), `Refresh(rect)` after props change | `RoomSightReading` |
+| `RoomSightReading` | Exposure, Enclosed and Sightline for a room | The Room Sweep |
+
+- **Lines.** A line is clear when it crosses only open floor and no tall inner wall. It passes
+  through a corner where either way round is open (grazing a pillar), not between two taken
+  tiles. Between open tiles a line reads the same from either end; a taken tile is seen but
+  sees nothing. Sight beyond 32 tiles doesn't count.
+- **Low things.** Inner walls lower than the eye (seat rows, low dividers and counters built as
+  walls) are looked over: they cover a body and stop movement but not sight. Taken *tiles* (props)
+  still block, whatever their height; seeing over low props needs a height on placements.
+- **Readings.** *Exposure*: the share of the open floor a typical tile sees (a hall read at a
+  glance is near 100%). *Enclosed*: the share of open tiles that see a quarter of the floor or
+  less (pockets and corners). *Sightline*: the longest line in any direction, in tiles.
+- **Cost.** A `RoomVisibility` tests about n²/2 lines for a room of n open tiles (a 400-tile hall
+  is 80,000 short walks), and `Refresh` tests every pair against the changed rectangle but walks only
+  those that touch it. It is not built while furnishing; only the sweep builds it.
+
+### Where the traits still stand
+
+The trait bands (`RoomTraitMeasure`) still read the row-and-column lane and narrow floor. The
+new readings sit beside them, because the bands are first guesses and the factions' priorities
+were never tuned against a sweep. The gate before anything switches:
+
+1. Run the sweep (*Sweep…* in the Room Lab) and *Copy report*. The *By place* table now has
+   *Exposure %*, *Enclosed %* and *Sightline* beside *Concealed*, *Narrow* and *Lane*; the
+   expressive range can plot any of them (*Across*, *Up*).
+2. Compare factions on both: do BIO, VOID and TECH separate more on exposure and sightline than
+   on narrow floor and lane? A reading that separates them is the better measure for that trait.
+3. If so, move *Walls* (low exposure / enclosed) and *Lines of fire* (sightline with cover beside
+   it) onto them, retune the bands from the same report, and move `RoomPostMap` (choke and
+   overwatch) and the cover selection (`SelectCover`: the tile that cuts the longest sightline)
+   after them. The traits' interface (`RoomTrait`, the priorities, `RoomTraitFit.Gap`) doesn't change.

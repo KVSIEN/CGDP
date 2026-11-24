@@ -10,7 +10,8 @@ namespace CGD.Editor
         public const int LaneCap = RoomTraitMeasure.LaneHighTiles * 2;
 
         public static readonly RoomMeasure[] All =
-            { RoomMeasure.Concealed, RoomMeasure.Narrow, RoomMeasure.Lane, RoomMeasure.Revealed, RoomMeasure.Filled };
+            { RoomMeasure.Concealed, RoomMeasure.Narrow, RoomMeasure.Lane, RoomMeasure.Revealed, RoomMeasure.Filled,
+              RoomMeasure.Exposure, RoomMeasure.Sightline };
 
         // False when the room has no value on it (a room with no way in reveals nothing).
         public static bool TryGet(RoomSweepResult room, RoomMeasure measure, out float value)
@@ -21,6 +22,8 @@ namespace CGD.Editor
                 RoomMeasure.Narrow    => room.Traits.NarrowShare,
                 RoomMeasure.Lane      => Mathf.Clamp01(room.Traits.LongestLane / (float)LaneCap),
                 RoomMeasure.Revealed  => room.Flow.Revealed,
+                RoomMeasure.Exposure  => room.Sight.Exposure,
+                RoomMeasure.Sightline => Mathf.Clamp01(room.Sight.Sightline / RoomVisibility.DefaultRange),
                 _                     => room.Flow.Filled,
             };
             return measure != RoomMeasure.Revealed || room.Flow.HasArrival;
@@ -32,6 +35,8 @@ namespace CGD.Editor
             RoomMeasure.Narrow    => "narrow %",
             RoomMeasure.Lane      => $"lane (0–{LaneCap} tiles)",
             RoomMeasure.Revealed  => "seen from the way in %",
+            RoomMeasure.Exposure  => "exposure %",
+            RoomMeasure.Sightline => $"sightline (0–{RoomVisibility.DefaultRange} tiles)",
             _                     => "filled %",
         };
     }

@@ -119,23 +119,6 @@ namespace CGD.Tests
         }
 
         [Test]
-        public void ALineIsClearBothWaysOrNeither()
-        {
-            for (int seed = 1; seed <= 20; seed++)
-            {
-                RoomStructure room = WalledRoom(10, 7, 5, 3f, new Vector2Int(9, 3));
-                var random = new RandomStream(new Seed((ulong)seed));
-                for (int i = 0; i < 8; i++)
-                    room.TryClaim(new[] { new Vector2Int(random.Range(0, 10), random.Range(0, 7)) }, RoomTileTags.Prop);
-                var visibility = new RoomVisibility(room);
-
-                foreach (Vector2Int a in room.Footprint.Tiles)
-                    foreach (Vector2Int b in room.Footprint.Tiles)
-                        Assert.That(visibility.LineIsClear(a, b), Is.EqualTo(visibility.LineIsClear(b, a)), $"seed {seed}: {a} and {b}");
-            }
-        }
-
-        [Test]
         public void RefreshingAfterChangesGivesWhatABuildFromScratchWould()
         {
             for (int seed = 1; seed <= 20; seed++)

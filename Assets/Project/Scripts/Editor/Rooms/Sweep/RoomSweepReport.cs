@@ -141,8 +141,8 @@ namespace CGD.Editor
         {
             text.AppendLine("## By place (medians over the seeds)");
             text.AppendLine();
-            text.AppendLine("| Place | Faction | Concealed % | Narrow % | Lane | Covered | Levels C/W/L (most common) | Mean miss |");
-            text.AppendLine("|---|---|---|---|---|---|---|---|");
+            text.AppendLine("| Place | Faction | Concealed % | Narrow % | Lane | Covered | Exposure % | Enclosed % | Sightline | Levels C/W/L (most common) | Mean miss |");
+            text.AppendLine("|---|---|---|---|---|---|---|---|---|---|---|");
             foreach (IGrouping<(string, string), RoomSweepResult> group in results.GroupBy(r => (r.Place, r.Faction)))
             {
                 List<RoomSweepResult> rooms = group.ToList();
@@ -150,6 +150,7 @@ namespace CGD.Editor
                 text.Append($"| {group.Key.Item1} | {group.Key.Item2} | ");
                 text.Append($"{Number(Median(rooms.Select(r => r.Traits.ConcealedShare * 100f)))} | {Number(Median(rooms.Select(r => r.Traits.NarrowShare * 100f)))} | ");
                 text.Append($"{Number(Median(rooms.Select(r => (float)r.Traits.LongestLane)))} | {Percent(rooms.Count(r => r.Traits.LaneHasCover) / (float)rooms.Count)} | ");
+                text.Append($"{Number(Median(rooms.Select(r => r.Sight.Exposure * 100f)))} | {Number(Median(rooms.Select(r => r.Sight.Enclosed * 100f)))} | {Number(Median(rooms.Select(r => r.Sight.Sightline)))} | ");
                 text.Append(string.Join("/", Traits.Select(trait => Initial(MostCommon(rooms, trait)))));
                 text.AppendLine(judged.Count > 0 ? $" | {judged.Average(r => r.Miss):0.0} |" : " | — |");
             }

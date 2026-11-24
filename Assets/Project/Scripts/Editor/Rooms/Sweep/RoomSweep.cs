@@ -96,7 +96,7 @@ namespace CGD.Editor
             RoomStructure structure = sample.Room.Structure;
             _results.Add(new RoomSweepResult(job.Place.DisplayName, faction, job.Seed, sample.Traits, sample.Design,
                                              sample.Furnishing.Attempt, sample.Furnishing.Tries,
-                                             RoomFlowReading.Of(structure), ShowcaseSeen(structure, sample.Furnishing)));
+                                             RoomFlowReading.Of(structure), ShowcaseSeen(structure, sample.Furnishing), RoomSightReading.Of(structure)));
         }
 
         // Any prop of a Showcase placement that went down and is in view of the way in.
