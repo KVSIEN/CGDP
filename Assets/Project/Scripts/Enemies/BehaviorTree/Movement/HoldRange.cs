@@ -4,7 +4,8 @@ using CGD.BehaviorTrees;
 namespace CGD.Enemies
 {
     // A ranged enemy's footwork: closes in, backs off or strafes to stay at EnemyData's
-    // preferred range, standing still while a burst goes out. Keeps running while the
+    // preferred range, standing still while a burst goes out (unless it fires that one on the
+    // move: a ranged combo step can). Keeps running while the
     // target is detected — run it in a Parallel next to Shoot Burst.
     [Serializable]
     [BtNodeInfo("Enemy/Movement/Hold Range", "Keeps the preferred distance from the target, strafing while there. Runs until the target is lost.")]
@@ -23,7 +24,7 @@ namespace CGD.Enemies
             Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed);
             Ai.Motion.FaceTowards(targetPos, context.DeltaTime);
 
-            if (Ai.RangedCombat.IsBursting) Ai.Agent.isStopped = true;
+            if (Ai.RangedCombat.IsBursting && Ai.RangedCombat.PlantsToFire) Ai.Agent.isStopped = true;
             else                             Ai.RangedCombat.HoldPreferredRange(targetPos, context.DeltaTime);
             return BtStatus.Running;
         }

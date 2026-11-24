@@ -15,6 +15,9 @@ namespace CGD.Combat
     // within CoverGrace of the point aimed at doesn't count either, so a body pressed against a
     // wall or standing in a doorway's edge is still reached.
     //
+    // Whatever the cover mask, a body behind a shield wall the blast meets the front of is spared
+    // (ShieldBarrier.Shelters).
+    //
     // One instance per caller, reused every query, so a blast allocates nothing.
     public sealed class AreaHits
     {
@@ -42,7 +45,10 @@ namespace CGD.Combat
 
         // coverMask: what blocks the blast (nothing = it reaches through walls).
         // ignore: a body never caught, with everything under it (the blast's own owner).
-        public void Gather(Vector3 center, float radius, LayerMask mask, LayerMask coverMask = default, Transform ignore = null)
+        // shelterFrom: where the hit comes from for shield walls (ShieldBarrier.Shelters), if not
+        // the centre — a blow's attacker rather than the spot it lands on.
+        public void Gather(Vector3 center, float radius, LayerMask mask, LayerMask coverMask = default, Transform ignore = null,
+                           Vector3? shelterFrom = null)
         {
             _hits.Clear();
             _bodies.Clear();
@@ -77,11 +83,23 @@ namespace CGD.Combat
                 _bodies.Add(collider.bounds);
             }
 
+            DropSheltered(shelterFrom ?? center);
             if (coverMask.value == 0) return;
 
             for (int i = _hits.Count - 1; i >= 0; i--)
             {
                 if (IsExposed(_hits[i].Point, _bodies[i])) continue;
+                _hits.RemoveAt(i);
+                _bodies.RemoveAt(i);
+            }
+        }
+
+        // Bodies behind a shield wall the hit comes at the front of. The wall itself is still hit.
+        private void DropSheltered(Vector3 from)
+        {
+            for (int i = _hits.Count - 1; i >= 0; i--)
+            {
+                if (_hits[i].Target is ShieldBarrier || !ShieldBarrier.Shelters(from, _bodies[i].center)) continue;
                 _hits.RemoveAt(i);
                 _bodies.RemoveAt(i);
             }

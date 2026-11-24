@@ -9,12 +9,14 @@ namespace CGD.Enemies
     // A supporter's place in a fight: where it can reach the most allies of its own side with its
     // help, behind the ally nearest the threat instead of out in front of the line (or, set to
     // hold the Front, just ahead of it, between the threat and its allies), in cover that faces
-    // the threat if it knows some. It weighs the known free cover round the ideal spot (on the
+    // the threat if it knows some (holding the Front, its own shield is its cover: it stands on the
+    // line itself). It weighs the known free cover round the ideal spot (on the
     // line from the threat through its allies' centre) and that spot itself (see SupportSpot),
     // claims the best cover, and goes there facing the threat. It plans again every few seconds
     // as the fight moves, but only changes its mind about where to stand once the ideal spot has
     // moved a few metres (see StationKeeper), so it drifts after a moving squad instead of
-    // twitching after every step. Never finishes while it has allies near; fails without any.
+    // twitching after every step. Never finishes while it has allies near (unless set to Finish On
+    // Arrival: one committed move, then success); fails without any.
     // Pair it in a Parallel with what it does from
     // there (Shoot Burst, a Repeat of its abilities).
     [Serializable]
@@ -32,7 +34,7 @@ namespace CGD.Enemies
         [SerializeField] private SupportLine _line;
         [Tooltip("Metres from the ally nearest the threat that it would ideally stand: behind it, or in front of it when holding the Front")]
         [SerializeField, Min(0f)] private float _fromLine = 4f;
-        [Tooltip("Metres round its ideal spot it looks for cover")]
+        [Tooltip("Metres round its ideal spot it looks for cover (not used holding the Front)")]
         [SerializeField, Min(1f)] private float _searchRadius = 10f;
         [Tooltip("Seconds between plans")]
         [SerializeField, Min(0.5f)] private float _replanEvery = 2f;
@@ -41,6 +43,8 @@ namespace CGD.Enemies
 
         [Tooltip("Walks the way its faction sneaks (Void keeps to walls, Bio slips through bushes) instead of the shortest way")]
         [SerializeField] private bool _sneak;
+        [Tooltip("Commits to one move: succeeds once it has reached the spot it picked (set Replan Every long so it doesn't change its mind on the way) instead of holding the station for good")]
+        [SerializeField] private bool _finishOnArrival;
 
         [NonSerialized] private StationKeeper _station;
         [NonSerialized] private Vector3 _spot;
@@ -51,7 +55,7 @@ namespace CGD.Enemies
 
         internal SupportLine Line => _line;
 
-        internal override bool NeverFinishes => true;
+        internal override bool NeverFinishes => !_finishOnArrival;
 
         protected override void OnEnter(BtContext context)
         {
@@ -78,9 +82,14 @@ namespace CGD.Enemies
             Ai.Motion.SetSpeed(Ai.Data.ChaseSpeed * _speed);
 
             _station.Update(_spot, Ai.transform.position);
-            if (_station.Moving) Ai.Routing.SetDestination(_station.Goal, WalkStyle(_sneak));
-            else Ai.Routing.Stop();
-            return BtStatus.Running;
+            if (_station.Moving)
+            {
+                Ai.Routing.SetDestination(_station.Goal, WalkStyle(_sneak));
+                return BtStatus.Running;
+            }
+
+            Ai.Routing.Stop();
+            return _finishOnArrival ? BtStatus.Success : BtStatus.Running;
         }
 
         // Picks the best spot and claims it if it is cover. False when no ally is near.
@@ -95,6 +104,14 @@ namespace CGD.Enemies
             Vector3 self  = Ai.transform.position;
             Vector3 ideal = SupportSpot.Ideal(situation, _fromLine);
             if (NavMesh.SamplePosition(ideal, out NavMeshHit hit, 3f, NavMesh.AllAreas)) ideal = hit.position;
+
+            // Holding the front, its shield is its cover: it stands on the line, where the wall covers
+            // its allies, rather than at a piece of cover off to the side.
+            if (_line == SupportLine.Front)
+            {
+                _spot = ideal;
+                return true;
+            }
 
             int     bestCover = -1;
             Vector3 best      = ideal;

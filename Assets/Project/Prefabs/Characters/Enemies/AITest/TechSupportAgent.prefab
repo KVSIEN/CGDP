@@ -130,7 +130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.Enemies.FrontalShield
   _halfArc: 70
-  _reduction: 0.8
+  _reduction: 1
   _stopsLightning: 0
   _durability: 300
   _downSeconds: 6

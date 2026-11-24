@@ -695,7 +695,7 @@ MonoBehaviour:
         _guid: f31d23a96a5f4ce3ad4da45322303ac0
         _position: {x: 920, y: 750}
         _comment: 
-        _range: 9
+        _range: 18
     - rid: 1069
       type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
       data:

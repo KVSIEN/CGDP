@@ -13,8 +13,9 @@ namespace CGD.Enemies
     // fights without it until it comes back up, the other answer to a shield wall.
     // With a Barrier Size it also stands a one-way wall of force in front of the bearer
     // (ShieldBarrier): hostile fire from the front stops on it, so allies behind are covered too,
-    // while shots fired from behind (the bearer's, its allies') pass through. What the wall stops
-    // wears its Durability down. The bearer lowers the shield while it casts any of its Lower For
+    // while shots fired from behind (the bearer's, its allies') pass through. Blasts, zones, melee
+    // and beams from its front don't reach anyone behind it either. Shots the wall stops (and hits
+    // on the bearer itself) wear its Durability down. The bearer lowers the shield while it casts any of its Lower For
     // abilities (both hands busy: a repair, a smoke screen) and raises it again once done.
     [DisallowMultipleComponent]
     public class FrontalShield : MonoBehaviour, IDamageInterceptor
@@ -98,7 +99,7 @@ namespace CGD.Enemies
         {
             _barrier = GameObject.CreatePrimitive(PrimitiveType.Cube);
             _barrier.name  = "ShieldBarrier";
-            _barrier.layer = LayerMask.NameToLayer("Ignore Raycast");
+            _barrier.layer = LayerMask.NameToLayer(ShieldBarrier.Layer);
             Transform wall = _barrier.transform;
             wall.SetParent(transform, false);
             wall.localPosition = new Vector3(0f, _barrierSize.y * 0.5f, _barrierDistance);
@@ -116,7 +117,9 @@ namespace CGD.Enemies
                 renderer.SetPropertyBlock(tint);
             }
 
-            _barrier.AddComponent<ShieldBarrier>().Absorbed += OnBarrierHit;
+            var barrier = _barrier.AddComponent<ShieldBarrier>();
+            barrier.StopEveryHit();
+            barrier.Absorbed += OnBarrierHit;
         }
 
         private void OnBarrierHit(float damage)

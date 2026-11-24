@@ -107,7 +107,7 @@ MonoBehaviour:
       data:
         _guid: 1ba0f3f01fc94390837d21d85118d87a
         _position: {x: 0, y: 0}
-        _comment: 'BIO tank (plague hulk): a slow mass of flesh with a huge health pool that fights at mid range with poison. It stalks in through the bushes, then holds about 11 m off, strafing and spitting poison bolts that leave a poison pool where they land, lobs Acid Spew pools into the enemy''s path (Grenade), and when something gets within 5 m chokes it in a Plague Cloud (Signature) and strikes with a poisoned blow in reach; below 60% health it regrows (Boost: Regrowth, 15 health a second for 8 s). Immune to poison. Its Soak Aura takes 30% of every hit on an ally within 8 m. Kit: Signature (Plague Cloud), Boost (Regrowth), Grenade (Acid Spew).'
+        _comment: 'BIO tank (plague hulk): a slow mass of flesh with a huge health pool that fights at mid range with poison. It stalks in through the bushes, then holds about 11 m off, strafing and spitting poison bolts, lobs Acid Spew pools into the enemy''s path (Grenade), and when something gets within 5 m chokes it in a Plague Cloud (Signature) and strikes with a poisoned blow in reach; below 60% health it regrows (Boost: Regrowth, 15 health a second for 8 s). Immune to poison. Its Soak Aura takes 30% of every hit on an ally within 8 m. Kit: Signature (Plague Cloud), Boost (Regrowth), Grenade (Acid Spew).'
         _children:
         - ac40c7e214cc4e37a5f193faca53f966
     - rid: 1001
@@ -373,7 +373,7 @@ MonoBehaviour:
       data:
         _guid: 5f15a1927c3e41aca300373e01b8db6c
         _position: {x: 1815, y: 600}
-        _comment: 'Hold mid range (about 11 m), strafing and spitting poison that leaves a pool where it lands'
+        _comment: 'Hold mid range (about 11 m), strafing and spitting poison bolts'
         _children:
         - 8759f6c52f5041dbad0675322cfcd72b
         - 1e1d563e39f94882bd0ae790cf0ff37b

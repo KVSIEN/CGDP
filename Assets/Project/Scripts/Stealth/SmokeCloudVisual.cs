@@ -6,8 +6,10 @@ namespace CGD.Stealth
     // What a smoke cloud looks like until real VFX exist: a clump of translucent grey puffs
     // filling its sphere, billowing out from nothing when it appears, churning slowly while it
     // lasts and thinning away over its last seconds (it times its fade from its PooledLifetime).
-    // Every smoke shares the one SmokeCloud prefab — the player's smoke grenade, Tech's Smoke
-    // Screen, Smoke Cover and Smoke Mortar — so each of them shows. The puffs are built at runtime
+    // The player's smoke grenade uses the SmokeCloud prefab; the enemies' concealment abilities
+    // (Tech's Smoke Screen, Smoke Cover and Smoke Mortar, Bio's Plague Cloud and Spore Burst) use
+    // SmokeSphere, which sets Single Sphere: one round, still sphere exactly filling the cloud's
+    // radius instead of puffs. The puffs are built at runtime
     // as children, without colliders, on the cloud's own layer. Needs a transparent material.
     [RequireComponent(typeof(SphereCollider))]
     public class SmokeCloudVisual : MonoBehaviour
@@ -24,6 +26,8 @@ namespace CGD.Stealth
         [SerializeField] private Color _color = new(0.72f, 0.72f, 0.7f, 0.55f);
         [Tooltip("How many puffs make up the cloud")]
         [SerializeField, Range(3, 24)] private int _puffs = 12;
+        [Tooltip("One round, still sphere exactly filling the cloud instead of churning puffs")]
+        [SerializeField] private bool _singleSphere;
 
         private Transform[] _puffTransforms;
         private Renderer[]  _puffRenderers;
@@ -64,23 +68,24 @@ namespace CGD.Stealth
             for (int i = 0; i < _puffTransforms.Length; i++)
             {
                 float phase = _phases[i] + _age * ChurnSpeed;
-                Vector3 drift = new Vector3(Mathf.Sin(phase), Mathf.Sin(phase * 1.3f) * 0.5f, Mathf.Cos(phase)) * (_radius * ChurnReach);
+                Vector3 drift = _singleSphere ? Vector3.zero : new Vector3(Mathf.Sin(phase), Mathf.Sin(phase * 1.3f) * 0.5f, Mathf.Cos(phase)) * (_radius * ChurnReach);
                 Transform puff = _puffTransforms[i];
                 puff.localPosition = _centre + (_homes[i] + drift) * grow;
                 float size = _sizes[i] * grow;
-                puff.localScale = new Vector3(size, size * FlatHeight, size);
+                puff.localScale = new Vector3(size, _singleSphere ? size : size * FlatHeight, size);
                 _puffRenderers[i].SetTint(tint);
             }
         }
 
         private void BuildPuffs()
         {
-            _puffTransforms = new Transform[_puffs];
-            _puffRenderers  = new Renderer[_puffs];
-            _homes  = new Vector3[_puffs];
-            _sizes  = new float[_puffs];
-            _phases = new float[_puffs];
-            for (int i = 0; i < _puffs; i++)
+            int count = _singleSphere ? 1 : _puffs;
+            _puffTransforms = new Transform[count];
+            _puffRenderers  = new Renderer[count];
+            _homes  = new Vector3[count];
+            _sizes  = new float[count];
+            _phases = new float[count];
+            for (int i = 0; i < count; i++)
             {
                 GameObject puff = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 Destroy(puff.GetComponent<Collider>());
@@ -109,7 +114,7 @@ namespace CGD.Stealth
                 if (i == 0)
                 {
                     _homes[i] = Vector3.zero;
-                    _sizes[i] = _radius * 1.4f;
+                    _sizes[i] = _radius * (_singleSphere ? 2f : 1.4f);
                 }
                 else
                 {

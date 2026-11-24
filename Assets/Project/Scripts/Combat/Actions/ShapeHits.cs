@@ -8,6 +8,7 @@ namespace CGD.Combat
     // only damageables, and lists each target once between Clear calls (and never one already
     // in `alreadyHit`, which the query adds it to, so a swing hits a target once across ticks).
     // Damage is the caller's: a point hit through Hitbox.ApplyHit, or an area hit.
+    // A body behind a shield wall the strike meets the front of is never listed (ShieldBarrier.Shelters).
     // One instance per caller, reused every tick, so a strike allocates nothing.
     public sealed class ShapeHits
     {
@@ -57,7 +58,7 @@ namespace CGD.Combat
             for (int i = 0; i < count; i++)
             {
                 Collider collider = _casts[i].collider;
-                if (!TryList(collider, source, alreadyHit, out IDamageable target)) continue;
+                if (!TryList(collider, origin, source, alreadyHit, out IDamageable target)) continue;
 
                 Vector3 point  = _casts[i].point;
                 Vector3 normal = _casts[i].normal;
@@ -108,6 +109,11 @@ namespace CGD.Combat
                 Collider collider = _overlaps[i];
                 _targets[i] = source != null && collider.transform.root == source ? null : Hitbox.FindDamageable(collider);
                 if (_targets[i] == null) continue;
+                if (IsSheltered(_targets[i], near, collider))
+                {
+                    _targets[i] = null;
+                    continue;
+                }
 
                 Vector3 onAxis = ClosestOnSegment(near, far, collider.bounds.center);
                 _points[i] = collider.ClosestPoint(onAxis);
@@ -143,21 +149,26 @@ namespace CGD.Combat
             for (int i = 0; i < count; i++)
             {
                 Collider collider = _overlaps[i];
-                if (!TryList(collider, source, alreadyHit, out IDamageable target)) continue;
+                if (!TryList(collider, pointFrom, source, alreadyHit, out IDamageable target)) continue;
 
                 Vector3 point = collider.ClosestPoint(pointFrom);
                 _hits.Add(new ShapeHit(collider, target, point, pointFrom - point));
             }
         }
 
-        private bool TryList(Collider collider, Transform source, HashSet<IDamageable> alreadyHit, out IDamageable target)
+        // `from`: where the strike comes from, for shield walls.
+        private bool TryList(Collider collider, Vector3 from, Transform source, HashSet<IDamageable> alreadyHit, out IDamageable target)
         {
             target = null;
             if (source != null && collider.transform.root == source) return false;
 
             target = Hitbox.FindDamageable(collider);
-            if (target == null || !_listed.Add(target)) return false;
+            if (target == null || IsSheltered(target, from, collider) || !_listed.Add(target)) return false;
             return alreadyHit == null || alreadyHit.Add(target);
         }
+
+        // Behind a shield wall the strike meets the front of: out of reach, though the wall itself is struck.
+        private static bool IsSheltered(IDamageable target, Vector3 from, Collider collider) =>
+            target is not ShieldBarrier && ShieldBarrier.Shelters(from, collider.bounds.center);
     }
 }

@@ -93,15 +93,23 @@ MonoBehaviour:
   - rid: 1117
   - rid: 1118
   - rid: 1119
-  - rid: 1120
-  - rid: 1121
-  - rid: 1122
-  - rid: 1123
   - rid: 1124
   - rid: 1125
+  - rid: 1126
   - rid: 1127
   - rid: 1128
   - rid: 1129
+  - rid: 1130
+  - rid: 1131
+  - rid: 1132
+  - rid: 1133
+  - rid: 1134
+  - rid: 1135
+  - rid: 1136
+  - rid: 1137
+  - rid: 1138
+  - rid: 1139
+  - rid: 1140
   _groups: []
   _notes: []
   references:
@@ -112,7 +120,7 @@ MonoBehaviour:
       data:
         _guid: ee7696869a6d413ead9ebb2c4d141e61
         _position: {x: 0, y: 0}
-        _comment: 'TECH support agent (shield wall): a field engineer built round a front-facing barrier. Its Frontal Shield stands a one-way wall in front of it: hostile fire from the front stops on it, while its own and its allies'' shots from behind pass through. It holds the line between the threat and its allies, about 8 m ahead of the ally nearest the threat (close range, in front of its mid-range attackers), facing the threat, and never falls back while the shield holds. Its attack is defensive: its blowtorch (the tool it repairs allies with) sears whatever reaches it (within 2.6 m), after a Weapon Bash (Special) shoves back what rushes it. Every 14 s it throws its Barrier Dome (kit Grenade) onto the squadmate taking the most fire. Fortifies when it takes fire (Boost). To repair it lowers the shield: a Smoke Screen where it stands, then Field Restoration (Support) on itself when worn down or on an ally in need. With no allies near it keeps to cover and only sears what reaches it.'
+        _comment: 'TECH support agent (shield wall): a field engineer built round a front-facing barrier. Its Frontal Shield stands a one-way wall in front of it: hostile fire from the front stops on it, while its own and its allies'' shots from behind pass through. Whenever it knows the threat it stands between it and its allies, about 5 m ahead of the ally nearest the threat on the line from the threat to them (close range, in front of its mid-range attackers, its allies within reach of its repairs), facing the threat with no cover but its own wall, and never falls back while the shield holds. It zones the front with its blowtorch (the tool it repairs allies with): whatever comes within 7 m it steps out to meet and sears, then goes back to its spot; a Weapon Bash (Special) shoves back what rushes it. When allies within 10 m are being hit it casts Barrier Field over them (+60 armour for 6 s) without lowering the shield. Every 14 s it throws its Barrier Dome (kit Grenade) onto the squadmate taking the most fire. Fortifies when it takes fire (Boost). To repair it lowers the shield: a Smoke Screen where it stands, then Field Restoration (Support) on itself when worn down or on an ally in need. With no allies near it keeps to cover and only sears what reaches it.'
         _children:
         - 41e3d4fde8b74f69babb7b62161be33f
     - rid: 1001
@@ -128,8 +136,8 @@ MonoBehaviour:
         - 5117a919dabf489a8640e2d181349535
         - 755bca2b640d43d3bc66aeb5221d2f26
         - 9ea344e64b0c4310a0bdb8e50d3eddeb
-        - 020a9fdfe3b74856bc5a480b3d1f9524
-        - 5584313faa4a4d5f99346d35060704f2
+        - 61e8a1a1e57e489995bf8c72d149be57
+        - 167f9c77f9854df698fcdd2692caf819
         - 4aff8ecef6fa4108a28d686b50db183a
         - ecb92a727c3d455594999408329c5bb6
         _abort: 0
@@ -186,15 +194,17 @@ MonoBehaviour:
       data:
         _guid: ad1777cfdea94ae781760e4f387919c6
         _position: {x: 259, y: 450}
-        _comment: 'Bash back what rushes it; fall back while its shield is broken; smoke and repair itself or an ally; otherwise hold the shield wall at the front'
+        _comment: 'Bash back what rushes it; fall back while its shield is broken; smoke and repair itself; zone the front with its blowtorch; buff or repair its allies; otherwise hold the shield wall between the threat and them'
         _children:
         - 8b41c41c2ece4a7994acd84f8c0e7fd9
         - 8698bf1bc2c44f19b46c385ff14990c0
         - 4a03a4b134ca46678284e21b7431cfe4
         - 10aad5f5754a4c55834f89a7f3e005d0
         - 6ae5931d201344c29e74c084f4beff56
+        - 0535fb4e1a574c128c4ec4ec9e33040d
         - cb0e4f6ed6b24a76a0dc473d00fc21e1
         - e23c90da588746f688eb14d22700f7cb
+        - 6e06ad4b09744bafb9de4a417afdcc32
         - 33ef000ecfec40d7b5dec7f7a5e3a9f0
         - 5f8e5f99d0f941bbab022deee822d606
         - 9a30703386bd4d26b8966854d34cd8d8
@@ -499,7 +509,7 @@ MonoBehaviour:
       data:
         _guid: 5f8e5f99d0f941bbab022deee822d606
         _position: {x: 1682, y: 600}
-        _comment: 'Position for the job, re-decided every 3 s: shield up between the threat and its allies while they are being hit, otherwise in cover facing the threat within reach of them'
+        _comment: 'Its post, re-decided every 3 s: shield up between the threat and its allies, 5 m ahead of the one nearest the threat, its wall its cover'
         _children:
         - 56c4b98d0acc44ef96cd24a32e810ae0
         - 3c3e91ca2dff4416ba4ca09921ceb759
@@ -526,7 +536,7 @@ MonoBehaviour:
         _position: {x: 1847, y: 900}
         _comment: 
         _children:
-        - 2cb6908ba27f48aaaa469ee2272b53db
+        - 240e50acc5dc45de9733716778f04c3c
         _seconds: 3
     - rid: 1045
       type: {class: TakeSupportPosition, ns: CGD.Enemies, asm: CGD.Runtime}
@@ -537,7 +547,7 @@ MonoBehaviour:
         _allyRadius: 20
         _reach: 10
         _line: 1
-        _fromLine: 8
+        _fromLine: 5
         _searchRadius: 8
         _replanEvery: 2
         _speed: 1
@@ -700,7 +710,7 @@ MonoBehaviour:
       data:
         _guid: 8698bf1bc2c44f19b46c385ff14990c0
         _position: {x: 0, y: 0}
-        _comment: 'Something reached it (within 2.6 m): its blowtorch (the basic attack) sears it; this is a defence, never an opening'
+        _comment: 'Something reached it (within 2.6 m): its blowtorch (the basic attack) sears it'
         _children:
         - 37c2a96500e84f0f982b1c3dec60207b
         - 55929ef57b87498d9035ff5ce6c76cd6
@@ -845,90 +855,156 @@ MonoBehaviour:
         - dfd81bb3efbe4252a88e204d2b18b489
         - a6c124423f254448954ec5664f9d8a6e
         _abort: 0
-    - rid: 1120
-      type: {class: KinUnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
-      data:
-        _guid: 484ffff1da8f454eab8fc4caae8e74c0
-        _position: {x: 0, y: 0}
-        _comment: 
-        _radius: 25
-        _minLoss: 0.05
-    - rid: 1121
+    - rid: 1124
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 7cf24e6e96c74c9b99c1d8ff33bf9d62
+        _guid: 0535fb4e1a574c128c4ec4ec9e33040d
         _position: {x: 0, y: 0}
-        _comment: 'Allies are taking fire: step up and put the shield between the threat and them'
+        _comment: 'It zones the front: whatever comes within 7 m of the line it holds, it steps out to meet shield first and sears with its blowtorch, then goes back to its spot'
         _children:
-        - 484ffff1da8f454eab8fc4caae8e74c0
-        - 240e50acc5dc45de9733716778f04c3c
-        _abort: 0
-    - rid: 1122
-      type: {class: TakeSupportPosition, ns: CGD.Enemies, asm: CGD.Runtime}
+        - 400ae9cc289540cc884cc72fe35309b4
+        - 7d649527b2f54bf1b0b02db47e4f88fd
+        - 72369ed129f14bc8b370d3fa39846cfa
+        - 613428f69421487d8ae1df11c263544b
+        _abort: 2
+    - rid: 1125
+      type: {class: HasTarget, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 525355a5b8c44770a81f7c65c7e6513c
+        _guid: 400ae9cc289540cc884cc72fe35309b4
         _position: {x: 0, y: 0}
-        _comment: 'Quiet: wait in cover facing the threat, within reach of its allies'
-        _allyRadius: 20
-        _reach: 10
-        _line: 0
-        _fromLine: 3
-        _searchRadius: 10
-        _replanEvery: 3
-        _speed: 1
-    - rid: 1123
-      type: {class: Selector, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+        _comment: 
+    - rid: 1126
+      type: {class: KinNear, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 2cb6908ba27f48aaaa469ee2272b53db
+        _guid: 7d649527b2f54bf1b0b02db47e4f88fd
         _position: {x: 0, y: 0}
-        _comment: Block while allies are being hit, otherwise take cover
+        _comment: 
+        _radius: 20
+        _atLeast: 1
+    - rid: 1127
+      type: {class: TargetInRange, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 72369ed129f14bc8b370d3fa39846cfa
+        _position: {x: 0, y: 0}
+        _comment: 
+        _range: 7
+    - rid: 1128
+      type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 613428f69421487d8ae1df11c263544b
+        _position: {x: 0, y: 0}
+        _comment: 
         _children:
-        - 7cf24e6e96c74c9b99c1d8ff33bf9d62
-        - 525355a5b8c44770a81f7c65c7e6513c
+        - da5bf6a34d3045909d83cf51403e9069
+        _seconds: 3
+    - rid: 1129
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: da5bf6a34d3045909d83cf51403e9069
+        _position: {x: 0, y: 0}
+        _comment: 
+        _children:
+        - 9ff93574e595448185f0b14563b5e191
+        - 37d2493524f644369f018e42e9bf2ad0
         _abort: 0
-    - rid: 1124
+    - rid: 1130
+      type: {class: AdvanceFacing, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 9ff93574e595448185f0b14563b5e191
+        _position: {x: 0, y: 0}
+        _comment: 
+        _stopDistance: 2
+        _speed: 0.9
+        _holdOnArrival: 0
+        _sneak: 0
+    - rid: 1131
+      type: {class: MeleeAttack, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 37d2493524f644369f018e42e9bf2ad0
+        _position: {x: 0, y: 0}
+        _comment: 
+    - rid: 1132
+      type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
+      data:
+        _guid: 6e06ad4b09744bafb9de4a417afdcc32
+        _position: {x: 0, y: 0}
+        _comment: 'Allies within 10 m being hit: Barrier Field over them (+60 armour for 6 s, every 20 s), shield still up'
+        _children:
+        - ef86cc7ec8e446e4abe38221abffa657
+        - c1f4c363c71e4e6a81eb04701e25f839
+        - 825435f560f44682a46fbea3270e4014
+        _abort: 0
+    - rid: 1133
+      type: {class: KinUnderFire, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: ef86cc7ec8e446e4abe38221abffa657
+        _position: {x: 0, y: 0}
+        _comment: 
+        _radius: 10
+        _minLoss: 0.05
+    - rid: 1134
+      type: {class: AbilityReady, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: c1f4c363c71e4e6a81eb04701e25f839
+        _position: {x: 0, y: 0}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: 8aac060c7e1d470fbb093db46ee4b163, type: 2}
+    - rid: 1135
+      type: {class: UseAbility, ns: CGD.Enemies, asm: CGD.Runtime}
+      data:
+        _guid: 825435f560f44682a46fbea3270e4014
+        _position: {x: 0, y: 0}
+        _comment: 
+        _slot: 0
+        _ability: {fileID: 11400000, guid: 8aac060c7e1d470fbb093db46ee4b163, type: 2}
+        _aim: 1
+        _maxRange: 0
+        _requireClearShot: 0
+        _leadMovingTarget: 0
+    - rid: 1136
       type: {class: JoinFight, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 32d9bc233ec44ddda7968e53fe76b6ad
+        _guid: b7d51b38b80240c9a42cf38f2acd8087
         _position: {x: 0, y: 0}
         _comment: 
         _radius: 40
         _stopDistance: 12
         _speed: 1
         _sneak: 0
-    - rid: 1125
+    - rid: 1137
       type: {class: TimeLimit, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 020a9fdfe3b74856bc5a480b3d1f9524
+        _guid: 61e8a1a1e57e489995bf8c72d149be57
         _position: {x: 0, y: 0}
-        _comment: 
+        _comment: "A squadmate is fighting something it hasn't seen yet: go and join the fight, stopping at its own range"
         _children:
-        - 32d9bc233ec44ddda7968e53fe76b6ad
+        - b7d51b38b80240c9a42cf38f2acd8087
         _seconds: 4
-    - rid: 1127
+    - rid: 1138
       type: {class: AnchorTether, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: 605fb5bad86644b5bd80e95c4035633d
+        _guid: a09d13d9c9f24a13a3e53ed5af1e529d
         _position: {x: 0, y: 0}
         _comment: 
         _state: 0
         _slack: 4
-    - rid: 1128
+    - rid: 1139
       type: {class: ReturnToAnchor, ns: CGD.Enemies, asm: CGD.Runtime}
       data:
-        _guid: ba8f24ef29f2434082656f552d6c4bd4
+        _guid: 7fb1882dd44145fe96789c2661c51680
         _position: {x: 0, y: 0}
         _comment: 
         _settleShare: 0.6
         _speed: 1
         _giveUpAfter: 8
-    - rid: 1129
+    - rid: 1140
       type: {class: Sequence, ns: CGD.BehaviorTrees, asm: CGD.Runtime}
       data:
-        _guid: 5584313faa4a4d5f99346d35060704f2
+        _guid: 167f9c77f9854df698fcdd2692caf819
         _position: {x: 0, y: 0}
         _comment: 'Calm: stay round the siege tank'
         _children:
-        - 605fb5bad86644b5bd80e95c4035633d
-        - ba8f24ef29f2434082656f552d6c4bd4
+        - a09d13d9c9f24a13a3e53ed5af1e529d
+        - 7fb1882dd44145fe96789c2661c51680
         _abort: 0

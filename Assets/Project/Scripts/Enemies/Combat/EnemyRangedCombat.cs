@@ -11,9 +11,10 @@ using CGD.Weapons;
 namespace CGD.Enemies
 {
     // How a ranged enemy fights: holding its preferred distance (approach, back off, strafe
-    // while in the band) and firing bursts — hitscan, or visible projectiles when its data has
-    // a ShotProjectile. Used by the ranged behavior tree nodes
-    // (Hold Range, Shoot Burst, Suppress).
+    // while in the band) and firing bursts — hitscan, visible projectiles or lobbed grenades.
+    // An enemy with a Ranged Combo fires its steps in turn, one burst per Shoot Burst/Suppress,
+    // and casts nothing until the combo is done. Used by the ranged behavior tree nodes
+    // (Hold Range, Shoot Burst, Suppress, Recovering From Burst).
     internal sealed class EnemyRangedCombat
     {
         // The band around the preferred range that counts as "in position".
@@ -25,6 +26,10 @@ namespace CGD.Enemies
         // A blast bursting on scenery still reaches a target within its radius less its body, but never less than this.
         private const float MinBlastSlack     = 0.5f;
         private const float TargetBodyRadius  = 0.5f;
+        // A combo whose next step hasn't started this long after it could (target lost, other
+        // business) is dropped: it starts over from the first step, after the cooldown. Long enough
+        // for a reposition between steps.
+        private const float MaxComboPause = 8f;
 
         private readonly EnemyAI      _ai;
         private readonly DamageSource _source;
@@ -37,8 +42,11 @@ namespace CGD.Enemies
         private float _burstTimer;
         private float _windupRemaining;
         private float _recoveryRemaining;
-        // Set when the enemy's data gives its bursts a wind-up or recovery: the whole cycle then
-        // shuts out abilities, not just the recovery.
+        // The combo step firing, or next to fire (always 0 without a combo).
+        private int   _stepIndex;
+        private float _comboPause;
+        // Set when the burst has a wind-up or recovery: the whole cycle then shuts out
+        // abilities, not just the recovery.
         private bool  _lockedCycle;
         private float _strafeTimer;
         private int   _strafeDir = 1;
@@ -53,18 +61,28 @@ namespace CGD.Enemies
         }
 
         public bool IsBursting => _burstRemaining > 0;
-        // Winding down after the last shot.
+        // Winding down after the last shot (decompressing, between combo steps too).
         public bool IsRecovering => _recoveryRemaining > 0f;
+        // Part way through a ranged combo: a later step is still to come.
+        public bool IsMidCombo => _stepIndex > 0;
         public bool CanFire    => !IsBursting && !IsRecovering && _fireCooldown.IsReady && !_ai.Tells.IsCommitting;
-        // Mid-cycle for an enemy whose bursts have a wind-up or recovery: it may reposition and plan,
-        // but casts nothing (abilities, grenades) until the cycle is over.
-        public bool LocksAbilities => IsRecovering || (_lockedCycle && IsBursting);
+        // Mid-cycle for an enemy whose bursts have a wind-up or recovery, or mid-combo: it may
+        // reposition and plan, but casts nothing (abilities, grenades) until the cycle is over.
+        public bool LocksAbilities => IsRecovering || (_lockedCycle && IsBursting) || IsMidCombo;
+
+        // The step firing, or the one the next burst fires.
+        private RangedStep Step => _ai.Data.RangedStepAt(_stepIndex);
+
+        // Whether it must stand still to fire the step firing (or next to fire): false for a step it
+        // fires on the move, so the nodes that fire (Suppress, Hold Range) leave its footwork alone.
+        public bool PlantsToFire => !Step.FiresOnTheMove;
 
         // Called every unstunned frame by EnemyAI, so cooldowns and bursts carry on whoever is deciding.
         public void Tick(float deltaTime)
         {
             _fireCooldown.Tick(deltaTime);
             TickBurst(deltaTime);
+            TickComboPause(deltaTime);
 
             // Ready to fire again: let a waiting ally have the turn if it wants it.
             if (_hasShooterToken && !IsBursting && _fireCooldown.IsReady) ReleaseToken();
@@ -109,7 +127,8 @@ namespace CGD.Enemies
             return SightLines.IsClear(eyePos, aimAt, _obstacleMask, target != null ? target.transform : null);
         }
 
-        // Starts a burst: the first shot comes now, or after BurstWindup; the rest follow every BurstInterval.
+        // Starts a burst (the combo's next step): the first shot comes now, or after its wind-up;
+        // the rest follow every interval.
         public bool TryStartBurst()
         {
             if (!CanFire) return false;
@@ -121,12 +140,13 @@ namespace CGD.Enemies
                 EnemyPacing.Current.ScaleAttackers(_ai.Data.MaxShooters));
             if (!_hasShooterToken) return false;
 
-            EnemyData data = _ai.Data;
-            _lockedCycle    = data.BurstWindup > 0f || data.BurstRecovery > 0f;
-            _burstRemaining = Mathf.Max(1, data.BurstCount);
-            if (data.BurstWindup > 0f)
+            RangedStep step = Step;
+            _lockedCycle    = step.Windup > 0f || step.Recovery > 0f;
+            _burstRemaining = Mathf.Max(1, step.Shots);
+            _comboPause     = 0f;
+            if (step.Windup > 0f)
             {
-                _windupRemaining = data.BurstWindup;
+                _windupRemaining = step.Windup;
                 return true;
             }
 
@@ -140,17 +160,49 @@ namespace CGD.Enemies
         {
             if (!FireOneShot()) return false;
 
-            EnemyData data = _ai.Data;
-            _fireCooldown.Start(data.RangedAttackCooldown > 0f ? data.RangedAttackCooldown : data.AttackCooldown);
+            // A single burst's cooldown counts from its first shot; a combo's from its last step.
+            if (!_ai.Data.HasRangedCombo) StartCooldown();
             AfterShot();
             return true;
         }
 
         private void AfterShot()
         {
+            RangedStep step = Step;
             _burstRemaining--;
-            _burstTimer = _ai.Data.BurstInterval;
-            if (_burstRemaining <= 0) _recoveryRemaining = _ai.Data.BurstRecovery;
+            _burstTimer = step.Interval;
+            if (_burstRemaining > 0) return;
+
+            _recoveryRemaining = step.Recovery;
+            if (!_ai.Data.HasRangedCombo) return;
+
+            if (_stepIndex < _ai.Data.RangedStepCount - 1) _stepIndex++;
+            else EndCombo();
+        }
+
+        private void StartCooldown()
+        {
+            EnemyData data = _ai.Data;
+            _fireCooldown.Start(data.RangedAttackCooldown > 0f ? data.RangedAttackCooldown : data.AttackCooldown);
+        }
+
+        private void EndCombo()
+        {
+            _stepIndex  = 0;
+            _comboPause = 0f;
+            StartCooldown();
+        }
+
+        private void TickComboPause(float deltaTime)
+        {
+            if (!IsMidCombo || IsBursting || IsRecovering)
+            {
+                _comboPause = 0f;
+                return;
+            }
+
+            _comboPause += deltaTime;
+            if (_comboPause > MaxComboPause) EndCombo();
         }
 
         // An interrupted burst keeps any recovery already under way: only Reset clears that.
@@ -165,6 +217,8 @@ namespace CGD.Enemies
         {
             CancelBurst();
             _recoveryRemaining = 0f;
+            _stepIndex         = 0;
+            _comboPause        = 0f;
             _fireCooldown.Reset();
         }
 
@@ -242,25 +296,32 @@ namespace CGD.Enemies
             SightLines.ReachesWithin(_ai.transform.position + Vector3.up * EnemyEyes.Height, aimPoint, ShotSlack(), _obstacleMask, ShotWidth());
 
         // How wide its shot flies: a projectile has a body, a hitscan shot none.
-        private float ShotWidth() => HasProjectile() ? _ai.Data.ShotRadius : 0f;
+        private float ShotWidth() => HasProjectile() ? Step.ShotRadius : 0f;
 
         // How short of its aim point a shot may burst on scenery and still count: a blast reaches a target
         // standing that close to the impact (less its body), but a shot that dies further off is wasted on the wall.
         private float ShotSlack()
         {
-            float blast = HasProjectile() ? _ai.Data.ShotBlastRadius : 0f;
+            float blast = HasProjectile() ? Step.BlastRadius : 0f;
             return blast > 0f ? Mathf.Min(ClearShotSlack, Mathf.Max(MinBlastSlack, blast - TargetBodyRadius)) : ClearShotSlack;
         }
 
-        private bool HasProjectile() => _ai.Data.ShotProjectile != null && _ai.Data.ShotProjectile.TryGetComponent(out Projectile _);
+        private bool HasProjectile()
+        {
+            GameObject projectile = Step.Projectile;
+            return projectile != null && projectile.TryGetComponent(out Projectile _);
+        }
+
+        private float ShotSpeed(RangedStep step) => step.ShotSpeed > 0f ? step.ShotSpeed : _ai.Data.ShotSpeed;
 
         // False when the shot isn't taken because scenery blocks it.
         private bool FireOneShot()
         {
-            EnemyData data   = _ai.Data;
-            var       target = _ai.Perception.Target;
+            EnemyData  data   = _ai.Data;
+            RangedStep step   = Step;
+            var        target = _ai.Perception.Target;
             if (target == null) return false;
-            if (data.ShotGrenade != null) return LobGrenade(data);
+            if (step.Grenade != null) return LobGrenade(step);
 
             Vector3 eyePos       = _ai.transform.position + Vector3.up * EnemyEyes.Height;
             // Aims where it believes the target is: dead on while it sees it, a guess when not.
@@ -269,13 +330,13 @@ namespace CGD.Enemies
             bool    projectile   = HasProjectile();
             if (projectile)
             {
-                float flightTime = Vector3.Distance(eyePos, targetCenter) / data.ShotSpeed;
+                float flightTime = Vector3.Distance(eyePos, targetCenter) / ShotSpeed(step);
                 targetCenter += _ai.Perception.TargetVelocity * flightTime;
             }
             Vector3 dir = (targetCenter - eyePos).normalized;
 
-            if (data.SpreadAngle > 0f)
-                dir = WeaponFireBehavior.ComputeSpreadDirection(dir, data.SpreadAngle);
+            if (step.SpreadAngle > 0f)
+                dir = WeaponFireBehavior.ComputeSpreadDirection(dir, step.SpreadAngle);
 
             // Checks the shot as it will really fly (lead and spread included), not just the line to the target.
             float reach = Vector3.Distance(eyePos, targetCenter);
@@ -285,13 +346,13 @@ namespace CGD.Enemies
             fireSound.TryPlay(_ai.transform.position);
             _ai.NotifyFired();
 
-            float damage = data.RangedAttackDamage > 0f ? data.RangedAttackDamage : data.AttackDamage;
+            float damage = data.StepDamage(step);
             if (_stats != null) damage = _stats.Apply(ItemStat.Damage, damage);
             var info = new DamageInfo(damage, type: data.ShotDamageType, source: _source,
                                   onHitEffects: data.ShotEffects);
             if (projectile)
             {
-                LaunchProjectile(data, eyePos, dir, info);
+                LaunchProjectile(data, step, eyePos, dir, info);
                 return true;
             }
 
@@ -304,32 +365,33 @@ namespace CGD.Enemies
         }
 
         // A mortar round: the grenade goes up and comes down on where the target is believed to be,
-        // as far off as the Spread Angle would carry a straight shot at that distance. False when
-        // the lob can't be made (out of throwing range, a wall in the way).
-        private bool LobGrenade(EnemyData data)
+        // as far off as the step's spread angle would carry a straight shot at that distance. False
+        // when the lob can't be made (out of throwing range, a wall in the way).
+        private bool LobGrenade(RangedStep step)
         {
             EnemyPerception perception = _ai.Perception;
             Vector3 spot    = perception.TargetPosition;
-            float   scatter = Vector3.Distance(_ai.transform.position, spot) * Mathf.Tan(data.SpreadAngle * Mathf.Deg2Rad);
+            float   scatter = Vector3.Distance(_ai.transform.position, spot) * Mathf.Tan(step.SpreadAngle * Mathf.Deg2Rad);
             // The throw plays its own sound and notifies the enemy it threw.
-            return _ai.Grenades.TryLob(data.ShotGrenade, spot, perception.TargetVelocity, scatter);
+            return _ai.Grenades.TryLob(step.Grenade, spot, perception.TargetVelocity, scatter);
         }
 
         // Starts just outside its own body (the projectile ignores the shooter anyway) and
         // flies as far as the enemy can see.
-        private static void LaunchProjectile(EnemyData data, Vector3 eyePos, Vector3 dir, DamageInfo info)
+        private void LaunchProjectile(EnemyData data, RangedStep step, Vector3 eyePos, Vector3 dir, DamageInfo info)
         {
-            var go = PrefabPool.Spawn(data.ShotProjectile, eyePos + dir * MuzzleOffset, Quaternion.LookRotation(dir));
+            float speed = ShotSpeed(step);
+            var go = PrefabPool.Spawn(step.Projectile, eyePos + dir * MuzzleOffset, Quaternion.LookRotation(dir));
             go.GetComponent<Projectile>().Launch(new ProjectileLaunch
             {
                 Damage      = info,
-                Velocity    = dir * data.ShotSpeed,
-                Lifetime    = data.SightRange / data.ShotSpeed + 0.5f,
+                Velocity    = dir * speed,
+                Lifetime    = data.SightRange / speed + 0.5f,
                 MaxDistance = data.SightRange,
                 HitMask     = ~0,
                 Falloff     = DamageFalloff.None,
-                HitRadius   = data.ShotRadius,
-                BlastRadius = data.ShotBlastRadius,
+                HitRadius   = step.ShotRadius,
+                BlastRadius = step.BlastRadius,
                 ZonePrefab  = data.ShotZonePrefab,
                 Zone        = data.ShotZone,
             });

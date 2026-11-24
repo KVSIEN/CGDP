@@ -9,7 +9,6 @@ namespace CGD.Combat
     // Built at runtime like a Frontal Shield's wall, so it needs no prefab, only a transparent material.
     public sealed class ShieldDome : MonoBehaviour
     {
-        private const string BarrierLayer = "Ignore Raycast";
         private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
 
         private float _durability;
@@ -21,7 +20,7 @@ namespace CGD.Combat
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             go.name  = "ShieldDome";
-            go.layer = LayerMask.NameToLayer(BarrierLayer);
+            go.layer = LayerMask.NameToLayer(ShieldBarrier.Layer);
             go.transform.position   = centre;
             go.transform.localScale = Vector3.one * (radius * 2f);
 

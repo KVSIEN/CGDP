@@ -42,23 +42,63 @@ MonoBehaviour:
   DamageNumberColor: {r: 1, g: 0.7, b: 0.2, a: 1}
   PreferredRange: 35
   SpreadAngle: 7
-  BurstCount: 3
+  BurstCount: 1
   BurstInterval: 0.5
-  BurstWindup: 0.8
-  BurstRecovery: 1
+  BurstWindup: 0
+  BurstRecovery: 0
+  RangedCombo:
+  - Name: Bullet burst
+    Shots: 5
+    Interval: 0.12
+    Windup: 0.6
+    Recovery: 1.5
+    FiresOnTheMove: 1
+    SpreadAngle: 6
+    Damage: 7
+    Grenade: {fileID: 0}
+    Projectile: {fileID: 2000000000000000001, guid: e8940c2f9d7b4c9e8c22af6d1b01279e, type: 3}
+    ShotSpeed: 26
+    ShotRadius: 0
+    BlastRadius: 0
+  - Name: Mortar strikes
+    Shots: 3
+    Interval: 0.5
+    Windup: 0.8
+    Recovery: 1.5
+    FiresOnTheMove: 1
+    SpreadAngle: 7
+    Damage: 0
+    Grenade: {fileID: 11400000, guid: 2c8f5a1e6d3b4790a4e7b0c2d9f18365, type: 2}
+    Projectile: {fileID: 0}
+    ShotSpeed: 0
+    ShotRadius: 0
+    BlastRadius: 0
+  - Name: Missile cannon
+    Shots: 1
+    Interval: 0
+    Windup: 1
+    Recovery: 1.8
+    FiresOnTheMove: 0
+    SpreadAngle: 1
+    Damage: 22
+    Grenade: {fileID: 0}
+    Projectile: {fileID: 2100000000000000001, guid: 134315cc9e5340b8add0a813ae9f4853, type: 3}
+    ShotSpeed: 20
+    ShotRadius: 0.3
+    BlastRadius: 3
   StrafeInterval: 2
   StrafeDistance: 3
   ShotProjectile: {fileID: 0}
-  ShotGrenade: {fileID: 11400000, guid: 2c8f5a1e6d3b4790a4e7b0c2d9f18365, type: 2}
+  ShotGrenade: {fileID: 0}
   ShotSpeed: 26
   RaisesAlarm: 0
   Grenade: {fileID: 0}
-  Signature: {fileID: 11400000, guid: bc948f8fed1e44cab59764b0f3f129b1, type: 2}
+  Signature: {fileID: 0}
   Escape: {fileID: 0}
   Summon: {fileID: 0}
   Boost: {fileID: 0}
   Support: {fileID: 0}
-  Special: {fileID: 11400000, guid: 90ac477e22c91c4d8058bf99fe1ef744, type: 2}
+  Special: {fileID: 0}
   RangedAttackCooldown: 2.6
   RangedAttackDamage: 14
   ShotRadius: 0
