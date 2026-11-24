@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using CGD.Core;
 using CGD.Level;
@@ -16,6 +18,18 @@ namespace CGD.Tests
             RoomStructure structure = new RoomStructurePlanner().Prepare(footprint, 4f, entrances);
             structure.AssignZones();
             return structure;
+        }
+
+        // A room with an inner wall of `wallHeight` (0 = full height) between columns wallX - 1 and wallX
+        // in every row but the bottom one, so the room stays whole.
+        public static RoomStructure WalledRoom(int width, int height, int wallX, float wallHeight, params Vector2Int[] entrances)
+        {
+            RoomStructure room = Room(width, height, entrances);
+            var edges = new List<PartitionEdge>();
+            for (int y = 1; y < height; y++)
+                edges.Add(new PartitionEdge(new Vector2Int(wallX - 1, y), new Vector2Int(wallX, y), wallHeight, dividesZones: false));
+            if (!room.TryAddPartition(edges)) throw new InvalidOperationException("The wall cut the room in two.");
+            return room;
         }
 
         public static RoomPropPlanner Planner(RoomStructure structure, int seed, float fillShare = RoomPropPlanner.DefaultFillShare, float countScale = 1f) =>

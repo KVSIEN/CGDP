@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using CGD.Level;
@@ -14,16 +13,7 @@ namespace CGD.Tests
 
         private static RoomStructure Hall() => Room(Width, Height, new Vector2Int(Width - 1, 3));
 
-        // A wall between columns WallX - 1 and WallX in every row but the bottom one (so the room stays whole).
-        private static RoomStructure HallWithWall(float wallHeight)
-        {
-            RoomStructure room = Hall();
-            var edges = new List<PartitionEdge>();
-            for (int y = 1; y < Height; y++)
-                edges.Add(new PartitionEdge(new Vector2Int(WallX - 1, y), new Vector2Int(WallX, y), wallHeight, dividesZones: false));
-            Assert.That(room.TryAddPartition(edges), Is.True);
-            return room;
-        }
+        private static RoomStructure HallWithWall(float wallHeight) => WalledRoom(Width, Height, WallX, wallHeight, new Vector2Int(Width - 1, 3));
 
         [Test]
         public void AnOpenRoomIsSeenRightAcross()
