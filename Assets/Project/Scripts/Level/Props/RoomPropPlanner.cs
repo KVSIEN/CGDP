@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Core;
@@ -17,7 +18,10 @@ namespace CGD.Level
     // floor (MaxFill), so a room is never packed solid. Add the important things first —
     // what a player comes for, then furniture, then cover and loose clutter — as each one
     // takes space the next can't have.
-    public class RoomPropPlanner
+    //
+    // Placements added as *refinable* may be moved afterwards, one prop at a time (IRefinablePlan,
+    // RoomPlanRefiner): the loose cover and clutter that a room's traits depend on.
+    public class RoomPropPlanner : IRefinablePlan
     {
         // How far an AgainstWall prop one tile deep moves from its tile's middle toward the wall, in tiles.
         private const float WallOffset = 0.25f;
@@ -51,8 +55,12 @@ namespace CGD.Level
         private readonly List<PropPlacementOutcome> _outcomes = new();
         // What each keyed placement put down (RoomPropPlacement.Key), for the ones Near it.
         private readonly Dictionary<string, List<RectInt>> _keyed = new();
+        // The props that may be moved (placements added refinable, RoomPropPlacement.CanRelocate), in the order they went down.
+        private readonly List<PlacedPiece> _pieces = new();
         private int _claimed;
         private bool _hitFillCap;
+        // Whether the placement being added records its props as movable pieces.
+        private bool _recordsPieces;
 
         // fillShare: the part of the floor props may take (a clean hall less, a crowded office
         // more). countScale multiplies every placement's count, required ones excepted;
@@ -87,19 +95,23 @@ namespace CGD.Level
         // zones of the room (one faction's side of a Breach room), with counts that scale by
         // room size read from their floor alone; null = the whole room. `countScale`: these
         // placements' counts only, on top of the room's (a frontier faction's thinner props).
+        // `refinable`: the props may be moved afterwards, where their placement allows it.
         public void Add(IEnumerable<RoomPropPlacement> placements, bool exactConcealment = false, ICollection<int> zones = null,
-                        float countScale = 1f)
+                        float countScale = 1f, bool refinable = false)
         {
-            foreach (RoomPropPlacement placement in placements) Add(placement, exactConcealment, zones, countScale);
+            foreach (RoomPropPlacement placement in placements) Add(placement, exactConcealment, zones, countScale, refinable);
         }
 
         // Places one kind of furnishing; returns how many it placed.
-        public int Add(RoomPropPlacement placement, bool exactConcealment = false, ICollection<int> zones = null, float countScale = 1f)
+        public int Add(RoomPropPlacement placement, bool exactConcealment = false, ICollection<int> zones = null, float countScale = 1f,
+                       bool refinable = false)
         {
             if (placement == null || !placement.HasPieces) return 0;
             if (zones != null && zones.Count == 0) return 0;
             // A piece for bigger rooms is left out of a small one: not a shortfall.
             if (placement.MinRoomTiles > 0 && FloorTiles(zones) < placement.MinRoomTiles) return 0;
+
+            _recordsPieces = refinable && placement.CanRelocate;
 
             int asked = 0, placed = 0;
             bool hitFillCap = false, relaxed = false;
@@ -230,7 +242,7 @@ namespace CGD.Level
 
                 PropCandidate chosen = pool[index];
                 pool.RemoveAt(index);
-                if (!TryPlace(chosen, placement, size, own)) continue;
+                if (!TryPlace(chosen, placement, size, own, zones)) continue;
 
                 placed++;
                 if (placed < count && placement.Symmetric && TryPlaceTwin(chosen, placement, size, own, required, zones)) placed++;
@@ -244,7 +256,7 @@ namespace CGD.Level
         {
             PropCandidate twin = Mirror(placed);
             if (twin.Rect.Equals(placed.Rect) || (!required && UsesFill(placement) && _claimed + size.x * size.y > _fillCap)) return false;
-            return _rules.Suits(twin, placement, size, checkLattice: false, zones) && _rules.Placeable(twin, placement, own) && TryPlace(twin, placement, size, own);
+            return _rules.Suits(twin, placement, size, checkLattice: false, zones) && _rules.Placeable(twin, placement, own) && TryPlace(twin, placement, size, own, zones);
         }
 
         // Across the line down the middle of the room's long side.
@@ -262,17 +274,18 @@ namespace CGD.Level
 
         // --- Placing --------------------------------------------------------------------
 
-        private bool TryPlace(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, List<RectInt> own)
+        private bool TryPlace(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, List<RectInt> own, ICollection<int> zones)
         {
+            int firstPlanned = _planned.Count;
             if (placement.Decor)
             {
                 Emit(candidate, placement, size);
                 own.Add(candidate.Rect);
+                Record(candidate, placement, size, zones, firstPlanned);
                 return true;
             }
 
-            var tiles = new List<Vector2Int>();
-            foreach (Vector2Int tile in candidate.Rect.allPositionsWithin) tiles.Add(tile);
+            List<Vector2Int> tiles = TilesOf(candidate.Rect);
             if (!_structure.TryClaim(tiles, RoomTileTags.Prop)) return false;
 
             ReserveAccess(candidate, placement.Clearance);
@@ -282,7 +295,22 @@ namespace CGD.Level
             own.Add(candidate.Rect);
             _selector.NotePlaced(candidate.Rect.center);
             if (UsesFill(placement)) _claimed += tiles.Count;
+            Record(candidate, placement, size, zones, firstPlanned);
             return true;
+        }
+
+        // A prop that went down as one entry of the plan, from a placement that allows it, may be moved later.
+        private void Record(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, ICollection<int> zones, int firstPlanned)
+        {
+            if (_recordsPieces && _planned.Count - firstPlanned == 1)
+                _pieces.Add(new PlacedPiece(placement, size, zones, candidate, firstPlanned));
+        }
+
+        private static List<Vector2Int> TilesOf(RectInt rect)
+        {
+            var tiles = new List<Vector2Int>(rect.width * rect.height);
+            foreach (Vector2Int tile in rect.allPositionsWithin) tiles.Add(tile);
+            return tiles;
         }
 
         // Decorations take no floor, and a feature that grows with the room is part of its plan.
@@ -309,21 +337,15 @@ namespace CGD.Level
         private void Emit(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size)
         {
             bool single = size == Vector2Int.one;
-            Vector2 centre = candidate.Rect.center;
-            Vector2 forward = candidate.Forward;
-            float yaw = YawFor(candidate, placement, size);
+            float yaw = YawFor(candidate, placement, size, _random);
 
             int pile = single && !placement.HasMembers ? Mathf.Clamp(placement.Pile.Evaluate(_random), 1, MaxPile) : 1;
-            Vector2 position = centre;
-            if (placement.Facing == PropFacing.AgainstWall && size.y == 1 && pile == 1) position -= forward * WallOffset;
-            if (placement.Jitter > 0f && single && !placement.Symmetric) position += Jitter(placement, forward);
+            Vector2 position = PositionOf(candidate, placement, size, pile, _random);
 
             if (pile == 1)
             {
-                Vector2 stretch = placement.Stretch ? (Vector2)size : Vector2.one;
                 if (placement.Prefabs != null && placement.Prefabs.Length > 0)
-                    _planned.Add(new PlannedProp(_random.Pick(placement.Prefabs), position, yaw, candidate.Rect, placement.Decor, stretch,
-                                                 placement.Decor ? null : placement.Activity));
+                    _planned.Add(Single(_random.Pick(placement.Prefabs), position, yaw, candidate, placement, size));
                 if (placement.HasMembers) EmitMembers(placement, position, yaw, candidate.Rect);
                 return;
             }
@@ -355,16 +377,134 @@ namespace CGD.Level
         }
 
         // Loose clutter takes any angle; everything else its candidate's quarter turn.
-        private float YawFor(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size) =>
-            PropPlacementRules.HasFreeYaw(placement, size) ? _random.Range(0f, 360f) : candidate.Rotation * 90f;
+        private static float YawFor(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, RandomStream random) =>
+            PropPlacementRules.HasFreeYaw(placement, size) ? random.Range(0f, 360f) : candidate.Rotation * 90f;
+
+        // Where a prop of a placement stands on its tiles: the middle, set back against the wall
+        // for a wall prop one tile deep, and jittered where the placement asks.
+        private static Vector2 PositionOf(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, int pile, RandomStream random)
+        {
+            Vector2 forward = candidate.Forward;
+            Vector2 position = candidate.Rect.center;
+            if (placement.Facing == PropFacing.AgainstWall && size.y == 1 && pile == 1) position -= forward * WallOffset;
+            if (placement.Jitter > 0f && size == Vector2Int.one && !placement.Symmetric) position += Jitter(placement, forward, random);
+            return position;
+        }
 
         // Along the wall for wall props, any way for the rest.
-        private Vector2 Jitter(RoomPropPlacement placement, Vector2 forward)
+        private static Vector2 Jitter(RoomPropPlacement placement, Vector2 forward, RandomStream random)
         {
             float reach = placement.Jitter * JitterReach;
             if (placement.Facing == PropFacing.AgainstWall)
-                return new Vector2(Mathf.Abs(forward.y), Mathf.Abs(forward.x)) * _random.Range(-reach, reach);
-            return new Vector2(_random.Range(-reach, reach), _random.Range(-reach, reach));
+                return new Vector2(Mathf.Abs(forward.y), Mathf.Abs(forward.x)) * random.Range(-reach, reach);
+            return new Vector2(random.Range(-reach, reach), random.Range(-reach, reach));
+        }
+
+        // One prop of a placement, on the tiles of its candidate.
+        private static PlannedProp Single(GameObject prefab, Vector2 position, float yaw, PropCandidate candidate, RoomPropPlacement placement, Vector2Int size)
+        {
+            Vector2 stretch = placement.Stretch ? (Vector2)size : Vector2.one;
+            return new PlannedProp(prefab, position, yaw, candidate.Rect, placement.Decor, stretch, placement.Decor ? null : placement.Activity);
+        }
+
+        // --- Refining -------------------------------------------------------------------
+
+        public int MovableCount => _pieces.Count;
+
+        // Moves one piece to a random other spot that suits its placement (its rules, spacing
+        // from the others of its kind and a room that stays whole), keeping its prefab. The
+        // rest of the plan is untouched, and `undo` puts it all back.
+        public bool TryMove(int index, RandomStream random, out Action undo)
+        {
+            undo = null;
+            PlacedPiece piece = _pieces[index];
+            RoomPropPlacement placement = piece.Placement;
+            PropCandidate origin = piece.Spot;
+            PlannedProp before = _planned[piece.PlanIndex];
+
+            // Its own floor is free to move to, so it is let go before a spot is looked for.
+            Vacate(placement, origin.Rect);
+            if (!TryRelocate(piece, origin, random))
+            {
+                Reoccupy(placement, origin.Rect);
+                return false;
+            }
+
+            PropCandidate destination = piece.Spot;
+            undo = () =>
+            {
+                Vacate(placement, destination.Rect);
+                Reoccupy(placement, origin.Rect);
+                piece.Spot = origin;
+                _planned[piece.PlanIndex] = before;
+            };
+            return true;
+        }
+
+        private bool TryRelocate(PlacedPiece piece, PropCandidate origin, RandomStream random)
+        {
+            RoomPropPlacement placement = piece.Placement;
+            List<PropCandidate> pool = _rules.Candidates(placement, piece.Size, piece.Zones);
+            List<RectInt> others = RectsOfOthers(piece);
+            while (pool.Count > 0)
+            {
+                int pick = random.Range(0, pool.Count);
+                PropCandidate spot = pool[pick];
+                pool[pick] = pool[pool.Count - 1];
+                pool.RemoveAt(pool.Count - 1);
+
+                if (spot.Rect.Equals(origin.Rect) && spot.Rotation == origin.Rotation) continue;
+                if (!_rules.Placeable(spot, placement, others) || !_rules.Eligible(spot, placement)) continue;
+                if (!placement.Decor && !_structure.TryClaim(TilesOf(spot.Rect), RoomTileTags.Prop)) continue;
+
+                Settle(piece, spot, random);
+                return true;
+            }
+            return false;
+        }
+
+        // The tiles of the other pieces from the same placement: what its spacing keeps clear of.
+        private List<RectInt> RectsOfOthers(PlacedPiece piece)
+        {
+            var rects = new List<RectInt>();
+            foreach (PlacedPiece other in _pieces)
+                if (other != piece && other.Placement == piece.Placement) rects.Add(other.Spot.Rect);
+            return rects;
+        }
+
+        // The piece stands on its new spot, turned and set on it as a freshly placed one would be.
+        private void Settle(PlacedPiece piece, PropCandidate spot, RandomStream random)
+        {
+            RoomPropPlacement placement = piece.Placement;
+            if (!placement.Decor)
+            {
+                if (UsesFill(placement)) _claimed += spot.Rect.width * spot.Rect.height;
+                _sight.Refresh(spot.Rect);
+            }
+            float yaw = YawFor(spot, placement, piece.Size, random);
+            Vector2 position = PositionOf(spot, placement, piece.Size, 1, random);
+            piece.Spot = spot;
+            _planned[piece.PlanIndex] = Single(_planned[piece.PlanIndex].Prefab, position, yaw, spot, placement, piece.Size);
+        }
+
+        // Lets go of a piece's floor, as when it moves away (a decoration takes none).
+        private void Vacate(RoomPropPlacement placement, RectInt rect)
+        {
+            if (placement.Decor) return;
+
+            _structure.Release(TilesOf(rect), RoomTileTags.Prop);
+            if (UsesFill(placement)) _claimed -= rect.width * rect.height;
+            _sight.Refresh(rect);
+        }
+
+        // Takes a piece's floor back, known to be free and to keep the room whole, as it was before it moved.
+        private void Reoccupy(RoomPropPlacement placement, RectInt rect)
+        {
+            if (placement.Decor) return;
+
+            foreach (Vector2Int tile in rect.allPositionsWithin) _structure.Tag(tile, RoomTileTags.Prop);
+            if (UsesFill(placement)) _claimed += rect.width * rect.height;
+            _sight.Refresh(rect);
         }
     }
 }

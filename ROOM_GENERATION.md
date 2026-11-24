@@ -211,10 +211,28 @@ Generation follows the priorities in two ways (Phase 1):
     better. So a room that already fit doesn't change.
   - The structure step is scored on walls and lines of fire only, because concealment comes
     from props.
+- **Refine by moving.** A furnishing that still misses is not thrown away for another seed: it
+  is fitted by hill climbing (`RoomPlanRefiner`). The loose cover and clutter a room type and
+  a faction add (their dressing, not the function's furniture, offerings, anchor, foothold or
+  side dressing) can each be moved. A step picks one such prop and puts it on another spot its
+  placement allows (the same tags, zone, spacing and facing as when it was placed, and a room
+  that stays whole), then keeps the move only if the room is closer to the priorities.
+  - **The score is smooth.** `RoomTraitFit.Miss` counts levels off, which a single prop rarely
+    changes, so the search follows `RoomTraitFit.Gap`: for a trait off its level, how far its
+    score has got toward the wanted level (`RoomTraitReading.PositionOf`: Low is 0–1, Medium
+    1–2, High 2–3). It is 0 exactly when `Miss` is 0. A lost flank costs 1.
+  - **What can't move.** Required pieces, groups, twins, anything keyed or set Near another,
+    anything that keeps floor in front of it or marks a route, and anything placed as a cluster,
+    line, showcase or centred block (`RoomPropPlacement.CanRelocate`).
+  - **A fitting room is left alone.** A try that fits makes no moves, and a move never makes a
+    room worse. Each try refines from its own stream, so planning draws are unchanged.
+  - *Refine Steps* (`LevelBuildSettings`) is how many moves a try gets; 0 turns it off.
+    A step costs a trait reading, far less than another try's whole structure and furnishing.
 
 Concealment a room *type* needs whoever holds it (a Stealth room's `ExtraDressing`) is never
-scaled. The Room Lab shows what each trait wants and what the room has, and which furnishing
-try was kept. Where no try fits, the check names the setting to change.
+scaled. The Room Lab shows what each trait wants and what the room has, which furnishing
+try was kept and how many props were moved to fit. Where no try fits, the check names the
+setting to change.
 
 ## 6. Breach rooms (Phase 6)
 
@@ -1092,7 +1110,9 @@ a run of seeds, and reports the results.
 6. Repeat for the other fight types (Elite, Ambush, Breach) once Combat reads right.
 
 The bands live in `RoomTraitMeasure` (code constants, because the Room Lab's checks and the
-generation steering must agree). *Priority Tries* lives in `LevelBuildSettings`.
+generation steering must agree). *Priority Tries* and *Refine Steps* live in `LevelBuildSettings`.
+With the sweep, compare *Refine Steps* 0 against its default: more rooms should fit, and the
+*Kept try* column should lean toward try 0, as the first try gets fitted instead of replaced.
 
 ### Seeing it in play
 

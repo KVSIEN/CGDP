@@ -24,6 +24,75 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void AGapIsZeroExactlyWhenNothingMisses()
+        {
+            RoomTraitPriorities[] wants =
+            {
+                new(TraitPriority.Low, TraitPriority.High, TraitPriority.High),
+                new(TraitPriority.High, TraitPriority.Low, TraitPriority.Low),
+                new(TraitPriority.Medium, TraitPriority.Medium, TraitPriority.Medium),
+            };
+            RoomTraitReading[] readings =
+            {
+                CoveredCorridor,
+                new(0.06f, 0.15f, 6, default, false),     // each trait exactly on the edge of its level
+                new(0.05f, 0.34f, 8, new RectInt(0, 0, 8, 1), true),
+                new(0f, 0f, 0, default, false),
+            };
+            foreach (RoomTraitReading reading in readings)
+                foreach (RoomTraitPriorities wanted in wants)
+                    Assert.AreEqual(RoomTraitFit.Miss(reading, wanted) == 0, RoomTraitFit.Gap(reading, wanted) == 0f,
+                                    $"miss {RoomTraitFit.Miss(reading, wanted)}, gap {RoomTraitFit.Gap(reading, wanted)}");
+        }
+
+        [Test]
+        public void AGapShrinksAsATraitNearsItsWantedLevel()
+        {
+            var wantsLanes = new RoomTraitPriorities(TraitPriority.Low, TraitPriority.Low, TraitPriority.High);
+            float previous = float.MaxValue;
+            foreach (int lane in new[] { 0, 3, 5, 6, 8, 9 })   // Low, Low, Low, Medium, Medium, High: always with cover
+            {
+                var reading = new RoomTraitReading(0f, 0f, lane, new RectInt(0, 0, lane, 1), true);
+                float gap = RoomTraitFit.Gap(reading, wantsLanes);
+                Assert.Less(gap, previous, $"a lane of {lane}");
+                previous = gap;
+            }
+            Assert.AreEqual(0f, previous);
+        }
+
+        [Test]
+        public void CoverBesideALongLaneClosesTheGapToAFiringLine()
+        {
+            var wanted = new RoomTraitPriorities(TraitPriority.Low, TraitPriority.Low, TraitPriority.High);
+            var killingField = new RoomTraitReading(0f, 0f, 12, new RectInt(0, 0, 12, 1), false);
+            var firingLine = new RoomTraitReading(0f, 0f, 12, new RectInt(0, 0, 12, 1), true);
+
+            Assert.Greater(RoomTraitFit.Gap(killingField, wanted), RoomTraitFit.Gap(firingLine, wanted));
+            Assert.AreEqual(0f, RoomTraitFit.Gap(firingLine, wanted));
+        }
+
+        [Test]
+        public void ALevelIsTheWholePartOfItsPosition()
+        {
+            RoomTraitReading[] readings =
+            {
+                CoveredCorridor,
+                new(0.06f, 0.15f, 6, default, false),
+                new(0.03f, 0.2f, 7, default, true),
+                new(1f, 1f, 40, default, true),
+                new(0f, 0f, 0, default, false),
+            };
+            foreach (RoomTraitReading reading in readings)
+                foreach (RoomTrait trait in new[] { RoomTrait.Concealment, RoomTrait.Walls, RoomTrait.LinesOfFire })
+                {
+                    float position = reading.PositionOf(trait);
+                    Assert.GreaterOrEqual(position, 0f);
+                    Assert.Less(position, 3f);
+                    Assert.AreEqual((int)Mathf.Floor(position), (int)reading.LevelOf(trait));
+                }
+        }
+
+        [Test]
         public void ABareStructureIsNotScoredOnConcealment()
         {
             var wanted = new RoomTraitPriorities(TraitPriority.High, TraitPriority.High, TraitPriority.High);

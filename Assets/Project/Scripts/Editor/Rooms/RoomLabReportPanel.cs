@@ -139,6 +139,8 @@ namespace CGD.Editor
             return string.Join(", ", parts);
         }
 
+        private static string Moved(int moves) => moves > 0 ? $", with {moves} {(moves == 1 ? "prop" : "props")} moved to fit" : "";
+
         // What the holding faction asks of its fight rooms, next to what this room offers.
         private static void DrawPriorities(RoomSample sample)
         {
@@ -150,8 +152,8 @@ namespace CGD.Editor
             else if (sample.Design == null)
                 EditorGUILayout.LabelField("No faction design holds this room: pick a faction to check its priorities.", EditorStyles.wordWrappedMiniLabel);
             else if (sample.Furnishing.Tries > 1)
-                EditorGUILayout.LabelField(new GUIContent($"Furnishing try {sample.Furnishing.Attempt + 1} of {sample.Furnishing.Tries} kept, as the closest fit",
-                                                          "The structure and then the furnishing are each built from several seeds (Level Build Settings › Priority Tries), keeping the one closest to these priorities"),
+                EditorGUILayout.LabelField(new GUIContent($"Furnishing try {sample.Furnishing.Attempt + 1} of {sample.Furnishing.Tries} kept, as the closest fit{Moved(sample.Furnishing.Moves)}",
+                                                          "The structure and then the furnishing are each built from several seeds (Level Build Settings › Priority Tries), keeping the one closest to these priorities. A furnishing that misses has its loose cover moved about to fit better (Refine Steps)"),
                                            EditorStyles.wordWrappedMiniLabel);
 
             foreach (RoomTrait trait in RoomSampleChecks.Traits)

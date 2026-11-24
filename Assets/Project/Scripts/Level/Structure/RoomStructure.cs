@@ -181,6 +181,21 @@ namespace CGD.Level
             return true;
         }
 
+        // Gives tiles back that a prop stood on, so it can be moved. Frees them for good: unlike
+        // TryClaim there is nothing to check, as taking floor away is the only thing that can cut a room.
+        public void Release(IReadOnlyList<Vector2Int> tiles, RoomTileTags tag)
+        {
+            foreach (Vector2Int tile in tiles)
+            {
+                if (!InBounds(tile)) continue;
+                int index = IndexOf(tile);
+                _tags[index] &= ~tag;
+                if (!_solid[index] || (_tags[index] & Solid) != 0) continue;
+                _solid[index] = false;
+                _solidCount--;
+            }
+        }
+
         // Whether every free tile can still be walked to from the doorways if `claimed` were
         // taken too (a room with no doorway starts from its first free tile).
         public bool StaysConnected(IReadOnlyList<Vector2Int> claimed)

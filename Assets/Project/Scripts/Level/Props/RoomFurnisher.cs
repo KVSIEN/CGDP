@@ -14,7 +14,8 @@ namespace CGD.Level
     // fill share and prop counts. A pavilion standing in the room (an annex: a restroom hut, a
     // kiosk) is furnished by its own place alone; everything else goes on the floor round it.
     // A hand-built landmark keeps its own interior. A fight room a faction design holds is
-    // furnished the way that design's priorities ask (RoomTraitFit).
+    // furnished the way that design's priorities ask (RoomTraitFit): from several seeds, each
+    // refined by moving its loose cover about (RoomPlanRefiner), keeping the closest fit.
     //
     // Pure planning — nothing is spawned — so the level (RoomPopulator) and the editor's room
     // previews get exactly the same props from the same seed. Planning claims the room's floor
@@ -51,27 +52,36 @@ namespace CGD.Level
                 return new RoomFurnishing(only.Planned, only.Outcomes);
             }
 
-            // Each try furnishes its own copy of the room; the best one's floor becomes the room's,
-            // so the winner is never furnished twice.
+            // Each try furnishes its own copy of the room, then moves its loose cover about for as
+            // long as that brings it closer; the best one's floor becomes the room's, so the
+            // winner is never furnished twice. A try that fits straight away is left as it is.
             RoomStructure bestFloor = null;
             RoomPropPlanner best = null;
-            int bestAttempt = 0, bestMiss = int.MaxValue;
-            for (int attempt = 0; attempt < tries && bestMiss > 0; attempt++)
+            int bestAttempt = 0, bestMoves = 0;
+            float bestCost = float.MaxValue;
+            for (int attempt = 0; attempt < tries && bestCost > 0f; attempt++)
             {
+                Seed attemptSeed = RoomTraitFit.Try(seed, attempt);
                 RoomStructure trial = room.Structure.Copy();
-                RoomPropPlanner planner = Plan(room, trial, rule, style, swaps, RoomTraitFit.Try(seed, attempt));
-                // Furniture can close a flank the structure left open.
-                int miss = RoomTraitFit.Miss(planner.Traits, style.Design.Priorities) + RoomFlank.Miss(trial);
-                if (miss >= bestMiss) continue;
+                RoomPropPlanner planner = Plan(room, trial, rule, style, swaps, attemptSeed);
+                RefineResult refined = RoomPlanRefiner.Refine(planner, () => Cost(planner, trial, style.Design),
+                                                              RoomTraitFit.Refinement(attemptSeed), _settings.RefineSteps);
+                if (refined.Cost >= bestCost) continue;
                 bestFloor   = trial;
                 best        = planner;
                 bestAttempt = attempt;
-                bestMiss    = miss;
+                bestMoves   = refined.Moves;
+                bestCost    = refined.Cost;
             }
 
             room.Structure.TakeFloorFrom(bestFloor);
-            return new RoomFurnishing(best.Planned, best.Outcomes, bestAttempt, tries);
+            return new RoomFurnishing(best.Planned, best.Outcomes, bestAttempt, tries, bestMoves);
         }
+
+        // How far a furnished room is from its faction's priorities (0 = fits). Furniture can
+        // close a flank the structure left open, so a lost flank counts as one level off.
+        private static float Cost(RoomPropPlanner planner, RoomStructure furnished, FactionDesign design) =>
+            RoomTraitFit.Gap(planner.Traits, design.Priorities) + RoomFlank.Miss(furnished);
 
         // `style`: the holder's design at the room's strength. `swaps`: whether the room type's
         // cover comes in the holder's own pieces.
@@ -149,8 +159,8 @@ namespace CGD.Level
 
             if (rule != null && rule.Dressing != null)
             {
-                planner.Add(Dressed(swaps ? design : null, rule.Dressing).Props, zones: holderZones);
-                if (split != null) planner.Add(Dressed(breachDesign, rule.Dressing).Props, zones: breachZones);
+                planner.Add(Dressed(swaps ? design : null, rule.Dressing).Props, zones: holderZones, refinable: true);
+                if (split != null) planner.Add(Dressed(breachDesign, rule.Dressing).Props, zones: breachZones, refinable: true);
             }
             if (rule != null && rule.ExtraDressing != null) planner.Add(rule.ExtraDressing.Props, exactConcealment: true, zones: floor);
 
@@ -175,7 +185,7 @@ namespace CGD.Level
         // A faction's own props: its furnishing of the room, after everything the room needs.
         private static void AddFactionProps(RoomPropPlanner planner, FactionDesign design, ICollection<int> zones, float countScale)
         {
-            if (design != null && design.Dressing != null) planner.Add(design.Dressing.Props, zones: zones, countScale: countScale);
+            if (design != null && design.Dressing != null) planner.Add(design.Dressing.Props, zones: zones, countScale: countScale, refinable: true);
         }
     }
 }

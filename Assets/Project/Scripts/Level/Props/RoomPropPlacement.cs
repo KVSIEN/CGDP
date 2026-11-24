@@ -19,6 +19,16 @@ namespace CGD.Level
         public bool HasMembers => Members != null && Members.Length > 0;
         public bool StandsNear => !string.IsNullOrEmpty(Near);
         public bool GrowsWithRoom => Grow.x > 0f || Grow.y > 0f;
+
+        // Whether each prop it puts down may be moved on its own once the room is furnished
+        // (RoomPlanRefiner): loose cover and clutter that stands by itself. A prop that others
+        // depend on (a keyed one, one set Near another, a group, a twin), that keeps floor in
+        // front of it or marks a route, or that is placed by a selection with a shape of its
+        // own (a cluster, a line, a showcase) would lose what it was placed for.
+        public bool CanRelocate =>
+            !Required && !Symmetric && !GrowsWithRoom && !HasMembers && !StandsNear && string.IsNullOrEmpty(Key)
+            && Clearance == 0 && !MarksRoute && Pile.Max <= 1 && Prefabs != null && Prefabs.Length > 0
+            && Selection is PropSelection.Random or PropSelection.Spread or PropSelection.Cover;
         public IntRange Count = new(2, 4);
         [Tooltip("Scale Count with the room's floor area (1× at 64 tiles, 0.4× to 2×), so a closet and a hall are equally furnished")]
         public bool ScaleByRoomSize;
