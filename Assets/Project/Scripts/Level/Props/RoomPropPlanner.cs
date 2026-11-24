@@ -48,6 +48,9 @@ namespace CGD.Level
         private readonly float _concealmentScale;
         private readonly RectInt _bounds;
         private readonly SightlineMap _sight;
+        // What can be seen from each tile, in every direction; only for the readers that asked for it (IsovistUse).
+        private readonly RoomVisibility _visibility;
+        private readonly bool _traitsUseIsovist;
         private readonly RouteMap _routes;
         private readonly PropPlacementRules _rules;
         private readonly PropSelector _selector;
@@ -64,9 +67,10 @@ namespace CGD.Level
 
         // fillShare: the part of the floor props may take (a clean hall less, a crowded office
         // more). countScale multiplies every placement's count, required ones excepted;
-        // concealmentScale multiplies it again for placements of concealment props.
+        // concealmentScale multiplies it again for placements of concealment props. `isovist`: which
+        // readings of the room see in every direction rather than along rows and columns.
         public RoomPropPlanner(RoomStructure structure, Vector2 anchor, RandomStream random, float fillShare = DefaultFillShare,
-                               float countScale = 1f, float concealmentScale = 1f)
+                               float countScale = 1f, float concealmentScale = 1f, IsovistUse isovist = IsovistUse.None)
         {
             _structure  = structure;
             _random     = random;
@@ -79,14 +83,16 @@ namespace CGD.Level
 
             _bounds   = structure.Footprint.Bounds;
             _sight    = new SightlineMap(structure);
+            _traitsUseIsovist = (isovist & IsovistUse.Traits) != 0;
+            if ((isovist & (IsovistUse.Traits | IsovistUse.Cover)) != 0) _visibility = new RoomVisibility(structure, _sight.Blocking);
             _routes   = new RouteMap(structure);
             _rules    = new PropPlacementRules(structure, anchor, _sight, _routes, _keyed);
-            _selector = new PropSelector(_rules, _sight, random, structure);
+            _selector = new PropSelector(_rules, _sight, random, structure, (isovist & IsovistUse.Cover) != 0 ? _visibility : null);
         }
 
         public IReadOnlyList<PlannedProp> Planned => _planned;
         // How the furnished room reads on each trait, from the sightlines kept while placing.
-        public RoomTraitReading Traits => RoomTraitMeasure.Measure(_structure, _planned, _sight);
+        public RoomTraitReading Traits => RoomTraitMeasure.Measure(_structure, _planned, _sight, _traitsUseIsovist ? _visibility : null);
         // One per placement added, in order: what it asked for and what it got.
         public IReadOnlyList<PropPlacementOutcome> Outcomes => _outcomes;
 
@@ -290,7 +296,7 @@ namespace CGD.Level
 
             ReserveAccess(candidate, placement.Clearance);
             if (placement.MarksRoute) MarkRoute(candidate);
-            _sight.Refresh(candidate.Rect);
+            Changed(candidate.Rect);
             Emit(candidate, placement, size);
             own.Add(candidate.Rect);
             _selector.NotePlaced(candidate.Rect.center);
@@ -311,6 +317,13 @@ namespace CGD.Level
             var tiles = new List<Vector2Int>(rect.width * rect.height);
             foreach (Vector2Int tile in rect.allPositionsWithin) tiles.Add(tile);
             return tiles;
+        }
+
+        // Floor props stand on changed: what can be seen across it is measured again.
+        private void Changed(RectInt rect)
+        {
+            _sight.Refresh(rect);
+            _visibility?.Invalidate(rect);
         }
 
         // Decorations take no floor, and a feature that grows with the room is part of its plan.
@@ -479,7 +492,7 @@ namespace CGD.Level
             if (!placement.Decor)
             {
                 if (UsesFill(placement)) _claimed += spot.Rect.width * spot.Rect.height;
-                _sight.Refresh(spot.Rect);
+                Changed(spot.Rect);
             }
             float yaw = YawFor(spot, placement, piece.Size, random);
             Vector2 position = PositionOf(spot, placement, piece.Size, 1, random);
@@ -494,7 +507,7 @@ namespace CGD.Level
 
             _structure.Release(TilesOf(rect), RoomTileTags.Prop);
             if (UsesFill(placement)) _claimed -= rect.width * rect.height;
-            _sight.Refresh(rect);
+            Changed(rect);
         }
 
         // Takes a piece's floor back, known to be free and to keep the room whole, as it was before it moved.
@@ -504,7 +517,7 @@ namespace CGD.Level
 
             foreach (Vector2Int tile in rect.allPositionsWithin) _structure.Tag(tile, RoomTileTags.Prop);
             if (UsesFill(placement)) _claimed += rect.width * rect.height;
-            _sight.Refresh(rect);
+            Changed(rect);
         }
     }
 }

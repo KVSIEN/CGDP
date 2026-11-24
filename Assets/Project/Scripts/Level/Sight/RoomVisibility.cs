@@ -15,8 +15,9 @@ namespace CGD.Level
     // (square distance, so a hangar's far wall doesn't cost a room-sized matrix of lines).
     //
     // The answers are kept as a bit matrix, one row of bits per tile, so asking is cheap and
-    // the rows' sizes (Area) and farthest sight (Reach) are at hand. After props go down or
-    // come away, Refresh walks again only the lines that touch the changed floor.
+    // the rows' sizes (Area) and farthest sight (Reach) are at hand. Nothing is walked until
+    // something asks, and then only what changed: tell it which floor changed (Invalidate) when
+    // props go down or come away, and the next question walks again just the lines that touch it.
     internal sealed class RoomVisibility
     {
         public const int DefaultRange = 32;
@@ -32,6 +33,9 @@ namespace CGD.Level
         private readonly int[] _area;
         private readonly float[] _reach;
         private readonly bool[] _reachKnown;
+        // The floor changed since the lines were last walked (all of it, to begin with).
+        private bool _stale = true;
+        private RectInt _changed;
 
         // `blocking`: the room's sight rules, when something else already holds them.
         public RoomVisibility(RoomStructure structure, SightBlocking blocking = null, int range = DefaultRange)
@@ -47,32 +51,97 @@ namespace CGD.Level
             _area       = new int[tiles];
             _reach      = new float[tiles];
             _reachKnown = new bool[tiles];
-            Refresh(_bounds);
+            _changed    = _bounds;
         }
 
         // Whether two tiles see each other (a tile sees itself, if it is open).
-        public bool Sees(Vector2Int a, Vector2Int b) => _bounds.Contains(a) && _bounds.Contains(b) && Get(IndexOf(a), IndexOf(b));
+        public bool Sees(Vector2Int a, Vector2Int b)
+        {
+            if (!_bounds.Contains(a) || !_bounds.Contains(b)) return false;
+
+            Sync();
+            return Get(IndexOf(a), IndexOf(b));
+        }
 
         // How many tiles a tile sees, itself included: the area of its isovist. 0 for a blocked tile.
-        public int Area(Vector2Int tile) => _bounds.Contains(tile) ? _area[IndexOf(tile)] : 0;
+        public int Area(Vector2Int tile)
+        {
+            if (!_bounds.Contains(tile)) return 0;
+
+            Sync();
+            return _area[IndexOf(tile)];
+        }
 
         // How far, in tiles, the farthest tile it sees lies. 0 for a blocked tile.
         public float Reach(Vector2Int tile)
         {
             if (!_bounds.Contains(tile)) return 0f;
 
+            Sync();
             int index = IndexOf(tile);
             if (_reachKnown[index]) return _reach[index];
 
-            _reach[index] = Farthest(tile, index);
+            _reach[index] = Farthest(tile, out _);
             _reachKnown[index] = true;
             return _reach[index];
         }
 
-        // Walks again every line that touches `changed`, after tiles in it were taken or freed,
-        // and sets those tiles' own sight. Nothing outside it can have changed: a line that
-        // doesn't touch it crosses none of its tiles.
-        public void Refresh(RectInt changed)
+        // The farthest tile a tile sees (the first of any that tie), and how far it lies. A blocked
+        // tile, or one outside the room, sees none: 0, and itself.
+        public float Farthest(Vector2Int tile, out Vector2Int farthest)
+        {
+            farthest = tile;
+            if (!_bounds.Contains(tile)) return 0f;
+
+            Sync();
+            int row = IndexOf(tile) * _words;
+            int best = 0;
+            for (int word = 0; word < _words; word++)
+            {
+                ulong bits = _rows[row + word];
+                for (int bit = 0; bits != 0; bit++, bits >>= 1)
+                {
+                    if ((bits & 1UL) == 0) continue;
+
+                    Vector2Int other = TileAt(word * 64 + bit);
+                    Vector2Int apart = other - tile;
+                    int distance = apart.x * apart.x + apart.y * apart.y;
+                    if (distance <= best) continue;
+                    best = distance;
+                    farthest = other;
+                }
+            }
+            return Mathf.Sqrt(best);
+        }
+
+        // Says that tiles in `changed` were taken or freed since the lines were last walked. Cheap:
+        // the lines are walked again when next asked, all the changes at once.
+        public void Invalidate(RectInt changed)
+        {
+            if (_stale)
+            {
+                int xMin = Mathf.Min(_changed.xMin, changed.xMin), yMin = Mathf.Min(_changed.yMin, changed.yMin);
+                int xMax = Mathf.Max(_changed.xMax, changed.xMax), yMax = Mathf.Max(_changed.yMax, changed.yMax);
+                _changed = new RectInt(xMin, yMin, xMax - xMin, yMax - yMin);
+            }
+            else
+            {
+                _changed = changed;
+            }
+            _stale = true;
+        }
+
+        // Walks again every line that touches the changed floor, and sets those tiles' own sight.
+        // Nothing outside it can have changed: a line that doesn't touch it crosses none of its tiles.
+        private void Sync()
+        {
+            if (!_stale) return;
+
+            _stale = false;
+            Walk(_changed);
+        }
+
+        private void Walk(RectInt changed)
         {
             var tiles = _structure.Footprint.Tiles;
             bool everything = changed.xMin <= _bounds.xMin && changed.yMin <= _bounds.yMin && changed.xMax >= _bounds.xMax && changed.yMax >= _bounds.yMax;
@@ -160,23 +229,6 @@ namespace CGD.Level
                 _area[row]--;
             }
             _reachKnown[row] = false;
-        }
-
-        private float Farthest(Vector2Int tile, int index)
-        {
-            int farthest = 0;
-            for (int word = 0; word < _words; word++)
-            {
-                ulong bits = _rows[index * _words + word];
-                for (int bit = 0; bits != 0; bit++, bits >>= 1)
-                {
-                    if ((bits & 1UL) == 0) continue;
-
-                    Vector2Int apart = TileAt(word * 64 + bit) - tile;
-                    farthest = Mathf.Max(farthest, apart.x * apart.x + apart.y * apart.y);
-                }
-            }
-            return Mathf.Sqrt(farthest);
         }
     }
 }

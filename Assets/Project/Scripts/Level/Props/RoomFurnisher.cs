@@ -92,7 +92,8 @@ namespace CGD.Level
             ShipSideDesign side = _settings.DesignFor(room.Side);
             float fillShare = style.FillShare * (side != null ? side.FillShareScale : 1f);
             float propScale = style.PropScale * (side != null ? side.PropScale : 1f);
-            var planner = new RoomPropPlanner(structure, room.Anchor, seed.Stream(), Mathf.Min(fillShare, MaxFillShare), propScale, concealment);
+            var planner = new RoomPropPlanner(structure, room.Anchor, seed.Stream(), Mathf.Min(fillShare, MaxFillShare), propScale, concealment,
+                                              _settings.IsovistFor);
             // Huts and kiosks standing in the room hold only their own furniture.
             ICollection<int> floor = structure.ZonesOutsideAnnexes();
             if (rule != null && rule.Offerings.Length > 0) planner.Add(RoomPropPlacement.Nook(rule.Offerings), zones: floor);

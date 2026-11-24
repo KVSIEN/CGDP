@@ -120,6 +120,8 @@ namespace CGD.Level
         [SerializeField, Range(1, 8)] private int _priorityTries = 4;
         [Tooltip("Each of those furnishings that misses the faction's priorities gets up to this many tries at moving one of its loose cover props elsewhere, keeping each move that brings the room closer. Cheaper than another try, and keeps what was right about the room. 0 = no moving, tries only")]
         [SerializeField, Range(0, 64)] private int _refineSteps = 24;
+        [Tooltip("Which readings of a room see in every direction (what can be seen from each tile, over the floor plan) rather than along its rows and columns. Traits: walls and lines of fire, in generation and in the Room Lab. Posts: where enemies hold chokes and overwatch. Cover: where cover goes. More accurate in round and diagonal rooms, but slower, and the trait bands were tuned for the row-and-column reading (see ROOM_GENERATION.md, Sight). None = the old reading")]
+        [SerializeField] private IsovistUse _isovistFor = IsovistUse.None;
         [Tooltip("Cover put just inside the doorway a fight room is entered by (its threshold, RoomFlowPlanner), so a player arrives at a foothold rather than in the open. A faction design may swap it like any dressing. Empty = none")]
         [SerializeField] private RoomDressing _footholdDressing;
         [Tooltip("How strongly a faction's design shows in a room, from how firmly the map's faction painter holds it: full in the core of a territory, thinner on its frontier")]
@@ -174,6 +176,8 @@ namespace CGD.Level
         public int   MinRoomWidthTiles => _minRoomWidthTiles;
         public int   PriorityTries  => _priorityTries;
         public int   RefineSteps    => _refineSteps;
+        public IsovistUse IsovistFor => _isovistFor;
+        public bool UsesIsovist(IsovistUse use) => (_isovistFor & use) != 0;
         public RoomDressing FootholdDressing => _footholdDressing;
         public TerritoryDepth TerritoryDepth => _territoryDepth;
 

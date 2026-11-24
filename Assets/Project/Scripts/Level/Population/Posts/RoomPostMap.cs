@@ -17,6 +17,8 @@ namespace CGD.Level
 
         private readonly RoomStructure _structure;
         private readonly SightlineMap _sight;
+        // What can be seen from each tile, in every direction; null when chokes and overwatch are read along rows and columns.
+        private readonly RoomVisibility _visibility;
         private readonly RouteMap _routes;
         private readonly HashSet<Vector2Int> _concealed = new();
         // Each tile's kinds once worked out: the room is finished by now, and a plan asks about
@@ -24,11 +26,14 @@ namespace CGD.Level
         private readonly RectInt _bounds;
         private readonly RoomPostKinds[] _kinds;
         private readonly bool[] _known;
+        private int _openTiles = -1;
 
-        public RoomPostMap(RoomStructure structure, IReadOnlyList<PlannedProp> props)
+        // `isovist`: read chokes and overwatch from what can be seen in every direction (IsovistUse.Posts).
+        public RoomPostMap(RoomStructure structure, IReadOnlyList<PlannedProp> props, bool isovist = false)
         {
             _structure = structure;
             _sight     = new SightlineMap(structure);
+            if (isovist) _visibility = new RoomVisibility(structure, _sight.Blocking);
             _routes    = new RouteMap(structure);
             _bounds    = structure.Footprint.Bounds;
             _kinds     = new RoomPostKinds[_bounds.width * _bounds.height];
@@ -63,9 +68,7 @@ namespace CGD.Level
             RoomPostKinds kinds = RoomPostKinds.None;
             if (_concealed.Contains(tile)) kinds |= RoomPostKinds.Concealed;
 
-            (int alongX, int alongY) = _sight.Runs(tile);
-            if (Mathf.Min(alongX, alongY) <= ChokeTiles) kinds |= RoomPostKinds.Choke;
-            if (Mathf.Max(alongX, alongY) >= OverwatchLaneTiles && HasCoverBeside(tile)) kinds |= RoomPostKinds.Overwatch;
+            kinds |= _visibility != null ? SeenFrom(tile) : SightAlongRuns(tile);
 
             if (_routes.HasRoutes)
             {
@@ -74,6 +77,36 @@ namespace CGD.Level
                 else if (steps >= DeadEndSteps && steps != RouteMap.Unreached) kinds |= RoomPostKinds.DeadEnd;
             }
             return kinds;
+        }
+
+        // A choke is floor hemmed in to a corridor's width; overwatch a long open lane with cover beside it.
+        private RoomPostKinds SightAlongRuns(Vector2Int tile)
+        {
+            (int alongX, int alongY) = _sight.Runs(tile);
+            RoomPostKinds kinds = RoomPostKinds.None;
+            if (Mathf.Min(alongX, alongY) <= ChokeTiles) kinds |= RoomPostKinds.Choke;
+            if (Mathf.Max(alongX, alongY) >= OverwatchLaneTiles && HasCoverBeside(tile)) kinds |= RoomPostKinds.Overwatch;
+            return kinds;
+        }
+
+        // The same from what can be seen in every direction: a choke is a tile that sees little of the room
+        // (RoomSightReading.EnclosedShare of the open floor or less), overwatch one with a long line of sight and cover beside it.
+        private RoomPostKinds SeenFrom(Vector2Int tile)
+        {
+            RoomPostKinds kinds = RoomPostKinds.None;
+            if (_visibility.Area(tile) <= RoomSightReading.EnclosedShare * OpenTiles()) kinds |= RoomPostKinds.Choke;
+            if (_visibility.Reach(tile) + 1f >= OverwatchLaneTiles && HasCoverBeside(tile)) kinds |= RoomPostKinds.Overwatch;
+            return kinds;
+        }
+
+        private int OpenTiles()
+        {
+            if (_openTiles >= 0) return _openTiles;
+
+            _openTiles = 0;
+            foreach (Vector2Int tile in _structure.Footprint.Tiles)
+                if (_visibility.Area(tile) > 0) _openTiles++;
+            return _openTiles;
         }
 
         // A pillar, a prop or an inner wall right next to the tile (the room's own walls don't count).

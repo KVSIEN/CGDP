@@ -20,7 +20,7 @@ namespace CGD.Editor
                           LevelBuildSettings settings, string seedText, int doorsWanted, List<string> warnings)
         {
             Enemies     = enemies;
-            Posts       = new RoomPostMap(room.Structure, furnishing.Props);
+            Posts       = new RoomPostMap(room.Structure, furnishing.Props, settings.UsesIsovist(IsovistUse.Posts));
             Layout      = layout;
             Room        = room;
             Furnishing  = furnishing;
@@ -29,7 +29,7 @@ namespace CGD.Editor
             DoorsWanted = doorsWanted;
             Warnings    = warnings;
             Sight       = new SightlineMap(room.Structure);
-            Traits      = RoomTraitMeasure.Measure(room.Structure, furnishing.Props);
+            Traits      = RoomTraitMeasure.Measure(room.Structure, furnishing.Props, settings.UsesIsovist(IsovistUse.Traits));
             // A Breach room is built by its holder's design; its zones are dressed by both factions.
             Design      = settings.DesignFor(room.Faction);
             Split       = room.BreachFaction != null ? BreachSplit.Of(room.Structure, room.BreachEntrances) : null;

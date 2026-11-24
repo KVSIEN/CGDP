@@ -119,6 +119,36 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void SeveralChangesAreWalkedTogetherWhenNextAsked()
+        {
+            RoomStructure room = Room(12, 9, new Vector2Int(11, 4));
+            var visibility = new RoomVisibility(room);
+            Assert.That(visibility.Area(new Vector2Int(0, 0)), Is.EqualTo(108));
+
+            var first = new RectInt(2, 2, 1, 1);
+            var second = new RectInt(8, 6, 2, 1);
+            Assert.That(room.TryClaim(new[] { new Vector2Int(2, 2) }, RoomTileTags.Prop), Is.True);
+            visibility.Invalidate(first);
+            Assert.That(room.TryClaim(new[] { new Vector2Int(8, 6), new Vector2Int(9, 6) }, RoomTileTags.Prop), Is.True);
+            visibility.Invalidate(second);
+
+            AssertSame(room, new RoomVisibility(room), visibility, "two changes, one walk");
+        }
+
+        [Test]
+        public void TheFarthestTileSeenIsNamed()
+        {
+            var visibility = new RoomVisibility(Room(6, 5, new Vector2Int(5, 2)));
+
+            float distance = visibility.Farthest(new Vector2Int(0, 0), out Vector2Int farthest);
+
+            Assert.That(farthest, Is.EqualTo(new Vector2Int(5, 4)));
+            Assert.That(distance, Is.EqualTo(visibility.Reach(new Vector2Int(0, 0))));
+            Assert.That(visibility.Farthest(new Vector2Int(-5, -5), out Vector2Int none), Is.Zero);
+            Assert.That(none, Is.EqualTo(new Vector2Int(-5, -5)));
+        }
+
+        [Test]
         public void RefreshingAfterChangesGivesWhatABuildFromScratchWould()
         {
             for (int seed = 1; seed <= 20; seed++)
@@ -126,6 +156,7 @@ namespace CGD.Tests
                 RoomStructure room = WalledRoom(12, 9, 6, 3f, new Vector2Int(11, 4));
                 var random = new RandomStream(new Seed((ulong)seed));
                 var visibility = new RoomVisibility(room);
+                Assert.That(visibility.Area(new Vector2Int(0, 0)), Is.GreaterThan(0), "walked once, so later changes are refreshed, not rebuilt");
                 var taken = new List<RectInt>();
 
                 for (int step = 0; step < 12; step++)
@@ -145,7 +176,7 @@ namespace CGD.Tests
                         taken.Add(changed);
                     }
 
-                    visibility.Refresh(changed);
+                    visibility.Invalidate(changed);
                     AssertSame(room, new RoomVisibility(room), visibility, $"seed {seed}, step {step}");
                 }
             }

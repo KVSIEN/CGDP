@@ -25,6 +25,8 @@ namespace CGD.Level
 
         private readonly PropPlacementRules _rules;
         private readonly SightlineMap _sight;
+        // Cover seeks the longest sightline in any direction when this is given (IsovistUse.Cover), else the longest run.
+        private readonly RoomVisibility _visibility;
         private readonly RandomStream _random;
         private readonly RectInt _bounds;
         private readonly RoomStructure _structure;
@@ -33,10 +35,12 @@ namespace CGD.Level
         // Made on the first Showcase: few placements use it.
         private ArrivalSight _arrivalSight;
 
-        public PropSelector(PropPlacementRules rules, SightlineMap sight, RandomStream random, RoomStructure structure)
+        public PropSelector(PropPlacementRules rules, SightlineMap sight, RandomStream random, RoomStructure structure,
+                            RoomVisibility visibility = null)
         {
             _rules     = rules;
             _sight     = sight;
+            _visibility = visibility;
             _random    = random;
             _structure = structure;
             _bounds    = structure.Footprint.Bounds;
@@ -222,18 +226,23 @@ namespace CGD.Level
             DropUnplaceable(placement, pool, own);
 
             int best = -1;
-            int bestRun = CoverMinRun - 1;
+            float bestRun = CoverMinRun - 1;
             for (int i = pool.Count - 1; i >= 0; i--)
             {
                 if (!_rules.Eligible(pool[i], placement)) continue;
 
-                int run = _sight.LongestRun(pool[i].Rect.min);
+                float run = LongestSightFrom(pool[i].Rect.min);
                 if (run <= bestRun) continue;
                 best = i;
                 bestRun = run;
             }
             return best;
         }
+
+        // How many tiles long the longest open stretch through a tile is: along its row or column, or in
+        // any direction (the line from middle to middle, and the tile it starts on).
+        private float LongestSightFrom(Vector2Int tile) =>
+            _visibility != null ? _visibility.Reach(tile) + 1f : _sight.LongestRun(tile);
 
         // How far a point is from the nearest prop (squared: only ever compared): of everything in
         // the room for furniture, of this placement's own for decorations (which aren't in the

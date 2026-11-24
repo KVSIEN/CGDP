@@ -13,6 +13,12 @@ namespace CGD.Level
     //     nothing beside it counts a level lower: it is a killing field, not a firing line
     // The bands below turn each score into Low / Medium / High, to compare with what the
     // holding faction's design asks for (RoomTraitPriorities).
+    //
+    // With IsovistUse.Traits the same traits are read from what can be seen from each tile in
+    // every direction (RoomVisibility) instead of along its row and column: walls are the share of
+    // floor that sees little (RoomSightReading.EnclosedShare of the open floor or less), and lines of
+    // fire the longest line of sight at any angle, with cover beside it. They keep these bands, which
+    // were set for the row-and-column reading and want retuning from a sweep.
     public static class RoomTraitMeasure
     {
         public const int   NarrowTiles          = 2;
@@ -23,15 +29,21 @@ namespace CGD.Level
         public const int   LaneHighTiles        = 9;
 
         private const RoomTileTags Solid = RoomTileTags.Structure | RoomTileTags.Prop;
+        // Sightlines this close in length count as equally long.
+        private const float SightlineTie = 1e-3f;
 
         private static readonly Dictionary<GameObject, bool> ConcealsCache = new();
 
-        public static RoomTraitReading Measure(RoomStructure structure, IReadOnlyList<PlannedProp> props) =>
-            Measure(structure, props, new SightlineMap(structure));
+        public static RoomTraitReading Measure(RoomStructure structure, IReadOnlyList<PlannedProp> props, bool isovist = false) =>
+            Measure(structure, props, new SightlineMap(structure), isovist ? new RoomVisibility(structure) : null);
 
-        // With the sightlines already kept current for this structure (a prop planner's).
-        internal static RoomTraitReading Measure(RoomStructure structure, IReadOnlyList<PlannedProp> props, SightlineMap sight)
+        // With the sightlines (and, to read the room in every direction, the visibility) already
+        // kept current for this structure (a prop planner's).
+        internal static RoomTraitReading Measure(RoomStructure structure, IReadOnlyList<PlannedProp> props, SightlineMap sight,
+                                                 RoomVisibility visibility = null)
         {
+            if (visibility != null) return MeasureIsovist(structure, props, visibility);
+
             int walkable = 0, narrow = 0;
             foreach (Vector2Int tile in structure.Footprint.Tiles)
             {
@@ -44,6 +56,71 @@ namespace CGD.Level
             RectInt lane = LongestLane(structure, sight, out int length);
             float share = walkable > 0 ? 1f / walkable : 0f;
             return new RoomTraitReading(ConcealedTiles(structure, props) * share, narrow * share, length, lane, HasCoverBeside(structure, lane));
+        }
+
+        private static RoomTraitReading MeasureIsovist(RoomStructure structure, IReadOnlyList<PlannedProp> props, RoomVisibility visibility)
+        {
+            int open = 0;
+            foreach (Vector2Int tile in structure.Footprint.Tiles)
+                if (visibility.Area(tile) > 0) open++;
+            if (open == 0) return new RoomTraitReading(0f, 0f, 0, default, false);
+
+            LongestSightline(structure, visibility, out Vector2Int from, out Vector2Int to, out float length);
+            float enclosed = RoomSightReading.Of(structure, visibility).Enclosed;
+            // A lane of n tiles runs n - 1 tiles from middle to middle, so a straight one reads as long as before.
+            int tiles = Mathf.RoundToInt(length) + 1;
+            return new RoomTraitReading(ConcealedTiles(structure, props) / (float)open, enclosed, tiles, SpanOf(from, to), HasCoverAlong(structure, from, to));
+        }
+
+        // The longest line of sight in the room, and of equally long ones, one with cover beside it.
+        private static void LongestSightline(RoomStructure structure, RoomVisibility visibility, out Vector2Int from, out Vector2Int to, out float length)
+        {
+            from = to = default;
+            length = 0f;
+            foreach (Vector2Int tile in structure.Footprint.Tiles)
+                length = Mathf.Max(length, visibility.Reach(tile));
+            if (length <= 0f) return;
+
+            bool found = false;
+            foreach (Vector2Int tile in structure.Footprint.Tiles)
+            {
+                if (visibility.Reach(tile) < length - SightlineTie) continue;
+
+                visibility.Farthest(tile, out Vector2Int far);
+                if (!found)
+                {
+                    from  = tile;
+                    to    = far;
+                    found = true;
+                }
+                if (!HasCoverAlong(structure, tile, far)) continue;
+                from = tile;
+                to   = far;
+                return;
+            }
+        }
+
+        private static RectInt SpanOf(Vector2Int a, Vector2Int b) =>
+            new(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Abs(a.x - b.x) + 1, Mathf.Abs(a.y - b.y) + 1);
+
+        // A pillar or piece of furniture right beside the line, away from its two ends (cover at the
+        // very end of a line is where it stops, not somewhere to shoot down it from). Looks half a tile at a time.
+        private static bool HasCoverAlong(RoomStructure structure, Vector2Int from, Vector2Int to)
+        {
+            Vector2 start = (Vector2)from + Vector2.one * 0.5f, end = (Vector2)to + Vector2.one * 0.5f;
+            int samples = Mathf.CeilToInt((end - start).magnitude * 2f);
+            Vector2Int previous = from;
+            for (int i = 1; i < samples; i++)
+            {
+                Vector2 point = Vector2.Lerp(start, end, (float)i / samples);
+                var tile = new Vector2Int(Mathf.FloorToInt(point.x), Mathf.FloorToInt(point.y));
+                if (tile == previous || tile == from || tile == to) continue;
+
+                previous = tile;
+                foreach (Vector2Int side in GridSides.All)
+                    if (IsCover(structure, tile + side)) return true;
+            }
+            return false;
         }
 
         // Walkable tiles some concealment prop lies on (patches are decorations: they take no floor).

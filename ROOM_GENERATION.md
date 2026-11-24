@@ -1154,18 +1154,35 @@ posts each had their own idea of what blocks sight, and they disagreed over low 
   is 80,000 short walks), and `Refresh` tests every pair against the changed rectangle but walks only
   those that touch it. It is not built while furnishing; only the sweep builds it.
 
-### Where the traits still stand
+### Switching readers over (`LevelBuildSettings` › *Isovist For*)
 
-The trait bands (`RoomTraitMeasure`) still read the row-and-column lane and narrow floor. The
-new readings sit beside them, because the bands are first guesses and the factions' priorities
-were never tuned against a sweep. The gate before anything switches:
+Each reader that could use the new readings has its own switch (`IsovistUse`), all off by
+default, so a sweep can be run with any mix and compared:
 
+| Switch | Reads | In the isovist version |
+|---|---|---|
+| **Traits** | `RoomTraitMeasure`: Walls, Lines of fire (Concealment is the same) | Walls = the share of open floor that sees a quarter of the room or less (`RoomSightReading.EnclosedShare`). Lines of fire = the longest line of sight at any angle, counted in tiles as a row's run is (middle to middle, plus one), with cover beside it away from its ends. The Lab's *lane* highlight is the box the line runs through |
+| **Posts** | `RoomPostMap` | Choke = a tile that sees a quarter of the room or less. Overwatch = a tile whose longest line is 6 tiles or more, with cover beside it |
+| **Cover** | `PropSelection.Cover` | The tile with the longest line of sight, not the longest run |
+
+- **Traits** also steers generation: the structure and furnishing tries and the refiner all
+  measure through it, so a faction's rooms are built to the same reading the Lab checks.
+- The Lab's *Lines of fire* and *Posts* layers still paint the row-and-column runs.
+- The bands are the same numbers either way (a lane of 6 / 9 tiles, 15% / 35% narrow floor), set
+  for rows and columns. A diagonal makes lanes longer and *enclosed* is not *narrow*, so expect
+  readings to move: retune from the sweep before leaving it on.
+- Cost: `RoomVisibility` is built when first asked and then walked again only where props
+  change; with Traits or Cover on, a furnishing builds one per try. Expect rooms to plan slower.
+
+### Choosing
+
+The new readings sit beside the old ones because the bands are first guesses and the factions'
+priorities were never tuned against a sweep. To decide which to leave on:
 1. Run the sweep (*Sweep…* in the Room Lab) and *Copy report*. The *By place* table now has
    *Exposure %*, *Enclosed %* and *Sightline* beside *Concealed*, *Narrow* and *Lane*; the
    expressive range can plot any of them (*Across*, *Up*).
 2. Compare factions on both: do BIO, VOID and TECH separate more on exposure and sightline than
    on narrow floor and lane? A reading that separates them is the better measure for that trait.
-3. If so, move *Walls* (low exposure / enclosed) and *Lines of fire* (sightline with cover beside
-   it) onto them, retune the bands from the same report, and move `RoomPostMap` (choke and
-   overwatch) and the cover selection (`SelectCover`: the tile that cuts the longest sightline)
-   after them. The traits' interface (`RoomTrait`, the priorities, `RoomTraitFit.Gap`) doesn't change.
+3. If so, switch the readers on (*Isovist For*), run the sweep again, and retune the bands
+   (`RoomTraitMeasure`) from that report. The traits' interface (`RoomTrait`, the priorities,
+   `RoomTraitFit.Gap`) is the same either way.

@@ -40,18 +40,19 @@ namespace CGD.Level
             // particular); the breaching faction's at full.
             PostPreference holder = _settings.StyleFor(room).Posts;
             PostPreference breach = room.BreachFaction != null ? _settings.DesignFor(room.BreachFaction)?.Posts : holder;
-            return Plan(room, props, count, random, taken, holder, breach, _settings.SpawnMarginTiles);
+            return Plan(room, props, count, random, taken, holder, breach, _settings.SpawnMarginTiles, _settings.UsesIsovist(IsovistUse.Posts));
         }
 
         // The plan with the two factions' preferences given (null = plain floor, patrolling).
         internal static RoomEnemyPlan Plan(LevelRoom room, IReadOnlyList<PlannedProp> props, int count, RandomStream random,
-                                           ICollection<Vector2Int> taken, PostPreference holder, PostPreference breach, int margin)
+                                           ICollection<Vector2Int> taken, PostPreference holder, PostPreference breach, int margin,
+                                           bool isovist = false)
         {
             List<Vector2Int> floor = SpawnableTiles(room, margin);
             if (floor.Count == 0) return RoomEnemyPlan.Empty;
 
             RoomStructure structure = room.Structure;
-            RoomPostMap posts = structure != null ? new RoomPostMap(structure, props) : null;
+            RoomPostMap posts = structure != null ? new RoomPostMap(structure, props, isovist) : null;
             BreachSplit split = room.BreachFaction != null ? BreachSplit.Of(structure, room.BreachEntrances) : null;
 
             // The way in is the player's foothold: enemies start and patrol past it while the room allows.

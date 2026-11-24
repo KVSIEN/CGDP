@@ -59,7 +59,7 @@ namespace CGD.Tests
             var tiles = new List<Vector2Int>();
             foreach (Vector2Int tile in taken.allPositionsWithin) tiles.Add(tile);
             Assert.That(room.TryClaim(tiles, RoomTileTags.Prop), Is.True);
-            visibility.Refresh(taken);
+            visibility.Invalidate(taken);
 
             RoomSightReading kept = RoomSightReading.Of(room, visibility);
             RoomSightReading fresh = RoomSightReading.Of(room);
