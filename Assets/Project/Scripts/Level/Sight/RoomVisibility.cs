@@ -169,6 +169,10 @@ namespace CGD.Level
         // Generous at the edges: a line is never missed, only sometimes walked again for nothing.
         private static bool Touches(Vector2Int a, Vector2Int b, RectInt rect)
         {
+            // Most lines lie wholly to one side of it: ruled out by comparing whole tiles, before any clipping.
+            if (Mathf.Max(a.x, b.x) < rect.xMin || Mathf.Min(a.x, b.x) >= rect.xMax) return false;
+            if (Mathf.Max(a.y, b.y) < rect.yMin || Mathf.Min(a.y, b.y) >= rect.yMax) return false;
+
             float startX = a.x + 0.5f, startY = a.y + 0.5f;
             float dx = b.x - a.x, dy = b.y - a.y;
             float from = 0f, to = 1f;

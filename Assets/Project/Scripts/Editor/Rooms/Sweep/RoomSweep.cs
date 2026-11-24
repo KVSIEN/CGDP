@@ -94,9 +94,15 @@ namespace CGD.Editor
 
             string faction = sample.Room.Faction != null ? sample.Room.Faction.DisplayName : $"faction {job.Faction}";
             RoomStructure structure = sample.Room.Structure;
+            // Read both ways off the finished room, from one visibility, so a single sweep compares them.
+            var visibility = new RoomVisibility(structure, sample.Sight.Blocking);
+            IReadOnlyList<PlannedProp> props = sample.Furnishing.Props;
             _results.Add(new RoomSweepResult(job.Place.DisplayName, faction, job.Seed, sample.Traits, sample.Design,
                                              sample.Furnishing.Attempt, sample.Furnishing.Tries,
-                                             RoomFlowReading.Of(structure), ShowcaseSeen(structure, sample.Furnishing), RoomSightReading.Of(structure)));
+                                             RoomFlowReading.Of(structure), ShowcaseSeen(structure, sample.Furnishing),
+                                             RoomSightReading.Of(structure, visibility),
+                                             RoomTraitMeasure.Measure(structure, props, sample.Sight),
+                                             RoomTraitMeasure.Measure(structure, props, sample.Sight, visibility)));
         }
 
         // Any prop of a Showcase placement that went down and is in view of the way in.

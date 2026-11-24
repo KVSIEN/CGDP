@@ -172,8 +172,10 @@ namespace CGD.Editor
 
         private static Color? SightColor(RoomSample sample, Vector2Int tile)
         {
-            int run = sample.Sight.LongestRun(tile);
-            if (run == 0) return null;
+            RoomVisibility visibility = sample.Visibility;
+            float run = visibility == null ? sample.Sight.LongestRun(tile)
+                      : visibility.Area(tile) > 0 ? visibility.Reach(tile) + 1f : 0f;
+            if (run == 0f) return null;
             return Color.Lerp(Open, Exposed, Mathf.InverseLerp(2f, RoomSampleChecks.ExposedLaneTiles + 2f, run));
         }
 
@@ -219,6 +221,8 @@ namespace CGD.Editor
             (int alongX, int alongY) = sample.Sight.Runs(tile);
             if (alongX + alongY > 0)
                 _readout.Append($"\nSees {alongX * sample.Settings.TileSize:0} m east–west, {alongY * sample.Settings.TileSize:0} m north–south");
+            if (sample.Visibility != null && sample.Visibility.Area(tile) > 0)
+                _readout.Append($"\nSees {sample.Visibility.Area(tile)} tiles, the farthest {sample.Visibility.Reach(tile) * sample.Settings.TileSize:0} m away");
 
             RoomPostKinds kinds = sample.Posts.KindsAt(tile);
             if (kinds != RoomPostKinds.None) _readout.Append($"\nFor an enemy: {kinds.ToString().ToLowerInvariant()}");
@@ -261,7 +265,9 @@ namespace CGD.Editor
             {
                 RoomLabLayer.Tags       => "cyan doorway front · blue walkway · yellow access · pink centre · violet corner · sand furniture",
                 RoomLabLayer.Zones      => sample.Room.Structure.ZoneCount > 1 ? $"{sample.Room.Structure.ZoneCount} zones split by inner walls" : "One zone: no inner walls split this room",
-                RoomLabLayer.Sightlines => $"green short sightlines → red {RoomSampleChecks.ExposedLaneTiles * sample.Settings.TileSize:0} m+ open lanes",
+                RoomLabLayer.Sightlines => sample.Visibility == null
+                    ? $"green short sightlines → red {RoomSampleChecks.ExposedLaneTiles * sample.Settings.TileSize:0} m+ open lanes"
+                    : $"green short sightlines → red {RoomSampleChecks.ExposedLaneTiles * sample.Settings.TileSize:0} m+ lines of sight, in any direction",
                 RoomLabLayer.Posts      => "green concealed · red overwatch · violet dead end · orange choke · blue route · ring guard, dot patrol (pink: breach side)",
                 RoomLabLayer.Flow       => FlowLegend(sample.Room.Structure),
                 _                       => "sand furniture · dark pillars · cyan outline doorway",

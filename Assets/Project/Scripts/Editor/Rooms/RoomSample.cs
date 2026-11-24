@@ -29,7 +29,8 @@ namespace CGD.Editor
             DoorsWanted = doorsWanted;
             Warnings    = warnings;
             Sight       = new SightlineMap(room.Structure);
-            Traits      = RoomTraitMeasure.Measure(room.Structure, furnishing.Props, settings.UsesIsovist(IsovistUse.Traits));
+            Visibility  = settings.IsovistFor != IsovistUse.None ? new RoomVisibility(room.Structure, Sight.Blocking) : null;
+            Traits      = RoomTraitMeasure.Measure(room.Structure, furnishing.Props, Sight, settings.UsesIsovist(IsovistUse.Traits) ? Visibility : null);
             // A Breach room is built by its holder's design; its zones are dressed by both factions.
             Design      = settings.DesignFor(room.Faction);
             Split       = room.BreachFaction != null ? BreachSplit.Of(room.Structure, room.BreachEntrances) : null;
@@ -54,6 +55,9 @@ namespace CGD.Editor
         public List<string>       Warnings    { get; }
         // Open floor along each row and column with the props in place.
         internal SightlineMap     Sight       { get; }
+        // What can be seen from each tile in every direction, when any reader of the room uses it
+        // (LevelBuildSettings › Isovist For); null otherwise.
+        internal RoomVisibility   Visibility  { get; }
         // How much concealment, walls and lines of fire the room offers.
         public RoomTraitReading   Traits      { get; }
         // The holding faction's design (its priorities), or null.

@@ -40,6 +40,7 @@ namespace CGD.Editor
             text.AppendLine();
 
             WriteFactions(text, results);
+            WriteReadings(text, results, recipe.BuildSettings.IsovistFor);
             WriteRange(text, results);
             WritePlaces(text, results);
             WriteWorst(text, results);
@@ -69,6 +70,72 @@ namespace CGD.Editor
             }
             text.AppendLine();
         }
+
+        // The same rooms read two ways: along rows and columns, and from what can be seen in every
+        // direction (IsovistUse). Which separates the factions better, and which fits their priorities,
+        // says which reading to leave on, and where the bands belong for it.
+        private static void WriteReadings(StringBuilder text, IReadOnlyList<RoomSweepResult> results, IsovistUse inForce)
+        {
+            if (results.Count == 0) return;
+
+            text.AppendLine("## Rows and columns against every direction");
+            text.AppendLine($"Generation steered by {(((inForce & IsovistUse.Traits) != 0) ? "the every-direction reading" : "rows and columns")} " +
+                            "(Isovist For › Traits); both readings below are of the same finished rooms. Narrow % is the floor at most 2 tiles across, " +
+                            $"enclosed % the floor that sees {Percent(RoomSightReading.EnclosedShare)} of the room or less; lane is the longest open row or column, " +
+                            "sightline the longest line at any angle (both in tiles). Bands are the same for both.");
+            text.AppendLine();
+            text.AppendLine("| Faction | Reading | Walls L/M/H | Narrow or enclosed % | Lines L/M/H | Lane or sightline | Covered | Fit | Mean miss |");
+            text.AppendLine("|---|---|---|---|---|---|---|---|---|");
+            foreach (IGrouping<string, RoomSweepResult> faction in results.GroupBy(r => r.Faction))
+            {
+                List<RoomSweepResult> rooms = faction.ToList();
+                WriteReading(text, faction.Key, "rows", rooms, r => r.Rows, r => r.RowsMiss);
+                WriteReading(text, "", "every direction", rooms, r => r.EveryDirection, r => r.EveryDirectionMiss);
+            }
+            text.AppendLine();
+
+            text.AppendLine("Separation: how far apart the factions' medians are, against how widely each faction's own rooms spread (higher = the factions read more differently, so the reading tells them apart).");
+            text.AppendLine();
+            text.AppendLine("| Trait | Rows and columns | Every direction |");
+            text.AppendLine("|---|---|---|");
+            text.AppendLine($"| Walls | {Separated(Separation(results, r => r.Rows.NarrowShare))} | {Separated(Separation(results, r => r.EveryDirection.NarrowShare))} |");
+            text.AppendLine($"| Lines of fire | {Separated(Separation(results, r => r.Rows.LongestLane))} | {Separated(Separation(results, r => r.EveryDirection.LongestLane))} |");
+            text.AppendLine();
+        }
+
+        private static void WriteReading(StringBuilder text, string faction, string reading, List<RoomSweepResult> rooms,
+                                         System.Func<RoomSweepResult, RoomTraitReading> read, System.Func<RoomSweepResult, int> missOf)
+        {
+            List<RoomSweepResult> judged = rooms.Where(r => missOf(r) >= 0).ToList();
+            float level(RoomTrait trait, TraitPriority at) => rooms.Count(r => read(r).LevelOf(trait) == at) / (float)rooms.Count;
+            string levels(RoomTrait trait) => $"{Whole(level(trait, TraitPriority.Low))}/{Whole(level(trait, TraitPriority.Medium))}/{Whole(level(trait, TraitPriority.High))}";
+
+            text.Append($"| {faction} | {reading} | {levels(RoomTrait.Walls)} | {Quartiles(rooms.Select(r => read(r).NarrowShare * 100f))} | ");
+            text.Append($"{levels(RoomTrait.LinesOfFire)} | {Quartiles(rooms.Select(r => (float)read(r).LongestLane))} | ");
+            text.Append($"{Percent(rooms.Count(r => read(r).LaneHasCover) / (float)rooms.Count)} | ");
+            text.AppendLine(judged.Count > 0 ? $"{Percent(judged.Count(r => missOf(r) == 0) / (float)judged.Count)} | {judged.Average(missOf):0.00} |" : "— | — |");
+        }
+
+        // The spread of the factions' median scores over the average of their interquartile ranges:
+        // a score that puts the factions far apart while each keeps tight scores separates them well.
+        // Negative when there is nothing to compare (fewer than two factions, or no spread within them).
+        public static float Separation(IReadOnlyList<RoomSweepResult> results, System.Func<RoomSweepResult, float> score)
+        {
+            var medians = new List<float>();
+            float widths = 0f;
+            foreach (IGrouping<string, RoomSweepResult> faction in results.GroupBy(r => r.Faction))
+            {
+                List<float> sorted = faction.Select(score).OrderBy(v => v).ToList();
+                medians.Add(At(sorted, 0.5f));
+                widths += At(sorted, 0.75f) - At(sorted, 0.25f);
+            }
+            if (medians.Count < 2) return -1f;
+
+            float width = widths / medians.Count;
+            return width <= 0f ? -1f : (medians.Max() - medians.Min()) / width;
+        }
+
+        private static string Separated(float separation) => separation < 0f ? "—" : separation.ToString("0.0", CultureInfo.InvariantCulture);
 
         private static void WriteRange(StringBuilder text, IReadOnlyList<RoomSweepResult> results)
         {

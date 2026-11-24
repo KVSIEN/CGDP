@@ -1167,7 +1167,9 @@ default, so a sweep can be run with any mix and compared:
 
 - **Traits** also steers generation: the structure and furnishing tries and the refiner all
   measure through it, so a faction's rooms are built to the same reading the Lab checks.
-- The Lab's *Lines of fire* and *Posts* layers still paint the row-and-column runs.
+- The Lab's *Sight* layer and tile readout follow whichever reading is on (any switch ticked): with
+  none, the run along the row and column; with one, how far the tile sees in any direction and how
+  many tiles. The *Posts* layer paints whichever reading Posts uses.
 - The bands are the same numbers either way (a lane of 6 / 9 tiles, 15% / 35% narrow floor), set
   for rows and columns. A diagonal makes lanes longer and *enclosed* is not *narrow*, so expect
   readings to move: retune from the sweep before leaving it on.
@@ -1178,6 +1180,11 @@ default, so a sweep can be run with any mix and compared:
 
 The new readings sit beside the old ones because the bands are first guesses and the factions'
 priorities were never tuned against a sweep. To decide which to leave on:
+0. Sweep with *Isovist For* › Traits **off**, so generation steers by rows and columns; the report
+   then reads the same finished rooms both ways. Its section *Rows and columns against every
+   direction* gives each faction's levels, raw scores, cover, fit and mean miss under each reading,
+   and a *Separation* score per trait (how far apart the factions' medians are against how widely
+   each faction's own rooms spread). A higher score means the reading tells the factions apart better.
 1. Run the sweep (*Sweep…* in the Room Lab) and *Copy report*. The *By place* table now has
    *Exposure %*, *Enclosed %* and *Sightline* beside *Concealed*, *Narrow* and *Lane*; the
    expressive range can plot any of them (*Across*, *Up*).
