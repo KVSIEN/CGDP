@@ -38,7 +38,7 @@ MonoBehaviour:
     Symmetric: 0
     Decor: 0
   - Prefabs:
-    - {fileID: 8100000000000013001, guid: 069c8e93058347aba4b46287ce55bfc5, type: 3}
+    - {fileID: 3079110002289479841, guid: 3a487a36770eeaebbd299c780ecf0caf, type: 3}
     Count:
       Min: 1
       Max: 2
