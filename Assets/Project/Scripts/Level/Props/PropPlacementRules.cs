@@ -172,7 +172,7 @@ namespace CGD.Level
                 for (int x = rect.xMin; x < rect.xMax; x++)
                 {
                     var tile = new Vector2Int(x, y);
-                    if (placement.Decor ? _structure.Has(tile, SightlineMap.BlocksSight) : !_structure.IsFree(tile)) return false;
+                    if (placement.Decor ? _structure.Has(tile, SightBlocking.Tiles) : !_structure.IsFree(tile)) return false;
                 }
 
             foreach (RectInt other in own)

@@ -119,7 +119,8 @@ Assets/
                             RoomPropPlanner (footprints, clearance, spread, cover, lattices, symmetry, clusters, prop groups, near/keyed placements, features that grow with the room; reports each placement's outcome), RoomDressing (cover and clutter per room type);
                             Design/ — FactionDesign (each faction's floor plans, structure, props and crowding), FactionStyle + TerritoryDepth (the design at a room's strength), ShipSideDesign, BreachSplit,
                             Traits/ (RoomTraitMeasure, RoomTraitFit: what fight rooms offer and how generation steers toward it);
-                            Flow/ — RoomFlowPlanner (the way in, threshold and goal of each room), RoomFlank (a second way round), ArrivalSight (what is seen on entering), RoomFlowReading (how a room plays from its way in);
+                            Flow/ — RoomFlowPlanner (the way in, threshold and goal of each room), RoomFlank (a second way round), RoomFlowReading (how a room plays from its way in);
+                            Sight/ — SightBlocking (what stops a person seeing across a room: one rule for every reading of sight), SightlineMap (open runs along rows and columns), ArrivalSight (what is seen on entering);
                             Navigation/ — VaultLinkPlanner, VaultLinkBuilder, VaultLinks (NavMesh links over low cover);
                             Culling/ — RoomPortals, RoomCuller (drawing only the rooms the camera can see into);
                             Gallery/ — RoomGallerySettings and RoomGalleryGraph (the RoomGallery scene's walk-through of every place),

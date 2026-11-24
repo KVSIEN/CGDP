@@ -107,7 +107,7 @@ namespace CGD.Level
         {
             Vector2Int step = alongX ? Vector2Int.right : Vector2Int.up;
             Vector2Int start = tile;
-            while (structure.Contains(start - step) && !structure.Has(start - step, SightlineMap.BlocksSight)
+            while (structure.Contains(start - step) && !structure.Has(start - step, SightBlocking.Tiles)
                    && !structure.IsPartitioned(start - step, start))
                 start -= step;
             return alongX ? new RectInt(start, new Vector2Int(length, 1)) : new RectInt(start, new Vector2Int(1, length));

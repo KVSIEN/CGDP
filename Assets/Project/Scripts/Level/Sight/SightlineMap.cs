@@ -7,8 +7,6 @@ namespace CGD.Level
     // score any tile at once (0 on a tile that is blocked).
     internal sealed class SightlineMap
     {
-        public const RoomTileTags BlocksSight = RoomTileTags.Structure | RoomTileTags.Prop;
-
         private readonly RoomStructure _structure;
         private readonly RectInt _bounds;
         private readonly int[] _runX;
@@ -53,7 +51,7 @@ namespace CGD.Level
             for (int i = 0; i <= length; i++)
             {
                 Vector2Int tile = origin + step * i;
-                bool open = i < length && _structure.Contains(tile) && !_structure.Has(tile, BlocksSight);
+                bool open = i < length && _structure.Contains(tile) && !_structure.Has(tile, SightBlocking.Tiles);
                 bool cut = open && i > start && _structure.IsPartitioned(tile - step, tile);
                 if (open && !cut) continue;
 
