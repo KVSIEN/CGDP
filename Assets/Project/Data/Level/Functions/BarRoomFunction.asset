@@ -65,22 +65,22 @@ MonoBehaviour:
     MarksRoute: 0
     Members:
     - Prefabs:
-      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
+      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
       Offset: {x: -0.7, y: 0.3}
       Yaw: 0
       Chance: 0.85
     - Prefabs:
-      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
+      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
       Offset: {x: -0.25, y: 0.3}
       Yaw: 0
       Chance: 0.85
     - Prefabs:
-      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
+      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
       Offset: {x: 0.25, y: 0.3}
       Yaw: 0
       Chance: 0.85
     - Prefabs:
-      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
+      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
       Offset: {x: 0.7, y: 0.3}
       Yaw: 0
       Chance: 0.85

@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Hazard Cordon
   _props:
   - Prefabs:
-    - {fileID: 984163221719025955, guid: 4ec80c7f34014eb688f5a16d1d9f3a2c, type: 3}
+    - {fileID: 3696935098255646125, guid: 6ef5f23a34b44945a100b9cfe0f7e1c0, type: 3}
     Count:
       Min: 2
       Max: 4

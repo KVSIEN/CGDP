@@ -35,7 +35,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 441755acee644d76be46572a30aa6aa8, type: 2}
   _props:
   - Prefabs:
-    - {fileID: 1249850620572438059, guid: 77f9c951b3c8451aacdcf45afd7ec002, type: 3}
+    - {fileID: 6137028835907501265, guid: 253283faa7c64eeba7822eaa48e7b6f8, type: 3}
     Count:
       Min: 1
       Max: 1

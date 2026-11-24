@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomDressing
   _props:
   - Prefabs:
-    - {fileID: 8100000000000009001, guid: b8920f5e26364be28e9b5405ccdf1ee8, type: 3}
+    - {fileID: 8100000000000013001, guid: 069c8e93058347aba4b46287ce55bfc5, type: 3}
     Count:
       Min: 1
       Max: 1
@@ -39,7 +39,7 @@ MonoBehaviour:
     Decor: 0
     Band: 1
   - Prefabs:
-    - {fileID: 8100000000000010001, guid: 2826edd0ab744f2aa91f98a32007dbee, type: 3}
+    - {fileID: 3696935098255646125, guid: 6ef5f23a34b44945a100b9cfe0f7e1c0, type: 3}
     Count:
       Min: 0
       Max: 1
