@@ -138,7 +138,7 @@ whatever is placed has to keep every free tile reachable from every doorway
 3. **Structure**: the pattern's inner walls and pillars, or the reality's when the function has none.
    Then the room's **flow** from the doorway it is entered by: the threshold and the goal (section 15).
 4. **Offerings**: what the player comes for (a cache or resource node), placed in a nook in the goal.
-5. **Anchor**: the one or two `Required` pieces that say what the room is (bar counter, reactor, operating table).
+5. **Anchor**: the one or two `Required` pieces that say what the room is (counter, reactor, operating table).
 6. **Furniture**: the function's own props, placed by tile tag, zone, lattice and facing.
    Then the side's dressing, and a fight room's **foothold** in its threshold (section 15).
 7. **Cover**: the room type's dressing, in the reality's own pieces (`DressingSwap`).
