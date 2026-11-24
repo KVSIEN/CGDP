@@ -95,7 +95,7 @@ namespace CGD.Level
                 for (int axis = 0; axis < 2; axis++)
                 {
                     if ((axis == 0 ? x : y) != length) continue;
-                    RectInt lane = LaneThrough(structure, tile, axis == 0, length);
+                    RectInt lane = LaneThrough(sight.Blocking, tile, axis == 0, length);
                     if (HasCoverBeside(structure, lane)) return lane;
                     if (!found) { first = lane; found = true; }
                 }
@@ -103,12 +103,11 @@ namespace CGD.Level
             return first;
         }
 
-        private static RectInt LaneThrough(RoomStructure structure, Vector2Int tile, bool alongX, int length)
+        private static RectInt LaneThrough(SightBlocking blocking, Vector2Int tile, bool alongX, int length)
         {
             Vector2Int step = alongX ? Vector2Int.right : Vector2Int.up;
             Vector2Int start = tile;
-            while (structure.Contains(start - step) && !structure.Has(start - step, SightBlocking.Tiles)
-                   && !structure.IsPartitioned(start - step, start))
+            while (!blocking.BlocksTile(start - step) && !blocking.BlocksEdge(start - step, start))
                 start -= step;
             return alongX ? new RectInt(start, new Vector2Int(length, 1)) : new RectInt(start, new Vector2Int(1, length));
         }

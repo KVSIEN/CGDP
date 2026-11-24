@@ -73,14 +73,37 @@ namespace CGD.Tests
             Assert.That(sight.Runs(new Vector2Int(2, 3)).alongY, Is.EqualTo(Height), "columns are not cut");
         }
 
-        // Pins what is true today: any inner wall cuts a run, even a low one that a person looks over.
-        // ArrivalSight already looks over walls lower than eye height; the two are brought together in phase 1b.
         [Test]
-        public void ALowWallCutsARowToo()
+        public void ALowWallIsSeenOver()
         {
             var sight = new SightlineMap(HallWithWall(0.8f));
 
+            Assert.That(sight.Runs(new Vector2Int(2, 3)).alongX, Is.EqualTo(Width), "a seat row or a counter doesn't hide what is behind it");
+        }
+
+        [Test]
+        public void AWallAtEyeHeightHidesWhatIsBehindIt()
+        {
+            var sight = new SightlineMap(HallWithWall(SightBlocking.EyeHeight));
+
             Assert.That(sight.Runs(new Vector2Int(2, 3)).alongX, Is.EqualTo(WallX));
+        }
+
+        [Test]
+        public void ARunAndWhatArrivalSightSeesAgree()
+        {
+            // The same room read two ways: along its rows, and by a line from the way in.
+            foreach (float wallHeight in new[] { 0.8f, 3f })
+            {
+                RoomStructure room = HallWithWall(wallHeight);
+                room.SetArrival(new Vector2Int(Width - 1, 3));
+                var arrival = new ArrivalSight(room);
+                var sight = new SightlineMap(room);
+
+                var behindWall = new Vector2Int(WallX - 2, 3);
+                bool seen = arrival.Sees(new RectInt(behindWall, Vector2Int.one));
+                Assert.That(sight.Runs(behindWall).alongX == Width, Is.EqualTo(seen), $"wall {wallHeight} m");
+            }
         }
     }
 }

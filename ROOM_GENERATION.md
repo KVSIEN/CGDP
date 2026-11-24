@@ -199,7 +199,9 @@ The priorities say what a reality's **fight rooms** (room types with enemies) sh
 `RoomTraitMeasure` reads each trait off the finished floor:
 - **Concealment**: the share of walkable floor under a `ConcealmentZone`.
 - **Walls**: the share of walkable floor at most 2 tiles across.
-- **Lines of fire**: the longest open lane, and whether hard cover stands beside it.
+- **Lines of fire**: the longest open lane, and whether hard cover stands beside it. A lane runs
+  over inner walls lower than eye height (1.6 m: seat rows, low counters and dividers), as a
+  person looks over them; walls as tall as that, pillars and props end it (`SightBlocking`).
 
 Generation follows the priorities in two ways (Phase 1):
 - **Steering.** Concealment placements are scaled by the concealment priority: ×0.5 for

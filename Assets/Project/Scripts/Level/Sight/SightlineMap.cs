@@ -3,23 +3,27 @@ using UnityEngine;
 namespace CGD.Level
 {
     // How far a person can see along each row and column of a room: the length of the open
-    // stretch of floor through every tile. Kept current as props go down, so the planner can
-    // score any tile at once (0 on a tile that is blocked).
+    // stretch of floor through every tile, stopped by whatever SightBlocking says stops sight.
+    // Kept current as props go down, so the planner can score any tile at once (0 on a tile
+    // that is blocked).
     internal sealed class SightlineMap
     {
-        private readonly RoomStructure _structure;
+        private readonly SightBlocking _blocking;
         private readonly RectInt _bounds;
         private readonly int[] _runX;
         private readonly int[] _runY;
 
-        public SightlineMap(RoomStructure structure)
+        // `blocking`: the room's sight rules, when something else already holds them.
+        public SightlineMap(RoomStructure structure, SightBlocking blocking = null)
         {
-            _structure = structure;
+            _blocking  = blocking ?? new SightBlocking(structure);
             _bounds    = structure.Footprint.Bounds;
             _runX      = new int[_bounds.width * _bounds.height];
             _runY      = new int[_bounds.width * _bounds.height];
             Refresh(_bounds);
         }
+
+        public SightBlocking Blocking => _blocking;
 
         // The open stretch through a tile along x and along y, the tile included.
         public (int alongX, int alongY) Runs(Vector2Int tile)
@@ -44,15 +48,15 @@ namespace CGD.Level
         }
 
         // Gives every tile of a row or column the length of the unbroken stretch of see-through
-        // floor it is in; a wall, pillar, prop or inner wall ends a stretch.
+        // floor it is in; a wall, pillar, prop or tall inner wall ends a stretch.
         private void MeasureLine(Vector2Int origin, Vector2Int step, int length, int[] runs)
         {
             int start = 0;
             for (int i = 0; i <= length; i++)
             {
                 Vector2Int tile = origin + step * i;
-                bool open = i < length && _structure.Contains(tile) && !_structure.Has(tile, SightBlocking.Tiles);
-                bool cut = open && i > start && _structure.IsPartitioned(tile - step, tile);
+                bool open = i < length && !_blocking.BlocksTile(tile);
+                bool cut = open && i > start && _blocking.BlocksEdge(tile - step, tile);
                 if (open && !cut) continue;
 
                 for (int j = start; j < i; j++)
