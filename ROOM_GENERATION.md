@@ -1194,7 +1194,7 @@ priorities were never tuned against a sweep. To decide which to leave on:
    (`RoomTraitMeasure`) from that report. The traits' interface (`RoomTrait`, the priorities,
    `RoomTraitFit.Gap`) is the same either way.
 
-## 18. Elevation (phases 0–5)
+## 18. Elevation (phases 0–6)
 
 A room's floor can stand a level up or down from the floor its doorways open onto: level 0 is the
 doorways' level, and each level is one step of 1 m (`RoomElevation.StepHeight`), under a standing
@@ -1342,6 +1342,16 @@ cover with it. Other enemies' sight of it aims that much lower (`EnemySenses`). 
 up, so it peeks over the top. *Hide* cover now takes low spots too, for enemies that crouch,
 scored a little below high ones.
 
-**Not yet.** Decks that are walked as part of a route (they are only ever an extra way across),
-props or spawns on a deck, and the room planner choosing crouch spots for enemies; see `TASKS.md` ›
-Elevation, next phases.
+**Decks in play (phase 6).** Where someone stands is a `StandSpot`: a tile, and whether it is on the
+deck over that tile (`LevelLayout.SpotToFloor` gives the point). `RoomEnemyPlanner` adds every deck
+tile past the threshold, on the right side of a Breach split, to the tiles an enemy may start on,
+after the floor, each worth what its faction gives `RoomEnemyPlanner.DeckKinds` (high ground and
+overwatch). A faction that holds either stands guard up there. Each side's patrol loop gets a stop
+on the middle of every deck whose two flights' landings are on its side, after the stop nearest its
+first flight: the patroller climbs on there and comes down whichever way its next stop is nearer.
+A room with no deck adds nothing and draws exactly as before. Each deck flight has a sloped rail
+along both sides, in the *Railings* part. The Room Lab frames deck spawns in violet and the
+readout says when an enemy starts on the overpass above a tile.
+
+**Not yet.** Props on a deck, a deck joining two platforms at level 2, and the room planner
+choosing crouch spots for enemies; see `TASKS.md` › Elevation, next phases.

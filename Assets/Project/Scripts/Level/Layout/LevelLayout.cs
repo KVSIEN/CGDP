@@ -88,6 +88,13 @@ namespace CGD.Level
         // The middle of a tile, standing on its floor: where things put on that tile go.
         public Vector3 TileToFloor(Vector2Int tile) => TileToLocal(tile) + Vector3.up * FloorHeight(tile);
 
+        // Where someone stands at a spot: on its tile's floor, or on the overpass deck over it.
+        public Vector3 SpotToFloor(StandSpot spot)
+        {
+            Overpass deck = spot.OnDeck ? RoomAt(spot.Tile)?.Structure?.OverpassAbove(spot.Tile) : null;
+            return deck != null ? TileToLocal(spot.Tile) + Vector3.up * RoomElevation.HeightOf(deck.Level) : TileToFloor(spot.Tile);
+        }
+
         // The room's centre, on the floor of the tile it falls in.
         public Vector3 RoomCenterLocal(LevelRoom room) =>
             new(room.Anchor.x * TileSize, FloorHeight(new Vector2Int(Mathf.FloorToInt(room.Anchor.x), Mathf.FloorToInt(room.Anchor.y))), room.Anchor.y * TileSize);

@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using CGD.Core;
 using CGD.Level;
+using CGD.Map;
 using static CGD.Tests.RoomTestKit;
 
 namespace CGD.Tests
@@ -77,6 +78,67 @@ namespace CGD.Tests
 
             Assert.That(standing.CanSee(new Vector2Int(2, 3), new Vector2Int(9, 3)), Is.True, "a standing eye passes under the deck");
             Assert.That(standing.CanSee(new Vector2Int(6, 7), new Vector2Int(6, 4)), Is.False, "looking down across the deck");
+        }
+
+        private static LevelRoom RoomOf(RoomStructure structure)
+        {
+            MapNode node = new MapGraph().AddNode(MapNodeType.Combat, Vector2.zero);
+            var room = new LevelRoom(node, structure.Footprint, null, 4f);
+            room.AttachStructure(structure);
+            return room;
+        }
+
+        [Test]
+        public void EnemiesMayStartOnADeckAsHighGround()
+        {
+            var likesHeight = new PostPreference(1f, 1f, 1f, 1f, 1f, RoomPostKinds.HighGround, highGround: 50f);
+            int onDeck = 0;
+            for (int seed = 1; seed <= 20; seed++)
+            {
+                RoomStructure structure = Walks();
+                Assert.That(structure.TryAddOverpass(AcrossTheLane()), Is.True);
+                RoomEnemyPlan plan = RoomEnemyPlanner.Plan(RoomOf(structure), System.Array.Empty<PlannedProp>(), 4,
+                                                           new RandomStream(new Seed((ulong)seed)), null, likesHeight, likesHeight, 0);
+                foreach (PlannedSpawn spawn in plan.Spawns)
+                {
+                    if (!spawn.OnDeck) continue;
+                    onDeck++;
+                    Assert.That(structure.OverpassAbove(spawn.Tile), Is.Not.Null, $"seed {seed}: over the deck");
+                    Assert.That(spawn.Kinds, Is.EqualTo(RoomEnemyPlanner.DeckKinds));
+                    Assert.That(spawn.Holds, Is.True, "it holds high ground");
+                }
+            }
+            Assert.That(onDeck, Is.GreaterThan(0), "some start up on the deck");
+        }
+
+        [Test]
+        public void APatrolCrossesTheDeck()
+        {
+            RoomStructure structure = Walks();
+            Assert.That(structure.TryAddOverpass(AcrossTheLane()), Is.True);
+            RoomEnemyPlan plan = RoomEnemyPlanner.Plan(RoomOf(structure), System.Array.Empty<PlannedProp>(), 0,
+                                                       Seed.From(1).Stream(), null, null, null, 0);
+
+            var stops = plan.PatrolOf(false);
+            int onDeck = 0;
+            foreach (StandSpot stop in stops)
+                if (stop.OnDeck)
+                {
+                    onDeck++;
+                    Assert.That(structure.OverpassAbove(stop.Tile), Is.Not.Null);
+                }
+            Assert.That(onDeck, Is.EqualTo(1));
+            Assert.That(stops.Count, Is.GreaterThan(2));
+        }
+
+        [Test]
+        public void ARoomWithNoDeckPlansItsEnemiesAsBefore()
+        {
+            RoomStructure structure = Walks();
+            RoomEnemyPlan plan = RoomEnemyPlanner.Plan(RoomOf(structure), System.Array.Empty<PlannedProp>(), 4,
+                                                       Seed.From(3).Stream(), null, null, null, 0);
+            foreach (PlannedSpawn spawn in plan.Spawns) Assert.That(spawn.OnDeck, Is.False);
+            foreach (StandSpot stop in plan.PatrolOf(false)) Assert.That(stop.OnDeck, Is.False);
         }
 
         [Test]

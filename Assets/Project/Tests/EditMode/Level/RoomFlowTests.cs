@@ -217,8 +217,8 @@ namespace CGD.Tests
                 Assert.That(plan.Spawns, Has.Count.EqualTo(4), $"seed {seed}");
                 foreach (PlannedSpawn spawn in plan.Spawns)
                     Assert.That(structure.Has(spawn.Tile, RoomTileTags.Threshold), Is.False, $"seed {seed}, spawn {spawn.Tile}");
-                foreach (Vector2Int tile in plan.PatrolOf(false))
-                    Assert.That(structure.Has(tile, RoomTileTags.Threshold), Is.False, $"seed {seed}, patrol {tile}");
+                foreach (StandSpot stop in plan.PatrolOf(false))
+                    Assert.That(structure.Has(stop.Tile, RoomTileTags.Threshold), Is.False, $"seed {seed}, patrol {stop.Tile}");
             }
         }
 

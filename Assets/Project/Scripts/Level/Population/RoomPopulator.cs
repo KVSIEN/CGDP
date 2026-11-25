@@ -218,7 +218,7 @@ namespace CGD.Level
                     GameObject prefab = (fromBreach ? breach : roster).Pick(_random);
                     if (prefab == null) continue;
 
-                    Vector3 position = OnNavMesh(_parent.TransformPoint(_layout.TileToFloor(spawn.Tile)));
+                    Vector3 position = OnNavMesh(_parent.TransformPoint(_layout.SpotToFloor(spawn.Spot)));
                     GameObject enemy = PrefabPool.Spawn(prefab, position, RandomYaw());
                     ISeedable.SeedAll(enemy, _seed.Derive("enemies").Derive(room.Node.Id).Derive(i));
                     // A pooled enemy keeps its last route unless told otherwise: guards get none.
@@ -323,7 +323,7 @@ namespace CGD.Level
 
         public Vector3 RoomCenter(LevelRoom room) => _parent.TransformPoint(_layout.RoomCenterLocal(room));
 
-        private Transform[] CreatePatrolRoute(LevelRoom room, IReadOnlyList<Vector2Int> loop, bool breach)
+        private Transform[] CreatePatrolRoute(LevelRoom room, IReadOnlyList<StandSpot> loop, bool breach)
         {
             var holder = new GameObject(breach ? $"PatrolRoute_{room.Node.Id}_Breach" : $"PatrolRoute_{room.Node.Id}").transform;
             holder.SetParent(_parent, false);
@@ -333,7 +333,7 @@ namespace CGD.Level
             {
                 route[i] = new GameObject($"Waypoint{i}").transform;
                 route[i].SetParent(holder, false);
-                route[i].localPosition = _layout.TileToFloor(loop[i]);
+                route[i].localPosition = _layout.SpotToFloor(loop[i]);
             }
             return route;
         }

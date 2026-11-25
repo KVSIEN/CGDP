@@ -190,7 +190,8 @@ namespace CGD.Editor
         }
 
         // Each side's patrol loop, then every spawn: a ring for a guard holding its post, a dot
-        // for a patroller, white for the holder and pink for the breaching faction.
+        // for a patroller, white for the holder and pink for the breaching faction, framed in
+        // violet when it starts up on an overpass's deck.
         private void DrawEnemies(Rect image, RoomSample sample)
         {
             RoomEnemyPlan plan = sample.Enemies;
@@ -201,16 +202,17 @@ namespace CGD.Editor
             {
                 Color color = spawn.Breach ? BreachSide : HolderSide;
                 Rect rect = TileRect(image, spawn.Tile);
+                if (spawn.OnDeck) MapGraphStyle.DrawOutline(rect, DeckTile, 2f);
                 if (spawn.Holds) MapGraphStyle.DrawOutline(Shrink(rect, 0.15f), color, 2f);
                 else EditorGUI.DrawRect(Shrink(rect, 0.32f), color);
             }
         }
 
-        private void DrawLoop(Rect image, IReadOnlyList<Vector2Int> loop, Color color)
+        private void DrawLoop(Rect image, IReadOnlyList<StandSpot> loop, Color color)
         {
             if (loop.Count < 2) return;
             var points = new Vector3[loop.Count + 1];
-            for (int i = 0; i <= loop.Count; i++) points[i] = TileRect(image, loop[i % loop.Count]).center;
+            for (int i = 0; i <= loop.Count; i++) points[i] = TileRect(image, loop[i % loop.Count].Tile).center;
             Color before = Handles.color;
             Handles.color = new Color(color.r, color.g, color.b, 0.6f);
             Handles.DrawAAPolyLine(2f, points);
@@ -309,7 +311,7 @@ namespace CGD.Editor
             if (kinds != RoomPostKinds.None) _readout.Append($"\nFor an enemy: {kinds.ToString().ToLowerInvariant()}");
             foreach (PlannedSpawn spawn in sample.Enemies.Spawns)
                 if (spawn.Tile == tile)
-                    _readout.Append($"\nAn enemy starts here ({(spawn.Breach ? room.BreachFaction?.DisplayName : room.Faction?.DisplayName) ?? "no faction"}) and {(spawn.Holds ? "holds the post" : "patrols")}");
+                    _readout.Append($"\nAn enemy starts {(spawn.OnDeck ? "on the overpass above" : "here")} ({(spawn.Breach ? room.BreachFaction?.DisplayName : room.Faction?.DisplayName) ?? "no faction"}) and {(spawn.Holds ? "holds the post" : "patrols")}");
 
             foreach (PlannedProp prop in sample.Furnishing.Props)
                 if (prop.Tiles.Contains(tile) && prop.Prefab != null)

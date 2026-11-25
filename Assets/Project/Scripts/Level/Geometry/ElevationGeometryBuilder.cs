@@ -67,7 +67,8 @@ namespace CGD.Level
         }
 
         // A deck slab over each of its tiles, its top at the deck's level; a flight up onto each
-        // end; a railing along both sides, so nobody falls off it.
+        // end, with a sloped rail along both its sides (it climbs a metre above the floor round
+        // it); a railing along both sides of the deck, so nobody falls off it.
         private void AddOverpass(RoomStructure structure, Overpass overpass, BoxMeshBuilder stairs, BoxMeshBuilder decks,
                                  BoxMeshBuilder railings, Transform parent)
         {
@@ -85,7 +86,24 @@ namespace CGD.Level
                     AddRailing(foot, Quaternion.LookRotation(inward), railings, parent);
                 }
             }
-            foreach (StairFlight flight in overpass.Stairs) AddStairs(structure, flight, stairs, parent);
+            foreach (StairFlight flight in overpass.Stairs)
+            {
+                AddStairs(structure, flight, stairs, parent);
+                AddFlightRails(structure, flight, railings);
+            }
+        }
+
+        // A rail along each side of a flight, following its slope a railing's height above it.
+        private void AddFlightRails(RoomStructure structure, StairFlight flight, BoxMeshBuilder boxes)
+        {
+            float run = _layout.TileSize, rise = RoomElevation.StepHeight;
+            float low = RoomElevation.HeightOf(structure.LevelOf(flight.Tile));
+            Vector3 up = new(flight.Up.x, 0f, flight.Up.y), side = new(-up.z, 0f, up.x);
+            Quaternion slope = Quaternion.LookRotation(up) * Quaternion.Euler(-Mathf.Atan2(rise, run) * Mathf.Rad2Deg, 0f, 0f);
+            Vector3 middle = _layout.TileToLocal(flight.Tile) + Vector3.up * (low + rise * 0.5f + RailHeight * 0.5f);
+            var size = new Vector3(RailThickness, RailHeight, Mathf.Sqrt(run * run + rise * rise));
+            foreach (float sign in new[] { 1f, -1f })
+                boxes.AddBox(middle + side * (sign * (run * 0.5f - RailInset)), size, slope);
         }
 
         // A slab climbing one level across a tile from its own floor toward `up` (a side, or a

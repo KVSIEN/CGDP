@@ -136,8 +136,8 @@ namespace CGD.Tests
                 Assert.IsNotNull(plan.Split);
                 foreach (PlannedSpawn spawn in plan.Spawns)
                     Assert.AreEqual(spawn.Breach, structure.ZoneOf(spawn.Tile) == west, $"seed {seed}: {spawn.Tile} on the wrong side");
-                foreach (Vector2Int tile in plan.PatrolOf(true)) Assert.AreEqual(west, structure.ZoneOf(tile), $"seed {seed}");
-                foreach (Vector2Int tile in plan.PatrolOf(false)) Assert.AreNotEqual(west, structure.ZoneOf(tile), $"seed {seed}");
+                foreach (StandSpot stop in plan.PatrolOf(true)) Assert.AreEqual(west, structure.ZoneOf(stop.Tile), $"seed {seed}");
+                foreach (StandSpot stop in plan.PatrolOf(false)) Assert.AreNotEqual(west, structure.ZoneOf(stop.Tile), $"seed {seed}");
             }
         }
 
@@ -150,8 +150,8 @@ namespace CGD.Tests
                 Assert.IsTrue(structure.TryClaim(new[] { pillar }, RoomTileTags.Structure));
 
             RoomEnemyPlan plan = Plan(RoomOf(structure), System.Array.Empty<PlannedProp>(), 0, 1);
-            foreach (Vector2Int tile in plan.PatrolOf(false))
-                Assert.IsFalse(structure.Has(tile, RoomTileTags.Structure | RoomTileTags.Prop), $"{tile} is not floor");
+            foreach (StandSpot stop in plan.PatrolOf(false))
+                Assert.IsFalse(structure.Has(stop.Tile, RoomTileTags.Structure | RoomTileTags.Prop), $"{stop.Tile} is not floor");
         }
 
         // 10 × 10, cut by a wall between columns 3 and 4 with an opening at the walkway.
