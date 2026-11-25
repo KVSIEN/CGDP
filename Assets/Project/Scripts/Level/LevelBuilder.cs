@@ -38,7 +38,7 @@ namespace CGD.Level
         [SerializeField] private MapGenerationSettings _generation;
         [Tooltip("Build a gallery of every place, faction and side instead of a map (takes the place of the graph asset and the generation settings)")]
         [SerializeField] private RoomGallerySettings _gallery;
-        [Tooltip("Build the one room this makes, with the player standing in it, instead of a map (takes the place of everything above, and of the seed)")]
+        [Tooltip("Build the one room this makes, with the player (or the spectator) in it, instead of a map (takes the place of everything above, and of the seed)")]
         [SerializeField] private RoomGenerator _roomGenerator;
         [Tooltip("A number or any text. Empty or 0 = a new random seed every play (with a graph asset: the asset's seed). Also drives room shapes and contents")]
         [SerializeField] private string _seed;
@@ -75,6 +75,7 @@ namespace CGD.Level
         [Tooltip("Outline every room along its wall tops in its room type's colour and label it from above (id, place, room type, layout, faction, tier), for reading a generated map in the Scene view. /overview in the dev console hides or shows it")]
         [SerializeField] private bool _roomOverview = true;
 
+        public LevelBuildSettings Settings => _settings;
         public Seed        Seed   { get; private set; }
         public MapGraph    Graph  { get; private set; }
         public LevelLayout Layout { get; private set; }
@@ -105,7 +106,8 @@ namespace CGD.Level
                 return;
             }
 
-            Layout = new LevelLayoutBuilder(_settings).Build(Graph, nodeSpacing, Seed, content);
+            LevelLayoutBuilder layoutBuilder = _roomGenerator != null ? _roomGenerator.LayoutBuilder(_settings) : new LevelLayoutBuilder(_settings);
+            Layout = layoutBuilder.Build(Graph, nodeSpacing, Seed, content);
             var populator = new RoomPopulator(_settings, Layout, transform, Seed.Derive("contents"));
             List<PlannedObjective> objectives = PlanObjectives(populator);
 
@@ -304,6 +306,7 @@ namespace CGD.Level
             // Slightly above the floor so the player's capsule doesn't start inside it.
             Vector3 position = populator.RoomCenter(start) + Vector3.up;
             if (_spawnPoint != null) _spawnPoint.position = position;
+            if (_roomGenerator != null) _roomGenerator.FrameRoom(populator.RoomCenter(start));
             if (_player == null) return;
 
             _player.position = position;

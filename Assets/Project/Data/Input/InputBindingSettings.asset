@@ -145,7 +145,3 @@ MonoBehaviour:
     PrimaryPath: 
     SecondaryPath: 
     Mode: 0
-  - Action: 33
-    PrimaryPath: <Keyboard>/f2
-    SecondaryPath: 
-    Mode: 0

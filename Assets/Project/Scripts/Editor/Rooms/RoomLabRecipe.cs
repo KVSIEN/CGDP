@@ -53,7 +53,7 @@ namespace CGD.Editor
             Layout        = Layout,
             Category      = Category,
             Faction       = Faction,
-            BreachFaction = BreachFaction,
+            BreachFaction = Type.HasSecondFaction() ? BreachFaction : MapNode.NoFaction,
             Influence     = Influence,
             Section       = Section,
             Tier          = Tier,

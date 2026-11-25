@@ -6,33 +6,40 @@ using UnityEngine;
 
 namespace CGD.Level
 {
-    // What the room generator's panel has set: each choice is either pinned or left to the seed
-    // (Random / Any), so one seed always makes the same room from the same choices. Kept by name
-    // and index rather than by asset so it can be saved as JSON between scene loads.
+    // What the room generator is set to build, as set in its Inspector: each part is either
+    // pinned or left to the seed (Any), so one seed always makes the same room from the same
+    // choices. Places and layouts are kept by asset name so the Inspector can list what the
+    // build settings offer.
     [Serializable]
     public sealed class RoomChoice
     {
-        // Faction and section choices: roll one by the seed, or none at all. Anything from 0 up
-        // is an index into the content's list.
-        public const int Random = -1;
+        // Faction and section choices: roll one by the seed, none at all, or (factions only) two
+        // that share the room. Anything from 0 up is an index into the content's list.
+        public const int Any = -1;
         public const int None = -2;
+        public const int Mixed = -3;
 
-        public string SeedText = "1";
+        [Tooltip("A number or any text. Empty = a new room every play")]
+        public string SeedText = string.Empty;
+        public bool AnyType = true;
         public MapNodeType Type = MapNodeType.Combat;
-        public bool RandomType = true;
         public RoomCategory Category = RoomCategory.None;
         public string Place = string.Empty;
         public string Layout = string.Empty;
-        public int Faction = Random;
-        public int BreachFaction = Random;
-        public int Section = Random;
+        public int Faction = Any;
+        // Who shares the room with the holder: used when Faction is Mixed and by Breach and Rift rooms.
+        public int SecondFaction = Any;
+        public int Section = Any;
         // 0 = rolled by the seed.
         public int Tier;
         public float Influence = 1f;
         public float Intensity = 0.5f;
+        // The floor levels the room's rules may raise or sink it to; 0 is the doorways' floor.
+        public int LowestLevel = RoomElevation.Lowest;
+        public int HighestLevel = RoomElevation.Highest;
         public bool DoorNorth = true, DoorEast = true, DoorSouth = true, DoorWest;
 
-        // Types a Random roll may land on: rooms that play as themselves on their own. Start and
+        // Types an Any roll may land on: rooms that play as themselves on their own. Start and
         // Exit are structure, Boss needs its arena and Junction has no encounter.
         public static readonly MapNodeType[] RollableTypes =
         {
@@ -43,57 +50,68 @@ namespace CGD.Level
             MapNodeType.Gauntlet, MapNodeType.Haunt,
         };
 
-        // Types the panel lists: those plus the Boss and Junction (Start, Exit and the legacy
+        // Types that can be pinned: those plus the Boss and Junction (Start, Exit and the legacy
         // Elite are no rooms to look at).
         public static readonly MapNodeType[] ChoosableTypes = new List<MapNodeType>(RollableTypes)
         {
             MapNodeType.Boss, MapNodeType.Junction,
         }.ToArray();
 
+        // Whether a second faction is chosen for the room: always when Mixed, and for the room
+        // types that are held by two at once.
+        public bool HasSecondFaction => Faction == Mixed || (!AnyType && Type.HasSecondFaction());
+
+        // The seed to build with: the one typed, or a fresh, short one when the field is empty.
+        public Seed ResolveSeed() => Seed.Parse(string.IsNullOrWhiteSpace(SeedText) ? NewSeedText() : SeedText);
+
         // Every roll is drawn whether or not it is used, so pinning one choice never changes what
         // the others roll to.
-        public RoomRecipe ToRecipe(LevelBuildSettings settings, MapContentSettings content)
+        public RoomRecipe ToRecipe(Seed seed, LevelBuildSettings settings, MapContentSettings content)
         {
-            RandomStream random = Seed.Parse(SeedText).Derive("room choice").Stream();
+            RandomStream random = seed.Derive("room choice").Stream();
             MapNodeType rolledType = random.Pick(RollableTypes);
             int rolledFaction = random.Range(0, 1 << 16);
-            int rolledBreach = random.Range(0, 1 << 16);
+            int rolledSecond = random.Range(0, 1 << 16);
             int rolledSection = random.Range(0, 1 << 16);
             int rolledTier = random.Range(1, 4);
 
             int factions = content != null ? content.Factions.Count : 0;
             int sections = content != null ? content.Sections.Count : 0;
             RoomFunction place = FindPlace(settings);
+            MapNodeType type = AnyType ? rolledType : Type;
 
             var recipe = new RoomRecipe
             {
-                Type       = RandomType ? rolledType : Type,
-                Place      = place,
-                Layout     = FindLayout(place),
-                Category   = place != null ? place.Category : Category,
-                Faction    = Pick(Faction, rolledFaction, factions, MapNode.NoFaction),
-                Section    = Pick(Section, rolledSection, sections, MapNode.NoSection),
-                Tier       = Tier > 0 ? Mathf.Clamp(Tier, 1, 3) : rolledTier,
-                Influence  = Influence,
-                Intensity  = Intensity,
-                DoorNorth  = DoorNorth,
-                DoorEast   = DoorEast,
-                DoorSouth  = DoorSouth,
-                DoorWest   = DoorWest,
+                Type         = type,
+                Place        = place,
+                Layout       = FindLayout(place),
+                Category     = place != null ? place.Category : Category,
+                Section      = Pick(Section, rolledSection, sections, MapNode.NoSection),
+                Tier         = Tier > 0 ? Mathf.Clamp(Tier, 1, 3) : rolledTier,
+                Influence    = Influence,
+                Intensity    = Intensity,
+                LowestLevel  = Mathf.Clamp(LowestLevel, RoomElevation.Lowest, 0),
+                HighestLevel = Mathf.Clamp(HighestLevel, 0, RoomElevation.Highest),
+                DoorNorth    = DoorNorth,
+                DoorEast     = DoorEast,
+                DoorSouth    = DoorSouth,
+                DoorWest     = DoorWest,
             };
-            recipe.BreachFaction = recipe.Type.HasSecondFaction() ? PickBreach(recipe.Faction, rolledBreach, factions) : MapNode.NoFaction;
+            PickFactions(recipe, type, rolledFaction, rolledSecond, factions);
             return recipe;
         }
 
-        // Everything rolled by the seed, with a new seed: a room nobody chose.
+        // Everything rolled by the seed, as broad as the build allows, with a new seed every play.
         public void RandomizeAll()
         {
-            SeedText = NewSeedText();
-            RandomType = true;
+            SeedText = string.Empty;
+            AnyType = true;
             Category = RoomCategory.None;
             Place = Layout = string.Empty;
-            Faction = BreachFaction = Section = Random;
+            Faction = SecondFaction = Section = Any;
             Tier = 0;
+            LowestLevel = RoomElevation.Lowest;
+            HighestLevel = RoomElevation.Highest;
         }
 
         // Short enough to read and retype.
@@ -115,21 +133,39 @@ namespace CGD.Level
             return null;
         }
 
+        // The holder, and the faction sharing the room when it has one: never the same faction twice.
+        private void PickFactions(RoomRecipe recipe, MapNodeType type, int rolledFaction, int rolledSecond, int factions)
+        {
+            recipe.Faction = recipe.BreachFaction = MapNode.NoFaction;
+            if (factions == 0) return;
+
+            bool second = Faction == Mixed || type.HasSecondFaction();
+            int pinnedSecond = second && IsIndex(SecondFaction, factions) ? SecondFaction : MapNode.NoFaction;
+
+            if (Faction == Mixed)        recipe.Faction = PickOther(pinnedSecond, rolledFaction, factions);
+            else if (Faction != None)    recipe.Faction = IsIndex(Faction, factions) ? Faction : rolledFaction % factions;
+            if (!second || (recipe.Faction >= 0 && factions < 2)) return;
+
+            recipe.BreachFaction = pinnedSecond != MapNode.NoFaction && pinnedSecond != recipe.Faction
+                ? pinnedSecond
+                : PickOther(recipe.Faction, rolledSecond, factions);
+        }
+
+        private static bool IsIndex(int choice, int count) => choice >= 0 && choice < count;
+
         private static int Pick(int choice, int rolled, int count, int none)
         {
             if (count == 0 || choice == None) return none;
-            return choice >= 0 && choice < count ? choice : rolled % count;
+            return IsIndex(choice, count) ? choice : rolled % count;
         }
 
-        // A breach comes from a reality other than the one holding the room.
-        private int PickBreach(int holder, int rolled, int count)
+        // Any faction but `other` (any at all when `other` is none, or the only one there is).
+        private static int PickOther(int other, int rolled, int count)
         {
-            if (count == 0) return MapNode.NoFaction;
-            if (BreachFaction >= 0 && BreachFaction < count) return BreachFaction;
             if (count == 1) return 0;
-            int others = holder >= 0 ? count - 1 : count;
+            int others = other >= 0 ? count - 1 : count;
             int pick = rolled % others;
-            return holder >= 0 && pick >= holder ? pick + 1 : pick;
+            return other >= 0 && pick >= other ? pick + 1 : pick;
         }
     }
 }

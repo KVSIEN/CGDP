@@ -27,7 +27,7 @@ namespace CGD.Level
             room.Tier          = recipe.Tier;
             room.Intensity     = recipe.Intensity;
             room.SetFaction(recipe.Faction, recipe.Influence);
-            room.BreachFaction = recipe.Type.HasSecondFaction() ? recipe.BreachFaction : MapNode.NoFaction;
+            room.BreachFaction = recipe.BreachFaction;
             room.Section       = recipe.Section;
 
             // The editor's y grows downward.

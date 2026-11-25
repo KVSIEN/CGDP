@@ -124,7 +124,7 @@ Assets/
                             Navigation/ — VaultLinkPlanner, VaultLinkBuilder, VaultLinks (NavMesh links over low cover);
                             Culling/ — RoomPortals, RoomCuller (drawing only the rooms the camera can see into);
                             Gallery/ — RoomGallerySettings and RoomGalleryGraph (the RoomGallery scene's walk-through of every place),
-                            RoomGenerator/ — RoomRecipe and RoomRecipeGraph (one made-up room as a map graph, shared with the Room Lab), RoomChoice, RoomGenerator and RoomGeneratorPanel (the RoomGenerator scene)
+                            RoomGenerator/ — RoomRecipe and RoomRecipeGraph (one made-up room as a map graph, shared with the Room Lab), RoomChoice, RoomGenerator and RoomGeneratorView (the RoomGenerator scene, set up in RoomGenerator's Inspector — Editor/Rooms/RoomGeneratorEditor)
                             Objectives/ — map objectives: templates, MapObjectivePlanner, MapObjectiveRunner;
                             Encounters/ — encounter rooms: Core/ (RoomEncounter, RoomEncounterBuilder, EncounterContext/Settings,
                             RoomShutter/RoomSeal, EncounterSpawner, rules: RoomArea, EnemyGroup, WaveSchedule); one folder per kind:

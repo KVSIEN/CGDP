@@ -22,8 +22,19 @@ namespace CGD.Level
         private const int DoorSpacing = 2;
 
         private readonly LevelBuildSettings _settings;
+        private readonly int _lowestLevel;
+        private readonly int _highestLevel;
 
-        public LevelLayoutBuilder(LevelBuildSettings settings) => _settings = settings;
+        public LevelLayoutBuilder(LevelBuildSettings settings) : this(settings, settings.LowestLevel, settings.HighestLevel) { }
+
+        // Rooms take floor levels from `lowestLevel` to `highestLevel` only, within the settings'
+        // own (which the walls' footing is sized for): a narrower range for one room on its own.
+        public LevelLayoutBuilder(LevelBuildSettings settings, int lowestLevel, int highestLevel)
+        {
+            _settings = settings;
+            _lowestLevel  = Mathf.Clamp(lowestLevel, settings.LowestLevel, 0);
+            _highestLevel = Mathf.Clamp(highestLevel, 0, settings.HighestLevel);
+        }
 
         // `seed` varies the room shapes; the same seed and graph give the same layout.
         // `content` resolves the graph's faction indices; without it rooms have no faction.
@@ -63,7 +74,7 @@ namespace CGD.Level
                 RoomStructureRule divider = room.BreachFaction != null ? _settings.DesignFor(room.BreachFaction)?.BreachDivider : null;
                 int tries = RoomTraitFit.TriesFor(room, _settings.RuleFor(room.Node.Type), design, _settings);
                 room.AttachStructure(BestStructure(planner, room, layout, seed.Derive(room.Node.Id), design, divider, room.DesignStrength, tries,
-                                                   _settings.UsesIsovist(IsovistUse.Traits), _settings.LowestLevel, _settings.HighestLevel));
+                                                   _settings.UsesIsovist(IsovistUse.Traits), _lowestLevel, _highestLevel));
                 if (room.BreachFaction != null) room.AttachBreachEntrances(BreachEntrances(room, layout));
             }
         }
