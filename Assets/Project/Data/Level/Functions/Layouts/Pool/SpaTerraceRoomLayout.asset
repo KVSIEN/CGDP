@@ -27,7 +27,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0779a8c9bfd943528d256e313c2460f9, type: 2}
   _props:
   - Prefabs:
-    - {fileID: 8100000000000013001, guid: 069c8e93058347aba4b46287ce55bfc5, type: 3}
+    - {fileID: 8100000000000027001, guid: 08d74bb15a5c459a848cb1b71fb9ec44, type: 3}
     Count:
       Min: 1
       Max: 1
