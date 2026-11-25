@@ -70,19 +70,29 @@ namespace CGD.Level
         // room id, for what draws rooms on and off (RoomCuller).
         public IReadOnlyDictionary<int, List<GameObject>> RoomObjects => _roomObjects;
 
+        // Plans every room's furniture (RoomFurnisher), claiming its floor, before anything is
+        // built, so what is built round the furniture (the overgrowth) can see where it stands.
+        // Each room is furnished once; PlaceProps puts it down.
+        public void FurnishRooms()
+        {
+            foreach (LevelRoom room in _layout.Rooms.Values)
+                if (!_props.ContainsKey(room.Node.Id)) _props[room.Node.Id] = _furnisher.Furnish(room).Props;
+        }
+
         public void PlaceProps()
         {
+            FurnishRooms();
             foreach (LevelRoom room in _layout.Rooms.Values)
             {
                 RoomContentRule rule = _settings.RuleFor(room.Node.Type);
-                IReadOnlyList<PlannedProp> props = _furnisher.Furnish(room).Props;
-                _props[room.Node.Id] = props;
-                foreach (PlannedProp prop in props)
+                foreach (PlannedProp prop in _props[room.Node.Id])
                 {
                     if (prop.Prefab == null) continue;
 
-                    // A prop stands on one level (PropPlacementRules), so any of its tiles gives its floor.
-                    Vector3 local = new Vector3(prop.Position.x * _layout.TileSize, _layout.FloorHeight(prop.Tiles.min), prop.Position.y * _layout.TileSize);
+                    // On the ground at its middle. A prop stands on one level (PropPlacementRules), and
+                    // a solid one on floor overgrowth leaves bare (OvergrowthGround), so it keeps its
+                    // height; a decoration sits on whatever has grown there.
+                    Vector3 local = new Vector3(prop.Position.x * _layout.TileSize, _layout.GroundHeight(prop.Position), prop.Position.y * _layout.TileSize);
                     GameObject placed = Place(room, prop.Prefab, _parent.TransformPoint(local), _parent.rotation * Quaternion.Euler(0f, prop.Yaw, 0f));
                     if (prop.Stretch != Vector2.one) placed.transform.localScale = Vector3.Scale(placed.transform.localScale, new Vector3(prop.Stretch.x, 1f, prop.Stretch.y));
                     // After any stretch, so its places to stand stay where they were put.

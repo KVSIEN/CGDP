@@ -25,6 +25,7 @@ namespace CGD.Editor
         private SerializedProperty _seed, _anyType, _type, _category, _place, _layout;
         private SerializedProperty _faction, _second, _section, _influence, _tier, _intensity;
         private SerializedProperty _lowest, _highest, _north, _east, _south, _west;
+        private SerializedProperty _overgrowth, _overgrowthProfile;
 
         private void OnEnable()
         {
@@ -52,6 +53,8 @@ namespace CGD.Editor
             _east      = room.FindPropertyRelative(nameof(RoomChoice.DoorEast));
             _south     = room.FindPropertyRelative(nameof(RoomChoice.DoorSouth));
             _west      = room.FindPropertyRelative(nameof(RoomChoice.DoorWest));
+            _overgrowth        = room.FindPropertyRelative(nameof(RoomChoice.Overgrowth));
+            _overgrowthProfile = room.FindPropertyRelative(nameof(RoomChoice.OvergrowthProfile));
         }
 
         public override void OnInspectorGUI()
@@ -84,6 +87,9 @@ namespace CGD.Editor
 
             Section("Elevation");
             DrawElevation(settings);
+
+            Section("Ground");
+            DrawOvergrowth();
 
             Section("Doorways");
             DrawDoorways();
@@ -215,6 +221,17 @@ namespace CGD.Editor
                 EditorGUILayout.LabelField(" ", "Flat: the whole floor at the doorways' level", EditorStyles.miniLabel);
             else
                 EditorGUILayout.LabelField(" ", "Used by places whose layouts raise or sink floor", EditorStyles.miniLabel);
+        }
+
+        private void DrawOvergrowth()
+        {
+            EditorGUILayout.PropertyField(_overgrowth, new GUIContent("Overgrowth",
+                "Faction: what the room's factions grow (Faction Design › Overgrowth), none for most. None: bare floor. Profile: the profile below, all over the room, whoever holds it"));
+            if ((RoomOvergrowth)_overgrowth.enumValueIndex != RoomOvergrowth.Profile) return;
+
+            EditorGUILayout.PropertyField(_overgrowthProfile, new GUIContent("Profile", "An Overgrowth Profile asset (Create › CGD › Level › Overgrowth Profile)"));
+            if (_overgrowthProfile.objectReferenceValue == null)
+                EditorGUILayout.HelpBox("With no profile the floor stays bare.", MessageType.Info);
         }
 
         private void DrawDoorways()

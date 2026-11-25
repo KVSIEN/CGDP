@@ -38,6 +38,9 @@ namespace CGD.Level
         public int LowestLevel = RoomElevation.Lowest;
         public int HighestLevel = RoomElevation.Highest;
         public bool DoorNorth = true, DoorEast = true, DoorSouth = true, DoorWest;
+        public RoomOvergrowth Overgrowth = RoomOvergrowth.Faction;
+        // Grown when Overgrowth is Profile.
+        public OvergrowthProfile OvergrowthProfile;
 
         // Types an Any roll may land on: rooms that play as themselves on their own. Start and
         // Exit are structure, Boss needs its arena and Junction has no encounter.
@@ -101,6 +104,14 @@ namespace CGD.Level
             return recipe;
         }
 
+        // Where the room's overgrowth comes from. Rolls nothing, so it never changes the room's other choices.
+        public OvergrowthSource ToOvergrowthSource(LevelBuildSettings settings) => Overgrowth switch
+        {
+            RoomOvergrowth.None    => OvergrowthSource.Fixed(null),
+            RoomOvergrowth.Profile => OvergrowthSource.Fixed(OvergrowthProfile),
+            _                      => OvergrowthSource.FromFactions(settings),
+        };
+
         // Everything rolled by the seed, as broad as the build allows, with a new seed every play.
         public void RandomizeAll()
         {
@@ -112,6 +123,7 @@ namespace CGD.Level
             Tier = 0;
             LowestLevel = RoomElevation.Lowest;
             HighestLevel = RoomElevation.Highest;
+            Overgrowth = RoomOvergrowth.Faction;
         }
 
         // Short enough to read and retype.

@@ -9,6 +9,7 @@ namespace CGD.Level
     //   - floor plans: which shapes it favours and how big its rooms are
     //   - structure: the columns and walls it builds where a room's function brings none, and
     //     what it adds to every room it holds (a ruin's wall stubs, a fold of corridors)
+    //   - ground: what grows over the floor of the rooms it holds (overgrowth)
     //   - dressing: its own props, its own version of the room types' cover and clutter, and
     //     how crowded it keeps a room
     //   - priorities: what its fight rooms should offer (concealment, walls, lines of fire);
@@ -36,6 +37,10 @@ namespace CGD.Level
         [SerializeField] private RoomStructureRule[] _additions = Array.Empty<RoomStructureRule>();
         [Tooltip("Where this faction breaches a room that is still one open space, this wall goes across it first, so the room splits into its side and the holder's (a Partition rule that divides zones)")]
         [SerializeField] private RoomStructureRule _breachDivider;
+
+        [Header("Ground")]
+        [Tooltip("Overgrowth lying over the floor of every room it holds, thinner toward its frontier: a low drift of dirt and moss that never changes how the room plays. Empty = bare floor")]
+        [SerializeField] private OvergrowthProfile _overgrowth;
 
         [Header("Dressing")]
         [Tooltip("The faction's own props, placed after the room type's dressing and the function's furniture")]
@@ -66,6 +71,7 @@ namespace CGD.Level
         public IReadOnlyList<RoomStructureRule> Structure => _structure;
         public IReadOnlyList<RoomStructureRule> Additions => _additions;
         public RoomStructureRule BreachDivider => _breachDivider;
+        public OvergrowthProfile Overgrowth => _overgrowth;
         public RoomDressing Dressing => _dressing;
         public float FillShare => _fillShare;
         public float PropScale => _propScale;

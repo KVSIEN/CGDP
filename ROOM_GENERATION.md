@@ -1402,3 +1402,53 @@ readout says when an enemy starts on the overpass above a tile.
 raised walk, a mound in a sunken court: today every feature starts from level 0), props on a deck,
 a deck joining two platforms at level 2, and the room planner
 choosing crouch spots for enemies; see `TASKS.md` › Elevation, next phases.
+
+## 19. Overgrowth
+
+A faction's design can overgrow the floor of the rooms it holds (`FactionDesign` › *Overgrowth*, an
+`OvergrowthProfile`; BIO's is `BioOvergrowthProfile`). The growth is a thin layer on top of the
+floor, at most 0.4 m (`OvergrowthProfile.HighestAllowed`), never a floor level: the tile grid,
+its levels, stairs, reachability and sight are untouched, and it is planned after them.
+
+**Which rooms** (`OvergrowthSource`): the holder's profile, at the room's design strength (thinner on
+the frontier of its territory). A Breach room whose holder grows nothing is overgrown by the faction
+breaching it, on its own side when the room is split (`BreachSplit`); a holder that grows keeps to its
+side the same way. The Room Generator can fix one profile, or none.
+
+**What stays bare** (`OvergrowthGround`): the floor in front of each doorway, stairs, slopes and their
+landings, both sides of every ledge and inner wall, the floor under a deck, solid furniture and
+pillars, the centre spot, the floor beside low cover, the tiles a curved or chamfered wall cuts, and
+(optionally) the walkways. The room's own walls are not on the list: growth piles up against them.
+So the growth can never make a ramp onto a platform or over a railing, bury cover, or step the
+floor at a doorway. Furniture has to be known first, so `RoomPopulator.FurnishRooms` plans every
+room's props before the geometry is built and places them after.
+
+**The height field** (`OvergrowthPlanner`, `OvergrowthField`): a grid of samples about 0.5 m apart
+(six to a 3 m tile), each a height above its own tile's floor. In four steps:
+1. *Pin*: a sample touching any of the room's tiles that stays bare is held at 0, so two tiles on
+   different levels never share a raised sample.
+2. *Reach*: how far the growth has spread to each sample, 1 at the heart of a few patches where it
+   broke through (`_patches`, `_patchRadius`) and, by `_wallPile`, along the walls (a distance field
+   from the walls).
+3. *Shape*: the reach, broken up by fractal noise with domain warping (`OvergrowthNoise`: broad
+   lumps with finer ones on them, the sample point pushed about by two more noises so the shapes
+   wind and creep), has to pass a threshold set by `_coverage`; past it the height feathers in and
+   rolls in lumps.
+4. *Slope*: `GridSlopeLimit` lowers every sample until none stands more than tan(`_maxSlope`) × the
+   spacing above a neighbour (×√2 diagonally): a chamfer distance transform, forward and back sweeps
+   until nothing changes. It only ever lowers, so the pinned zeros pull the growth around them down
+   into even banks; that's what guarantees the growth is walkable. The same pass started from 0 at
+   the walls and infinity elsewhere gives step 2 its distance to the walls.
+
+Each room draws from its own layer of the level's `overgrowth` seed, so the growth never moves any
+other random roll, and a room without it builds exactly as before.
+
+**Built** (`OvergrowthMeshBuilder`, called by `LevelGeometryBuilder`): each overgrown tile a grid of
+quads on its own floor, lifted 2 cm so it never flickers against the floor where it thins out, normals
+from the field so tiles join without a seam; one mesh per material, with a MeshCollider, in the
+NavMesh. **What stands on it**: `LevelLayout.GroundHeight` is the floor plus the growth; props,
+spawn tiles and the room's centre stand on it. Solid props are on bare floor and keep their height;
+decorations sit on the growth.
+
+**Not yet**: a Room Lab layer, decor scattered by the growth's density, a blended ground shader,
+growth on decks; see `TASKS.md` › Elevation, next phases.

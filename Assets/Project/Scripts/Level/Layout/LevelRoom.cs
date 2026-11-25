@@ -41,6 +41,8 @@ namespace CGD.Level
         public RoomLayout    RoomLayout { get; }
         public float         WallHeight { get; }    // metres
         public RoomStructure Structure  { get; private set; }
+        // The growth lying on its floor, if it is overgrown (OvergrowthPlanner); null otherwise.
+        public OvergrowthField Overgrowth { get; private set; }
         // Tiles cut off each outside corner at 45° (0 = sharp corners).
         public int           Chamfer    { get; }
         // The wall line when it leaves the tile edges (curved or chamfered rooms); null otherwise.
@@ -88,6 +90,13 @@ namespace CGD.Level
         {
             if (Structure != null) throw new InvalidOperationException("Room structure is already set.");
             Structure = structure;
+        }
+
+        // Set once the room is furnished, so the growth knows which floor its furniture stands on.
+        public void AttachOvergrowth(OvergrowthField overgrowth)
+        {
+            if (Overgrowth != null) throw new InvalidOperationException("Room overgrowth is already set.");
+            Overgrowth = overgrowth;
         }
     }
 }

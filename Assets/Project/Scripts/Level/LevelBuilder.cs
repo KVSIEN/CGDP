@@ -111,6 +111,12 @@ namespace CGD.Level
             var populator = new RoomPopulator(_settings, Layout, transform, Seed.Derive("contents"));
             List<PlannedObjective> objectives = PlanObjectives(populator);
 
+            // Furnished first, so the overgrowth leaves the furniture's floor bare; both before the
+            // geometry, which builds the overgrowth with the floor.
+            populator.FurnishRooms();
+            OvergrowthSource overgrowth = _roomGenerator != null ? _roomGenerator.Overgrowth(_settings) : OvergrowthSource.FromFactions(_settings);
+            new OvergrowthPlanner(Layout.TileSize).PlanLevel(Layout, overgrowth, Seed.Derive("overgrowth"));
+
             var geometry = new LevelGeometryBuilder(_settings, _assets);
             LockBossRoom(geometry, objectives);
             geometry.Build(Layout, transform);

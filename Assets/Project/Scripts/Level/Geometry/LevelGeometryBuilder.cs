@@ -8,10 +8,10 @@ using CGD.Interaction;
 
 namespace CGD.Level
 {
-    // Builds floors, walls, room structure (pillars, inner walls) and doors for a
-    // LevelLayout under a parent transform. Walls come from LevelWallBuilder (dressed with the
-    // settings' wall kit when there is one: the boxes then only collide); doorways are
-    // simply where a corridor tile meets a room tile.
+    // Builds floors, walls, room structure (pillars, inner walls), the overgrowth on overgrown
+    // rooms' floors and doors for a LevelLayout under a parent transform. Walls come from
+    // LevelWallBuilder (dressed with the settings' wall kit when there is one: the boxes then
+    // only collide); doorways are simply where a corridor tile meets a room tile.
     public class LevelGeometryBuilder
     {
         private static readonly Vector2Int[] Neighbours =
@@ -80,6 +80,7 @@ namespace CGD.Level
             CreatePart("Slopes",         ground,         _settings.FloorMaterial,         parent);
             CreatePart("Railings",       railings,       _settings.LowCoverMaterial,      parent);
             CreatePart("Decks",          decks,          _settings.FloorMaterial,         parent);
+            BuildOvergrowth(layout, parent);
             bool roofedBuildings = HasRoofedBuildings(layout);
             if (_settings.BuildCeilings || roofedBuildings) BuildCeilings(layout, outerRing, parent);
             if (roofedBuildings && _settings.LightBuildings) new BuildingLightBuilder(_settings).Build(layout, parent);
@@ -167,6 +168,35 @@ namespace CGD.Level
 
             GameObject part = CreatePart("Ceilings", ceilings, _settings.CeilingMaterial, parent, _settings.CeilingLayer);
             if (part != null) part.AddComponent<NavMeshModifier>().ignoreFromBuild = true;
+        }
+
+        // The growth lying on overgrown rooms' floors (LevelRoom.Overgrowth): one mesh per look,
+        // walked on and in the NavMesh like the floor under it.
+        private void BuildOvergrowth(LevelLayout layout, Transform parent)
+        {
+            var looks = new List<(Material material, OvergrowthMeshBuilder mesh)>();
+            foreach (LevelRoom room in layout.Rooms.Values)
+            {
+                if (room.Overgrowth == null) continue;
+
+                Material material = room.Overgrowth.Profile != null && room.Overgrowth.Profile.Material != null
+                    ? room.Overgrowth.Profile.Material
+                    : _settings.FloorMaterial;
+                int look = looks.FindIndex(entry => entry.material == material);
+                if (look < 0)
+                {
+                    looks.Add((material, new OvergrowthMeshBuilder()));
+                    look = looks.Count - 1;
+                }
+                looks[look].mesh.AddRoom(layout, room);
+            }
+
+            foreach (var (material, mesh) in looks)
+            {
+                if (mesh.IsEmpty) continue;
+                string name = material != null ? $"Overgrowth_{material.name}" : "Overgrowth";
+                CreatePart(name, _assets.Track(mesh.ToMesh(name)), material, parent);
+            }
         }
 
         // A tile's slab: its floor's thickness under it, reaching down to the lowest floor beside
@@ -325,16 +355,17 @@ namespace CGD.Level
                 layout.Warnings.Add($"One-way #{doorway.Connection.A}–#{doorway.Connection.B} is open both ways: its door prefab has no Door.");
         }
 
-        private GameObject CreatePart(string name, BoxMeshBuilder builder, Material material, Transform parent, int layer = -1)
-        {
-            if (builder.IsEmpty) return null;
+        private GameObject CreatePart(string name, BoxMeshBuilder builder, Material material, Transform parent, int layer = -1) =>
+            builder.IsEmpty ? null : CreatePart(name, _assets.Track(builder.ToMesh(name)), material, parent, layer);
 
+        // A static, solid piece of the level: drawn, collided with and (unless told otherwise) in the NavMesh.
+        private GameObject CreatePart(string name, Mesh mesh, Material material, Transform parent, int layer = -1)
+        {
             var go = new GameObject(name, typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider));
             go.layer = layer >= 0 ? layer : _settings.GeometryLayer;
             go.isStatic = true;
             go.transform.SetParent(parent, false);
 
-            Mesh mesh = _assets.Track(builder.ToMesh(name));
             go.GetComponent<MeshFilter>().sharedMesh     = mesh;
             go.GetComponent<MeshCollider>().sharedMesh   = mesh;
             if (material != null) go.GetComponent<MeshRenderer>().sharedMaterial = material;

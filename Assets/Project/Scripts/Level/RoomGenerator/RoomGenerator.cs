@@ -53,6 +53,9 @@ namespace CGD.Level
             return new LevelLayoutBuilder(settings, recipe.LowestLevel, recipe.HighestLevel);
         }
 
+        // Where the room's overgrowth comes from: its factions', none, or the profile chosen.
+        public OvergrowthSource Overgrowth(LevelBuildSettings settings) => _room.ToOvergrowthSource(settings);
+
         // Called with the room's centre once it is built; the spectator's overview looks at it.
         public void FrameRoom(Vector3 centre)
         {

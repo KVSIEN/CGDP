@@ -9,6 +9,8 @@ namespace CGD.Level
     // Tile (x, y) covers world x and z from tile * TileSize, relative to the level's origin.
     public class LevelLayout
     {
+        private static readonly Vector2 TileMiddle = new(0.5f, 0.5f);
+
         private readonly HashSet<Vector2Int> _walkable = new();
         private readonly HashSet<Vector2Int> _corridorTiles = new();
         private readonly Dictionary<Vector2Int, LevelRoom> _roomTiles = new();
@@ -85,8 +87,17 @@ namespace CGD.Level
             return structure != null ? RoomElevation.HeightOf(structure.LevelOf(tile)) : 0f;
         }
 
-        // The middle of a tile, standing on its floor: where things put on that tile go.
-        public Vector3 TileToFloor(Vector2Int tile) => TileToLocal(tile) + Vector3.up * FloorHeight(tile);
+        // How high the ground stands at a point on the floor plan (tile units), in metres: its
+        // tile's floor plus any overgrowth lying on it (LevelRoom.Overgrowth).
+        public float GroundHeight(Vector2 point)
+        {
+            var tile = new Vector2Int(Mathf.FloorToInt(point.x), Mathf.FloorToInt(point.y));
+            OvergrowthField overgrowth = RoomAt(tile)?.Overgrowth;
+            return FloorHeight(tile) + (overgrowth != null ? overgrowth.HeightAt(point) : 0f);
+        }
+
+        // The middle of a tile, standing on its ground: where things put on that tile go.
+        public Vector3 TileToFloor(Vector2Int tile) => TileToLocal(tile) + Vector3.up * GroundHeight(tile + TileMiddle);
 
         // Where someone stands at a spot: on its tile's floor, or on the overpass deck over it.
         public Vector3 SpotToFloor(StandSpot spot)
@@ -95,9 +106,9 @@ namespace CGD.Level
             return deck != null ? TileToLocal(spot.Tile) + Vector3.up * RoomElevation.HeightOf(deck.Level) : TileToFloor(spot.Tile);
         }
 
-        // The room's centre, on the floor of the tile it falls in.
+        // The room's centre, on the ground of the tile it falls in.
         public Vector3 RoomCenterLocal(LevelRoom room) =>
-            new(room.Anchor.x * TileSize, FloorHeight(new Vector2Int(Mathf.FloorToInt(room.Anchor.x), Mathf.FloorToInt(room.Anchor.y))), room.Anchor.y * TileSize);
+            new(room.Anchor.x * TileSize, GroundHeight(room.Anchor), room.Anchor.y * TileSize);
 
         // The room's bounding rectangle on the floor plan (x, z), in the level's space.
         public Rect RoomLocalRect(LevelRoom room)
