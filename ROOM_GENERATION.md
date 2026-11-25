@@ -719,10 +719,29 @@ gather round whatever a place is built round.
 | **Locker Row** | Two to four lockers nose to tail along a wall | Barracks, Gym, Security Office, Armory, Quarters, Cabin Row, Workshop, School, Pool, Wellness Center |
 | **Seating Nook** | One or two benches against the walls with floor in front | Lobby, Promenade, Commons, Observation Deck, Wellness Center, Grand Atrium, Food Court, Medical Bay, Docking Bay |
 | **Greenery** | One to three planters in corners and along walls | Grand Atrium, Lobby, Promenade, Commons, Offices, Restaurant, Wellness Center, Observation Deck, Chapel |
+| **Vending Alcove** | One or two vending machines on the walls within two steps of a route, floor kept in front | Commons, Gym, Lobby, Promenade, Food Court, Barracks, Docking Bay, Escape Pod Bay, Medical Bay, School, Observation Deck, Hangar |
+| **Waste Point** | One or two recycling bins spread along the walls | Food Court, Kitchen, Promenade, Restaurant, Cargo Bay, Workshop, Commons, Lobby, Bar & Lounge, Hangar |
+| **Corner Lamps** | One to three floor lamps in the corners | Quarters, Commons, Bar & Lounge, Casino, Library, Lobby, Offices, Observation Deck, Wellness Center, Restaurant, Theatre |
+| **Wash Station** | One or two sinks side by side on a wall, floor kept in front | Kitchen, Laboratory, Medical Bay, Morgue, Gym, Wellness Center, Ward, Pharmacy, Barracks |
+| **Study Desk** *(Residential)* | A desk on a wall with its chair in front and perhaps a lamp | Quarters, Cabin Row, School, Library |
+| **Sun Deck** *(Recreation)* | One or two pairs of loungers under a parasol, facing the middle | Observation Deck, Park, Wellness Center |
+| **Lounge Set** *(Entertainment)* | A sofa on a wall with a rug in front and a lamp beside it | Bar & Lounge, Casino, Theatre, Grand Atrium, Lobby, Observation Deck |
+| **Café Tables** *(Commercial)* | One to three tables with two to four chairs each, spread over the floor | Food Court, Promenade, Grand Atrium, Commons, Bar & Lounge |
+| **Market Kiosks** *(Commercial)* | One or two kiosks facing the middle, floor kept round them (90+ tiles) | Promenade, Food Court, Grand Atrium |
+| **Treatment Bay** *(Medical)* | One or two beds on the walls, each with an instrument trolley | Medical Bay, Ward, Wellness Center |
+| **Guard Post** *(Security)* | A console and chair just inside the way in, by the route | Security Office, Armory, Data Center, Docking Bay, Hangar, Cargo Bay |
+| **Rack Wall** *(Security)* | One to three weapon racks nose to tail along a wall | Security Office, Barracks |
+| **Briefing Table** *(Command)* | A command table in the middle with up to six chairs (60+ tiles) | Control Room, Security Office, Offices |
+| **Grow Station** *(Agriculture)* | Two to four grow racks in a line along a wall | Hydroponics Bay, Farm |
+| **Lab Bench** *(Science)* | One or two workbenches on the walls with stools in front | Laboratory, Workshop, Maintenance Hub, School |
+| **Showcase** *(Science)* | One to three display cases in plain view of the way in (60+ tiles) | Library, Lobby, Grand Atrium, School |
+| **Waiting Seats** *(Transit)* | One or two seat rows on the walls | Lobby, Docking Bay, Escape Pod Bay, Medical Bay, Pharmacy |
+| **Votive Candles** *(Worship)* | Two to four clusters of candles round the *Altar* | Chapel, Shrine |
 
 The first five are tuned for the operations places (the Control Station, Hazard Cordon and the
-operations Service Corner gather round the *Plant*); the last five stand Near nothing, so any
-place may list them. Every kit's counts scale with the room (`ScaleByRoomSize`) where it is a
+operations Service Corner gather round the *Plant*); Terminal Bank to Wash Station stand Near nothing, so any
+place may list them; the kits marked with a category are built for the places of that
+category, and the Votive Candles gather round the *Altar* a chapel or shrine sets. Every kit's counts scale with the room (`ScaleByRoomSize`) where it is a
 filler, so a closet and a hall are equally furnished.
 
 **Growing the ecosystem.** To add a kit: make the asset under `Sets/` (copy one, give it a new
