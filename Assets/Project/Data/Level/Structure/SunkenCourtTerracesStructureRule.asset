@@ -23,3 +23,4 @@ MonoBehaviour:
   _shiftToDoorways: 1
   _stairSpacing: 6
   _railed: 1
+  _bridges: 1
