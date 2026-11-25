@@ -1,0 +1,166 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 067aff8eb7e145a5ad54e525ff98bd15, type: 3}
+  m_Name: TerracedWalkRoomLayout
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomLayout
+  _displayName: Terraced Walk
+  _weight: 1
+  _shapes:
+  - {fileID: 11400000, guid: 281e2a7b95274c4da71fab1e7b3b171d, type: 2}
+  - {fileID: 11400000, guid: 3f7e534409b94f5ab7a3441d75b78bb2, type: 2}
+  _cells: {x: 2, y: 1}
+  _size:
+    Min: 0
+    Max: 0
+    Bias: 0
+  _structure:
+  - {fileID: 11400000, guid: 8e6f78803fcd4d0a85d2777720503472, type: 2}
+  - {fileID: 11400000, guid: 0779a8c9bfd943528d256e313c2460f9, type: 2}
+  _props:
+  - Prefabs:
+    - {fileID: 4591613494888101668, guid: 73892ceb6bf040539f11e8d41cbf139c, type: 3}
+    Count:
+      Min: 2
+      Max: 4
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 2, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 1
+    Spacing: 1
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: Shop
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  - Prefabs:
+    - {fileID: 8100000000000006001, guid: 97ae7a84afd448a680fd5f5622baca66, type: 3}
+    Activity: {fileID: 11400000, guid: 25d0720e9217471bb77b24e450249459, type: 2}
+    Count:
+      Min: 3
+      Max: 5
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 0
+    Avoid: 124
+    Zone: 0
+    Facing: 1
+    Clearance: 0
+    Spacing: 2
+    Selection: 4
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: 
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  - Prefabs:
+    - {fileID: 174689818534657366, guid: ae7e0963ed9e418cbba020b4b8023758, type: 3}
+    Activity: {fileID: 11400000, guid: 7094f214361d4e419b86597f60799031, type: 2}
+    Count:
+      Min: 2
+      Max: 4
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 0
+    Avoid: 124
+    Zone: 0
+    Facing: 6
+    Clearance: 0
+    Spacing: 1
+    Selection: 6
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: 
+    Near: Shop
+    NearDistance: 3
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  - Prefabs:
+    - {fileID: 8100000000000019001, guid: 36041f5bd7dd45ecba9724cbd6a5fcc2, type: 3}
+    Count:
+      Min: 2
+      Max: 3
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 0
+    Avoid: 124
+    Zone: 0
+    Facing: 1
+    Clearance: 0
+    Spacing: 2
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: 
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
