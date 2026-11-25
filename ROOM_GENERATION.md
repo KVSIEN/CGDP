@@ -1194,7 +1194,7 @@ priorities were never tuned against a sweep. To decide which to leave on:
    (`RoomTraitMeasure`) from that report. The traits' interface (`RoomTrait`, the priorities,
    `RoomTraitFit.Gap`) is the same either way.
 
-## 18. Elevation (phases 0–4)
+## 18. Elevation (phases 0–5)
 
 A room's floor can stand a level up or down from the floor its doorways open onto: level 0 is the
 doorways' level, and each level is one step of 1 m (`RoomElevation.StepHeight`), under a standing
@@ -1305,5 +1305,43 @@ below it. The post map's inner walls still count on top.
 preference, the default), so enemies of a faction that likes overwatch already take the edges of
 platforms and the rims of sunken courts.
 
-**Not yet.** Overpasses with walkable floor underneath (phase 5), and an enemy using the crouching
-rule itself (enemies don't crouch behind cover yet); see `TASKS.md` › Elevation, next phases.
+**Overpasses (phase 5).** An `Overpass` is a deck in the air: a straight run of tiles at its level,
+with the floor under each still at its own level and still walked (`CanStep` never sees the deck),
+so a tile has two layers only there. The level range reaches 2 for it (`RoomElevation.Highest`); no
+ground is ever raised to 2. `RoomStructure.TryAddOverpass` lays one if:
+
+- the deck is at least `OverpassClearance` (2) levels over every tile under it, so 1.8 m is clear
+  under its 0.2 m slab (`DeckThickness`): enough for an enemy (1.5 m) and a crouching player, not a
+  standing one, as the owner chose over taller decks;
+- the room's walls stand `DeckHeadroom` (2 m) above the deck;
+- the floor under it is free, not a doorway's front or the centre spot, and under no other deck;
+- each end has a flight on floor a level below the deck, its landing behind it on the same level,
+  clear of a doorway's front and the centre;
+- the room stays whole with the flights' tiles taken, so the deck is never the only way across.
+
+The flights' tiles become solid (`Structure`; nobody walks the floor under a flight), their
+landings `Landing`, and the floor under the deck `Overpass`, which is in `Taken` and `KeepClear`:
+walked under, but no prop, pillar or other feature goes there. `OverpassStructureRule` finds every
+straight run across lower floor between two tiles a level below a deck, for each deck level
+allowed, highest first, and lays `_count` of them nearest the room's middle, three tiles apart
+along the lane. After Raised Walks (1-0-1) that is a deck at 2 over the middle lane; after a Sunken
+Court (0 -1 0) a deck at 1 over the court. Built in the *Decks* part (floor material), with the
+settings' stairs on each flight and a railing along both sides of the deck; the terrace railing is
+left open where a flight climbs onto it. The runtime NavMesh's agent height is 1.6 m
+(`NavMeshAreas`), so it runs both on the deck and under it.
+
+For sight (`SightBlocking`) a deck is a slab from 1.8 to 2 m above the floor under it: a standing
+eye below passes under it, an eye on the walks passes over it, and a line from the walks down onto
+the floor under it is stopped. Its flights stand as high as the deck.
+
+**Enemies crouching.** In play, an enemy that can crouch (`EnemyData.CanCrouch`, on by default)
+ducks at a low cover spot it holds (`EnemyTactics.ShouldCrouch`): between bursts when fighting from
+it, the whole time when it is there to hide. It stands to fire and to move off. Crouching squashes
+its parts to 0.6 of their height toward its feet (`EnemyPosture`), so its hitboxes drop behind the
+cover with it. Other enemies' sight of it aims that much lower (`EnemySenses`). Its own eyes stay
+up, so it peeks over the top. *Hide* cover now takes low spots too, for enemies that crouch,
+scored a little below high ones.
+
+**Not yet.** Decks that are walked as part of a route (they are only ever an extra way across),
+props or spawns on a deck, and the room planner choosing crouch spots for enemies; see `TASKS.md` ›
+Elevation, next phases.

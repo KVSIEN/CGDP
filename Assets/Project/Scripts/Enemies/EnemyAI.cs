@@ -130,6 +130,8 @@ namespace CGD.Enemies
         internal EnemyReflexes     Reflexes     { get; private set; }
         internal EnemyVoice        Voice        { get; private set; }
         internal TargetReadings    Readings     { get; private set; }
+        // Standing or crouched behind low cover.
+        internal EnemyPosture      Posture      { get; private set; }
 
         // How its faction carries itself; a plain doctrine without one.
         internal FactionDoctrine Doctrine => _data.Doctrine != null ? _data.Doctrine : FactionDoctrine.Neutral;
@@ -191,6 +193,7 @@ namespace CGD.Enemies
             Morale        = new EnemyMorale(this);
             Voice         = new EnemyVoice(this);
             Readings      = new TargetReadings(this);
+            Posture       = new EnemyPosture(transform);
             _health.OnDeath += OnDeath;
         }
 
@@ -265,6 +268,7 @@ namespace CGD.Enemies
                     Belief.Tick(Time.time);
                     Ground.Tick(Time.time);
                     Tactics.Tick(Time.time);
+                    Posture.Tick(Tactics.ShouldCrouch, dt);
                     Morale.Tick(dt);
                     TrackEngagement();
                 }
@@ -543,6 +547,7 @@ namespace CGD.Enemies
             Minions.DismissAll();
             Search.Cancel();
             Tactics.Reset();
+            Posture.Stand();
             Perception.Reset();
             Readings.Forget();
             Belief.Clear();

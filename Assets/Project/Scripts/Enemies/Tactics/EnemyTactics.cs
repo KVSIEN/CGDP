@@ -26,6 +26,8 @@ namespace CGD.Enemies
         private const float MinThreatDistance = 4f;
         private const float FacingDot         = 0.35f;
         private const float InCoverDistance   = 1.2f;
+        // Moving faster than this, it is going somewhere, not crouched at its cover.
+        private const float CrouchMoveSpeed   = 0.5f;
         private const float AbandonDistance   = 4f;
         private const int   VerifiedCandidates = 3;
         private const float FlankDetourLimit   = 3f;
@@ -57,6 +59,8 @@ namespace CGD.Enemies
         private readonly List<(int index, float score)> _unseen = new();
 
         private int   _claimed = -1;
+        // The cover it holds is for hiding (CoverUse.Hide), not for fighting from.
+        private bool  _hiding;
         // The squad's anchor (a siege tank) for the cover choice in progress; none when AnchorRadius is 0.
         private Vector3 _anchorAt;
         private float   _anchorRadius;
@@ -82,6 +86,21 @@ namespace CGD.Enemies
         public Vector3 CoverPosition => HasCover ? _knowledge.Map[_claimed].Position : _ai.transform.position;
         // The claimed spot's index in the CoverMap, −1 for none.
         public int ClaimedCover => HasCover ? _claimed : -1;
+
+        // Whether it should be crouched now: it can crouch, it is settled at the low cover it
+        // claimed, and it isn't shooting — between bursts, or the whole time it is there to hide.
+        // It stands to fire (a burst starting stands it up) and to move off.
+        public bool ShouldCrouch
+        {
+            get
+            {
+                if (!_ai.Data.CanCrouch || !HasCover || _ai.Health.IsDead) return false;
+                CoverPoint cover = _knowledge.Map[_claimed];
+                if (cover.IsHigh || (cover.Position - _ai.transform.position).sqrMagnitude > InCoverDistance * InCoverDistance) return false;
+                if (_ai.Agent.velocity.sqrMagnitude > CrouchMoveSpeed * CrouchMoveSpeed) return false;
+                return !_ai.RangedCombat.IsBursting && (_hiding || !_ai.RangedCombat.CanFire);
+            }
+        }
 
         public bool KnowsCover(int index) => _knowledge.Knows(index);
 
@@ -227,6 +246,7 @@ namespace CGD.Enemies
                     continue;
                 }
                 _claimed    = index;
+                _hiding     = use == CoverUse.Hide;
                 destination = cover.Position;
                 log.Add(destination, score, CandidateVerdict.Picked);
                 log.Pick(destination);
@@ -388,6 +408,7 @@ namespace CGD.Enemies
             ReleaseCover();
             if (!map.TryClaim(index, _ai)) return false;
             _claimed = index;
+            _hiding  = false;
             position = map[index].Position;
             return true;
         }
@@ -461,9 +482,9 @@ namespace CGD.Enemies
                     return true;
 
                 case CoverUse.Hide:
-                    // Enemies don't crouch, so only full-height cover takes them out of sight.
-                    if (!cover.IsHigh) return false;
-                    score += threatDistance / 20f;
+                    // Low cover hides only one that crouches behind it, and full-height cover hides better.
+                    if (!cover.IsHigh && !_ai.Data.CanCrouch) return false;
+                    score += threatDistance / 20f - (cover.IsHigh ? 0f : 0.5f);
                     return true;
 
                 case CoverUse.Advance:

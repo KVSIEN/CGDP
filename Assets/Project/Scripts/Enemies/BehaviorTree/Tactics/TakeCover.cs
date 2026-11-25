@@ -13,7 +13,7 @@ namespace CGD.Enemies
     {
         private const float ArrivalDistance = 0.6f;
 
-        [Tooltip("Fight: somewhere to shoot from near its preferred range. Hide: out of sight (high cover only). Advance: cover closer to the target, to close in")]
+        [Tooltip("Fight: somewhere to shoot from near its preferred range. Hide: out of sight (behind low cover too, crouched, for an enemy that can crouch). Advance: cover closer to the target, to close in")]
         [SerializeField] private CoverUse _use = CoverUse.Fight;
         [Tooltip("Give up if not there after this many seconds")]
         [SerializeField, Min(1f)] private float _giveUpAfter = 6f;

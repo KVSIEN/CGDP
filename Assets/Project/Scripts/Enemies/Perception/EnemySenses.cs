@@ -18,6 +18,8 @@ namespace CGD.Enemies
         // Each hostile's body collider and status effects, looked up once instead of per check.
         private static readonly Dictionary<HealthManager, Collider> Bodies = new();
         private static readonly Dictionary<HealthManager, StatusEffectController> Effects = new();
+        // Each hostile that is an enemy, for how low it crouches (null for the player and the rest).
+        private static readonly Dictionary<HealthManager, EnemyAI> Enemies = new();
         private static readonly List<ActiveStatus> ActiveBuffer = new();
 
         private readonly Transform         _self;
@@ -38,6 +40,7 @@ namespace CGD.Enemies
         {
             Bodies.Clear();
             Effects.Clear();
+            Enemies.Clear();
             SceneManager.sceneUnloaded -= OnSceneUnloaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
         }
@@ -46,6 +49,7 @@ namespace CGD.Enemies
         {
             DestroyedKeys.Remove(Bodies);
             DestroyedKeys.Remove(Effects);
+            DestroyedKeys.Remove(Enemies);
         }
 
         public Vector3 Eye => _self.position + Vector3.up * EnemyEyes.Height;
@@ -146,9 +150,17 @@ namespace CGD.Enemies
                 return;
             }
 
+            // Without a collider of its own (an enemy: its hitboxes are its parts), an enemy crouched
+            // behind cover (EnemyPosture) is that much lower.
             Vector3 feet = target.transform.position;
-            chest = feet + Vector3.up;
-            head  = feet + Vector3.up * 1.6f;
+            if (!Enemies.TryGetValue(target, out EnemyAI enemy))
+            {
+                target.TryGetComponent(out enemy);
+                Enemies[target] = enemy;
+            }
+            float share = enemy != null && enemy.Posture != null ? enemy.Posture.HeightShare : 1f;
+            chest = feet + Vector3.up * share;
+            head  = feet + Vector3.up * (1.6f * share);
         }
     }
 }

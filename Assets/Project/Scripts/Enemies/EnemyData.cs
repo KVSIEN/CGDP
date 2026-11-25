@@ -107,6 +107,9 @@ namespace CGD.Enemies
         [Tooltip("Colour of the damage numbers on whatever this enemy hurts, to tell attackers apart (rival factions). Clear = the usual white")]
         public Color DamageNumberColor = Color.clear;
 
+        [Tooltip("Ducks behind low cover at its cover spot between bursts (and when hiding), so it can hide behind waist-high cover too. Off: only full-height cover hides it")]
+        public bool CanCrouch = true;
+
         [Header("Ranged Combat")]
         [Tooltip("Distance the enemy tries to maintain from its target")]
         public float PreferredRange = 12f;
