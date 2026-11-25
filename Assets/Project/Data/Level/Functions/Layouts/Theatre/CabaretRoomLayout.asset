@@ -26,7 +26,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0779a8c9bfd943528d256e313c2460f9, type: 2}
   _props:
   - Prefabs:
-    - {fileID: 6137028835907501265, guid: 253283faa7c64eeba7822eaa48e7b6f8, type: 3}
+    - {fileID: 301272768472712224, guid: 6ac2bf647b1d4254959e4e7a78430d57, type: 3}
     Activity: {fileID: 11400000, guid: 7094f214361d4e419b86597f60799031, type: 2}
     Count:
       Min: 3
@@ -110,22 +110,22 @@ MonoBehaviour:
     MarksRoute: 0
     Members:
     - Prefabs:
-      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
       Offset: {x: -0.7, y: 0.3}
       Yaw: 0
       Chance: 0.85
     - Prefabs:
-      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
       Offset: {x: -0.25, y: 0.3}
       Yaw: 0
       Chance: 0.85
     - Prefabs:
-      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
       Offset: {x: 0.25, y: 0.3}
       Yaw: 0
       Chance: 0.85
     - Prefabs:
-      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
       Offset: {x: 0.7, y: 0.3}
       Yaw: 0
       Chance: 0.85
