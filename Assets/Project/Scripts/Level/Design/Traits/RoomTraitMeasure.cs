@@ -118,7 +118,7 @@ namespace CGD.Level
 
                 previous = tile;
                 foreach (Vector2Int side in GridSides.All)
-                    if (IsCover(structure, tile + side)) return true;
+                    if (RoomCover.Shelters(structure, tile, tile + side)) return true;
             }
             return false;
         }
@@ -202,12 +202,9 @@ namespace CGD.Level
             for (int i = 1; i < length - 1; i++)
             {
                 Vector2Int tile = lane.min + step * i;
-                if (IsCover(structure, tile + side) || IsCover(structure, tile - side)) return true;
+                if (RoomCover.Shelters(structure, tile, tile + side) || RoomCover.Shelters(structure, tile, tile - side)) return true;
             }
             return false;
         }
-
-        private static bool IsCover(RoomStructure structure, Vector2Int tile) =>
-            structure.Contains(tile) && structure.Has(tile, Solid);
     }
 }

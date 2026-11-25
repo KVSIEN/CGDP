@@ -15,12 +15,15 @@ namespace CGD.Level
         [SerializeField, Min(0f)] private float _choke = 1f;
         [SerializeField, Min(0f)] private float _deadEnd = 1f;
         [SerializeField, Min(0f)] private float _route = 1f;
+        [Tooltip("At the edge of raised floor, looking down on the floor below (only rooms with elevation have any)")]
+        [SerializeField, Min(0f)] private float _highGround = 1f;
         [Tooltip("An enemy starting on one of these holds its post (a guard scanning about) instead of patrolling")]
         [SerializeField] private RoomPostKinds _hold;
 
         public PostPreference() { }
 
-        public PostPreference(float concealed, float overwatch, float choke, float deadEnd, float route, RoomPostKinds hold)
+        public PostPreference(float concealed, float overwatch, float choke, float deadEnd, float route, RoomPostKinds hold,
+                              float highGround = 1f)
         {
             _concealed = concealed;
             _overwatch = overwatch;
@@ -28,6 +31,7 @@ namespace CGD.Level
             _deadEnd   = deadEnd;
             _route     = route;
             _hold      = hold;
+            _highGround = highGround;
         }
 
         public RoomPostKinds Hold => _hold;
@@ -42,6 +46,7 @@ namespace CGD.Level
             if ((kinds & RoomPostKinds.Choke)     != 0) weight = Mathf.Max(weight, _choke);
             if ((kinds & RoomPostKinds.DeadEnd)   != 0) weight = Mathf.Max(weight, _deadEnd);
             if ((kinds & RoomPostKinds.Route)     != 0) weight = Mathf.Max(weight, _route);
+            if ((kinds & RoomPostKinds.HighGround) != 0) weight = Mathf.Max(weight, _highGround);
             return weight;
         }
 
@@ -52,7 +57,7 @@ namespace CGD.Level
         public PostPreference Toward(float strength)
         {
             float Blend(float weight) => Mathf.Lerp(1f, weight, Mathf.Clamp01(strength));
-            return new PostPreference(Blend(_concealed), Blend(_overwatch), Blend(_choke), Blend(_deadEnd), Blend(_route), _hold);
+            return new PostPreference(Blend(_concealed), Blend(_overwatch), Blend(_choke), Blend(_deadEnd), Blend(_route), _hold, Blend(_highGround));
         }
     }
 }

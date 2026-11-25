@@ -1134,7 +1134,7 @@ posts each had their own idea of what blocks sight, and they disagreed over low 
 
 | Piece | Does | Used by |
 |---|---|---|
-| `SightBlocking` | What stops sight: the room's walls, tiles taken by a pillar or prop, inner walls as tall as the eye (1.6 m). `CanSee(from, to)` traces one line between two tiles' middles | Everything below |
+| `SightBlocking` | What stops sight at an eye height (standing 1.6 m by default, crouching 0.85 m): the room's walls and pillars, props, inner walls and the floor's own levels that reach the line (§18, *Sight and cover*). `CanSee(from, to)` traces one line between two tiles' middles | Everything below |
 | `SightlineMap` | The open run along each row and column, kept current as props go down. Cheap: used while furnishing | Cover selection, lanes, walls, posts, the Lab |
 | `ArrivalSight` | What is seen from the way in: `CanSee` from the arrival to each tile | Showcase, `RoomFlowReading` (Revealed), the sweep |
 | `RoomVisibility` | Who sees whom, in every direction: a bit matrix over the open tiles. `Area(tile)` (tiles seen), `Reach(tile)` (farthest seen), `Refresh(rect)` after props change | `RoomSightReading` |
@@ -1144,9 +1144,9 @@ posts each had their own idea of what blocks sight, and they disagreed over low 
   through a corner where either way round is open (grazing a pillar), not between two taken
   tiles. Between open tiles a line reads the same from either end; a taken tile is seen but
   sees nothing. Sight beyond 32 tiles doesn't count.
-- **Low things.** Inner walls lower than the eye (seat rows, low dividers and counters built as
-  walls) are looked over: they cover a body and stop movement but not sight. Taken *tiles* (props)
-  still block, whatever their height; seeing over low props needs a height on placements.
+- **Low things.** Inner walls and props lower than the eye (seat rows, low dividers, counters,
+  crates) are looked over standing: they cover a body and stop movement but not sight. A prop's
+  height is the top of its solid colliders (`PropHeights`); one of unknown height blocks.
 - **Readings.** *Exposure*: the share of the open floor a typical tile sees (a hall read at a
   glance is near 100%). *Enclosed*: the share of open tiles that see a quarter of the floor or
   less (pockets and corners). *Sightline*: the longest line in any direction, in tiles.
@@ -1194,11 +1194,12 @@ priorities were never tuned against a sweep. To decide which to leave on:
    (`RoomTraitMeasure`) from that report. The traits' interface (`RoomTrait`, the priorities,
    `RoomTraitFit.Gap`) is the same either way.
 
-## 18. Elevation (phases 0–3)
+## 18. Elevation (phases 0–4)
 
 A room's floor can stand a level up or down from the floor its doorways open onto: level 0 is the
-doorways' level, and each level is one step of 1 m (`RoomElevation.StepHeight`), under eye height,
-so the edge of a platform doesn't hide someone standing below it. The levels are -1, 0 and 1.
+doorways' level, and each level is one step of 1 m (`RoomElevation.StepHeight`), under a standing
+eye, so the edge of a platform doesn't hide someone standing below it, but over a crouching one, so
+it hides someone crouched against it. The levels are -1, 0 and 1.
 
 **The model (`RoomStructure`).** Every tile has a level. A flight of stairs (`StairFlight`) takes one
 tile at the lower level and climbs one level toward its *Up* side: it is walked onto from its foot
@@ -1271,6 +1272,38 @@ generates exactly as before.
 stairs yellow with an arrow climbing, open ledges white and railed ones grey; the readout gives a
 tile's level and which way its stairs climb. The gallery's Prop Yard has the Stairs piece.
 
-**Not yet.** Height-aware sight (standing over low cover,
-crouching behind it, a raised eye seeing further) and high ground in combat phase 4 (see `TASKS.md`
-› Elevation, next phases).
+**Sight and cover (phase 4).** Every reading of sight (`SightBlocking`, §17) traces its line from
+an eye over its tile's floor to an eye over the other tile's, and anything along the way that
+reaches the line stops it: a pillar or the room's wall always, a prop as tall as the top of its
+solid colliders (`PropHeights`, recorded on its tiles by the prop planner, `RoomStructure.PropHeightAt`),
+an inner wall as tall as it is built, the face of raised floor, the rim of a sunken one, and a mound's
+or crater's corner pieces as high as the ground they climb to. Stairs count as halfway up. So:
+
+| | Standing (1.6 m) | Crouching (0.85 m) |
+|---|---|---|
+| a bench, table or bed (under 0.85 m) | seen over | seen over |
+| a counter, crate, rock, low wall (0.85–1.6 m) | seen over | hidden behind |
+| a locker, shelf, tree, shopfront | hidden behind | hidden behind |
+| a ledge (1 m) | seen over | hidden behind |
+
+The crouching height is where enemies look for a crouched player's head (a 1 m body, its head
+0.15 m below the top), so what the plan reads as hiding someone is what hides them in play. A prop
+with no solid collider stops no line in play, so it is seen through. Up on a platform an eye sees
+over furniture that hides someone below it; crouched on a sunken floor, its rim hides you.
+
+Who reads which eye: the traits, posts, the arrival's view and the Room Sweep read standing (where a
+fight is seen from); cover placement (`PropSelection.Cover`, and a barrier's *Across Sightline*
+facing) reads crouching, so cover goes where someone crouched has nothing to hide behind, and a
+crate still breaks a firing lane for it. Cover beside a tile (`RoomCover.Shelters`, shared by the
+trait measure's covered lanes and the post map's firing positions) is a pillar or prop on the next
+tile, or ground rising a level above it with no stairs between: a ledge is cover for the floor
+below it. The post map's inner walls still count on top.
+
+**High ground.** A tile at the edge of raised floor, where a ledge drops to the floor below
+(`RoomCover.OverlooksLowerFloor`), is `RoomPostKinds.HighGround`, and counts as a firing position for
+*Overwatch* with no cover beside it. A faction's *Posts* › *High Ground* weighs it (1 = no
+preference, the default), so enemies of a faction that likes overwatch already take the edges of
+platforms and the rims of sunken courts.
+
+**Not yet.** Overpasses with walkable floor underneath (phase 5), and an enemy using the crouching
+rule itself (enemies don't crouch behind cover yet); see `TASKS.md` › Elevation, next phases.

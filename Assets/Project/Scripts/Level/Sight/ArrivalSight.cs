@@ -3,9 +3,10 @@ using UnityEngine;
 namespace CGD.Level
 {
     // What a player sees from the doorway they arrive by: a straight line over the floor plan
-    // from the arrival tile, stopped by pillars, props and inner walls as tall as the eye (seat
-    // rows and low counters are seen over) and by the room's own walls (SightBlocking). It reads
-    // the room as it is now, so it needs no refreshing as props go down.
+    // from the arrival tile at a standing eye's height, stopped by pillars, the room's own walls,
+    // and props, inner walls and raised floor that reach the line (SightBlocking): a counter or
+    // a crate is seen over, a sunken floor's far side is seen across. It reads the room as it is
+    // now, so it needs no refreshing as props go down.
     internal sealed class ArrivalSight
     {
         private readonly RoomStructure _structure;

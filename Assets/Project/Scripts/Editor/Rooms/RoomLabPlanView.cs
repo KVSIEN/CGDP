@@ -28,6 +28,7 @@ namespace CGD.Editor
         private static readonly Color Choke     = new(1f, 0.6f, 0.15f, 0.45f);
         private static readonly Color DeadEnd   = new(0.6f, 0.35f, 0.95f, 0.45f);
         private static readonly Color Route     = new(0.3f, 0.7f, 1f, 0.25f);
+        private static readonly Color HighGround = new(1f, 0.75f, 0.3f, 0.5f);
         private static readonly Color Threshold = new(0.3f, 0.95f, 0.75f, 0.45f);
         private static readonly Color Goal      = new(1f, 0.8f, 0.25f, 0.5f);
         private static readonly Color Arrival   = new(0.3f, 1f, 0.6f, 1f);
@@ -165,6 +166,7 @@ namespace CGD.Editor
         {
             if ((kinds & RoomPostKinds.Concealed) != 0) return Concealed;
             if ((kinds & RoomPostKinds.Overwatch) != 0) return Overwatch;
+            if ((kinds & RoomPostKinds.HighGround) != 0) return HighGround;
             if ((kinds & RoomPostKinds.DeadEnd)   != 0) return DeadEnd;
             if ((kinds & RoomPostKinds.Choke)     != 0) return Choke;
             if ((kinds & RoomPostKinds.Route)     != 0) return Route;
@@ -289,8 +291,17 @@ namespace CGD.Editor
 
             foreach (PlannedProp prop in sample.Furnishing.Props)
                 if (prop.Tiles.Contains(tile) && prop.Prefab != null)
-                    _readout.Append($"\n{prop.Prefab.name}{(prop.Decor ? " (decor)" : "")}, facing {Mathf.Repeat(prop.Yaw, 360f):0}°");
+                    _readout.Append($"\n{prop.Prefab.name}{(prop.Decor ? " (decor)" : "")}, facing {Mathf.Repeat(prop.Yaw, 360f):0}°{(prop.Decor ? "" : SeenOver(PropHeights.Of(prop.Prefab)))}");
             return _readout.ToString();
+        }
+
+        // What a prop's height means for sight (SightBlocking's eye heights).
+        private static string SeenOver(float height)
+        {
+            if (float.IsPositiveInfinity(height)) return ", no prefab: taken to block sight";
+            if (height >= SightBlocking.EyeHeight) return $", {height:0.0#} m: blocks sight";
+            if (height >= SightBlocking.CrouchingEyeHeight) return $", {height:0.0#} m: seen over standing, hides someone crouching";
+            return height > 0f ? $", {height:0.0#} m: seen over" : ", no collider: seen through";
         }
 
         private static string LevelName(int level) => level == 0 ? "doorways' level" : $"level {level:+0;-0} ({RoomElevation.HeightOf(level):+0.#;-0.#} m)";
@@ -332,7 +343,7 @@ namespace CGD.Editor
                 RoomLabLayer.Sightlines => sample.Visibility == null
                     ? $"green short sightlines → red {RoomSampleChecks.ExposedLaneTiles * sample.Settings.TileSize:0} m+ open lanes"
                     : $"green short sightlines → red {RoomSampleChecks.ExposedLaneTiles * sample.Settings.TileSize:0} m+ lines of sight, in any direction",
-                RoomLabLayer.Posts      => "green concealed · red overwatch · violet dead end · orange choke · blue route · ring guard, dot patrol (pink: breach side)",
+                RoomLabLayer.Posts      => "green concealed · red overwatch · amber high ground · violet dead end · orange choke · blue route · ring guard, dot patrol (pink: breach side)",
                 RoomLabLayer.Flow       => FlowLegend(sample.Room.Structure),
                 RoomLabLayer.Elevation  => sample.Room.Structure.HasElevation
                     ? "orange raised · blue sunken · yellow stairs, green slopes (arrow climbing; small square: a corner) · white ledge you can drop off · grey railed"

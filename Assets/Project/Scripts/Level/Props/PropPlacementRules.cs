@@ -15,6 +15,7 @@ namespace CGD.Level
         private readonly RoomStructure _structure;
         private readonly Vector2 _anchor;
         private readonly RectInt _bounds;
+        // The firing lanes a barrier turns across: what someone crouched sees along rows and columns.
         private readonly SightlineMap _sight;
         private readonly int _mainZone;
         private readonly Vector2Int _latticeOrigin;

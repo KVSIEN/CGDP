@@ -24,8 +24,10 @@ namespace CGD.Level
         private const float ShowcaseDepthShare = 0.75f;
 
         private readonly PropPlacementRules _rules;
+        // What a standing eye sees (the arrival's view, for Showcase) and what a crouching one does (for Cover).
         private readonly SightlineMap _sight;
-        // Cover seeks the longest sightline in any direction when this is given (IsovistUse.Cover), else the longest run.
+        private readonly SightlineMap _coverSight;
+        // Cover seeks the longest crouched sightline in any direction when this is given (IsovistUse.Cover), else the longest run.
         private readonly RoomVisibility _visibility;
         private readonly RandomStream _random;
         private readonly RectInt _bounds;
@@ -35,12 +37,14 @@ namespace CGD.Level
         // Made on the first Showcase: few placements use it.
         private ArrivalSight _arrivalSight;
 
-        public PropSelector(PropPlacementRules rules, SightlineMap sight, RandomStream random, RoomStructure structure,
-                            RoomVisibility visibility = null)
+        // `coverVisibility`: what a crouching eye sees in every direction, for Cover (IsovistUse.Cover).
+        public PropSelector(PropPlacementRules rules, SightlineMap sight, SightlineMap coverSight, RandomStream random,
+                            RoomStructure structure, RoomVisibility coverVisibility = null)
         {
             _rules     = rules;
             _sight     = sight;
-            _visibility = visibility;
+            _coverSight = coverSight;
+            _visibility = coverVisibility;
             _random    = random;
             _structure = structure;
             _bounds    = structure.Footprint.Bounds;
@@ -219,8 +223,8 @@ namespace CGD.Level
             return nearest;
         }
 
-        // The candidate on the longest open line of sight, so each piece cuts the room's worst
-        // firing lane; stops when nothing is left to break.
+        // The candidate on the longest open line of sight for someone crouched, so each piece cuts
+        // the room's worst firing lane where nothing yet hides them; stops when nothing is left to break.
         private int SelectCover(RoomPropPlacement placement, List<PropCandidate> pool, List<RectInt> own)
         {
             DropUnplaceable(placement, pool, own);
@@ -242,7 +246,7 @@ namespace CGD.Level
         // How many tiles long the longest open stretch through a tile is: along its row or column, or in
         // any direction (the line from middle to middle, and the tile it starts on).
         private float LongestSightFrom(Vector2Int tile) =>
-            _visibility != null ? _visibility.Reach(tile) + 1f : _sight.LongestRun(tile);
+            _visibility != null ? _visibility.Reach(tile) + 1f : _coverSight.LongestRun(tile);
 
         // How far a point is from the nearest prop (squared: only ever compared): of everything in
         // the room for furniture, of this placement's own for decorations (which aren't in the

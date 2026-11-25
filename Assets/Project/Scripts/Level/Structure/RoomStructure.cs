@@ -52,6 +52,9 @@ namespace CGD.Level
         private readonly sbyte[] _level;
         private readonly sbyte[] _stairUp;
         private readonly short[] _areaOf;
+        // How tall the prop on a tile stands above its floor (SetPropHeight), so low ones are seen
+        // over (SightBlocking); infinite until said, as a prop of unknown height may be any height.
+        private readonly float[] _propHeight;
         private int _solidCount;
         private int _blockedCount;
         // The reachability search's scratch space, kept between calls: it runs for every prop tried.
@@ -73,6 +76,8 @@ namespace CGD.Level
             _level     = new sbyte[_floor.Length];
             _stairUp   = new sbyte[_floor.Length];
             _areaOf    = new short[_floor.Length];
+            _propHeight = new float[_floor.Length];
+            System.Array.Fill(_propHeight, float.PositiveInfinity);
             _reached   = new bool[_floor.Length];
             foreach (Vector2Int tile in footprint.Tiles) _floor[IndexOf(tile)] = true;
         }
@@ -143,6 +148,7 @@ namespace CGD.Level
             if (other._tags.Length != _tags.Length) throw new System.ArgumentException("Not a copy of this room.", nameof(other));
             System.Array.Copy(other._tags, _tags, _tags.Length);
             System.Array.Copy(other._solid, _solid, _solid.Length);
+            System.Array.Copy(other._propHeight, _propHeight, _propHeight.Length);
             _solidCount = other._solidCount;
         }
 
@@ -217,10 +223,22 @@ namespace CGD.Level
                 if (!InBounds(tile)) continue;
                 int index = IndexOf(tile);
                 _tags[index] &= ~tag;
+                if ((tag & RoomTileTags.Prop) != 0) _propHeight[index] = float.PositiveInfinity;
                 if (!_solid[index] || (_tags[index] & Solid) != 0) continue;
                 _solid[index] = false;
                 _solidCount--;
             }
+        }
+
+        // How tall the prop on a tile stands above its floor: 0 with no prop, infinite when nobody
+        // said (SetPropHeight).
+        public float PropHeightAt(Vector2Int tile) =>
+            Has(tile, RoomTileTags.Prop) ? _propHeight[IndexOf(tile)] : 0f;
+
+        // Says how tall the prop on a tile stands (PropHeights), once it has claimed the tile.
+        public void SetPropHeight(Vector2Int tile, float height)
+        {
+            if (InBounds(tile)) _propHeight[IndexOf(tile)] = Mathf.Max(0f, height);
         }
 
         // Whether every free tile can still be walked to from the doorways if `claimed` were

@@ -4,8 +4,9 @@ using UnityEngine;
 namespace CGD.Level
 {
     // What each floor tile of a furnished room offers an enemy (RoomPostKinds): concealment
-    // from the concealment props over it, overwatch and chokes from the sightlines, dead ends
-    // and routes from the walkways. Read once the room's props are planned.
+    // from the concealment props over it, overwatch and chokes from the sightlines, high ground
+    // from the floor's levels, dead ends and routes from the walkways. Read once the room's
+    // props are planned.
     public sealed class RoomPostMap
     {
         public const int OverwatchLaneTiles = RoomTraitMeasure.LaneMediumTiles;
@@ -67,6 +68,7 @@ namespace CGD.Level
 
             RoomPostKinds kinds = RoomPostKinds.None;
             if (_concealed.Contains(tile)) kinds |= RoomPostKinds.Concealed;
+            if (RoomCover.OverlooksLowerFloor(_structure, tile)) kinds |= RoomPostKinds.HighGround;
 
             kinds |= _visibility != null ? SeenFrom(tile) : SightAlongRuns(tile);
 
@@ -85,7 +87,7 @@ namespace CGD.Level
             (int alongX, int alongY) = _sight.Runs(tile);
             RoomPostKinds kinds = RoomPostKinds.None;
             if (Mathf.Min(alongX, alongY) <= ChokeTiles) kinds |= RoomPostKinds.Choke;
-            if (Mathf.Max(alongX, alongY) >= OverwatchLaneTiles && HasCoverBeside(tile)) kinds |= RoomPostKinds.Overwatch;
+            if (Mathf.Max(alongX, alongY) >= OverwatchLaneTiles && IsFiringPosition(tile)) kinds |= RoomPostKinds.Overwatch;
             return kinds;
         }
 
@@ -95,7 +97,7 @@ namespace CGD.Level
         {
             RoomPostKinds kinds = RoomPostKinds.None;
             if (_visibility.Area(tile) <= RoomSightReading.EnclosedShare * OpenTiles()) kinds |= RoomPostKinds.Choke;
-            if (_visibility.Reach(tile) + 1f >= OverwatchLaneTiles && HasCoverBeside(tile)) kinds |= RoomPostKinds.Overwatch;
+            if (_visibility.Reach(tile) + 1f >= OverwatchLaneTiles && IsFiringPosition(tile)) kinds |= RoomPostKinds.Overwatch;
             return kinds;
         }
 
@@ -109,16 +111,19 @@ namespace CGD.Level
             return _openTiles;
         }
 
-        // A pillar, a prop or an inner wall right next to the tile (the room's own walls don't count).
+        // An inner wall right next to the tile, or what RoomCover counts: a pillar, a prop, or a
+        // ledge rising above it (the room's own walls don't count).
         private bool HasCoverBeside(Vector2Int tile)
         {
             foreach (Vector2Int side in GridSides.All)
             {
                 Vector2Int next = tile + side;
-                if (_structure.IsPartitioned(tile, next)) return true;
-                if (_structure.Contains(next) && _structure.Has(next, Solid)) return true;
+                if (_structure.IsPartitioned(tile, next) || RoomCover.Shelters(_structure, tile, next)) return true;
             }
             return false;
         }
+
+        // Somewhere to shoot from: cover beside the tile, or the edge of higher ground looking down on the floor below.
+        private bool IsFiringPosition(Vector2Int tile) => HasCoverBeside(tile) || RoomCover.OverlooksLowerFloor(_structure, tile);
     }
 }

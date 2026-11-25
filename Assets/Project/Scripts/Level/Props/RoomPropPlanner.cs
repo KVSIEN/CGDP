@@ -47,9 +47,15 @@ namespace CGD.Level
         private readonly float _countScale;
         private readonly float _concealmentScale;
         private readonly RectInt _bounds;
+        // What a standing eye sees (the traits, the arrival's view) and what a crouching one does:
+        // cover goes where someone crouched has nothing to hide behind, so a crate breaks a
+        // crouched firing lane though a standing eye sees over it.
         private readonly SightlineMap _sight;
-        // What can be seen from each tile, in every direction; only for the readers that asked for it (IsovistUse).
+        private readonly SightlineMap _coverSight;
+        // What can be seen from each tile, in every direction, standing and crouched; only for the
+        // readers that asked for it (IsovistUse).
         private readonly RoomVisibility _visibility;
+        private readonly RoomVisibility _coverVisibility;
         private readonly bool _traitsUseIsovist;
         private readonly RouteMap _routes;
         private readonly PropPlacementRules _rules;
@@ -82,12 +88,14 @@ namespace CGD.Level
                 if (structure.Has(tile, RoomTileTags.Structure | RoomTileTags.Prop)) _claimed++;
 
             _bounds   = structure.Footprint.Bounds;
-            _sight    = new SightlineMap(structure);
+            _sight      = new SightlineMap(structure);
+            _coverSight = new SightlineMap(structure, new SightBlocking(structure, SightBlocking.CrouchingEyeHeight));
             _traitsUseIsovist = (isovist & IsovistUse.Traits) != 0;
-            if ((isovist & (IsovistUse.Traits | IsovistUse.Cover)) != 0) _visibility = new RoomVisibility(structure, _sight.Blocking);
+            if (_traitsUseIsovist) _visibility = new RoomVisibility(structure, _sight.Blocking);
+            if ((isovist & IsovistUse.Cover) != 0) _coverVisibility = new RoomVisibility(structure, _coverSight.Blocking);
             _routes   = new RouteMap(structure);
-            _rules    = new PropPlacementRules(structure, anchor, _sight, _routes, _keyed);
-            _selector = new PropSelector(_rules, _sight, random, structure, (isovist & IsovistUse.Cover) != 0 ? _visibility : null);
+            _rules    = new PropPlacementRules(structure, anchor, _coverSight, _routes, _keyed);
+            _selector = new PropSelector(_rules, _sight, _coverSight, random, structure, _coverVisibility);
         }
 
         public IReadOnlyList<PlannedProp> Planned => _planned;
@@ -296,8 +304,9 @@ namespace CGD.Level
 
             ReserveAccess(candidate, placement.Clearance);
             if (placement.MarksRoute) MarkRoute(candidate);
-            Changed(candidate.Rect);
             Emit(candidate, placement, size);
+            SetHeight(candidate.Rect, TallestSince(firstPlanned));
+            Changed(candidate.Rect);
             own.Add(candidate.Rect);
             _selector.NotePlaced(candidate.Rect.center);
             if (UsesFill(placement)) _claimed += tiles.Count;
@@ -319,11 +328,30 @@ namespace CGD.Level
             return tiles;
         }
 
+        // The tallest of the props planned from `first` on: the pieces one placement just put on its
+        // tiles (a pile, a group and its members). Infinite when it put none down.
+        private float TallestSince(int first)
+        {
+            if (first >= _planned.Count) return float.PositiveInfinity;
+
+            float tallest = 0f;
+            for (int i = first; i < _planned.Count; i++) tallest = Mathf.Max(tallest, PropHeights.Of(_planned[i].Prefab));
+            return tallest;
+        }
+
+        // How tall what stands on a prop's tiles is, before what can be seen across them is measured again.
+        private void SetHeight(RectInt rect, float height)
+        {
+            foreach (Vector2Int tile in rect.allPositionsWithin) _structure.SetPropHeight(tile, height);
+        }
+
         // Floor props stand on changed: what can be seen across it is measured again.
         private void Changed(RectInt rect)
         {
             _sight.Refresh(rect);
+            _coverSight.Refresh(rect);
             _visibility?.Invalidate(rect);
+            _coverVisibility?.Invalidate(rect);
         }
 
         // Decorations take no floor, and a feature that grows with the room is part of its plan.
@@ -439,7 +467,7 @@ namespace CGD.Level
             Vacate(placement, origin.Rect);
             if (!TryRelocate(piece, origin, random))
             {
-                Reoccupy(placement, origin.Rect);
+                Reoccupy(placement, origin.Rect, before.Prefab);
                 return false;
             }
 
@@ -447,7 +475,7 @@ namespace CGD.Level
             undo = () =>
             {
                 Vacate(placement, destination.Rect);
-                Reoccupy(placement, origin.Rect);
+                Reoccupy(placement, origin.Rect, before.Prefab);
                 piece.Spot = origin;
                 _planned[piece.PlanIndex] = before;
             };
@@ -492,6 +520,7 @@ namespace CGD.Level
             if (!placement.Decor)
             {
                 if (UsesFill(placement)) _claimed += spot.Rect.width * spot.Rect.height;
+                SetHeight(spot.Rect, PropHeights.Of(_planned[piece.PlanIndex].Prefab));
                 Changed(spot.Rect);
             }
             float yaw = YawFor(spot, placement, piece.Size, random);
@@ -511,11 +540,12 @@ namespace CGD.Level
         }
 
         // Takes a piece's floor back, known to be free and to keep the room whole, as it was before it moved.
-        private void Reoccupy(RoomPropPlacement placement, RectInt rect)
+        private void Reoccupy(RoomPropPlacement placement, RectInt rect, GameObject prefab)
         {
             if (placement.Decor) return;
 
             foreach (Vector2Int tile in rect.allPositionsWithin) _structure.Tag(tile, RoomTileTags.Prop);
+            SetHeight(rect, PropHeights.Of(prefab));
             if (UsesFill(placement)) _claimed += rect.width * rect.height;
             Changed(rect);
         }

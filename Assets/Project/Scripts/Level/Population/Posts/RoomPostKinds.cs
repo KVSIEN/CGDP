@@ -8,9 +8,10 @@ namespace CGD.Level
     {
         None      = 0,
         Concealed = 1,   // under a concealment prop: hidden until someone is close
-        Overwatch = 2,   // on a long open lane with hard cover beside it: a firing position
+        Overwatch = 2,   // on a long open lane with hard cover beside it, or at the edge of high ground: a firing position
         Choke     = 4,   // narrow floor: a corridor, aisle or gap between pillars
         DeadEnd   = 8,   // well away from every route: a back corner
         Route     = 16,  // on or beside a walkway: where everyone passes
+        HighGround = 32, // at the edge of raised floor, looking down a ledge onto the floor below
     }
 }

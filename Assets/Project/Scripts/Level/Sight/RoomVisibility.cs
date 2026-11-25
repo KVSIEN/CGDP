@@ -7,8 +7,9 @@ namespace CGD.Level
     // only, this sees in every direction, so a diagonal lane, a round room's open middle and
     // the shadow behind a pillar all read as they play.
     //
-    // A line is clear when it crosses only open floor (what SightBlocking says) and no inner
-    // wall tall enough to hide behind. A line through the exact corner where two tiles meet
+    // A line is clear when it passes over everything between the two tiles at eye height
+    // (SightBlocking): pillars and the room's walls, props and inner walls that reach the line,
+    // the faces of raised floor. Only tiles someone can stand on see or are seen. A line through the exact corner where two tiles meet
     // passes if either of the two ways round the corner is open, so it can graze a pillar but
     // not squeeze between two. Lines are symmetric: a sees b exactly when b sees a. A tile
     // that is blocked sees nothing and is seen by none. Nothing beyond `range` tiles is seen
@@ -146,7 +147,7 @@ namespace CGD.Level
             var tiles = _structure.Footprint.Tiles;
             bool everything = changed.xMin <= _bounds.xMin && changed.yMin <= _bounds.yMin && changed.xMax >= _bounds.xMax && changed.yMax >= _bounds.yMax;
             var open = new bool[tiles.Count];
-            for (int i = 0; i < tiles.Count; i++) open[i] = !_blocking.BlocksTile(tiles[i]);
+            for (int i = 0; i < tiles.Count; i++) open[i] = !_blocking.IsTaken(tiles[i]);
 
             for (int i = 0; i < tiles.Count; i++)
             {
