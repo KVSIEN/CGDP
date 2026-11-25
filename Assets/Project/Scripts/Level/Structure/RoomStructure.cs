@@ -46,8 +46,9 @@ namespace CGD.Level
         private readonly bool[] _solid;
         private readonly bool[] _wallEast;
         private readonly bool[] _wallNorth;
-        // The floor's level (0 = the doorways' level), the flight of stairs on a tile (0 = none,
-        // else 1 + its Up's index in GridSides.All) and the elevated area a tile belongs to (0 = none, else 1 + its index).
+        // The floor's level (0 = the doorways' level), the flight on a tile (0 = none, else 1 + its
+        // Up's index in GridSides.All, plus 4 for a slope) and the elevated area a tile belongs to
+        // (0 = none, else 1 + its index).
         private readonly sbyte[] _level;
         private readonly sbyte[] _stairUp;
         private readonly short[] _areaOf;
@@ -427,7 +428,7 @@ namespace CGD.Level
         {
             stairs = default;
             if (!InBounds(tile) || _stairUp[IndexOf(tile)] == 0) return false;
-            stairs = new StairFlight(tile, UpAt(IndexOf(tile)));
+            stairs = new StairFlight(tile, UpAt(IndexOf(tile)), _stairUp[IndexOf(tile)] > GridSides.All.Length);
             return true;
         }
 
@@ -485,16 +486,27 @@ namespace CGD.Level
                     if (!IsFree(tile) || Has(tile, RoomTileTags.NearDoor) || _level[IndexOf(tile)] != 0 || !claimed.Add(tile)) return false;
             }
 
+            // Each flight and corner piece takes a tile of its own; landings may be shared (two
+            // slopes side by side onto one mound), but nothing stands on another's landing.
             const RoomTileTags NotOnStairs = RoomTileTags.NearDoor | RoomTileTags.Centre;
             var flights = new HashSet<Vector2Int>();
+            var landings = new HashSet<Vector2Int>();
             foreach (ElevatedArea area in areas)
+            {
                 foreach (StairFlight stairs in area.Stairs)
                 {
                     if (Mathf.Abs(stairs.Up.x) + Mathf.Abs(stairs.Up.y) != 1 || Has(stairs.Tile, NotOnStairs)) return false;
-                    foreach (Vector2Int tile in new[] { stairs.Foot, stairs.Tile, stairs.Head })
-                        if (!IsFree(tile) || !flights.Add(tile)) return false;
+                    if (!IsFree(stairs.Tile) || !IsFree(stairs.Foot) || !IsFree(stairs.Head) || !flights.Add(stairs.Tile)) return false;
                     if (IsPartitioned(stairs.Foot, stairs.Tile) || IsPartitioned(stairs.Tile, stairs.Head)) return false;
+                    landings.Add(stairs.Foot);
+                    landings.Add(stairs.Head);
                 }
+                foreach (SlopeCorner corner in area.Corners)
+                    if (Mathf.Abs(corner.Up.x) != 1 || Mathf.Abs(corner.Up.y) != 1 || !IsFree(corner.Tile)
+                        || Has(corner.Tile, RoomTileTags.NearDoor) || !flights.Add(corner.Tile)) return false;
+            }
+            foreach (Vector2Int tile in flights)
+                if (landings.Contains(tile)) return false;
 
             int first = _elevations.Count;
             for (int i = 0; i < areas.Count; i++)
@@ -524,6 +536,9 @@ namespace CGD.Level
                     if (LevelOf(stairs.Foot) != low || LevelOf(stairs.Head) != low + 1) return false;
                     if (AreaOf(stairs.Tile) != area && AreaOf(stairs.Head) != area) return false;
                 }
+
+                foreach (SlopeCorner corner in area.Corners)
+                    if (LevelOf(corner.Tile + corner.Up) != LevelOf(corner.Tile) + 1) return false;
             }
             return true;
         }
@@ -539,10 +554,18 @@ namespace CGD.Level
             }
             foreach (StairFlight stairs in area.Stairs)
             {
-                _stairUp[IndexOf(stairs.Tile)] = adding ? (sbyte)(1 + System.Array.IndexOf(GridSides.All, stairs.Up)) : (sbyte)0;
+                int code = 1 + System.Array.IndexOf(GridSides.All, stairs.Up) + (stairs.Slope ? GridSides.All.Length : 0);
+                _stairUp[IndexOf(stairs.Tile)] = adding ? (sbyte)code : (sbyte)0;
                 foreach (Vector2Int tile in new[] { stairs.Foot, stairs.Head })
                     SetTag(tile, RoomTileTags.Landing, adding);
                 SetTag(stairs.Tile, RoomTileTags.Stairs, adding);
+            }
+
+            // A corner piece is solid ground, like a pillar.
+            foreach (SlopeCorner corner in area.Corners)
+            {
+                if (adding) Tag(corner.Tile, RoomTileTags.Structure);
+                else Release(new[] { corner.Tile }, RoomTileTags.Structure);
             }
         }
 
@@ -559,6 +582,9 @@ namespace CGD.Level
         {
             int ia = IndexOf(a), ib = IndexOf(b);
             Vector2Int step = b - a;
+            // Across a wide flight: two flights side by side, climbing the same way from the same level.
+            if (_stairUp[ia] != 0 && _stairUp[ib] != 0 && UpAt(ia) == UpAt(ib) && _level[ia] == _level[ib] && !Along(UpAt(ia), step))
+                return true;
             if (_stairUp[ia] != 0 && !Along(UpAt(ia), step)) return false;
             if (_stairUp[ib] != 0 && !Along(UpAt(ib), step)) return false;
 
@@ -571,7 +597,7 @@ namespace CGD.Level
 
         private static bool Along(Vector2Int up, Vector2Int step) => step == up || step == -up;
 
-        private Vector2Int UpAt(int index) => GridSides.All[_stairUp[index] - 1];
+        private Vector2Int UpAt(int index) => GridSides.All[(_stairUp[index] - 1) % GridSides.All.Length];
 
         // A railed area keeps anyone from crossing its ledges: off a platform, or into a pit.
         private bool IsRailed(int a, int b)

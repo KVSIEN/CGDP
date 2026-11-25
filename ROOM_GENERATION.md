@@ -1194,7 +1194,7 @@ priorities were never tuned against a sweep. To decide which to leave on:
    (`RoomTraitMeasure`) from that report. The traits' interface (`RoomTrait`, the priorities,
    `RoomTraitFit.Gap`) is the same either way.
 
-## 18. Elevation (phases 0–2)
+## 18. Elevation (phases 0–3)
 
 A room's floor can stand a level up or down from the floor its doorways open onto: level 0 is the
 doorways' level, and each level is one step of 1 m (`RoomElevation.StepHeight`), under eye height,
@@ -1223,7 +1223,15 @@ landings `Landing`: nothing is built on either, and a prop never straddles a led
 
 **Features (`ElevationStructureRule`).** *Platform* raises a block with its back to the room's wall,
 its flights on its open sides facing into the room; *Sunken Floor* sinks a block with floor all
-round it, its flights just inside its rim. Both keep off routes, doorway fronts and the centre.
+round it, its flights just inside its rim, and with *Bridge* a strip of floor level with the room
+across its middle, splitting it in two (each half gets a flight, which may climb onto the bridge).
+*Mound* and *Crater* are round (*Radius* 1 is a plus, 2 a round blob) and slope on every side
+instead of having stairs: a slope (`StairFlight.Slope`) wherever the edge runs straight, a solid
+corner piece (`SlopeCorner`, tagged `Structure`) where two slopes meet, so there is no bare ledge
+anywhere round them. A mound's slopes stand on the floor round its top; a crater's just inside its
+rim, climbing out. Slopes side by side climbing the same way are one bank: walked across as well as
+up (`CanStep`), still not entered from the floor at their ends. All four keep off routes, doorway
+fronts and the centre.
 
 **Terraces (`TerracesStructureRule`, `TerraceLayout`).** Lanes running wall to wall, side by side,
 each with a level and a width weight: *Split Level* 1-0, *Raised Walks* 1-0-1, *Raised Middle*
@@ -1234,15 +1242,19 @@ down when that is what fits (Raised Walks with doors onto the walks becomes a su
 walks level with the doors), and turned when Direction allows. Floor just in front of a doorway in
 another lane stays level with the doorway, as a landing, with a flight on where the route steps off
 it. Flights go wherever a route from a doorway crosses a ledge, then evenly, one per *Stair Spacing*
-tiles of ledge (at least one per ledge, three tiles apart at least). *Railed* puts railings along the
-rest; without, the ledges can be dropped off. A room no shift or turn fits, or too narrow for its
+tiles of ledge (at least one per ledge, three tiles apart at least), counted on each piece of ledge
+a landing or a bridge leaves. *Railed* puts railings along the rest; without, the ledges can be
+dropped off. *Bridges* lays that many strips of floor, level with the room, straight across each
+sunken lane that has floor on both sides (a court between two walks), spread evenly along it. A room no shift or turn fits, or too narrow for its
 lanes (two tiles each at least), stays flat. Put it first in a layout's structure: pillars and walls
 after it stand on its levels.
 
 **Built (`ElevationGeometryBuilder`).** Each tile's floor slab reaches down to the lowest floor beside
 it, so a raised floor shows its face and a sunken one its sides; with a level below 0 allowed, the
 outer walls reach a metre below the floor too. Each flight gets the settings' *Stairs Prefab* (a
-plain ramp without one) and each railed ledge the *Railing Prefab* on its higher side. Pillars stand
+plain ramp without one) and each railed ledge the *Railing Prefab* on its higher side. A slope is
+a ramp of ground the full width of its tile, so a bank of them reads as one, and a corner piece a
+narrower ramp along the tile's diagonal (all in the *Slopes* part, floor material). Pillars stand
 on the lowest floor round them and still reach the ceiling; an inner wall on a ledge stands from the
 lower floor. Props, enemies, patrol points, keys, terminals and the centrepiece go on their tile's
 floor (`LevelLayout.TileToFloor`, `FloorHeight`). Enemies get a one-way NavMesh link down every open
@@ -1259,6 +1271,6 @@ generates exactly as before.
 stairs yellow with an arrow climbing, open ledges white and railed ones grey; the readout gives a
 tile's level and which way its stairs climb. The gallery's Prop Yard has the Stairs piece.
 
-**Not yet.** Mounds, craters and bridges are phase 3; height-aware sight (standing over low cover,
+**Not yet.** Height-aware sight (standing over low cover,
 crouching behind it, a raised eye seeing further) and high ground in combat phase 4 (see `TASKS.md`
 › Elevation, next phases).

@@ -36,6 +36,7 @@ namespace CGD.Editor
         private static readonly Color Raised    = new(1f, 0.55f, 0.2f, 0.45f);
         private static readonly Color Sunken    = new(0.25f, 0.45f, 1f, 0.45f);
         private static readonly Color StairTile = new(1f, 0.9f, 0.25f, 0.7f);
+        private static readonly Color SlopeTile = new(0.55f, 0.85f, 0.35f, 0.7f);
         private static readonly Color OpenLedge  = new(1f, 1f, 1f, 0.95f);
         private static readonly Color RailedLedge = new(0.45f, 0.45f, 0.5f, 1f);
 
@@ -105,7 +106,7 @@ namespace CGD.Editor
 
         private static Color? ElevationColor(RoomStructure structure, Vector2Int tile)
         {
-            if (structure.Has(tile, RoomTileTags.Stairs)) return StairTile;
+            if (structure.TryGetStairs(tile, out StairFlight flight)) return flight.Slope ? SlopeTile : StairTile;
             int level = structure.LevelOf(tile);
             return level > 0 ? Raised : level < 0 ? Sunken : (Color?)null;
         }
@@ -115,6 +116,10 @@ namespace CGD.Editor
         private void DrawLevels(Rect image, RoomStructure structure)
         {
             if (!structure.HasElevation) return;
+
+            foreach (ElevatedArea area in structure.Elevations)
+                foreach (SlopeCorner corner in area.Corners)
+                    EditorGUI.DrawRect(Shrink(TileRect(image, corner.Tile), 0.2f), SlopeTile);
 
             Color before = Handles.color;
             foreach (Vector2Int tile in structure.Footprint.Tiles)
@@ -264,7 +269,7 @@ namespace CGD.Editor
             _readout.Append($"Tile {tile.x}, {tile.y}");
             if (structure.ZoneCount > 1) _readout.Append($" · zone {structure.ZoneOf(tile) + 1}");
             if (structure.HasElevation) _readout.Append($" · {LevelName(structure.LevelOf(tile))}");
-            if (structure.TryGetStairs(tile, out StairFlight flight)) _readout.Append($" · stairs climbing {SideName(flight.Up)}");
+            if (structure.TryGetStairs(tile, out StairFlight flight)) _readout.Append($" · {(flight.Slope ? "slope" : "stairs")} climbing {SideName(flight.Up)}");
             if (sample.Split != null)
                 _readout.Append($" ({(sample.Split.IsBreachZone(structure.ZoneOf(tile)) ? room.BreachFaction.DisplayName : room.Faction?.DisplayName ?? "holder")}'s side)");
             RoomTileTags tags = structure.TagsAt(tile);
@@ -330,7 +335,7 @@ namespace CGD.Editor
                 RoomLabLayer.Posts      => "green concealed · red overwatch · violet dead end · orange choke · blue route · ring guard, dot patrol (pink: breach side)",
                 RoomLabLayer.Flow       => FlowLegend(sample.Room.Structure),
                 RoomLabLayer.Elevation  => sample.Room.Structure.HasElevation
-                    ? "orange raised · blue sunken · yellow stairs, arrow climbing · white ledge you can drop off · grey railed"
+                    ? "orange raised · blue sunken · yellow stairs, green slopes (arrow climbing; small square: a corner) · white ledge you can drop off · grey railed"
                     : "Flat: every tile on the doorways' level (Elevation rules need Level Build Settings › Lowest/Highest Level)",
                 _                       => "sand furniture · dark pillars · cyan outline doorway",
             };

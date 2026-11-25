@@ -46,9 +46,11 @@ namespace CGD.Level
         }
 
         // The runs off level 0, each with the flights onto or off it. Floor just in front of a
-        // doorway, and floor something already stands on, stays on level 0.
-        public List<ElevatedArea> Areas(int stairSpacing, int minGap, bool railed)
+        // doorway, and floor something already stands on, stays on level 0, and so does each of
+        // `bridges` strips straight across a sunken run that has floor on both sides of it.
+        public List<ElevatedArea> Areas(int stairSpacing, int minGap, bool railed, int bridges = 0)
         {
+            HashSet<Vector2Int> bridged = Bridges(bridges);
             var tilesOf = new List<Vector2Int>[_runs.Count];
             var stairsOf = new List<StairFlight>[_runs.Count];
             for (int r = 0; r < _runs.Count; r++)
@@ -61,7 +63,7 @@ namespace CGD.Level
                 {
                     int lane = LaneOf(tile);
                     if (lane < _runs[r].first || lane > _runs[r].last) continue;
-                    if (!_structure.IsFree(tile) || _structure.Has(tile, RoomTileTags.NearDoor)) continue;
+                    if (!_structure.IsFree(tile) || _structure.Has(tile, RoomTileTags.NearDoor) || bridged.Contains(tile)) continue;
                     tilesOf[r].Add(tile);
                     _levelAfter[tile] = _runs[r].level;
                 }
@@ -99,49 +101,91 @@ namespace CGD.Level
             return areas;
         }
 
+        // Tiles of floor kept level with the room across each sunken run between two others: `count`
+        // strips straight across it, spread evenly along it.
+        private HashSet<Vector2Int> Bridges(int count)
+        {
+            var tiles = new HashSet<Vector2Int>();
+            if (count <= 0) return tiles;
+
+            RectInt bounds = _structure.Footprint.Bounds;
+            int from = _stackedAlongY ? bounds.xMin : bounds.yMin, span = _stackedAlongY ? bounds.width : bounds.height;
+            for (int r = 1; r < _runs.Count - 1; r++)
+            {
+                if (_runs[r].level >= 0) continue;
+                for (int k = 0; k < count; k++)
+                {
+                    int along = from + Mathf.FloorToInt((k + 1) * span / (float)(count + 1));
+                    for (int across = _starts[_runs[r].first]; across < _starts[_runs[r].last + 1]; across++)
+                        tiles.Add(TileAt(along, across));
+                }
+            }
+            return tiles;
+        }
+
         // Flights across the ledge between the lane ending at `boundary - 1` and the one starting
-        // at `boundary`: first wherever a route from a doorway crosses it, then spread evenly so
-        // there is one every `spacing` tiles of ledge, none nearer another than `minGap`.
+        // at `boundary`. A bridge or a doorway's landing breaks a ledge into pieces; on each piece,
+        // first wherever a route from a doorway crosses it, then spread evenly so there is one
+        // every `spacing` tiles and at least one, none nearer another than `minGap`.
         private List<StairFlight> AlongLedge(int boundary, int spacing, int minGap)
         {
             RectInt bounds = _structure.Footprint.Bounds;
             int from = _stackedAlongY ? bounds.xMin : bounds.yMin, to = _stackedAlongY ? bounds.xMax : bounds.yMax;
 
+            var chosen = new List<(int along, StairFlight stairs)>();
+            var piece = new List<int>();
             var candidates = new List<(int along, StairFlight stairs)>();
-            int ledge = 0, firstLedge = int.MaxValue, lastLedge = int.MinValue;
-            for (int along = from; along < to; along++)
+            for (int along = from; along <= to; along++)
             {
-                Vector2Int below = TileAt(along, boundary - 1), above = TileAt(along, boundary);
-                if (!_structure.Contains(below) || !_structure.Contains(above)) continue;
-                int levelBelow = LevelAfter(below), levelAbove = LevelAfter(above);
-                if (Mathf.Abs(levelBelow - levelAbove) != 1) continue;
-
-                ledge++;
-                firstLedge = Mathf.Min(firstLedge, along);
-                lastLedge  = Mathf.Max(lastLedge, along);
-                // The flight stands on the lower side and climbs onto the higher.
-                StairFlight stairs = levelBelow < levelAbove ? new StairFlight(below, Step(+1)) : new StairFlight(above, Step(-1));
-                if (CanStand(stairs)) candidates.Add((along, stairs));
+                StairFlight stairs = default;
+                if (along < to && TryLedge(along, boundary, out stairs))
+                {
+                    piece.Add(along);
+                    if (CanStand(stairs)) candidates.Add((along, stairs));
+                    continue;
+                }
+                if (piece.Count > 0) ChooseOnPiece(piece, candidates, spacing, minGap, chosen);
+                piece.Clear();
+                candidates.Clear();
             }
 
-            var chosen = new List<(int along, StairFlight stairs)>();
+            var flights = new List<StairFlight>(chosen.Count);
+            foreach ((int along, StairFlight stairs) candidate in chosen) flights.Add(candidate.stairs);
+            return flights;
+        }
+
+        // Whether the floor steps one level across the boundary here, and the flight that would
+        // climb it: standing on the lower side, climbing onto the higher.
+        private bool TryLedge(int along, int boundary, out StairFlight stairs)
+        {
+            stairs = default;
+            Vector2Int below = TileAt(along, boundary - 1), above = TileAt(along, boundary);
+            if (!_structure.Contains(below) || !_structure.Contains(above)) return false;
+
+            int levelBelow = LevelAfter(below), levelAbove = LevelAfter(above);
+            if (Mathf.Abs(levelBelow - levelAbove) != 1) return false;
+            stairs = levelBelow < levelAbove ? new StairFlight(below, Step(+1)) : new StairFlight(above, Step(-1));
+            return true;
+        }
+
+        private void ChooseOnPiece(List<int> piece, List<(int along, StairFlight stairs)> candidates, int spacing, int minGap,
+                                   List<(int along, StairFlight stairs)> chosen)
+        {
+            int before = chosen.Count;
             foreach ((int along, StairFlight stairs) candidate in candidates)
                 if (OnARoute(candidate.stairs) && FarFromAll(candidate.along, chosen, minGap)) chosen.Add(candidate);
 
-            int wanted = Mathf.Max(1, Mathf.RoundToInt(ledge / (float)spacing));
-            for (int k = 0; k < wanted && chosen.Count < wanted && candidates.Count > 0; k++)
+            int first = piece[0], length = piece.Count;
+            int wanted = Mathf.Max(1, Mathf.RoundToInt(length / (float)spacing));
+            for (int k = 0; k < wanted && chosen.Count - before < wanted; k++)
             {
-                float target = firstLedge + (k + 0.5f) * (lastLedge - firstLedge + 1) / wanted;
+                float target = first + (k + 0.5f) * length / wanted;
                 (int along, StairFlight stairs)? best = null;
                 foreach ((int along, StairFlight stairs) candidate in candidates)
                     if (FarFromAll(candidate.along, chosen, minGap) && (best == null || Mathf.Abs(candidate.along + 0.5f - target) < Mathf.Abs(best.Value.along + 0.5f - target)))
                         best = candidate;
                 if (best.HasValue) chosen.Add(best.Value);
             }
-
-            var flights = new List<StairFlight>(chosen.Count);
-            foreach ((int along, StairFlight stairs) candidate in chosen) flights.Add(candidate.stairs);
-            return flights;
         }
 
         // Free floor for the flight and both landings, the foot on the flight's own level, no wall across it.

@@ -212,12 +212,15 @@ namespace CGD.Tests
 
         // --- The rule -------------------------------------------------------------------
 
-        private static ElevationStructureRule Rule(ElevationKind kind, bool railed = false)
+        private static ElevationStructureRule Rule(ElevationKind kind, bool railed = false, bool bridge = false, int minLength = 3)
         {
             var rule = ScriptableObject.CreateInstance<ElevationStructureRule>();
             var serialized = new SerializedObject(rule);
             serialized.FindProperty("_kind").enumValueIndex = (int)kind;
             serialized.FindProperty("_railed").boolValue = railed;
+            serialized.FindProperty("_bridge").boolValue = bridge;
+            serialized.FindProperty("_length").FindPropertyRelative("Min").intValue = minLength;
+            serialized.FindProperty("_length").FindPropertyRelative("Max").intValue = Mathf.Max(minLength, 5);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return rule;
         }
@@ -316,6 +319,105 @@ namespace CGD.Tests
                     }
                 }
             }
+        }
+
+        // --- Slopes, mounds, craters and bridges -------------------------------------------
+
+        [Test]
+        public void SlopesSideBySideAreWalkedAcrossButNotEnteredFromTheSide()
+        {
+            RoomStructure room = Room(12, 10, new Vector2Int(11, 5));
+            room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
+            var bank = new ElevatedArea(ElevationKind.Mound, 1, Block(2, 2, 2, 1),
+                new[] { new StairFlight(new Vector2Int(2, 1), Vector2Int.up, slope: true), new StairFlight(new Vector2Int(3, 1), Vector2Int.up, slope: true) }, false);
+
+            Assert.That(room.TryAddElevation(bank), Is.True);
+            Assert.That(room.CanStep(new Vector2Int(2, 1), new Vector2Int(3, 1)), Is.True, "across the bank");
+            Assert.That(room.CanStep(new Vector2Int(1, 1), new Vector2Int(2, 1)), Is.False, "onto it from the side");
+            Assert.That(room.TryGetStairs(new Vector2Int(2, 1), out StairFlight slope) && slope.Slope, Is.True);
+        }
+
+        [Test]
+        public void ACornerPieceIsSolidAndGivenBackWhenItsAreaIsRefused()
+        {
+            RoomStructure room = Room(12, 10, new Vector2Int(11, 5));
+            room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
+            var corner = new SlopeCorner(new Vector2Int(1, 1), new Vector2Int(1, 1));
+            var stranded = new ElevatedArea(ElevationKind.Mound, 1, Block(2, 2, 1, 1), System.Array.Empty<StairFlight>(), false, new[] { corner });
+
+            Assert.That(room.TryAddElevation(stranded), Is.False, "no way up");
+            Assert.That(room.Has(new Vector2Int(1, 1), RoomTileTags.Structure), Is.False, "the corner is given back");
+            Assert.That(room.StaysConnected(System.Array.Empty<Vector2Int>()), Is.True);
+
+            var reached = new ElevatedArea(ElevationKind.Mound, 1, Block(2, 2, 1, 1),
+                new[] { new StairFlight(new Vector2Int(3, 2), Vector2Int.left, slope: true) }, false, new[] { corner });
+            Assert.That(room.TryAddElevation(reached), Is.True);
+            Assert.That(room.Has(new Vector2Int(1, 1), RoomTileTags.Structure), Is.True);
+            Assert.That(room.TryClaim(new[] { new Vector2Int(1, 1) }, RoomTileTags.Prop), Is.False);
+        }
+
+        private static IEnumerable<RoomStructure> RoomyRooms()
+        {
+            yield return Room(16, 12, new Vector2Int(15, 6), new Vector2Int(7, 0));
+            yield return Room(20, 16, new Vector2Int(19, 8));
+        }
+
+        [Test]
+        public void MoundsAndCratersSlopeOnEverySide([Values(ElevationKind.Mound, ElevationKind.Crater)] ElevationKind kind)
+        {
+            ElevationStructureRule rule = Rule(kind);
+            int built = 0;
+            for (int seed = 1; seed <= Seeds; seed++)
+                foreach (RoomStructure room in RoomyRooms())
+                {
+                    room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
+                    rule.Apply(room, new RandomStream(new Seed((ulong)seed)));
+                    built += room.Elevations.Count;
+                    string at = $"seed {seed}, {room.Footprint.Bounds.size}";
+
+                    Assert.That(room.StaysConnected(System.Array.Empty<Vector2Int>()), Is.True, $"{at}: every tile reachable both ways");
+                    foreach (ElevatedArea area in room.Elevations)
+                    {
+                        Assert.That(area.Stairs, Is.Not.Empty, at);
+                        Assert.That(area.Stairs, Has.All.Matches<StairFlight>(flight => flight.Slope), $"{at}: slopes, not steps");
+                        Assert.That(area.Corners, Is.Not.Empty, $"{at}: rounded off");
+                        Assert.That(area.Railed, Is.False);
+                    }
+
+                    // No open ledge: wherever the level changes, it is up a slope or beside a solid corner.
+                    foreach (Vector2Int tile in room.Footprint.Tiles)
+                        foreach (Vector2Int side in GridSides.All)
+                            if (room.IsLedge(tile, tile + side))
+                                Assert.That(room.Has(tile, RoomTileTags.Structure) || room.Has(tile + side, RoomTileTags.Structure), Is.True,
+                                            $"{at}: a bare ledge between {tile} and {tile + side}");
+                }
+            Assert.That(built, Is.GreaterThan(Seeds / 2), "most rooms got one");
+        }
+
+        [Test]
+        public void ABridgedSunkenFloorHasStairsIntoBothHalves()
+        {
+            ElevationStructureRule rule = Rule(ElevationKind.SunkenFloor, bridge: true, minLength: 5);
+            int bridged = 0;
+            for (int seed = 1; seed <= Seeds; seed++)
+                foreach (RoomStructure room in RoomyRooms())
+                {
+                    room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
+                    rule.Apply(room, new RandomStream(new Seed((ulong)seed)));
+                    Assert.That(room.StaysConnected(System.Array.Empty<Vector2Int>()), Is.True, $"seed {seed}");
+
+                    foreach (ElevatedArea area in room.Elevations)
+                    {
+                        var tiles = new HashSet<Vector2Int>(area.Tiles);
+                        int halves = 0;
+                        foreach (Vector2Int tile in area.Tiles)
+                            if (!tiles.Contains(tile + Vector2Int.left) && !tiles.Contains(tile + Vector2Int.down)) halves++;
+                        if (halves < 2) continue;
+                        bridged++;
+                        Assert.That(area.Stairs.Count, Is.GreaterThanOrEqualTo(2), $"seed {seed}: a flight into each half");
+                    }
+                }
+            Assert.That(bridged, Is.GreaterThan(0));
         }
     }
 }

@@ -4,13 +4,17 @@ namespace CGD.Level
 {
     // Builds what a room's floor levels add to its geometry (RoomStructure.Elevations): the floor
     // under each tile reaching down to its lowest neighbour, so a raised floor shows its face and
-    // a sunken one its sides; a ramp of stairs on each flight; and a railing along each railed
-    // ledge. Stairs and railings are the settings' prefabs when it has them, plain boxes otherwise.
+    // a sunken one its sides; a ramp of stairs on each flight; a ramp of ground the full width of
+    // the tile on each slope, so slopes side by side read as one bank, and a diagonal one on each
+    // corner of a mound or crater; and a railing along each railed ledge. Stairs and railings are
+    // the settings' prefabs when it has them, plain boxes otherwise; ground is always boxes.
     public sealed class ElevationGeometryBuilder
     {
         // A flight's ramp, without a prefab: this share of the tile wide, this many metres thick.
         private const float StairWidthShare = 0.9f;
         private const float StairThickness  = 0.2f;
+        // A mound's or crater's corner ramp: this share of the tile's diagonal wide, tucked between the slopes beside it.
+        private const float CornerWidthShare = 0.5f;
         // A railing, without a prefab: metres tall and thick, and how far in from the ledge it stands.
         private const float RailHeight    = 1f;
         private const float RailThickness = 0.08f;
@@ -38,20 +42,37 @@ namespace CGD.Level
             return (RoomElevation.HeightOf(lowest) - thickness, RoomElevation.HeightOf(level));
         }
 
-        // The room's stairs and railings: boxes into `stairs` and `railings`, prefabs under `parent`.
-        public void Build(LevelRoom room, BoxMeshBuilder stairs, BoxMeshBuilder railings, Transform parent)
+        // The room's stairs, slopes and railings: boxes into `stairs`, `ground` and `railings`,
+        // prefabs under `parent`.
+        public void Build(LevelRoom room, BoxMeshBuilder stairs, BoxMeshBuilder ground, BoxMeshBuilder railings, Transform parent)
         {
             RoomStructure structure = room.Structure;
             if (structure == null || !structure.HasElevation) return;
 
             foreach (ElevatedArea area in structure.Elevations)
             {
-                foreach (StairFlight flight in area.Stairs) AddStairs(structure, flight, stairs, parent);
+                foreach (StairFlight flight in area.Stairs)
+                {
+                    if (flight.Slope) AddRamp(structure, flight.Tile, flight.Up, 1f, ground);
+                    else AddStairs(structure, flight, stairs, parent);
+                }
+                foreach (SlopeCorner corner in area.Corners) AddRamp(structure, corner.Tile, corner.Up, CornerWidthShare, ground);
                 if (area.Railed) AddRailings(structure, area, railings, parent);
             }
         }
 
-        // A ramp climbing one level across the flight's tile, foot to head.
+        // A slab climbing one level across a tile from its own floor toward `up` (a side, or a
+        // diagonal for a corner, which is then that much longer and `widthShare` of its diagonal wide).
+        private void AddRamp(RoomStructure structure, Vector2Int tile, Vector2Int up, float widthShare, BoxMeshBuilder boxes)
+        {
+            float run = _layout.TileSize * new Vector2(up.x, up.y).magnitude, rise = RoomElevation.StepHeight;
+            float low = RoomElevation.HeightOf(structure.LevelOf(tile));
+            Quaternion slope = Quaternion.LookRotation(new Vector3(up.x, 0f, up.y)) * Quaternion.Euler(-Mathf.Atan2(rise, run) * Mathf.Rad2Deg, 0f, 0f);
+            Vector3 middle = _layout.TileToLocal(tile) + Vector3.up * (low + rise * 0.5f) - slope * Vector3.up * (StairThickness * 0.5f);
+            boxes.AddBox(middle, new Vector3(run * widthShare, StairThickness, Mathf.Sqrt(run * run + rise * rise)), slope);
+        }
+
+        // A flight of steps climbing one level across its tile, foot to head.
         private void AddStairs(RoomStructure structure, StairFlight flight, BoxMeshBuilder boxes, Transform parent)
         {
             float tile = _layout.TileSize, rise = RoomElevation.StepHeight;
@@ -67,9 +88,7 @@ namespace CGD.Level
                 return;
             }
 
-            Quaternion slope = facing * Quaternion.Euler(-Mathf.Atan2(rise, tile) * Mathf.Rad2Deg, 0f, 0f);
-            Vector3 middle = foot + Vector3.up * (rise * 0.5f) - slope * Vector3.up * (StairThickness * 0.5f);
-            boxes.AddBox(middle, new Vector3(tile * StairWidthShare, StairThickness, Mathf.Sqrt(tile * tile + rise * rise)), slope);
+            AddRamp(structure, flight.Tile, flight.Up, StairWidthShare, boxes);
         }
 
         // A railing on the higher side of every ledge round the area, stairs left open.

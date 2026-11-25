@@ -7,8 +7,8 @@ namespace CGD.Level
     // Splits the room into lanes at different floor levels, side by side: a hall split in two
     // (1-0), raised walks along both walls (1-0-1), a raised middle (0-1-0), a court sunk below
     // its edges (0 -1 0). Lanes run wall to wall, with flights of stairs wherever a route from
-    // a doorway crosses a ledge and at even spacing along every ledge, and (when Railed) a
-    // railing along the rest of it.
+    // a doorway crosses a ledge and at even spacing along every ledge, (when Railed) a railing
+    // along the rest of it, and (Bridges) strips of floor straight across a sunken lane.
     //
     // The doorways decide how it sits. Every doorway must open onto level 0, so the profile is
     // turned and shifted (1-0-1 becomes 0 -1 0, the raised walks now level with the doorways and
@@ -35,6 +35,8 @@ namespace CGD.Level
         [SerializeField, Min(StairSpacingMin)] private int _stairSpacing = 6;
         [Tooltip("A railing along the ledges between the stairs: nobody drops off. Off: open ledges, dropped off one way")]
         [SerializeField] private bool _railed = true;
+        [Tooltip("Strips of floor level with the room straight across each sunken lane that has floor on both sides, spread evenly along it: bridges over a sunken court. Each piece of lane they leave gets its own stairs")]
+        [SerializeField, Range(0, 3)] private int _bridges;
 
         public override void Apply(RoomStructure structure, RandomStream random)
         {
@@ -60,7 +62,7 @@ namespace CGD.Level
                 {
                     var layout = new TerraceLayout(structure, _lanes, starts, alongY, shift);
                     if (!layout.Fits()) continue;
-                    if (structure.TryAddElevations(layout.Areas(_stairSpacing, StairSpacingMin, _railed))) return;
+                    if (structure.TryAddElevations(layout.Areas(_stairSpacing, StairSpacingMin, _railed, _bridges))) return;
                 }
             }
         }

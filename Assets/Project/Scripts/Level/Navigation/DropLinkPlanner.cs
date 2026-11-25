@@ -9,6 +9,9 @@ namespace CGD.Level
     // VaultLinkBuilder adds them to the NavMesh where they save a walk round to the stairs.
     public static class DropLinkPlanner
     {
+        // Nobody stands on, or lands on, a pillar, a prop or a mound's corner.
+        private const RoomTileTags Solid = RoomTileTags.Structure | RoomTileTags.Prop;
+
         public static List<VaultLink> Plan(LevelLayout layout)
         {
             var links = new List<VaultLink>();
@@ -23,7 +26,7 @@ namespace CGD.Level
             var edges = new List<(Vector2Int, Vector2Int, int)>();
             foreach (Vector2Int tile in structure.Footprint.Tiles)
                 foreach (Vector2Int side in GridSides.All)
-                    if (structure.CanDropDown(tile, tile + side) && !structure.Has(tile + side, RoomTileTags.Structure | RoomTileTags.Prop))
+                    if (structure.CanDropDown(tile, tile + side) && !structure.Has(tile, Solid) && !structure.Has(tile + side, Solid))
                         edges.Add((tile, side, structure.LevelOf(tile)));
 
             foreach (EdgeRuns.Run run in EdgeRuns.Of(edges, VaultLinkPlanner.MaxRunTiles))

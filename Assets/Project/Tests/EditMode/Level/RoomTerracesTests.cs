@@ -13,7 +13,9 @@ namespace CGD.Tests
     // levels from its neighbour, and the floor and the walls meet without a gap.
     public class RoomTerracesTests
     {
-        private static TerracesStructureRule Rule(bool shift = true, bool railed = true, params (int level, float weight)[] lanes)
+        private static TerracesStructureRule Rule(bool shift = true, bool railed = true, params (int level, float weight)[] lanes) => Rule(shift, railed, 0, lanes);
+
+        private static TerracesStructureRule Rule(bool shift, bool railed, int bridges, params (int level, float weight)[] lanes)
         {
             var rule = ScriptableObject.CreateInstance<TerracesStructureRule>();
             var serialized = new SerializedObject(rule);
@@ -26,6 +28,7 @@ namespace CGD.Tests
             }
             serialized.FindProperty("_shiftToDoorways").boolValue = shift;
             serialized.FindProperty("_railed").boolValue = railed;
+            serialized.FindProperty("_bridges").intValue = bridges;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return rule;
         }
@@ -162,6 +165,20 @@ namespace CGD.Tests
                         Assert.That(Mathf.Abs(room.LevelOf(tile) - room.LevelOf(tile + side)), Is.LessThanOrEqualTo(1), $"{tile} beside {tile + side}");
             foreach (ElevatedArea area in room.Elevations)
                 Assert.That(area.Stairs.Count, Is.GreaterThan(0));
+        }
+
+        [Test]
+        public void ABridgeCrossesASunkenCourtLevelWithItsSides()
+        {
+            RoomStructure room = Hall(SideDoors);
+            Apply(Rule(true, true, 1, (0, 1f), (-1, 2f), (0, 1f)), room);
+
+            Assert.That(room.LevelOf(new Vector2Int(8, 5)), Is.Zero, "the bridge, halfway along");
+            Assert.That(room.LevelOf(new Vector2Int(7, 5)), Is.EqualTo(-1));
+            Assert.That(room.LevelOf(new Vector2Int(9, 5)), Is.EqualTo(-1));
+            Assert.That(room.CanStep(new Vector2Int(8, 1), new Vector2Int(8, 2)) && room.CanStep(new Vector2Int(8, 7), new Vector2Int(8, 8)), Is.True, "walked across from walk to walk");
+            Assert.That(room.CanDropDown(new Vector2Int(8, 4), new Vector2Int(7, 4)), Is.False, "railed like the court");
+            AssertSound(room);
         }
 
         // --- Geometry and links -----------------------------------------------------------

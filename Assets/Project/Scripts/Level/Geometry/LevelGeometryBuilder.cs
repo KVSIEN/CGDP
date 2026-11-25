@@ -49,6 +49,7 @@ namespace CGD.Level
             var lowCover       = new BoxMeshBuilder();
             var stairs         = new BoxMeshBuilder();
             var railings       = new BoxMeshBuilder();
+            var ground         = new BoxMeshBuilder();
             var elevation      = new ElevationGeometryBuilder(_settings, layout);
 
             Dictionary<Vector2Int, LevelRoom> outerRing = AddFloors(layout, roomFloors, factionFloors, corridorFloors);
@@ -57,7 +58,7 @@ namespace CGD.Level
             foreach (LevelRoom room in layout.Rooms.Values)
             {
                 if (room.Structure != null) AddStructure(layout, room, structure, lowCover, parent);
-                elevation.Build(room, stairs, railings, parent);
+                elevation.Build(room, stairs, ground, railings, parent);
                 if (room.Landmark != null) PlaceLandmark(layout, room, parent);
             }
 
@@ -75,6 +76,7 @@ namespace CGD.Level
             CreatePart("Structure",      structure,      _settings.WallMaterial,          parent);
             CreatePart("LowCover",       lowCover,       _settings.LowCoverMaterial,      parent);
             CreatePart("Stairs",         stairs,         _settings.FloorMaterial,         parent);
+            CreatePart("Slopes",         ground,         _settings.FloorMaterial,         parent);
             CreatePart("Railings",       railings,       _settings.LowCoverMaterial,      parent);
             bool roofedBuildings = HasRoofedBuildings(layout);
             if (_settings.BuildCeilings || roofedBuildings) BuildCeilings(layout, outerRing, parent);
