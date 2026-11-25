@@ -21,16 +21,20 @@ namespace CGD.Level
         // already split the room into zones, so the two factions each get a side.
         // `additionChance`: how likely each addition is to be built (a frontier room's thinner
         // style, TerritoryDepth); at 1 every one is, with no random draw.
+        // `lowestLevel`, `highestLevel`: the floor levels elevation rules may raise or sink the
+        // room to (RoomElevation); both 0 keeps every room flat.
         public RoomStructure Plan(LevelRoom room, IReadOnlyList<LevelDoorway> doorways, RandomStream random,
                                   IReadOnlyList<RoomStructureRule> factionRules = null,
                                   IReadOnlyList<RoomStructureRule> factionAdditions = null,
-                                  RoomStructureRule breachDivider = null, float additionChance = 1f)
+                                  RoomStructureRule breachDivider = null, float additionChance = 1f,
+                                  int lowestLevel = 0, int highestLevel = 0)
         {
             var entrances = new List<Vector2Int>();
             foreach (LevelDoorway doorway in doorways)
                 if (doorway.Room == room) entrances.Add(doorway.RoomTile);
 
             RoomStructure structure = Prepare(room.Footprint, room.WallHeight, entrances);
+            structure.AllowLevels(lowestLevel, highestLevel);
             if (room.Landmark != null)
                 TagLandmark(structure, room);
             else

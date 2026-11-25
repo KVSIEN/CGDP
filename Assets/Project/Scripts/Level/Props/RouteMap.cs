@@ -78,7 +78,7 @@ namespace CGD.Level
                 {
                     Vector2Int neighbour = tile + side;
                     if (!_structure.Contains(neighbour) || _distance[IndexOf(neighbour)] != Unreached) continue;
-                    if (_structure.IsPartitioned(tile, neighbour) || _structure.Has(neighbour, RoomTileTags.Structure)) continue;
+                    if (!_structure.CanStep(tile, neighbour) || _structure.Has(neighbour, RoomTileTags.Structure)) continue;
                     Reach(neighbour, next, open);
                 }
             }

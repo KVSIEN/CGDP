@@ -1193,3 +1193,50 @@ priorities were never tuned against a sweep. To decide which to leave on:
 3. If so, switch the readers on (*Isovist For*), run the sweep again, and retune the bands
    (`RoomTraitMeasure`) from that report. The traits' interface (`RoomTrait`, the priorities,
    `RoomTraitFit.Gap`) is the same either way.
+
+## 18. Elevation (phases 0–1)
+
+A room's floor can stand a level up or down from the floor its doorways open onto: level 0 is the
+doorways' level, and each level is one step of 1 m (`RoomElevation.StepHeight`), under eye height,
+so the edge of a platform doesn't hide someone standing below it. The levels are -1, 0 and 1.
+
+**The model (`RoomStructure`).** Every tile has a level. A flight of stairs (`StairFlight`) takes one
+tile at the lower level and climbs one level toward its *Up* side: it is walked onto from its foot
+(behind it, same level) and leads to its head (ahead, one level up); its sides are closed. Every
+edge between two tiles is then one of:
+
+| Edge | What it is | Walk (`CanStep`) | Drop (`CanDropDown`) |
+|---|---|---|---|
+| flat | same level | both ways | — |
+| stairs | along a flight | both ways | — |
+| ledge (`IsLedge`) | a change of level with no flight | no | down only, unless the area is railed |
+
+"Reachable" (`StaysConnected`, and so every `TryClaim`) means reachable both ways, so it never counts
+a drop: every raised or sunken area needs its stairs. `TryAddElevation` adds an `ElevatedArea` only
+if the level is one the room allows, its tiles are flat free floor nothing keeps clear (doorway
+fronts, walkways and the centre stay on level 0, so everyone arrives and crosses on the doorways'
+level), no tile ends up two levels from a neighbour, each flight climbs one level onto or off the
+area with both landings free and no wall across it, and the room stays whole. Stairs are tagged
+`Stairs` and their landings `Landing`: nothing is built on either.
+
+**Placing it (`ElevationStructureRule`, a structure rule).** *Kind* Platform raises a block with its
+back to the room's wall, its flights on its open sides and facing into the room (nearest the
+centre first, three tiles apart). *Kind* Sunken Floor sinks a block with floor all round it (two
+tiles in from the walls), its flights just inside its rim. *Depth*, *Length*, *Count*, *Stairs* and
+*Max Share* (of the floor, 25 %) size it; *Railed* puts a railing on its open edges, so nobody drops
+off (a mezzanine) or in. The rule does nothing, and draws no random number, in a room whose levels
+don't take its kind.
+
+**The range.** `LevelBuildSettings` › *Lowest Level* and *Highest Level* say which levels rooms may
+use; both 0 (the default) keeps every room flat. Walking code (flow steps, routes, prop spacing and
+clearance, the Room Lab's reachability check) goes through `CanStep`, which in a flat room is just
+"no wall between", so seeded output is unchanged. A prop never straddles a ledge.
+
+**Seeing it.** The Room Lab's *Elevation* layer paints raised floor orange and sunken floor blue,
+stairs yellow with an arrow climbing, open ledges white and railed ones grey; the readout gives a
+tile's level and which way its stairs climb.
+
+**Not yet.** The level's floor is still built flat (phase 2 builds it, with stairs, railings, drop
+links and props at height); mounds, craters and bridges are phase 3; height-aware sight and high
+ground in combat phase 4 (see `TASKS.md` › Elevation, next phases).
+

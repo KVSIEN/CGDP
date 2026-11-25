@@ -24,6 +24,7 @@ namespace CGD.Editor
             CheckBuilding(sample, issues);
             foreach (string warning in sample.Warnings) issues.Add(new RoomIssue(RoomIssue.Severity.Warning, warning));
             CheckReachable(sample, issues);
+            CheckElevation(sample, issues);
             CheckFurnishing(sample, issues);
             CheckPriorities(sample, issues);
             return issues;
@@ -40,6 +41,24 @@ namespace CGD.Editor
                     "No building was built: the room is too small for the plan, or its walls would have cut floor off from a doorway."));
             if (structure.LeftOut.Count > 0)
                 issues.Add(new RoomIssue(RoomIssue.Severity.Info, $"The building had no space for: {string.Join(", ", structure.LeftOut)}."));
+        }
+
+        // What the room's floor levels came to. They are planned only: the level's floor is still
+        // built flat, so a room with them doesn't play as drawn yet.
+        private static void CheckElevation(RoomSample sample, List<RoomIssue> issues)
+        {
+            RoomStructure structure = sample.Room.Structure;
+            if (!structure.HasElevation) return;
+
+            int raised = 0, sunken = 0, flights = 0;
+            foreach (ElevatedArea area in structure.Elevations)
+            {
+                if (area.Level > 0) raised++;
+                else sunken++;
+                flights += area.Stairs.Count;
+            }
+            issues.Add(new RoomIssue(RoomIssue.Severity.Info,
+                $"{raised} raised and {sunken} sunken area(s), {flights} flight(s) of stairs. Planned only: the level is still built flat, so they show here and not in play yet."));
         }
 
         private static void CheckDoorways(RoomSample sample, List<RoomIssue> issues)
@@ -71,7 +90,7 @@ namespace CGD.Editor
                 foreach (Vector2Int side in Sides)
                 {
                     Vector2Int next = tile + side;
-                    if (!IsWalkable(structure, next) || structure.IsPartitioned(tile, next) || !reached.Add(next)) continue;
+                    if (!IsWalkable(structure, next) || !structure.CanStep(tile, next) || !reached.Add(next)) continue;
                     open.Enqueue(next);
                 }
             }

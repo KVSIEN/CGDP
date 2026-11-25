@@ -33,7 +33,7 @@ namespace CGD.Level
                 {
                     Vector2Int neighbour = tile + side;
                     if (!structure.Contains(neighbour) || _steps[IndexOf(neighbour)] != Unreached) continue;
-                    if (structure.Has(neighbour, solid) || structure.IsPartitioned(tile, neighbour)) continue;
+                    if (structure.Has(neighbour, solid) || !structure.CanStep(tile, neighbour)) continue;
                     if (blocked != null && blocked.Contains(neighbour)) continue;
                     _steps[IndexOf(neighbour)] = next;
                     open.Enqueue(neighbour);
@@ -71,7 +71,7 @@ namespace CGD.Level
             foreach (Vector2Int side in GridSides.All)
             {
                 previous = tile + side;
-                if (At(previous) == At(tile) - 1 && !structure.IsPartitioned(tile, previous)) return true;
+                if (At(previous) == At(tile) - 1 && structure.CanStep(previous, tile)) return true;
             }
             previous = tile;
             return false;

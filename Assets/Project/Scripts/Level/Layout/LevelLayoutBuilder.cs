@@ -63,7 +63,7 @@ namespace CGD.Level
                 RoomStructureRule divider = room.BreachFaction != null ? _settings.DesignFor(room.BreachFaction)?.BreachDivider : null;
                 int tries = RoomTraitFit.TriesFor(room, _settings.RuleFor(room.Node.Type), design, _settings);
                 room.AttachStructure(BestStructure(planner, room, layout, seed.Derive(room.Node.Id), design, divider, room.DesignStrength, tries,
-                                                   _settings.UsesIsovist(IsovistUse.Traits)));
+                                                   _settings.UsesIsovist(IsovistUse.Traits), _settings.LowestLevel, _settings.HighestLevel));
                 if (room.BreachFaction != null) room.AttachBreachEntrances(BreachEntrances(room, layout));
             }
         }
@@ -86,13 +86,15 @@ namespace CGD.Level
         // closest to the faction's priorities (RoomTraitFit), and that leaves a flank (RoomFlank);
         // any other room has one try.
         private static RoomStructure BestStructure(RoomStructurePlanner planner, LevelRoom room, LevelLayout layout, Seed seed,
-                                                   FactionDesign design, RoomStructureRule breachDivider, float strength, int tries, bool isovist)
+                                                   FactionDesign design, RoomStructureRule breachDivider, float strength, int tries, bool isovist,
+                                                   int lowestLevel, int highestLevel)
         {
             RoomStructure best = null;
             int bestMiss = int.MaxValue;
             for (int attempt = 0; attempt < tries && bestMiss > 0; attempt++)
             {
-                RoomStructure structure = planner.Plan(room, layout.Doorways, RoomTraitFit.Try(seed, attempt).Stream(), design?.Structure, design?.Additions, breachDivider, strength);
+                RoomStructure structure = planner.Plan(room, layout.Doorways, RoomTraitFit.Try(seed, attempt).Stream(), design?.Structure, design?.Additions,
+                                                      breachDivider, strength, lowestLevel, highestLevel);
                 if (tries == 1) return structure;
 
                 int miss = RoomTraitFit.Miss(RoomTraitMeasure.Measure(structure, System.Array.Empty<PlannedProp>(), isovist), design.Priorities,

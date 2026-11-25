@@ -122,6 +122,10 @@ namespace CGD.Level
         [SerializeField, Range(0, 64)] private int _refineSteps = 24;
         [Tooltip("Which readings of a room see in every direction (what can be seen from each tile, over the floor plan) rather than along its rows and columns. Traits: walls and lines of fire, in generation and in the Room Lab. Posts: where enemies hold chokes and overwatch. Cover: where cover goes. More accurate in round and diagonal rooms, but slower, and the trait bands were tuned for the row-and-column reading (see ROOM_GENERATION.md, Sight). None = the old reading")]
         [SerializeField] private IsovistUse _isovistFor = IsovistUse.None;
+        [Tooltip("The lowest floor level a room may be sunk to by its Elevation structure rules: -1 lets sunken floors and pits in, 0 keeps every room's floor at or above the doorways' level")]
+        [SerializeField, Range(RoomElevation.Lowest, 0)] private int _lowestLevel;
+        [Tooltip("The highest floor level a room may be raised to by its Elevation structure rules: 1 lets platforms in, 0 keeps every room's floor at or below the doorways' level. Both 0 = every room flat, whatever its rules")]
+        [SerializeField, Range(0, RoomElevation.Highest)] private int _highestLevel;
         [Tooltip("Cover put just inside the doorway a fight room is entered by (its threshold, RoomFlowPlanner), so a player arrives at a foothold rather than in the open. A faction design may swap it like any dressing. Empty = none")]
         [SerializeField] private RoomDressing _footholdDressing;
         [Tooltip("How strongly a faction's design shows in a room, from how firmly the map's faction painter holds it: full in the core of a territory, thinner on its frontier")]
@@ -177,6 +181,8 @@ namespace CGD.Level
         public int   PriorityTries  => _priorityTries;
         public int   RefineSteps    => _refineSteps;
         public IsovistUse IsovistFor => _isovistFor;
+        public int LowestLevel  => _lowestLevel;
+        public int HighestLevel => _highestLevel;
         public bool UsesIsovist(IsovistUse use) => (_isovistFor & use) != 0;
         public RoomDressing FootholdDressing => _footholdDressing;
         public TerritoryDepth TerritoryDepth => _territoryDepth;

@@ -9,5 +9,6 @@ namespace CGD.Editor
         Sightlines,  // how far you can see along each tile's row or column (red = long, exposed)
         Posts,       // what each tile offers an enemy, where the room's enemies start and the loops they patrol
         Flow,        // the way in, the threshold just inside it, the contest and the goal at the far end; whether a flank goes round
+        Elevation,   // raised and sunken floor, the stairs between levels and the ledges you can drop off
     }
 }

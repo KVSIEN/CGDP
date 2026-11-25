@@ -33,6 +33,11 @@ namespace CGD.Editor
         private static readonly Color Arrival   = new(0.3f, 1f, 0.6f, 1f);
         private static readonly Color HolderSide = new(1f, 1f, 1f, 0.95f);
         private static readonly Color BreachSide = new(1f, 0.35f, 0.85f, 0.95f);
+        private static readonly Color Raised    = new(1f, 0.55f, 0.2f, 0.45f);
+        private static readonly Color Sunken    = new(0.25f, 0.45f, 1f, 0.45f);
+        private static readonly Color StairTile = new(1f, 0.9f, 0.25f, 0.7f);
+        private static readonly Color OpenLedge  = new(1f, 1f, 1f, 0.95f);
+        private static readonly Color RailedLedge = new(0.45f, 0.45f, 0.5f, 1f);
 
         private readonly RoomPlanTexture _plan = new();
         private readonly StringBuilder _readout = new();
@@ -87,14 +92,59 @@ namespace CGD.Editor
                     RoomLabLayer.Sightlines => SightColor(sample, tile),
                     RoomLabLayer.Posts      => PostColor(sample.Posts.KindsAt(tile)),
                     RoomLabLayer.Flow       => FlowColor(structure.TagsAt(tile)),
+                    RoomLabLayer.Elevation  => ElevationColor(structure, tile),
                     _                       => null,
                 };
                 if (color.HasValue) EditorGUI.DrawRect(TileRect(image, tile), color.Value);
             }
             if (Layer == RoomLabLayer.Posts) DrawEnemies(image, sample);
+            if (Layer == RoomLabLayer.Elevation) DrawLevels(image, structure);
             if (Layer == RoomLabLayer.Flow && structure.Arrival.HasValue)
                 Outline(image, new RectInt(structure.Arrival.Value, Vector2Int.one), Arrival, 3f);
         }
+
+        private static Color? ElevationColor(RoomStructure structure, Vector2Int tile)
+        {
+            if (structure.Has(tile, RoomTileTags.Stairs)) return StairTile;
+            int level = structure.LevelOf(tile);
+            return level > 0 ? Raised : level < 0 ? Sunken : (Color?)null;
+        }
+
+        // Each flight as an arrow climbing toward its head, and each ledge as a line along its edge:
+        // white where someone can drop off it, grey where a railing stops them.
+        private void DrawLevels(Rect image, RoomStructure structure)
+        {
+            if (!structure.HasElevation) return;
+
+            Color before = Handles.color;
+            foreach (Vector2Int tile in structure.Footprint.Tiles)
+            {
+                if (structure.TryGetStairs(tile, out StairFlight stairs))
+                {
+                    Vector2 from = ToGui(image, tile + Vector2.one * 0.5f - (Vector2)stairs.Up * 0.35f);
+                    Vector2 to   = ToGui(image, tile + Vector2.one * 0.5f + (Vector2)stairs.Up * 0.35f);
+                    Handles.color = Color.black;
+                    Handles.DrawAAPolyLine(3f, from, to);
+                    Handles.DrawAAPolyLine(3f, to, ToGui(image, tile + Vector2.one * 0.5f + (Vector2)stairs.Up * 0.1f + (Vector2)Perpendicular(stairs.Up) * 0.2f));
+                    Handles.DrawAAPolyLine(3f, to, ToGui(image, tile + Vector2.one * 0.5f + (Vector2)stairs.Up * 0.1f - (Vector2)Perpendicular(stairs.Up) * 0.2f));
+                }
+
+                foreach (Vector2Int side in new[] { Vector2Int.right, Vector2Int.up })
+                {
+                    Vector2Int next = tile + side;
+                    if (!structure.IsLedge(tile, next)) continue;
+
+                    bool open = structure.CanDropDown(tile, next) || structure.CanDropDown(next, tile);
+                    Vector2 a = tile + Vector2.one - (Vector2)Perpendicular(side);   // the far corner of the shared edge…
+                    Vector2 b = tile + Vector2.one;                                   // …and the near one
+                    Handles.color = open ? OpenLedge : RailedLedge;
+                    Handles.DrawAAPolyLine(open ? 2f : 4f, ToGui(image, a), ToGui(image, b));
+                }
+            }
+            Handles.color = before;
+        }
+
+        private static Vector2Int Perpendicular(Vector2Int side) => new(side.y, side.x);
 
         // The threshold and the goal; the contest between them is left plain.
         private static Color? FlowColor(RoomTileTags tags)
@@ -213,6 +263,8 @@ namespace CGD.Editor
             RoomStructure structure = room.Structure;
             _readout.Append($"Tile {tile.x}, {tile.y}");
             if (structure.ZoneCount > 1) _readout.Append($" · zone {structure.ZoneOf(tile) + 1}");
+            if (structure.HasElevation) _readout.Append($" · {LevelName(structure.LevelOf(tile))}");
+            if (structure.TryGetStairs(tile, out StairFlight flight)) _readout.Append($" · stairs climbing {SideName(flight.Up)}");
             if (sample.Split != null)
                 _readout.Append($" ({(sample.Split.IsBreachZone(structure.ZoneOf(tile)) ? room.BreachFaction.DisplayName : room.Faction?.DisplayName ?? "holder")}'s side)");
             RoomTileTags tags = structure.TagsAt(tile);
@@ -236,6 +288,11 @@ namespace CGD.Editor
             return _readout.ToString();
         }
 
+        private static string LevelName(int level) => level == 0 ? "doorways' level" : $"level {level:+0;-0} ({RoomElevation.HeightOf(level):+0.#;-0.#} m)";
+
+        private static string SideName(Vector2Int side) =>
+            side == Vector2Int.up ? "north" : side == Vector2Int.right ? "east" : side == Vector2Int.down ? "south" : "west";
+
         private static string Describe(RoomTileTags tags)
         {
             var parts = new List<string>();
@@ -249,6 +306,8 @@ namespace CGD.Editor
             else if ((tags & RoomTileTags.Edge) != 0) parts.Add("against a wall");
             if ((tags & RoomTileTags.Threshold) != 0) parts.Add("threshold (just inside the way in)");
             if ((tags & RoomTileTags.Goal)      != 0) parts.Add("goal (the far end)");
+            if ((tags & RoomTileTags.Stairs)    != 0) parts.Add("stairs");
+            if ((tags & RoomTileTags.Landing)   != 0) parts.Add("landing (kept clear at the end of a flight)");
             return string.Join(", ", parts);
         }
 
@@ -270,6 +329,9 @@ namespace CGD.Editor
                     : $"green short sightlines → red {RoomSampleChecks.ExposedLaneTiles * sample.Settings.TileSize:0} m+ lines of sight, in any direction",
                 RoomLabLayer.Posts      => "green concealed · red overwatch · violet dead end · orange choke · blue route · ring guard, dot patrol (pink: breach side)",
                 RoomLabLayer.Flow       => FlowLegend(sample.Room.Structure),
+                RoomLabLayer.Elevation  => sample.Room.Structure.HasElevation
+                    ? "orange raised · blue sunken · yellow stairs, arrow climbing · white ledge you can drop off · grey railed"
+                    : "Flat: every tile on the doorways' level (Elevation rules need Level Build Settings › Lowest/Highest Level)",
                 _                       => "sand furniture · dark pillars · cyan outline doorway",
             };
             GUI.Label(rect, legend + " · hover a tile for details", EditorStyles.whiteMiniLabel);

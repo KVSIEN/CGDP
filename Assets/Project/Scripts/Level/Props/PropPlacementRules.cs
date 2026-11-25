@@ -103,15 +103,16 @@ namespace CGD.Level
                 for (int x = rect.xMin; x < rect.xMax; x++)
                 {
                     var tile = new Vector2Int(x, y);
-                    if (!_structure.Contains(tile) || _structure.Has(tile, placement.Avoid)) return false;
+                    if (!_structure.Contains(tile) || _structure.Has(tile, placement.Avoid | RoomTileTags.Stairs)) return false;
                     if (zones != null && !zones.Contains(_structure.ZoneOf(tile))) return false;
                     if (placement.Zone == PropZone.Largest && _structure.ZoneOf(tile) != _mainZone) return false;
                     if (placement.Zone == PropZone.Others  && _structure.ZoneOf(tile) == _mainZone) return false;
                     if (!RoomFlowPlanner.InBand(_structure, tile, placement.Band)) return false;
                     if (_structure.Has(tile, placement.On)) matchesOn = true;
 
-                    if (x + 1 < rect.xMax && _structure.IsPartitioned(tile, tile + Vector2Int.right)) return false;
-                    if (y + 1 < rect.yMax && _structure.IsPartitioned(tile, tile + Vector2Int.up))    return false;
+                    // A prop stands on one piece of floor: no wall through it, and all of it on one level.
+                    if (x + 1 < rect.xMax && !_structure.CanStep(tile, tile + Vector2Int.right)) return false;
+                    if (y + 1 < rect.yMax && !_structure.CanStep(tile, tile + Vector2Int.up))    return false;
                 }
             if (!matchesOn || !SuitsRoutes(rect, placement)) return false;
             if (placement.StandsNear && !TryNearest(rect, placement.Near, placement.NearDistance, out _)) return false;
@@ -201,7 +202,7 @@ namespace CGD.Level
                 for (int step = 0; step < depth; step++)
                 {
                     Vector2Int next = tile + forward;
-                    if (_structure.IsPartitioned(tile, next) || !_structure.Contains(next)
+                    if (!_structure.CanStep(tile, next)
                         || _structure.Has(next, RoomTileTags.Structure | RoomTileTags.Prop)) return false;
                     tile = next;
                 }
