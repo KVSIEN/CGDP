@@ -598,38 +598,38 @@ Props go down in this order:
 
 A function with no layout places its props in their own order.
 
-Every generated place has two to four layouts. Junction stays bare on purpose, and the
+Every generated place has three or four layouts. Junction stays bare on purpose, and the
 Reactor Core is a hand-built landmark. Casino, Library and Pool are written out in full below
 as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/` hold the rest.
 
 | Place | Layouts (cells or size · structure) |
 |---|---|
 | Quarters | **Suite** (9–11 tiles · DividerWall); **Twin Cabin** (7–9 tiles · CornerPillars); **Penthouse** (2×1 · CornerPillars) |
-| Cabin Row | **Cabin Corridor** (2×1 · OfficeMaze); **Dormitory** (10–12 tiles · LowRows) |
+| Cabin Row | **Cabin Corridor** (2×1 · OfficeMaze); **Dormitory** (10–12 tiles · LowRows); **Capsule Hotel** (9–11 tiles · LowRows) |
 | Commons | **Lounge** (11–12 tiles · CornerPillars); **Rec Room** (2×1 · WidePillarGrid, GuestPavilions); **Hearth** (10–12 tiles · ColumnRing) |
 | School | **Classroom** (9–11 tiles · CornerPillars); **Lecture Hall** (2×1 · AcrossLowRows); **Study Room** (8–10 tiles · CornerPillars) |
 | Park | **Garden** (2×1 · the faction’s); **Grove** (2×1 · the faction’s); **Plaza Garden** (10–12 tiles · CornerPillars, HubRing) |
-| Gym | **Weight Room** (10–12 tiles · LowRows); **Fitness Hall** (2×1 · WidePillarGrid, GuestPavilions) |
-| Observation Deck | **Window Gallery** (2×1 · CornerPillars); **Star Lounge** (10–12 tiles · ColumnRing) |
-| Wellness Center | **Treatment Suites** (9–11 tiles · OfficeMaze); **Spa Lounge** (9–11 tiles · CornerPillars) |
+| Gym | **Weight Room** (10–12 tiles · LowRows); **Fitness Hall** (2×1 · WidePillarGrid, GuestPavilions); **Studio** (9–11 tiles · CornerPillars) |
+| Observation Deck | **Window Gallery** (2×1 · CornerPillars); **Star Lounge** (10–12 tiles · ColumnRing); **Stargazing Dome** (10–12 tiles · ColumnRing) |
+| Wellness Center | **Treatment Suites** (9–11 tiles · OfficeMaze); **Spa Lounge** (9–11 tiles · CornerPillars); **Thermal Suite** (9–11 tiles · OfficeMaze) |
 | Pool | **Lap Pool** (2×1 · CornerPillars, GuestPerimeterPavilions); **Lagoon** (2×2 · CornerPillars, GuestPerimeterPavilions); **Spa Terrace** (8–11 tiles · CornerPillars) |
 | Theatre | **Auditorium** (2×1 · AcrossLowRows); **Cabaret** (10–12 tiles · CornerPillars); **Amphitheatre** (2×1 · AcrossLowRows) |
 | Bar & Lounge | **Lounge Bar** (8–10 tiles · ServiceCounter); **Pub** (9–11 tiles · CornerPillars); **Cocktail Club** (9–11 tiles · ColumnRing) |
 | Casino | **Slot Hall** (2×1 · LowRows); **Table Pits** (10–12 tiles · ColumnRing, CornerPillars); **High-Roller Salon** (7–9 tiles · CornerPillars) |
-| Exhibit Hall | **Gallery** (10–12 tiles · ThreeLanes); **Sculpture Court** (10–12 tiles · HubRing) |
+| Exhibit Hall | **Gallery** (10–12 tiles · ThreeLanes); **Sculpture Court** (10–12 tiles · HubRing); **Enfilade** (10–12 tiles · OfficeMaze) |
 | Grand Atrium | **Fountain Court** (2×2 · CornerPillars, HubRing); **Galleria** (2×2 · LowThreeLanes) |
 | Restaurant | **Dining Room** (10–12 tiles · DividerWall); **Bistro** (8–10 tiles · DividerWall); **Banquet Hall** (2×1 · DividerWall) |
-| Food Court | **Food Hall** (2×1 · WidePillarGrid, GuestPavilions); **Kiosk Ring** (2×1 · ColumnRing) |
-| Kitchen | **Galley** (8–10 tiles · ServiceCounter, CornerPillars); **Line Kitchen** (9–11 tiles · LowRows) |
+| Food Court | **Food Hall** (2×1 · WidePillarGrid, GuestPavilions); **Kiosk Ring** (2×1 · ColumnRing); **Night Market** (2×1 · LowThreeLanes) |
+| Kitchen | **Galley** (8–10 tiles · ServiceCounter, CornerPillars); **Line Kitchen** (9–11 tiles · LowRows); **Island Kitchen** (9–11 tiles · CornerPillars) |
 | Promenade | **Arcade** (2×1 · CornerPillars); **Boulevard** (2×1 · LowThreeLanes) |
 | Medical Bay | **Surgery** (9–11 tiles · DividerWall); **Clinic Bays** (2×1 · OfficeMaze) |
-| Ward | **Long Ward** (2×1 · LowRows); **Bay Ward** (2×1 · OfficeMaze) |
-| Pharmacy | **Counter Shop** (6–8 tiles · ServiceCounter, CornerPillars); **Dispensary Aisles** (8–10 tiles · ShelfRows) |
-| Morgue | **Cold Room** (7–9 tiles · CornerPillars); **Autopsy Suite** (8–10 tiles · DividerWall) |
-| Security Office | **Checkpoint** (10–12 tiles · CheckpointBarrier); **Holding Cells** (10–12 tiles · OfficeMaze) |
-| Armory | **Rack Aisles** (8–10 tiles · ShelfRows); **Vault** (6–8 tiles · CornerPillars) |
+| Ward | **Long Ward** (2×1 · LowRows); **Bay Ward** (2×1 · OfficeMaze); **Racetrack Ward** (2×1 · ColumnRing) |
+| Pharmacy | **Counter Shop** (6–8 tiles · ServiceCounter, CornerPillars); **Dispensary Aisles** (8–10 tiles · ShelfRows); **Compounding Room** (8–10 tiles · DividerWall) |
+| Morgue | **Cold Room** (7–9 tiles · CornerPillars); **Autopsy Suite** (8–10 tiles · DividerWall); **Drawer Gallery** (8–10 tiles · ShelfRows) |
+| Security Office | **Checkpoint** (10–12 tiles · CheckpointBarrier); **Holding Cells** (10–12 tiles · OfficeMaze); **Surveillance Room** (9–11 tiles · CornerPillars) |
+| Armory | **Rack Aisles** (8–10 tiles · ShelfRows); **Vault** (6–8 tiles · CornerPillars); **Issue Counter** (9–11 tiles · ServiceCounter) |
 | Barracks | **Bunk Rows** (10–12 tiles · LowRows); **Bunk Bays** (2×1 · OfficeMaze) |
-| Workshop | **Fab Shop** (10–12 tiles · CornerPillars); **Assembly Bay** (2×1 · ThreeLanes) |
+| Workshop | **Fab Shop** (10–12 tiles · CornerPillars); **Assembly Bay** (2×1 · ThreeLanes); **Tool Crib** (9–11 tiles · ServiceCounter) |
 | Processing Plant | **Line Hall** (2×1 · LowRows); **Sorting Floor** (2×1 · ThreeLanes); **Smeltery** (2×1 · WidePillarGrid) |
 | Life Support | **Scrubber Hall** (10–12 tiles · CornerPillars); **Plant Room** (9–11 tiles · DensePillarGrid); **Atmosphere Processor** (10–12 tiles · ColumnRing); **Air Garden** (10–12 tiles · WidePillarGrid) |
 | Engine Room | **Turbine Hall** (2×1 · CornerPillars); **Drive Gallery** (2×1 · LowRows); **Thruster Bay** (2×1 · CornerPillars); **Drive Core** (2×1 · ColumnRing) |
@@ -639,22 +639,22 @@ as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/`
 | Coolant Plant | **Radiator Gallery** (2×1 · ShelfRows); **Pump Hall** (2×1 · WidePillarGrid); **Cryo Loop** (10–12 tiles · ColumnRing) |
 | Maintenance Hub | **Crawlway** (7–9 tiles · CornerPillars); **Parts Store** (8–10 tiles · ShelfRows); **Repair Bay** (9–11 tiles · CornerPillars) |
 | Comms Array | **Signal Room** (9–11 tiles · AcrossLowRows); **Antenna Gallery** (10–12 tiles · ColumnRing); **Relay Closet** (7–9 tiles · CornerPillars) |
-| Bridge | **Command Deck** (2×1 · ColumnRing); **Flight Bridge** (2×1 · AcrossLowRows) |
-| Control Room | **Operations** (9–11 tiles · AcrossLowRows); **Monitoring Ring** (10–12 tiles · ColumnRing) |
-| Offices | **Cubicles** (9–11 tiles · OfficeMaze); **Open Plan** (2×1 · LowThreeLanes) |
-| Hydroponics Bay | **Rack Rows** (2×1 · ShelfRows); **Grow Hall** (2×1 · LowThreeLanes) |
+| Bridge | **Command Deck** (2×1 · ColumnRing); **Flight Bridge** (2×1 · AcrossLowRows); **Horseshoe Bridge** (2×1 · CornerPillars) |
+| Control Room | **Operations** (9–11 tiles · AcrossLowRows); **Monitoring Ring** (10–12 tiles · ColumnRing); **Situation Room** (10–12 tiles · CornerPillars) |
+| Offices | **Cubicles** (9–11 tiles · OfficeMaze); **Open Plan** (2×1 · LowThreeLanes); **Executive Suite** (9–11 tiles · DividerWall) |
+| Hydroponics Bay | **Rack Rows** (2×1 · ShelfRows); **Grow Hall** (2×1 · LowThreeLanes); **Aquaponics Bay** (2×1 · WidePillarGrid) |
 | Farm | **Fields** (2×1 · the faction’s); **Orchard** (2×1 · the faction’s) |
 | Water Treatment | **Tank Farm** (2×1 · CornerPillars); **Filter Gallery** (2×1 · LowRows); **Settling Pools** (2×1 · CornerPillars); **Pump Station** (9–11 tiles · DensePillarGrid) |
-| Laboratory | **Wet Lab** (9–11 tiles · DividerWall); **Clean Rooms** (2×1 · OfficeMaze) |
-| Data Center | **Server Aisles** (8–10 tiles · ShelfRows); **Core Vault** (9–11 tiles · ColumnRing) |
+| Laboratory | **Wet Lab** (9–11 tiles · DividerWall); **Clean Rooms** (2×1 · OfficeMaze); **Island Benches** (10–12 tiles · CornerPillars) |
+| Data Center | **Server Aisles** (8–10 tiles · ShelfRows); **Core Vault** (9–11 tiles · ColumnRing); **Rack Pods** (9–11 tiles · CornerPillars) |
 | Library | **Stacks** (10–12 tiles · ShelfRows); **Reading Hall** (2×1 · WidePillarGrid); **Rotunda** (10–12 tiles · ColumnRing) |
-| Chapel | **Nave** (9–11 tiles · AcrossLowRows); **Round Chapel** (9–11 tiles · ColumnRing) |
-| Shrine | **Alcove Shrine** (6–8 tiles · ColumnRing); **Garden Shrine** (7–9 tiles · CornerPillars) |
-| Lobby | **Reception Hall** (1×1 · CornerPillars, HubRing); **Waiting Lounge** (9–11 tiles · LowRows) |
+| Chapel | **Nave** (9–11 tiles · AcrossLowRows); **Round Chapel** (9–11 tiles · ColumnRing); **Meditation Room** (7–9 tiles · CornerPillars) |
+| Shrine | **Alcove Shrine** (6–8 tiles · ColumnRing); **Garden Shrine** (7–9 tiles · CornerPillars); **Lantern Walk** (6–8 tiles · CornerPillars) |
+| Lobby | **Reception Hall** (1×1 · CornerPillars, HubRing); **Waiting Lounge** (9–11 tiles · LowRows); **Rotunda Lobby** (10–12 tiles · ColumnRing) |
 | Cargo Bay | **Container Yard** (2×1 · DensePillarGrid, ServicePavilions); **Loading Dock** (2×1 · ThreeLanes) |
-| Docking Bay | **Airlock Hall** (1×1 · WidePillarGrid, ServicePerimeterPavilions); **Fuel Dock** (1×1 · CornerPillars) |
-| Hangar | **Flight Deck** (2×2 · CornerPillars, ServicePerimeterPavilions); **Maintenance Bay** (2×1 · CornerPillars, ServicePavilions) |
-| Escape Pod Bay | **Pod Gallery** (8–10 tiles · CornerPillars); **Muster Station** (9–11 tiles · LowRows) |
+| Docking Bay | **Airlock Hall** (1×1 · WidePillarGrid, ServicePerimeterPavilions); **Fuel Dock** (1×1 · CornerPillars); **Customs Hall** (1×1 · CheckpointBarrier) |
+| Hangar | **Flight Deck** (2×2 · CornerPillars, ServicePerimeterPavilions); **Maintenance Bay** (2×1 · CornerPillars, ServicePavilions); **Launch Bay** (2×1 · ThreeLanes) |
+| Escape Pod Bay | **Pod Gallery** (8–10 tiles · CornerPillars); **Muster Station** (9–11 tiles · LowRows); **Launch Ring** (9–11 tiles · ColumnRing) |
 | Storage | **Shelf Aisles** (8–10 tiles · ShelfRows); **Crate Stacks** (8–10 tiles · WideShelfRows) |
 
 **Worked examples.**
@@ -796,7 +796,6 @@ three layouts, and nothing anywhere stands *Near* a key that isn't set before it
 
 ### Next
 
-- A third layout for the places that have two, starting with the guest places seen most.
 - Let a faction prefer layouts: VOID the salon's tight cells, TECH the hall's long lanes. That
   could be a weight multiplier per layout on `FactionDesign`, like its shapes.
 - Let the check also report the room's traits per layout, so a layout can be tuned toward the
