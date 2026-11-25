@@ -18,6 +18,10 @@ Work that is written (and mostly compiled) but has not been opened or played in 
 
 Run the whole EditMode suite first (it needs no scene, and once the repository has Unity license secrets CI does it on every push). Then clear the groups below one scene at a time; each entry is kept as it was written, newest first within its group.
 
+#### Algorithms library
+
+- `Scripts/Algorithms/` (new, `CGD.Algorithms`): noise (hash, value, Perlin, simplex, Worley, fractal, domain warp), Poisson disk sampling, a min-heap, shuffle bag, disjoint set, Kruskal's spanning tree, grid distance maps, A*, Bresenham lines, cellular automata, random walks, a spatial hash, easing, Bézier and Catmull-Rom curves, a damped spring, L-systems and turtle drawing. Compiled outside Unity against stand-ins for Unity's vector and math types, and its 19 EditMode tests (`Tests/EditMode/Algorithms/`) plus a wider set of checks ran and passed there; not imported into Unity yet (metas made outside Unity). Let Unity import, run the Algorithms tests, and check the Console for warnings. Nothing in the game uses the library yet except the corridor router's heap (see the next entry when it lands), so no scene changes.
+
 #### Rooms and map generation
 
 Rooms, room places, layouts, the map generation pass and the Room Lab. Check in the Room Lab window, then the `RoomGallery` and `MapGenerator` scenes. Entries run newest first; generation phases 1–7 and 9 are merged into one entry.
