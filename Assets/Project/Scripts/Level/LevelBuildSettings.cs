@@ -42,7 +42,7 @@ namespace CGD.Level
         [Header("Elevation")]
         [Tooltip("The lowest floor level a room may be sunk to by its Elevation and Terraces structure rules: -1 lets sunken floors and courts in, lower lets tiered ones go deeper; 0 keeps every room's floor at or above the doorways' level. The walls reach down this far")]
         [SerializeField, Range(RoomElevation.Lowest, 0)] private int _lowestLevel;
-        [Tooltip("The highest floor level a room may be raised to by its Elevation, Terraces and Overpass structure rules: 1 lets platforms and raised walks in, 2 overpasses and second tiers, higher taller tiers; 0 keeps every room's floor at or below the doorways' level. A level also needs 2 m of headroom under the room's ceiling. Both 0 = every room flat, whatever its rules")]
+        [Tooltip("The highest floor level a room may be raised to by its Elevation and Terraces structure rules: 1 lets platforms and raised walks in, 2 second tiers, higher taller tiers; 0 keeps every room's floor at or below the doorways' level. A level also needs 2 m of headroom under the room's ceiling. Decks (overpasses) aren't held to this, only to the ceiling. Both 0 = every room flat, whatever its rules")]
         [SerializeField, Range(0, RoomElevation.Highest)] private int _highestLevel;
         [Tooltip("A flight of stairs between two floor levels: made for a 3 m tile and a 1 m climb, its origin on the lower floor in the middle of the tile, climbing toward +Z. Empty = a plain ramp")]
         [SerializeField] private GameObject _stairsPrefab;

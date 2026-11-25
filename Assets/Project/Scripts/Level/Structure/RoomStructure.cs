@@ -101,7 +101,8 @@ namespace CGD.Level
         // doorway leads back toward Start (the Start room itself), so nothing reads the room's flow.
         public Vector2Int? Arrival { get; private set; }
         public int ZoneCount { get; private set; } = 1;
-        // The levels this room's floor may take (AllowLevels); both 0 until allowed, so a room stays flat.
+        // The levels this room's floor may take (AllowLevels); both 0 until allowed, so a room stays
+        // flat. Decks above the floor (overpasses) aren't held to it, only to the ceiling (AllowsDeck).
         public int LowestLevel  { get; private set; }
         public int HighestLevel { get; private set; }
         // The raised and sunken parts of the floor, with their stairs.
@@ -442,17 +443,24 @@ namespace CGD.Level
             HighestLevel = Mathf.Clamp(highest, 0, RoomElevation.Highest);
         }
 
-        // Whether floor (or a deck) can stand at `level`: one the room allows, with Headroom
-        // under the ceiling. The one test every rule and every check of a level goes through.
-        public bool AllowsLevel(int level) =>
-            level >= LowestLevel && level <= HighestLevel && RoomElevation.HeightOf(level) + RoomElevation.Headroom <= WallHeight;
+        // Whether the room's floor can stand at `level`: one the room allows, with Headroom under
+        // the ceiling. Every rule that raises or sinks floor goes through it.
+        public bool AllowsFloor(int level) => level >= LowestLevel && level <= HighestLevel && HasHeadroom(level);
+
+        // Whether a deck can stand at `level`: anywhere the ceiling leaves Headroom over it. Decks
+        // are a layer of their own over the floor (footbridges, and later balconies and upper
+        // decks), so a room whose floor keeps within a level of its doorways can still have them
+        // higher up, as high as the room is tall.
+        public bool AllowsDeck(int level) => level >= RoomElevation.Lowest && level <= RoomElevation.Highest && HasHeadroom(level);
+
+        private bool HasHeadroom(int level) => RoomElevation.HeightOf(level) + RoomElevation.Headroom <= WallHeight;
 
         // The most tiers a feature stepping `direction` (+1 up, -1 down) from the doorways' level
         // can have here, up to `wanted`; 0 when not even one level that way stands.
         public int TiersAllowed(int direction, int wanted)
         {
             int tiers = 0;
-            while (tiers < wanted && AllowsLevel(direction * (tiers + 1))) tiers++;
+            while (tiers < wanted && AllowsFloor(direction * (tiers + 1))) tiers++;
             return tiers;
         }
 
@@ -499,7 +507,7 @@ namespace CGD.Level
         public bool TryAddElevation(ElevatedArea area) => area != null && TryAddElevations(new[] { area });
 
         // Raises or sinks every area together, or none of them, if the room stays sound:
-        //   - each level is one the room allows (AllowsLevel), and the tiles are flat, free floor,
+        //   - each level is one the room allows (AllowsFloor), and the tiles are flat, free floor,
         //     none of it in front of a doorway (so everyone arrives on the doorways' level), no tile
         //     in two areas; areas added together may be tiers of one feature, each standing on the
         //     one below it (the lower tier's tiles carrying the upper tier's stairs);
@@ -519,7 +527,7 @@ namespace CGD.Level
             foreach (ElevatedArea area in areas)
             {
                 if (area == null || area.Tiles.Count == 0 || area.Level == 0) return false;
-                if (!AllowsLevel(area.Level)) return false;
+                if (!AllowsFloor(area.Level)) return false;
                 foreach (Vector2Int tile in area.Tiles)
                     if (!IsFree(tile) || Has(tile, RoomTileTags.NearDoor) || _level[IndexOf(tile)] != 0 || !claimed.Add(tile)) return false;
             }
@@ -560,7 +568,7 @@ namespace CGD.Level
         }
 
         // Lays a deck across the room above its floor (Overpass), if it fits:
-        //   - its level is one the room allows, with headroom under the ceiling (AllowsLevel);
+        //   - its level has headroom under the ceiling (AllowsDeck), whatever the floor's range;
         //   - the deck runs straight over floor at least OverpassClearance levels below it, free,
         //     not in front of a doorway or over the centre spot, under no other deck and with no
         //     wall along it;
@@ -571,7 +579,7 @@ namespace CGD.Level
         // Landing, and the floor under the deck Overpass: walked under, but nothing is put there.
         public bool TryAddOverpass(Overpass overpass)
         {
-            if (overpass == null || overpass.Deck.Count == 0 || !AllowsLevel(overpass.Level)) return false;
+            if (overpass == null || overpass.Deck.Count == 0 || !AllowsDeck(overpass.Level)) return false;
 
             const RoomTileTags NotUnder = RoomTileTags.NearDoor | RoomTileTags.Centre | RoomTileTags.Overpass;
             Vector2Int previous = overpass.Stairs[0].Tile;

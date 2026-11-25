@@ -54,7 +54,7 @@ namespace CGD.Level
 
         public override void Apply(RoomStructure structure, RandomStream random)
         {
-            if (!structure.AllowsLevel(Level)) return;
+            if (!structure.AllowsFloor(Level)) return;
 
             var blocks = new BlockElevationBuilder(_kind, _depth, _length, _stairs, _bridge, _railed);
             var rounds = new RoundElevationBuilder(_kind, _radius);

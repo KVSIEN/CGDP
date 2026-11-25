@@ -9,7 +9,7 @@ namespace CGD.Level
     //
     // Which levels a room may use is set by the build (LevelBuildSettings › Lowest and Highest
     // Level, narrowed per room by RoomStructure.AllowLevels); a level stands only where the
-    // room's ceiling leaves Headroom over it (RoomStructure.AllowsLevel). Lowest and Highest are
+    // room's ceiling leaves Headroom over it (RoomStructure.AllowsFloor). Lowest and Highest are
     // only the bounds the code can store and the Inspector offers, not a design limit.
     public static class RoomElevation
     {

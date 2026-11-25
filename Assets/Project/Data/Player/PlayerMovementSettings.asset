@@ -47,7 +47,7 @@ MonoBehaviour:
   MantleReach: 0.9
   MantleBufferTime: 0.3
   MantleMinHeight: 0.5
-  MantleMaxHeight: 2.2
+  MantleMaxHeight: 1.5
   MantleSpeed: 4
   MantleSpeedByHeight:
     serializedVersion: 2

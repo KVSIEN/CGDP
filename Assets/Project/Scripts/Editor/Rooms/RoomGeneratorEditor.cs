@@ -209,7 +209,7 @@ namespace CGD.Editor
             int highest = settings != null ? settings.HighestLevel : RoomElevation.Highest;
             _lowest.intValue = EditorGUILayout.IntSlider(new GUIContent("Lowest level", "How far the floor may sink below the doorways' level (0): sunken floors, craters, lower terraces"),
                                                          Mathf.Clamp(_lowest.intValue, lowest, 0), lowest, 0);
-            _highest.intValue = EditorGUILayout.IntSlider(new GUIContent("Highest level", "How far the floor may rise above the doorways' level (0): platforms and mounds at 1, overpasses at 2"),
+            _highest.intValue = EditorGUILayout.IntSlider(new GUIContent("Highest level", "How far the floor may rise above the doorways' level (0): platforms and mounds at 1, second tiers at 2. Footbridges stand over the floor whatever this says"),
                                                           Mathf.Clamp(_highest.intValue, 0, highest), 0, highest);
             if (_lowest.intValue == 0 && _highest.intValue == 0)
                 EditorGUILayout.LabelField(" ", "Flat: the whole floor at the doorways' level", EditorStyles.miniLabel);

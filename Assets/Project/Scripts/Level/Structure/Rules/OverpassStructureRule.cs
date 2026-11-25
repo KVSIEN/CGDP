@@ -46,12 +46,13 @@ namespace CGD.Level
 
         // Every straight run across lower floor: from a tile a level below the deck, over tiles at
         // least OverpassClearance below it, to another tile a level below the deck. Each once
-        // (eastward or northward), for every deck level the room allows, highest first.
+        // (eastward or northward), for every deck level the room's floor can climb to (a level over
+        // its highest), highest first; TryAddOverpass holds each to the ceiling.
         private List<(Vector2Int, Vector2Int, int)> Spans(RoomStructure structure)
         {
             var spans = new List<(Vector2Int, Vector2Int, int)>();
             int lowestDeck = structure.LowestLevel + RoomElevation.OverpassClearance;
-            for (int level = structure.HighestLevel; level >= lowestDeck; level--)
+            for (int level = structure.HighestLevel + 1; level >= lowestDeck; level--)
                 foreach (Vector2Int start in structure.Footprint.Tiles)
                 {
                     if (structure.LevelOf(start) != level - 1) continue;

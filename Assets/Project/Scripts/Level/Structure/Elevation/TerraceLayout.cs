@@ -39,7 +39,7 @@ namespace CGD.Level
         public bool Fits()
         {
             foreach (int level in _levels)
-                if (!_structure.AllowsLevel(level)) return false;
+                if (!_structure.AllowsFloor(level)) return false;
             foreach (Vector2Int entrance in _structure.Entrances)
                 if (_levels[LaneOf(entrance)] != 0) return false;
             return true;

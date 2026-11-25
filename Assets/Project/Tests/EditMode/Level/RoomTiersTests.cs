@@ -23,13 +23,24 @@ namespace CGD.Tests
             RoomStructure room = Room(10, 8, new Vector2Int(9, 4));
             room.AllowLevels(-3, 5);
 
-            Assert.That(room.AllowsLevel(-3), Is.True);
-            Assert.That(room.AllowsLevel(-4), Is.False, "below the range");
-            Assert.That(room.AllowsLevel(2), Is.True);
-            Assert.That(room.AllowsLevel(3), Is.False, "no headroom under a 4 m ceiling");
+            Assert.That(room.AllowsFloor(-3), Is.True);
+            Assert.That(room.AllowsFloor(-4), Is.False, "below the range");
+            Assert.That(room.AllowsFloor(2), Is.True);
+            Assert.That(room.AllowsFloor(3), Is.False, "no headroom under a 4 m ceiling");
             Assert.That(room.TiersAllowed(1, 5), Is.EqualTo(2));
             Assert.That(room.TiersAllowed(-1, 5), Is.EqualTo(3));
             Assert.That(room.TiersAllowed(-1, 2), Is.EqualTo(2), "never more than wanted");
+        }
+
+        [Test]
+        public void ADeckStandsOverTheFloorsRangeUpToTheCeiling()
+        {
+            RoomStructure room = Room(10, 8, new Vector2Int(9, 4));
+            room.AllowLevels(-1, 1);
+
+            Assert.That(room.AllowsFloor(2), Is.False, "the floor keeps to its range");
+            Assert.That(room.AllowsDeck(2), Is.True, "a deck doesn't");
+            Assert.That(room.AllowsDeck(3), Is.False, "but needs its headroom");
         }
 
         [Test]

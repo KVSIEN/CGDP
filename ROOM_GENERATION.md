@@ -1216,7 +1216,7 @@ edge between two tiles is then one of:
 
 "Reachable" (`StaysConnected`, and so every `TryClaim`) means reachable both ways, so it never counts
 a drop: every raised or sunken area needs its stairs. `TryAddElevations` adds a set of
-`ElevatedArea`s together, or none of them, only if each level is one the room allows (`AllowsLevel`:
+`ElevatedArea`s together, or none of them, only if each level is one the room's floor allows (`AllowsFloor`:
 in its range, with 2 m of `Headroom` under its ceiling), the tiles are
 flat free floor with none of it in front of a doorway (so everyone arrives on level 0), no tile ends
 up two levels from a neighbour, each flight climbs one level onto or off its own area with both
@@ -1265,8 +1265,20 @@ floor (`LevelLayout.TileToFloor`, `FloorHeight`). Enemies get a one-way NavMesh 
 run of ledge (`DropLinkPlanner`, sharing `EdgeRuns` with the vault links over low walls); the
 NavMesh's own step (0.75 m) never climbs a 1 m ledge, and a flight's 18° slope is well under its 45°.
 
-**The range.** `LevelBuildSettings` › *Elevation* › *Lowest Level* and *Highest Level* (-1 and 2 in
-the default settings) say which levels rooms may use; both 0 keeps every room flat. They are design
+**Layers: floor and decks.** A room has two kinds of level. Its **floor** is the ground you walk:
+every tile has a level, neighbours are never more than one apart, and a flight of stairs climbs one
+level per tile; one level (1 m) is a half wall, low cover you hide behind crouched and see over
+standing, and the most the player can mantle (*Mantle Max Height* 1.5 m, counted from the ground
+they last stood on, so a jump doesn't add to it), so a door-high wall (two levels) or a railed
+ledge (1 m of floor and 1 m of railing) can't be climbed and sends you to the stairs. Its
+**decks** stand over the floor as a layer of their own (`AllowsDeck`): today the overpasses, next
+balconies, galleries and upper decks overlooking a hall, reached by connectors that climb several
+levels in one place (a spiral staircase or a lift from floor 0 straight to a deck at 2 or higher).
+Decks keep only to the ceiling, not to the floor's range, so a tall luxury interior can stack
+several of them while its floor stays within a level of its doorways.
+
+**The range.** `LevelBuildSettings` › *Elevation* › *Lowest Level* and *Highest Level* (-1 and 1 in
+the default settings) say which levels rooms' floors may use; both 0 keeps every room flat. They are design
 choices, not code limits: the code stores and offers -8 to 8 (`RoomElevation.Lowest`, `Highest`),
 the walls reach down to the lowest level, and a level also needs its headroom under the room's own
 ceiling, so a tall room can take more tiers than a low one. The Room Generator scene narrows the

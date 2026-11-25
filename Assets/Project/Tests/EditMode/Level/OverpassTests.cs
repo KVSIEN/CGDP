@@ -60,7 +60,7 @@ namespace CGD.Tests
         [Test]
         public void ADeckNeedsItsLevelTwoLevelsClearAndFreeFloor()
         {
-            Assert.That(Walks(highest: 1).TryAddOverpass(AcrossTheLane()), Is.False, "level 2 not allowed");
+            Assert.That(Walks(highest: 1).TryAddOverpass(AcrossTheLane()), Is.True, "a deck isn't held to the floor's range");
 
             RoomStructure room = Walks();
             Assert.That(room.TryAddOverpass(new Overpass(2, new Vector2Int(1, 1), new Vector2Int(1, 6))), Is.True);

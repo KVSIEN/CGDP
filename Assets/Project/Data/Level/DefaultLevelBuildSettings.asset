@@ -23,7 +23,7 @@ MonoBehaviour:
   _wallMaterial: {fileID: 2100000, guid: 2ab8149ec4775284bada96c1b85b4a09, type: 2}
   _lowCoverMaterial: {fileID: 2100000, guid: 9fe0a856a63e8634ebc7077bc570ea68, type: 2}
   _lowestLevel: -1
-  _highestLevel: 2
+  _highestLevel: 1
   _stairsPrefab: {fileID: 5272085605032644662, guid: d4f3e28b07df4dbf8d04b93f488ec8bf, type: 3}
   _railingPrefab: {fileID: 2789657991163672792, guid: 31571b824cc043b79589fc72e0e5cc08, type: 3}
   _geometryLayer: 0

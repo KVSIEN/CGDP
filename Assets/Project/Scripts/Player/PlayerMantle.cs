@@ -4,6 +4,10 @@ namespace CGD.Player
 {
     // Pulls the player up onto a ledge when PlayerMovement asks (TryStart). Uses the
     // movement's settings and camera, so the two can't be set up differently.
+    //
+    // A ledge's height is counted from the ground the player last stood on, not from where a
+    // jump has carried them, so jumping first never reaches a ledge taller than Mantle Max
+    // Height: one floor level (1 m) can be climbed, a door-high wall or a railed ledge can't.
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(CapsuleCollider))]
     [RequireComponent(typeof(PlayerMovement))]
@@ -33,12 +37,15 @@ namespace CGD.Player
         private bool _inLiftPhase;
         private float _speed;
         private float _timer;
+        // Feet height the last time the player stood on the ground.
+        private float _groundY;
 
         private void Awake()
         {
             _rb       = GetComponent<Rigidbody>();
             _col      = GetComponent<CapsuleCollider>();
             _movement = GetComponent<PlayerMovement>();
+            _groundY  = _rb.position.y;
         }
 
         private void OnDisable() => Cancel();
@@ -53,7 +60,11 @@ namespace CGD.Player
 
         private void FixedUpdate()
         {
-            if (!_isMantling) return;
+            if (!_isMantling)
+            {
+                if (_movement.IsGrounded) _groundY = _rb.position.y;
+                return;
+            }
 
             _timer -= Time.fixedDeltaTime;
 
@@ -86,7 +97,7 @@ namespace CGD.Player
             if (!TryFindLedge(forward, out Vector3 wallPoint, out float ledgeY)) return false;
 
             float height = ledgeY - _rb.position.y;
-            if (height < Settings.MantleMinHeight || height > Settings.MantleMaxHeight) return false;
+            if (height < Settings.MantleMinHeight || ReachFromGround(ledgeY) > Settings.MantleMaxHeight) return false;
 
             Vector3 target = new Vector3(
                 wallPoint.x + forward.x * Settings.MantleStepOver,
@@ -97,6 +108,10 @@ namespace CGD.Player
             Begin(target, height);
             return true;
         }
+
+        // How far above the ground the player last stood on the ledge is (from the feet, while standing).
+        private float ReachFromGround(float ledgeY) =>
+            ledgeY - (_movement.IsGrounded ? _rb.position.y : _groundY);
 
         private bool TryFindLedge(Vector3 forward, out Vector3 wallPoint, out float ledgeY)
         {

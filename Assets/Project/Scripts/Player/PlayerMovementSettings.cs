@@ -58,8 +58,8 @@ namespace CGD.Player
         public float MantleBufferTime = 0.3f;
         [Tooltip("Lowest ledge top, relative to the feet, that can be mantled. Lower obstacles are just jumped over.")]
         public float MantleMinHeight = 0.5f;
-        [Tooltip("Highest ledge top, relative to the feet, that can be mantled")]
-        public float MantleMaxHeight = 2.2f;
+        [Tooltip("Highest ledge top that can be mantled, above the ground the player last stood on (a jump doesn't add to it). 1.5 m: a floor level (1 m) can be climbed, a door-high wall or a railed ledge (2 m) can't")]
+        public float MantleMaxHeight = 1.5f;
         [Tooltip("Base speed at which the player is moved onto the ledge (m/s)")]
         public float MantleSpeed = 6f;
         [Tooltip("Multiplier on Mantle Speed by ledge height: 0 = Mantle Min Height, 1 = Mantle Max Height")]
