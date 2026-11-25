@@ -81,7 +81,8 @@ namespace CGD.Level
                 {
                     if (prop.Prefab == null) continue;
 
-                    Vector3 local = new Vector3(prop.Position.x, 0f, prop.Position.y) * _layout.TileSize;
+                    // A prop stands on one level (PropPlacementRules), so any of its tiles gives its floor.
+                    Vector3 local = new Vector3(prop.Position.x * _layout.TileSize, _layout.FloorHeight(prop.Tiles.min), prop.Position.y * _layout.TileSize);
                     GameObject placed = Place(room, prop.Prefab, _parent.TransformPoint(local), _parent.rotation * Quaternion.Euler(0f, prop.Yaw, 0f));
                     if (prop.Stretch != Vector2.one) placed.transform.localScale = Vector3.Scale(placed.transform.localScale, new Vector3(prop.Stretch.x, 1f, prop.Stretch.y));
                     // After any stretch, so its places to stand stay where they were put.
@@ -217,7 +218,7 @@ namespace CGD.Level
                     GameObject prefab = (fromBreach ? breach : roster).Pick(_random);
                     if (prefab == null) continue;
 
-                    Vector3 position = OnNavMesh(_parent.TransformPoint(_layout.TileToLocal(spawn.Tile)));
+                    Vector3 position = OnNavMesh(_parent.TransformPoint(_layout.TileToFloor(spawn.Tile)));
                     GameObject enemy = PrefabPool.Spawn(prefab, position, RandomYaw());
                     ISeedable.SeedAll(enemy, _seed.Derive("enemies").Derive(room.Node.Id).Derive(i));
                     // A pooled enemy keeps its last route unless told otherwise: guards get none.
@@ -332,7 +333,7 @@ namespace CGD.Level
             {
                 route[i] = new GameObject($"Waypoint{i}").transform;
                 route[i].SetParent(holder, false);
-                route[i].localPosition = _layout.TileToLocal(loop[i]);
+                route[i].localPosition = _layout.TileToFloor(loop[i]);
             }
             return route;
         }
@@ -348,7 +349,7 @@ namespace CGD.Level
 
                 free.RemoveAt(i);
                 TakenTiles(room).Add(tile);
-                position = _parent.TransformPoint(_layout.TileToLocal(tile));
+                position = _parent.TransformPoint(_layout.TileToFloor(tile));
                 return true;
             }
 

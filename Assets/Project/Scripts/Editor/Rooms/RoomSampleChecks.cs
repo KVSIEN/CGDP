@@ -43,22 +43,23 @@ namespace CGD.Editor
                 issues.Add(new RoomIssue(RoomIssue.Severity.Info, $"The building had no space for: {string.Join(", ", structure.LeftOut)}."));
         }
 
-        // What the room's floor levels came to. They are planned only: the level's floor is still
-        // built flat, so a room with them doesn't play as drawn yet.
+        // What the room's floor levels came to: how many raised and sunken areas, their stairs,
+        // and where enemies can drop off a ledge.
         private static void CheckElevation(RoomSample sample, List<RoomIssue> issues)
         {
             RoomStructure structure = sample.Room.Structure;
             if (!structure.HasElevation) return;
 
-            int raised = 0, sunken = 0, flights = 0;
+            int raised = 0, sunken = 0, flights = 0, railed = 0;
             foreach (ElevatedArea area in structure.Elevations)
             {
                 if (area.Level > 0) raised++;
                 else sunken++;
                 flights += area.Stairs.Count;
+                if (area.Railed) railed++;
             }
             issues.Add(new RoomIssue(RoomIssue.Severity.Info,
-                $"{raised} raised and {sunken} sunken area(s), {flights} flight(s) of stairs. Planned only: the level is still built flat, so they show here and not in play yet."));
+                $"{raised} raised and {sunken} sunken area(s), {flights} flight(s) of stairs, {railed} of the areas railed (the rest can be dropped off)."));
         }
 
         private static void CheckDoorways(RoomSample sample, List<RoomIssue> issues)

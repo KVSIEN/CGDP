@@ -6,7 +6,8 @@ namespace CGD.Level
 {
     // Lets enemies hop a generated level's low cover (EnemyVault does the hop): once the NavMesh
     // is built, links go across the low inner walls (VaultLinkPlanner) and across low, thin
-    // furniture (barriers, counters), measured from what was placed. A link is only kept where
+    // furniture (barriers, counters), measured from what was placed, and one way down off open
+    // ledges where the floor changes level (DropLinkPlanner). A link is only kept where
     // both ends are on the NavMesh and it saves a real detour — over a divider rather than round
     // it — so enemies still walk round a lone crate.
     public sealed class VaultLinkBuilder
@@ -28,6 +29,8 @@ namespace CGD.Level
             var holder = level.gameObject.AddComponent<VaultLinks>();
             foreach (VaultLink link in VaultLinkPlanner.Plan(layout))
                 TryAdd(holder, level.TransformPoint(link.From), level.TransformPoint(link.To), link.Width, agentTypeId);
+            foreach (VaultLink link in DropLinkPlanner.Plan(layout))
+                TryAdd(holder, level.TransformPoint(link.From), level.TransformPoint(link.To), link.Width, agentTypeId, link.OneWay);
             foreach (GameObject piece in furniture)
                 if (TryAcross(piece, level.position.y, out Vector3 from, out Vector3 to, out float width))
                     TryAdd(holder, from, to, width, agentTypeId);
@@ -68,7 +71,7 @@ namespace CGD.Level
             return any;
         }
 
-        private void TryAdd(VaultLinks holder, Vector3 from, Vector3 to, float width, int agentTypeId)
+        private void TryAdd(VaultLinks holder, Vector3 from, Vector3 to, float width, int agentTypeId, bool oneWay = false)
         {
             if (!NavMesh.SamplePosition(from, out NavMeshHit start, EndSearch, NavMesh.AllAreas)) return;
             if (!NavMesh.SamplePosition(to, out NavMeshHit end, EndSearch, NavMesh.AllAreas)) return;
@@ -79,7 +82,7 @@ namespace CGD.Level
                 startPosition = start.position,
                 endPosition   = end.position,
                 width         = width,
-                bidirectional = true,
+                bidirectional = !oneWay,
                 costModifier  = -1f,
                 area          = 0,
                 agentTypeID   = agentTypeId,

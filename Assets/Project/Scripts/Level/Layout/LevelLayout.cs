@@ -76,7 +76,21 @@ namespace CGD.Level
         // Centre of a tile, on the floor.
         public Vector3 TileToLocal(Vector2Int tile) => new((tile.x + 0.5f) * TileSize, 0f, (tile.y + 0.5f) * TileSize);
 
-        public Vector3 RoomCenterLocal(LevelRoom room) => new(room.Anchor.x * TileSize, 0f, room.Anchor.y * TileSize);
+        // How high a tile's floor stands, in metres: its level in a room with raised or sunken
+        // floor (RoomElevation), 0 for corridors and flat rooms. A flight of stairs counts as its
+        // lower level.
+        public float FloorHeight(Vector2Int tile)
+        {
+            RoomStructure structure = RoomAt(tile)?.Structure;
+            return structure != null ? RoomElevation.HeightOf(structure.LevelOf(tile)) : 0f;
+        }
+
+        // The middle of a tile, standing on its floor: where things put on that tile go.
+        public Vector3 TileToFloor(Vector2Int tile) => TileToLocal(tile) + Vector3.up * FloorHeight(tile);
+
+        // The room's centre, on the floor of the tile it falls in.
+        public Vector3 RoomCenterLocal(LevelRoom room) =>
+            new(room.Anchor.x * TileSize, FloorHeight(new Vector2Int(Mathf.FloorToInt(room.Anchor.x), Mathf.FloorToInt(room.Anchor.y))), room.Anchor.y * TileSize);
 
         // The room's bounding rectangle on the floor plan (x, z), in the level's space.
         public Rect RoomLocalRect(LevelRoom room)

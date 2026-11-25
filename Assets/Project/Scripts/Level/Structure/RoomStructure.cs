@@ -457,50 +457,75 @@ namespace CGD.Level
         public bool IsLedge(Vector2Int a, Vector2Int b) =>
             AreNeighbours(a, b) && Contains(a) && Contains(b) && LevelOf(a) != LevelOf(b) && !LevelsJoin(a, b);
 
-        // Raises or sinks `area`'s tiles to its level with its stairs, if the room stays sound:
-        //   - the level is one the room allows, and the tiles are flat, free floor nothing keeps
-        //     clear (so doorways, routes and the centre stay on the doorways' level);
+        // Raises or sinks `area`'s tiles to its level with its stairs, if the room stays sound
+        // (see TryAddElevations).
+        public bool TryAddElevation(ElevatedArea area) => area != null && TryAddElevations(new[] { area });
+
+        // Raises or sinks every area together, or none of them, if the room stays sound:
+        //   - each level is one the room allows, and the tiles are flat, free floor, none of it in
+        //     front of a doorway (so everyone arrives on the doorways' level), no tile in two areas;
         //   - no tile ends up more than one level from its neighbour;
         //   - each flight climbs one level from its foot to its head, with nothing on either
-        //     landing and no wall across it, and leads onto or off the area;
+        //     landing and no wall across it, stands clear of a doorway's front and the centre
+        //     spot, and leads onto or off its own area;
         //   - every free tile is still reachable from every doorway, both ways.
-        public bool TryAddElevation(ElevatedArea area)
+        // Routes and the centre spot may be raised or sunk: the stairs carry a route on, and
+        // the rules choose whether to (a sunken court round the centrepiece, a lane the route
+        // runs along). Adding them together lets terraces lean on each other's stairs.
+        public bool TryAddElevations(IReadOnlyList<ElevatedArea> areas)
         {
-            if (area == null || area.Tiles.Count == 0 || area.Level == 0) return false;
-            if (area.Level < LowestLevel || area.Level > HighestLevel) return false;
+            if (areas == null || areas.Count == 0) return false;
 
-            var inside = new HashSet<Vector2Int>(area.Tiles);
-            foreach (Vector2Int tile in area.Tiles)
-                if (!IsFree(tile) || Has(tile, KeepClear) || _level[IndexOf(tile)] != 0) return false;
-
-            int LevelAfter(Vector2Int tile) => inside.Contains(tile) ? area.Level : LevelOf(tile);
-            foreach (Vector2Int tile in area.Tiles)
-                foreach (Vector2Int side in GridSides.All)
-                {
-                    Vector2Int next = tile + side;
-                    if (Contains(next) && !inside.Contains(next) && Mathf.Abs(area.Level - LevelAfter(next)) > 1) return false;
-                }
-
-            var landings = new HashSet<Vector2Int>();
-            foreach (StairFlight stairs in area.Stairs)
+            var claimed = new HashSet<Vector2Int>();
+            foreach (ElevatedArea area in areas)
             {
-                if (Mathf.Abs(stairs.Up.x) + Mathf.Abs(stairs.Up.y) != 1 || Has(stairs.Tile, KeepClear)) return false;
-                foreach (Vector2Int tile in new[] { stairs.Foot, stairs.Tile, stairs.Head })
-                    if (!IsFree(tile) || !landings.Add(tile)) return false;
-                if (IsPartitioned(stairs.Foot, stairs.Tile) || IsPartitioned(stairs.Tile, stairs.Head)) return false;
-                if (!inside.Contains(stairs.Tile) && !inside.Contains(stairs.Head)) return false;
-
-                int low = LevelAfter(stairs.Tile);
-                if (LevelAfter(stairs.Foot) != low || LevelAfter(stairs.Head) != low + 1) return false;
+                if (area == null || area.Tiles.Count == 0 || area.Level == 0) return false;
+                if (area.Level < LowestLevel || area.Level > HighestLevel) return false;
+                foreach (Vector2Int tile in area.Tiles)
+                    if (!IsFree(tile) || Has(tile, RoomTileTags.NearDoor) || _level[IndexOf(tile)] != 0 || !claimed.Add(tile)) return false;
             }
 
-            _elevations.Add(area);
-            Raise(area, (short)_elevations.Count, (sbyte)area.Level);
-            if (StaysConnected(System.Array.Empty<Vector2Int>())) return true;
+            const RoomTileTags NotOnStairs = RoomTileTags.NearDoor | RoomTileTags.Centre;
+            var flights = new HashSet<Vector2Int>();
+            foreach (ElevatedArea area in areas)
+                foreach (StairFlight stairs in area.Stairs)
+                {
+                    if (Mathf.Abs(stairs.Up.x) + Mathf.Abs(stairs.Up.y) != 1 || Has(stairs.Tile, NotOnStairs)) return false;
+                    foreach (Vector2Int tile in new[] { stairs.Foot, stairs.Tile, stairs.Head })
+                        if (!IsFree(tile) || !flights.Add(tile)) return false;
+                    if (IsPartitioned(stairs.Foot, stairs.Tile) || IsPartitioned(stairs.Tile, stairs.Head)) return false;
+                }
 
-            Raise(area, 0, 0);
-            _elevations.RemoveAt(_elevations.Count - 1);
+            int first = _elevations.Count;
+            for (int i = 0; i < areas.Count; i++)
+            {
+                _elevations.Add(areas[i]);
+                Raise(areas[i], (short)(first + i + 1), (sbyte)areas[i].Level);
+            }
+            if (StepsAreSound(areas) && StaysConnected(System.Array.Empty<Vector2Int>())) return true;
+
+            for (int i = areas.Count - 1; i >= 0; i--) Raise(areas[i], 0, 0);
+            _elevations.RemoveRange(first, areas.Count);
             return false;
+        }
+
+        // Once raised: no tile two levels from a neighbour, and every flight climbing one level onto or off its area.
+        private bool StepsAreSound(IReadOnlyList<ElevatedArea> areas)
+        {
+            foreach (ElevatedArea area in areas)
+            {
+                foreach (Vector2Int tile in area.Tiles)
+                    foreach (Vector2Int side in GridSides.All)
+                        if (Contains(tile + side) && Mathf.Abs(area.Level - LevelOf(tile + side)) > 1) return false;
+
+                foreach (StairFlight stairs in area.Stairs)
+                {
+                    int low = LevelOf(stairs.Tile);
+                    if (LevelOf(stairs.Foot) != low || LevelOf(stairs.Head) != low + 1) return false;
+                    if (AreaOf(stairs.Tile) != area && AreaOf(stairs.Head) != area) return false;
+                }
+            }
+            return true;
         }
 
         // Sets (or, with 0s, takes back) an area's levels, stairs and landings.

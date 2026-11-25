@@ -1194,7 +1194,7 @@ priorities were never tuned against a sweep. To decide which to leave on:
    (`RoomTraitMeasure`) from that report. The traits' interface (`RoomTrait`, the priorities,
    `RoomTraitFit.Gap`) is the same either way.
 
-## 18. Elevation (phases 0–1)
+## 18. Elevation (phases 0–2)
 
 A room's floor can stand a level up or down from the floor its doorways open onto: level 0 is the
 doorways' level, and each level is one step of 1 m (`RoomElevation.StepHeight`), under eye height,
@@ -1212,31 +1212,53 @@ edge between two tiles is then one of:
 | ledge (`IsLedge`) | a change of level with no flight | no | down only, unless the area is railed |
 
 "Reachable" (`StaysConnected`, and so every `TryClaim`) means reachable both ways, so it never counts
-a drop: every raised or sunken area needs its stairs. `TryAddElevation` adds an `ElevatedArea` only
-if the level is one the room allows, its tiles are flat free floor nothing keeps clear (doorway
-fronts, walkways and the centre stay on level 0, so everyone arrives and crosses on the doorways'
-level), no tile ends up two levels from a neighbour, each flight climbs one level onto or off the
-area with both landings free and no wall across it, and the room stays whole. Stairs are tagged
-`Stairs` and their landings `Landing`: nothing is built on either.
+a drop: every raised or sunken area needs its stairs. `TryAddElevations` adds a set of
+`ElevatedArea`s together, or none of them, only if each level is one the room allows, the tiles are
+flat free floor with none of it in front of a doorway (so everyone arrives on level 0), no tile ends
+up two levels from a neighbour, each flight climbs one level onto or off its own area with both
+landings free, no wall across it and clear of a doorway's front and the centre spot, and the room
+stays whole. Routes and the centre spot may be raised or sunk (a court sunk round its centrepiece):
+the stairs carry a route on, and each rule decides whether to. Stairs are tagged `Stairs` and their
+landings `Landing`: nothing is built on either, and a prop never straddles a ledge.
 
-**Placing it (`ElevationStructureRule`, a structure rule).** *Kind* Platform raises a block with its
-back to the room's wall, its flights on its open sides and facing into the room (nearest the
-centre first, three tiles apart). *Kind* Sunken Floor sinks a block with floor all round it (two
-tiles in from the walls), its flights just inside its rim. *Depth*, *Length*, *Count*, *Stairs* and
-*Max Share* (of the floor, 25 %) size it; *Railed* puts a railing on its open edges, so nobody drops
-off (a mezzanine) or in. The rule does nothing, and draws no random number, in a room whose levels
-don't take its kind.
+**Features (`ElevationStructureRule`).** *Platform* raises a block with its back to the room's wall,
+its flights on its open sides facing into the room; *Sunken Floor* sinks a block with floor all
+round it, its flights just inside its rim. Both keep off routes, doorway fronts and the centre.
 
-**The range.** `LevelBuildSettings` › *Lowest Level* and *Highest Level* say which levels rooms may
-use; both 0 (the default) keeps every room flat. Walking code (flow steps, routes, prop spacing and
-clearance, the Room Lab's reachability check) goes through `CanStep`, which in a flat room is just
-"no wall between", so seeded output is unchanged. A prop never straddles a ledge.
+**Terraces (`TerracesStructureRule`, `TerraceLayout`).** Lanes running wall to wall, side by side,
+each with a level and a width weight: *Split Level* 1-0, *Raised Walks* 1-0-1, *Raised Middle*
+0-1-0, *Sunken Court* 0 -1 0; any profile whose neighbours differ by one level at most. *Direction*
+runs them along the room's length (side by side across it), across it, or either. The doorways
+decide how it sits: every doorway must open onto level 0, so the profile is shifted a level up or
+down when that is what fits (Raised Walks with doors onto the walks becomes a sunken court, the
+walks level with the doors), and turned when Direction allows. Floor just in front of a doorway in
+another lane stays level with the doorway, as a landing, with a flight on where the route steps off
+it. Flights go wherever a route from a doorway crosses a ledge, then evenly, one per *Stair Spacing*
+tiles of ledge (at least one per ledge, three tiles apart at least). *Railed* puts railings along the
+rest; without, the ledges can be dropped off. A room no shift or turn fits, or too narrow for its
+lanes (two tiles each at least), stays flat. Put it first in a layout's structure: pillars and walls
+after it stand on its levels.
+
+**Built (`ElevationGeometryBuilder`).** Each tile's floor slab reaches down to the lowest floor beside
+it, so a raised floor shows its face and a sunken one its sides; with a level below 0 allowed, the
+outer walls reach a metre below the floor too. Each flight gets the settings' *Stairs Prefab* (a
+plain ramp without one) and each railed ledge the *Railing Prefab* on its higher side. Pillars stand
+on the lowest floor round them and still reach the ceiling; an inner wall on a ledge stands from the
+lower floor. Props, enemies, patrol points, keys, terminals and the centrepiece go on their tile's
+floor (`LevelLayout.TileToFloor`, `FloorHeight`). Enemies get a one-way NavMesh link down every open
+run of ledge (`DropLinkPlanner`, sharing `EdgeRuns` with the vault links over low walls); the
+NavMesh's own step (0.75 m) never climbs a 1 m ledge, and a flight's 18° slope is well under its 45°.
+
+**The range.** `LevelBuildSettings` › *Elevation* › *Lowest Level* and *Highest Level* (-1 and 1 in
+the default settings) say which levels rooms may use; both 0 keeps every room flat. Walking code
+(flow steps, routes, prop spacing and clearance, the Room Lab's reachability check) goes through
+`CanStep`, which in a flat room is just "no wall between", so a room with no elevation rule
+generates exactly as before.
 
 **Seeing it.** The Room Lab's *Elevation* layer paints raised floor orange and sunken floor blue,
 stairs yellow with an arrow climbing, open ledges white and railed ones grey; the readout gives a
-tile's level and which way its stairs climb.
+tile's level and which way its stairs climb. The gallery's Prop Yard has the Stairs piece.
 
-**Not yet.** The level's floor is still built flat (phase 2 builds it, with stairs, railings, drop
-links and props at height); mounds, craters and bridges are phase 3; height-aware sight and high
-ground in combat phase 4 (see `TASKS.md` › Elevation, next phases).
-
+**Not yet.** Mounds, craters and bridges are phase 3; height-aware sight (standing over low cover,
+crouching behind it, a raised eye seeing further) and high ground in combat phase 4 (see `TASKS.md`
+› Elevation, next phases).

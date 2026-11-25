@@ -26,42 +26,26 @@ namespace CGD.Level
 
         private static void PlanRoom(RoomStructure structure, float tileSize, List<VaultLink> links)
         {
-            // Low edges by the line they lie on: (side, the coordinate across the line) → the
-            // coordinates along it.
-            var lines = new Dictionary<(Vector2Int Side, int Across), List<int>>();
+            var edges = new List<(Vector2Int, Vector2Int, int)>();
             foreach (PartitionEdge edge in structure.Partitions)
             {
                 if (!CoverHeights.IsLow(edge.Height) || structure.Has(edge.Tile, Taken) || structure.Has(edge.Other, Taken)) continue;
-                bool vertical = edge.Side.x != 0;   // a wall between x and x + 1, running along y
-                var key = (edge.Side, vertical ? edge.Tile.x : edge.Tile.y);
-                if (!lines.TryGetValue(key, out List<int> along)) lines[key] = along = new List<int>();
-                along.Add(vertical ? edge.Tile.y : edge.Tile.x);
+                edges.Add((edge.Tile, edge.Side, 0));
             }
 
-            foreach (KeyValuePair<(Vector2Int Side, int Across), List<int>> line in lines)
+            // A link from the middle of the tiles on one side of the run to those on the other.
+            foreach (EdgeRuns.Run run in EdgeRuns.Of(edges, MaxRunTiles))
             {
-                List<int> along = line.Value;
-                along.Sort();
-                int start = 0;
-                for (int i = 1; i <= along.Count; i++)
-                {
-                    bool ends = i == along.Count || along[i] != along[i - 1] + 1 || i - start == MaxRunTiles;
-                    if (!ends) continue;
-                    links.Add(Across(line.Key.Side, line.Key.Across, along[start], along[i - 1], tileSize));
-                    start = i;
-                }
+                (Vector2 from, Vector2 to) = EdgeRuns.Middles(run);
+                links.Add(new VaultLink(OnFloor(structure, from, tileSize), OnFloor(structure, to, tileSize), EdgeRuns.Length(run) * tileSize * WidthShare));
             }
         }
 
-        // A link from the middle of the tiles on one side of the run to those on the other.
-        private static VaultLink Across(Vector2Int side, int across, int first, int last, float tileSize)
+        // A point in tile units, in metres on the floor of the tile it falls in (raised or sunken floor included).
+        internal static Vector3 OnFloor(RoomStructure structure, Vector2 point, float tileSize)
         {
-            float middle = (first + last + 1) * 0.5f;
-            float width  = (last - first + 1) * tileSize * WidthShare;
-            bool vertical = side.x != 0;
-            Vector2 from = vertical ? new Vector2(across + 0.5f, middle) : new Vector2(middle, across + 0.5f);
-            Vector2 to   = from + (Vector2)side;
-            return new VaultLink(new Vector3(from.x, 0f, from.y) * tileSize, new Vector3(to.x, 0f, to.y) * tileSize, width);
+            var tile = new Vector2Int(Mathf.FloorToInt(point.x), Mathf.FloorToInt(point.y));
+            return new Vector3(point.x * tileSize, RoomElevation.HeightOf(structure.LevelOf(tile)), point.y * tileSize);
         }
     }
 }

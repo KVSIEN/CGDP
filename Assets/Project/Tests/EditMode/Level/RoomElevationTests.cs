@@ -101,13 +101,38 @@ namespace CGD.Tests
         }
 
         [Test]
-        public void FloorADoorwayOrRouteNeedsIsNeverRaised()
+        public void FloorInFrontOfADoorwayIsNeverRaised()
         {
-            var acrossTheRoute = new ElevatedArea(ElevationKind.Platform, 1, Block(6, 4, 1, 1), new[] { new StairFlight(new Vector2Int(6, 3), Vector2Int.up) }, false);
-            Assert.That(Hall().TryAddElevation(acrossTheRoute), Is.False, "the walkway to the centre");
-
             var atTheDoor = new ElevatedArea(ElevationKind.Platform, 1, Block(8, 6, 2, 2), new[] { new StairFlight(new Vector2Int(7, 6), Vector2Int.right) }, false);
-            Assert.That(Hall().TryAddElevation(atTheDoor), Is.False, "in front of the doorway");
+            Assert.That(Hall().TryAddElevation(atTheDoor), Is.False);
+        }
+
+        [Test]
+        public void ARouteMayBeRaisedWhenStairsCarryItOn()
+        {
+            // The walkway runs along row 4 from the doorway to the centre: raise a stretch of it.
+            RoomStructure room = Hall();
+            var acrossTheRoute = new ElevatedArea(ElevationKind.Platform, 1, Block(6, 4, 1, 2), new[] { new StairFlight(new Vector2Int(6, 3), Vector2Int.up) }, false);
+
+            Assert.That(room.TryAddElevation(acrossTheRoute), Is.True);
+            Assert.That(room.LevelOf(new Vector2Int(6, 4)), Is.EqualTo(1));
+            Assert.That(room.StaysConnected(System.Array.Empty<Vector2Int>()), Is.True);
+        }
+
+        [Test]
+        public void AreasAddedTogetherStandOrFallTogether()
+        {
+            RoomStructure room = Room(12, 10, new Vector2Int(11, 5));
+            room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
+            var west = new ElevatedArea(ElevationKind.Terrace, 1, Block(0, 0, 2, 4), new[] { new StairFlight(new Vector2Int(2, 1), Vector2Int.left) }, false);
+            var stranded = new ElevatedArea(ElevationKind.Terrace, 1, Block(0, 7, 2, 3), System.Array.Empty<StairFlight>(), false);
+
+            Assert.That(room.TryAddElevations(new[] { west, stranded }), Is.False, "the second has no way up");
+            Assert.That(room.HasElevation, Is.False, "so neither stands");
+            Assert.That(room.LevelOf(new Vector2Int(0, 0)), Is.Zero);
+            Assert.That(room.Has(new Vector2Int(2, 1), RoomTileTags.Stairs), Is.False);
+
+            Assert.That(room.TryAddElevations(new[] { west }), Is.True);
         }
 
         [Test]

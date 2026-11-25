@@ -20,6 +20,9 @@ namespace CGD.Level
 
         private float Tile      => _layout.TileSize;
         private float Thickness => _settings.WallThickness;
+        // How far below the doorways' floor the walls reach: down to the lowest floor a room may
+        // be sunk to, so a sunken floor that meets the wall shows no gap under it.
+        private float Footing => -RoomElevation.HeightOf(_settings.LowestLevel);
 
         public void Build(LevelWallPlan plan)
         {
@@ -39,9 +42,9 @@ namespace CGD.Level
 
             Vector3 dir = along / length;
             Vector3 outward = new(dir.z, 0f, -dir.x);
-            Vector3 position = (a + b) * 0.5f + outward * (Thickness * 0.5f) + Vector3.up * (segment.Height * 0.5f);
+            Vector3 position = (a + b) * 0.5f + outward * (Thickness * 0.5f) + Vector3.up * ((segment.Height - Footing) * 0.5f);
             float overlap = segment.SquareEnds ? Thickness * 2f : Thickness;
-            _walls.AddBox(position, new Vector3(Thickness, segment.Height, length + overlap), Quaternion.LookRotation(dir));
+            _walls.AddBox(position, new Vector3(Thickness, segment.Height + Footing, length + overlap), Quaternion.LookRotation(dir));
         }
 
         // Room walls stand taller than the corridor's; above each doorway the wall carries on.

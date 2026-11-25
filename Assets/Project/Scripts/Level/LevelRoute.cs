@@ -32,7 +32,7 @@ namespace CGD.Level
         {
             point = default;
             if (!TryPickTile(_level.InverseTransformPoint(player), side, rooms, random, out Vector2Int tile)) return false;
-            point = _level.TransformPoint(_layout.TileToLocal(tile));
+            point = _level.TransformPoint(_layout.TileToFloor(tile));
             return true;
         }
 

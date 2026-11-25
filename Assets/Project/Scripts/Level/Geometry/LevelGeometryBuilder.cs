@@ -47,6 +47,9 @@ namespace CGD.Level
             var walls          = new BoxMeshBuilder();
             var structure      = new BoxMeshBuilder();
             var lowCover       = new BoxMeshBuilder();
+            var stairs         = new BoxMeshBuilder();
+            var railings       = new BoxMeshBuilder();
+            var elevation      = new ElevationGeometryBuilder(_settings, layout);
 
             Dictionary<Vector2Int, LevelRoom> outerRing = AddFloors(layout, roomFloors, factionFloors, corridorFloors);
             LevelWallPlan wallPlan = LevelWallPlan.Create(layout, _settings);
@@ -54,6 +57,7 @@ namespace CGD.Level
             foreach (LevelRoom room in layout.Rooms.Values)
             {
                 if (room.Structure != null) AddStructure(layout, room, structure, lowCover, parent);
+                elevation.Build(room, stairs, railings, parent);
                 if (room.Landmark != null) PlaceLandmark(layout, room, parent);
             }
 
@@ -70,6 +74,8 @@ namespace CGD.Level
             }
             CreatePart("Structure",      structure,      _settings.WallMaterial,          parent);
             CreatePart("LowCover",       lowCover,       _settings.LowCoverMaterial,      parent);
+            CreatePart("Stairs",         stairs,         _settings.FloorMaterial,         parent);
+            CreatePart("Railings",       railings,       _settings.LowCoverMaterial,      parent);
             bool roofedBuildings = HasRoofedBuildings(layout);
             if (_settings.BuildCeilings || roofedBuildings) BuildCeilings(layout, outerRing, parent);
             if (roofedBuildings && _settings.LightBuildings) new BuildingLightBuilder(_settings).Build(layout, parent);
@@ -95,13 +101,13 @@ namespace CGD.Level
             foreach (Vector2Int t in layout.WalkableTiles)
             {
                 LevelRoom room = layout.RoomAt(t);
-                AddFloorTile(layout, layout.IsCorridor(t) ? corridorFloors : FloorsOf(room), t);
+                AddFloorTile(layout, layout.IsCorridor(t) ? corridorFloors : FloorsOf(room), t, layout.IsCorridor(t) ? null : room?.Structure);
 
                 if (room == null || !room.Footprint.CurvedWalls) continue;
                 foreach (Vector2Int n in Neighbours)
                     if (!layout.IsWalkable(t + n)) extra[t + n] = room;
             }
-            foreach (var (t, room) in extra) AddFloorTile(layout, FloorsOf(room), t);
+            foreach (var (t, room) in extra) AddFloorTile(layout, FloorsOf(room), t, room.Structure);
             return extra;
         }
 
@@ -159,10 +165,15 @@ namespace CGD.Level
             if (part != null) part.AddComponent<NavMeshModifier>().ignoreFromBuild = true;
         }
 
-        private void AddFloorTile(LevelLayout layout, BoxMeshBuilder floors, Vector2Int t)
+        // A tile's slab: its floor's thickness under it, reaching down to the lowest floor beside
+        // it in a room with raised or sunken floor (ElevationGeometryBuilder.FloorSpan).
+        private void AddFloorTile(LevelLayout layout, BoxMeshBuilder floors, Vector2Int t, RoomStructure structure)
         {
             float tile = layout.TileSize, floor = _settings.FloorThickness;
-            floors.AddBox(layout.TileToLocal(t) + Vector3.down * (floor * 0.5f), new Vector3(tile, floor, tile));
+            (float bottom, float top) = structure != null && structure.HasElevation
+                ? ElevationGeometryBuilder.FloorSpan(structure, t, floor)
+                : (-floor, 0f);
+            floors.AddBox(layout.TileToLocal(t) + Vector3.up * ((bottom + top) * 0.5f), new Vector3(tile, top - bottom, tile));
         }
 
         // The interior prefab's origin goes on the room's south-west floor corner, or, for a
@@ -186,8 +197,12 @@ namespace CGD.Level
 
             foreach (StructurePillar pillar in room.Structure.Pillars)
             {
-                Vector3 foot = new Vector3(pillar.Position.x, 0f, pillar.Position.y) * tile;
-                float h = pillar.Height > 0f ? Mathf.Min(pillar.Height, height) : height;
+                // A pillar stands on the lowest floor round it, so it never floats over a ledge,
+                // and reaches the ceiling (or, broken, its height above its own floor).
+                float floor = LowestFloorAround(layout, pillar.Position);
+                float own   = layout.FloorHeight(new Vector2Int(Mathf.FloorToInt(pillar.Position.x), Mathf.FloorToInt(pillar.Position.y)));
+                Vector3 foot = new Vector3(pillar.Position.x * tile, floor, pillar.Position.y * tile);
+                float h = pillar.Height > 0f ? Mathf.Min(pillar.Height + own - floor, height - floor) : height - floor;
                 if (pillar.Prefab != null)
                 {
                     // Pillar prefabs are 1 m wide and 1 m tall: stretched to this pillar, one
@@ -201,11 +216,14 @@ namespace CGD.Level
 
             // Inner walls stand centred on the edge between their two tiles.
             float thickness = _settings.WallThickness;
+            // On a ledge, an inner wall stands from the lower floor to its height above the higher.
             foreach (PartitionEdge edge in room.Structure.Partitions)
             {
                 float h = edge.Height > 0f ? Mathf.Min(edge.Height, height) : height;
-                Vector3 centre = (layout.TileToLocal(edge.Tile) + layout.TileToLocal(edge.Other)) * 0.5f + Vector3.up * (h * 0.5f);
-                Vector3 size = edge.Side.x != 0 ? new Vector3(thickness, h, tile + thickness) : new Vector3(tile + thickness, h, thickness);
+                (float low, float high) = FloorsEither(layout, edge);
+                float top = edge.Height > 0f ? Mathf.Min(high + h, height) : height;
+                Vector3 centre = (layout.TileToLocal(edge.Tile) + layout.TileToLocal(edge.Other)) * 0.5f + Vector3.up * ((low + top) * 0.5f);
+                Vector3 size = edge.Side.x != 0 ? new Vector3(thickness, top - low, tile + thickness) : new Vector3(tile + thickness, top - low, thickness);
                 (CoverHeights.IsLow(h) ? lowCover : boxes).AddBox(centre, size);
             }
 
@@ -214,11 +232,33 @@ namespace CGD.Level
             {
                 if (opening.Height <= 0f || opening.Height >= height) continue;
 
-                float lintel = height - opening.Height;
-                Vector3 centre = (layout.TileToLocal(opening.Tile) + layout.TileToLocal(opening.Other)) * 0.5f + Vector3.up * (opening.Height + lintel * 0.5f);
+                float bottom = FloorsEither(layout, opening).high + opening.Height;
+                if (bottom >= height) continue;
+                float lintel = height - bottom;
+                Vector3 centre = (layout.TileToLocal(opening.Tile) + layout.TileToLocal(opening.Other)) * 0.5f + Vector3.up * (bottom + lintel * 0.5f);
                 Vector3 size = opening.Side.x != 0 ? new Vector3(thickness, lintel, tile + thickness) : new Vector3(tile + thickness, lintel, thickness);
                 boxes.AddBox(centre, size);
             }
+        }
+
+        // The floors on the two sides of an inner wall, lower first.
+        private static (float low, float high) FloorsEither(LevelLayout layout, PartitionEdge edge)
+        {
+            float a = layout.FloorHeight(edge.Tile), b = layout.FloorHeight(edge.Other);
+            return (Mathf.Min(a, b), Mathf.Max(a, b));
+        }
+
+        // The lowest floor among the tiles touching a point (a tile's middle, or a corner where four meet).
+        private static float LowestFloorAround(LevelLayout layout, Vector2 point)
+        {
+            float lowest = float.MaxValue;
+            for (int dx = -1; dx <= 1; dx += 2)
+                for (int dy = -1; dy <= 1; dy += 2)
+                {
+                    var tile = new Vector2Int(Mathf.FloorToInt(point.x + dx * 0.49f), Mathf.FloorToInt(point.y + dy * 0.49f));
+                    if (layout.RoomAt(tile) != null) lowest = Mathf.Min(lowest, layout.FloorHeight(tile));
+                }
+            return lowest == float.MaxValue ? 0f : lowest;
         }
 
         private void PlaceDoors(LevelLayout layout, Transform parent)
