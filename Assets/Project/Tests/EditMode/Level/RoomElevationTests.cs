@@ -194,7 +194,7 @@ namespace CGD.Tests
             Assert.That(copy.LevelOf(new Vector2Int(0, 0)), Is.EqualTo(1));
             Assert.That(copy.TryGetStairs(new Vector2Int(2, 1), out _), Is.True);
             Assert.That(copy.Elevations.Count, Is.EqualTo(1));
-            Assert.That(copy.HighestLevel, Is.EqualTo(1));
+            Assert.That(copy.HighestLevel, Is.EqualTo(RoomElevation.Highest));
             Assert.That(copy.CanStep(new Vector2Int(2, 2), new Vector2Int(1, 2)), Is.False);
         }
 

@@ -17,11 +17,11 @@ namespace CGD.Level
     // is a way down only, and never counts toward it.
     public class RoomStructure
     {
-        private const RoomTileTags KeepClear = RoomTileTags.Walkway | RoomTileTags.NearDoor | RoomTileTags.Centre | RoomTileTags.Structure | RoomTileTags.Stairs;
+        private const RoomTileTags KeepClear = RoomTileTags.Walkway | RoomTileTags.NearDoor | RoomTileTags.Centre | RoomTileTags.Structure | RoomTileTags.Stairs | RoomTileTags.Overpass;
         // What can't be walked through.
         private const RoomTileTags Solid = RoomTileTags.Structure | RoomTileTags.Prop;
         // What nothing new may be put on.
-        private const RoomTileTags Taken = Solid | RoomTileTags.Access | RoomTileTags.Stairs | RoomTileTags.Landing;
+        private const RoomTileTags Taken = Solid | RoomTileTags.Access | RoomTileTags.Stairs | RoomTileTags.Landing | RoomTileTags.Overpass;
 
         private readonly List<StructurePillar> _pillars = new();
         private readonly List<PartitionEdge> _partitions = new();
@@ -30,6 +30,7 @@ namespace CGD.Level
         private readonly List<StructureSpace> _spaces = new();
         private readonly List<string> _leftOut = new();
         private readonly List<ElevatedArea> _elevations = new();
+        private readonly List<Overpass> _overpasses = new();
         // Doorways that still divide zones: the gap in a building's wall opens onto the next
         // room, but the two stay separate places.
         private readonly HashSet<(Vector2Int, Vector2Int)> _sealedOpenings = new();
@@ -106,6 +107,8 @@ namespace CGD.Level
         // The raised and sunken parts of the floor, with their stairs.
         public IReadOnlyList<ElevatedArea> Elevations => _elevations;
         public bool HasElevation => _elevations.Count > 0;
+        // Decks crossing the room above its floor (TryAddOverpass).
+        public IReadOnlyList<Overpass> Overpasses => _overpasses;
         // The zone with the most floor (0 when the room is one zone).
         public int LargestZone { get; private set; }
 
@@ -123,6 +126,7 @@ namespace CGD.Level
             copy._spaces.AddRange(_spaces);
             copy._leftOut.AddRange(_leftOut);
             copy._elevations.AddRange(_elevations);
+            copy._overpasses.AddRange(_overpasses);
             System.Array.Copy(_level, copy._level, _level.Length);
             System.Array.Copy(_stairUp, copy._stairUp, _stairUp.Length);
             System.Array.Copy(_areaOf, copy._areaOf, _areaOf.Length);
@@ -537,6 +541,64 @@ namespace CGD.Level
             for (int i = areas.Count - 1; i >= 0; i--) Raise(areas[i], 0, 0);
             _elevations.RemoveRange(first, areas.Count);
             return false;
+        }
+
+        // Lays a deck across the room above its floor (Overpass), if it fits:
+        //   - its level is one the room allows, with the deck's headroom under the ceiling;
+        //   - the deck runs straight over floor at least OverpassClearance levels below it, free,
+        //     not in front of a doorway or over the centre spot, under no other deck and with no
+        //     wall along it;
+        //   - each flight stands on free, flat floor one level below the deck, clear of a doorway's
+        //     front and the centre, with its landing behind it on the same level and no wall across;
+        //   - the room stays whole with the flights' tiles taken, so the deck is never the only way.
+        // The flights' tiles become solid (no one walks the floor under a flight), their landings
+        // Landing, and the floor under the deck Overpass: walked under, but nothing is put there.
+        public bool TryAddOverpass(Overpass overpass)
+        {
+            if (overpass == null || overpass.Deck.Count == 0 || overpass.Level > HighestLevel) return false;
+            if (WallHeight < RoomElevation.HeightOf(overpass.Level) + RoomElevation.DeckHeadroom) return false;
+
+            const RoomTileTags NotUnder = RoomTileTags.NearDoor | RoomTileTags.Centre | RoomTileTags.Overpass;
+            Vector2Int previous = overpass.Stairs[0].Tile;
+            foreach (Vector2Int tile in overpass.Deck)
+            {
+                if (!IsFree(tile) || Has(tile, NotUnder) || IsPartitioned(previous, tile)) return false;
+                if (overpass.Level - LevelOf(tile) < RoomElevation.OverpassClearance) return false;
+                previous = tile;
+            }
+            if (IsPartitioned(previous, overpass.Stairs[1].Tile)) return false;
+
+            const RoomTileTags NotOnStairs = RoomTileTags.NearDoor | RoomTileTags.Centre;
+            var flights = new Vector2Int[overpass.Stairs.Count];
+            for (int i = 0; i < overpass.Stairs.Count; i++)
+            {
+                StairFlight stairs = overpass.Stairs[i];
+                int below = overpass.Level - 1;
+                if (!IsFree(stairs.Tile) || Has(stairs.Tile, NotOnStairs) || _stairUp[IndexOf(stairs.Tile)] != 0) return false;
+                if (LevelOf(stairs.Tile) != below || !Contains(stairs.Foot) || LevelOf(stairs.Foot) != below) return false;
+                if (Has(stairs.Foot, RoomTileTags.Structure | RoomTileTags.Prop | RoomTileTags.Stairs) || IsPartitioned(stairs.Foot, stairs.Tile)) return false;
+                flights[i] = stairs.Tile;
+            }
+            if (!StaysConnected(flights)) return false;
+
+            foreach (Vector2Int tile in overpass.Deck) Tag(tile, RoomTileTags.Overpass);
+            foreach (StairFlight stairs in overpass.Stairs)
+            {
+                Tag(stairs.Tile, RoomTileTags.Structure);
+                Tag(stairs.Foot, RoomTileTags.Landing);
+            }
+            _overpasses.Add(overpass);
+            return true;
+        }
+
+        // The overpass whose deck crosses above a tile, if one does.
+        public Overpass OverpassAbove(Vector2Int tile)
+        {
+            if (!Has(tile, RoomTileTags.Overpass)) return null;
+            foreach (Overpass overpass in _overpasses)
+                foreach (Vector2Int deck in overpass.Deck)
+                    if (deck == tile) return overpass;
+            return null;
         }
 
         // Once raised: no tile two levels from a neighbour, and every flight climbing one level onto or off its area.

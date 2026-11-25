@@ -44,7 +44,7 @@ namespace CGD.Editor
         }
 
         // What the room's floor levels came to: how many raised and sunken areas, their stairs,
-        // and where enemies can drop off a ledge.
+        // where enemies can drop off a ledge, and the overpasses over them.
         private static void CheckElevation(RoomSample sample, List<RoomIssue> issues)
         {
             RoomStructure structure = sample.Room.Structure;
@@ -58,8 +58,9 @@ namespace CGD.Editor
                 flights += area.Stairs.Count;
                 if (area.Railed) railed++;
             }
+            string overpasses = structure.Overpasses.Count > 0 ? $", {structure.Overpasses.Count} overpass(es) across" : "";
             issues.Add(new RoomIssue(RoomIssue.Severity.Info,
-                $"{raised} raised and {sunken} sunken area(s), {flights} flight(s) of stairs, {railed} of the areas railed (the rest can be dropped off)."));
+                $"{raised} raised and {sunken} sunken area(s), {flights} flight(s) of stairs, {railed} of the areas railed (the rest can be dropped off){overpasses}."));
         }
 
         private static void CheckDoorways(RoomSample sample, List<RoomIssue> issues)

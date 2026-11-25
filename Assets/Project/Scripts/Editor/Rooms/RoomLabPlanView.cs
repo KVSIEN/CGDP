@@ -38,6 +38,7 @@ namespace CGD.Editor
         private static readonly Color Sunken    = new(0.25f, 0.45f, 1f, 0.45f);
         private static readonly Color StairTile = new(1f, 0.9f, 0.25f, 0.7f);
         private static readonly Color SlopeTile = new(0.55f, 0.85f, 0.35f, 0.7f);
+        private static readonly Color DeckTile  = new(0.7f, 0.4f, 1f, 0.75f);
         private static readonly Color OpenLedge  = new(1f, 1f, 1f, 0.95f);
         private static readonly Color RailedLedge = new(0.45f, 0.45f, 0.5f, 1f);
 
@@ -113,9 +114,19 @@ namespace CGD.Editor
         }
 
         // Each flight as an arrow climbing toward its head, and each ledge as a line along its edge:
-        // white where someone can drop off it, grey where a railing stops them.
+        // white where someone can drop off it, grey where a railing stops them. An overpass is a
+        // violet band along its deck, over the floor it crosses, with an arrow up each flight.
         private void DrawLevels(Rect image, RoomStructure structure)
         {
+            foreach (Overpass overpass in structure.Overpasses)
+            {
+                foreach (Vector2Int deck in overpass.Deck) EditorGUI.DrawRect(Shrink(TileRect(image, deck), 0.25f), DeckTile);
+                foreach (StairFlight flight in overpass.Stairs)
+                {
+                    EditorGUI.DrawRect(TileRect(image, flight.Tile), StairTile);
+                    DrawArrow(image, flight.Tile, flight.Up);
+                }
+            }
             if (!structure.HasElevation) return;
 
             foreach (ElevatedArea area in structure.Elevations)
@@ -125,15 +136,7 @@ namespace CGD.Editor
             Color before = Handles.color;
             foreach (Vector2Int tile in structure.Footprint.Tiles)
             {
-                if (structure.TryGetStairs(tile, out StairFlight stairs))
-                {
-                    Vector2 from = ToGui(image, tile + Vector2.one * 0.5f - (Vector2)stairs.Up * 0.35f);
-                    Vector2 to   = ToGui(image, tile + Vector2.one * 0.5f + (Vector2)stairs.Up * 0.35f);
-                    Handles.color = Color.black;
-                    Handles.DrawAAPolyLine(3f, from, to);
-                    Handles.DrawAAPolyLine(3f, to, ToGui(image, tile + Vector2.one * 0.5f + (Vector2)stairs.Up * 0.1f + (Vector2)Perpendicular(stairs.Up) * 0.2f));
-                    Handles.DrawAAPolyLine(3f, to, ToGui(image, tile + Vector2.one * 0.5f + (Vector2)stairs.Up * 0.1f - (Vector2)Perpendicular(stairs.Up) * 0.2f));
-                }
+                if (structure.TryGetStairs(tile, out StairFlight stairs)) DrawArrow(image, tile, stairs.Up);
 
                 foreach (Vector2Int side in new[] { Vector2Int.right, Vector2Int.up })
                 {
@@ -147,6 +150,19 @@ namespace CGD.Editor
                     Handles.DrawAAPolyLine(open ? 2f : 4f, ToGui(image, a), ToGui(image, b));
                 }
             }
+            Handles.color = before;
+        }
+
+        // A black arrow across a tile, pointing `up`.
+        private void DrawArrow(Rect image, Vector2Int tile, Vector2Int up)
+        {
+            Color before = Handles.color;
+            Vector2 middle = tile + Vector2.one * 0.5f;
+            Vector2 to = ToGui(image, middle + (Vector2)up * 0.35f);
+            Handles.color = Color.black;
+            Handles.DrawAAPolyLine(3f, ToGui(image, middle - (Vector2)up * 0.35f), to);
+            Handles.DrawAAPolyLine(3f, to, ToGui(image, middle + (Vector2)up * 0.1f + (Vector2)Perpendicular(up) * 0.2f));
+            Handles.DrawAAPolyLine(3f, to, ToGui(image, middle + (Vector2)up * 0.1f - (Vector2)Perpendicular(up) * 0.2f));
             Handles.color = before;
         }
 
@@ -272,6 +288,12 @@ namespace CGD.Editor
             if (structure.ZoneCount > 1) _readout.Append($" · zone {structure.ZoneOf(tile) + 1}");
             if (structure.HasElevation) _readout.Append($" · {LevelName(structure.LevelOf(tile))}");
             if (structure.TryGetStairs(tile, out StairFlight flight)) _readout.Append($" · {(flight.Slope ? "slope" : "stairs")} climbing {SideName(flight.Up)}");
+            Overpass above = structure.OverpassAbove(tile);
+            if (above != null)
+                _readout.Append($" · under an overpass ({RoomElevation.HeightOf(above.Level) - RoomElevation.DeckThickness - RoomElevation.HeightOf(structure.LevelOf(tile)):0.0} m clear)");
+            foreach (Overpass overpass in structure.Overpasses)
+                foreach (StairFlight onto in overpass.Stairs)
+                    if (onto.Tile == tile) _readout.Append($" · stairs up onto an overpass, climbing {SideName(onto.Up)}");
             if (sample.Split != null)
                 _readout.Append($" ({(sample.Split.IsBreachZone(structure.ZoneOf(tile)) ? room.BreachFaction.DisplayName : room.Faction?.DisplayName ?? "holder")}'s side)");
             RoomTileTags tags = structure.TagsAt(tile);
@@ -345,8 +367,8 @@ namespace CGD.Editor
                     : $"green short sightlines → red {RoomSampleChecks.ExposedLaneTiles * sample.Settings.TileSize:0} m+ lines of sight, in any direction",
                 RoomLabLayer.Posts      => "green concealed · red overwatch · amber high ground · violet dead end · orange choke · blue route · ring guard, dot patrol (pink: breach side)",
                 RoomLabLayer.Flow       => FlowLegend(sample.Room.Structure),
-                RoomLabLayer.Elevation  => sample.Room.Structure.HasElevation
-                    ? "orange raised · blue sunken · yellow stairs, green slopes (arrow climbing; small square: a corner) · white ledge you can drop off · grey railed"
+                RoomLabLayer.Elevation  => sample.Room.Structure.HasElevation || sample.Room.Structure.Overpasses.Count > 0
+                    ? "orange raised · blue sunken · yellow stairs, green slopes (arrow climbing; small square: a corner) · violet overpass deck · white ledge you can drop off · grey railed"
                     : "Flat: every tile on the doorways' level (Elevation rules need Level Build Settings › Lowest/Highest Level)",
                 _                       => "sand furniture · dark pillars · cyan outline doorway",
             };

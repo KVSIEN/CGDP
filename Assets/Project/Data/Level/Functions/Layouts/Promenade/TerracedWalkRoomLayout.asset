@@ -24,6 +24,7 @@ MonoBehaviour:
     Bias: 0
   _structure:
   - {fileID: 11400000, guid: 8e6f78803fcd4d0a85d2777720503472, type: 2}
+  - {fileID: 11400000, guid: 62d96afacb52479e8cc4df455e8fe82d, type: 2}
   - {fileID: 11400000, guid: 0779a8c9bfd943528d256e313c2460f9, type: 2}
   _props:
   - Prefabs:

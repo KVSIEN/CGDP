@@ -20,5 +20,6 @@ namespace CGD.Level
         Goal      = 1 << 9,   // the far end from the way in: where the room's reward and onward doorways lie
         Stairs    = 1 << 10,  // a flight of stairs between two floor levels (RoomStructure.TryAddElevation)
         Landing   = 1 << 11,  // the floor at the top or bottom of a flight, kept clear to walk on and off
+        Overpass  = 1 << 12,  // under an overpass's deck: walked under, nothing built or put there (RoomStructure.TryAddOverpass)
     }
 }

@@ -6,8 +6,9 @@ namespace CGD.Level
     // under each tile reaching down to its lowest neighbour, so a raised floor shows its face and
     // a sunken one its sides; a ramp of stairs on each flight; a ramp of ground the full width of
     // the tile on each slope, so slopes side by side read as one bank, and a diagonal one on each
-    // corner of a mound or crater; and a railing along each railed ledge. Stairs and railings are
-    // the settings' prefabs when it has them, plain boxes otherwise; ground is always boxes.
+    // corner of a mound or crater; a railing along each railed ledge; and each overpass's deck,
+    // with a flight onto each end and a railing along both sides. Stairs and railings are the
+    // settings' prefabs when it has them, plain boxes otherwise; ground and decks are always boxes.
     public sealed class ElevationGeometryBuilder
     {
         // A flight's ramp, without a prefab: this share of the tile wide, this many metres thick.
@@ -42,12 +43,16 @@ namespace CGD.Level
             return (RoomElevation.HeightOf(lowest) - thickness, RoomElevation.HeightOf(level));
         }
 
-        // The room's stairs, slopes and railings: boxes into `stairs`, `ground` and `railings`,
-        // prefabs under `parent`.
-        public void Build(LevelRoom room, BoxMeshBuilder stairs, BoxMeshBuilder ground, BoxMeshBuilder railings, Transform parent)
+        // The room's stairs, slopes, railings and decks: boxes into `stairs`, `ground`, `railings`
+        // and `decks`, prefabs under `parent`.
+        public void Build(LevelRoom room, BoxMeshBuilder stairs, BoxMeshBuilder ground, BoxMeshBuilder railings, BoxMeshBuilder decks,
+                          Transform parent)
         {
             RoomStructure structure = room.Structure;
-            if (structure == null || !structure.HasElevation) return;
+            if (structure == null) return;
+
+            foreach (Overpass overpass in structure.Overpasses) AddOverpass(structure, overpass, stairs, decks, railings, parent);
+            if (!structure.HasElevation) return;
 
             foreach (ElevatedArea area in structure.Elevations)
             {
@@ -59,6 +64,28 @@ namespace CGD.Level
                 foreach (SlopeCorner corner in area.Corners) AddRamp(structure, corner.Tile, corner.Up, CornerWidthShare, ground);
                 if (area.Railed) AddRailings(structure, area, railings, parent);
             }
+        }
+
+        // A deck slab over each of its tiles, its top at the deck's level; a flight up onto each
+        // end; a railing along both sides, so nobody falls off it.
+        private void AddOverpass(RoomStructure structure, Overpass overpass, BoxMeshBuilder stairs, BoxMeshBuilder decks,
+                                 BoxMeshBuilder railings, Transform parent)
+        {
+            float tile = _layout.TileSize, top = RoomElevation.HeightOf(overpass.Level);
+            Vector3 along = new(overpass.Along.x, 0f, overpass.Along.y);
+            Vector3 across = new(-along.z, 0f, along.x);
+            foreach (Vector2Int deck in overpass.Deck)
+            {
+                Vector3 middle = _layout.TileToLocal(deck);
+                decks.AddBox(middle + Vector3.up * (top - RoomElevation.DeckThickness * 0.5f), new Vector3(tile, RoomElevation.DeckThickness, tile));
+                foreach (float side in new[] { 1f, -1f })
+                {
+                    Vector3 inward = -across * side;
+                    Vector3 foot = middle - inward * (tile * 0.5f - RailInset) + Vector3.up * top;
+                    AddRailing(foot, Quaternion.LookRotation(inward), railings, parent);
+                }
+            }
+            foreach (StairFlight flight in overpass.Stairs) AddStairs(structure, flight, stairs, parent);
         }
 
         // A slab climbing one level across a tile from its own floor toward `up` (a side, or a
@@ -94,12 +121,12 @@ namespace CGD.Level
         // A railing on the higher side of every ledge round the area, stairs left open.
         private void AddRailings(RoomStructure structure, ElevatedArea area, BoxMeshBuilder boxes, Transform parent)
         {
-            float tile = _layout.TileSize;
             foreach (Vector2Int inside in area.Tiles)
                 foreach (Vector2Int side in GridSides.All)
                 {
                     Vector2Int outside = inside + side;
                     if (!structure.IsLedge(inside, outside) || structure.IsPartitioned(inside, outside)) continue;
+                    if (LeadsOntoADeck(structure, inside, outside)) continue;
 
                     Vector2Int high = structure.LevelOf(inside) > structure.LevelOf(outside) ? inside : outside;
                     Vector2Int low  = high == inside ? outside : inside;
@@ -107,16 +134,30 @@ namespace CGD.Level
                     Vector3 foot = (_layout.TileToLocal(inside) + _layout.TileToLocal(outside)) * 0.5f
                                  + towardHigh * RailInset + Vector3.up * RoomElevation.HeightOf(structure.LevelOf(high));
                     // Facing the higher floor, the railing's length (its x) runs along the edge.
-                    Quaternion along = Quaternion.LookRotation(towardHigh);
-
-                    if (_settings.RailingPrefab != null)
-                    {
-                        GameObject placed = Object.Instantiate(_settings.RailingPrefab, parent.TransformPoint(foot), parent.rotation * along, parent);
-                        placed.transform.localScale = Vector3.Scale(placed.transform.localScale, new Vector3(tile / KitTileMetres, 1f, 1f));
-                        continue;
-                    }
-                    boxes.AddBox(foot + Vector3.up * (RailHeight * 0.5f), new Vector3(tile, RailHeight, RailThickness), along);
+                    AddRailing(foot, Quaternion.LookRotation(towardHigh), boxes, parent);
                 }
+        }
+
+        // One tile's length of railing standing at `foot`, facing `facing` (its length runs across that).
+        private void AddRailing(Vector3 foot, Quaternion facing, BoxMeshBuilder boxes, Transform parent)
+        {
+            float tile = _layout.TileSize;
+            if (_settings.RailingPrefab != null)
+            {
+                GameObject placed = Object.Instantiate(_settings.RailingPrefab, parent.TransformPoint(foot), parent.rotation * facing, parent);
+                placed.transform.localScale = Vector3.Scale(placed.transform.localScale, new Vector3(tile / KitTileMetres, 1f, 1f));
+                return;
+            }
+            boxes.AddBox(foot + Vector3.up * (RailHeight * 0.5f), new Vector3(tile, RailHeight, RailThickness), facing);
+        }
+
+        // The edge an overpass's flight climbs over onto its deck: left open.
+        private static bool LeadsOntoADeck(RoomStructure structure, Vector2Int a, Vector2Int b)
+        {
+            foreach (Overpass overpass in structure.Overpasses)
+                foreach (StairFlight flight in overpass.Stairs)
+                    if ((flight.Tile == a && flight.Head == b) || (flight.Tile == b && flight.Head == a)) return true;
+            return false;
         }
     }
 }

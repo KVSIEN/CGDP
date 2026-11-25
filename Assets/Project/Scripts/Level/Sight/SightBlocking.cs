@@ -13,7 +13,10 @@ namespace CGD.Level
     //     hides behind them;
     //   - inner walls as tall as they are built (one of no height reaches the ceiling);
     //   - the floor itself: the face of a raised platform, the rim of a sunken floor, and the
-    //     solid corner pieces round a mound or a crater, as high as the ground they climb to.
+    //     solid corner pieces round a mound or a crater, as high as the ground they climb to;
+    //   - an overpass's deck, a slab in the air: seen under from the floor beneath it and over
+    //     from above, but it hides the floor under it from someone looking down across it, and
+    //     its flights stand as high as the deck.
     // So an eye up on a platform sees over furniture that hides someone below it, and someone
     // crouched on a sunken floor is hidden by its rim.
     //
@@ -34,8 +37,11 @@ namespace CGD.Level
         private readonly float _eye;
         // Inner walls by the tiles either side (lower or left first) and the height they stand to.
         private readonly Dictionary<(Vector2Int, Vector2Int), float> _edges = new();
-        // The solid corner pieces of mounds and craters, and how high their tops stand.
+        // Solid pieces of ground that are lower than a pillar (the corners of mounds and craters,
+        // an overpass's flights), and how high their tops stand.
         private readonly Dictionary<Vector2Int, float> _cornerTops = new();
+        // The slab over each tile an overpass crosses: its underside and its top.
+        private readonly Dictionary<Vector2Int, (float bottom, float top)> _decks = new();
 
         // `eyeHeight`: how high the eyes are above the floor (EyeHeight standing, CrouchingEyeHeight crouched).
         public SightBlocking(RoomStructure structure, float eyeHeight = EyeHeight)
@@ -52,6 +58,12 @@ namespace CGD.Level
             foreach (ElevatedArea area in structure.Elevations)
             foreach (SlopeCorner corner in area.Corners)
                 _cornerTops[corner.Tile] = HighestFloorBeside(corner.Tile);
+            foreach (Overpass overpass in structure.Overpasses)
+            {
+                float top = RoomElevation.HeightOf(overpass.Level);
+                foreach (Vector2Int tile in overpass.Deck) _decks[tile] = (top - RoomElevation.DeckThickness, top);
+                foreach (StairFlight flight in overpass.Stairs) _cornerTops[flight.Tile] = top;
+            }
         }
 
         // Nobody stands here: off the floor plan, or taken by a pillar or a prop.
@@ -59,7 +71,8 @@ namespace CGD.Level
 
         // Sight along the floor stops at this tile: off the floor plan, a pillar, or a prop that
         // reaches the eye. A lower prop takes the tile (IsTaken) but is seen over.
-        public bool BlocksTile(Vector2Int tile) => TopOf(tile) - FloorAt(tile) >= _eye;
+        public bool BlocksTile(Vector2Int tile) =>
+            TopOf(tile) - FloorAt(tile) >= _eye || DeckIn(tile, FloorAt(tile) + _eye, FloorAt(tile) + _eye);
 
         // Sight along the floor stops between two neighbouring tiles: an inner wall that reaches
         // the eye, or a change of level at least as big (a crouching eye doesn't see over a ledge).
@@ -96,6 +109,8 @@ namespace CGD.Level
             int nx = Mathf.Abs(to.x - from.x), ny = Mathf.Abs(to.y - from.y);
             int stepX = to.x >= from.x ? 1 : -1, stepY = to.y >= from.y ? 1 : -1;
             Vector2Int tile = from;
+            // The line's height where it came into the tile it is crossing.
+            float entered = startHeight;
             int doneX = 0, doneY = 0;
             while (doneX < nx || doneY < ny)
             {
@@ -120,10 +135,19 @@ namespace CGD.Level
                     if (EdgeTop(tile, next) >= height) return false;
                 }
                 if (tile != from && TopOf(tile) >= height) return false;
+                if (DeckIn(tile, entered, height)) return false;
                 if ((next == to ? FloorAt(next) : TopOf(next)) >= height) return false;
                 tile = next;
+                entered = height;
             }
-            return true;
+            return !DeckIn(to, entered, startHeight + rise);
+        }
+
+        // Whether the line, between two heights over a tile, passes through a deck above it.
+        private bool DeckIn(Vector2Int tile, float a, float b)
+        {
+            if (!_decks.TryGetValue(tile, out (float bottom, float top) deck)) return false;
+            return Mathf.Max(a, b) >= deck.bottom && Mathf.Min(a, b) <= deck.top;
         }
 
         // How high whatever stands on a tile reaches, in metres above the doorways' level: its
@@ -151,7 +175,7 @@ namespace CGD.Level
             OpenVia(from, new Vector2Int(to.x, from.y), to, height) || OpenVia(from, new Vector2Int(from.x, to.y), to, height);
 
         private bool OpenVia(Vector2Int from, Vector2Int via, Vector2Int to, float height) =>
-            TopOf(via) < height && EdgeTop(from, via) < height && EdgeTop(via, to) < height;
+            TopOf(via) < height && !DeckIn(via, height, height) && EdgeTop(from, via) < height && EdgeTop(via, to) < height;
 
         private float Level(Vector2Int tile) => RoomElevation.HeightOf(_structure.LevelOf(tile));
 
