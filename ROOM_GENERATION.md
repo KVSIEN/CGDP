@@ -1194,12 +1194,14 @@ priorities were never tuned against a sweep. To decide which to leave on:
    (`RoomTraitMeasure`) from that report. The traits' interface (`RoomTrait`, the priorities,
    `RoomTraitFit.Gap`) is the same either way.
 
-## 18. Elevation (phases 0–6)
+## 18. Elevation (phases 0–7)
 
 A room's floor can stand a level up or down from the floor its doorways open onto: level 0 is the
 doorways' level, and each level is one step of 1 m (`RoomElevation.StepHeight`), under a standing
 eye, so the edge of a platform doesn't hide someone standing below it, but over a crouching one, so
-it hides someone crouched against it. The levels are -1, 0 and 1.
+it hides someone crouched against it. Any number of levels up or down can be used (the build's
+range decides, below); neighbouring floor is never more than one level apart, so height is always
+climbed a level at a time, and a taller feature is built in tiers (phase 7).
 
 **The model (`RoomStructure`).** Every tile has a level. A flight of stairs (`StairFlight`) takes one
 tile at the lower level and climbs one level toward its *Up* side: it is walked onto from its foot
@@ -1214,7 +1216,8 @@ edge between two tiles is then one of:
 
 "Reachable" (`StaysConnected`, and so every `TryClaim`) means reachable both ways, so it never counts
 a drop: every raised or sunken area needs its stairs. `TryAddElevations` adds a set of
-`ElevatedArea`s together, or none of them, only if each level is one the room allows, the tiles are
+`ElevatedArea`s together, or none of them, only if each level is one the room allows (`AllowsLevel`:
+in its range, with 2 m of `Headroom` under its ceiling), the tiles are
 flat free floor with none of it in front of a doorway (so everyone arrives on level 0), no tile ends
 up two levels from a neighbour, each flight climbs one level onto or off its own area with both
 landings free, no wall across it and clear of a doorway's front and the centre spot, and the room
@@ -1262,13 +1265,42 @@ floor (`LevelLayout.TileToFloor`, `FloorHeight`). Enemies get a one-way NavMesh 
 run of ledge (`DropLinkPlanner`, sharing `EdgeRuns` with the vault links over low walls); the
 NavMesh's own step (0.75 m) never climbs a 1 m ledge, and a flight's 18° slope is well under its 45°.
 
-**The range.** `LevelBuildSettings` › *Elevation* › *Lowest Level* and *Highest Level* (-1 and 1 in
-the default settings) say which levels rooms may use; both 0 keeps every room flat. Walking code
+**The range.** `LevelBuildSettings` › *Elevation* › *Lowest Level* and *Highest Level* (-1 and 2 in
+the default settings) say which levels rooms may use; both 0 keeps every room flat. They are design
+choices, not code limits: the code stores and offers -8 to 8 (`RoomElevation.Lowest`, `Highest`),
+the walls reach down to the lowest level, and a level also needs its headroom under the room's own
+ceiling, so a tall room can take more tiers than a low one. The Room Generator scene narrows the
+range for its one room. Walking code
 (flow steps, routes, prop spacing and clearance, the Room Lab's reachability check) goes through
 `CanStep`, which in a flat room is just "no wall between", so a room with no elevation rule
 generates exactly as before.
 
+**Tiers (phase 7).** The features and terrace profiles are concepts, not fixed heights: each can
+be built several levels deep, a tier per level, every tier a smaller copy standing on the one
+before and reached from it, so one asset reads the same at one level or at four.
+
+- `ElevationStructureRule` › *Tiers* (default 1–1): a stepped stage (each platform tier two tiles in
+  from the front of the one below, one from its ends, its flights standing on the tier below), a
+  stepped pit (each sunken tier two tiles in all round), a terraced hill (each mound tier a ring of
+  ground two tiles wide round the one above, its slopes rising from that ring) or a crater ringed
+  by ledges (each tier a hollow two tiles inside the last). A range draws the count per feature
+  (a fixed count draws nothing); the most of it that the room's levels and ceiling allow and the
+  feature's size fits is built (`BlockElevationBuilder`, `RoundElevationBuilder`). A bridged sunken
+  floor keeps one tier.
+- `TerracesStructureRule` › *Tiers* (default 1–1) and *Tier Weight*: each level step of the profile
+  becomes that many, with a lane per level between, of Tier Weight against the profile's own
+  weights: Raised Walks 1-0-1 at two tiers is 2-1-0-1-2, a Sunken Court 0 -1 -2 -1 0, a Split Level
+  2-1-0. The most tiers from Max down to Min that the room's levels, ceiling and width take are
+  used. The shift that puts the doorways on level 0 is worked out from the profile (any lane can be
+  the doorways' one), not limited to a level up or down. Floor kept level in front of a doorway
+  spills two tiles into the next lane, so a lane next to the doorways' lane wants to be wide enough
+  that the one beyond it isn't two levels from that landing; a profile that can't is laid with
+  fewer tiers. A bridged court keeps one tier.
+- One tier is the feature as it always was, with the same random draws, so existing layouts and
+  seeds are unchanged; tiers only appear where an asset asks for them and the build's range allows.
+
 **Seeing it.** The Room Lab's *Elevation* layer paints raised floor orange and sunken floor blue,
+a stronger shade for each level further from the doorways',
 stairs yellow with an arrow climbing, open ledges white and railed ones grey; the readout gives a
 tile's level and which way its stairs climb. The gallery's Prop Yard has the Stairs piece.
 
@@ -1307,8 +1339,9 @@ platforms and the rims of sunken courts.
 
 **Overpasses (phase 5).** An `Overpass` is a deck in the air: a straight run of tiles at its level,
 with the floor under each still at its own level and still walked (`CanStep` never sees the deck),
-so a tile has two layers only there. The level range reaches 2 for it (`RoomElevation.Highest`); no
-ground is ever raised to 2. `RoomStructure.TryAddOverpass` lays one if:
+so a tile has two layers only there. A deck can stand at any level the room allows with its
+headroom, over any floor at least two levels below it (between walks at 1 over a lane at 0, between
+tier-2 walks at 2 over a lane at 1 or 0…). `RoomStructure.TryAddOverpass` lays one if:
 
 - the deck is at least `OverpassClearance` (2) levels over every tile under it, so 1.8 m is clear
   under its 0.2 m slab (`DeckThickness`): enough for an enemy (1.5 m) and a crouching player, not a
@@ -1353,5 +1386,7 @@ A room with no deck adds nothing and draws exactly as before. Each deck flight h
 along both sides, in the *Railings* part. The Room Lab frames deck spawns in violet and the
 readout says when an enemy starts on the overpass above a tile.
 
-**Not yet.** Props on a deck, a deck joining two platforms at level 2, and the room planner
+**Not yet.** A feature standing on floor an earlier rule already raised or sank (a platform on a
+raised walk, a mound in a sunken court: today every feature starts from level 0), props on a deck,
+a deck joining two platforms at level 2, and the room planner
 choosing crouch spots for enemies; see `TASKS.md` › Elevation, next phases.

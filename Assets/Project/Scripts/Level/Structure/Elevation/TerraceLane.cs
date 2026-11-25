@@ -8,7 +8,7 @@ namespace CGD.Level
     [Serializable]
     public struct TerraceLane
     {
-        [Tooltip("Floor level of the lane (-1, 0 or 1), before the whole room is shifted so its doorways open onto level 0")]
+        [Tooltip("Floor level of the lane in the profile (1-0-1, 0 -1 0…), before it is scaled by the rule's tiers and the whole room is shifted so its doorways open onto level 0")]
         [Range(RoomElevation.Lowest, RoomElevation.Highest)] public int Level;
         [Tooltip("Share of the room's width, against the other lanes' (at least two tiles wide whatever its share)")]
         [Min(0.1f)] public float Weight;

@@ -10,12 +10,19 @@ namespace CGD.Level
     // a doorway crosses a ledge and at even spacing along every ledge, (when Railed) a railing
     // along the rest of it, and (Bridges) strips of floor straight across a sunken lane.
     //
+    // The lanes are a profile, not fixed heights: with Tiers, each level step of it becomes that
+    // many steps, a lane per level between, so raised walks (1-0-1) at two tiers are a stand
+    // stepping up to both walls (2-1-0-1-2) and a sunken court (0 -1 0) a pit two ledges deep
+    // (0 -1 -2 -1 0). The most tiers the room takes are used: its levels, its ceiling and its
+    // width for the lanes decide, down to the fewest asked for.
+    //
     // The doorways decide how it sits. Every doorway must open onto level 0, so the profile is
     // turned and shifted (1-0-1 becomes 0 -1 0, the raised walks now level with the doorways and
     // the middle sunk) until each doorway's lane is on level 0; floor just in front of a doorway
     // that falls in another lane stays on level 0 as a landing. A room no turn or shift fits is
     // left flat. Runs early in a layout's structure: pillars and walls placed after it stand on
-    // the levels it made.
+    // the levels it made. A bridged court takes one tier only: a bridge level with the doorways
+    // can't cross floor two levels below it.
     //
     // Does nothing, and draws no random number, in a room that allows no level but 0.
     [CreateAssetMenu(fileName = "TerracesStructureRule", menuName = "CGD/Level/Structure/Terraces")]
@@ -24,10 +31,15 @@ namespace CGD.Level
         private const int MinLaneTiles = 2;
         // Flights along one ledge keep at least this many tiles apart.
         private const int StairSpacingMin = 3;
-        private static readonly int[] Shifts = { 0, -1, 1 };
+        // More tiers than this would pass every level a room can store.
+        private const int MostTiers = RoomElevation.Highest - RoomElevation.Lowest;
 
-        [Tooltip("The lanes from one wall to the other. Neighbouring lanes may differ by one level at most")]
+        [Tooltip("The profile of lanes from one wall to the other. Neighbouring lanes may differ by one level at most")]
         [SerializeField] private TerraceLane[] _lanes = { new(1, 1f), new(0, 2f), new(1, 1f) };
+        [Tooltip("Levels each step of the profile climbs, a lane per level: 1-0-1 at 2 tiers is 2-1-0-1-2. The most that fit are used, from Max down to Min")]
+        [SerializeField] private IntRange _tiers = new(1, 1);
+        [Tooltip("Share of the room's width of each lane a tier adds between two of the profile's, against the profile's own weights")]
+        [SerializeField, Min(0.1f)] private float _tierWeight = 1f;
         [SerializeField] private TerraceDirection _direction = TerraceDirection.AlongLength;
         [Tooltip("Turn the whole profile a level up or down when that puts the doorways on level 0. Off: the profile is used as written, or not at all")]
         [SerializeField] private bool _shiftToDoorways = true;
@@ -53,18 +65,60 @@ namespace CGD.Level
                 _                             => random.Chance(0.5f),
             };
 
-            foreach (bool alongY in _direction == TerraceDirection.Either ? new[] { stackedAlongY, !stackedAlongY } : new[] { stackedAlongY })
+            bool[] directions = _direction == TerraceDirection.Either ? new[] { stackedAlongY, !stackedAlongY } : new[] { stackedAlongY };
+            int fewest = Mathf.Clamp(_tiers.Min, 1, MostTiers);
+            for (int tiers = Mathf.Clamp(_tiers.Max, fewest, MostTiers); tiers >= fewest; tiers--)
+                if (TryLay(structure, Scaled(tiers), directions, bounds)) return;
+        }
+
+        // The lanes laid one way or the other, the profile shifted to put the doorways on level 0.
+        private bool TryLay(RoomStructure structure, TerraceLane[] lanes, bool[] directions, RectInt bounds)
+        {
+            foreach (bool alongY in directions)
             {
-                int[] starts = LaneStarts(alongY ? bounds.yMin : bounds.xMin, alongY ? bounds.height : bounds.width);
+                int[] starts = LaneStarts(lanes, alongY ? bounds.yMin : bounds.xMin, alongY ? bounds.height : bounds.width);
                 if (starts == null) continue;
 
-                foreach (int shift in _shiftToDoorways ? Shifts : new[] { 0 })
+                foreach (int shift in _shiftToDoorways ? Shifts(lanes) : new[] { 0 })
                 {
-                    var layout = new TerraceLayout(structure, _lanes, starts, alongY, shift);
+                    var layout = new TerraceLayout(structure, lanes, starts, alongY, shift);
                     if (!layout.Fits()) continue;
-                    if (structure.TryAddElevations(layout.Areas(_stairSpacing, StairSpacingMin, _railed, _bridges))) return;
+                    if (structure.TryAddElevations(layout.Areas(_stairSpacing, StairSpacingMin, _railed, _bridges))) return true;
                 }
             }
+            return false;
+        }
+
+        // The profile at `tiers` levels a step: each lane's level times the tiers, with a lane of
+        // TierWeight at every level between two neighbours. One tier is the profile as written.
+        private TerraceLane[] Scaled(int tiers)
+        {
+            if (tiers == 1) return _lanes;
+
+            var lanes = new List<TerraceLane>();
+            for (int i = 0; i < _lanes.Length; i++)
+            {
+                int level = _lanes[i].Level * tiers;
+                if (i > 0)
+                {
+                    int previous = _lanes[i - 1].Level * tiers, step = System.Math.Sign(level - previous);
+                    for (int between = previous + step; step != 0 && between != level; between += step)
+                        lanes.Add(new TerraceLane(between, _tierWeight));
+                }
+                lanes.Add(new TerraceLane(level, _lanes[i].Weight));
+            }
+            return lanes.ToArray();
+        }
+
+        // The shifts that put some lane on level 0, the doorways' level, so one may hold them:
+        // none first, then the smallest, downward before upward.
+        private static int[] Shifts(TerraceLane[] lanes)
+        {
+            var shifts = new List<int> { 0 };
+            foreach (TerraceLane lane in lanes)
+                if (!shifts.Contains(-lane.Level)) shifts.Add(-lane.Level);
+            shifts.Sort((a, b) => System.Math.Abs(a) != System.Math.Abs(b) ? System.Math.Abs(a).CompareTo(System.Math.Abs(b)) : a.CompareTo(b));
+            return shifts.ToArray();
         }
 
         // Neighbouring lanes no more than a level apart, and some lane off level 0.
@@ -80,19 +134,19 @@ namespace CGD.Level
 
         // Where each lane starts across the room, sharing `span` tiles out by weight with every
         // lane at least MinLaneTiles wide; null when the room is too narrow for them.
-        private int[] LaneStarts(int from, int span)
+        private static int[] LaneStarts(TerraceLane[] lanes, int from, int span)
         {
-            int count = _lanes.Length;
+            int count = lanes.Length;
             if (span < count * MinLaneTiles) return null;
 
             float total = 0f;
-            foreach (TerraceLane lane in _lanes) total += Mathf.Max(0.1f, lane.Weight);
+            foreach (TerraceLane lane in lanes) total += Mathf.Max(0.1f, lane.Weight);
 
             var widths = new int[count];
             int used = 0;
             for (int i = 0; i < count; i++)
             {
-                widths[i] = Mathf.Max(MinLaneTiles, Mathf.RoundToInt(span * Mathf.Max(0.1f, _lanes[i].Weight) / total));
+                widths[i] = Mathf.Max(MinLaneTiles, Mathf.RoundToInt(span * Mathf.Max(0.1f, lanes[i].Weight) / total));
                 used += widths[i];
             }
             // Rounding leaves a tile or two over or short: the widest lane gives or takes them.

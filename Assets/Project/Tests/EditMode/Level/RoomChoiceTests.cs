@@ -108,7 +108,7 @@ namespace CGD.Tests
         [Test]
         public void TheFloorLevelsAreKeptWithinWhatRoomsCanHave()
         {
-            var choice = new RoomChoice { LowestLevel = -5, HighestLevel = 1 };
+            var choice = new RoomChoice { LowestLevel = -50, HighestLevel = 1 };
 
             RoomRecipe recipe = choice.ToRecipe(new Seed(1UL), null, Content);
 

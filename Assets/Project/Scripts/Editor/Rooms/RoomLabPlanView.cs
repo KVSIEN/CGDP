@@ -110,7 +110,12 @@ namespace CGD.Editor
         {
             if (structure.TryGetStairs(tile, out StairFlight flight)) return flight.Slope ? SlopeTile : StairTile;
             int level = structure.LevelOf(tile);
-            return level > 0 ? Raised : level < 0 ? Sunken : (Color?)null;
+            if (level == 0) return null;
+
+            // Deeper tiers in a stronger shade, so floor several levels up or down reads apart.
+            Color color = level > 0 ? Raised : Sunken;
+            color.a = Mathf.Min(0.9f, color.a * (0.6f + 0.4f * Mathf.Abs(level)));
+            return color;
         }
 
         // Each flight as an arrow climbing toward its head, and each ledge as a line along its edge:
