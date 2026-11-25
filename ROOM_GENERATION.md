@@ -403,7 +403,7 @@ Farm take the holding reality's structure unless a layout brings its own; Juncti
 | Shrine | Worship | G2 | Ring | Shrine object | Candles, mats | Small, one centrepiece | S, P, L |
 | Lobby | Transit | G1 | Hall | Reception desk | Seating, planters | Open hall with a desk | S, P, L |
 | Junction | Transit | — | Strip | — | — | A crossing of routes; keep it bare | — |
-| Cargo Bay | Transit | C | Hall | Loader | Container stacks | Dense pillar grid of crates | S, P, L |
+| Cargo Bay | Transit | C | Hall | Dock door | Container stacks | Dense pillar grid of crates | S, P, L |
 | Docking Bay | Transit | C | Hall | Airlock | Cargo, fuel lines | Wide grid, long lanes | S, P, L |
 | Hangar | Transit | C | Hall | Shuttle | Tool carts, crates | Huge, one big obstacle | S, P, L |
 | Escape Pod Bay | Transit | C | Strip | Pod row on a wall | Lockers | Long lane along the pods | S, P, L |
@@ -651,11 +651,11 @@ as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/`
 | Chapel | **Nave** (9–11 tiles · AcrossLowRows); **Round Chapel** (9–11 tiles · ColumnRing); **Meditation Room** (7–9 tiles · CornerPillars) |
 | Shrine | **Alcove Shrine** (6–8 tiles · ColumnRing); **Garden Shrine** (7–9 tiles · CornerPillars); **Lantern Walk** (6–8 tiles · CornerPillars) |
 | Lobby | **Reception Hall** (1×1 · CornerPillars, HubRing); **Waiting Lounge** (9–11 tiles · LowRows); **Rotunda Lobby** (10–12 tiles · ColumnRing) |
-| Cargo Bay | **Container Yard** (2×1 · DensePillarGrid, ServicePavilions); **Loading Dock** (2×1 · ThreeLanes) |
+| Cargo Bay | **Container Yard** (2×1 · DensePillarGrid, ServicePavilions); **Loading Dock** (2×1 · ThreeLanes); **Dock Neck** (2×1, Waist · WidePillarGrid); **Split Deck** (2×1 · SplitLevelTerraces); **Ro-Ro Deck** (2×1 · LowThreeLanes); **Logistics Module** (7–9 tiles · CornerPillars) |
 | Docking Bay | **Airlock Hall** (1×1 · WidePillarGrid, ServicePerimeterPavilions); **Fuel Dock** (1×1 · CornerPillars); **Customs Hall** (1×1 · CheckpointBarrier) |
 | Hangar | **Flight Deck** (2×2 · CornerPillars, ServicePerimeterPavilions); **Maintenance Bay** (2×1 · CornerPillars, ServicePavilions); **Launch Bay** (2×1 · ThreeLanes) |
 | Escape Pod Bay | **Pod Gallery** (8–10 tiles · CornerPillars); **Muster Station** (9–11 tiles · LowRows); **Launch Ring** (9–11 tiles · ColumnRing) |
-| Storage | **Shelf Aisles** (8–10 tiles · ShelfRows); **Crate Stacks** (8–10 tiles · WideShelfRows) |
+| Storage | **Shelf Aisles** (8–10 tiles · ShelfRows); **Crate Stacks** (8–10 tiles · WideShelfRows); **Aisle Comb** (8–10 tiles, Comb · ShelfRows); **Cage Store** (9–11 tiles · StorageCages); **High Bay** (9–12 tiles · PalletRackRows) |
 
 **Worked examples.**
 
@@ -679,6 +679,45 @@ What each place keeps in every layout:
 In the worked examples, the numbers in brackets are *Min Room Tiles*. A multi-cell layout falls back to one cell
 where its neighbours leave no room, and its set pieces still fit, because they grow with the
 room or are left out by size.
+
+### Researched places: Cargo Bay and Storage
+
+The first places rebuilt from how real ones are laid out (warehouse flow and racking,
+ship holds and ro-ro decks, the station's logistics modules, self-storage halls). The
+rest of the catalogue follows the same way, a place at a time.
+
+**Cargo Bay.** A cargo bay is organised round where goods come in: the place's anchor is
+now one or two **dock doors** (`ServiceDoor`, *Key* `Dock`, *Marks Route*), and the layouts
+stage their cargo in front of them. Its layouts follow the three warehouse flows and the
+ship's holds:
+- **Container Yard**: containers in bays on a 3×2 lattice, the way a hold stows them, a
+  forklift working the stacks (*Key* `Stack`) and loose freight on the walls.
+- **Loading Dock**: a U-shaped dock, more doors along the walls with pallets staged in front
+  of each and forklifts working them.
+- **Dock Neck**: the L-shaped flow on the Waist shape, a receiving hall where pallets wait by
+  the dock and pallet racks at the back, off the routes, through the neck.
+- **Split Deck**: on-deck and under-deck: heavy containers in the middle, crates and light
+  stowage bags round them.
+- **Ro-Ro Deck**: a roll-on, roll-off vehicle deck: low lane dividers, vehicles and trailers
+  parked nose to tail down the lanes, fuel drums in the corners.
+- **Logistics Module**: a cramped one-cell module like the station's supply modules, racks on
+  every wall and stowage bags strapped in front of them.
+
+**Storage.** A storeroom is about how goods are racked, so its layouts follow the main
+storage systems:
+- **Shelf Aisles**: selective shelving, every shelf reachable from an aisle, a picking cart.
+- **Crate Stacks**: block stacking: pallets packed along wide rows, few aisles.
+- **Aisle Comb**: shelving bays off a spine.
+- **Cage Store**: a self-storage hall: a corridor one tile wide with narrow units opening on
+  both sides (`StorageCagesStructureRule`, an Office Maze with 2-deep, 1–2-wide units and no
+  suites), each unit holding a stack of crates and perhaps a shelf.
+- **High Bay**: narrow-aisle pallet racking: full-height rows three tiles apart in long runs
+  (`PalletRackRowsStructureRule`), pallet racks lining every face, a forklift in the aisles and
+  pallets waiting just inside the way in.
+
+New pieces for them: `PalletRack` (two levels of loads with an orange beam, high cover),
+`Pallet` (a wrapped load, low cover) and `CargoBag` (a strapped stowage bag), with
+`CargoContainer`, `Forklift` and `ServiceDoor` back from the cut.
 
 ### Set pieces
 
