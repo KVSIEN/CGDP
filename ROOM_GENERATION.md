@@ -1434,7 +1434,7 @@ room's props before the geometry is built and places them after.
    lumps with finer ones on them, the sample point pushed about by two more noises so the shapes
    wind and creep), has to pass a threshold set by `_coverage`; past it the height feathers in and
    rolls in lumps.
-4. *Slope*: `GridSlopeLimit` lowers every sample until none stands more than tan(`_maxSlope`) × the
+4. *Slope*: `GridSlopeLimit` (`Scripts/Algorithms/Grids`) lowers every sample until none stands more than tan(`_maxSlope`) × the
    spacing above a neighbour (×√2 diagonally): a chamfer distance transform, forward and back sweeps
    until nothing changes. It only ever lowers, so the pinned zeros pull the growth around them down
    into even banks; that's what guarantees the growth is walkable. The same pass started from 0 at

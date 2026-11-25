@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Algorithms;
 using CGD.Core;
 
 namespace CGD.Level

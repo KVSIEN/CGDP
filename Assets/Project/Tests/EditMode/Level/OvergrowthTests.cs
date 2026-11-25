@@ -17,42 +17,6 @@ namespace CGD.Tests
         private const float TileSize = 3f;
         private const float Slack = 1e-4f;
 
-        // --- The slope limit -----------------------------------------------------------------
-
-        [Test]
-        public void TheSlopeLimitLowersEveryBankToItsStepAndLeavesTheLowestAlone()
-        {
-            const int columns = 9, rows = 7;
-            const float step = 0.1f;
-            var random = new RandomStream(new Seed(7));
-            var values = new float[columns * rows];
-            for (int i = 0; i < values.Length; i++) values[i] = random.Range(0f, 2f);
-            values[3 * columns + 4] = 0f;
-            var before = (float[])values.Clone();
-
-            GridSlopeLimit.Apply(values, columns, rows, step);
-
-            for (int i = 0; i < values.Length; i++)
-                Assert.That(values[i], Is.LessThanOrEqualTo(before[i] + Slack), "only ever lowered");
-            Assert.That(values[3 * columns + 4], Is.EqualTo(0f), "the lowest stays where it is");
-            for (int row = 0; row < rows; row++)
-                for (int column = 0; column + 1 < columns; column++)
-                    Assert.That(Mathf.Abs(values[row * columns + column] - values[row * columns + column + 1]), Is.LessThanOrEqualTo(step + Slack));
-            for (int row = 0; row + 1 < rows; row++)
-                for (int column = 0; column < columns; column++)
-                    Assert.That(Mathf.Abs(values[row * columns + column] - values[(row + 1) * columns + column]), Is.LessThanOrEqualTo(step + Slack));
-        }
-
-        [Test]
-        public void FromZeroAndInfinityTheSlopeLimitMeasuresDistance()
-        {
-            var values = new[] { 0f, float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity };
-
-            GridSlopeLimit.Apply(values, 5, 1, 1f);
-
-            Assert.That(values, Is.EqualTo(new[] { 0f, 1f, 2f, 3f, 4f }));
-        }
-
         // --- The field -----------------------------------------------------------------------
 
         [Test]

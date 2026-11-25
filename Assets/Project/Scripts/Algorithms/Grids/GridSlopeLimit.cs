@@ -1,18 +1,23 @@
 using UnityEngine;
 
-namespace CGD.Level
+namespace CGD.Algorithms
 {
-    // Lowers a grid of values until none stands more than `step` above a side neighbour, or
-    // `step` times √2 above a diagonal one: the steepest slope the grid can have. Values are
-    // only ever lowered, so the lowest ones stay where they are and everything round them comes
-    // down into an even ramp toward them. That's what keeps overgrowth walkable: bare floor
-    // pinned at 0 pulls the growth around it down to a bank no steeper than the limit.
+    // A slope limit: lowers a grid of values until none stands more than `step` above a side
+    // neighbour, or `step` times √2 above a diagonal one. That makes `step` the steepest slope
+    // the grid can have anywhere.
     //
-    // Started from 0 at some samples and infinity everywhere else, the same pass gives each
-    // sample's distance (in samples, with step 1) to the nearest of them.
+    // How it works: two sweeps over the grid, one forward from the first row and one back from
+    // the last. Each sample is held to no higher than each neighbour already passed, plus the
+    // step (a chamfer distance transform). Values are only ever lowered, so the lowest stay
+    // where they are and everything round them comes down into an even ramp toward them. Two
+    // sweeps settle it; more run until nothing changes, so the result never rests on that.
     //
-    // Two sweeps, one forward and one back, settle it (a chamfer distance transform); further
-    // sweeps run until nothing changes, so the result never rests on that.
+    // Why it's useful: it keeps generated heights walkable. Pin some samples at 0 (a doorway,
+    // a path) and every height round them ramps down to them no steeper than the limit; the
+    // overgrowth on a room's floor is shaped this way (Level/Overgrowth/OvergrowthPlanner).
+    // It also measures distance: start from 0 at some samples and infinity everywhere else,
+    // and with step 1 each sample ends up at its distance, in samples, to the nearest of them
+    // (diagonals counted as √2): a distance field from walls, water or anything else.
     public static class GridSlopeLimit
     {
         private const int MostSweeps = 8;

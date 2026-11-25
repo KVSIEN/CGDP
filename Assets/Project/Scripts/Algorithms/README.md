@@ -30,6 +30,7 @@ Tests: `Tests/EditMode/Algorithms/`.
 | | `GridLine` | Bresenham: the tiles a straight line crosses | Tile line of sight, shots, drawing walls and roads |
 | | `CellularAutomaton` | Cells living or dying by their neighbours, in rounds | Caves, lakes, patches of spreading growth |
 | | `DrunkardsWalk` | A random walk that keeps every tile it stood on | Tunnels, connected blobs, creep spreading from a point |
+| | `GridSlopeLimit` | Lowers a height grid until no slope is steeper than a limit; also a distance field | Walkable generated ground (the overgrowth), distance from walls |
 | | `GridNeighbours` | The 4 and 8 steps to a tile's neighbours | Shared by the grid algorithms |
 | Spatial | `SpatialHashGrid` | Buckets by position, so "what's near here?" checks only a few | Crowds, flocking, separation, hearing, pick-ups |
 | Curves | `Easing` | Reshaped 0..1 progress: ease in, out, overshoot, bounce | Polish on any movement or UI transition |
@@ -70,6 +71,5 @@ Some algorithms live with the feature they serve:
 
 - `Core/Random/RandomStream`, `Seed`: the seeded random number generator everything here draws from.
 - `Core/Random/WeightedChoice`: a weighted random pick in one pass (reservoir sampling).
-- `Level/Layout/CorridorRouter`: A* specialised for corridors (turns cost extra).
-- `Level/Overgrowth/OvergrowthNoise`: warped fractal noise on Unity's `Mathf.PerlinNoise`.
-- `Level/Overgrowth/GridSlopeLimit`: a chamfer distance transform, used to keep slopes walkable.
+- `Level/Layout/CorridorRouter`: A* specialised for corridors (turns cost extra), on this folder's `MinHeap`.
+- `Level/Overgrowth/OvergrowthNoise`: warped fractal noise on Unity's `Mathf.PerlinNoise` (a candidate to move onto `FractalNoise` and `DomainWarpNoise`; see TASKS.md).
