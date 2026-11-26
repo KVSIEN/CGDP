@@ -67,6 +67,43 @@ MonoBehaviour:
     Grow: {x: 0, y: 0}
     Stretch: 0
     MinRoomTiles: 0
+  - Prefabs:
+    - {fileID: 7400000000000000301, guid: ed2000526df4445abaa0cfdec66e62fd, type: 3}
+    - {fileID: 7400000000000000301, guid: 2529c005867344cfbe83ef8bd08e865a, type: 3}
+    Count:
+      Min: 0
+      Max: 1
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    EachZone: 0
+    Facing: 2
+    Clearance: 1
+    Spacing: 1
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Band: 3
+    Members: []
+    Key: 
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
   _layouts:
   - {fileID: 11400000, guid: cfb49189124b4684b058bbf1a63aedb4, type: 2}
   - {fileID: 11400000, guid: bfdfe19c3eb74d6490453c6a3302bf70, type: 2}

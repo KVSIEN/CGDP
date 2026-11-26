@@ -178,6 +178,7 @@
   - **Munitions crate** (olive) — 2–3 handfuls of ammo of any kind, arrows included
   - **Chest** (yellow) — anything and everything: 2–3 draws across weapons, equipment, consumables, resources and ammo
   - Weapons and equipment from any of them roll their tier the same way as every other drop (Legendary 1% → Common)
+- **Containers where they belong** — about half the rooms of these places hold one container of their kind, against a wall at the far end from the way in: Armory (weapon crate or munitions crate), Security Office (weapon crate or equipment locker), Barracks (equipment locker or munitions crate), Medical Bay, Pharmacy and Ward (supply case), Storage, Cargo Bay, Workshop and Maintenance Hub (resource crate)
 - **Container subtypes** — a container can turn out to be a narrower kind of itself, shown in its prompt before you open it ("Open weapon crate (Pistols)"). The same level seed always gives the same subtypes. A subtype only narrows what can come out; tiers and amounts stay the same
   - Weapon crate (60% have one): **Pistols**, **SMGs & ARs**, **Shotguns**, **Long guns** (sniper rifles and LMGs), **Bows & crossbows**, **Melee** — 10% each. Its bonus ammo matches: pistol crates hold light or heavy rounds, bow crates arrows, melee crates none
   - Supply case (50%): **Healing** (bandages and rations, 30%) or **Combat** (stims and grenades, 20%)
