@@ -11,6 +11,7 @@ namespace CGD.Level
     {
         private readonly SightBlocking _blocking;
         private readonly RectInt _bounds;
+        private readonly TileGrid _grid;
         private readonly int[] _runX;
         private readonly int[] _runY;
 
@@ -19,8 +20,9 @@ namespace CGD.Level
         {
             _blocking  = blocking ?? new SightBlocking(structure);
             _bounds    = structure.Footprint.Bounds;
-            _runX      = new int[_bounds.width * _bounds.height];
-            _runY      = new int[_bounds.width * _bounds.height];
+            _grid      = new TileGrid(_bounds);
+            _runX      = new int[_grid.Count];
+            _runY      = new int[_grid.Count];
             Refresh(_bounds);
         }
 
@@ -29,7 +31,7 @@ namespace CGD.Level
         // The open stretch through a tile along x and along y, the tile included.
         public (int alongX, int alongY) Runs(Vector2Int tile)
         {
-            int index = (tile.y - _bounds.yMin) * _bounds.width + (tile.x - _bounds.xMin);
+            int index = _grid.IndexOf(tile);
             return (_runX[index], _runY[index]);
         }
 
@@ -65,9 +67,9 @@ namespace CGD.Level
                 for (int j = start; j < i; j++)
                 {
                     Vector2Int inside = origin + step * j;
-                    runs[(inside.y - _bounds.yMin) * _bounds.width + (inside.x - _bounds.xMin)] = _blocking.IsTaken(inside) ? 0 : i - start;
+                    runs[_grid.IndexOf(inside)] = _blocking.IsTaken(inside) ? 0 : i - start;
                 }
-                if (!open && i < length) runs[(tile.y - _bounds.yMin) * _bounds.width + (tile.x - _bounds.xMin)] = 0;
+                if (!open && i < length) runs[_grid.IndexOf(tile)] = 0;
                 start = open ? i : i + 1;
             }
         }

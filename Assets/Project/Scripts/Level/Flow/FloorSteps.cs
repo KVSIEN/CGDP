@@ -13,7 +13,7 @@ namespace CGD.Level
     {
         public const int Unreached = int.MaxValue;
 
-        private readonly RectInt _bounds;
+        private readonly TileGrid _grid;
         private readonly int[] _steps;
 
         // `solid`: tiles carrying any of these tags can't be walked (Structure alone measures the
@@ -24,8 +24,8 @@ namespace CGD.Level
         // From whichever of `sources` is nearest; sources off the floor are skipped.
         public FloorSteps(RoomStructure structure, IEnumerable<Vector2Int> sources, RoomTileTags solid, ICollection<Vector2Int> blocked = null)
         {
-            _bounds = structure.Footprint.Bounds;
-            _steps  = new int[_bounds.width * _bounds.height];
+            _grid   = new TileGrid(structure.Footprint.Bounds);
+            _steps  = new int[_grid.Count];
             System.Array.Fill(_steps, Unreached);
 
             var open = new Queue<Vector2Int>();
@@ -56,7 +56,7 @@ namespace CGD.Level
         // Whether any source was on the floor to measure from.
         public bool HasSources { get; }
 
-        public int At(Vector2Int tile) => _bounds.Contains(tile) ? _steps[IndexOf(tile)] : Unreached;
+        public int At(Vector2Int tile) => _grid.Contains(tile) ? _steps[IndexOf(tile)] : Unreached;
 
         public bool Reaches(Vector2Int tile) => At(tile) != Unreached;
 
@@ -92,6 +92,6 @@ namespace CGD.Level
             return false;
         }
 
-        private int IndexOf(Vector2Int tile) => (tile.y - _bounds.yMin) * _bounds.width + (tile.x - _bounds.xMin);
+        private int IndexOf(Vector2Int tile) => _grid.IndexOf(tile);
     }
 }

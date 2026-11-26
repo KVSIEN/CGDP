@@ -41,7 +41,7 @@ namespace CGD.Level
         // thousands of times a room, so they need no hashing, and a copy is a few array copies.
         // Inner walls are stored on the tile below or left of them: _wallEast[i] is the edge
         // between tile i and the one east of it, _wallNorth[i] the one north of it.
-        private readonly RectInt _bounds;
+        private readonly TileGrid _grid;
         private readonly bool[] _floor;
         private readonly RoomTileTags[] _tags;
         private readonly int[] _zones;
@@ -68,8 +68,8 @@ namespace CGD.Level
             Footprint  = footprint;
             WallHeight = wallHeight;
 
-            _bounds = footprint.Bounds;
-            _floor     = new bool[_bounds.width * _bounds.height];
+            _grid      = new TileGrid(footprint.Bounds);
+            _floor     = new bool[_grid.Count];
             _tags      = new RoomTileTags[_floor.Length];
             _zones     = new int[_floor.Length];
             _solid     = new bool[_floor.Length];
@@ -307,10 +307,9 @@ namespace CGD.Level
             return Footprint.Tiles[0];
         }
 
-        private int IndexOf(Vector2Int tile) => (tile.y - _bounds.yMin) * _bounds.width + (tile.x - _bounds.xMin);
+        private int IndexOf(Vector2Int tile) => _grid.IndexOf(tile);
 
-        private bool InBounds(Vector2Int tile) =>
-            tile.x >= _bounds.xMin && tile.x < _bounds.xMax && tile.y >= _bounds.yMin && tile.y < _bounds.yMax;
+        private bool InBounds(Vector2Int tile) => _grid.Contains(tile);
 
         // The wall array and index holding the edge between two neighbouring tiles.
         private bool TryEdge(Vector2Int a, Vector2Int b, out bool[] walls, out int index)

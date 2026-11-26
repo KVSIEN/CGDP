@@ -16,7 +16,7 @@ namespace CGD.Level
         private const float TurnCost = 1.5f;
         private const int   Headings = 5;   // four directions, plus "no direction yet" for the first step
 
-        private readonly RectInt _bounds;
+        private readonly TileGrid _grid;
         private readonly float[] _cost;
         private readonly int[]   _cameFrom;
         private readonly int[]   _stamp;
@@ -26,8 +26,8 @@ namespace CGD.Level
 
         public CorridorRouter(RectInt bounds)
         {
-            _bounds   = bounds;
-            int size  = Mathf.Max(0, bounds.width * bounds.height) * Headings;
+            _grid     = new TileGrid(bounds);
+            int size  = _grid.Count * Headings;
             _cost     = new float[size];
             _cameFrom = new int[size];
             _stamp    = new int[size];
@@ -37,7 +37,7 @@ namespace CGD.Level
         // asked about every tile except start and goal themselves.
         public List<Vector2Int> FindPath(Vector2Int start, Vector2Int goal, Func<Vector2Int, bool> isPassable)
         {
-            if (!_bounds.Contains(start)) return null;
+            if (!_grid.Contains(start)) return null;
 
             _search++;
             _open.Clear();
@@ -58,7 +58,7 @@ namespace CGD.Level
                 for (int d = 0; d < GridNeighbours.Four.Length; d++)
                 {
                     Vector2Int next = tile + GridNeighbours.Four[d];
-                    if (!_bounds.Contains(next)) continue;
+                    if (!_grid.Contains(next)) continue;
                     if (next != goal && !isPassable(next)) continue;
 
                     float step = 1f + (heading > 0 && heading != d + 1 ? TurnCost : 0f);
@@ -74,9 +74,9 @@ namespace CGD.Level
         }
 
         private int StateOf(Vector2Int tile, int heading) =>
-            ((tile.y - _bounds.yMin) * _bounds.width + (tile.x - _bounds.xMin)) * Headings + heading;
+            _grid.IndexOf(tile) * Headings + heading;
 
-        private Vector2Int TileOf(int cell) => new(_bounds.xMin + cell % _bounds.width, _bounds.yMin + cell / _bounds.width);
+        private Vector2Int TileOf(int cell) => _grid.TileAt(cell);
 
         private void Visit(int state, float cost, int from)
         {
