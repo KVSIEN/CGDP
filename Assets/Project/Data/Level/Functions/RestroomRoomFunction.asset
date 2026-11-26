@@ -47,8 +47,8 @@ MonoBehaviour:
     Zone: 0
     Facing: 2
     Clearance: 1
-    Spacing: 1
-    Selection: 1
+    Spacing: 0
+    Selection: 4
     Pile:
       Min: 1
       Max: 1
@@ -81,8 +81,8 @@ MonoBehaviour:
     Zone: 0
     Facing: 2
     Clearance: 1
-    Spacing: 1
-    Selection: 1
+    Spacing: 0
+    Selection: 4
     Pile:
       Min: 1
       Max: 1

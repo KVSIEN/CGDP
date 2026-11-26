@@ -606,10 +606,10 @@ as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/`
 
 | Place | Layouts (cells or size · structure) |
 |---|---|
-| Quarters | **Suite** (9–11 tiles · DividerWall); **Twin Cabin** (7–9 tiles · CornerPillars); **Penthouse** (2×1 · CornerPillars) |
-| Cabin Row | **Cabin Corridor** (2×1 · OfficeMaze); **Dormitory** (10–12 tiles · LowRows); **Capsule Hotel** (9–11 tiles · LowRows) |
-| Commons | **Lounge** (11–12 tiles · CornerPillars); **Rec Room** (2×1 · WidePillarGrid, GuestPavilions); **Hearth** (10–12 tiles · ColumnRing) |
-| School | **Classroom** (9–11 tiles · CornerPillars); **Lecture Hall** (2×1 · AcrossLowRows); **Study Room** (8–10 tiles · CornerPillars) |
+| Quarters | **Suite** (9–11 tiles · DividerWall); **Twin Cabin** (7–9 tiles · CornerPillars); **Penthouse** (2×1 · CornerPillars); **Studio** (7–9 tiles · CornerPillars); **Connecting Rooms** (9–11 tiles · DividerWall) |
+| Cabin Row | **Cabin Corridor** (2×1 · OfficeMaze); **Dormitory** (10–12 tiles · LowRows); **Capsule Hotel** (9–11 tiles · LowRows); **Open Berthing** (9–11 tiles · LowRows) |
+| Commons | **Lounge** (11–12 tiles · CornerPillars); **Rec Room** (2×1 · WidePillarGrid, GuestPavilions); **Hearth** (10–12 tiles · ColumnRing); **Common Kitchen** (10–12 tiles · CornerPillars); **Media Lounge** (10–12 tiles · CornerPillars) |
+| School | **Classroom** (9–11 tiles · CornerPillars); **Lecture Hall** (2×1 · AcrossLowRows); **Study Room** (8–10 tiles · CornerPillars); **Horseshoe Classroom** (9–11 tiles · CornerPillars); **Seminar Room** (8–10 tiles · CornerPillars) |
 | Park | **Garden** (2×1 · the faction’s); **Grove** (2×1 · the faction’s); **Plaza Garden** (10–12 tiles · CornerPillars, HubRing) |
 | Gym | **Weight Room** (10–12 tiles · LowRows); **Fitness Hall** (2×1 · WidePillarGrid, GuestPavilions); **Studio** (9–11 tiles · CornerPillars) |
 | Observation Deck | **Window Gallery** (2×1 · CornerPillars); **Star Lounge** (10–12 tiles · ColumnRing); **Stargazing Dome** (10–12 tiles · ColumnRing) |
@@ -751,6 +751,29 @@ in place of lockers, counters, tables and rubble) and gained the arrangements th
   (**Sculpture Court**), linear procession (**Enfilade**), and now the **Loop Gallery** (cases
   along a ring that brings visitors back to the way in, an information lectern there) and the
   **Exhibit Maze** (a labyrinth of fold walls with cases spread through it).
+
+#### Residential
+
+The crew and passenger rooms gained the arrangements their real counterparts are known by:
+- **Quarters.** Hotel room types: the **Suite** (bedroom and living room behind a divider),
+  **Twin Cabin** and **Penthouse** were there; new are the **Studio** (one open room: the bed,
+  a kitchenette counter with a sink beside it, a table for two near it, a sofa on a rug) and
+  **Connecting Rooms** (a divider wall with a doorway splits the room in two, each half with
+  its own bed, locker and lamp).
+- **Cabin Row.** Beside the cabin corridor, dormitory and capsule hotel, **Open Berthing** is a
+  ship's crew berthing: bunks along every wall, low locker rows down the middle, a mess table
+  with stools.
+- **Commons.** A shared lounge is zoned by activity, the loud kitchen apart from the quiet seats:
+  the **Common Kitchen** has counters and a sink on a wall with a vending machine, dining tables
+  near it and sofas away from the routes; the **Media Lounge** has a screen on a wall
+  (*Key* `Screen`) with sofas facing it, a rug in front and, in a big room, a card table.
+- **School.** The classroom seating plans: rows facing the teacher (**Classroom**), tiered rows
+  (**Lecture Hall**) and group pods (**Study Room**) were there; new are the **Horseshoe
+  Classroom** (desks along the walls facing the middle, the lectern by the teacher's desk) and
+  the **Seminar Room** (one round table, chairs on both sides, shelves and a screen on the walls).
+- **Restroom.** It furnishes rooms in buildings and pavilions, which don't pick layouts, so it
+  stays one arrangement, now planned like a public washroom: the toilets (`Toilet`, back from the
+  cut) as a stall row along one wall and the sinks in a row of their own.
 
 ### Set pieces
 
@@ -916,7 +939,7 @@ or an earlier structure are left as plazas.
   are not applied inside a room. Zone rules in its props are read against the room alone
   (`RoomPropPlacement.ForSingleZone`: "main space" is the whole room, "others" are skipped).
 - The Restroom place (`Data/Level/Functions/`, not in the build settings' list) is used by the
-  School, Hospital, Library and House plans; it has no stalls, only toilets, sinks and a bin.
+  School, Hospital, Library and House plans; its toilets stand in a row along a wall (no stall walls: structure isn't built inside a building's rooms), with a row of sinks and a bin.
 - A town's room is open-air: it sits under a sky dome (`SkyDomeBuilder`, shared with parks,
   *Sky domes* in the build settings). Its buildings are roofed (`StructureSpace.Roofed`, set
   by a shell-walled blueprint; `LevelGeometryBuilder.BuildCeilings` roofs those tiles even
