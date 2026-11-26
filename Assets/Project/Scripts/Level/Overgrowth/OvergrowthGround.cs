@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -46,7 +47,7 @@ namespace CGD.Level
             if (_structure.Has(tile, _bare)) return true;
 
             int level = _structure.LevelOf(tile);
-            foreach (Vector2Int side in GridSides.All)
+            foreach (Vector2Int side in GridNeighbours.Four)
             {
                 Vector2Int next = tile + side;
                 if (!_structure.Contains(next)) continue;

@@ -29,7 +29,7 @@ Assets/
     Scripts/                runtime code, one folder per feature (CGD.Runtime assembly)
       Abilities/            Core/ (Ability base, AbilityContext, cooldowns and charges, Surge, resource costs, PlayerAbilities — the player's slots,
                             TimelineAbilityRunner, caster interfaces), Types/ (one class per kind of ability, incl. TargetedAbility and ZoneAbility)
-      Algorithms/           general-purpose algorithms, each file explaining what it is, how it works and what it's for (see its README.md): Noise/ (CoordinateHash, Value, Perlin, Simplex, Worley, Fractal, DomainWarp), Sampling/ (PoissonDiskSampler), Collections/ (MinHeap, ShuffleBag, DisjointSet), Graphs/ (MinimumSpanningTree), Grids/ (GridDistanceMap, GridPathfinder (A*), GridLine (Bresenham), CellularAutomaton, DrunkardsWalk, GridSlopeLimit), Spatial/ (SpatialHashGrid), Curves/ (Easing, BezierCurve, CatmullRomSpline), Motion/ (SpringDamper), Growth/ (LSystem, Turtle2D);
+      Algorithms/           general-purpose algorithms, each file explaining what it is, how it works and what it's for (see its README.md): Noise/ (CoordinateHash, Value, Perlin, Simplex, Worley, Fractal, DomainWarp), Sampling/ (PoissonDiskSampler), Collections/ (MinHeap, ShuffleBag, DisjointSet), Graphs/ (MinimumSpanningTree), Grids/ (GridNeighbours (the four and eight tile neighbours, in the order seeded generation walks them; the level uses it too), GridDistanceMap, GridPathfinder (A*), GridLine (Bresenham), CellularAutomaton, DrunkardsWalk, GridSlopeLimit), Spatial/ (SpatialHashGrid), Curves/ (Easing, BezierCurve, CatmullRomSpline), Motion/ (SpringDamper), Growth/ (LSystem, Turtle2D);
       Artifacts/            offhand artifacts: ArtifactDefinition/Instance (rolled stats, passives, perks), OffhandBehavior (+ OffhandUse state) with
                             Cast, Ward and Channel behaviors; add a new artifact kind by subclassing OffhandBehavior and OffhandUse
       Animation/            Animator parameter bridge (AnimatorBridge, AnimatorParams), PlayerAnimator, EnemyAnimator, ViewmodelAnimator (per-weapon override controllers), Ragdoll;
@@ -109,7 +109,7 @@ Assets/
       Level/                map graph → level: LevelBuilder (scene entry point), LevelBuildSettings, LevelExit,
                             RoomLabel (room names), RoomArrivalAnnouncer;
                             Layout/ — the level as tiles: LevelLayoutBuilder, RoomPlacer (cells, multi-cell rooms), CorridorRouter,
-                            DirectRoomAligner, LevelLayout/LevelRoom/LevelDoorway, LevelWallPlan, LevelBlueprint (floor-plan drawing), GridSides (the four tile neighbours, in generation order);
+                            DirectRoomAligner, LevelLayout/LevelRoom/LevelDoorway, LevelWallPlan, LevelBlueprint (floor-plan drawing);
                             Geometry/ — tiles → meshes: LevelGeometryBuilder, LevelWallBuilder, BoxMeshBuilder, DoorwaySignBuilder,
                             RuntimeNavMesh, GeneratedAssets; Population/ — RoomPopulator, RoomContentRule, RoomRoster, EnemyTierOdds, Posts/ (RoomPostMap, RoomEnemyPlanner: where enemies start, who guards and who patrols);
                             Shapes/ — RoomShape assets, RoomShapeRasterizer, RoomFootprint (tiles + door sockets)

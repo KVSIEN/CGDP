@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 using CGD.Core;
 
@@ -93,7 +94,7 @@ namespace CGD.Level
             foreach (Vector2Int tile in ring.allPositionsWithin)
             {
                 if (!structure.Contains(tile) || structure.Has(tile, RoomTileTags.Structure)) return false;
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                     if (ring.Contains(tile + side) && structure.IsPartitioned(tile, tile + side)) return false;
             }
 
@@ -113,7 +114,7 @@ namespace CGD.Level
             float height = CoverHeights.Readable(_wallHeight);
             var walls = new List<PartitionEdge>();
             foreach (Vector2Int tile in rect.allPositionsWithin)
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     Vector2Int outside = tile + side;
                     if (rect.Contains(outside)) continue;
@@ -135,7 +136,7 @@ namespace CGD.Level
         private static bool TryDoor(RoomStructure structure, RectInt rect, out PartitionEdge door)
         {
             Vector2 toAnchor = structure.Footprint.Anchor - rect.center;
-            var sides = new List<Vector2Int>(GridSides.All);
+            var sides = new List<Vector2Int>(GridNeighbours.Four);
             sides.Sort((a, b) => Vector2.Dot(b, toAnchor).CompareTo(Vector2.Dot(a, toAnchor)));
 
             foreach (Vector2Int side in sides)

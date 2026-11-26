@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -22,7 +23,7 @@ namespace CGD.Level
             while (open.Count > 0)
             {
                 Vector2Int tile = open.Pop();
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     Vector2Int next = tile + side;
                     if (footprint.Contains(next) && reached.Add(next)) open.Push(next);

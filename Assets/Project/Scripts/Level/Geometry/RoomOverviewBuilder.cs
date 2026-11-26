@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 using TMPro;
 using CGD.Map;
@@ -65,7 +66,7 @@ namespace CGD.Level
             foreach (Vector2Int tile in room.Footprint.Tiles)
             {
                 Vector3 centre = layout.TileToLocal(tile);
-                foreach (Vector2Int side in new[] { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left })
+                foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     if (room.Footprint.Contains(tile + side)) continue;
                     Vector3 edge = centre + new Vector3(side.x, 0f, side.y) * (size * 0.5f) + Vector3.up * y;

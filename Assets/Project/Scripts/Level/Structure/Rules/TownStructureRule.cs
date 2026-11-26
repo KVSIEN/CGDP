@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 using CGD.Core;
 
@@ -84,7 +85,7 @@ namespace CGD.Level
             if (plan == null) return false;
 
             var planner = new BuildingLayoutPlanner(plan);
-            var fronts = new List<Vector2Int>(GridSides.All);
+            var fronts = new List<Vector2Int>(GridNeighbours.Four);
             random.Shuffle(fronts);
             foreach (Vector2Int front in fronts)
             {

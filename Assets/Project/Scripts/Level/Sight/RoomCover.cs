@@ -1,3 +1,4 @@
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -22,7 +23,7 @@ namespace CGD.Level
         // rim of a sunken floor, where someone looks down on the floor below.
         public static bool OverlooksLowerFloor(RoomStructure structure, Vector2Int tile)
         {
-            foreach (Vector2Int side in GridSides.All)
+            foreach (Vector2Int side in GridNeighbours.Four)
             {
                 Vector2Int next = tile + side;
                 if (structure.LevelOf(next) < structure.LevelOf(tile) && structure.IsLedge(tile, next)) return true;

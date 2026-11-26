@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -34,7 +35,7 @@ namespace CGD.Level
                 Vector2Int tile = entry.Key;
                 if (!structure.Contains(tile)) continue;
 
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     Vector2Int next = tile + side;
                     bool inside = owner.TryGetValue(next, out int nextOwner);

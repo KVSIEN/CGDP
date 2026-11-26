@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -83,7 +84,7 @@ namespace CGD.Level
             {
                 if (tilesOf[r] == null) continue;
                 foreach (Vector2Int tile in tilesOf[r])
-                    foreach (Vector2Int side in GridSides.All)
+                    foreach (Vector2Int side in GridNeighbours.Four)
                     {
                         Vector2Int landing = tile + side;
                         if (!_structure.Contains(landing) || LevelAfter(landing) != 0 || LaneRun(landing) != r) continue;

@@ -15,8 +15,6 @@ namespace CGD.Editor
 
         private const RoomTileTags Solid = RoomTileTags.Structure | RoomTileTags.Prop;
 
-        private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-
         public static List<RoomIssue> Run(RoomSample sample)
         {
             var issues = new List<RoomIssue>();

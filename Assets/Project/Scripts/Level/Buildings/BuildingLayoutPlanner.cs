@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 using CGD.Core;
 
@@ -28,7 +29,7 @@ namespace CGD.Level
 
         public BuildingLayoutPlanner(BuildingPlan plan) => _plan = plan;
 
-        // `front`: the side of `lot` the front door is on (one of GridSides.All). Null when the lot is
+        // `front`: the side of `lot` the front door is on (one of GridNeighbours.Four). Null when the lot is
         // too small for the plan or the plan has no rooms to line the hall with.
         public BuildingBlueprint Plan(RectInt lot, Vector2Int front, RandomStream random)
         {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -115,7 +116,7 @@ namespace CGD.Level
         // ledge rising above it (the room's own walls don't count).
         private bool HasCoverBeside(Vector2Int tile)
         {
-            foreach (Vector2Int side in GridSides.All)
+            foreach (Vector2Int side in GridNeighbours.Four)
             {
                 Vector2Int next = tile + side;
                 if (_structure.IsPartitioned(tile, next) || RoomCover.Shelters(_structure, tile, next)) return true;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -160,7 +161,7 @@ namespace CGD.Tests
             foreach (Vector2Int entrance in room.Entrances)
                 Assert.That(room.LevelOf(entrance), Is.Zero, $"the doorway at {entrance} opens onto level 0");
             foreach (Vector2Int tile in room.Footprint.Tiles)
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                     if (room.Contains(tile + side))
                         Assert.That(Mathf.Abs(room.LevelOf(tile) - room.LevelOf(tile + side)), Is.LessThanOrEqualTo(1), $"{tile} beside {tile + side}");
             foreach (ElevatedArea area in room.Elevations)

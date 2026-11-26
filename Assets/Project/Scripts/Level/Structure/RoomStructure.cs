@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -48,7 +49,7 @@ namespace CGD.Level
         private readonly bool[] _wallEast;
         private readonly bool[] _wallNorth;
         // The floor's level (0 = the doorways' level), the flight on a tile (0 = none, else 1 + its
-        // Up's index in GridSides.All, plus 4 for a slope) and the elevated area a tile belongs to
+        // Up's index in GridNeighbours.Four, plus 4 for a slope) and the elevated area a tile belongs to
         // (0 = none, else 1 + its index).
         private readonly sbyte[] _level;
         private readonly sbyte[] _stairUp;
@@ -285,7 +286,7 @@ namespace CGD.Level
             while (open.Count > 0)
             {
                 Vector2Int tile = open.Pop();
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     Vector2Int next = tile + side;
                     if (!Contains(next)) continue;
@@ -472,7 +473,7 @@ namespace CGD.Level
         {
             stairs = default;
             if (!InBounds(tile) || _stairUp[IndexOf(tile)] == 0) return false;
-            stairs = new StairFlight(tile, UpAt(IndexOf(tile)), _stairUp[IndexOf(tile)] > GridSides.All.Length);
+            stairs = new StairFlight(tile, UpAt(IndexOf(tile)), _stairUp[IndexOf(tile)] > GridNeighbours.Four.Length);
             return true;
         }
 
@@ -630,7 +631,7 @@ namespace CGD.Level
             foreach (ElevatedArea area in areas)
             {
                 foreach (Vector2Int tile in area.Tiles)
-                    foreach (Vector2Int side in GridSides.All)
+                    foreach (Vector2Int side in GridNeighbours.Four)
                         if (Contains(tile + side) && Mathf.Abs(area.Level - LevelOf(tile + side)) > 1) return false;
 
                 foreach (StairFlight stairs in area.Stairs)
@@ -657,7 +658,7 @@ namespace CGD.Level
             }
             foreach (StairFlight stairs in area.Stairs)
             {
-                int code = 1 + System.Array.IndexOf(GridSides.All, stairs.Up) + (stairs.Slope ? GridSides.All.Length : 0);
+                int code = 1 + GridNeighbours.IndexOf(stairs.Up) + (stairs.Slope ? GridNeighbours.Four.Length : 0);
                 _stairUp[IndexOf(stairs.Tile)] = adding ? (sbyte)code : (sbyte)0;
                 foreach (Vector2Int tile in new[] { stairs.Foot, stairs.Head })
                     SetTag(tile, RoomTileTags.Landing, adding);
@@ -700,7 +701,7 @@ namespace CGD.Level
 
         private static bool Along(Vector2Int up, Vector2Int step) => step == up || step == -up;
 
-        private Vector2Int UpAt(int index) => GridSides.All[(_stairUp[index] - 1) % GridSides.All.Length];
+        private Vector2Int UpAt(int index) => GridNeighbours.Four[(_stairUp[index] - 1) % GridNeighbours.Four.Length];
 
         // A railed area keeps anyone from crossing its ledges: off a platform, or into a pit.
         private bool IsRailed(int a, int b)
@@ -748,7 +749,7 @@ namespace CGD.Level
                 {
                     Vector2Int tile = open.Pop();
                     if (assign) _zones[IndexOf(tile)] = zones;
-                    foreach (Vector2Int side in GridSides.All)
+                    foreach (Vector2Int side in GridNeighbours.Four)
                     {
                         Vector2Int next = tile + side;
                         if (!Contains(next) || seen.Contains(next)) continue;

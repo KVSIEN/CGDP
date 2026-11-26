@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -65,7 +66,7 @@ namespace CGD.Level
 
                 Vector2Int open = Vector2Int.zero;
                 int count = 0;
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                     if (layout.IsWalkable(tile + side)) { open += side; count++; }
 
                 // Two open sides at right angles sum to a diagonal.
@@ -86,9 +87,9 @@ namespace CGD.Level
                 float height = room != null ? room.WallHeight : corridorHeight;
                 bool isBend = bends.TryGetValue(t, out var cut);
 
-                for (int side = 0; side < GridSides.All.Length; side++)
+                for (int side = 0; side < GridNeighbours.Four.Length; side++)
                 {
-                    Vector2Int dir = GridSides.All[side];
+                    Vector2Int dir = GridNeighbours.Four[side];
                     if (layout.IsWalkable(t + dir)) continue;
                     if (isBend && (dir == cut.Item1 || dir == cut.Item2)) continue;
 
@@ -106,7 +107,7 @@ namespace CGD.Level
                 for (int i = 1; i <= positions.Count; i++)
                 {
                     if (i < positions.Count && positions[i] == positions[i - 1] + 1) continue;
-                    AddEdgeRun(GridSides.All[side], line, runStart, positions[i - 1], height, room);
+                    AddEdgeRun(GridNeighbours.Four[side], line, runStart, positions[i - 1], height, room);
                     if (i < positions.Count) runStart = positions[i];
                 }
             }

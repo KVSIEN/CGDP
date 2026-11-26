@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -40,7 +41,7 @@ namespace CGD.Level
             {
                 Vector2Int tile = open.Dequeue();
                 int next = _steps[IndexOf(tile)] + 1;
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     Vector2Int neighbour = tile + side;
                     if (!structure.Contains(neighbour) || _steps[IndexOf(neighbour)] != Unreached) continue;
@@ -82,7 +83,7 @@ namespace CGD.Level
 
         private bool TryStepBack(Vector2Int tile, RoomStructure structure, out Vector2Int previous)
         {
-            foreach (Vector2Int side in GridSides.All)
+            foreach (Vector2Int side in GridNeighbours.Four)
             {
                 previous = tile + side;
                 if (At(previous) == At(tile) - 1 && structure.CanStep(previous, tile)) return true;

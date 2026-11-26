@@ -1,3 +1,4 @@
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -15,6 +16,6 @@ namespace CGD.Level
 
         public RectInt    Rect     { get; }
         public int        Rotation { get; }
-        public Vector2Int Forward  => GridSides.All[Rotation];
+        public Vector2Int Forward  => GridNeighbours.Four[Rotation];
     }
 }

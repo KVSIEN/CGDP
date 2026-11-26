@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -25,7 +26,7 @@ namespace CGD.Level
             // Grouped by the level dropped from, so one run never mixes two heights.
             var edges = new List<(Vector2Int, Vector2Int, int)>();
             foreach (Vector2Int tile in structure.Footprint.Tiles)
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                     if (structure.CanDropDown(tile, tile + side) && !structure.Has(tile, Solid) && !structure.Has(tile + side, Solid))
                         edges.Add((tile, side, structure.LevelOf(tile)));
 

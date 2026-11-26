@@ -55,9 +55,9 @@ namespace CGD.Level
                 if (tile == goal) return Reconstruct(state);
 
                 float here = _cost[state];
-                for (int d = 0; d < GridSides.All.Length; d++)
+                for (int d = 0; d < GridNeighbours.Four.Length; d++)
                 {
-                    Vector2Int next = tile + GridSides.All[d];
+                    Vector2Int next = tile + GridNeighbours.Four[d];
                     if (!_bounds.Contains(next)) continue;
                     if (next != goal && !isPassable(next)) continue;
 
