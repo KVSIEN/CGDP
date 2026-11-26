@@ -3,9 +3,11 @@ using UnityEngine;
 
 namespace CGD.Level
 {
-    // Steps from one floor tile to every other over a room's floor plan, around inner walls and
-    // whatever the caller counts as in the way. An array over the footprint's bounds, read with
-    // IndexOf; Unreached where no way leads.
+    // Steps from a floor tile (or the nearest of several) to every other over a room's floor
+    // plan, around inner walls and whatever the caller counts as in the way. An array over the
+    // footprint's bounds, read with IndexOf; Unreached where no way leads. Shared by the room's
+    // flow (from the arrival), the furnishing's routes (from every walkway) and the Room Lab's
+    // reachability check (from every doorway).
     internal sealed class FloorSteps
     {
         public const int Unreached = int.MaxValue;
@@ -16,15 +18,24 @@ namespace CGD.Level
         // `solid`: tiles carrying any of these tags can't be walked (Structure alone measures the
         // floor plan, which props don't change). `blocked`: further tiles to walk round (null = none).
         public FloorSteps(RoomStructure structure, Vector2Int from, RoomTileTags solid, ICollection<Vector2Int> blocked = null)
+            : this(structure, new[] { from }, solid, blocked) { }
+
+        // From whichever of `sources` is nearest; sources off the floor are skipped.
+        public FloorSteps(RoomStructure structure, IEnumerable<Vector2Int> sources, RoomTileTags solid, ICollection<Vector2Int> blocked = null)
         {
             _bounds = structure.Footprint.Bounds;
             _steps  = new int[_bounds.width * _bounds.height];
             System.Array.Fill(_steps, Unreached);
-            if (!structure.Contains(from)) return;
 
             var open = new Queue<Vector2Int>();
-            _steps[IndexOf(from)] = 0;
-            open.Enqueue(from);
+            foreach (Vector2Int source in sources)
+            {
+                if (!structure.Contains(source) || _steps[IndexOf(source)] == 0) continue;
+                _steps[IndexOf(source)] = 0;
+                open.Enqueue(source);
+            }
+            HasSources = open.Count > 0;
+
             while (open.Count > 0)
             {
                 Vector2Int tile = open.Dequeue();
@@ -40,6 +51,9 @@ namespace CGD.Level
                 }
             }
         }
+
+        // Whether any source was on the floor to measure from.
+        public bool HasSources { get; }
 
         public int At(Vector2Int tile) => _bounds.Contains(tile) ? _steps[IndexOf(tile)] : Unreached;
 
