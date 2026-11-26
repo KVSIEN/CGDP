@@ -32,7 +32,7 @@ namespace CGD.Editor
             RoomRecipe room = recipe.ToRoomRecipe();
             Seed seed = Seed.Parse(seedText);
             LevelLayout layout = room.LayoutBuilder(recipe.BuildSettings).Build(RoomRecipeGraph.Build(room), Vector2.one, seed, recipe.Content);
-            return Finish(layout, RoomId, recipe.BuildSettings, seed, seedText, recipe.DoorCount);
+            return Finish(layout, RoomId, recipe.BuildSettings, seed, seedText, recipe.Room.DoorCount);
         }
 
         private static RoomSample BuildMapRoom(RoomLabRecipe recipe)

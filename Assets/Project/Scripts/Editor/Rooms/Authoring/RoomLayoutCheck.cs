@@ -81,10 +81,7 @@ namespace CGD.Editor
             var recipe = new RoomLabRecipe
             {
                 BuildSettings = settings,
-                Type          = MapNodeType.Quiet,
-                Place         = place,
-                Layout        = layout,
-                Category      = place.Category,
+                Room          = new RoomRecipe { Type = MapNodeType.Quiet, Place = place, Layout = layout, Category = place.Category },
             };
             foreach (string seed in SeedSequence.CountingFrom("1", seeds)) check.Add(Build(recipe, seed));
             return check;

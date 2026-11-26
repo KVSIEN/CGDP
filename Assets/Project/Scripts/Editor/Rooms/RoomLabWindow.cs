@@ -42,9 +42,9 @@ namespace CGD.Editor
         {
             RoomLabWindow window = GetWindow<RoomLabWindow>();
             window._recipe.Source   = RoomLabRecipe.SourceKind.Recipe;
-            window._recipe.Place    = function;
-            window._recipe.Layout   = null;
-            window._recipe.Category = function.Category;
+            window._recipe.Room.Place    = function;
+            window._recipe.Room.Layout   = null;
+            window._recipe.Room.Category = function.Category;
             window.MarkDirty();
         }
 
@@ -52,7 +52,7 @@ namespace CGD.Editor
         public static void OpenLayout(RoomFunction function, RoomLayout layout)
         {
             OpenFunction(function);
-            GetWindow<RoomLabWindow>()._recipe.Layout = layout;
+            GetWindow<RoomLabWindow>()._recipe.Room.Layout = layout;
         }
 
         // The Room Lab on the room a map graph node becomes.

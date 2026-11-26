@@ -55,7 +55,7 @@ namespace CGD.Editor
                 return;
             }
 
-            EditorGUILayout.LabelField("Recipe", $"{_recipe.Type} · tier {_recipe.Tier} · {_recipe.DoorCount} doorway(s) · seeds from \"{_recipe.Seed}\"");
+            EditorGUILayout.LabelField("Recipe", $"{_recipe.Room.Type} · tier {_recipe.Room.Tier} · {_recipe.Room.DoorCount} doorway(s) · seeds from \"{_recipe.Seed}\"");
             EditorGUILayout.LabelField("Rooms", "every place but the landmarks × every faction in the content × the seeds");
             _seeds = EditorGUILayout.IntSlider(new GUIContent("Seeds", "Rooms built per place and faction"), _seeds, 1, 50);
 

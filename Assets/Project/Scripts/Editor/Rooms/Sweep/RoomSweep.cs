@@ -70,10 +70,10 @@ namespace CGD.Editor
         private void Build(Job job)
         {
             RoomLabRecipe recipe = _recipe.Clone();
-            recipe.Place         = job.Place;
-            recipe.Category      = job.Place.Category;
-            recipe.Faction       = job.Faction;
-            recipe.BreachFaction = recipe.Type.HasSecondFaction() ? (job.Faction + 1) % recipe.Content.Factions.Count : MapNode.NoFaction;
+            recipe.Room.Place         = job.Place;
+            recipe.Room.Category      = job.Place.Category;
+            recipe.Room.Faction       = job.Faction;
+            recipe.Room.BreachFaction = recipe.Room.Type.HasSecondFaction() ? (job.Faction + 1) % recipe.Content.Factions.Count : MapNode.NoFaction;
 
             RoomSample sample;
             try
