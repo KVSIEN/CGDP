@@ -1200,7 +1200,6 @@ MonoBehaviour:
   _agents: {fileID: 1271365120}
   _agentPrefabs: []
   _inputSettings: {fileID: 11400000, guid: b3052e3d42934a0095e9ec6202ec3e23, type: 2}
-  _panLimit: 30
   _overlayMaterial: {fileID: 0}
   _scenarios: []
   _labelHeight: 3
