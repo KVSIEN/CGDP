@@ -16,5 +16,10 @@ namespace CGD.Level
         Bastion,
         // Low ground: open (or railed) rim, and two ways out at least, apart, so it is never a dead end.
         Pit,
+        // A platform the room is arranged to face: against the wall across from the way in,
+        // centred on it, reached by one wide flight up the middle of its front or a mirrored pair
+        // at its ends (a chancel, a command dais, a lounge deck under the big window). Open or
+        // railed like a split level. Platforms only: anything else takes it as a split level.
+        Stage,
     }
 }

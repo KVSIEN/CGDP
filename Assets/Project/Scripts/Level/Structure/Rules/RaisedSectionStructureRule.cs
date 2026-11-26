@@ -34,7 +34,7 @@ namespace CGD.Level
         // (RoomTileTags.NearDoor) and a ring beyond it for a flight up to stand on.
         private const int LandingReach = 3;
 
-        [Tooltip("What the part is for in play. Split Level: open or railed step (Rail Chance), stairs where every route crosses it. Perch: Wall along its longest step, the other open to climb, one or two flights. Bastion: Wall along all of it, two flights at least, the only ways up")]
+        [Tooltip("What the part is for in play. Split Level: open or railed step (Rail Chance), stairs where every route crosses it. Perch: Wall along its longest step, the other open to climb, one or two flights. Bastion: Wall along all of it, two flights at least, the only ways up. Stage: as Split Level (it is for platforms)")]
         [SerializeField] private ElevationRole _role = ElevationRole.SplitLevel;
         [Tooltip("Perch and Bastion: what stands along the walled step. Half Wall: solid, low cover. Railing: seen and shot through")]
         [SerializeField] private LedgeGuard _wall = LedgeGuard.HalfWall;
@@ -144,7 +144,7 @@ namespace CGD.Level
 
             int wanted = ElevationAccess.Ways(_role, Mathf.Max(2, Mathf.RoundToInt(step / (float)_stairSpacing)), tiles.Count);
             // Only a split level is crossed wherever a route meets it; a guarded part is crossed where its role puts the stairs.
-            Predicate<StairFlight> always = _role == ElevationRole.SplitLevel ? stairs => routes.Contains(stairs.Tile) : null;
+            Predicate<StairFlight> always = _role is ElevationRole.SplitLevel or ElevationRole.Stage ? stairs => routes.Contains(stairs.Tile) : null;
             return ElevationAccess.Pick(preferred, Pieces(structure, tiles), (stairs, piece) => piece.Contains(stairs.Head), always,
                                         wanted, StairGap);
         }

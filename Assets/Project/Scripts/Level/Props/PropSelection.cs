@@ -10,5 +10,6 @@ namespace CGD.Level
         Line,     // along what is already placed, down the room's long axis: machines nose to tail in rows
         Showcase, // in plain view of the doorway a player arrives by, toward the far end: the landmark seen on the way in
         Centred,  // the free spot nearest the room's middle (or what it stands Near), so a count fills a compact, ordered block outward: on a Lattice, rows and columns with no gaps
+        Flank,    // in mirrored pairs either side of what it frames (Flanks: what it stands Near, each doorway, each flight of stairs), as close as both fit: planters framing the way in. Count is rounded up to whole pairs
     }
 }

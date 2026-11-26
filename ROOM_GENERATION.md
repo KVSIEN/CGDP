@@ -801,7 +801,7 @@ Layouts built round a level of their own, with *Floor* keeping their pieces on i
 kits that only go up or down (Pit Lounge, Mezzanine Tables, Dais). Each falls back to the
 ground floor where the room gets no platform or pit, so it never comes up bare:
 - **Chapel › Raised Chancel**: the sanctuary of a church, up steps from the nave: the altar and
-  a lectern on a platform against the far wall (`PlatformElevation`), pews below facing it. The
+  a lectern on a stage against the far wall (`StageElevation`), pews below facing it. The
   altar moved from the place into each layout to allow it.
 - **Bridge › Command Dais**: the command table and the captain's chair up on a dais, consoles
   on the floor round it and the main screen on a wall. The command table moved into each layout.
@@ -1058,6 +1058,24 @@ The faction dressings, which every room a faction holds gets, are written as set
 | **VOID** | Office desks in a **row** along a wall (`Line`), each with a desk lamp half the time; filing cabinets in **runs**; a **sofa** against a wall on a rug, with a lamp; an **interrogation table** with two or three chairs pushed back, and a **street lamp** standing over it (*Near* `VoidTable`, facing it); a safe in a corner |
 | **TECH** | Server racks in mirrored **banks** along the walls (`Line`, keyed `TechRack`); an operator's **console** facing each bank with its chair behind (*Near* `TechRack`); a **sentry post** at each doorway behind its own barrier; production lines nose to tail |
 | **BIO** | **Undergrowth** gathered round each tree (*Near* `BioTree`); an overgrown **resting spot** against a wall (a bench between two bushes, with a lamp post 60% of the time); ground cover and evenly spread concealment |
+
+### Framing and stages
+
+What the reference rooms (a mall concourse, a raised lounge, a kitchen island, a chapel) share
+is that the room is laid out toward one thing, and the pieces round it come in mirrored pairs.
+Two tools give a room that order:
+- **Flank** (`PropSelection.Flank`, *Flanks* says what): pairs either side of an anchor, the
+  same distance out (the nearest both fit, up to 3 tiles), backs in line with it and facing its
+  way. Anchors: what the placement stands *Near* (it faces away from the wall it backs onto,
+  else toward the way in), each **doorway** (along its wall, clear of its front), or each
+  **flight** of stairs (side by side flights as one; at its top on raised floor, its foot
+  otherwise). Nearest the way in first; a pair goes down whole or not at all; *Count* is rounded
+  up to whole pairs. Used by `DoorwayPlanters`, the chapel's altar candles and the `Dais` kit.
+- **Stage** (`ElevationRole.Stage`, `StageElevationStructureRule`): a platform against the wall
+  across from the arrival (80%, else any wall), centred on the room's middle, climbed by one wide
+  flight up the middle of its front or a mirrored pair at its ends (50/50). No symmetric stairs
+  fit: that spot isn't used, and the rule tries smaller or elsewhere. Chapel, Theatre and the
+  Bridge's dais layouts use it.
 
 Keys used by dressings are prefixed with their reality (`VoidTable`, `TechRack`, `BioTree`), so
 they never meet a place's own keys (`Pool`, `Desk`, `Plant`).

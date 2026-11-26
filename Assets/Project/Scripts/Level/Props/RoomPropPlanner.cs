@@ -242,6 +242,8 @@ namespace CGD.Level
 
         private int FillAt(Vector2Int size, RoomPropPlacement placement, int count, bool required, ICollection<int> zones, List<RectInt> own)
         {
+            if (placement.Selection == PropSelection.Flank) return FillFlanks(size, placement, count, required, zones, own);
+
             List<PropCandidate> pool = _rules.Candidates(placement, size, zones);
             _random.Shuffle(pool);
 
@@ -266,6 +268,40 @@ namespace CGD.Level
             }
             return placed;
         }
+
+        // Pairs either side of what the placement frames (PropFlanks), nearest the way in first,
+        // each as close to its anchor as both of the pair fit, until `count` (rounded up to a pair).
+        // A pair only goes down whole, so the frame stays symmetric.
+        private int FillFlanks(Vector2Int size, RoomPropPlacement placement, int count, bool required, ICollection<int> zones, List<RectInt> own)
+        {
+            IReadOnlyList<RectInt> keyed = placement.StandsNear && _keyed.TryGetValue(placement.Near, out List<RectInt> rects) ? rects : null;
+            int placed = 0;
+            foreach (PropFlanks.Anchor anchor in PropFlanks.Anchors(_structure, placement, keyed))
+            {
+                if (placed >= count) break;
+                if (!required && UsesFill(placement) && _claimed + 2 * size.x * size.y > _fillCap)
+                {
+                    _hitFillCap = true;
+                    break;
+                }
+
+                for (int gap = 0; gap <= PropFlanks.MaxGap; gap++)
+                {
+                    var (first, second) = PropFlanks.Pair(anchor, size, gap);
+                    if (!FlankFits(first, placement, size, zones, own)) continue;
+                    var withFirst = new List<RectInt>(own) { first.Rect };
+                    if (!FlankFits(second, placement, size, zones, withFirst)) continue;
+                    if (!TryPlace(first, placement, size, own, zones)) continue;
+                    if (TryPlace(second, placement, size, own, zones)) placed++;
+                    placed++;
+                    break;
+                }
+            }
+            return placed;
+        }
+
+        private bool FlankFits(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, ICollection<int> zones, List<RectInt> own) =>
+            _rules.Suits(candidate, placement, size, checkLattice: false, zones) && _rules.Placeable(candidate, placement, own);
 
         // The mirror image of a placed prop, if the room has the floor for it.
         private bool TryPlaceTwin(PropCandidate placed, RoomPropPlacement placement, Vector2Int size, List<RectInt> own, bool required,

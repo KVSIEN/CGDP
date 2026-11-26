@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f96a2a1460b46d7863c6102e07ac4d8, type: 3}
+  m_Name: StageElevationStructureRule
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.ElevationStructureRule
+  _kind: 0
+  _role: 4
+  _wall: 2
+  _count:
+    Min: 1
+    Max: 1
+    Bias: 0
+  _depth:
+    Min: 2
+    Max: 3
+    Bias: 0
+  _length:
+    Min: 4
+    Max: 6
+    Bias: 0
+  _radius:
+    Min: 1
+    Max: 2
+    Bias: 0
+  _stairs:
+    Min: 1
+    Max: 2
+    Bias: 0
+  _bridge: 0
+  _maxShare: 0.25
+  _railed: 0
+  _railChance: 0.5

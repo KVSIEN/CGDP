@@ -47,6 +47,8 @@ namespace CGD.Level
         [Tooltip("Free tiles kept between two of these (0 = may stand side by side)")]
         [Min(0)] public int Spacing = 1;
         public PropSelection Selection;
+        [Tooltip("Flank selection only: what the pairs frame. Near = each of what it stands Near; Doorways = each doorway, along the wall either side; Stairs = each flight, at its top on raised floor and its foot otherwise")]
+        public FlankAnchor Flanks;
         [Tooltip("Props per tile, for a 1×1 footprint: a pile of crates in a corner rather than one")]
         public IntRange Pile = new(1, 1);
         [Tooltip("How far a 1×1 prop wanders from its tile's usual spot, so rows don't look ruled (along the wall for wall props)")]

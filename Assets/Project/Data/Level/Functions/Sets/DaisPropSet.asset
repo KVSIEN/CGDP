@@ -17,19 +17,20 @@ MonoBehaviour:
   - Prefabs:
     - {fileID: 126843052005683991, guid: d07f3118f7ae4dbf92f6c478e7a8da78, type: 3}
     Count:
-      Min: 1
-      Max: 2
+      Min: 4
+      Max: 4
       Bias: 0
     ScaleByRoomSize: 0
     Footprint: {x: 1, y: 1}
-    On: 2
+    On: 0
     Avoid: 124
     Zone: 0
     EachZone: 0
     Facing: 1
     Clearance: 0
-    Spacing: 1
-    Selection: 1
+    Spacing: 0
+    Selection: 7
+    Flanks: 2
     Pile:
       Min: 1
       Max: 1

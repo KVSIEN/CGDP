@@ -25,6 +25,11 @@ namespace CGD.Level
         private const int SmallestSide = 2;
         // Tiles each tier keeps in from the open sides of the one below it: a flight and its landing.
         private const int TierInset = 2;
+        // The chance a stage backs onto the wall across from the way in; the rest take any wall, so
+        // a doorway in that wall doesn't leave the room without one. Either way it is centred on it.
+        private const float StageOnAxis = 0.8f;
+        // The chance a stage is climbed by one wide flight up its middle rather than a pair at its ends.
+        private const float WideStageStairs = 0.5f;
 
         private readonly ElevationKind _kind;
         private readonly IntRange _depth;
@@ -48,6 +53,8 @@ namespace CGD.Level
         }
 
         private int Direction => _kind == ElevationKind.Platform ? 1 : -1;
+
+        private bool IsStage => _role == ElevationRole.Stage && _kind == ElevationKind.Platform;
 
         // One area per tier, lowest step first, up to `tiers` of them (fewer where the block is too
         // small for more); null when not even the first fits. `shrink`: tiles taken off the size
@@ -98,6 +105,43 @@ namespace CGD.Level
             return areas;
         }
 
+        // The side of the room across from its way in: the one facing away from the arrival most.
+        private static Vector2Int FarSide(RoomStructure structure)
+        {
+            Vector2 away = structure.Footprint.Anchor - ((Vector2)structure.Arrival.Value + Vector2.one * 0.5f);
+            Vector2Int far = GridNeighbours.Four[0];
+            float best = float.NegativeInfinity;
+            foreach (Vector2Int side in GridNeighbours.Four)
+            {
+                float facing = Vector2.Dot(side, away);
+                if (facing > best)
+                {
+                    best = facing;
+                    far = side;
+                }
+            }
+            return far;
+        }
+
+        // Of the tiles along a wall, the one a block `length` long running `along` from it starts at
+        // to stand centred on `middle`. Ties go to the first found, so the choice is seeded.
+        private static Vector2Int Centred(List<Vector2Int> starts, Vector2 middle, Vector2Int along, int length)
+        {
+            Vector2Int best = starts[0];
+            float nearest = float.PositiveInfinity;
+            foreach (Vector2Int start in starts)
+            {
+                Vector2 blockMiddle = start + (Vector2)along * ((length - 1) * 0.5f) + Vector2.one * 0.5f;
+                float off = Mathf.Abs(Vector2.Dot(blockMiddle - middle, along));
+                if (off < nearest)
+                {
+                    nearest = off;
+                    best = start;
+                }
+            }
+            return best;
+        }
+
         private static int Shrunk(int side, int by) => Mathf.Max(Mathf.Min(side, SmallestSide), side - by);
 
         private static int HighestRank(List<(Vector2Int tile, int rank)> block)
@@ -109,10 +153,12 @@ namespace CGD.Level
 
         // `depth` rows of `length` tiles standing out from a stretch of the room's wall, all of it
         // free floor nothing keeps clear. `back` is the side the wall is on. A tile's rank is the
-        // highest tier that reaches it: inner tiers keep in from the front and the ends.
-        private static List<(Vector2Int, int)> AgainstAWall(RoomStructure structure, RandomStream random, int depth, int length, out Vector2Int back)
+        // highest tier that reaches it: inner tiers keep in from the front and the ends. A stage
+        // mostly backs onto the wall across from the way in, and stands centred on the room's middle.
+        private List<(Vector2Int, int)> AgainstAWall(RoomStructure structure, RandomStream random, int depth, int length, out Vector2Int back)
         {
             back = GridNeighbours.Four[random.Range(0, GridNeighbours.Four.Length)];
+            if (IsStage && random.Chance(StageOnAxis) && structure.Arrival.HasValue) back = FarSide(structure);
             RoomFootprint footprint = structure.Footprint;
             var starts = new List<Vector2Int>();
             foreach (Vector2Int tile in footprint.Tiles)
@@ -122,6 +168,7 @@ namespace CGD.Level
             Vector2Int start = starts[random.Range(0, starts.Count)];
             var along = new Vector2Int(back.y, back.x);
             if (random.Chance(0.5f)) along = -along;
+            if (IsStage) start = Centred(starts, footprint.Anchor, along, length);
 
             var tiles = new List<(Vector2Int, int)>(depth * length);
             for (int i = 0; i < length; i++)
@@ -196,8 +243,28 @@ namespace CGD.Level
             foreach (var candidate in candidates) preferred.Add(candidate.stairs);
 
             List<HashSet<Vector2Int>> pieces = Pieces(region);
+            // A stage's stairs are symmetric or it isn't built there: the rule tries it smaller or elsewhere.
+            if (IsStage) return StageStairs(preferred, region, back, random.Chance(WideStageStairs));
             int wanted = ElevationAccess.Ways(_role, Mathf.Max(pieces.Count, _stairs.Evaluate(random)), region.Count);
             return ElevationAccess.Pick(preferred, pieces, Reaches, null, wanted, StairSpacing);
+        }
+
+        // A stage's flights up the front of `region`, from the free ones in `preferred` (see ElevationAccess.Stage).
+        private static List<StairFlight> StageStairs(List<StairFlight> preferred, List<Vector2Int> region, Vector2Int back, bool wide)
+        {
+            var front = new List<StairFlight>();
+            foreach (StairFlight stairs in preferred)
+                if (stairs.Up == back) front.Add(stairs);
+
+            var along = new Vector2Int(Mathf.Abs(back.y), Mathf.Abs(back.x));
+            int first = int.MaxValue, last = int.MinValue;
+            foreach (Vector2Int tile in region)
+            {
+                int position = tile.x * along.x + tile.y * along.y;
+                first = Mathf.Min(first, position);
+                last  = Mathf.Max(last, position);
+            }
+            return ElevationAccess.Stage(front, first, last, wide);
         }
 
         // Whether the flight's three tiles are free floor of the right kind before the block is

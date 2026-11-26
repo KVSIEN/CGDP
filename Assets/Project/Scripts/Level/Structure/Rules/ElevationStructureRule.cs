@@ -18,7 +18,8 @@ namespace CGD.Level
     // Role (ElevationRole) says what a Platform or Sunken Floor is for in play, which sets its guards
     // and its ways up (ElevationAccess): a split level or a pit is open or railed by Railed and Rail
     // Chance; a perch has Wall along its front and open sides; a bastion has Wall all round, its
-    // stairs the only ways on. Mounds and craters slope on every side whatever their role.
+    // stairs the only ways on; a stage faces the way in, centred, with symmetric stairs. Mounds and
+    // craters slope on every side whatever their role.
     // A feature with no space for itself is tried smaller, down to two tiles each way, so a
     // small or crowded room still gets one.
     // None covers a doorway's front, a route from a doorway or the centre spot, so everyone
@@ -36,7 +37,7 @@ namespace CGD.Level
         private const int MaxShrink = 4;
 
         [SerializeField] private ElevationKind _kind = ElevationKind.Platform;
-        [Tooltip("Platform and Sunken Floor: what it is for in play. Split Level and Pit: open or railed ledges (Railed, Rail Chance). Perch: Wall along the side facing into the room, the other sides open to climb, one or two flights. Bastion: Wall all round, two flights at least on different sides, the only ways on. Pit: two flights at least")]
+        [Tooltip("Platform and Sunken Floor: what it is for in play. Split Level and Pit: open or railed ledges (Railed, Rail Chance). Perch: Wall along the side facing into the room, the other sides open to climb, one or two flights. Bastion: Wall all round, two flights at least on different sides, the only ways on. Pit: two flights at least. Stage (Platform): against the wall across from the way in, centred, one wide flight up the middle or a pair at the ends")]
         [SerializeField] private ElevationRole _role = ElevationRole.SplitLevel;
         [Tooltip("Perch and Bastion: what stands along their guarded ledges. Half Wall: solid, low cover. Railing: seen and shot through")]
         [SerializeField] private LedgeGuard _wall = LedgeGuard.HalfWall;
@@ -56,9 +57,9 @@ namespace CGD.Level
         [SerializeField] private bool _bridge;
         [Tooltip("Most of the room's floor these may take together, slopes and corners counted")]
         [SerializeField, Range(0.05f, 0.5f)] private float _maxShare = 0.25f;
-        [Tooltip("Split Level and Pit: a railing along the open edges: nobody drops off a platform or into a sunken floor, only takes the stairs. Mounds and craters have no open edge")]
+        [Tooltip("Split Level, Pit and Stage: a railing along the open edges: nobody drops off a platform or into a sunken floor, only takes the stairs. Mounds and craters have no open edge")]
         [SerializeField] private bool _railed;
-        [Tooltip("Split Level and Pit: the chance a feature that isn't always railed gets a railing anyway, so most drops are fenced and some are the open one-metre drop a real deck has. Draws a random number only when above 0")]
+        [Tooltip("Split Level, Pit and Stage: the chance a feature that isn't always railed gets a railing anyway, so most drops are fenced and some are the open one-metre drop a real deck has. Draws a random number only when above 0")]
         [SerializeField, Range(0f, 1f)] private float _railChance;
 
         public ElevationKind Kind => _kind;

@@ -34,7 +34,8 @@ namespace CGD.Level
         };
 
         // Whether the role rolls its open ledges' railing (the others are set by the role alone).
-        public static bool RollsRailing(ElevationRole role) => role == ElevationRole.SplitLevel || role == ElevationRole.Pit;
+        public static bool RollsRailing(ElevationRole role) =>
+            role == ElevationRole.SplitLevel || role == ElevationRole.Pit || role == ElevationRole.Stage;
 
         // How many flights the role wants onto an area of `tiles` tiles, given the rule's own `wanted`.
         public static int Ways(ElevationRole role, int wanted, int tiles) => role switch
@@ -82,6 +83,48 @@ namespace CGD.Level
                 }
             }
             return front;
+        }
+
+        // A stage's flights from those free to climb its front (all climbing the same way), whose
+        // tiles run from `first` to `last` along it: `wide`, one wide flight up the middle (two side
+        // by side, or one where the front is an odd number of tiles), else a pair at its ends, as
+        // near them as both are free. The other is tried when the one asked for doesn't fit; empty
+        // when neither does. Symmetric about the front's middle either way.
+        public static List<StairFlight> Stage(IReadOnlyList<StairFlight> front, int first, int last, bool wide)
+        {
+            var chosen = new List<StairFlight>(2);
+            if (front.Count == 0) return chosen;
+
+            Vector2Int up = front[0].Up;
+            var along = new Vector2Int(Mathf.Abs(up.y), Mathf.Abs(up.x));
+            var byPosition = new Dictionary<int, StairFlight>();
+            foreach (StairFlight stairs in front)
+                byPosition[stairs.Tile.x * along.x + stairs.Tile.y * along.y] = stairs;
+
+            if (TryStage(byPosition, first, last, wide, chosen) || TryStage(byPosition, first, last, !wide, chosen)) return chosen;
+            return chosen;
+        }
+
+        private static bool TryStage(Dictionary<int, StairFlight> byPosition, int first, int last, bool wide, List<StairFlight> chosen)
+        {
+            chosen.Clear();
+            if (wide)
+            {
+                int lower = (first + last) / 2, upper = (first + last + 1) / 2;
+                if (!byPosition.TryGetValue(lower, out StairFlight a) || !byPosition.TryGetValue(upper, out StairFlight b)) return false;
+                chosen.Add(a);
+                if (upper != lower) chosen.Add(b);
+                return true;
+            }
+            // Ends far enough apart to read as a pair, not one wide flight.
+            for (int inset = 0; last - first - 2 * inset >= 2; inset++)
+                if (byPosition.TryGetValue(first + inset, out StairFlight a) && byPosition.TryGetValue(last - inset, out StairFlight b))
+                {
+                    chosen.Add(a);
+                    chosen.Add(b);
+                    return true;
+                }
+            return false;
         }
 
         // Flights for an area from `preferred` (most wanted first), at least `minGap` tiles apart:
