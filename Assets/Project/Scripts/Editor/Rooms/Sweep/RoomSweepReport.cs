@@ -31,7 +31,7 @@ namespace CGD.Editor
             RoomLabRecipe recipe = sweep.Recipe;
             IReadOnlyList<RoomSweepResult> results = sweep.Results;
 
-            text.AppendLine($"# Room sweep: {recipe.Type}, tier {recipe.Tier}, {recipe.DoorCount} doorway(s), seeds from \"{recipe.Seed}\"");
+            text.AppendLine($"# Room sweep: {recipe.Room.Type}, tier {recipe.Room.Tier}, {recipe.Room.DoorCount} doorway(s), seeds from \"{recipe.Seed}\"");
             text.AppendLine($"{results.Count} rooms built, {sweep.Failed} failed, {sweep.Total - sweep.Done} still to build. " +
                             $"Priority Tries {recipe.BuildSettings.PriorityTries}.");
             text.AppendLine($"Bands: concealment > 0 = Medium, ≥ {Percent(RoomTraitMeasure.ConcealmentHighShare)} = High · " +

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -24,7 +25,7 @@ namespace CGD.Level
         private readonly HashSet<Vector2Int> _concealed = new();
         // Each tile's kinds once worked out: the room is finished by now, and a plan asks about
         // every floor tile again for every enemy it places.
-        private readonly RectInt _bounds;
+        private readonly TileGrid _grid;
         private readonly RoomPostKinds[] _kinds;
         private readonly bool[] _known;
         private int _openTiles = -1;
@@ -36,8 +37,8 @@ namespace CGD.Level
             _sight     = new SightlineMap(structure);
             if (isovist) _visibility = new RoomVisibility(structure, _sight.Blocking);
             _routes    = new RouteMap(structure);
-            _bounds    = structure.Footprint.Bounds;
-            _kinds     = new RoomPostKinds[_bounds.width * _bounds.height];
+            _grid      = new TileGrid(structure.Footprint.Bounds);
+            _kinds     = new RoomPostKinds[_grid.Count];
             _known     = new bool[_kinds.Length];
 
             foreach (PlannedProp prop in props)
@@ -53,7 +54,7 @@ namespace CGD.Level
         {
             if (!_structure.Contains(tile)) return RoomPostKinds.None;
 
-            int index = (tile.y - _bounds.yMin) * _bounds.width + (tile.x - _bounds.xMin);
+            int index = _grid.IndexOf(tile);
             if (!_known[index])
             {
                 _kinds[index] = Measure(tile);
@@ -115,7 +116,7 @@ namespace CGD.Level
         // ledge rising above it (the room's own walls don't count).
         private bool HasCoverBeside(Vector2Int tile)
         {
-            foreach (Vector2Int side in GridSides.All)
+            foreach (Vector2Int side in GridNeighbours.Four)
             {
                 Vector2Int next = tile + side;
                 if (_structure.IsPartitioned(tile, next) || RoomCover.Shelters(_structure, tile, next)) return true;

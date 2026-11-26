@@ -28,6 +28,7 @@ namespace CGD.Level
         private readonly RoomStructure _structure;
         private readonly SightBlocking _blocking;
         private readonly RectInt _bounds;
+        private readonly TileGrid _grid;
         private readonly int _range;
         private readonly int _words;
         private readonly ulong[] _rows;
@@ -44,9 +45,10 @@ namespace CGD.Level
             _structure = structure;
             _blocking  = blocking ?? new SightBlocking(structure);
             _bounds    = structure.Footprint.Bounds;
+            _grid      = new TileGrid(_bounds);
             _range     = Mathf.Max(0, range);
 
-            int tiles   = _bounds.width * _bounds.height;
+            int tiles   = _grid.Count;
             _words      = (tiles + 63) >> 6;
             _rows       = new ulong[tiles * _words];
             _area       = new int[tiles];
@@ -58,7 +60,7 @@ namespace CGD.Level
         // Whether two tiles see each other (a tile sees itself, if it is open).
         public bool Sees(Vector2Int a, Vector2Int b)
         {
-            if (!_bounds.Contains(a) || !_bounds.Contains(b)) return false;
+            if (!_grid.Contains(a) || !_grid.Contains(b)) return false;
 
             Sync();
             return Get(IndexOf(a), IndexOf(b));
@@ -67,7 +69,7 @@ namespace CGD.Level
         // How many tiles a tile sees, itself included: the area of its isovist. 0 for a blocked tile.
         public int Area(Vector2Int tile)
         {
-            if (!_bounds.Contains(tile)) return 0;
+            if (!_grid.Contains(tile)) return 0;
 
             Sync();
             return _area[IndexOf(tile)];
@@ -76,7 +78,7 @@ namespace CGD.Level
         // How far, in tiles, the farthest tile it sees lies. 0 for a blocked tile.
         public float Reach(Vector2Int tile)
         {
-            if (!_bounds.Contains(tile)) return 0f;
+            if (!_grid.Contains(tile)) return 0f;
 
             Sync();
             int index = IndexOf(tile);
@@ -92,7 +94,7 @@ namespace CGD.Level
         public float Farthest(Vector2Int tile, out Vector2Int farthest)
         {
             farthest = tile;
-            if (!_bounds.Contains(tile)) return 0f;
+            if (!_grid.Contains(tile)) return 0f;
 
             Sync();
             int row = IndexOf(tile) * _words;
@@ -205,9 +207,9 @@ namespace CGD.Level
 
         // --- The matrix -----------------------------------------------------------------
 
-        private int IndexOf(Vector2Int tile) => (tile.y - _bounds.yMin) * _bounds.width + (tile.x - _bounds.xMin);
+        private int IndexOf(Vector2Int tile) => _grid.IndexOf(tile);
 
-        private Vector2Int TileAt(int index) => new(_bounds.xMin + index % _bounds.width, _bounds.yMin + index / _bounds.width);
+        private Vector2Int TileAt(int index) => _grid.TileAt(index);
 
         private bool Get(int a, int b) => (_rows[a * _words + (b >> 6)] & (1UL << (b & 63))) != 0;
 

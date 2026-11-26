@@ -40,29 +40,42 @@ namespace CGD.Editor
             return EditorGUI.EndChangeCheck();
         }
 
+        // As the room generator's Inspector: within the build settings' levels.
+        private static void DrawLevels(RoomLabRecipe recipe)
+        {
+            LevelBuildSettings settings = recipe.BuildSettings;
+            int lowest = settings != null ? settings.LowestLevel : RoomElevation.Lowest;
+            int highest = settings != null ? settings.HighestLevel : RoomElevation.Highest;
+            recipe.Room.LowestLevel = EditorGUILayout.IntSlider(new GUIContent("Lowest level", "How far the floor may sink below the doorways' level (0): pits, craters, lower terraces"),
+                                                           Mathf.Clamp(recipe.Room.LowestLevel, lowest, 0), lowest, 0);
+            recipe.Room.HighestLevel = EditorGUILayout.IntSlider(new GUIContent("Highest level", "How far the floor may rise above the doorways' level (0): platforms, mezzanines, mounds"),
+                                                            Mathf.Clamp(recipe.Room.HighestLevel, 0, highest), 0, highest);
+        }
+
         private void DrawRecipe(RoomLabRecipe recipe)
         {
             EditorGUILayout.LabelField("Room", EditorStyles.boldLabel);
-            recipe.Type = (MapNodeType)EditorGUILayout.EnumPopup(
-                new GUIContent("Type", "What the player meets here: decides cover, clutter, enemies and offerings"), recipe.Type);
-            recipe.Category = (RoomCategory)EditorGUILayout.EnumPopup(
-                new GUIContent("Category", "The kind of ship space. With no place pinned, one of this category's places is picked"), recipe.Category);
+            recipe.Room.Type = (MapNodeType)EditorGUILayout.EnumPopup(
+                new GUIContent("Type", "What the player meets here: decides cover, clutter, enemies and offerings"), recipe.Room.Type);
+            recipe.Room.Category = (RoomCategory)EditorGUILayout.EnumPopup(
+                new GUIContent("Category", "The kind of ship space. With no place pinned, one of this category's places is picked"), recipe.Room.Category);
             DrawPlace(recipe);
             DrawLayout(recipe);
-            recipe.Tier = EditorGUILayout.IntSlider(new GUIContent("Tier", "1 ordinary – 3 toughest"), recipe.Tier, 1, 3);
-            recipe.Intensity = EditorGUILayout.Slider(new GUIContent("Intensity", "0 calm – 1 peak: how many enemies"), recipe.Intensity, 0f, 1f);
+            recipe.Room.Tier = EditorGUILayout.IntSlider(new GUIContent("Tier", "1 ordinary – 3 toughest"), recipe.Room.Tier, 1, 3);
+            recipe.Room.Intensity = EditorGUILayout.Slider(new GUIContent("Intensity", "0 calm – 1 peak: how many enemies"), recipe.Room.Intensity, 0f, 1f);
+            DrawLevels(recipe);
 
             EditorGUILayout.Space(6f);
             EditorGUILayout.LabelField("Faction", EditorStyles.boldLabel);
             recipe.Content = (MapContentSettings)EditorGUILayout.ObjectField(
                 new GUIContent("Content", "The map content whose faction list the faction below comes from"),
                 recipe.Content, typeof(MapContentSettings), false);
-            recipe.Faction = FactionPopup("Holder", recipe.Content, recipe.Faction);
-            recipe.Influence = EditorGUILayout.Slider(new GUIContent("Influence", "How firmly the holder holds the room on the map: 1 at its territory's origin, 0.35 on its frontier. Lower shows less of its design"),
-                                                      recipe.Influence, 0f, 1f);
-            if (recipe.Type.HasSecondFaction())
-                recipe.BreachFaction = FactionPopup("Breaching", recipe.Content, recipe.BreachFaction);
-            recipe.Section = SectionPopup(recipe.Content, recipe.Section);
+            recipe.Room.Faction = FactionPopup("Holder", recipe.Content, recipe.Room.Faction);
+            recipe.Room.Influence = EditorGUILayout.Slider(new GUIContent("Influence", "How firmly the holder holds the room on the map: 1 at its territory's origin, 0.35 on its frontier. Lower shows less of its design"),
+                                                      recipe.Room.Influence, 0f, 1f);
+            if (recipe.Room.Type.HasSecondFaction())
+                recipe.Room.BreachFaction = FactionPopup("Breaching", recipe.Content, recipe.Room.BreachFaction);
+            recipe.Room.Section = SectionPopup(recipe.Content, recipe.Room.Section);
 
             EditorGUILayout.Space(6f);
             EditorGUILayout.LabelField(new GUIContent("Doorways", "Which walls get a corridor. The floor plan decides where along the wall"), EditorStyles.boldLabel);
@@ -79,41 +92,41 @@ namespace CGD.Editor
             _labels.Add("(pick from category)");
             if (recipe.BuildSettings != null)
                 foreach (RoomFunction function in recipe.BuildSettings.Functions)
-                    if (function != null && (recipe.Category == RoomCategory.None || function.Category == recipe.Category))
+                    if (function != null && (recipe.Room.Category == RoomCategory.None || function.Category == recipe.Room.Category))
                     {
                         _places.Add(function);
                         _labels.Add($"{function.DisplayName}  ({function.Category})");
                     }
-            if (recipe.Place != null && !_places.Contains(recipe.Place))
+            if (recipe.Room.Place != null && !_places.Contains(recipe.Room.Place))
             {
-                _places.Add(recipe.Place);
-                _labels.Add($"{recipe.Place.DisplayName}  (not in the build settings)");
+                _places.Add(recipe.Room.Place);
+                _labels.Add($"{recipe.Room.Place.DisplayName}  (not in the build settings)");
             }
 
             using (new EditorGUILayout.HorizontalScope())
             {
                 int index = EditorGUILayout.Popup(new GUIContent("Place", "Pin the room function to build. Pick = as the level would"),
-                                                  _places.IndexOf(recipe.Place), _labels.ToArray());
-                recipe.Place = _places[Mathf.Max(0, index)];
-                using (new EditorGUI.DisabledScope(recipe.Place == null))
+                                                  _places.IndexOf(recipe.Room.Place), _labels.ToArray());
+                recipe.Room.Place = _places[Mathf.Max(0, index)];
+                using (new EditorGUI.DisabledScope(recipe.Room.Place == null))
                     if (GUILayout.Button(new GUIContent("Edit", "Select the room function asset; the plan updates as you change it"),
                                          EditorStyles.miniButton, GUILayout.Width(36f)))
-                        Selection.activeObject = recipe.Place;
+                        Selection.activeObject = recipe.Room.Place;
             }
         }
 
         // Only for a place with layouts: any (as the level picks) or one of them.
         private static void DrawLayout(RoomLabRecipe recipe)
         {
-            if (recipe.Place == null || recipe.Place.Layouts.Count == 0)
+            if (recipe.Room.Place == null || recipe.Room.Place.Layouts.Count == 0)
             {
-                recipe.Layout = null;
+                recipe.Room.Layout = null;
                 return;
             }
 
             var layouts = new List<RoomLayout> { null };
             var labels  = new List<string> { "(pick by weight)" };
-            foreach (RoomLayout layout in recipe.Place.Layouts)
+            foreach (RoomLayout layout in recipe.Room.Place.Layouts)
             {
                 if (layout == null) continue;
                 layouts.Add(layout);
@@ -123,12 +136,12 @@ namespace CGD.Editor
             using (new EditorGUILayout.HorizontalScope())
             {
                 int index = EditorGUILayout.Popup(new GUIContent("Layout", "Pin one of the place's arrangements. Pick = by weight, as the level does; step the seed to see them come round"),
-                                                  Mathf.Max(0, layouts.IndexOf(recipe.Layout)), labels.ToArray());
-                recipe.Layout = layouts[Mathf.Max(0, index)];
-                using (new EditorGUI.DisabledScope(recipe.Layout == null))
+                                                  Mathf.Max(0, layouts.IndexOf(recipe.Room.Layout)), labels.ToArray());
+                recipe.Room.Layout = layouts[Mathf.Max(0, index)];
+                using (new EditorGUI.DisabledScope(recipe.Room.Layout == null))
                     if (GUILayout.Button(new GUIContent("Edit", "Select the room layout asset; the plan updates as you change it"),
                                          EditorStyles.miniButton, GUILayout.Width(36f)))
-                        Selection.activeObject = recipe.Layout;
+                        Selection.activeObject = recipe.Room.Layout;
             }
         }
 
@@ -176,20 +189,20 @@ namespace CGD.Editor
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.Space(w);
-                recipe.DoorNorth = GUILayout.Toggle(recipe.DoorNorth, "North", EditorStyles.miniButton, GUILayout.Width(w));
+                recipe.Room.DoorNorth = GUILayout.Toggle(recipe.Room.DoorNorth, "North", EditorStyles.miniButton, GUILayout.Width(w));
             }
             using (new EditorGUILayout.HorizontalScope())
             {
-                recipe.DoorWest = GUILayout.Toggle(recipe.DoorWest, "West", EditorStyles.miniButton, GUILayout.Width(w));
+                recipe.Room.DoorWest = GUILayout.Toggle(recipe.Room.DoorWest, "West", EditorStyles.miniButton, GUILayout.Width(w));
                 GUILayout.Space(w);
-                recipe.DoorEast = GUILayout.Toggle(recipe.DoorEast, "East", EditorStyles.miniButton, GUILayout.Width(w));
+                recipe.Room.DoorEast = GUILayout.Toggle(recipe.Room.DoorEast, "East", EditorStyles.miniButton, GUILayout.Width(w));
             }
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.Space(w);
-                recipe.DoorSouth = GUILayout.Toggle(recipe.DoorSouth, "South", EditorStyles.miniButton, GUILayout.Width(w));
+                recipe.Room.DoorSouth = GUILayout.Toggle(recipe.Room.DoorSouth, "South", EditorStyles.miniButton, GUILayout.Width(w));
             }
-            if (recipe.DoorCount == 0)
+            if (recipe.Room.DoorCount == 0)
                 EditorGUILayout.HelpBox("A room with no doorway is checked without its walkways and reachability.", MessageType.None);
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 using CGD.Map;
 
@@ -98,7 +99,7 @@ namespace CGD.Level
         {
             if (room.Structure == null) return;
             foreach (Vector2Int tile in room.Footprint.Tiles)
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                     if (room.Structure.IsPartitioned(tile, tile + side))
                         canvas.FillEdge(tile, side, Wall, thickness: 1);
         }

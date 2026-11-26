@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 using CGD.Stealth;
 
@@ -117,7 +118,7 @@ namespace CGD.Level
                 if (tile == previous || tile == from || tile == to) continue;
 
                 previous = tile;
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                     if (RoomCover.Shelters(structure, tile, tile + side)) return true;
             }
             return false;

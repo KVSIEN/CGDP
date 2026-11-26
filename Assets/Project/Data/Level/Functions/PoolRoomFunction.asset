@@ -62,17 +62,17 @@ MonoBehaviour:
     MarksRoute: 0
     Members:
     - Prefabs:
-      - {fileID: 8100000000000017001, guid: bbfcec54324c4a86a6908b2d293c535d, type: 3}
+      - {fileID: 1861704443084381746, guid: f075953bf75445edb40571e98fd4661f, type: 3}
       Offset: {x: -0.2, y: 0}
       Yaw: 0
       Chance: 1
     - Prefabs:
-      - {fileID: 8100000000000017001, guid: bbfcec54324c4a86a6908b2d293c535d, type: 3}
+      - {fileID: 1861704443084381746, guid: f075953bf75445edb40571e98fd4661f, type: 3}
       Offset: {x: 0.2, y: 0}
       Yaw: 0
       Chance: 0.8
     - Prefabs:
-      - {fileID: 174689818534657366, guid: ae7e0963ed9e418cbba020b4b8023758, type: 3}
+      - {fileID: 530914858147861133, guid: 06074c0ba69548498a5ca32ec114eed6, type: 3}
       Offset: {x: 0, y: -0.32}
       Yaw: 0
       Chance: 0.6
@@ -112,22 +112,22 @@ MonoBehaviour:
     MarksRoute: 0
     Members:
     - Prefabs:
-      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
       Offset: {x: -0.7, y: 0.3}
       Yaw: 0
       Chance: 0.85
     - Prefabs:
-      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
       Offset: {x: -0.25, y: 0.3}
       Yaw: 0
       Chance: 0.85
     - Prefabs:
-      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
       Offset: {x: 0.25, y: 0.3}
       Yaw: 0
       Chance: 0.85
     - Prefabs:
-      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
       Offset: {x: 0.7, y: 0.3}
       Yaw: 0
       Chance: 0.85
@@ -138,7 +138,7 @@ MonoBehaviour:
     Stretch: 0
     MinRoomTiles: 100
   - Prefabs:
-    - {fileID: 8100000000000006001, guid: 97ae7a84afd448a680fd5f5622baca66, type: 3}
+    - {fileID: 126843052005683991, guid: d07f3118f7ae4dbf92f6c478e7a8da78, type: 3}
     Activity: {fileID: 11400000, guid: 25d0720e9217471bb77b24e450249459, type: 2}
     Count:
       Min: 2

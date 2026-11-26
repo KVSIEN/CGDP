@@ -1,3 +1,4 @@
+using CGD.Algorithms;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -102,7 +103,7 @@ namespace CGD.Tests
 
                 Assert.That(field.Covers(crate), Is.False, $"{at}: the crate stands on the floor");
                 Assert.That(field.Covers(shelf), Is.False, $"{at}: the shelf stands on the floor");
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                     Assert.That(field.Covers(crate + side), Is.False, $"{at}: whoever crouches behind the low crate is hidden by all of it");
             }
         }
@@ -123,7 +124,7 @@ namespace CGD.Tests
                 if (field == null) continue;
 
                 foreach (Vector2Int tile in room.Footprint.Tiles)
-                    foreach (Vector2Int side in GridSides.All)
+                    foreach (Vector2Int side in GridNeighbours.Four)
                     {
                         if (!room.Contains(tile + side) || room.LevelOf(tile + side) == room.LevelOf(tile)) continue;
                         ledges++;

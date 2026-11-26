@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 using CGD.Core;
 
@@ -174,7 +175,7 @@ namespace CGD.Level
                 {
                     Vector2Int toward = Vector2Int.zero;
                     int sides = 0;
-                    foreach (Vector2Int side in GridSides.All)
+                    foreach (Vector2Int side in GridNeighbours.Four)
                         if (top.Contains(tile + side)) { toward += side; sides++; }
 
                     if (sides == 0) continue;   // beside the top corner to corner only: plain floor
@@ -201,7 +202,7 @@ namespace CGD.Level
                 {
                     Vector2Int outward = Vector2Int.zero;
                     int sides = 0;
-                    foreach (Vector2Int side in GridSides.All)
+                    foreach (Vector2Int side in GridNeighbours.Four)
                         if (!hollow.Contains(tile + side)) { outward += side; sides++; }
 
                     if (sides == 0) continue;

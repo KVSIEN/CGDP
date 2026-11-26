@@ -34,7 +34,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6c99a485ddf44f11809d1c26d6d910dc, type: 2}
   _props:
   - Prefabs:
-    - {fileID: 6380377105223745331, guid: f8cbcc3603e442f28ef444f3071f0296, type: 3}
+    - {fileID: 8905101444435955514, guid: a91a507071414e5db8004fc4b4c6f840, type: 3}
     Count:
       Min: 1
       Max: 2
@@ -70,3 +70,6 @@ MonoBehaviour:
   _layouts:
   - {fileID: 11400000, guid: 5ce62ae0305a40a2a9dfc081ed181a38, type: 2}
   - {fileID: 11400000, guid: 8e53db3db99a46f39bb6962d13a6c530, type: 2}
+  - {fileID: 11400000, guid: 12ef72469d9942d9a57520fbf71e446e, type: 2}
+  - {fileID: 11400000, guid: c52bac9d0fbb4b68a223b526398a5f58, type: 2}
+  - {fileID: 11400000, guid: e209d52ca7bb4c809a4895900c2fd04c, type: 2}

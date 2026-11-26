@@ -103,7 +103,7 @@ namespace CGD.Editor
         // Every room's furniture, from the seeds LevelBuilder uses with the graph's seed.
         private static List<PlannedProp> Furnish(LevelLayout layout, LevelBuildSettings settings, Seed seed)
         {
-            var furnisher = new RoomFurnisher(settings, seed.Derive("contents"));
+            var furnisher = new RoomFurnisher(settings, LevelSeeds.Contents(seed));
             var props = new List<PlannedProp>();
             foreach (LevelRoom room in layout.Rooms.Values)
                 props.AddRange(furnisher.Furnish(room).Props);

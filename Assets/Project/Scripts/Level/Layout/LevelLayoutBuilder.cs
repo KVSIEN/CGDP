@@ -187,9 +187,11 @@ namespace CGD.Level
                     continue;
                 }
 
-                if (!TryRoute(router, doorsA, doorsB, t => !blocked.Contains(t) && !reserved.Contains(t), out Route route))
+                System.Func<Vector2Int, bool> clear    = t => !blocked.Contains(t) && !reserved.Contains(t);
+                System.Func<Vector2Int, bool> crossing = t => !blocked.Contains(t);
+                if (!TryRoute(router, doorsA, doorsB, clear, out Route route) && !TryRouteAround(router, a, b, usedDoors, clear, out route))
                 {
-                    if (!TryRoute(router, doorsA, doorsB, t => !blocked.Contains(t), out route))
+                    if (!TryRoute(router, doorsA, doorsB, crossing, out route) && !TryRouteAround(router, a, b, usedDoors, crossing, out route))
                     {
                         layout.Warnings.Add($"No corridor route between {Describe(a)} and {Describe(b)}.");
                         continue;
@@ -264,6 +266,41 @@ namespace CGD.Level
                 if (found) return true;
             }
             return false;
+        }
+
+        // When no doorway on a side the rooms face can be joined: rooms packed together by direct
+        // doors can wall in pockets of floor, and the doorway picked for a side may open into one
+        // while another on the same side, or round the back, opens onto floor that goes round. Every
+        // free doorway of each room is tried, the nearest to the other room first.
+        private const int MaxDoorsAround = 12;
+
+        private static bool TryRouteAround(CorridorRouter router, LevelRoom a, LevelRoom b, Dictionary<int, HashSet<Vector2Int>> usedDoors,
+            System.Func<Vector2Int, bool> isPassable, out Route best)
+        {
+            best = default;
+            bool found = false;
+            foreach (Door doorA in EveryDoor(a, b, usedDoors[a.Node.Id]))
+                foreach (Door doorB in EveryDoor(b, a, usedDoors[b.Node.Id]))
+                {
+                    List<Vector2Int> path = router.FindPath(doorA.Outside, doorB.Outside, isPassable);
+                    if (path == null || (found && path.Count >= best.Path.Count)) continue;
+
+                    best  = new Route(doorA, doorB, path);
+                    found = true;
+                }
+            return found;
+        }
+
+        private static List<Door> EveryDoor(LevelRoom room, LevelRoom other, HashSet<Vector2Int> used)
+        {
+            var doors = new List<Door>();
+            foreach (DoorSocket socket in room.Footprint.Sockets)
+                if (!IsNearUsed(socket.Outside, used))
+                    doors.Add(new Door(socket.Inside, socket.Outside));
+            // Sockets come in a fixed order and the sort is deterministic, so a seed lays out the same.
+            doors.Sort((x, y) => Vector2.Distance(x.Outside, other.Center).CompareTo(Vector2.Distance(y.Outside, other.Center)));
+            if (doors.Count > MaxDoorsAround) doors.RemoveRange(MaxDoorsAround, doors.Count - MaxDoorsAround);
+            return doors;
         }
 
         // One free doorway per side of `room`, the side facing `other` first.

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 using CGD.Core;
 
@@ -141,7 +142,7 @@ namespace CGD.Level
                 Vector2Int tile = open.Dequeue();
                 Vector2Int heading = tile - cameFrom[tile];
                 if (heading != Vector2Int.zero) TryStep(tile, heading);
-                foreach (Vector2Int side in GridSides.All) TryStep(tile, side);
+                foreach (Vector2Int side in GridNeighbours.Four) TryStep(tile, side);
 
                 void TryStep(Vector2Int current, Vector2Int dir)
                 {

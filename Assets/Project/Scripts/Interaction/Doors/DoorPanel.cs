@@ -4,7 +4,8 @@ namespace CGD.Interaction
 {
     // One moving leaf of a Door: a swing leaf (origin on the hinge) or a slide leaf. Put it on
     // the object that carries the leaf's collider, so the player can use the door by looking at
-    // any leaf; the Door (on a parent) drives its movement and decides what use does.
+    // any leaf (a handle door's handle, a button door's leaf to force); the Door (on a parent)
+    // drives its movement and decides what use does.
     // A door with several panels moves them together: a double door is two swing panels
     // turning opposite ways, a split door two slide panels moving apart.
     public class DoorPanel : MonoBehaviour, IInteractable
@@ -48,5 +49,7 @@ namespace CGD.Interaction
         public void   Interact(GameObject interactor)         => _door.Interact(interactor);
         public bool   CanInteract(GameObject interactor)      => _door.CanInteract(interactor);
         public float  HoldDuration                            => _door.HoldDuration;
+        public float  HoldDurationFor(GameObject interactor)  => _door.HoldDurationFor(interactor);
+        public InteractionStyle StyleFor(GameObject interactor) => _door.StyleFor(interactor);
     }
 }

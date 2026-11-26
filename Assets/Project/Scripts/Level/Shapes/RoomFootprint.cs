@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -124,7 +125,7 @@ namespace CGD.Level
             HashSet<Vector2Int> outside = OutsideTiles();
 
             foreach (Vector2Int tile in _tiles)
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     Vector2Int front = tile + side;
                     if (!outside.Contains(front) || !outside.Contains(front + side)) continue;
@@ -158,7 +159,7 @@ namespace CGD.Level
             while (open.Count > 0)
             {
                 Vector2Int tile = open.Pop();
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     Vector2Int next = tile + side;
                     if (!area.Contains(next) || _lookup.Contains(next) || !reached.Add(next)) continue;

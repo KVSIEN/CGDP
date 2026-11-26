@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -29,8 +30,6 @@ namespace CGD.Level
         private readonly List<Vector2Int> _entrances = new();
         private readonly List<StructureSpace> _spaces = new();
         private readonly List<string> _leftOut = new();
-        private readonly List<ElevatedArea> _elevations = new();
-        private readonly List<Overpass> _overpasses = new();
         // Doorways that still divide zones: the gap in a building's wall opens onto the next
         // room, but the two stay separate places.
         private readonly HashSet<(Vector2Int, Vector2Int)> _sealedOpenings = new();
@@ -40,19 +39,15 @@ namespace CGD.Level
         // thousands of times a room, so they need no hashing, and a copy is a few array copies.
         // Inner walls are stored on the tile below or left of them: _wallEast[i] is the edge
         // between tile i and the one east of it, _wallNorth[i] the one north of it.
-        private readonly RectInt _bounds;
+        private readonly TileGrid _grid;
         private readonly bool[] _floor;
         private readonly RoomTileTags[] _tags;
         private readonly int[] _zones;
         private readonly bool[] _solid;
         private readonly bool[] _wallEast;
         private readonly bool[] _wallNorth;
-        // The floor's level (0 = the doorways' level), the flight on a tile (0 = none, else 1 + its
-        // Up's index in GridSides.All, plus 4 for a slope) and the elevated area a tile belongs to
-        // (0 = none, else 1 + its index).
-        private readonly sbyte[] _level;
-        private readonly sbyte[] _stairUp;
-        private readonly short[] _areaOf;
+        // The floor's levels, stairs, raised and sunken areas and decks.
+        private readonly RoomLevels _levels;
         // How tall the prop on a tile stands above its floor (SetPropHeight), so low ones are seen
         // over (SightBlocking); infinite until said, as a prop of unknown height may be any height.
         private readonly float[] _propHeight;
@@ -67,16 +62,14 @@ namespace CGD.Level
             Footprint  = footprint;
             WallHeight = wallHeight;
 
-            _bounds = footprint.Bounds;
-            _floor     = new bool[_bounds.width * _bounds.height];
+            _grid      = new TileGrid(footprint.Bounds);
+            _floor     = new bool[_grid.Count];
             _tags      = new RoomTileTags[_floor.Length];
             _zones     = new int[_floor.Length];
             _solid     = new bool[_floor.Length];
             _wallEast  = new bool[_floor.Length];
             _wallNorth = new bool[_floor.Length];
-            _level     = new sbyte[_floor.Length];
-            _stairUp   = new sbyte[_floor.Length];
-            _areaOf    = new short[_floor.Length];
+            _levels    = new RoomLevels(_grid, wallHeight);
             _propHeight = new float[_floor.Length];
             System.Array.Fill(_propHeight, float.PositiveInfinity);
             _reached   = new bool[_floor.Length];
@@ -103,13 +96,13 @@ namespace CGD.Level
         public int ZoneCount { get; private set; } = 1;
         // The levels this room's floor may take (AllowLevels); both 0 until allowed, so a room stays
         // flat. Decks above the floor (overpasses) aren't held to it, only to the ceiling (AllowsDeck).
-        public int LowestLevel  { get; private set; }
-        public int HighestLevel { get; private set; }
+        public int LowestLevel  => _levels.LowestLevel;
+        public int HighestLevel => _levels.HighestLevel;
         // The raised and sunken parts of the floor, with their stairs.
-        public IReadOnlyList<ElevatedArea> Elevations => _elevations;
-        public bool HasElevation => _elevations.Count > 0;
+        public IReadOnlyList<ElevatedArea> Elevations => _levels.Elevations;
+        public bool HasElevation => _levels.Elevations.Count > 0;
         // Decks crossing the room above its floor (TryAddOverpass).
-        public IReadOnlyList<Overpass> Overpasses => _overpasses;
+        public IReadOnlyList<Overpass> Overpasses => _levels.Overpasses;
         // The zone with the most floor (0 when the room is one zone).
         public int LargestZone { get; private set; }
 
@@ -126,13 +119,7 @@ namespace CGD.Level
             copy._entrances.AddRange(_entrances);
             copy._spaces.AddRange(_spaces);
             copy._leftOut.AddRange(_leftOut);
-            copy._elevations.AddRange(_elevations);
-            copy._overpasses.AddRange(_overpasses);
-            System.Array.Copy(_level, copy._level, _level.Length);
-            System.Array.Copy(_stairUp, copy._stairUp, _stairUp.Length);
-            System.Array.Copy(_areaOf, copy._areaOf, _areaOf.Length);
-            copy.LowestLevel  = LowestLevel;
-            copy.HighestLevel = HighestLevel;
+            _levels.CopyTo(copy._levels);
             copy._sealedOpenings.UnionWith(_sealedOpenings);
             System.Array.Copy(_zones, copy._zones, _zones.Length);
             System.Array.Copy(_wallEast, copy._wallEast, _wallEast.Length);
@@ -281,18 +268,18 @@ namespace CGD.Level
             foreach (Vector2Int entrance in _entrances) Visit(entrance);
 
             bool partitioned = _blockedCount > 0;
-            bool elevated = _elevations.Count > 0;
+            bool elevated = HasElevation;
             while (open.Count > 0)
             {
                 Vector2Int tile = open.Pop();
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     Vector2Int next = tile + side;
                     if (!Contains(next)) continue;
 
                     int index = IndexOf(next);
                     if (reached[index] || _solid[index] || (partitioned && IsPartitioned(tile, next))) continue;
-                    if (elevated && !LevelsJoin(tile, next)) continue;
+                    if (elevated && !_levels.Join(tile, next)) continue;
                     Visit(next);
                 }
             }
@@ -306,10 +293,9 @@ namespace CGD.Level
             return Footprint.Tiles[0];
         }
 
-        private int IndexOf(Vector2Int tile) => (tile.y - _bounds.yMin) * _bounds.width + (tile.x - _bounds.xMin);
+        private int IndexOf(Vector2Int tile) => _grid.IndexOf(tile);
 
-        private bool InBounds(Vector2Int tile) =>
-            tile.x >= _bounds.xMin && tile.x < _bounds.xMax && tile.y >= _bounds.yMin && tile.y < _bounds.yMax;
+        private bool InBounds(Vector2Int tile) => _grid.Contains(tile);
 
         // The wall array and index holding the edge between two neighbouring tiles.
         private bool TryEdge(Vector2Int a, Vector2Int b, out bool[] walls, out int index)
@@ -448,70 +434,49 @@ namespace CGD.Level
 
         // Lets the floor take levels from `lowest` to `highest` (clamped to RoomElevation's), so
         // elevation rules may raise or sink parts of it. Level 0 is always allowed.
-        public void AllowLevels(int lowest, int highest)
-        {
-            LowestLevel  = Mathf.Clamp(lowest, RoomElevation.Lowest, 0);
-            HighestLevel = Mathf.Clamp(highest, 0, RoomElevation.Highest);
-        }
+        public void AllowLevels(int lowest, int highest) => _levels.Allow(lowest, highest);
 
         // Whether the room's floor can stand at `level`: one the room allows, with Headroom under
         // the ceiling. Every rule that raises or sinks floor goes through it.
-        public bool AllowsFloor(int level) => level >= LowestLevel && level <= HighestLevel && HasHeadroom(level);
+        public bool AllowsFloor(int level) => _levels.AllowsFloor(level);
 
         // Whether a deck can stand at `level`: anywhere the ceiling leaves Headroom over it. Decks
         // are a layer of their own over the floor (footbridges, and later balconies and upper
         // decks), so a room whose floor keeps within a level of its doorways can still have them
         // higher up, as high as the room is tall.
-        public bool AllowsDeck(int level) => level >= RoomElevation.Lowest && level <= RoomElevation.Highest && HasHeadroom(level);
-
-        private bool HasHeadroom(int level) => RoomElevation.HeightOf(level) + RoomElevation.Headroom <= WallHeight;
+        public bool AllowsDeck(int level) => _levels.AllowsDeck(level);
 
         // The most tiers a feature stepping `direction` (+1 up, -1 down) from the doorways' level
         // can have here, up to `wanted`; 0 when not even one level that way stands.
-        public int TiersAllowed(int direction, int wanted)
-        {
-            int tiers = 0;
-            while (tiers < wanted && AllowsFloor(direction * (tiers + 1))) tiers++;
-            return tiers;
-        }
+        public int TiersAllowed(int direction, int wanted) => _levels.TiersAllowed(direction, wanted);
 
         // The tile's floor level (0 off the floor).
-        public int LevelOf(Vector2Int tile) => InBounds(tile) ? _level[IndexOf(tile)] : 0;
+        public int LevelOf(Vector2Int tile) => _levels.LevelOf(tile);
 
         // The flight of stairs on a tile, if there is one.
-        public bool TryGetStairs(Vector2Int tile, out StairFlight stairs)
-        {
-            stairs = default;
-            if (!InBounds(tile) || _stairUp[IndexOf(tile)] == 0) return false;
-            stairs = new StairFlight(tile, UpAt(IndexOf(tile)), _stairUp[IndexOf(tile)] > GridSides.All.Length);
-            return true;
-        }
+        public bool TryGetStairs(Vector2Int tile, out StairFlight stairs) => _levels.TryGetStairs(tile, out stairs);
 
         // The elevated area a tile is part of; null on the doorways' level.
-        public ElevatedArea AreaOf(Vector2Int tile) =>
-            InBounds(tile) && _areaOf[IndexOf(tile)] > 0 ? _elevations[_areaOf[IndexOf(tile)] - 1] : null;
+        public ElevatedArea AreaOf(Vector2Int tile) => _levels.AreaOf(tile);
 
         // Whether someone can walk between two neighbouring floor tiles, both ways: no wall
         // between them, and the same level, or a flight of stairs leading from one to the other.
         // What stands on the tiles is not looked at.
         public bool CanStep(Vector2Int a, Vector2Int b) =>
-            AreNeighbours(a, b) && Contains(a) && Contains(b) && !IsPartitioned(a, b) && LevelsJoin(a, b);
+            AreNeighbours(a, b) && Contains(a) && Contains(b) && !IsPartitioned(a, b) && _levels.Join(a, b);
 
         // Whether someone can drop from `from` to the floor a level below it: an open ledge with
         // no wall or railing on it. A way down only: climbing back up needs the stairs.
         public bool CanDropDown(Vector2Int from, Vector2Int to)
         {
             if (!AreNeighbours(from, to) || !Contains(from) || !Contains(to) || IsPartitioned(from, to)) return false;
-
-            int a = IndexOf(from), b = IndexOf(to);
-            if (_level[a] != _level[b] + 1 || _stairUp[a] != 0 || _stairUp[b] != 0) return false;
-            return !IsRailed(a, b);
+            return _levels.IsOpenDrop(from, to);
         }
 
         // Whether the floor changes level between two neighbouring tiles where no stairs lead:
         // the edge of a platform or the rim of a sunken floor.
         public bool IsLedge(Vector2Int a, Vector2Int b) =>
-            AreNeighbours(a, b) && Contains(a) && Contains(b) && LevelOf(a) != LevelOf(b) && !LevelsJoin(a, b);
+            AreNeighbours(a, b) && Contains(a) && Contains(b) && LevelOf(a) != LevelOf(b) && !_levels.Join(a, b);
 
         // Raises or sinks `area`'s tiles to its level with its stairs, if the room stays sound
         // (see TryAddElevations).
@@ -540,7 +505,7 @@ namespace CGD.Level
                 if (area == null || area.Tiles.Count == 0 || area.Level == 0) return false;
                 if (!AllowsFloor(area.Level)) return false;
                 foreach (Vector2Int tile in area.Tiles)
-                    if (!IsFree(tile) || Has(tile, RoomTileTags.NearDoor) || _level[IndexOf(tile)] != 0 || !claimed.Add(tile)) return false;
+                    if (!IsFree(tile) || Has(tile, RoomTileTags.NearDoor) || LevelOf(tile) != 0 || !claimed.Add(tile)) return false;
             }
 
             // Each flight and corner piece takes a tile of its own; landings may be shared (two
@@ -565,16 +530,12 @@ namespace CGD.Level
             foreach (Vector2Int tile in flights)
                 if (landings.Contains(tile)) return false;
 
-            int first = _elevations.Count;
-            for (int i = 0; i < areas.Count; i++)
-            {
-                _elevations.Add(areas[i]);
-                Raise(areas[i], (short)(first + i + 1), (sbyte)areas[i].Level);
-            }
+            _levels.Add(areas);
+            foreach (ElevatedArea area in areas) TagStairs(area, true);
             if (StepsAreSound(areas) && StaysConnected(System.Array.Empty<Vector2Int>())) return true;
 
-            for (int i = areas.Count - 1; i >= 0; i--) Raise(areas[i], 0, 0);
-            _elevations.RemoveRange(first, areas.Count);
+            for (int i = areas.Count - 1; i >= 0; i--) TagStairs(areas[i], false);
+            _levels.Remove(areas);
             return false;
         }
 
@@ -608,7 +569,7 @@ namespace CGD.Level
             {
                 StairFlight stairs = overpass.Stairs[i];
                 int below = overpass.Level - 1;
-                if (!IsFree(stairs.Tile) || Has(stairs.Tile, NotOnStairs) || _stairUp[IndexOf(stairs.Tile)] != 0) return false;
+                if (!IsFree(stairs.Tile) || Has(stairs.Tile, NotOnStairs) || _levels.HasStairs(stairs.Tile)) return false;
                 if (LevelOf(stairs.Tile) != below || !Contains(stairs.Foot) || LevelOf(stairs.Foot) != below) return false;
                 if (Has(stairs.Foot, RoomTileTags.Structure | RoomTileTags.Prop | RoomTileTags.Stairs) || IsPartitioned(stairs.Foot, stairs.Tile)) return false;
                 flights[i] = stairs.Tile;
@@ -621,18 +582,14 @@ namespace CGD.Level
                 Tag(stairs.Tile, RoomTileTags.Structure);
                 Tag(stairs.Foot, RoomTileTags.Landing);
             }
-            _overpasses.Add(overpass);
+            _levels.AddOverpass(overpass);
             return true;
         }
 
         // The overpass whose deck crosses above a tile, if one does.
         public Overpass OverpassAbove(Vector2Int tile)
         {
-            if (!Has(tile, RoomTileTags.Overpass)) return null;
-            foreach (Overpass overpass in _overpasses)
-                foreach (Vector2Int deck in overpass.Deck)
-                    if (deck == tile) return overpass;
-            return null;
+            return Has(tile, RoomTileTags.Overpass) ? _levels.OverpassAbove(tile) : null;
         }
 
         // Once raised: no tile two levels from a neighbour, and every flight climbing one level onto or off its area.
@@ -641,7 +598,7 @@ namespace CGD.Level
             foreach (ElevatedArea area in areas)
             {
                 foreach (Vector2Int tile in area.Tiles)
-                    foreach (Vector2Int side in GridSides.All)
+                    foreach (Vector2Int side in GridNeighbours.Four)
                         if (Contains(tile + side) && Mathf.Abs(area.Level - LevelOf(tile + side)) > 1) return false;
 
                 foreach (StairFlight stairs in area.Stairs)
@@ -657,19 +614,12 @@ namespace CGD.Level
             return true;
         }
 
-        // Sets (or, with 0s, takes back) an area's levels, stairs and landings.
-        private void Raise(ElevatedArea area, short index, sbyte level)
+        // Tags (or takes back) an area's stairs, their landings and its corner pieces; its levels
+        // are set in RoomLevels.
+        private void TagStairs(ElevatedArea area, bool adding)
         {
-            bool adding = index != 0;
-            foreach (Vector2Int tile in area.Tiles)
-            {
-                _level[IndexOf(tile)]  = level;
-                _areaOf[IndexOf(tile)] = index;
-            }
             foreach (StairFlight stairs in area.Stairs)
             {
-                int code = 1 + System.Array.IndexOf(GridSides.All, stairs.Up) + (stairs.Slope ? GridSides.All.Length : 0);
-                _stairUp[IndexOf(stairs.Tile)] = adding ? (sbyte)code : (sbyte)0;
                 foreach (Vector2Int tile in new[] { stairs.Foot, stairs.Head })
                     SetTag(tile, RoomTileTags.Landing, adding);
                 SetTag(stairs.Tile, RoomTileTags.Stairs, adding);
@@ -688,37 +638,6 @@ namespace CGD.Level
         {
             if (on) Tag(tile, tag);
             else _tags[IndexOf(tile)] &= ~tag;
-        }
-
-        // Whether walking can cross between two neighbouring tiles as far as their levels go: the
-        // same level, entered along any flight either stands on, or one level apart up a flight.
-        private bool LevelsJoin(Vector2Int a, Vector2Int b)
-        {
-            int ia = IndexOf(a), ib = IndexOf(b);
-            Vector2Int step = b - a;
-            // Across a wide flight: two flights side by side, climbing the same way from the same level.
-            if (_stairUp[ia] != 0 && _stairUp[ib] != 0 && UpAt(ia) == UpAt(ib) && _level[ia] == _level[ib] && !Along(UpAt(ia), step))
-                return true;
-            if (_stairUp[ia] != 0 && !Along(UpAt(ia), step)) return false;
-            if (_stairUp[ib] != 0 && !Along(UpAt(ib), step)) return false;
-
-            int la = _level[ia], lb = _level[ib];
-            if (la == lb) return true;
-            if (la + 1 == lb) return _stairUp[ia] != 0 && UpAt(ia) == step;
-            if (lb + 1 == la) return _stairUp[ib] != 0 && UpAt(ib) == -step;
-            return false;
-        }
-
-        private static bool Along(Vector2Int up, Vector2Int step) => step == up || step == -up;
-
-        private Vector2Int UpAt(int index) => GridSides.All[(_stairUp[index] - 1) % GridSides.All.Length];
-
-        // A railed area keeps anyone from crossing its ledges: off a platform, or into a pit.
-        private bool IsRailed(int a, int b)
-        {
-            ElevatedArea from = _areaOf[a] > 0 ? _elevations[_areaOf[a] - 1] : null;
-            ElevatedArea to   = _areaOf[b] > 0 ? _elevations[_areaOf[b] - 1] : null;
-            return (from != null && from != to && from.Railed) || (to != null && to != from && to.Railed);
         }
 
         private static bool AreNeighbours(Vector2Int a, Vector2Int b) => Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) == 1;
@@ -759,7 +678,7 @@ namespace CGD.Level
                 {
                     Vector2Int tile = open.Pop();
                     if (assign) _zones[IndexOf(tile)] = zones;
-                    foreach (Vector2Int side in GridSides.All)
+                    foreach (Vector2Int side in GridNeighbours.Four)
                     {
                         Vector2Int next = tile + side;
                         if (!Contains(next) || seen.Contains(next)) continue;

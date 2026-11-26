@@ -23,6 +23,12 @@ namespace CGD.Interaction
         // HoldDuration, a single press when it has none. Mash needs TapsRequired.
         InteractionStyle Style => HoldDuration > 0f ? InteractionStyle.Hold : InteractionStyle.Press;
 
+        // The same two for one interactor, for things used differently by how you stand: a
+        // button door is forced open with a long hold while crouched. Unless overridden, the
+        // ones above.
+        float HoldDurationFor(GameObject interactor) => HoldDuration;
+        InteractionStyle StyleFor(GameObject interactor) => Style;
+
         // Mash only: taps that complete the effort.
         int TapsRequired => 5;
 

@@ -15,8 +15,6 @@ namespace CGD.Editor
 
         private const RoomTileTags Solid = RoomTileTags.Structure | RoomTileTags.Prop;
 
-        private static readonly Vector2Int[] Sides = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
-
         public static List<RoomIssue> Run(RoomSample sample)
         {
             var issues = new List<RoomIssue>();
@@ -79,29 +77,17 @@ namespace CGD.Editor
         private static void CheckReachable(RoomSample sample, List<RoomIssue> issues)
         {
             RoomStructure structure = sample.Room.Structure;
-            var reached = new HashSet<Vector2Int>();
-            var open = new Queue<Vector2Int>();
+            var doorways = new List<Vector2Int>();
             foreach (Vector2Int entrance in structure.Entrances)
-                if (IsWalkable(structure, entrance) && reached.Add(entrance))
-                    open.Enqueue(entrance);
-
-            if (open.Count == 0) return;   // no doorway: nothing to walk from
-            while (open.Count > 0)
-            {
-                Vector2Int tile = open.Dequeue();
-                foreach (Vector2Int side in Sides)
-                {
-                    Vector2Int next = tile + side;
-                    if (!IsWalkable(structure, next) || !structure.CanStep(tile, next) || !reached.Add(next)) continue;
-                    open.Enqueue(next);
-                }
-            }
+                if (IsWalkable(structure, entrance)) doorways.Add(entrance);
+            if (doorways.Count == 0) return;   // no doorway: nothing to walk from
+            var reached = new FloorSteps(structure, doorways, Solid);
 
             int cutOff = 0;
             Vector2Int min = new(int.MaxValue, int.MaxValue), max = new(int.MinValue, int.MinValue);
             foreach (Vector2Int tile in sample.Room.Footprint.Tiles)
             {
-                if (!IsWalkable(structure, tile) || reached.Contains(tile)) continue;
+                if (!IsWalkable(structure, tile) || reached.Reaches(tile)) continue;
                 cutOff++;
                 min = Vector2Int.Min(min, tile);
                 max = Vector2Int.Max(max, tile);

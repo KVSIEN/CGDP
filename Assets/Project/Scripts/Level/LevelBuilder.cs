@@ -80,10 +80,14 @@ namespace CGD.Level
         public MapGraph    Graph  { get; private set; }
         public LevelLayout Layout { get; private set; }
 
+        // Where the graph came from (PickSource).
+        private LevelSource _source;
         // Meshes, materials and the map texture made for this level, freed with it.
         private readonly GeneratedAssets _assets = new();
         // The run modifiers the map was generated with (a MapGraphAsset's are recovered from its seed).
         public IReadOnlyList<MapRunModifier> Modifiers { get; private set; } = Array.Empty<MapRunModifier>();
+        // How much the run's warnings add to the level's loot.
+        private float LootLuck => new MapRunTuning(Modifiers).LootLuck;
 
         private void Awake()
         {
@@ -93,29 +97,24 @@ namespace CGD.Level
                 return;
             }
 
-            // A graph asset's own seed lays its rooms out the way the Map Graph window's
-            // blueprint shows them; only generated maps roll a fresh seed for 0.
-            Seed  = _roomGenerator != null ? _roomGenerator.Seed
-                  : !RollsFreshSeed(_seed) ? Seed.Parse(_seed)
-                  : _graphAsset != null && _gallery == null ? _graphAsset.Seed
-                  : Seed.Random();
-            Graph = ResolveGraph(out Vector2 nodeSpacing, out MapContentSettings content);
+            _source = PickSource();
+            Seed  = _source.ResolveSeed(_seed);
+            Graph = _source.BuildGraph(_settings, Seed);
+            Modifiers = _source.Modifiers;
             if (Graph == null)
             {
                 Debug.LogError($"{name}: LevelBuilder needs a map graph asset, or map generation settings with content and a layout.", this);
                 return;
             }
 
-            LevelLayoutBuilder layoutBuilder = _roomGenerator != null ? _roomGenerator.LayoutBuilder(_settings) : new LevelLayoutBuilder(_settings);
-            Layout = layoutBuilder.Build(Graph, nodeSpacing, Seed, content);
-            var populator = new RoomPopulator(_settings, Layout, transform, Seed.Derive("contents"));
+            Layout = _source.LayoutBuilder(_settings).Build(Graph, _source.NodeSpacing, Seed, _source.Content);
+            var populator = new RoomPopulator(_settings, Layout, transform, LevelSeeds.Contents(Seed));
             List<PlannedObjective> objectives = PlanObjectives(populator);
 
             // Furnished first, so the overgrowth leaves the furniture's floor bare; both before the
             // geometry, which builds the overgrowth with the floor.
             populator.FurnishRooms();
-            OvergrowthSource overgrowth = _roomGenerator != null ? _roomGenerator.Overgrowth(_settings) : OvergrowthSource.FromFactions(_settings);
-            new OvergrowthPlanner(Layout.TileSize).PlanLevel(Layout, overgrowth, Seed.Derive("overgrowth"));
+            new OvergrowthPlanner(Layout.TileSize).PlanLevel(Layout, _source.Overgrowth(_settings), LevelSeeds.Overgrowth(Seed));
 
             var geometry = new LevelGeometryBuilder(_settings, _assets);
             LockBossRoom(geometry, objectives);
@@ -138,7 +137,7 @@ namespace CGD.Level
             populator.SpawnEnemies();
             populator.SpawnFauna();
             new RoomEncounterBuilder(_encounters, Layout, Graph, transform, populator, _player, _worldMap,
-                                     Seed.Derive("encounters"), new MapRunTuning(Modifiers).LootLuck).Build();
+                                     LevelSeeds.Encounters(Seed), LootLuck).Build();
 
             StartObjectives(objectives, populator, geometry);
             PlacePlayer(populator);
@@ -153,7 +152,7 @@ namespace CGD.Level
         // The dev console's /overview, wherever the player carries one: hides or shows the room labels and outlines.
         private void AddOverviewCommand(GameObject overview)
         {
-            if (overview == null || _player == null || !_player.TryGetComponent(out DevCommands commands)) return;
+            if (overview == null || !TryGetConsole(out DevCommands commands)) return;
             commands.Console.Register("overview", "", "Hide or show the room type outlines and labels above every room",
                 _ =>
                 {
@@ -167,7 +166,7 @@ namespace CGD.Level
             if (!_announceRooms || _player == null) return;
 
             var announcer = gameObject.AddComponent<RoomArrivalAnnouncer>();
-            if (_gallery != null) announcer.BeginGallery(Layout, transform, _player, _settings.TerritoryDepth);
+            if (_source.IsGallery) announcer.BeginGallery(Layout, transform, _player, _settings.TerritoryDepth);
             else                  announcer.Begin(Layout, transform, _player);
         }
 
@@ -179,7 +178,7 @@ namespace CGD.Level
             var culler = gameObject.AddComponent<RoomCuller>();
             culler.Begin(Layout, transform, _cullingCamera, _player, populator.RoomObjects);
             culler.enabled = _cullHiddenRooms;
-            if (_player == null || !_player.TryGetComponent(out DevCommands commands)) return;
+            if (!TryGetConsole(out DevCommands commands)) return;
             commands.Console.Register("cull", "", "Switch drawing only the rooms the camera can see into on or off",
                 _ =>
                 {
@@ -188,15 +187,19 @@ namespace CGD.Level
                 });
         }
 
+        // The dev console the level's commands go on: the player's, when it carries one.
+        private bool TryGetConsole(out DevCommands commands)
+        {
+            commands = null;
+            return _player != null && _player.TryGetComponent(out commands);
+        }
+
         // The dev console's /room, wherever the player carries one.
         private void AddRoomTravel(RoomPopulator populator)
         {
-            if (_player == null || !_player.TryGetComponent(out DevCommands commands) || !_player.TryGetComponent(out PlayerMovement movement)) return;
+            if (!TryGetConsole(out DevCommands commands) || !_player.TryGetComponent(out PlayerMovement movement)) return;
             new RoomTravelCommand(Layout, transform, movement, populator.RoomCenter).Register(commands.Console);
         }
-
-        // "0" too: the field used to be a number where 0 meant a fresh seed, and scenes saved then still hold it.
-        private static bool RollsFreshSeed(string text) => string.IsNullOrWhiteSpace(text) || text.Trim() == "0";
 
         // Only when the player can track quests; the same seed always plans the same objectives.
         private List<PlannedObjective> PlanObjectives(RoomPopulator populator)
@@ -204,7 +207,7 @@ namespace CGD.Level
             var none = new List<PlannedObjective>();
             if (_objectives == null || _player == null || !_player.TryGetComponent(out QuestTracker _)) return none;
 
-            RandomStream random = Seed.Derive("objectives").Stream();
+            RandomStream random = LevelSeeds.Objectives(Seed).Stream();
             var planner = new MapObjectivePlanner(Graph, random,
                 node => Layout.Rooms.TryGetValue(node.Id, out LevelRoom room) && populator.WillHaveEnemies(room));
             return planner.Plan(_objectives.Templates, _objectives.MainCount.Evaluate(random), _objectives.SideCount.Evaluate(random));
@@ -242,7 +245,7 @@ namespace CGD.Level
 
             var runner = gameObject.AddComponent<MapObjectiveRunner>();
             runner.Begin(objectives, Layout.Rooms, _objectives, populator, _player.GetComponent<QuestTracker>(), bossLocks,
-                         new MapRunTuning(Modifiers).LootLuck, Seed.Derive("objective rewards"));
+                         LootLuck, LevelSeeds.ObjectiveRewards(Seed));
         }
 
         // In Start, not Awake: the HUD subscribes to FeedbackBus in its OnEnable, after this
@@ -262,45 +265,21 @@ namespace CGD.Level
         // centrepieces placed under this builder.
         private void ApplyLootLuck()
         {
-            float luck = new MapRunTuning(Modifiers).LootLuck;
+            float luck = LootLuck;
             if (luck <= 0f) return;
 
             foreach (LootDropper dropper in GetComponentsInChildren<LootDropper>(true))
                 dropper.AddLuck(luck);
         }
 
-        // content: where the graph's faction indices point (null = rooms have no faction).
-        private MapGraph ResolveGraph(out Vector2 nodeSpacing, out MapContentSettings content)
+        // What the Inspector was given, first match: the room generator, the gallery, a graph
+        // asset, else the generation settings (which may have nothing to generate).
+        private LevelSource PickSource()
         {
-            if (_roomGenerator != null)
-            {
-                // Positions are in cells, as in the gallery.
-                nodeSpacing = Vector2.one;
-                content     = _roomGenerator.Content;
-                return _roomGenerator.BuildGraph(_settings);
-            }
-            if (_gallery != null)
-            {
-                // Gallery positions are in cells.
-                nodeSpacing = Vector2.one;
-                content     = _gallery.Content;
-                return RoomGalleryGraph.Build(_gallery, _settings);
-            }
-            if (_graphAsset != null)
-            {
-                nodeSpacing = _graphAsset.NodeSpacing;
-                content     = _graphAsset.Content;
-                Modifiers   = _graphAsset.Tuning.Modifiers;
-                return _graphAsset.Graph;
-            }
-
-            nodeSpacing = _generation != null ? _generation.NodeSpacing : MapGenerationSettings.DefaultNodeSpacing;
-            content     = _generation != null ? _generation.Content : null;
-            if (_generation == null || !_generation.CanGenerate) return null;
-
-            MapGenerationResult result = new MapGenerator(_generation).Generate(Seed.Derive("map"));
-            Modifiers = result.Modifiers;
-            return result.Graph;
+            if (_roomGenerator != null) return new RoomGeneratorLevelSource(_roomGenerator);
+            if (_gallery != null)       return new GalleryLevelSource(_gallery);
+            if (_graphAsset != null)    return new SavedGraphLevelSource(_graphAsset);
+            return new GeneratedMapLevelSource(_generation);
         }
 
         // Metres the spectator may pan from the room's centre: 1.5 x the way to the far corner of everything built round it, plus a margin.
@@ -319,14 +298,14 @@ namespace CGD.Level
 
         private void PlacePlayer(RoomPopulator populator)
         {
-            int startRoom = _roomGenerator != null ? RoomRecipeGraph.RoomId : _startRoom;
+            int startRoom = _source.StartRoom(_startRoom);
             LevelRoom start = startRoom >= 0 && Layout.Rooms.TryGetValue(startRoom, out LevelRoom chosen) ? chosen : FindRoom(MapNodeType.Start);
             if (start == null) return;
 
             // Slightly above the floor so the player's capsule doesn't start inside it.
             Vector3 position = populator.RoomCenter(start) + Vector3.up;
             if (_spawnPoint != null) _spawnPoint.position = position;
-            if (_roomGenerator != null) _roomGenerator.FrameRoom(populator.RoomCenter(start), ReachFrom(start, populator));
+            _source.Started(populator.RoomCenter(start), ReachFrom(start, populator));
             if (_player == null) return;
 
             _player.position = position;

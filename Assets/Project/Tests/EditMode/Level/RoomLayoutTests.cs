@@ -78,7 +78,7 @@ namespace CGD.Tests
             foreach (RoomFunction place in PlacesWithLayouts())
                 foreach (RoomLayout layout in place.Layouts)
                 {
-                    var recipe = new RoomLabRecipe { BuildSettings = Settings, Type = MapNodeType.Quiet, Place = place, Layout = layout };
+                    var recipe = new RoomLabRecipe { BuildSettings = Settings, Room = new RoomRecipe { Type = MapNodeType.Quiet, Place = place, Layout = layout } };
                     int setPieces = 0;
                     for (int seed = 0; seed < Seeds; seed++)
                     {
@@ -110,7 +110,7 @@ namespace CGD.Tests
             foreach (RoomFunction function in Settings.Functions)
             {
                 if (function == null || function.Layouts.Count > 0 || function.Landmark != null) continue;
-                var recipe = new RoomLabRecipe { BuildSettings = Settings, Type = MapNodeType.Quiet, Place = function };
+                var recipe = new RoomLabRecipe { BuildSettings = Settings, Room = new RoomRecipe { Type = MapNodeType.Quiet, Place = function } };
                 RoomSample sample = RoomSampleBuilder.Build(recipe, "5");
                 Assert.IsTrue(sample.IsValid, sample.Message);
                 Assert.IsNull(sample.Room.RoomLayout, function.DisplayName);

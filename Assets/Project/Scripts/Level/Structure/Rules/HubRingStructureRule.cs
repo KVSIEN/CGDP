@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 using CGD.Core;
 
@@ -51,7 +52,7 @@ namespace CGD.Level
         {
             var edges = new List<PartitionEdge>();
             foreach (Vector2Int tile in court.allPositionsWithin)
-                foreach (Vector2Int side in new[] { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left })
+                foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     Vector2Int outside = tile + side;
                     if (court.Contains(outside) || IsGap(court, tile, side) || structure.EdgeMustStayOpen(tile, outside)) continue;

@@ -34,7 +34,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0779a8c9bfd943528d256e313c2460f9, type: 2}
   _props:
   - Prefabs:
-    - {fileID: 8100000000000019001, guid: 36041f5bd7dd45ecba9724cbd6a5fcc2, type: 3}
+    - {fileID: 4492462149717228501, guid: 4d499d28a50f47f388f02a980c77ddf5, type: 3}
     Count:
       Min: 1
       Max: 1
@@ -70,6 +70,12 @@ MonoBehaviour:
   _layouts:
   - {fileID: 11400000, guid: 2a238ba248364b9b8db8da8517d59df8, type: 2}
   - {fileID: 11400000, guid: 903a8b5ae2e8489d8ac132a5526f10f8, type: 2}
+  - {fileID: 11400000, guid: df0dbd75b4ce4cb99b7626854b4540a8, type: 2}
+  - {fileID: 11400000, guid: b1c15d4b7cd74d3c87eafb0dec775209, type: 2}
   _sets:
   - {fileID: 11400000, guid: b3e4b817b81d4008b2616110f5e60177, type: 2}
   - {fileID: 11400000, guid: 0330467b3aa640089b2bab726beadb66, type: 2}
+  - {fileID: 11400000, guid: 04696d135b87453f848fe20fb613049a, type: 2}
+  - {fileID: 11400000, guid: 78fe5e5df903493ab12139b6f036f13b, type: 2}
+  - {fileID: 11400000, guid: d86f4c0704f343529e9452079d1c9b65, type: 2}
+  - {fileID: 11400000, guid: 11b65b94896b46db838ba882754921fb, type: 2}

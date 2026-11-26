@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -274,7 +275,7 @@ namespace CGD.Tests
 
         private static bool TouchesTheRoomsWall(RoomStructure room, Vector2Int tile)
         {
-            foreach (Vector2Int side in GridSides.All)
+            foreach (Vector2Int side in GridNeighbours.Four)
                 if (!room.Contains(tile + side)) return true;
             return false;
         }
@@ -386,7 +387,7 @@ namespace CGD.Tests
 
                     // No open ledge: wherever the level changes, it is up a slope or beside a solid corner.
                     foreach (Vector2Int tile in room.Footprint.Tiles)
-                        foreach (Vector2Int side in GridSides.All)
+                        foreach (Vector2Int side in GridNeighbours.Four)
                             if (room.IsLedge(tile, tile + side))
                                 Assert.That(room.Has(tile, RoomTileTags.Structure) || room.Has(tile + side, RoomTileTags.Structure), Is.True,
                                             $"{at}: a bare ledge between {tile} and {tile + side}");

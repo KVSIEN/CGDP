@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -182,7 +183,7 @@ namespace CGD.Level
         private float HighestFloorBeside(Vector2Int tile)
         {
             float highest = Level(tile);
-            foreach (Vector2Int side in GridSides.All)
+            foreach (Vector2Int side in GridNeighbours.Four)
                 if (_structure.Contains(tile + side)) highest = Mathf.Max(highest, Level(tile + side));
             return highest;
         }

@@ -69,10 +69,48 @@ MonoBehaviour:
     Grow: {x: 0, y: 0}
     Stretch: 0
     MinRoomTiles: 0
+  - Prefabs:
+    - {fileID: 7400000000000000301, guid: 4e55b711aaaf4c4e84eae1b6ec0f1a85, type: 3}
+    Count:
+      Min: 0
+      Max: 1
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    EachZone: 0
+    Facing: 2
+    Clearance: 1
+    Spacing: 1
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Band: 3
+    Members: []
+    Key: 
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
   _layouts:
   - {fileID: 11400000, guid: 7ef2eed89e674dd4baeae54e169780ad, type: 2}
   - {fileID: 11400000, guid: eb0696fe45674b37a589dbf0afe3cbb2, type: 2}
   - {fileID: 11400000, guid: 9b7d35d5d72d4df69983bdebbcd8d74d, type: 2}
+  - {fileID: 11400000, guid: 9987dcfebfa94ba9a2486e921a9c3a3f, type: 2}
+  - {fileID: 11400000, guid: 49721cdd1de74c4d8c2a103905dc9d17, type: 2}
   _sets:
   - {fileID: 11400000, guid: 640f315d105f41e2b4a1397e823680da, type: 2}
   - {fileID: 11400000, guid: 26f96a999287437c99af1534ca109180, type: 2}

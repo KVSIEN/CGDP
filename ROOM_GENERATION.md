@@ -356,9 +356,9 @@ Farm take the holding reality's structure unless a layout brings its own; Juncti
 |---|---|---|---|---|---|---|---|
 | Grand Atrium | Entertainment | G1 | Ring | Central fountain or statue | Benches round the ring, planters | Circle the centrepiece; balcony-like edges | S, P, L |
 | Casino | Entertainment | G1 | by layout | Cashier cage on a wall | Slot banks, card-table pits, roulette, bar with stools, sofas | Lanes between slot banks; tables as cover at crossings | S, P, L |
-| Theatre | Entertainment | G1 | Aisles | Stage on the far wall | Seat rows facing the stage | Lanes down the aisles, stage as high ground | S, P, L |
+| Theatre | Entertainment | G1 | Aisles | Stage (placed by each layout) | Seat rows facing the stage | Lanes down the aisles, stage as high ground | S, P, L |
 | Exhibit Hall | Entertainment | G1 | Hall | Centre display | Display cases on a lattice | Open hall, cases as waist cover | S, P, L |
-| Bar | Entertainment | G2 | Ring | Bar counter (low partition) | Stools, booths along walls | Counter splits the room; booths for close range | S, P, L |
+| Bar | Entertainment | G2 | Ring | Bar counter (placed by each layout) | Stools, booths along walls | Counter splits the room; booths for close range | S, P, L |
 | Restaurant | Commercial | G1 | Cells | Kitchen wall (divider) | Tables in the dining zone, ovens in the kitchen | Open dining room, tight kitchen | S, P, L |
 | Food Court | Commercial | G2 | Hall | Kiosk island | Table clusters, kiosks on walls | Many low cover pieces, no long lanes | S, P, L |
 | Kitchen | Commercial | C | Service | Cooking line along a wall | Prep tables, shelves | Narrow gaps between counters | S, P, L |
@@ -403,7 +403,7 @@ Farm take the holding reality's structure unless a layout brings its own; Juncti
 | Shrine | Worship | G2 | Ring | Shrine object | Candles, mats | Small, one centrepiece | S, P, L |
 | Lobby | Transit | G1 | Hall | Reception desk | Seating, planters | Open hall with a desk | S, P, L |
 | Junction | Transit | — | Strip | — | — | A crossing of routes; keep it bare | — |
-| Cargo Bay | Transit | C | Hall | Loader | Container stacks | Dense pillar grid of crates | S, P, L |
+| Cargo Bay | Transit | C | Hall | Dock door | Container stacks | Dense pillar grid of crates | S, P, L |
 | Docking Bay | Transit | C | Hall | Airlock | Cargo, fuel lines | Wide grid, long lanes | S, P, L |
 | Hangar | Transit | C | Hall | Shuttle | Tool carts, crates | Huge, one big obstacle | S, P, L |
 | Escape Pod Bay | Transit | C | Strip | Pod row on a wall | Lockers | Long lane along the pods | S, P, L |
@@ -585,9 +585,11 @@ own set pieces. The function keeps what every arrangement of the place shares. T
 
 Props go down in this order:
 1. The function's anchor: its *Required* pieces, the same in every layout (the casino's
-   cashier cage, the library's front desk, the theatre's stage). They go first so the
-   layout's pieces can stand *Near* them and face them (desks facing the teacher, tables
-   facing the stage).
+   cashier cage, the library's front desk). They go first so the layout's pieces can stand
+   *Near* them and face them (desks facing the teacher, the catalogue beside the desk). Where
+   the anchor's place is what tells the arrangements apart, each layout places its own as
+   its first, *Required* set piece instead: the theatre's stage (on a wall, in the round,
+   anywhere in a black box) and the bar's counter (on a wall, an island in the middle).
 2. The layout's set pieces: what the arrangement is built around (the pool basin, the
    card-table pits, the seat rows).
 3. The function's other props, the same in every layout (the pool's loungers round whatever
@@ -598,64 +600,64 @@ Props go down in this order:
 
 A function with no layout places its props in their own order.
 
-Every generated place has two to four layouts. Junction stays bare on purpose, and the
+Every generated place has three or four layouts. Junction stays bare on purpose, and the
 Reactor Core is a hand-built landmark. Casino, Library and Pool are written out in full below
 as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/` hold the rest.
 
 | Place | Layouts (cells or size · structure) |
 |---|---|
-| Quarters | **Suite** (9–11 tiles · DividerWall); **Twin Cabin** (7–9 tiles · CornerPillars); **Penthouse** (2×1 · CornerPillars) |
-| Cabin Row | **Cabin Corridor** (2×1 · OfficeMaze); **Dormitory** (10–12 tiles · LowRows) |
-| Commons | **Lounge** (11–12 tiles · CornerPillars); **Rec Room** (2×1 · WidePillarGrid, GuestPavilions); **Hearth** (10–12 tiles · ColumnRing) |
-| School | **Classroom** (9–11 tiles · CornerPillars); **Lecture Hall** (2×1 · AcrossLowRows); **Study Room** (8–10 tiles · CornerPillars) |
-| Park | **Garden** (2×1 · the faction’s); **Grove** (2×1 · the faction’s); **Plaza Garden** (10–12 tiles · CornerPillars, HubRing) |
-| Gym | **Weight Room** (10–12 tiles · LowRows); **Fitness Hall** (2×1 · WidePillarGrid, GuestPavilions) |
-| Observation Deck | **Window Gallery** (2×1 · CornerPillars); **Star Lounge** (10–12 tiles · ColumnRing) |
-| Wellness Center | **Treatment Suites** (9–11 tiles · OfficeMaze); **Spa Lounge** (9–11 tiles · CornerPillars) |
+| Quarters | **Suite** (9–11 tiles · DividerWall); **Twin Cabin** (7–9 tiles · CornerPillars); **Penthouse** (2×1 · CornerPillars); **Studio** (7–9 tiles · CornerPillars); **Connecting Rooms** (9–11 tiles · DividerWall) |
+| Cabin Row | **Cabin Corridor** (2×1 · OfficeMaze); **Dormitory** (10–12 tiles · LowRows); **Capsule Hotel** (9–11 tiles · LowRows); **Open Berthing** (9–11 tiles · LowRows) |
+| Commons | **Lounge** (11–12 tiles · CornerPillars); **Rec Room** (2×1 · WidePillarGrid, GuestPavilions); **Hearth** (10–12 tiles · ColumnRing); **Common Kitchen** (10–12 tiles · CornerPillars); **Media Lounge** (10–12 tiles · CornerPillars) |
+| School | **Classroom** (9–11 tiles · CornerPillars); **Lecture Hall** (2×1 · AcrossLowRows); **Study Room** (8–10 tiles · CornerPillars); **Horseshoe Classroom** (9–11 tiles · CornerPillars); **Seminar Room** (8–10 tiles · CornerPillars) |
+| Park | **Garden** (2×1 · the faction’s); **Grove** (2×1 · the faction’s); **Plaza Garden** (10–12 tiles · CornerPillars, HubRing); **Sunken Garden** (2×1 · SunkenFloorElevation) |
+| Gym | **Weight Room** (10–12 tiles · LowRows); **Fitness Hall** (2×1 · WidePillarGrid, GuestPavilions); **Studio** (9–11 tiles · CornerPillars) |
+| Observation Deck | **Window Gallery** (2×1 · CornerPillars); **Star Lounge** (10–12 tiles · ColumnRing); **Stargazing Dome** (10–12 tiles · ColumnRing); **Conversation Pit** (2×1 · CornerPillars, SunkenFloorElevation) |
+| Wellness Center | **Treatment Suites** (9–11 tiles · OfficeMaze); **Spa Lounge** (9–11 tiles · CornerPillars); **Thermal Suite** (9–11 tiles · OfficeMaze) |
 | Pool | **Lap Pool** (2×1 · CornerPillars, GuestPerimeterPavilions); **Lagoon** (2×2 · CornerPillars, GuestPerimeterPavilions); **Spa Terrace** (8–11 tiles · CornerPillars) |
-| Theatre | **Auditorium** (2×1 · AcrossLowRows); **Cabaret** (10–12 tiles · CornerPillars); **Amphitheatre** (2×1 · AcrossLowRows) |
-| Bar & Lounge | **Lounge Bar** (8–10 tiles · ServiceCounter); **Pub** (9–11 tiles · CornerPillars); **Cocktail Club** (9–11 tiles · ColumnRing) |
-| Casino | **Slot Hall** (2×1 · LowRows); **Table Pits** (10–12 tiles · ColumnRing, CornerPillars); **High-Roller Salon** (7–9 tiles · CornerPillars) |
-| Exhibit Hall | **Gallery** (10–12 tiles · ThreeLanes); **Sculpture Court** (10–12 tiles · HubRing) |
-| Grand Atrium | **Fountain Court** (2×2 · CornerPillars, HubRing); **Galleria** (2×2 · LowThreeLanes) |
-| Restaurant | **Dining Room** (10–12 tiles · DividerWall); **Bistro** (8–10 tiles · DividerWall); **Banquet Hall** (2×1 · DividerWall) |
-| Food Court | **Food Hall** (2×1 · WidePillarGrid, GuestPavilions); **Kiosk Ring** (2×1 · ColumnRing) |
-| Kitchen | **Galley** (8–10 tiles · ServiceCounter, CornerPillars); **Line Kitchen** (9–11 tiles · LowRows) |
+| Theatre | **Auditorium** (2×1 · AcrossLowRows); **Cabaret** (10–12 tiles · CornerPillars); **Amphitheatre** (2×1 · AcrossLowRows); **Theatre in the Round** (10–12 tiles · ColumnRing); **Black Box** (8–10 tiles · CornerPillars) |
+| Bar & Lounge | **Lounge Bar** (8–10 tiles · ServiceCounter); **Pub** (9–11 tiles · CornerPillars); **Cocktail Club** (9–11 tiles · ColumnRing); **Island Bar** (10–12 tiles · CornerPillars); **Sunken Lounge** (9–11 tiles · SunkenFloorElevation, CornerPillars) |
+| Casino | **Slot Hall** (2×1 · LowRows); **Table Pits** (10–12 tiles · ColumnRing, CornerPillars); **High-Roller Salon** (7–9 tiles · CornerPillars); **Playground Floor** (2×1 · CornerPillars, SunkenFloorElevation) |
+| Exhibit Hall | **Gallery** (10–12 tiles · ThreeLanes); **Sculpture Court** (10–12 tiles · HubRing); **Enfilade** (10–12 tiles · OfficeMaze); **Loop Gallery** (10–12 tiles, Ring · CornerPillars); **Exhibit Maze** (10–12 tiles · FoldWalls) |
+| Grand Atrium | **Fountain Court** (2×2 · CornerPillars, HubRing); **Galleria** (2×2 · LowThreeLanes); **Sunken Court** (2×2 · SunkenCourtTerraces, Overpass); **Centrum** (2×2 · CornerPillars, MezzanineElevation) |
+| Restaurant | **Dining Room** (10–12 tiles · DividerWall); **Bistro** (8–10 tiles · DividerWall); **Banquet Hall** (2×1 · DividerWall); **Diner** (9–11 tiles · DividerWall); **Open Kitchen** (10–12 tiles · ServiceCounter); **Buffet Hall** (10–12 tiles · DividerWall); **Terrace Dining** (10–12 tiles · DividerWall, MezzanineElevation) |
+| Food Court | **Food Hall** (2×1 · WidePillarGrid, GuestPavilions); **Kiosk Ring** (2×1 · ColumnRing); **Night Market** (2×1 · LowThreeLanes); **Cafeteria** (2×1 · WidePillarGrid); **Scatter Servery** (2×1 · WidePillarGrid); **Seating Deck** (2×1 · RaisedMiddleTerraces, CornerPillars) |
+| Kitchen | **Galley** (8–10 tiles · ServiceCounter, CornerPillars); **Line Kitchen** (9–11 tiles · LowRows); **Island Kitchen** (9–11 tiles · CornerPillars); **Zone Kitchen** (9–11 tiles · DividerWall); **Assembly Line** (8–10 tiles · CornerPillars) |
 | Promenade | **Arcade** (2×1 · CornerPillars); **Boulevard** (2×1 · LowThreeLanes) |
 | Medical Bay | **Surgery** (9–11 tiles · DividerWall); **Clinic Bays** (2×1 · OfficeMaze) |
-| Ward | **Long Ward** (2×1 · LowRows); **Bay Ward** (2×1 · OfficeMaze) |
-| Pharmacy | **Counter Shop** (6–8 tiles · ServiceCounter, CornerPillars); **Dispensary Aisles** (8–10 tiles · ShelfRows) |
-| Morgue | **Cold Room** (7–9 tiles · CornerPillars); **Autopsy Suite** (8–10 tiles · DividerWall) |
-| Security Office | **Checkpoint** (10–12 tiles · CheckpointBarrier); **Holding Cells** (10–12 tiles · OfficeMaze) |
-| Armory | **Rack Aisles** (8–10 tiles · ShelfRows); **Vault** (6–8 tiles · CornerPillars) |
+| Ward | **Long Ward** (2×1 · LowRows); **Bay Ward** (2×1 · OfficeMaze); **Racetrack Ward** (2×1 · ColumnRing) |
+| Pharmacy | **Counter Shop** (6–8 tiles · ServiceCounter, CornerPillars); **Dispensary Aisles** (8–10 tiles · ShelfRows); **Compounding Room** (8–10 tiles · DividerWall) |
+| Morgue | **Cold Room** (7–9 tiles · CornerPillars); **Autopsy Suite** (8–10 tiles · DividerWall); **Drawer Gallery** (8–10 tiles · ShelfRows) |
+| Security Office | **Checkpoint** (10–12 tiles · CheckpointBarrier); **Holding Cells** (10–12 tiles · OfficeMaze); **Surveillance Room** (9–11 tiles · CornerPillars) |
+| Armory | **Rack Aisles** (8–10 tiles · ShelfRows); **Vault** (6–8 tiles · CornerPillars); **Issue Counter** (9–11 tiles · ServiceCounter) |
 | Barracks | **Bunk Rows** (10–12 tiles · LowRows); **Bunk Bays** (2×1 · OfficeMaze) |
-| Workshop | **Fab Shop** (10–12 tiles · CornerPillars); **Assembly Bay** (2×1 · ThreeLanes) |
+| Workshop | **Fab Shop** (10–12 tiles · CornerPillars); **Assembly Bay** (2×1 · ThreeLanes); **Tool Crib** (9–11 tiles · ServiceCounter) |
 | Processing Plant | **Line Hall** (2×1 · LowRows); **Sorting Floor** (2×1 · ThreeLanes); **Smeltery** (2×1 · WidePillarGrid) |
 | Life Support | **Scrubber Hall** (10–12 tiles · CornerPillars); **Plant Room** (9–11 tiles · DensePillarGrid); **Atmosphere Processor** (10–12 tiles · ColumnRing); **Air Garden** (10–12 tiles · WidePillarGrid) |
-| Engine Room | **Turbine Hall** (2×1 · CornerPillars); **Drive Gallery** (2×1 · LowRows); **Thruster Bay** (2×1 · CornerPillars); **Drive Core** (2×1 · ColumnRing) |
+| Engine Room | **Turbine Hall** (2×1 · CornerPillars); **Drive Gallery** (2×1 · LowRows); **Thruster Bay** (2×1 · CornerPillars); **Drive Core** (2×1 · ColumnRing); **Catwalk Hall** (2×1 · CornerPillars, MezzanineElevation) |
 | Power Distribution | **Switchgear** (9–11 tiles · CornerPillars); **Capacitor Hall** (2×1 · LowRows); **Substation** (10–12 tiles · ColumnRing) |
 | Waste Reclamation | **Sorting Line** (2×1 · LowRows); **Compactor Bay** (10–12 tiles · CornerPillars); **Incinerator Hall** (2×1 · WidePillarGrid, ServicePavilions) |
 | Fuel Depot | **Tank Row** (2×1 · CornerPillars); **Pump Room** (9–11 tiles · DensePillarGrid); **Bunkers** (2×1 · CornerPillars) |
 | Coolant Plant | **Radiator Gallery** (2×1 · ShelfRows); **Pump Hall** (2×1 · WidePillarGrid); **Cryo Loop** (10–12 tiles · ColumnRing) |
 | Maintenance Hub | **Crawlway** (7–9 tiles · CornerPillars); **Parts Store** (8–10 tiles · ShelfRows); **Repair Bay** (9–11 tiles · CornerPillars) |
 | Comms Array | **Signal Room** (9–11 tiles · AcrossLowRows); **Antenna Gallery** (10–12 tiles · ColumnRing); **Relay Closet** (7–9 tiles · CornerPillars) |
-| Bridge | **Command Deck** (2×1 · ColumnRing); **Flight Bridge** (2×1 · AcrossLowRows) |
-| Control Room | **Operations** (9–11 tiles · AcrossLowRows); **Monitoring Ring** (10–12 tiles · ColumnRing) |
-| Offices | **Cubicles** (9–11 tiles · OfficeMaze); **Open Plan** (2×1 · LowThreeLanes) |
-| Hydroponics Bay | **Rack Rows** (2×1 · ShelfRows); **Grow Hall** (2×1 · LowThreeLanes) |
+| Bridge | **Command Deck** (2×1 · ColumnRing); **Flight Bridge** (2×1 · AcrossLowRows); **Horseshoe Bridge** (2×1 · CornerPillars); **Command Dais** (2×1 · CornerPillars, PlatformElevation) |
+| Control Room | **Operations** (9–11 tiles · AcrossLowRows); **Monitoring Ring** (10–12 tiles · ColumnRing); **Situation Room** (10–12 tiles · CornerPillars) |
+| Offices | **Cubicles** (9–11 tiles · OfficeMaze); **Open Plan** (2×1 · LowThreeLanes); **Executive Suite** (9–11 tiles · DividerWall) |
+| Hydroponics Bay | **Rack Rows** (2×1 · ShelfRows); **Grow Hall** (2×1 · LowThreeLanes); **Aquaponics Bay** (2×1 · WidePillarGrid) |
 | Farm | **Fields** (2×1 · the faction’s); **Orchard** (2×1 · the faction’s) |
 | Water Treatment | **Tank Farm** (2×1 · CornerPillars); **Filter Gallery** (2×1 · LowRows); **Settling Pools** (2×1 · CornerPillars); **Pump Station** (9–11 tiles · DensePillarGrid) |
-| Laboratory | **Wet Lab** (9–11 tiles · DividerWall); **Clean Rooms** (2×1 · OfficeMaze) |
-| Data Center | **Server Aisles** (8–10 tiles · ShelfRows); **Core Vault** (9–11 tiles · ColumnRing) |
-| Library | **Stacks** (10–12 tiles · ShelfRows); **Reading Hall** (2×1 · WidePillarGrid); **Rotunda** (10–12 tiles · ColumnRing) |
-| Chapel | **Nave** (9–11 tiles · AcrossLowRows); **Round Chapel** (9–11 tiles · ColumnRing) |
-| Shrine | **Alcove Shrine** (6–8 tiles · ColumnRing); **Garden Shrine** (7–9 tiles · CornerPillars) |
-| Lobby | **Reception Hall** (1×1 · CornerPillars, HubRing); **Waiting Lounge** (9–11 tiles · LowRows) |
-| Cargo Bay | **Container Yard** (2×1 · DensePillarGrid, ServicePavilions); **Loading Dock** (2×1 · ThreeLanes) |
-| Docking Bay | **Airlock Hall** (1×1 · WidePillarGrid, ServicePerimeterPavilions); **Fuel Dock** (1×1 · CornerPillars) |
-| Hangar | **Flight Deck** (2×2 · CornerPillars, ServicePerimeterPavilions); **Maintenance Bay** (2×1 · CornerPillars, ServicePavilions) |
-| Escape Pod Bay | **Pod Gallery** (8–10 tiles · CornerPillars); **Muster Station** (9–11 tiles · LowRows) |
-| Storage | **Shelf Aisles** (8–10 tiles · ShelfRows); **Crate Stacks** (8–10 tiles · WideShelfRows) |
+| Laboratory | **Wet Lab** (9–11 tiles · DividerWall); **Clean Rooms** (2×1 · OfficeMaze); **Island Benches** (10–12 tiles · CornerPillars) |
+| Data Center | **Server Aisles** (8–10 tiles · ShelfRows); **Core Vault** (9–11 tiles · ColumnRing); **Rack Pods** (9–11 tiles · CornerPillars) |
+| Library | **Stacks** (10–12 tiles · ShelfRows); **Reading Hall** (2×1 · WidePillarGrid); **Rotunda** (10–12 tiles · ColumnRing); **Mezzanine Stacks** (10–12 tiles · CornerPillars, MezzanineElevation) |
+| Chapel | **Nave** (9–11 tiles · AcrossLowRows); **Round Chapel** (9–11 tiles · ColumnRing); **Meditation Room** (7–9 tiles · CornerPillars); **Raised Chancel** (9–11 tiles · PlatformElevation) |
+| Shrine | **Alcove Shrine** (6–8 tiles · ColumnRing); **Garden Shrine** (7–9 tiles · CornerPillars); **Lantern Walk** (6–8 tiles · CornerPillars) |
+| Lobby | **Reception Hall** (1×1 · CornerPillars, HubRing); **Waiting Lounge** (9–11 tiles · LowRows); **Rotunda Lobby** (10–12 tiles · ColumnRing) |
+| Cargo Bay | **Container Yard** (2×1 · DensePillarGrid, ServicePavilions); **Loading Dock** (2×1 · ThreeLanes); **Dock Neck** (2×1, Waist · WidePillarGrid); **Split Deck** (2×1 · SplitLevelTerraces); **Ro-Ro Deck** (2×1 · LowThreeLanes); **Logistics Module** (7–9 tiles · CornerPillars); **Loading Platform** (2×1 · CornerPillars, PlatformElevation) |
+| Docking Bay | **Airlock Hall** (1×1 · WidePillarGrid, ServicePerimeterPavilions); **Fuel Dock** (1×1 · CornerPillars); **Customs Hall** (1×1 · CheckpointBarrier) |
+| Hangar | **Flight Deck** (2×2 · CornerPillars, ServicePerimeterPavilions); **Maintenance Bay** (2×1 · CornerPillars, ServicePavilions); **Launch Bay** (2×1 · ThreeLanes); **Service Pit** (2×1 · BridgedSunkenFloorElevation, CornerPillars) |
+| Escape Pod Bay | **Pod Gallery** (8–10 tiles · CornerPillars); **Muster Station** (9–11 tiles · LowRows); **Launch Ring** (9–11 tiles · ColumnRing) |
+| Storage | **Shelf Aisles** (8–10 tiles · ShelfRows); **Crate Stacks** (8–10 tiles · WideShelfRows); **Aisle Comb** (8–10 tiles, Comb · ShelfRows); **Cage Store** (9–11 tiles · StorageCages); **High Bay** (9–12 tiles · PalletRackRows) |
 
 **Worked examples.**
 
@@ -680,6 +682,141 @@ In the worked examples, the numbers in brackets are *Min Room Tiles*. A multi-ce
 where its neighbours leave no room, and its set pieces still fit, because they grow with the
 room or are left out by size.
 
+### Researched places
+
+#### Cargo Bay and Storage
+
+The first places rebuilt from how real ones are laid out (warehouse flow and racking,
+ship holds and ro-ro decks, the station's logistics modules, self-storage halls). The
+rest of the catalogue follows the same way, a place at a time.
+
+**Cargo Bay.** A cargo bay is organised round where goods come in: the place's anchor is
+now one or two **dock doors** (`ServiceDoor`, *Key* `Dock`, *Marks Route*), and the layouts
+stage their cargo in front of them. Its layouts follow the three warehouse flows and the
+ship's holds:
+- **Container Yard**: containers in bays on a 3×2 lattice, the way a hold stows them, a
+  forklift working the stacks (*Key* `Stack`) and loose freight on the walls.
+- **Loading Dock**: a U-shaped dock, more doors along the walls with pallets staged in front
+  of each and forklifts working them.
+- **Dock Neck**: the L-shaped flow on the Waist shape, a receiving hall where pallets wait by
+  the dock and pallet racks at the back, off the routes, through the neck.
+- **Split Deck**: on-deck and under-deck: heavy containers in the middle, crates and light
+  stowage bags round them.
+- **Ro-Ro Deck**: a roll-on, roll-off vehicle deck: low lane dividers, vehicles and trailers
+  parked nose to tail down the lanes, fuel drums in the corners.
+- **Logistics Module**: a cramped one-cell module like the station's supply modules, racks on
+  every wall and stowage bags strapped in front of them.
+
+**Storage.** A storeroom is about how goods are racked, so its layouts follow the main
+storage systems:
+- **Shelf Aisles**: selective shelving, every shelf reachable from an aisle, a picking cart.
+- **Crate Stacks**: block stacking: pallets packed along wide rows, few aisles.
+- **Aisle Comb**: shelving bays off a spine.
+- **Cage Store**: a self-storage hall: a corridor one tile wide with narrow units opening on
+  both sides (`StorageCagesStructureRule`, an Office Maze with 2-deep, 1–2-wide units and no
+  suites), each unit holding a stack of crates and perhaps a shelf.
+- **High Bay**: narrow-aisle pallet racking: full-height rows three tiles apart in long runs
+  (`PalletRackRowsStructureRule`), pallet racks lining every face, a forklift in the aisles and
+  pallets waiting just inside the way in.
+
+New pieces for them: `PalletRack` (two levels of loads with an orange beam, high cover),
+`Pallet` (a wrapped load, low cover) and `CargoBag` (a strapped stowage bag), with
+`CargoContainer`, `Forklift` and `ServiceDoor` back from the cut.
+
+#### Entertainment
+
+The guest halls kept their layouts where they already matched how such rooms are planned,
+got the real pieces back (`SlotMachine`, `CashierCage`, `RouletteTable`, `Stage`, `Fountain`
+in place of lockers, counters, tables and rubble) and gained the arrangements that were missing:
+- **Casino.** The two schools of casino planning: Friedman's *maze* (dense slot banks, short
+  sightlines, no central aisle) is the **Slot Hall**; the *playground* that replaced it (open
+  floor under a high ceiling, slots in islands, a table pit and a feature in view) is the new
+  **Playground Floor**: card tables on a lattice in a sunken pit, roulette beside them, slot
+  machines clustered in islands, a fountain in view of the way in (150+ tiles) and a bar on a
+  wall (110+). Slots outnumber tables, as on real floors.
+- **Theatre.** The stage forms: **Auditorium** is the proscenium (rows facing a stage on one
+  wall), **Amphitheatre** the thrust (benches wrapped round three sides), **Cabaret** tables
+  facing the stage; new are **Theatre in the Round** (the stage in the middle, seat rows all
+  round it) and the **Black Box** (a small bare room, the stage wherever the show puts it,
+  loose chairs facing it and flight cases in the corners). The stage moved from the place into
+  each layout to allow it.
+- **Bar & Lounge.** The bar shapes: a straight bar on a wall (**Lounge Bar**, **Pub**,
+  **Cocktail Club**) and the new **Island Bar** (the counter in the middle with stools on both
+  faces, banquettes on the walls, high tables round it), plus the **Sunken Lounge**: a lounge pit
+  of sofas round low tables, the bar on a wall. The counter moved into each layout too.
+- **Grand Atrium.** The cruise-ship centrum: the new **Centrum** has a mezzanine, a stage with
+  benches facing it, one or two glass lifts (`GlassLift`), a bar at the foot, shopfronts round the
+  walls and a tree in the middle.
+- **Exhibit Hall.** The museum circulation types: open plan (**Gallery**), core and satellites
+  (**Sculpture Court**), linear procession (**Enfilade**), and now the **Loop Gallery** (cases
+  along a ring that brings visitors back to the way in, an information lectern there) and the
+  **Exhibit Maze** (a labyrinth of fold walls with cases spread through it).
+
+#### Residential
+
+The crew and passenger rooms gained the arrangements their real counterparts are known by:
+- **Quarters.** Hotel room types: the **Suite** (bedroom and living room behind a divider),
+  **Twin Cabin** and **Penthouse** were there; new are the **Studio** (one open room: the bed,
+  a kitchenette counter with a sink beside it, a table for two near it, a sofa on a rug) and
+  **Connecting Rooms** (a divider wall with a doorway splits the room in two, each half with
+  its own bed, locker and lamp).
+- **Cabin Row.** Beside the cabin corridor, dormitory and capsule hotel, **Open Berthing** is a
+  ship's crew berthing: bunks along every wall, low locker rows down the middle, a mess table
+  with stools.
+- **Commons.** A shared lounge is zoned by activity, the loud kitchen apart from the quiet seats:
+  the **Common Kitchen** has counters and a sink on a wall with a vending machine, dining tables
+  near it and sofas away from the routes; the **Media Lounge** has a screen on a wall
+  (*Key* `Screen`) with sofas facing it, a rug in front and, in a big room, a card table.
+- **School.** The classroom seating plans: rows facing the teacher (**Classroom**), tiered rows
+  (**Lecture Hall**) and group pods (**Study Room**) were there; new are the **Horseshoe
+  Classroom** (desks along the walls facing the middle, the lectern by the teacher's desk) and
+  the **Seminar Room** (one round table, chairs on both sides, shelves and a screen on the walls).
+- **Restroom.** It furnishes rooms in buildings and pavilions, which don't pick layouts, so it
+  stays one arrangement, now planned like a public washroom: the toilets (`Toilet`, back from the
+  cut) as a stall row along one wall and the sinks in a row of their own.
+
+#### Food
+
+The galley line (`KitchenLine`: a counter with a hob and an extractor hood) is back from the cut
+as the Kitchen's and Restaurant's anchor, and the food places gained the layouts their trade
+plans by:
+- **Kitchen.** The commercial kitchen layouts: galley, island and line were there; new are the
+  **Zone Kitchen** (a divider splits the cooking and prep side from a scullery of sinks and
+  store shelves) and the **Assembly Line** (a second range near the place's cooking line, then
+  the pass counter, *Key* `Pass`, with a trolley beside it: food moves one way down the wall).
+- **Restaurant.** The kitchen stays behind the dining room in the back zone. New are the
+  **Diner** (booths nose to tail along the walls, a counter with stools, a few tables), the
+  **Open Kitchen** (the kitchen wall is a low service counter diners see over, tables on a
+  lattice and a chef's counter with stools) and the **Buffet Hall** (buffet counters end to
+  end down the middle, *Key* `Buffet`, a trolley by them and tables round them).
+- **Food Court.** Beside the food hall, kiosk ring and night market: the **Cafeteria**, a crew
+  mess with a serving line along one wall (*Key* `Servery`), long tables on a lattice with six
+  chairs each and tray bins by the routes; and the **Scatter Servery**, the modern cafeteria
+  that breaks the queue up into free-standing stations (*Key* `Station`) with table clusters
+  between them.
+
+#### Raised and sunken floor
+
+Layouts built round a level of their own, with *Floor* keeping their pieces on it, and three
+kits that only go up or down (Pit Lounge, Mezzanine Tables, Dais). Each falls back to the
+ground floor where the room gets no platform or pit, so it never comes up bare:
+- **Chapel › Raised Chancel**: the sanctuary of a church, up steps from the nave: the altar and
+  a lectern on a platform against the far wall (`PlatformElevation`), pews below facing it. The
+  altar moved from the place into each layout to allow it.
+- **Bridge › Command Dais**: the command table and the captain's chair up on a dais, consoles
+  on the floor round it and the main screen on a wall. The command table moved into each layout.
+- **Cargo Bay › Loading Platform**: a dock platform at the height of a vehicle's bed, pallets
+  staged on it, a forklift and containers on the floor below.
+- **Restaurant › Terrace Dining**: a railed gallery of tables for two above the dining room
+  (`MezzanineElevation`), the kitchen behind its wall as usual.
+- **Library › Mezzanine Stacks**: shelves along the gallery, reading tables on the floor.
+- **Park › Sunken Garden**: a sunken garden: a fountain and planters down in the hollow,
+  benches round the rim facing it.
+- **Observation Deck › Conversation Pit**: a lounge well of sofas round a table, the telescopes
+  on the walls.
+- **Engine Room › Catwalk Hall**: consoles and pipe runs up on a gallery above the plant.
+- **Grand Atrium › Centrum** gained Mezzanine Tables on its mezzanine.
+
 ### Set pieces
 
 These options on `RoomPropPlacement` (every function, dressing and layout has them) keep a
@@ -697,6 +834,11 @@ place recognisable at any size:
   and stretched to the footprint, so one basin fits every pool. Such a feature is part of the
   room's plan: it neither stops at nor uses up the fill share, so the furniture round it keeps
   its share.
+- **Floor level** (*Floor*: Ground, Raised, Sunken): kept to the doorways' floor, to a platform,
+  stage, mezzanine or upper terrace, or down in a pit, crater or lower terrace, every tile of
+  the piece. A room that got no such floor (the rule found no room for it, or the level's
+  settings allow no levels) puts those pieces anywhere instead, so it keeps its furniture.
+  The Playground Floor's card tables stand in its pit and the Sunken Lounge's sofas in its well.
 - **Pieces for big rooms** (*Min Room Tiles*): left out of a smaller room (or Breach side). That
   is not reported as a shortfall.
 
@@ -719,10 +861,32 @@ gather round whatever a place is built round.
 | **Locker Row** | Two to four lockers nose to tail along a wall | Barracks, Gym, Security Office, Armory, Quarters, Cabin Row, Workshop, School, Pool, Wellness Center |
 | **Seating Nook** | One or two benches against the walls with floor in front | Lobby, Promenade, Commons, Observation Deck, Wellness Center, Grand Atrium, Food Court, Medical Bay, Docking Bay |
 | **Greenery** | One to three planters in corners and along walls | Grand Atrium, Lobby, Promenade, Commons, Offices, Restaurant, Wellness Center, Observation Deck, Chapel |
+| **Vending Alcove** | One or two vending machines on the walls within two steps of a route, floor kept in front | Commons, Gym, Lobby, Promenade, Food Court, Barracks, Docking Bay, Escape Pod Bay, Medical Bay, School, Observation Deck, Hangar |
+| **Waste Point** | One or two recycling bins spread along the walls | Food Court, Kitchen, Promenade, Restaurant, Cargo Bay, Workshop, Commons, Lobby, Bar & Lounge, Hangar |
+| **Corner Lamps** | One to three floor lamps in the corners | Quarters, Commons, Bar & Lounge, Casino, Library, Lobby, Offices, Observation Deck, Wellness Center, Restaurant, Theatre |
+| **Wash Station** | One or two sinks side by side on a wall, floor kept in front | Kitchen, Laboratory, Medical Bay, Morgue, Gym, Wellness Center, Ward, Pharmacy, Barracks |
+| **Study Desk** *(Residential)* | A desk on a wall with its chair in front and perhaps a lamp | Quarters, Cabin Row, School, Library |
+| **Sun Deck** *(Recreation)* | One or two pairs of loungers under a parasol, facing the middle | Observation Deck, Park, Wellness Center |
+| **Lounge Set** *(Entertainment)* | A sofa on a wall with a rug in front and a lamp beside it | Bar & Lounge, Casino, Theatre, Grand Atrium, Lobby, Observation Deck |
+| **Pit Lounge** *(Sunken)* | Two to four sofas facing the middle with rugs, a low table among them, down in the pit | Observation Deck's Conversation Pit |
+| **Mezzanine Tables** *(Raised)* | One to three tables for two up on the mezzanine, a lamp in its corner | Grand Atrium's Centrum, Restaurant's Terrace Dining |
+| **Dais** *(Raised)* | Planters in the corners of the platform and candles clustered on it | Chapel's Raised Chancel |
+| **Café Tables** *(Commercial)* | One to three tables with two to four chairs each, spread over the floor | Food Court, Promenade, Grand Atrium, Commons, Bar & Lounge |
+| **Market Kiosks** *(Commercial)* | One or two kiosks facing the middle, floor kept round them (90+ tiles) | Promenade, Food Court, Grand Atrium |
+| **Treatment Bay** *(Medical)* | One or two beds on the walls, each with an instrument trolley | Medical Bay, Ward, Wellness Center |
+| **Guard Post** *(Security)* | A console and chair just inside the way in, by the route | Security Office, Armory, Data Center, Docking Bay, Hangar, Cargo Bay |
+| **Rack Wall** *(Security)* | One to three weapon racks nose to tail along a wall | Security Office, Barracks |
+| **Briefing Table** *(Command)* | A command table in the middle with up to six chairs (60+ tiles) | Control Room, Security Office, Offices |
+| **Grow Station** *(Agriculture)* | Two to four grow racks in a line along a wall | Hydroponics Bay, Farm |
+| **Lab Bench** *(Science)* | One or two workbenches on the walls with stools in front | Laboratory, Workshop, Maintenance Hub, School |
+| **Showcase** *(Science)* | One to three display cases in plain view of the way in (60+ tiles) | Library, Lobby, Grand Atrium, School |
+| **Waiting Seats** *(Transit)* | One or two seat rows on the walls | Lobby, Docking Bay, Escape Pod Bay, Medical Bay, Pharmacy |
+| **Votive Candles** *(Worship)* | Two to four clusters of candles round the *Altar* | Chapel, Shrine |
 
 The first five are tuned for the operations places (the Control Station, Hazard Cordon and the
-operations Service Corner gather round the *Plant*); the last five stand Near nothing, so any
-place may list them. Every kit's counts scale with the room (`ScaleByRoomSize`) where it is a
+operations Service Corner gather round the *Plant*); Terminal Bank to Wash Station stand Near nothing, so any
+place may list them; the kits marked with a category are built for the places of that
+category, and the Votive Candles gather round the *Altar* a chapel or shrine sets. Every kit's counts scale with the room (`ScaleByRoomSize`) where it is a
 filler, so a closet and a hall are equally furnished.
 
 **Growing the ecosystem.** To add a kit: make the asset under `Sets/` (copy one, give it a new
@@ -777,7 +941,6 @@ three layouts, and nothing anywhere stands *Near* a key that isn't set before it
 
 ### Next
 
-- A third layout for the places that have two, starting with the guest places seen most.
 - Let a faction prefer layouts: VOID the salon's tight cells, TECH the hall's long lanes. That
   could be a weight multiplier per layout on `FactionDesign`, like its shapes.
 - Let the check also report the room's traits per layout, so a layout can be tuned toward the
@@ -826,7 +989,7 @@ or an earlier structure are left as plazas.
   are not applied inside a room. Zone rules in its props are read against the room alone
   (`RoomPropPlacement.ForSingleZone`: "main space" is the whole room, "others" are skipped).
 - The Restroom place (`Data/Level/Functions/`, not in the build settings' list) is used by the
-  School, Hospital, Library and House plans; it has no stalls, only toilets, sinks and a bin.
+  School, Hospital, Library and House plans; its toilets stand in a row along a wall (no stall walls: structure isn't built inside a building's rooms), with a row of sinks and a bin.
 - A town's room is open-air: it sits under a sky dome (`SkyDomeBuilder`, shared with parks,
   *Sky domes* in the build settings). Its buildings are roofed (`StructureSpace.Roofed`, set
   by a shell-walled blueprint; `LevelGeometryBuilder.BuildCeilings` roofs those tiles even
@@ -1043,6 +1206,27 @@ already fitted together are one group that moves as a block (`DirectRoomAligner`
 and pairs of pairs fit. A moved group keeps a hallway's width (3 tiles) from every room except
 the one it joins, so the hallways still to be routed have room to pass. The ready-made map
 layouts' *Direct Door Chance* went from 0.2–0.3 to 0.45–0.55, and Linear, which had none, to 0.4.
+
+**Direct by default.** Every ready-made layout's *Direct Door Chance* is now 1: rooms open into
+each other as standard, and a hallway is left only where it does a job — a gate, a shortcut or
+a one-way link (they always keep theirs), a link between rooms that aren't grid neighbours, and a
+pair that can't be fitted (shapes whose doorways can't face each other within a cell's shift, or
+a neighbour in the way; the build warning says which). Measured outside Unity on 600 generated
+grid maps of about 20 rooms, with the real `DirectRoomAligner` and `CorridorRouter`, rectangle
+and L-shaped rooms and two-cell halls:
+
+| Direct Door Chance | Fitted direct doors | Fell back to a hallway | Hallways per map | Average hallway |
+|---|---|---|---|---|
+| 0.5 (before) | 8.4 | 0.6 | 12.4 of 20.7 links | 11.6 tiles |
+| 1 (now) | 14.5 | 3.5 | 6.2 of 20.7 links | 17 tiles |
+
+The hallways that are left are longer because they go round packed groups of rooms. Packing
+can also wall in pockets of floor, and the one doorway picked per side may open into one: about 1
+map in 25 (1 in 100 before) had a link no corridor reached. The builder now tries every free
+doorway of both rooms (nearest first, up to 12 each) before giving up, which joined all of them;
+layouts that routed before route exactly as they did. Letting groups shift further (1.5 cells)
+fits more pairs (13% fall back) but brought unroutable links back at 2 cells, so the shift stays
+at one cell. Next: give the remaining hallways something to do (sightlines, cover, a door to hold).
 
 ### Next
 

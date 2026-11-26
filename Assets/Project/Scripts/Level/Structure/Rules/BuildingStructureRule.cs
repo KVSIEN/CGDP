@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 using CGD.Core;
 
@@ -29,7 +30,7 @@ namespace CGD.Level
         // The sides of the room, nearest the first doorway first (random order without one).
         private static List<Vector2Int> FrontsNearestFirst(RoomStructure structure, RectInt bounds, RandomStream random)
         {
-            var fronts = new List<Vector2Int>(GridSides.All);
+            var fronts = new List<Vector2Int>(GridNeighbours.Four);
             random.Shuffle(fronts);
             if (structure.Entrances.Count == 0) return fronts;
 

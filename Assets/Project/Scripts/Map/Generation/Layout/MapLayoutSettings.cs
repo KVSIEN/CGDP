@@ -34,7 +34,7 @@ namespace CGD.Map
         [SerializeField] private MapBranchSettings _branches = new();
         [SerializeField] private MapLoopSettings   _loops    = new();
         [SerializeField] private MapGateSettings   _gates    = new();
-        [Tooltip("Chance a plain link between rooms in neighbouring grid cells is a direct door: the rooms touch and share a doorway instead of a hallway")]
+        [Tooltip("Chance a plain link between rooms in neighbouring grid cells is a direct door: the rooms touch and share a doorway instead of a hallway. At 1 (the presets) hallways are left to gates, shortcuts, one-way links, rooms further apart and pairs whose shapes can't be fitted together")]
         [SerializeField, Range(0f, 1f)] private float _directDoorChance;
 
         public IntRange OptionalRooms         => _optionalRooms;

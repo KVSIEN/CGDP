@@ -15,7 +15,7 @@ MonoBehaviour:
   _displayName: Breakers
   _props:
   - Prefabs:
-    - {fileID: 6690596464837188276, guid: 75ee3fbd35214e96915a6891ac2dbb89, type: 3}
+    - {fileID: 168696516621161971, guid: 8eba4821ea7c48dc97b597a59490fb66, type: 3}
     Activity: {fileID: 11400000, guid: 343e0ce247b4467c9bdfa08a72236ac6, type: 2}
     Count:
       Min: 1

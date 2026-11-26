@@ -59,7 +59,7 @@ namespace CGD.Level
         [Header("Doors")]
         [Tooltip("The door on this faction's ordinary connections, at the end of the corridor its room holds (a Door prefab: origin at the doorway's centre on the floor, +Z out of the room). Empty = the build settings' door. Locks, secrets and one-way shortcuts keep theirs")]
         [SerializeField] private GameObject _doorPrefab;
-        [Tooltip("The door on a connection into a Stealth room: hand-operated, so it opens when you choose and makes next to no sound. Empty = the build settings' stealth door")]
+        [Tooltip("The door on a connection into a Stealth room: a door without a DoorSensor, so enemies can't open it and the room's guards stay in; you press its button or force it. Empty = the build settings' stealth door")]
         [SerializeField] private GameObject _stealthDoorPrefab;
 
         [Header("Agents")]

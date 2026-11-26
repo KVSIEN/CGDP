@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
+using CGD.Algorithms;
 using NUnit.Framework;
 using UnityEngine;
 using CGD.Core;
@@ -56,7 +57,7 @@ namespace CGD.Tests
             try
             {
                 for (int seed = 0; seed < Seeds; seed++)
-                    foreach (Vector2Int front in GridSides.All)
+                    foreach (Vector2Int front in GridNeighbours.Four)
                     {
                         var lot = new RectInt(3, 5, 14, 11);
                         BuildingBlueprint blueprint = new BuildingLayoutPlanner(plan).Plan(lot, front, Stream(seed));

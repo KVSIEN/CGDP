@@ -19,50 +19,30 @@ namespace CGD.Editor
         public string Seed = "1";
 
         // --- Recipe ---------------------------------------------------------------------
-        public MapNodeType Type = MapNodeType.Combat;
-        [Tooltip("Pinned place. Empty = picked from the category, as the level does")]
-        public RoomFunction Place;
-        [Tooltip("Pinned layout of the place. Empty = picked by weight, as the level does")]
-        public RoomLayout Layout;
-        public RoomCategory Category;
+        // The made-up room (type, place, layout, faction, tier, levels, doorways…), as the
+        // room generator scene resolves its own to.
+        public RoomRecipe Room = new();
         [Tooltip("Factions come from this content's list")]
         public MapContentSettings Content;
-        public int Faction = MapNode.NoFaction;
-        public int BreachFaction = MapNode.NoFaction;
-        [Tooltip("How firmly the holder holds the room (the map's faction influence): full design at 0.7 and up, thinner toward the frontier")]
-        [Range(0f, 1f)] public float Influence = 1f;
-        [Tooltip("The ship section the room stands in (from the content's list): its side of the ship, where the place can sit on it")]
-        public int Section = MapNode.NoSection;
-        [Range(1, 3)] public int Tier = 1;
-        [Range(0f, 1f)] public float Intensity = 0.5f;
-        public bool DoorNorth = true, DoorEast = true, DoorSouth = true, DoorWest;
 
         // --- Map room -------------------------------------------------------------------
         public MapGraphAsset Graph;
         public int NodeId;
 
-        public int DoorCount => (DoorNorth ? 1 : 0) + (DoorEast ? 1 : 0) + (DoorSouth ? 1 : 0) + (DoorWest ? 1 : 0);
-
-        public RoomLabRecipe Clone() => (RoomLabRecipe)MemberwiseClone();
-
-        // The made-up room alone, for RoomRecipeGraph.
-        public RoomRecipe ToRoomRecipe() => new()
+        public RoomLabRecipe Clone()
         {
-            Type          = Type,
-            Place         = Place,
-            Layout        = Layout,
-            Category      = Category,
-            Faction       = Faction,
-            BreachFaction = Type.HasSecondFaction() ? BreachFaction : MapNode.NoFaction,
-            Influence     = Influence,
-            Section       = Section,
-            Tier          = Tier,
-            Intensity     = Intensity,
-            DoorNorth     = DoorNorth,
-            DoorEast      = DoorEast,
-            DoorSouth     = DoorSouth,
-            DoorWest      = DoorWest,
-        };
+            var copy = (RoomLabRecipe)MemberwiseClone();
+            copy.Room = Room.Clone();
+            return copy;
+        }
+
+        // The made-up room alone, for RoomRecipeGraph: a second faction only where the type has one.
+        public RoomRecipe ToRoomRecipe()
+        {
+            RoomRecipe room = Room.Clone();
+            if (!room.Type.HasSecondFaction()) room.BreachFaction = MapNode.NoFaction;
+            return room;
+        }
 
         // A recipe for the room a map graph node becomes, so it can be tried on its own with
         // other doorways, places or seeds. Doorways keep the sides the node's neighbours lie on.
@@ -73,18 +53,21 @@ namespace CGD.Editor
                 Source        = SourceKind.Recipe,
                 BuildSettings = settings,
                 Seed          = graph.SeedText,
-                Type          = node.Type,
-                Place         = node.Place as RoomFunction,
-                Layout        = node.Layout as RoomLayout,
-                Category      = node.Category,
                 Content       = graph.Content,
-                Faction       = node.Faction,
-                BreachFaction = node.BreachFaction,
-                Influence     = node.FactionInfluence,
-                Section       = node.Section,
-                Tier          = node.Tier,
-                Intensity     = node.Intensity,
-                DoorNorth = false, DoorEast = false, DoorSouth = false, DoorWest = false,
+                Room = new RoomRecipe
+                {
+                    Type          = node.Type,
+                    Place         = node.Place as RoomFunction,
+                    Layout        = node.Layout as RoomLayout,
+                    Category      = node.Category,
+                    Faction       = node.Faction,
+                    BreachFaction = node.BreachFaction,
+                    Influence     = node.FactionInfluence,
+                    Section       = node.Section,
+                    Tier          = node.Tier,
+                    Intensity     = node.Intensity,
+                    DoorNorth = false, DoorEast = false, DoorSouth = false, DoorWest = false,
+                },
             };
 
             foreach (MapConnection connection in graph.Graph.Connections)
@@ -93,9 +76,9 @@ namespace CGD.Editor
 
                 // The editor's y grows downward, so a neighbour drawn above lies north.
                 Vector2 to = other.Position - node.Position;
-                if (Mathf.Abs(to.x) >= Mathf.Abs(to.y)) { if (to.x >= 0f) recipe.DoorEast = true; else recipe.DoorWest = true; }
-                else if (to.y <= 0f) recipe.DoorNorth = true;
-                else recipe.DoorSouth = true;
+                if (Mathf.Abs(to.x) >= Mathf.Abs(to.y)) { if (to.x >= 0f) recipe.Room.DoorEast = true; else recipe.Room.DoorWest = true; }
+                else if (to.y <= 0f) recipe.Room.DoorNorth = true;
+                else recipe.Room.DoorSouth = true;
             }
             return recipe;
         }

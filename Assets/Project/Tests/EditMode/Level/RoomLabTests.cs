@@ -18,7 +18,7 @@ namespace CGD.Tests
         {
             var settings = AssetDatabase.LoadAssetAtPath<LevelBuildSettings>(SettingsPath);
             Assert.IsNotNull(settings, $"Missing {SettingsPath}");
-            return new RoomLabRecipe { BuildSettings = settings, Type = type };
+            return new RoomLabRecipe { BuildSettings = settings, Room = new RoomRecipe { Type = type } };
         }
 
         // One seed of every place for every faction: everything builds, and the report covers it.
@@ -52,7 +52,7 @@ namespace CGD.Tests
                 RoomSample sample = RoomSampleBuilder.Build(recipe, seed.ToString());
                 Assert.IsTrue(sample.IsValid, sample.Message);
                 if (sample.Room.Landmark != null) continue;   // a landmark has its own doorways
-                Assert.AreEqual(recipe.DoorCount, sample.DoorwayCount, $"seed {seed}: {sample.Room.DisplayName}");
+                Assert.AreEqual(recipe.Room.DoorCount, sample.DoorwayCount, $"seed {seed}: {sample.Room.DisplayName}");
             }
         }
 
@@ -93,7 +93,7 @@ namespace CGD.Tests
             foreach (RoomFunction function in recipe.BuildSettings.Functions)
             {
                 if (function == null || function.Landmark != null) continue;
-                recipe.Place = function;
+                recipe.Room.Place = function;
                 RoomSample sample = RoomSampleBuilder.Build(recipe, "7");
                 Assert.IsTrue(sample.IsValid, sample.Message);
                 Assert.AreEqual(function, sample.Room.Function);

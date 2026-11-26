@@ -67,6 +67,8 @@ MonoBehaviour:
     Grow: {x: 0, y: 0}
     Stretch: 0
     MinRoomTiles: 0
+  _sets:
+  - {fileID: 11400000, guid: 44a2929ae9794e7184761b8fb929ccfd, type: 2}
   _layouts:
   - {fileID: 11400000, guid: 7836a033509c470c8a6300c24656f235, type: 2}
   - {fileID: 11400000, guid: ddc9224918994dfa90429a3cb65b4234, type: 2}

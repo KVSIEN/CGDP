@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 using CGD.Core;
 
@@ -98,7 +99,7 @@ namespace CGD.Level
         // highest tier that reaches it: inner tiers keep in from the front and the ends.
         private static List<(Vector2Int, int)> AgainstAWall(RoomStructure structure, RandomStream random, int depth, int length, out Vector2Int back)
         {
-            back = GridSides.All[random.Range(0, GridSides.All.Length)];
+            back = GridNeighbours.Four[random.Range(0, GridNeighbours.Four.Length)];
             RoomFootprint footprint = structure.Footprint;
             var starts = new List<Vector2Int>();
             foreach (Vector2Int tile in footprint.Tiles)
@@ -163,7 +164,7 @@ namespace CGD.Level
             Vector2 centre = structure.Footprint.Anchor;
             var candidates = new List<(StairFlight stairs, float score, int order)>();
             foreach (Vector2Int tile in region)
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     if (inside.Contains(tile + side) || side == back) continue;
 
@@ -240,7 +241,7 @@ namespace CGD.Level
                 while (open.Count > 0)
                 {
                     Vector2Int tile = open.Pop();
-                    foreach (Vector2Int side in GridSides.All)
+                    foreach (Vector2Int side in GridNeighbours.Four)
                         if (left.Remove(tile + side))
                         {
                             piece.Add(tile + side);

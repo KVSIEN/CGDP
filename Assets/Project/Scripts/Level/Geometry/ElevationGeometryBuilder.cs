@@ -1,3 +1,4 @@
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -38,7 +39,7 @@ namespace CGD.Level
         {
             int level = structure.LevelOf(tile), lowest = level;
             if (structure.HasElevation)
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                     if (structure.Contains(tile + side)) lowest = Mathf.Min(lowest, structure.LevelOf(tile + side));
             return (RoomElevation.HeightOf(lowest) - thickness, RoomElevation.HeightOf(level));
         }
@@ -140,7 +141,7 @@ namespace CGD.Level
         private void AddRailings(RoomStructure structure, ElevatedArea area, BoxMeshBuilder boxes, Transform parent)
         {
             foreach (Vector2Int inside in area.Tiles)
-                foreach (Vector2Int side in GridSides.All)
+                foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     Vector2Int outside = inside + side;
                     if (!structure.IsLedge(inside, outside) || structure.IsPartitioned(inside, outside)) continue;
