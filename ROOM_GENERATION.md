@@ -620,9 +620,9 @@ as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/`
 | Casino | **Slot Hall** (2×1 · LowRows); **Table Pits** (10–12 tiles · ColumnRing, CornerPillars); **High-Roller Salon** (7–9 tiles · CornerPillars); **Playground Floor** (2×1 · CornerPillars, SunkenFloorElevation) |
 | Exhibit Hall | **Gallery** (10–12 tiles · ThreeLanes); **Sculpture Court** (10–12 tiles · HubRing); **Enfilade** (10–12 tiles · OfficeMaze); **Loop Gallery** (10–12 tiles, Ring · CornerPillars); **Exhibit Maze** (10–12 tiles · FoldWalls) |
 | Grand Atrium | **Fountain Court** (2×2 · CornerPillars, HubRing); **Galleria** (2×2 · LowThreeLanes); **Sunken Court** (2×2 · SunkenCourtTerraces, Overpass); **Centrum** (2×2 · CornerPillars, MezzanineElevation) |
-| Restaurant | **Dining Room** (10–12 tiles · DividerWall); **Bistro** (8–10 tiles · DividerWall); **Banquet Hall** (2×1 · DividerWall) |
-| Food Court | **Food Hall** (2×1 · WidePillarGrid, GuestPavilions); **Kiosk Ring** (2×1 · ColumnRing); **Night Market** (2×1 · LowThreeLanes) |
-| Kitchen | **Galley** (8–10 tiles · ServiceCounter, CornerPillars); **Line Kitchen** (9–11 tiles · LowRows); **Island Kitchen** (9–11 tiles · CornerPillars) |
+| Restaurant | **Dining Room** (10–12 tiles · DividerWall); **Bistro** (8–10 tiles · DividerWall); **Banquet Hall** (2×1 · DividerWall); **Diner** (9–11 tiles · DividerWall); **Open Kitchen** (10–12 tiles · ServiceCounter); **Buffet Hall** (10–12 tiles · DividerWall) |
+| Food Court | **Food Hall** (2×1 · WidePillarGrid, GuestPavilions); **Kiosk Ring** (2×1 · ColumnRing); **Night Market** (2×1 · LowThreeLanes); **Cafeteria** (2×1 · WidePillarGrid); **Scatter Servery** (2×1 · WidePillarGrid) |
+| Kitchen | **Galley** (8–10 tiles · ServiceCounter, CornerPillars); **Line Kitchen** (9–11 tiles · LowRows); **Island Kitchen** (9–11 tiles · CornerPillars); **Zone Kitchen** (9–11 tiles · DividerWall); **Assembly Line** (8–10 tiles · CornerPillars) |
 | Promenade | **Arcade** (2×1 · CornerPillars); **Boulevard** (2×1 · LowThreeLanes) |
 | Medical Bay | **Surgery** (9–11 tiles · DividerWall); **Clinic Bays** (2×1 · OfficeMaze) |
 | Ward | **Long Ward** (2×1 · LowRows); **Bay Ward** (2×1 · OfficeMaze); **Racetrack Ward** (2×1 · ColumnRing) |
@@ -774,6 +774,26 @@ The crew and passenger rooms gained the arrangements their real counterparts are
 - **Restroom.** It furnishes rooms in buildings and pavilions, which don't pick layouts, so it
   stays one arrangement, now planned like a public washroom: the toilets (`Toilet`, back from the
   cut) as a stall row along one wall and the sinks in a row of their own.
+
+#### Food
+
+The galley line (`KitchenLine`: a counter with a hob and an extractor hood) is back from the cut
+as the Kitchen's and Restaurant's anchor, and the food places gained the layouts their trade
+plans by:
+- **Kitchen.** The commercial kitchen layouts: galley, island and line were there; new are the
+  **Zone Kitchen** (a divider splits the cooking and prep side from a scullery of sinks and
+  store shelves) and the **Assembly Line** (a second range near the place's cooking line, then
+  the pass counter, *Key* `Pass`, with a trolley beside it: food moves one way down the wall).
+- **Restaurant.** The kitchen stays behind the dining room in the back zone. New are the
+  **Diner** (booths nose to tail along the walls, a counter with stools, a few tables), the
+  **Open Kitchen** (the kitchen wall is a low service counter diners see over, tables on a
+  lattice and a chef's counter with stools) and the **Buffet Hall** (buffet counters end to
+  end down the middle, *Key* `Buffet`, a trolley by them and tables round them).
+- **Food Court.** Beside the food hall, kiosk ring and night market: the **Cafeteria**, a crew
+  mess with a serving line along one wall (*Key* `Servery`), long tables on a lattice with six
+  chairs each and tray bins by the routes; and the **Scatter Servery**, the modern cafeteria
+  that breaks the queue up into free-standing stations (*Key* `Station`) with table clusters
+  between them.
 
 ### Set pieces
 
