@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 250277810566356255}
+  - component: {fileID: 6380377105223746231}
   m_Layer: 0
   m_Name: Shelf
   m_TagString: Untagged
@@ -144,3 +145,23 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6380377105223746231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6380377105223745331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c62d70b7816a2d7a41c187b1fb0d092, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.PropSizeVariants
+  _ownWeight: 0.5
+  _variants:
+  - Prefab: {fileID: 6380377105223745331, guid: 6bf5695a0c84f7f3e44de446c14668bc, type: 3}
+    Weight: 0.3
+    MinRoomHeight: 0
+  - Prefab: {fileID: 6380377105223745331, guid: 3ba2d33a7fb07fce89f789d9e34687fd, type: 3}
+    Weight: 0.2
+    MinRoomHeight: 5

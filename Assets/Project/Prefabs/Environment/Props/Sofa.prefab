@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8100000000000017002}
+  - component: {fileID: 8100000000000017901}
   m_Layer: 0
   m_Name: Sofa
   m_TagString: Untagged
@@ -257,3 +258,25 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8100000000000017901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8100000000000017001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c62d70b7816a2d7a41c187b1fb0d092, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.PropSizeVariants
+  _ownWeight: 0.5
+  _variants:
+  - Prefab: {fileID: 8100000000000017001, guid: 5c2a19dffc077c6a938f2a3a9666e346, type: 3}
+    Weight: 0.3
+    MinRoomHeight: 0
+    MemberShift: {x: -0.45, y: 0}
+  - Prefab: {fileID: 8100000000000017001, guid: 379dd82edddede3a7533abd12e80dee5, type: 3}
+    Weight: 0.2
+    MinRoomHeight: 0
+    MemberShift: {x: 0.375, y: 0.025}

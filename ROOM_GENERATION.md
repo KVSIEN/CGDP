@@ -1241,6 +1241,33 @@ at one cell. Next: give the remaining hallways something to do (sightlines, cove
   sizes of ship.
 - Not yet looked at in play; compiled, and the EditMode tests were run in a headless copy of the project.
 
+## 16a. Prop sizes
+
+A prop that comes in several sizes carries `PropSizeVariants` on its prefab, so a size is added once
+and every room, set and dressing that places the prop gets it. The planner draws a size only for
+placements that list such a prop. A size other than the listed one stands alone where a pile was
+rolled, is not jittered, and is set back from a wall by its own depth. Two rules keep a size from
+undoing why the prop is there: a *Cover* placement never gets a size lower than the listed one, and
+a variant may ask for a minimum wall height (the large tree).
+
+- Medium and large: crates, cardboard boxes (the listed prop is the small one).
+- Small and large: park trees, bushes, rocks, barrels, shelves, pallet stacks, lockers, storage and
+  filing cabinets (the listed prop is the middle one). Cabinet sizes carry their own loot table, so
+  a bigger one is less often empty while the average over a level stays what it was.
+- Tables, desks, benches and sofas, which groups are built round: a size states its **member shift**,
+  and members standing off to a side (0.2 tiles or more) move out or in by it, so a chair keeps its
+  distance from the edge. A size that would push a member off the footprint is not offered to that
+  group, so long pieces turn up mostly alone, on wide footprints or with chairs only in front and behind.
+- Containers and machines (`CargoContainer`, `ServerRack`, `FuelTank`, `Generator`). A size may state
+  a **footprint** larger than its placement's (the long container, 3 x 1): the planner looks for such a
+  spot over the chosen tiles that suits the placement and keeps the room whole, and otherwise puts
+  down the listed prop. The sizing rules live in `PropSizing`.
+
+**Wall clearance.** After a placement puts something on its tiles, `PropWallClearance` measures the
+solid colliders of everything it put there and, where they reach into a wall beside those tiles (the
+room's or an inner one), moves the whole lot off it. It draws nothing from the seed, and nothing
+moves against open floor, so data needs no care about offsets near walls.
+
 ## 16b. Gap fill and office doors
 
 Searchable furniture comes first in the gap fill: one or two lockers or cabinets per zone (*Each Zone*,

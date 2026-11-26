@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8100000000000014002}
   - component: {fileID: 8100000000000014009}
+  - component: {fileID: 8100000000000014901}
   m_Layer: 0
   m_Name: OfficeDesk
   m_TagString: Untagged
@@ -224,3 +225,25 @@ MonoBehaviour:
   _renderers: []
   _highlightColor: {r: 1, g: 0.85, b: 0.35, a: 1}
   _strength: 0.45
+--- !u!114 &8100000000000014901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8100000000000014001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c62d70b7816a2d7a41c187b1fb0d092, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.PropSizeVariants
+  _ownWeight: 0.5
+  _variants:
+  - Prefab: {fileID: 8100000000000014001, guid: 435da21860fb8d1f2f303087ebafed33, type: 3}
+    Weight: 0.3
+    MinRoomHeight: 0
+    MemberShift: {x: -0.25, y: -0.075}
+  - Prefab: {fileID: 8100000000000014001, guid: d58812c069ffc0cad6a29bcaa6d51705, type: 3}
+    Weight: 0.2
+    MinRoomHeight: 0
+    MemberShift: {x: 0.4, y: 0.075}

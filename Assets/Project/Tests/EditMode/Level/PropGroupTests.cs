@@ -1,5 +1,8 @@
+using System.Linq;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
+using CGD.Editor;
 using CGD.Level;
 using static CGD.Tests.RoomTestKit;
 
@@ -195,6 +198,39 @@ namespace CGD.Tests
             planner.Add(crate);
 
             foreach (PlannedProp prop in planner.Planned) Assert.AreEqual(Vector2.one, prop.Stretch);
+        }
+
+        // Whichever way a group faces, a chair that would reach into a wall moves the group off it,
+        // and the chair keeps its place behind the desk.
+        [Test]
+        public void AGroupKeepsItsPiecesOutOfTheWalls([Values(PropFacing.AgainstWall, PropFacing.Square)] PropFacing facing)
+        {
+            var desk  = AssetDatabase.LoadAssetAtPath<GameObject>(PlaceholderPropBuilder.PathFor("OfficeDesk"));
+            var chair = AssetDatabase.LoadAssetAtPath<GameObject>(PlaceholderPropBuilder.PathFor("Chair"));
+            Assert.IsTrue(desk.TryGetComponent(out PropSizeVariants sizes));
+            // How far the chair reaches from its middle, in tiles, and a wall's half thickness.
+            const float ChairReach = 0.25f / PlaceholderPropBuilder.TileMetres, Wall = 0.04f;
+
+            for (int seed = 0; seed < Seeds; seed++)
+            {
+                RoomPropPlanner planner = Planner(Room(10, 10, new Vector2Int(0, 5)), seed);
+                RoomPropPlacement desks = Placement(6, 6, facing);
+                desks.Prefabs = new[] { desk };
+                desks.Members = new[] { new PropMember { Prefabs = new[] { chair }, Offset = new Vector2(0f, -0.45f) } };
+                planner.Add(desks);
+
+                for (int i = 1; i < planner.Planned.Count; i += 2)
+                {
+                    PlannedProp seat = planner.Planned[i];
+                    Vector2 at = seat.Position;
+                    float clear = Mathf.Min(Mathf.Min(at.x, 10f - at.x), Mathf.Min(at.y, 10f - at.y));
+                    Assert.GreaterOrEqual(clear, ChairReach + Wall - 0.002f, $"seed {seed}: a chair reaches into the wall at {at}");
+                    Vector2 behind = seat.Position - planner.Planned[i - 1].Position;
+                    // A bigger or smaller desk moves the chair by what it grew.
+                    float grown = sizes.Variants.FirstOrDefault(v => v.Prefab == planner.Planned[i - 1].Prefab).MemberShift.y;
+                    Assert.AreEqual(0.45f + grown / PlaceholderPropBuilder.TileMetres, behind.magnitude, 0.001f, $"seed {seed}: the chair left its place");
+                }
+            }
         }
 
         [Test]

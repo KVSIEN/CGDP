@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 486949061624667857}
+  - component: {fileID: 691457762715825601}
   m_Layer: 0
   m_Name: ParkTree
   m_TagString: Untagged
@@ -235,3 +236,23 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &691457762715825601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 691457762715824701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c62d70b7816a2d7a41c187b1fb0d092, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.PropSizeVariants
+  _ownWeight: 0.5
+  _variants:
+  - Prefab: {fileID: 691457762715824701, guid: 15c92662ee0b70e73b299ca03d0be83f, type: 3}
+    Weight: 0.3
+    MinRoomHeight: 0
+  - Prefab: {fileID: 691457762715824701, guid: b324bfe70b92d5cdb917a570b765199c, type: 3}
+    Weight: 0.2
+    MinRoomHeight: 5.5

@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3968058435249826043}
+  - component: {fileID: 3696935098255647025}
   m_Layer: 0
   m_Name: Crate
   m_TagString: Untagged
@@ -144,3 +145,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3696935098255647025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3696935098255646125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c62d70b7816a2d7a41c187b1fb0d092, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.PropSizeVariants
+  _ownWeight: 0.55
+  _variants:
+  - Prefab: {fileID: 3696935098255646125, guid: 67119a61d619e06c0cb9baf50d102ac6, type: 3}
+    Weight: 0.3
+  - Prefab: {fileID: 3696935098255646125, guid: 7d1f3c7ec8a04d564836fd2a95dc68b0, type: 3}
+    Weight: 0.15

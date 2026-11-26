@@ -26,9 +26,8 @@ namespace CGD.Level
         // How far an AgainstWall prop one tile deep moves from its tile's middle toward the wall, in tiles, at most:
         // a deep prop (a bed) is set back less, so its back stops short of the wall.
         private const float WallOffset = 0.25f;
-        // A tile is 3 m in the placeholder kit; a wall's half thickness, in tiles, the back must stay clear of.
+        // A tile is 3 m in the placeholder kit.
         private const float TileMetres = 3f;
-        private const float WallClearance = 0.04f;
         // Props in a pile stand this far from the tile's middle along each axis, in tiles.
         private const float PileOffset = 0.22f;
         // How far a fully jittered prop wanders from its spot, in tiles.
@@ -295,27 +294,53 @@ namespace CGD.Level
         private bool TryPlace(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, List<RectInt> own, ICollection<int> zones)
         {
             int firstPlanned = _planned.Count;
+            GameObject sized = PropSizing.Roll(placement, size, _structure.WallHeight, _random);
             if (placement.Decor)
             {
-                Emit(candidate, placement, size);
+                Emit(candidate, placement, size, sized);
                 own.Add(candidate.Rect);
                 Record(candidate, placement, size, zones, firstPlanned);
                 return true;
             }
 
-            List<Vector2Int> tiles = TilesOf(candidate.Rect);
-            if (!_structure.TryClaim(tiles, RoomTileTags.Prop)) return false;
+            Vector2Int needed = PropSizing.FootprintFor(placement, sized, size);
+            if (needed != size && TryClaimLarger(ref candidate, placement, needed, own, zones)) size = needed;
+            else
+            {
+                // No room for a size that needs more floor: the listed one stands there instead.
+                if (needed != size) sized = PropSizing.ListedFor(placement, sized);
+                if (!_structure.TryClaim(TilesOf(candidate.Rect), RoomTileTags.Prop)) return false;
+            }
 
             ReserveAccess(candidate, placement.Clearance);
             if (placement.MarksRoute) MarkRoute(candidate);
-            Emit(candidate, placement, size);
+            Emit(candidate, placement, size, sized);
+            PropWallClearance.KeepOut(_structure, candidate.Rect, _planned, firstPlanned, _planned.Count - firstPlanned);
             SetHeight(candidate.Rect, TallestSince(firstPlanned));
             Changed(candidate.Rect);
             own.Add(candidate.Rect);
             _selector.NotePlaced(candidate.Rect.center);
-            if (UsesFill(placement)) _claimed += tiles.Count;
+            if (UsesFill(placement)) _claimed += candidate.Rect.width * candidate.Rect.height;
             Record(candidate, placement, size, zones, firstPlanned);
             return true;
+        }
+
+        // For a size that needs more floor than its placement gives: moves the candidate to a spot
+        // of that footprint over the same tiles that suits the placement and claims it.
+        private bool TryClaimLarger(ref PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, List<RectInt> own,
+                                    ICollection<int> zones)
+        {
+            foreach (PropCandidate larger in PropSizing.Covering(candidate, size))
+            {
+                int tiles = larger.Rect.width * larger.Rect.height;
+                if (!placement.Required && UsesFill(placement) && _claimed + tiles > _fillCap) return false;
+                if (!_rules.Suits(larger, placement, size, checkLattice: false, zones) || !_rules.Placeable(larger, placement, own)) continue;
+                if (!_structure.TryClaim(TilesOf(larger.Rect), RoomTileTags.Prop)) continue;
+
+                candidate = larger;
+                return true;
+            }
+            return false;
         }
 
         // A prop that went down as one entry of the plan, from a placement that allows it, may be moved later.
@@ -379,19 +404,25 @@ namespace CGD.Level
         }
 
         // `size`: the footprint it was given, across and front to back (before turning).
-        private void Emit(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size)
+        // `sized`: the size of prop rolled for it, null when its placement has none.
+        private void Emit(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, GameObject sized)
         {
             bool single = size == Vector2Int.one;
             float yaw = YawFor(candidate, placement, size, _random);
 
             int pile = single && !placement.HasMembers ? Mathf.Clamp(placement.Pile.Evaluate(_random), 1, MaxPile) : 1;
-            Vector2 position = PositionOf(candidate, placement, size, pile, _random);
+            // A bigger or smaller size stands alone: it takes the floor a pile would have.
+            if (PropSizing.IsVariant(placement, sized)) pile = 1;
+            Vector2 position = PositionOf(candidate, placement, size, pile, sized, _random);
 
             if (pile == 1)
             {
                 if (placement.Prefabs != null && placement.Prefabs.Length > 0)
-                    _planned.Add(Single(_random.Pick(placement.Prefabs), position, yaw, candidate, placement, size));
-                if (placement.HasMembers) EmitMembers(placement, position, yaw, candidate.Rect);
+                {
+                    GameObject prefab = sized != null ? sized : _random.Pick(placement.Prefabs);
+                    _planned.Add(Single(prefab, position, yaw, candidate, placement, size));
+                }
+                if (placement.HasMembers) EmitMembers(placement, position, yaw, candidate.Rect, PropSizing.MemberShift(placement, sized));
                 return;
             }
 
@@ -406,7 +437,7 @@ namespace CGD.Level
         }
 
         // A group's members, turned with it about its middle; each comes in by its chance.
-        private void EmitMembers(RoomPropPlacement placement, Vector2 position, float yaw, RectInt tiles)
+        private void EmitMembers(RoomPropPlacement placement, Vector2 position, float yaw, RectInt tiles, Vector2 shift)
         {
             float turn = yaw * Mathf.Deg2Rad;
             var front = new Vector2(Mathf.Sin(turn), Mathf.Cos(turn));
@@ -416,7 +447,8 @@ namespace CGD.Level
                 if (member == null || member.Prefabs == null || member.Prefabs.Length == 0) continue;
                 if (member.Chance < 1f && !_random.Chance(member.Chance)) continue;
 
-                Vector2 at = position + right * member.Offset.x + front * member.Offset.y;
+                Vector2 offset = PropSizing.Shifted(member.Offset, shift);
+                Vector2 at = position + right * offset.x + front * offset.y;
                 _planned.Add(new PlannedProp(_random.Pick(member.Prefabs), at, yaw + member.Yaw, tiles, placement.Decor));
             }
         }
@@ -426,25 +458,30 @@ namespace CGD.Level
             PropPlacementRules.HasFreeYaw(placement, size) ? random.Range(0f, 360f) : candidate.Rotation * 90f;
 
         // Where a prop of a placement stands on its tiles: the middle, set back against the wall
-        // for a wall prop one tile deep, and jittered where the placement asks.
-        private static Vector2 PositionOf(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, int pile, RandomStream random)
+        // for a wall prop one tile deep, and jittered where the placement asks. `prefab`: what
+        // stands there, when already chosen. Another size of a prop isn't jittered, as the reach
+        // is written for the listed one and a bigger one would poke into its neighbours.
+        private static Vector2 PositionOf(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, int pile, GameObject prefab,
+                                          RandomStream random)
         {
             Vector2 forward = candidate.Forward;
             Vector2 position = candidate.Rect.center;
-            if (placement.Facing == PropFacing.AgainstWall && size.y == 1 && pile == 1) position -= forward * SetBack(placement);
-            if (placement.Jitter > 0f && size == Vector2Int.one && !placement.Symmetric) position += Jitter(placement, forward, random);
+            if (placement.Facing == PropFacing.AgainstWall && size.y == 1 && pile == 1) position -= forward * SetBack(placement, prefab);
+            if (placement.Jitter > 0f && size == Vector2Int.one && !placement.Symmetric && !PropSizing.IsVariant(placement, prefab))
+                position += Jitter(placement, forward, random);
             return position;
         }
 
         // How far a wall prop sits from its tile's middle toward the wall: the usual set-back, less
-        // for a deep prop so its back (the deepest of its prefabs) stays inside the tile.
-        private static float SetBack(RoomPropPlacement placement)
+        // for a deep prop so its back (the deepest of its prefabs, or of the one standing there)
+        // stays inside the tile.
+        private static float SetBack(RoomPropPlacement placement, GameObject standing)
         {
-            float behind = 0f;
+            float behind = PropReach.BehindOrigin(standing);
             if (placement.Prefabs != null)
                 foreach (GameObject prefab in placement.Prefabs)
-                    behind = Mathf.Max(behind, PropDepth.BehindOrigin(prefab));
-            return Mathf.Clamp(0.5f - behind / TileMetres - WallClearance, 0f, WallOffset);
+                    behind = Mathf.Max(behind, PropReach.BehindOrigin(prefab));
+            return Mathf.Clamp(0.5f - behind / TileMetres - PropWallClearance.WallHalfThickness, 0f, WallOffset);
         }
 
         // Along the wall for wall props, any way for the rest.
@@ -539,9 +576,11 @@ namespace CGD.Level
                 Changed(spot.Rect);
             }
             float yaw = YawFor(spot, placement, piece.Size, random);
-            Vector2 position = PositionOf(spot, placement, piece.Size, 1, random);
+            GameObject prefab = _planned[piece.PlanIndex].Prefab;
+            Vector2 position = PositionOf(spot, placement, piece.Size, 1, prefab, random);
             piece.Spot = spot;
-            _planned[piece.PlanIndex] = Single(_planned[piece.PlanIndex].Prefab, position, yaw, spot, placement, piece.Size);
+            _planned[piece.PlanIndex] = Single(prefab, position, yaw, spot, placement, piece.Size);
+            if (!placement.Decor) PropWallClearance.KeepOut(_structure, spot.Rect, _planned, piece.PlanIndex, 1);
         }
 
         // Lets go of a piece's floor, as when it moves away (a decoration takes none).

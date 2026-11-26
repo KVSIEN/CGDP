@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6360132256555932685}
+  - component: {fileID: 6690596464837189176}
   m_Layer: 0
   m_Name: Locker
   m_TagString: Untagged
@@ -208,3 +209,23 @@ MonoBehaviour:
   _renderers: []
   _highlightColor: {r: 1, g: 0.85, b: 0.35, a: 1}
   _strength: 0.45
+--- !u!114 &6690596464837189176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6690596464837188276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c62d70b7816a2d7a41c187b1fb0d092, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.PropSizeVariants
+  _ownWeight: 0.5
+  _variants:
+  - Prefab: {fileID: 6690596464837188276, guid: d4140baf9edee1b784a9a30b8ebff2c5, type: 3}
+    Weight: 0.3
+    MinRoomHeight: 0
+  - Prefab: {fileID: 6690596464837188276, guid: 0665ddd13ba4ddc62d933372d5d75b01, type: 3}
+    Weight: 0.2
+    MinRoomHeight: 0

@@ -23,6 +23,10 @@ namespace CGD.Level
             _stretch = stretch;
         }
 
+        // The same prop standing `offset` tiles away, on the same tiles.
+        public PlannedProp MovedBy(Vector2 offset) =>
+            new(Prefab, Position + offset, Yaw, Tiles, Decor, _stretch, Activity);
+
         public GameObject Prefab   { get; }
         public Vector2    Position { get; }
         public float      Yaw      { get; }
