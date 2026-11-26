@@ -18,8 +18,9 @@ namespace CGD.Level
     //
     // The doorways decide how it sits. Every doorway must open onto level 0, so the profile is
     // turned and shifted (1-0-1 becomes 0 -1 0, the raised walks now level with the doorways and
-    // the middle sunk) until each doorway's lane is on level 0; floor just in front of a doorway
-    // that falls in another lane stays on level 0 as a landing. A room no turn or shift fits is
+    // the middle sunk) until each doorway's lane is on level 0. Where no turn or shift manages
+    // that, a doorway may fall in a lane one level up or down: the floor just in front of it stays
+    // on level 0 as a landing, with a flight where the route steps off. A room neither fits is
     // left flat. Runs early in a layout's structure: pillars and walls placed after it stand on
     // the levels it made. A bridged court takes one tier only: a bridge level with the doorways
     // can't cross floor two levels below it.
@@ -72,7 +73,13 @@ namespace CGD.Level
         }
 
         // The lanes laid one way or the other, the profile shifted to put the doorways on level 0.
-        private bool TryLay(RoomStructure structure, TerraceLane[] lanes, bool[] directions, RectInt bounds)
+        // Every doorway in a lane on level 0 is preferred; landings are the fallback.
+        // A profile used as written (no shift) takes no landings either.
+        private bool TryLay(RoomStructure structure, TerraceLane[] lanes, bool[] directions, RectInt bounds) =>
+            TryLay(structure, lanes, directions, bounds, landings: false)
+            || (_shiftToDoorways && TryLay(structure, lanes, directions, bounds, landings: true));
+
+        private bool TryLay(RoomStructure structure, TerraceLane[] lanes, bool[] directions, RectInt bounds, bool landings)
         {
             foreach (bool alongY in directions)
             {
@@ -82,7 +89,7 @@ namespace CGD.Level
                 foreach (int shift in _shiftToDoorways ? Shifts(lanes) : new[] { 0 })
                 {
                     var layout = new TerraceLayout(structure, lanes, starts, alongY, shift);
-                    if (!layout.Fits()) continue;
+                    if (!layout.Fits(landings)) continue;
                     if (structure.TryAddElevations(layout.Areas(_stairSpacing, StairSpacingMin, _railed, _bridges))) return true;
                 }
             }

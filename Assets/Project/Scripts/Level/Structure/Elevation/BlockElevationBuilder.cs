@@ -21,6 +21,8 @@ namespace CGD.Level
         private const int SunkenMargin = 2;
         // A bridge needs this many tiles of sunken floor along its length: two either side of it.
         private const int BridgedLength = 5;
+        // Shrinking never takes a side below this: a flight's landing and something beside it.
+        private const int SmallestSide = 2;
         // Tiles each tier keeps in from the open sides of the one below it: a flight and its landing.
         private const int TierInset = 2;
 
@@ -42,11 +44,12 @@ namespace CGD.Level
         private int Direction => _kind == ElevationKind.Platform ? 1 : -1;
 
         // One area per tier, lowest step first, up to `tiers` of them (fewer where the block is too
-        // small for more); null when not even the first fits.
-        public List<ElevatedArea> Build(RoomStructure structure, RandomStream random, int tiers, bool railed)
+        // small for more); null when not even the first fits. `shrink`: tiles taken off the size
+        // drawn, off the length first and off the depth half as fast.
+        public List<ElevatedArea> Build(RoomStructure structure, RandomStream random, int tiers, bool railed, int shrink = 0)
         {
-            int depth  = Mathf.Max(1, _depth.Evaluate(random));
-            int length = Mathf.Max(depth, _length.Evaluate(random));
+            int depth  = Shrunk(Mathf.Max(1, _depth.Evaluate(random)), shrink / 2);
+            int length = Mathf.Max(depth, Shrunk(_length.Evaluate(random), shrink));
 
             List<(Vector2Int tile, int rank)> block = _kind == ElevationKind.Platform
                 ? AgainstAWall(structure, random, depth, length, out Vector2Int back)
@@ -86,6 +89,8 @@ namespace CGD.Level
             }
             return areas;
         }
+
+        private static int Shrunk(int side, int by) => Mathf.Max(Mathf.Min(side, SmallestSide), side - by);
 
         private static int HighestRank(List<(Vector2Int tile, int rank)> block)
         {

@@ -483,8 +483,9 @@ namespace CGD.Level
         public bool TryAddElevation(ElevatedArea area) => area != null && TryAddElevations(new[] { area });
 
         // Raises or sinks every area together, or none of them, if the room stays sound:
-        //   - each level is one the room allows (AllowsFloor), and the tiles are flat, free floor,
-        //     none of it in front of a doorway (so everyone arrives on the doorways' level), no tile
+        //   - each level is one the room allows (AllowsFloor), and the tiles are flat, free floor
+        //     (a Section also takes what pillars and cut-off floor stand on, and lifts it with
+        //     the rest), none of it in front of a doorway (so everyone arrives on the doorways' level), no tile
         //     in two areas; areas added together may be tiers of one feature, each standing on the
         //     one below it (the lower tier's tiles carrying the upper tier's stairs);
         //   - no tile ends up more than one level from its neighbour;
@@ -505,7 +506,7 @@ namespace CGD.Level
                 if (area == null || area.Tiles.Count == 0 || area.Level == 0) return false;
                 if (!AllowsFloor(area.Level)) return false;
                 foreach (Vector2Int tile in area.Tiles)
-                    if (!IsFree(tile) || Has(tile, RoomTileTags.NearDoor) || LevelOf(tile) != 0 || !claimed.Add(tile)) return false;
+                    if (!CanChangeLevel(area.Kind, tile) || Has(tile, RoomTileTags.NearDoor) || LevelOf(tile) != 0 || !claimed.Add(tile)) return false;
             }
 
             // Each flight and corner piece takes a tile of its own; landings may be shared (two
@@ -593,6 +594,10 @@ namespace CGD.Level
         }
 
         // Once raised: no tile two levels from a neighbour, and every flight climbing one level onto or off its area.
+        // Free floor; for a section also floor only structure stands on, which rises with it.
+        private bool CanChangeLevel(ElevationKind kind, Vector2Int tile) =>
+            IsFree(tile) || (kind == ElevationKind.Section && Contains(tile) && (TagsAt(tile) & Taken) == RoomTileTags.Structure);
+
         private bool StepsAreSound(IReadOnlyList<ElevatedArea> areas)
         {
             foreach (ElevatedArea area in areas)

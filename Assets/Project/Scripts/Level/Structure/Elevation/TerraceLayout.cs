@@ -36,13 +36,15 @@ namespace CGD.Level
             }
         }
 
-        // Every lane's level is one the room allows (under its ceiling too), and every doorway opens onto level 0.
-        public bool Fits()
+        // Every lane's level is one the room allows (under its ceiling too), and every doorway lies
+        // in a lane on level 0, or (`landings`) at most a level from it, where the floor in front of
+        // it stays level with it.
+        public bool Fits(bool landings)
         {
             foreach (int level in _levels)
                 if (!_structure.AllowsFloor(level)) return false;
             foreach (Vector2Int entrance in _structure.Entrances)
-                if (_levels[LaneOf(entrance)] != 0) return false;
+                if (Mathf.Abs(_levels[LaneOf(entrance)]) > (landings ? 1 : 0)) return false;
             return true;
         }
 

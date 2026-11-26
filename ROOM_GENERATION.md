@@ -1502,6 +1502,41 @@ rim, climbing out. Slopes side by side climbing the same way are one bank: walke
 up (`CanStep`), still not entered from the floor at their ends. All four keep off routes, doorway
 fronts and the centre.
 
+A Platform or Sunken Floor with no space at its drawn size is tried smaller, up to four tiles
+shorter and two shallower, down to two tiles each way. Nothing is raised or sunk inside a building
+or hut, or on the floor a chamfered or curved wall cuts off.
+
+**Elevation budget (`ElevationBudget`).** *Level Build Settings* › *Elevation Budget* tops up a room
+whose own rules left it mostly flat. After the structure and its budget, a room that takes levels,
+has 36 floor tiles or more and under 18% of its floor off level 0 gets options added (9 rooms in
+10): nearly always a *Raised Section*, now and then a *Platform* or *Sunken Floor*, by weight, up
+to six tries. A feature is kept only if the room's required pieces (its
+offerings, the required placements of its function and side) still fit as well as without it
+(`RoomAnchorFit`). So a place's own rules say what suits it, and the budget makes sure there is a
+second level at all.
+
+**Raised section (`RaisedSectionStructureRule`).** The room is laid out as usual and then one part
+of it is lifted a level: a half along one wall, or a corner (half the time each). Its walls and
+pillars stay where they are and rise with it, and props are furnished on top afterwards; cut-off
+floor rises too. Flights go wherever a route crosses the step, one at least to every piece inner
+walls split the part into, and then one per five tiles of step; 6 in 10 are railed. Parts clear of
+every doorway are tried first, then ones that keep a landing (three tiles) round a doorway. A part
+that would cut a hut or building, cross a doorway in an inner wall, or take floor already raised or
+sunk is passed over. Put it last in a structure list: terraces, by contrast, go first and what
+follows is built on their lanes.
+
+**What the levels are modelled on** (web search, November 2026; read as summaries):
+
+| Real or designed interior | What it suggests | Here |
+|---|---|---|
+| [Royal Promenade](https://www.fisherdachs.com/portfolio/royal-caribbean-international-voyager-of-the-seas-royal-promenade/): a four-deck indoor street ending in atria | Public streets are overlooked from above | Promenade › Arcade: Gallery |
+| Cruise theatres and [dining rooms on two levels](https://www.cruisemapper.com/deckplans/Carnival-Dream-680/deck03-1728) | Dining and shows step up in tiers | Food Court › Cafeteria: Raised Walks; Observation Deck › Window Gallery: Split Level |
+| [Stanford torus](https://en.wikipedia.org/wiki/Stanford_torus): housing terraced up the hull, shops and plant below the central plain | A colony ship uses height everywhere, and sinks its services | The budget on every kind of place; sunken floors in it |
+| [Split-level restaurant](https://designclarity.net/?p=12915): levels zone a large floor | Zones by level, not only by walls | Pool › Spa Terrace: Platform; Observation Deck › Star Lounge, Exhibit Hall › Sculpture Court: Sunken Floor |
+| [Engine rooms](https://blog.martide.com/the-engine-room-on-a-cargo-ship/): platforms and catwalks round the machinery | Working spaces have galleries | Engine rooms' and plants' mezzanines |
+| Bridges and command spaces | The command position stands on a dais | Bridge › Command Deck, Flight and Horseshoe Bridge: Platform |
+| [Gears of War map theory](https://udn.epicgames.com/Three/GearsMultiplayerMapTheory.html): high ground is strong and needs a trade-off | Few, readable levels with more than one way up | One level up or down, features capped at a quarter of the floor each |
+
 **Terraces (`TerracesStructureRule`, `TerraceLayout`).** Lanes running wall to wall, side by side,
 each with a level and a width weight: *Split Level* 1-0, *Raised Walks* 1-0-1, *Raised Middle*
 0-1-0, *Sunken Court* 0 -1 0; any profile whose neighbours differ by one level at most. *Direction*
@@ -1515,7 +1550,9 @@ tiles of ledge (at least one per ledge, three tiles apart at least), counted on 
 a landing or a bridge leaves. *Railed* puts railings along the rest; without, the ledges can be
 dropped off. *Bridges* lays that many strips of floor, level with the room, straight across each
 sunken lane that has floor on both sides (a court between two walks), spread evenly along it. A room no shift or turn fits, or too narrow for its
-lanes (two tiles each at least), stays flat. Put it first in a layout's structure: pillars and walls
+lanes (two tiles each at least), stays flat. Where no shift or turn puts every doorway on level 0,
+a doorway may fall in a lane one level off: the floor in front of it stays level with it, as a
+landing. (A profile with *Shift To Doorways* off takes no landings.) Put it first in a layout's structure: pillars and walls
 after it stand on its levels.
 
 **Built (`ElevationGeometryBuilder`).** Each tile's floor slab reaches down to the lowest floor beside

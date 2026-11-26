@@ -18,6 +18,12 @@ Work that is written (and mostly compiled) but has not been opened or played in 
 
 Run the whole EditMode suite first (it needs no scene, and once the repository has Unity license secrets CI does it on every push). Then clear the groups below one scene at a time; each entry is kept as it was written, newest first within its group.
 
+#### More elevation
+
+- Raised sections (a half or corner lifted with what stands on it): check stairs along the step read well, low walls and pillars on the step look right, doorways in inner walls aren't pinched, and enemies cross it.
+- Elevation budget, shrinking features, terrace landings and nine layouts given levels (EditMode tests and a room-by-room measurement run headless, not played). In `RoomGenerator` and a generated level check: galleries and pits read well and aren't cluttering small rooms, enemies path up and down, loot and required pieces are reachable, and the second level helps fights more than it blocks them. Tune *Level Build Settings* › *Elevation Budget* (share, chance, weights).
+- Decide: medical wards, the morgue and the ro-ro vehicle deck would be flat on a real ship; nothing lets a place opt out of the elevation budget yet.
+
 #### Algorithms library
 
 - `Scripts/Algorithms/` (new, `CGD.Algorithms`): noise (hash, value, Perlin, simplex, Worley, fractal, domain warp), Poisson disk sampling, a min-heap, shuffle bag, disjoint set, Kruskal's spanning tree, grid distance maps, A*, Bresenham lines, cellular automata, random walks, a spatial hash, easing, Bézier and Catmull-Rom curves, a damped spring, L-systems and turtle drawing. Compiled outside Unity against stand-ins for Unity's vector and math types, and its 19 EditMode tests (`Tests/EditMode/Algorithms/`) plus a wider set of checks ran and passed there; not imported into Unity yet (metas made outside Unity). Let Unity import, run the Algorithms tests, and check the Console for warnings. In the game, only two pieces are used so far: `CorridorRouter` now runs on the library's `MinHeap<int>` (the same heap code it had privately, so every corridor routes as before: regenerate a few MapGenerator seeds and compare), and the overgrowth's slope limit moved here as `GridSlopeLimit` (its two tests moved from `OvergrowthTests` to `GridAlgorithmTests`). No scene changes.

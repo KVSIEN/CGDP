@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed1d71fb61ff333830818d1910dd48b4, type: 3}
+  m_Name: RaisedSectionStructureRule
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RaisedSectionStructureRule
+  _cornerChance: 0.5
+  _halfDepth:
+    Min: 0.35
+    Max: 0.5
+  _cornerSide:
+    Min: 0.45
+    Max: 0.65
+  _floorShare:
+    Min: 0.18
+    Max: 0.55
+  _stairSpacing: 5
+  _railChance: 0.6

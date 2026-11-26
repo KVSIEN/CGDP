@@ -9,8 +9,8 @@ namespace CGD.Level
     // centre and doorway tiles, notes where the entrances are, reserves a walkway from every
     // doorway to the centre, runs the room function's structure rules (its layout's, where the
     // layout brings some; the faction's where neither has any) and then the faction's
-    // additions, then works out the zones their
-    // inner walls make. A Breach room left in one piece gets the breach faction's divider.
+    // additions, tops up a room that is still mostly flat (ElevationBudget), then works out the
+    // zones their inner walls make. A Breach room left in one piece gets the breach faction's divider.
     // Last, the room's flow from the doorway a player arrives by (RoomFlowPlanner).
     // A landmark room brings its own interior: its furniture tiles are marked instead.
     public class RoomStructurePlanner
@@ -25,11 +25,14 @@ namespace CGD.Level
         // `lowestLevel`, `highestLevel`: the floor levels elevation rules may raise or sink the
         // room to (RoomElevation); both 0 keeps every room flat.
         // `budget`: structure added to a room still short of its weighted structure score after all of that (StructureBudget).
+        // `elevation`: floor levels added after that to a room with too little of them (ElevationBudget),
+        // as long as `anchors`, the room's required pieces, still fit (RoomAnchorFit).
         public RoomStructure Plan(LevelRoom room, IReadOnlyList<LevelDoorway> doorways, RandomStream random,
                                   IReadOnlyList<RoomStructureRule> factionRules = null,
                                   IReadOnlyList<RoomStructureRule> factionAdditions = null,
                                   RoomStructureRule breachDivider = null, float additionChance = 1f,
-                                  int lowestLevel = 0, int highestLevel = 0, StructureBudget budget = null)
+                                  int lowestLevel = 0, int highestLevel = 0, StructureBudget budget = null,
+                                  ElevationBudget elevation = null, IReadOnlyList<RoomPropPlacement> anchors = null)
         {
             var entrances = new List<Vector2Int>();
             foreach (LevelDoorway doorway in doorways)
@@ -37,6 +40,9 @@ namespace CGD.Level
 
             RoomStructure structure = Prepare(room.Footprint, room.WallHeight, entrances);
             structure.AllowLevels(lowestLevel, highestLevel);
+            // The floor a chamfered or curved wall cuts off, before anything is planned on it.
+            if (room.Outline != null)
+                foreach (Vector2Int tile in room.Outline.CutTiles) structure.Tag(tile, RoomTileTags.Structure);
             if (room.Landmark != null)
                 TagLandmark(structure, room);
             else
@@ -45,6 +51,8 @@ namespace CGD.Level
                 Apply(rules, structure, random);
                 Apply(factionAdditions, structure, random, additionChance);
                 if (budget != null && budget.Needs(structure)) budget.Apply(structure, random);
+                if (elevation != null && elevation.Needs(structure))
+                    structure = AddLevels(elevation, structure, room, random, anchors);
             }
 
             structure.AssignZones();
@@ -57,6 +65,15 @@ namespace CGD.Level
             Vector2Int? arrival = RoomFlowPlanner.ArrivalOf(room, doorways);
             if (arrival.HasValue) RoomFlowPlanner.Mark(structure, arrival.Value);
             return structure;
+        }
+
+        private static RoomStructure AddLevels(ElevationBudget elevation, RoomStructure structure, LevelRoom room, RandomStream random,
+                                               IReadOnlyList<RoomPropPlacement> anchors)
+        {
+            if (anchors == null || anchors.Count == 0) return elevation.Apply(structure, random);
+
+            int fit = RoomAnchorFit.Of(structure, room.Anchor, anchors);
+            return elevation.Apply(structure, random, trial => RoomAnchorFit.Of(trial, room.Anchor, anchors) >= fit);
         }
 
         private static void Apply(IReadOnlyList<RoomStructureRule> rules, RoomStructure structure, RandomStream random, float chance = 1f)

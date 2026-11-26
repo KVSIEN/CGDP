@@ -281,6 +281,95 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void ARaisedSectionLiftsPartOfTheRoomWithItsPillars()
+        {
+            var rule = ScriptableObject.CreateInstance<RaisedSectionStructureRule>();
+            int built = 0, rooms = 0, pillarsLifted = 0;
+            for (int seed = 1; seed <= Seeds; seed++)
+                foreach (RoomStructure room in Rooms())
+                {
+                    room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
+                    var pillars = new List<Vector2Int>();
+                    foreach (Vector2Int tile in new[] { new Vector2Int(1, 1), new Vector2Int(1, 6), new Vector2Int(6, 1), new Vector2Int(6, 6) })
+                        if (room.TryClaim(new[] { tile }, RoomTileTags.Structure)) pillars.Add(tile);
+
+                    rule.Apply(room, new RandomStream(new Seed((ulong)seed)));
+                    rooms++;
+                    string at = $"seed {seed}, {room.Footprint.Bounds.size}";
+                    Assert.That(room.StaysConnected(System.Array.Empty<Vector2Int>()), Is.True, $"{at}: every tile reachable both ways");
+                    foreach (Vector2Int entrance in room.Entrances)
+                        Assert.That(room.LevelOf(entrance), Is.Zero, $"{at}: a doorway opens onto the doorways' level");
+                    if (!room.HasElevation) continue;
+
+                    built++;
+                    ElevatedArea section = room.Elevations[0];
+                    Assert.That(section.Kind, Is.EqualTo(ElevationKind.Section), at);
+                    Assert.That(section.Stairs.Count, Is.GreaterThan(0), $"{at}: a way up and down");
+                    Assert.That(section.Tiles.Count, Is.InRange(room.Footprint.Count * 0.18f, room.Footprint.Count * 0.55f), $"{at}: a part of the room");
+                    foreach (Vector2Int pillar in pillars)
+                        if (room.LevelOf(pillar) == 1) pillarsLifted++;
+                }
+            Assert.That(built, Is.GreaterThan(rooms / 2), "most rooms got one");
+            Assert.That(pillarsLifted, Is.GreaterThan(0), "what stands on the part rises with it");
+        }
+
+        [Test]
+        public void APlatformTooLongForItsRoomIsBuiltSmaller()
+        {
+            ElevationStructureRule rule = Rule(ElevationKind.Platform, minLength: 7);
+            int built = 0;
+            for (int seed = 1; seed <= Seeds; seed++)
+            {
+                RoomStructure room = Room(6, 6, new Vector2Int(5, 3));
+                room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
+                rule.Apply(room, new RandomStream(new Seed((ulong)seed)));
+                built += room.Elevations.Count;
+            }
+            Assert.That(built, Is.GreaterThan(0), "a seven-tile stage never fits a six-tile room");
+        }
+
+        [Test]
+        public void ARoomShortOfFloorLevelsIsToppedUp()
+        {
+            var holder = ScriptableObject.CreateInstance<LevelBuildSettings>();
+            var serialized = new SerializedObject(holder);
+            SerializedProperty options = serialized.FindProperty("_elevationBudget").FindPropertyRelative("_options");
+            options.arraySize = 1;
+            options.GetArrayElementAtIndex(0).FindPropertyRelative("Rule").objectReferenceValue = Rule(ElevationKind.Platform);
+            options.GetArrayElementAtIndex(0).FindPropertyRelative("Weight").floatValue = 1f;
+            serialized.FindProperty("_elevationBudget").FindPropertyRelative("_chance").floatValue = 1f;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            ElevationBudget budget = holder.ElevationBudget;
+
+            RoomStructure flat = Room(12, 10, new Vector2Int(11, 5));
+            Assert.That(budget.Needs(flat), Is.False, "a room that takes no levels is left alone");
+
+            flat.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
+            Assert.That(budget.Needs(flat), Is.True);
+            RoomStructure raised = budget.Apply(flat, new RandomStream(new Seed(3UL)));
+            Assert.That(raised.HasElevation, Is.True);
+            Assert.That(raised.StaysConnected(System.Array.Empty<Vector2Int>()), Is.True);
+            Assert.That(budget.Apply(flat, new RandomStream(new Seed(3UL)), trial => false), Is.SameAs(flat), "a feature turned down is left off");
+            Assert.That(flat.HasElevation, Is.False);
+        }
+
+        [Test]
+        public void TerracesKeepALandingForADoorwayInARaisedLane()
+        {
+            var rule = ScriptableObject.CreateInstance<TerracesStructureRule>();
+            // Raised walks, with doorways onto both a walk and the middle: no shift puts both on level 0.
+            var doors = new[] { new Vector2Int(15, 6), new Vector2Int(7, 0) };
+            RoomStructure room = Room(16, 12, doors);
+            room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
+
+            rule.Apply(room, new RandomStream(new Seed(1UL)));
+
+            Assert.That(room.HasElevation, Is.True);
+            foreach (Vector2Int door in doors) Assert.That(room.LevelOf(door), Is.Zero, $"{door} opens onto the doorways' level");
+            Assert.That(room.StaysConnected(System.Array.Empty<Vector2Int>()), Is.True);
+        }
+
+        [Test]
         public void ARoomThatDoesntTakeTheLevelIsLeftAloneWithNoRandomDrawn()
         {
             ElevationStructureRule rule = Rule(ElevationKind.SunkenFloor);

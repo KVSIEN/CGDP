@@ -45,8 +45,9 @@ namespace CGD.Level
 
             var directLinks = new DirectRoomAligner(_settings.CellTiles).Align(graph, layout);
             BuildCorridors(graph, layout, directLinks);
-            PlanStructures(seed.Derive("structure"), layout);
             PlanOutlines(layout);
+            PlanStructures(seed.Derive("structure"), layout);
+            TagOutlineCorners(layout);
             return layout;
         }
 
@@ -74,7 +75,8 @@ namespace CGD.Level
                 RoomStructureRule divider = room.BreachFaction != null ? _settings.DesignFor(room.BreachFaction)?.BreachDivider : null;
                 int tries = RoomTraitFit.TriesFor(room, _settings.RuleFor(room.Node.Type), design, _settings);
                 room.AttachStructure(BestStructure(planner, room, layout, seed.Derive(room.Node.Id), design, divider, room.DesignStrength, tries,
-                                                   _settings.UsesIsovist(IsovistUse.Traits), _lowestLevel, _highestLevel, _settings.StructureBudget));
+                                                   _settings.UsesIsovist(IsovistUse.Traits), _lowestLevel, _highestLevel, _settings.StructureBudget,
+                                                   _settings.ElevationBudget, RoomFurnisher.AnchorsOf(_settings, room)));
                 if (room.BreachFaction != null) room.AttachBreachEntrances(BreachEntrances(room, layout));
             }
         }
@@ -98,14 +100,15 @@ namespace CGD.Level
         // any other room has one try.
         private static RoomStructure BestStructure(RoomStructurePlanner planner, LevelRoom room, LevelLayout layout, Seed seed,
                                                    FactionDesign design, RoomStructureRule breachDivider, float strength, int tries, bool isovist,
-                                                   int lowestLevel, int highestLevel, StructureBudget budget)
+                                                   int lowestLevel, int highestLevel, StructureBudget budget, ElevationBudget elevation,
+                                                   IReadOnlyList<RoomPropPlacement> anchors)
         {
             RoomStructure best = null;
             int bestMiss = int.MaxValue;
             for (int attempt = 0; attempt < tries && bestMiss > 0; attempt++)
             {
                 RoomStructure structure = planner.Plan(room, layout.Doorways, RoomTraitFit.Try(seed, attempt).Stream(), design?.Structure, design?.Additions,
-                                                      breachDivider, strength, lowestLevel, highestLevel, budget);
+                                                      breachDivider, strength, lowestLevel, highestLevel, budget, elevation, anchors);
                 if (tries == 1) return structure;
 
                 int miss = RoomTraitFit.Miss(RoomTraitMeasure.Measure(structure, System.Array.Empty<PlannedProp>(), isovist), design.Priorities,
@@ -117,9 +120,9 @@ namespace CGD.Level
             return best;
         }
 
-        // Curved and chamfered rooms get their wall line now the doorways are fixed. Tiles a
-        // chamfer cuts into are marked as structure, so props and enemies keep off them; the
-        // tiles beside each cut become the room's corners for corner props.
+        // Curved and chamfered rooms get their wall line now the doorways are fixed. The structure
+        // planner marks the tiles a chamfer cuts into as structure, so nothing is built, put or
+        // spawned on them.
         private void PlanOutlines(LevelLayout layout)
         {
             foreach (LevelRoom room in layout.Rooms.Values)
@@ -129,10 +132,17 @@ namespace CGD.Level
                 RoomOutlinePlan outline = RoomOutline.Plan(room.Footprint, (tile, side) => layout.IsWalkable(tile + side),
                                                             room.Chamfer, RoomOutline.SmoothingFor(room.Footprint.Bounds, _settings.CurveSmoothing));
                 room.AttachOutline(outline);
-                foreach (Vector2Int tile in outline.CutTiles)
-                    room.Structure?.Tag(tile, RoomTileTags.Structure);
-                foreach (Vector2Int tile in outline.CornerTiles)
-                    if (!outline.CutTiles.Contains(tile)) room.Structure?.Tag(tile, RoomTileTags.Corner);
+            }
+        }
+
+        // The tiles beside each cut become the room's corners for corner props.
+        private static void TagOutlineCorners(LevelLayout layout)
+        {
+            foreach (LevelRoom room in layout.Rooms.Values)
+            {
+                if (room.Outline == null) continue;
+                foreach (Vector2Int tile in room.Outline.CornerTiles)
+                    if (!room.Outline.CutTiles.Contains(tile)) room.Structure?.Tag(tile, RoomTileTags.Corner);
             }
         }
 

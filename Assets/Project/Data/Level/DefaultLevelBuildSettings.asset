@@ -24,6 +24,18 @@ MonoBehaviour:
   _lowCoverMaterial: {fileID: 2100000, guid: 9fe0a856a63e8634ebc7077bc570ea68, type: 2}
   _lowestLevel: -1
   _highestLevel: 1
+  _elevationBudget:
+    _options:
+    - Rule: {fileID: 11400000, guid: 75952d7c5a7e2bc5369bdabf68990b42, type: 2}
+      Weight: 12
+    - Rule: {fileID: 11400000, guid: 6a96b51e9d7b4db09c1dae90ce3a44b9, type: 2}
+      Weight: 1
+    - Rule: {fileID: 11400000, guid: f4cbf76b7405419aaaf2796f6bffcaa6, type: 2}
+      Weight: 1
+    _chance: 0.9
+    _share: 0.18
+    _minTiles: 36
+    _attempts: 6
   _stairsPrefab: {fileID: 5272085605032644662, guid: d4f3e28b07df4dbf8d04b93f488ec8bf, type: 3}
   _railingPrefab: {fileID: 2789657991163672792, guid: 31571b824cc043b79589fc72e0e5cc08, type: 3}
   _geometryLayer: 0

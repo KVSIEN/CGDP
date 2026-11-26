@@ -36,6 +36,29 @@ namespace CGD.Level
             _seed     = seed;
         }
 
+        // The pieces a room can't do without, in the order they are furnished: its offerings and
+        // the required placements of its function and its side. The structure planner keeps floor
+        // levels from crowding them out.
+        public static List<RoomPropPlacement> AnchorsOf(LevelBuildSettings settings, LevelRoom room)
+        {
+            var anchors = new List<RoomPropPlacement>();
+            RoomContentRule rule = settings.RuleFor(room.Node.Type);
+            if (rule != null && rule.Offerings.Length > 0) anchors.Add(RoomPropPlacement.Nook(rule.Offerings));
+            if (room.Landmark != null) return anchors;
+
+            AddRequired(anchors, room.FunctionProps);
+            ShipSideDesign side = settings.DesignFor(room.Side);
+            if (side != null && side.Dressing != null) AddRequired(anchors, side.Dressing.Props);
+            return anchors;
+        }
+
+        private static void AddRequired(List<RoomPropPlacement> anchors, IEnumerable<RoomPropPlacement> placements)
+        {
+            if (placements == null) return;
+            foreach (RoomPropPlacement placement in placements)
+                if (placement != null && placement.Required) anchors.Add(placement);
+        }
+
         public RoomFurnishing Furnish(LevelRoom room)
         {
             if (room.Structure == null) return RoomFurnishing.Empty;

@@ -10,5 +10,6 @@ namespace CGD.Level
         Terrace,      // a lane running wall to wall a level up or down from the next (TerracesStructureRule)
         Mound,        // a round rise of ground, sloping all round: a hillock, a heap of rubble; in tiers, a terraced hill
         Crater,       // a round hollow, sloping all round: a blast crater, a sinkhole; in tiers, a pit ringed by ledges
+        Section,      // half or a corner of the room lifted with whatever stands on it (RaisedSectionStructureRule)
     }
 }

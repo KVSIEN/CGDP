@@ -44,6 +44,8 @@ namespace CGD.Level
         [SerializeField, Range(RoomElevation.Lowest, 0)] private int _lowestLevel;
         [Tooltip("The highest floor level a room may be raised to by its Elevation and Terraces structure rules: 1 lets platforms and raised walks in, 2 second tiers, higher taller tiers; 0 keeps every room's floor at or below the doorways' level. A level also needs 2 m of headroom under the room's ceiling. Decks (overpasses) aren't held to this, only to the ceiling. Both 0 = every room flat, whatever its rules")]
         [SerializeField, Range(0, RoomElevation.Highest)] private int _highestLevel;
+        [Tooltip("How much of a room's floor should stand off the doorways' level, and what raises or sinks it where the room's own structure rules leave it short, so most rooms have a second level")]
+        [SerializeField] private ElevationBudget _elevationBudget = new();
         [Tooltip("A flight of stairs between two floor levels: made for a 3 m tile and a 1 m climb, its origin on the lower floor in the middle of the tile, climbing toward +Z. Empty = a plain ramp")]
         [SerializeField] private GameObject _stairsPrefab;
         [Tooltip("The railing along a railed ledge: made for a 3 m tile edge, its origin at its foot, running along X. Empty = a plain bar")]
@@ -193,6 +195,7 @@ namespace CGD.Level
         public IsovistUse IsovistFor => _isovistFor;
         public int LowestLevel  => _lowestLevel;
         public int HighestLevel => _highestLevel;
+        public ElevationBudget ElevationBudget => _elevationBudget;
         public GameObject StairsPrefab  => _stairsPrefab;
         public GameObject RailingPrefab => _railingPrefab;
         public bool UsesIsovist(IsovistUse use) => (_isovistFor & use) != 0;

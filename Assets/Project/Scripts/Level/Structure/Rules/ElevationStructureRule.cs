@@ -15,6 +15,8 @@ namespace CGD.Level
     // steps, a stepped pit, a terraced hill, a crater deepening ring by ring. Each tier is a smaller
     // copy of the one it stands on, reached from it; as many tiers are built as the room's levels,
     // its ceiling and the feature's size allow (BlockElevationBuilder, RoundElevationBuilder).
+    // A feature with no space for itself is tried smaller, down to two tiles each way, so a
+    // small or crowded room still gets one.
     // None covers a doorway's front, a route from a doorway or the centre spot, so everyone
     // arrives and crosses the room on the doorways' level; every piece has a way up and down, with
     // landings clear at both ends, and every tile stays reachable both ways (RoomStructure.TryAddElevations
@@ -24,7 +26,10 @@ namespace CGD.Level
     [CreateAssetMenu(fileName = "ElevationStructureRule", menuName = "CGD/Level/Structure/Elevation")]
     public class ElevationStructureRule : RoomStructureRule
     {
+        // Places tried at each size before the next smaller one.
         private const int Attempts = 16;
+        // How many tiles a block may be shrunk by, along its length and (half as fast) its depth.
+        private const int MaxShrink = 4;
 
         [SerializeField] private ElevationKind _kind = ElevationKind.Platform;
         [Tooltip("How many to put in the room")]
@@ -66,12 +71,22 @@ namespace CGD.Level
             {
                 int tiers = TiersFor(structure, random);
                 bool railed = _railed || (_railChance > 0f && random.Chance(_railChance));
-                for (int attempt = 0; attempt < Attempts; attempt++)
-                {
-                    List<ElevatedArea> areas = IsRound ? rounds.Build(structure, random, tiers) : blocks.Build(structure, random, tiers, railed);
-                    if (TryAdd(structure, areas, ref budget)) break;
-                }
+                // A round feature's radius already starts at its smallest, so it isn't shrunk.
+                for (int shrink = 0; shrink <= (IsRound ? 0 : MaxShrink); shrink++)
+                    if (TryPlace(structure, random, blocks, rounds, tiers, railed, shrink, ref budget)) break;
             }
+        }
+
+        private bool TryPlace(RoomStructure structure, RandomStream random, BlockElevationBuilder blocks, RoundElevationBuilder rounds,
+                              int tiers, bool railed, int shrink, ref int budget)
+        {
+            for (int attempt = 0; attempt < Attempts; attempt++)
+            {
+                List<ElevatedArea> areas = IsRound ? rounds.Build(structure, random, tiers)
+                                                   : blocks.Build(structure, random, tiers, railed, shrink);
+                if (TryAdd(structure, areas, ref budget)) return true;
+            }
+            return false;
         }
 
         // How many tiers this one is to have: drawn only when the range leaves a choice, then as
