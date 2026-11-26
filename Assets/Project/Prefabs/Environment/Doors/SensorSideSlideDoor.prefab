@@ -12,14 +12,6 @@ PrefabInstance:
       propertyPath: _agentsPathThrough
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7000000000000777, guid: feecb9b0eed90e55a422f5e3d14cb0cb, type: 3}
-      propertyPath: _interactable
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7000000000000777, guid: feecb9b0eed90e55a422f5e3d14cb0cb, type: 3}
-      propertyPath: _noiseRadius
-      value: 4
-      objectReference: {fileID: 0}
     - target: {fileID: 7000000000000763, guid: feecb9b0eed90e55a422f5e3d14cb0cb, type: 3}
       propertyPath: m_Name
       value: SensorSideSlideDoor
@@ -61,7 +53,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.Interaction.DoorSensor
   _door: {fileID: 7000000000000698}
-  _opensFor: 0
   _center: {x: 0, y: 1.1, z: 0}
   _size: {x: 3.4, y: 2.2, z: 5}
   _mask:

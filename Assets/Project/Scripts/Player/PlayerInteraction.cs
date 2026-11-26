@@ -32,7 +32,7 @@ namespace CGD.Player
         public IInteractable Current        => _current;
         public Vector3       TargetPosition => _currentCollider != null ? _currentCollider.transform.position : Vector3.zero;
         // How the target is used, so the prompt can say so.
-        public InteractionStyle TargetStyle => _current != null ? _current.Style : InteractionStyle.Press;
+        public InteractionStyle TargetStyle => _current != null ? _current.StyleFor(gameObject) : InteractionStyle.Press;
 
         // 0..1 while holding or mashing toward finishing the target; 0 for a plain press.
         public float   EffortProgress => TargetStyle != InteractionStyle.Press ? _effort.Progress : 0f;
@@ -92,11 +92,11 @@ namespace CGD.Player
 
             if (_current == null) return;
 
-            switch (_current.Style)
+            switch (_current.StyleFor(gameObject))
             {
                 case InteractionStyle.Hold:
                     // One completion per press: the key must be released before holding again.
-                    if (_effort.Hold(_input.IsHeld(GameAction.Interact), _current.HoldDuration, Time.deltaTime))
+                    if (_effort.Hold(_input.IsHeld(GameAction.Interact), _current.HoldDurationFor(gameObject), Time.deltaTime))
                         Use();
                     break;
 

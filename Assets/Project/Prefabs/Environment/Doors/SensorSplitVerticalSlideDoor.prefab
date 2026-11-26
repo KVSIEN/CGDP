@@ -12,14 +12,6 @@ PrefabInstance:
       propertyPath: _agentsPathThrough
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7000000000001211, guid: 64758a2338da648b474200816834bd95, type: 3}
-      propertyPath: _interactable
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7000000000001211, guid: 64758a2338da648b474200816834bd95, type: 3}
-      propertyPath: _noiseRadius
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 7000000000001197, guid: 64758a2338da648b474200816834bd95, type: 3}
       propertyPath: m_Name
       value: SensorSplitVerticalSlideDoor
@@ -61,7 +53,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CGD.Runtime::CGD.Interaction.DoorSensor
   _door: {fileID: 7000000000001316}
-  _opensFor: 0
   _center: {x: 0, y: 1.1, z: 0}
   _size: {x: 3.4, y: 2.2, z: 5}
   _mask:
