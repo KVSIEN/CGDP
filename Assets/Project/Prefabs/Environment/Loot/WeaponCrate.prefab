@@ -108,8 +108,8 @@ MonoBehaviour:
     Weight: 10
   - Filter: {fileID: 11400000, guid: b2d01d8b17364865ba90187d8c282482, type: 2}
     Weight: 10
-  _itemPickupPrefab: {fileID: 7400000000000000004, guid: 8388490666aa4c8b87afd39d7be008b1, type: 3}
-  _weaponPickupPrefab: {fileID: 7400000000000000104, guid: 3a43c12ea9e742f6a70610074201a1ea, type: 3}
+  _itemPickupPrefab: {fileID: 7400000000000000004, guid: 388256a9a4738594fb070b524bfaba60, type: 3}
+  _weaponPickupPrefab: {fileID: 7400000000000000104, guid: 3f6348acfcc8f1f4198e2f4eed0ffb7e, type: 3}
   _dropOffset: {x: 0, y: 1, z: 0}
   _scatterRadius: 0.8
   _groundMask:
