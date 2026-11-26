@@ -82,6 +82,24 @@ namespace CGD.Tests
             }
         }
 
+        // A furnished neighbour behind a wall doesn't count: each bare cell still gets its piece.
+        [Test]
+        public void MinEmptyLooksOnlyInItsOwnZone()
+        {
+            for (int seed = 0; seed < Seeds; seed++)
+            {
+                RoomStructure room = ThreeZoneRoom();
+                RoomPropPlanner planner = Planner(room, seed, fillShare: 0.6f);
+                planner.Add(Placement(1, 1), zones: new[] { room.ZoneOf(Vector2Int.zero) });
+
+                RoomPropPlacement fill = Placement(1, 1);
+                fill.MinEmpty = 8;
+                fill.EachZone = true;
+
+                Assert.AreEqual(2, planner.Add(fill), $"seed {seed}");
+            }
+        }
+
         // Centred on a lattice: a count fills the lattice points nearest the middle, so no
         // point farther out is taken while a nearer one is left empty.
         [Test]

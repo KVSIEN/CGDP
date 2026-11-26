@@ -209,12 +209,17 @@ namespace CGD.Level
             return placement.Decor || placement.Clearance == 0 || ClearanceIsOpen(candidate, placement.Clearance);
         }
 
-        // Whether no prop or pillar stands within `reach` tiles round a rectangle.
+        // Whether no prop or pillar stands within `reach` tiles round a rectangle, in its own zone:
+        // what stands behind a wall doesn't furnish this room.
         private bool IsBare(RectInt rect, int reach)
         {
+            int zone = _structure.ZoneOf(rect.min);
             for (int y = rect.yMin - reach; y < rect.yMax + reach; y++)
                 for (int x = rect.xMin - reach; x < rect.xMax + reach; x++)
-                    if (_structure.Has(new Vector2Int(x, y), RoomTileTags.Prop | RoomTileTags.Structure)) return false;
+                {
+                    var tile = new Vector2Int(x, y);
+                    if (_structure.ZoneOf(tile) == zone && _structure.Has(tile, RoomTileTags.Prop | RoomTileTags.Structure)) return false;
+                }
             return true;
         }
 

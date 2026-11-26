@@ -1243,6 +1243,10 @@ at one cell. Next: give the remaining hallways something to do (sightlines, cove
 
 ## 16b. Gap fill and office doors
 
+Searchable furniture comes first in the gap fill: one or two lockers or cabinets per zone (*Each Zone*,
+so every office and cubicle is looked at by itself) and a desk or two in wider bare floor. *Min Empty*
+only looks within the piece's own zone, so furniture behind a wall no longer leaves a room blank.
+
 Play-testing showed rooms dense in one corner and blank in the next (a drive core with shelves in
 one corner, a study room with a few cover blocks, a morgue with one table). Two changes:
 
