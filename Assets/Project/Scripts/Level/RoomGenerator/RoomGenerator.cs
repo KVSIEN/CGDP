@@ -88,12 +88,11 @@ namespace CGD.Level
         // Where the room's overgrowth comes from: its factions', none, or the profile chosen.
         public OvergrowthSource Overgrowth(LevelBuildSettings settings) => _room.ToOvergrowthSource(settings);
 
-        // Called with the room's centre once it is built and the metres out to the furthest room round it: the
-        // spectator's overview looks at the centre and can pan out to all of it.
-        public void FrameRoom(Vector3 centre, float radius)
+        // Called with the room's centre once it is built: the spectator's overview starts looking at it.
+        public void FrameRoom(Vector3 centre)
         {
             if (_spectatorCamera == null) return;
-            if (_spectatorCamera.TryGetComponent(out SpectatorCamera spectator)) spectator.Frame(centre, radius);
+            if (_spectatorCamera.TryGetComponent(out SpectatorCamera spectator)) spectator.Frame(centre);
             else _spectatorCamera.position += centre;
         }
 

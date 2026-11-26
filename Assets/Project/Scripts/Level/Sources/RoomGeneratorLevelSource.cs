@@ -19,6 +19,6 @@ namespace CGD.Level
         public override LevelLayoutBuilder LayoutBuilder(LevelBuildSettings settings) => _generator.LayoutBuilder(settings);
         public override OvergrowthSource Overgrowth(LevelBuildSettings settings) => _generator.Overgrowth(settings);
         public override int StartRoom(int pinned) => RoomRecipeGraph.RoomId;
-        public override void Started(Vector3 centre, float reach) => _generator.FrameRoom(centre, reach);
+        public override void Started(Vector3 centre) => _generator.FrameRoom(centre);
     }
 }

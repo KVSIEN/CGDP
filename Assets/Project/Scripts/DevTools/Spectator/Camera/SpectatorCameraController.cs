@@ -5,7 +5,7 @@ namespace CGD.DevTools
     // Where the spectator camera should be, from the steering it gets each frame. Plain
     // maths, no Unity objects, so it can be tested.
     //   Overview  the placed viewpoint's angle, looking at a point on the ground: move pans
-    //             that point (faster when zoomed out, never far from the arena), zoom moves
+    //             that point (faster when zoomed out, as far as wanted), zoom moves
     //             along the view. Turning (Look) leaves it for Free from where it is.
     //   Follow    orbits a point given each frame (an agent): Look turns round it, zoom moves
     //             closer or further. Moving leaves it for Free, from where it is.
@@ -17,7 +17,6 @@ namespace CGD.DevTools
         private const float FastMultiplier   = 3f;
         private const float ZoomStep         = 0.12f;   // share of the distance one zoom step covers
         private const float MinOverviewZoom  = 0.25f;   // × the placed distance
-        private const float MaxOverviewZoom  = 3f; 
         private const float MinFollowDistance = 3f;
         private const float MaxFollowDistance = 45f;
         private const float DefaultFollowDistance = 12f;
@@ -32,7 +31,6 @@ namespace CGD.DevTools
         private readonly float   _homeDistance;
         private readonly float   _homeYaw;
         private readonly float   _homePitch;
-        private float   _panLimit;
 
         private Vector3 _focus;
         private float   _overviewDistance;
@@ -46,14 +44,12 @@ namespace CGD.DevTools
         private Vector3    _targetPosition;
         private Quaternion _targetRotation;
 
-        // home: the viewpoint placed in the scene. panLimit: metres the overview may pan from
-        // where that viewpoint looks.
-        public SpectatorCameraController(Vector3 homePosition, Quaternion homeRotation, float panLimit)
+        // home: the viewpoint placed in the scene.
+        public SpectatorCameraController(Vector3 homePosition, Quaternion homeRotation)
         {
             Vector3 euler = homeRotation.eulerAngles;
             _homeYaw   = euler.y;
             _homePitch = Mathf.Clamp(SignedAngle(euler.x), 10f, 89f);
-            _panLimit  = Mathf.Max(0f, panLimit);
 
             Vector3 forward = Quaternion.Euler(_homePitch, _homeYaw, 0f) * Vector3.forward;
             _homeDistance = homePosition.y > 0.1f ? homePosition.y / -forward.y : 20f;
@@ -64,12 +60,11 @@ namespace CGD.DevTools
             Rotation = _targetRotation;
         }
 
-        // Moves the overview to look at `focus`, a point on the ground, and lets it pan `radius` metres
-        // from there at least (a scene viewpoint is placed before the level it looks at exists). Snaps.
-        public void Frame(Vector3 focus, float radius)
+        // Moves the overview to look at `focus`, a point on the ground (a scene viewpoint is placed
+        // before the level it looks at exists). Snaps.
+        public void Frame(Vector3 focus)
         {
             _homeFocus = focus;
-            _panLimit  = Mathf.Max(_panLimit, radius);
             ShowOverview();
             Position = _targetPosition;
             Rotation = _targetRotation;
@@ -134,17 +129,13 @@ namespace CGD.DevTools
         private void TickOverview(in SpectatorMotion motion, float speed, float deltaTime)
         {
             if (motion.Zoom != 0)
-                _overviewDistance = Mathf.Clamp(_overviewDistance * Mathf.Pow(1f - ZoomStep, motion.Zoom),
-                                                _homeDistance * MinOverviewZoom, _homeDistance * MaxOverviewZoom);
+                _overviewDistance = Mathf.Max(_overviewDistance * Mathf.Pow(1f - ZoomStep, motion.Zoom),
+                                              _homeDistance * MinOverviewZoom);
 
             // Pans over the ground in the camera's facing; further out, faster.
             Quaternion yaw = Quaternion.Euler(0f, _homeYaw, 0f);
             Vector3 pan = yaw * new Vector3(motion.Move.x, 0f, motion.Move.z);
             _focus += pan * (speed * (_overviewDistance / _homeDistance) * deltaTime);
-
-            Vector3 offset = _focus - _homeFocus;
-            offset.y = 0f;
-            if (offset.sqrMagnitude > _panLimit * _panLimit) _focus = _homeFocus + offset.normalized * _panLimit;
             AimOverview();
         }
 

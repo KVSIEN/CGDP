@@ -13,7 +13,7 @@ namespace CGD.Tests
         private static readonly Vector3    HomePosition = new(0f, 50f, -30f);
         private static readonly Quaternion HomeRotation = Quaternion.Euler(62f, 0f, 0f);
 
-        private static SpectatorCameraController Make() => new(HomePosition, HomeRotation, panLimit: 30f);
+        private static SpectatorCameraController Make() => new(HomePosition, HomeRotation);
 
         private static void Run(SpectatorCameraController camera, SpectatorMotion motion, Vector3? follow = null, float seconds = Settle) =>
             camera.Tick(motion, follow, moveSpeed: 10f, smoothing: 0f, deltaTime: seconds);
@@ -83,13 +83,13 @@ namespace CGD.Tests
         }
 
         [Test]
-        public void OverviewPansButNeverFarFromTheArena()
+        public void OverviewPansWithoutLimit()
         {
             SpectatorCameraController camera = Make();
             Run(camera, new SpectatorMotion(new Vector3(1f, 0f, 0f), Vector2.zero, 0, fast: true), seconds: 100f);
 
             Assert.AreEqual(SpectatorCameraMode.Overview, camera.Mode);
-            Assert.That(camera.Position.x, Is.EqualTo(30f).Within(0.1f));
+            Assert.Greater(camera.Position.x, 1000f);
             Assert.That(camera.Position.y, Is.EqualTo(HomePosition.y).Within(0.1f));
         }
 
@@ -100,6 +100,17 @@ namespace CGD.Tests
             Run(camera, new SpectatorMotion(Vector3.zero, Vector2.zero, zoom: 3, fast: false));
             Assert.Less(camera.Position.y, HomePosition.y);
             Assert.That(Quaternion.Angle(HomeRotation, camera.Rotation), Is.LessThan(0.1f));
+        }
+
+        [Test]
+        public void FramingStartsTheOverviewOnThePoint()
+        {
+            SpectatorCameraController camera = Make();
+            Vector3 room = new(200f, 0f, 150f);
+            camera.Frame(room);
+
+            Vector3 toRoom = (room - camera.Position).normalized;
+            Assert.That(Vector3.Angle(camera.Rotation * Vector3.forward, toRoom), Is.LessThan(0.5f));
         }
 
         [Test]

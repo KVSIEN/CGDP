@@ -30,8 +30,8 @@ namespace CGD.Level
         public virtual OvergrowthSource Overgrowth(LevelBuildSettings settings) => OvergrowthSource.FromFactions(settings);
         // The room the player starts in: `pinned` (LevelBuilder's Start Room; -1 = the Start room's).
         public virtual int StartRoom(int pinned) => pinned;
-        // Told the start room's centre once the level is built, and how far from it the level reaches.
-        public virtual void Started(Vector3 centre, float reach) { }
+        // Told the start room's centre once the level is built.
+        public virtual void Started(Vector3 centre) { }
 
         protected virtual Seed OwnSeed() => Seed.Random();
 

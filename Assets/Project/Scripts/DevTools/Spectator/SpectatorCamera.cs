@@ -43,8 +43,6 @@ namespace CGD.DevTools
         [SerializeField] private GameObject[]  _agentPrefabs;
         [Tooltip("The spectator's controls and default feel (Data/DevTools/SpectatorInputSettings)")]
         [SerializeField] private SpectatorInputSettings _inputSettings;
-        [Tooltip("Metres the overview may pan away from where it looks at first")]
-        [SerializeField, Min(0f)] private float _panLimit = 30f;
         [Tooltip("Transparent material with vertex colours for the world overlays (Sprites-Default). Empty = made from the Sprites/Default shader")]
         [SerializeField] private Material _overlayMaterial;
         [Tooltip("Starting situations to pick from (B), e.g. Data/DevTools/Scenarios")]
@@ -64,7 +62,7 @@ namespace CGD.DevTools
         private SpectatorInput            _input;
         private SpectatorPreferences      _preferences;
         private SpectatorCameraController _controller;
-        private (Vector3 focus, float radius)? _pendingFrame;
+        private Vector3?                  _pendingFrame;
         private SpectatorHud              _hud;
         private SpectatorSettingsPanel    _settingsPanel;
         private AgentLabels               _labels;
@@ -92,8 +90,8 @@ namespace CGD.DevTools
             _watchable     = new AgentRoster(_agents != null ? _agents.GetComponentsInChildren<EnemyAI>(true) : System.Array.Empty<EnemyAI>());
             _input         = new SpectatorInput(_inputSettings);
             _preferences   = SpectatorSave.LoadPreferences(_inputSettings);
-            _controller    = new SpectatorCameraController(transform.position, transform.rotation, _panLimit);
-            if (_pendingFrame.HasValue) _controller.Frame(_pendingFrame.Value.focus, _pendingFrame.Value.radius);
+            _controller    = new SpectatorCameraController(transform.position, transform.rotation);
+            if (_pendingFrame.HasValue) _controller.Frame(_pendingFrame.Value);
             _labels        = new AgentLabels(transform, _watchable, _labelSize, _fontSize);
             _hud           = new SpectatorHud(transform);
             _settingsPanel = new SpectatorSettingsPanel(_hud.Root, _inputSettings, _input, _preferences, ApplyPreferences);
@@ -256,11 +254,11 @@ namespace CGD.DevTools
 
         private bool Pressed(SpectatorAction action) => _input.WasPressed(action);
 
-        // Looks at `focus` and pans `radius` metres from it at least; held until the camera wakes if it has not yet.
-        public void Frame(Vector3 focus, float radius)
+        // Looks at `focus`; held until the camera wakes if it has not yet.
+        public void Frame(Vector3 focus)
         {
-            if (_controller != null) _controller.Frame(focus, radius);
-            else _pendingFrame = (focus, radius);
+            if (_controller != null) _controller.Frame(focus);
+            else _pendingFrame = focus;
         }
 
         private void ShowOverview()
