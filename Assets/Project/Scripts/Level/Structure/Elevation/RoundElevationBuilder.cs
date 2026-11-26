@@ -125,7 +125,7 @@ namespace CGD.Level
                 var own = new List<Vector2Int>();
                 foreach (Vector2Int tile in tiles)
                     if (tierOf[tile] == tier) own.Add(tile);
-                areas.Add(new ElevatedArea(_kind, direction * tier, own, stairs[tier], railed: false, corners[tier]));
+                areas.Add(new ElevatedArea(_kind, direction * tier, own, stairs[tier], LedgeGuards.None, corners[tier]));
             }
             return areas;
         }

@@ -25,6 +25,11 @@ namespace CGD.Level
         public const int   OverpassClearance = 2;
         public const float DeckThickness     = 0.2f;
 
+        // A ledge's railing or half wall stands this high over its higher floor: low cover from
+        // above, and from below 2 m, past Mantle Max Height (PlayerMovementSettings), so a guarded
+        // ledge is only crossed by its stairs while an open one is mantled.
+        public const float GuardHeight = 1f;
+
         // Metres above the room's floor.
         public static float HeightOf(int level) => level * StepHeight;
     }

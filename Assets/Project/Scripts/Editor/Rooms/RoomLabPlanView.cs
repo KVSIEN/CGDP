@@ -41,6 +41,7 @@ namespace CGD.Editor
         private static readonly Color DeckTile  = new(0.7f, 0.4f, 1f, 0.75f);
         private static readonly Color OpenLedge  = new(1f, 1f, 1f, 0.95f);
         private static readonly Color RailedLedge = new(0.45f, 0.45f, 0.5f, 1f);
+        private static readonly Color HalfWallLedge = new(0.2f, 0.2f, 0.25f, 1f);
 
         private readonly RoomPlanTexture _plan = new();
         private readonly StringBuilder _readout = new();
@@ -151,8 +152,9 @@ namespace CGD.Editor
                     bool open = structure.CanDropDown(tile, next) || structure.CanDropDown(next, tile);
                     Vector2 a = tile + Vector2.one - (Vector2)Perpendicular(side);   // the far corner of the shared edge…
                     Vector2 b = tile + Vector2.one;                                   // …and the near one
-                    Handles.color = open ? OpenLedge : RailedLedge;
-                    Handles.DrawAAPolyLine(open ? 2f : 4f, ToGui(image, a), ToGui(image, b));
+                    bool halfWall = structure.GuardOn(tile, next) == LedgeGuard.HalfWall;
+                    Handles.color = open ? OpenLedge : halfWall ? HalfWallLedge : RailedLedge;
+                    Handles.DrawAAPolyLine(open ? 2f : halfWall ? 6f : 4f, ToGui(image, a), ToGui(image, b));
                 }
             }
             Handles.color = before;
@@ -375,7 +377,7 @@ namespace CGD.Editor
                 RoomLabLayer.Posts      => "green concealed · red overwatch · amber high ground · violet dead end · orange choke · blue route · ring guard, dot patrol (pink: breach side)",
                 RoomLabLayer.Flow       => FlowLegend(sample.Room.Structure),
                 RoomLabLayer.Elevation  => sample.Room.Structure.HasElevation || sample.Room.Structure.Overpasses.Count > 0
-                    ? "orange raised · blue sunken · yellow stairs, green slopes (arrow climbing; small square: a corner) · violet overpass deck · white ledge you can drop off · grey railed"
+                    ? "orange raised · blue sunken · yellow stairs, green slopes (arrow climbing; small square: a corner) · violet overpass deck · white ledge you can drop off · grey railed · dark thick half wall"
                     : "Flat: every tile on the doorways' level (Elevation rules need Level Build Settings › Lowest/Highest Level)",
                 _                       => "sand furniture · dark pillars · cyan outline doorway",
             };

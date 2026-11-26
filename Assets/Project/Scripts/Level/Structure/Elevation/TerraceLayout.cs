@@ -97,10 +97,11 @@ namespace CGD.Level
                     }
             }
 
+            LedgeGuards guards = LedgeGuards.All(railed ? LedgeGuard.Railing : LedgeGuard.None);
             var areas = new List<ElevatedArea>();
             for (int r = 0; r < _runs.Count; r++)
                 if (tilesOf[r] != null && tilesOf[r].Count > 0)
-                    areas.Add(new ElevatedArea(ElevationKind.Terrace, _runs[r].level, tilesOf[r], stairsOf[r], railed));
+                    areas.Add(new ElevatedArea(ElevationKind.Terrace, _runs[r].level, tilesOf[r], stairsOf[r], guards));
             return areas;
         }
 

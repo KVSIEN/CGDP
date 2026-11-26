@@ -5,8 +5,9 @@ namespace CGD.Level
 {
     // What counts as cover beside a floor tile, for every reading of a room that asks (the trait
     // measure's covered lanes, the post map's firing positions): something solid to duck behind
-    // on the neighbouring tile, or ground rising a level above the tile with no stairs between
-    // (the face of a platform, the rim of a sunken floor) for whoever stands below it.
+    // on the neighbouring tile, ground rising a level above the tile with no stairs between
+    // (the face of a platform, the rim of a sunken floor) for whoever stands below it, or a half
+    // wall along a ledge, for whoever stands either side of it.
     public static class RoomCover
     {
         private const RoomTileTags Solid = RoomTileTags.Structure | RoomTileTags.Prop;
@@ -16,6 +17,7 @@ namespace CGD.Level
         {
             if (!structure.Contains(beside)) return false;
             if (structure.Has(beside, Solid)) return true;
+            if (structure.GuardOn(tile, beside) == LedgeGuard.HalfWall) return true;
             return structure.LevelOf(beside) > structure.LevelOf(tile) && structure.IsLedge(tile, beside);
         }
 

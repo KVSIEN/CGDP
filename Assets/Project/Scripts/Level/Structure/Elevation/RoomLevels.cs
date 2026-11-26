@@ -117,25 +117,29 @@ namespace CGD.Level
         }
 
         // Whether `from` stands an open ledge's height over `to`: one level up, no stairs on
-        // either, and no railing of either's area between them. Walls are the structure's to check.
+        // either, and no guard of either's area between them. Walls are the structure's to check.
         public bool IsOpenDrop(Vector2Int from, Vector2Int to)
         {
             int a = _grid.IndexOf(from), b = _grid.IndexOf(to);
             if (_level[a] != _level[b] + 1 || _stairUp[a] != 0 || _stairUp[b] != 0) return false;
-            return !IsRailed(a, b);
+            return GuardBetween(from, to) == LedgeGuard.None;
+        }
+
+        // What stands between two neighbouring tiles of different areas (or an area and the floor
+        // round it): the stronger of either area's guard on that edge. Whether it is a ledge at all
+        // is the caller's to ask.
+        public LedgeGuard GuardBetween(Vector2Int a, Vector2Int b)
+        {
+            ElevatedArea from = AreaOf(a), to = AreaOf(b);
+            if (from == to) return LedgeGuard.None;
+            LedgeGuard outOfA = from != null ? from.GuardOn(a, b) : LedgeGuard.None;
+            LedgeGuard outOfB = to   != null ? to.GuardOn(b, a)   : LedgeGuard.None;
+            return (LedgeGuard)Mathf.Max((int)outOfA, (int)outOfB);
         }
 
         private static bool Along(Vector2Int up, Vector2Int step) => step == up || step == -up;
 
         private Vector2Int UpAt(int index) => GridNeighbours.Four[(_stairUp[index] - 1) % GridNeighbours.Four.Length];
-
-        // A railed area keeps anyone from crossing its ledges: off a platform, or into a pit.
-        private bool IsRailed(int a, int b)
-        {
-            ElevatedArea from = _areaOf[a] > 0 ? _elevations[_areaOf[a] - 1] : null;
-            ElevatedArea to   = _areaOf[b] > 0 ? _elevations[_areaOf[b] - 1] : null;
-            return (from != null && from != to && from.Railed) || (to != null && to != from && to.Railed);
-        }
 
         // --- Changes (checked by RoomStructure first) -----------------------------------
 

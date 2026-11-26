@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: GalleryElevationStructureRule
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.ElevationStructureRule
   _kind: 0
+  _role: 1
+  _wall: 2
   _count:
     Min: 1
     Max: 2

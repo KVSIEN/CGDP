@@ -59,7 +59,7 @@ namespace CGD.Level
             foreach (LevelRoom room in layout.Rooms.Values)
             {
                 if (room.Structure != null) AddStructure(layout, room, structure, lowCover, parent);
-                elevation.Build(room, stairs, ground, railings, decks, parent);
+                elevation.Build(room, stairs, ground, railings, lowCover, decks, parent);
                 if (room.Landmark != null) PlaceLandmark(layout, room, parent);
             }
 

@@ -15,6 +15,10 @@ namespace CGD.Level
     // steps, a stepped pit, a terraced hill, a crater deepening ring by ring. Each tier is a smaller
     // copy of the one it stands on, reached from it; as many tiers are built as the room's levels,
     // its ceiling and the feature's size allow (BlockElevationBuilder, RoundElevationBuilder).
+    // Role (ElevationRole) says what a Platform or Sunken Floor is for in play, which sets its guards
+    // and its ways up (ElevationAccess): a split level or a pit is open or railed by Railed and Rail
+    // Chance; a perch has Wall along its front and open sides; a bastion has Wall all round, its
+    // stairs the only ways on. Mounds and craters slope on every side whatever their role.
     // A feature with no space for itself is tried smaller, down to two tiles each way, so a
     // small or crowded room still gets one.
     // None covers a doorway's front, a route from a doorway or the centre spot, so everyone
@@ -32,6 +36,10 @@ namespace CGD.Level
         private const int MaxShrink = 4;
 
         [SerializeField] private ElevationKind _kind = ElevationKind.Platform;
+        [Tooltip("Platform and Sunken Floor: what it is for in play. Split Level and Pit: open or railed ledges (Railed, Rail Chance). Perch: Wall along the side facing into the room, the other sides open to climb, one or two flights. Bastion: Wall all round, two flights at least on different sides, the only ways on. Pit: two flights at least")]
+        [SerializeField] private ElevationRole _role = ElevationRole.SplitLevel;
+        [Tooltip("Perch and Bastion: what stands along their guarded ledges. Half Wall: solid, low cover. Railing: seen and shot through")]
+        [SerializeField] private LedgeGuard _wall = LedgeGuard.HalfWall;
         [Tooltip("How many to put in the room")]
         [SerializeField] private IntRange _count = new(1, 1);
         [Tooltip("Levels each one rises or sinks, a tier per level, each standing on the one before it. Capped by the levels the room allows and its ceiling, and by the feature's size: Platform and Sunken Floor tiers keep two tiles in from the tier below, Mound and Crater tiers two tiles all round")]
@@ -48,12 +56,13 @@ namespace CGD.Level
         [SerializeField] private bool _bridge;
         [Tooltip("Most of the room's floor these may take together, slopes and corners counted")]
         [SerializeField, Range(0.05f, 0.5f)] private float _maxShare = 0.25f;
-        [Tooltip("A railing along the open edges: nobody drops off a platform or into a sunken floor, only takes the stairs. Mounds and craters have no open edge")]
+        [Tooltip("Split Level and Pit: a railing along the open edges: nobody drops off a platform or into a sunken floor, only takes the stairs. Mounds and craters have no open edge")]
         [SerializeField] private bool _railed;
-        [Tooltip("Platform and Sunken Floor: the chance a feature that isn't always railed gets a railing anyway, so most drops are fenced and some are the open one-metre drop a real deck has. Draws a random number only when above 0")]
+        [Tooltip("Split Level and Pit: the chance a feature that isn't always railed gets a railing anyway, so most drops are fenced and some are the open one-metre drop a real deck has. Draws a random number only when above 0")]
         [SerializeField, Range(0f, 1f)] private float _railChance;
 
         public ElevationKind Kind => _kind;
+        public ElevationRole Role => _role;
         // Up (+1) or down (-1), and the level of the first tier.
         public int Level => _kind == ElevationKind.Platform || _kind == ElevationKind.Mound ? 1 : -1;
 
@@ -63,30 +72,39 @@ namespace CGD.Level
         {
             if (!structure.AllowsFloor(Level)) return;
 
-            var blocks = new BlockElevationBuilder(_kind, _depth, _length, _stairs, _bridge);
+            var blocks = new BlockElevationBuilder(_kind, _depth, _length, _stairs, _bridge, _role, _wall);
             var rounds = new RoundElevationBuilder(_kind, _radius);
             int budget = Mathf.FloorToInt(structure.Footprint.Count * _maxShare);
             int count = _count.Evaluate(random);
             for (int i = 0; i < count; i++)
             {
                 int tiers = TiersFor(structure, random);
-                bool railed = _railed || (_railChance > 0f && random.Chance(_railChance));
+                LedgeGuard open = OpenGuard(random);
                 // A round feature's radius already starts at its smallest, so it isn't shrunk.
                 for (int shrink = 0; shrink <= (IsRound ? 0 : MaxShrink); shrink++)
-                    if (TryPlace(structure, random, blocks, rounds, tiers, railed, shrink, ref budget)) break;
+                    if (TryPlace(structure, random, blocks, rounds, tiers, open, shrink, ref budget)) break;
             }
         }
 
         private bool TryPlace(RoomStructure structure, RandomStream random, BlockElevationBuilder blocks, RoundElevationBuilder rounds,
-                              int tiers, bool railed, int shrink, ref int budget)
+                              int tiers, LedgeGuard open, int shrink, ref int budget)
         {
             for (int attempt = 0; attempt < Attempts; attempt++)
             {
                 List<ElevatedArea> areas = IsRound ? rounds.Build(structure, random, tiers)
-                                                   : blocks.Build(structure, random, tiers, railed, shrink);
+                                                   : blocks.Build(structure, random, tiers, open, shrink);
                 if (TryAdd(structure, areas, ref budget)) return true;
             }
             return false;
+        }
+
+        // The guard on the ledges this one's role leaves open: a railing when always railed or by
+        // its chance (drawn only when the chance is above 0 and the role has open ledges to rail).
+        private LedgeGuard OpenGuard(RandomStream random)
+        {
+            if (!ElevationAccess.RollsRailing(_role)) return LedgeGuard.None;
+            bool railed = _railed || (_railChance > 0f && random.Chance(_railChance));
+            return railed ? LedgeGuard.Railing : LedgeGuard.None;
         }
 
         // How many tiers this one is to have: drawn only when the range leaves a choice, then as

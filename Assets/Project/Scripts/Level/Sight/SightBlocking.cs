@@ -15,6 +15,8 @@ namespace CGD.Level
     //   - inner walls as tall as they are built (one of no height reaches the ceiling);
     //   - the floor itself: the face of a raised platform, the rim of a sunken floor, and the
     //     solid corner pieces round a mound or a crater, as high as the ground they climb to;
+    //   - a half wall along a ledge, RoomElevation.GuardHeight over its higher floor (a railing
+    //     is seen through);
     //   - an overpass's deck, a slab in the air: seen under from the floor beneath it and over
     //     from above, but it hides the floor under it from someone looking down across it, and
     //     its flights stand as high as the deck.
@@ -76,11 +78,14 @@ namespace CGD.Level
             TopOf(tile) - FloorAt(tile) >= _eye || DeckIn(tile, FloorAt(tile) + _eye, FloorAt(tile) + _eye);
 
         // Sight along the floor stops between two neighbouring tiles: an inner wall that reaches
-        // the eye, or a change of level at least as big (a crouching eye doesn't see over a ledge).
+        // the eye, a change of level at least as big (a crouching eye doesn't see over a ledge),
+        // or a half wall on a ledge that does from the floor below it.
         public bool BlocksEdge(Vector2Int a, Vector2Int b)
         {
             if (_structure.IsPartitioned(a, b) && WallHeight(a, b) >= _eye) return true;
-            return Mathf.Abs(FloorAt(a) - FloorAt(b)) >= _eye;
+            float rise = Mathf.Abs(FloorAt(a) - FloorAt(b));
+            if (_structure.GuardOn(a, b) == LedgeGuard.HalfWall) rise += RoomElevation.GuardHeight;
+            return rise >= _eye;
         }
 
         // How high the floor of a tile is, in metres above the doorways' level: halfway up a flight
@@ -164,9 +169,14 @@ namespace CGD.Level
             return _structure.Has(tile, RoomTileTags.Prop) ? floor + _structure.PropHeightAt(tile) : floor;
         }
 
-        // How high an inner wall between two tiles reaches above the doorways' level (nothing there: no height at all).
-        private float EdgeTop(Vector2Int a, Vector2Int b) =>
-            _structure.IsPartitioned(a, b) ? Mathf.Max(FloorAt(a), FloorAt(b)) + WallHeight(a, b) : float.NegativeInfinity;
+        // How high an inner wall or a half wall between two tiles reaches above the doorways'
+        // level (nothing there: no height at all).
+        private float EdgeTop(Vector2Int a, Vector2Int b)
+        {
+            if (_structure.IsPartitioned(a, b)) return Mathf.Max(FloorAt(a), FloorAt(b)) + WallHeight(a, b);
+            if (_structure.GuardOn(a, b) == LedgeGuard.HalfWall) return Mathf.Max(FloorAt(a), FloorAt(b)) + RoomElevation.GuardHeight;
+            return float.NegativeInfinity;
+        }
 
         // An inner wall's own height; one the planners never recorded reaches the ceiling.
         private float WallHeight(Vector2Int a, Vector2Int b) =>

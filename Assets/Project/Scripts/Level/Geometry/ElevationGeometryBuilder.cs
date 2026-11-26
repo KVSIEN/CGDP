@@ -17,9 +17,12 @@ namespace CGD.Level
         private const float StairThickness  = 0.2f;
         // A mound's or crater's corner ramp: this share of the tile's diagonal wide, tucked between the slopes beside it.
         private const float CornerWidthShare = 0.5f;
-        // A railing, without a prefab: metres tall and thick, and how far in from the ledge it stands.
-        private const float RailHeight    = 1f;
+        // A railing, without a prefab: metres thick, and how far in from the ledge it stands
+        // (RoomElevation.GuardHeight tall, as the half wall).
+        private const float RailHeight    = RoomElevation.GuardHeight;
         private const float RailThickness = 0.08f;
+        // A half wall: metres thick, its outer face flush with the ledge.
+        private const float HalfWallThickness = 0.2f;
         private const float RailInset     = 0.15f;
         // The kit's stairs and railing prefabs are made for this tile size (PlaceholderPropBuilder.TileMetres).
         private const float KitTileMetres = 3f;
@@ -44,10 +47,10 @@ namespace CGD.Level
             return (RoomElevation.HeightOf(lowest) - thickness, RoomElevation.HeightOf(level));
         }
 
-        // The room's stairs, slopes, railings and decks: boxes into `stairs`, `ground`, `railings`
-        // and `decks`, prefabs under `parent`.
-        public void Build(LevelRoom room, BoxMeshBuilder stairs, BoxMeshBuilder ground, BoxMeshBuilder railings, BoxMeshBuilder decks,
-                          Transform parent)
+        // The room's stairs, slopes, railings, half walls and decks: boxes into `stairs`, `ground`,
+        // `railings`, `halfWalls` (low cover) and `decks`, prefabs under `parent`.
+        public void Build(LevelRoom room, BoxMeshBuilder stairs, BoxMeshBuilder ground, BoxMeshBuilder railings, BoxMeshBuilder halfWalls,
+                          BoxMeshBuilder decks, Transform parent)
         {
             RoomStructure structure = room.Structure;
             if (structure == null) return;
@@ -63,7 +66,7 @@ namespace CGD.Level
                     else AddStairs(structure, flight, stairs, parent);
                 }
                 foreach (SlopeCorner corner in area.Corners) AddRamp(structure, corner.Tile, corner.Up, CornerWidthShare, ground);
-                if (area.Railed) AddRailings(structure, area, railings, parent);
+                if (area.Guards.Any) AddGuards(structure, area, railings, halfWalls, parent);
             }
         }
 
@@ -137,25 +140,36 @@ namespace CGD.Level
             AddRamp(structure, flight.Tile, flight.Up, StairWidthShare, boxes);
         }
 
-        // A railing on the higher side of every ledge round the area, stairs left open.
-        private void AddRailings(RoomStructure structure, ElevatedArea area, BoxMeshBuilder boxes, Transform parent)
+        // A railing or a half wall on the higher side of every ledge round the area its guards
+        // cover, stairs left open. A ledge two guarded areas share is built once, by the higher.
+        private void AddGuards(RoomStructure structure, ElevatedArea area, BoxMeshBuilder railings, BoxMeshBuilder halfWalls, Transform parent)
         {
             foreach (Vector2Int inside in area.Tiles)
                 foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     Vector2Int outside = inside + side;
-                    if (!structure.IsLedge(inside, outside) || structure.IsPartitioned(inside, outside)) continue;
+                    LedgeGuard guard = structure.GuardOn(inside, outside);
+                    if (guard == LedgeGuard.None || area.GuardOn(inside, outside) != guard || structure.IsPartitioned(inside, outside)) continue;
                     if (LeadsOntoADeck(structure, inside, outside)) continue;
+                    ElevatedArea other = structure.AreaOf(outside);
+                    if (other != null && other.GuardOn(outside, inside) == guard && structure.LevelOf(outside) > structure.LevelOf(inside)) continue;
 
                     Vector2Int high = structure.LevelOf(inside) > structure.LevelOf(outside) ? inside : outside;
                     Vector2Int low  = high == inside ? outside : inside;
                     Vector3 towardHigh = new(high.x - low.x, 0f, high.y - low.y);
                     Vector3 foot = (_layout.TileToLocal(inside) + _layout.TileToLocal(outside)) * 0.5f
                                  + towardHigh * RailInset + Vector3.up * RoomElevation.HeightOf(structure.LevelOf(high));
-                    // Facing the higher floor, the railing's length (its x) runs along the edge.
-                    AddRailing(foot, Quaternion.LookRotation(towardHigh), boxes, parent);
+                    // Facing the higher floor, the guard's length (its x) runs along the edge.
+                    Quaternion facing = Quaternion.LookRotation(towardHigh);
+                    if (guard == LedgeGuard.Railing) AddRailing(foot, facing, railings, parent);
+                    else AddHalfWall(foot - towardHigh * (RailInset - HalfWallThickness * 0.5f), facing, halfWalls);
                 }
         }
+
+        // One tile's length of half wall, solid, centred on `middle` at its foot.
+        private void AddHalfWall(Vector3 middle, Quaternion facing, BoxMeshBuilder boxes) =>
+            boxes.AddBox(middle + Vector3.up * (RoomElevation.GuardHeight * 0.5f),
+                         new Vector3(_layout.TileSize, RoomElevation.GuardHeight, HalfWallThickness), facing);
 
         // One tile's length of railing standing at `foot`, facing `facing` (its length runs across that).
         private void AddRailing(Vector3 foot, Quaternion facing, BoxMeshBuilder boxes, Transform parent)

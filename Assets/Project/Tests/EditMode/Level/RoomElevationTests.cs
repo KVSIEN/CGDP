@@ -34,7 +34,7 @@ namespace CGD.Tests
 
         // Two tiles out from the west wall, four along it, with a flight climbing west onto it from (2, 1).
         private static ElevatedArea WestPlatform(bool railed = false, params StairFlight[] stairs) =>
-            new(ElevationKind.Platform, 1, Block(0, 0, 2, 4), stairs.Length > 0 ? stairs : new[] { new StairFlight(new Vector2Int(2, 1), Vector2Int.left) }, railed);
+            new(ElevationKind.Platform, 1, Block(0, 0, 2, 4), stairs.Length > 0 ? stairs : new[] { new StairFlight(new Vector2Int(2, 1), Vector2Int.left) }, LedgeGuards.All(railed ? LedgeGuard.Railing : LedgeGuard.None));
 
         [Test]
         public void AFlatRoomWalksAsItAlwaysDid()
@@ -85,7 +85,7 @@ namespace CGD.Tests
         public void FloorWithNoWayUpIsRefusedAndLeftFlat()
         {
             RoomStructure room = Hall();
-            var noStairs = new ElevatedArea(ElevationKind.Platform, 1, Block(0, 0, 2, 4), System.Array.Empty<StairFlight>(), false);
+            var noStairs = new ElevatedArea(ElevationKind.Platform, 1, Block(0, 0, 2, 4), System.Array.Empty<StairFlight>(), LedgeGuards.None);
 
             Assert.That(room.TryAddElevation(noStairs), Is.False);
             Assert.That(room.LevelOf(new Vector2Int(0, 0)), Is.Zero);
@@ -104,7 +104,7 @@ namespace CGD.Tests
         [Test]
         public void FloorInFrontOfADoorwayIsNeverRaised()
         {
-            var atTheDoor = new ElevatedArea(ElevationKind.Platform, 1, Block(8, 6, 2, 2), new[] { new StairFlight(new Vector2Int(7, 6), Vector2Int.right) }, false);
+            var atTheDoor = new ElevatedArea(ElevationKind.Platform, 1, Block(8, 6, 2, 2), new[] { new StairFlight(new Vector2Int(7, 6), Vector2Int.right) }, LedgeGuards.None);
             Assert.That(Hall().TryAddElevation(atTheDoor), Is.False);
         }
 
@@ -113,7 +113,7 @@ namespace CGD.Tests
         {
             // The walkway runs along row 4 from the doorway to the centre: raise a stretch of it.
             RoomStructure room = Hall();
-            var acrossTheRoute = new ElevatedArea(ElevationKind.Platform, 1, Block(6, 4, 1, 2), new[] { new StairFlight(new Vector2Int(6, 3), Vector2Int.up) }, false);
+            var acrossTheRoute = new ElevatedArea(ElevationKind.Platform, 1, Block(6, 4, 1, 2), new[] { new StairFlight(new Vector2Int(6, 3), Vector2Int.up) }, LedgeGuards.None);
 
             Assert.That(room.TryAddElevation(acrossTheRoute), Is.True);
             Assert.That(room.LevelOf(new Vector2Int(6, 4)), Is.EqualTo(1));
@@ -125,8 +125,8 @@ namespace CGD.Tests
         {
             RoomStructure room = Room(12, 10, new Vector2Int(11, 5));
             room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
-            var west = new ElevatedArea(ElevationKind.Terrace, 1, Block(0, 0, 2, 4), new[] { new StairFlight(new Vector2Int(2, 1), Vector2Int.left) }, false);
-            var stranded = new ElevatedArea(ElevationKind.Terrace, 1, Block(0, 7, 2, 3), System.Array.Empty<StairFlight>(), false);
+            var west = new ElevatedArea(ElevationKind.Terrace, 1, Block(0, 0, 2, 4), new[] { new StairFlight(new Vector2Int(2, 1), Vector2Int.left) }, LedgeGuards.None);
+            var stranded = new ElevatedArea(ElevationKind.Terrace, 1, Block(0, 7, 2, 3), System.Array.Empty<StairFlight>(), LedgeGuards.None);
 
             Assert.That(room.TryAddElevations(new[] { west, stranded }), Is.False, "the second has no way up");
             Assert.That(room.HasElevation, Is.False, "so neither stands");
@@ -141,10 +141,10 @@ namespace CGD.Tests
         {
             RoomStructure room = Room(12, 10, new Vector2Int(11, 5));
             room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
-            var pit = new ElevatedArea(ElevationKind.SunkenFloor, -1, Block(3, 1, 2, 3), new[] { new StairFlight(new Vector2Int(3, 1), Vector2Int.down) }, false);
+            var pit = new ElevatedArea(ElevationKind.SunkenFloor, -1, Block(3, 1, 2, 3), new[] { new StairFlight(new Vector2Int(3, 1), Vector2Int.down) }, LedgeGuards.None);
             Assert.That(room.TryAddElevation(pit), Is.True);
 
-            var platformBeside = new ElevatedArea(ElevationKind.Platform, 1, Block(1, 1, 2, 3), new[] { new StairFlight(new Vector2Int(1, 4), Vector2Int.down) }, false);
+            var platformBeside = new ElevatedArea(ElevationKind.Platform, 1, Block(1, 1, 2, 3), new[] { new StairFlight(new Vector2Int(1, 4), Vector2Int.down) }, LedgeGuards.None);
             Assert.That(room.TryAddElevation(platformBeside), Is.False);
         }
 
@@ -419,7 +419,7 @@ namespace CGD.Tests
             RoomStructure room = Room(12, 10, new Vector2Int(11, 5));
             room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
             var bank = new ElevatedArea(ElevationKind.Mound, 1, Block(2, 2, 2, 1),
-                new[] { new StairFlight(new Vector2Int(2, 1), Vector2Int.up, slope: true), new StairFlight(new Vector2Int(3, 1), Vector2Int.up, slope: true) }, false);
+                new[] { new StairFlight(new Vector2Int(2, 1), Vector2Int.up, slope: true), new StairFlight(new Vector2Int(3, 1), Vector2Int.up, slope: true) }, LedgeGuards.None);
 
             Assert.That(room.TryAddElevation(bank), Is.True);
             Assert.That(room.CanStep(new Vector2Int(2, 1), new Vector2Int(3, 1)), Is.True, "across the bank");
@@ -433,14 +433,14 @@ namespace CGD.Tests
             RoomStructure room = Room(12, 10, new Vector2Int(11, 5));
             room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
             var corner = new SlopeCorner(new Vector2Int(1, 1), new Vector2Int(1, 1));
-            var stranded = new ElevatedArea(ElevationKind.Mound, 1, Block(2, 2, 1, 1), System.Array.Empty<StairFlight>(), false, new[] { corner });
+            var stranded = new ElevatedArea(ElevationKind.Mound, 1, Block(2, 2, 1, 1), System.Array.Empty<StairFlight>(), LedgeGuards.None, new[] { corner });
 
             Assert.That(room.TryAddElevation(stranded), Is.False, "no way up");
             Assert.That(room.Has(new Vector2Int(1, 1), RoomTileTags.Structure), Is.False, "the corner is given back");
             Assert.That(room.StaysConnected(System.Array.Empty<Vector2Int>()), Is.True);
 
             var reached = new ElevatedArea(ElevationKind.Mound, 1, Block(2, 2, 1, 1),
-                new[] { new StairFlight(new Vector2Int(3, 2), Vector2Int.left, slope: true) }, false, new[] { corner });
+                new[] { new StairFlight(new Vector2Int(3, 2), Vector2Int.left, slope: true) }, LedgeGuards.None, new[] { corner });
             Assert.That(room.TryAddElevation(reached), Is.True);
             Assert.That(room.Has(new Vector2Int(1, 1), RoomTileTags.Structure), Is.True);
             Assert.That(room.TryClaim(new[] { new Vector2Int(1, 1) }, RoomTileTags.Prop), Is.False);
@@ -471,7 +471,7 @@ namespace CGD.Tests
                         Assert.That(area.Stairs, Is.Not.Empty, at);
                         Assert.That(area.Stairs, Has.All.Matches<StairFlight>(flight => flight.Slope), $"{at}: slopes, not steps");
                         Assert.That(area.Corners, Is.Not.Empty, $"{at}: rounded off");
-                        Assert.That(area.Railed, Is.False);
+                        Assert.That(area.Guards.Any, Is.False);
                     }
 
                     // No open ledge: wherever the level changes, it is up a slope or beside a solid corner.

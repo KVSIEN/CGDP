@@ -19,8 +19,8 @@ namespace CGD.Tests
         {
             RoomStructure room = Room(10, 8, new Vector2Int(9, 4));
             room.AllowLevels(RoomElevation.Lowest, highest);
-            var south = new ElevatedArea(ElevationKind.Terrace, 1, Block(0, 0, 10, 2), new[] { new StairFlight(new Vector2Int(3, 2), Vector2Int.down) }, railed: true);
-            var north = new ElevatedArea(ElevationKind.Terrace, 1, Block(0, 6, 8, 2), new[] { new StairFlight(new Vector2Int(3, 5), Vector2Int.up) }, railed: true);
+            var south = new ElevatedArea(ElevationKind.Terrace, 1, Block(0, 0, 10, 2), new[] { new StairFlight(new Vector2Int(3, 2), Vector2Int.down) }, LedgeGuards.All(LedgeGuard.Railing));
+            var north = new ElevatedArea(ElevationKind.Terrace, 1, Block(0, 6, 8, 2), new[] { new StairFlight(new Vector2Int(3, 5), Vector2Int.up) }, LedgeGuards.All(LedgeGuard.Railing));
             Assert.That(room.TryAddElevations(new[] { south, north }), Is.True, "the walks fit");
             return room;
         }

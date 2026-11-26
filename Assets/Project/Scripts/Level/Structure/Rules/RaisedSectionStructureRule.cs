@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CGD.Algorithms;
 using UnityEngine;
@@ -10,6 +11,11 @@ namespace CGD.Level
     // stand a metre higher, with flights of stairs along the step, first where a route from a
     // doorway crosses it. So it goes last in a structure list (ElevationBudget runs it after
     // everything else).
+    //
+    // Role (ElevationRole) says what the part is for in play: a split level (the usual) has open
+    // or railed steps with stairs wherever a route crosses; a perch has Wall along its longest
+    // step and its other step open to climb; a bastion has Wall all along, so its stairs, two at
+    // least on different stretches of the step, are the only ways up (ElevationAccess).
     //
     // Doorways stay on level 0: a part clear of every doorway is looked for first, and only then
     // one that keeps a landing round a doorway inside it. A part that would cut through a hut or
@@ -28,6 +34,10 @@ namespace CGD.Level
         // (RoomTileTags.NearDoor) and a ring beyond it for a flight up to stand on.
         private const int LandingReach = 3;
 
+        [Tooltip("What the part is for in play. Split Level: open or railed step (Rail Chance), stairs where every route crosses it. Perch: Wall along its longest step, the other open to climb, one or two flights. Bastion: Wall along all of it, two flights at least, the only ways up")]
+        [SerializeField] private ElevationRole _role = ElevationRole.SplitLevel;
+        [Tooltip("Perch and Bastion: what stands along the walled step. Half Wall: solid, low cover. Railing: seen and shot through")]
+        [SerializeField] private LedgeGuard _wall = LedgeGuard.HalfWall;
         [Tooltip("The chance the part is a corner of the room; otherwise it is a half, running the length of one wall")]
         [SerializeField, Range(0f, 1f)] private float _cornerChance = 0.5f;
         [Tooltip("A half's depth, as a share of the room's width or length")]
@@ -38,7 +48,7 @@ namespace CGD.Level
         [SerializeField] private FloatRange _floorShare = new(0.18f, 0.55f);
         [Tooltip("Tiles of step for each flight of stairs; two flights at least where there is room")]
         [SerializeField, Min(StairGap)] private int _stairSpacing = 5;
-        [Tooltip("The chance the open step gets a railing; without one it can be dropped off")]
+        [Tooltip("Split Level: the chance the open step gets a railing; without one it can be dropped off")]
         [SerializeField, Range(0f, 1f)] private float _railChance = 0.6f;
 
         public override void Apply(RoomStructure structure, RandomStream random)
@@ -96,12 +106,14 @@ namespace CGD.Level
             List<StairFlight> stairs = ChooseStairs(structure, tiles, inside, random);
             if (stairs.Count == 0) return false;
 
-            bool railed = random.Chance(_railChance);
-            return structure.TryAddElevation(new ElevatedArea(ElevationKind.Section, 1, tiles, stairs, railed));
+            LedgeGuard open = ElevationAccess.RollsRailing(_role) && random.Chance(_railChance) ? LedgeGuard.Railing : LedgeGuard.None;
+            LedgeGuards? guards = ElevationAccess.Fit(_role, ElevationAccess.Guards(_role, structure, inside, open, _wall), stairs.Count);
+            return guards != null && structure.TryAddElevation(new ElevatedArea(ElevationKind.Section, 1, tiles, stairs, guards.Value));
         }
 
-        // One flight to every separate piece of the part (inner walls may split it), then one
-        // wherever a route crosses the step, then more until there is one per spacing of step.
+        // One flight to every separate piece of the part (inner walls may split it), then, on a
+        // split level, one wherever a route crosses the step, then more spread along it until
+        // there is one per spacing of step, as many as the role asks (ElevationAccess).
         private List<StairFlight> ChooseStairs(RoomStructure structure, List<Vector2Int> tiles, HashSet<Vector2Int> inside,
                                                RandomStream random)
         {
@@ -122,21 +134,19 @@ namespace CGD.Level
             // Routes first; List.Sort is unstable, so ties fall back to the order they were found in.
             candidates.Sort((a, b) => a.route != b.route ? b.route.CompareTo(a.route)
                                     : a.score != b.score ? a.score.CompareTo(b.score) : a.order.CompareTo(b.order));
-
-            var chosen = new List<StairFlight>();
-            foreach (HashSet<Vector2Int> piece in Pieces(structure, tiles))
-                foreach (var candidate in candidates)
-                    if (piece.Contains(candidate.stairs.Head) && Apart(candidate.stairs, chosen))
-                    {
-                        chosen.Add(candidate.stairs);
-                        break;
-                    }
-
-            int wanted = Mathf.Max(2, Mathf.RoundToInt(step / (float)_stairSpacing));
+            var preferred = new List<StairFlight>(candidates.Count);
+            var routes = new HashSet<Vector2Int>();
             foreach (var candidate in candidates)
-                if ((candidate.route || chosen.Count < wanted) && Apart(candidate.stairs, chosen))
-                    chosen.Add(candidate.stairs);
-            return chosen;
+            {
+                preferred.Add(candidate.stairs);
+                if (candidate.route) routes.Add(candidate.stairs.Tile);
+            }
+
+            int wanted = ElevationAccess.Ways(_role, Mathf.Max(2, Mathf.RoundToInt(step / (float)_stairSpacing)), tiles.Count);
+            // Only a split level is crossed wherever a route meets it; a guarded part is crossed where its role puts the stairs.
+            Predicate<StairFlight> always = _role == ElevationRole.SplitLevel ? stairs => routes.Contains(stairs.Tile) : null;
+            return ElevationAccess.Pick(preferred, Pieces(structure, tiles), (stairs, piece) => piece.Contains(stairs.Head), always,
+                                        wanted, StairGap);
         }
 
         // Free floor for the flight and both landings, the foot below the step beside it, no wall across.
@@ -145,16 +155,6 @@ namespace CGD.Level
             if (!structure.IsFree(stairs.Tile) || !structure.IsFree(stairs.Foot) || !structure.IsFree(stairs.Head)) return false;
             if (structure.Has(stairs.Tile, RoomTileTags.NearDoor | RoomTileTags.Centre) || inside.Contains(stairs.Foot)) return false;
             return !structure.IsPartitioned(stairs.Foot, stairs.Tile) && !structure.IsPartitioned(stairs.Tile, stairs.Head);
-        }
-
-        private static bool Apart(StairFlight stairs, List<StairFlight> chosen)
-        {
-            foreach (StairFlight other in chosen)
-            {
-                Vector2Int apart = stairs.Tile - other.Tile;
-                if (Mathf.Max(Mathf.Abs(apart.x), Mathf.Abs(apart.y)) < StairGap) return false;
-            }
-            return true;
         }
 
         // The part's walkable tiles split where inner walls or pillars separate them.

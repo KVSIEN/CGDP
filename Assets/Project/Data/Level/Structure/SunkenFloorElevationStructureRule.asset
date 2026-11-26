@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: SunkenFloorElevationStructureRule
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.ElevationStructureRule
   _kind: 1
+  _role: 3
+  _wall: 2
   _count:
     Min: 1
     Max: 1

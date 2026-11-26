@@ -30,7 +30,7 @@ namespace CGD.Tests
                 for (int x = 4; x < 6; x++)
                     tiles.Add(new Vector2Int(x, y));
             var platform = new ElevatedArea(ElevationKind.Platform, 1, tiles,
-                                            new[] { new StairFlight(new Vector2Int(6, 1), Vector2Int.left) }, railed: false);
+                                            new[] { new StairFlight(new Vector2Int(6, 1), Vector2Int.left) }, LedgeGuards.None);
             Assert.That(room.TryAddElevation(platform), Is.True, "the platform fits");
             return room;
         }

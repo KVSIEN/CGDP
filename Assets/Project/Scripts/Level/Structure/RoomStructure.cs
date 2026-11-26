@@ -466,7 +466,7 @@ namespace CGD.Level
             AreNeighbours(a, b) && Contains(a) && Contains(b) && !IsPartitioned(a, b) && _levels.Join(a, b);
 
         // Whether someone can drop from `from` to the floor a level below it: an open ledge with
-        // no wall or railing on it. A way down only: climbing back up needs the stairs.
+        // no wall or guard on it. A way down only: climbing back up needs the stairs.
         public bool CanDropDown(Vector2Int from, Vector2Int to)
         {
             if (!AreNeighbours(from, to) || !Contains(from) || !Contains(to) || IsPartitioned(from, to)) return false;
@@ -477,6 +477,10 @@ namespace CGD.Level
         // the edge of a platform or the rim of a sunken floor.
         public bool IsLedge(Vector2Int a, Vector2Int b) =>
             AreNeighbours(a, b) && Contains(a) && Contains(b) && LevelOf(a) != LevelOf(b) && !_levels.Join(a, b);
+
+        // What stands along the ledge between two neighbouring tiles (LedgeGuard): None where they
+        // are no ledge, or an open one.
+        public LedgeGuard GuardOn(Vector2Int a, Vector2Int b) => IsLedge(a, b) ? _levels.GuardBetween(a, b) : LedgeGuard.None;
 
         // Raises or sinks `area`'s tiles to its level with its stairs, if the room stays sound
         // (see TryAddElevations).

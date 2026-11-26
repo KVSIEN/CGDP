@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using CGD.Level;
 using CGD.Map;
 using UnityEngine;
@@ -48,17 +49,26 @@ namespace CGD.Editor
             RoomStructure structure = sample.Room.Structure;
             if (!structure.HasElevation) return;
 
-            int raised = 0, sunken = 0, flights = 0, railed = 0;
+            int raised = 0, sunken = 0, flights = 0, railed = 0, walled = 0;
             foreach (ElevatedArea area in structure.Elevations)
             {
                 if (area.Level > 0) raised++;
                 else sunken++;
                 flights += area.Stairs.Count;
-                if (area.Railed) railed++;
+                if (Has(area, LedgeGuard.Railing)) railed++;
+                if (Has(area, LedgeGuard.HalfWall)) walled++;
             }
             string overpasses = structure.Overpasses.Count > 0 ? $", {structure.Overpasses.Count} overpass(es) across" : "";
             issues.Add(new RoomIssue(RoomIssue.Severity.Info,
-                $"{raised} raised and {sunken} sunken area(s), {flights} flight(s) of stairs, {railed} of the areas railed (the rest can be dropped off){overpasses}."));
+                $"{raised} raised and {sunken} sunken area(s), {flights} flight(s) of stairs, {railed} of the areas railed and {walled} half-walled on some side (the rest can be dropped off){overpasses}."));
+        }
+
+        // Whether any side of the area carries `guard`.
+        private static bool Has(ElevatedArea area, LedgeGuard guard)
+        {
+            foreach (Vector2Int side in GridNeighbours.Four)
+                if (area.Guards.On(side) == guard) return true;
+            return false;
         }
 
         private static void CheckDoorways(RoomSample sample, List<RoomIssue> issues)

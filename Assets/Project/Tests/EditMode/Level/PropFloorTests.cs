@@ -28,7 +28,7 @@ namespace CGD.Tests
             for (int y = 0; y < 4; y++)
                 for (int x = 0; x < 2; x++)
                     tiles.Add(new Vector2Int(x, y));
-            var platform = new ElevatedArea(ElevationKind.Platform, 1, tiles, new[] { new StairFlight(new Vector2Int(2, 1), Vector2Int.left) }, false);
+            var platform = new ElevatedArea(ElevationKind.Platform, 1, tiles, new[] { new StairFlight(new Vector2Int(2, 1), Vector2Int.left) }, LedgeGuards.None);
             Assert.That(room.TryAddElevation(platform), Is.True);
             return room;
         }

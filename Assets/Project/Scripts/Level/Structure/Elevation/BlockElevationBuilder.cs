@@ -12,7 +12,7 @@ namespace CGD.Level
     // Every tier is reached by its own flights from the tier below it (the room's floor for the
     // first). An inner tier keeps TierInset tiles in from the one below on its open sides, room
     // for a flight and the flight's landing, and a platform's one tile in from either end. One
-    // tier is the plain feature, built exactly as it always was.
+    // tier is the plain feature. Each tier is guarded and reached as its role asks (ElevationAccess).
     internal sealed class BlockElevationBuilder
     {
         // Flights of one tier keep at least this many tiles apart, so two don't stand side by side.
@@ -31,22 +31,29 @@ namespace CGD.Level
         private readonly IntRange _length;
         private readonly IntRange _stairs;
         private readonly bool _bridge;
+        private readonly ElevationRole _role;
+        private readonly LedgeGuard _wall;
 
-        public BlockElevationBuilder(ElevationKind kind, IntRange depth, IntRange length, IntRange stairs, bool bridge)
+        // `wall`: what a perch's front or a bastion's ledges carry.
+        public BlockElevationBuilder(ElevationKind kind, IntRange depth, IntRange length, IntRange stairs, bool bridge,
+                                     ElevationRole role = ElevationRole.SplitLevel, LedgeGuard wall = LedgeGuard.HalfWall)
         {
             _kind   = kind;
             _depth  = depth;
             _length = length;
             _stairs = stairs;
             _bridge = bridge;
+            _role   = role;
+            _wall   = wall;
         }
 
         private int Direction => _kind == ElevationKind.Platform ? 1 : -1;
 
         // One area per tier, lowest step first, up to `tiers` of them (fewer where the block is too
         // small for more); null when not even the first fits. `shrink`: tiles taken off the size
-        // drawn, off the length first and off the depth half as fast.
-        public List<ElevatedArea> Build(RoomStructure structure, RandomStream random, int tiers, bool railed, int shrink = 0)
+        // drawn, off the length first and off the depth half as fast. `open`: the guard on ledges
+        // the role leaves open (a split level's or a pit's: None or Railing).
+        public List<ElevatedArea> Build(RoomStructure structure, RandomStream random, int tiers, LedgeGuard open, int shrink = 0)
         {
             int depth  = Shrunk(Mathf.Max(1, _depth.Evaluate(random)), shrink / 2);
             int length = Mathf.Max(depth, Shrunk(_length.Evaluate(random), shrink));
@@ -58,16 +65,16 @@ namespace CGD.Level
 
             for (int count = Mathf.Min(tiers, HighestRank(block)); count >= 1; count--)
             {
-                List<ElevatedArea> areas = Tiers(structure, random, block, back, count, railed);
+                List<ElevatedArea> areas = Tiers(structure, random, block, back, count, open);
                 if (areas != null) return areas;
             }
             return null;
         }
 
         // `count` tiers of the block: a tile is on the highest tier its rank reaches. Each tier's
-        // flights stand on the tier below it; a tier left without a flight sinks the whole try.
+        // flights stand on the tier below it; a tier left without the flights its role needs sinks the whole try.
         private List<ElevatedArea> Tiers(RoomStructure structure, RandomStream random, List<(Vector2Int tile, int rank)> block,
-                                         Vector2Int back, int count, bool railed)
+                                         Vector2Int back, int count, LedgeGuard open)
         {
             var areas = new List<ElevatedArea>(count);
             HashSet<Vector2Int> below = null;
@@ -83,8 +90,9 @@ namespace CGD.Level
                 }
 
                 List<StairFlight> stairs = ChooseStairs(structure, region, back, below, random);
-                if (stairs.Count == 0) return null;
-                areas.Add(new ElevatedArea(_kind, Direction * tier, own, stairs, railed));
+                LedgeGuards? guards = ElevationAccess.Fit(_role, ElevationAccess.Guards(_role, structure, own, open, _wall), stairs.Count);
+                if (guards == null) return null;
+                areas.Add(new ElevatedArea(_kind, Direction * tier, own, stairs, guards.Value));
                 below = new HashSet<Vector2Int>(own);
             }
             return areas;
@@ -158,10 +166,11 @@ namespace CGD.Level
         }
 
         // Flights onto a platform's tier from the floor in front of it, or down into a sunken
-        // floor's from the floor round it, nearest the room's centre first (so they face into the
-        // room), kept apart from each other: one to each separate piece of it first, then up to
-        // Stairs. `region`: the tier and every tier above it. `below`: the tier it stands on, which
-        // every tile of a flight outside the region must be on (null for the first tier, on the room's floor).
+        // floor's from the floor round it, nearest the room's centre first (so the first faces into
+        // the room), kept apart from each other: one to each separate piece of it, then spread
+        // round it up to Stairs, as many as the role asks (ElevationAccess). `region`: the tier and
+        // every tier above it. `below`: the tier it stands on, which every tile of a flight outside
+        // the region must be on (null for the first tier, on the room's floor).
         private List<StairFlight> ChooseStairs(RoomStructure structure, List<Vector2Int> region, Vector2Int back,
                                                HashSet<Vector2Int> below, RandomStream random)
         {
@@ -183,23 +192,12 @@ namespace CGD.Level
                 }
             // List.Sort is unstable: ties fall back to the order the candidates were found in, so the choice is seeded.
             candidates.Sort((a, b) => a.score != b.score ? a.score.CompareTo(b.score) : a.order.CompareTo(b.order));
+            var preferred = new List<StairFlight>(candidates.Count);
+            foreach (var candidate in candidates) preferred.Add(candidate.stairs);
 
             List<HashSet<Vector2Int>> pieces = Pieces(region);
-            int wanted = Mathf.Max(pieces.Count, _stairs.Evaluate(random));
-            var chosen = new List<StairFlight>(wanted);
-            foreach (HashSet<Vector2Int> piece in pieces)
-                foreach (var candidate in candidates)
-                    if (Reaches(candidate.stairs, piece) && FarFromAll(candidate.stairs, chosen))
-                    {
-                        chosen.Add(candidate.stairs);
-                        break;
-                    }
-            foreach (var candidate in candidates)
-            {
-                if (chosen.Count >= wanted) break;
-                if (FarFromAll(candidate.stairs, chosen)) chosen.Add(candidate.stairs);
-            }
-            return chosen;
+            int wanted = ElevationAccess.Ways(_role, Mathf.Max(pieces.Count, _stairs.Evaluate(random)), region.Count);
+            return ElevationAccess.Pick(preferred, pieces, Reaches, null, wanted, StairSpacing);
         }
 
         // Whether the flight's three tiles are free floor of the right kind before the block is
@@ -221,16 +219,6 @@ namespace CGD.Level
             inside.Contains(tile) || below.Contains(tile);
 
         private static bool Reaches(StairFlight stairs, HashSet<Vector2Int> piece) => piece.Contains(stairs.Tile) || piece.Contains(stairs.Head);
-
-        private static bool FarFromAll(StairFlight stairs, List<StairFlight> chosen)
-        {
-            foreach (StairFlight other in chosen)
-            {
-                Vector2Int apart = stairs.Tile - other.Tile;
-                if (Mathf.Max(Mathf.Abs(apart.x), Mathf.Abs(apart.y)) < StairSpacing) return false;
-            }
-            return true;
-        }
 
         // The tiles split into pieces joined side to side (a bridged floor's two halves).
         private static List<HashSet<Vector2Int>> Pieces(List<Vector2Int> tiles)
