@@ -621,7 +621,7 @@ as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/`
 | Exhibit Hall | **Gallery** (10–12 tiles · ThreeLanes); **Sculpture Court** (10–12 tiles · HubRing); **Enfilade** (10–12 tiles · OfficeMaze); **Loop Gallery** (10–12 tiles, Ring · CornerPillars); **Exhibit Maze** (10–12 tiles · FoldWalls) |
 | Grand Atrium | **Fountain Court** (2×2 · CornerPillars, HubRing); **Galleria** (2×2 · LowThreeLanes); **Sunken Court** (2×2 · SunkenCourtTerraces, Overpass); **Centrum** (2×2 · CornerPillars, MezzanineElevation) |
 | Restaurant | **Dining Room** (10–12 tiles · DividerWall); **Bistro** (8–10 tiles · DividerWall); **Banquet Hall** (2×1 · DividerWall); **Diner** (9–11 tiles · DividerWall); **Open Kitchen** (10–12 tiles · ServiceCounter); **Buffet Hall** (10–12 tiles · DividerWall); **Terrace Dining** (10–12 tiles · DividerWall, MezzanineElevation) |
-| Food Court | **Food Hall** (2×1 · WidePillarGrid, GuestPavilions); **Kiosk Ring** (2×1 · ColumnRing); **Night Market** (2×1 · LowThreeLanes); **Cafeteria** (2×1 · WidePillarGrid); **Scatter Servery** (2×1 · WidePillarGrid) |
+| Food Court | **Food Hall** (2×1 · WidePillarGrid, GuestPavilions); **Kiosk Ring** (2×1 · ColumnRing); **Night Market** (2×1 · LowThreeLanes); **Cafeteria** (2×1 · WidePillarGrid); **Scatter Servery** (2×1 · WidePillarGrid); **Seating Deck** (2×1 · RaisedMiddleTerraces, CornerPillars) |
 | Kitchen | **Galley** (8–10 tiles · ServiceCounter, CornerPillars); **Line Kitchen** (9–11 tiles · LowRows); **Island Kitchen** (9–11 tiles · CornerPillars); **Zone Kitchen** (9–11 tiles · DividerWall); **Assembly Line** (8–10 tiles · CornerPillars) |
 | Promenade | **Arcade** (2×1 · CornerPillars); **Boulevard** (2×1 · LowThreeLanes) |
 | Medical Bay | **Surgery** (9–11 tiles · DividerWall); **Clinic Bays** (2×1 · OfficeMaze) |
@@ -655,7 +655,7 @@ as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/`
 | Lobby | **Reception Hall** (1×1 · CornerPillars, HubRing); **Waiting Lounge** (9–11 tiles · LowRows); **Rotunda Lobby** (10–12 tiles · ColumnRing) |
 | Cargo Bay | **Container Yard** (2×1 · DensePillarGrid, ServicePavilions); **Loading Dock** (2×1 · ThreeLanes); **Dock Neck** (2×1, Waist · WidePillarGrid); **Split Deck** (2×1 · SplitLevelTerraces); **Ro-Ro Deck** (2×1 · LowThreeLanes); **Logistics Module** (7–9 tiles · CornerPillars); **Loading Platform** (2×1 · CornerPillars, PlatformElevation) |
 | Docking Bay | **Airlock Hall** (1×1 · WidePillarGrid, ServicePerimeterPavilions); **Fuel Dock** (1×1 · CornerPillars); **Customs Hall** (1×1 · CheckpointBarrier) |
-| Hangar | **Flight Deck** (2×2 · CornerPillars, ServicePerimeterPavilions); **Maintenance Bay** (2×1 · CornerPillars, ServicePavilions); **Launch Bay** (2×1 · ThreeLanes) |
+| Hangar | **Flight Deck** (2×2 · CornerPillars, ServicePerimeterPavilions); **Maintenance Bay** (2×1 · CornerPillars, ServicePavilions); **Launch Bay** (2×1 · ThreeLanes); **Service Pit** (2×1 · BridgedSunkenFloorElevation, CornerPillars) |
 | Escape Pod Bay | **Pod Gallery** (8–10 tiles · CornerPillars); **Muster Station** (9–11 tiles · LowRows); **Launch Ring** (9–11 tiles · ColumnRing) |
 | Storage | **Shelf Aisles** (8–10 tiles · ShelfRows); **Crate Stacks** (8–10 tiles · WideShelfRows); **Aisle Comb** (8–10 tiles, Comb · ShelfRows); **Cage Store** (9–11 tiles · StorageCages); **High Bay** (9–12 tiles · PalletRackRows) |
 
