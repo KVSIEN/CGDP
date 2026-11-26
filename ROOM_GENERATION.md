@@ -356,9 +356,9 @@ Farm take the holding reality's structure unless a layout brings its own; Juncti
 |---|---|---|---|---|---|---|---|
 | Grand Atrium | Entertainment | G1 | Ring | Central fountain or statue | Benches round the ring, planters | Circle the centrepiece; balcony-like edges | S, P, L |
 | Casino | Entertainment | G1 | by layout | Cashier cage on a wall | Slot banks, card-table pits, roulette, bar with stools, sofas | Lanes between slot banks; tables as cover at crossings | S, P, L |
-| Theatre | Entertainment | G1 | Aisles | Stage on the far wall | Seat rows facing the stage | Lanes down the aisles, stage as high ground | S, P, L |
+| Theatre | Entertainment | G1 | Aisles | Stage (placed by each layout) | Seat rows facing the stage | Lanes down the aisles, stage as high ground | S, P, L |
 | Exhibit Hall | Entertainment | G1 | Hall | Centre display | Display cases on a lattice | Open hall, cases as waist cover | S, P, L |
-| Bar | Entertainment | G2 | Ring | Bar counter (low partition) | Stools, booths along walls | Counter splits the room; booths for close range | S, P, L |
+| Bar | Entertainment | G2 | Ring | Bar counter (placed by each layout) | Stools, booths along walls | Counter splits the room; booths for close range | S, P, L |
 | Restaurant | Commercial | G1 | Cells | Kitchen wall (divider) | Tables in the dining zone, ovens in the kitchen | Open dining room, tight kitchen | S, P, L |
 | Food Court | Commercial | G2 | Hall | Kiosk island | Table clusters, kiosks on walls | Many low cover pieces, no long lanes | S, P, L |
 | Kitchen | Commercial | C | Service | Cooking line along a wall | Prep tables, shelves | Narrow gaps between counters | S, P, L |
@@ -585,9 +585,11 @@ own set pieces. The function keeps what every arrangement of the place shares. T
 
 Props go down in this order:
 1. The function's anchor: its *Required* pieces, the same in every layout (the casino's
-   cashier cage, the library's front desk, the theatre's stage). They go first so the
-   layout's pieces can stand *Near* them and face them (desks facing the teacher, tables
-   facing the stage).
+   cashier cage, the library's front desk). They go first so the layout's pieces can stand
+   *Near* them and face them (desks facing the teacher, the catalogue beside the desk). Where
+   the anchor's place is what tells the arrangements apart, each layout places its own as
+   its first, *Required* set piece instead: the theatre's stage (on a wall, in the round,
+   anywhere in a black box) and the bar's counter (on a wall, an island in the middle).
 2. The layout's set pieces: what the arrangement is built around (the pool basin, the
    card-table pits, the seat rows).
 3. The function's other props, the same in every layout (the pool's loungers round whatever
@@ -613,11 +615,11 @@ as worked examples; the layout assets in `Data/Level/Functions/Layouts/<Place>/`
 | Observation Deck | **Window Gallery** (2×1 · CornerPillars); **Star Lounge** (10–12 tiles · ColumnRing); **Stargazing Dome** (10–12 tiles · ColumnRing) |
 | Wellness Center | **Treatment Suites** (9–11 tiles · OfficeMaze); **Spa Lounge** (9–11 tiles · CornerPillars); **Thermal Suite** (9–11 tiles · OfficeMaze) |
 | Pool | **Lap Pool** (2×1 · CornerPillars, GuestPerimeterPavilions); **Lagoon** (2×2 · CornerPillars, GuestPerimeterPavilions); **Spa Terrace** (8–11 tiles · CornerPillars) |
-| Theatre | **Auditorium** (2×1 · AcrossLowRows); **Cabaret** (10–12 tiles · CornerPillars); **Amphitheatre** (2×1 · AcrossLowRows) |
-| Bar & Lounge | **Lounge Bar** (8–10 tiles · ServiceCounter); **Pub** (9–11 tiles · CornerPillars); **Cocktail Club** (9–11 tiles · ColumnRing) |
-| Casino | **Slot Hall** (2×1 · LowRows); **Table Pits** (10–12 tiles · ColumnRing, CornerPillars); **High-Roller Salon** (7–9 tiles · CornerPillars) |
-| Exhibit Hall | **Gallery** (10–12 tiles · ThreeLanes); **Sculpture Court** (10–12 tiles · HubRing); **Enfilade** (10–12 tiles · OfficeMaze) |
-| Grand Atrium | **Fountain Court** (2×2 · CornerPillars, HubRing); **Galleria** (2×2 · LowThreeLanes) |
+| Theatre | **Auditorium** (2×1 · AcrossLowRows); **Cabaret** (10–12 tiles · CornerPillars); **Amphitheatre** (2×1 · AcrossLowRows); **Theatre in the Round** (10–12 tiles · ColumnRing); **Black Box** (8–10 tiles · CornerPillars) |
+| Bar & Lounge | **Lounge Bar** (8–10 tiles · ServiceCounter); **Pub** (9–11 tiles · CornerPillars); **Cocktail Club** (9–11 tiles · ColumnRing); **Island Bar** (10–12 tiles · CornerPillars); **Sunken Lounge** (9–11 tiles · SunkenFloorElevation, CornerPillars) |
+| Casino | **Slot Hall** (2×1 · LowRows); **Table Pits** (10–12 tiles · ColumnRing, CornerPillars); **High-Roller Salon** (7–9 tiles · CornerPillars); **Playground Floor** (2×1 · CornerPillars, SunkenFloorElevation) |
+| Exhibit Hall | **Gallery** (10–12 tiles · ThreeLanes); **Sculpture Court** (10–12 tiles · HubRing); **Enfilade** (10–12 tiles · OfficeMaze); **Loop Gallery** (10–12 tiles, Ring · CornerPillars); **Exhibit Maze** (10–12 tiles · FoldWalls) |
+| Grand Atrium | **Fountain Court** (2×2 · CornerPillars, HubRing); **Galleria** (2×2 · LowThreeLanes); **Sunken Court** (2×2 · SunkenCourtTerraces, Overpass); **Centrum** (2×2 · CornerPillars, MezzanineElevation) |
 | Restaurant | **Dining Room** (10–12 tiles · DividerWall); **Bistro** (8–10 tiles · DividerWall); **Banquet Hall** (2×1 · DividerWall) |
 | Food Court | **Food Hall** (2×1 · WidePillarGrid, GuestPavilions); **Kiosk Ring** (2×1 · ColumnRing); **Night Market** (2×1 · LowThreeLanes) |
 | Kitchen | **Galley** (8–10 tiles · ServiceCounter, CornerPillars); **Line Kitchen** (9–11 tiles · LowRows); **Island Kitchen** (9–11 tiles · CornerPillars) |
@@ -680,7 +682,9 @@ In the worked examples, the numbers in brackets are *Min Room Tiles*. A multi-ce
 where its neighbours leave no room, and its set pieces still fit, because they grow with the
 room or are left out by size.
 
-### Researched places: Cargo Bay and Storage
+### Researched places
+
+#### Cargo Bay and Storage
 
 The first places rebuilt from how real ones are laid out (warehouse flow and racking,
 ship holds and ro-ro decks, the station's logistics modules, self-storage halls). The
@@ -718,6 +722,35 @@ storage systems:
 New pieces for them: `PalletRack` (two levels of loads with an orange beam, high cover),
 `Pallet` (a wrapped load, low cover) and `CargoBag` (a strapped stowage bag), with
 `CargoContainer`, `Forklift` and `ServiceDoor` back from the cut.
+
+#### Entertainment
+
+The guest halls kept their layouts where they already matched how such rooms are planned,
+got the real pieces back (`SlotMachine`, `CashierCage`, `RouletteTable`, `Stage`, `Fountain`
+in place of lockers, counters, tables and rubble) and gained the arrangements that were missing:
+- **Casino.** The two schools of casino planning: Friedman's *maze* (dense slot banks, short
+  sightlines, no central aisle) is the **Slot Hall**; the *playground* that replaced it (open
+  floor under a high ceiling, slots in islands, a table pit and a feature in view) is the new
+  **Playground Floor**: card tables on a lattice in a sunken pit, roulette beside them, slot
+  machines clustered in islands, a fountain in view of the way in (150+ tiles) and a bar on a
+  wall (110+). Slots outnumber tables, as on real floors.
+- **Theatre.** The stage forms: **Auditorium** is the proscenium (rows facing a stage on one
+  wall), **Amphitheatre** the thrust (benches wrapped round three sides), **Cabaret** tables
+  facing the stage; new are **Theatre in the Round** (the stage in the middle, seat rows all
+  round it) and the **Black Box** (a small bare room, the stage wherever the show puts it,
+  loose chairs facing it and flight cases in the corners). The stage moved from the place into
+  each layout to allow it.
+- **Bar & Lounge.** The bar shapes: a straight bar on a wall (**Lounge Bar**, **Pub**,
+  **Cocktail Club**) and the new **Island Bar** (the counter in the middle with stools on both
+  faces, banquettes on the walls, high tables round it), plus the **Sunken Lounge**: a lounge pit
+  of sofas round low tables, the bar on a wall. The counter moved into each layout too.
+- **Grand Atrium.** The cruise-ship centrum: the new **Centrum** has a mezzanine, a stage with
+  benches facing it, one or two glass lifts (`GlassLift`), a bar at the foot, shopfronts round the
+  walls and a tree in the middle.
+- **Exhibit Hall.** The museum circulation types: open plan (**Gallery**), core and satellites
+  (**Sculpture Court**), linear procession (**Enfilade**), and now the **Loop Gallery** (cases
+  along a ring that brings visitors back to the way in, an information lectern there) and the
+  **Exhibit Maze** (a labyrinth of fold walls with cases spread through it).
 
 ### Set pieces
 

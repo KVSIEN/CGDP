@@ -34,62 +34,7 @@ MonoBehaviour:
   _landmark: {fileID: 0}
   _structure:
   - {fileID: 11400000, guid: 78008a8e47414fc98fbcc5b1ce8aa882, type: 2}
-  _props:
-  - Prefabs:
-    - {fileID: 2387528128696719469, guid: 77a7e71de2b4456aa98e7a4d7d818d75, type: 3}
-    Activity: {fileID: 11400000, guid: 7094f214361d4e419b86597f60799031, type: 2}
-    Count:
-      Min: 1
-      Max: 1
-      Bias: 0
-    ScaleByRoomSize: 0
-    Footprint: {x: 2, y: 1}
-    On: 1
-    Avoid: 124
-    Zone: 0
-    Facing: 2
-    Clearance: 1
-    Spacing: 1
-    Selection: 5
-    Pile:
-      Min: 1
-      Max: 1
-      Bias: 0
-    Jitter: 0
-    Required: 1
-    Lattice: {x: 0, y: 0}
-    Symmetric: 0
-    Decor: 0
-    NearRoute: 0
-    OffRoute: 0
-    MarksRoute: 0
-    Members:
-    - Prefabs:
-      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
-      Offset: {x: -0.7, y: 0.3}
-      Yaw: 0
-      Chance: 0.85
-    - Prefabs:
-      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
-      Offset: {x: -0.25, y: 0.3}
-      Yaw: 0
-      Chance: 0.85
-    - Prefabs:
-      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
-      Offset: {x: 0.25, y: 0.3}
-      Yaw: 0
-      Chance: 0.85
-    - Prefabs:
-      - {fileID: 519817376311239590, guid: e8b9130d2fc04dc5a9916190c2bfb880, type: 3}
-      Offset: {x: 0.7, y: 0.3}
-      Yaw: 0
-      Chance: 0.85
-    Key: Bar
-    Near: 
-    NearDistance: 2
-    Grow: {x: 0, y: 0}
-    Stretch: 0
-    MinRoomTiles: 0
+  _props: []
   _sets:
   - {fileID: 11400000, guid: 8f5d15ffe3d84cacbdc64304f53552d1, type: 2}
   - {fileID: 11400000, guid: 78fe5e5df903493ab12139b6f036f13b, type: 2}
@@ -99,3 +44,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 274cdfd10ea94753acd8104d39cd99e0, type: 2}
   - {fileID: 11400000, guid: 5b232a7595e24ec89d627f780aa17029, type: 2}
   - {fileID: 11400000, guid: fe22234ec61449868f358d4e7a880a93, type: 2}
+  - {fileID: 11400000, guid: e44ba9f0810a40a781dfb6bd1a395ae1, type: 2}
+  - {fileID: 11400000, guid: 164b44ed87124e139788004493b8b741, type: 2}
