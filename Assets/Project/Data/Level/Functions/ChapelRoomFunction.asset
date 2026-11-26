@@ -35,40 +35,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bc41b23240354b2685106c18b0574a1e, type: 2}
   _props:
   - Prefabs:
-    - {fileID: 1271470208521269280, guid: a003f82c785f4a04a6300fb778ab6cbf, type: 3}
-    Count:
-      Min: 1
-      Max: 1
-      Bias: 0
-    ScaleByRoomSize: 0
-    Footprint: {x: 1, y: 1}
-    On: 1
-    Avoid: 124
-    Zone: 0
-    Facing: 2
-    Clearance: 1
-    Spacing: 1
-    Selection: 5
-    Pile:
-      Min: 1
-      Max: 1
-      Bias: 0
-    Jitter: 0
-    Required: 1
-    Lattice: {x: 0, y: 0}
-    Symmetric: 0
-    Decor: 0
-    NearRoute: 0
-    OffRoute: 0
-    MarksRoute: 0
-    Members: []
-    Key: Altar
-    Near: 
-    NearDistance: 2
-    Grow: {x: 0, y: 0}
-    Stretch: 0
-    MinRoomTiles: 0
-  - Prefabs:
     - {fileID: 3681066440374514250, guid: 8610e5701fe04c00a24c12b772cae9f7, type: 3}
     Count:
       Min: 2
@@ -106,6 +72,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5f0751cc2b4b44c292b5058a2e49c18d, type: 2}
   - {fileID: 11400000, guid: 606588274d0b40c99b80fcf1b4faa24f, type: 2}
   - {fileID: 11400000, guid: 85d387c7f66f465bbd2fc2452b92d9e8, type: 2}
+  - {fileID: 11400000, guid: 3950d56a94c94990816938fad3a16242, type: 2}
   _sets:
   - {fileID: 11400000, guid: 0330467b3aa640089b2bab726beadb66, type: 2}
   - {fileID: 11400000, guid: d76228a665e44f61a6ddcdac014d19e9, type: 2}

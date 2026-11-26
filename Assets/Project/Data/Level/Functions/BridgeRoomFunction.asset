@@ -32,46 +32,12 @@ MonoBehaviour:
   _landmark: {fileID: 0}
   _structure:
   - {fileID: 11400000, guid: 7cf71c7a718f4fb7a542a867464e3ff8, type: 2}
-  _props:
-  - Prefabs:
-    - {fileID: 7442656817404282964, guid: c3f05f491b0747d8bef2abb16274dfc0, type: 3}
-    Activity: {fileID: 11400000, guid: 4cb702c7376d4ba59f1662a9cbdc867b, type: 2}
-    Count:
-      Min: 1
-      Max: 1
-      Bias: 0
-    ScaleByRoomSize: 0
-    Footprint: {x: 2, y: 1}
-    On: 1
-    Avoid: 124
-    Zone: 0
-    Facing: 2
-    Clearance: 1
-    Spacing: 1
-    Selection: 5
-    Pile:
-      Min: 1
-      Max: 1
-      Bias: 0
-    Jitter: 0
-    Required: 1
-    Lattice: {x: 0, y: 0}
-    Symmetric: 0
-    Decor: 0
-    NearRoute: 0
-    OffRoute: 0
-    MarksRoute: 0
-    Members: []
-    Key: Command
-    Near: 
-    NearDistance: 2
-    Grow: {x: 0, y: 0}
-    Stretch: 0
-    MinRoomTiles: 0
+  _props: []
   _layouts:
   - {fileID: 11400000, guid: e5ae9ef05d994d8cb9859116641e297b, type: 2}
   - {fileID: 11400000, guid: c4b8ce3032a641b285093e0aa57959ea, type: 2}
   - {fileID: 11400000, guid: 3c588d9d18964460acd64b032c965e2e, type: 2}
+  - {fileID: 11400000, guid: 6e3be714f61b4608a76368450ec82136, type: 2}
   _sets:
   - {fileID: 11400000, guid: 10178e46263a441e84464d2910644f93, type: 2}
   - {fileID: 11400000, guid: 9bcf43e25ad44ea0b722aff6d0c841b5, type: 2}

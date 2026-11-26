@@ -26,6 +26,40 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 580d20230d3144fa9f7423a767e06daa, type: 2}
   _props:
   - Prefabs:
+    - {fileID: 1271470208521269280, guid: a003f82c785f4a04a6300fb778ab6cbf, type: 3}
+    Count:
+      Min: 1
+      Max: 1
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 1
+    Spacing: 1
+    Selection: 5
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 1
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    NearRoute: 0
+    OffRoute: 0
+    MarksRoute: 0
+    Members: []
+    Key: Altar
+    Near: 
+    NearDistance: 2
+    Grow: {x: 0, y: 0}
+    Stretch: 0
+    MinRoomTiles: 0
+  - Prefabs:
     - {fileID: 372200163368048613, guid: 8ee81fcaa91145ebaee4f63467853bab, type: 3}
     Activity: {fileID: 11400000, guid: 7094f214361d4e419b86597f60799031, type: 2}
     Count:
