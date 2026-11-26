@@ -33,7 +33,8 @@ MonoBehaviour:
   _wallHeight: 8
   _openCeiling: 1
   _landmark: {fileID: 0}
-  _structure: []
+  _structure:
+  - {fileID: 11400000, guid: f4cbf76b7405419aaaf2796f6bffcaa6, type: 2}
   _props:
   - Prefabs:
     - {fileID: 246657195920720429, guid: 88c32b0875ef42b3affd87035644ef65, type: 3}

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 532cf63a919226d0d989ef87cb4f7d84, type: 3}
+  m_Name: OfficeSuiteStructureRule
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.PavilionStructureRule
+  _kinds:
+  - Function: {fileID: 11400000, guid: f2a4b6c8d0e14f93a5b7c9d1e3f25a68, type: 2}
+    Name: Manager's Office
+    MinSize: {x: 3, y: 3}
+    MaxSize: {x: 3, y: 4}
+    Weight: 1
+  - Function: {fileID: 11400000, guid: 7a2c4e6b8d0f4a19b3c5d7e9f1a28b3c, type: 2}
+    Name: Meeting Room
+    MinSize: {x: 3, y: 4}
+    MaxSize: {x: 4, y: 4}
+    Weight: 1.2
+  _count:
+    Min: 1
+    Max: 2
+    Bias: 0
+  _tilesEach: 45
+  _margin: 1
+  _placement: 2
+  _againstWall: 1
+  _wallHeight: 2.6

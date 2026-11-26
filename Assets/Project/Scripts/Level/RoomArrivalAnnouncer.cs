@@ -20,6 +20,7 @@ namespace CGD.Level
         private TerritoryDepth _exhibitDepth;
         private readonly HashSet<int> _visited = new();
         private int _currentRoom = -1;
+        private string _currentSpace;
         private float _nextCheck;
 
         public void Begin(LevelLayout layout, Transform level, Transform player)
@@ -52,6 +53,20 @@ namespace CGD.Level
             }
 
             if (_visited.Add(room.Node.Id)) FeedbackBus.Notify($"{RoomLabel.Name(room)} — {RoomLabel.Details(room)}");
+            AnnounceSubroom(room);
+        }
+
+        // Walking into one of the room's named places (a kitchen's walk-in fridge) names it; leaving it clears it.
+        private void AnnounceSubroom(LevelRoom room)
+        {
+            Vector3 local = _level.InverseTransformPoint(_player.position);
+            var tile = new Vector2Int(Mathf.FloorToInt(local.x / _layout.TileSize), Mathf.FloorToInt(local.z / _layout.TileSize));
+            StructureSpace? space = room.Structure?.SpaceAt(tile);
+            string name = space.HasValue ? space.Value.Name : null;
+            if (name == _currentSpace) return;
+
+            _currentSpace = name;
+            if (!string.IsNullOrEmpty(name)) FeedbackBus.Notify(name);
         }
     }
 }

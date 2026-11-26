@@ -14,19 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomDressing
   _props:
   - Prefabs:
-    - {fileID: 8100000000000031001, guid: d86900c5c09544228b46c60103a437d3, type: 3}
+    - {fileID: 8100000000000031001, guid: c3d5e7f9a1b24c68d0e2f4a6b8c1d3e5, type: 3}
     Count:
-      Min: 1
-      Max: 2
+      Min: 3
+      Max: 6
       Bias: 0
     ScaleByRoomSize: 1
-    Footprint: {x: 2, y: 2}
+    Footprint: {x: 1, y: 1}
     On: 0
     Avoid: 108
     Zone: 0
     Facing: 1
     Clearance: 0
-    Spacing: 2
+    Spacing: 1
     Selection: 1
     Pile:
       Min: 1

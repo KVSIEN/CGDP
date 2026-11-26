@@ -32,6 +32,7 @@ MonoBehaviour:
   _landmark: {fileID: 0}
   _structure:
   - {fileID: 11400000, guid: bc41b23240354b2685106c18b0574a1e, type: 2}
+  - {fileID: 11400000, guid: 6a96b51e9d7b4db09c1dae90ce3a44b9, type: 2}
   _props:
   - Prefabs:
     - {fileID: 8100000000000014001, guid: 3974a662cdf34089b694cff1832d7ed4, type: 3}
@@ -61,7 +62,12 @@ MonoBehaviour:
     NearRoute: 0
     OffRoute: 0
     MarksRoute: 0
-    Members: []
+    Members:
+    - Prefabs:
+      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      Offset: {x: 0, y: -0.45}
+      Yaw: 0
+      Chance: 1
     Key: Screen
     Near: 
     NearDistance: 2

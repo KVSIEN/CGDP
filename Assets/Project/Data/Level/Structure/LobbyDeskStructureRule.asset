@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 532cf63a919226d0d989ef87cb4f7d84, type: 3}
+  m_Name: LobbyDeskStructureRule
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.PavilionStructureRule
+  _kinds:
+  - Function: {fileID: 11400000, guid: e1f3a5b7c9d04e82f4a6b8c0d2e14f57, type: 2}
+    Name: Reception Desk
+    MinSize: {x: 4, y: 2}
+    MaxSize: {x: 5, y: 3}
+    Weight: 1
+  _count:
+    Min: 1
+    Max: 1
+    Bias: 0
+  _tilesEach: 40
+  _margin: 1
+  _placement: 2
+  _againstWall: 1
+  _wallHeight: 1.1

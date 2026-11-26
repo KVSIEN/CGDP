@@ -362,6 +362,30 @@ MonoBehaviour:
   _spawnMarginTiles: 1
   _priorityTries: 4
   _footholdDressing: {fileID: 11400000, guid: 7cc62ef6e91c48feb4437609514fe721, type: 2}
+  _gapDressing: {fileID: 11400000, guid: 5b0c1d2e3f4a4b6c8d7e9f0a1b2c3d4e, type: 2}
+  _structureBudget:
+    _options:
+    - Rule: {fileID: 11400000, guid: d0489fed4403c233c90bf9490149d473, type: 2}
+      Kind: 0
+    - Rule: {fileID: 11400000, guid: 441755acee644d76be46572a30aa6aa8, type: 2}
+      Kind: 0
+    - Rule: {fileID: 11400000, guid: 84153ba9c2bdd3a72cd7d7c1c1501f91, type: 2}
+      Kind: 1
+    - Rule: {fileID: 11400000, guid: 6c99a485ddf44f11809d1c26d6d910dc, type: 2}
+      Kind: 2
+    - Rule: {fileID: 11400000, guid: e561e277a8874e6dbcc24efe75e0d704, type: 2}
+      Kind: 2
+    - Rule: {fileID: 11400000, guid: bc41b23240354b2685106c18b0574a1e, type: 2}
+      Kind: 3
+    - Rule: {fileID: 11400000, guid: 107790776f321a983103a3aeb2ac5d42, type: 2}
+      Kind: 3
+    _minTiles: 90
+    _tilesPerPoint: 8
+    _maxAdditions: 2
+    _wall: 1
+    _building: 4
+    _pillar: 0.75
+    _halfWall: 0.5
   _territoryDepth:
     _coreInfluence: 0.7
     _frontierInfluence: 0.35

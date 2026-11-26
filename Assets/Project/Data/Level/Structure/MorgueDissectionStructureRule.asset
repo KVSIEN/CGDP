@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 532cf63a919226d0d989ef87cb4f7d84, type: 3}
+  m_Name: MorgueDissectionStructureRule
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.PavilionStructureRule
+  _kinds:
+  - Function: {fileID: 11400000, guid: 2b7d9f1c3e5a4b84c6d8e0f2a4b65c97, type: 2}
+    Name: Dissection Bay
+    MinSize: {x: 4, y: 3}
+    MaxSize: {x: 5, y: 3}
+    Weight: 1
+  _count:
+    Min: 1
+    Max: 2
+    Bias: 0
+  _tilesEach: 40
+  _margin: 1
+  _placement: 0
+    _wallHeight: 1.1

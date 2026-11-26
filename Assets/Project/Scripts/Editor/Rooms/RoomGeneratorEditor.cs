@@ -243,6 +243,7 @@ namespace CGD.Editor
                 Door(_south, "South");
                 Door(_west, "West");
             }
+            EditorGUILayout.HelpBox("Each doorway leads to a room of its own, rolled by the seed. The first is the way in; none of them has a doorway but this one.", MessageType.None);
             if (!_north.boolValue && !_east.boolValue && !_south.boolValue && !_west.boolValue)
                 EditorGUILayout.HelpBox("With no doorway the room has no way in: it is built with its walls closed.", MessageType.Warning);
         }
@@ -253,6 +254,12 @@ namespace CGD.Editor
         // What the room rolled to, while playing: the choices left to Any, filled in.
         private static void DrawBuilt(RoomGenerator generator, MapContentSettings content)
         {
+            if (GUILayout.Button(new GUIContent("New room (F5)", "Builds the scene again with a new seed, keeping every pinned choice")))
+            {
+                generator.Regenerate();
+                return;
+            }
+
             RoomRecipe room = generator.Recipe;
             if (room == null) return;
 
@@ -264,6 +271,33 @@ namespace CGD.Editor
                 $"Tier {room.Tier} · intensity {room.Intensity:0.00} · levels {room.LowestLevel} to {room.HighestLevel} · seed {generator.Seed.Value}\n" +
                 "Changes made while playing are lost when play stops; set the room up before pressing Play.",
                 MessageType.None);
+            DrawSubrooms();
+        }
+
+        // The named places inside the built room (a kitchen's cooking area, prep area and walk-in fridge) and
+        // the floor levels it climbs through; the same names float over them in the Scene view.
+        private static void DrawSubrooms()
+        {
+            LevelBuilder builder = UnityEngine.Object.FindFirstObjectByType<LevelBuilder>();
+            if (builder == null || builder.Layout == null || !builder.Layout.Rooms.TryGetValue(RoomRecipeGraph.RoomId, out LevelRoom built) || built.Structure == null) return;
+
+            var lines = new System.Text.StringBuilder();
+            foreach (StructureSpace space in built.Structure.Spaces)
+            {
+                if (!space.HasArea || string.IsNullOrEmpty(space.Name)) continue;
+                lines.Append("• ").Append(space.Name).Append(" · ").Append(space.Area.width).Append(" × ").Append(space.Area.height).Append(" tiles");
+                if (space.Function != null) lines.Append(" · ").Append(space.Function.DisplayName);
+                lines.Append('\n');
+            }
+            if (lines.Length == 0) lines.Append("No subrooms. ");
+            int low = 0, high = 0;
+            foreach (Vector2Int tile in built.Footprint.Tiles)
+            {
+                low = Mathf.Min(low, built.Structure.LevelOf(tile));
+                high = Mathf.Max(high, built.Structure.LevelOf(tile));
+            }
+            lines.Append(low == 0 && high == 0 ? "Flat floor" : $"Floor levels {low} to {high}");
+            EditorGUILayout.HelpBox("Subrooms\n" + lines, MessageType.None);
         }
 
         // --- Helpers ---------------------------------------------------------------------

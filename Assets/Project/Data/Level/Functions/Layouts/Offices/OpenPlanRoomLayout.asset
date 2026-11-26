@@ -24,10 +24,11 @@ MonoBehaviour:
     Bias: 0
   _structure:
   - {fileID: 11400000, guid: 107790776f321a983103a3aeb2ac5d42, type: 2}
+  - {fileID: 11400000, guid: 9c4e6a8d0f2b4c3bd5e7f9a1b3c4ad5e, type: 2}
+  - {fileID: 11400000, guid: ad5f7b9e1a3c4d4ce6f8a0b2c4d5be6f, type: 2}
   _props:
   - Prefabs:
     - {fileID: 8100000000000014001, guid: 3974a662cdf34089b694cff1832d7ed4, type: 3}
-    Activity: {fileID: 11400000, guid: 5d0a818be1ad45ea8d811c13941dc61e, type: 2}
     Count:
       Min: 4
       Max: 8
@@ -39,30 +40,84 @@ MonoBehaviour:
     Zone: 0
     Facing: 1
     Clearance: 0
-    Spacing: 1
+    Spacing: 0
     Selection: 6
     Pile:
       Min: 1
       Max: 1
       Bias: 0
     Jitter: 0
-    Required: 0
-    Lattice: {x: 2, y: 2}
+    Required: 1
+    Lattice: {x: 0, y: 0}
     Symmetric: 0
     Decor: 0
-    NearRoute: 0
-    OffRoute: 0
-    MarksRoute: 0
+    MinEmpty: 0
+    Members:
+    - Prefabs:
+      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      Offset: {x: 0, y: -0.45}
+      Yaw: 0
+      Chance: 1
+    Key: 
+    Near: 
+  - Prefabs:
+    - {fileID: 81000000000000241, guid: 0c4e6a8b1d3f4a57b9c1e3f5a7b92d68, type: 3}
+    Count:
+      Min: 2
+      Max: 4
+      Bias: 0
+    ScaleByRoomSize: 1
+    Footprint: {x: 1, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 0
+    Spacing: 0
+    Selection: 4
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    MinEmpty: 0
     Members: []
     Key: 
     Near: 
-    NearDistance: 2
-    Grow: {x: 0, y: 0}
-    Stretch: 0
-    MinRoomTiles: 0
   - Prefabs:
-    - {fileID: 8100000000000017001, guid: bbfcec54324c4a86a6908b2d293c535d, type: 3}
-    Activity: {fileID: 11400000, guid: 7094f214361d4e419b86597f60799031, type: 2}
+    - {fileID: 6380377105223745331, guid: f8cbcc3603e442f28ef444f3071f0296, type: 3}
+    Count:
+      Min: 1
+      Max: 2
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 0
+    Spacing: 0
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    MinEmpty: 0
+    Members: []
+    Key: 
+    Near: 
+  - Prefabs:
+    - {fileID: 6690596464837188276, guid: 75ee3fbd35214e96915a6891ac2dbb89, type: 3}
     Count:
       Min: 1
       Max: 1
@@ -74,7 +129,7 @@ MonoBehaviour:
     Zone: 0
     Facing: 2
     Clearance: 0
-    Spacing: 1
+    Spacing: 0
     Selection: 1
     Pile:
       Min: 1
@@ -85,29 +140,12 @@ MonoBehaviour:
     Lattice: {x: 0, y: 0}
     Symmetric: 0
     Decor: 0
-    NearRoute: 0
-    OffRoute: 0
-    MarksRoute: 0
-    Members:
-    - Prefabs:
-      - {fileID: 2235404494973605514, guid: 80816d6048be4ada9986e1a0b9673fa7, type: 3}
-      Offset: {x: 0, y: 0.36}
-      Yaw: 0
-      Chance: 1
-    - Prefabs:
-      - {fileID: 833794111753750423, guid: 2fdbdb9e1da5448fbe3c1854a3720315, type: 3}
-      Offset: {x: 0.42, y: -0.05}
-      Yaw: 0
-      Chance: 0.7
+    MinEmpty: 0
+    Members: []
     Key: 
     Near: 
-    NearDistance: 2
-    Grow: {x: 0, y: 0}
-    Stretch: 0
-    MinRoomTiles: 0
   - Prefabs:
-    - {fileID: 8100000000000006001, guid: 97ae7a84afd448a680fd5f5622baca66, type: 3}
-    Activity: {fileID: 11400000, guid: 25d0720e9217471bb77b24e450249459, type: 2}
+    - {fileID: 938496126903206658, guid: 1a2ba1f28b034ea5a2c0436f6a57863c, type: 3}
     Count:
       Min: 2
       Max: 3
@@ -117,9 +155,9 @@ MonoBehaviour:
     On: 1
     Avoid: 124
     Zone: 0
-    Facing: 1
+    Facing: 2
     Clearance: 0
-    Spacing: 2
+    Spacing: 0
     Selection: 1
     Pile:
       Min: 1
@@ -130,13 +168,35 @@ MonoBehaviour:
     Lattice: {x: 0, y: 0}
     Symmetric: 0
     Decor: 0
-    NearRoute: 0
-    OffRoute: 0
-    MarksRoute: 0
+    MinEmpty: 0
     Members: []
     Key: 
     Near: 
-    NearDistance: 2
-    Grow: {x: 0, y: 0}
-    Stretch: 0
-    MinRoomTiles: 0
+  - Prefabs:
+    - {fileID: 8100000000000006001, guid: 97ae7a84afd448a680fd5f5622baca66, type: 3}
+    Count:
+      Min: 2
+      Max: 3
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 2
+    Avoid: 124
+    Zone: 0
+    Facing: 1
+    Clearance: 0
+    Spacing: 0
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    MinEmpty: 0
+    Members: []
+    Key: 
+    Near: 

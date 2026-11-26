@@ -265,6 +265,7 @@ namespace CGD.Level
             foreach (PartitionEdge opening in room.Structure.Openings)
             {
                 if (opening.Height <= 0f || opening.Height >= height) continue;
+                if (opening.HasDoor) HangDoor(layout, room, opening, parent);
 
                 float bottom = FloorsEither(layout, opening).high + opening.Height;
                 if (bottom >= height) continue;
@@ -273,6 +274,17 @@ namespace CGD.Level
                 Vector3 size = opening.Side.x != 0 ? new Vector3(thickness, lintel, tile + thickness) : new Vector3(tile + thickness, lintel, thickness);
                 boxes.AddBox(centre, size);
             }
+        }
+
+        // An interactable door in an inner doorway, on the floor, +Z along the wall's normal.
+        private void HangDoor(LevelLayout layout, LevelRoom room, PartitionEdge opening, Transform parent)
+        {
+            GameObject prefab = _settings.InteriorDoorPrefabFor(room);
+            if (prefab == null) return;
+
+            Vector3 local = (layout.TileToLocal(opening.Tile) + layout.TileToLocal(opening.Other)) * 0.5f + Vector3.up * FloorsEither(layout, opening).low;
+            var outward = new Vector3(opening.Side.x, 0f, opening.Side.y);
+            Object.Instantiate(prefab, parent.TransformPoint(local), parent.rotation * Quaternion.LookRotation(outward), parent);
         }
 
         // The floors on the two sides of an inner wall, lower first.

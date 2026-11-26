@@ -34,6 +34,7 @@ MonoBehaviour:
   _landmark: {fileID: 0}
   _structure:
   - {fileID: 11400000, guid: 6c99a485ddf44f11809d1c26d6d910dc, type: 2}
+  - {fileID: 11400000, guid: 6a96b51e9d7b4db09c1dae90ce3a44b9, type: 2}
   _props:
   - Prefabs:
     - {fileID: 2387528128696719469, guid: 77a7e71de2b4456aa98e7a4d7d818d75, type: 3}

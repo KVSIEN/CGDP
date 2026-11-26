@@ -52,7 +52,12 @@ MonoBehaviour:
     NearRoute: 0
     OffRoute: 0
     MarksRoute: 0
-    Members: []
+    Members:
+    - Prefabs:
+      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      Offset: {x: 0, y: -0.45}
+      Yaw: 0
+      Chance: 1
     Key: 
     Near: 
     NearDistance: 2

@@ -56,6 +56,32 @@ namespace CGD.Tests
             }
         }
 
+        // MinEmpty is the room's gap fill: a piece goes only into floor with nothing built
+        // within that many tiles, so a busy corner is left alone and a bare one is filled.
+        [Test]
+        public void MinEmptyKeepsEveryPieceClearOfWhatWasPlacedBefore()
+        {
+            for (int seed = 0; seed < Seeds; seed++)
+            {
+                RoomPropPlanner planner = Planner(Room(16, 16), seed, fillShare: 0.6f);
+                planner.Add(Placement(6, 6));
+                var before = new List<PlannedProp>(planner.Planned);
+
+                RoomPropPlacement fill = Placement(4, 6);
+                fill.MinEmpty = 2;
+                planner.Add(fill);
+
+                for (int i = before.Count; i < planner.Planned.Count; i++)
+                    foreach (PlannedProp other in before)
+                    {
+                        RectInt a = planner.Planned[i].Tiles, b = other.Tiles;
+                        int dx = Mathf.Max(0, Mathf.Max(a.xMin - (b.xMax - 1), b.xMin - (a.xMax - 1)));
+                        int dy = Mathf.Max(0, Mathf.Max(a.yMin - (b.yMax - 1), b.yMin - (a.yMax - 1)));
+                        Assert.Greater(Mathf.Max(dx, dy), 2, $"seed {seed}: a gap-fill piece stands within 2 tiles of another prop");
+                    }
+            }
+        }
+
         // Centred on a lattice: a count fills the lattice points nearest the middle, so no
         // point farther out is taken while a nearer one is left empty.
         [Test]

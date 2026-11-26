@@ -1057,6 +1057,56 @@ layouts' *Direct Door Chance* went from 0.2–0.3 to 0.45–0.55, and Linear, wh
   sizes of ship.
 - Not yet looked at in play; compiled, and the EditMode tests were run in a headless copy of the project.
 
+## 16b. Gap fill and office doors
+
+Play-testing showed rooms dense in one corner and blank in the next (a drive core with shelves in
+one corner, a study room with a few cover blocks, a morgue with one table). Two changes:
+
+- **Gap fill.** `LevelBuildSettings` › `_gapDressing` (`Dressing/GapFillRoomDressing`) is planned
+  last in every furnished room. Each of its pieces has **MinEmpty** set (`RoomPropPlacement.MinEmpty`):
+  it only goes where no prop or pillar stands within that many tiles, so it fills the bare walls,
+  corners and middles the rest of the furnishing left and never a busy part. Lockers and shelves on
+  bare wall, lamps in bare corners, crates and barrels in bare floor. Any placement can use MinEmpty.
+- **Better furnishing for four places.** Morgue: rows of cold-storage lockers along the walls,
+  counters, lamps, a bin. School: bookcases along the walls, low walls with bushes beside them as
+  planter dividers, lamps. Engine Room: tool lockers and counters on the walls, barrel clusters,
+  lamps. Offices: desks with a chair each against the walls, filing-cabinet runs, plants and bins.
+- **Office doors.** An office's own doorway gets an interactable door (the holder's door, else the
+  level's) with `OfficeMazeStructureRule` › `_doorChance` (0.6), chosen from the doorway's place so no
+  random draw moves. Gaps where a route crosses stay open. `PartitionEdge.HasDoor` carries it;
+  `LevelGeometryBuilder.HangDoor` hangs it.
+
+- **Deep wall props stay in their tile.** An AgainstWall prop used to sit a fixed 0.75 m off its
+  tile's middle toward the wall, which put a 2.2 m bed's back 0.35 m through the inner wall of the
+  next cell. The set-back is now capped by how far the prefab's colliders reach behind its origin
+  (`PropDepth`), so it stops short of the wall.
+- **Bedrooms.** Every bed placement in the Quarters place and its Twin Cabin layout, and in the
+  Cabin Row's Cabin Corridor and Dormitory, is Required (at least one) and brings a **Nightstand**
+  (new prop: a wooden cabinet with a lamp on top) beside its head, always.
+- **Bushes are planters.** The Bush prop is a wooden planter box with a square bush on top (two
+  shapes), a kept decorative plant. Tall grass and growth stay the concealment patches.
+- **Structure is counted and weighted.** `LevelBuildSettings` › `_structureBudget`
+  (`StructureBudget`) scores every room: a point per full-height wall piece (1), per building or hut
+  (4), per pillar (0.75) and per low wall piece (0.5), the heaviest kind first. A room of 90+ tiles is
+  built up when its score reaches its floor tiles ÷ 8. One short of that has structure added, at
+  most twice, each time one option of the heaviest kind it has none of (walls, then buildings, then
+  pillars, then half walls), else of the heaviest kind: so an open hall gets lanes or a divider
+  wall to run along and fight round before pillars, and a walled one a pillar grid or low rows.
+  Options: Three Lanes and Divider Wall (walls), Service Pavilions (buildings), Wide and Dense
+  Pillar Grid, Low Rows and Low Three Lanes (half walls). The pick is drawn from a stream of its
+  own, so no other draw in the room moves. Because the walls it adds shape the zones, the doorway
+  arrival and the flow bands, the room's flow follows from them.
+
+## 16c. Subrooms and raised floors
+
+A room can be built of named subrooms. A subroom is a walled or low-walled block (a Pavilion structure rule) whose kind has a name and a `RoomFunction` that furnishes the inside; the room's own function, cover and faction props furnish the floor round it. `StructureSpace.Area` records the tiles it covers, which is what lets the overview label it, the Room Generator Inspector list it, and the HUD feed name it when the player walks in (`RoomStructure.SpaceAt`).
+
+The kitchen is the first: `KitchenStations` stands two or three low (1.1 m) blocks in the middle (Cooking Area, Prep Area) and `KitchenColdStore` a walled Walk-in Fridge along the perimeter. The two layouts use them in place of Low Rows. The subroom functions have weight 0 so they are never rolled as rooms.
+
+Elevation: the Mezzanine, Platform and Sunken Floor rules are now listed in about 45 room functions and layouts (a layout's own structure list replaces its function's, so each carries the rule). `PropZone.Raised` places a prop only on floor above the doorways' level; `GapFillRoomDressing` uses it for crates, shelves and a lamp on raised floor. Rooms without headroom or a level allowance still stay flat.
+
+Next: the same treatment room by room (morgue, study room, offices, engine room, bedrooms), each as a set of named subrooms.
+
 ## Roadmap
 
 | Phase | What | Status |

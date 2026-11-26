@@ -23,8 +23,12 @@ namespace CGD.Level
     // RoomPlanRefiner): the loose cover and clutter that a room's traits depend on.
     public class RoomPropPlanner : IRefinablePlan
     {
-        // How far an AgainstWall prop one tile deep moves from its tile's middle toward the wall, in tiles.
+        // How far an AgainstWall prop one tile deep moves from its tile's middle toward the wall, in tiles, at most:
+        // a deep prop (a bed) is set back less, so its back stops short of the wall.
         private const float WallOffset = 0.25f;
+        // A tile is 3 m in the placeholder kit; a wall's half thickness, in tiles, the back must stay clear of.
+        private const float TileMetres = 3f;
+        private const float WallClearance = 0.04f;
         // Props in a pile stand this far from the tile's middle along each axis, in tiles.
         private const float PileOffset = 0.22f;
         // How far a fully jittered prop wanders from its spot, in tiles.
@@ -427,9 +431,20 @@ namespace CGD.Level
         {
             Vector2 forward = candidate.Forward;
             Vector2 position = candidate.Rect.center;
-            if (placement.Facing == PropFacing.AgainstWall && size.y == 1 && pile == 1) position -= forward * WallOffset;
+            if (placement.Facing == PropFacing.AgainstWall && size.y == 1 && pile == 1) position -= forward * SetBack(placement);
             if (placement.Jitter > 0f && size == Vector2Int.one && !placement.Symmetric) position += Jitter(placement, forward, random);
             return position;
+        }
+
+        // How far a wall prop sits from its tile's middle toward the wall: the usual set-back, less
+        // for a deep prop so its back (the deepest of its prefabs) stays inside the tile.
+        private static float SetBack(RoomPropPlacement placement)
+        {
+            float behind = 0f;
+            if (placement.Prefabs != null)
+                foreach (GameObject prefab in placement.Prefabs)
+                    behind = Mathf.Max(behind, PropDepth.BehindOrigin(prefab));
+            return Mathf.Clamp(0.5f - behind / TileMetres - WallClearance, 0f, WallOffset);
         }
 
         // Along the wall for wall props, any way for the rest.

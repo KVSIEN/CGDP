@@ -23,6 +23,7 @@ MonoBehaviour:
     Bias: 0
   _structure:
   - {fileID: 11400000, guid: 0779a8c9bfd943528d256e313c2460f9, type: 2}
+  - {fileID: 11400000, guid: 654c446c93be40b7ad323d2625abfbcf, type: 2}
   _props:
   - Prefabs:
     - {fileID: 2715582239689006198, guid: 6b4188015b22e5e5d840b13873bbccf3, type: 3}

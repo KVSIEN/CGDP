@@ -60,7 +60,22 @@ namespace CGD.Level
             if (side != null) text.Append(" · ").Append(side);
             if (room.Faction != null && depth != null) text.Append(" · ").Append(depth.NameOf(room.DesignStrength));
             if (room.BreachFaction != null) text.Append(" · breached by ").Append(Coloured(room.BreachFaction));
+            foreach (string tag in room.Tags) text.Append('\n').Append("<color=#FF9A5A>").Append(tag).Append("</color>");
+            string subrooms = Subrooms(room);
+            if (subrooms != null) text.Append('\n').Append(subrooms);
             return text.Append("</size>").ToString();
+        }
+
+        // "Cooking Area, Prep Area, Walk-in Fridge": the named places inside the room that stand on
+        // their own floor (a kitchen's stations, a pool hall's huts); null when it has none.
+        public static string Subrooms(LevelRoom room)
+        {
+            if (room.Structure == null) return null;
+
+            var names = new System.Collections.Generic.List<string>();
+            foreach (StructureSpace space in room.Structure.Spaces)
+                if (space.HasArea && !string.IsNullOrEmpty(space.Name)) names.Add(space.Name);
+            return names.Count > 0 ? string.Join(", ", names) : null;
         }
 
         private static string Coloured(FactionDefinition faction) =>

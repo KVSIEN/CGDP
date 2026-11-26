@@ -51,8 +51,8 @@ MonoBehaviour:
   - Prefabs:
     - {fileID: 8100000000000006001, guid: 97ae7a84afd448a680fd5f5622baca66, type: 3}
     Count:
-      Min: 6
-      Max: 12
+      Min: 3
+      Max: 6
       Bias: 0
     ScaleByRoomSize: 1
     Footprint: {x: 1, y: 1}
@@ -133,10 +133,10 @@ MonoBehaviour:
     Stretch: 0
     MinRoomTiles: 0
   - Prefabs:
-    - {fileID: 8100000000000006001, guid: 97ae7a84afd448a680fd5f5622baca66, type: 3}
+    - {fileID: 8100000000000031001, guid: c3d5e7f9a1b24c68d0e2f4a6b8c1d3e5, type: 3}
     Count:
-      Min: 10
-      Max: 18
+      Min: 4
+      Max: 8
       Bias: 0
     ScaleByRoomSize: 1
     Footprint: {x: 1, y: 1}
@@ -157,10 +157,10 @@ MonoBehaviour:
     Symmetric: 0
     Decor: 1
   - Prefabs:
-    - {fileID: 8100000000000006001, guid: 97ae7a84afd448a680fd5f5622baca66, type: 3}
+    - {fileID: 8100000000000031001, guid: c3d5e7f9a1b24c68d0e2f4a6b8c1d3e5, type: 3}
     Count:
-      Min: 5
-      Max: 9
+      Min: 3
+      Max: 5
       Bias: 0
     ScaleByRoomSize: 1
     Footprint: {x: 1, y: 1}
@@ -205,19 +205,19 @@ MonoBehaviour:
     Symmetric: 0
     Decor: 1
   - Prefabs:
-    - {fileID: 8100000000000031001, guid: d86900c5c09544228b46c60103a437d3, type: 3}
+    - {fileID: 8100000000000031001, guid: c3d5e7f9a1b24c68d0e2f4a6b8c1d3e5, type: 3}
     Count:
-      Min: 3
-      Max: 5
+      Min: 5
+      Max: 9
       Bias: 0
     ScaleByRoomSize: 1
-    Footprint: {x: 2, y: 2}
+    Footprint: {x: 1, y: 1}
     On: 0
     Avoid: 108
     Zone: 0
     Facing: 1
     Clearance: 0
-    Spacing: 2
+    Spacing: 1
     Selection: 1
     Pile:
       Min: 1

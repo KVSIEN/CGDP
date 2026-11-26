@@ -82,6 +82,15 @@ namespace CGD.Level
             Function != null ? Function.PropsWith(RoomLayout) : Array.Empty<RoomPropPlacement>();
 
         // Set once by LevelLayoutBuilder once the doorways are known (no chamfer cuts a doorway).
+        // Short notes the overview label shows under the room's details (an encounter's hazard).
+        public IReadOnlyList<string> Tags => _tags;
+        private readonly List<string> _tags = new();
+
+        public void AddTag(string tag)
+        {
+            if (!string.IsNullOrEmpty(tag) && !_tags.Contains(tag)) _tags.Add(tag);
+        }
+
         public void AttachOutline(RoomOutlinePlan outline) => Outline = outline;
 
         public void AttachBreachEntrances(IReadOnlyList<Vector2Int> entrances) => BreachEntrances = entrances ?? Array.Empty<Vector2Int>();

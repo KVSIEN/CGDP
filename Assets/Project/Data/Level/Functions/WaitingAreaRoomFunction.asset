@@ -1,0 +1,182 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782486c3ed6a422a9b324498ab198d59, type: 3}
+  m_Name: WaitingAreaRoomFunction
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.RoomFunction
+  _displayName: Waiting Area
+  _category: 11
+  _weight: 0
+  _preferredSections: []
+  _sectionPreference: 3
+  _sides:
+  - 3
+  _shapes: []
+  _cells: {x: 1, y: 1}
+  _size:
+    Min: 3
+    Max: 4
+    Bias: 0
+  _wallHeight: 0
+  _chamfer: -1
+  _openCeiling: 0
+  _landmark: {fileID: 0}
+  _structure: []
+  _props:
+  - Prefabs:
+    - {fileID: 6137028835907501265, guid: 253283faa7c64eeba7822eaa48e7b6f8, type: 3}
+    Count:
+      Min: 1
+      Max: 2
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 2, y: 2}
+    On: 0
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 0
+    Spacing: 0
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 1
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    MinEmpty: 0
+    Members:
+    - Prefabs:
+      - {fileID: 2235404494973605514, guid: 80816d6048be4ada9986e1a0b9673fa7, type: 3}
+      Offset: {x: 0, y: 0}
+      Yaw: 0
+      Chance: 1
+    - Prefabs:
+      - {fileID: 8100000000000017001, guid: bbfcec54324c4a86a6908b2d293c535d, type: 3}
+      Offset: {x: 0, y: -0.57}
+      Yaw: 0
+      Chance: 1
+    - Prefabs:
+      - {fileID: 8100000000000017001, guid: bbfcec54324c4a86a6908b2d293c535d, type: 3}
+      Offset: {x: 0, y: 0.57}
+      Yaw: 180
+      Chance: 0.45
+    - Prefabs:
+      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      Offset: {x: -0.57, y: 0}
+      Yaw: 90
+      Chance: 0.9
+    - Prefabs:
+      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      Offset: {x: 0.57, y: 0}
+      Yaw: 270
+      Chance: 0.9
+    - Prefabs:
+      - {fileID: 833794111753750423, guid: 2fdbdb9e1da5448fbe3c1854a3720315, type: 3}
+      Offset: {x: -0.62, y: -0.62}
+      Yaw: 0
+      Chance: 0.8
+    - Prefabs:
+      - {fileID: 8100000000000006001, guid: 97ae7a84afd448a680fd5f5622baca66, type: 3}
+      Offset: {x: 0.62, y: -0.62}
+      Yaw: 0
+      Chance: 0.7
+    Key: 
+    Near: 
+  - Prefabs:
+    - {fileID: 174689818534657366, guid: ae7e0963ed9e418cbba020b4b8023758, type: 3}
+    Count:
+      Min: 1
+      Max: 2
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 2, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 0
+    Spacing: 0
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    MinEmpty: 0
+    Members: []
+    Key: 
+    Near: 
+  - Prefabs:
+    - {fileID: 8100000000000006001, guid: 97ae7a84afd448a680fd5f5622baca66, type: 3}
+    Count:
+      Min: 2
+      Max: 3
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 2
+    Avoid: 124
+    Zone: 0
+    Facing: 1
+    Clearance: 0
+    Spacing: 0
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    MinEmpty: 0
+    Members: []
+    Key: 
+    Near: 
+  - Prefabs:
+    - {fileID: 833794111753750423, guid: 2fdbdb9e1da5448fbe3c1854a3720315, type: 3}
+    Count:
+      Min: 1
+      Max: 2
+      Bias: 0
+    ScaleByRoomSize: 0
+    Footprint: {x: 1, y: 1}
+    On: 3
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 0
+    Spacing: 0
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    MinEmpty: 0
+    Members: []
+    Key: 
+    Near: 
+  _layouts: []
+  _sets: []

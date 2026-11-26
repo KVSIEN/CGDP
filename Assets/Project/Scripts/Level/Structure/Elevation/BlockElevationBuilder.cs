@@ -28,23 +28,21 @@ namespace CGD.Level
         private readonly IntRange _length;
         private readonly IntRange _stairs;
         private readonly bool _bridge;
-        private readonly bool _railed;
 
-        public BlockElevationBuilder(ElevationKind kind, IntRange depth, IntRange length, IntRange stairs, bool bridge, bool railed)
+        public BlockElevationBuilder(ElevationKind kind, IntRange depth, IntRange length, IntRange stairs, bool bridge)
         {
             _kind   = kind;
             _depth  = depth;
             _length = length;
             _stairs = stairs;
             _bridge = bridge;
-            _railed = railed;
         }
 
         private int Direction => _kind == ElevationKind.Platform ? 1 : -1;
 
         // One area per tier, lowest step first, up to `tiers` of them (fewer where the block is too
         // small for more); null when not even the first fits.
-        public List<ElevatedArea> Build(RoomStructure structure, RandomStream random, int tiers)
+        public List<ElevatedArea> Build(RoomStructure structure, RandomStream random, int tiers, bool railed)
         {
             int depth  = Mathf.Max(1, _depth.Evaluate(random));
             int length = Mathf.Max(depth, _length.Evaluate(random));
@@ -56,7 +54,7 @@ namespace CGD.Level
 
             for (int count = Mathf.Min(tiers, HighestRank(block)); count >= 1; count--)
             {
-                List<ElevatedArea> areas = Tiers(structure, random, block, back, count);
+                List<ElevatedArea> areas = Tiers(structure, random, block, back, count, railed);
                 if (areas != null) return areas;
             }
             return null;
@@ -65,7 +63,7 @@ namespace CGD.Level
         // `count` tiers of the block: a tile is on the highest tier its rank reaches. Each tier's
         // flights stand on the tier below it; a tier left without a flight sinks the whole try.
         private List<ElevatedArea> Tiers(RoomStructure structure, RandomStream random, List<(Vector2Int tile, int rank)> block,
-                                         Vector2Int back, int count)
+                                         Vector2Int back, int count, bool railed)
         {
             var areas = new List<ElevatedArea>(count);
             HashSet<Vector2Int> below = null;
@@ -82,7 +80,7 @@ namespace CGD.Level
 
                 List<StairFlight> stairs = ChooseStairs(structure, region, back, below, random);
                 if (stairs.Count == 0) return null;
-                areas.Add(new ElevatedArea(_kind, Direction * tier, own, stairs, _railed));
+                areas.Add(new ElevatedArea(_kind, Direction * tier, own, stairs, railed));
                 below = new HashSet<Vector2Int>(own);
             }
             return areas;

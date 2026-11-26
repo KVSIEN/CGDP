@@ -380,11 +380,22 @@ namespace CGD.Level
 
         // Marks the zone holding `tile` as a place of its own, to be furnished by `function`.
         // Call before AssignZones or after: the zone is looked up from the tile when needed.
+        // `area`: the tiles it covers, when it is a rectangle (shown as its own label in the overview).
         // `roofed`: the space is a building standing in an open-air room, so it gets a roof.
         // `annex`: a hut or kiosk standing in a room that stays its own place round it.
         public void AddSpace(Vector2Int tile, RoomFunction function, string name, RoomLayout layout = null, bool roofed = false,
-                             bool annex = false) =>
-            _spaces.Add(new StructureSpace(tile, function, name, layout, roofed, annex));
+                             bool annex = false, RectInt? area = null) =>
+            _spaces.Add(new StructureSpace(tile, function, name, layout, roofed, annex, area));
+
+        // The place with a known area that covers this tile (the smallest first), or null.
+        public StructureSpace? SpaceAt(Vector2Int tile)
+        {
+            StructureSpace? found = null;
+            foreach (StructureSpace space in _spaces)
+                if (space.Covers(tile) && (!found.HasValue || space.Area.width * space.Area.height < found.Value.Area.width * found.Value.Area.height))
+                    found = space;
+            return found;
+        }
 
         // The zones of the room's own floor when annexes stand in it: every zone but theirs.
         // Null when there is no annex (the whole room). Needs the zones assigned.

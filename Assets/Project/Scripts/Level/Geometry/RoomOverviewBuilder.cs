@@ -51,6 +51,7 @@ namespace CGD.Level
                 if (!outlines.TryGetValue(color, out BoxMeshBuilder mesh)) outlines[color] = mesh = new BoxMeshBuilder();
                 AddOutline(layout, room, mesh);
                 AddLabel(layout, room, root.transform);
+                AddSpaceLabels(layout, room, root.transform);
             }
             foreach (var (color, mesh) in outlines)
                 CreateOutline(color, mesh, template, root.transform);
@@ -95,6 +96,36 @@ namespace CGD.Level
             text.alignment        = TextAlignmentOptions.Center;
             text.color            = Color.white;
             text.fontSharedMaterial = LabelMaterial(text.fontSharedMaterial);
+        }
+
+        // A small flat label over each named place inside the room, so the Scene view shows which
+        // subrooms it has and where.
+        private void AddSpaceLabels(LevelLayout layout, LevelRoom room, Transform parent)
+        {
+            if (room.Structure == null) return;
+
+            foreach (StructureSpace space in room.Structure.Spaces)
+            {
+                if (!space.HasArea || string.IsNullOrEmpty(space.Name)) continue;
+
+                Vector3 centre = layout.TileToLocal(Vector2Int.zero) + new Vector3(space.Centre.x - 0.5f, 0f, space.Centre.y - 0.5f) * layout.TileSize;
+                centre.y = room.WallHeight + LabelLift;
+
+                var label = new GameObject($"SpaceLabel_{room.Node.Id}_{space.Name}", typeof(TextMeshPro));
+                label.transform.SetParent(parent, false);
+                label.transform.SetLocalPositionAndRotation(centre, Quaternion.Euler(90f, 0f, 0f));
+
+                var text = label.GetComponent<TextMeshPro>();
+                text.rectTransform.sizeDelta = new Vector2(space.Area.width, space.Area.height) * (layout.TileSize * 0.9f);
+                text.text             = space.Name;
+                text.enableAutoSizing = true;
+                text.fontSizeMin      = LabelMinFont;
+                text.fontSizeMax      = LabelMaxFont * 0.6f;
+                text.textWrappingMode = TextWrappingModes.Normal;
+                text.alignment        = TextAlignmentOptions.Center;
+                text.color            = new Color(1f, 0.92f, 0.55f);
+                text.fontSharedMaterial = LabelMaterial(text.fontSharedMaterial);
+            }
         }
 
         // One material for every label: the font's, outlined in black to read over any floor,

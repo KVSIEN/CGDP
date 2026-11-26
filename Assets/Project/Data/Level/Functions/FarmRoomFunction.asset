@@ -30,7 +30,8 @@ MonoBehaviour:
   _chamfer: -1
   _openCeiling: 1
   _landmark: {fileID: 0}
-  _structure: []
+  _structure:
+  - {fileID: 11400000, guid: 6a96b51e9d7b4db09c1dae90ce3a44b9, type: 2}
   _props:
   - Prefabs:
     - {fileID: 2715582239689006198, guid: 6b4188015b22e5e5d840b13873bbccf3, type: 3}

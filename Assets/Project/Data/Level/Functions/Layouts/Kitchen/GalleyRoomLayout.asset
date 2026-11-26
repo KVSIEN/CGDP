@@ -25,6 +25,8 @@ MonoBehaviour:
   _structure:
   - {fileID: 11400000, guid: 78008a8e47414fc98fbcc5b1ce8aa882, type: 2}
   - {fileID: 11400000, guid: 0779a8c9bfd943528d256e313c2460f9, type: 2}
+  - {fileID: 11400000, guid: a1f6c8d2b4e04c35b9a3f1e5d7c94a26, type: 2}
+  - {fileID: 11400000, guid: b2a7d9e3c5f14d46cab4a2f6e8da5b37, type: 2}
   _props:
   - Prefabs:
     - {fileID: 6137028835907501265, guid: 253283faa7c64eeba7822eaa48e7b6f8, type: 3}
@@ -53,8 +55,18 @@ MonoBehaviour:
     NearRoute: 0
     OffRoute: 0
     MarksRoute: 0
-    Members: []
-    Key: 
+    Members:
+    - Prefabs:
+      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      Offset: {x: 0, y: 0.37}
+      Yaw: 180
+      Chance: 1
+    - Prefabs:
+      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      Offset: {x: 0, y: -0.37}
+      Yaw: 0
+      Chance: 0.85
+    Key: Table
     Near: 
     NearDistance: 2
     Grow: {x: 0, y: 0}

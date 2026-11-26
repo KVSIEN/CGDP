@@ -24,15 +24,17 @@ MonoBehaviour:
     Bias: 0
   _structure:
   - {fileID: 11400000, guid: 441755acee644d76be46572a30aa6aa8, type: 2}
+  - {fileID: 11400000, guid: 3c8e0a2d4f6b4c95d7e9f1a3b5c76da8, type: 2}
+  - {fileID: 11400000, guid: 4d9f1b3e5a7c4da6e8f0a2b4c6d87eb9, type: 2}
   _props:
   - Prefabs:
-    - {fileID: 6137028835907501265, guid: 253283faa7c64eeba7822eaa48e7b6f8, type: 3}
+    - {fileID: 2387528128696719469, guid: 77a7e71de2b4456aa98e7a4d7d818d75, type: 3}
     Count:
       Min: 1
       Max: 2
       Bias: 0
     ScaleByRoomSize: 0
-    Footprint: {x: 1, y: 1}
+    Footprint: {x: 2, y: 1}
     On: 1
     Avoid: 124
     Zone: 1
@@ -53,7 +55,7 @@ MonoBehaviour:
     OffRoute: 0
     MarksRoute: 0
     Members: []
-    Key: 
+    Key: Table
     Near: 
     NearDistance: 2
     Grow: {x: 0, y: 0}

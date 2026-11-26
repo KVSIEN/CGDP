@@ -46,14 +46,19 @@ MonoBehaviour:
       Max: 1
       Bias: 0
     Jitter: 0
-    Required: 0
+    Required: 1
     Lattice: {x: 0, y: 0}
     Symmetric: 0
     Decor: 0
     NearRoute: 0
     OffRoute: 0
     MarksRoute: 0
-    Members: []
+    Members:
+    - Prefabs:
+      - {fileID: 8100000000000016001, guid: 4d7a2c9e6b1f4e30a5c8d0f3b7e92a16, type: 3}
+      Offset: {x: 0.36, y: -0.3}
+      Yaw: 0
+      Chance: 1
     Key: 
     Near: 
     NearDistance: 2

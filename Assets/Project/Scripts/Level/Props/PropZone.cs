@@ -6,5 +6,6 @@ namespace CGD.Level
         Any,
         Largest,   // the main space (a restaurant's dining room)
         Others,    // everything but the main space (its kitchen); none in an undivided room
+        Raised,    // only on floor above the doorways' level (a mezzanine's or platform's); none in a flat room
     }
 }

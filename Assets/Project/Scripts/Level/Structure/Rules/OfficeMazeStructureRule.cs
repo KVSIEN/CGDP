@@ -26,6 +26,8 @@ namespace CGD.Level
         [SerializeField, Range(0f, 1f)] private float _throughChance = 0.3f;
         [Tooltip("Metres of clear height under the lintel over every doorway")]
         [SerializeField, Min(1f)] private float _doorHeight = 2.6f;
+        [Tooltip("Chance an office's own doorway has a door hung in it (an interactable one, the level's door); the rest are bare openings. Gaps where a route crosses are never hung")]
+        [SerializeField, Range(0f, 1f)] private float _doorChance = 0.6f;
 
         public override void Apply(RoomStructure structure, RandomStream random)
         {
@@ -123,7 +125,7 @@ namespace CGD.Level
             {
                 Vector2Int a = tileAt(along, row - 1);
                 Vector2Int b = tileAt(along, row);
-                if (structure.Contains(a) && structure.Contains(b)) wall.Add(structure, a, b, along == doorway, _doorHeight);
+                if (structure.Contains(a) && structure.Contains(b)) wall.Add(structure, a, b, along == doorway, _doorHeight, _doorChance);
             }
             wall.Commit(structure);
         }
@@ -137,7 +139,7 @@ namespace CGD.Level
             {
                 Vector2Int a = tileAt(along - 1, row);
                 Vector2Int b = tileAt(along, row);
-                if (structure.Contains(a) && structure.Contains(b)) wall.Add(structure, a, b, row == doorway, _doorHeight);
+                if (structure.Contains(a) && structure.Contains(b)) wall.Add(structure, a, b, row == doorway, _doorHeight, _doorChance);
             }
             wall.Commit(structure);
         }
@@ -147,6 +149,17 @@ namespace CGD.Level
             for (int along = from; along < to; along++)
                 if (structure.Contains(tileAt(along, row - 1)) && structure.Contains(tileAt(along, row))) return true;
             return false;
+        }
+
+        // Whether a door hangs in the doorway between two tiles: decided from where it is, not drawn
+        // from the room's stream, so no other draw moves.
+        private static bool IsHung(Vector2Int a, Vector2Int b, float chance)
+        {
+            unchecked
+            {
+                uint hash = (uint)(a.x * 73856093 ^ a.y * 19349663 ^ b.x * 83492791 ^ b.y * 2654435761u);
+                return (hash >> 8 & 0xFFFF) < chance * 0x10000;
+            }
         }
 
         // One run of wall and the openings in it. An office's own doorway keeps the office a zone
@@ -159,10 +172,10 @@ namespace CGD.Level
             private readonly List<PartitionEdge> _doors = new();
             private readonly List<PartitionEdge> _gaps  = new();
 
-            public void Add(RoomStructure structure, Vector2Int a, Vector2Int b, bool door, float doorHeight)
+            public void Add(RoomStructure structure, Vector2Int a, Vector2Int b, bool door, float doorHeight, float doorChance)
             {
                 if (structure.EdgeMustStayOpen(a, b)) _gaps.Add(new PartitionEdge(a, b, doorHeight, dividesZones: false));
-                else if (door) _doors.Add(new PartitionEdge(a, b, doorHeight, dividesZones: false));
+                else if (door) _doors.Add(new PartitionEdge(a, b, doorHeight, dividesZones: false, hasDoor: IsHung(a, b, doorChance)));
                 else _walls.Add(new PartitionEdge(a, b, 0f, dividesZones: false));
             }
 

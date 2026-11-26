@@ -303,6 +303,20 @@ namespace CGD.Level
             return result.Graph;
         }
 
+        // Metres the spectator may pan from the room's centre: 1.5 x the way to the far corner of everything built round it, plus a margin.
+        private float ReachFrom(LevelRoom room, RoomPopulator populator)
+        {
+            Vector3 centre = populator.RoomCenter(room);
+            float reach = 0f;
+            foreach (LevelRoom other in Layout.Rooms.Values)
+            {
+                Rect rect = Layout.RoomLocalRect(other);
+                foreach (Vector2 corner in new[] { rect.min, rect.max, new Vector2(rect.xMin, rect.yMax), new Vector2(rect.xMax, rect.yMin) })
+                    reach = Mathf.Max(reach, Vector3.Distance(centre, transform.TransformPoint(new Vector3(corner.x, 0f, corner.y))));
+            }
+            return reach * 1.5f + 40f;
+        }
+
         private void PlacePlayer(RoomPopulator populator)
         {
             int startRoom = _roomGenerator != null ? RoomRecipeGraph.RoomId : _startRoom;
@@ -312,7 +326,7 @@ namespace CGD.Level
             // Slightly above the floor so the player's capsule doesn't start inside it.
             Vector3 position = populator.RoomCenter(start) + Vector3.up;
             if (_spawnPoint != null) _spawnPoint.position = position;
-            if (_roomGenerator != null) _roomGenerator.FrameRoom(populator.RoomCenter(start));
+            if (_roomGenerator != null) _roomGenerator.FrameRoom(populator.RoomCenter(start), ReachFrom(start, populator));
             if (_player == null) return;
 
             _player.position = position;

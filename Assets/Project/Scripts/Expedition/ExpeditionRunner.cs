@@ -55,6 +55,9 @@ namespace CGD.Expedition
 
         private void Start()
         {
+            // A spectator scene switches the Player off before it wakes: nothing to equip, carry or settle.
+            if (_weapons != null && !_weapons.gameObject.activeInHierarchy) return;
+
             ApplyUpgrades();
             Give(Ledger.Deploy());
             GiveStarterKit();

@@ -50,7 +50,7 @@ namespace CGD.Level
         }
 
         // The box round a collider in its own transform's space.
-        private static bool TryGetLocalBox(Collider collider, out Vector3 center, out Vector3 size)
+        internal static bool TryGetLocalBox(Collider collider, out Vector3 center, out Vector3 size)
         {
             switch (collider)
             {

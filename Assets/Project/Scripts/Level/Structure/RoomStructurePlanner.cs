@@ -23,11 +23,12 @@ namespace CGD.Level
         // style, TerritoryDepth); at 1 every one is, with no random draw.
         // `lowestLevel`, `highestLevel`: the floor levels elevation rules may raise or sink the
         // room to (RoomElevation); both 0 keeps every room flat.
+        // `budget`: structure added to a room still short of its weighted structure score after all of that (StructureBudget).
         public RoomStructure Plan(LevelRoom room, IReadOnlyList<LevelDoorway> doorways, RandomStream random,
                                   IReadOnlyList<RoomStructureRule> factionRules = null,
                                   IReadOnlyList<RoomStructureRule> factionAdditions = null,
                                   RoomStructureRule breachDivider = null, float additionChance = 1f,
-                                  int lowestLevel = 0, int highestLevel = 0)
+                                  int lowestLevel = 0, int highestLevel = 0, StructureBudget budget = null)
         {
             var entrances = new List<Vector2Int>();
             foreach (LevelDoorway doorway in doorways)
@@ -42,6 +43,7 @@ namespace CGD.Level
                 IReadOnlyList<RoomStructureRule> rules = HasRules(room.StructureRules) ? room.StructureRules : factionRules;
                 Apply(rules, structure, random);
                 Apply(factionAdditions, structure, random, additionChance);
+                if (budget != null && budget.Needs(structure)) budget.Apply(structure, random);
             }
 
             structure.AssignZones();

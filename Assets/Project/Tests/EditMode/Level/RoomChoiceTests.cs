@@ -139,6 +139,24 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void WithRollsEachNeighbourIsARoomJoinedOnlyToTheRoomAndTheFirstIsTheStart()
+        {
+            var recipe = new RoomRecipe { Type = MapNodeType.Combat, DoorNorth = true, DoorEast = true, DoorSouth = true, DoorWest = true };
+
+            MapGraph graph = RoomRecipeGraph.Build(recipe, new Seed(7).Stream());
+
+            Assert.AreEqual(1 + recipe.DoorCount, graph.Nodes.Count);
+            Assert.AreEqual(MapNodeType.Start, graph.Nodes[1].Type);
+            for (int i = 1; i < graph.Nodes.Count; i++)
+            {
+                Assert.AreNotEqual(MapNodeType.Junction, graph.Nodes[i].Type);
+                var linked = new System.Collections.Generic.List<int>();
+                graph.GetNeighbors(graph.Nodes[i].Id, linked);
+                Assert.AreEqual(1, linked.Count, $"neighbour {i} has one doorway");
+            }
+        }
+
+        [Test]
         public void AMixedRoomKeepsItsSecondFactionWhateverItsType()
         {
             var recipe = new RoomRecipe { Type = MapNodeType.Combat, Faction = 0, BreachFaction = 1 };

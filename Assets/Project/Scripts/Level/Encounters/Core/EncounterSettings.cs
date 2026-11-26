@@ -114,8 +114,6 @@ namespace CGD.Level
         [SerializeField, Min(0.1f)] private float _hazardTick = 1f;
         [Tooltip("Strength the effect is applied with (its 'hit' damage)")]
         [SerializeField, Min(0f)] private float _hazardMagnitude = 8f;
-        [Tooltip("Tinted with the effect's colour and laid over the room's floor while the leak runs")]
-        [SerializeField] private Material _hazardMaterial;
 
         public RoomShutter ShutterPrefab => _shutterPrefab;
         public GameObject  RewardPrefab  => _rewardPrefab;
@@ -173,6 +171,5 @@ namespace CGD.Level
         public StatusEffect[] HazardEffects   => _hazardEffects;
         public float          HazardTick      => _hazardTick;
         public float          HazardMagnitude => _hazardMagnitude;
-        public Material       HazardMaterial  => _hazardMaterial;
     }
 }

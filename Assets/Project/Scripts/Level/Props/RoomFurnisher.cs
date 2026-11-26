@@ -106,6 +106,7 @@ namespace CGD.Level
                 if (side != null && side.Dressing != null) planner.Add(side.Dressing.Props, zones: floor);
                 AddFoothold(planner, room, structure, rule, style, swaps, floor);
                 AddRoomTypeDressing(planner, room, structure, rule, style, swaps, floor);
+                if (_settings.GapDressing != null) planner.Add(_settings.GapDressing.Props, zones: floor);
             }
             return planner;
         }

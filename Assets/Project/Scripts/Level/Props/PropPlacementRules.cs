@@ -108,6 +108,7 @@ namespace CGD.Level
                     if (zones != null && !zones.Contains(_structure.ZoneOf(tile))) return false;
                     if (placement.Zone == PropZone.Largest && _structure.ZoneOf(tile) != _mainZone) return false;
                     if (placement.Zone == PropZone.Others  && _structure.ZoneOf(tile) == _mainZone) return false;
+                    if (placement.Zone == PropZone.Raised  && _structure.LevelOf(tile) <= 0) return false;
                     if (!RoomFlowPlanner.InBand(_structure, tile, placement.Band)) return false;
                     if (_structure.Has(tile, placement.On)) matchesOn = true;
 
@@ -180,7 +181,17 @@ namespace CGD.Level
             foreach (RectInt other in own)
                 if (TileDistance(rect, other) <= placement.Spacing) return false;
 
+            if (placement.MinEmpty > 0 && !IsBare(rect, placement.MinEmpty)) return false;
             return placement.Decor || placement.Clearance == 0 || ClearanceIsOpen(candidate, placement.Clearance);
+        }
+
+        // Whether no prop or pillar stands within `reach` tiles round a rectangle.
+        private bool IsBare(RectInt rect, int reach)
+        {
+            for (int y = rect.yMin - reach; y < rect.yMax + reach; y++)
+                for (int x = rect.xMin - reach; x < rect.xMax + reach; x++)
+                    if (_structure.Has(new Vector2Int(x, y), RoomTileTags.Prop | RoomTileTags.Structure)) return false;
+            return true;
         }
 
         // Whether a barrier-like prop would face the way its sightline runs.

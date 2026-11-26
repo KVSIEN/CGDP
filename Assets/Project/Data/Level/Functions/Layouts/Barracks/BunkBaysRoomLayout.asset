@@ -24,6 +24,7 @@ MonoBehaviour:
     Bias: 0
   _structure:
   - {fileID: 11400000, guid: 135aff73d97f493b931cc0928b9f9aa3, type: 2}
+  - {fileID: 11400000, guid: 6a96b51e9d7b4db09c1dae90ce3a44b9, type: 2}
   _props:
   - Prefabs:
     - {fileID: 1591441430198938903, guid: 62030a090092d377345b1bba6e3039c1, type: 3}
@@ -109,7 +110,7 @@ MonoBehaviour:
       Offset: {x: -0.37, y: 0}
       Yaw: 90
       Chance: 0.7
-    Key: 
+    Key: Table
     Near: 
     NearDistance: 2
     Grow: {x: 0, y: 0}

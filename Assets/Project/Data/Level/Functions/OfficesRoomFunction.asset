@@ -68,6 +68,123 @@ MonoBehaviour:
     Grow: {x: 0, y: 0}
     Stretch: 0
     MinRoomTiles: 0
+  - Prefabs:
+    - {fileID: 8100000000000014001, guid: 3974a662cdf34089b694cff1832d7ed4, type: 3}
+    Count:
+      Min: 2
+      Max: 4
+      Bias: 0
+    ScaleByRoomSize: 1
+    Footprint: {x: 1, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 1
+    Spacing: 1
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    MinEmpty: 0
+    Members:
+    - Prefabs:
+      - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}
+      Offset: {x: 0, y: 0.37}
+      Yaw: 180
+      Chance: 0.9
+    Key: 
+    Near: 
+  - Prefabs:
+    - {fileID: 6690596464837188276, guid: 75ee3fbd35214e96915a6891ac2dbb89, type: 3}
+    Count:
+      Min: 3
+      Max: 5
+      Bias: 0
+    ScaleByRoomSize: 1
+    Footprint: {x: 1, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 1
+    Spacing: 0
+    Selection: 4
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    MinEmpty: 0
+    Members: []
+    Key: 
+    Near: 
+  - Prefabs:
+    - {fileID: 8100000000000006001, guid: 97ae7a84afd448a680fd5f5622baca66, type: 3}
+    Count:
+      Min: 1
+      Max: 2
+      Bias: 0
+    ScaleByRoomSize: 1
+    Footprint: {x: 1, y: 1}
+    On: 2
+    Avoid: 124
+    Zone: 0
+    Facing: 1
+    Clearance: 0
+    Spacing: 1
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    MinEmpty: 0
+    Members: []
+    Key: 
+    Near: 
+  - Prefabs:
+    - {fileID: 938496126903206658, guid: 1a2ba1f28b034ea5a2c0436f6a57863c, type: 3}
+    Count:
+      Min: 1
+      Max: 2
+      Bias: 0
+    ScaleByRoomSize: 1
+    Footprint: {x: 1, y: 1}
+    On: 1
+    Avoid: 124
+    Zone: 0
+    Facing: 2
+    Clearance: 0
+    Spacing: 1
+    Selection: 1
+    Pile:
+      Min: 1
+      Max: 1
+      Bias: 0
+    Jitter: 0
+    Required: 0
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
+    Decor: 0
+    MinEmpty: 0
+    Members: []
+    Key: 
+    Near: 
   _layouts:
   - {fileID: 11400000, guid: 4ca00298fbba42a7a9142073a38a330f, type: 2}
   - {fileID: 11400000, guid: e3d5b3a2da944337b77f3d4535e5ad86, type: 2}

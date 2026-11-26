@@ -45,6 +45,8 @@ namespace CGD.Level
         [SerializeField, Range(0.05f, 0.5f)] private float _maxShare = 0.25f;
         [Tooltip("A railing along the open edges: nobody drops off a platform or into a sunken floor, only takes the stairs. Mounds and craters have no open edge")]
         [SerializeField] private bool _railed;
+        [Tooltip("Platform and Sunken Floor: the chance a feature that isn't always railed gets a railing anyway, so most drops are fenced and some are the open one-metre drop a real deck has. Draws a random number only when above 0")]
+        [SerializeField, Range(0f, 1f)] private float _railChance;
 
         public ElevationKind Kind => _kind;
         // Up (+1) or down (-1), and the level of the first tier.
@@ -56,16 +58,17 @@ namespace CGD.Level
         {
             if (!structure.AllowsFloor(Level)) return;
 
-            var blocks = new BlockElevationBuilder(_kind, _depth, _length, _stairs, _bridge, _railed);
+            var blocks = new BlockElevationBuilder(_kind, _depth, _length, _stairs, _bridge);
             var rounds = new RoundElevationBuilder(_kind, _radius);
             int budget = Mathf.FloorToInt(structure.Footprint.Count * _maxShare);
             int count = _count.Evaluate(random);
             for (int i = 0; i < count; i++)
             {
                 int tiers = TiersFor(structure, random);
+                bool railed = _railed || (_railChance > 0f && random.Chance(_railChance));
                 for (int attempt = 0; attempt < Attempts; attempt++)
                 {
-                    List<ElevatedArea> areas = IsRound ? rounds.Build(structure, random, tiers) : blocks.Build(structure, random, tiers);
+                    List<ElevatedArea> areas = IsRound ? rounds.Build(structure, random, tiers) : blocks.Build(structure, random, tiers, railed);
                     if (TryAdd(structure, areas, ref budget)) break;
                 }
             }

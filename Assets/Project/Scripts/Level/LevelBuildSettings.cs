@@ -134,6 +134,10 @@ namespace CGD.Level
         [SerializeField] private IsovistUse _isovistFor = IsovistUse.None;
         [Tooltip("Cover put just inside the doorway a fight room is entered by (its threshold, RoomFlowPlanner), so a player arrives at a foothold rather than in the open. A faction design may swap it like any dressing. Empty = none")]
         [SerializeField] private RoomDressing _footholdDressing;
+        [Tooltip("Placed last in every furnished room, each piece with MinEmpty set so it only goes into patches of floor the rest of the furnishing left bare: shelves and lockers on empty wall, crates and lamps in empty corners and middles. Keeps a room from being dense in one corner and blank in the next. Empty = none")]
+        [SerializeField] private RoomDressing _gapDressing;
+        [Tooltip("How much structure (walls, buildings, pillars, half walls, weighted) a room should have for its size, and what is added when it has less, so a hall is never a field of bare floor")]
+        [SerializeField] private StructureBudget _structureBudget = new();
         [Tooltip("How strongly a faction's design shows in a room, from how firmly the map's faction painter holds it: full in the core of a territory, thinner on its frontier")]
         [SerializeField] private TerritoryDepth _territoryDepth = new();
 
@@ -193,6 +197,8 @@ namespace CGD.Level
         public GameObject RailingPrefab => _railingPrefab;
         public bool UsesIsovist(IsovistUse use) => (_isovistFor & use) != 0;
         public RoomDressing FootholdDressing => _footholdDressing;
+        public RoomDressing GapDressing => _gapDressing;
+        public StructureBudget StructureBudget => _structureBudget;
         public TerritoryDepth TerritoryDepth => _territoryDepth;
 
         // The holding faction's design as this room shows it (full strength without a faction influence).
@@ -209,6 +215,9 @@ namespace CGD.Level
             _ when intoStealth    => FirstSet(StealthDoorOf(gateRoom), _stealthDoorPrefab, FactionDoorOf(gateRoom), _doorPrefab),
             _                     => FirstSet(FactionDoorOf(gateRoom), _doorPrefab),
         };
+
+        // The door hung in a doorway inside a room (an office's): the holder's door, else the plain one.
+        public GameObject InteriorDoorPrefabFor(LevelRoom room) => FirstSet(FactionDoorOf(room), _doorPrefab);
 
         private GameObject FactionDoorOf(LevelRoom room) => DesignFor(room?.Faction)?.DoorPrefab;
         private GameObject StealthDoorOf(LevelRoom room) => DesignFor(room?.Faction)?.StealthDoorPrefab;

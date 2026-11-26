@@ -28,6 +28,8 @@ namespace CGD.Level
         [Tooltip("Free floor kept all round each pavilion, in tiles")]
         [SerializeField, Min(1)] private int _margin = 1;
         [SerializeField] private PavilionPlacement _placement;
+        [Tooltip("Backs onto the room's own wall instead of standing clear of it: a back room built into the edge, not a hut in the way. Only spots touching the wall are used")]
+        [SerializeField] private bool _againstWall;
         [Tooltip("Metres; 0 = the room's full wall height. Pulled into the low or high cover band: a hut wants high (2.2+)")]
         [SerializeField, Min(0f)] private float _wallHeight = 2.6f;
 
@@ -90,12 +92,21 @@ namespace CGD.Level
                 if (!structure.IsOpen(tile) || !structure.IsFree(tile)) return false;
 
             var ring = new RectInt(rect.x - _margin, rect.y - _margin, rect.width + _margin * 2, rect.height + _margin * 2);
+            bool touchesWall = false;
             foreach (Vector2Int tile in ring.allPositionsWithin)
             {
-                if (!structure.Contains(tile) || structure.Has(tile, RoomTileTags.Structure)) return false;
+                if (!structure.Contains(tile))
+                {
+                    if (!_againstWall) return false;
+                    touchesWall = true;
+                    continue;
+                }
+                if (structure.Has(tile, RoomTileTags.Structure)) return false;
                 foreach (Vector2Int side in GridSides.All)
                     if (ring.Contains(tile + side) && structure.IsPartitioned(tile, tile + side)) return false;
             }
+
+            if (_againstWall && !touchesWall) return false;
 
             var apart = new RectInt(ring.x - 1, ring.y - 1, ring.width + 2, ring.height + 2);
             foreach (RectInt other in placed)
@@ -116,7 +127,7 @@ namespace CGD.Level
                 foreach (Vector2Int side in GridSides.All)
                 {
                     Vector2Int outside = tile + side;
-                    if (rect.Contains(outside)) continue;
+                    if (rect.Contains(outside) || !structure.Contains(outside)) continue;
                     var wall = new PartitionEdge(tile, outside, height, dividesZones: false);
                     if (wall.Tile != door.Tile || wall.Side != door.Side) walls.Add(wall);
                 }
@@ -126,7 +137,7 @@ namespace CGD.Level
             structure.Tag(door.Tile, RoomTileTags.Access);
             structure.Tag(door.Other, RoomTileTags.Access);
             BuildingBlueprintWriter.TagWalls(structure, rect);
-            structure.AddSpace(rect.min, kind.Function, kind.Name, annex: true);
+            structure.AddSpace(rect.min, kind.Function, kind.Name, annex: true, area: rect);
             return true;
         }
 

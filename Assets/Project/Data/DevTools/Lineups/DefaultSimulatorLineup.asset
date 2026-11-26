@@ -16,9 +16,7 @@ MonoBehaviour:
   - Name: Bio Herd
     Enabled: 1
     Members:
-    - Prefab: {fileID: 1000000000000000001, guid: 9e7541bee9c44d3faa589ede7ff73723, type: 3}
-      Count: 1
-    - Prefab: {fileID: 1000000000000000001, guid: e3672195dfc0463f81e4ec4640099d2e, type: 3}
+    - Prefab: {fileID: 1000000000000000001, guid: 75ff1fd9d4ba476ba0050ba25edc0f3b, type: 3}
       Count: 1
     Position: {x: -24, y: 0, z: -12}
     Facing: 0
@@ -27,9 +25,7 @@ MonoBehaviour:
   - Name: Tech Union
     Enabled: 1
     Members:
-    - Prefab: {fileID: 1000000000000000001, guid: 050ebccdc68b4c94b6cbff854402cdb2, type: 3}
-      Count: 1
-    - Prefab: {fileID: 1000000000000000001, guid: edefa7e8ed104b0180432dd541187886, type: 3}
+    - Prefab: {fileID: 1000000000000000001, guid: 7e7e2db0155b42e0a04c013d4ea42691, type: 3}
       Count: 1
     Position: {x: 0, y: 0, z: 16}
     Facing: 0
@@ -38,9 +34,7 @@ MonoBehaviour:
   - Name: Void Coven
     Enabled: 1
     Members:
-    - Prefab: {fileID: 1000000000000000001, guid: 0d35b39f81bb4954be7c1f783dfc1d96, type: 3}
-      Count: 1
-    - Prefab: {fileID: 1000000000000000001, guid: 67661e84c5374d3497f8d12ba82346e0, type: 3}
+    - Prefab: {fileID: 1000000000000000001, guid: 3490f43dcd7c4caca28414efcacda7cf, type: 3}
       Count: 1
     Position: {x: 16, y: 0, z: -18}
     Facing: 270

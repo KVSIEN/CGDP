@@ -45,7 +45,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fe4cda318e12b57468e09a8a3b0dc38b, type: 2}
   _hazardTick: 1
   _hazardMagnitude: 8
-  _hazardMaterial: {fileID: 2100000, guid: eeab0eff08d3435d98e452a61eb34004, type: 2}
   _spawnerPrefab: {fileID: 4155799211291261164, guid: b5d93e9b2cfd4b56a007111c444650f9, type: 3}
   _spawnerInterval: 8
   _spawnerBatch: 2

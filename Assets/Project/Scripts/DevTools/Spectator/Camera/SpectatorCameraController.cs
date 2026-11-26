@@ -17,7 +17,7 @@ namespace CGD.DevTools
         private const float FastMultiplier   = 3f;
         private const float ZoomStep         = 0.12f;   // share of the distance one zoom step covers
         private const float MinOverviewZoom  = 0.25f;   // × the placed distance
-        private const float MaxOverviewZoom  = 1.6f;
+        private const float MaxOverviewZoom  = 3f; 
         private const float MinFollowDistance = 3f;
         private const float MaxFollowDistance = 45f;
         private const float DefaultFollowDistance = 12f;
@@ -28,11 +28,11 @@ namespace CGD.DevTools
         private const float SnapSharpness    = 30f;    // per second, smoothing 0
         private const float GlideSharpness   = 3.5f;   // per second, smoothing 1
 
-        private readonly Vector3 _homeFocus;
+        private Vector3 _homeFocus;
         private readonly float   _homeDistance;
         private readonly float   _homeYaw;
         private readonly float   _homePitch;
-        private readonly float   _panLimit;
+        private float   _panLimit;
 
         private Vector3 _focus;
         private float   _overviewDistance;
@@ -59,6 +59,17 @@ namespace CGD.DevTools
             _homeDistance = homePosition.y > 0.1f ? homePosition.y / -forward.y : 20f;
             _homeFocus    = homePosition + forward * _homeDistance;
 
+            ShowOverview();
+            Position = _targetPosition;
+            Rotation = _targetRotation;
+        }
+
+        // Moves the overview to look at `focus`, a point on the ground, and lets it pan `radius` metres
+        // from there at least (a scene viewpoint is placed before the level it looks at exists). Snaps.
+        public void Frame(Vector3 focus, float radius)
+        {
+            _homeFocus = focus;
+            _panLimit  = Mathf.Max(_panLimit, radius);
             ShowOverview();
             Position = _targetPosition;
             Rotation = _targetRotation;

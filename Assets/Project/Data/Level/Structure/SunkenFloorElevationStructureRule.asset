@@ -36,3 +36,4 @@ MonoBehaviour:
   _bridge: 0
   _maxShare: 0.25
   _railed: 0
+  _railChance: 0.75

@@ -47,7 +47,7 @@ namespace CGD.Tests
         {
             List<Vector2Int> round = GridPathfinder.FindPath(5, 3, new Vector2Int(0, 1), new Vector2Int(4, 1), _ => true,
                                                              stepCost: tile => tile == new Vector2Int(2, 1) ? 10f : 1f);
-            Assert.That(round, Does.Not.Contain(new Vector2Int(2, 1)));
+            Assert.That(round.Contains(new Vector2Int(2, 1)), Is.False);
             Assert.That(GridPathfinder.FindPath(5, 5, Vector2Int.zero, new Vector2Int(4, 4), tile => tile.x != 2), Is.Null);
         }
 

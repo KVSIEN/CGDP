@@ -68,6 +68,9 @@ namespace CGD.Level
         [Tooltip("Only in this part of the room's flow, every tile of it: Threshold (just inside the doorway a player arrives by), Past Threshold, or Goal (the far end). A room no doorway leads back into takes every tile")]
         public RoomFlowBand Band;
 
+        [Tooltip("Only where this many tiles round it hold no prop or pillar yet: it goes into a bare patch of floor and nowhere else, so what is placed last fills the empty corners and middles a room was left with, and nothing already busy. 0 = anywhere")]
+        [Min(0)] public int MinEmpty;
+
         [Header("Groups, relations and size")]
         [Tooltip("Pieces set around each one placed, on its tiles: chairs round a card table, stools along a bar. With members, Prefabs may be left empty: then the members are the whole group")]
         public PropMember[] Members = Array.Empty<PropMember>();
@@ -132,6 +135,7 @@ namespace CGD.Level
             copy.NearRoute = 0;
             copy.OffRoute  = 0;
             copy.Band      = RoomFlowBand.Any;
+            copy.MinEmpty  = 0;
             copy.Near      = null;
             copy.Grow      = Vector2.zero;
             if (copy.Facing is PropFacing.AgainstWall or PropFacing.AcrossSightline or PropFacing.AlongRoom or PropFacing.TowardNear)
