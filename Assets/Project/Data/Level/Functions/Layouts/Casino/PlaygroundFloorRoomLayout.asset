@@ -48,13 +48,14 @@ MonoBehaviour:
       Bias: 0
     Jitter: 0
     Required: 0
-    Lattice: {x: 2, y: 2}
-    Symmetric: 1
+    Lattice: {x: 0, y: 0}
+    Symmetric: 0
     Decor: 0
     NearRoute: 0
     OffRoute: 0
     MarksRoute: 0
     Band: 0
+    Floor: 3
     Members:
     - Prefabs:
       - {fileID: 8100000000000015001, guid: 6d1ebac8c8344e2b9dbd7903edf182f0, type: 3}

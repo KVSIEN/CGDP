@@ -812,6 +812,11 @@ place recognisable at any size:
   and stretched to the footprint, so one basin fits every pool. Such a feature is part of the
   room's plan: it neither stops at nor uses up the fill share, so the furniture round it keeps
   its share.
+- **Floor level** (*Floor*: Ground, Raised, Sunken): kept to the doorways' floor, to a platform,
+  stage, mezzanine or upper terrace, or down in a pit, crater or lower terrace, every tile of
+  the piece. A room that got no such floor (the rule found no room for it, or the level's
+  settings allow no levels) puts those pieces anywhere instead, so it keeps its furniture.
+  The Playground Floor's card tables stand in its pit and the Sunken Lounge's sofas in its well.
 - **Pieces for big rooms** (*Min Room Tiles*): left out of a smaller room (or Breach side). That
   is not reported as a shortfall.
 

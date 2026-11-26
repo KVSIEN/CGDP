@@ -22,6 +22,8 @@ namespace CGD.Level
         private readonly RouteMap _routes;
         // What each keyed placement has put down so far (RoomPropPlacement.Key), for Near.
         private readonly IReadOnlyDictionary<string, List<RectInt>> _keyed;
+        // Whether the room has floor above and below the doorways' level, for Floor.
+        private readonly bool _hasRaised, _hasSunken;
 
         public PropPlacementRules(RoomStructure structure, Vector2 anchor, SightlineMap sight, RouteMap routes,
                                   IReadOnlyDictionary<string, List<RectInt>> keyed)
@@ -34,6 +36,12 @@ namespace CGD.Level
             _routes        = routes;
             _mainZone      = structure.LargestZone;
             _latticeOrigin = new Vector2Int(Mathf.FloorToInt(anchor.x), Mathf.FloorToInt(anchor.y));
+            foreach (Vector2Int tile in structure.Footprint.Tiles)
+            {
+                int level = structure.LevelOf(tile);
+                _hasRaised |= level > 0;
+                _hasSunken |= level < 0;
+            }
         }
 
         internal static Vector2Int FootprintOf(RoomPropPlacement placement) =>
@@ -109,6 +117,7 @@ namespace CGD.Level
                     if (placement.Zone == PropZone.Largest && _structure.ZoneOf(tile) != _mainZone) return false;
                     if (placement.Zone == PropZone.Others  && _structure.ZoneOf(tile) == _mainZone) return false;
                     if (!RoomFlowPlanner.InBand(_structure, tile, placement.Band)) return false;
+                    if (!OnFloor(tile, placement.Floor)) return false;
                     if (_structure.Has(tile, placement.On)) matchesOn = true;
 
                     // A prop stands on one piece of floor: no wall through it, and all of it on one level.
@@ -136,6 +145,21 @@ namespace CGD.Level
                 default:
                     return true;
             }
+        }
+
+        // Floor is kept to where the room has that floor: in a room that got no platform or pit,
+        // its pieces go on the ground floor like any others, so the room keeps its furniture.
+        private bool OnFloor(Vector2Int tile, PropFloor floor)
+        {
+            if ((floor == PropFloor.Raised && !_hasRaised) || (floor == PropFloor.Sunken && !_hasSunken)) return true;
+            int level = _structure.LevelOf(tile);
+            return floor switch
+            {
+                PropFloor.Ground => level == 0,
+                PropFloor.Raised => level > 0,
+                PropFloor.Sunken => level < 0,
+                _                => true,
+            };
         }
 
         // The nearest of what the placements keyed `key` have put down, within `reach` steps.

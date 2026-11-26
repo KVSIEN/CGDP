@@ -67,6 +67,8 @@ namespace CGD.Level
         public bool MarksRoute;
         [Tooltip("Only in this part of the room's flow, every tile of it: Threshold (just inside the doorway a player arrives by), Past Threshold, or Goal (the far end). A room no doorway leads back into takes every tile")]
         public RoomFlowBand Band;
+        [Tooltip("Only on floor at this level, every tile of it: Ground (the doorways' level), Raised (a platform, stage, mezzanine or upper terrace) or Sunken (a pit, crater or lower terrace). In a room that got no such floor (no platform or pit was built), anywhere, so the room keeps its furniture")]
+        public PropFloor Floor;
 
         [Header("Groups, relations and size")]
         [Tooltip("Pieces set around each one placed, on its tiles: chairs round a card table, stools along a bar. With members, Prefabs may be left empty: then the members are the whole group")]
@@ -118,7 +120,7 @@ namespace CGD.Level
         }
 
         // The same placement with its picky rules dropped, to find any spot at all. Level 1 gives
-        // up where (tags, zone, routes, flow band, what it stands near), which way and growing
+        // up where (tags, zone, routes, flow band, floor level, what it stands near), which way and growing
         // with the room; level 2 also the floor in front.
         public RoomPropPlacement Relaxed(int level)
         {
@@ -132,6 +134,7 @@ namespace CGD.Level
             copy.NearRoute = 0;
             copy.OffRoute  = 0;
             copy.Band      = RoomFlowBand.Any;
+            copy.Floor     = PropFloor.Any;
             copy.Near      = null;
             copy.Grow      = Vector2.zero;
             if (copy.Facing is PropFacing.AgainstWall or PropFacing.AcrossSightline or PropFacing.AlongRoom or PropFacing.TowardNear)

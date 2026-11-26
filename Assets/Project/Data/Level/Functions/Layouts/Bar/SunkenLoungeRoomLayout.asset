@@ -111,6 +111,7 @@ MonoBehaviour:
     OffRoute: 0
     MarksRoute: 0
     Band: 0
+    Floor: 3
     Members:
     - Prefabs:
       - {fileID: 2235404494973605514, guid: 80816d6048be4ada9986e1a0b9673fa7, type: 3}
@@ -153,6 +154,7 @@ MonoBehaviour:
     OffRoute: 0
     MarksRoute: 0
     Band: 0
+    Floor: 3
     Members: []
     Key: 
     Near: 
