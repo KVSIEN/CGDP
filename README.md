@@ -106,7 +106,7 @@ Assets/
                             Locks/ — ConditionLock (multi-condition door locks), LockProgress (rule), LockTerminal
       Items/                item definitions, inventory, equipment, quality rolls, stats;
                             Catalog/ — ItemCatalog (stable item ids); Saving/ — InventoryRecord, GearRecord, StackRecord
-      Level/                map graph → level: LevelBuilder (scene entry point), LevelBuildSettings, LevelExit,
+      Level/                map graph → level: LevelBuilder (scene entry point), Sources/ (where its graph comes from: LevelSource — a saved graph, a generated map, the gallery, the room generator), LevelSeeds (the seed branches every part and the editor previews draw from), LevelBuildSettings, LevelExit,
                             RoomLabel (room names), RoomArrivalAnnouncer;
                             Layout/ — the level as tiles: LevelLayoutBuilder, RoomPlacer (cells, multi-cell rooms), CorridorRouter,
                             DirectRoomAligner, LevelLayout/LevelRoom/LevelDoorway, LevelWallPlan, LevelBlueprint (floor-plan drawing);
