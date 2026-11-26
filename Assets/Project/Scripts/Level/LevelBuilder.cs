@@ -84,6 +84,8 @@ namespace CGD.Level
         private readonly GeneratedAssets _assets = new();
         // The run modifiers the map was generated with (a MapGraphAsset's are recovered from its seed).
         public IReadOnlyList<MapRunModifier> Modifiers { get; private set; } = Array.Empty<MapRunModifier>();
+        // How much the run's warnings add to the level's loot.
+        private float LootLuck => new MapRunTuning(Modifiers).LootLuck;
 
         private void Awake()
         {
@@ -138,7 +140,7 @@ namespace CGD.Level
             populator.SpawnEnemies();
             populator.SpawnFauna();
             new RoomEncounterBuilder(_encounters, Layout, Graph, transform, populator, _player, _worldMap,
-                                     LevelSeeds.Encounters(Seed), new MapRunTuning(Modifiers).LootLuck).Build();
+                                     LevelSeeds.Encounters(Seed), LootLuck).Build();
 
             StartObjectives(objectives, populator, geometry);
             PlacePlayer(populator);
@@ -153,7 +155,7 @@ namespace CGD.Level
         // The dev console's /overview, wherever the player carries one: hides or shows the room labels and outlines.
         private void AddOverviewCommand(GameObject overview)
         {
-            if (overview == null || _player == null || !_player.TryGetComponent(out DevCommands commands)) return;
+            if (overview == null || !TryGetConsole(out DevCommands commands)) return;
             commands.Console.Register("overview", "", "Hide or show the room type outlines and labels above every room",
                 _ =>
                 {
@@ -179,7 +181,7 @@ namespace CGD.Level
             var culler = gameObject.AddComponent<RoomCuller>();
             culler.Begin(Layout, transform, _cullingCamera, _player, populator.RoomObjects);
             culler.enabled = _cullHiddenRooms;
-            if (_player == null || !_player.TryGetComponent(out DevCommands commands)) return;
+            if (!TryGetConsole(out DevCommands commands)) return;
             commands.Console.Register("cull", "", "Switch drawing only the rooms the camera can see into on or off",
                 _ =>
                 {
@@ -188,10 +190,17 @@ namespace CGD.Level
                 });
         }
 
+        // The dev console the level's commands go on: the player's, when it carries one.
+        private bool TryGetConsole(out DevCommands commands)
+        {
+            commands = null;
+            return _player != null && _player.TryGetComponent(out commands);
+        }
+
         // The dev console's /room, wherever the player carries one.
         private void AddRoomTravel(RoomPopulator populator)
         {
-            if (_player == null || !_player.TryGetComponent(out DevCommands commands) || !_player.TryGetComponent(out PlayerMovement movement)) return;
+            if (!TryGetConsole(out DevCommands commands) || !_player.TryGetComponent(out PlayerMovement movement)) return;
             new RoomTravelCommand(Layout, transform, movement, populator.RoomCenter).Register(commands.Console);
         }
 
@@ -242,7 +251,7 @@ namespace CGD.Level
 
             var runner = gameObject.AddComponent<MapObjectiveRunner>();
             runner.Begin(objectives, Layout.Rooms, _objectives, populator, _player.GetComponent<QuestTracker>(), bossLocks,
-                         new MapRunTuning(Modifiers).LootLuck, LevelSeeds.ObjectiveRewards(Seed));
+                         LootLuck, LevelSeeds.ObjectiveRewards(Seed));
         }
 
         // In Start, not Awake: the HUD subscribes to FeedbackBus in its OnEnable, after this
@@ -262,7 +271,7 @@ namespace CGD.Level
         // centrepieces placed under this builder.
         private void ApplyLootLuck()
         {
-            float luck = new MapRunTuning(Modifiers).LootLuck;
+            float luck = LootLuck;
             if (luck <= 0f) return;
 
             foreach (LootDropper dropper in GetComponentsInChildren<LootDropper>(true))
