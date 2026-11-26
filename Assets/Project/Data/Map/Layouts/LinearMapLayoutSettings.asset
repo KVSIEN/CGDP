@@ -65,4 +65,4 @@ MonoBehaviour:
       Min: 2
       Max: 2
       Bias: 0
-  _directDoorChance: 0.4
+  _directDoorChance: 1

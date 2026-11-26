@@ -1101,6 +1101,27 @@ and pairs of pairs fit. A moved group keeps a hallway's width (3 tiles) from eve
 the one it joins, so the hallways still to be routed have room to pass. The ready-made map
 layouts' *Direct Door Chance* went from 0.2–0.3 to 0.45–0.55, and Linear, which had none, to 0.4.
 
+**Direct by default.** Every ready-made layout's *Direct Door Chance* is now 1: rooms open into
+each other as standard, and a hallway is left only where it does a job — a gate, a shortcut or
+a one-way link (they always keep theirs), a link between rooms that aren't grid neighbours, and a
+pair that can't be fitted (shapes whose doorways can't face each other within a cell's shift, or
+a neighbour in the way; the build warning says which). Measured outside Unity on 600 generated
+grid maps of about 20 rooms, with the real `DirectRoomAligner` and `CorridorRouter`, rectangle
+and L-shaped rooms and two-cell halls:
+
+| Direct Door Chance | Fitted direct doors | Fell back to a hallway | Hallways per map | Average hallway |
+|---|---|---|---|---|
+| 0.5 (before) | 8.4 | 0.6 | 12.4 of 20.7 links | 11.6 tiles |
+| 1 (now) | 14.5 | 3.5 | 6.2 of 20.7 links | 17 tiles |
+
+The hallways that are left are longer because they go round packed groups of rooms. Packing
+can also wall in pockets of floor, and the one doorway picked per side may open into one: about 1
+map in 25 (1 in 100 before) had a link no corridor reached. The builder now tries every free
+doorway of both rooms (nearest first, up to 12 each) before giving up, which joined all of them;
+layouts that routed before route exactly as they did. Letting groups shift further (1.5 cells)
+fits more pairs (13% fall back) but brought unroutable links back at 2 cells, so the shift stays
+at one cell. Next: give the remaining hallways something to do (sightlines, cover, a door to hold).
+
 ### Next
 
 - Many wall placements still use *Spread* along the walls. A lattice on *Edge* placements gives
