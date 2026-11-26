@@ -35,7 +35,7 @@ MonoBehaviour:
   _structure: []
   _props:
   - Prefabs:
-    - {fileID: 938496126903206658, guid: 1a2ba1f28b034ea5a2c0436f6a57863c, type: 3}
+    - {fileID: 826127071012954766, guid: f1e3cda018bc493fb5a9c9cbd4c9e34a, type: 3}
     Count:
       Min: 2
       Max: 4
