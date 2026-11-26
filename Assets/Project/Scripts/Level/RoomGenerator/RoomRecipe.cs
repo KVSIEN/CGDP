@@ -30,6 +30,9 @@ namespace CGD.Level
         public bool DoorSouth { get; set; } = true;
         public bool DoorWest { get; set; }
 
+        // The layout builder for the room: its floor levels held to the recipe's.
+        public LevelLayoutBuilder LayoutBuilder(LevelBuildSettings settings) => new(settings, LowestLevel, HighestLevel);
+
         public int DoorCount => (DoorNorth ? 1 : 0) + (DoorEast ? 1 : 0) + (DoorSouth ? 1 : 0) + (DoorWest ? 1 : 0);
     }
 }

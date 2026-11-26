@@ -12,7 +12,8 @@ namespace CGD.Editor
     //     Only the room is furnished.
     //   - MapRoom: the whole saved graph laid out with its own seed, as LevelBuilder does when
     //     its seed is left empty, then the chosen node's room.
-    // Furnishing uses LevelBuilder's seed layers (seed → "contents" → RoomFurnisher).
+    // Furnishing uses LevelBuilder's seed layers (LevelSeeds.Contents → RoomFurnisher), and a
+    // recipe's floor levels limit the room as the room generator scene's do (RoomRecipe.LayoutBuilder).
     public static class RoomSampleBuilder
     {
         private const int RoomId = RoomRecipeGraph.RoomId;
@@ -28,9 +29,9 @@ namespace CGD.Editor
 
         private static RoomSample BuildRecipe(RoomLabRecipe recipe, string seedText)
         {
-            MapGraph graph = RoomRecipeGraph.Build(recipe.ToRoomRecipe());
+            RoomRecipe room = recipe.ToRoomRecipe();
             Seed seed = Seed.Parse(seedText);
-            LevelLayout layout = new LevelLayoutBuilder(recipe.BuildSettings).Build(graph, Vector2.one, seed, recipe.Content);
+            LevelLayout layout = room.LayoutBuilder(recipe.BuildSettings).Build(RoomRecipeGraph.Build(room), Vector2.one, seed, recipe.Content);
             return Finish(layout, RoomId, recipe.BuildSettings, seed, seedText, recipe.DoorCount);
         }
 
@@ -51,7 +52,7 @@ namespace CGD.Editor
             if (!layout.Rooms.TryGetValue(roomId, out LevelRoom room) || room.Structure == null)
                 return new RoomSample(layout.Warnings.Count > 0 ? layout.Warnings[0] : "The room could not be laid out.");
 
-            Seed contents = seed.Derive("contents");
+            Seed contents = LevelSeeds.Contents(seed);
             RoomFurnishing furnishing = new RoomFurnisher(settings, contents).Furnish(room);
             // As RoomPopulator does, but without the keys and terminals that may take a tile first.
             int count = RoomEnemyPlanner.CountFor(settings.RuleFor(room.Node.Type), room);

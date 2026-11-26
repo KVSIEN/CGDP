@@ -40,6 +40,18 @@ namespace CGD.Editor
             return EditorGUI.EndChangeCheck();
         }
 
+        // As the room generator's Inspector: within the build settings' levels.
+        private static void DrawLevels(RoomLabRecipe recipe)
+        {
+            LevelBuildSettings settings = recipe.BuildSettings;
+            int lowest = settings != null ? settings.LowestLevel : RoomElevation.Lowest;
+            int highest = settings != null ? settings.HighestLevel : RoomElevation.Highest;
+            recipe.LowestLevel = EditorGUILayout.IntSlider(new GUIContent("Lowest level", "How far the floor may sink below the doorways' level (0): pits, craters, lower terraces"),
+                                                           Mathf.Clamp(recipe.LowestLevel, lowest, 0), lowest, 0);
+            recipe.HighestLevel = EditorGUILayout.IntSlider(new GUIContent("Highest level", "How far the floor may rise above the doorways' level (0): platforms, mezzanines, mounds"),
+                                                            Mathf.Clamp(recipe.HighestLevel, 0, highest), 0, highest);
+        }
+
         private void DrawRecipe(RoomLabRecipe recipe)
         {
             EditorGUILayout.LabelField("Room", EditorStyles.boldLabel);
@@ -51,6 +63,7 @@ namespace CGD.Editor
             DrawLayout(recipe);
             recipe.Tier = EditorGUILayout.IntSlider(new GUIContent("Tier", "1 ordinary – 3 toughest"), recipe.Tier, 1, 3);
             recipe.Intensity = EditorGUILayout.Slider(new GUIContent("Intensity", "0 calm – 1 peak: how many enemies"), recipe.Intensity, 0f, 1f);
+            DrawLevels(recipe);
 
             EditorGUILayout.Space(6f);
             EditorGUILayout.LabelField("Faction", EditorStyles.boldLabel);

@@ -35,6 +35,9 @@ namespace CGD.Editor
         public int Section = MapNode.NoSection;
         [Range(1, 3)] public int Tier = 1;
         [Range(0f, 1f)] public float Intensity = 0.5f;
+        [Tooltip("The floor levels the room may be sunk and raised to (0 = the doorways' floor), within the build settings' own: 0 and 0 builds it flat")]
+        public int LowestLevel = RoomElevation.Lowest;
+        public int HighestLevel = RoomElevation.Highest;
         public bool DoorNorth = true, DoorEast = true, DoorSouth = true, DoorWest;
 
         // --- Map room -------------------------------------------------------------------
@@ -58,6 +61,8 @@ namespace CGD.Editor
             Section       = Section,
             Tier          = Tier,
             Intensity     = Intensity,
+            LowestLevel   = LowestLevel,
+            HighestLevel  = HighestLevel,
             DoorNorth     = DoorNorth,
             DoorEast      = DoorEast,
             DoorSouth     = DoorSouth,

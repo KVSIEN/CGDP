@@ -108,14 +108,14 @@ namespace CGD.Level
 
             LevelLayoutBuilder layoutBuilder = _roomGenerator != null ? _roomGenerator.LayoutBuilder(_settings) : new LevelLayoutBuilder(_settings);
             Layout = layoutBuilder.Build(Graph, nodeSpacing, Seed, content);
-            var populator = new RoomPopulator(_settings, Layout, transform, Seed.Derive("contents"));
+            var populator = new RoomPopulator(_settings, Layout, transform, LevelSeeds.Contents(Seed));
             List<PlannedObjective> objectives = PlanObjectives(populator);
 
             // Furnished first, so the overgrowth leaves the furniture's floor bare; both before the
             // geometry, which builds the overgrowth with the floor.
             populator.FurnishRooms();
             OvergrowthSource overgrowth = _roomGenerator != null ? _roomGenerator.Overgrowth(_settings) : OvergrowthSource.FromFactions(_settings);
-            new OvergrowthPlanner(Layout.TileSize).PlanLevel(Layout, overgrowth, Seed.Derive("overgrowth"));
+            new OvergrowthPlanner(Layout.TileSize).PlanLevel(Layout, overgrowth, LevelSeeds.Overgrowth(Seed));
 
             var geometry = new LevelGeometryBuilder(_settings, _assets);
             LockBossRoom(geometry, objectives);
@@ -138,7 +138,7 @@ namespace CGD.Level
             populator.SpawnEnemies();
             populator.SpawnFauna();
             new RoomEncounterBuilder(_encounters, Layout, Graph, transform, populator, _player, _worldMap,
-                                     Seed.Derive("encounters"), new MapRunTuning(Modifiers).LootLuck).Build();
+                                     LevelSeeds.Encounters(Seed), new MapRunTuning(Modifiers).LootLuck).Build();
 
             StartObjectives(objectives, populator, geometry);
             PlacePlayer(populator);
@@ -204,7 +204,7 @@ namespace CGD.Level
             var none = new List<PlannedObjective>();
             if (_objectives == null || _player == null || !_player.TryGetComponent(out QuestTracker _)) return none;
 
-            RandomStream random = Seed.Derive("objectives").Stream();
+            RandomStream random = LevelSeeds.Objectives(Seed).Stream();
             var planner = new MapObjectivePlanner(Graph, random,
                 node => Layout.Rooms.TryGetValue(node.Id, out LevelRoom room) && populator.WillHaveEnemies(room));
             return planner.Plan(_objectives.Templates, _objectives.MainCount.Evaluate(random), _objectives.SideCount.Evaluate(random));
@@ -242,7 +242,7 @@ namespace CGD.Level
 
             var runner = gameObject.AddComponent<MapObjectiveRunner>();
             runner.Begin(objectives, Layout.Rooms, _objectives, populator, _player.GetComponent<QuestTracker>(), bossLocks,
-                         new MapRunTuning(Modifiers).LootLuck, Seed.Derive("objective rewards"));
+                         new MapRunTuning(Modifiers).LootLuck, LevelSeeds.ObjectiveRewards(Seed));
         }
 
         // In Start, not Awake: the HUD subscribes to FeedbackBus in its OnEnable, after this
@@ -298,7 +298,7 @@ namespace CGD.Level
             content     = _generation != null ? _generation.Content : null;
             if (_generation == null || !_generation.CanGenerate) return null;
 
-            MapGenerationResult result = new MapGenerator(_generation).Generate(Seed.Derive("map"));
+            MapGenerationResult result = new MapGenerator(_generation).Generate(LevelSeeds.Map(Seed));
             Modifiers = result.Modifiers;
             return result.Graph;
         }

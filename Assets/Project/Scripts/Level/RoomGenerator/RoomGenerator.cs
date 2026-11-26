@@ -50,7 +50,7 @@ namespace CGD.Level
         public LevelLayoutBuilder LayoutBuilder(LevelBuildSettings settings)
         {
             RoomRecipe recipe = Recipe ?? _room.ToRecipe(Seed, settings, _content);
-            return new LevelLayoutBuilder(settings, recipe.LowestLevel, recipe.HighestLevel);
+            return recipe.LayoutBuilder(settings);
         }
 
         // Where the room's overgrowth comes from: its factions', none, or the profile chosen.
