@@ -127,6 +127,8 @@ namespace CGD.Level
         {
             if (placement == null || !placement.IsUsed) return 0;
             if (zones != null && zones.Count == 0) return 0;
+            // A room with no diagonal walls has no halves to fill: not a shortfall.
+            if (placement.HalfTile && _structure.Diagonals.Count == 0) return 0;
             // A piece for bigger rooms is left out of a small one: not a shortfall.
             if (placement.MinRoomTiles > 0 && FloorTiles(zones) < placement.MinRoomTiles) return 0;
 
@@ -140,7 +142,7 @@ namespace CGD.Level
                 if (count <= 0) continue;
 
                 asked += count;
-                placed += PlaceIn(placement, count, area, ref hitFillCap, ref relaxed);
+                placed += placement.HalfTile ? PlaceInHalves(placement, count, area) : PlaceIn(placement, count, area, ref hitFillCap, ref relaxed);
             }
             if (asked > 0) _outcomes.Add(new PropPlacementOutcome(placement, asked, placed, hitFillCap, relaxed));
             return placed;
@@ -162,6 +164,28 @@ namespace CGD.Level
                 if (placement.Zone == PropZone.Others && zone == _structure.LargestZone) continue;
                 yield return new[] { zone };
             }
+        }
+
+        // Puts down up to `count` in the open halves of the diagonal walls' tiles (PropHalves), at
+        // random among them, each in the middle of its half facing out of the wall. They take
+        // none of the grid's floor; the room's structure keeps their heights for sight.
+        private int PlaceInHalves(RoomPropPlacement placement, int count, ICollection<int> zones)
+        {
+            if (placement.Prefabs == null || placement.Prefabs.Length == 0) return 0;
+            List<(Vector2Int tile, Vector2Int normal)> halves = PropHalves.Open(_structure, zones);
+            int placed = 0;
+            for (; placed < count && halves.Count > 0; placed++)
+            {
+                int pick = _random.Range(0, halves.Count);
+                var (tile, normal) = halves[pick];
+                halves.RemoveAt(pick);
+
+                GameObject prefab = _random.Pick(placement.Prefabs);
+                _structure.TryGetDiagonal(tile, out DiagonalWall wall);
+                _structure.TryAddHalfProp(tile, normal, PropHeights.Of(prefab));
+                _planned.Add(new PlannedProp(prefab, wall.HalfMiddle(normal), PropHalves.YawOf(normal), new RectInt(tile, Vector2Int.one), placement.Decor));
+            }
+            return placed;
         }
 
         // Puts down up to `count` in one area; a Required placement that finds no spot is

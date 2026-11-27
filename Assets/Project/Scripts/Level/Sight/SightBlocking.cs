@@ -18,7 +18,9 @@ namespace CGD.Level
     //     as the ground they climb to (and a cut corner's half wall on top);
     //   - a half wall along a ledge, RoomElevation.GuardHeight over its higher floor (a railing
     //     is seen through);
-    //   - a diagonal wall across a tile, as tall as it is built (one of no height reaches the ceiling);
+    //   - a diagonal wall across a tile, as tall as it is built (one of no height reaches the ceiling),
+    //     for a line that crosses it; a line that comes into the tile and leaves it on the same
+    //     side of the wall passes through that open half, over the prop standing in it if any;
     //   - an overpass's deck, a slab in the air: seen under from the floor beneath it and over
     //     from above, but it hides the floor under it from someone looking down across it, and
     //     its flights stand as high as the deck.
@@ -47,6 +49,8 @@ namespace CGD.Level
         private readonly Dictionary<Vector2Int, float> _cornerTops = new();
         // The slab over each tile an overpass crosses: its underside and its top.
         private readonly Dictionary<Vector2Int, (float bottom, float top)> _decks = new();
+        // The diagonal walls by tile.
+        private readonly Dictionary<Vector2Int, DiagonalWall> _diagonals = new();
 
         // `eyeHeight`: how high the eyes are above the floor (EyeHeight standing, CrouchingEyeHeight crouched).
         public SightBlocking(RoomStructure structure, float eyeHeight = EyeHeight)
@@ -66,7 +70,10 @@ namespace CGD.Level
                 _cornerTops[corner.Tile] = HighestFloorBeside(corner.Tile)
                                          + (corner.Sheer && area.GuardAcross(corner) == LedgeGuard.HalfWall ? RoomElevation.GuardHeight : 0f);
             foreach (DiagonalWall wall in structure.Diagonals)
+            {
+                _diagonals[wall.Tile] = wall;
                 if (wall.Height > 0f) _cornerTops[wall.Tile] = Level(wall.Tile) + wall.Height;
+            }
             foreach (Overpass overpass in structure.Overpasses)
             {
                 float top = RoomElevation.HeightOf(overpass.Level);
@@ -120,9 +127,10 @@ namespace CGD.Level
             float startHeight = FloorAt(from) + _eye, rise = FloorAt(to) + _eye - startHeight;
             int nx = Mathf.Abs(to.x - from.x), ny = Mathf.Abs(to.y - from.y);
             int stepX = to.x >= from.x ? 1 : -1, stepY = to.y >= from.y ? 1 : -1;
-            Vector2Int tile = from;
-            // The line's height where it came into the tile it is crossing.
+            Vector2Int tile = from, previous = from;
+            // The line's height where it came into the tile it is crossing, and whether through a corner.
             float entered = startHeight;
+            bool cornerIn = false;
             int doneX = 0, doneY = 0;
             while (doneX < nx || doneY < ny)
             {
@@ -132,7 +140,8 @@ namespace CGD.Level
                 float along = order <= 0 ? (doneX + 0.5f) / nx : (doneY + 0.5f) / ny;
                 float height = startHeight + rise * along;
                 Vector2Int next;
-                if (order == 0)
+                bool corner = order == 0;
+                if (corner)
                 {
                     next = new Vector2Int(tile.x + stepX, tile.y + stepY);
                     if (!CanCutCorner(tile, next, height)) return false;
@@ -146,13 +155,35 @@ namespace CGD.Level
                     if (acrossX) doneX++; else doneY++;
                     if (EdgeTop(tile, next) >= height) return false;
                 }
-                if (tile != from && TopOf(tile) >= height) return false;
+                if (tile != from)
+                {
+                    if (_diagonals.TryGetValue(tile, out DiagonalWall wall))
+                    {
+                        if (!PassesDiagonal(wall, previous, next, cornerIn || corner, Mathf.Min(entered, height))) return false;
+                    }
+                    else if (TopOf(tile) >= height) return false;
+                }
                 if (DeckIn(tile, entered, height)) return false;
-                if ((next == to ? FloorAt(next) : TopOf(next)) >= height) return false;
+                // A diagonal's tile is judged on the way out, once it is known which half the line took.
+                if (next == to ? FloorAt(next) >= height : !_diagonals.ContainsKey(next) && TopOf(next) >= height) return false;
+                previous = tile;
                 tile = next;
                 entered = height;
+                cornerIn = corner;
             }
             return !DeckIn(to, entered, startHeight + rise);
+        }
+
+        // Whether a line through a diagonal wall's tile, from `previous` to `next` and at least
+        // `lowest` high over it, gets past: on one side of the wall (in and out through that
+        // half's two sides) over the prop standing in the half; across it over the wall itself.
+        // A line through one of the tile's corners is taken to cross the wall.
+        private bool PassesDiagonal(DiagonalWall wall, Vector2Int previous, Vector2Int next, bool throughCorner, float lowest)
+        {
+            Vector2Int inSide = previous - wall.Tile, outSide = next - wall.Tile;
+            if (throughCorner || !wall.SameHalf(inSide, outSide)) return TopOf(wall.Tile) < lowest;
+            Vector2Int normal = wall.NormalToward(next);
+            return FloorAt(wall.Tile) + _structure.HalfPropHeight(wall.Tile, normal) < lowest;
         }
 
         // Whether the line, between two heights over a tile, passes through a deck above it.

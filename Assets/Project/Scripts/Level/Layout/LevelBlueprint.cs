@@ -63,7 +63,7 @@ namespace CGD.Level
                 canvas.Line(segment.From, segment.To, Wall);
             foreach (LevelRoom room in layout.Rooms.Values)
                 DrawPartitions(room, canvas);
-            if (props != null) DrawProps(props, canvas);
+            if (props != null) DrawProps(layout, props, canvas);
 
             foreach (LevelDoorway doorway in layout.Doorways)
                 if (doorway.HasGate && GateColor(doorway.Connection, out Color32 color))
@@ -128,7 +128,7 @@ namespace CGD.Level
         }
 
         // Props on one tile share it (a pile), so each tile is filled once; decorations are a dot.
-        private static void DrawProps(IEnumerable<PlannedProp> props, Canvas canvas)
+        private static void DrawProps(LevelLayout layout, IEnumerable<PlannedProp> props, Canvas canvas)
         {
             foreach (PlannedProp prop in props)
             {
@@ -136,6 +136,13 @@ namespace CGD.Level
                 if (prop.Decor)
                 {
                     canvas.FillDot(prop.Position, Decor);
+                    continue;
+                }
+                // One in a diagonal wall's open half: a dot beside the wall's line.
+                RoomStructure structure = layout.RoomAt(prop.Tiles.min)?.Structure;
+                if (structure != null && structure.TryGetDiagonal(prop.Tiles.min, out _))
+                {
+                    canvas.FillDot(prop.Position, Prop);
                     continue;
                 }
                 foreach (Vector2Int tile in prop.Tiles.allPositionsWithin)

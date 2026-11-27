@@ -59,6 +59,9 @@ namespace CGD.Level
         // The tiles of each connection's corridor.
         private readonly Dictionary<MapConnection, IReadOnlyList<Vector2Int>> _corridors = new();
 
+        // Every corridor's tiles, from one doorway to the other.
+        public IEnumerable<IReadOnlyList<Vector2Int>> Corridors => _corridors.Values;
+
         public IReadOnlyList<Vector2Int> CorridorOf(MapConnection connection) =>
             _corridors.TryGetValue(connection, out IReadOnlyList<Vector2Int> tiles) ? tiles : System.Array.Empty<Vector2Int>();
 

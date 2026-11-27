@@ -123,7 +123,8 @@ namespace CGD.Level
 
         // A socket needs a straight wall on both sides of it (no doorway in a corner) and must
         // open onto the space around the room, not into an enclosed courtyard, with room in
-        // front for a corridor to leave.
+        // front for a corridor to leave. An angled room (SharpDiagonals) also takes one on each
+        // step of a slanted wall (DoorSocket.Slanted).
         private void FindSockets()
         {
             HashSet<Vector2Int> outside = OutsideTiles();
@@ -135,9 +136,10 @@ namespace CGD.Level
                     if (!outside.Contains(front) || !outside.Contains(front + side)) continue;
 
                     var along = new Vector2Int(side.y, side.x);
-                    if (!IsStraightWall(tile + along, side) || !IsStraightWall(tile - along, side)) continue;
-
-                    _sockets.Add(new DoorSocket(tile, side));
+                    if (IsStraightWall(tile + along, side) && IsStraightWall(tile - along, side))
+                        _sockets.Add(new DoorSocket(tile, side));
+                    else if (SharpDiagonals && (IsSlantStep(tile, side, along) || IsSlantStep(tile, side, -along)))
+                        _sockets.Add(new DoorSocket(tile, side, slanted: true));
                 }
         }
 
@@ -147,6 +149,13 @@ namespace CGD.Level
                 if (_lookup.Contains(socket.Inside) && !_lookup.Contains(socket.Outside))
                     _sockets.Add(socket);
         }
+
+        // `tile`'s `side` is one step of a 45° staircase climbing toward `up` (along the wall): the
+        // floor steps in beyond it (nothing at tile + up, floor at tile - side + up) and out before
+        // it (floor at tile - up and tile - up + side, nothing past that), each step one tile.
+        private bool IsSlantStep(Vector2Int tile, Vector2Int side, Vector2Int up) =>
+            !_lookup.Contains(tile + up) && _lookup.Contains(tile - side + up)
+            && _lookup.Contains(tile - up) && _lookup.Contains(tile - up + side) && !_lookup.Contains(tile - up + side * 2);
 
         private bool IsStraightWall(Vector2Int neighbour, Vector2Int side) =>
             _lookup.Contains(neighbour) && !_lookup.Contains(neighbour + side);

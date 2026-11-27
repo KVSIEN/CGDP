@@ -114,6 +114,16 @@ namespace CGD.Level
         [Tooltip("Rooms at or above this intensity get a danger marker on their door signs (tier-3 rooms and the Boss always do)")]
         [SerializeField, Range(0f, 1f)] private float _dangerIntensity = 0.75f;
 
+        [Header("Floor stripes")]
+        [Tooltip("A glowing guide line down the middle of every corridor (its bends and 45° runs cut on the diagonal), and a stripe along the top of every open drop (a ledge with no railing or half wall, a cut corner's diagonal too)")]
+        [SerializeField] private bool _floorStripes;
+        [Tooltip("Copied and tinted in the colours below (emission is turned on). Empty = the floor material")]
+        [SerializeField] private Material _stripeMaterial;
+        [SerializeField] private Color _corridorStripeColor = new(0.35f, 0.75f, 1f);
+        [SerializeField] private Color _ledgeStripeColor = new(1f, 0.7f, 0.15f);
+        [Tooltip("Metres across")]
+        [SerializeField, Range(0.05f, 0.5f)] private float _stripeWidth = 0.15f;
+
         [Header("Room tiers")]
         [Tooltip("Enemy tier odds in rooms of tier 1, 2 and 3 (map node tier)")]
         [SerializeField] private EnemyTierOdds[] _enemyTierOdds = { new(0.1f, 0f), new(0.45f, 0.1f), new(0.45f, 0.45f) };
@@ -241,6 +251,11 @@ namespace CGD.Level
         public GameObject TerminalDoorPrefab => _terminalDoorPrefab != null ? _terminalDoorPrefab : _lockedDoorPrefab;
         public GameObject TerminalPrefab => _terminalPrefab;
 
+        public bool     FloorStripes        => _floorStripes;
+        public Material StripeMaterial      => _stripeMaterial != null ? _stripeMaterial : _floorMaterial;
+        public Color    CorridorStripeColor => _corridorStripeColor;
+        public Color    LedgeStripeColor    => _ledgeStripeColor;
+        public float    StripeWidth         => _stripeWidth;
         public bool     BuildDoorSigns   => _buildDoorSigns;
         public Material DoorSignMaterial => _doorSignMaterial != null ? _doorSignMaterial : _floorMaterial;
         public bool     DoorSignLabels   => _doorSignLabels;

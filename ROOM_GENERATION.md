@@ -1434,12 +1434,19 @@ rising `/` or falling `\`, full height or low). Every piece starts and ends on t
 a run of tiles a diagonal step apart is one straight 45° wall, two runs make a chevron, and a run
 meets the room's walls and other runs cleanly. Only 45°, one diagonal per tile.
 
-- **Planning (level 1).** `RoomStructure.TryAddDiagonals` makes each tile Structure through
-  `TryClaim`, so reachability, claims and the stairs rules hold unchanged; a low piece is seen
-  over (`SightBlocking`, its top at floor + height) and is low cover; the structure budget counts
-  pieces as walls or half walls. The open half-triangles either side are floor in play (geometry
-  and NavMesh) but not to the planner. Level 2 (half-tiles as walkable nodes) waits until the lost
-  floor matters.
+- **Planning.** `RoomStructure.TryAddDiagonals` makes each tile Structure through `TryClaim`,
+  so claims and the stairs rules hold unchanged; a low piece is seen over (`SightBlocking`, its
+  top at floor + height) and is low cover; the structure budget counts pieces as walls or half
+  walls.
+- **Half-tiles.** The two triangles either side of the wall are floor (named by their normal,
+  `DiagonalWall.NormalToward`). Each joins the two tiles it opens onto: reachability walks round
+  the corner through it (`CanPassHalf`, so a diagonal may close a room's only side-to-side way
+  through), and a line of sight that comes into the tile and leaves it through one half's two
+  sides passes, over whatever prop stands in it (a line crossing the wall, or through one of the
+  tile's corners, is stopped as before). A half holds one prop at most
+  (`TryAddHalfProp`, its height kept for sight); a placement with *Half Tile* puts small props
+  there, at the half's middle facing out of the wall (`PropHalves`; the Greenery kit's planters).
+  Routes, flow and posts still read whole tiles.
 - **Geometry.** A thin box along the tile's diagonal, a wall thickness longer so pieces close up;
   low ones in the low-cover material.
 - **Shapes.** `RoomShapeKind` Octagon, Diamond and Pointed Ends are measured in tiles from a
@@ -1451,7 +1458,15 @@ meets the room's walls and other runs cleanly. Only 45°, one diagonal per tile.
   in the structure budget.
 - **Props.** `PropFacing.Diagonal` turns a single-tile prop 45° off square; `AgainstDiagonal`
   stands one beside an angled wall facing straight out of it (the Greenery kit's planters).
-- **Doorways** stay on straight runs of the outer walls.
+- **Doorways in slanted walls.** An angled room (`SharpDiagonals`) also gets a socket on each
+  one-tile step of a 45° wall (`DoorSocket.Slanted`). The outline keeps that step and the steps
+  either side square (`RoomOutline`: a short run with a doorway, and its neighbours), so the wall
+  leaves the diagonal, runs round the doorway on tile edges and rejoins it: the door, gate, sign,
+  culling portal and NavMesh all stand on an ordinary tile edge. The corridor leaves by the tile
+  straight out past the doorway's (`DoorSocket.Lead`), which lies in the ring corridors keep off
+  rooms (it touches the next step's corner), so the router may use a doorway's own lead; direct
+  links never use slanted sockets. Outlines open only at the room's doorways (`LevelDoorway`), not
+  wherever a walkable tile touches the wall.
 - **Corridors.** With *Diagonal Corridor Steps* (`LevelBuildSettings`, needs bend chamfers),
   `CorridorCorners` cuts each routed bend into a staircase of tiles as long as the arms allow, up
   to that many steps back along each (the longest that fits: free tiles, touching the corridor
@@ -1468,6 +1483,11 @@ meets the room's walls and other runs cleanly. Only 45°, one diagonal per tile.
   triangular slab up to it, with the stronger guard of the two ledges meeting there across the
   diagonal (`ElevatedArea.GuardAcross`; sight reads it as high as the guard). No flight stands on it.
   The Stage and Island rules cut half the time.
+- **Floor stripes** (`FloorStripeBuilder`, *Floor Stripes* in `LevelBuildSettings`): a glowing
+  guide line down each corridor through the midpoints between its tiles, so square bends are cut
+  on the diagonal and a diagonal run is one 45° line; and a stripe on the higher floor along every
+  open drop, across a cut corner's diagonal too. Thin boxes with no collider, in a tinted,
+  emissive copy of the stripe material (`GlowingPart`, shared with door signs and the overview).
 - **Drawing.** The blueprint (level map and Room Lab plan) draws diagonal walls as lines and cut
   corners as their raised half, not as solid tiles; the Lab's elevation layer draws a cut corner's
   ledge along its diagonal.

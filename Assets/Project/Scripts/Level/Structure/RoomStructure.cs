@@ -27,6 +27,8 @@ namespace CGD.Level
         private readonly List<StructurePillar> _pillars = new();
         private readonly List<PartitionEdge> _partitions = new();
         private readonly List<DiagonalWall> _diagonals = new();
+        // Props standing in diagonal walls' open halves, by tile and the half's normal, and their heights.
+        private readonly Dictionary<(Vector2Int, Vector2Int), float> _halfProps = new();
         private readonly List<PartitionEdge> _openings = new();
         private readonly List<Vector2Int> _entrances = new();
         private readonly List<StructureSpace> _spaces = new();
@@ -118,6 +120,7 @@ namespace CGD.Level
             copy._pillars.AddRange(_pillars);
             copy._partitions.AddRange(_partitions);
             copy._diagonals.AddRange(_diagonals);
+            foreach (var (half, height) in _halfProps) copy._halfProps[half] = height;
             copy._openings.AddRange(_openings);
             copy._entrances.AddRange(_entrances);
             copy._spaces.AddRange(_spaces);
@@ -237,7 +240,8 @@ namespace CGD.Level
         }
 
         // Whether every free tile can still be walked to from the doorways if `claimed` were
-        // taken too (a room with no doorway starts from its first free tile).
+        // taken too (a room with no doorway starts from its first free tile). Walking goes side
+        // to side, and round a corner through a diagonal wall's open half (CanPassHalf).
         public bool StaysConnected(IReadOnlyList<Vector2Int> claimed)
         {
             foreach (Vector2Int entrance in _entrances)
@@ -284,6 +288,15 @@ namespace CGD.Level
                     if (reached[index] || _solid[index] || (partitioned && IsPartitioned(tile, next))) continue;
                     if (elevated && !_levels.Join(tile, next)) continue;
                     Visit(next);
+                }
+                // Round a corner through a diagonal wall's open half.
+                if (_diagonals.Count == 0) continue;
+                foreach (Vector2Int corner in GridNeighbours.Eight)
+                {
+                    Vector2Int next = tile + corner;
+                    if (!GridNeighbours.IsDiagonal(corner) || !Contains(next)) continue;
+                    int index = IndexOf(next);
+                    if (!reached[index] && !_solid[index] && CanPassHalf(tile, next)) Visit(next);
                 }
             }
             return visited == free;
@@ -344,9 +357,46 @@ namespace CGD.Level
                 if (!IsOpen(wall.Tile) || Includes(tiles, wall.Tile)) return false;
                 tiles.Add(wall.Tile);
             }
-            if (!TryClaim(tiles, RoomTileTags.Structure)) return false;
+            // Listed first, so the room is judged whole with walking round them through their halves.
             _diagonals.AddRange(walls);
+            if (TryClaim(tiles, RoomTileTags.Structure)) return true;
+            _diagonals.RemoveRange(_diagonals.Count - walls.Count, walls.Count);
+            return false;
+        }
+
+        // A prop standing in one half of a diagonal wall's tile (DiagonalWall), the half facing
+        // `normal`, `height` metres tall: one to a half. Takes no floor of the grid, which the wall
+        // already holds.
+        public bool TryAddHalfProp(Vector2Int tile, Vector2Int normal, float height)
+        {
+            if (!TryGetDiagonal(tile, out DiagonalWall wall) || wall.NormalToward(tile + DiagonalWall.SidesOf(normal).Item1) != normal) return false;
+            if (_halfProps.ContainsKey((tile, normal))) return false;
+            _halfProps[(tile, normal)] = Mathf.Max(0f, height);
             return true;
+        }
+
+        public bool HasHalfProp(Vector2Int tile, Vector2Int normal) => _halfProps.ContainsKey((tile, normal));
+
+        // How tall the prop in a half stands above the floor (0 with none).
+        public float HalfPropHeight(Vector2Int tile, Vector2Int normal) =>
+            _halfProps.TryGetValue((tile, normal), out float height) ? height : 0f;
+
+        // Whether someone walks from `from` round a corner to `to` through the open half of the
+        // diagonal wall's tile between them: `to` a diagonal step from `from`, the tile at one
+        // of the two ways round holding a diagonal whose half opens onto both, all three on one
+        // level and no inner wall across either edge.
+        public bool CanPassHalf(Vector2Int from, Vector2Int to)
+        {
+            Vector2Int step = to - from;
+            if (_diagonals.Count == 0 || Mathf.Abs(step.x) != 1 || Mathf.Abs(step.y) != 1) return false;
+            foreach (Vector2Int via in new[] { from + new Vector2Int(step.x, 0), from + new Vector2Int(0, step.y) })
+            {
+                if (!TryGetDiagonal(via, out DiagonalWall wall) || !wall.SameHalf(from - via, to - via)) continue;
+                if (LevelOf(from) != LevelOf(via) || LevelOf(to) != LevelOf(via)) continue;
+                if (IsPartitioned(from, via) || IsPartitioned(via, to)) continue;
+                return true;
+            }
+            return false;
         }
 
         // The diagonal wall across a tile, if one stands there.

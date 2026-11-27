@@ -66,6 +66,15 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void ACorridorsGuideStripeCutsItsBendsOnTheDiagonal()
+        {
+            List<Vector2Int> path = CorridorCorners.Cut(Walk(Vector2Int.zero, (Right, 8), (Up, 8)), 3, _ => true);
+            List<Vector2> line = FloorStripeBuilder.GuideLine(path);
+            Assert.That(line, Is.EqualTo(new List<Vector2> { new(0.5f, 0.5f), new(5f, 0.5f), new(8.5f, 4f), new(8.5f, 8.5f) }),
+                        "straight, one 45° run down the staircase, straight");
+        }
+
+        [Test]
         public void AStaircaseIsWalledByOneStraightDiagonalEachSide()
         {
             var settings = ScriptableObject.CreateInstance<LevelBuildSettings>();

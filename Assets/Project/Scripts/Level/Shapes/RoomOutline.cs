@@ -16,7 +16,9 @@ namespace CGD.Level
     // Angled rooms (RoomFootprint.SharpDiagonals) are traced the same way but never smoothed,
     // so their slanted edges stay straight 45° walls with sharp corners.
     // Long runs otherwise stay on the tile edges (that's where doorways sit), minus the
-    // openings `isOpening` reports.
+    // openings `isOpening` reports. A doorway on a slanted wall's step (DoorSocket.Slanted) keeps
+    // that step square, and the steps either side of it: the wall leaves the diagonal half a
+    // tile before the doorway, runs round it on the tile edges and rejoins the diagonal after.
     public static class RoomOutline
     {
         private const int LongRun = 3;
@@ -194,19 +196,44 @@ namespace CGD.Level
         private static void AddLoop(List<Run> runs, int[] cuts, Func<Vector2Int, Vector2Int, bool> isOpening, List<(Vector2, Vector2)> segments)
         {
             int count = runs.Count;
+            bool[] square = SquareRuns(runs, isOpening);
             for (int i = 0; i < count; i++)
             {
-                Run run = runs[i], next = runs[(i + 1) % count], previous = runs[(i + count - 1) % count];
-                int cutBefore = cuts[(i + count - 1) % count], cutAfter = cuts[i];
+                int n = (i + 1) % count, p = (i + count - 1) % count;
+                Run run = runs[i], next = runs[n];
+                int cutBefore = cuts[p], cutAfter = cuts[i];
 
-                float trimStart = (run.IsLong && !previous.IsLong ? 0.5f : 0f) + cutBefore;
-                float trimEnd   = (run.IsLong && !next.IsLong     ? 0.5f : 0f) + cutAfter;
-                if (run.IsLong) AddStraight(run, trimStart, trimEnd, isOpening, segments);
+                // A long run meets a diagonal half a tile in; a squared short step runs whole.
+                float trimStart = (run.IsLong && !square[p] ? 0.5f : 0f) + cutBefore;
+                float trimEnd   = (run.IsLong && !square[n] ? 0.5f : 0f) + cutAfter;
+                if (square[i]) AddStraight(run, trimStart, trimEnd, isOpening, segments);
 
-                Vector2 end   = run.IsLong  ? run.End - (Vector2)run.Dir * trimEnd : run.Mid;
-                Vector2 start = next.IsLong ? next.Start + (Vector2)next.Dir * ((!run.IsLong ? 0.5f : 0f) + cutAfter) : next.Mid;
+                Vector2 end   = square[i] ? run.End - (Vector2)run.Dir * trimEnd : run.Mid;
+                Vector2 start = square[n] ? next.Start + (Vector2)next.Dir * ((next.IsLong && !square[i] ? 0.5f : 0f) + cutAfter) : next.Mid;
                 if (end != start) segments.Add((end, start));
             }
+        }
+
+        // Runs that keep to the tile edges: long ones, and a short step with a doorway on it
+        // together with the steps either side of it.
+        private static bool[] SquareRuns(List<Run> runs, Func<Vector2Int, Vector2Int, bool> isOpening)
+        {
+            int count = runs.Count;
+            var square = new bool[count];
+            for (int i = 0; i < count; i++)
+            {
+                square[i] |= runs[i].IsLong;
+                if (runs[i].IsLong || !HasOpening(runs[i], isOpening)) continue;
+                square[i] = square[(i + 1) % count] = square[(i + count - 1) % count] = true;
+            }
+            return square;
+        }
+
+        private static bool HasOpening(Run run, Func<Vector2Int, Vector2Int, bool> isOpening)
+        {
+            foreach (Edge edge in run.Edges)
+                if (isOpening(edge.Tile, edge.Side)) return true;
+            return false;
         }
 
         // A curve's diagonals come out one stair-step at a time; joins pieces that continue

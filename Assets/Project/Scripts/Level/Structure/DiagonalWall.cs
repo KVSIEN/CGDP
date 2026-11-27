@@ -9,9 +9,11 @@ namespace CGD.Level
     // one straight 45° wall, two runs meeting at a corner make a chevron, and a run ending on the
     // room's wall meets it cleanly: diagonals always line up with each other and with the grid.
     //
-    // To the room's planning the tile is solid (RoomStructure.TryAddDiagonals): nothing walks,
-    // stands or is built on it, and it is seen over only when it is low. The floor either side of
-    // the wall line is the geometry's and, in play, the NavMesh's.
+    // To the room's planning the tile is solid (RoomStructure.TryAddDiagonals): nothing is built
+    // on it and its floor is claimed. The two halves either side of the wall are floor all the same
+    // (half-tiles): each joins the two neighbours on its sides, for walking round the corner
+    // (RoomStructure.StaysConnected) and for sight (SightBlocking), and holds one small prop at
+    // most (RoomStructure.TryAddHalfProp). A half is named by its normal (NormalToward).
     public readonly struct DiagonalWall
     {
         public DiagonalWall(Vector2Int tile, bool rising, float height = 0f)
@@ -38,6 +40,16 @@ namespace CGD.Level
             Vector2Int normal = Rising ? new Vector2Int(1, -1) : new Vector2Int(1, 1);
             return side.x * normal.x + side.y * normal.y > 0 ? normal : -normal;
         }
+
+        // Whether the sides `a` and `b` of the tile (unit steps) open onto the same half.
+        public bool SameHalf(Vector2Int a, Vector2Int b) => NormalToward(Tile + a) == NormalToward(Tile + b);
+
+        // The two sides of the tile the half facing `normal` opens onto.
+        public static (Vector2Int, Vector2Int) SidesOf(Vector2Int normal) => (new Vector2Int(normal.x, 0), new Vector2Int(0, normal.y));
+
+        // The middle of the half facing `normal` (its centroid), in tile units: a sixth of the
+        // normal out from the tile's middle.
+        public Vector2 HalfMiddle(Vector2Int normal) => (Vector2)Tile + Vector2.one * 0.5f + (Vector2)normal / 6f;
 
         // `length` pieces from `start`, each a diagonal `step` (such as (1, 1)) on from the last,
         // which join into one straight 45° wall.

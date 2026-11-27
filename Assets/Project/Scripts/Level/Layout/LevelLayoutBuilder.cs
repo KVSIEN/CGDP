@@ -129,7 +129,12 @@ namespace CGD.Level
             {
                 if (!room.Footprint.CurvedWalls && room.Chamfer <= 0) continue;
 
-                RoomOutlinePlan outline = RoomOutline.Plan(room.Footprint, (tile, side) => layout.IsWalkable(tile + side),
+                // Only its doorways open the wall: a corridor leaving a slanted wall's doorway also
+                // passes the step beside it, which stays walled.
+                var doorways = new HashSet<(Vector2Int, Vector2Int)>();
+                foreach (LevelDoorway doorway in layout.Doorways)
+                    if (doorway.Room == room) doorways.Add((doorway.RoomTile, doorway.Outward));
+                RoomOutlinePlan outline = RoomOutline.Plan(room.Footprint, (tile, side) => doorways.Contains((tile, side)),
                                                             room.Chamfer, RoomOutline.SmoothingFor(room.Footprint.Bounds, _settings.CurveSmoothing));
                 room.AttachOutline(outline);
             }
@@ -199,9 +204,10 @@ namespace CGD.Level
 
                 System.Func<Vector2Int, bool> clear    = t => !blocked.Contains(t) && !reserved.Contains(t);
                 System.Func<Vector2Int, bool> crossing = t => !blocked.Contains(t);
-                if (!TryRoute(router, doorsA, doorsB, clear, out Route route) && !TryRouteAround(router, a, b, usedDoors, clear, out route))
+                System.Func<Vector2Int, bool> leadFree = t => !reserved.Contains(t) && layout.RoomAt(t) == null;
+                if (!TryRoute(router, doorsA, doorsB, clear, leadFree, out Route route) && !TryRouteAround(router, a, b, usedDoors, clear, leadFree, out route))
                 {
-                    if (!TryRoute(router, doorsA, doorsB, crossing, out route) && !TryRouteAround(router, a, b, usedDoors, crossing, out route))
+                    if (!TryRoute(router, doorsA, doorsB, crossing, leadFree, out route) && !TryRouteAround(router, a, b, usedDoors, crossing, leadFree, out route))
                     {
                         layout.Warnings.Add($"No corridor route between {Describe(a)} and {Describe(b)}.");
                         continue;
@@ -240,9 +246,17 @@ namespace CGD.Level
 
         private readonly struct Door
         {
-            public Door(Vector2Int inside, Vector2Int outside) { Inside = inside; Outside = outside; }
+            public Door(DoorSocket socket)
+            {
+                Inside  = socket.Inside;
+                Outside = socket.Outside;
+                Lead    = socket.Slanted ? socket.Lead : null;
+            }
             public Vector2Int Inside  { get; }
             public Vector2Int Outside { get; }
+            // A doorway in a slanted wall: the tile its corridor must leave by, which stands by the
+            // room's next step (inside the ring every corridor otherwise keeps off rooms).
+            public Vector2Int? Lead   { get; }
         }
 
         private readonly struct Route
@@ -258,7 +272,7 @@ namespace CGD.Level
         // doorway blindly can send a corridor the long way round the whole map, walling in
         // rooms that later corridors then have to cross into.
         private static bool TryRoute(CorridorRouter router, List<Door> doorsA, List<Door> doorsB,
-            System.Func<Vector2Int, bool> isPassable, out Route best)
+            System.Func<Vector2Int, bool> isPassable, System.Func<Vector2Int, bool> leadFree, out Route best)
         {
             best = default;
             for (int limit = 2; limit <= 4; limit += 2)
@@ -269,7 +283,7 @@ namespace CGD.Level
                     {
                         if (limit > 2 && i < 2 && j < 2) continue;   // already tried
 
-                        List<Vector2Int> path = router.FindPath(doorsA[i].Outside, doorsB[j].Outside, isPassable);
+                        List<Vector2Int> path = FindPath(router, doorsA[i], doorsB[j], isPassable, leadFree);
                         if (path == null || (found && path.Count >= best.Path.Count)) continue;
 
                         best  = new Route(doorsA[i], doorsB[j], path);
@@ -280,6 +294,17 @@ namespace CGD.Level
             return false;
         }
 
+        // A route between two doorways' outside tiles. A doorway in a slanted wall is left by its
+        // Lead tile, which the route may use though it lies in the ring kept round rooms
+        // (`leadFree`: not a room's or another corridor's).
+        private static List<Vector2Int> FindPath(CorridorRouter router, Door a, Door b,
+            System.Func<Vector2Int, bool> isPassable, System.Func<Vector2Int, bool> leadFree)
+        {
+            if (a.Lead == null && b.Lead == null) return router.FindPath(a.Outside, b.Outside, isPassable);
+            bool Passable(Vector2Int tile) => isPassable(tile) || ((tile == a.Lead || tile == b.Lead) && leadFree(tile));
+            return router.FindPath(a.Outside, b.Outside, Passable);
+        }
+
         // When no doorway on a side the rooms face can be joined: rooms packed together by direct
         // doors can wall in pockets of floor, and the doorway picked for a side may open into one
         // while another on the same side, or round the back, opens onto floor that goes round. Every
@@ -287,14 +312,14 @@ namespace CGD.Level
         private const int MaxDoorsAround = 12;
 
         private static bool TryRouteAround(CorridorRouter router, LevelRoom a, LevelRoom b, Dictionary<int, HashSet<Vector2Int>> usedDoors,
-            System.Func<Vector2Int, bool> isPassable, out Route best)
+            System.Func<Vector2Int, bool> isPassable, System.Func<Vector2Int, bool> leadFree, out Route best)
         {
             best = default;
             bool found = false;
             foreach (Door doorA in EveryDoor(a, b, usedDoors[a.Node.Id]))
                 foreach (Door doorB in EveryDoor(b, a, usedDoors[b.Node.Id]))
                 {
-                    List<Vector2Int> path = router.FindPath(doorA.Outside, doorB.Outside, isPassable);
+                    List<Vector2Int> path = FindPath(router, doorA, doorB, isPassable, leadFree);
                     if (path == null || (found && path.Count >= best.Path.Count)) continue;
 
                     best  = new Route(doorA, doorB, path);
@@ -308,7 +333,7 @@ namespace CGD.Level
             var doors = new List<Door>();
             foreach (DoorSocket socket in room.Footprint.Sockets)
                 if (!IsNearUsed(socket.Outside, used))
-                    doors.Add(new Door(socket.Inside, socket.Outside));
+                    doors.Add(new Door(socket));
             // Sockets come in a fixed order and the sort is deterministic, so a seed lays out the same.
             doors.Sort((x, y) => Vector2.Distance(x.Outside, other.Center).CompareTo(Vector2.Distance(y.Outside, other.Center)));
             if (doors.Count > MaxDoorsAround) doors.RemoveRange(MaxDoorsAround, doors.Count - MaxDoorsAround);
@@ -354,7 +379,7 @@ namespace CGD.Level
                 if (score <= bestScore) continue;
 
                 bestScore = score;
-                door = new Door(socket.Inside, socket.Outside);
+                door = new Door(socket);
             }
             return bestScore > float.MinValue;
         }

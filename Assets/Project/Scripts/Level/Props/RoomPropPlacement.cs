@@ -29,7 +29,7 @@ namespace CGD.Level
         // front of it or marks a route, or that is placed by a selection with a shape of its
         // own (a cluster, a line, a showcase) would lose what it was placed for.
         public bool CanRelocate =>
-            !Required && !Symmetric && !GrowsWithRoom && !HasMembers && !StandsNear && !Area && !StandsWithin && string.IsNullOrEmpty(Key)
+            !Required && !Symmetric && !GrowsWithRoom && !HasMembers && !StandsNear && !Area && !StandsWithin && !HalfTile && string.IsNullOrEmpty(Key)
             && Clearance == 0 && !MarksRoute && Pile.Max <= 1 && Prefabs != null && Prefabs.Length > 0
             && Selection is PropSelection.Random or PropSelection.Spread or PropSelection.Cover;
         public IntRange Count = new(2, 4);
@@ -81,6 +81,9 @@ namespace CGD.Level
 
         [Tooltip("Only where this many tiles round it hold no prop or pillar yet: it goes into a bare patch of floor and nowhere else, so what is placed last fills the empty corners and middles a room was left with, and nothing already busy. 0 = anywhere")]
         [Min(0)] public int MinEmpty;
+
+        [Tooltip("Stands in the open half of a diagonal wall's tile (the nook behind an angled corner, the inside of a chevron), backed onto the wall and facing straight out of it, one to a half. For small props: a half is a triangle a tile across. Ignores where and which way it faces; a room with no diagonal walls gets none")]
+        public bool HalfTile;
 
         [Header("Activity areas")]
         [Tooltip("Marks out an activity area (a lounge corner, a work corner) on bare floor: its footprint is kept for the placements Within its Key, and no other area overlaps it or touches it. It takes no floor itself, so its prefab is a rug or nothing (an unmarked area); Stretch fits a rug to it")]

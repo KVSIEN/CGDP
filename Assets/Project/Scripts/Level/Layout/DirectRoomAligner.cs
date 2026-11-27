@@ -94,7 +94,8 @@ namespace CGD.Level
             foreach (DoorSocket f in fixedRoom.Footprint.Sockets)
                 foreach (DoorSocket m in mover.Footprint.Sockets)
                 {
-                    if (m.Outward != -f.Outward) continue;
+                    // Rooms put face to face share a straight stretch of wall, never a slanted step.
+                    if (m.Outward != -f.Outward || f.Slanted || m.Slanted) continue;
 
                     Vector2Int offset = f.Outside - m.Outside;
                     int shift = Mathf.Abs(offset.x) + Mathf.Abs(offset.y);

@@ -82,6 +82,7 @@ namespace CGD.Level
             CreatePart("Railings",       railings,       _settings.LowCoverMaterial,      parent);
             CreatePart("Decks",          decks,          _settings.FloorMaterial,         parent);
             BuildOvergrowth(layout, parent);
+            new FloorStripeBuilder(_settings, layout).Build(_assets, parent);
             bool roofedBuildings = HasRoofedBuildings(layout);
             if (_settings.BuildCeilings || roofedBuildings) BuildCeilings(layout, outerRing, wallPlan, parent);
             if (roofedBuildings && _settings.LightBuildings) new BuildingLightBuilder(_settings).Build(layout, parent);
