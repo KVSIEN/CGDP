@@ -8,7 +8,7 @@ namespace CGD.Level
     // Turns a RoomRecipe into a map graph: the room, and a neighbour on each side that should
     // have a doorway. A neighbour joins only to the room, so the room's doorway is the only
     // one it has and nothing builds on past it. Node positions are in cells (lay it out with a
-    // node spacing of one). The room is node RoomId; the Room Lab and the room generator scene
+    // node spacing of one) and every link is a direct door. The room is node RoomId; the Room Lab and the room generator scene
     // both build their rooms this way.
     //
     // Given a random stream (the room generator) the neighbours are rooms of their own to look
@@ -20,7 +20,7 @@ namespace CGD.Level
     {
         public const int RoomId = 0;
 
-        // Neighbours stand this many cells away: far enough that a two-cell room and a
+        // Neighbours are placed this many cells away before they are pulled in: far enough that a two-cell room and a
         // two-cell neighbour never claim the same cell.
         private const int NeighbourCells = 3;
 
@@ -30,7 +30,7 @@ namespace CGD.Level
             RoomChoice.RollableTypes, type => !type.HasSecondFaction());
 
         // The recipe's room at the origin and one neighbour per doorway side; the corridor to
-        // each comes out of the wall facing it.
+        // each is on the wall facing it.
         public static MapGraph Build(RoomRecipe recipe, RandomStream neighbourRolls = null)
         {
             var graph = new MapGraph();
@@ -59,7 +59,7 @@ namespace CGD.Level
             if (graph.Nodes.Count < 2) return;
             MapNode first = graph.Nodes[1];
             MapNode start = graph.AddNode(MapNodeType.Start, first.Position + (first.Position - room.Position));
-            graph.Connect(first.Id, start.Id);
+            ConnectDirect(graph, first.Id, start.Id);
         }
 
         // A Breach room's first neighbour belongs to the breaching faction, so the breach
@@ -79,7 +79,13 @@ namespace CGD.Level
                 neighbour.SetFaction(recipe.Faction, recipe.Influence);
             }
             if (first && room.HasBreachFaction) neighbour.SetFaction(room.BreachFaction, 1f);
-            graph.Connect(room.Id, neighbour.Id);
+            ConnectDirect(graph, room.Id, neighbour.Id);
+        }
+
+        // The level builder pulls the rooms together, so they meet as a map's neighbours do.
+        private static void ConnectDirect(MapGraph graph, int a, int b)
+        {
+            if (graph.Connect(a, b)) graph.Connections[graph.Connections.Count - 1].Direct = true;
         }
     }
 }

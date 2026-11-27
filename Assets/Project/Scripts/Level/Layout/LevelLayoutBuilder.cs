@@ -176,13 +176,12 @@ namespace CGD.Level
             foreach (var (connection, link) in directLinks)
             {
                 LevelRoom a = layout.Rooms[connection.A], b = layout.Rooms[connection.B];
-                usedDoors[a.Node.Id].Add(link.Tile);
-                usedDoors[b.Node.Id].Add(link.Tile);
+                usedDoors[a.Node.Id].Add(link.OutsideA);
+                usedDoors[b.Node.Id].Add(link.OutsideB);
 
-                var path = new List<Vector2Int> { link.Tile };
-                Reserve(path, reserved);
-                layout.AddCorridor(connection, path);
-                AddDoorways(layout, analysis, connection, a, link.InsideA, link.Tile, b, link.InsideB, link.Tile);
+                Reserve(link.Tiles, reserved);
+                layout.AddCorridor(connection, link.Tiles);
+                AddDoorways(layout, analysis, connection, a, link.InsideA, link.OutsideA, b, link.InsideB, link.OutsideB);
             }
 
             // Short connections first: they have the fewest ways around each other.
@@ -210,7 +209,11 @@ namespace CGD.Level
                 // Without bend chamfers a throat would be walled as a staircase, so slanted doorways go unused.
                 System.Func<Vector2Int, LevelRoom, bool> throatFree = (t, own) =>
                     _settings.ChamferCorridorBends && !reserved.Contains(t) && ClearOfRooms(layout, t, own);
-                if (!TryRoute(router, doorsA, doorsB, clear, throatFree, out Route route) && !TryRouteAround(router, a, b, usedDoors, clear, throatFree, out route))
+                // A pair meant to touch that couldn't be put together takes the shortest route
+                // from any of its doorways; other links keep to the sides facing each other.
+                if (!(connection.Direct && TryRouteAround(router, a, b, usedDoors, clear, throatFree, out Route route, NearestDoors))
+                    && !TryRoute(router, doorsA, doorsB, clear, throatFree, out route)
+                    && !TryRouteAround(router, a, b, usedDoors, clear, throatFree, out route))
                 {
                     if (!TryRoute(router, doorsA, doorsB, crossing, throatFree, out route) && !TryRouteAround(router, a, b, usedDoors, crossing, throatFree, out route))
                     {
@@ -350,19 +353,24 @@ namespace CGD.Level
             return path;
         }
 
-        // When no doorway on a side the rooms face can be joined: rooms packed together by direct
+        // The shortest route from any doorway, for a pair meant to touch, and the fallback when no
+        // doorway on a side the rooms face can be joined: rooms packed together by direct
         // doors can wall in pockets of floor, and the doorway picked for a side may open into one
         // while another on the same side, or round the back, opens onto floor that goes round. Every
         // free doorway of each room is tried, the nearest to the other room first.
         private const int MaxDoorsAround = 12;
+        // A pair meant to touch tries only its doorways nearest each other: the shortest route
+        // leaves from among them, and every pair tried is a whole search.
+        private const int NearestDoors = 4;
 
         private static bool TryRouteAround(CorridorRouter router, LevelRoom a, LevelRoom b, Dictionary<int, HashSet<Vector2Int>> usedDoors,
-            System.Func<Vector2Int, bool> isPassable, System.Func<Vector2Int, LevelRoom, bool> throatFree, out Route best)
+            System.Func<Vector2Int, bool> isPassable, System.Func<Vector2Int, LevelRoom, bool> throatFree, out Route best,
+            int doorsEach = MaxDoorsAround)
         {
             best = default;
             bool found = false;
-            foreach (Door doorA in EveryDoor(a, b, usedDoors[a.Node.Id]))
-                foreach (Door doorB in EveryDoor(b, a, usedDoors[b.Node.Id]))
+            foreach (Door doorA in EveryDoor(a, b, usedDoors[a.Node.Id], doorsEach))
+                foreach (Door doorB in EveryDoor(b, a, usedDoors[b.Node.Id], doorsEach))
                 {
                     List<Vector2Int> path = FindPath(router, doorA, doorB, isPassable, throatFree);
                     if (path == null || (found && path.Count >= best.Path.Count)) continue;
@@ -373,7 +381,7 @@ namespace CGD.Level
             return found;
         }
 
-        private static List<Door> EveryDoor(LevelRoom room, LevelRoom other, HashSet<Vector2Int> used)
+        private static List<Door> EveryDoor(LevelRoom room, LevelRoom other, HashSet<Vector2Int> used, int most)
         {
             var doors = new List<Door>();
             foreach (DoorSocket socket in room.Footprint.Sockets)
@@ -381,7 +389,7 @@ namespace CGD.Level
                     doors.Add(new Door(room, socket));
             // Sockets come in a fixed order and the sort is deterministic, so a seed lays out the same.
             doors.Sort((x, y) => Vector2.Distance(x.Outside, other.Center).CompareTo(Vector2.Distance(y.Outside, other.Center)));
-            if (doors.Count > MaxDoorsAround) doors.RemoveRange(MaxDoorsAround, doors.Count - MaxDoorsAround);
+            if (doors.Count > most) doors.RemoveRange(most, doors.Count - most);
             return doors;
         }
 
@@ -436,7 +444,7 @@ namespace CGD.Level
             return false;
         }
 
-        private static void Reserve(List<Vector2Int> path, HashSet<Vector2Int> reserved)
+        private static void Reserve(IReadOnlyList<Vector2Int> path, HashSet<Vector2Int> reserved)
         {
             foreach (Vector2Int tile in path)
             {

@@ -95,8 +95,6 @@ namespace CGD.Tests
                     bool oneColumn = Mathf.Approximately(Mathf.Abs(step.x), spacing.x) && Mathf.Approximately(step.y, 0f);
                     bool oneRow    = Mathf.Approximately(Mathf.Abs(step.y), spacing.y) && Mathf.Approximately(step.x, 0f);
                     Assert.IsTrue(oneColumn || oneRow, $"{name}, seed {i}: direct door #{a.Id}–#{b.Id} isn't between neighbouring cells");
-                    Assert.AreEqual(ConnectionType.Normal, connection.Type, $"{name}, seed {i}: direct door #{a.Id}–#{b.Id} is a gate or shortcut");
-                    Assert.IsFalse(connection.OneWay, $"{name}, seed {i}: direct door #{a.Id}–#{b.Id} is one-way");
                 }
             }
         }

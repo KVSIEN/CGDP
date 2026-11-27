@@ -19,7 +19,7 @@ namespace CGD.Map
         [SerializeField] private List<int>      _keyNodeIds = new();
         [Tooltip("Opens only from the end further from Start; a normal passage once opened")]
         [SerializeField] private bool           _oneWay;
-        [Tooltip("The two rooms touch: a door in the wall they share instead of a hallway. Needs rooms in neighbouring grid cells; otherwise the level builds a hallway")]
+        [Tooltip("The two rooms are put together: a door in the wall they share, or the shortest straight run their shapes allow. Falls back to a routed hallway when neither fits")]
         [SerializeField] private bool           _direct;
 
         public MapConnection(int a, int b, ConnectionType type)

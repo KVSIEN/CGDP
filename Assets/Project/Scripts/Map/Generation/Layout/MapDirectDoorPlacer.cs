@@ -2,11 +2,10 @@ using CGD.Core;
 
 namespace CGD.Map
 {
-    // Turns some plain links between neighbouring grid cells into direct doors: the level
-    // builder then puts the two rooms side by side with a doorway between, instead of a
-    // hallway. Runs after the gates, so a gate, shortcut or one-way link always keeps its
-    // hallway (and its door), and draws nothing when the chance is 0 so existing seeds
-    // are unchanged.
+    // Turns links between neighbouring grid cells into direct doors: the level builder then
+    // puts the two rooms side by side with a doorway between, instead of a hallway. Gates and
+    // one-way links included (their door stands in that doorway), so it runs after them.
+    // Draws nothing when the chance is 0.
     internal class MapDirectDoorPlacer
     {
         private readonly MapGenerationContext _context;
@@ -25,7 +24,6 @@ namespace CGD.Map
 
             foreach (MapConnection connection in _context.Graph.Connections)
             {
-                if (connection.Type != ConnectionType.Normal || connection.OneWay) continue;
                 if (!AreNeighbours(connection)) continue;
                 connection.Direct = _random.Chance(chance);
             }

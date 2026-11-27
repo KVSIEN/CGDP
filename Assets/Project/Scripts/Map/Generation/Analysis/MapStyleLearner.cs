@@ -238,7 +238,7 @@ namespace CGD.Map
                 }
 
                 Vector2Int gap = cells[connection.A] - cells[connection.B];
-                if (connection.Type == ConnectionType.Normal && !connection.OneWay && Mathf.Abs(gap.x) + Mathf.Abs(gap.y) == 1)
+                if (Mathf.Abs(gap.x) + Mathf.Abs(gap.y) == 1)
                 {
                     m.DirectEligible++;
                     if (connection.Direct) m.Direct++;
