@@ -6,13 +6,18 @@ namespace CGD.Level
     // Keeps what a placement just put on its tiles out of the walls beside them: a chair at a
     // desk's far side, a crate turned at an angle, a plant in a corner. Whatever reaches into a
     // wall moves the whole group off it, so its pieces keep their places round each other;
-    // against open floor nothing moves. The room's slanted walls (a curved or angled room's,
+    // against open floor nothing moves. A ledge counts as a wall too: its guard (standing on the
+    // higher side), the face of a floor on another level, and a flight of stairs. The room's slanted walls (a curved or angled room's,
     // which cut across its edge tiles: RoomStructure.SlantedWalls) push it straight off them too.
     internal static class PropWallClearance
     {
         // A tile is 3 m in the placeholder kit; a wall's half thickness, in tiles.
-        private const float TileMetres = 3f;
+        internal const float TileMetres = 3f;
         public const float WallHalfThickness = 0.04f;
+        // A ledge's half wall or railing stands this far into the higher tile, in tiles (0.2 m).
+        public const float GuardDepth = 0.2f / TileMetres;
+        // Off the edge of a floor on another level or a flight of stairs, in tiles.
+        private const float LedgeGap = 0.01f;
         // Less than this into a wall, in tiles, is rounding.
         private const float Tolerance = 0.001f;
 
@@ -23,9 +28,9 @@ namespace CGD.Level
 
             var shift = new Vector2(
                 Shift(min.x, max.x, tiles.xMin, tiles.xMax,
-                      HasWall(structure, tiles, Vector2Int.left), HasWall(structure, tiles, Vector2Int.right)),
+                      InsetOf(structure, tiles, Vector2Int.left), InsetOf(structure, tiles, Vector2Int.right)),
                 Shift(min.y, max.y, tiles.yMin, tiles.yMax,
-                      HasWall(structure, tiles, Vector2Int.down), HasWall(structure, tiles, Vector2Int.up)));
+                      InsetOf(structure, tiles, Vector2Int.down), InsetOf(structure, tiles, Vector2Int.up)));
             shift += OffSlants(structure.SlantedWalls, min + shift, max + shift);
             if (shift == Vector2.zero) return;
 
@@ -79,11 +84,13 @@ namespace CGD.Level
         }
 
         // How far to move along one axis so [min, max] clears the walls at the ends of
-        // [low, high]. Too wide to clear a wall on both sides: centred between them.
-        private static float Shift(float min, float max, float low, float high, bool wallLow, bool wallHigh)
+        // [low, high], each standing `insetLow` / `insetHigh` in from its end (negative: no wall).
+        // Too wide to clear a wall on both sides: centred between them.
+        private static float Shift(float min, float max, float low, float high, float insetLow, float insetHigh)
         {
-            if (wallLow) low += WallHalfThickness;
-            if (wallHigh) high -= WallHalfThickness;
+            bool wallLow = insetLow >= 0f, wallHigh = insetHigh >= 0f;
+            if (wallLow) low += insetLow;
+            if (wallHigh) high -= insetHigh;
             float off = wallLow ? Mathf.Max(0f, low - min) : 0f;
             float back = wallHigh ? Mathf.Max(0f, max - high) : 0f;
             if (off <= Tolerance && back <= Tolerance) return 0f;
@@ -91,11 +98,22 @@ namespace CGD.Level
             return off - back;
         }
 
-        private static bool HasWall(RoomStructure structure, RectInt tiles, Vector2Int side)
+        // How far in from the tiles' `side` the props must keep, the deepest of what stands along
+        // it: a wall, a ledge's guard on these tiles' (higher) side, or the edge of another floor
+        // or a flight of stairs. Negative when that side is open floor.
+        private static float InsetOf(RoomStructure structure, RectInt tiles, Vector2Int side)
         {
+            float inset = -1f;
             foreach (Vector2Int tile in tiles.allPositionsWithin)
-                if (!tiles.Contains(tile + side) && structure.IsWall(tile, side)) return true;
-            return false;
+            {
+                Vector2Int next = tile + side;
+                if (tiles.Contains(next)) continue;
+                if (structure.IsWall(tile, side)) inset = Mathf.Max(inset, WallHalfThickness);
+                else if (structure.LevelOf(next) != structure.LevelOf(tile) || structure.TryGetStairs(next, out _))
+                    inset = Mathf.Max(inset, structure.LevelOf(tile) > structure.LevelOf(next) && structure.GuardOn(tile, next) != LedgeGuard.None
+                                                 ? GuardDepth : LedgeGap);
+            }
+            return inset;
         }
     }
 }

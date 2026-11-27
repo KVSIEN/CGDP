@@ -25,6 +25,7 @@ namespace CGD.Editor
             CheckReachable(sample, issues);
             CheckElevation(sample, issues);
             CheckFurnishing(sample, issues);
+            CheckPropsClear(sample, issues);
             CheckPriorities(sample, issues);
             return issues;
         }
@@ -109,6 +110,19 @@ namespace CGD.Editor
 
         private static bool IsWalkable(RoomStructure structure, Vector2Int tile) =>
             structure.Contains(tile) && !structure.Has(tile, Solid);
+
+        // Furniture that reaches into a wall, pillar, ledge guard, stairs or another floor
+        // (PropObstruction): planning should never leave one, so each is named.
+        private static void CheckPropsClear(RoomSample sample, List<RoomIssue> issues)
+        {
+            var boxes = new List<Vector2[]>();
+            foreach (PlannedProp prop in sample.Furnishing.Props)
+            {
+                string hit = PropObstruction.Find(sample.Room.Structure, prop, boxes);
+                if (hit != null)
+                    issues.Add(new RoomIssue(RoomIssue.Severity.Error, $"{prop.Prefab.name} at {prop.Position} reaches into {hit}."));
+            }
+        }
 
         private static void CheckFurnishing(RoomSample sample, List<RoomIssue> issues)
         {

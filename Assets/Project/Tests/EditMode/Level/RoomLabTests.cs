@@ -86,6 +86,30 @@ namespace CGD.Tests
             }
         }
 
+        // Every place for every faction: no furniture reaches into a wall, pillar, 45° wall, ledge
+        // guard, stairs or another floor (PropObstruction) — on raised floors and angled walls too.
+        [Test]
+        public void NoFurnitureReachesIntoTheRoomsStructure()
+        {
+            RoomLabRecipe recipe = Recipe();
+            recipe.Content = AssetDatabase.LoadAssetAtPath<MapContentSettings>("Assets/Project/Data/Map/Content/StandardMapContentSettings.asset");
+            foreach (RoomFunction function in recipe.BuildSettings.Functions)
+            {
+                if (function == null || function.Landmark != null) continue;
+                recipe.Room.Place = function;
+                recipe.Room.Category = function.Category;
+                for (int faction = 0; faction < recipe.Content.Factions.Count; faction++)
+                    for (int seed = 1; seed <= 2; seed++)
+                    {
+                        recipe.Room.Faction = faction;
+                        RoomSample sample = RoomSampleBuilder.Build(recipe, (seed * 7919 + faction).ToString());
+                        Assert.IsTrue(sample.IsValid, sample.Message);
+                        foreach (RoomIssue issue in sample.Issues)
+                            StringAssert.DoesNotContain("reaches into", issue.Text, $"{sample.Room.LayoutName}, faction {faction}, seed {seed}");
+                    }
+            }
+        }
+
         [Test]
         public void APinnedPlaceIsBuilt()
         {

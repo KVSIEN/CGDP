@@ -39,6 +39,27 @@ namespace CGD.Level
             return true;
         }
 
+        // Each solid collider's outline on the floor once turned and stretched, as TryGetExtent
+        // measures them but kept apart and at their true angle: three corners of its box, in
+        // metres from the origin, the second and third each one edge on from the first.
+        internal static bool TryGetFootprints(GameObject prefab, float yaw, Vector2 stretch, List<Vector2[]> boxes)
+        {
+            boxes.Clear();
+            if (prefab == null) return false;
+
+            Vector2[] corners = CornersOf(prefab);
+            Quaternion turn = Quaternion.Euler(0f, yaw, 0f);
+            Vector2 Turned(Vector2 corner)
+            {
+                Vector3 at = turn * new Vector3(corner.x * stretch.x, 0f, corner.y * stretch.y);
+                return new Vector2(at.x, at.z);
+            }
+            // Measure writes eight corners a box, x in bit 0 and z in bit 2.
+            for (int i = 0; i + 7 < corners.Length; i += 8)
+                boxes.Add(new[] { Turned(corners[i]), Turned(corners[i + 1]), Turned(corners[i + 4]) });
+            return boxes.Count > 0;
+        }
+
         private static Vector2[] CornersOf(GameObject prefab)
         {
             if (!Application.isPlaying) return Measure(prefab);

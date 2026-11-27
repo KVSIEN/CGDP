@@ -24,6 +24,18 @@ namespace CGD.Level
             return halves;
         }
 
+        // Where a prop facing out of the half (YawOf) stands: at the half's middle, or further out
+        // when its back would reach into the wall from there (PropReach), so it stands clear.
+        public static Vector2 SpotIn(DiagonalWall wall, Vector2Int normal, GameObject prefab)
+        {
+            Vector2 middle = wall.HalfMiddle(normal), centre = wall.Tile + Vector2.one * 0.5f, outward = ((Vector2)normal).normalized;
+            float needed = PropReach.BehindOrigin(prefab) / PropWallClearance.TileMetres + BackClearance;
+            return centre + outward * Mathf.Max(Vector2.Distance(middle, centre), needed);
+        }
+
+        // From the wall's middle line to a prop's back: the wall's half thickness and a little.
+        private const float BackClearance = 0.06f;
+
         // Facing straight out of the wall, away from it (yaw 0 = +y, 90 = +x).
         public static float YawOf(Vector2Int normal) => Mathf.Atan2(normal.x, normal.y) * Mathf.Rad2Deg;
 

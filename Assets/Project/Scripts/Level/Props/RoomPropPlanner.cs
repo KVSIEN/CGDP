@@ -64,6 +64,8 @@ namespace CGD.Level
         private readonly PropPlacementRules _rules;
         private readonly PropSelector _selector;
         private readonly List<PlannedProp> _planned = new();
+        // Scratch for PropObstruction.
+        private readonly List<Vector2[]> _boxes = new();
         private readonly List<PropPlacementOutcome> _outcomes = new();
         // What each keyed placement put down (RoomPropPlacement.Key), for the ones Near it.
         private readonly Dictionary<string, List<RectInt>> _keyed = new();
@@ -167,14 +169,15 @@ namespace CGD.Level
         }
 
         // Puts down up to `count` in the open halves of the diagonal walls' tiles (PropHalves), at
-        // random among them, each in the middle of its half facing out of the wall. They take
-        // none of the grid's floor; the room's structure keeps their heights for sight.
+        // random among them, each facing out of the wall with its back clear of it (PropHalves.SpotIn);
+        // a half too small for the prop drawn is left empty. They take none of the grid's floor;
+        // the room's structure keeps their heights for sight.
         private int PlaceInHalves(RoomPropPlacement placement, int count, ICollection<int> zones)
         {
             if (placement.Prefabs == null || placement.Prefabs.Length == 0) return 0;
             List<(Vector2Int tile, Vector2Int normal)> halves = PropHalves.Open(_structure, zones);
             int placed = 0;
-            for (; placed < count && halves.Count > 0; placed++)
+            while (placed < count && halves.Count > 0)
             {
                 int pick = _random.Range(0, halves.Count);
                 var (tile, normal) = halves[pick];
@@ -182,10 +185,23 @@ namespace CGD.Level
 
                 GameObject prefab = _random.Pick(placement.Prefabs);
                 _structure.TryGetDiagonal(tile, out DiagonalWall wall);
+                var prop = new PlannedProp(prefab, PropHalves.SpotIn(wall, normal, prefab), PropHalves.YawOf(normal),
+                                           new RectInt(tile, Vector2Int.one), placement.Decor);
+                if (!placement.Decor && PropObstruction.Find(_structure, prop, _boxes) != null) continue;
+
                 _structure.TryAddHalfProp(tile, normal, PropHeights.Of(prefab));
-                _planned.Add(new PlannedProp(prefab, wall.HalfMiddle(normal), PropHalves.YawOf(normal), new RectInt(tile, Vector2Int.one), placement.Decor));
+                _planned.Add(prop);
+                placed++;
             }
             return placed;
+        }
+
+        // Whether any of the `count` props planned from `first` on reaches into the room's structure.
+        private bool Obstructed(int first, int count)
+        {
+            for (int i = first; i < first + count; i++)
+                if (PropObstruction.Find(_structure, _planned[i], _boxes) != null) return true;
+            return false;
         }
 
         // Puts down up to `count` in one area; a Required placement that finds no spot is
@@ -375,10 +391,17 @@ namespace CGD.Level
                 if (!_structure.TryClaim(TilesOf(candidate.Rect), RoomTileTags.Prop)) return false;
             }
 
-            ReserveAccess(candidate, placement.Clearance);
-            if (placement.MarksRoute) MarkRoute(candidate);
             Emit(candidate, placement, size, sized);
             PropWallClearance.KeepOut(_structure, candidate.Rect, _planned, firstPlanned, _planned.Count - firstPlanned);
+            // Still into something kept clear of (a pillar, a 45° wall, a ledge): not this spot.
+            if (Obstructed(firstPlanned, _planned.Count - firstPlanned))
+            {
+                _planned.RemoveRange(firstPlanned, _planned.Count - firstPlanned);
+                _structure.Release(TilesOf(candidate.Rect), RoomTileTags.Prop);
+                return false;
+            }
+            ReserveAccess(candidate, placement.Clearance);
+            if (placement.MarksRoute) MarkRoute(candidate);
             SetHeight(candidate.Rect, TallestSince(firstPlanned));
             Changed(candidate.Rect);
             own.Add(candidate.Rect);
@@ -624,7 +647,15 @@ namespace CGD.Level
                 if (!_rules.Placeable(spot, placement, others) || !_rules.Eligible(spot, placement)) continue;
                 if (!placement.Decor && !_structure.TryClaim(TilesOf(spot.Rect), RoomTileTags.Prop)) continue;
 
+                PlannedProp before = _planned[piece.PlanIndex];
                 Settle(piece, spot, random);
+                if (Obstructed(piece.PlanIndex, 1))
+                {
+                    Vacate(placement, spot.Rect);
+                    _planned[piece.PlanIndex] = before;
+                    piece.Spot = origin;
+                    continue;
+                }
                 return true;
             }
             return false;
