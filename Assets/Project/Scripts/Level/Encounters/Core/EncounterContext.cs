@@ -13,7 +13,7 @@ namespace CGD.Level
         public EncounterContext(LevelRoom room, RoomArea area, RoomArea floor, RoomSeal seal, EncounterSpawner spawner,
             EncounterSettings settings, IReadOnlyList<HealthManager> roomEnemies, Transform player, Transform level,
             float tileSize, Vector3 center, RandomStream random, Seed rewardSeed, float lootLuck, WorldMapArea worldMap,
-            Queue<Vector3> freeSpots, IReadOnlyList<Pose> forwardDoorways)
+            Queue<Vector3> freeSpots, IReadOnlyList<DoorwaySpot> forwardDoorways)
         {
             Room            = room;
             Area            = area;
@@ -56,8 +56,8 @@ namespace CGD.Level
         // The run's loot luck (modifiers), added to every reward this encounter drops.
         public float        LootLuck { get; }
         public WorldMapArea WorldMap { get; }
-        // Doorways (pose: on the floor, +Z out of the room) leading deeper into the map.
-        public IReadOnlyList<Pose> ForwardDoorways { get; }
+        // Doorways (on the floor, +Z out of the room, with their width) leading deeper into the map.
+        public IReadOnlyList<DoorwaySpot> ForwardDoorways { get; }
 
         public int WaveSize => Settings.WaveSize.Lerp(Room.Node.Intensity);
 

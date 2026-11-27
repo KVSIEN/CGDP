@@ -67,7 +67,15 @@ namespace CGD.Level
 
             foreach (LevelDoorway doorway in layout.Doorways)
                 if (doorway.HasGate && GateColor(doorway.Connection, out Color32 color))
-                    canvas.FillEdge(doorway.RoomTile, doorway.Outward, color, thickness: 2);
+                {
+                    if (!doorway.Slanted) canvas.FillEdge(doorway.RoomTile, doorway.Outward, color, thickness: 2);
+                    else
+                    {
+                        var (from, to) = doorway.Ends;
+                        canvas.Line(from, to, color);
+                        canvas.Line(to, from, color);
+                    }
+                }
 
             return canvas.Pixels;
         }

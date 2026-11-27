@@ -75,6 +75,11 @@ namespace CGD.Level
             }
         }
 
+        // A doorway's middle on the floor and the way out of the room it faces, in the level's
+        // space (LevelDoorway.Middle, Facing).
+        public Vector3 DoorwayMiddle(LevelDoorway doorway) => new(doorway.Middle.x * TileSize, 0f, doorway.Middle.y * TileSize);
+        public static Vector3 DoorwayOutward(LevelDoorway doorway) => new(doorway.Facing.x, 0f, doorway.Facing.y);
+
         // One tile's rectangle on the floor plan (x, z), in the level's space.
         public Rect TileLocalRect(Vector2Int tile) => new(tile.x * TileSize, tile.y * TileSize, TileSize, TileSize);
 

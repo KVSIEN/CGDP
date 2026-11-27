@@ -54,9 +54,9 @@ namespace CGD.Level
 
                 bool dangerous = IsDangerous(beyond.Node);
                 Pose sign = SignPose(layout, doorway);
-                AddSign(layout, sign, MeshFor(meshes, MapNodeColors.Of(beyond.Node.Type.SignType())),
+                AddSign(layout, sign, doorway.Width, MeshFor(meshes, MapNodeColors.Of(beyond.Node.Type.SignType())),
                         dangerous ? MeshFor(meshes, DangerColor) : null);
-                if (labels != null) AddLabel(layout, sign, beyond, dangerous, labels);
+                if (labels != null) AddLabel(layout, sign, doorway.Width, beyond, dangerous, labels);
             }
 
             foreach (var (color, mesh) in meshes)
@@ -76,23 +76,24 @@ namespace CGD.Level
         // facing out of the room.
         private Pose SignPose(LevelLayout layout, LevelDoorway doorway)
         {
-            Vector3 outward = new(doorway.Outward.x, 0f, doorway.Outward.y);
-            Vector3 edge    = (layout.TileToLocal(doorway.RoomTile) + layout.TileToLocal(doorway.OutsideTile)) * 0.5f;
+            Vector3 outward = LevelLayout.DoorwayOutward(doorway);
+            Vector3 edge    = layout.DoorwayMiddle(doorway);
             Vector3 top     = edge - outward * (_settings.WallThickness * 0.5f + BarDepth)
                             + Vector3.up * (_settings.WallHeight - BarHeight * 0.5f);
             return new Pose(top, Quaternion.LookRotation(outward));
         }
 
-        private static void AddSign(LevelLayout layout, Pose sign, BoxMeshBuilder bar, BoxMeshBuilder danger)
+        // `width`: the doorway's, in tiles (LevelDoorway.Width).
+        private static void AddSign(LevelLayout layout, Pose sign, float width, BoxMeshBuilder bar, BoxMeshBuilder danger)
         {
-            bar.AddBox(sign.position, new Vector3(layout.TileSize * BarWidth, BarHeight, BarDepth), sign.rotation);
+            bar.AddBox(sign.position, new Vector3(layout.TileSize * width * BarWidth, BarHeight, BarDepth), sign.rotation);
             danger?.AddBox(sign.position + Vector3.down * (BarHeight + MarkerSize) * 0.5f,
                            new Vector3(MarkerSize, MarkerSize, BarDepth), sign.rotation);
         }
 
         // Read from inside the room, looking at the doorway: TextMeshPro faces -Z, so a label
         // turned like the sign (+Z out of the room) reads the right way round.
-        private static void AddLabel(LevelLayout layout, Pose sign, LevelRoom beyond, bool dangerous, Transform parent)
+        private static void AddLabel(LevelLayout layout, Pose sign, float width, LevelRoom beyond, bool dangerous, Transform parent)
         {
             float drop = BarHeight * 0.5f + (dangerous ? MarkerSize : 0f) + LabelGap + LabelHeight * 0.5f;
             var label = new GameObject($"DoorLabel_{beyond.Node.Id}", typeof(TextMeshPro));
@@ -100,7 +101,7 @@ namespace CGD.Level
             label.transform.SetLocalPositionAndRotation(sign.position + Vector3.down * drop, sign.rotation);
 
             var text = label.GetComponent<TextMeshPro>();
-            text.rectTransform.sizeDelta = new Vector2(layout.TileSize * 0.9f, LabelHeight);
+            text.rectTransform.sizeDelta = new Vector2(layout.TileSize * width * 0.9f, LabelHeight);
             text.text             = $"{RoomLabel.Name(beyond).ToUpperInvariant()}\n<size=65%>{RoomLabel.Details(beyond)}</size>";
             text.fontSize         = LabelFontSize;
             text.enableAutoSizing = true;

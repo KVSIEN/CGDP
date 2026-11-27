@@ -138,8 +138,10 @@ namespace CGD.Level
                     var along = new Vector2Int(side.y, side.x);
                     if (IsStraightWall(tile + along, side) && IsStraightWall(tile - along, side))
                         _sockets.Add(new DoorSocket(tile, side));
-                    else if (SharpDiagonals && (IsSlantStep(tile, side, along) || IsSlantStep(tile, side, -along)))
-                        _sockets.Add(new DoorSocket(tile, side, slanted: true));
+                    else if (SharpDiagonals && IsSlantStep(tile, side, along))
+                        _sockets.Add(new DoorSocket(tile, side, side + along));
+                    else if (SharpDiagonals && IsSlantStep(tile, side, -along))
+                        _sockets.Add(new DoorSocket(tile, side, side - along));
                 }
         }
 

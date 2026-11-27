@@ -1459,14 +1459,23 @@ meets the room's walls and other runs cleanly. Only 45°, one diagonal per tile.
 - **Props.** `PropFacing.Diagonal` turns a single-tile prop 45° off square; `AgainstDiagonal`
   stands one beside an angled wall facing straight out of it (the Greenery kit's planters).
 - **Doorways in slanted walls.** An angled room (`SharpDiagonals`) also gets a socket on each
-  one-tile step of a 45° wall (`DoorSocket.Slanted`). The outline keeps that step and the steps
-  either side square (`RoomOutline`: a short run with a doorway, and its neighbours), so the wall
-  leaves the diagonal, runs round the doorway on tile edges and rejoins it: the door, gate, sign,
-  culling portal and NavMesh all stand on an ordinary tile edge. The corridor leaves by the tile
-  straight out past the doorway's (`DoorSocket.Lead`), which lies in the ring corridors keep off
-  rooms (it touches the next step's corner), so the router may use a doorway's own lead; direct
-  links never use slanted sockets. Outlines open only at the room's doorways (`LevelDoorway`), not
-  wherever a walkable tile touches the wall.
+  one-tile step of a 45° wall (`DoorSocket.Slant`: the wall's diagonal way out). The doorway is
+  set into the wall itself: the outline leaves out the two pieces either side of the step's
+  midpoint (`RoomOutline`), an opening √2 tiles wide along the diagonal (`LevelDoorway.Ends`).
+  `LevelDoorway.Middle`, `Facing` and `Width` place everything built at a doorway, square or
+  slanted: the door, gate, shutter and puzzle door (`DoorwaySpot`, stretched across to the
+  width), the sign, the lintel, the wall kit's frame and the culling portal. The corridor leaves
+  on the diagonal: a throat of two staircase steps from the doorway's outside tile
+  (`DoorSocket.Throat`), which may pass corner to corner by its own room but touches no other,
+  then the route on from its end. The throat's staircase is walled by the corridor's two
+  diagonals, which run on to the opening's two ends (`LevelWallPlan`), so the room's wall, the
+  doorway and the corridor meet at two points. A corridor tile opens onto a room's tile only
+  through a doorway (the throat's first tile also touches the room's next step). Direct links
+  never use slanted sockets; without bend chamfers they go unused. Outlines open only at the
+  room's doorways.
+- **Slanted walls and props.** A curved or angled room's outline pieces off the tile edges are
+  kept on its structure (`RoomStructure.SlantedWalls`); `PropWallClearance` pushes a prop that
+  reaches into one straight off it, a half wall's thickness clear, as it does from straight walls.
 - **Corridors.** With *Diagonal Corridor Steps* (`LevelBuildSettings`, needs bend chamfers),
   `CorridorCorners` cuts each routed bend into a staircase of tiles as long as the arms allow, up
   to that many steps back along each (the longest that fits: free tiles, touching the corridor
@@ -1475,7 +1484,9 @@ meets the room's walls and other runs cleanly. Only 45°, one diagonal per tile.
   corner to corner, the risers between them cut the other way) and walls it as one straight
   diagonal through those chamfers; the notches it takes in are `Fills`, floored and ceiled with
   triangular slabs (`BoxMeshBuilder.AddPrism`). The corridor is 1.4 tiles wide across its
-  diagonal; its tiles plan as before.
+  diagonal; its tiles plan as before. Where a diagonal would turn half a tile along a straight
+  wall before meeting it (the inner side of a cut bend), it runs on to meet it at 45° instead,
+  the straight wall cut back and the notch floored.
 - **Cut corners.** An Elevation rule's *Cut Corners* chance cuts a raised block's corners at 45°
   (a platform's two front corners, an island's four; blocks under 4 by 2 tiles stay square, and
   never a corner in front of a doorway or beside another cut). The corner tile leaves the area and

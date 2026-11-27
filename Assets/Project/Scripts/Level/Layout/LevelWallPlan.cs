@@ -16,6 +16,11 @@ namespace CGD.Level
     //     is walled by one straight 45° wall each side, through those same chamfers: the
     //     corridor runs diagonally, 1.4 tiles wide across, its walls meeting the straight
     //     stretches either end at 45°.
+    //     Where a diagonal would turn half a tile along a straight wall before meeting it, it runs
+    //     on to meet it instead; at a doorway set into a 45° wall (LevelDoorway.Slanted) the
+    //     corridor's two diagonals run on to the opening's two ends.
+    //   - A corridor tile is open to a room's tile only through a doorway: a slanted doorway's
+    //     first corridor tile also touches the room's next step, which stays walled.
     // Cuts are the triangles a chamfer removes (between the diagonal and the old corner); Fills
     // the triangles a diagonal wall adds to the floor, in the notches of the tile staircase.
     public class LevelWallPlan
@@ -46,9 +51,21 @@ namespace CGD.Level
         public static LevelWallPlan Create(LevelLayout layout, LevelBuildSettings settings)
         {
             var plan = new LevelWallPlan();
-            var bends = settings.ChamferCorridorBends ? CorridorBends(layout) : new Dictionary<Vector2Int, (Vector2Int, Vector2Int)>();
+            var doorways = new HashSet<(Vector2Int, Vector2Int)>();
+            var doorEnds = new List<Vector2>();
+            foreach (LevelDoorway doorway in layout.Doorways)
+            {
+                doorways.Add((doorway.OutsideTile, doorway.RoomTile));
+                if (!doorway.Slanted) continue;
+                var (from, to) = doorway.Ends;
+                doorEnds.Add(from);
+                doorEnds.Add(to);
+            }
+            bool Opens(Vector2Int tile, Vector2Int next) =>
+                layout.IsWalkable(next) && (!layout.IsCorridor(tile) || layout.RoomAt(next) == null || doorways.Contains((tile, next)));
 
-            plan.AddTileEdgeRuns(layout, settings.WallHeight, bends);
+            var bends = settings.ChamferCorridorBends ? CorridorBends(layout, Opens) : new Dictionary<Vector2Int, (Vector2Int, Vector2Int)>();
+            plan.AddTileEdgeRuns(layout, settings.WallHeight, bends, Opens);
             foreach (LevelRoom room in layout.Rooms.Values)
             {
                 if (room.Outline == null) continue;
@@ -57,10 +74,10 @@ namespace CGD.Level
                 plan.Cuts.AddRange(room.Outline.Cuts);
             }
             var straight = new HashSet<Vector2Int>();
-            if (settings.DiagonalCorridorSteps > 0)
+            if (settings.DiagonalCorridorSteps > 0 || doorEnds.Count > 0)
                 foreach (List<Vector2Int> line in DiagonalLines(bends))
                 {
-                    plan.AddDiagonal(line, bends, settings.WallHeight);
+                    plan.AddDiagonal(line, bends, settings.WallHeight, doorEnds);
                     straight.UnionWith(line);
                 }
             foreach (var (tile, (a, b)) in bends)
@@ -70,7 +87,7 @@ namespace CGD.Level
 
         // Corridor tiles with exactly two open sides at right angles, keyed to those sides'
         // opposites: the two walls that meet at the bend's outside corner.
-        private static Dictionary<Vector2Int, (Vector2Int, Vector2Int)> CorridorBends(LevelLayout layout)
+        private static Dictionary<Vector2Int, (Vector2Int, Vector2Int)> CorridorBends(LevelLayout layout, System.Func<Vector2Int, Vector2Int, bool> opens)
         {
             var bends = new Dictionary<Vector2Int, (Vector2Int, Vector2Int)>();
             foreach (Vector2Int tile in layout.WalkableTiles)
@@ -80,7 +97,7 @@ namespace CGD.Level
                 Vector2Int open = Vector2Int.zero;
                 int count = 0;
                 foreach (Vector2Int side in GridNeighbours.Four)
-                    if (layout.IsWalkable(tile + side)) { open += side; count++; }
+                    if (opens(tile, tile + side)) { open += side; count++; }
 
                 // Two open sides at right angles sum to a diagonal.
                 if (count == 2 && open.x != 0 && open.y != 0)
@@ -89,7 +106,8 @@ namespace CGD.Level
             return bends;
         }
 
-        private void AddTileEdgeRuns(LevelLayout layout, float corridorHeight, Dictionary<Vector2Int, (Vector2Int, Vector2Int)> bends)
+        private void AddTileEdgeRuns(LevelLayout layout, float corridorHeight, Dictionary<Vector2Int, (Vector2Int, Vector2Int)> bends,
+                                     System.Func<Vector2Int, Vector2Int, bool> opens)
         {
             // Keyed by room too (null = corridor), so each run belongs to one room.
             var edges = new Dictionary<(int side, int line, float height, LevelRoom room), List<int>>();
@@ -103,7 +121,7 @@ namespace CGD.Level
                 for (int side = 0; side < GridNeighbours.Four.Length; side++)
                 {
                     Vector2Int dir = GridNeighbours.Four[side];
-                    if (layout.IsWalkable(t + dir)) continue;
+                    if (opens(t, t + dir)) continue;
                     if (isBend && (dir == cut.Item1 || dir == cut.Item2)) continue;
 
                     bool alongY = dir.x != 0;
@@ -171,8 +189,11 @@ namespace CGD.Level
 
         // One line of bends walled as a single diagonal: the first chamfer's stub along the
         // straight wall before it, a wall from there to the last chamfer's end, and the last's stub
-        // after it. Each chamfer still cuts its corner; each notch the wall crosses is filled.
-        private void AddDiagonal(List<Vector2Int> line, Dictionary<Vector2Int, (Vector2Int, Vector2Int)> bends, float height)
+        // after it — unless the line can end on a slanted doorway's end or on the straight wall
+        // its stub turns onto (Fit), when it runs there with no stub. Each chamfer still cuts its
+        // corner; each notch the wall crosses is filled.
+        private void AddDiagonal(List<Vector2Int> line, Dictionary<Vector2Int, (Vector2Int, Vector2Int)> bends, float height,
+                                 List<Vector2> doorEnds)
         {
             var chamfers = new List<(Vector2 start, Vector2 a, Vector2 corner, Vector2 b, Vector2 end)>(line.Count);
             foreach (Vector2Int tile in line)
@@ -184,9 +205,14 @@ namespace CGD.Level
 
             var first = chamfers[0];
             var last  = chamfers[chamfers.Count - 1];
-            Segments.Add(new Segment(first.start, first.a, height, squareEnds: true, room: null));
-            Segments.Add(new Segment(first.a, last.b, height, squareEnds: false, room: null));
-            Segments.Add(new Segment(last.b, last.end, height, squareEnds: true, room: null));
+            Vector2 run = (last.b - first.a).normalized;
+            bool fitsStart = Fit(first.a, first.start, -run, leading: true, doorEnds, out Vector2 start);
+            bool fitsEnd   = Fit(last.b, last.end, run, leading: false, doorEnds, out Vector2 end);
+            if (fitsStart) AddFill(start, first.start, first.a);
+            else Segments.Add(new Segment(first.start, first.a, height, squareEnds: true, room: null));
+            Segments.Add(new Segment(fitsStart ? start : first.a, fitsEnd ? end : last.b, height, squareEnds: false, room: null));
+            if (fitsEnd) AddFill(last.b, last.end, end);
+            else Segments.Add(new Segment(last.b, last.end, height, squareEnds: true, room: null));
             for (int i = 0; i < chamfers.Count; i++)
             {
                 Cuts.Add((chamfers[i].a, chamfers[i].corner, chamfers[i].b));
@@ -196,6 +222,51 @@ namespace CGD.Level
                 var notch = new Vector2(from.x, to.y);
                 Fills.Add((from, IsCorner(notch) ? notch : new Vector2(to.x, from.y), to));
             }
+        }
+
+        // Where a diagonal, ending at `point` and running on `outward`, can end instead of turning
+        // down its stub to `corner`: a slanted doorway's end a short way on along it, or the point
+        // where it meets the straight corridor wall the stub turns onto (that wall, ending or
+        // starting at `corner` as the line starts or ends, is cut back to meet it at 45°).
+        private bool Fit(Vector2 point, Vector2 corner, Vector2 outward, bool leading, List<Vector2> doorEnds, out Vector2 fitted)
+        {
+            foreach (Vector2 doorEnd in doorEnds)
+            {
+                Vector2 off = doorEnd - point;
+                if (off.sqrMagnitude > 0.6f || Mathf.Abs(off.x * outward.y - off.y * outward.x) > 1e-3f || Vector2.Dot(off, outward) < -1e-4f) continue;
+                fitted = doorEnd;
+                return true;
+            }
+
+            for (int i = 0; i < Segments.Count; i++)
+            {
+                Segment wall = Segments[i];
+                if (wall.Room != null || ((leading ? wall.To : wall.From) - corner).sqrMagnitude > 1e-6f) continue;
+                Vector2 length = wall.To - wall.From;
+                Vector2 away = (leading ? -length : length).normalized;   // from the corner along the wall
+                if (Mathf.Abs(away.x) > 1e-4f && Mathf.Abs(away.y) > 1e-4f) continue;   // a straight wall only
+
+                // point + outward·u = corner + away·t, for u and t both ahead.
+                float det = outward.x * -away.y - outward.y * -away.x;
+                if (Mathf.Abs(det) < 1e-6f) continue;
+                Vector2 gap = corner - point;
+                float u = (gap.x * -away.y - gap.y * -away.x) / det;
+                float t = (outward.x * gap.y - outward.y * gap.x) / det;
+                if (u <= 1e-4f || t <= 1e-4f || t >= length.magnitude - 1e-4f) continue;
+
+                fitted = corner + away * t;
+                Segments[i] = leading ? new Segment(wall.From, fitted, wall.Height, squareEnds: false, wall.Room)
+                                      : new Segment(fitted, wall.To, wall.Height, squareEnds: false, wall.Room);
+                return true;
+            }
+            fitted = default;
+            return false;
+        }
+
+        // The floor between a fitted diagonal and the stub it replaced.
+        private void AddFill(Vector2 a, Vector2 corner, Vector2 b)
+        {
+            if (Mathf.Abs((corner.x - a.x) * (b.y - a.y) - (corner.y - a.y) * (b.x - a.x)) > 1e-5f) Fills.Add((a, corner, b));
         }
 
         private static bool IsCorner(Vector2 point) =>

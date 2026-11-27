@@ -56,12 +56,11 @@ namespace CGD.Level
                 float extra = doorway.Room.WallHeight - corridorHeight;
                 if (extra <= 0.01f) continue;
 
-                Vector2Int dir = doorway.Outward;
-                Vector3 outward = new(dir.x, 0f, dir.y);
-                Vector3 position = _layout.TileToLocal(doorway.RoomTile) + outward * ((Tile + Thickness) * 0.5f)
+                // Across the opening (a slanted one too), standing outside it as the wall does.
+                Vector3 outward = LevelLayout.DoorwayOutward(doorway);
+                Vector3 position = _layout.DoorwayMiddle(doorway) + outward * (Thickness * 0.5f)
                                  + Vector3.up * (corridorHeight + extra * 0.5f);
-                Vector3 size = dir.x != 0 ? new Vector3(Thickness, extra, Tile) : new Vector3(Tile, extra, Thickness);
-                _walls.AddBox(position, size);
+                _walls.AddBox(position, new Vector3(Tile * doorway.Width, extra, Thickness), Quaternion.LookRotation(outward));
             }
         }
     }

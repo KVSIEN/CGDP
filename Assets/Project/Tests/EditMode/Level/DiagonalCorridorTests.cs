@@ -98,6 +98,24 @@ namespace CGD.Tests
                 if (diagonal && run.magnitude > 2f) diagonals++;
             }
             Assert.That(diagonals, Is.EqualTo(2), "one long diagonal wall a side");
+            // No jog: where a long diagonal ends, no half-tile piece turns off it at a right angle to
+            // a straight wall; the diagonal runs on to meet that wall instead.
+            foreach (LevelWallPlan.Segment diagonal in plan.Segments)
+            {
+                if ((diagonal.To - diagonal.From).magnitude <= 2f) continue;
+                foreach (LevelWallPlan.Segment stub in plan.Segments)
+                {
+                    Vector2 run = stub.To - stub.From;
+                    if (!Mathf.Approximately(run.magnitude, 0.5f) || (stub.From != diagonal.To && stub.To != diagonal.From)) continue;
+                    Vector2 far = stub.From == diagonal.To ? stub.To : stub.From;
+                    foreach (LevelWallPlan.Segment next in plan.Segments)
+                    {
+                        if (next.From != far && next.To != far || next.From == stub.From && next.To == stub.To) continue;
+                        Vector2 on = next.To - next.From;
+                        Assert.That(Mathf.Abs(on.x * run.y - on.y * run.x), Is.LessThan(1e-4f), $"a jog at {far}");
+                    }
+                }
+            }
             Assert.That(plan.Fills, Is.Not.Empty, "the notches the walls take in are floored");
             foreach (var (a, corner, b) in plan.Fills)
             {

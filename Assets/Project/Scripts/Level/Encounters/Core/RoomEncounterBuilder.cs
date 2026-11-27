@@ -118,18 +118,17 @@ namespace CGD.Level
             if (_settings.ShutterPrefab != null)
                 foreach (LevelDoorway doorway in doorways)
                 {
-                    Pose pose = LevelGeometryBuilder.DoorwayPose(_layout, doorway, _level);
-                    Vector3 position = pose.position - pose.forward * ShutterInset;
-                    shutters.Add(UnityEngine.Object.Instantiate(_settings.ShutterPrefab, position, pose.rotation, holder));
+                    DoorwaySpot spot = LevelGeometryBuilder.DoorwaySpotOf(_layout, doorway, _level);
+                    shutters.Add(spot.Place(_settings.ShutterPrefab.gameObject, holder, ShutterInset).GetComponent<RoomShutter>());
                 }
             return new RoomSeal(shutters);
         }
 
         // Open passages from this room to rooms further from Start: where a Puzzle room's
         // locked doors go. Gates and one-way doors already have a door of their own.
-        private List<Pose> ForwardDoorways(LevelRoom room, List<LevelDoorway> doorways, MapGraphAnalysis analysis)
+        private List<DoorwaySpot> ForwardDoorways(LevelRoom room, List<LevelDoorway> doorways, MapGraphAnalysis analysis)
         {
-            var forward = new List<Pose>();
+            var forward = new List<DoorwaySpot>();
             if (room.Node.Type != MapNodeType.Puzzle) return forward;
 
             int depth = analysis.Depth(room.Node.Id);
@@ -138,7 +137,7 @@ namespace CGD.Level
                 MapConnection connection = doorway.Connection;
                 if (connection.IsGate || connection.OneWay) continue;
                 if (analysis.Depth(connection.Other(room.Node.Id)) <= depth) continue;
-                forward.Add(LevelGeometryBuilder.DoorwayPose(_layout, doorway, _level));
+                forward.Add(LevelGeometryBuilder.DoorwaySpotOf(_layout, doorway, _level));
             }
             return forward;
         }

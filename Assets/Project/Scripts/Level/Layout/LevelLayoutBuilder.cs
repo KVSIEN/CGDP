@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using CGD.Algorithms;
 using CGD.Core;
 using CGD.Map;
 
@@ -129,8 +130,8 @@ namespace CGD.Level
             {
                 if (!room.Footprint.CurvedWalls && room.Chamfer <= 0) continue;
 
-                // Only its doorways open the wall: a corridor leaving a slanted wall's doorway also
-                // passes the step beside it, which stays walled.
+                // Only its doorways open the wall: a slanted doorway's corridor also touches the step
+                // beside it, which stays walled.
                 var doorways = new HashSet<(Vector2Int, Vector2Int)>();
                 foreach (LevelDoorway doorway in layout.Doorways)
                     if (doorway.Room == room) doorways.Add((doorway.RoomTile, doorway.Outward));
@@ -204,10 +205,14 @@ namespace CGD.Level
 
                 System.Func<Vector2Int, bool> clear    = t => !blocked.Contains(t) && !reserved.Contains(t);
                 System.Func<Vector2Int, bool> crossing = t => !blocked.Contains(t);
-                System.Func<Vector2Int, bool> leadFree = t => !reserved.Contains(t) && layout.RoomAt(t) == null;
-                if (!TryRoute(router, doorsA, doorsB, clear, leadFree, out Route route) && !TryRouteAround(router, a, b, usedDoors, clear, leadFree, out route))
+                // A slanted doorway's throat (Door.Throat) passes inside the ring kept round its own
+                // room, so it is let through there, but only clear of every other room and corridor.
+                // Without bend chamfers a throat would be walled as a staircase, so slanted doorways go unused.
+                System.Func<Vector2Int, LevelRoom, bool> throatFree = (t, own) =>
+                    _settings.ChamferCorridorBends && !reserved.Contains(t) && ClearOfRooms(layout, t, own);
+                if (!TryRoute(router, doorsA, doorsB, clear, throatFree, out Route route) && !TryRouteAround(router, a, b, usedDoors, clear, throatFree, out route))
                 {
-                    if (!TryRoute(router, doorsA, doorsB, crossing, leadFree, out route) && !TryRouteAround(router, a, b, usedDoors, crossing, leadFree, out route))
+                    if (!TryRoute(router, doorsA, doorsB, crossing, throatFree, out route) && !TryRouteAround(router, a, b, usedDoors, crossing, throatFree, out route))
                     {
                         layout.Warnings.Add($"No corridor route between {Describe(a)} and {Describe(b)}.");
                         continue;
@@ -222,20 +227,37 @@ namespace CGD.Level
                 Reserve(path, reserved);
                 layout.AddCorridor(connection, path);
 
-                AddDoorways(layout, analysis, connection, a, route.A.Inside, route.A.Outside, b, route.B.Inside, route.B.Outside);
+                AddDoorways(layout, analysis, connection, route.A, route.B);
             }
+        }
+
+        // Whether a throat tile beyond a doorway's own (Outside) is off every room and touches
+        // none but its own, and that only corner to corner.
+        private static bool ClearOfRooms(LevelLayout layout, Vector2Int tile, LevelRoom own)
+        {
+            if (layout.RoomAt(tile) != null) return false;
+            foreach (Vector2Int step in GridNeighbours.Eight)
+            {
+                LevelRoom beside = layout.RoomAt(tile + step);
+                if (beside != null && (beside != own || !GridNeighbours.IsDiagonal(step))) return false;
+            }
+            return true;
         }
 
         // A connection's doorways: the gate (or door) goes on the end nearer Start, and each end
         // knows whether it leads back toward Start or onward.
         private static void AddDoorways(LevelLayout layout, MapGraphAnalysis analysis, MapConnection connection,
-            LevelRoom a, Vector2Int insideA, Vector2Int outsideA, LevelRoom b, Vector2Int insideB, Vector2Int outsideB)
+            LevelRoom a, Vector2Int insideA, Vector2Int outsideA, LevelRoom b, Vector2Int insideB, Vector2Int outsideB,
+            Vector2Int slantA = default, Vector2Int slantB = default)
         {
             bool gateAtA = analysis.Progress(a.Node.Id) <= analysis.Progress(b.Node.Id);
             int depthA = analysis.Depth(a.Node.Id), depthB = analysis.Depth(b.Node.Id);
-            layout.Doorways.Add(new LevelDoorway(a, connection, insideA, outsideA, gateAtA, DirectionOf(depthA, depthB)));
-            layout.Doorways.Add(new LevelDoorway(b, connection, insideB, outsideB, !gateAtA, DirectionOf(depthB, depthA)));
+            layout.Doorways.Add(new LevelDoorway(a, connection, insideA, outsideA, gateAtA, DirectionOf(depthA, depthB), slantA));
+            layout.Doorways.Add(new LevelDoorway(b, connection, insideB, outsideB, !gateAtA, DirectionOf(depthB, depthA), slantB));
         }
+
+        private static void AddDoorways(LevelLayout layout, MapGraphAnalysis analysis, MapConnection connection, Door a, Door b) =>
+            AddDoorways(layout, analysis, connection, a.Room, a.Inside, a.Outside, b.Room, b.Inside, b.Outside, a.Slant, b.Slant);
 
         private static DoorwayDirection DirectionOf(int ownDepth, int otherDepth)
         {
@@ -246,17 +268,22 @@ namespace CGD.Level
 
         private readonly struct Door
         {
-            public Door(DoorSocket socket)
+            public Door(LevelRoom room, DoorSocket socket)
             {
+                Room    = room;
                 Inside  = socket.Inside;
                 Outside = socket.Outside;
-                Lead    = socket.Slanted ? socket.Lead : null;
+                Slant   = socket.Slant;
+                Throat  = socket.Throat(ThroatSteps);
             }
+            public LevelRoom  Room    { get; }
             public Vector2Int Inside  { get; }
             public Vector2Int Outside { get; }
-            // A doorway in a slanted wall: the tile its corridor must leave by, which stands by the
-            // room's next step (inside the ring every corridor otherwise keeps off rooms).
-            public Vector2Int? Lead   { get; }
+            public Vector2Int Slant   { get; }
+            // The corridor's first tiles from Outside: just Outside on a straight wall; on a slanted
+            // one a staircase out along the diagonal (DoorSocket.Throat), the route going on from its end.
+            public List<Vector2Int> Throat { get; }
+            public Vector2Int ThroatEnd => Throat[Throat.Count - 1];
         }
 
         private readonly struct Route
@@ -272,7 +299,7 @@ namespace CGD.Level
         // doorway blindly can send a corridor the long way round the whole map, walling in
         // rooms that later corridors then have to cross into.
         private static bool TryRoute(CorridorRouter router, List<Door> doorsA, List<Door> doorsB,
-            System.Func<Vector2Int, bool> isPassable, System.Func<Vector2Int, bool> leadFree, out Route best)
+            System.Func<Vector2Int, bool> isPassable, System.Func<Vector2Int, LevelRoom, bool> throatFree, out Route best)
         {
             best = default;
             for (int limit = 2; limit <= 4; limit += 2)
@@ -283,7 +310,7 @@ namespace CGD.Level
                     {
                         if (limit > 2 && i < 2 && j < 2) continue;   // already tried
 
-                        List<Vector2Int> path = FindPath(router, doorsA[i], doorsB[j], isPassable, leadFree);
+                        List<Vector2Int> path = FindPath(router, doorsA[i], doorsB[j], isPassable, throatFree);
                         if (path == null || (found && path.Count >= best.Path.Count)) continue;
 
                         best  = new Route(doorsA[i], doorsB[j], path);
@@ -294,15 +321,33 @@ namespace CGD.Level
             return false;
         }
 
-        // A route between two doorways' outside tiles. A doorway in a slanted wall is left by its
-        // Lead tile, which the route may use though it lies in the ring kept round rooms
-        // (`leadFree`: not a room's or another corridor's).
+        // A slanted doorway's corridor leaves on the diagonal this many steps before it is routed.
+        private const int ThroatSteps = 2;
+
+        // A route between two doorways' outside tiles: each one's throat (Door.Throat), routed
+        // between the throats' ends, which stays off the throats' other tiles. A throat that isn't
+        // `throatFree` gives no route.
         private static List<Vector2Int> FindPath(CorridorRouter router, Door a, Door b,
-            System.Func<Vector2Int, bool> isPassable, System.Func<Vector2Int, bool> leadFree)
+            System.Func<Vector2Int, bool> isPassable, System.Func<Vector2Int, LevelRoom, bool> throatFree)
         {
-            if (a.Lead == null && b.Lead == null) return router.FindPath(a.Outside, b.Outside, isPassable);
-            bool Passable(Vector2Int tile) => isPassable(tile) || ((tile == a.Lead || tile == b.Lead) && leadFree(tile));
-            return router.FindPath(a.Outside, b.Outside, Passable);
+            if (a.Throat.Count == 1 && b.Throat.Count == 1) return router.FindPath(a.Outside, b.Outside, isPassable);
+
+            var throats = new HashSet<Vector2Int>();
+            foreach (Door door in new[] { a, b })
+                for (int i = 1; i < door.Throat.Count; i++)
+                {
+                    if (!throatFree(door.Throat[i], door.Room)) return null;
+                    if (i < door.Throat.Count - 1) throats.Add(door.Throat[i]);
+                }
+            if (throats.Contains(a.ThroatEnd) || throats.Contains(b.ThroatEnd) || a.ThroatEnd == b.ThroatEnd) return null;
+
+            List<Vector2Int> middle = router.FindPath(a.ThroatEnd, b.ThroatEnd, tile => isPassable(tile) && !throats.Contains(tile));
+            if (middle == null) return null;
+            var path = new List<Vector2Int>(a.Throat.Count + middle.Count + b.Throat.Count);
+            for (int i = 0; i < a.Throat.Count - 1; i++) path.Add(a.Throat[i]);
+            path.AddRange(middle);
+            for (int i = b.Throat.Count - 2; i >= 0; i--) path.Add(b.Throat[i]);
+            return path;
         }
 
         // When no doorway on a side the rooms face can be joined: rooms packed together by direct
@@ -312,14 +357,14 @@ namespace CGD.Level
         private const int MaxDoorsAround = 12;
 
         private static bool TryRouteAround(CorridorRouter router, LevelRoom a, LevelRoom b, Dictionary<int, HashSet<Vector2Int>> usedDoors,
-            System.Func<Vector2Int, bool> isPassable, System.Func<Vector2Int, bool> leadFree, out Route best)
+            System.Func<Vector2Int, bool> isPassable, System.Func<Vector2Int, LevelRoom, bool> throatFree, out Route best)
         {
             best = default;
             bool found = false;
             foreach (Door doorA in EveryDoor(a, b, usedDoors[a.Node.Id]))
                 foreach (Door doorB in EveryDoor(b, a, usedDoors[b.Node.Id]))
                 {
-                    List<Vector2Int> path = FindPath(router, doorA, doorB, isPassable, leadFree);
+                    List<Vector2Int> path = FindPath(router, doorA, doorB, isPassable, throatFree);
                     if (path == null || (found && path.Count >= best.Path.Count)) continue;
 
                     best  = new Route(doorA, doorB, path);
@@ -333,7 +378,7 @@ namespace CGD.Level
             var doors = new List<Door>();
             foreach (DoorSocket socket in room.Footprint.Sockets)
                 if (!IsNearUsed(socket.Outside, used))
-                    doors.Add(new Door(socket));
+                    doors.Add(new Door(room, socket));
             // Sockets come in a fixed order and the sort is deterministic, so a seed lays out the same.
             doors.Sort((x, y) => Vector2.Distance(x.Outside, other.Center).CompareTo(Vector2.Distance(y.Outside, other.Center)));
             if (doors.Count > MaxDoorsAround) doors.RemoveRange(MaxDoorsAround, doors.Count - MaxDoorsAround);
@@ -379,7 +424,7 @@ namespace CGD.Level
                 if (score <= bestScore) continue;
 
                 bestScore = score;
-                door = new Door(socket);
+                door = new Door(room, socket);
             }
             return bestScore > float.MinValue;
         }

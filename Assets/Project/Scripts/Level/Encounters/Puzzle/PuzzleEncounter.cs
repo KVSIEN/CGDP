@@ -20,9 +20,9 @@ namespace CGD.Level
             if (settings.PuzzleSwitchPrefab == null) return;
 
             if (settings.PuzzleDoorPrefab != null)
-                foreach (Pose doorway in Context.ForwardDoorways)
+                foreach (DoorwaySpot doorway in Context.ForwardDoorways)
                 {
-                    GameObject door = Instantiate(settings.PuzzleDoorPrefab, doorway.position, doorway.rotation, Context.Level);
+                    GameObject door = doorway.Place(settings.PuzzleDoorPrefab, Context.Level);
                     ConditionLock conditionLock = door.GetComponentInChildren<ConditionLock>();
                     if (conditionLock != null) _doors.Add(conditionLock);
                 }

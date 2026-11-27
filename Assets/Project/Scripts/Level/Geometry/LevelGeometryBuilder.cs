@@ -339,14 +339,14 @@ namespace CGD.Level
                 GameObject prefab = objectiveGated ? ObjectiveDoorPrefab : _settings.DoorPrefabFor(doorway.Connection, doorway.Room, LeadsToStealthRoom(layout, doorway.Connection));
                 if (prefab == null) continue;
 
-                Pose pose = DoorwayPose(layout, doorway, parent);
-                GameObject door = Object.Instantiate(prefab, pose.position, pose.rotation, parent);
+                DoorwaySpot spot = DoorwaySpotOf(layout, doorway, parent);
+                GameObject door = spot.Place(prefab, parent);
                 if (objectiveGated) ObjectiveDoors.Add(door);
                 else if (doorway.Connection.IsGate) Gates[doorway.Connection] = door;
 
                 // The door sits at the end nearer Start; a one-way door opens from the corridor
                 // side, i.e. for someone arriving from the deeper room.
-                if (doorway.Connection.OneWay) MakeOneWay(layout, doorway, door, pose.forward);
+                if (doorway.Connection.OneWay) MakeOneWay(layout, doorway, door, spot.Pose.forward);
             }
         }
 
@@ -356,13 +356,13 @@ namespace CGD.Level
         private static bool IsStealth(LevelLayout layout, int roomId) =>
             layout.Rooms.TryGetValue(roomId, out LevelRoom room) && room.Node.Type == MapNodeType.Stealth;
 
-        // Where a door goes: on the edge between the room tile and the corridor tile, on the
-        // floor, +Z facing out of the room. World space.
-        public static Pose DoorwayPose(LevelLayout layout, LevelDoorway doorway, Transform parent)
+        // Where a door goes: in the middle of the doorway's opening, on the floor, +Z facing out of
+        // the room, and how wide the opening is. World space.
+        public static DoorwaySpot DoorwaySpotOf(LevelLayout layout, LevelDoorway doorway, Transform parent)
         {
-            Vector3 position = (layout.TileToLocal(doorway.RoomTile) + layout.TileToLocal(doorway.OutsideTile)) * 0.5f;
-            Vector3 outward  = new(doorway.Outward.x, 0f, doorway.Outward.y);
-            return new Pose(parent.TransformPoint(position), parent.rotation * Quaternion.LookRotation(outward));
+            Vector3 position = layout.DoorwayMiddle(doorway);
+            Quaternion facing = Quaternion.LookRotation(LevelLayout.DoorwayOutward(doorway));
+            return new DoorwaySpot(new Pose(parent.TransformPoint(position), parent.rotation * facing), doorway.Width);
         }
 
         // Visual only: the kit pieces have no colliders to keep in sync with the boxes.

@@ -91,10 +91,13 @@ namespace CGD.Level
         {
             float tile = _layout.TileSize;
             float height = Mathf.Max(doorway.Room.WallHeight, 1f);
-            Vector3 middle = (_layout.TileToLocal(doorway.RoomTile) + _layout.TileToLocal(doorway.OutsideTile)) * 0.5f;
-            bool acrossX = doorway.Outward.x != 0;
-            var size = new Vector3(acrossX ? PortalDepth : tile, height, acrossX ? tile : PortalDepth);
-            return new Bounds(middle + Vector3.up * (height * 0.5f), size);
+            Vector3 middle = _layout.DoorwayMiddle(doorway);
+            // The opening as a thin slab across the doorway, turned with it (45° in a slanted wall),
+            // and the box round that.
+            Vector2 facing = doorway.Facing, across = new(-facing.y, facing.x);
+            Vector2 extent = new Vector2(Mathf.Abs(across.x), Mathf.Abs(across.y)) * (tile * doorway.Width)
+                           + new Vector2(Mathf.Abs(facing.x), Mathf.Abs(facing.y)) * PortalDepth;
+            return new Bounds(middle + Vector3.up * (height * 0.5f), new Vector3(extent.x, height, extent.y));
         }
     }
 }

@@ -42,7 +42,10 @@ namespace CGD.Level
             structure.AllowLevels(lowestLevel, highestLevel);
             // The floor a chamfered or curved wall cuts off, before anything is planned on it.
             if (room.Outline != null)
+            {
                 foreach (Vector2Int tile in room.Outline.CutTiles) structure.Tag(tile, RoomTileTags.Structure);
+                structure.SetOutline(room.Outline.Segments);
+            }
             if (room.Landmark != null)
                 TagLandmark(structure, room);
             else

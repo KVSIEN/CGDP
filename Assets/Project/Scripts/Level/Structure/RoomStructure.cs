@@ -27,6 +27,9 @@ namespace CGD.Level
         private readonly List<StructurePillar> _pillars = new();
         private readonly List<PartitionEdge> _partitions = new();
         private readonly List<DiagonalWall> _diagonals = new();
+        // The room's own walls that run off the tile edges (a curved or angled room's outline), in
+        // tile units with the floor on their left: what props are kept out of (PropWallClearance).
+        private readonly List<(Vector2 from, Vector2 to)> _slantedWalls = new();
         // Props standing in diagonal walls' open halves, by tile and the half's normal, and their heights.
         private readonly Dictionary<(Vector2Int, Vector2Int), float> _halfProps = new();
         private readonly List<PartitionEdge> _openings = new();
@@ -121,6 +124,7 @@ namespace CGD.Level
             copy._partitions.AddRange(_partitions);
             copy._diagonals.AddRange(_diagonals);
             foreach (var (half, height) in _halfProps) copy._halfProps[half] = height;
+            copy._slantedWalls.AddRange(_slantedWalls);
             copy._openings.AddRange(_openings);
             copy._entrances.AddRange(_entrances);
             copy._spaces.AddRange(_spaces);
@@ -362,6 +366,17 @@ namespace CGD.Level
             if (TryClaim(tiles, RoomTileTags.Structure)) return true;
             _diagonals.RemoveRange(_diagonals.Count - walls.Count, walls.Count);
             return false;
+        }
+
+        public IReadOnlyList<(Vector2 from, Vector2 to)> SlantedWalls => _slantedWalls;
+
+        // Takes the room's outline (RoomOutline, floor on the left of each piece) and keeps the
+        // pieces that leave the tile edges.
+        public void SetOutline(IEnumerable<(Vector2 from, Vector2 to)> segments)
+        {
+            _slantedWalls.Clear();
+            foreach (var (from, to) in segments)
+                if (!Mathf.Approximately(from.x, to.x) && !Mathf.Approximately(from.y, to.y)) _slantedWalls.Add((from, to));
         }
 
         // A prop standing in one half of a diagonal wall's tile (DiagonalWall), the half facing

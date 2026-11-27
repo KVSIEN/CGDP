@@ -5,8 +5,8 @@ using CGD.Level;
 
 namespace CGD.Tests
 {
-    // Doorways on an angled room's slanted walls: a socket on each 45° step, and the wall squared
-    // off round the step the doorway takes, so the door stands on a tile edge like any other.
+    // Doorways set into an angled room's slanted walls: a socket on each 45° step, the wall opened
+    // √2 tiles wide along its diagonal, and the corridor leaving on the diagonal.
     public class SlantedDoorwayTests
     {
         private static RoomFootprint Diamond(int radius)
@@ -26,7 +26,15 @@ namespace CGD.Tests
             {
                 if (!socket.Slanted) continue;
                 slanted++;
-                Assert.That(Diamond(6).Contains(socket.Outside) || Diamond(6).Contains(socket.Lead), Is.False, "the corridor's first two tiles are off the floor");
+                Assert.That(Mathf.Abs(socket.Slant.x) == 1 && Mathf.Abs(socket.Slant.y) == 1, Is.True, "a diagonal way out");
+                List<Vector2Int> throat = socket.Throat(2);
+                Assert.That(throat.Count, Is.EqualTo(5));
+                for (int i = 0; i < throat.Count; i++)
+                {
+                    Assert.That(Diamond(6).Contains(throat[i]), Is.False, "the throat is off the floor");
+                    if (i > 0) Assert.That((throat[i] - throat[i - 1]).sqrMagnitude, Is.EqualTo(1));
+                }
+                Assert.That(throat[4] - throat[0], Is.EqualTo(socket.Slant * 2), "two steps out along the diagonal");
             }
             Assert.That(slanted, Is.GreaterThan(0));
 
@@ -36,7 +44,7 @@ namespace CGD.Tests
         }
 
         [Test]
-        public void TheWallRunsRoundASlantedDoorwayAndClosesEverywhereElse()
+        public void TheWallOpensAlongItsDiagonalAndClosesEverywhereElse()
         {
             RoomFootprint diamond = Diamond(6);
             foreach (DoorSocket socket in diamond.Sockets)
@@ -44,7 +52,8 @@ namespace CGD.Tests
                 if (!socket.Slanted) continue;
                 List<(Vector2 from, Vector2 to)> wall = RoomOutline.Build(diamond, (tile, side) => tile == socket.Inside && side == socket.Outward);
 
-                // Every point is the end of two pieces except the doorway's two corners.
+                // Every point is the end of two pieces except the opening's two ends, half a tile
+                // either way along the diagonal from the step's middle.
                 var ends = new Dictionary<Vector2, int>();
                 foreach (var (from, to) in wall)
                     foreach (Vector2 point in new[] { from, to })
@@ -55,7 +64,8 @@ namespace CGD.Tests
                 {
                     if (uses % 2 == 0) continue;
                     open++;
-                    Assert.That(Vector2.Distance(point, doorway), Is.EqualTo(0.5f).Within(1e-4f), $"{socket.Inside}: an open end away from the doorway");
+                    Assert.That(Vector2.Distance(point, doorway), Is.EqualTo(Mathf.Sqrt(0.5f)).Within(1e-4f), $"{socket.Inside}: an open end away from the doorway");
+                    Assert.That(Mathf.Abs(Vector2.Dot(point - doorway, socket.Slant)), Is.LessThan(1e-4f), "on the diagonal");
                 }
                 Assert.That(open, Is.EqualTo(2));
 
@@ -66,6 +76,20 @@ namespace CGD.Tests
                     Assert.That(square || Mathf.Approximately(Mathf.Abs(run.x), Mathf.Abs(run.y)), Is.True, "walls square or 45°");
                 }
             }
+        }
+
+        [Test]
+        public void APropReachingIntoASlantedWallIsPushedStraightOffIt()
+        {
+            // A wall from (0, 2) to (2, 0) with the floor on its left: where x + y >= 2.
+            var walls = new List<(Vector2, Vector2)> { (new Vector2(0f, 2f), new Vector2(2f, 0f)) };
+            Vector2 shift = PropWallClearance.OffSlants(walls, new Vector2(0.6f, 0.6f), new Vector2(1.2f, 1.2f));
+            Assert.That(shift.x, Is.EqualTo(shift.y).Within(1e-5f), "straight off the 45° wall");
+            Vector2 corner = new Vector2(0.6f, 0.6f) + shift;
+            Assert.That((corner.x + corner.y - 2f) / Mathf.Sqrt(2f), Is.EqualTo(PropWallClearance.WallHalfThickness).Within(1e-4f), "just clear of it");
+
+            Assert.That(PropWallClearance.OffSlants(walls, new Vector2(1.5f, 1.5f), new Vector2(2f, 2f)), Is.EqualTo(Vector2.zero), "clear already");
+            Assert.That(PropWallClearance.OffSlants(walls, new Vector2(5f, 0.6f), new Vector2(5.5f, 1f)), Is.EqualTo(Vector2.zero), "beside the wall's run, not across from it");
         }
     }
 }

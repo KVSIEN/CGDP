@@ -29,9 +29,9 @@ namespace CGD.Level
                 WallKit kit = kitFor(doorway.Room);
                 if (kit == null || kit.DoorFrame == null) continue;
 
-                Vector3 position = (layout.TileToLocal(doorway.RoomTile) + layout.TileToLocal(doorway.OutsideTile)) * 0.5f;
-                Vector3 outward  = new(doorway.Outward.x, 0f, doorway.Outward.y);
-                placements.Add(new WallKitPlacement(kit.DoorFrame, position, Quaternion.LookRotation(outward), Vector3.one));
+                Vector3 outward = LevelLayout.DoorwayOutward(doorway);
+                placements.Add(new WallKitPlacement(kit.DoorFrame, layout.DoorwayMiddle(doorway), Quaternion.LookRotation(outward),
+                                                    new Vector3(doorway.Width, 1f, 1f)));
             }
             return placements;
         }
