@@ -17,7 +17,6 @@ namespace CGD.Level
     {
         private const float OutlineWidth   = 0.25f;
         private const float OutlineHeight  = 0.1f;
-        private const float EmissionGain   = 2f;
         // How far above the room's walls the label floats.
         private const float LabelLift      = 0.5f;
         private const float LabelMaxFont   = 14f;
@@ -143,16 +142,7 @@ namespace CGD.Level
             return _labelMaterial;
         }
 
-        private void CreateOutline(Color color, BoxMeshBuilder builder, Material template, Transform parent)
-        {
-            var go = new GameObject("RoomOutlines", typeof(MeshFilter), typeof(MeshRenderer));
-            go.transform.SetParent(parent, false);
-            go.GetComponent<MeshFilter>().sharedMesh = _assets.Track(builder.ToMesh(go.name));
-
-            var material = _assets.Track(new Material(template) { name = $"{template.name} (overview)", color = color });
-            material.EnableKeyword("_EMISSION");
-            material.SetColor("_EmissionColor", color * EmissionGain);
-            go.GetComponent<MeshRenderer>().sharedMaterial = material;
-        }
+        private void CreateOutline(Color color, BoxMeshBuilder builder, Material template, Transform parent) =>
+            GlowingPart.Create("RoomOutlines", builder, template, color, "overview", _assets, parent);
     }
 }

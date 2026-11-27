@@ -22,7 +22,6 @@ namespace CGD.Level
         private const float BarDepth     = 0.08f;
         private const float BarWidth     = 0.7f;   // of a tile
         private const float MarkerSize   = 0.25f;
-        private const float EmissionGain = 2f;
 
         // The label hangs under the bar (and its danger marker), as wide as the doorway.
         private const float LabelGap      = 0.08f;
@@ -119,16 +118,7 @@ namespace CGD.Level
             return mesh;
         }
 
-        private void CreateSign(Color color, BoxMeshBuilder builder, Material template, Transform parent)
-        {
-            var go = new GameObject("DoorSigns", typeof(MeshFilter), typeof(MeshRenderer));
-            go.transform.SetParent(parent, false);
-            go.GetComponent<MeshFilter>().sharedMesh = _assets.Track(builder.ToMesh(go.name));
-
-            var material = _assets.Track(new Material(template) { name = $"{template.name} (sign)", color = color });
-            material.EnableKeyword("_EMISSION");
-            material.SetColor("_EmissionColor", color * EmissionGain);
-            go.GetComponent<MeshRenderer>().sharedMaterial = material;
-        }
+        private void CreateSign(Color color, BoxMeshBuilder builder, Material template, Transform parent) =>
+            GlowingPart.Create("DoorSigns", builder, template, color, "sign", _assets, parent);
     }
 }
