@@ -200,7 +200,7 @@ namespace CGD.Level
             if (function == null || block.width * block.height > 1) return area;
 
             int size = function.RollSize(random, MinRoomTiles, _settings.RoomTiles, roomLayout);
-            float scale = style.RoomSizeScale * (sideDesign != null ? sideDesign.RoomSizeScale : 1f);
+            float scale = _settings.RoomSizeScale * style.RoomSizeScale * (sideDesign != null ? sideDesign.RoomSizeScale : 1f);
             if (!Mathf.Approximately(scale, 1f)) size = Mathf.Clamp(Mathf.RoundToInt(size * scale), MinRoomTiles, _settings.RoomTiles);
             int inset = (_settings.RoomTiles - size) / 2;
             return new RectInt(area.xMin + inset, area.yMin + inset, size, size);

@@ -50,6 +50,17 @@ namespace CGD.Level
                     _steps[IndexOf(neighbour)] = next;
                     open.Enqueue(neighbour);
                 }
+                // Round a corner through a diagonal wall's open half, as RoomStructure.StaysConnected walks.
+                if (structure.Diagonals.Count == 0) continue;
+                foreach (Vector2Int corner in GridNeighbours.Eight)
+                {
+                    Vector2Int neighbour = tile + corner;
+                    if (!GridNeighbours.IsDiagonal(corner) || !structure.Contains(neighbour) || _steps[IndexOf(neighbour)] != Unreached) continue;
+                    if (structure.Has(neighbour, solid) || !structure.CanPassHalf(tile, neighbour)) continue;
+                    if (blocked != null && blocked.Contains(neighbour)) continue;
+                    _steps[IndexOf(neighbour)] = next;
+                    open.Enqueue(neighbour);
+                }
             }
         }
 

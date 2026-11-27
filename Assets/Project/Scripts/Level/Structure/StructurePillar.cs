@@ -5,8 +5,9 @@ namespace CGD.Level
     // A column, floor to top unless it is broken. Position is in tile units (tile corners are whole numbers).
     public readonly struct StructurePillar
     {
-        public StructurePillar(Vector2 position, float width, GameObject prefab, float height = 0f)
+        public StructurePillar(Vector2 position, float width, GameObject prefab, float height = 0f, bool freeStanding = true)
         {
+            FreeStanding = freeStanding;
             Position = position;
             Width    = width;
             Prefab   = prefab;
@@ -17,5 +18,7 @@ namespace CGD.Level
         public float      Width    { get; }    // metres
         public float      Height   { get; }    // metres; 0 = the room's full wall height
         public GameObject Prefab   { get; }    // optional; replaces the plain box
+        // Standing on a floor tile of its own, rather than in the room's wall (a corner column).
+        public bool       FreeStanding { get; }
     }
 }

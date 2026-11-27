@@ -1264,6 +1264,13 @@ layouts that routed before route exactly as they did. Letting groups shift furth
 fits more pairs (13% fall back) but brought unroutable links back at 2 cells, so the shift stays
 at one cell. Next: give the remaining hallways something to do (sightlines, cover, a door to hold).
 
+**Touch first.** Gates and one-way links between neighbours are direct too (their door stands in
+the shared doorway), and so are the room generator's neighbours. The aligner fits every pair that
+can touch, then holds the rest one tile further apart, then two, up to half a cell, joining them
+with a straight run that keeps a wall to everything else. Rooms further apart than a cell may
+close their whole distance. Only a pair no straight run can join is routed, now over the shortest
+route from any doorway. The table above predates this.
+
 ### Next
 
 - Many wall placements still use *Spread* along the walls. A lattice on *Edge* placements gives
@@ -1347,6 +1354,48 @@ one corner, a study room with a few cover blocks, a morgue with one table). Two 
   Pillar Grid, Low Rows and Low Three Lanes (half walls). The pick is drawn from a stream of its
   own, so no other draw in the room moves. Because the walls it adds shape the zones, the doorway
   arrival and the flow bands, the room's flow follows from them.
+- **Fewer open rooms (tuning).** Rooms of 50+ tiles are now built up, at a point per 5 tiles, up to
+  three additions; one-cell rooms roll 1.3× their size (`_roomSizeScale`) and the cell is 14 tiles
+  (was 12). Measured headless over every place, three factions and six seeds: average floor seen
+  from a spot went from 52% to about a third, the Control Room from 64% to about 40% (59 → ~105
+  tiles). Halls that fill their cells grew with the cell. Every seeded room changes. Each addition
+  is now tried on a copy and dropped if it would cut floor off from the doorways. `FloorSteps`
+  (flow, furnishing routes, the Room Lab's reachability check) now also walks round a corner
+  through a 45° wall's open half, as `StaysConnected` always did: the nook behind an angled corner
+  read as cut off.
+- **Columns count less, and line up.** A pillar scores 0.3 in the structure budget (was 0.75):
+  a column hides one person and splits nothing, so a room of columns no longer passes for a walled
+  one. Column grids (`GridPillarsStructureRule`) were set on a ship-wide grid, which rooms shifted to
+  meet their neighbours left at any offset, unevenly spaced from the walls and holed by walkways;
+  each room now picks the offset that centres the grid between its walls, then loses the fewest
+  columns. Measured over every place: floor in view 35% → 32% (Commons 35 → 31%, Gym 26 → 23%),
+  walls added 34 → 35 a room. Rooms with column grids lay out differently.
+- **The budget judges areas, by sight.** A room is cut into areas about 8 tiles across, each
+  judged by how far its floor sees along rows and columns standing (`SightlineMap`: full walls and
+  columns stop sight, low walls are seen over) beside its share of points. A room short as a whole,
+  or with an area seeing further than *Open Run* (8 tiles) or under half its points, is built up, up
+  to 6 times. Each time every aimable option (`IFocusedStructureRule`: the new
+  `CoverWallsStructureRule`) is tried at the shortest area and three others drawn at random; the
+  copy that closes most of the shortfall is kept. Before, the budget only added the heaviest kind a
+  room lacked, anywhere. Free-standing columns a full-height wall passes within a tile of are taken
+  away (`RoomStructure.RemovePillarsBesideWalls`) before and after the budget, so it builds up where
+  they went. A half wall now scores 0.35 (was 0.5). Measured over every place, three factions, six
+  seeds: walls 35 -> 42 a room, half walls 18 -> 30, columns 13 -> 19, floor in view 32% -> 31%,
+  the most exposed area of a room 35% -> 34%; small rooms (Shrine, Life Support) see a little more
+  than before, having lost crowded columns with no floor left for walls. Level layout takes about
+  twice as long (a Labyrinth map 0.8 -> 1.6 s headless). Tried and dropped: scoring by points alone
+  (low rows win, the room stays seen across), and pruning beside low walls too (a casino lost
+  nearly every column between its slot banks).
+- **Props are checked against everything built.** `PropObstruction` samples each prop's solid
+  colliders at their true turn and reports what they reach into: the room's walls (straight and
+  slanted), inner and 45° walls, pillars, ledge guards, stairs and floors on another level. A
+  headless run over every place, three factions and six seeds found 677 of 63,617 props doing so
+  (ledge guards 266, inner walls 150, 45° walls 148, pillars 50, ledges and stairs 47).
+  `PropWallClearance` now also keeps props off ledges (a guard's 0.2 m on its higher side, the
+  edge of another level, stairs); the planner drops a placement or refiner move that still
+  collides; half-tile planters stand out from their 45° wall by their depth. After: none collide,
+  62 fewer props placed. The Room Lab reports any that do (`RoomSampleChecks`), and
+  `RoomLabTests.NoFurnitureReachesIntoTheRoomsStructure` checks every place.
 
 ## 16c. Subrooms and raised floors
 

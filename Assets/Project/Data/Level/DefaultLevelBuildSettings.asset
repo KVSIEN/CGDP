@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: DefaultLevelBuildSettings
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.LevelBuildSettings
   _tileSize: 3
-  _roomTiles: 12
+  _roomTiles: 14
+  _roomSizeScale: 1.3
   _gapTiles: 6
   _wallHeight: 4
   _wallThickness: 0.3
@@ -385,32 +386,29 @@ MonoBehaviour:
   _structureBudget:
     _options:
     - Rule: {fileID: 11400000, guid: d0489fed4403c233c90bf9490149d473, type: 2}
-      Kind: 0
     - Rule: {fileID: 11400000, guid: 441755acee644d76be46572a30aa6aa8, type: 2}
-      Kind: 0
     - Rule: {fileID: 11400000, guid: 84153ba9c2bdd3a72cd7d7c1c1501f91, type: 2}
-      Kind: 1
     - Rule: {fileID: 11400000, guid: 6c99a485ddf44f11809d1c26d6d910dc, type: 2}
-      Kind: 2
     - Rule: {fileID: 11400000, guid: e561e277a8874e6dbcc24efe75e0d704, type: 2}
-      Kind: 2
     - Rule: {fileID: 11400000, guid: bc41b23240354b2685106c18b0574a1e, type: 2}
-      Kind: 3
     - Rule: {fileID: 11400000, guid: 107790776f321a983103a3aeb2ac5d42, type: 2}
-      Kind: 3
     - Rule: {fileID: 11400000, guid: 37141783909e4282970aac91ffbe87f8, type: 2}
-      Kind: 0
     - Rule: {fileID: 11400000, guid: cd9766f33d1745c5a93f6447f0bfc652, type: 2}
-      Kind: 3
     - Rule: {fileID: 11400000, guid: c05daa6cb7cb4772ba1123b56b20d817, type: 2}
-      Kind: 3
-    _minTiles: 90
-    _tilesPerPoint: 8
-    _maxAdditions: 2
+    - Rule: {fileID: 11400000, guid: b4003143c99d470dabf09b367e4966b9, type: 2}
+    _minTiles: 50
+    _tilesPerPoint: 5
+    _maxAdditions: 6
+    _areaTiles: 8
+    _areaShare: 0.5
+    _choices: 3
+    _tries: 1
+    _openRun: 8
+    _pointsWeight: 0.5
     _wall: 1
     _building: 4
-    _pillar: 0.75
-    _halfWall: 0.5
+    _pillar: 0.3
+    _halfWall: 0.35
   _territoryDepth:
     _coreInfluence: 0.7
     _frontierInfluence: 0.35

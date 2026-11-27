@@ -312,6 +312,35 @@ namespace CGD.Tests
             }
         }
 
+        // Wherever the room lies on the level, its grid stands evenly between its walls.
+        [Test]
+        public void AColumnGridIsCentredInItsRoom([Values(0, 1, 2, 3)] int shift)
+        {
+            var rule = Rule<GridPillarsStructureRule>();
+            try
+            {
+                RoomStructure room = Room(14, 14, new Vector2Int(0, 7));
+                RoomStructure moved = new RoomStructurePlanner().Prepare(room.Footprint.Translated(new Vector2Int(shift, shift)), 4f,
+                                                                         new[] { new Vector2Int(shift, 7 + shift) });
+                rule.Apply(moved, new RandomStream(new Seed(1)));
+                Assert.Greater(moved.Pillars.Count, 4);
+
+                RectInt bounds = moved.Footprint.Bounds;
+                float minX = float.MaxValue, maxX = float.MinValue, minY = float.MaxValue, maxY = float.MinValue;
+                foreach (StructurePillar pillar in moved.Pillars)
+                {
+                    minX = Mathf.Min(minX, pillar.Position.x); maxX = Mathf.Max(maxX, pillar.Position.x);
+                    minY = Mathf.Min(minY, pillar.Position.y); maxY = Mathf.Max(maxY, pillar.Position.y);
+                }
+                Assert.That(Mathf.Abs((minX - bounds.xMin) - (bounds.xMax - maxX)), Is.LessThanOrEqualTo(1f), $"shift {shift}: off centre across");
+                Assert.That(Mathf.Abs((minY - bounds.yMin) - (bounds.yMax - maxY)), Is.LessThanOrEqualTo(1f), $"shift {shift}: off centre down");
+            }
+            finally
+            {
+                Object.DestroyImmediate(rule);
+            }
+        }
+
         [Test]
         public void ColumnGridsCanCrumble()
         {

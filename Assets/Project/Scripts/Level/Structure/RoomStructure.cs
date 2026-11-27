@@ -344,8 +344,50 @@ namespace CGD.Level
             {
                 if (!IsOpen(tile) || !TryClaim(new[] { tile }, RoomTileTags.Structure)) return false;
             }
-            _pillars.Add(new StructurePillar(position, width, prefab, height));
+            _pillars.Add(new StructurePillar(position, width, prefab, height, freeStanding));
             return true;
+        }
+
+        // Takes away the free-standing columns a full-height inner or 45° wall passes closer to
+        // than a tile from their middle: a column squeezed against a wall reads as a mistake, never
+        // as built. Low walls and counters may run past a column, as a row of slot banks does.
+        // Their tiles are free floor again. Returns how many went.
+        public int RemovePillarsBesideWalls()
+        {
+            const float Reach = 1f;
+            int removed = 0;
+            for (int i = _pillars.Count - 1; i >= 0; i--)
+            {
+                StructurePillar pillar = _pillars[i];
+                if (!pillar.FreeStanding || !HasWallWithin(pillar.Position, Reach)) continue;
+                _pillars.RemoveAt(i);
+                Release(new[] { Vector2Int.FloorToInt(pillar.Position) }, RoomTileTags.Structure);
+                removed++;
+            }
+            return removed;
+        }
+
+        // Whether a full-height inner or 45° wall passes within `reach` tiles of a point.
+        private bool HasWallWithin(Vector2 point, float reach)
+        {
+            foreach (PartitionEdge edge in _partitions)
+            {
+                if (CoverHeights.IsLow(edge.Height)) continue;
+                // The edge between the two tiles: one tile long, on their shared side.
+                Vector2 middle = (Vector2)(edge.Tile + edge.Other) * 0.5f + Vector2.one * 0.5f;
+                var along = new Vector2(edge.Side.y, edge.Side.x) * 0.5f;
+                if (DistanceToSegment(point, middle - along, middle + along) < reach) return true;
+            }
+            foreach (DiagonalWall wall in _diagonals)
+                if (!CoverHeights.IsLow(wall.Height) && DistanceToSegment(point, wall.From, wall.To) < reach) return true;
+            return false;
+        }
+
+        private static float DistanceToSegment(Vector2 point, Vector2 from, Vector2 to)
+        {
+            Vector2 along = to - from;
+            float t = Mathf.Clamp01(Vector2.Dot(point - from, along) / along.sqrMagnitude);
+            return Vector2.Distance(point, from + along * t);
         }
 
         // Stands 45° walls across tiles (DiagonalWall), all or none: each on open floor (no route,

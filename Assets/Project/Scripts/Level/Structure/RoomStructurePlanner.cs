@@ -53,7 +53,11 @@ namespace CGD.Level
                 IReadOnlyList<RoomStructureRule> rules = HasRules(room.StructureRules) ? room.StructureRules : factionRules;
                 Apply(rules, structure, random);
                 Apply(factionAdditions, structure, random, additionChance);
-                if (budget != null && budget.Needs(structure)) budget.Apply(structure, random);
+                // Columns crowded by a wall go before the budget judges the room, so it makes up
+                // for them, and again after, for walls the budget put up.
+                structure.RemovePillarsBesideWalls();
+                if (budget != null && budget.Needs(structure)) structure = budget.Apply(structure, random);
+                structure.RemovePillarsBesideWalls();
                 if (elevation != null && elevation.Needs(structure))
                     structure = AddLevels(elevation, structure, room, random, anchors);
             }

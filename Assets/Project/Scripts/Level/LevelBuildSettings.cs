@@ -16,6 +16,8 @@ namespace CGD.Level
         [SerializeField, Min(1f)] private float _tileSize = 3f;
         [Tooltip("Room width and depth, in tiles")]
         [SerializeField, Min(4)] private int _roomTiles = 12;
+        [Tooltip("Multiplies the size every one-cell room rolls from its place's or layout's size range, so rooms grow or shrink together; never past Room Tiles. Rooms that fill their cells grow with Room Tiles instead")]
+        [SerializeField, Range(0.5f, 2f)] private float _roomSizeScale = 1f;
         [Tooltip("Tiles between neighbouring rooms, where corridors run")]
         [SerializeField, Min(4)] private int _gapTiles = 6;
 
@@ -157,6 +159,7 @@ namespace CGD.Level
 
         public float TileSize       => _tileSize;
         public int   RoomTiles      => _roomTiles;
+        public float RoomSizeScale  => _roomSizeScale;
         public int   GapTiles       => _gapTiles;
         public int   CellTiles      => _roomTiles + _gapTiles;
         public float WallHeight     => _wallHeight;
