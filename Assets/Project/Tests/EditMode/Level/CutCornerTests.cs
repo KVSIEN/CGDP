@@ -51,7 +51,7 @@ namespace CGD.Tests
                     Assert.That(room.Has(corner.Tile, RoomTileTags.Structure), Is.True, $"seed {seed}: the corner tile is solid");
                     Assert.That(room.LevelOf(corner.Tile), Is.EqualTo(0));
                     Assert.That(area.Tiles, Does.Contain(corner.Tile + new Vector2Int(corner.Up.x, 0))
-                                               .And.Contain(corner.Tile + new Vector2Int(0, corner.Up.y)), "the platform on both sides of it");
+                                               .And.Member(corner.Tile + new Vector2Int(0, corner.Up.y)), "the platform on both sides of it");
                     foreach (StairFlight stairs in area.Stairs)
                         Assert.That(stairs.Tile != corner.Tile && stairs.Foot != corner.Tile, Is.True, "no flight on a cut corner");
                 }

@@ -40,8 +40,8 @@ namespace CGD.Tests
             Assert.That(cut.Count, Is.EqualTo(path.Count));
             Assert.That(cut[0], Is.EqualTo(path[0]));
             Assert.That(cut[cut.Count - 1], Is.EqualTo(path[path.Count - 1]));
-            Assert.That(cut, Does.Not.Contain(new Vector2Int(8, 0)), "the square corner is gone");
-            Assert.That(cut, Does.Contain(new Vector2Int(6, 1)).And.Contain(new Vector2Int(7, 2)), "the staircase crosses the inside of the bend");
+            Assert.That(cut, Has.No.Member(new Vector2Int(8, 0)), "the square corner is gone");
+            Assert.That(cut, Has.Member(new Vector2Int(6, 1)).And.Member(new Vector2Int(7, 2)), "the staircase crosses the inside of the bend");
             AssertWhole(cut);
         }
 
