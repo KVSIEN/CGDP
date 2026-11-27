@@ -1077,6 +1077,24 @@ Two tools give a room that order:
   fit: that spot isn't used, and the rule tries smaller or elsewhere. Chapel, Theatre and the
   Bridge's dais layouts use it.
 
+### Islands, activity areas and a beat down the route
+
+Three more patterns from the reference rooms:
+- **Island** (`ElevationKind.Island`, `IslandElevationStructureRule`): a block a level up with
+  floor all round it, two tiles in from the walls, climbed from the floor round it. It stands as
+  near the room's middle as the routes and centre spot allow (one of the three nearest spots
+  that fit). As a Bastion it is half-walled all round with two flights on different sides: the
+  Island Bar's counter and stool ring (*Floor* Raised) stand on it.
+- **Activity areas** (`RoomPropPlacement.Area` / `Within`): an *Area* placement marks a patch of
+  bare floor (a stretched rug, or nothing) under its *Key*; it takes no floor, and no other area
+  overlaps or touches it. Placements *Within* that key stay wholly inside it, so a lounge corner's
+  sofa, table, chair and lamp share one rug and a work corner's desk, shelf and lamp share their
+  patch. `LoungeCorner` and `WorkCorner` kits; the suites list both.
+- **Route rhythm** (Flank of `FlankAnchor.Route`): every *Rhythm.x* tiles along the walkway
+  from the arrival, from the *Rhythm.y*-th on, a pair either side, at least *Flank Gap* tiles
+  out. `Colonnade` (columns from 3) and `LampRow` (lamps from 5) alternate down the spine of the
+  Promenade, Grand Atrium and Exhibit Hall.
+
 Keys used by dressings are prefixed with their reality (`VoidTable`, `TechRack`, `BioTree`), so
 they never meet a place's own keys (`Pool`, `Desk`, `Plant`).
 

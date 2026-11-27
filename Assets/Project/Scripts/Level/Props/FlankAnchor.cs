@@ -6,5 +6,6 @@ namespace CGD.Level
         Near,       // each of what the placement stands Near: candles either side of the altar, lamps beside the stage
         Doorways,   // each doorway, along the wall either side of it: planters framing the way in
         Stairs,     // each flight (a wide one as one), either side of it: at its top on raised floor, its foot otherwise
+        Route,      // the walkway from the way in, a pair either side of it every Rhythm.x tiles: columns and lamps lining a concourse
     }
 }

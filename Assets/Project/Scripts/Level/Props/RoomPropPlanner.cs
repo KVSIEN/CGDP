@@ -67,6 +67,8 @@ namespace CGD.Level
         private readonly List<PropPlacementOutcome> _outcomes = new();
         // What each keyed placement put down (RoomPropPlacement.Key), for the ones Near it.
         private readonly Dictionary<string, List<RectInt>> _keyed = new();
+        // Every activity area marked out (RoomPropPlacement.Area), whatever its key.
+        private readonly List<RectInt> _areas = new();
         // The props that may be moved (placements added refinable, RoomPropPlacement.CanRelocate), in the order they went down.
         private readonly List<PlacedPiece> _pieces = new();
         private int _claimed;
@@ -97,7 +99,7 @@ namespace CGD.Level
             if (_traitsUseIsovist) _visibility = new RoomVisibility(structure, _sight.Blocking);
             if ((isovist & IsovistUse.Cover) != 0) _coverVisibility = new RoomVisibility(structure, _coverSight.Blocking);
             _routes   = new RouteMap(structure);
-            _rules    = new PropPlacementRules(structure, anchor, _coverSight, _routes, _keyed);
+            _rules    = new PropPlacementRules(structure, anchor, _coverSight, _routes, _keyed, _areas);
             _selector = new PropSelector(_rules, _sight, _coverSight, random, structure, _coverVisibility);
         }
 
@@ -123,7 +125,7 @@ namespace CGD.Level
         public int Add(RoomPropPlacement placement, bool exactConcealment = false, ICollection<int> zones = null, float countScale = 1f,
                        bool refinable = false)
         {
-            if (placement == null || !placement.HasPieces) return 0;
+            if (placement == null || !placement.IsUsed) return 0;
             if (zones != null && zones.Count == 0) return 0;
             // A piece for bigger rooms is left out of a small one: not a shortfall.
             if (placement.MinRoomTiles > 0 && FloorTiles(zones) < placement.MinRoomTiles) return 0;
@@ -285,7 +287,7 @@ namespace CGD.Level
                     break;
                 }
 
-                for (int gap = 0; gap <= PropFlanks.MaxGap; gap++)
+                for (int gap = placement.FlankGap; gap <= placement.FlankGap + PropFlanks.MaxGap; gap++)
                 {
                     var (first, second) = PropFlanks.Pair(anchor, size, gap);
                     if (!FlankFits(first, placement, size, zones, own)) continue;
@@ -331,10 +333,11 @@ namespace CGD.Level
         {
             int firstPlanned = _planned.Count;
             GameObject sized = PropSizing.Roll(placement, size, _structure.WallHeight, _random);
-            if (placement.Decor)
+            if (placement.Decor || placement.Area)
             {
                 Emit(candidate, placement, size, sized);
                 own.Add(candidate.Rect);
+                if (placement.Area) _areas.Add(candidate.Rect);
                 Record(candidate, placement, size, zones, firstPlanned);
                 return true;
             }
@@ -420,7 +423,8 @@ namespace CGD.Level
         }
 
         // Decorations take no floor, and a feature that grows with the room is part of its plan.
-        private static bool UsesFill(RoomPropPlacement placement) => !placement.Decor && !placement.GrowsWithRoom;
+        // An area only marks floor out for what goes in it.
+        private static bool UsesFill(RoomPropPlacement placement) => !placement.Decor && !placement.GrowsWithRoom && !placement.Area;
 
         private void ReserveAccess(PropCandidate candidate, int depth)
         {

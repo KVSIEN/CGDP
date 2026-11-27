@@ -5,9 +5,9 @@ using CGD.Core;
 
 namespace CGD.Level
 {
-    // Platforms and sunken floors for ElevationStructureRule, in as many tiers as asked for and
-    // as fit: a block of floor a level up (a platform, its back to a wall) or down (a sunken floor,
-    // floor all round it), then each further tier a smaller block on the one before, a level
+    // Platforms, islands and sunken floors for ElevationStructureRule, in as many tiers as asked
+    // for and as fit: a block of floor a level up (a platform, its back to a wall; an island, floor
+    // all round it) or down (a sunken floor, floor all round it), then each further tier a smaller block on the one before, a level
     // further up or down, so a stage can climb in steps or a pit deepen like an amphitheatre.
     // Every tier is reached by its own flights from the tier below it (the room's floor for the
     // first). An inner tier keeps TierInset tiles in from the one below on its open sides, room
@@ -28,6 +28,8 @@ namespace CGD.Level
         // The chance a stage backs onto the wall across from the way in; the rest take any wall, so
         // a doorway in that wall doesn't leave the room without one. Either way it is centred on it.
         private const float StageOnAxis = 0.8f;
+        // An island takes one of this many spots nearest the room's middle, so it varies from room to room.
+        private const int IslandChoices = 3;
         // The chance a stage is climbed by one wide flight up its middle rather than a pair at its ends.
         private const float WideStageStairs = 0.5f;
 
@@ -52,7 +54,10 @@ namespace CGD.Level
             _wall   = wall;
         }
 
-        private int Direction => _kind == ElevationKind.Platform ? 1 : -1;
+        private int Direction => IsRaised ? 1 : -1;
+
+        // Raised floor is climbed onto from the floor round it; a sunken floor is climbed out of.
+        private bool IsRaised => _kind == ElevationKind.Platform || _kind == ElevationKind.Island;
 
         private bool IsStage => _role == ElevationRole.Stage && _kind == ElevationKind.Platform;
 
@@ -67,7 +72,7 @@ namespace CGD.Level
 
             List<(Vector2Int tile, int rank)> block = _kind == ElevationKind.Platform
                 ? AgainstAWall(structure, random, depth, length, out Vector2Int back)
-                : OutInTheRoom(structure, random, depth, length, _bridge, out back);
+                : OutInTheRoom(structure, random, depth, length, _bridge && _kind == ElevationKind.SunkenFloor, out back);
             if (block == null) return null;
 
             for (int count = Mathf.Min(tiers, HighestRank(block)); count >= 1; count--)
@@ -189,13 +194,16 @@ namespace CGD.Level
         // back, so `back` is zero. Bridged: the row across the middle of its length stays level
         // with the room (still free floor, so nothing stands on the bridge), and the floor is one
         // tier only: a deeper tier would leave the bridge two levels above its neighbours.
-        private static List<(Vector2Int, int)> OutInTheRoom(RoomStructure structure, RandomStream random, int depth, int length, bool bridged, out Vector2Int back)
+        // An island stands as near the room's middle as its routes and centre spot leave room for:
+        // one of the IslandChoices nearest spots that fit.
+        private List<(Vector2Int, int)> OutInTheRoom(RoomStructure structure, RandomStream random, int depth, int length, bool bridged, out Vector2Int back)
         {
             back = Vector2Int.zero;
             RoomFootprint footprint = structure.Footprint;
             Vector2Int corner = footprint.Tiles[random.Range(0, footprint.Tiles.Count)];
             bool longAlongX = random.Chance(0.5f);
             Vector2Int size = longAlongX ? new Vector2Int(length, depth) : new Vector2Int(depth, length);
+            if (_kind == ElevationKind.Island && !TryNearTheMiddle(structure, size, random, out corner)) return null;
             int bridgeAt = bridged && length >= BridgedLength ? length / 2 : -1;
 
             var tiles = new List<(Vector2Int, int)>(depth * length);
@@ -229,9 +237,9 @@ namespace CGD.Level
                 {
                     if (inside.Contains(tile + side) || side == back) continue;
 
-                    // A platform's flight stands in front of it and climbs onto it; a sunken floor's
-                    // stands just inside its rim and climbs out of it.
-                    StairFlight stairs = _kind == ElevationKind.Platform ? new StairFlight(tile + side, -side) : new StairFlight(tile, side);
+                    // A platform's or an island's flight stands in front of it and climbs onto it; a
+                    // sunken floor's stands just inside its rim and climbs out of it.
+                    StairFlight stairs = IsRaised ? new StairFlight(tile + side, -side) : new StairFlight(tile, side);
                     if (!CanStand(structure, stairs, inside, below)) continue;
 
                     float distance = Vector2.Distance(stairs.Tile + Vector2.one * 0.5f, centre);
@@ -247,6 +255,38 @@ namespace CGD.Level
             if (IsStage) return StageStairs(preferred, region, back, random.Chance(WideStageStairs));
             int wanted = ElevationAccess.Ways(_role, Mathf.Max(pieces.Count, _stairs.Evaluate(random)), region.Count);
             return ElevationAccess.Pick(preferred, pieces, Reaches, null, wanted, StairSpacing);
+        }
+
+        // The corner of a block of `size` that fits (bare floor away from the walls), one of the
+        // IslandChoices whose middle is nearest the room's.
+        private static bool TryNearTheMiddle(RoomStructure structure, Vector2Int size, RandomStream random, out Vector2Int corner)
+        {
+            RoomFootprint footprint = structure.Footprint;
+            Vector2 middle = footprint.Anchor;
+            var fits = new List<(Vector2Int corner, float distance)>();
+            foreach (Vector2Int start in footprint.Tiles)
+            {
+                if (!Fits(structure, start, size)) continue;
+                fits.Add((start, (start + (Vector2)size * 0.5f - middle).sqrMagnitude));
+            }
+            corner = default;
+            if (fits.Count == 0) return false;
+
+            // Footprint order breaks ties, so the choice is seeded.
+            fits.Sort((a, b) => a.distance.CompareTo(b.distance));
+            corner = fits[random.Range(0, Mathf.Min(IslandChoices, fits.Count))].corner;
+            return true;
+        }
+
+        private static bool Fits(RoomStructure structure, Vector2Int corner, Vector2Int size)
+        {
+            for (int y = 0; y < size.y; y++)
+                for (int x = 0; x < size.x; x++)
+                {
+                    Vector2Int tile = corner + new Vector2Int(x, y);
+                    if (!structure.Footprint.IsInterior(tile, SunkenMargin) || !ElevationGround.IsBare(structure, tile)) return false;
+                }
+            return true;
         }
 
         // A stage's flights up the front of `region`, from the free ones in `preferred` (see ElevationAccess.Stage).

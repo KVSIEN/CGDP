@@ -9,13 +9,15 @@ namespace CGD.Level
     //     the room (a stage, a loading deck, a mezzanine);
     //   - Sunken Floor: a block with floor all round it, stairs down from its rim (a lounge pit),
     //     optionally crossed by a bridge of floor level with the room, splitting it in two;
+    //   - Island: a block a level up with floor all round it, stairs up its sides (a kitchen
+    //     island, a raised bar); as a Bastion, walled all round and climbed from two sides;
     //   - Mound: a round rise of ground sloping down on every side, its corners filled (a hillock);
     //   - Crater: a round hollow sloping down from every side, its corners filled (a blast crater).
     // Each is one level up or down, or with Tiers several, a level per tier: a stage climbing in
     // steps, a stepped pit, a terraced hill, a crater deepening ring by ring. Each tier is a smaller
     // copy of the one it stands on, reached from it; as many tiers are built as the room's levels,
     // its ceiling and the feature's size allow (BlockElevationBuilder, RoundElevationBuilder).
-    // Role (ElevationRole) says what a Platform or Sunken Floor is for in play, which sets its guards
+    // Role (ElevationRole) says what a Platform, Island or Sunken Floor is for in play, which sets its guards
     // and its ways up (ElevationAccess): a split level or a pit is open or railed by Railed and Rail
     // Chance; a perch has Wall along its front and open sides; a bastion has Wall all round, its
     // stairs the only ways on; a stage faces the way in, centred, with symmetric stairs. Mounds and
@@ -37,7 +39,7 @@ namespace CGD.Level
         private const int MaxShrink = 4;
 
         [SerializeField] private ElevationKind _kind = ElevationKind.Platform;
-        [Tooltip("Platform and Sunken Floor: what it is for in play. Split Level and Pit: open or railed ledges (Railed, Rail Chance). Perch: Wall along the side facing into the room, the other sides open to climb, one or two flights. Bastion: Wall all round, two flights at least on different sides, the only ways on. Pit: two flights at least. Stage (Platform): against the wall across from the way in, centred, one wide flight up the middle or a pair at the ends")]
+        [Tooltip("Platform, Island and Sunken Floor: what it is for in play. Split Level and Pit: open or railed ledges (Railed, Rail Chance). Perch: Wall along the side facing into the room, the other sides open to climb, one or two flights. Bastion: Wall all round, two flights at least on different sides, the only ways on. Pit: two flights at least. Stage (Platform): against the wall across from the way in, centred, one wide flight up the middle or a pair at the ends")]
         [SerializeField] private ElevationRole _role = ElevationRole.SplitLevel;
         [Tooltip("Perch and Bastion: what stands along their guarded ledges. Half Wall: solid, low cover. Railing: seen and shot through")]
         [SerializeField] private LedgeGuard _wall = LedgeGuard.HalfWall;
@@ -45,13 +47,13 @@ namespace CGD.Level
         [SerializeField] private IntRange _count = new(1, 1);
         [Tooltip("Levels each one rises or sinks, a tier per level, each standing on the one before it. Capped by the levels the room allows and its ceiling, and by the feature's size: Platform and Sunken Floor tiers keep two tiles in from the tier below, Mound and Crater tiers two tiles all round")]
         [SerializeField] private IntRange _tiers = new(1, 1);
-        [Tooltip("Platform and Sunken Floor: tiles across (out from the wall for a platform, the short side for a sunken floor), of the lowest tier")]
+        [Tooltip("Platform, Island and Sunken Floor: tiles across (out from the wall for a platform, the short side for an island or a sunken floor), of the lowest tier")]
         [SerializeField] private IntRange _depth = new(2, 3);
-        [Tooltip("Platform and Sunken Floor: tiles long (along the wall for a platform, the long side for a sunken floor), of the lowest tier")]
+        [Tooltip("Platform, Island and Sunken Floor: tiles long (along the wall for a platform, the long side for an island or a sunken floor), of the lowest tier")]
         [SerializeField] private IntRange _length = new(3, 5);
         [Tooltip("Mound and Crater: tiles from the middle to the edge of the top (a mound's) or the floor (a crater's), slopes not counted. A crater needs 2 at least")]
         [SerializeField] private IntRange _radius = new(1, 2);
-        [Tooltip("Platform and Sunken Floor: flights of stairs to each tier; fewer are built where there is no room for them, never none (and one at least to each half of a bridged floor). Mounds and craters slope on every side instead")]
+        [Tooltip("Platform, Island and Sunken Floor: flights of stairs to each tier; fewer are built where there is no room for them, never none (and one at least to each half of a bridged floor). Mounds and craters slope on every side instead")]
         [SerializeField] private IntRange _stairs = new(1, 2);
         [Tooltip("Sunken Floor: a strip of floor level with the room across its middle, splitting it in two (five tiles long at least). A bridged floor has one tier")]
         [SerializeField] private bool _bridge;
@@ -65,7 +67,7 @@ namespace CGD.Level
         public ElevationKind Kind => _kind;
         public ElevationRole Role => _role;
         // Up (+1) or down (-1), and the level of the first tier.
-        public int Level => _kind == ElevationKind.Platform || _kind == ElevationKind.Mound ? 1 : -1;
+        public int Level => _kind is ElevationKind.Platform or ElevationKind.Island or ElevationKind.Mound ? 1 : -1;
 
         private bool IsRound => _kind == ElevationKind.Mound || _kind == ElevationKind.Crater;
 

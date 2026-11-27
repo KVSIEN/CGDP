@@ -16,6 +16,9 @@ namespace CGD.Level
 
         // Whether it puts anything down: a prefab of its own or a group's members.
         public bool HasPieces => (Prefabs != null && Prefabs.Length > 0) || (Members != null && Members.Length > 0);
+        // Whether it puts anything down or marks anything out: an area may be left unmarked.
+        public bool IsUsed => HasPieces || Area;
+        public bool StandsWithin => !string.IsNullOrEmpty(Within);
         public bool HasMembers => Members != null && Members.Length > 0;
         public bool StandsNear => !string.IsNullOrEmpty(Near);
         public bool GrowsWithRoom => Grow.x > 0f || Grow.y > 0f;
@@ -26,7 +29,7 @@ namespace CGD.Level
         // front of it or marks a route, or that is placed by a selection with a shape of its
         // own (a cluster, a line, a showcase) would lose what it was placed for.
         public bool CanRelocate =>
-            !Required && !Symmetric && !GrowsWithRoom && !HasMembers && !StandsNear && string.IsNullOrEmpty(Key)
+            !Required && !Symmetric && !GrowsWithRoom && !HasMembers && !StandsNear && !Area && !StandsWithin && string.IsNullOrEmpty(Key)
             && Clearance == 0 && !MarksRoute && Pile.Max <= 1 && Prefabs != null && Prefabs.Length > 0
             && Selection is PropSelection.Random or PropSelection.Spread or PropSelection.Cover;
         public IntRange Count = new(2, 4);
@@ -47,8 +50,12 @@ namespace CGD.Level
         [Tooltip("Free tiles kept between two of these (0 = may stand side by side)")]
         [Min(0)] public int Spacing = 1;
         public PropSelection Selection;
-        [Tooltip("Flank selection only: what the pairs frame. Near = each of what it stands Near; Doorways = each doorway, along the wall either side; Stairs = each flight, at its top on raised floor and its foot otherwise")]
+        [Tooltip("Flank selection only: what the pairs frame. Near = each of what it stands Near; Doorways = each doorway, along the wall either side; Stairs = each flight, at its top on raised floor and its foot otherwise; Route = the room's walkway from the way in, a pair every Rhythm.x tiles")]
         public FlankAnchor Flanks;
+        [Tooltip("Flank selection only: tiles kept between a pair and what it frames, at least (0 = as close as both fit): a wide aisle between the columns down a route")]
+        [Min(0)] public int FlankGap;
+        [Tooltip("Flank of the Route only: a pair every x tiles along the walkway, the first y tiles in from the doorway (columns every 4 from 3, lamps every 4 from 5, so the two alternate)")]
+        public Vector2Int Rhythm = new(4, 3);
         [Tooltip("Props per tile, for a 1×1 footprint: a pile of crates in a corner rather than one")]
         public IntRange Pile = new(1, 1);
         [Tooltip("How far a 1×1 prop wanders from its tile's usual spot, so rows don't look ruled (along the wall for wall props)")]
@@ -74,6 +81,12 @@ namespace CGD.Level
 
         [Tooltip("Only where this many tiles round it hold no prop or pillar yet: it goes into a bare patch of floor and nowhere else, so what is placed last fills the empty corners and middles a room was left with, and nothing already busy. 0 = anywhere")]
         [Min(0)] public int MinEmpty;
+
+        [Header("Activity areas")]
+        [Tooltip("Marks out an activity area (a lounge corner, a work corner) on bare floor: its footprint is kept for the placements Within its Key, and no other area overlaps it or touches it. It takes no floor itself, so its prefab is a rug or nothing (an unmarked area); Stretch fits a rug to it")]
+        public bool Area;
+        [Tooltip("Only wholly inside an area an earlier placement keyed this marked out: the sofa, table and lamp of a lounge corner on its rug. Nothing is placed where it marked none (a Required one is still placed, anywhere). Empty = anywhere")]
+        public string Within;
 
         [Header("Groups, relations and size")]
         [Tooltip("Pieces set around each one placed, on its tiles: chairs round a card table, stools along a bar. With members, Prefabs may be left empty: then the members are the whole group")]
@@ -142,6 +155,7 @@ namespace CGD.Level
             copy.MinEmpty  = 0;
             copy.Floor     = PropFloor.Any;
             copy.Near      = null;
+            copy.Within    = null;
             copy.Grow      = Vector2.zero;
             if (copy.Facing is PropFacing.AgainstWall or PropFacing.AcrossSightline or PropFacing.AlongRoom or PropFacing.TowardNear)
                 copy.Facing = PropFacing.Square;

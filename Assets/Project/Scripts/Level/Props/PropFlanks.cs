@@ -10,7 +10,7 @@ namespace CGD.Level
     // pairs suit the placement is the planner's to check.
     internal static class PropFlanks
     {
-        // How many tiles out from its anchor a pair may stand, at most: it takes the nearest that fits both.
+        // How many tiles past the placement's Flank Gap a pair may stand, at most: it takes the nearest that fits both.
         public const int MaxGap = 3;
 
         // Something to frame: its tiles and the way it faces. The pair stands either side of it
@@ -27,7 +27,8 @@ namespace CGD.Level
             public Vector2Int Front { get; }
         }
 
-        // The anchors a placement frames, nearest the doorway a player arrives by first, so the
+        // The anchors a placement frames (what it stands Near, the doorways, the flights or beats
+        // down the walkway), nearest the doorway a player arrives by first, so the
         // pairs a count allows go where they are seen. `keyed`: what the placement stands Near
         // put down (null when nothing).
         public static List<Anchor> Anchors(RoomStructure structure, RoomPropPlacement placement, IReadOnlyList<RectInt> keyed)
@@ -41,6 +42,9 @@ namespace CGD.Level
                     break;
                 case FlankAnchor.Stairs:
                     AddFlights(structure, placement.Floor, anchors);
+                    break;
+                case FlankAnchor.Route:
+                    AddRoute(structure, placement.Rhythm, anchors);
                     break;
                 default:
                     if (keyed != null)
@@ -117,6 +121,34 @@ namespace CGD.Level
                     Vector2Int min = Vector2Int.Min(low, high) + shift, max = Vector2Int.Max(low, high) + shift;
                     anchors.Add(new Anchor(new RectInt(min, max - min + Vector2Int.one), -stairs.Up));
                 }
+        }
+
+        // Every Rhythm.x-th tile of the walkway counted from the doorway a player arrives by (the
+        // first entrance when none is set), from the Rhythm.y-th on, facing the way the walkway runs
+        // there: a pair either side of it keeps an even beat down the room's spine, and down each
+        // branch to the other doorways. Steps are counted along the walkway itself.
+        private static void AddRoute(RoomStructure structure, Vector2Int rhythm, List<Anchor> anchors)
+        {
+            int pitch = Mathf.Max(1, rhythm.x), first = Mathf.Max(0, rhythm.y);
+            Vector2Int? start = structure.Arrival ?? (structure.Entrances.Count > 0 ? structure.Entrances[0] : (Vector2Int?)null);
+            if (!start.HasValue || !structure.Has(start.Value, RoomTileTags.Walkway)) return;
+
+            var steps = new Dictionary<Vector2Int, int> { [start.Value] = 0 };
+            var open = new Queue<Vector2Int>();
+            open.Enqueue(start.Value);
+            while (open.Count > 0)
+            {
+                Vector2Int tile = open.Dequeue();
+                int step = steps[tile];
+                foreach (Vector2Int side in GridNeighbours.Four)
+                {
+                    Vector2Int next = tile + side;
+                    if (steps.ContainsKey(next) || !structure.Has(next, RoomTileTags.Walkway) || !structure.CanStep(tile, next)) continue;
+                    steps[next] = step + 1;
+                    open.Enqueue(next);
+                    if (step + 1 >= first && (step + 1 - first) % pitch == 0) anchors.Add(new Anchor(new RectInt(next, Vector2Int.one), side));
+                }
+            }
         }
 
         private static bool SameFlight(RoomStructure structure, StairFlight stairs, Vector2Int tile) =>

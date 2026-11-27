@@ -22,13 +22,16 @@ namespace CGD.Level
         private readonly RouteMap _routes;
         // What each keyed placement has put down so far (RoomPropPlacement.Key), for Near.
         private readonly IReadOnlyDictionary<string, List<RectInt>> _keyed;
+        // Every activity area marked out so far (RoomPropPlacement.Area): no other area overlaps or touches one.
+        private readonly IReadOnlyList<RectInt> _areas;
         // Whether the room has floor above and below the doorways' level, for Floor.
         private readonly bool _hasRaised, _hasSunken;
 
         public PropPlacementRules(RoomStructure structure, Vector2 anchor, SightlineMap sight, RouteMap routes,
-                                  IReadOnlyDictionary<string, List<RectInt>> keyed)
+                                  IReadOnlyDictionary<string, List<RectInt>> keyed, IReadOnlyList<RectInt> areas)
         {
             _keyed         = keyed;
+            _areas         = areas;
             _structure     = structure;
             _anchor        = anchor;
             _bounds        = structure.Footprint.Bounds;
@@ -127,6 +130,7 @@ namespace CGD.Level
                 }
             if (!matchesOn || !SuitsRoutes(rect, placement)) return false;
             if (placement.StandsNear && !TryNearest(rect, placement.Near, placement.NearDistance, out _)) return false;
+            if (placement.StandsWithin && !IsWithin(rect, placement.Within)) return false;
 
             switch (placement.Facing)
             {
@@ -161,6 +165,15 @@ namespace CGD.Level
                 PropFloor.Sunken => level < 0,
                 _                => true,
             };
+        }
+
+        // Whether `rect` lies wholly inside one of the areas the placements keyed `key` marked out.
+        private bool IsWithin(RectInt rect, string key)
+        {
+            if (!_keyed.TryGetValue(key, out List<RectInt> areas)) return false;
+            foreach (RectInt area in areas)
+                if (rect.xMin >= area.xMin && rect.yMin >= area.yMin && rect.xMax <= area.xMax && rect.yMax <= area.yMax) return true;
+            return false;
         }
 
         // The nearest of what the placements keyed `key` have put down, within `reach` steps.
@@ -199,8 +212,13 @@ namespace CGD.Level
                 for (int x = rect.xMin; x < rect.xMax; x++)
                 {
                     var tile = new Vector2Int(x, y);
-                    if (placement.Decor ? _structure.Has(tile, SightBlocking.Tiles) : !_structure.IsFree(tile)) return false;
+                    if (placement.Decor && !placement.Area ? _structure.Has(tile, SightBlocking.Tiles) : !_structure.IsFree(tile)) return false;
                 }
+
+            // An area is a patch of its own: apart from every other one.
+            if (placement.Area)
+                foreach (RectInt other in _areas)
+                    if (TileDistance(rect, other) <= 1) return false;
 
             foreach (RectInt other in own)
                 if (TileDistance(rect, other) <= placement.Spacing) return false;

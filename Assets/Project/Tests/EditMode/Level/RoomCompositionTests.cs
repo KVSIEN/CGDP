@@ -193,5 +193,160 @@ namespace CGD.Tests
             Assert.That(built, Is.GreaterThan(Seeds / 2));
             Assert.That(facing, Is.GreaterThan(built / 2), "most face the way in");
         }
+        // --- Islands --------------------------------------------------------------------
+
+        private static ElevationStructureRule IslandRule(ElevationRole role)
+        {
+            var rule = ScriptableObject.CreateInstance<ElevationStructureRule>();
+            var serialized = new SerializedObject(rule);
+            serialized.FindProperty("_kind").enumValueIndex = (int)ElevationKind.Island;
+            serialized.FindProperty("_role").enumValueIndex = (int)role;
+            serialized.FindProperty("_depth").FindPropertyRelative("Min").intValue = 3;
+            serialized.FindProperty("_depth").FindPropertyRelative("Max").intValue = 4;
+            serialized.FindProperty("_length").FindPropertyRelative("Min").intValue = 4;
+            serialized.FindProperty("_length").FindPropertyRelative("Max").intValue = 5;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            return rule;
+        }
+
+        [Test]
+        public void AnIslandStandsRaisedOutInTheRoomNearItsMiddle()
+        {
+            ElevationStructureRule rule = IslandRule(ElevationRole.Bastion);
+            int built = 0;
+            for (int seed = 1; seed <= Seeds; seed++)
+            {
+                RoomStructure room = Room(14, 12, new Vector2Int(13, 6), new Vector2Int(7, 0));
+                room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
+                rule.Apply(room, new RandomStream(new Seed((ulong)seed)));
+                Assert.That(room.StaysConnected(System.Array.Empty<Vector2Int>()), Is.True, $"seed {seed}");
+                if (room.Elevations.Count == 0) continue;
+
+                built++;
+                ElevatedArea island = room.Elevations[0];
+                Assert.That(island.Level, Is.EqualTo(1), $"seed {seed}: raised");
+                Assert.That(island.Stairs.Count, Is.GreaterThanOrEqualTo(2), $"seed {seed}: a bastion is climbed two ways");
+                Vector2 middle = Vector2.zero;
+                foreach (Vector2Int tile in island.Tiles)
+                {
+                    Assert.That(room.Footprint.IsInterior(tile, 2), Is.True, $"seed {seed}: floor all round it");
+                    middle += tile + Vector2.one * 0.5f;
+                }
+                middle /= island.Tiles.Count;
+                Assert.That((middle - room.Footprint.Anchor).magnitude, Is.LessThan(4.5f), $"seed {seed}: near the room's middle");
+                foreach (StairFlight stairs in island.Stairs)
+                    Assert.That(room.LevelOf(stairs.Tile), Is.Zero, $"seed {seed}: climbed from the floor round it");
+            }
+            Assert.That(built, Is.GreaterThan(Seeds / 2));
+        }
+
+        // --- Activity areas -------------------------------------------------------------
+
+        private static RoomPropPlacement AreaMarker(string key, Vector2Int size, bool rug)
+        {
+            RoomPropPlacement area = Placement(1, 1);
+            if (!rug) area.Prefabs = System.Array.Empty<GameObject>();
+            area.Area      = true;
+            area.Decor     = rug;
+            area.Footprint = size;
+            area.Key       = key;
+            area.On        = RoomTileTags.Corner;
+            area.Selection = PropSelection.Spread;
+            return area;
+        }
+
+        private static RoomPropPlacement Inside(string key, int count)
+        {
+            RoomPropPlacement piece = Placement(count, count);
+            piece.Within = key;
+            return piece;
+        }
+
+        [Test]
+        public void AnAreasPiecesStayOnItAndAreasKeepApart()
+        {
+            for (int seed = 0; seed < 20; seed++)
+            {
+                RoomStructure room = Room(12, 10, new Vector2Int(11, 5));
+                RoomPropPlanner planner = Planner(room, seed);
+                planner.Add(AreaMarker("Lounge", new Vector2Int(3, 3), rug: true));
+                planner.Add(Inside("Lounge", 3));
+                planner.Add(AreaMarker("Work", new Vector2Int(3, 3), rug: false));
+                planner.Add(Inside("Work", 2));
+
+                Assert.That(planner.Planned.Count, Is.EqualTo(1 + 3 + 2), $"seed {seed}: the rug and five pieces, the unmarked area nothing");
+                RectInt lounge = planner.Planned[0].Tiles;
+                Assert.That(lounge.size, Is.EqualTo(new Vector2Int(3, 3)), $"seed {seed}");
+                Assert.That(planner.Planned[0].Decor, Is.True, "the rug is a decoration");
+                for (int i = 1; i <= 3; i++)
+                    Assert.That(lounge.Contains(TileOf(planner.Planned[i])), Is.True, $"seed {seed}: on the lounge's rug");
+
+                // The work corner's two pieces share a 3 by 3 patch a tile clear of the rug.
+                Vector2Int first = TileOf(planner.Planned[4]), second = TileOf(planner.Planned[5]);
+                Assert.That(Mathf.Abs(first.x - second.x) <= 2 && Mathf.Abs(first.y - second.y) <= 2, Is.True, $"seed {seed}: in one corner");
+                foreach (Vector2Int piece in new[] { first, second })
+                {
+                    int dx = Mathf.Max(0, Mathf.Max(lounge.xMin - piece.x, piece.x - (lounge.xMax - 1)));
+                    int dy = Mathf.Max(0, Mathf.Max(lounge.yMin - piece.y, piece.y - (lounge.yMax - 1)));
+                    Assert.That(Mathf.Max(dx, dy), Is.GreaterThanOrEqualTo(2), $"seed {seed}: the areas keep apart");
+                }
+            }
+        }
+
+        [Test]
+        public void NothingStandsWithinAnAreaNobodyMarked()
+        {
+            RoomStructure room = Room(12, 10, new Vector2Int(11, 5));
+            RoomPropPlanner planner = Planner(room, 1);
+            Assert.That(planner.Add(Inside("Lounge", 3)), Is.Zero);
+        }
+
+        [Test]
+        public void AnAreaTakesNoFloorOfItsOwn()
+        {
+            RoomStructure room = Room(12, 10, new Vector2Int(11, 5));
+            int free = 0;
+            foreach (Vector2Int tile in room.Footprint.Tiles) if (room.IsFree(tile)) free++;
+            RoomPropPlanner planner = Planner(room, 1);
+            planner.Add(AreaMarker("Lounge", new Vector2Int(3, 3), rug: true));
+            int after = 0;
+            foreach (Vector2Int tile in room.Footprint.Tiles) if (room.IsFree(tile)) after++;
+            Assert.That(after, Is.EqualTo(free));
+        }
+
+        // --- A beat down the route ------------------------------------------------------
+
+        [Test]
+        public void PairsLineTheRouteAtAnEvenBeat()
+        {
+            var way = new Vector2Int(0, 5);
+            RoomStructure room = Room(20, 11, way, new Vector2Int(19, 5));
+            room.SetArrival(way);
+            RoomPropPlanner planner = Planner(room, 1);
+            RoomPropPlacement columns = Flank(FlankAnchor.Route, 10);
+            columns.Rhythm   = new Vector2Int(4, 3);
+            columns.FlankGap = 1;
+            planner.Add(columns);
+
+            Assert.That(planner.Planned.Count, Is.GreaterThanOrEqualTo(4), "two pairs at least down a 20-tile hall");
+            Assert.That(planner.Planned.Count % 2, Is.Zero);
+            for (int i = 0; i < planner.Planned.Count; i += 2)
+            {
+                Vector2Int a = TileOf(planner.Planned[i]), b = TileOf(planner.Planned[i + 1]);
+                Vector2Int beat = (a + b) / 2;
+                Assert.That(room.Has(beat, RoomTileTags.Walkway), Is.True, $"pair {a} {b}: either side of the walkway");
+                Assert.That(Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y), Is.GreaterThanOrEqualTo(4), $"pair {a} {b}: an aisle between them");
+            }
+            // Along the straight run from the doorway, the beats are four tiles apart.
+            var beatsX = new List<int>();
+            for (int i = 0; i < planner.Planned.Count; i += 2)
+            {
+                Vector2Int a = TileOf(planner.Planned[i]), b = TileOf(planner.Planned[i + 1]);
+                if (a.x == b.x && a.y + b.y == 10) beatsX.Add(a.x);
+            }
+            beatsX.Sort();
+            Assert.That(beatsX.Count, Is.GreaterThanOrEqualTo(2));
+            for (int i = 1; i < beatsX.Count; i++) Assert.That((beatsX[i] - beatsX[0]) % 4, Is.Zero, $"beats at {string.Join(",", beatsX)}");
+        }
     }
 }

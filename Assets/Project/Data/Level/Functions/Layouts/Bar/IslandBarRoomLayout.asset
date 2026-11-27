@@ -24,6 +24,7 @@ MonoBehaviour:
     Bias: 0
   _structure:
   - {fileID: 11400000, guid: 0779a8c9bfd943528d256e313c2460f9, type: 2}
+  - {fileID: 11400000, guid: c7960f1b6e384caa83cba4339e03672c, type: 2}
   _props:
   - Prefabs:
     - {fileID: 2387528128696719469, guid: 77a7e71de2b4456aa98e7a4d7d818d75, type: 3}
@@ -42,6 +43,7 @@ MonoBehaviour:
     Clearance: 1
     Spacing: 1
     Selection: 6
+    Floor: 2
     Pile:
       Min: 1
       Max: 1
