@@ -49,8 +49,7 @@ namespace CGD.Map
         }
 
         // `spacings[i]` is the node spacing graphs[i] was laid out with (its grid cell size).
-        // `content` decides which types count as fights for the pacing.
-        public static LearnedMapStyle Learn(IReadOnlyList<MapGraph> graphs, IReadOnlyList<Vector2> spacings, MapContentSettings content)
+        public static LearnedMapStyle Learn(IReadOnlyList<MapGraph> graphs, IReadOnlyList<Vector2> spacings)
         {
             var style     = new LearnedMapStyle();
             var measured  = new List<Measures>();
@@ -71,7 +70,7 @@ namespace CGD.Map
                     continue;
                 }
 
-                Measures m = Measure(graph, analysis, spacings[i], content);
+                Measures m = Measure(graph, analysis, spacings[i]);
                 measured.Add(m);
                 CollectTypes(graph, analysis, m, instances, adjacent, closest);
                 categorisedLinks += CollectCategories(graph, categories, pairs);
@@ -90,7 +89,7 @@ namespace CGD.Map
 
         // --- Measuring one map -----------------------------------------------------------
 
-        private static Measures Measure(MapGraph graph, MapGraphAnalysis analysis, Vector2 spacing, MapContentSettings content)
+        private static Measures Measure(MapGraph graph, MapGraphAnalysis analysis, Vector2 spacing)
         {
             var m = new Measures();
             var cells = new Dictionary<int, Vector2Int>();
@@ -121,7 +120,7 @@ namespace CGD.Map
             foreach (int id in path)
             {
                 graph.TryGetNode(id, out MapNode node);
-                run = content != null && content.Pacing.IsCombat(node.Type) ? run + 1 : 0;
+                run = node.Type.IsFight() ? run + 1 : 0;
                 m.MaxCombatRun = Mathf.Max(m.MaxCombatRun, run);
             }
             return m;

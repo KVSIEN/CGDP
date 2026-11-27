@@ -11,7 +11,7 @@ namespace CGD.Level
     // together; the director reads that curve the way an encounter designer would pace it
     // (Left 4 Dead's build-up, peak and relax; a tension curve over rooms). Its beats:
     //   - Climax: the Boss room.
-    //   - Rest: a room of a calm type (MapDirectorSettings.CalmTypes).
+    //   - Rest: a room with no fight planned (MapNodeTypeExtensions.IsFight).
     //   - Peak: a fight at least PeakIntensity, more intense than every fight beside it: the big
     //     set-piece fight of its stretch of map. Ties go to the deeper room, then the lower id, so
     //     two peaks never stand side by side.
@@ -42,7 +42,7 @@ namespace CGD.Level
             if (settings == null || graph == null || graph.Nodes.Count == 0) return MapDirection.None;
 
             var findings = new List<DirectorFinding>();
-            Dictionary<int, RoomBeat> beats = Plan(graph, settings.CalmTypes, settings.PeakIntensity, settings.FlatStretch, settings.CalmStretch, findings);
+            Dictionary<int, RoomBeat> beats = Plan(graph, settings.PeakIntensity, settings.FlatStretch, settings.CalmStretch, findings);
             var analysis = new MapGraphAnalysis(graph);
             var sizes = new Dictionary<int, float>();
             foreach (MapNode node in graph.Nodes)
@@ -122,15 +122,14 @@ namespace CGD.Level
 
         // `flatStretch`, `calmStretch`: the longest runs of ordinary fights and of calm rooms the main
         // path may have (0 = not checked). `findings`: what was changed and found, when given.
-        public static Dictionary<int, RoomBeat> Plan(MapGraph graph, IReadOnlyCollection<MapNodeType> calmTypes, float peakIntensity,
+        public static Dictionary<int, RoomBeat> Plan(MapGraph graph, float peakIntensity,
                                                      int flatStretch = 0, int calmStretch = 0, List<DirectorFinding> findings = null)
         {
             var beats = new Dictionary<int, RoomBeat>();
             if (graph == null || graph.Nodes.Count == 0) return beats;
 
             var analysis = new MapGraphAnalysis(graph);
-            var calm = new HashSet<MapNodeType>(calmTypes ?? System.Array.Empty<MapNodeType>());
-            bool IsFight(MapNode node) => node.Type != MapNodeType.Boss && !calm.Contains(node.Type);
+            bool IsFight(MapNode node) => node.Type.IsFight();
 
             var neighbours = new List<int>();
             foreach (MapNode node in graph.Nodes)

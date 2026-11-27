@@ -11,8 +11,6 @@ namespace CGD.Tests
     // StructureTarget).
     public class MapDirectorTests
     {
-        private static readonly MapNodeType[] Calm = { MapNodeType.Start, MapNodeType.Exit, MapNodeType.Shop, MapNodeType.Quiet };
-
         private MapGraph _graph;
 
         [SetUp]
@@ -31,7 +29,7 @@ namespace CGD.Tests
             for (int i = 1; i < ids.Length; i++) _graph.Connect(ids[i - 1], ids[i]);
         }
 
-        private Dictionary<int, RoomBeat> Plan() => MapDirector.Plan(_graph, Calm, 0.6f);
+        private Dictionary<int, RoomBeat> Plan() => MapDirector.Plan(_graph, 0.6f);
 
         [Test]
         public void TheStrongestFightOfItsStretchPeaksAndTheNextFightIsTheRelief()

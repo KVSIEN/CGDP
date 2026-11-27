@@ -337,7 +337,7 @@ namespace CGD.Map
             if (CanFallBackTo(Pacing.RestType, slot)) return Pacing.RestType;
 
             foreach (MapNodeTypeRule rule in Content.NodeRules)
-                if (!Pacing.IsCombat(rule.Type) && CanFallBackTo(rule.Type, slot))
+                if (!rule.Type.IsFight() && CanFallBackTo(rule.Type, slot))
                     return rule.Type;
 
             _context.Warnings.Add($"#{slot.NodeId} is a {Pacing.RestType} over its rule's limits: no calm room fits there and a fight would break the pacing.");
@@ -383,7 +383,7 @@ namespace CGD.Map
         // fight is kept by MapTierPainter, which runs once the types are set).
         private bool PacingAllows(MapNodeType type, MapSlot slot)
         {
-            if (slot.MainPathIndex < 0 || !Pacing.IsCombat(type)) return true;
+            if (slot.MainPathIndex < 0 || !type.IsFight()) return true;
 
             List<int> path = _context.MainPath;
             int i = slot.MainPathIndex;
@@ -398,7 +398,7 @@ namespace CGD.Map
         private bool IsAssignedCombat(int nodeId)
         {
             MapNodeType? type = AssignedTypeAt(nodeId);
-            return type.HasValue && !type.Value.IsStructural() && Pacing.IsCombat(type.Value);
+            return type.HasValue && type.Value.IsFight();
         }
 
         private MapNodeType? AssignedTypeAt(int nodeId) =>

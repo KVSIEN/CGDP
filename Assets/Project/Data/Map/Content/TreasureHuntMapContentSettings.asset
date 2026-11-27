@@ -236,13 +236,6 @@ MonoBehaviour:
       Max: 3
       Bias: 0
   _pacing:
-    _combatTypes:
-    - 1
-    - 2
-    - 10
-    - 11
-    - 12
-    - 15
     _maxCombatInARow: 2
     _restType: 5
   _intensityByDepth:

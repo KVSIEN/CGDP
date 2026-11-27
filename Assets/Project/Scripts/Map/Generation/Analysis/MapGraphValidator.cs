@@ -260,8 +260,7 @@ namespace CGD.Map
             for (int i = 0; i < path.Count; i++)
             {
                 if (!graph.TryGetNode(path[i], out MapNode node)) continue;
-                bool combat = !node.Type.IsStructural() && pacing.IsCombat(node.Type);
-                run = combat ? run + 1 : 0;
+                run = node.Type.IsFight() ? run + 1 : 0;
 
                 if (pacing.MaxCombatInARow > 0 && run == pacing.MaxCombatInARow + 1)
                     issues.Add($"More than {pacing.MaxCombatInARow} fights in a row on the main path (up to #{node.Id}).");

@@ -183,7 +183,7 @@ namespace CGD.Tests
                 spacings.Add(settings.NodeSpacing);
             }
 
-            LearnedMapStyle style = MapStyleLearner.Learn(graphs, spacings, settings.Content);
+            LearnedMapStyle style = MapStyleLearner.Learn(graphs, spacings);
             foreach (string note in style.Notes) TestContext.WriteLine(note);
 
             Assert.AreEqual(10, style.MapCount);

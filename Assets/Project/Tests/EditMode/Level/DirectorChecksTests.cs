@@ -10,8 +10,6 @@ namespace CGD.Tests
     // set-piece retry on built rooms (BeatReview).
     public class DirectorChecksTests
     {
-        private static readonly MapNodeType[] Calm = { MapNodeType.Start, MapNodeType.Exit, MapNodeType.Shop, MapNodeType.Quiet };
-
         private MapGraph _graph;
         private List<DirectorFinding> _findings;
 
@@ -35,7 +33,7 @@ namespace CGD.Tests
         }
 
         private Dictionary<int, RoomBeat> Plan(int flatStretch = 3, int calmStretch = 3) =>
-            MapDirector.Plan(_graph, Calm, 0.6f, flatStretch, calmStretch, _findings);
+            MapDirector.Plan(_graph, 0.6f, flatStretch, calmStretch, _findings);
 
         private bool Found(DirectorCheck check, bool fixedByDirector) => _findings.Exists(f => f.Check == check && f.Fixed == fixedByDirector);
 

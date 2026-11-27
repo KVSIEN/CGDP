@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using CGD.Map;
 
 namespace CGD.Level
 {
@@ -9,13 +8,6 @@ namespace CGD.Level
     [CreateAssetMenu(fileName = "MapDirector", menuName = "CGD/Level/Map Director")]
     public class MapDirectorSettings : ScriptableObject
     {
-        [Tooltip("Room types with no fight planned in them: they rest the pacing. Every other type is a fight (waves and encounters too)")]
-        [SerializeField] private List<MapNodeType> _calmTypes = new()
-        {
-            MapNodeType.Start, MapNodeType.Exit, MapNodeType.Puzzle, MapNodeType.Shop, MapNodeType.Event, MapNodeType.Treasure,
-            MapNodeType.Resupply, MapNodeType.Gamble, MapNodeType.EmergencyExit, MapNodeType.Quiet, MapNodeType.Junction,
-            MapNodeType.Workshop, MapNodeType.Shrine,
-        };
         [Tooltip("A fight this intense or more, and more intense than every fight next to it, is a Peak")]
         [SerializeField, Range(0f, 1f)] private float _peakIntensity = 0.6f;
         [Tooltip("Most ordinary fights in a row on the main path: a longer run has its strongest fight made a peak (0 = not checked)")]
@@ -33,7 +25,6 @@ namespace CGD.Level
         [Tooltip("What each beat changes. A beat not listed is left as the generator makes it")]
         [SerializeField] private List<BeatTuning> _beats = new();
 
-        public IReadOnlyCollection<MapNodeType> CalmTypes => _calmTypes;
         public float PeakIntensity => _peakIntensity;
         public float RepeatNeighbour => _repeatNeighbour;
         public int FlatStretch => _flatStretch;

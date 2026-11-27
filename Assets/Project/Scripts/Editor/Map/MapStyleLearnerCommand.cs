@@ -38,7 +38,7 @@ namespace CGD.Editor
                 spacings.Add(example.NodeSpacing);
             }
 
-            LearnedMapStyle style = MapStyleLearner.Learn(graphs, spacings, baseStyle.Content);
+            LearnedMapStyle style = MapStyleLearner.Learn(graphs, spacings);
             if (style.MapCount == 0)
             {
                 EditorUtility.DisplayDialog("Learn Map Style", string.Join("\n", style.Notes), "OK");
