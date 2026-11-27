@@ -5,7 +5,7 @@ namespace CGD.Level
     // as they were built (BeatReview).
     public enum DirectorCheck
     {
-        FlatStretch,     // too many ordinary fights in a row on the main path, no peak among them
+        FlatStretch,     // too many fights in a row on the main path, no peak among them
         NoPeak,          // a main path with fights but no peak before the boss
         CalmStretch,     // too many calm rooms in a row on the main path
         EarlyPeak,       // the main path's strongest peak comes in its first third, and the rest only fall away

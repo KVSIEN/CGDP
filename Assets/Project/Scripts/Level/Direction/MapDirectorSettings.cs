@@ -4,14 +4,10 @@ using UnityEngine;
 namespace CGD.Level
 {
     // How the map director reads a map and what it changes in each room's beat (MapDirector,
-    // BeatTuning). Referenced from LevelBuildSettings; without it every room is built as before.
+    // BeatTuning). Which rooms are peaks is the map's pacing (MapPacingSettings). Referenced from LevelBuildSettings; without it every room is built as before.
     [CreateAssetMenu(fileName = "MapDirector", menuName = "CGD/Level/Map Director")]
     public class MapDirectorSettings : ScriptableObject
     {
-        [Tooltip("A fight this intense or more, and more intense than every fight next to it, is a Peak")]
-        [SerializeField, Range(0f, 1f)] private float _peakIntensity = 0.6f;
-        [Tooltip("Most ordinary fights in a row on the main path: a longer run has its strongest fight made a peak (0 = not checked)")]
-        [SerializeField, Range(0, 8)] private int _flatStretch = 3;
         [Tooltip("Most calm rooms in a row on the main path before it is reported as dragging (0 = not checked)")]
         [SerializeField, Range(0, 8)] private int _calmStretch = 3;
         [Tooltip("A peak or boss room holding no more cover for its size than a fight beside it is built again from up to this many more seeds, keeping the best")]
@@ -25,9 +21,7 @@ namespace CGD.Level
         [Tooltip("What each beat changes. A beat not listed is left as the generator makes it")]
         [SerializeField] private List<BeatTuning> _beats = new();
 
-        public float PeakIntensity => _peakIntensity;
         public float RepeatNeighbour => _repeatNeighbour;
-        public int FlatStretch => _flatStretch;
         public int CalmStretch => _calmStretch;
         public int CoverRetries => _coverRetries;
 

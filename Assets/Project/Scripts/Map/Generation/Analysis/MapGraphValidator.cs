@@ -252,7 +252,7 @@ namespace CGD.Map
             return false;
         }
 
-        // Along the main path: fight runs and the room after an Elite.
+        // Along the main path: fight runs and their peaks.
         private static void CheckPacing(MapGraph graph, MapGraphAnalysis analysis, MapPacingSettings pacing, List<string> issues)
         {
             IReadOnlyList<int> path = analysis.MainPath;
@@ -265,6 +265,19 @@ namespace CGD.Map
                 if (pacing.MaxCombatInARow > 0 && run == pacing.MaxCombatInARow + 1)
                     issues.Add($"More than {pacing.MaxCombatInARow} fights in a row on the main path (up to #{node.Id}).");
             }
+            CheckPeaks(graph, analysis, pacing, issues);
+        }
+
+        // The sawtooth the generator raises (MapPeaks): a hand-made graph is told where it has none.
+        private static void CheckPeaks(MapGraph graph, MapGraphAnalysis analysis, MapPacingSettings pacing, List<string> issues)
+        {
+            if (pacing.MaxFightsWithoutPeak <= 0) return;
+            List<int> path = MapPeaks.PacedPath(graph, analysis);
+            foreach (List<int> run in MapPeaks.PeaklessRuns(graph, analysis, path, pacing.PeakIntensity, pacing.MaxFightsWithoutPeak))
+                issues.Add($"{run.Count} fights in a row on the main path (#{run[0]} to #{run[run.Count - 1]}) and none is a peak (at least {pacing.PeakIntensity:0.##} intensity, above every fight beside it).");
+            List<int> fights = MapPeaks.PeaklessFights(graph, analysis, path, pacing.PeakIntensity);
+            if (fights.Count > 0)
+                issues.Add($"No peak among the {fights.Count} fights on the way to the boss: raise one to at least {pacing.PeakIntensity:0.##} intensity, above every fight beside it.");
         }
 
         // With factions listed, every room is one of the ship's realities.

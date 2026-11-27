@@ -65,7 +65,7 @@ namespace CGD.Level
                 return layout;
             }
 
-            layout.AttachDirection(MapDirector.Plan(graph, _settings.Director));
+            layout.AttachDirection(MapDirector.Plan(graph, content != null ? content.Pacing : null, _settings.Director));
             new RoomPlacer(_settings).Place(graph, nodeSpacing, seed.Derive("rooms"), layout, content);
             MapDirector.MovePeaksToBiggerRooms(graph, layout, _settings.Director);
             return layout;

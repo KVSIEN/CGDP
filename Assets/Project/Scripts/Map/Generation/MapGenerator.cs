@@ -62,8 +62,7 @@ namespace CGD.Map
             if (_settings.Content.Categories != null)
                 new MapCategoryPainter(context, _settings.Content.Categories).Paint();
 
-            new MapIntensityPainter(context).Paint();
-            ApplyPinnedIntensity(context.Graph, pins, types.PinnedNodeIds);
+            new MapIntensityPainter(context).Paint(pins, types.PinnedNodeIds);
             new MapTierPainter(context).Paint();
 
             MapFactionMix factionMix = PickFactionMix(_settings, seed, variants, tuning);
@@ -97,13 +96,6 @@ namespace CGD.Map
             foreach (MapSlot slot in context.Slots)
                 if (context.Graph.TryGetNode(slot.NodeId, out MapNode node))
                     node.Section = context.Content.SectionAt(slot.Progress);
-        }
-
-        private static void ApplyPinnedIntensity(MapGraph graph, IReadOnlyList<MapNodePin> pins, IReadOnlyList<int> nodeIds)
-        {
-            for (int i = 0; i < pins.Count; i++)
-                if (graph.TryGetNode(nodeIds[i], out MapNode node))
-                    node.Intensity = pins[i].Intensity;
         }
     }
 }

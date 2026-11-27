@@ -29,7 +29,7 @@ namespace CGD.Tests
             for (int i = 1; i < ids.Length; i++) _graph.Connect(ids[i - 1], ids[i]);
         }
 
-        private Dictionary<int, RoomBeat> Plan() => MapDirector.Plan(_graph, 0.6f);
+        private Dictionary<int, RoomBeat> Plan() => MapDirector.Plan(_graph, MapPacingSettings.Default);
 
         [Test]
         public void TheStrongestFightOfItsStretchPeaksAndTheNextFightIsTheRelief()
@@ -105,7 +105,7 @@ namespace CGD.Tests
         public void WithoutSettingsNoRoomIsDirected()
         {
             Chain(Add(MapNodeType.Start, 0f), Add(MapNodeType.Combat, 0.9f));
-            MapDirection direction = MapDirector.Plan(_graph, null);
+            MapDirection direction = MapDirector.Plan(_graph, null, null);
             Assert.That(direction.Beats, Is.Empty);
             Assert.That(direction.SizeScaleOf(0), Is.EqualTo(1f));
         }
@@ -121,7 +121,7 @@ namespace CGD.Tests
             Chain(start, early, shop, late, boss, Add(MapNodeType.Exit, 0f));
 
             var settings = ScriptableObject.CreateInstance<MapDirectorSettings>();
-            MapDirection direction = MapDirector.Plan(_graph, settings);
+            MapDirection direction = MapDirector.Plan(_graph, null, settings);
             Assert.That(direction.BeatOf(early), Is.EqualTo(RoomBeat.Build));
             Assert.That(direction.SizeScaleOf(early), Is.LessThan(1f), "small chambers early");
             Assert.That(direction.SizeScaleOf(late), Is.GreaterThan(direction.SizeScaleOf(early)));

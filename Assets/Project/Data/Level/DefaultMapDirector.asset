@@ -12,8 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52e22fc6269b44daa486cfbc56aa78fc, type: 3}
   m_Name: DefaultMapDirector
   m_EditorClassIdentifier: CGD.Runtime::CGD.Level.MapDirectorSettings
-  _peakIntensity: 0.6
-  _flatStretch: 3
   _calmStretch: 3
   _coverRetries: 3
   _earlySize: 0.9

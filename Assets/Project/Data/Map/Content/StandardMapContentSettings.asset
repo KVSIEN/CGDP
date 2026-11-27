@@ -303,6 +303,8 @@ MonoBehaviour:
   _pacing:
     _maxCombatInARow: 3
     _restType: 5
+    _peakIntensity: 0.6
+    _maxFightsWithoutPeak: 3
   _intensityByDepth:
     serializedVersion: 2
     m_Curve:

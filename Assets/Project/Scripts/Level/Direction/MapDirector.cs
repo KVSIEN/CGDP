@@ -7,28 +7,25 @@ namespace CGD.Level
     // alone, before anything is built, so the rooms can be made for it: their size, how much
     // cover they get, how many enemies, what is put down in them, where reinforcements go.
     //
-    // The graph already rises in intensity toward the boss and never strings too many fights
-    // together; the director reads that curve the way an encounter designer would pace it
-    // (Left 4 Dead's build-up, peak and relax; a tension curve over rooms). Its beats:
+    // The graph rises in intensity toward the boss, never strings too many fights together and
+    // comes out of the generator with its peaks raised (MapPeaks); the director reads that
+    // curve the way an encounter designer would pace it (Left 4 Dead's build-up, peak and
+    // relax; a tension curve over rooms). Its beats:
     //   - Climax: the Boss room.
     //   - Rest: a room with no fight planned (MapNodeTypeExtensions.IsFight).
-    //   - Peak: a fight at least PeakIntensity, more intense than every fight beside it: the big
-    //     set-piece fight of its stretch of map. Ties go to the deeper room, then the lower id, so
-    //     two peaks never stand side by side.
+    //   - Peak: a fight MapPeaks.IsPeak calls the top of its stretch (MapPacingSettings.PeakIntensity).
     //   - Relief: a fight entered from a Peak (a neighbour nearer the Start), the breather after it.
     //   - Approach: the fight right before the Boss on the main path; a calm room there is
     //     already the breather and stays Rest.
     //   - Build: every other fight.
     // Rooms the Start can't reach get None. Pure: the same graph gives the same beats.
     //
-    // Then the main path is paced as a sawtooth, rising fights broken by peaks and breathers:
-    //   - a run of more than FlatStretch ordinary fights in a row has its strongest one made a
-    //     peak (never beside another peak, never the room before the boss), and the fight after
-    //     it the relief, until no run is that long;
-    //   - a main path with fights and no peak gets its strongest fight made one;
-    //   - more than CalmStretch calm rooms in a row, or a strongest peak in the first third of
-    //     the way with only weaker ones after it, can't be put right by beats and are reported.
-    // Every change and every report is a DirectorFinding on the direction.
+    // It changes no intensity: what the pacing asks of the map is the generator's to make. A
+    // graph that misses it (a hand-made one, or a pinned room standing in the way) is reported,
+    // as the validator reports it in the map editor: a run of more than MaxFightsWithoutPeak
+    // fights with no peak, a way to the boss with no peak, more than CalmStretch calm rooms in a
+    // row, or a strongest peak in the first third of the way with only weaker ones after it.
+    // Every report is a DirectorFinding on the direction.
     //
     // Each room's size is scaled by its beat and, for a fight, by how far into the map it lies:
     // small chambers early, bigger ones toward the boss, as Hades grows its chambers through a
@@ -36,13 +33,14 @@ namespace CGD.Level
     // clearly bigger ordinary fight moves onto it (MovePeaksToBiggerRooms).
     public static class MapDirector
     {
-        // Every room's beat and size; nothing without settings, so nothing changes.
-        public static MapDirection Plan(MapGraph graph, MapDirectorSettings settings)
+        // Every room's beat and size; nothing without settings, so nothing changes. `pacing`: the
+        // map content's (null = MapPacingSettings.Default).
+        public static MapDirection Plan(MapGraph graph, MapPacingSettings pacing, MapDirectorSettings settings)
         {
             if (settings == null || graph == null || graph.Nodes.Count == 0) return MapDirection.None;
 
             var findings = new List<DirectorFinding>();
-            Dictionary<int, RoomBeat> beats = Plan(graph, settings.PeakIntensity, settings.FlatStretch, settings.CalmStretch, findings);
+            Dictionary<int, RoomBeat> beats = Plan(graph, pacing ?? MapPacingSettings.Default, settings.CalmStretch, findings);
             var analysis = new MapGraphAnalysis(graph);
             var sizes = new Dictionary<int, float>();
             foreach (MapNode node in graph.Nodes)
@@ -120,35 +118,28 @@ namespace CGD.Level
             return best;
         }
 
-        // `flatStretch`, `calmStretch`: the longest runs of ordinary fights and of calm rooms the main
-        // path may have (0 = not checked). `findings`: what was changed and found, when given.
-        public static Dictionary<int, RoomBeat> Plan(MapGraph graph, float peakIntensity,
-                                                     int flatStretch = 0, int calmStretch = 0, List<DirectorFinding> findings = null)
+        // `calmStretch`: the longest run of calm rooms the main path may have before it is reported
+        // (0 = not checked). `findings`: what was found, when given.
+        public static Dictionary<int, RoomBeat> Plan(MapGraph graph, MapPacingSettings pacing, int calmStretch = 0, List<DirectorFinding> findings = null)
         {
             var beats = new Dictionary<int, RoomBeat>();
             if (graph == null || graph.Nodes.Count == 0) return beats;
 
             var analysis = new MapGraphAnalysis(graph);
-            bool IsFight(MapNode node) => node.Type.IsFight();
-
             var neighbours = new List<int>();
             foreach (MapNode node in graph.Nodes)
             {
                 if (!analysis.IsReachable(node.Id)) beats[node.Id] = RoomBeat.None;
                 else if (node.Type == MapNodeType.Boss) beats[node.Id] = RoomBeat.Climax;
-                else if (!IsFight(node)) beats[node.Id] = RoomBeat.Rest;
-                else beats[node.Id] = IsPeak(graph, analysis, node, peakIntensity, IsFight, neighbours) ? RoomBeat.Peak : RoomBeat.Build;
+                else if (!node.Type.IsFight()) beats[node.Id] = RoomBeat.Rest;
+                else beats[node.Id] = MapPeaks.IsPeak(graph, analysis, node, pacing.PeakIntensity, neighbours) ? RoomBeat.Peak : RoomBeat.Build;
             }
 
             MarkReliefs(graph, analysis, beats, neighbours);
-            List<int> path = FightPath(graph, analysis);
-            if (flatStretch > 0)
-            {
-                BreakFlatStretches(graph, analysis, beats, path, flatStretch, findings, neighbours);
-                PromoteIfNoPeak(graph, analysis, beats, path, findings, neighbours);
-            }
+            MarkApproach(graph, analysis, beats);
+            if (findings == null) return beats;
 
-            MarkApproach(graph, analysis, beats, IsFight);
+            ReportPeaklessPacing(graph, analysis, pacing, findings);
             if (calmStretch > 0) ReportCalmStretches(analysis, beats, calmStretch, findings);
             ReportEarlyPeak(graph, analysis, beats, findings);
             return beats;
@@ -161,87 +152,17 @@ namespace CGD.Level
                     beats[node.Id] = RoomBeat.Relief;
         }
 
-        // The main path's rooms between the Start and the Boss (or the Exit), less the room right
-        // before the Boss: it is the Approach whatever it was.
-        private static List<int> FightPath(MapGraph graph, MapGraphAnalysis analysis)
+        private static void ReportPeaklessPacing(MapGraph graph, MapGraphAnalysis analysis, MapPacingSettings pacing, List<DirectorFinding> findings)
         {
-            var path = new List<int>();
-            IReadOnlyList<int> main = analysis.MainPath;
-            for (int i = 1; i < main.Count - 1; i++)
-            {
-                if (graph.TryGetNode(main[i], out MapNode node) && node.Type == MapNodeType.Boss)
-                {
-                    if (path.Count > 0) path.RemoveAt(path.Count - 1);
-                    break;
-                }
-                path.Add(main[i]);
-            }
-            return path;
-        }
+            if (pacing.MaxFightsWithoutPeak <= 0) return;
+            List<int> path = MapPeaks.PacedPath(graph, analysis);
+            foreach (List<int> run in MapPeaks.PeaklessRuns(graph, analysis, path, pacing.PeakIntensity, pacing.MaxFightsWithoutPeak))
+                findings.Add(new DirectorFinding(DirectorCheck.FlatStretch, run[0],
+                    $"{run.Count} fights in a row (#{run[0]} to #{run[run.Count - 1]}) with no peak among them"));
 
-        private static void BreakFlatStretches(MapGraph graph, MapGraphAnalysis analysis, Dictionary<int, RoomBeat> beats, List<int> path,
-                                               int flatStretch, List<DirectorFinding> findings, List<int> neighbours)
-        {
-            var run = new List<int>();
-            var reported = new HashSet<int>();
-            for (bool changed = true; changed;)
-            {
-                changed = false;
-                run.Clear();
-                for (int i = 0; i <= path.Count && !changed; i++)
-                {
-                    if (i < path.Count && beats[path[i]] == RoomBeat.Build)
-                    {
-                        run.Add(path[i]);
-                        continue;
-                    }
-                    if (run.Count > flatStretch)
-                    {
-                        changed = TryPromote(graph, analysis, beats, run, neighbours, out int peak);
-                        string rooms = $"#{run[0]} to #{run[run.Count - 1]}";
-                        if (changed)
-                        {
-                            findings?.Add(new DirectorFinding(DirectorCheck.FlatStretch, peak, $"{run.Count} ordinary fights in a row ({rooms}): #{peak} made their peak", true));
-                            MarkReliefs(graph, analysis, beats, neighbours);
-                        }
-                        else if (reported.Add(run[0]))
-                            findings?.Add(new DirectorFinding(DirectorCheck.FlatStretch, run[0], $"{run.Count} ordinary fights in a row ({rooms}), and none can peak beside the peaks there"));
-                    }
-                    run.Clear();
-                }
-            }
-        }
-
-        private static void PromoteIfNoPeak(MapGraph graph, MapGraphAnalysis analysis, Dictionary<int, RoomBeat> beats, List<int> path,
-                                            List<DirectorFinding> findings, List<int> neighbours)
-        {
-            var fights = new List<int>();
-            foreach (int id in path)
-            {
-                if (beats[id] == RoomBeat.Peak) return;
-                if (beats[id] is RoomBeat.Build or RoomBeat.Relief) fights.Add(id);
-            }
-            if (fights.Count < 2 || !TryPromote(graph, analysis, beats, fights, neighbours, out int peak)) return;
-
-            findings?.Add(new DirectorFinding(DirectorCheck.NoPeak, peak, $"no peak on the way to the boss: #{peak}, its strongest fight, made one", true));
-            MarkReliefs(graph, analysis, beats, neighbours);
-        }
-
-        // The strongest of `candidates` that no peak stands beside, made a peak.
-        private static bool TryPromote(MapGraph graph, MapGraphAnalysis analysis, Dictionary<int, RoomBeat> beats, List<int> candidates,
-                                       List<int> neighbours, out int peak)
-        {
-            peak = -1;
-            MapNode best = null;
-            foreach (int id in candidates)
-            {
-                if (!graph.TryGetNode(id, out MapNode node) || BesidePeak(graph, beats, id, neighbours)) continue;
-                if (best == null || Outranks(analysis, node, best)) best = node;
-            }
-            if (best == null) return false;
-            peak = best.Id;
-            beats[peak] = RoomBeat.Peak;
-            return true;
+            List<int> fights = MapPeaks.PeaklessFights(graph, analysis, path, pacing.PeakIntensity);
+            if (fights.Count > 0)
+                findings.Add(new DirectorFinding(DirectorCheck.NoPeak, fights[0], $"no peak among the {fights.Count} fights on the way to the boss"));
         }
 
         // `except`: a peak not to count (the one about to move away).
@@ -286,27 +207,6 @@ namespace CGD.Level
                 $"the strongest peak, #{strongest.Id}, comes in the first third of the way and every later one is weaker"));
         }
 
-        private static bool IsPeak(MapGraph graph, MapGraphAnalysis analysis, MapNode node, float peakIntensity,
-                                   System.Func<MapNode, bool> isFight, List<int> neighbours)
-        {
-            if (node.Intensity < peakIntensity) return false;
-
-            graph.GetNeighbors(node.Id, neighbours);
-            foreach (int id in neighbours)
-                if (graph.TryGetNode(id, out MapNode other) && isFight(other) && analysis.IsReachable(id) && Outranks(analysis, other, node))
-                    return false;
-            return true;
-        }
-
-        // Whether `a` is the stronger candidate for a peak than `b`.
-        private static bool Outranks(MapGraphAnalysis analysis, MapNode a, MapNode b)
-        {
-            if (a.Intensity != b.Intensity) return a.Intensity > b.Intensity;
-            int depthA = analysis.Depth(a.Id), depthB = analysis.Depth(b.Id);
-            if (depthA != depthB) return depthA > depthB;
-            return a.Id < b.Id;
-        }
-
         private static bool FollowsPeak(MapGraph graph, MapGraphAnalysis analysis, MapNode node, Dictionary<int, RoomBeat> beats, List<int> neighbours)
         {
             int depth = analysis.Depth(node.Id);
@@ -317,13 +217,13 @@ namespace CGD.Level
             return false;
         }
 
-        private static void MarkApproach(MapGraph graph, MapGraphAnalysis analysis, Dictionary<int, RoomBeat> beats, System.Func<MapNode, bool> isFight)
+        private static void MarkApproach(MapGraph graph, MapGraphAnalysis analysis, Dictionary<int, RoomBeat> beats)
         {
             IReadOnlyList<int> path = analysis.MainPath;
             for (int i = 1; i < path.Count; i++)
             {
                 if (!graph.TryGetNode(path[i], out MapNode boss) || boss.Type != MapNodeType.Boss) continue;
-                if (graph.TryGetNode(path[i - 1], out MapNode before) && isFight(before)) beats[before.Id] = RoomBeat.Approach;
+                if (graph.TryGetNode(path[i - 1], out MapNode before) && before.Type.IsFight()) beats[before.Id] = RoomBeat.Approach;
                 return;
             }
         }

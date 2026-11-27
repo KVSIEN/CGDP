@@ -1,10 +1,14 @@
+using System.Collections.Generic;
 using CGD.Core;
 using UnityEngine;
 
 namespace CGD.Map
 {
     // Intensity = the depth curve, plus the type's bonus, plus a little jitter so
-    // neighbouring rooms of the same type don't read identically.
+    // neighbouring rooms of the same type don't read identically. Pinned rooms then take their
+    // pin's intensity, and the main path's peaks are raised where the pacing asks for one
+    // (MapPeaks.Raise), never a pinned room's: the map comes out with the sawtooth the map
+    // director builds, instead of the director making peaks of its own afterwards.
     internal class MapIntensityPainter
     {
         private readonly MapGenerationContext _context;
@@ -16,11 +20,21 @@ namespace CGD.Map
             _random  = context.StreamFor(MapGenerator.IntensityLayer);
         }
 
-        public void Paint()
+        // `pins` and `pinnedIds` pair up: the pinned rooms and the nodes they were given.
+        public void Paint(IReadOnlyList<MapNodePin> pins, IReadOnlyList<int> pinnedIds)
         {
             foreach (MapSlot slot in _context.Slots)
                 if (_context.Graph.TryGetNode(slot.NodeId, out MapNode node))
                     node.Intensity = Mathf.Clamp01(IntensityFor(node.Type, slot.Progress) + OffsetFor(node.Type));
+
+            var pinned = new HashSet<int>();
+            for (int i = 0; i < pins.Count; i++)
+            {
+                if (!_context.Graph.TryGetNode(pinnedIds[i], out MapNode node)) continue;
+                node.Intensity = pins[i].Intensity;
+                pinned.Add(node.Id);
+            }
+            MapPeaks.Raise(_context.Graph, _context.Content.Pacing, pinned);
         }
 
         // Run modifiers shift every room but the calm structural ones.
