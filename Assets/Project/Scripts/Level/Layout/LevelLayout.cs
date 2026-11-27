@@ -22,6 +22,16 @@ namespace CGD.Level
         public Dictionary<int, LevelRoom> Rooms     { get; } = new();
         public List<LevelDoorway>          Doorways  { get; } = new();
         public List<string>                Warnings  { get; } = new();
+        // The map director's plan for the map (MapDirector), set before any room is placed.
+        public MapDirection Direction { get; private set; } = MapDirection.None;
+        // What the director changed and found: its pacing pass, then its checks of the built rooms (BeatReview).
+        public List<DirectorFinding> DirectorFindings { get; } = new();
+
+        public void AttachDirection(MapDirection direction)
+        {
+            Direction = direction ?? MapDirection.None;
+            DirectorFindings.AddRange(Direction.Findings);
+        }
 
         public IEnumerable<Vector2Int> WalkableTiles => _walkable;
 

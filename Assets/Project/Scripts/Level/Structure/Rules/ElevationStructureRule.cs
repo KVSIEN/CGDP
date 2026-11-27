@@ -73,6 +73,10 @@ namespace CGD.Level
 
         private bool IsRound => _kind == ElevationKind.Mound || _kind == ElevationKind.Crater;
 
+        // Floor a platform, island or sunken floor (each tier of it) keeps besides its stairs, at
+        // least: one smaller is a flight up to nothing, nothing to stand or put anything on.
+        private const int MinFloorTiles = 6;
+
         public override void Apply(RoomStructure structure, RandomStream random)
         {
             if (!structure.AllowsFloor(Level)) return;
@@ -98,6 +102,7 @@ namespace CGD.Level
             {
                 List<ElevatedArea> areas = IsRound ? rounds.Build(structure, random, tiers)
                                                    : blocks.Build(structure, random, tiers, open, shrink);
+                if (!IsRound && HasTooLittleFloor(areas)) continue;
                 if (TryAdd(structure, areas, ref budget)) return true;
             }
             return false;
@@ -128,6 +133,26 @@ namespace CGD.Level
             if (size > budget || !structure.TryAddElevations(areas)) return false;
             budget -= size;
             return true;
+        }
+
+        private static bool HasTooLittleFloor(List<ElevatedArea> areas)
+        {
+            if (areas == null) return false;
+            foreach (ElevatedArea area in areas)
+            {
+                int floor = area.Tiles.Count;
+                foreach (StairFlight flight in area.Stairs)
+                    if (Contains(area.Tiles, flight.Tile)) floor--;
+                if (floor < MinFloorTiles) return true;
+            }
+            return false;
+        }
+
+        private static bool Contains(IReadOnlyList<Vector2Int> tiles, Vector2Int tile)
+        {
+            foreach (Vector2Int t in tiles)
+                if (t == tile) return true;
+            return false;
         }
 
         // What the feature counts against the budget: every tier's tiles and corners and a raised

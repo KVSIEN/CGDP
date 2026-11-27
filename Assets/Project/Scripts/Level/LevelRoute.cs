@@ -10,7 +10,8 @@ namespace CGD.Level
     // from the player's room to the Exit are ahead, those on the way back to the Start behind.
     // Only the first few rooms each way count (the caller says how many), so a group arrives
     // near where the player is going or has just been, not across the map. The Start room, the
-    // safe hub, never counts.
+    // safe hub, never counts, nor any room the map director keeps calm (BeatTuning.NoReinforcements).
+    // A walk through such a room still goes on to the rooms past it.
     public sealed class LevelRoute : IRouteSpots
     {
         private const RoomTileTags Taken = RoomTileTags.Structure | RoomTileTags.Prop;
@@ -20,9 +21,12 @@ namespace CGD.Level
         private readonly Transform _level;
         private readonly Dictionary<(int, RouteSide), List<int>> _paths = new();
         private readonly List<LevelRoom> _along = new();
+        private readonly System.Func<LevelRoom, bool> _keptCalm;
 
-        public LevelRoute(LevelLayout layout, MapGraph graph, Transform level)
+        // `keptCalm`: rooms groups never arrive in (null = only the Start room).
+        public LevelRoute(LevelLayout layout, MapGraph graph, Transform level, System.Func<LevelRoom, bool> keptCalm = null)
         {
+            _keptCalm = keptCalm;
             _layout   = layout;
             _analysis = new MapGraphAnalysis(graph);
             _level    = level;
@@ -56,7 +60,8 @@ namespace CGD.Level
             foreach (int id in PathFrom(from, side))
             {
                 if (_along.Count >= count) break;
-                if (id != from && _layout.Rooms.TryGetValue(id, out LevelRoom room) && room.Node.Type != MapNodeType.Start)
+                if (id != from && _layout.Rooms.TryGetValue(id, out LevelRoom room) && room.Node.Type != MapNodeType.Start
+                    && (_keptCalm == null || !_keptCalm(room)))
                     _along.Add(room);
             }
             return _along;

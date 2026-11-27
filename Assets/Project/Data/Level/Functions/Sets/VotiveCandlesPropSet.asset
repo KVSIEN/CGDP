@@ -38,7 +38,7 @@ MonoBehaviour:
     Required: 0
     Lattice: {x: 0, y: 0}
     Symmetric: 0
-    Decor: 1
+    Decor: 0
     NearRoute: 0
     OffRoute: 0
     MarksRoute: 0

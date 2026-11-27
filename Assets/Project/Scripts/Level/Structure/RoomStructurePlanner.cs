@@ -24,7 +24,9 @@ namespace CGD.Level
         // style, TerritoryDepth); at 1 every one is, with no random draw.
         // `lowestLevel`, `highestLevel`: the floor levels elevation rules may raise or sink the
         // room to (RoomElevation); both 0 keeps every room flat.
-        // `budget`: structure added to a room still short of its weighted structure score after all of that (StructureBudget).
+        // `budget`: structure added to a room still short of its weighted structure score after all of that (StructureBudget),
+        // asked for as `target` says (the map director's, by the room's beat), never closing the
+        // way round a room that had one (RoomFlank).
         // `elevation`: floor levels added after that to a room with too little of them (ElevationBudget),
         // as long as `anchors`, the room's required pieces, still fit (RoomAnchorFit).
         public RoomStructure Plan(LevelRoom room, IReadOnlyList<LevelDoorway> doorways, RandomStream random,
@@ -32,13 +34,15 @@ namespace CGD.Level
                                   IReadOnlyList<RoomStructureRule> factionAdditions = null,
                                   RoomStructureRule breachDivider = null, float additionChance = 1f,
                                   int lowestLevel = 0, int highestLevel = 0, StructureBudget budget = null,
-                                  ElevationBudget elevation = null, IReadOnlyList<RoomPropPlacement> anchors = null)
+                                  ElevationBudget elevation = null, IReadOnlyList<RoomPropPlacement> anchors = null,
+                                  StructureTarget target = default)
         {
             var entrances = new List<Vector2Int>();
             foreach (LevelDoorway doorway in doorways)
                 if (doorway.Room == room) entrances.Add(doorway.RoomTile);
 
             RoomStructure structure = Prepare(room.Footprint, room.WallHeight, entrances);
+            Vector2Int? arrival = RoomFlowPlanner.ArrivalOf(room, doorways);
             structure.AllowLevels(lowestLevel, highestLevel);
             // The floor a chamfered or curved wall cuts off, before anything is planned on it.
             if (room.Outline != null)
@@ -56,7 +60,8 @@ namespace CGD.Level
                 // Columns crowded by a wall go before the budget judges the room, so it makes up
                 // for them, and again after, for walls the budget put up.
                 structure.RemovePillarsBesideWalls();
-                if (budget != null && budget.Needs(structure)) structure = budget.Apply(structure, random);
+                if (budget != null && budget.Needs(structure, target))
+                    structure = budget.Apply(structure, random, target, KeepsFlank(structure, arrival));
                 structure.RemovePillarsBesideWalls();
                 if (elevation != null && elevation.Needs(structure))
                     structure = AddLevels(elevation, structure, room, random, anchors);
@@ -69,9 +74,17 @@ namespace CGD.Level
                 structure.AssignZones();
             }
 
-            Vector2Int? arrival = RoomFlowPlanner.ArrivalOf(room, doorways);
             if (arrival.HasValue) RoomFlowPlanner.Mark(structure, arrival.Value);
             return structure;
+        }
+
+        // A budget addition may not close the way round a room that has one; a room without a
+        // way in, or already without a way round, takes any.
+        private static System.Predicate<RoomStructure> KeepsFlank(RoomStructure structure, Vector2Int? arrival)
+        {
+            if (!arrival.HasValue || structure.Footprint.Count < RoomFlank.MinFloorTiles) return null;
+            Vector2Int from = arrival.Value;
+            return RoomFlowPlanner.KeepsFlank(structure, from) ? trial => RoomFlowPlanner.KeepsFlank(trial, from) : null;
         }
 
         private static RoomStructure AddLevels(ElevationBudget elevation, RoomStructure structure, LevelRoom room, RandomStream random,

@@ -19,10 +19,14 @@ namespace CGD.Level
 
         private const RoomTileTags Solid = RoomTileTags.Structure | RoomTileTags.Prop;
 
+        // Whether a flank means anything in the room: it has a way in and is big enough.
+        public static bool Applies(RoomStructure structure) =>
+            structure.Arrival.HasValue && structure.Footprint.Count >= MinFloorTiles;
+
         // True for a room that has no flow, is too small to need one, or has a way round.
         public static bool Has(RoomStructure structure)
         {
-            if (!structure.Arrival.HasValue || structure.Footprint.Count < MinFloorTiles) return true;
+            if (!Applies(structure)) return true;
 
             Vector2Int arrival = structure.Arrival.Value;
             var steps = new FloorSteps(structure, arrival, Solid);
@@ -30,6 +34,27 @@ namespace CGD.Level
 
             HashSet<Vector2Int> lane = LaneThroughContest(structure, steps.PathTo(farEnd, structure));
             return lane.Count == 0 || new FloorSteps(structure, arrival, Solid, lane).Reaches(farEnd);
+        }
+
+        // Keeps a room's way round through its furnishing: the main lane and the shortest way
+        // round it are tagged FlankLane, which solid props keep off. Both, as props only make
+        // other ways longer, so the main lane stays the one Has closes off and the way round stays
+        // beside it. A room without a way round is left as it is.
+        public static void Reserve(RoomStructure structure)
+        {
+            if (!Applies(structure)) return;
+
+            Vector2Int arrival = structure.Arrival.Value;
+            var steps = new FloorSteps(structure, arrival, Solid);
+            if (!TryFarEnd(structure, steps, arrival, out Vector2Int farEnd)) return;
+
+            List<Vector2Int> main = steps.PathTo(farEnd, structure);
+            HashSet<Vector2Int> lane = LaneThroughContest(structure, main);
+            var round = new FloorSteps(structure, arrival, Solid, lane);
+            if (lane.Count == 0 || !round.Reaches(farEnd)) return;
+
+            foreach (Vector2Int tile in main) structure.Tag(tile, RoomTileTags.FlankLane);
+            foreach (Vector2Int tile in round.PathTo(farEnd, structure)) structure.Tag(tile, RoomTileTags.FlankLane);
         }
 
         // 1 for a fight room that has no flank, as a level off its priorities (RoomTraitFit).

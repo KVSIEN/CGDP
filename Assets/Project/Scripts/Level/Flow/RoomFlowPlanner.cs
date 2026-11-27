@@ -59,6 +59,15 @@ namespace CGD.Level
             }
         }
 
+        // Whether a room, as it stands, would keep a way round once its flow is marked from
+        // `arrival` (RoomFlank). Read on a copy, so `structure` keeps no flow tags of it.
+        public static bool KeepsFlank(RoomStructure structure, Vector2Int arrival)
+        {
+            RoomStructure marked = structure.Copy();
+            Mark(marked, arrival);
+            return RoomFlank.Has(marked);
+        }
+
         // Whether a tile lies in the band (Any and rooms without a flow take every tile).
         public static bool InBand(RoomStructure structure, Vector2Int tile, RoomFlowBand band) => band switch
         {

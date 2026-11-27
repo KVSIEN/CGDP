@@ -174,6 +174,42 @@ namespace CGD.Tests
             }
         }
 
+        // A building's last rooms still get what every room gets once the first ones used up the room's share.
+        [Test]
+        public void EachZoneHoldsEveryCellToItsOwnShare()
+        {
+            for (int seed = 0; seed < Seeds; seed++)
+            {
+                RoomStructure room = ThreeZoneRoom();
+                RoomPropPlanner planner = Planner(room, seed, fillShare: 0.2f);
+                RoomPropPlacement crowd = Placement(60, 60, PropFacing.Square);
+                crowd.Zone    = PropZone.Largest;
+                crowd.Spacing = 0;
+                planner.Add(crowd);
+                Assert.IsTrue(planner.Outcomes[0].HitFillCap, $"seed {seed}: the main space didn't use up the room's share");
+
+                RoomPropPlacement lockers = Placement(1, 1, PropFacing.AgainstWall);
+                lockers.Zone     = PropZone.Others;
+                lockers.EachZone = true;
+                Assert.AreEqual(2, planner.Add(lockers), $"seed {seed}: a cell went without its locker");
+            }
+        }
+
+        [Test]
+        public void TowardNearWithNothingNamedFacesTheMiddle()
+        {
+            for (int seed = 0; seed < Seeds; seed++)
+            {
+                RoomStructure room = Room(12, 12);
+                RoomPropPlanner planner = Planner(room, seed);
+                planner.Add(Placement(6, 8, PropFacing.TowardNear));
+
+                Vector2 middle = room.Footprint.Anchor;
+                foreach (PlannedProp prop in planner.Planned)
+                    Assert.GreaterOrEqual(Vector2.Dot(middle - prop.Tiles.center, Forward(prop)), 0f, $"seed {seed}: a seat turns its back on the room");
+            }
+        }
+
         [Test]
         public void OfficeMazeOfficesAreZonesOfTheirOwn()
         {

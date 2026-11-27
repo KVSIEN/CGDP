@@ -5,7 +5,8 @@ using CGD.Core;
 namespace CGD.Level
 {
     // Plans what a room is furnished with, most important first, as each placement takes floor
-    // the next can't have: what a player comes for (offerings), the function's furniture (its
+    // the next can't have: what a player comes for (offerings, and the supplies the map director
+    // puts down for the room's beat), the function's furniture (its
     // layout's set pieces first), then
     // its side's dressing (a crew room's staff door), a fight room's foothold just inside the way
     // in, the room type's cover and clutter (and its
@@ -15,7 +16,8 @@ namespace CGD.Level
     // kiosk) is furnished by its own place alone; everything else goes on the floor round it.
     // A hand-built landmark keeps its own interior. A fight room a faction design holds is
     // furnished the way that design's priorities ask (RoomTraitFit): from several seeds, each
-    // refined by moving its loose cover about (RoomPlanRefiner), keeping the closest fit.
+    // refined by moving its loose cover about (RoomPlanRefiner), keeping the closest fit. In
+    // every fight room the way round its structure left (RoomFlank.Reserve) is kept clear of props.
     //
     // Pure planning — nothing is spawned — so the level (RoomPopulator) and the editor's room
     // previews get exactly the same props from the same seed. Planning claims the room's floor
@@ -44,6 +46,8 @@ namespace CGD.Level
             var anchors = new List<RoomPropPlacement>();
             RoomContentRule rule = settings.RuleFor(room.Node.Type);
             if (rule != null && rule.Offerings.Length > 0) anchors.Add(RoomPropPlacement.Nook(rule.Offerings));
+            BeatTuning beat = settings.TuningFor(room);
+            if (beat.HasSupplies) anchors.Add(RoomPropPlacement.Nook(Supplies(beat)));
             if (room.Landmark != null) return anchors;
 
             AddRequired(anchors, room.FunctionProps);
@@ -51,6 +55,8 @@ namespace CGD.Level
             if (side != null && side.Dressing != null) AddRequired(anchors, side.Dressing.Props);
             return anchors;
         }
+
+        private static GameObject[] Supplies(BeatTuning beat) => new List<GameObject>(beat.Supplies).FindAll(s => s != null).ToArray();
 
         private static void AddRequired(List<RoomPropPlacement> anchors, IEnumerable<RoomPropPlacement> placements)
         {
@@ -68,6 +74,7 @@ namespace CGD.Level
             Seed seed = _seed.Derive("props").Derive(room.Node.Id);
             // Decided once for the room, so every try dresses it the same way; a core room draws nothing.
             bool swaps = style.IsFull || style.Shows(seed.Derive("territory").Stream());
+            if (RoomTraitFit.IsFightRoom(rule) && room.Landmark == null) RoomFlank.Reserve(room.Structure);
             int tries = RoomTraitFit.TriesFor(room, rule, style.Design, _settings);
             if (tries <= 1)
             {
@@ -120,6 +127,8 @@ namespace CGD.Level
             // Huts and kiosks standing in the room hold only their own furniture.
             ICollection<int> floor = structure.ZonesOutsideAnnexes();
             if (rule != null && rule.Offerings.Length > 0) planner.Add(RoomPropPlacement.Nook(rule.Offerings), zones: floor);
+            BeatTuning beat = _settings.TuningFor(room);
+            if (beat.HasSupplies) planner.Add(RoomPropPlacement.Nook(Supplies(beat)), zones: floor);
             if (room.Landmark == null)
             {
                 // A building's or a town's rooms are furnished by their own places; the place's own

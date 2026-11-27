@@ -97,6 +97,28 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void AReservedFlankSurvivesFurnitureOnEveryOtherTile()
+        {
+            RoomStructure room = Hall(1, 7);
+            RoomFlank.Reserve(room);
+            Assert.That(TilesWith(room, RoomTileTags.FlankLane), Is.GreaterThan(0));
+
+            foreach (Vector2Int tile in room.Footprint.Tiles)
+                if (tile != room.Arrival && !room.Has(tile, RoomTileTags.FlankLane | RoomTileTags.Structure))
+                    room.TryClaim(new[] { tile }, RoomTileTags.Prop);
+
+            Assert.That(RoomFlank.Has(room), Is.True);
+        }
+
+        [Test]
+        public void ARoomWithNoFlankGetsNoneReserved()
+        {
+            RoomStructure room = Hall(4);
+            RoomFlank.Reserve(room);
+            Assert.That(TilesWith(room, RoomTileTags.FlankLane), Is.Zero);
+        }
+
+        [Test]
         public void ARoomTooSmallForAFlankIsNotJudged()
         {
             RoomStructure room = Room(6, 6, new Vector2Int(0, 3));

@@ -154,6 +154,8 @@ namespace CGD.Level
         [SerializeField] private RoomDressing _gapDressing;
         [Tooltip("How much structure (walls, buildings, pillars, half walls, weighted) a room should have for its size, and what is added when it has less, so a hall is never a field of bare floor")]
         [SerializeField] private StructureBudget _structureBudget = new();
+        [Tooltip("Gives every room a part in the level's pacing (a peak, the relief after it, a calm room, the approach to the boss) and builds it for that part: its size, cover, enemies and supplies. Empty = every room is built alike")]
+        [SerializeField] private MapDirectorSettings _director;
         [Tooltip("How strongly a faction's design shows in a room, from how firmly the map's faction painter holds it: full in the core of a territory, thinner on its frontier")]
         [SerializeField] private TerritoryDepth _territoryDepth = new();
 
@@ -218,7 +220,11 @@ namespace CGD.Level
         public RoomDressing FootholdDressing => _footholdDressing;
         public RoomDressing GapDressing => _gapDressing;
         public StructureBudget StructureBudget => _structureBudget;
+        public MapDirectorSettings Director => _director;
         public TerritoryDepth TerritoryDepth => _territoryDepth;
+
+        // What the director changes in this room for its beat; nothing without a director.
+        public BeatTuning TuningFor(LevelRoom room) => _director != null ? _director.TuningFor(room.Beat) : BeatTuning.Neutral;
 
         // The holding faction's design as this room shows it (full strength without a faction influence).
         public FactionStyle StyleFor(LevelRoom room) => new(DesignFor(room.Faction), room.DesignStrength);

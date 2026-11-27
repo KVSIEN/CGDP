@@ -79,6 +79,10 @@ namespace CGD.Level
                 if (!_props.ContainsKey(room.Node.Id)) _props[room.Node.Id] = _furnisher.Furnish(room).Props;
         }
 
+        // What a room was furnished with (FurnishRooms); empty before it was.
+        public IReadOnlyList<PlannedProp> PropsOf(LevelRoom room) =>
+            _props.TryGetValue(room.Node.Id, out IReadOnlyList<PlannedProp> props) ? props : System.Array.Empty<PlannedProp>();
+
         public void PlaceProps()
         {
             FurnishRooms();
@@ -133,8 +137,7 @@ namespace CGD.Level
         // Whether SpawnEnemies will put enemies in this room (before it has run).
         public bool WillHaveEnemies(LevelRoom room)
         {
-            RoomContentRule rule = _settings.RuleFor(room.Node.Type);
-            return RoomEnemyPlanner.CountFor(rule, room) > 0
+            return RoomEnemyPlanner.CountFor(_settings, room) > 0
                    && !(RosterFor(room).IsEmpty && SecondRosterFor(room).IsEmpty);
         }
 
@@ -211,7 +214,7 @@ namespace CGD.Level
                 RoomRoster breach = SecondRosterFor(room);
                 if (roster.IsEmpty && breach.IsEmpty) continue;
 
-                int count = RoomEnemyPlanner.CountFor(rule, room);
+                int count = RoomEnemyPlanner.CountFor(_settings, room);
                 if (count <= 0) continue;
 
                 _props.TryGetValue(room.Node.Id, out IReadOnlyList<PlannedProp> props);

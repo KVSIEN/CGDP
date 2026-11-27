@@ -37,6 +37,8 @@ namespace CGD.Level
             Dictionary<int, List<Vector2Int>> toward = ConnectionDirections(graph, cells);
             var claimed = new HashSet<Vector2Int>(cells.Values);
             HashSet<RoomFunction> usedUnique = PinnedUniquePlaces(graph);
+            MapDirection direction = layout.Direction;
+            var neighbours = new List<int>();
 
             foreach (MapNode node in graph.Nodes)
             {
@@ -46,13 +48,16 @@ namespace CGD.Level
                 if (function == null)
                 {
                     List<RoomFunction> candidates = FunctionsInCategory(node, layout, usedUnique);
-                    function = random.PickWeighted(candidates, f => f != null ? f.WeightIn(section) : 0f);
+                    HashSet<RoomFunction> beside = NeighbourPlaces(graph, node, layout, neighbours);
+                    float repeat = _settings.Director != null ? _settings.Director.RepeatNeighbour : 1f;
+                    function = random.PickWeighted(candidates, f => f == null ? 0f : f.WeightIn(section) * (beside.Contains(f) ? repeat : 1f));
                 }
                 // Its own seed layer, so a function without layouts rolls exactly as before.
                 RoomLayout roomLayout = function != null
                     ? function.PickLayout(seed.Derive(node.Id).Derive("layout").Stream(), node.Layout as RoomLayout) : null;
                 RectInt block = ClaimBlock(cells[node.Id], function != null ? function.CellsWith(roomLayout) : Vector2Int.one, claimed, random);
                 connections.TryGetValue(node.Id, out int count);
+                RoomBeat beat = direction.BeatOf(node.Id);
 
                 float height = function != null && function.WallHeight > 0f ? function.WallHeight : _settings.WallHeight;
                 FactionDefinition faction = content != null && node.HasFaction ? content.GetFaction(node.Faction) : null;
@@ -65,19 +70,19 @@ namespace CGD.Level
                                                          out RoomFootprint landmarkFootprint, out int landmarkTurns))
                 {
                     layout.AddRoom(new LevelRoom(node, landmarkFootprint, function, height, landmark, faction, breach, side: side,
-                                                 designStrength: strength, landmarkTurns: landmarkTurns));
+                                                 designStrength: strength, landmarkTurns: landmarkTurns, beat: beat));
                     continue;
                 }
                 if (landmark != null)
                     layout.Warnings.Add($"Landmark '{landmark.name}' doesn't fit {node.Type} #{node.Id} (too big, or fewer doorways than its {count} connections); generated instead.");
 
                 var style = new FactionStyle(_settings.DesignFor(faction), strength);
-                RectInt area = RoomArea(block, function, roomLayout, random, style, _settings.DesignFor(side));
+                RectInt area = RoomArea(block, function, roomLayout, random, style, _settings.DesignFor(side), direction.SizeScaleOf(node.Id));
                 IReadOnlyList<RoomShape> functionShapes = function != null ? function.ShapesWith(roomLayout) : null;
                 IReadOnlyList<RoomShape> shapeList = functionShapes != null && functionShapes.Count > 0 ? functionShapes : _settings.DefaultShapes;
                 layout.AddRoom(new LevelRoom(node, _shapes.Build(shapeList, count, area, random, style), function, height, faction: faction, breachFaction: breach,
                                              chamfer: function != null ? function.ChamferOr(_settings.RoomChamfer) : _settings.RoomChamfer, side: side,
-                                             designStrength: strength, roomLayout: roomLayout));
+                                             designStrength: strength, roomLayout: roomLayout, beat: beat));
             }
         }
 
@@ -192,15 +197,26 @@ namespace CGD.Level
                 block.width * cell - _settings.GapTiles, block.height * cell - _settings.GapTiles);
         }
 
+        // The places of the rooms already given one next to `node`, so it can be told apart from them.
+        private static HashSet<RoomFunction> NeighbourPlaces(MapGraph graph, MapNode node, LevelLayout layout, List<int> neighbours)
+        {
+            var places = new HashSet<RoomFunction>();
+            graph.GetNeighbors(node.Id, neighbours);
+            foreach (int id in neighbours)
+                if (layout.Rooms.TryGetValue(id, out LevelRoom room) && room.Function != null) places.Add(room.Function);
+            return places;
+        }
+
         // Multi-cell rooms fill their block; single-cell rooms may be smaller, centred.
+        // `directorScale`: the map director's size for the room's beat and depth (MapDirection).
         private RectInt RoomArea(RectInt block, RoomFunction function, RoomLayout roomLayout, RandomStream random, FactionStyle style,
-                                 ShipSideDesign sideDesign)
+                                 ShipSideDesign sideDesign, float directorScale)
         {
             RectInt area = BlockArea(block);
             if (function == null || block.width * block.height > 1) return area;
 
             int size = function.RollSize(random, MinRoomTiles, _settings.RoomTiles, roomLayout);
-            float scale = _settings.RoomSizeScale * style.RoomSizeScale * (sideDesign != null ? sideDesign.RoomSizeScale : 1f);
+            float scale = _settings.RoomSizeScale * style.RoomSizeScale * (sideDesign != null ? sideDesign.RoomSizeScale : 1f) * directorScale;
             if (!Mathf.Approximately(scale, 1f)) size = Mathf.Clamp(Mathf.RoundToInt(size * scale), MinRoomTiles, _settings.RoomTiles);
             int inset = (_settings.RoomTiles - size) / 2;
             return new RectInt(area.xMin + inset, area.yMin + inset, size, size);

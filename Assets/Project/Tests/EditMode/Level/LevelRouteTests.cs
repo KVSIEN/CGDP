@@ -72,6 +72,14 @@ namespace CGD.Tests
         }
 
         [Test]
+        public void RoomsKeptCalmAreWalkedThroughButNeverPicked()
+        {
+            var route = new LevelRoute(_layout, _graph, null, room => room.Node.Id == _c);
+            Assert.That(Ids(route.RoomsAlong(_b, RouteSide.Ahead, 2)), Is.EqualTo(new[] { _d, _exit }));
+            Assert.That(Ids(route.RoomsAlong(_d, RouteSide.Behind, 2)), Is.EqualTo(new[] { _b, _a }));
+        }
+
+        [Test]
         public void FromADeadEndAheadLeadsBackOntoTheRoute()
         {
             Assert.That(Ids(Route().RoomsAlong(_x, RouteSide.Ahead, 2)), Is.EqualTo(new[] { _b, _c }));

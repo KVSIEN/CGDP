@@ -27,6 +27,10 @@ namespace CGD.Level
         private readonly IReadOnlyList<RectInt> _areas;
         // Whether the room has floor above and below the doorways' level, for Floor.
         private readonly bool _hasRaised, _hasSunken;
+        // The floor either side of a gap in an inner wall: the way through, which no solid prop blocks.
+        private readonly HashSet<Vector2Int> _wallGaps = new();
+        // The widest gap in an inner wall still read as a way through rather than the end of a wall.
+        private const int MaxGapTiles = 3;
 
         public PropPlacementRules(RoomStructure structure, Vector2 anchor, SightlineMap sight, RouteMap routes,
                                   IReadOnlyDictionary<string, List<RectInt>> keyed, IReadOnlyList<RectInt> areas)
@@ -45,7 +49,33 @@ namespace CGD.Level
                 int level = structure.LevelOf(tile);
                 _hasRaised |= level > 0;
                 _hasSunken |= level < 0;
+                if (InWallGap(structure, tile)) _wallGaps.Add(tile);
             }
+        }
+
+        // Whether `tile` stands in a gap of an inner wall: the edge to a neighbour is open while the
+        // same line is walled within MaxGapTiles on both sides of it.
+        private static bool InWallGap(RoomStructure structure, Vector2Int tile)
+        {
+            foreach (Vector2Int through in new[] { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down })
+            {
+                Vector2Int beyond = tile + through;
+                if (!structure.Contains(beyond) || structure.IsPartitioned(tile, beyond)) continue;
+                var along = new Vector2Int(through.y, through.x);
+                if (WalledWithin(structure, tile, through, along) && WalledWithin(structure, tile, through, -along)) return true;
+            }
+            return false;
+        }
+
+        private static bool WalledWithin(RoomStructure structure, Vector2Int tile, Vector2Int through, Vector2Int along)
+        {
+            for (int step = 1; step < MaxGapTiles; step++)
+            {
+                Vector2Int side = tile + along * step;
+                if (!structure.Contains(side)) return false;
+                if (structure.IsPartitioned(side, side + through)) return true;
+            }
+            return false;
         }
 
         internal static Vector2Int FootprintOf(RoomPropPlacement placement) =>
@@ -111,12 +141,15 @@ namespace CGD.Level
             RectInt rect = candidate.Rect;
             if (checkLattice && !OnLattice(rect.min, placement.Lattice)) return false;
             bool matchesOn = placement.On == RoomTileTags.None;
+            // Decor is walked over, so only solid props keep off the way round (RoomFlank.Reserve).
+            RoomTileTags avoid = placement.Avoid | RoomTileTags.Stairs | (placement.Decor ? RoomTileTags.None : RoomTileTags.FlankLane);
 
             for (int y = rect.yMin; y < rect.yMax; y++)
                 for (int x = rect.xMin; x < rect.xMax; x++)
                 {
                     var tile = new Vector2Int(x, y);
-                    if (!_structure.Contains(tile) || _structure.Has(tile, placement.Avoid | RoomTileTags.Stairs)) return false;
+                    if (!_structure.Contains(tile) || _structure.Has(tile, avoid)) return false;
+                    if (!placement.Decor && _wallGaps.Contains(tile)) return false;
                     if (zones != null && !zones.Contains(_structure.ZoneOf(tile))) return false;
                     if (placement.Zone == PropZone.Largest && _structure.ZoneOf(tile) != _mainZone) return false;
                     if (placement.Zone == PropZone.Others  && _structure.ZoneOf(tile) == _mainZone) return false;
@@ -141,7 +174,9 @@ namespace CGD.Level
                     for (int i = 0; i < length; i++)
                         if (!_structure.IsWall(first + along * i, back)) return false;
                     return true;
+                // Seats told to face what they stand near, with nothing named, face into the room rather than any way at all.
                 case PropFacing.TowardCentre when !HasFreeYaw(placement, size):
+                case PropFacing.TowardNear when !placement.StandsNear && !HasFreeYaw(placement, size):
                     return candidate.Rotation == RotationToward(rect.center);
                 case PropFacing.AgainstDiagonal:
                     return size == Vector2Int.one && TryDiagonalBeside(rect.min, out _);

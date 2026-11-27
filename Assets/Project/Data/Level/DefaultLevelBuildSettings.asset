@@ -397,18 +397,19 @@ MonoBehaviour:
     - Rule: {fileID: 11400000, guid: c05daa6cb7cb4772ba1123b56b20d817, type: 2}
     - Rule: {fileID: 11400000, guid: b4003143c99d470dabf09b367e4966b9, type: 2}
     _minTiles: 50
-    _tilesPerPoint: 5
+    _tilesPerPoint: 6
     _maxAdditions: 6
     _areaTiles: 8
     _areaShare: 0.5
     _choices: 3
     _tries: 1
-    _openRun: 8
+    _openRun: 10
     _pointsWeight: 0.5
     _wall: 1
     _building: 4
     _pillar: 0.3
     _halfWall: 0.35
+  _director: {fileID: 11400000, guid: 96385f13ba2a4c428d977d86480d266a, type: 2}
   _territoryDepth:
     _coreInfluence: 0.7
     _frontierInfluence: 0.35

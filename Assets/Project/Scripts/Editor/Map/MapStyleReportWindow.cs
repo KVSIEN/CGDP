@@ -1,3 +1,4 @@
+using CGD.Level;
 using CGD.Map;
 using UnityEditor;
 using UnityEngine;
@@ -5,14 +6,20 @@ using UnityEngine;
 namespace CGD.Editor
 {
     // Runs MapStyleReport for a map style and shows the result, for tuning layout and
-    // content settings against many seeds at once.
+    // content settings against many seeds at once. Given build settings, it can also build the
+    // levels themselves (MapDirectorSweep) and read them by the map director's beats and checks:
+    // slower, so it runs on its own count of seeds.
     public class MapStyleReportWindow : EditorWindow
     {
         [SerializeField] private MapGenerationSettings _settings;
         [SerializeField] private int _seeds = 100;
         [SerializeField] private string _firstSeed = "1";
+        [SerializeField] private LevelBuildSettings _build;
+        [SerializeField] private int _levels = 20;
+        [SerializeField] private bool _furnish;
 
         private string _report;
+        private string _levelReport;
         private Vector2 _scroll;
 
         public static void Open(MapGenerationSettings settings)
@@ -37,13 +44,28 @@ namespace CGD.Editor
                     if (GUILayout.Button("Run", EditorStyles.toolbarButton)) Run();
 
                 GUILayout.FlexibleSpace();
-                using (new EditorGUI.DisabledScope(string.IsNullOrEmpty(_report)))
-                    if (GUILayout.Button("Copy", EditorStyles.toolbarButton)) EditorGUIUtility.systemCopyBuffer = _report;
+                using (new EditorGUI.DisabledScope(string.IsNullOrEmpty(_report) && string.IsNullOrEmpty(_levelReport)))
+                    if (GUILayout.Button("Copy", EditorStyles.toolbarButton)) EditorGUIUtility.systemCopyBuffer = Text();
+            }
+
+            using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
+            {
+                _build = (LevelBuildSettings)EditorGUILayout.ObjectField(new GUIContent("", "Build settings to build the levels with, for the map director's beats and checks"),
+                                                                         _build, typeof(LevelBuildSettings), false, GUILayout.Width(220f));
+                EditorGUIUtility.labelWidth = 44f;
+                _levels  = Mathf.Clamp(EditorGUILayout.IntField(new GUIContent("Levels", "Seeds to build levels for, from the same first seed (about a second each)"),
+                                                                 _levels, EditorStyles.toolbarTextField, GUILayout.Width(100f)), 1, 500);
+                EditorGUIUtility.labelWidth = 0f;
+                _furnish = GUILayout.Toggle(_furnish, new GUIContent("Furnish", "Furnish every room too, to check the supplies found a place (several times slower)"),
+                                            EditorStyles.toolbarButton, GUILayout.Width(60f));
+                using (new EditorGUI.DisabledScope(_settings == null || !_settings.CanGenerate || _build == null))
+                    if (GUILayout.Button("Build levels", EditorStyles.toolbarButton)) BuildLevels();
+                GUILayout.FlexibleSpace();
             }
 
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
-            EditorGUILayout.SelectableLabel(_report ?? "Pick a style and press Run.", EditorStyles.wordWrappedLabel,
-                GUILayout.ExpandHeight(true), GUILayout.MinHeight(position.height - 30f));
+            EditorGUILayout.SelectableLabel(Text() ?? "Pick a style and press Run, or pick build settings too and press Build levels.",
+                EditorStyles.wordWrappedLabel, GUILayout.ExpandHeight(true), GUILayout.MinHeight(position.height - 50f));
             EditorGUILayout.EndScrollView();
         }
 
@@ -52,6 +74,29 @@ namespace CGD.Editor
             if (_settings == null || !_settings.CanGenerate) return;
             _report = MapStyleReport.Run(_settings, _seeds, _firstSeed).ToText();
             Repaint();
+        }
+
+        private void BuildLevels()
+        {
+            if (_settings == null || !_settings.CanGenerate || _build == null) return;
+            try
+            {
+                MapDirectorSweep sweep = MapDirectorSweep.Run(_settings, _build, _levels, _firstSeed, _furnish,
+                    (done, total) => EditorUtility.DisplayCancelableProgressBar("Building levels", $"Level {done + 1} of {total}", (float)done / total));
+                _levelReport = sweep.ToText();
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+            }
+            Repaint();
+        }
+
+        // Both reports, the levels' first (null when neither has run).
+        private string Text()
+        {
+            if (string.IsNullOrEmpty(_levelReport)) return _report;
+            return string.IsNullOrEmpty(_report) ? _levelReport : _levelReport + "\n\n" + _report;
         }
     }
 }

@@ -1915,3 +1915,147 @@ decorations sit on the growth.
 
 **Not yet**: a Room Lab layer, decor scattered by the growth's density, a blended ground shader,
 growth on decks; see `TASKS.md` › Elevation, next phases.
+
+## 20. Map director
+
+The pacing director (`Scripts/Director`) paces a play session the way Left 4 Dead's does:
+build-up, peak, fade, calm. It works on a level that is already built. The map director
+(`Scripts/Level/Direction`) is its counterpart at generation time: it reads the map graph before
+any room is placed, gives every room a **beat** (`RoomBeat`), and the rest of the generator builds
+each room for its beat. It adds no pass of its own over the built level; each system reads the
+room's beat where it already makes its decision, so nothing is built twice.
+
+**Where the idea comes from.**
+- *Left 4 Dead* (Valve; Mike Booth, "The AI Systems of Left 4 Dead", 2009): the director's goal is
+  dramatic pacing, a cycle of build-up, peak and relax, read from the player's stress. Left 4 Dead
+  2 lets it change the map too (it opens or closes alternate routes). The runtime director here
+  already does the cycle; the map director gives the map itself the same shape.
+- *Sonancia* (Lopes, Liapis, Yannakakis, AIIDE 2015): a designer draws a tension curve over a
+  level's rooms, and the generator searches for rooms whose tension follows it. Its tension model
+  comes from Left 4 Dead's. Our graph already carries such a curve (each room's intensity, rising to
+  a breather before the boss), so the director reads beats off it rather than searching.
+- *Mission graph, then space* (Joris Dormans; *Unexplored*'s cyclic generation): decide what
+  happens in each room first, then build the space to serve it. The map graph is the mission; the
+  beats are what each part of it is for.
+- *Gears of War* "combat bowls": open arenas joined by tight passages, so the rhythm of compression
+  and release is in the space itself. Here a peak is built bigger, and the relief after it tighter.
+- *Dead Cells* (Motion Twin, Sébastien Bénard): designers lay down the constraints and the level's
+  overall design first, then let the algorithm loose "in the most restrained way possible". Each beat is a
+  small set of constraints on systems that already exist.
+- *Combat-space practice* (layered cover at several heights, lanes for flanking, a foothold of
+  cover just inside the way in; Game Developer's "Engaging level design for combat", mapcore's
+  "Creating a single player combat space"): a peak asks the structure budget for more cover and
+  shorter sightlines. The way-in foothold (§15) and the flank check (`RoomFlank`) were already
+  here.
+- *Safe rooms* (Left 4 Dead) and a stop before the boss (Dead Cells): calm rooms never take
+  reinforcements, and the room leading into the boss gets supplies.
+- *Hades* (Supergiant; Ed Gorinstein on its chambers): smaller chambers come early in a biome,
+  larger ones later, so the space grows with the difficulty. Fight rooms here scale from
+  `_earlySize` (0.9) at the Start to `_lateSize` (1.1) at the boss, by `MapGraphAnalysis.Progress`.
+- *Sawtooth pacing* (rising challenge broken by breathers and payoffs; an easier stretch after a
+  hard one to use what was learned; rest areas give the peaks their contrast): every peak ends in a
+  reward cache in its far end (the nook's Goal band), and the relief after it is lighter.
+- *Repetition* is the best-known complaint about generated levels ("10,000 bowls of oatmeal"): a
+  place a neighbouring room already is weighs `_repeatNeighbour` (0.15) when a room's place is
+  picked, so the same place rarely opens onto itself (the weights change, never the draws).
+
+**Beats** (`MapDirector.Plan`, from the graph alone, so the map editor's layout gives the same):
+Climax for the Boss; Rest for a calm type (`MapDirectorSettings._calmTypes`; waves count as
+fights); Peak for a fight of at least `_peakIntensity` (0.6) that no fight beside it outranks
+(higher intensity, then deeper, then lower id, so two peaks never touch); Relief for a fight entered
+from a peak (a peak neighbour nearer the Start); Approach for the fight just before the Boss on the
+main path, overriding the rest; Build otherwise. A room the Start can't reach gets None.
+
+**What a beat changes** (`BeatTuning`, one row per beat, every value 1 = unchanged):
+- *Size*, in `RoomPlacer`: one more factor beside the build's, the faction's and the side's
+  (single-cell rooms only, never past the cell): the beat's, times the depth's for a fight
+  (`MapDirection.SizeScaleOf`).
+- *Room places*, in `RoomPlacer`: a place a placed neighbour already is weighs `_repeatNeighbour`.
+- *Structure*, in `StructureBudget` through a `StructureTarget`: how far an area may see before it
+  counts as open (`_openRunScale`), how much structure the room should have (`_structureScale`),
+  and how many additions past the budget's own limit it may take (`_extraAdditions`).
+  In every room, directed or not, the budget never keeps an addition that closes the way round
+  a room that had one (`RoomFlowPlanner.KeepsFlank`): more cover in a peak must not leave one lane.
+- *Enemies*, in `RoomEnemyPlanner.CountFor`: the count read at the room's intensity, scaled, a fight
+  keeping at least one.
+- *Supplies*, in `RoomFurnisher`: one of `_supplies` in a nook, planned right after the room type's
+  own offerings and kept by the structure planner as an anchor.
+- *Reinforcements*, in `LevelRoute`: a beat with `_noReinforcements` is walked through but never
+  picked for a group to arrive in.
+
+The room carries its beat (`LevelRoom.Beat`, kept through the direct-door moves), and the overview
+label names it. Without a director in `LevelBuildSettings._director` every room gets None and builds
+exactly as before.
+
+**Measured** (48 maps headless, Linear, Balanced, Labyrinth and Hub styles, 12 seeds each, the
+same graphs built without and with the director; the flank guard on in both):
+Peak rooms 220 -> 233 tiles, walls 33 -> 35, columns 13 -> 16, a way round in 65% -> 69%;
+boss rooms 229 -> 242 tiles, walls 45 -> 51; relief rooms 193 -> 184 tiles, enemies 3.7 -> 2.0;
+approach rooms enemies 3.1 -> 1.6, an ammo cache in all 36; calm rooms slightly less built
+(columns 10.4 -> 9.6); ordinary fights unchanged. A peak is a bigger room with more in it, but
+its floor doesn't see less far (8.5 -> 8.7 tiles): the budget's six additions grow with the room
+rather than past it. Build time unchanged (about 1.15 s a map). The flank guard alone, against
+the budget before it: a way round kept in 62% -> 72% of ordinary fight rooms, peaks 54% -> 69%,
+boss rooms 58% -> 75%, for about a wall fewer per room and sight 0.2 tiles longer.
+
+**Second pass** (the same 48 maps, without -> with the director): peaks 220 -> 244 tiles, walls
+33 -> 39, low walls 35 -> 38, columns 13 -> 18, a reward cache in all 129; boss rooms walls
+45 -> 52; reliefs 190 tiles against their peaks' 244; neighbouring rooms of the same place 4% ->
+1% of 1087 links; build time 1.20 -> 1.29 s a map. A peak's floor still sees as far as before (8.5
+tiles): its structure grows about as fast as the room, so it holds more cover per tile but its
+longest lines are no shorter. Cutting them needs a cover rule that favours full-height walls in
+a peak, not more additions.
+
+**Checks** (`DirectorCheck`, `DirectorFinding` on `LevelLayout.DirectorFindings`, short on the
+room's overview label: "Director: flat stretch, fixed", "! under-covered"):
+- *Pacing, before the build* (`MapDirector`): more than `_flatStretch` (3) ordinary fights in a row
+  on the main path get their strongest made a peak (not beside a peak, not the approach), the next
+  fight its relief; a main path with fights but no peak gets one. More than `_calmStretch` (3) calm
+  rooms in a row, or the strongest peak in the first third with only weaker ones after, are
+  reported: beats can't fix them, the graph's layout would have to.
+- *Set pieces, while built* (`BeatReview.BestSetPiece`): peaks and the boss room are planned after
+  every other room; one holding no more structure points per tile than an ordinary fight beside it,
+  or with no way round, is built again from up to `_coverRetries` (3) seeds of the director's own
+  (`room seed › director › n`), keeping the first that passes, else the best. A room that passes
+  the first time is built exactly as without the check.
+- *After the build* (`BeatReview.ReviewStructures`, `ReviewSupplies`): a set piece still under
+  covered or smaller than a fight beside it, a relief no smaller than its peak, supplies that found
+  no nook. Reported only: sizes are fixed by then.
+
+**The sweep**: the Map Style Report window's second row builds a style's levels (`MapDirectorSweep`)
+and prints per beat the rooms' tiles, cover per tile, standing sight run, enemies and way-round
+share, each check's fixed and left counts, and the seeds that left the most.
+
+Measured, 12 seeds of each of Linear, Balanced, Labyrinth and Hub, retries 0 -> 3: set pieces left
+under covered 18 -> 7, 14 -> 9, 26 -> 14, 13 -> 9; peaks with a way round 72 -> 81%, 66 -> 83%,
+60 -> 79%, 64 -> 82%; peak cover 0.22-0.27 -> 0.25-0.30 a tile; build 25-35% slower (Labyrinth
+1.77 -> 2.26 s a map). The pacing pass fixed 1-3 flat stretches or missing peaks per 12 maps and
+found no calm stretch or early peak. Supplies always found a nook (6 furnished Balanced maps).
+Left: "smaller than a neighbour", 1-2 a map, almost always beside a multi-cell hall (380-450
+tiles) the size scaling never touches. And furnished, the share of fight rooms with a way round
+fell from about 70% to about 31%: furniture closes far more flanks than structure does. (Every
+fight room in these styles is faction-held, so all of them already weighed the flank among their
+tries; with 30-230 props a room no try or single-prop move reopened it.)
+
+**Peaks onto halls** (`MapDirector.MovePeaksToBiggerRooms`, right after `RoomPlacer`): a peak beside
+an ordinary fight (Build or Relief) at least 1.25x its tiles moves onto the biggest such room that
+is no hand-built landmark, not beside another peak, and on the main path when the peak was; the
+reliefs are marked again after the peaks; each peak moves once; sizes stay as placed. The move is a
+fixed `PeakSize` finding (`LevelRoom.Recast`; `MapDirection` keeps the beats planned from the
+graph). Measured, 12 seeds a style: 7, 7, 11 and 7 peaks moved (Linear, Balanced, Labyrinth, Hub),
+peak size 228-283 -> 276-334 tiles; "smaller than a neighbour" left 10-16 per 12 maps, mostly the
+boss room (it never moves) or a peak whose hall is off the main path or beside another peak.
+
+**Flank lanes** (`RoomFlank.Reserve`, `RoomTileTags.FlankLane`): before a fight room is furnished,
+its main lane and the shortest way round it are tagged, and solid props (not decor) keep off them
+(`PropPlacementRules.Suits`, whatever the placement's own Avoid). Both lanes, since props only make
+other ways longer: the main lane stays the shortest, so the way round stays beside it. Measured, 6
+furnished Balanced maps: fight rooms that kept the way round their structure left 28 -> 56 of 62,
+for 1% fewer props (7448 -> 7373); furnished way-round share Build 30 -> 64%, Peak 39 -> 61%
+(Labyrinth Build 30 -> 74%, Peak 38 -> 65%); furnishing a little faster (4.5 -> 3.9 s a map, fewer
+tries miss). Supplies still always found a nook.
+
+**Not yet**: the map editor and the Room Lab don't show beats; the director reads the graph only, not
+the built rooms (it could look again at a peak whose structure stayed open, or a relief that came
+out bigger than its peak); and it doesn't move rooms or change connections the way Left 4 Dead 2
+opens routes.

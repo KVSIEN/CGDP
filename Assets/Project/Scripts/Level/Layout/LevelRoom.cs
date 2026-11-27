@@ -13,8 +13,9 @@ namespace CGD.Level
         public LevelRoom(MapNode node, RoomFootprint footprint, RoomFunction function, float wallHeight,
             LandmarkRoomDefinition landmark = null, FactionDefinition faction = null,
             FactionDefinition breachFaction = null, int chamfer = 0, ShipSide side = ShipSide.None, float designStrength = 1f,
-            RoomLayout roomLayout = null, int landmarkTurns = 0)
+            RoomLayout roomLayout = null, int landmarkTurns = 0, RoomBeat beat = RoomBeat.None)
         {
+            Beat          = beat;
             LandmarkTurns = landmarkTurns;
             RoomLayout    = roomLayout;
             DesignStrength = Mathf.Clamp01(designStrength);
@@ -32,7 +33,11 @@ namespace CGD.Level
         // The same room shifted by `offset` tiles. Only before its structure and outline are
         // planned, which depend on where the doorways end up.
         public LevelRoom Translated(Vector2Int offset) =>
-            new(Node, Footprint.Translated(offset), Function, WallHeight, Landmark, Faction, BreachFaction, Chamfer, Side, DesignStrength, RoomLayout, LandmarkTurns);
+            new(Node, Footprint.Translated(offset), Function, WallHeight, Landmark, Faction, BreachFaction, Chamfer, Side, DesignStrength, RoomLayout, LandmarkTurns, Beat);
+
+        // The map director giving the room another beat once rooms are placed
+        // (MapDirector.MovePeaksToBiggerRooms). Only before its structure is planned, which is built for it.
+        internal void Recast(RoomBeat beat) => Beat = beat;
 
         public MapNode       Node       { get; }
         public RoomFootprint Footprint  { get; }
@@ -60,6 +65,8 @@ namespace CGD.Level
         // How strongly the holding faction's design shows here: 1 in the core of its territory,
         // less toward the frontier (TerritoryDepth). See LevelBuildSettings.StyleFor.
         public float DesignStrength { get; }
+        // The part it plays in the level's pacing (MapDirector); None without a director.
+        public RoomBeat Beat { get; private set; }
         // Breach rooms: the floor tiles inside the doorways whose corridors lead from a room
         // the breach faction holds. Its side of the room is the one they open into.
         public IReadOnlyList<Vector2Int> BreachEntrances { get; private set; } = Array.Empty<Vector2Int>();

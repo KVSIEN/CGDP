@@ -33,7 +33,7 @@ namespace CGD.Level
             && Clearance == 0 && !MarksRoute && Pile.Max <= 1 && Prefabs != null && Prefabs.Length > 0
             && Selection is PropSelection.Random or PropSelection.Spread or PropSelection.Cover;
         public IntRange Count = new(2, 4);
-        [Tooltip("Scale Count with the room's floor area (1× at 64 tiles, 0.4× to 2×), so a closet and a hall are equally furnished")]
+        [Tooltip("Scale Count with the room's floor area (1× at 64 tiles, 0.4× to 4×), so a closet and a hall are equally furnished")]
         public bool ScaleByRoomSize;
         [Tooltip("Floor tiles it covers: width across, depth front to back. It turns with the prop; a 1×1 can take any angle, bigger ones snap to quarter turns")]
         public Vector2Int Footprint = Vector2Int.one;

@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52e22fc6269b44daa486cfbc56aa78fc, type: 3}
+  m_Name: DefaultMapDirector
+  m_EditorClassIdentifier: CGD.Runtime::CGD.Level.MapDirectorSettings
+  _calmTypes:
+  - 0
+  - 8
+  - 3
+  - 4
+  - 5
+  - 6
+  - 9
+  - 16
+  - 17
+  - 19
+  - 20
+  - 22
+  - 23
+  _peakIntensity: 0.6
+  _flatStretch: 3
+  _calmStretch: 3
+  _coverRetries: 3
+  _earlySize: 0.9
+  _lateSize: 1.1
+  _repeatNeighbour: 0.15
+  _beats:
+  - _beat: 1
+    _sizeScale: 1
+    _openRunScale: 1.25
+    _structureScale: 0.85
+    _extraAdditions: 0
+    _enemyScale: 1
+    _noReinforcements: 1
+    _supplies: []
+  - _beat: 2
+    _sizeScale: 1
+    _openRunScale: 1
+    _structureScale: 1
+    _extraAdditions: 0
+    _enemyScale: 1
+    _noReinforcements: 0
+    _supplies: []
+  - _beat: 3
+    _sizeScale: 1.15
+    _openRunScale: 0.75
+    _structureScale: 1.25
+    _extraAdditions: 3
+    _enemyScale: 1
+    _noReinforcements: 0
+    _supplies: 
+    - {fileID: 7400000000000000301, guid: 75d68765a99f0b142aa042f8b2bea8e1, type: 3}
+  - _beat: 4
+    _sizeScale: 0.9
+    _openRunScale: 1
+    _structureScale: 1
+    _extraAdditions: 0
+    _enemyScale: 0.6
+    _noReinforcements: 0
+    _supplies: []
+  - _beat: 5
+    _sizeScale: 1
+    _openRunScale: 1
+    _structureScale: 1
+    _extraAdditions: 0
+    _enemyScale: 0.6
+    _noReinforcements: 0
+    _supplies: 
+    - {fileID: 7530473905300712717, guid: c9bf881dd67b4a0abd3f1f58135261a4, type: 3}
+  - _beat: 6
+    _sizeScale: 1.2
+    _openRunScale: 0.75
+    _structureScale: 1.25
+    _extraAdditions: 3
+    _enemyScale: 1
+    _noReinforcements: 0
+    _supplies: []

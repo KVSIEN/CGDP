@@ -55,7 +55,7 @@ namespace CGD.Editor
             Seed contents = LevelSeeds.Contents(seed);
             RoomFurnishing furnishing = new RoomFurnisher(settings, contents).Furnish(room);
             // As RoomPopulator does, but without the keys and terminals that may take a tile first.
-            int count = RoomEnemyPlanner.CountFor(settings.RuleFor(room.Node.Type), room);
+            int count = RoomEnemyPlanner.CountFor(settings, room);
             RoomEnemyPlan enemies = new RoomEnemyPlanner(settings).Plan(room, furnishing.Props, count,
                                                                         RoomEnemyPlanner.SeedFor(contents, room).Stream());
             return new RoomSample(layout, room, furnishing, enemies, settings, seedText, doorsWanted, WarningsAbout(layout, room));

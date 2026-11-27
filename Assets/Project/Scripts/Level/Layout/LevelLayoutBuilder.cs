@@ -12,7 +12,8 @@ namespace CGD.Level
     //      facing the other, routed around every room.
     //   3. With the doorways fixed, each room's structure (walkways, pillars, dividers) is
     //      planned by RoomStructurePlanner — for a faction's fight room, the best of a few
-    //      tries at its priorities (RoomTraitFit) and its flank (RoomFlank).
+    //      tries at its priorities (RoomTraitFit) and its flank (RoomFlank), built up as far as
+    //      the map director asks for the room's beat (MapDirector, BeatTuning).
     // Corridors keep a wall's width apart so two connections never merge into one — the
     // level has exactly the routes the graph has. When that's impossible (crossing
     // shortcuts) the corridors cross and a warning says so.
@@ -47,8 +48,9 @@ namespace CGD.Level
             var directLinks = new DirectRoomAligner(_settings.CellTiles).Align(graph, layout);
             BuildCorridors(graph, layout, directLinks);
             PlanOutlines(layout);
-            PlanStructures(seed.Derive("structure"), layout);
+            PlanStructures(seed.Derive("structure"), graph, layout);
             TagOutlineCorners(layout);
+            BeatReview.ReviewStructures(graph, layout, _settings);
             return layout;
         }
 
@@ -63,23 +65,43 @@ namespace CGD.Level
                 return layout;
             }
 
+            layout.AttachDirection(MapDirector.Plan(graph, _settings.Director));
             new RoomPlacer(_settings).Place(graph, nodeSpacing, seed.Derive("rooms"), layout, content);
+            MapDirector.MovePeaksToBiggerRooms(graph, layout, _settings.Director);
             return layout;
         }
 
-        private void PlanStructures(Seed seed, LevelLayout layout)
+        // Peaks and the boss room go last, once the fights beside them are built: one that comes out
+        // holding no more cover for its size than they do is built again from the director's
+        // seeds (BeatReview.CoverRetries), keeping the try closest to its beat. Seeds are per room,
+        // so the order moves no draw.
+        private void PlanStructures(Seed seed, MapGraph graph, LevelLayout layout)
         {
             var planner = new RoomStructurePlanner();
-            foreach (LevelRoom room in layout.Rooms.Values)
+            var rooms = new List<LevelRoom>(layout.Rooms.Values);
+            rooms.Sort((a, b) => BeatReview.IsSetPiece(a.Beat).CompareTo(BeatReview.IsSetPiece(b.Beat)));
+            int retries = _settings.Director != null ? _settings.Director.CoverRetries : 0;
+            foreach (LevelRoom room in rooms)
             {
-                FactionDesign design = _settings.DesignFor(room.Faction);
-                RoomStructureRule divider = room.BreachFaction != null ? _settings.DesignFor(room.BreachFaction)?.BreachDivider : null;
-                int tries = RoomTraitFit.TriesFor(room, _settings.RuleFor(room.Node.Type), design, _settings);
-                room.AttachStructure(BestStructure(planner, room, layout, seed.Derive(room.Node.Id), design, divider, room.DesignStrength, tries,
-                                                   _settings.UsesIsovist(IsovistUse.Traits), _lowestLevel, _highestLevel, _settings.StructureBudget,
-                                                   _settings.ElevationBudget, RoomFurnisher.AnchorsOf(_settings, room)));
+                Seed roomSeed = seed.Derive(room.Node.Id);
+                RoomStructure structure = PlanRoom(planner, room, layout, roomSeed);
+                if (BeatReview.IsSetPiece(room.Beat) && retries > 0)
+                    structure = BeatReview.BestSetPiece(graph, layout, room, structure, _settings.StructureBudget, retries,
+                                                        attempt => PlanRoom(planner, room, layout, roomSeed.Derive("director").Derive(attempt)));
+                room.AttachStructure(structure);
+                if (room.Beat != RoomBeat.None) room.AddTag($"{room.Beat} beat");
                 if (room.BreachFaction != null) room.AttachBreachEntrances(BreachEntrances(room, layout));
             }
+        }
+
+        private RoomStructure PlanRoom(RoomStructurePlanner planner, LevelRoom room, LevelLayout layout, Seed seed)
+        {
+            FactionDesign design = _settings.DesignFor(room.Faction);
+            RoomStructureRule divider = room.BreachFaction != null ? _settings.DesignFor(room.BreachFaction)?.BreachDivider : null;
+            int tries = RoomTraitFit.TriesFor(room, _settings.RuleFor(room.Node.Type), design, _settings);
+            return BestStructure(planner, room, layout, seed, design, divider, room.DesignStrength, tries,
+                                 _settings.UsesIsovist(IsovistUse.Traits), _lowestLevel, _highestLevel, _settings.StructureBudget,
+                                 _settings.ElevationBudget, RoomFurnisher.AnchorsOf(_settings, room), _settings.TuningFor(room).Structure);
         }
 
         // The doorways of a Breach room whose corridors come from a room the breach faction holds.
@@ -102,14 +124,14 @@ namespace CGD.Level
         private static RoomStructure BestStructure(RoomStructurePlanner planner, LevelRoom room, LevelLayout layout, Seed seed,
                                                    FactionDesign design, RoomStructureRule breachDivider, float strength, int tries, bool isovist,
                                                    int lowestLevel, int highestLevel, StructureBudget budget, ElevationBudget elevation,
-                                                   IReadOnlyList<RoomPropPlacement> anchors)
+                                                   IReadOnlyList<RoomPropPlacement> anchors, StructureTarget target)
         {
             RoomStructure best = null;
             int bestMiss = int.MaxValue;
             for (int attempt = 0; attempt < tries && bestMiss > 0; attempt++)
             {
                 RoomStructure structure = planner.Plan(room, layout.Doorways, RoomTraitFit.Try(seed, attempt).Stream(), design?.Structure, design?.Additions,
-                                                      breachDivider, strength, lowestLevel, highestLevel, budget, elevation, anchors);
+                                                      breachDivider, strength, lowestLevel, highestLevel, budget, elevation, anchors, target);
                 if (tries == 1) return structure;
 
                 int miss = RoomTraitFit.Miss(RoomTraitMeasure.Measure(structure, System.Array.Empty<PlannedProp>(), isovist), design.Priorities,

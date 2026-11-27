@@ -20,8 +20,10 @@ namespace CGD.Level
     // on a copy at the shortest area, and a few others drawn at random on copies of their own; the
     // copy that closes the areas'
     // shortfall most is kept, sight first and points after, so walls go where the room is open
-    // and low walls still count as cover. A copy that cuts floor off from the doorways is never
-    // kept. Options are drawn from a stream of their own, so no other draw in the room moves.
+    // and low walls still count as cover. A copy that cuts floor off from the doorways, or that
+    // the caller turns down (the way round a fight room, RoomFlank), is never kept. Options are drawn from a stream of their own, so no other draw in the room moves.
+    // A StructureTarget (the map director's, by the room's beat) scales how far a room may see
+    // and how much it should have, so a peak's arena is built up further than a calm room.
     [Serializable]
     public sealed class StructureBudget
     {
@@ -104,30 +106,35 @@ namespace CGD.Level
         }
 
         // The score a room of this many floor tiles should reach; 0 for a room too small to ask.
-        public float Needed(RoomStructure structure)
+        public float Needed(RoomStructure structure, StructureTarget target = default)
         {
             int tiles = structure.Footprint.Count;
-            return _options.Count == 0 || tiles < _minTiles ? 0f : (float)tiles / _tilesPerPoint;
+            return _options.Count == 0 || tiles < _minTiles ? 0f : (float)tiles / _tilesPerPoint * target.PointsScale;
         }
 
         // Short as a whole, or in any one area.
-        public bool Needs(RoomStructure structure)
+        public bool Needs(RoomStructure structure, StructureTarget target = default)
         {
-            float needed = Needed(structure);
+            float needed = Needed(structure, target);
             if (needed <= 0f) return false;
             if (Score(structure) < needed) return true;
-            foreach (Area area in AreasOf(structure))
-                if (area.Score < area.Needed * _areaShare || area.MeanRun > _openRun) return true;
+            float openRun = OpenRun(target);
+            foreach (Area area in AreasOf(structure, target))
+                if (area.Score < area.Needed * _areaShare || area.MeanRun > openRun) return true;
             return false;
         }
 
+        private float OpenRun(StructureTarget target) => _openRun * target.OpenRunScale;
+
         // The room with structure added: `structure` itself when nothing was, else a copy.
-        public RoomStructure Apply(RoomStructure structure, RandomStream random)
+        // `accepts`: whether a copy may be kept (null = any that stays connected).
+        public RoomStructure Apply(RoomStructure structure, RandomStream random, StructureTarget target = default,
+                                   Predicate<RoomStructure> accepts = null)
         {
             RandomStream own = random.Fork("structure budget");
-            for (int added = 0; added < _maxAdditions && Needs(structure); added++)
+            for (int added = 0; added < _maxAdditions + target.ExtraAdditions && Needs(structure, target); added++)
             {
-                RoomStructure built = AddOne(structure, own, added);
+                RoomStructure built = AddOne(structure, own, added, target, accepts);
                 if (built == null) break;
                 structure = built;
             }
@@ -136,7 +143,8 @@ namespace CGD.Level
 
         // The best of the options tried, each on a copy, the aimable ones at the shortest area:
         // the copy that most fills the areas' shortfall and keeps the room whole. Null when none helps.
-        private RoomStructure AddOne(RoomStructure structure, RandomStream random, int addition)
+        private RoomStructure AddOne(RoomStructure structure, RandomStream random, int addition, StructureTarget target,
+                                     Predicate<RoomStructure> accepts)
         {
             var usable = new List<RoomStructureRule>();
             var tried = new List<RoomStructureRule>();
@@ -149,7 +157,7 @@ namespace CGD.Level
             if (usable.Count == 0) return null;
             for (int choice = 0; choice < _choices; choice++) tried.Add(random.Pick(usable));
 
-            float before = Shortfall(structure, out RectInt shortest);
+            float before = Shortfall(structure, target, out RectInt shortest);
             RoomStructure best = null;
             float bestGain = 0f;
             for (int choice = 0; choice < tried.Count; choice++)
@@ -163,8 +171,8 @@ namespace CGD.Level
                     else rule.Apply(trial, draws);
                     if (!trial.StaysConnected(Array.Empty<Vector2Int>())) continue;
 
-                    float gain = before - Shortfall(trial, out _);
-                    if (gain <= bestGain + 1e-4f) continue;
+                    float gain = before - Shortfall(trial, target, out _);
+                    if (gain <= bestGain + 1e-4f || (accepts != null && !accepts(trial))) continue;
                     best = trial;
                     bestGain = gain;
                 }
@@ -174,13 +182,14 @@ namespace CGD.Level
 
         // How far the areas fall short, together, and the one that falls furthest: how much
         // further than OpenRun each sees, in its share of points, and its missing points.
-        private float Shortfall(RoomStructure structure, out RectInt shortest)
+        private float Shortfall(RoomStructure structure, StructureTarget target, out RectInt shortest)
         {
             float total = 0f, most = -1f;
+            float openRun = OpenRun(target);
             shortest = structure.Footprint.Bounds;
-            foreach (Area area in AreasOf(structure))
+            foreach (Area area in AreasOf(structure, target))
             {
-                float missing = area.Needed * Mathf.Max(0f, area.MeanRun - _openRun) / _openRun
+                float missing = area.Needed * Mathf.Max(0f, area.MeanRun - openRun) / openRun
                               + _pointsWeight * Mathf.Max(0f, area.Needed - area.Score);
                 total += missing;
                 if (missing <= most) continue;
@@ -209,7 +218,7 @@ namespace CGD.Level
 
         // The room's bounds cut into a grid about AreaTiles across, each area with its floor's
         // share and the points of what stands in it (a building's spread over the floor it covers).
-        private List<Area> AreasOf(RoomStructure structure)
+        private List<Area> AreasOf(RoomStructure structure, StructureTarget target)
         {
             RectInt bounds = structure.Footprint.Bounds;
             int columns = Mathf.Max(1, Mathf.RoundToInt((float)bounds.width / _areaTiles));
@@ -256,7 +265,7 @@ namespace CGD.Level
                 {
                     int xMin = bounds.xMin + c * bounds.width / columns, xMax = bounds.xMin + (c + 1) * bounds.width / columns;
                     int yMin = bounds.yMin + r * bounds.height / rows, yMax = bounds.yMin + (r + 1) * bounds.height / rows;
-                    areas.Add(new Area(new RectInt(xMin, yMin, xMax - xMin, yMax - yMin), (float)floor[c, r] / _tilesPerPoint, score[c, r],
+                    areas.Add(new Area(new RectInt(xMin, yMin, xMax - xMin, yMax - yMin), (float)floor[c, r] / _tilesPerPoint * target.PointsScale, score[c, r],
                                        seeing[c, r] > 0 ? runs[c, r] / seeing[c, r] : 0f));
                 }
             return areas;

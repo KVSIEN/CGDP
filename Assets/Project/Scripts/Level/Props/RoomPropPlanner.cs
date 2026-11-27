@@ -39,7 +39,8 @@ namespace CGD.Level
         public const float DefaultFillShare = 0.35f;
         // Floor area a placement's Count is written for, and how far room size may scale it.
         private const float ReferenceTiles = 64f;
-        private const float MinScale = 0.4f, MaxScale = 2f;
+        // Up to 4x: a hall of 300-450 tiles capped at 2x was furnished at a third of a small room's density.
+        private const float MinScale = 0.4f, MaxScale = 4f;
         private const int MaxPile = 4;
 
         private static readonly Vector2[] Quarters = { new(-1f, -1f), new(1f, -1f), new(-1f, 1f), new(1f, 1f) };
@@ -47,6 +48,7 @@ namespace CGD.Level
         private readonly RoomStructure _structure;
         private readonly RandomStream _random;
         private readonly int _fillCap;
+        private readonly float _fillShare;
         private readonly float _countScale;
         private readonly float _concealmentScale;
         private readonly RectInt _bounds;
@@ -87,7 +89,8 @@ namespace CGD.Level
         {
             _structure  = structure;
             _random     = random;
-            _fillCap    = Mathf.FloorToInt(structure.Footprint.Count * Mathf.Clamp01(fillShare));
+            _fillShare  = Mathf.Clamp01(fillShare);
+            _fillCap    = Mathf.FloorToInt(structure.Footprint.Count * _fillShare);
             _countScale = Mathf.Max(0f, countScale);
             _concealmentScale = Mathf.Max(0f, concealmentScale);
 
@@ -292,7 +295,7 @@ namespace CGD.Level
             int placed = 0;
             while (placed < count)
             {
-                if (!required && UsesFill(placement) && _claimed + size.x * size.y > _fillCap)
+                if (!required && OverFill(placement, size.x * size.y, zones))
                 {
                     _hitFillCap = true;
                     break;
@@ -321,7 +324,7 @@ namespace CGD.Level
             foreach (PropFlanks.Anchor anchor in PropFlanks.Anchors(_structure, placement, keyed))
             {
                 if (placed >= count) break;
-                if (!required && UsesFill(placement) && _claimed + 2 * size.x * size.y > _fillCap)
+                if (!required && OverFill(placement, 2 * size.x * size.y, zones))
                 {
                     _hitFillCap = true;
                     break;
@@ -350,7 +353,7 @@ namespace CGD.Level
                                   ICollection<int> zones)
         {
             PropCandidate twin = Mirror(placed);
-            if (twin.Rect.Equals(placed.Rect) || (!required && UsesFill(placement) && _claimed + size.x * size.y > _fillCap)) return false;
+            if (twin.Rect.Equals(placed.Rect) || (!required && OverFill(placement, size.x * size.y, zones))) return false;
             return _rules.Suits(twin, placement, size, checkLattice: false, zones) && _rules.Placeable(twin, placement, own) && TryPlace(twin, placement, size, own, zones);
         }
 
@@ -419,7 +422,7 @@ namespace CGD.Level
             foreach (PropCandidate larger in PropSizing.Covering(candidate, size))
             {
                 int tiles = larger.Rect.width * larger.Rect.height;
-                if (!placement.Required && UsesFill(placement) && _claimed + tiles > _fillCap) return false;
+                if (!placement.Required && OverFill(placement, tiles, zones)) return false;
                 if (!_rules.Suits(larger, placement, size, checkLattice: false, zones) || !_rules.Placeable(larger, placement, own)) continue;
                 if (!_structure.TryClaim(TilesOf(larger.Rect), RoomTileTags.Prop)) continue;
 
@@ -472,6 +475,26 @@ namespace CGD.Level
         // Decorations take no floor, and a feature that grows with the room is part of its plan.
         // An area only marks floor out for what goes in it.
         private static bool UsesFill(RoomPropPlacement placement) => !placement.Decor && !placement.GrowsWithRoom && !placement.Area;
+
+        // Whether `tiles` more floor for the placement would take it over its share. One with Each
+        // Zone is held to the zone's own share (Areas hands it one zone at a time), not the room's:
+        // in a building of many small rooms the first rooms' furniture would otherwise use up the
+        // room's share and leave the last ones with nothing of what every room should get.
+        private bool OverFill(RoomPropPlacement placement, int tiles, ICollection<int> zones)
+        {
+            if (!UsesFill(placement)) return false;
+            if (placement.EachZone && zones != null && zones.Count == 1)
+                return ClaimedIn(zones) + tiles > Mathf.FloorToInt(FloorTiles(zones) * _fillShare);
+            return _claimed + tiles > _fillCap;
+        }
+
+        private int ClaimedIn(ICollection<int> zones)
+        {
+            int claimed = 0;
+            foreach (Vector2Int tile in _structure.Footprint.Tiles)
+                if (zones.Contains(_structure.ZoneOf(tile)) && _structure.Has(tile, RoomTileTags.Structure | RoomTileTags.Prop)) claimed++;
+            return claimed;
+        }
 
         private void ReserveAccess(PropCandidate candidate, int depth)
         {

@@ -21,5 +21,6 @@ namespace CGD.Level
         Stairs    = 1 << 10,  // a flight of stairs between two floor levels (RoomStructure.TryAddElevation)
         Landing   = 1 << 11,  // the floor at the top or bottom of a flight, kept clear to walk on and off
         Overpass  = 1 << 12,  // under an overpass's deck: walked under, nothing built or put there (RoomStructure.TryAddOverpass)
+        FlankLane = 1 << 13,  // a fight room's way round its main lane, kept clear of props (RoomFlank.Reserve)
     }
 }

@@ -114,6 +114,7 @@ namespace CGD.Level
             // Furnished first, so the overgrowth leaves the furniture's floor bare; both before the
             // geometry, which builds the overgrowth with the floor.
             populator.FurnishRooms();
+            BeatReview.ReviewSupplies(Layout, _settings, populator.PropsOf);
             new OvergrowthPlanner(Layout.TileSize).PlanLevel(Layout, _source.Overgrowth(_settings), LevelSeeds.Overgrowth(Seed));
 
             var geometry = new LevelGeometryBuilder(_settings, _assets);
@@ -133,7 +134,8 @@ namespace CGD.Level
             // Hundreds of probes on a big level: done here, during the load, not on the frame an
             // enemy first wants cover.
             if (_coverMap != null) _coverMap.Rebuild();
-            if (_reinforcements != null) _reinforcements.FollowRoute(new LevelRoute(Layout, Graph, transform));
+            if (_reinforcements != null)
+                _reinforcements.FollowRoute(new LevelRoute(Layout, Graph, transform, room => _settings.TuningFor(room).NoReinforcements));
             populator.SpawnEnemies();
             populator.SpawnFauna();
             new RoomEncounterBuilder(_encounters, Layout, Graph, transform, populator, _player, _worldMap,

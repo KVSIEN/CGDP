@@ -31,8 +31,13 @@ namespace CGD.Level
 
         public RoomEnemyPlanner(LevelBuildSettings settings) => _settings = settings;
 
-        // How many enemies a room's type sends, at its intensity (before rosters are checked).
-        public static int CountFor(RoomContentRule rule, LevelRoom room) => rule != null ? rule.EnemyCount.Lerp(room.Node.Intensity) : 0;
+        // How many enemies a room's type sends, at its intensity, scaled for its beat by the map
+        // director (BeatTuning), before rosters are checked.
+        public static int CountFor(LevelBuildSettings settings, LevelRoom room)
+        {
+            RoomContentRule rule = settings.RuleFor(room.Node.Type);
+            return rule != null ? settings.TuningFor(room).ScaleEnemies(rule.EnemyCount.Lerp(room.Node.Intensity)) : 0;
+        }
 
         // The seed a room's enemy plan is drawn from, under the level's contents seed.
         public static Seed SeedFor(Seed contents, LevelRoom room) => contents.Derive("posts").Derive(room.Node.Id);
