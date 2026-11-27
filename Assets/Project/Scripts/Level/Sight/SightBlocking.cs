@@ -14,7 +14,8 @@ namespace CGD.Level
     //     hides behind them;
     //   - inner walls as tall as they are built (one of no height reaches the ceiling);
     //   - the floor itself: the face of a raised platform, the rim of a sunken floor, and the
-    //     solid corner pieces round a mound or a crater, as high as the ground they climb to;
+    //     solid corner pieces round a mound or a crater and on a platform's cut corners, as high
+    //     as the ground they climb to (and a cut corner's half wall on top);
     //   - a half wall along a ledge, RoomElevation.GuardHeight over its higher floor (a railing
     //     is seen through);
     //   - a diagonal wall across a tile, as tall as it is built (one of no height reaches the ceiling);
@@ -59,9 +60,11 @@ namespace CGD.Level
                 float height = edge.Height > 0f ? edge.Height : float.PositiveInfinity;
                 _edges[key] = _edges.TryGetValue(key, out float before) ? Mathf.Max(before, height) : height;
             }
+            // A cut corner's half wall stands across it, so the corner reaches its top.
             foreach (ElevatedArea area in structure.Elevations)
-            foreach (SlopeCorner corner in area.Corners)
-                _cornerTops[corner.Tile] = HighestFloorBeside(corner.Tile);
+            foreach (GroundCorner corner in area.Corners)
+                _cornerTops[corner.Tile] = HighestFloorBeside(corner.Tile)
+                                         + (corner.Sheer && area.GuardAcross(corner) == LedgeGuard.HalfWall ? RoomElevation.GuardHeight : 0f);
             foreach (DiagonalWall wall in structure.Diagonals)
                 if (wall.Height > 0f) _cornerTops[wall.Tile] = Level(wall.Tile) + wall.Height;
             foreach (Overpass overpass in structure.Overpasses)

@@ -135,11 +135,26 @@ namespace CGD.Editor
             }
             if (!structure.HasElevation) return;
 
-            foreach (ElevatedArea area in structure.Elevations)
-                foreach (SlopeCorner corner in area.Corners)
-                    EditorGUI.DrawRect(Shrink(TileRect(image, corner.Tile), 0.2f), SlopeTile);
-
             Color before = Handles.color;
+            var cut = new HashSet<Vector2Int>();
+            foreach (ElevatedArea area in structure.Elevations)
+                foreach (GroundCorner corner in area.Corners)
+                {
+                    if (!corner.Sheer)
+                    {
+                        EditorGUI.DrawRect(Shrink(TileRect(image, corner.Tile), 0.2f), SlopeTile);
+                        continue;
+                    }
+                    // A cut corner: its raised half, and its ledge across the diagonal.
+                    cut.Add(corner.Tile);
+                    var (inner, a, b) = corner.RaisedHalf;
+                    Handles.color = Raised;
+                    Handles.DrawAAConvexPolygon(ToGui(image, inner), ToGui(image, a), ToGui(image, b));
+                    LedgeGuard guard = area.GuardAcross(corner);
+                    Handles.color = guard == LedgeGuard.None ? OpenLedge : guard == LedgeGuard.HalfWall ? HalfWallLedge : RailedLedge;
+                    Handles.DrawAAPolyLine(guard == LedgeGuard.None ? 2f : guard == LedgeGuard.HalfWall ? 6f : 4f, ToGui(image, a), ToGui(image, b));
+                }
+
             foreach (Vector2Int tile in structure.Footprint.Tiles)
             {
                 if (structure.TryGetStairs(tile, out StairFlight stairs)) DrawArrow(image, tile, stairs.Up);
@@ -147,7 +162,7 @@ namespace CGD.Editor
                 foreach (Vector2Int side in new[] { Vector2Int.right, Vector2Int.up })
                 {
                     Vector2Int next = tile + side;
-                    if (!structure.IsLedge(tile, next)) continue;
+                    if (!structure.IsLedge(tile, next) || cut.Contains(tile) || cut.Contains(next)) continue;
 
                     bool open = structure.CanDropDown(tile, next) || structure.CanDropDown(next, tile);
                     Vector2 a = tile + Vector2.one - (Vector2)Perpendicular(side);   // the far corner of the shared edge…

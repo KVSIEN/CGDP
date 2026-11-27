@@ -211,8 +211,10 @@ namespace CGD.Level
 
                 usedDoors[a.Node.Id].Add(route.A.Outside);
                 usedDoors[b.Node.Id].Add(route.B.Outside);
-                Reserve(route.Path, reserved);
-                layout.AddCorridor(connection, route.Path);
+                // A cut never crosses another corridor, even on a route that had to.
+                List<Vector2Int> path = CorridorCorners.Cut(route.Path, _settings.DiagonalCorridorSteps, clear);
+                Reserve(path, reserved);
+                layout.AddCorridor(connection, path);
 
                 AddDoorways(layout, analysis, connection, a, route.A.Inside, route.A.Outside, b, route.B.Inside, route.B.Outside);
             }

@@ -1452,6 +1452,25 @@ meets the room's walls and other runs cleanly. Only 45°, one diagonal per tile.
 - **Props.** `PropFacing.Diagonal` turns a single-tile prop 45° off square; `AgainstDiagonal`
   stands one beside an angled wall facing straight out of it (the Greenery kit's planters).
 - **Doorways** stay on straight runs of the outer walls.
+- **Corridors.** With *Diagonal Corridor Steps* (`LevelBuildSettings`, needs bend chamfers),
+  `CorridorCorners` cuts each routed bend into a staircase of tiles as long as the arms allow, up
+  to that many steps back along each (the longest that fits: free tiles, touching the corridor
+  only at its ends; never the doorway tile or the one before it), so the corridor turns in two
+  45° bends. `LevelWallPlan` finds each line of bend chamfers that line up (two or more bends,
+  corner to corner, the risers between them cut the other way) and walls it as one straight
+  diagonal through those chamfers; the notches it takes in are `Fills`, floored and ceiled with
+  triangular slabs (`BoxMeshBuilder.AddPrism`). The corridor is 1.4 tiles wide across its
+  diagonal; its tiles plan as before.
+- **Cut corners.** An Elevation rule's *Cut Corners* chance cuts a raised block's corners at 45°
+  (a platform's two front corners, an island's four; blocks under 4 by 2 tiles stay square, and
+  never a corner in front of a doorway or beside another cut). The corner tile leaves the area and
+  becomes a sheer `GroundCorner`: solid, on the floor's level, its half toward the platform a
+  triangular slab up to it, with the stronger guard of the two ledges meeting there across the
+  diagonal (`ElevatedArea.GuardAcross`; sight reads it as high as the guard). No flight stands on it.
+  The Stage and Island rules cut half the time.
+- **Drawing.** The blueprint (level map and Room Lab plan) draws diagonal walls as lines and cut
+  corners as their raised half, not as solid tiles; the Lab's elevation layer draws a cut corner's
+  ledge along its diagonal.
 
 ## 17. Sight (phases 0–5 of the better-sightline plan)
 
@@ -1558,7 +1577,7 @@ round it, its flights just inside its rim, and with *Bridge* a strip of floor le
 across its middle, splitting it in two (each half gets a flight, which may climb onto the bridge).
 *Mound* and *Crater* are round (*Radius* 1 is a plus, 2 a round blob) and slope on every side
 instead of having stairs: a slope (`StairFlight.Slope`) wherever the edge runs straight, a solid
-corner piece (`SlopeCorner`, tagged `Structure`) where two slopes meet, so there is no bare ledge
+corner piece (`GroundCorner`, tagged `Structure`) where two slopes meet, so there is no bare ledge
 anywhere round them. A mound's slopes stand on the floor round its top; a crater's just inside its
 rim, climbing out. Slopes side by side climbing the same way are one bank: walked across as well as
 up (`CanStep`), still not entered from the floor at their ends. All four keep off routes, doorway

@@ -39,3 +39,4 @@ MonoBehaviour:
   _maxShare: 0.25
   _railed: 0
   _railChance: 0.5
+  _cutCorners: 0.5

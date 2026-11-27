@@ -562,7 +562,7 @@ namespace CGD.Level
                     landings.Add(stairs.Foot);
                     landings.Add(stairs.Head);
                 }
-                foreach (SlopeCorner corner in area.Corners)
+                foreach (GroundCorner corner in area.Corners)
                     if (Mathf.Abs(corner.Up.x) != 1 || Mathf.Abs(corner.Up.y) != 1 || !IsFree(corner.Tile)
                         || Has(corner.Tile, RoomTileTags.NearDoor) || !flights.Add(corner.Tile)) return false;
             }
@@ -651,7 +651,7 @@ namespace CGD.Level
                     if (AreaOf(stairs.Tile) != area && AreaOf(stairs.Head) != area) return false;
                 }
 
-                foreach (SlopeCorner corner in area.Corners)
+                foreach (GroundCorner corner in area.Corners)
                     if (LevelOf(corner.Tile + corner.Up) != LevelOf(corner.Tile) + 1) return false;
             }
             return true;
@@ -669,7 +669,7 @@ namespace CGD.Level
             }
 
             // A corner piece is solid ground, like a pillar.
-            foreach (SlopeCorner corner in area.Corners)
+            foreach (GroundCorner corner in area.Corners)
             {
                 if (adding) Tag(corner.Tile, RoomTileTags.Structure);
                 else Release(new[] { corner.Tile }, RoomTileTags.Structure);

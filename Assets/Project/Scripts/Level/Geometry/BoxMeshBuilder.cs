@@ -4,9 +4,10 @@ using UnityEngine.Rendering;
 
 namespace CGD.Level
 {
-    // Accumulates axis-aligned boxes into one mesh, so a whole level's walls are a single
-    // renderer and collider instead of thousands of cube GameObjects. UVs are in metres,
-    // which keeps grid/prototype textures the same scale on every face.
+    // Accumulates boxes (and the odd triangular prism, where a floor or a ledge follows a 45°
+    // line) into one mesh, so a whole level's walls are a single renderer and collider instead
+    // of thousands of cube GameObjects. UVs are in metres, which keeps grid/prototype textures
+    // the same scale on every face.
     public class BoxMeshBuilder
     {
         private readonly List<Vector3> _vertices  = new();
@@ -29,6 +30,22 @@ namespace CGD.Level
             AddFace(center, -right,  -forward,  up,      h.x, h.z, h.y);
             AddFace(center,  forward, -right,   up,      h.z, h.x, h.y);
             AddFace(center, -forward,  right,   up,      h.z, h.x, h.y);
+        }
+
+        // An upright prism over the triangle a, b, c on the floor plan (x, z in metres), from
+        // `bottom` to `top`: a floor slab or a ledge cut at 45°. The corners may come either way round.
+        public void AddPrism(Vector2 a, Vector2 b, Vector2 c, float bottom, float top)
+        {
+            // Turned anticlockwise seen from above, so every face below winds the same way.
+            if ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x) < 0f) (b, c) = (c, b);
+            Vector3 Low(Vector2 p) => new(p.x, bottom, p.y);
+            Vector3 High(Vector2 p) => new(p.x, top, p.y);
+
+            AddTriangle(High(a), High(c), High(b), Vector3.up);
+            AddTriangle(Low(a), Low(b), Low(c), Vector3.down);
+            AddSide(a, b, Low, High);
+            AddSide(b, c, Low, High);
+            AddSide(c, a, Low, High);
         }
 
         public Mesh ToMesh(string name)
@@ -63,6 +80,32 @@ namespace CGD.Level
             // Clockwise seen from outside (Unity's front face).
             _triangles.Add(start);     _triangles.Add(start + 2); _triangles.Add(start + 1);
             _triangles.Add(start);     _triangles.Add(start + 3); _triangles.Add(start + 2);
+        }
+
+        // One upright side of a prism, from `from` to `to` on a triangle turned anticlockwise
+        // seen from above, so its outside is on the right.
+        private void AddSide(Vector2 from, Vector2 to, System.Func<Vector2, Vector3> low, System.Func<Vector2, Vector3> high)
+        {
+            Vector2 along = (to - from).normalized;
+            var normal = new Vector3(along.y, 0f, -along.x);
+            AddTriangle(low(from), high(from), high(to), normal);
+            AddTriangle(low(from), high(to), low(to), normal);
+        }
+
+        // One triangle, clockwise seen from the side `normal` faces; its UVs are the two axes
+        // across that normal, in metres.
+        private void AddTriangle(Vector3 a, Vector3 b, Vector3 c, Vector3 normal)
+        {
+            Vector3 u = Mathf.Abs(normal.y) > 0.5f ? Vector3.right : Vector3.Cross(Vector3.up, normal).normalized;
+            Vector3 v = Mathf.Abs(normal.y) > 0.5f ? Vector3.forward : Vector3.up;
+            int start = _vertices.Count;
+            foreach (Vector3 vertex in new[] { a, b, c })
+            {
+                _vertices.Add(vertex);
+                _normals.Add(normal);
+                _uvs.Add(new Vector2(Vector3.Dot(vertex, u), Vector3.Dot(vertex, v)));
+            }
+            _triangles.Add(start); _triangles.Add(start + 1); _triangles.Add(start + 2);
         }
     }
 }

@@ -63,6 +63,8 @@ namespace CGD.Level
         [SerializeField] private bool _railed;
         [Tooltip("Split Level, Pit and Stage: the chance a feature that isn't always railed gets a railing anyway, so most drops are fenced and some are the open one-metre drop a real deck has. Draws a random number only when above 0")]
         [SerializeField, Range(0f, 1f)] private float _railChance;
+        [Tooltip("Platform and Island: the chance its corners are cut at 45° (a platform's two front corners, an island's four), the ledge and its guard running across the corner tile's diagonal. Blocks under 4 by 2 tiles stay square. Draws a random number only when above 0")]
+        [SerializeField, Range(0f, 1f)] private float _cutCorners;
 
         public ElevationKind Kind => _kind;
         public ElevationRole Role => _role;
@@ -75,7 +77,7 @@ namespace CGD.Level
         {
             if (!structure.AllowsFloor(Level)) return;
 
-            var blocks = new BlockElevationBuilder(_kind, _depth, _length, _stairs, _bridge, _role, _wall);
+            var blocks = new BlockElevationBuilder(_kind, _depth, _length, _stairs, _bridge, _role, _wall, _cutCorners);
             var rounds = new RoundElevationBuilder(_kind, _radius);
             int budget = Mathf.FloorToInt(structure.Footprint.Count * _maxShare);
             int count = _count.Evaluate(random);

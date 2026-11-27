@@ -54,17 +54,17 @@ namespace CGD.Level
             HashSet<Vector2Int> ground = Disc(centre, radius);
             var tierOf = new Dictionary<Vector2Int, int>();
             var stairs = new List<StairFlight>[count + 1];
-            var corners = new List<SlopeCorner>[count + 1];
+            var corners = new List<GroundCorner>[count + 1];
             for (int tier = count; tier >= 1; tier--)
             {
                 stairs[tier] = new List<StairFlight>();
-                corners[tier] = new List<SlopeCorner>();
+                corners[tier] = new List<GroundCorner>();
                 if (!RingAround(ground, stairs[tier], corners[tier])) return null;
                 foreach (Vector2Int tile in ground) tierOf.TryAdd(tile, tier);
                 if (tier == 1) break;
 
                 foreach (StairFlight slope in stairs[tier]) ground.Add(slope.Tile);
-                foreach (SlopeCorner corner in corners[tier]) ground.Add(corner.Tile);
+                foreach (GroundCorner corner in corners[tier]) ground.Add(corner.Tile);
                 foreach (Vector2Int foot in Around(ground)) ground.Add(foot);
             }
 
@@ -81,11 +81,11 @@ namespace CGD.Level
             var all = new HashSet<Vector2Int>(hollow);
             var tierOf = new Dictionary<Vector2Int, int>();
             var stairs = new List<StairFlight>[count + 1];
-            var corners = new List<SlopeCorner>[count + 1];
+            var corners = new List<GroundCorner>[count + 1];
             for (int tier = 1; tier <= count; tier++)
             {
                 stairs[tier] = new List<StairFlight>();
-                corners[tier] = new List<SlopeCorner>();
+                corners[tier] = new List<GroundCorner>();
                 if (!RingInside(hollow, stairs[tier], corners[tier])) return null;
                 foreach (Vector2Int tile in hollow) tierOf[tile] = tier;
                 if (tier == count) break;
@@ -101,7 +101,7 @@ namespace CGD.Level
         }
 
         // Every tile bare floor, every slope's feet free and on the doorways' level before anything is raised.
-        private static bool Stands(RoomStructure structure, HashSet<Vector2Int> tiles, List<StairFlight>[] stairs, List<SlopeCorner>[] corners)
+        private static bool Stands(RoomStructure structure, HashSet<Vector2Int> tiles, List<StairFlight>[] stairs, List<GroundCorner>[] corners)
         {
             foreach (Vector2Int tile in tiles)
                 if (!ElevationGround.IsBare(structure, tile)) return false;
@@ -110,14 +110,14 @@ namespace CGD.Level
                 foreach (StairFlight slope in stairs[tier])
                     if (!ElevationGround.IsBare(structure, slope.Tile) || !structure.IsFree(slope.Foot) || !structure.IsFree(slope.Head)
                         || structure.LevelOf(slope.Foot) != 0) return false;
-                foreach (SlopeCorner corner in corners[tier])
+                foreach (GroundCorner corner in corners[tier])
                     if (!ElevationGround.IsBare(structure, corner.Tile)) return false;
             }
             return true;
         }
 
         private List<ElevatedArea> Areas(HashSet<Vector2Int> tiles, Dictionary<Vector2Int, int> tierOf, List<StairFlight>[] stairs,
-                                         List<SlopeCorner>[] corners, int count, int direction)
+                                         List<GroundCorner>[] corners, int count, int direction)
         {
             var areas = new List<ElevatedArea>(count);
             for (int tier = 1; tier <= count; tier++)
@@ -142,11 +142,11 @@ namespace CGD.Level
 
         // The hollow's floor inside its ring of slopes and corners and the ring of their feet: the
         // next tier's hollow.
-        private static HashSet<Vector2Int> Inside(HashSet<Vector2Int> hollow, List<StairFlight> stairs, List<SlopeCorner> corners)
+        private static HashSet<Vector2Int> Inside(HashSet<Vector2Int> hollow, List<StairFlight> stairs, List<GroundCorner> corners)
         {
             var floor = new HashSet<Vector2Int>(hollow);
             foreach (StairFlight slope in stairs) floor.Remove(slope.Tile);
-            foreach (SlopeCorner corner in corners) floor.Remove(corner.Tile);
+            foreach (GroundCorner corner in corners) floor.Remove(corner.Tile);
 
             var inside = new HashSet<Vector2Int>();
             foreach (Vector2Int tile in hollow)
@@ -164,7 +164,7 @@ namespace CGD.Level
 
         // A mound's slopes and corners on the floor round its top. A tile touching the top on two
         // opposite sides, or three, joins the top instead, and the ring is worked out again.
-        private static bool RingAround(HashSet<Vector2Int> top, List<StairFlight> stairs, List<SlopeCorner> corners)
+        private static bool RingAround(HashSet<Vector2Int> top, List<StairFlight> stairs, List<GroundCorner> corners)
         {
             for (int pass = 0; pass < 4; pass++)
             {
@@ -180,7 +180,7 @@ namespace CGD.Level
 
                     if (sides == 0) continue;   // beside the top corner to corner only: plain floor
                     if (sides == 1) stairs.Add(new StairFlight(tile, toward, slope: true));
-                    else if (sides == 2 && toward != Vector2Int.zero) corners.Add(new SlopeCorner(tile, toward));
+                    else if (sides == 2 && toward != Vector2Int.zero) corners.Add(new GroundCorner(tile, toward));
                     else { top.Add(tile); grew = true; }
                 }
                 if (!grew) return true;
@@ -191,7 +191,7 @@ namespace CGD.Level
         // A crater's slopes and corners along the inside of its rim, climbing out. A rim tile open
         // to the room on two opposite sides, or three, is dropped from the crater, and the rim is
         // worked out again; a crater left with no floor inside its slopes is no crater.
-        private static bool RingInside(HashSet<Vector2Int> hollow, List<StairFlight> stairs, List<SlopeCorner> corners)
+        private static bool RingInside(HashSet<Vector2Int> hollow, List<StairFlight> stairs, List<GroundCorner> corners)
         {
             for (int pass = 0; pass < 4; pass++)
             {
@@ -207,7 +207,7 @@ namespace CGD.Level
 
                     if (sides == 0) continue;
                     if (sides == 1) stairs.Add(new StairFlight(tile, outward, slope: true));
-                    else if (sides == 2 && outward != Vector2Int.zero) corners.Add(new SlopeCorner(tile, outward));
+                    else if (sides == 2 && outward != Vector2Int.zero) corners.Add(new GroundCorner(tile, outward));
                     else dropped.Add(tile);
                 }
                 foreach (Vector2Int tile in dropped) hollow.Remove(tile);
@@ -216,7 +216,7 @@ namespace CGD.Level
                 // Every slope's foot must be the crater's floor, not another slope or a corner.
                 var rim = new HashSet<Vector2Int>();
                 foreach (StairFlight slope in stairs) rim.Add(slope.Tile);
-                foreach (SlopeCorner corner in corners) rim.Add(corner.Tile);
+                foreach (GroundCorner corner in corners) rim.Add(corner.Tile);
                 foreach (StairFlight slope in stairs)
                     if (!hollow.Contains(slope.Foot) || rim.Contains(slope.Foot)) return false;
                 return stairs.Count > 0;

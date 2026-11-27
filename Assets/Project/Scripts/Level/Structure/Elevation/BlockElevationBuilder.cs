@@ -13,6 +13,8 @@ namespace CGD.Level
     // first). An inner tier keeps TierInset tiles in from the one below on its open sides, room
     // for a flight and the flight's landing, and a platform's one tile in from either end. One
     // tier is the plain feature. Each tier is guarded and reached as its role asks (ElevationAccess).
+    // A raised block may have its corners cut at 45° (GroundCorner.Sheer): a platform's two front
+    // corners, an island's four; the corner tiles turn solid, half up and half down.
     internal sealed class BlockElevationBuilder
     {
         // Flights of one tier keep at least this many tiles apart, so two don't stand side by side.
@@ -32,6 +34,10 @@ namespace CGD.Level
         private const int IslandChoices = 3;
         // The chance a stage is climbed by one wide flight up its middle rather than a pair at its ends.
         private const float WideStageStairs = 0.5f;
+        // A block's corners are cut only when it is at least this many tiles along its long side
+        // and CutShortSide along its short one, so it keeps a flat top worth standing on.
+        private const int CutLongSide  = 4;
+        private const int CutShortSide = 2;
 
         private readonly ElevationKind _kind;
         private readonly IntRange _depth;
@@ -40,11 +46,14 @@ namespace CGD.Level
         private readonly bool _bridge;
         private readonly ElevationRole _role;
         private readonly LedgeGuard _wall;
+        private readonly float _cutChance;
 
-        // `wall`: what a perch's front or a bastion's ledges carry.
+        // `wall`: what a perch's front or a bastion's ledges carry. `cutChance`: the chance a raised
+        // block's corners are cut at 45°, drawn only when above 0.
         public BlockElevationBuilder(ElevationKind kind, IntRange depth, IntRange length, IntRange stairs, bool bridge,
-                                     ElevationRole role = ElevationRole.SplitLevel, LedgeGuard wall = LedgeGuard.HalfWall)
+                                     ElevationRole role = ElevationRole.SplitLevel, LedgeGuard wall = LedgeGuard.HalfWall, float cutChance = 0f)
         {
+            _cutChance = cutChance;
             _kind   = kind;
             _depth  = depth;
             _length = length;
@@ -75,18 +84,24 @@ namespace CGD.Level
                 : OutInTheRoom(structure, random, depth, length, _bridge && _kind == ElevationKind.SunkenFloor, out back);
             if (block == null) return null;
 
+            HashSet<Vector2Int> cuts = IsRaised && _cutChance > 0f && random.Chance(_cutChance)
+                ? CutCorners(structure, block, back)
+                : new HashSet<Vector2Int>();
+            block.RemoveAll(entry => cuts.Contains(entry.tile));
+
             for (int count = Mathf.Min(tiers, HighestRank(block)); count >= 1; count--)
             {
-                List<ElevatedArea> areas = Tiers(structure, random, block, back, count, open);
+                List<ElevatedArea> areas = Tiers(structure, random, block, back, count, open, cuts);
                 if (areas != null) return areas;
             }
             return null;
         }
 
         // `count` tiers of the block: a tile is on the highest tier its rank reaches. Each tier's
-        // flights stand on the tier below it; a tier left without the flights its role needs sinks the whole try.
+        // flights stand on the tier below it; a tier left without the flights its role needs sinks
+        // the whole try. `cuts`: the block's cut corners, the first tier's, where no flight stands.
         private List<ElevatedArea> Tiers(RoomStructure structure, RandomStream random, List<(Vector2Int tile, int rank)> block,
-                                         Vector2Int back, int count, LedgeGuard open)
+                                         Vector2Int back, int count, LedgeGuard open, HashSet<Vector2Int> cuts)
         {
             var areas = new List<ElevatedArea>(count);
             HashSet<Vector2Int> below = null;
@@ -101,13 +116,74 @@ namespace CGD.Level
                     if (top == tier) own.Add(tile);
                 }
 
-                List<StairFlight> stairs = ChooseStairs(structure, region, back, below, random);
+                List<StairFlight> stairs = ChooseStairs(structure, region, back, below, cuts, random);
                 LedgeGuards? guards = ElevationAccess.Fit(_role, ElevationAccess.Guards(_role, structure, own, open, _wall), stairs.Count);
                 if (guards == null) return null;
-                areas.Add(new ElevatedArea(_kind, Direction * tier, own, stairs, guards.Value));
+                areas.Add(new ElevatedArea(_kind, Direction * tier, own, stairs, guards.Value, tier == 1 ? Sheer(cuts, region) : null));
                 below = new HashSet<Vector2Int>(own);
             }
             return areas;
+        }
+
+        // The block's corner tiles to cut: those of its first tier with the block on two sides at
+        // right angles, but not a platform's back corners (against the wall) nor one in front of a
+        // doorway (RoomStructure keeps those free). None when the block is too small to cut.
+        private static HashSet<Vector2Int> CutCorners(RoomStructure structure, List<(Vector2Int tile, int rank)> block, Vector2Int back)
+        {
+            var cuts = new HashSet<Vector2Int>();
+            var tiles = new HashSet<Vector2Int>();
+            var min = new Vector2Int(int.MaxValue, int.MaxValue);
+            var max = new Vector2Int(int.MinValue, int.MinValue);
+            foreach ((Vector2Int tile, _) in block)
+            {
+                tiles.Add(tile);
+                min = Vector2Int.Min(min, tile);
+                max = Vector2Int.Max(max, tile);
+            }
+            Vector2Int size = max - min + Vector2Int.one;
+            if (Mathf.Max(size.x, size.y) < CutLongSide || Mathf.Min(size.x, size.y) < CutShortSide) return cuts;
+
+            foreach ((Vector2Int tile, int rank) in block)
+            {
+                if (rank != 1 || structure.Has(tile, RoomTileTags.NearDoor)) continue;
+                Vector2Int outward = Vector2Int.zero;
+                int open = 0;
+                bool againstTheWall = false;
+                foreach (Vector2Int side in GridNeighbours.Four)
+                    if (!tiles.Contains(tile + side))
+                    {
+                        againstTheWall |= side == back;
+                        outward += side;
+                        open++;
+                    }
+                // Two open sides at right angles sum to a diagonal.
+                if (open == 2 && !againstTheWall && outward.x != 0 && outward.y != 0) cuts.Add(tile);
+            }
+            // Two corners side by side (a block two tiles across) would leave each other nothing to rise onto.
+            cuts.RemoveWhere(tile =>
+            {
+                foreach (Vector2Int side in GridNeighbours.Four)
+                    if (cuts.Contains(tile + side)) return true;
+                return false;
+            });
+            return cuts;
+        }
+
+        // The cut corners as sheer corner pieces, each rising toward the block across its inner
+        // corner (the two sides it has the block on). `region`: the first tier and every tier above it.
+        private static List<GroundCorner> Sheer(HashSet<Vector2Int> cuts, List<Vector2Int> region)
+        {
+            if (cuts.Count == 0) return null;
+            var inside = new HashSet<Vector2Int>(region);
+            var corners = new List<GroundCorner>(cuts.Count);
+            foreach (Vector2Int tile in cuts)
+            {
+                Vector2Int up = Vector2Int.zero;
+                foreach (Vector2Int side in GridNeighbours.Four)
+                    if (inside.Contains(tile + side)) up += side;
+                corners.Add(new GroundCorner(tile, up, sheer: true));
+            }
+            return corners;
         }
 
         // The side of the room across from its way in: the one facing away from the arrival most.
@@ -227,7 +303,7 @@ namespace CGD.Level
         // every tier above it. `below`: the tier it stands on, which every tile of a flight outside
         // the region must be on (null for the first tier, on the room's floor).
         private List<StairFlight> ChooseStairs(RoomStructure structure, List<Vector2Int> region, Vector2Int back,
-                                               HashSet<Vector2Int> below, RandomStream random)
+                                               HashSet<Vector2Int> below, HashSet<Vector2Int> cuts, RandomStream random)
         {
             var inside = new HashSet<Vector2Int>(region);
             Vector2 centre = structure.Footprint.Anchor;
@@ -240,7 +316,7 @@ namespace CGD.Level
                     // A platform's or an island's flight stands in front of it and climbs onto it; a
                     // sunken floor's stands just inside its rim and climbs out of it.
                     StairFlight stairs = IsRaised ? new StairFlight(tile + side, -side) : new StairFlight(tile, side);
-                    if (!CanStand(structure, stairs, inside, below)) continue;
+                    if (!CanStand(structure, stairs, inside, below) || cuts.Contains(stairs.Tile) || cuts.Contains(stairs.Foot)) continue;
 
                     float distance = Vector2.Distance(stairs.Tile + Vector2.one * 0.5f, centre);
                     candidates.Add((stairs, distance + random.Value, candidates.Count));

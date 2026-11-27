@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CGD.Algorithms;
 using UnityEngine;
 
@@ -7,7 +8,8 @@ namespace CGD.Level
     // under each tile reaching down to its lowest neighbour, so a raised floor shows its face and
     // a sunken one its sides; a ramp of stairs on each flight; a ramp of ground the full width of
     // the tile on each slope, so slopes side by side read as one bank, and a diagonal one on each
-    // corner of a mound or crater; a railing along each railed ledge; and each overpass's deck,
+    // corner of a mound or crater; a sheer half-tile of ground on a platform's cut corner, its
+    // guard across the diagonal; a railing along each railed ledge; and each overpass's deck,
     // with a flight onto each end and a railing along both sides. Stairs and railings are the
     // settings' prefabs when it has them, plain boxes otherwise; ground and decks are always boxes.
     public sealed class ElevationGeometryBuilder
@@ -65,7 +67,11 @@ namespace CGD.Level
                     if (flight.Slope) AddRamp(structure, flight.Tile, flight.Up, 1f, ground);
                     else AddStairs(structure, flight, stairs, parent);
                 }
-                foreach (SlopeCorner corner in area.Corners) AddRamp(structure, corner.Tile, corner.Up, CornerWidthShare, ground);
+                foreach (GroundCorner corner in area.Corners)
+                {
+                    if (corner.Sheer) AddCutCorner(structure, area, corner, ground, railings, halfWalls, parent);
+                    else AddRamp(structure, corner.Tile, corner.Up, CornerWidthShare, ground);
+                }
                 if (area.Guards.Any) AddGuards(structure, area, railings, halfWalls, parent);
             }
         }
@@ -140,14 +146,43 @@ namespace CGD.Level
             AddRamp(structure, flight.Tile, flight.Up, StairWidthShare, boxes);
         }
 
+        // A platform's corner cut at 45°: the half of the tile toward the platform raised to it,
+        // its face along the diagonal, which carries the guard of the ledges either side (the
+        // stronger, where they differ).
+        private void AddCutCorner(RoomStructure structure, ElevatedArea area, GroundCorner corner, BoxMeshBuilder ground,
+                                  BoxMeshBuilder railings, BoxMeshBuilder halfWalls, Transform parent)
+        {
+            float tile = _layout.TileSize;
+            float low = RoomElevation.HeightOf(structure.LevelOf(corner.Tile));
+            float high = RoomElevation.HeightOf(structure.LevelOf(corner.Tile + corner.Up));
+            var (inner, a, b) = corner.RaisedHalf;
+            ground.AddPrism(inner * tile, a * tile, b * tile, low, high);
+            Vector2 middle = (a + b) * 0.5f, up = corner.Up;
+
+            LedgeGuard guard = area.GuardAcross(corner);
+            if (guard == LedgeGuard.None) return;
+            Vector3 towardHigh = new Vector3(up.x, 0f, up.y).normalized;
+            Vector3 foot = new Vector3(middle.x, 0f, middle.y) * tile + towardHigh * RailInset + Vector3.up * high;
+            Quaternion facing = Quaternion.LookRotation(towardHigh);
+            float length = tile * Mathf.Sqrt(2f);
+            if (guard == LedgeGuard.Railing) AddRailing(foot, facing, railings, parent, length);
+            else AddHalfWall(foot - towardHigh * (RailInset - HalfWallThickness * 0.5f), facing, halfWalls, length);
+        }
+
         // A railing or a half wall on the higher side of every ledge round the area its guards
-        // cover, stairs left open. A ledge two guarded areas share is built once, by the higher.
+        // cover, stairs left open, and cut corners (their guard runs across the diagonal). A
+        // ledge two guarded areas share is built once, by the higher.
         private void AddGuards(RoomStructure structure, ElevatedArea area, BoxMeshBuilder railings, BoxMeshBuilder halfWalls, Transform parent)
         {
+            var cut = new HashSet<Vector2Int>();
+            foreach (GroundCorner corner in area.Corners)
+                if (corner.Sheer) cut.Add(corner.Tile);
+
             foreach (Vector2Int inside in area.Tiles)
                 foreach (Vector2Int side in GridNeighbours.Four)
                 {
                     Vector2Int outside = inside + side;
+                    if (cut.Contains(outside)) continue;
                     LedgeGuard guard = structure.GuardOn(inside, outside);
                     if (guard == LedgeGuard.None || area.GuardOn(inside, outside) != guard || structure.IsPartitioned(inside, outside)) continue;
                     if (LeadsOntoADeck(structure, inside, outside)) continue;
@@ -166,22 +201,22 @@ namespace CGD.Level
                 }
         }
 
-        // One tile's length of half wall, solid, centred on `middle` at its foot.
-        private void AddHalfWall(Vector3 middle, Quaternion facing, BoxMeshBuilder boxes) =>
+        // A half wall `length` metres long (a tile's when 0), solid, centred on `middle` at its foot.
+        private void AddHalfWall(Vector3 middle, Quaternion facing, BoxMeshBuilder boxes, float length = 0f) =>
             boxes.AddBox(middle + Vector3.up * (RoomElevation.GuardHeight * 0.5f),
-                         new Vector3(_layout.TileSize, RoomElevation.GuardHeight, HalfWallThickness), facing);
+                         new Vector3(length > 0f ? length : _layout.TileSize, RoomElevation.GuardHeight, HalfWallThickness), facing);
 
-        // One tile's length of railing standing at `foot`, facing `facing` (its length runs across that).
-        private void AddRailing(Vector3 foot, Quaternion facing, BoxMeshBuilder boxes, Transform parent)
+        // A railing `length` metres long (a tile's when 0) standing at `foot`, facing `facing` (its length runs across that).
+        private void AddRailing(Vector3 foot, Quaternion facing, BoxMeshBuilder boxes, Transform parent, float length = 0f)
         {
-            float tile = _layout.TileSize;
+            float run = length > 0f ? length : _layout.TileSize;
             if (_settings.RailingPrefab != null)
             {
                 GameObject placed = Object.Instantiate(_settings.RailingPrefab, parent.TransformPoint(foot), parent.rotation * facing, parent);
-                placed.transform.localScale = Vector3.Scale(placed.transform.localScale, new Vector3(tile / KitTileMetres, 1f, 1f));
+                placed.transform.localScale = Vector3.Scale(placed.transform.localScale, new Vector3(run / KitTileMetres, 1f, 1f));
                 return;
             }
-            boxes.AddBox(foot + Vector3.up * (RailHeight * 0.5f), new Vector3(tile, RailHeight, RailThickness), facing);
+            boxes.AddBox(foot + Vector3.up * (RailHeight * 0.5f), new Vector3(run, RailHeight, RailThickness), facing);
         }
 
         // The edge an overpass's flight climbs over onto its deck: left open.

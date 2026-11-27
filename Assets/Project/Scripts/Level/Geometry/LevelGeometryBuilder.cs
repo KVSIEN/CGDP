@@ -55,6 +55,7 @@ namespace CGD.Level
 
             Dictionary<Vector2Int, LevelRoom> outerRing = AddFloors(layout, roomFloors, factionFloors, corridorFloors);
             LevelWallPlan wallPlan = LevelWallPlan.Create(layout, _settings);
+            foreach (var fill in wallPlan.Fills) AddFill(layout, corridorFloors, fill, -_settings.FloorThickness, 0f);
             new LevelWallBuilder(_settings, layout, walls).Build(wallPlan);
             foreach (LevelRoom room in layout.Rooms.Values)
             {
@@ -82,7 +83,7 @@ namespace CGD.Level
             CreatePart("Decks",          decks,          _settings.FloorMaterial,         parent);
             BuildOvergrowth(layout, parent);
             bool roofedBuildings = HasRoofedBuildings(layout);
-            if (_settings.BuildCeilings || roofedBuildings) BuildCeilings(layout, outerRing, parent);
+            if (_settings.BuildCeilings || roofedBuildings) BuildCeilings(layout, outerRing, wallPlan, parent);
             if (roofedBuildings && _settings.LightBuildings) new BuildingLightBuilder(_settings).Build(layout, parent);
             if (_settings.BuildSkyDomes && _settings.SkyDomeMaterial != null) new SkyDomeBuilder(_settings, _assets).Build(layout, parent);
             PlaceDoors(layout, parent);
@@ -137,7 +138,7 @@ namespace CGD.Level
         // except for the buildings standing in them (a town's), which are roofed even when the
         // level builds no ceilings. The ceiling is left out of the NavMesh so nothing walks on
         // the roof.
-        private void BuildCeilings(LevelLayout layout, Dictionary<Vector2Int, LevelRoom> outerRing, Transform parent)
+        private void BuildCeilings(LevelLayout layout, Dictionary<Vector2Int, LevelRoom> outerRing, LevelWallPlan wallPlan, Transform parent)
         {
             var rows = new Dictionary<(int y, float height), List<int>>();
             void Add(Vector2Int t, LevelRoom room)
@@ -165,6 +166,10 @@ namespace CGD.Level
                     if (i < xs.Count) start = xs[i];
                 }
             }
+            // Over the notches a diagonal corridor's walls take in (corridors are always ceiled when the level is).
+            if (_settings.BuildCeilings)
+                foreach (var fill in wallPlan.Fills)
+                    AddFill(layout, ceilings, fill, _settings.WallHeight, _settings.WallHeight + thickness);
 
             GameObject part = CreatePart("Ceilings", ceilings, _settings.CeilingMaterial, parent, _settings.CeilingLayer);
             if (part != null) part.AddComponent<NavMeshModifier>().ignoreFromBuild = true;
@@ -209,6 +214,10 @@ namespace CGD.Level
                 : (-floor, 0f);
             floors.AddBox(layout.TileToLocal(t) + Vector3.up * ((bottom + top) * 0.5f), new Vector3(tile, top - bottom, tile));
         }
+
+        // A triangle of floor (or ceiling) a diagonal wall takes in (LevelWallPlan.Fills), from `bottom` to `top` metres.
+        private static void AddFill(LevelLayout layout, BoxMeshBuilder boxes, (Vector2 a, Vector2 corner, Vector2 b) fill, float bottom, float top) =>
+            boxes.AddPrism(fill.a * layout.TileSize, fill.corner * layout.TileSize, fill.b * layout.TileSize, bottom, top);
 
         // The interior prefab's origin goes on the room's south-west floor corner, or, for a
         // landmark placed turned, on the corner LandmarkTurn names, turned the same way.

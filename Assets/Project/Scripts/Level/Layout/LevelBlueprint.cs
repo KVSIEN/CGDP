@@ -50,13 +50,15 @@ namespace CGD.Level
             {
                 LevelRoom room = layout.RoomAt(tile);
                 canvas.FillTile(tile, room != null ? FloorColor(room, fill) : Corridor);
-                if (room?.Structure != null && room.Structure.Has(tile, RoomTileTags.Structure))
+                if (room?.Structure != null && room.Structure.Has(tile, RoomTileTags.Structure) && !IsDrawnAsLine(room.Structure, tile))
                     canvas.FillTile(tile, Structure, inset: 1);
             }
 
             LevelWallPlan walls = LevelWallPlan.Create(layout, settings);
             foreach (var (a, corner, b) in walls.Cuts)
                 canvas.FillTriangle(a, corner, b, Background);
+            foreach (var (a, corner, b) in walls.Fills)
+                canvas.FillTriangle(a, corner, b, Corridor);
             foreach (LevelWallPlan.Segment segment in walls.Segments)
                 canvas.Line(segment.From, segment.To, Wall);
             foreach (LevelRoom room in layout.Rooms.Values)
@@ -95,6 +97,8 @@ namespace CGD.Level
             return connection.IsGate || connection.OneWay;
         }
 
+        // Inner walls along their edges, diagonal walls corner to corner, and a platform's cut
+        // corners as the raised half of their tile.
         private static void DrawPartitions(LevelRoom room, Canvas canvas)
         {
             if (room.Structure == null) return;
@@ -102,6 +106,25 @@ namespace CGD.Level
                 foreach (Vector2Int side in GridNeighbours.Four)
                     if (room.Structure.IsPartitioned(tile, tile + side))
                         canvas.FillEdge(tile, side, Wall, thickness: 1);
+            foreach (DiagonalWall wall in room.Structure.Diagonals)
+                canvas.Line(wall.From, wall.To, Wall);
+            foreach (ElevatedArea area in room.Structure.Elevations)
+                foreach (GroundCorner corner in area.Corners)
+                {
+                    if (!corner.Sheer) continue;
+                    var (inner, a, b) = corner.RaisedHalf;
+                    canvas.FillTriangle(inner, a, b, Structure);
+                }
+        }
+
+        // A solid tile whose wall or ledge runs across it, drawn as that line rather than filled.
+        private static bool IsDrawnAsLine(RoomStructure structure, Vector2Int tile)
+        {
+            if (structure.TryGetDiagonal(tile, out _)) return true;
+            foreach (ElevatedArea area in structure.Elevations)
+                foreach (GroundCorner corner in area.Corners)
+                    if (corner.Sheer && corner.Tile == tile) return true;
+            return false;
         }
 
         // Props on one tile share it (a pile), so each tile is filled once; decorations are a dot.

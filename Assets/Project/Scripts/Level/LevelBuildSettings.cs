@@ -38,6 +38,8 @@ namespace CGD.Level
         [SerializeField, Range(0, RoomOutline.MaxSmoothing)] private int _curveSmoothing = 2;
         [Tooltip("Cut the outside corner of every corridor bend at 45°")]
         [SerializeField] private bool _chamferCorridorBends = true;
+        [Tooltip("Tiles back along each arm a corridor's square bend is cut into a 45° run, walled straight across (needs Chamfer Corridor Bends; 0 = square bends). Bends with shorter arms, or no room inside them, are cut as far as they allow, and under 2 not at all")]
+        [SerializeField, Range(0, CorridorCorners.MaxSteps)] private int _diagonalCorridorSteps;
 
         [Header("Elevation")]
         [Tooltip("The lowest floor level a room may be sunk to by its Elevation and Terraces structure rules: -1 lets sunken floors and courts in, lower lets tiered ones go deeper; 0 keeps every room's floor at or above the doorways' level. The walls reach down this far")]
@@ -157,6 +159,7 @@ namespace CGD.Level
         public int   GeometryLayer  => _geometryLayer;
         public int   RoomChamfer    => _roomChamfer;
         public bool  ChamferCorridorBends => _chamferCorridorBends;
+        public int   DiagonalCorridorSteps => _chamferCorridorBends ? _diagonalCorridorSteps : 0;
         public int   CurveSmoothing => _curveSmoothing;
         public WallKit WallKit      => _wallKit;
 

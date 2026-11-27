@@ -432,7 +432,7 @@ namespace CGD.Tests
         {
             RoomStructure room = Room(12, 10, new Vector2Int(11, 5));
             room.AllowLevels(RoomElevation.Lowest, RoomElevation.Highest);
-            var corner = new SlopeCorner(new Vector2Int(1, 1), new Vector2Int(1, 1));
+            var corner = new GroundCorner(new Vector2Int(1, 1), new Vector2Int(1, 1));
             var stranded = new ElevatedArea(ElevationKind.Mound, 1, Block(2, 2, 1, 1), System.Array.Empty<StairFlight>(), LedgeGuards.None, new[] { corner });
 
             Assert.That(room.TryAddElevation(stranded), Is.False, "no way up");

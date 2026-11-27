@@ -12,7 +12,12 @@ namespace CGD.Level
     //   - Curved and chamfered rooms follow their outline (LevelRoom.Outline).
     //   - With ChamferCorridorBends, the outside corner of each corridor bend is cut at 45°,
     //     half a tile back along both walls.
-    // Cuts are the triangles a chamfer removes (between the diagonal and the old corner).
+    //   - With diagonal corridors (DiagonalCorridorSteps), a staircase of bends (CorridorCorners)
+    //     is walled by one straight 45° wall each side, through those same chamfers: the
+    //     corridor runs diagonally, 1.4 tiles wide across, its walls meeting the straight
+    //     stretches either end at 45°.
+    // Cuts are the triangles a chamfer removes (between the diagonal and the old corner); Fills
+    // the triangles a diagonal wall adds to the floor, in the notches of the tile staircase.
     public class LevelWallPlan
     {
         public readonly struct Segment
@@ -36,6 +41,7 @@ namespace CGD.Level
 
         public List<Segment> Segments { get; } = new();
         public List<(Vector2 a, Vector2 corner, Vector2 b)> Cuts { get; } = new();
+        public List<(Vector2 a, Vector2 corner, Vector2 b)> Fills { get; } = new();
 
         public static LevelWallPlan Create(LevelLayout layout, LevelBuildSettings settings)
         {
@@ -50,8 +56,15 @@ namespace CGD.Level
                     plan.Segments.Add(new Segment(from, to, room.WallHeight, squareEnds: false, room));
                 plan.Cuts.AddRange(room.Outline.Cuts);
             }
+            var straight = new HashSet<Vector2Int>();
+            if (settings.DiagonalCorridorSteps > 0)
+                foreach (List<Vector2Int> line in DiagonalLines(bends))
+                {
+                    plan.AddDiagonal(line, bends, settings.WallHeight);
+                    straight.UnionWith(line);
+                }
             foreach (var (tile, (a, b)) in bends)
-                plan.AddBendChamfer(tile, a, b, settings.WallHeight);
+                if (!straight.Contains(tile)) plan.AddBendChamfer(tile, a, b, settings.WallHeight);
             return plan;
         }
 
@@ -124,9 +137,85 @@ namespace CGD.Level
             Segments.Add(new Segment(from, to, height, squareEnds: true, room));
         }
 
+        // Bends whose chamfers line up on one 45° wall, in order along it, two or more to a line:
+        // each the next's neighbour corner to corner, both cut on the same side, with the bend
+        // between them (the stair's riser) cut on the other. A lone bend keeps its own chamfer.
+        private static List<List<Vector2Int>> DiagonalLines(Dictionary<Vector2Int, (Vector2Int, Vector2Int)> bends)
+        {
+            bool Continues(Vector2Int tile, Vector2Int along, Vector2Int outward)
+            {
+                Vector2Int next = tile + along;
+                if (!bends.TryGetValue(next, out var cut) || cut.Item1 + cut.Item2 != outward) return false;
+                // The riser: the neighbour the line steps through, away from the cut side.
+                Vector2Int riser = tile + (along.x == outward.x ? new Vector2Int(0, along.y) : new Vector2Int(along.x, 0));
+                return bends.TryGetValue(riser, out var riserCut) && riserCut.Item1 + riserCut.Item2 == -outward;
+            }
+
+            var lines = new List<List<Vector2Int>>();
+            // Bends in a fixed order (by tile), so the plan never depends on a set's order.
+            var tiles = new List<Vector2Int>(bends.Keys);
+            tiles.Sort((a, b) => a.x != b.x ? a.x.CompareTo(b.x) : a.y.CompareTo(b.y));
+            foreach (Vector2Int tile in tiles)
+            {
+                var (sideA, sideB) = bends[tile];
+                Vector2Int outward = sideA + sideB;
+                var along = new Vector2Int(-outward.y, outward.x);
+                if (Continues(tile, -along, outward)) continue;   // not the line's first
+
+                var line = new List<Vector2Int> { tile };
+                while (Continues(line[line.Count - 1], along, outward)) line.Add(line[line.Count - 1] + along);
+                if (line.Count >= 2) lines.Add(line);
+            }
+            return lines;
+        }
+
+        // One line of bends walled as a single diagonal: the first chamfer's stub along the
+        // straight wall before it, a wall from there to the last chamfer's end, and the last's stub
+        // after it. Each chamfer still cuts its corner; each notch the wall crosses is filled.
+        private void AddDiagonal(List<Vector2Int> line, Dictionary<Vector2Int, (Vector2Int, Vector2Int)> bends, float height)
+        {
+            var chamfers = new List<(Vector2 start, Vector2 a, Vector2 corner, Vector2 b, Vector2 end)>(line.Count);
+            foreach (Vector2Int tile in line)
+                chamfers.Add(Chamfer(tile, bends[tile].Item1, bends[tile].Item2));
+
+            // In the direction the wall runs, the floor on its left.
+            Vector2 travel = chamfers[0].b - chamfers[0].a;
+            if (Vector2.Dot(travel, line[line.Count - 1] - line[0]) < 0f) chamfers.Reverse();
+
+            var first = chamfers[0];
+            var last  = chamfers[chamfers.Count - 1];
+            Segments.Add(new Segment(first.start, first.a, height, squareEnds: true, room: null));
+            Segments.Add(new Segment(first.a, last.b, height, squareEnds: false, room: null));
+            Segments.Add(new Segment(last.b, last.end, height, squareEnds: true, room: null));
+            for (int i = 0; i < chamfers.Count; i++)
+            {
+                Cuts.Add((chamfers[i].a, chamfers[i].corner, chamfers[i].b));
+                // The notch between two chamfers: its inside corner is where their tile edges meet.
+                if (i == 0) continue;
+                Vector2 from = chamfers[i - 1].b, to = chamfers[i].a;
+                var notch = new Vector2(from.x, to.y);
+                Fills.Add((from, IsCorner(notch) ? notch : new Vector2(to.x, from.y), to));
+            }
+        }
+
+        private static bool IsCorner(Vector2 point) =>
+            Mathf.Approximately(point.x, Mathf.Round(point.x)) && Mathf.Approximately(point.y, Mathf.Round(point.y));
+
         // The bend tile's two outer walls, each stopping half a tile short of their shared
         // corner, joined by a diagonal.
         private void AddBendChamfer(Vector2Int tile, Vector2Int sideA, Vector2Int sideB, float height)
+        {
+            var (firstStart, cutA, corner, cutB, secondEnd) = Chamfer(tile, sideA, sideB);
+            Segments.Add(new Segment(firstStart, cutA, height, squareEnds: true, room: null));
+            Segments.Add(new Segment(cutA, cutB, height, squareEnds: false, room: null));
+            Segments.Add(new Segment(cutB, secondEnd, height, squareEnds: true, room: null));
+            Cuts.Add((cutA, corner, cutB));
+        }
+
+        // A bend's chamfer, in the order the wall runs with the floor on its left: the far end of
+        // the first outer wall, where the cut leaves it, the corner it cuts off, where it meets the
+        // second wall, and that wall's far end.
+        private static (Vector2 start, Vector2 a, Vector2 corner, Vector2 b, Vector2 end) Chamfer(Vector2Int tile, Vector2Int sideA, Vector2Int sideB)
         {
             Vector2 centre = tile + Vector2.one * 0.5f;
             Vector2 corner = centre + ((Vector2)(sideA + sideB)) * 0.5f;
@@ -142,11 +231,7 @@ namespace CGD.Level
             Vector2 cutA = corner - dirFirst * CorridorCut;
             Vector2 cutB = corner + dirSecond * CorridorCut;
             Vector2 secondEnd = corner + dirSecond;
-
-            Segments.Add(new Segment(firstStart, cutA, height, squareEnds: true, room: null));
-            Segments.Add(new Segment(cutA, cutB, height, squareEnds: false, room: null));
-            Segments.Add(new Segment(cutB, secondEnd, height, squareEnds: true, room: null));
-            Cuts.Add((cutA, corner, cutB));
+            return (firstStart, cutA, corner, cutB, secondEnd);
         }
 
         // Direction of travel along a wall on `side` of a tile with the floor on the left.
