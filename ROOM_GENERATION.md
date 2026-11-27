@@ -1960,8 +1960,9 @@ room's beat where it already makes its decision, so nothing is built twice.
   picked, so the same place rarely opens onto itself (the weights change, never the draws).
 
 **Beats** (`MapDirector.Plan`, from the graph alone, so the map editor's layout gives the same):
-Climax for the Boss; Rest for a calm type (`MapDirectorSettings._calmTypes`; waves count as
-fights); Peak for a fight of at least `_peakIntensity` (0.6) that no fight beside it outranks
+Climax for the Boss; Rest for a room that isn't a fight (`MapNodeTypeExtensions.IsFight`, the one
+list the generator's pacing reads too; waves count as fights); Peak for a fight `MapPeaks.IsPeak`
+calls one: at least the content's `_pacing._peakIntensity` (0.6) and outranked by no fight beside it
 (higher intensity, then deeper, then lower id, so two peaks never touch); Relief for a fight entered
 from a peak (a peak neighbour nearer the Start); Approach for the fight just before the Boss on the
 main path, overriding the rest; Build otherwise. A room the Start can't reach gets None.
@@ -2008,11 +2009,15 @@ a peak, not more additions.
 
 **Checks** (`DirectorCheck`, `DirectorFinding` on `LevelLayout.DirectorFindings`, short on the
 room's overview label: "Director: flat stretch, fixed", "! under-covered"):
-- *Pacing, before the build* (`MapDirector`): more than `_flatStretch` (3) ordinary fights in a row
-  on the main path get their strongest made a peak (not beside a peak, not the approach), the next
-  fight its relief; a main path with fights but no peak gets one. More than `_calmStretch` (3) calm
-  rooms in a row, or the strongest peak in the first third with only weaker ones after, are
-  reported: beats can't fix them, the graph's layout would have to.
+- *Pacing, before the build*: made by the generator, not patched by the director. The intensity
+  painter raises the main path's peaks itself (`MapPeaks.Raise`, after the pins): more than
+  `_pacing._maxFightsWithoutPeak` (3) fights in a row with no peak, or a way to the boss with two
+  fights and no peak, get their strongest fight that can peak (beside no peak, not pinned, not the
+  room before the boss) lifted to the peak intensity and `MapPeaks.Margin` (0.05) above every fight
+  beside it. The director reads the peaks as they are and only reports a stretch that still has
+  none (`FlatStretch`, `NoPeak`: a hand-made graph or a pinned room in the way; the validator says
+  the same in the map editor), more than `_calmStretch` (3) calm rooms in a row, or the strongest
+  peak in the first third with only weaker ones after.
 - *Set pieces, while built* (`BeatReview.BestSetPiece`): peaks and the boss room are planned after
   every other room; one holding no more structure points per tile than an ordinary fight beside it,
   or with no way round, is built again from up to `_coverRetries` (3) seeds of the director's own
@@ -2037,7 +2042,15 @@ fell from about 70% to about 31%: furniture closes far more flanks than structur
 fight room in these styles is faction-held, so all of them already weighed the flank among their
 tries; with 30-230 props a room no try or single-prop move reopened it.)
 
-**Peaks onto halls** (`MapDirector.MovePeaksToBiggerRooms`, right after `RoomPlacer`): a peak beside
+**Set pieces placed first** (replaces *Peaks onto halls* below): `RoomPlacer` lays out the peaks and
+the boss room before every other room (`MapDirector.PlacementOrder`), and an ordinary fight beside
+one (Build, Relief, Approach) gets no more floor than the smallest set piece beside it
+(`MapDirector.AreaLimit`): a multi-cell place there spans one cell, a single-cell room is cut to a
+centred square of that size. A footprint lies within its area, so the set piece is never the smaller
+room, the boss room included, which the move below never reached. Only a hand-built landmark beside
+a set piece can still come out bigger; *smaller than a neighbour* reports it.
+
+*Peaks onto halls* (removed; kept for its measure): `MapDirector.MovePeaksToBiggerRooms`, right after `RoomPlacer`, a peak beside
 an ordinary fight (Build or Relief) at least 1.25x its tiles moves onto the biggest such room that
 is no hand-built landmark, not beside another peak, and on the main path when the peak was; the
 reliefs are marked again after the peaks; each peak moves once; sizes stay as placed. The move is a
@@ -2055,7 +2068,8 @@ for 1% fewer props (7448 -> 7373); furnished way-round share Build 30 -> 64%, Pe
 (Labyrinth Build 30 -> 74%, Peak 38 -> 65%); furnishing a little faster (4.5 -> 3.9 s a map, fewer
 tries miss). Supplies still always found a nook.
 
-**Not yet**: the map editor and the Room Lab don't show beats; the director reads the graph only, not
+**Not yet**: the map editor and the Room Lab don't show beats; set pieces don't favour multi-cell
+places of their own (fewer halls stand beside them now, none bigger); the director reads the graph only, not
 the built rooms (it could look again at a peak whose structure stayed open, or a relief that came
 out bigger than its peak); and it doesn't move rooms or change connections the way Left 4 Dead 2
 opens routes.

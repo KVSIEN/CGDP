@@ -67,7 +67,6 @@ namespace CGD.Level
 
             layout.AttachDirection(MapDirector.Plan(graph, content != null ? content.Pacing : null, _settings.Director));
             new RoomPlacer(_settings).Place(graph, nodeSpacing, seed.Derive("rooms"), layout, content);
-            MapDirector.MovePeaksToBiggerRooms(graph, layout, _settings.Director);
             return layout;
         }
 
@@ -79,13 +78,13 @@ namespace CGD.Level
         {
             var planner = new RoomStructurePlanner();
             var rooms = new List<LevelRoom>(layout.Rooms.Values);
-            rooms.Sort((a, b) => BeatReview.IsSetPiece(a.Beat).CompareTo(BeatReview.IsSetPiece(b.Beat)));
+            rooms.Sort((a, b) => MapDirector.IsSetPiece(a.Beat).CompareTo(MapDirector.IsSetPiece(b.Beat)));
             int retries = _settings.Director != null ? _settings.Director.CoverRetries : 0;
             foreach (LevelRoom room in rooms)
             {
                 Seed roomSeed = seed.Derive(room.Node.Id);
                 RoomStructure structure = PlanRoom(planner, room, layout, roomSeed);
-                if (BeatReview.IsSetPiece(room.Beat) && retries > 0)
+                if (MapDirector.IsSetPiece(room.Beat) && retries > 0)
                     structure = BeatReview.BestSetPiece(graph, layout, room, structure, _settings.StructureBudget, retries,
                                                         attempt => PlanRoom(planner, room, layout, roomSeed.Derive("director").Derive(attempt)));
                 room.AttachStructure(structure);

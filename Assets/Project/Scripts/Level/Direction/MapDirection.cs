@@ -4,8 +4,7 @@ namespace CGD.Level
 {
     // What the map director decided for a map (MapDirector.Plan): every room's beat, how much its
     // size is scaled for it, and what the pacing pass changed and found (DirectorFinding). A room
-    // it has no word on is None at size 1. These are the beats planned from the graph; a room's
-    // own LevelRoom.Beat is the final one (a peak can move once the rooms are placed).
+    // it has no word on is None at size 1. Each LevelRoom is placed with its beat from here.
     public sealed class MapDirection
     {
         public static readonly MapDirection None = new(new Dictionary<int, RoomBeat>(), new Dictionary<int, float>(), new List<DirectorFinding>());

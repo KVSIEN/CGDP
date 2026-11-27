@@ -39,8 +39,9 @@ namespace CGD.Level
             HashSet<RoomFunction> usedUnique = PinnedUniquePlaces(graph);
             MapDirection direction = layout.Direction;
             var neighbours = new List<int>();
+            var placedTiles = new Dictionary<int, int>();
 
-            foreach (MapNode node in graph.Nodes)
+            foreach (MapNode node in MapDirector.PlacementOrder(graph, direction))
             {
                 RandomStream random = seed.Derive(node.Id).Stream();
                 MapSectionDefinition section = content != null && node.HasSection ? content.GetSection(node.Section) : null;
@@ -55,7 +56,12 @@ namespace CGD.Level
                 // Its own seed layer, so a function without layouts rolls exactly as before.
                 RoomLayout roomLayout = function != null
                     ? function.PickLayout(seed.Derive(node.Id).Derive("layout").Stream(), node.Layout as RoomLayout) : null;
-                RectInt block = ClaimBlock(cells[node.Id], function != null ? function.CellsWith(roomLayout) : Vector2Int.one, claimed, random);
+                // Beside a set piece already placed, an ordinary fight spans one cell rather than
+                // come out bigger than it.
+                int tileLimit = MapDirector.AreaLimit(graph, node.Id, direction, placedTiles, neighbours);
+                Vector2Int span = function != null ? function.CellsWith(roomLayout) : Vector2Int.one;
+                if (TilesOf(BlockArea(new RectInt(Vector2Int.zero, span))) > tileLimit) span = Vector2Int.one;
+                RectInt block = ClaimBlock(cells[node.Id], span, claimed, random);
                 connections.TryGetValue(node.Id, out int count);
                 RoomBeat beat = direction.BeatOf(node.Id);
 
@@ -71,18 +77,21 @@ namespace CGD.Level
                 {
                     layout.AddRoom(new LevelRoom(node, landmarkFootprint, function, height, landmark, faction, breach, side: side,
                                                  designStrength: strength, landmarkTurns: landmarkTurns, beat: beat));
+                    placedTiles[node.Id] = landmarkFootprint.Count;
                     continue;
                 }
                 if (landmark != null)
                     layout.Warnings.Add($"Landmark '{landmark.name}' doesn't fit {node.Type} #{node.Id} (too big, or fewer doorways than its {count} connections); generated instead.");
 
                 var style = new FactionStyle(_settings.DesignFor(faction), strength);
-                RectInt area = RoomArea(block, function, roomLayout, random, style, _settings.DesignFor(side), direction.SizeScaleOf(node.Id));
+                RectInt area = WithinLimit(RoomArea(block, function, roomLayout, random, style, _settings.DesignFor(side), direction.SizeScaleOf(node.Id)), tileLimit);
                 IReadOnlyList<RoomShape> functionShapes = function != null ? function.ShapesWith(roomLayout) : null;
                 IReadOnlyList<RoomShape> shapeList = functionShapes != null && functionShapes.Count > 0 ? functionShapes : _settings.DefaultShapes;
-                layout.AddRoom(new LevelRoom(node, _shapes.Build(shapeList, count, area, random, style), function, height, faction: faction, breachFaction: breach,
+                RoomFootprint footprint = _shapes.Build(shapeList, count, area, random, style);
+                layout.AddRoom(new LevelRoom(node, footprint, function, height, faction: faction, breachFaction: breach,
                                              chamfer: function != null ? function.ChamferOr(_settings.RoomChamfer) : _settings.RoomChamfer, side: side,
                                              designStrength: strength, roomLayout: roomLayout, beat: beat));
+                placedTiles[node.Id] = footprint.Count;
             }
         }
 
@@ -220,6 +229,17 @@ namespace CGD.Level
             if (!Mathf.Approximately(scale, 1f)) size = Mathf.Clamp(Mathf.RoundToInt(size * scale), MinRoomTiles, _settings.RoomTiles);
             int inset = (_settings.RoomTiles - size) / 2;
             return new RectInt(area.xMin + inset, area.yMin + inset, size, size);
+        }
+
+        private static int TilesOf(RectInt area) => area.width * area.height;
+
+        // `area`, or the centred square no bigger than `tileLimit` tiles inside it (never under
+        // MinRoomTiles a side). A footprint lies within its area, so it is no bigger either.
+        private static RectInt WithinLimit(RectInt area, int tileLimit)
+        {
+            if (TilesOf(area) <= tileLimit) return area;
+            int side = Mathf.Max(MinRoomTiles, Mathf.Min(Mathf.Min(area.width, area.height), Mathf.FloorToInt(Mathf.Sqrt(tileLimit))));
+            return new RectInt(area.xMin + (area.width - side) / 2, area.yMin + (area.height - side) / 2, side, side);
         }
 
         // The landmark's footprint, turned by whichever quarter turns fit the area and leave a

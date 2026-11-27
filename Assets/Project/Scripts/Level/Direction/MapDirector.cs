@@ -29,8 +29,9 @@ namespace CGD.Level
     //
     // Each room's size is scaled by its beat and, for a fight, by how far into the map it lies:
     // small chambers early, bigger ones toward the boss, as Hades grows its chambers through a
-    // biome, so the space grows with the fights in it. Once the rooms are placed, a peak beside a
-    // clearly bigger ordinary fight moves onto it (MovePeaksToBiggerRooms).
+    // biome, so the space grows with the fights in it. The set pieces are placed first and no
+    // ordinary fight beside one is given more floor than it (PlacementOrder, AreaLimit), so the
+    // big fight of a stretch is its biggest room from the start.
     public static class MapDirector
     {
         // Every room's beat and size; nothing without settings, so nothing changes. `pacing`: the
@@ -55,67 +56,32 @@ namespace CGD.Level
 
         private static bool IsFightBeat(RoomBeat beat) => beat is RoomBeat.Build or RoomBeat.Peak or RoomBeat.Relief or RoomBeat.Approach;
 
-        // How much bigger an ordinary fight beside a peak must come out for the peak to move onto it.
-        private const float PeakMoveSize = 1.25f;
+        public static bool IsSetPiece(RoomBeat beat) => beat is RoomBeat.Peak or RoomBeat.Climax;
 
-        // Once the rooms are placed: the beats were given from the graph alone, before anyone knew
-        // which room would be a multi-cell hall, and a peak beside a hall is the smaller room.
-        // Each such peak moves onto the biggest ordinary fight beside it that came out at least
-        // PeakMoveSize its tiles (not a hand-built landmark, not beside another peak, and on the
-        // main path when the peak was), and the reliefs are marked again after the peaks. A peak
-        // moves once. Sizes stay as placed. Every move is a fixed PeakSize finding on the layout.
-        public static void MovePeaksToBiggerRooms(MapGraph graph, LevelLayout layout, MapDirectorSettings settings)
+        // The order the rooms are placed in: the set pieces (peaks and the boss room) first, so
+        // they take their cells before the fights beside them; otherwise the graph's own order.
+        public static List<MapNode> PlacementOrder(MapGraph graph, MapDirection direction)
         {
-            if (settings == null || graph == null || layout.Rooms.Count == 0) return;
-
-            var analysis = new MapGraphAnalysis(graph);
-            var onPath = new HashSet<int>(analysis.MainPath);
-            var beats = new Dictionary<int, RoomBeat>();
-            foreach (MapNode node in graph.Nodes)
-                beats[node.Id] = layout.Rooms.TryGetValue(node.Id, out LevelRoom room) ? room.Beat : RoomBeat.None;
-
-            var neighbours = new List<int>();
-            var moved = new HashSet<int>();
-            bool changed = false;
-            foreach (MapNode node in graph.Nodes)
-            {
-                if (moved.Contains(node.Id) || !layout.Rooms.TryGetValue(node.Id, out LevelRoom peak) || beats[node.Id] != RoomBeat.Peak) continue;
-
-                LevelRoom bigger = BiggerFightBeside(graph, layout, beats, peak, onPath.Contains(node.Id) ? onPath : null, neighbours);
-                if (bigger == null) continue;
-
-                beats[node.Id] = RoomBeat.Build;
-                beats[bigger.Node.Id] = RoomBeat.Peak;
-                moved.Add(bigger.Node.Id);
-                changed = true;
-                layout.DirectorFindings.Add(new DirectorFinding(DirectorCheck.PeakSize, bigger.Node.Id,
-                    $"the peak moved from #{node.Id} ({peak.Footprint.Count} tiles) onto #{bigger.Node.Id} beside it ({bigger.Footprint.Count})", true));
-            }
-            if (!changed) return;
-
-            foreach (int id in new List<int>(beats.Keys))
-                if (beats[id] == RoomBeat.Relief) beats[id] = RoomBeat.Build;
-            MarkReliefs(graph, analysis, beats, neighbours);
-            foreach (LevelRoom room in layout.Rooms.Values)
-                if (beats[room.Node.Id] != room.Beat) room.Recast(beats[room.Node.Id]);
+            var order = new List<MapNode>(graph.Nodes);
+            var rank = new Dictionary<MapNode, int>();
+            for (int i = 0; i < order.Count; i++) rank[order[i]] = (IsSetPiece(direction.BeatOf(order[i].Id)) ? 0 : order.Count) + i;
+            order.Sort((a, b) => rank[a].CompareTo(rank[b]));
+            return order;
         }
 
-        // `path`: when given, only a room on it.
-        private static LevelRoom BiggerFightBeside(MapGraph graph, LevelLayout layout, Dictionary<int, RoomBeat> beats, LevelRoom peak,
-                                                   HashSet<int> path, List<int> neighbours)
+        // The most floor tiles an ordinary fight may be given beside the set pieces already placed
+        // (`placed`: their floor tiles): the smallest of theirs, so the set-piece fight is the
+        // biggest room around it. int.MaxValue for any other room, or with none placed beside it.
+        public static int AreaLimit(MapGraph graph, int id, MapDirection direction, IReadOnlyDictionary<int, int> placed, List<int> neighbours)
         {
-            var candidates = new List<int>();
-            graph.GetNeighbors(peak.Node.Id, candidates);
-            LevelRoom best = null;
-            foreach (int id in candidates)
-            {
-                if (!layout.Rooms.TryGetValue(id, out LevelRoom other) || other.Landmark != null || !(beats[id] is RoomBeat.Build or RoomBeat.Relief)) continue;
-                if (path != null && !path.Contains(id)) continue;
-                if (other.Footprint.Count < peak.Footprint.Count * PeakMoveSize || (best != null && other.Footprint.Count <= best.Footprint.Count)) continue;
-                if (BesidePeak(graph, beats, id, neighbours, except: peak.Node.Id)) continue;
-                best = other;
-            }
-            return best;
+            if (!(direction.BeatOf(id) is RoomBeat.Build or RoomBeat.Relief or RoomBeat.Approach)) return int.MaxValue;
+
+            int limit = int.MaxValue;
+            graph.GetNeighbors(id, neighbours);
+            foreach (int other in neighbours)
+                if (IsSetPiece(direction.BeatOf(other)) && placed.TryGetValue(other, out int tiles))
+                    limit = System.Math.Min(limit, tiles);
+            return limit;
         }
 
         // `calmStretch`: the longest run of calm rooms the main path may have before it is reported
@@ -163,15 +129,6 @@ namespace CGD.Level
             List<int> fights = MapPeaks.PeaklessFights(graph, analysis, path, pacing.PeakIntensity);
             if (fights.Count > 0)
                 findings.Add(new DirectorFinding(DirectorCheck.NoPeak, fights[0], $"no peak among the {fights.Count} fights on the way to the boss"));
-        }
-
-        // `except`: a peak not to count (the one about to move away).
-        private static bool BesidePeak(MapGraph graph, Dictionary<int, RoomBeat> beats, int id, List<int> neighbours, int except = -1)
-        {
-            graph.GetNeighbors(id, neighbours);
-            foreach (int other in neighbours)
-                if (other != except && beats.TryGetValue(other, out RoomBeat beat) && beat == RoomBeat.Peak) return true;
-            return false;
         }
 
         // Calm rooms in a row between the Start and the Exit (neither counts).

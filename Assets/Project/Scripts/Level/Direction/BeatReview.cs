@@ -17,8 +17,6 @@ namespace CGD.Level
     // overview label, so a room that missed its beat is seen in the Scene view.
     public static class BeatReview
     {
-        public static bool IsSetPiece(RoomBeat beat) => beat is RoomBeat.Peak or RoomBeat.Climax;
-
         private static bool IsFight(RoomBeat beat) => beat is RoomBeat.Build or RoomBeat.Peak or RoomBeat.Relief or RoomBeat.Approach;
 
         // Structure points per floor tile: how much there is to hide behind for the room's size.
@@ -83,7 +81,7 @@ namespace CGD.Level
             foreach (LevelRoom room in layout.Rooms.Values)
             {
                 if (room.Structure == null) continue;
-                if (IsSetPiece(room.Beat)) ReviewSetPiece(graph, layout, room, budget);
+                if (MapDirector.IsSetPiece(room.Beat)) ReviewSetPiece(graph, layout, room, budget);
                 else if (room.Beat == RoomBeat.Relief) ReviewRelief(graph, layout, room);
             }
         }

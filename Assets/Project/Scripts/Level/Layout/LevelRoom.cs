@@ -35,10 +35,6 @@ namespace CGD.Level
         public LevelRoom Translated(Vector2Int offset) =>
             new(Node, Footprint.Translated(offset), Function, WallHeight, Landmark, Faction, BreachFaction, Chamfer, Side, DesignStrength, RoomLayout, LandmarkTurns, Beat);
 
-        // The map director giving the room another beat once rooms are placed
-        // (MapDirector.MovePeaksToBiggerRooms). Only before its structure is planned, which is built for it.
-        internal void Recast(RoomBeat beat) => Beat = beat;
-
         public MapNode       Node       { get; }
         public RoomFootprint Footprint  { get; }
         public RoomFunction  Function   { get; }    // null for a plain room

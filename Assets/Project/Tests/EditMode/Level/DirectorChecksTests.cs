@@ -143,58 +143,45 @@ namespace CGD.Tests
         }
 
         [Test]
-        public void APeakBesideAClearlyBiggerFightMovesOntoItAndTheReliefsFollow()
-        {
-            int start = Add(MapNodeType.Start, 0f);
-            int hall = Add(MapNodeType.Combat, 0.3f);
-            int peak = Add(MapNodeType.Combat, 0.8f);
-            int after = Add(MapNodeType.Combat, 0.3f);
-            int approach = Add(MapNodeType.Combat, 0.3f);
-            Chain(start, hall, peak, after, approach, Add(MapNodeType.Boss, 1f), Add(MapNodeType.Exit, 0f));
-
-            LevelLayout layout = Placed(Plan(), (hall, 20), (peak, 10), (after, 10), (approach, 10));
-            var settings = ScriptableObject.CreateInstance<MapDirectorSettings>();
-            try { MapDirector.MovePeaksToBiggerRooms(_graph, layout, settings); }
-            finally { Object.DestroyImmediate(settings); }
-
-            Assert.That(layout.Rooms[hall].Beat, Is.EqualTo(RoomBeat.Peak));
-            Assert.That(layout.Rooms[peak].Beat, Is.EqualTo(RoomBeat.Relief), "the old peak is now the breather after the new one");
-            Assert.That(layout.Rooms[after].Beat, Is.EqualTo(RoomBeat.Build));
-            Assert.That(layout.Rooms[approach].Beat, Is.EqualTo(RoomBeat.Approach));
-            Assert.That(layout.DirectorFindings.Exists(f => f.Check == DirectorCheck.PeakSize && f.Fixed && f.RoomId == hall), Is.True);
-        }
-
-        [Test]
-        public void APeakBesideAFightOnlyALittleBiggerStays()
+        public void TheSetPiecesArePlacedFirstAndTheRestInGraphOrder()
         {
             int start = Add(MapNodeType.Start, 0f);
             int a = Add(MapNodeType.Combat, 0.3f);
             int peak = Add(MapNodeType.Combat, 0.8f);
             int after = Add(MapNodeType.Combat, 0.3f);
-            Chain(start, a, peak, after, Add(MapNodeType.Combat, 0.3f), Add(MapNodeType.Boss, 1f), Add(MapNodeType.Exit, 0f));
+            int approach = Add(MapNodeType.Combat, 0.3f);
+            int boss = Add(MapNodeType.Boss, 1f);
+            Chain(start, a, peak, after, approach, boss, Add(MapNodeType.Exit, 0f));
+            var direction = new MapDirection(Plan(), new Dictionary<int, float>(), new List<DirectorFinding>());
 
-            LevelLayout layout = Placed(Plan(), (a, 11), (peak, 10), (after, 10));
-            var settings = ScriptableObject.CreateInstance<MapDirectorSettings>();
-            try { MapDirector.MovePeaksToBiggerRooms(_graph, layout, settings); }
-            finally { Object.DestroyImmediate(settings); }
-
-            Assert.That(layout.Rooms[peak].Beat, Is.EqualTo(RoomBeat.Peak));
-            Assert.That(layout.Rooms[after].Beat, Is.EqualTo(RoomBeat.Relief));
-            Assert.That(layout.DirectorFindings, Is.Empty);
+            List<MapNode> order = MapDirector.PlacementOrder(_graph, direction);
+            Assert.That(order[0].Id, Is.EqualTo(peak));
+            Assert.That(order[1].Id, Is.EqualTo(boss));
+            Assert.That(order[2].Id, Is.EqualTo(start));
+            Assert.That(order[3].Id, Is.EqualTo(a));
         }
 
-        // Square rooms of the given sides for the given nodes, with the planned beats.
-        private LevelLayout Placed(Dictionary<int, RoomBeat> beats, params (int id, int side)[] rooms)
+        [Test]
+        public void AFightBesideAPlacedSetPieceGetsNoMoreFloorThanIt()
         {
-            var layout = new LevelLayout(1f);
-            int x = 0;
-            foreach ((int id, int side) in rooms)
-            {
-                _graph.TryGetNode(id, out MapNode node);
-                layout.AddRoom(new LevelRoom(node, RoomFootprint.Rectangle(new RectInt(x, 0, side, side)), null, 4f, beat: beats[id]));
-                x += side + 4;
-            }
-            return layout;
+            int start = Add(MapNodeType.Start, 0f);
+            int a = Add(MapNodeType.Combat, 0.3f);
+            int peak = Add(MapNodeType.Combat, 0.8f);
+            int after = Add(MapNodeType.Combat, 0.3f);
+            int far = Add(MapNodeType.Combat, 0.3f);
+            int approach = Add(MapNodeType.Combat, 0.3f);
+            int boss = Add(MapNodeType.Boss, 1f);
+            Chain(start, a, peak, after, far, approach, boss, Add(MapNodeType.Exit, 0f));
+            var direction = new MapDirection(Plan(), new Dictionary<int, float>(), new List<DirectorFinding>());
+            var placed = new Dictionary<int, int> { [peak] = 120, [boss] = 200 };
+            var neighbours = new List<int>();
+
+            Assert.That(MapDirector.AreaLimit(_graph, a, direction, placed, neighbours), Is.EqualTo(120));
+            Assert.That(MapDirector.AreaLimit(_graph, after, direction, placed, neighbours), Is.EqualTo(120), "the relief too");
+            Assert.That(MapDirector.AreaLimit(_graph, approach, direction, placed, neighbours), Is.EqualTo(200), "the room before the boss stays under the boss room");
+            Assert.That(MapDirector.AreaLimit(_graph, far, direction, placed, neighbours), Is.EqualTo(int.MaxValue));
+            Assert.That(MapDirector.AreaLimit(_graph, start, direction, placed, neighbours), Is.EqualTo(int.MaxValue), "calm rooms aren't held to it");
+            Assert.That(MapDirector.AreaLimit(_graph, a, direction, new Dictionary<int, int>(), neighbours), Is.EqualTo(int.MaxValue), "nothing placed yet");
         }
 
         // A room with `walls` full-height wall pieces down its middle column.
