@@ -20,12 +20,19 @@ namespace CGD.Level
                     random.Range(part.SizeMin.x, part.SizeMax.x),
                     random.Range(part.SizeMin.y, part.SizeMax.y));
                 bool add = part.Operation == RoomShapeOperation.Add;
+                bool angled = IsAngled(part.Kind);
+                // A 45° shape is centred on a tile's middle, so its points are one tile and every
+                // step of its slanted edges is one tile: one straight diagonal wall, no kinks.
+                Vector2 centre = new(part.Center.x * width, part.Center.y * depth);
+                Vector2 snapped = new(Mathf.Floor(centre.x) + 0.5f, Mathf.Floor(centre.y) + 0.5f);
 
                 for (int x = 0; x < width; x++)
                     for (int y = 0; y < depth; y++)
                     {
-                        var point = new Vector2((x + 0.5f) / width, (y + 0.5f) / depth);
-                        if (Covers(part.Kind, point - part.Center, size)) floor[x, y] = add;
+                        bool covers = angled
+                            ? CoversAngled(part.Kind, new Vector2(x + 0.5f, y + 0.5f) - snapped, new Vector2(size.x * width, size.y * depth) * 0.5f)
+                            : Covers(part.Kind, new Vector2((x + 0.5f) / width, (y + 0.5f) / depth) - part.Center, size);
+                        if (covers) floor[x, y] = add;
                     }
             }
 
@@ -37,8 +44,11 @@ namespace CGD.Level
             for (int x = 0; x < width; x++)
                 for (int y = 0; y < depth; y++)
                     if (floor[x, y]) tiles.Add(area.min + Orient(new Vector2Int(x, y), width, depth, turns, mirror));
-            return new RoomFootprint(tiles, shape.CurvedWalls);
+            return new RoomFootprint(tiles, shape.CurvedWalls || shape.AngledWalls, shape.AngledWalls);
         }
+
+        private static bool IsAngled(RoomShapeKind kind) =>
+            kind is RoomShapeKind.Octagon or RoomShapeKind.Diamond or RoomShapeKind.PointedEnds;
 
         // A tiny tolerance keeps tiles lying exactly on a part's edge from flickering in and
         // out with float rounding.
@@ -53,6 +63,26 @@ namespace CGD.Level
 
             float nx = offset.x / half.x, ny = offset.y / half.y;
             return nx * nx + ny * ny <= 1f + Tolerance;
+        }
+
+        // In tiles from the (snapped) centre, measured in tiles so a slanted edge is a 45° line
+        // whatever the room's proportions: |x| + |y| = constant.
+        private static bool CoversAngled(RoomShapeKind kind, Vector2 offset, Vector2 half)
+        {
+            const float Tolerance = 1e-4f;
+            float x = Mathf.Abs(offset.x), y = Mathf.Abs(offset.y), shorter = Mathf.Min(half.x, half.y);
+            switch (kind)
+            {
+                case RoomShapeKind.Octagon:
+                    return x <= half.x + Tolerance && y <= half.y + Tolerance && x + y <= half.x + half.y - shorter * 0.5f + Tolerance;
+                case RoomShapeKind.Diamond:
+                    return x + y <= shorter + Tolerance;
+                default:
+                    // Points along the longer axis.
+                    return half.x >= half.y
+                        ? y <= half.y + Tolerance && x + y <= half.x + Tolerance
+                        : x <= half.x + Tolerance && x + y <= half.y + Tolerance;
+            }
         }
 
         private static Vector2Int Orient(Vector2Int tile, int width, int depth, int turns, bool mirror)

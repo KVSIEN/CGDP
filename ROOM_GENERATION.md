@@ -1427,6 +1427,32 @@ Breach room (section 10). Each room's placard in the HUD feed names its side, de
 type, and the dev console's `/room` jumps between rooms. The scene's Prop Yard (outside the level, seen in the Scene
 view) holds one of every placeholder column and prop.
 
+## 16d. Diagonals
+
+Rooms stay on the square grid, but a tile can carry a 45° wall corner to corner (`DiagonalWall`:
+rising `/` or falling `\`, full height or low). Every piece starts and ends on tile corners, so
+a run of tiles a diagonal step apart is one straight 45° wall, two runs make a chevron, and a run
+meets the room's walls and other runs cleanly. Only 45°, one diagonal per tile.
+
+- **Planning (level 1).** `RoomStructure.TryAddDiagonals` makes each tile Structure through
+  `TryClaim`, so reachability, claims and the stairs rules hold unchanged; a low piece is seen
+  over (`SightBlocking`, its top at floor + height) and is low cover; the structure budget counts
+  pieces as walls or half walls. The open half-triangles either side are floor in play (geometry
+  and NavMesh) but not to the planner. Level 2 (half-tiles as walkable nodes) waits until the lost
+  floor matters.
+- **Geometry.** A thin box along the tile's diagonal, a wall thickness longer so pieces close up;
+  low ones in the low-cover material.
+- **Shapes.** `RoomShapeKind` Octagon, Diamond and Pointed Ends are measured in tiles from a
+  tile-centred middle, so every step of a slanted edge is one tile; with *Angled Walls* the
+  outline turns those steps into 45° walls and skips curve smoothing (`RoomFootprint.SharpDiagonals`).
+  Octagon, Diamond and Pointed Hall shapes are in the default shape list.
+- **Rules.** *Angled Corner* cuts a corner off wall to wall with a gap (full height; *Angled
+  Counter* at 1.1 m); *Chevron Cover* puts low Vs out in the room pointing at the arrival. Both are
+  in the structure budget.
+- **Props.** `PropFacing.Diagonal` turns a single-tile prop 45° off square; `AgainstDiagonal`
+  stands one beside an angled wall facing straight out of it (the Greenery kit's planters).
+- **Doorways** stay on straight runs of the outer walls.
+
 ## 17. Sight (phases 0–5 of the better-sightline plan)
 
 Every reading of sight in a room goes through one rule and, where it needs more than a single

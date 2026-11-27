@@ -102,7 +102,7 @@ namespace CGD.Editor
             EditorGUILayout.LabelField("Size", $"{bounds.width * tile:0} × {bounds.height * tile:0} m · {room.WallHeight:0.#} m high");
             EditorGUILayout.LabelField("Floor", $"{room.Footprint.Count} tiles{(room.Footprint.CurvedWalls ? " · curved walls" : "")}{(room.Chamfer > 0 ? $" · {room.Chamfer}-tile bevels" : "")}");
             EditorGUILayout.LabelField("Doorways", sample.DoorsWanted >= 0 ? $"{sample.DoorwayCount} of {sample.DoorsWanted}" : sample.DoorwayCount.ToString());
-            EditorGUILayout.LabelField("Structure", $"{room.Structure.Pillars.Count} pillars · {room.Structure.Partitions.Count} inner wall edges · {room.Structure.ZoneCount} zone(s)");
+            EditorGUILayout.LabelField("Structure", $"{room.Structure.Pillars.Count} pillars · {room.Structure.Partitions.Count} inner wall edges · {room.Structure.Diagonals.Count} diagonal wall pieces · {room.Structure.ZoneCount} zone(s)");
             if (room.Structure.Spaces.Count > 0)
                 EditorGUILayout.LabelField(new GUIContent("Spaces", "The walled-off places inside the room, each furnished by its own place (a building's classrooms, the streets round it). Each is a zone in the Zones layer"),
                                            new GUIContent(SpaceSummary(room.Structure)));

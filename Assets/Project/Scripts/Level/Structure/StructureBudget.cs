@@ -69,6 +69,11 @@ namespace CGD.Level
                 if (CoverHeights.IsLow(edge.Height)) low++;
                 else walls++;
             }
+            foreach (DiagonalWall wall in structure.Diagonals)
+            {
+                if (CoverHeights.IsLow(wall.Height)) low++;
+                else walls++;
+            }
             return kind == StructureKind.Wall ? walls : low;
         }
 

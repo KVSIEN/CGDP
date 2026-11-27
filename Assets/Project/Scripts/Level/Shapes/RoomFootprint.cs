@@ -13,14 +13,16 @@ namespace CGD.Level
         private readonly List<DoorSocket> _sockets = new();
         private readonly bool _hasFixedSockets;
 
-        public RoomFootprint(IEnumerable<Vector2Int> tiles, bool curvedWalls = false)
-            : this(tiles, curvedWalls, null) { }
+        // `sharpDiagonals`: its curved walls are straight 45° runs with sharp corners, never smoothed.
+        public RoomFootprint(IEnumerable<Vector2Int> tiles, bool curvedWalls = false, bool sharpDiagonals = false)
+            : this(tiles, curvedWalls, null, sharpDiagonals) { }
 
         // fixedSockets replaces the automatic doorway spots (a hand-built room's doorways);
         // entries not on the outline facing out are dropped.
-        private RoomFootprint(IEnumerable<Vector2Int> tiles, bool curvedWalls, IEnumerable<DoorSocket> fixedSockets)
+        private RoomFootprint(IEnumerable<Vector2Int> tiles, bool curvedWalls, IEnumerable<DoorSocket> fixedSockets, bool sharpDiagonals = false)
         {
             CurvedWalls = curvedWalls;
+            SharpDiagonals = curvedWalls && sharpDiagonals;
             _hasFixedSockets = fixedSockets != null;
             _lookup = new HashSet<Vector2Int>(tiles);
             // Sorted so everything iterating the tiles (sockets, spawn spots) is the same for
@@ -54,11 +56,11 @@ namespace CGD.Level
         {
             var tiles = new List<Vector2Int>(_tiles.Count);
             foreach (Vector2Int tile in _tiles) tiles.Add(tile + offset);
-            if (!_hasFixedSockets) return new RoomFootprint(tiles, CurvedWalls);
+            if (!_hasFixedSockets) return new RoomFootprint(tiles, CurvedWalls, SharpDiagonals);
 
             var sockets = new List<DoorSocket>(_sockets.Count);
             foreach (DoorSocket socket in _sockets) sockets.Add(new DoorSocket(socket.Inside + offset, socket.Outward));
-            return new RoomFootprint(tiles, CurvedWalls, sockets);
+            return new RoomFootprint(tiles, CurvedWalls, sockets, SharpDiagonals);
         }
 
         public IReadOnlyList<Vector2Int> Tiles   => _tiles;
@@ -66,6 +68,8 @@ namespace CGD.Level
         public int     Count  => _tiles.Count;
         // Walls follow RoomOutline's smoothed outline instead of the tile edges.
         public bool    CurvedWalls { get; }
+        // Its walls leave the tile edges only as straight 45° runs: no curve smoothing (RoomOutline).
+        public bool    SharpDiagonals { get; }
         public RectInt Bounds { get; }
 
         // Middle of the bounds, in tile units — for which way another room lies.

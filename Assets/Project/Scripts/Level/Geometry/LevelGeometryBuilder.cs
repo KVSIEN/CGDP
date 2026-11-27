@@ -261,6 +261,18 @@ namespace CGD.Level
                 (CoverHeights.IsLow(h) ? lowCover : boxes).AddBox(centre, size);
             }
 
+            // A diagonal wall stands corner to corner across its tile, a little longer than the
+            // diagonal so the pieces of a run, and a run and the wall it meets, close up.
+            foreach (DiagonalWall wall in room.Structure.Diagonals)
+            {
+                float floor = layout.FloorHeight(wall.Tile);
+                float h = wall.Height > 0f ? Mathf.Min(wall.Height, height - floor) : height - floor;
+                Vector2 middle = (wall.From + wall.To) * 0.5f, along = wall.To - wall.From;
+                Vector3 centre = new Vector3(middle.x * tile, floor + h * 0.5f, middle.y * tile);
+                var size = new Vector3(thickness, h, along.magnitude * tile + thickness);
+                (CoverHeights.IsLow(h) ? lowCover : boxes).AddBox(centre, size, Quaternion.LookRotation(new Vector3(along.x, 0f, along.y)));
+            }
+
             // A doorway through an inner wall: the gap is left, with a lintel over it.
             foreach (PartitionEdge opening in room.Structure.Openings)
             {

@@ -157,7 +157,8 @@ namespace CGD.Level
             copy.Near      = null;
             copy.Within    = null;
             copy.Grow      = Vector2.zero;
-            if (copy.Facing is PropFacing.AgainstWall or PropFacing.AcrossSightline or PropFacing.AlongRoom or PropFacing.TowardNear)
+            if (copy.Facing is PropFacing.AgainstWall or PropFacing.AcrossSightline or PropFacing.AlongRoom or PropFacing.TowardNear
+                or PropFacing.AgainstDiagonal)
                 copy.Facing = PropFacing.Square;
             if (level >= 2) copy.Clearance = 0;
             return copy;

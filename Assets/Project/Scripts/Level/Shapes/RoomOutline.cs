@@ -13,6 +13,8 @@ namespace CGD.Level
     //   short pieces — two passes turn 45° kinks into 11° ones. Wall ends at a doorway never move.
     //   Chamfered rooms: each outside corner where two long runs meet is cut at 45°,
     //   `chamfer` tiles back along both — unless a doorway is that close to it.
+    // Angled rooms (RoomFootprint.SharpDiagonals) are traced the same way but never smoothed,
+    // so their slanted edges stay straight 45° walls with sharp corners.
     // Long runs otherwise stay on the tile edges (that's where doorways sit), minus the
     // openings `isOpening` reports.
     public static class RoomOutline
@@ -44,7 +46,7 @@ namespace CGD.Level
                                            int chamfer = 0, int smoothing = 0)
         {
             chamfer   = Mathf.Clamp(chamfer, 0, MaxChamfer);
-            smoothing = footprint.CurvedWalls ? Mathf.Clamp(smoothing, 0, MaxSmoothing) : 0;
+            smoothing = footprint.CurvedWalls && !footprint.SharpDiagonals ? Mathf.Clamp(smoothing, 0, MaxSmoothing) : 0;
             var plan = new RoomOutlinePlan();
             foreach (List<Run> loop in TraceLoops(footprint))
             {

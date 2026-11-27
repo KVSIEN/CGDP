@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CGD.Algorithms;
 using UnityEngine;
 
 namespace CGD.Level
@@ -142,6 +143,8 @@ namespace CGD.Level
                     return true;
                 case PropFacing.TowardCentre when !HasFreeYaw(placement, size):
                     return candidate.Rotation == RotationToward(rect.center);
+                case PropFacing.AgainstDiagonal:
+                    return size == Vector2Int.one && TryDiagonalBeside(rect.min, out _);
                 case PropFacing.AlongRoom:
                     return candidate.Rotation == RotationAlongRoom(rect.center);
                 case PropFacing.TowardNear when placement.StandsNear && !HasFreeYaw(placement, size):
@@ -150,6 +153,16 @@ namespace CGD.Level
                 default:
                     return true;
             }
+        }
+
+        // The 45° wall across a tile beside `tile`, if any: what an AgainstDiagonal prop stands against.
+        internal bool TryDiagonalBeside(Vector2Int tile, out DiagonalWall wall)
+        {
+            wall = default;
+            if (_structure.Diagonals.Count == 0) return false;
+            foreach (Vector2Int side in GridNeighbours.Four)
+                if (_structure.TryGetDiagonal(tile + side, out wall)) return true;
+            return false;
         }
 
         // Floor is kept to where the room has that floor: in a room that got no platform or pit,

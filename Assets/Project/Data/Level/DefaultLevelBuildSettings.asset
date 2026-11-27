@@ -372,6 +372,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b6cf0b4dec9d4419a4b96c63d8278140, type: 2}
   - {fileID: 11400000, guid: ab825d68623d4d908c1f0c3cf462451d, type: 2}
   - {fileID: 11400000, guid: 3cf90817eefb42238292adbde28bfc6b, type: 2}
+  - {fileID: 11400000, guid: 30c723f097d54c9a80b2f27155a176f3, type: 2}
+  - {fileID: 11400000, guid: 67ea0ac8bdaf4b2c8778869514e4e855, type: 2}
+  - {fileID: 11400000, guid: 72833ccb9eb64e649a3236d93870c8ec, type: 2}
   _minRoomWidthTiles: 2
   _spawnMarginTiles: 1
   _priorityTries: 4
@@ -392,6 +395,12 @@ MonoBehaviour:
     - Rule: {fileID: 11400000, guid: bc41b23240354b2685106c18b0574a1e, type: 2}
       Kind: 3
     - Rule: {fileID: 11400000, guid: 107790776f321a983103a3aeb2ac5d42, type: 2}
+      Kind: 3
+    - Rule: {fileID: 11400000, guid: 37141783909e4282970aac91ffbe87f8, type: 2}
+      Kind: 0
+    - Rule: {fileID: 11400000, guid: cd9766f33d1745c5a93f6447f0bfc652, type: 2}
+      Kind: 3
+    - Rule: {fileID: 11400000, guid: c05daa6cb7cb4772ba1123b56b20d817, type: 2}
       Kind: 3
     _minTiles: 90
     _tilesPerPoint: 8

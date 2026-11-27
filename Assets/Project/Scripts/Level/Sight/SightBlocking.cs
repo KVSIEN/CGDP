@@ -17,6 +17,7 @@ namespace CGD.Level
     //     solid corner pieces round a mound or a crater, as high as the ground they climb to;
     //   - a half wall along a ledge, RoomElevation.GuardHeight over its higher floor (a railing
     //     is seen through);
+    //   - a diagonal wall across a tile, as tall as it is built (one of no height reaches the ceiling);
     //   - an overpass's deck, a slab in the air: seen under from the floor beneath it and over
     //     from above, but it hides the floor under it from someone looking down across it, and
     //     its flights stand as high as the deck.
@@ -61,6 +62,8 @@ namespace CGD.Level
             foreach (ElevatedArea area in structure.Elevations)
             foreach (SlopeCorner corner in area.Corners)
                 _cornerTops[corner.Tile] = HighestFloorBeside(corner.Tile);
+            foreach (DiagonalWall wall in structure.Diagonals)
+                if (wall.Height > 0f) _cornerTops[wall.Tile] = Level(wall.Tile) + wall.Height;
             foreach (Overpass overpass in structure.Overpasses)
             {
                 float top = RoomElevation.HeightOf(overpass.Level);

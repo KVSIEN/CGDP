@@ -20,12 +20,15 @@ namespace CGD.Level
         [SerializeField] private bool _allowMirror = true;
         [Tooltip("Cut the stair-steps of round outlines into diagonal walls (domes, circles)")]
         [SerializeField] private bool _curvedWalls;
+        [Tooltip("Straight 45° walls along slanted edges, corners kept sharp (octagons, diamonds, pointed ends): the stair-steps become diagonals, but the outline isn't smoothed into a curve")]
+        [SerializeField] private bool _angledWalls;
 
         public IReadOnlyList<RoomShapePart> Parts => _parts;
         public float Weight        => _weight;
         public bool  AllowRotation => _allowRotation;
         public bool  AllowMirror   => _allowMirror;
         public bool  CurvedWalls   => _curvedWalls;
+        public bool  AngledWalls   => _angledWalls;
 
         public bool Suits(int connections) => connections >= _connections.Min && connections <= _connections.Max;
     }

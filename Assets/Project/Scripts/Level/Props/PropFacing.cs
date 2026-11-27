@@ -10,5 +10,7 @@ namespace CGD.Level
         AcrossSightline, // front toward the longest open stretch of floor through it, so a barrier faces the lane it blocks
         AlongRoom,       // length (Z) running down the room's longer axis, front toward the room's middle: rows of machines, lines of desks
         TowardNear,      // front toward the nearest of what it stands Near: loungers facing the pool, chairs facing the stage (Square without a Near)
+        Diagonal,        // a quarter turn and 45° more, for a single tile: café tables turned on the diagonal, a herringbone of crates
+        AgainstDiagonal, // beside a 45° wall (DiagonalWall), single tile, facing straight out from it: a planter or console tucked against an angled wall
     }
 }

@@ -494,8 +494,18 @@ namespace CGD.Level
         }
 
         // Loose clutter takes any angle; everything else its candidate's quarter turn.
-        private static float YawFor(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, RandomStream random) =>
-            PropPlacementRules.HasFreeYaw(placement, size) ? random.Range(0f, 360f) : candidate.Rotation * 90f;
+        // Diagonal: its quarter turn and 45° more. AgainstDiagonal: straight out from the angled wall beside it.
+        private float YawFor(PropCandidate candidate, RoomPropPlacement placement, Vector2Int size, RandomStream random)
+        {
+            if (PropPlacementRules.HasFreeYaw(placement, size)) return random.Range(0f, 360f);
+            if (placement.Facing == PropFacing.Diagonal && size == Vector2Int.one) return candidate.Rotation * 90f + 45f;
+            if (placement.Facing == PropFacing.AgainstDiagonal && _rules.TryDiagonalBeside(candidate.Rect.min, out DiagonalWall wall))
+            {
+                Vector2Int normal = wall.NormalToward(candidate.Rect.min);
+                return Mathf.Atan2(normal.x, normal.y) * Mathf.Rad2Deg;
+            }
+            return candidate.Rotation * 90f;
+        }
 
         // Where a prop of a placement stands on its tiles: the middle, set back against the wall
         // for a wall prop one tile deep, and jittered where the placement asks. `prefab`: what

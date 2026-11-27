@@ -26,6 +26,7 @@ namespace CGD.Level
 
         private readonly List<StructurePillar> _pillars = new();
         private readonly List<PartitionEdge> _partitions = new();
+        private readonly List<DiagonalWall> _diagonals = new();
         private readonly List<PartitionEdge> _openings = new();
         private readonly List<Vector2Int> _entrances = new();
         private readonly List<StructureSpace> _spaces = new();
@@ -81,6 +82,7 @@ namespace CGD.Level
 
         public IReadOnlyList<StructurePillar> Pillars    => _pillars;
         public IReadOnlyList<PartitionEdge>   Partitions => _partitions;
+        public IReadOnlyList<DiagonalWall>    Diagonals  => _diagonals;
         // Doorways cut through inner walls, framed by a lintel (Height = the clear height).
         public IReadOnlyList<PartitionEdge>   Openings   => _openings;
         // The floor tile inside each doorway.
@@ -115,6 +117,7 @@ namespace CGD.Level
             var copy = new RoomStructure(Footprint, WallHeight);
             copy._pillars.AddRange(_pillars);
             copy._partitions.AddRange(_partitions);
+            copy._diagonals.AddRange(_diagonals);
             copy._openings.AddRange(_openings);
             copy._entrances.AddRange(_entrances);
             copy._spaces.AddRange(_spaces);
@@ -326,6 +329,37 @@ namespace CGD.Level
             }
             _pillars.Add(new StructurePillar(position, width, prefab, height));
             return true;
+        }
+
+        // Stands 45° walls across tiles (DiagonalWall), all or none: each on open floor (no route,
+        // doorway front, centre spot, stairs or anything built or put down), one to a tile, and
+        // only if the room stays whole with their tiles taken. Each tile becomes Structure.
+        public bool TryAddDiagonals(IReadOnlyList<DiagonalWall> walls)
+        {
+            if (walls == null || walls.Count == 0) return false;
+
+            var tiles = new List<Vector2Int>(walls.Count);
+            foreach (DiagonalWall wall in walls)
+            {
+                if (!IsOpen(wall.Tile) || Includes(tiles, wall.Tile)) return false;
+                tiles.Add(wall.Tile);
+            }
+            if (!TryClaim(tiles, RoomTileTags.Structure)) return false;
+            _diagonals.AddRange(walls);
+            return true;
+        }
+
+        // The diagonal wall across a tile, if one stands there.
+        public bool TryGetDiagonal(Vector2Int tile, out DiagonalWall wall)
+        {
+            foreach (DiagonalWall diagonal in _diagonals)
+                if (diagonal.Tile == tile)
+                {
+                    wall = diagonal;
+                    return true;
+                }
+            wall = default;
+            return false;
         }
 
         private static bool Includes(IReadOnlyList<Vector2Int> tiles, Vector2Int tile)
