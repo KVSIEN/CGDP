@@ -8,8 +8,6 @@ namespace CGD.Level
     [CreateAssetMenu(fileName = "MapDirector", menuName = "CGD/Level/Map Director")]
     public class MapDirectorSettings : ScriptableObject
     {
-        [Tooltip("Most calm rooms in a row on the main path before it is reported as dragging (0 = not checked)")]
-        [SerializeField, Range(0, 8)] private int _calmStretch = 3;
         [Tooltip("A peak or boss room is built up to hold more cover for its size than every fight beside it; one whose additions run out before it gets there is built again from up to this many more seeds, keeping the best")]
         [SerializeField, Range(0, 6)] private int _coverRetries = 3;
         [Tooltip("Size of a fight room at the start of the map, scaling up to Late Size by the boss (beside its beat's own size): small chambers early, bigger ones deeper in")]
@@ -22,7 +20,6 @@ namespace CGD.Level
         [SerializeField] private List<BeatTuning> _beats = new();
 
         public float RepeatNeighbour => _repeatNeighbour;
-        public int CalmStretch => _calmStretch;
         public int CoverRetries => _coverRetries;
 
         // A fight room's size for how far into the map it lies (0 = the start, 1 = the boss).

@@ -7,7 +7,7 @@ namespace CGD.Map
     // Intensity = the depth curve, plus the type's bonus, plus a little jitter so
     // neighbouring rooms of the same type don't read identically. Pinned rooms then take their
     // pin's intensity, and the main path's peaks are raised where the pacing asks for one
-    // (MapPeaks.Raise), never a pinned room's: the map comes out with the sawtooth the map
+    // (MapPacing.Raise), never a pinned room's: the map comes out with the sawtooth the map
     // director builds, instead of the director making peaks of its own afterwards.
     internal class MapIntensityPainter
     {
@@ -34,7 +34,7 @@ namespace CGD.Map
                 node.Intensity = pins[i].Intensity;
                 pinned.Add(node.Id);
             }
-            MapPeaks.Raise(_context.Graph, _context.Content.Pacing, pinned);
+            MapPacing.Raise(_context.Graph, _context.Content.Pacing, pinned);
         }
 
         // Run modifiers shift every room but the calm structural ones.

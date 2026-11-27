@@ -33,7 +33,7 @@ namespace CGD.Tests
         }
 
         private Dictionary<int, RoomBeat> Plan(int maxFightsWithoutPeak = 3, int calmStretch = 3) =>
-            MapDirector.Plan(_graph, new MapPacingSettings(maxFightsWithoutPeak: maxFightsWithoutPeak), calmStretch, _findings);
+            MapDirector.Plan(_graph, new MapPacingSettings(maxFightsWithoutPeak: maxFightsWithoutPeak, maxCalmInARow: calmStretch), _findings);
 
         private bool Found(DirectorCheck check, bool fixedByDirector) => _findings.Exists(f => f.Check == check && f.Fixed == fixedByDirector);
 
@@ -50,7 +50,7 @@ namespace CGD.Tests
             Chain(start, a, b, c, d, e, before, Add(MapNodeType.Boss, 1f), Add(MapNodeType.Exit, 0f));
 
             Dictionary<int, RoomBeat> beats = Plan();
-            Assert.That(beats[c], Is.EqualTo(RoomBeat.Build), "raising peaks is the generator's job (MapPeaks.Raise)");
+            Assert.That(beats[c], Is.EqualTo(RoomBeat.Build), "raising peaks is the generator's job (MapPacing.Raise)");
             Assert.That(_graph.TryGetNode(c, out MapNode strongest) ? strongest.Intensity : -1f, Is.EqualTo(0.5f), "the director changes no intensity");
             Assert.That(beats[before], Is.EqualTo(RoomBeat.Approach));
             Assert.That(Found(DirectorCheck.FlatStretch, fixedByDirector: false), Is.True);

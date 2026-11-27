@@ -10,7 +10,9 @@ namespace CGD.Map
     //      the content lists them
     //   3. minimums — each rule gets its Min rooms, dead ends first when it prefers them,
     //      most constrained rule first
-    //   4. fill — remaining rooms roll a weighted rule that still has room under its Max
+    //   4. fill — remaining rooms roll a weighted rule that still has room under its Max, and a
+    //      fight where another calm room would string more calm rooms together on the main
+    //      path than the pacing allows (pins, guarantees and minimums never wait on that)
     // A rule is only offered rooms matching its placement, depth, adjacency and spacing
     // limits and the content's pacing; rules that want space prefer rooms with an empty
     // grid cell beside them. Counts, weights and limits come through the run's modifiers
@@ -333,7 +335,12 @@ namespace CGD.Map
         // and has room under its Max. Only when none does is the rest type forced in.
         private MapNodeType FallbackType(MapSlot slot)
         {
-            if (PacingAllows(Content.FillType, slot)) return Content.FillType;
+            bool calmAllowed = CalmAllows(slot);
+            if (PacingAllows(Content.FillType, slot) && (calmAllowed || Content.FillType.IsFight())) return Content.FillType;
+            if (!calmAllowed)
+                foreach (MapNodeTypeRule rule in Content.NodeRules)
+                    if (rule.Type.IsFight() && HasRoomFor(rule.Type) && CanPlace(rule, slot))
+                        return rule.Type;
             if (CanFallBackTo(Pacing.RestType, slot)) return Pacing.RestType;
 
             foreach (MapNodeTypeRule rule in Content.NodeRules)
@@ -354,6 +361,7 @@ namespace CGD.Map
         private float FillWeight(MapNodeTypeRule rule, MapSlot slot)
         {
             if (CountOf(rule.Type) >= Tuning.Max(rule) || !CanPlace(rule, slot)) return 0f;
+            if (!rule.Type.IsFight() && !CalmAllows(slot)) return 0f;
 
             float weight = Tuning.Weight(rule);
             if (rule.PreferDeadEnds && slot.IsDeadEnd)       weight *= DeadEndWeightMultiplier;
@@ -393,6 +401,25 @@ namespace CGD.Map
             for (int j = i - 1; j >= 0 && IsAssignedCombat(path[j]); j--) run++;
             for (int j = i + 1; j < path.Count && IsAssignedCombat(path[j]); j++) run++;
             return run <= Pacing.MaxCombatInARow;
+        }
+
+        // On the main path: a calm room here strings no more calm rooms together than allowed.
+        private bool CalmAllows(MapSlot slot)
+        {
+            if (slot.MainPathIndex < 0 || Pacing.MaxCalmInARow <= 0) return true;
+
+            List<int> path = _context.MainPath;
+            int i = slot.MainPathIndex, run = 1;
+            for (int j = i - 1; j >= 0 && IsAssignedCalm(path[j]); j--) run++;
+            for (int j = i + 1; j < path.Count && IsAssignedCalm(path[j]); j++) run++;
+            return run <= Pacing.MaxCalmInARow;
+        }
+
+        // Start, Exit and Boss stand outside the runs: they are where a stretch begins and ends.
+        private bool IsAssignedCalm(int nodeId)
+        {
+            MapNodeType? type = AssignedTypeAt(nodeId);
+            return type.HasValue && !type.Value.IsStructural() && !type.Value.IsFight();
         }
 
         private bool IsAssignedCombat(int nodeId)

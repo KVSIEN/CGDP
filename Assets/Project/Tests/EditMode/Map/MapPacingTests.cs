@@ -6,9 +6,9 @@ using CGD.Map;
 
 namespace CGD.Tests
 {
-    // The sawtooth the generator raises into a map (MapPeaks.Raise), and that the map director
+    // The sawtooth the generator raises into a map (MapPacing.Raise), and that the map director
     // then reads as it is, with nothing left to report.
-    public class MapPeaksTests
+    public class MapPacingTests
     {
         private MapGraph _graph;
 
@@ -32,7 +32,7 @@ namespace CGD.Tests
         private List<DirectorFinding> PlanFindings(MapPacingSettings pacing, out Dictionary<int, RoomBeat> beats)
         {
             var findings = new List<DirectorFinding>();
-            beats = MapDirector.Plan(_graph, pacing, 0, findings);
+            beats = MapDirector.Plan(_graph, pacing, findings);
             return findings;
         }
 
@@ -48,7 +48,7 @@ namespace CGD.Tests
             int before = Add(MapNodeType.Combat, 0.2f);
             Chain(start, a, b, c, d, e, before, Add(MapNodeType.Boss, 1f), Add(MapNodeType.Exit, 0f));
 
-            MapPeaks.Raise(_graph, MapPacingSettings.Default, null);
+            MapPacing.Raise(_graph, MapPacingSettings.Default, null);
 
             Assert.That(IntensityOf(c), Is.EqualTo(0.6f).Within(1e-5f), "lifted to the peak intensity");
             Assert.That(IntensityOf(d), Is.EqualTo(0.4f), "nothing else changes");
@@ -76,12 +76,12 @@ namespace CGD.Tests
             Chain(start, a, b, c, before, Add(MapNodeType.Boss, 1f), Add(MapNodeType.Exit, 0f));
             var pacing = new MapPacingSettings(maxFightsWithoutPeak: 2);
 
-            MapPeaks.Raise(_graph, pacing, null);
+            MapPacing.Raise(_graph, pacing, null);
 
             var analysis = new MapGraphAnalysis(_graph);
-            List<int> path = MapPeaks.PacedPath(_graph, analysis);
-            Assert.That(MapPeaks.PeaklessRuns(_graph, analysis, path, pacing.PeakIntensity, 2), Is.Empty);
-            Assert.That(IntensityOf(b), Is.EqualTo(0.75f + MapPeaks.Margin).Within(1e-5f), "above the side room's fight beside it");
+            List<int> path = MapPacing.PacedPath(_graph, analysis);
+            Assert.That(MapPacing.PeaklessRuns(_graph, analysis, path, pacing.PeakIntensity, 2), Is.Empty);
+            Assert.That(IntensityOf(b), Is.EqualTo(0.75f + MapPacing.Margin).Within(1e-5f), "above the side room's fight beside it");
         }
 
         [Test]
@@ -94,7 +94,7 @@ namespace CGD.Tests
             int before = Add(MapNodeType.Combat, 0.5f);
             Chain(start, a, shop, b, before, Add(MapNodeType.Boss, 1f), Add(MapNodeType.Exit, 0f));
 
-            MapPeaks.Raise(_graph, MapPacingSettings.Default, null);
+            MapPacing.Raise(_graph, MapPacingSettings.Default, null);
 
             PlanFindings(MapPacingSettings.Default, out Dictionary<int, RoomBeat> beats);
             Assert.That(beats[a], Is.EqualTo(RoomBeat.Peak), "the strongest fight that can peak");
@@ -113,7 +113,7 @@ namespace CGD.Tests
             int before = Add(MapNodeType.Combat, 0.2f);
             Chain(start, a, pinned, c, d, before, Add(MapNodeType.Boss, 1f), Add(MapNodeType.Exit, 0f));
 
-            MapPeaks.Raise(_graph, MapPacingSettings.Default, new HashSet<int> { pinned });
+            MapPacing.Raise(_graph, MapPacingSettings.Default, new HashSet<int> { pinned });
 
             Assert.That(IntensityOf(pinned), Is.EqualTo(0.5f));
             Assert.That(IntensityOf(d), Is.EqualTo(0.6f).Within(1e-5f));
@@ -131,7 +131,7 @@ namespace CGD.Tests
             var was = new List<float>();
             foreach (MapNode node in _graph.Nodes) was.Add(node.Intensity);
 
-            MapPeaks.Raise(_graph, MapPacingSettings.Default, null);
+            MapPacing.Raise(_graph, MapPacingSettings.Default, null);
 
             for (int i = 0; i < was.Count; i++) Assert.That(_graph.Nodes[i].Intensity, Is.EqualTo(was[i]));
         }
@@ -148,13 +148,52 @@ namespace CGD.Tests
             chain.Add(Add(MapNodeType.Exit, 0f));
             Chain(chain.ToArray());
 
-            MapPeaks.Raise(_graph, new MapPacingSettings(maxFightsWithoutPeak: 2), null);
+            MapPacing.Raise(_graph, new MapPacingSettings(maxFightsWithoutPeak: 2), null);
 
             PlanFindings(new MapPacingSettings(maxFightsWithoutPeak: 2), out Dictionary<int, RoomBeat> beats);
             for (int i = 1; i < fights.Count; i++)
                 Assert.That(beats[fights[i]] == RoomBeat.Peak && beats[fights[i - 1]] == RoomBeat.Peak, Is.False, $"#{fights[i - 1]} and #{fights[i]}");
             var analysis = new MapGraphAnalysis(_graph);
-            Assert.That(MapPeaks.PeaklessRuns(_graph, analysis, MapPeaks.PacedPath(_graph, analysis), 0.6f, 2), Is.Empty);
+            Assert.That(MapPacing.PeaklessRuns(_graph, analysis, MapPacing.PacedPath(_graph, analysis), 0.6f, 2), Is.Empty);
+        }
+
+        [Test]
+        public void AStrongestPeakEarlyGetsALaterFightRaisedAboveIt()
+        {
+            int start = Add(MapNodeType.Start, 0f);
+            int early = Add(MapNodeType.Combat, 0.8f);
+            int a = Add(MapNodeType.Combat, 0.3f);
+            int shop = Add(MapNodeType.Shop, 0.1f);
+            int b = Add(MapNodeType.Combat, 0.3f);
+            int late = Add(MapNodeType.Combat, 0.65f);
+            int c = Add(MapNodeType.Combat, 0.4f);
+            int quiet = Add(MapNodeType.Quiet, 0f);
+            int before = Add(MapNodeType.Combat, 0.3f);
+            Chain(start, early, a, shop, b, late, c, quiet, before, Add(MapNodeType.Boss, 1f), Add(MapNodeType.Exit, 0f));
+            var analysis = new MapGraphAnalysis(_graph);
+            Assert.That(MapPacing.EarlyStrongestPeak(_graph, analysis, MapPacing.PacedPath(_graph, analysis), 0.6f), Is.EqualTo(early));
+
+            MapPacing.Raise(_graph, MapPacingSettings.Default, null);
+
+            Assert.That(IntensityOf(early), Is.EqualTo(0.8f), "the early peak stays as it was");
+            Assert.That(IntensityOf(late), Is.EqualTo(0.8f + MapPacing.Margin).Within(1e-5f), "the later peak climbs past it");
+            List<DirectorFinding> findings = PlanFindings(MapPacingSettings.Default, out _);
+            Assert.That(findings.Exists(f => f.Check == DirectorCheck.EarlyPeak), Is.False);
+        }
+
+        [Test]
+        public void CalmRunsCountNeitherTheStartNorTheBoss()
+        {
+            int start = Add(MapNodeType.Start, 0f);
+            int first = Add(MapNodeType.Shop, 0f);
+            Chain(start, first, Add(MapNodeType.Quiet, 0f), Add(MapNodeType.Junction, 0f), Add(MapNodeType.Boss, 1f), Add(MapNodeType.Exit, 0f));
+            var analysis = new MapGraphAnalysis(_graph);
+
+            Assert.That(MapPacing.CalmRuns(_graph, analysis, 3), Is.Empty);
+            List<List<int>> runs = MapPacing.CalmRuns(_graph, analysis, 2);
+            Assert.That(runs.Count, Is.EqualTo(1));
+            Assert.That(runs[0][0], Is.EqualTo(first));
+            Assert.That(runs[0].Count, Is.EqualTo(3));
         }
 
         [Test]
@@ -166,7 +205,7 @@ namespace CGD.Tests
             int before = Add(MapNodeType.Combat, 0.2f);
             Chain(start, a, b, before, Add(MapNodeType.Boss, 1f), Add(MapNodeType.Exit, 0f));
 
-            MapPeaks.Raise(_graph, new MapPacingSettings(maxFightsWithoutPeak: 0), null);
+            MapPacing.Raise(_graph, new MapPacingSettings(maxFightsWithoutPeak: 0), null);
 
             Assert.That(IntensityOf(b), Is.EqualTo(0.4f));
         }

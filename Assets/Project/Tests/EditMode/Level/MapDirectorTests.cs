@@ -105,7 +105,7 @@ namespace CGD.Tests
         public void WithoutSettingsNoRoomIsDirected()
         {
             Chain(Add(MapNodeType.Start, 0f), Add(MapNodeType.Combat, 0.9f));
-            MapDirection direction = MapDirector.Plan(_graph, null, null);
+            MapDirection direction = MapDirector.Plan(_graph, null, (MapDirectorSettings)null);
             Assert.That(direction.Beats, Is.Empty);
             Assert.That(direction.SizeScaleOf(0), Is.EqualTo(1f));
         }

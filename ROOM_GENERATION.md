@@ -1961,7 +1961,7 @@ room's beat where it already makes its decision, so nothing is built twice.
 
 **Beats** (`MapDirector.Plan`, from the graph alone, so the map editor's layout gives the same):
 Climax for the Boss; Rest for a room that isn't a fight (`MapNodeTypeExtensions.IsFight`, the one
-list the generator's pacing reads too; waves count as fights); Peak for a fight `MapPeaks.IsPeak`
+list the generator's pacing reads too; waves count as fights); Peak for a fight `MapPacing.IsPeak`
 calls one: at least the content's `_pacing._peakIntensity` (0.6) and outranked by no fight beside it
 (higher intensity, then deeper, then lower id, so two peaks never touch); Relief for a fight entered
 from a peak (a peak neighbour nearer the Start); Approach for the fight just before the Boss on the
@@ -2010,14 +2010,17 @@ a peak, not more additions.
 **Checks** (`DirectorCheck`, `DirectorFinding` on `LevelLayout.DirectorFindings`, short on the
 room's overview label: "Director: flat stretch, fixed", "! under-covered"):
 - *Pacing, before the build*: made by the generator, not patched by the director. The intensity
-  painter raises the main path's peaks itself (`MapPeaks.Raise`, after the pins): more than
+  painter raises the main path's peaks itself (`MapPacing.Raise`, after the pins): more than
   `_pacing._maxFightsWithoutPeak` (3) fights in a row with no peak, or a way to the boss with two
   fights and no peak, get their strongest fight that can peak (beside no peak, not pinned, not the
-  room before the boss) lifted to the peak intensity and `MapPeaks.Margin` (0.05) above every fight
+  room before the boss) lifted to the peak intensity and `MapPacing.Margin` (0.05) above every fight
   beside it. The director reads the peaks as they are and only reports a stretch that still has
   none (`FlatStretch`, `NoPeak`: a hand-made graph or a pinned room in the way; the validator says
-  the same in the map editor), more than `_calmStretch` (3) calm rooms in a row, or the strongest
-  peak in the first third with only weaker ones after.
+  the same in the map editor). The same goes for the two the old pass could only report: the
+  type assigner's fill puts a fight where another calm room would make more than
+  `_pacing._maxCalmInARow` (3) in a row (`CalmStretch`; guarantees, pins and minimums come first),
+  and `Raise` lifts a later fight `Margin` past a strongest peak standing in the first third alone
+  (`EarlyPeak`).
 - *Set pieces, while built*: peaks and the boss room are planned after every other room, and asked
   for more structure points per tile than the most covered ordinary fight beside them
   (`BeatReview.CoverBar` as the target's `StructureTarget.CoverAbove`): the budget keeps adding

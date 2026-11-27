@@ -268,14 +268,19 @@ namespace CGD.Map
             CheckPeaks(graph, analysis, pacing, issues);
         }
 
-        // The sawtooth the generator raises (MapPeaks): a hand-made graph is told where it has none.
+        // The rhythm the generator makes (MapPacing): a hand-made graph is told where it misses it.
         private static void CheckPeaks(MapGraph graph, MapGraphAnalysis analysis, MapPacingSettings pacing, List<string> issues)
         {
+            List<int> path = MapPacing.PacedPath(graph, analysis);
+            foreach (List<int> calm in MapPacing.CalmRuns(graph, analysis, pacing.MaxCalmInARow))
+                issues.Add($"More than {pacing.MaxCalmInARow} calm rooms in a row on the main path (#{calm[0]} to #{calm[calm.Count - 1]}).");
+            int early = MapPacing.EarlyStrongestPeak(graph, analysis, path, pacing.PeakIntensity);
+            if (early >= 0)
+                issues.Add($"The strongest peak, #{early}, comes in the first third of the main path and every later one is weaker: the run falls away.");
             if (pacing.MaxFightsWithoutPeak <= 0) return;
-            List<int> path = MapPeaks.PacedPath(graph, analysis);
-            foreach (List<int> run in MapPeaks.PeaklessRuns(graph, analysis, path, pacing.PeakIntensity, pacing.MaxFightsWithoutPeak))
+            foreach (List<int> run in MapPacing.PeaklessRuns(graph, analysis, path, pacing.PeakIntensity, pacing.MaxFightsWithoutPeak))
                 issues.Add($"{run.Count} fights in a row on the main path (#{run[0]} to #{run[run.Count - 1]}) and none is a peak (at least {pacing.PeakIntensity:0.##} intensity, above every fight beside it).");
-            List<int> fights = MapPeaks.PeaklessFights(graph, analysis, path, pacing.PeakIntensity);
+            List<int> fights = MapPacing.PeaklessFights(graph, analysis, path, pacing.PeakIntensity);
             if (fights.Count > 0)
                 issues.Add($"No peak among the {fights.Count} fights on the way to the boss: raise one to at least {pacing.PeakIntensity:0.##} intensity, above every fight beside it.");
         }
