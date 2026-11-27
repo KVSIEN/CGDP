@@ -10,7 +10,7 @@ namespace CGD.Level
     {
         [Tooltip("Most calm rooms in a row on the main path before it is reported as dragging (0 = not checked)")]
         [SerializeField, Range(0, 8)] private int _calmStretch = 3;
-        [Tooltip("A peak or boss room holding no more cover for its size than a fight beside it is built again from up to this many more seeds, keeping the best")]
+        [Tooltip("A peak or boss room is built up to hold more cover for its size than every fight beside it; one whose additions run out before it gets there is built again from up to this many more seeds, keeping the best")]
         [SerializeField, Range(0, 6)] private int _coverRetries = 3;
         [Tooltip("Size of a fight room at the start of the map, scaling up to Late Size by the boss (beside its beat's own size): small chambers early, bigger ones deeper in")]
         [SerializeField, Range(0.5f, 1.5f)] private float _earlySize = 0.9f;

@@ -23,14 +23,15 @@ namespace CGD.Level
         public static float CoverOf(StructureBudget budget, RoomStructure structure) =>
             structure == null || structure.Footprint.Count == 0 ? 0f : budget.Score(structure) / structure.Footprint.Count;
 
-        // The best of `first` and up to `retries` more tries (`replan(attempt)`) for a set piece:
+        // The fallback for a set piece planned to its cover bar whose additions ran out before it
+        // got there: the best of `first` and up to `retries` more tries (`replan(attempt)`):
         // the first to hold more cover than every built fight beside it, with a way round if any
         // try has one; failing that, the most covered. `first` is kept when it already passes, so
         // a room that met its beat is built exactly as it would be without the check.
         public static RoomStructure BestSetPiece(MapGraph graph, LevelLayout layout, LevelRoom room, RoomStructure first,
                                                  StructureBudget budget, int retries, Func<int, RoomStructure> replan)
         {
-            float bar = StrongestNeighbourCover(graph, layout, room, budget);
+            float bar = CoverBar(graph, layout, room, budget);
             if (bar <= 0f || Passes(first, bar, budget)) return first;
 
             RoomStructure best = first;
@@ -53,7 +54,10 @@ namespace CGD.Level
             return (cover > bar ? 2f : 0f) + (RoomFlank.Has(structure) ? 1f : 0f) + Math.Min(cover, 0.99f);
         }
 
-        private static float StrongestNeighbourCover(MapGraph graph, LevelLayout layout, LevelRoom room, StructureBudget budget)
+        // The cover a set piece should hold more of for its size: the most of any fight beside it
+        // already built (0 = none built). It is asked of the room as it is planned
+        // (StructureTarget.CoverAbove); BestSetPiece rebuilds only one whose additions ran out.
+        public static float CoverBar(MapGraph graph, LevelLayout layout, LevelRoom room, StructureBudget budget)
         {
             float bar = 0f;
             foreach (LevelRoom other in BuiltFightsBeside(graph, layout, room))

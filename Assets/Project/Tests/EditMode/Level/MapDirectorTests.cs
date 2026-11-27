@@ -175,6 +175,36 @@ namespace CGD.Tests
             Assert.That(peakWalls, Is.GreaterThan(calmWalls));
         }
 
+        [Test]
+        public void ACoverBarKeepsTheRestOfTheTarget()
+        {
+            StructureTarget target = new StructureTarget(0.75f, 1.25f, 3).WithCoverAbove(0.3f);
+            Assert.That(target.OpenRunScale, Is.EqualTo(0.75f).Within(1e-5f));
+            Assert.That(target.PointsScale, Is.EqualTo(1.25f).Within(1e-5f));
+            Assert.That(target.ExtraAdditions, Is.EqualTo(3));
+            Assert.That(target.CoverAbove, Is.EqualTo(0.3f));
+            Assert.That(default(StructureTarget).CoverAbove, Is.EqualTo(0f), "no bar unless one is asked for");
+        }
+
+        [Test]
+        public void ASetPieceIsBuiltUpPastTheCoverOfTheFightsBesideIt()
+        {
+            var budget = new StructureBudget();
+            SetOptions(budget, ScriptableObject.CreateInstance<CoverWallsStructureRule>());
+            RoomStructure hall = new RoomStructurePlanner().Prepare(RoomFootprint.Rectangle(new RectInt(0, 0, 16, 12)), 4f,
+                                                                     new[] { new Vector2Int(0, 6) });
+            var plain = new StructureTarget(1f, 1f, 3);
+            float withBar = 0f, without = 0f;
+            for (int seed = 1; seed <= 6; seed++)
+            {
+                RoomStructure neighbour = budget.Apply(hall, new RandomStream(new Seed((ulong)(seed + 100))), plain);
+                float bar = BeatReview.CoverOf(budget, neighbour);
+                without += BeatReview.CoverOf(budget, budget.Apply(hall, new RandomStream(new Seed((ulong)seed)), plain));
+                withBar += BeatReview.CoverOf(budget, budget.Apply(hall, new RandomStream(new Seed((ulong)seed)), plain.WithCoverAbove(bar)));
+            }
+            Assert.That(withBar, Is.GreaterThan(without), "a room asked to beat its neighbours' cover is built up further");
+        }
+
         private static void SetOptions(StructureBudget budget, RoomStructureRule rule)
         {
             var options = new List<StructureBudget.Option> { new() { Rule = rule } };

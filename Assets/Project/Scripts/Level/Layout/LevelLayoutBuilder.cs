@@ -70,10 +70,11 @@ namespace CGD.Level
             return layout;
         }
 
-        // Peaks and the boss room go last, once the fights beside them are built: one that comes out
-        // holding no more cover for its size than they do is built again from the director's
-        // seeds (BeatReview.CoverRetries), keeping the try closest to its beat. Seeds are per room,
-        // so the order moves no draw.
+        // Peaks and the boss room go last, once the fights beside them are built, and are planned to
+        // hold more cover for their size than any of them (BeatReview.CoverBar as the structure
+        // target's CoverAbove). Only one whose additions ran out first is built again from the
+        // director's seeds (MapDirectorSettings.CoverRetries), keeping the try closest to its beat.
+        // Seeds are per room, so the order moves no draw.
         private void PlanStructures(Seed seed, MapGraph graph, LevelLayout layout)
         {
             var planner = new RoomStructurePlanner();
@@ -83,24 +84,27 @@ namespace CGD.Level
             foreach (LevelRoom room in rooms)
             {
                 Seed roomSeed = seed.Derive(room.Node.Id);
-                RoomStructure structure = PlanRoom(planner, room, layout, roomSeed);
+                StructureTarget target = _settings.TuningFor(room).Structure;
+                if (MapDirector.IsSetPiece(room.Beat))
+                    target = target.WithCoverAbove(BeatReview.CoverBar(graph, layout, room, _settings.StructureBudget));
+                RoomStructure structure = PlanRoom(planner, room, layout, roomSeed, target);
                 if (MapDirector.IsSetPiece(room.Beat) && retries > 0)
                     structure = BeatReview.BestSetPiece(graph, layout, room, structure, _settings.StructureBudget, retries,
-                                                        attempt => PlanRoom(planner, room, layout, roomSeed.Derive("director").Derive(attempt)));
+                                                        attempt => PlanRoom(planner, room, layout, roomSeed.Derive("director").Derive(attempt), target));
                 room.AttachStructure(structure);
                 if (room.Beat != RoomBeat.None) room.AddTag($"{room.Beat} beat");
                 if (room.BreachFaction != null) room.AttachBreachEntrances(BreachEntrances(room, layout));
             }
         }
 
-        private RoomStructure PlanRoom(RoomStructurePlanner planner, LevelRoom room, LevelLayout layout, Seed seed)
+        private RoomStructure PlanRoom(RoomStructurePlanner planner, LevelRoom room, LevelLayout layout, Seed seed, StructureTarget target)
         {
             FactionDesign design = _settings.DesignFor(room.Faction);
             RoomStructureRule divider = room.BreachFaction != null ? _settings.DesignFor(room.BreachFaction)?.BreachDivider : null;
             int tries = RoomTraitFit.TriesFor(room, _settings.RuleFor(room.Node.Type), design, _settings);
             return BestStructure(planner, room, layout, seed, design, divider, room.DesignStrength, tries,
                                  _settings.UsesIsovist(IsovistUse.Traits), _lowestLevel, _highestLevel, _settings.StructureBudget,
-                                 _settings.ElevationBudget, RoomFurnisher.AnchorsOf(_settings, room), _settings.TuningFor(room).Structure);
+                                 _settings.ElevationBudget, RoomFurnisher.AnchorsOf(_settings, room), target);
         }
 
         // The doorways of a Breach room whose corridors come from a room the breach faction holds.

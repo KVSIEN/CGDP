@@ -2018,11 +2018,14 @@ room's overview label: "Director: flat stretch, fixed", "! under-covered"):
   none (`FlatStretch`, `NoPeak`: a hand-made graph or a pinned room in the way; the validator says
   the same in the map editor), more than `_calmStretch` (3) calm rooms in a row, or the strongest
   peak in the first third with only weaker ones after.
-- *Set pieces, while built* (`BeatReview.BestSetPiece`): peaks and the boss room are planned after
-  every other room; one holding no more structure points per tile than an ordinary fight beside it,
-  or with no way round, is built again from up to `_coverRetries` (3) seeds of the director's own
-  (`room seed › director › n`), keeping the first that passes, else the best. A room that passes
-  the first time is built exactly as without the check.
+- *Set pieces, while built*: peaks and the boss room are planned after every other room, and asked
+  for more structure points per tile than the most covered ordinary fight beside them
+  (`BeatReview.CoverBar` as the target's `StructureTarget.CoverAbove`): the budget keeps adding
+  while the room is at or under the bar, within its additions, and never keeps one that closes the
+  way round. Only a room whose additions ran out first, or with no way round, is built again
+  (`BeatReview.BestSetPiece`) from up to `_coverRetries` (3) seeds of the director's own
+  (`room seed › director › n`), keeping the first that passes, else the best. The retry measure
+  below is from before the bar was asked for up front.
 - *After the build* (`BeatReview.ReviewStructures`, `ReviewSupplies`): a set piece still under
   covered or smaller than a fight beside it, a relief no smaller than its peak, supplies that found
   no nook. Reported only: sizes are fixed by then.

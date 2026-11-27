@@ -23,7 +23,9 @@ namespace CGD.Level
     // and low walls still count as cover. A copy that cuts floor off from the doorways, or that
     // the caller turns down (the way round a fight room, RoomFlank), is never kept. Options are drawn from a stream of their own, so no other draw in the room moves.
     // A StructureTarget (the map director's, by the room's beat) scales how far a room may see
-    // and how much it should have, so a peak's arena is built up further than a calm room.
+    // and how much it should have, so a peak's arena is built up further than a calm room, and
+    // can ask for more points a tile than a bar (CoverAbove): a set piece is built up until it
+    // holds more cover for its size than every fight beside it, within its additions.
     [Serializable]
     public sealed class StructureBudget
     {
@@ -117,7 +119,7 @@ namespace CGD.Level
         {
             float needed = Needed(structure, target);
             if (needed <= 0f) return false;
-            if (Score(structure) < needed) return true;
+            if (Score(structure) < needed || CoverMissing(structure, target) > 0f) return true;
             float openRun = OpenRun(target);
             foreach (Area area in AreasOf(structure, target))
                 if (area.Score < area.Needed * _areaShare || area.MeanRun > openRun) return true;
@@ -125,6 +127,17 @@ namespace CGD.Level
         }
 
         private float OpenRun(StructureTarget target) => _openRun * target.OpenRunScale;
+
+        // The points short of the target's cover bar, the room needing strictly more than it:
+        // at the bar exactly, a token amount, so any addition still counts as a gain.
+        private float CoverMissing(RoomStructure structure, StructureTarget target)
+        {
+            if (target.CoverAbove <= 0f) return 0f;
+            float bar = target.CoverAbove * structure.Footprint.Count, score = Score(structure);
+            return score > bar ? 0f : bar - score + CoverToken;
+        }
+
+        private const float CoverToken = 1e-3f;
 
         // The room with structure added: `structure` itself when nothing was, else a copy.
         // `accepts`: whether a copy may be kept (null = any that stays connected).
@@ -184,7 +197,7 @@ namespace CGD.Level
         // further than OpenRun each sees, in its share of points, and its missing points.
         private float Shortfall(RoomStructure structure, StructureTarget target, out RectInt shortest)
         {
-            float total = 0f, most = -1f;
+            float total = _pointsWeight * CoverMissing(structure, target), most = -1f;
             float openRun = OpenRun(target);
             shortest = structure.Footprint.Bounds;
             foreach (Area area in AreasOf(structure, target))
