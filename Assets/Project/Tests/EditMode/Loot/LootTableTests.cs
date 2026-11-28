@@ -198,5 +198,30 @@ namespace CGD.Tests
             for (int i = 0; i < 20; i++)
                 Assert.AreEqual(RollOne(table, i).Instance.Tier, RollOne(table, i).Instance.Tier);
         }
-    }
+    
+        [Test]
+        public void AFoundRollIsNeverEmptyAndTheChanceOfAnythingFollowsTheNothingWeight()
+        {
+            LootTable table = CreateTable(Create<WeaponCategoryData>());
+            var serialized = new SerializedObject(table);
+            serialized.FindProperty("_nothingWeight").floatValue = 3f;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            Assert.That(table.ChanceOfAnything(), Is.EqualTo(0.25f).Within(1e-5f), "1 entry against 3 of nothing");
+            Assert.That(table.ChanceOfAnything(2f), Is.EqualTo(0.5f).Within(1e-5f), "luck shrinks the nothing weight to 1");
+
+            var drops = new List<LootDrop>();
+            int empty = 0;
+            for (int i = 0; i < 40; i++)
+            {
+                drops.Clear();
+                table.RollFound(drops, 0f, Seed.From(i));
+                Assert.That(drops.Count, Is.EqualTo(1), $"seed {i}: a found roll always holds something");
+                drops.Clear();
+                table.Roll(drops, 0f, Seed.From(i));
+                if (drops.Count == 0) empty++;
+            }
+            Assert.That(empty, Is.GreaterThan(0), "a plain roll still comes up empty");
+        }
+}
 }

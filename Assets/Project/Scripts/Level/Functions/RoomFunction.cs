@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CGD.Core;
+using CGD.Loot;
 using CGD.Map;
 
 namespace CGD.Level
@@ -47,6 +48,8 @@ namespace CGD.Level
         [SerializeField] private RoomPropSet[] _sets = Array.Empty<RoomPropSet>();
         [Tooltip("Ways this place can be arranged; each room picks one by weight. A layout overrides the shapes, cells, size and structure it sets and adds its own set pieces. Empty = one arrangement, the function's")]
         [SerializeField] private RoomLayout[] _layouts = Array.Empty<RoomLayout>();
+        [Tooltip("What searchable furniture here leans toward, by weight (a locker in a medical bay toward healing): one is rolled per piece, an entry without a filter leaving it as it is. Pieces with subtypes of their own keep theirs. Empty = no lean")]
+        [SerializeField] private WeightedLootFilter[] _searchLean = Array.Empty<WeightedLootFilter>();
 
         public string DisplayName => _displayName;
         public RoomCategory Category => _category;
@@ -54,6 +57,7 @@ namespace CGD.Level
         public float  WallHeight  => _wallHeight;
         public Vector2Int Cells   => new(Mathf.Clamp(_cells.x, 1, 2), Mathf.Clamp(_cells.y, 1, 2));
         public LandmarkRoomDefinition Landmark => _landmark;
+        public WeightedLootFilter[] SearchLean => _searchLean;
         public bool   IsUnique    => _unique || _landmark != null;
         public bool   OpenCeiling => _openCeiling;
         // Corner chamfer in tiles, or `fallback` when this function doesn't set one.

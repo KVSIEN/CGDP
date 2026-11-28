@@ -58,10 +58,12 @@ namespace CGD.Loot
             public readonly TierCheck[]    Checks;   // an outer table's, which win over a nested one's own
             public readonly ItemTier?      Tier;     // set inside a tier's pool: its gear drops at that tier, unchecked
             public readonly LootFilter     Filter;
+            public readonly bool           Found;    // this table's own draws are never empty (RollFound)
 
             public RollContext(List<LootDrop> results, float luck, RandomStream random, int depth,
-                               TierCheck[] checks, ItemTier? tier, LootFilter filter)
+                               TierCheck[] checks, ItemTier? tier, LootFilter filter, bool found = false)
             {
+                Found   = found;
                 Results = results;
                 Luck    = luck;
                 Random  = random;
@@ -86,12 +88,39 @@ namespace CGD.Loot
             Roll(new RollContext(results, Mathf.Max(0f, luck), seed.Stream(), 0, null, null, filter));
         }
 
+        // As Roll, for a container a level chose to hold a find: this table's own draws are
+        // never empty (its Nothing Weight is skipped; tables nested in it keep theirs).
+        public void RollFound(List<LootDrop> results, float luck, Seed seed, LootFilter filter = null)
+        {
+            if (filter != null && !CanYield(filter, 0)) filter = null;
+            Roll(new RollContext(results, Mathf.Max(0f, luck), seed.Stream(), 0, null, null, filter, found: true));
+        }
+
+        // The chance a roll at `luck` holds anything: 1 with guaranteed entries, else the chance
+        // at least one pool draw isn't empty (the Rolls range taken evenly, nested tables as
+        // never empty). What a piece of searchable furniture adds to its level's finds.
+        public float ChanceOfAnything(float luck = 0f)
+        {
+            if (_guaranteed.Length > 0) return 1f;
+
+            float pool = 0f;
+            foreach (LootEntry entry in _pool) pool += entry.Weight;
+            if (pool <= 0f) return 0f;
+
+            float nothing = _nothingWeight / (1f + Mathf.Max(0f, luck));
+            float empty   = nothing / (pool + nothing);
+            float sum = 0f;
+            int min = Mathf.Max(0, _rolls.Min), max = Mathf.Max(min, _rolls.Max);
+            for (int draws = min; draws <= max; draws++) sum += 1f - Mathf.Pow(empty, draws);
+            return sum / (max - min + 1);
+        }
+
         private void Roll(in RollContext ctx)
         {
             if (ctx.Depth > MaxNesting) return;
 
             RollContext roll = ctx.Checks == null && _tierChecks.Length > 0
-                ? new RollContext(ctx.Results, ctx.Luck, ctx.Random, ctx.Depth, _tierChecks, ctx.Tier, ctx.Filter)
+                ? new RollContext(ctx.Results, ctx.Luck, ctx.Random, ctx.Depth, _tierChecks, ctx.Tier, ctx.Filter, ctx.Found)
                 : ctx;
 
             foreach (LootEntry entry in _guaranteed)
@@ -102,7 +131,9 @@ namespace CGD.Loot
             RollPool(roll);
         }
 
-        // Whether anything in this table, nested tables included, passes the filter.
+        // Whether anything in this table, nested tables included, passes the filter (null passes).
+        public bool CanYield(LootFilter filter) => filter == null || CanYield(filter, 0);
+
         private bool CanYield(LootFilter filter, int depth)
         {
             if (depth > MaxNesting) return false;
@@ -136,7 +167,7 @@ namespace CGD.Loot
             for (int i = 0; i < _pool.Length; i++)
                 weights[i] = Allows(_pool[i], ctx.Filter, ctx.Depth) ? _pool[i].Weight : 0f;
 
-            float nothing = _nothingWeight / (1f + ctx.Luck);
+            float nothing = ctx.Found ? 0f : _nothingWeight / (1f + ctx.Luck);
             int   draws   = _rolls.Evaluate(ctx.Random);
 
             for (int i = 0; i < draws; i++)

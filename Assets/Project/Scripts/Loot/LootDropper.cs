@@ -62,6 +62,7 @@ namespace CGD.Loot
         private LootFilter _subtype;
         private bool       _subtypeRolled;
         private float      _dropScale = 1f;
+        private WeightedLootFilter[] _lean = System.Array.Empty<WeightedLootFilter>();
 
         // What this dropper's drops are narrowed to; null = anything its table holds.
         public LootFilter Subtype
@@ -86,6 +87,22 @@ namespace CGD.Loot
         // Run-wide bonuses (a warning's loot luck) stack on top of the authored luck.
         public void AddLuck(float amount) => _luck = Mathf.Max(0f, _luck + amount);
 
+        // The chance a drop holds anything, at this dropper's luck (LootTable.ChanceOfAnything).
+        public float FindChance => _table != null ? _table.ChanceOfAnything(_luck) : 0f;
+
+        // Subtypes the room it stands in leans it toward (a locker in a medical bay toward
+        // healing), rolled like its own when it has none of its own. A lean its table holds
+        // nothing of is left out, so a crate never reads "(Armor)". Reset when pooled.
+        public void LeanTo(WeightedLootFilter[] lean)
+        {
+            var kept = new List<WeightedLootFilter>();
+            if (lean != null && _table != null)
+                foreach (WeightedLootFilter option in lean)
+                    if (_table.CanYield(option.Filter)) kept.Add(option);
+            _lean = kept.ToArray();
+            _subtypeRolled = false;
+        }
+
         public void ApplySeed(Seed seed)
         {
             _seed          = seed;
@@ -102,26 +119,32 @@ namespace CGD.Loot
             _seed          = null;
             _subtypeRolled = false;
             _dropScale     = 1f;
+            _lean          = System.Array.Empty<WeightedLootFilter>();
         }
 
         private void RollSubtype()
         {
             _subtypeRolled = true;
             _subtype       = null;
-            if (_subtypes.Length == 0) return;
+            WeightedLootFilter[] options = _subtypes.Length > 0 ? _subtypes : _lean;
+            if (options.Length == 0) return;
 
             RandomStream random = (_seed?.Derive("subtype") ?? Seed.Random()).Stream();
-            _subtype = random.PickWeighted(_subtypes, option => option.Weight).Filter;
+            _subtype = random.PickWeighted(options, option => option.Weight).Filter;
         }
 
         public void Drop() => Drop(1f);
+
+        // A drop that is never empty (LootTable.RollFound): the level chose this container to
+        // hold one of its finds.
+        public void DropFound() => Drop(1f, found: true);
 
         private void DropOnDeath() => Drop(KillCredit());
 
         // 0..1: the credited team's share of the kill, which every item's drop chance is scaled by.
         private float KillCredit() => _creditedTeam == Team.None ? 1f : _health.DamageShareOf(_creditedTeam);
 
-        private void Drop(float credit)
+        private void Drop(float credit, bool found = false)
         {
             if (_table == null) return;
 
@@ -131,7 +154,8 @@ namespace CGD.Loot
             if (keepChance <= 0f) return;
 
             _drops.Clear();
-            _table.Roll(_drops, _luck, seed, Subtype);
+            if (found) _table.RollFound(_drops, _luck, seed, Subtype);
+            else _table.Roll(_drops, _luck, seed, Subtype);
 
             RandomStream placement = seed.Derive("placement").Stream();
             RandomStream keep      = seed.Derive("credit").Stream();

@@ -156,6 +156,8 @@ namespace CGD.Level
         [SerializeField] private StructureBudget _structureBudget = new();
         [Tooltip("Gives every room a part in the level's pacing (a peak, the relief after it, a calm room, the approach to the boss) and builds it for that part: its size, cover, enemies and supplies. Empty = every room is built alike")]
         [SerializeField] private MapDirectorSettings _director;
+        [Tooltip("Where the level's search finds lean: furniture off the main path, and more behind a gate, is likelier to hold one. The total stays what the searchable furniture adds")]
+        [SerializeField] private SearchLootSettings _searchLoot = new();
         [Tooltip("How strongly a faction's design shows in a room, from how firmly the map's faction painter holds it: full in the core of a territory, thinner on its frontier")]
         [SerializeField] private TerritoryDepth _territoryDepth = new();
 
@@ -221,6 +223,7 @@ namespace CGD.Level
         public RoomDressing GapDressing => _gapDressing;
         public StructureBudget StructureBudget => _structureBudget;
         public MapDirectorSettings Director => _director;
+        public SearchLootSettings SearchLoot => _searchLoot;
         public TerritoryDepth TerritoryDepth => _territoryDepth;
 
         // What the director changes in this room for its beat; nothing without a director.

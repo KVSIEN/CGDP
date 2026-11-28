@@ -12,6 +12,7 @@ namespace CGD.Level
         public static Seed Contents(Seed level)         => level.Derive("contents");
         public static Seed Overgrowth(Seed level)       => level.Derive("overgrowth");
         public static Seed Encounters(Seed level)       => level.Derive("encounters");
+        public static Seed SearchFinds(Seed level)      => level.Derive("search finds");
         public static Seed Objectives(Seed level)       => level.Derive("objectives");
         public static Seed ObjectiveRewards(Seed level) => level.Derive("objective rewards");
     }

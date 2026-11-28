@@ -160,7 +160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _label: Search filing cabinet
-  _holdDuration: 0.5
+  _holdDuration: 0.8
   _requirement:
     Item: {fileID: 0}
     Count: 1
@@ -168,6 +168,9 @@ MonoBehaviour:
   _onOpened:
     m_PersistentCalls:
       m_Calls: []
+  _findWeight: 0.7
+  _addsFinds: 1
+  _noiseRadius: 4
 --- !u!114 &46916684954212364
 MonoBehaviour:
   m_ObjectHideFlags: 0

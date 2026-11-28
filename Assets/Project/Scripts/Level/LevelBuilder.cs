@@ -128,6 +128,8 @@ namespace CGD.Level
             foreach (string warning in Layout.Warnings)
                 Debug.LogWarning($"{name}: {warning}", this);
             ApplyLootLuck();
+            // After the luck, which is part of what each piece adds to the level's finds.
+            SearchLootDistributor.Distribute(Layout, Graph, populator.RoomObjects, _settings.SearchLoot, LevelSeeds.SearchFinds(Seed));
 
             if (_navMesh != null) _navMesh.BuildNavMesh();
             if (_navMesh != null && _vaultLowCover) new VaultLinkBuilder().Build(Layout, transform, populator.Furniture, _navMesh.agentTypeID);
