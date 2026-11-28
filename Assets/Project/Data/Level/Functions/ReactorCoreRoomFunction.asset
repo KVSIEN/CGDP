@@ -31,3 +31,8 @@ MonoBehaviour:
   _landmark: {fileID: 11400000, guid: 4adf3fe300664e66bb7b10815a27586c, type: 2}
   _structure: []
   _props: []
+  _searchLean:
+  - Filter: {fileID: 0}
+    Weight: 1
+  - Filter: {fileID: 11400000, guid: 3a3d604e06ee461ca47f9c2de4ea5cd4, type: 2}
+    Weight: 1

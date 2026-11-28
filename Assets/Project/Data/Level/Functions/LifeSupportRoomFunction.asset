@@ -76,3 +76,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 53f3b9ce8b604ef58518d80583fddd79, type: 2}
   - {fileID: 11400000, guid: ab5f4dffefde41c58c09c52bcc077bd5, type: 2}
   - {fileID: 11400000, guid: 40f73b4131f048909d282d6b4b73cdf3, type: 2}
+  _searchLean:
+  - Filter: {fileID: 0}
+    Weight: 1
+  - Filter: {fileID: 11400000, guid: 3a3d604e06ee461ca47f9c2de4ea5cd4, type: 2}
+    Weight: 1

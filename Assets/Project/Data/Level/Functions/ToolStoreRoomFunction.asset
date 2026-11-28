@@ -173,3 +173,8 @@ MonoBehaviour:
     Near: 
   _layouts: []
   _sets: []
+  _searchLean:
+  - Filter: {fileID: 0}
+    Weight: 1
+  - Filter: {fileID: 11400000, guid: 3a3d604e06ee461ca47f9c2de4ea5cd4, type: 2}
+    Weight: 1

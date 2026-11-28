@@ -44,6 +44,9 @@ GameObject:
   - component: {fileID: 379379982678739173}
   - component: {fileID: 5847499923347664271}
   - component: {fileID: 630610543719929646}
+  - component: {fileID: 5158298901084474817}
+  - component: {fileID: 6526721355838485840}
+  - component: {fileID: 2247636677928952617}
   m_Layer: 0
   m_Name: Box
   m_TagString: Untagged
@@ -144,3 +147,67 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5158298901084474817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4135232510380172920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc3ca5ab3c2c497495b902bfb88db4b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _label: Search crate
+  _holdDuration: 1.5
+  _requirement:
+    Item: {fileID: 0}
+    Count: 1
+    Consume: 0
+  _onOpened:
+    m_PersistentCalls:
+      m_Calls: []
+  _findWeight: 0.8
+  _addsFinds: 0
+  _noiseRadius: 6
+--- !u!114 &6526721355838485840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4135232510380172920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faf0a0e336204d75988189b2bb42c58a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _table: {fileID: 11400000, guid: 65b4f77e3fdf4a26833ac82325eb07a7, type: 2}
+  _dropOnDeath: 0
+  _luck: 0
+  _subtypes: []
+  _creditedTeam: 1
+  _itemPickupPrefab: {fileID: 7400000000000000004, guid: 388256a9a4738594fb070b524bfaba60, type: 3}
+  _weaponPickupPrefab: {fileID: 7400000000000000104, guid: 3f6348acfcc8f1f4198e2f4eed0ffb7e, type: 3}
+  _dropOffset: {x: 0.0, y: 0.042, z: 0.714}
+  _scatterRadius: 0.25
+  _groundMask:
+    serializedVersion: 2
+    m_Bits: 1
+  _groundClearance: 0.3
+--- !u!114 &2247636677928952617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4135232510380172920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3036c902d06d470d8dad8273ce07c00a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _renderers: []
+  _highlightColor: {r: 1, g: 0.85, b: 0.35, a: 1}
+  _strength: 0.45
